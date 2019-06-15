@@ -30,12 +30,16 @@
 #include <wg_mempool.h>
 #include <wg_standardformatter.h>
 #include <wg_inputhandler.h>
+#include <wg_context.h>
 
 
 namespace wg
 {
 
 	Base::Data *			Base::s_pData = 0;
+
+	float					Base::s_scale;						
+	int						Base::s_pixelQuartersPerPoint;				
 
 
 	//____ init() __________________________________________________________________
@@ -51,6 +55,8 @@ namespace wg
 		s_pData->pPtrPool = new MemPool( 128, sizeof( WeakPtrHub ) );
 		s_pData->pMemStack = new MemStack( 4096 );
 
+		s_pData->pActiveContext = Context::create();
+
 		s_pData->pDefaultCaret = Caret::create();
 
 		s_pData->pDefaultTextMapper = StdTextMapper::create();
@@ -65,8 +71,11 @@ namespace wg
 		s_pData->pDefaultStyle = TextStyle::create();
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
 
-
 		TextTool::setDefaultBreakRules();
+
+		s_scale = 1.f;
+		s_pixelQuartersPerPoint = 4;
+
 	}
 
 	//____ exit() __________________________________________________________________
@@ -189,6 +198,25 @@ namespace wg
 	{
 		assert(s_pData != 0);
 		return s_pData->pDefaultValueFormatter;
+	}
+
+	//___ setActiveContext() __________________________________________________
+
+	void Base::setActiveContext(Context * pContext)
+	{
+		assert(s_pData != 0);
+		s_pData->pActiveContext = pContext;
+
+		s_scale = pContext->scale();
+		s_pixelQuartersPerPoint = int(s_scale * 4.f);
+	}
+
+	//____ activeContext() ____________________________________________________
+
+	Context_p Base::activeContext()
+	{
+		assert(s_pData != 0);
+		return s_pData->pActiveContext;
 	}
 
 

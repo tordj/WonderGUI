@@ -32,7 +32,8 @@
 #include <wg_multiblockskin.h>
 #include <wg_dragndroplayer.h>
 
-
+#include <wg_point.h>
+#include <wg_context.h>
 
 using namespace wg;
 
@@ -66,32 +67,6 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 int main(int argc, char** argv)
 {
-	int scaleInteger = 7;
-	int scaleDivisor = 4;
-	int scaleShift = 2;
-
-
-	int pixel = -4;
-
-
-
-
-
-	int pointInteger = (pixel << scaleShift) / scaleInteger;
-	int pointFraction = (pixel << scaleShift) % scaleInteger;
-
-
-	int px = pixel << scaleShift;
-	int pointData = ((px / scaleInteger) << 6) + tab[(px%scaleInteger)];
-
-
-
-//	int pointFraction = (pixel << scaleShift) % scaleInteger;
-//	int pointInteger = ((pixel << scaleShift) - pointFraction) / scaleInteger;
-
-
-	int x = -4;
-	int y = x / 7;
 
 	printf("SizeOf Filler: %d\n", (int) sizeof(Filler));
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
@@ -139,6 +114,12 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	Base::init();
+
+	Context_p pContext = Context::create();
+	pContext->setScale(1.25);
+	Base::setActiveContext(pContext);
+
+
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
 	InputHandler_p pInput = Base::inputHandler();

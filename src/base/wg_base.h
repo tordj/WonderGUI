@@ -48,6 +48,7 @@ namespace wg
 	class TextMapper;
 	class Caret;
 	class TextStyle;
+	class Context;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
@@ -55,6 +56,8 @@ namespace wg
 	typedef	StrongPtr<TextMapper>		TextMapper_p;
 	typedef	StrongPtr<Caret>			Caret_p;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
+	typedef	StrongPtr<Context>			Context_p;
+
 
 
 	/**
@@ -73,6 +76,7 @@ namespace wg
 //		friend class Object_wp;
 		friend class Interface_wp;
 		friend class WeakPtrHub;
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -97,22 +101,29 @@ namespace wg
 		static void			setDefaultValueFormatter(ValueFormatter * pFormatter);
 		static ValueFormatter_p defaultValueFormatter();
 
+		static void			setActiveContext(Context * pContext);
+		static Context_p	activeContext();
 
 		//.____ Misc ________________________________________________
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 
+		inline static float		scale() { return s_scale; }
+		inline static int		pixelQuartersPerPoint() { return s_pixelQuartersPerPoint; }
+
 	private:
 
 		static WeakPtrHub *	_allocWeakPtrHub();
 		static void			_freeWeakPtrHub(WeakPtrHub * pHub);
+
 
 		struct Data
 		{
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
 
+			Context_p		pActiveContext;
 
 			TextMapper_p		pDefaultTextMapper;
 			Caret_p				pDefaultCaret;
@@ -130,6 +141,8 @@ namespace wg
 
 		static Data *	s_pData;
 
+		static float	s_scale;						// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
+		static int		s_pixelQuartersPerPoint;		// Value to multiply point with to get quarter-pixels.
 	};
 
 

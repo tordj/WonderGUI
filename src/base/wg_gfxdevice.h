@@ -37,8 +37,6 @@
 
 namespace wg
 {
-	class	Rect;
-	class	Border;
 	class	Surface;
 	class	LegacyCTextDisplay;
 	class	CaretInstance;

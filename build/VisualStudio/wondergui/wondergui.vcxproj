@@ -93,6 +93,7 @@
     <ClInclude Include="..\..\..\src\base\wg_charseq.h" />
     <ClInclude Include="..\..\..\src\base\wg_codepages.h" />
     <ClInclude Include="..\..\..\src\base\wg_color.h" />
+    <ClInclude Include="..\..\..\src\base\wg_context.h" />
     <ClInclude Include="..\..\..\src\base\wg_dummyfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_font.h" />
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
@@ -109,6 +110,7 @@
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
+    <ClInclude Include="..\..\..\src\base\wg_point.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
     <ClInclude Include="..\..\..\src\base\wg_childiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h" />
@@ -247,6 +249,7 @@
     <ClCompile Include="..\..\..\src\base\wg_charseq.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_codepages.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_color.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_context.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_font.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
@@ -268,6 +271,8 @@
     <ClCompile Include="..\..\..\src\base\wg_nullgfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_object.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_patches.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_payload.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_point.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />

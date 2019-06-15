@@ -35,10 +35,21 @@ namespace wg
   class Payload : public Object
   {
   public:
+
+	  //.____ Creation __________________________________________
+
 	  static Payload_p	create() { return Payload_p(new Payload()); }
+
+	  //.____ Identification _________________________________________________
+
+	  bool				isInstanceOf(const char * pClassName) const;
+	  const char *		className(void) const;
+	  static const char	CLASSNAME[];
+	  static Payload_p	cast(Object * pObject);
+
   protected:
 	  Payload() {}
   };
 
 } // namespace wg
-#endif //WG_WEAKPTR_DOT_H
+#endif //WG_PAYLOAD_DOT_H

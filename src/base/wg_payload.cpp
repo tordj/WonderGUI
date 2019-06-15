@@ -20,19 +20,37 @@
 
 =========================================================================*/
 
-
-#include <wg_geo.h>
-
-#include <utility>
-#include <algorithm>
-#include <cstdlib>
+#include <wg_payload.h>
 
 namespace wg
 {
+	const char Payload::CLASSNAME[] = { "Payload" };
 
 
+	//____ isInstanceOf() _________________________________________________________
 
+	bool Payload::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
 
+		return Object::isInstanceOf(pClassName);
+	}
 
+	//____ className() ____________________________________________________________
 
-} // namespace wg
+	const char * Payload::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+	//____ cast() _________________________________________________________________
+
+	Payload_p Payload::cast(Object * pObject)
+	{
+		if (pObject && pObject->isInstanceOf(CLASSNAME))
+			return Payload_p(static_cast<Payload*>(pObject));
+
+		return 0;
+	}
+}

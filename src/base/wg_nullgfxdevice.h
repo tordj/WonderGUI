@@ -31,7 +31,6 @@ namespace wg
 {
 
 	class Surface;
-	class Rect;
 	class Color;
 
 	class NullGfxDevice;

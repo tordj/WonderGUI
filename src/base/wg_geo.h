@@ -29,57 +29,21 @@
 
 namespace wg
 {
-	class Size;
-	class SizeF;
-	class Rect;
-	class RectF;
 
-	//____ Class: Coord8 _________________________________________________________
+	template<class T> class CoordT;
+	template<class T> class SizeT;
+	template<class T> class RectT;
 
-	class	Coord8
-	{
-	public:
-		//.____ Creation __________________________________________
+	typedef	CoordT<int>		Coord;
+	typedef CoordT<float>	CoordF;
 
-		Coord8() : x(0), y(0) {}
-		Coord8( int8_t x, int8_t y ) : x(x), y(y) {}
+	typedef	SizeT<int>		Size;
+	typedef SizeT<float>	SizeF;
 
-		//.____ Operators ___________________________________________
-
-		inline Coord8 operator=(const Coord8& k)	{ x = k.x; y = k.y; return *this; }
-
-		inline bool operator==(const Coord8& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-		inline bool operator!=(const Coord8& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-		//.____ Properties __________________________________________
-
-		int8_t		x, y;
-	};
-
-	//____ Class: Coord16 ________________________________________________________
-
-	class	Coord16
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		Coord16() : x(0), y(0) {}
-		Coord16( int16_t x, int16_t y ) : x(x), y(y) {}
-
-		//.____ Operators ___________________________________________
-
-		inline Coord16 operator=(const Coord16& k)	{ x = k.x; y = k.y; return *this; }
-
-		inline bool operator==(const Coord16& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-		inline bool operator!=(const Coord16& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-		//.____ Properties __________________________________________
-
-		int16_t	x, y;
-	};
+	typedef	RectT<int>		Rect;
+	typedef RectT<float>	RectF;
 
 
-	//____ Class: Coord ________________________________________________________
 	/**
 		@brief Simple class holding the X and Y values of a 2D coordinate.
 
@@ -89,107 +53,78 @@ namespace wg
 
 		Coord specifies the position in discrete pixels (integer precision).
 	**/
-	class	Coord
+	template<class Type> class CoordT
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		Coord() : x(0), y(0) {}
-		Coord( int x, int y ) : x(x), y(y) {}
-		Coord( const Rect& rect );
-		Coord( Coord8 coord8 ) : x(coord8.x), y(coord8.y) {}
-		Coord( Coord16 coord16 ) : x(coord16.x), y(coord16.y) {}
+		CoordT() : x(0), y(0) {}
+		CoordT(Type x, Type y) : x(x), y(y) {}
+		CoordT(const RectT<Type>& rect);
 
 		//.____ Misc ______________________________________________
 
-		inline Size toSize();
+		inline SizeT<Type> toSize();
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
 		//.____ Operators ___________________________________________
 
-		inline Coord operator=(const Coord& k)	{ x = k.x; y = k.y; return *this; }
-		inline Coord operator=(const Rect& r);
+		inline CoordT<Type> operator=(const CoordT<Type>& k) { x = k.x; y = k.y; return *this; }
+		inline CoordT<Type> operator=(const RectT<Type>& r);
 
-		inline bool operator==(const Coord& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-		inline bool operator!=(const Coord& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
+		inline bool operator==(const CoordT<Type>& k) const { if (x == k.x && y == k.y) return true; return false; }
+		inline bool operator!=(const CoordT<Type>& k) const { if (x != k.x || y != k.y) return true; return false; }
 
-		inline void operator+=(const Coord& k)			{ x += k.x; y += k.y; }
-		inline void operator-=(const Coord& k)			{ x -= k.x; y -= k.y; }
-		inline Coord operator+(const Coord& k) const	{ Coord res; res.x = x + k.x; res.y = y + k.y; return res; }
-		inline Coord operator-(const Coord& k) const	{ Coord res; res.x = x - k.x; res.y = y - k.y; return res; }
+		inline void operator+=(const CoordT<Type>& k) { x += k.x; y += k.y; }
+		inline void operator-=(const CoordT<Type>& k) { x -= k.x; y -= k.y; }
+		inline CoordT<Type> operator+(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x + k.x; res.y = y + k.y; return res; }
+		inline CoordT<Type> operator-(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x - k.x; res.y = y - k.y; return res; }
 
-		inline void operator*=(double v)				{ x = (int) (x*v); y = (int) (y*v); }
-		inline void operator/=(double v)				{ x = (int) (x/v); y = (int) (y/v); }
-		inline Coord operator*(double v) const	{ Coord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-		inline Coord operator/(double v) const	{ Coord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+		inline void operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); }
+		inline void operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); }
+		inline CoordT<Type> operator*(double v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
+		inline CoordT<Type> operator/(double v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
 
-		inline void operator*=(float v)				{ x = (int) (x*v); y = (int) (y*v); }
-		inline void operator/=(float v)				{ x = (int) (x/v); y = (int) (y/v); }
-		inline Coord operator*(float v) const	{ Coord res; res.x = (int) (x*v); res.y = (int) (y*v); return res; }
-		inline Coord operator/(float v) const	{ Coord res; res.x = (int) (x/v); res.y = (int) (y/v); return res; }
+		inline void operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); }
+		inline void operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); }
+		inline CoordT<Type> operator*(float v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
+		inline CoordT<Type> operator/(float v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
 
-		inline void operator*=(int v)				{ x *= v; y *= v; }
-		inline void operator/=(int v)				{ x /= v; y /= v; }
-		inline Coord operator*(int v) const	{ Coord res; res.x = x * v; res.y = y * v; return res; }
-		inline Coord operator/(int v) const	{ Coord res; res.x = x / v; res.y = y / v; return res; }
+		inline void operator*=(int v) { x = (Type)(x*v); y = (Type)(x*v); }
+		inline void operator/=(int v) { x = (Type)(x / v); y = (Type)(y / v); }
+		inline CoordT<Type> operator*(int v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
+		inline CoordT<Type> operator/(int v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
 
 		//.____ Properties __________________________________________
 
-		int	x, y;
+		Type	x, y;
 	};
 
-	//____ Class: CoordF _______________________________________________________
-
-	class	CoordF
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline CoordT<Type>::CoordT(const RectT<Type>& rect)
 	{
-	public:
-		//.____ Creation __________________________________________
+		x = rect.x;
+		y = rect.y;
+	}
 
-		CoordF() : x(0.f), y(0.f) {}
-		CoordF( float _x, float _y ) {x=_x;y=_y;};
-		CoordF(const RectF& rect);
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline CoordT<Type> CoordT<Type>::operator=(const RectT<Type>& r)
+	{
+		x = r.x;
+		y = r.y;
+		return *this;
+	}
 
-		//.____ Misc ______________________________________________
-
-		inline SizeF toSize();
-		inline void clear() { x = 0.f; y = 0.f; }			///< Sets X and Y to 0.
-
-		//.____ Operators ___________________________________________
-
-		inline CoordF operator=(const CoordF& k)	{ x = k.x; y = k.y; return *this; }
-		inline CoordF operator=(const RectF& r);
-
-		inline bool operator==(const CoordF& k) const	{ if( x == k.x && y == k.y ) return true; return false; }
-		inline bool operator!=(const CoordF& k) const	{ if( x != k.x || y != k.y ) return true; return false; }
-
-		inline void operator+=(const CoordF& k) { x += k.x; y += k.y; }
-		inline void operator-=(const CoordF& k) { x -= k.x; y -= k.y; }
-		inline CoordF operator+(const CoordF& k) const { CoordF res; res.x = x + k.x; res.y = y + k.y; return res; }
-		inline CoordF operator-(const CoordF& k) const { CoordF res; res.x = x - k.x; res.y = y - k.y; return res; }
-
-		inline void operator*=(double v) { x = (float) (x*v); y = (float) (x*v); }
-		inline void operator/=(double v) { x = (float) (x/v); y = (float) (y/v); }
-		inline CoordF operator*(double v) const { CoordF res; res.x = (float) (x*v); res.y = (float) (y*v); return res; }
-		inline CoordF operator/(double v) const { CoordF res; res.x = (float) (x/v); res.y = (float) (y/v); return res; }
-
-		inline void operator*=(float v) { x *= v; y *= v; }
-		inline void operator/=(float v) { x /= v; y /= v; }
-		inline CoordF operator*(float v) const { CoordF res; res.x = x*v; res.y = y*v; return res; }
-		inline CoordF operator/(float v) const { CoordF res; res.x = x / v; res.y = y / v; return res; }
-
-		inline void operator*=(int v) { x *= v; y *= v; }
-		inline void operator/=(int v) { x /= v; y /= v; }
-		inline CoordF operator*(int v) const { CoordF res; res.x = x * v; res.y = y * v; return res; }
-		inline CoordF operator/(int v) const { CoordF res; res.x = x / v; res.y = y / v; return res; }
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline SizeT<Type> CoordT<Type>::toSize()
+	{
+		return SizeT<Type>(x, y);
+	}
 
 
-		//.____ Properties __________________________________________
-
-		float	x, y;
-	};
-
-
-	class Size;
 
 	//____ Border ______________________________________________________________
 	/**
@@ -247,7 +182,8 @@ namespace wg
 		short		top, right, bottom, left;
 	};
 
-	//____ Class: Size ________________________________________________________
+
+	//____ SizeT<T> ________________________________________________________
 
 	/**
 		@brief Specifies the size of a rectangular area, measured in pixels.
@@ -256,141 +192,101 @@ namespace wg
 		Members are integer precision and can be negative.
 	**/
 
-	class	Size
+	template<class Type> class SizeT
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		Size() : w(0), h(0) {}
-		Size( int width, int height ) : w(width), h(height) {}
-		Size( const Size& size ) : w(size.w), h(size.h) {}
-		Size( const Rect& rect );
-		Size( const Coord& c1, const Coord& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
+		SizeT() : w(0), h(0) {}
+		SizeT( Type width, Type height ) : w(width), h(height) {}
+		SizeT( const SizeT<Type>& size ) : w(size.w), h(size.h) {}
+		SizeT( const RectT<Type>& rect );
+		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
 		//.____ Misc ______________________________________________
 
-		inline void limit( const Size& min, const Size& max );
+		inline void limit( const SizeT<Type>& min, const SizeT<Type>& max );
 		inline void clear()		{ w = 0; h = 0; }
 
-		inline Coord toCoord() { return Coord(w,h); }
+		inline CoordT<Type> toCoord() { return CoordT<Type>(w,h); }
 
 		//.____ Operators ___________________________________________
 
-		inline Size operator=(const Size& k)	{ w = k.w; h = k.h; return *this; }
-		inline Size operator=(const Rect& k);
+		inline SizeT<Type> operator=(const SizeT<Type>& k)	{ w = k.w; h = k.h; return *this; }
+		inline SizeT<Type> operator=(const RectT<Type>& k);
 
-		inline bool operator==(const Size& k) const	{ if( w == k.w && h == k.h ) return true; return false; }
-		inline bool operator!=(const Size& k) const	{ if( w != k.w || h != k.h ) return true; return false; }
+		inline bool operator==(const SizeT<Type>& k) const	{ if( w == k.w && h == k.h ) return true; return false; }
+		inline bool operator!=(const SizeT<Type>& k) const	{ if( w != k.w || h != k.h ) return true; return false; }
 
-		inline void operator+=(const Size& k)				{ w += k.w; h += k.h; }
-		inline void operator-=(const Size& k)				{ w -= k.w; h -= k.h; }
-		inline Size operator+(const Size& k) const	{ Size res; res.w = w + k.w; res.h = h + k.h; return res; }
-		inline Size operator-(const Size& k) const	{ Size res; res.w = w - k.w; res.h = h - k.h; return res; }
+		inline void operator+=(const SizeT<Type>& k)				{ w += k.w; h += k.h; }
+		inline void operator-=(const SizeT<Type>& k)				{ w -= k.w; h -= k.h; }
+		inline SizeT<Type> operator+(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w + k.w; res.h = h + k.h; return res; }
+		inline SizeT<Type> operator-(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w - k.w; res.h = h - k.h; return res; }
 
 		inline void operator+=(const Border& k)			{ w += k.left + k.right; h += k.top + k.bottom; }
 		inline void operator-=(const Border& k)			{ w -= k.left + k.right; h -= k.top + k.bottom; }
-		inline Size operator+(const Border& k) const	{ Size res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-		inline Size operator-(const Border& k) const	{ Size res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+		inline SizeT<Type> operator+(const Border& k) const	{ SizeT<Type> res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+		inline SizeT<Type> operator-(const Border& k) const	{ SizeT<Type> res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
 
-		inline void operator*=(double x)				{ w = (int) (w*x); h = (int) (h*x); }
-		inline void operator/=(double x)				{ w = (int) (w/x); h = (int) (h/x); }
-		inline Size operator*(double x) const	{ Size res; res.w = (int) (w*x); res.h = (int) (h*x); return res; }
-		inline Size operator/(double x) const	{ Size res; res.w = (int) (w/x); res.h = (int) (h/x); return res; }
+		inline void operator*=(double x)				{ w = (Type) (w*x); h = (Type) (h*x); }
+		inline void operator/=(double x)				{ w = (Type) (w/x); h = (Type) (h/x); }
+		inline SizeT<Type> operator*(double x) const	{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
+		inline SizeT<Type> operator/(double x) const	{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
 
-		inline void operator*=(float x)				{ w = (int) (w*x); h = (int) (h*x); }
-		inline void operator/=(float x)				{ w = (int) (w/x); h = (int) (h/x); }
-		inline Size operator*(float x) const	{ Size res; res.w = (int) (w*x); res.h = (int) (h*x); return res; }
-		inline Size operator/(float x) const	{ Size res; res.w = (int) (w/x); res.h = (int) (h/x); return res; }
+		inline void operator*=(float x)				{ w = (Type) (w*x); h = (Type) (h*x); }
+		inline void operator/=(float x)				{ w = (Type) (w/x); h = (Type) (h/x); }
+		inline SizeT<Type> operator*(float x) const	{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
+		inline SizeT<Type> operator/(float x) const	{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
 
 		inline void operator*=(int x)				{ w *= x; h *= x; }
 		inline void operator/=(int x)				{ w /= x; h /= x; }
-		inline Size operator*(int x) const	{ Size res; res.w = w * x; res.h = h * x; return res; }
-		inline Size operator/(int x) const	{ Size res; res.w = w / x; res.h = h / x; return res; }
+		inline SizeT<Type> operator*(int x) const	{ SizeT<Type> res; res.w = w * x; res.h = h * x; return res; }
+		inline SizeT<Type> operator/(int x) const	{ SizeT<Type> res; res.w = w / x; res.h = h / x; return res; }
 
-		static inline Size min( Size sz1, Size sz2 ) { return Size( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
-		static inline Size max( Size sz1, Size sz2 ) { return Size( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
+		static inline SizeT<Type> min( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
+		static inline SizeT<Type> max( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
 
 		//.____ Properties __________________________________________
 
-		int	w;		///< Width of the rectangular area in pixels.
-		int h;		///< Height of the rectangular area in pixels.
+		Type	w;		///< Width of the rectangular area in pixels.
+		Type	h;		///< Height of the rectangular area in pixels.
 
 	};
 
-
-	//____ Class: SizeF ________________________________________________________
-
-	/**
-	@brief Specifies the size of a rectangular area.
-
-	Specifies the size of a rectangular area.
-	Members are float precision and can be negative.
-	**/
-
-	class	SizeF
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline SizeT<Type>::SizeT(const RectT<Type>& rect)
 	{
-	public:
-		//.____ Creation __________________________________________
+		w = rect.w;
+		h = rect.h;
+	}
 
-		SizeF() : w(0.f), h(0.f) {}
-		SizeF(float width, float height) : w(width), h(height) {}
-		SizeF(const SizeF& size) : w(size.w), h(size.h) {}
-		SizeF(const RectF& rect);
-		SizeF(const CoordF& c1, const CoordF& c2) { w = c2.x - c1.x; h = c2.y - c1.y; }
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline SizeT<Type> SizeT<Type>::operator=(const RectT<Type>& k)
+	{
+		w = k.w;
+		h = k.h;
+		return *this;
+	}
 
-		//.____ Misc ______________________________________________
+	//_____________________________________________________________________________
+	template<typename Type>
+	inline void SizeT<Type>::limit(const SizeT<Type>& min, const SizeT<Type>& max)
+	{
+		if (w < min.w)
+			w = min.w;
+		if (h < min.h)
+			h = min.h;
 
-		inline void limit(const SizeF& min, const SizeF& max);
-		inline void clear() { w = 0.f; h = 0.f; }
-
-		inline CoordF toCoord() { return CoordF(w, h); }
-
-		//.____ Operators ___________________________________________
-
-		inline SizeF operator=(const SizeF& k) { w = k.w; h = k.h; return *this; }
-		inline SizeF operator=(const RectF& k);
-
-		inline bool operator==(const SizeF& k) const { if (w == k.w && h == k.h) return true; return false; }
-		inline bool operator!=(const SizeF& k) const { if (w != k.w || h != k.h) return true; return false; }
-
-		inline void operator+=(const SizeF& k) { w += k.w; h += k.h; }
-		inline void operator-=(const SizeF& k) { w -= k.w; h -= k.h; }
-		inline SizeF operator+(const SizeF& k) const { SizeF res; res.w = w + k.w; res.h = h + k.h; return res; }
-		inline SizeF operator-(const SizeF& k) const { SizeF res; res.w = w - k.w; res.h = h - k.h; return res; }
-/*
-		inline void operator+=(const Border& k) { w += k.left + k.right; h += k.top + k.bottom; }
-		inline void operator-=(const Border& k) { w -= k.left + k.right; h -= k.top + k.bottom; }
-		inline Size operator+(const Border& k) const { Size res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-		inline Size operator-(const Border& k) const { Size res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
-*/
-		inline void operator*=(double x) { w = (float)(w*x); h = (float)(h*x); }
-		inline void operator/=(double x) { w = (float)(w / x); h = (float)(h / x); }
-		inline SizeF operator*(double x) const { SizeF res; res.w = (float)(w*x); res.h = (float)(h*x); return res; }
-		inline SizeF operator/(double x) const { SizeF res; res.w = (float)(w / x); res.h = (float)(h / x); return res; }
-
-		inline void operator*=(float x) { w *= x; h *= x; }
-		inline void operator/=(float x) { w /= x; h /= x; }
-		inline SizeF operator*(float x) const { SizeF res; res.w = w*x; res.h = h*x; return res; }
-		inline SizeF operator/(float x) const { SizeF res; res.w = w / x; res.h = h / x; return res; }
-
-		inline void operator*=(int x) { w *= x; h *= x; }
-		inline void operator/=(int x) { w /= x; h /= x; }
-		inline SizeF operator*(int x) const { SizeF res; res.w = w * x; res.h = h * x; return res; }
-		inline SizeF operator/(int x) const { SizeF res; res.w = w / x; res.h = h / x; return res; }
-
-		static inline SizeF min(SizeF sz1, Size sz2) { return SizeF(sz1.w<sz2.w ? sz1.w : sz2.w, sz1.h<sz2.h ? sz1.h : sz2.h); }
-		static inline SizeF max(SizeF sz1, Size sz2) { return SizeF(sz1.w>sz2.w ? sz1.w : sz2.w, sz1.h>sz2.h ? sz1.h : sz2.h); }
-
-		//.____ Properties __________________________________________
-
-		float	w;		///< Width of the rectangular area in pixels.
-		float	h;		///< Height of the rectangular area in pixels.
-
-	};
+		if (w > max.w)
+			w = max.w;
+		if (h > max.h)
+			h = max.h;
+	}
 
 
-
-	//____ Rect ___________________________________________________________
+	//____ Rect<T> ___________________________________________________________
 
 	/**
 		@brief Specifies a rectangular area of a 2D surface through position and size.
@@ -412,261 +308,186 @@ namespace wg
 
 	**/
 
-	class Rect
+	template<class Type> class RectT
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		Rect() : x(0), y(0), w(0), h(0) {}								///< @brief Create rectangle with x, y, w and h set to 0.
+		RectT() : x(0), y(0), w(0), h(0) {}								///< @brief Create rectangle with x, y, w and h set to 0.
 																			///<
 																			///< Create rectangle with x, y, w and h set to 0.
-		Rect( int x, int y, int w, int h ) : x(x), y(y), w(w), h(h) {}	///< @brief Create rectangle with the given values.
+		RectT( Type x, Type y, Type w, Type h ) : x(x), y(y), w(w), h(h) {}	///< @brief Create rectangle with the given values.
 																			///<
 																			///< Create rectangle with the given values.
-		Rect( const Rect& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}		///< @brief Create a copy of specified rectangle.
+		RectT( const RectT<Type>& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}		///< @brief Create a copy of specified rectangle.
 																			///<
 																			///< Create a copy of specified rectangle.
-		Rect( const Rect& r1, const Rect& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
-		Rect( const Coord& p1, const Coord& p2 );						///< @brief	Create rectangle to cover the area between the specified coordinates.
-		Rect( const Coord& p, const Size& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Create rectangle of specified position and size.
+
+		template<typename T>
+		RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}		///< @brief Create a copy of specified rectangle.
+
+
+		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
+		RectT( const CoordT<Type>& p1, const CoordT<Type>& p2 );						///< @brief	Create rectangle to cover the area between the specified coordinates.
+		RectT( const CoordT<Type>& p, const SizeT<Type>& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param p 	Coordinate containing position for rectangle.
 																							///< @param sz	Coordinate containing size for rectangle.
-		Rect( const Coord& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}			///< @brief Create rectangle of specified position and size.
+		RectT( const CoordT<Type>& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}			///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param p		Coordinate containing position for rectangle.
 																							///< @param w		Width for rectangle.
 																							///< @param h		Height for rectangle.
-		Rect( int x, int y, const Size& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}			///< @brief Create rectangle of specified position and size.
+		RectT( Type x, Type y, const SizeT<Type>& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}			///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param x		Horizontal position for rectangle.
 																							///< @param y		Vertical position for rectangle.
 																							///< @param sz	Width and height for rectangle.
-		Rect( const Coord& p ) : x(p.x), y(p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
+		RectT( const CoordT<Type>& p ) : x(p.x), y(p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
 																			///<
 																			///< Create rectangle of specified position and size of (0,0).
 																			///< @param p		Coordinate containing position for rectangle.
-		Rect( const Size& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
+		RectT( const SizeT<Type>& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
 																			///<
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
 
 		//.____ Misc ______________________________________________
 
-		inline void setPos( const Coord& p );					///< @brief Set position of rectangle.
-		inline void setSize( const Size& sz );					///< @brief Set size of rectangle.
+		inline void setPos( const CoordT<Type>& p );					///< @brief Set position of rectangle.
+		inline void setSize( const SizeT<Type>& sz );					///< @brief Set size of rectangle.
 
 		void shrink( const Border &borders );
-		void shrink( int top, int right, int bottom, int left );
+		void shrink( Type top, Type right, Type bottom, Type left );
 
 		void grow( const Border &borders );
-		void grow( int top, int right, int bottom, int left );
+		void grow( Type top, Type right, Type bottom, Type left );
 
-		bool intersection( const Rect& r1, const Rect& r2 );
-		static Rect getUnion( const Rect& r1, const Rect& r2 );
+		bool intersection( const RectT<Type>& r1, const RectT<Type>& r2 );
+		static RectT<Type> getUnion( const RectT<Type>& r1, const RectT<Type>& r2 );
 
-		void growToContain( int x, int y );
-		void growToContain( const Rect& rect );
-		void growToContain( const Coord& coord );
+		void growToContain( Type x, Type y );
+		void growToContain( const RectT<Type>& rect );
+		void growToContain( const CoordT<Type>& coord );
 
-		inline bool contains( int x, int y ) const;				///< @brief Check if coordinate is within rectangle.
-		inline bool	contains( const Coord& coord ) const;		///< @brief Check if coordinate is within rectangle.
-		inline bool contains( const Rect& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
+		inline bool contains( Type x, Type y ) const;				///< @brief Check if coordinate is within rectangle.
+		inline bool	contains( const CoordT<Type>& coord ) const;		///< @brief Check if coordinate is within rectangle.
+		inline bool contains( const RectT<Type>& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
 
-		inline Coord limit( const Coord& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
-		inline Coord center() const { return {x+w/2,y+h/2}; }
-		inline Rect center(Size sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
+		inline CoordT<Type> limit( const CoordT<Type>& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
+		inline CoordT<Type> center() const { return {x+w/2,y+h/2}; }
+		inline RectT<Type> center(SizeT<Type> sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
 
-		inline bool intersectsWith( const Rect& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
+		inline bool intersectsWith( const RectT<Type>& rect ) const;	///< @brief Check for intersection (partial or full overlap) with specified rectangle.
 
-		bool		intersectsWithOrContains(Coord p1, Coord p2, int precision = 14) const;
-		bool		clipLine(Coord * p1, Coord * p2, int precision = 14) const;
+		bool		intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision = 14) const;
+		bool		clipLine(CoordT<Type> * p1, CoordT<Type> * p2, int precision = 14) const;
 
 
-		inline int width() const;								///< @brief Get the width of the rectangle.
-		inline int height() const;								///< @brief Get the height of the rectangle.
-		inline Size size() const;								///< @brief Get the size of the rectangle.
-		inline Coord pos() const;								///< @brief Get the position of the rectangle.
+		inline Type width() const;								///< @brief Get the width of the rectangle.
+		inline Type height() const;								///< @brief Get the height of the rectangle.
+		inline SizeT<Type> size() const;								///< @brief Get the size of the rectangle.
+		inline CoordT<Type> pos() const;								///< @brief Get the position of the rectangle.
 
-		inline int left() const;								///< @brief Get X coordinate of left border.
-		inline int top() const;									///< @brief Get Y cordinate of top border.
-		inline int right() const;								///< @brief Get X coordinate of right border.
-		inline int bottom() const;								///< @brief Get Y coordinate of bottom border.
+		inline Type left() const;								///< @brief Get X coordinate of left border.
+		inline Type top() const;									///< @brief Get Y cordinate of top border.
+		inline Type right() const;								///< @brief Get X coordinate of right border.
+		inline Type bottom() const;								///< @brief Get Y coordinate of bottom border.
 
 		inline bool	isEmpty() const;							///< @brief Check if rectangle has no area.
 		inline void clear();									///< @brief Sets all values to zero.
 
 		//.____ Operators ___________________________________________
 
-		inline void operator=(const Rect&);					///< @brief Normal assignment operator.
-		inline void operator=(const Size& sz);				///< @brief Set rectangle to specified size. Position is cleared.
-		inline void operator=(const Coord& c);				///< @brief Set rectangle to specified position. Size is cleared.
-		inline bool operator==(const Rect& rect) const;
-		inline bool operator!=(const Rect& rect) const;
+		inline void operator=(const RectT<Type>&);					///< @brief Normal assignment operator.
+		inline void operator=(const SizeT<Type>& sz);				///< @brief Set rectangle to specified size. Position is cleared.
+		inline void operator=(const CoordT<Type>& c);				///< @brief Set rectangle to specified position. Size is cleared.
+		inline bool operator==(const RectT<Type>& rect) const;
+		inline bool operator!=(const RectT<Type>& rect) const;
 
-		inline void operator+=(const Size& k);				///< @brief Increase size of rectangle.
-		inline void operator-=(const Size& k);				///< @brief Decrease size of rectangle.
-		inline Rect operator+(const Size& k) const; 		///< @brief Returns rectangle with size increased by Size.
-		inline Rect operator-(const Size& k) const; 		///< @brief Returns rectangle with size decreased by Size.
+		inline void operator+=(const SizeT<Type>& k);				///< @brief Increase size of rectangle.
+		inline void operator-=(const SizeT<Type>& k);				///< @brief Decrease size of rectangle.
+		inline RectT<Type> operator+(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size increased by Size.
+		inline RectT<Type> operator-(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size decreased by Size.
 
 
 
-		inline void operator+=(const Coord& k); 				///< @brief Increase position of rectangle.
-		inline void operator-=(const Coord& k);				///< @brief Decrease position of rectangle.
-		inline Rect operator+(const Coord& k) const; 		///< @brief Returns rectangle with position increased by Coord.
-		inline Rect operator-(const Coord& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
+		inline void operator+=(const CoordT<Type>& k); 				///< @brief Increase position of rectangle.
+		inline void operator-=(const CoordT<Type>& k);				///< @brief Decrease position of rectangle.
+		inline RectT<Type> operator+(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position increased by Coord.
+		inline RectT<Type> operator-(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
 
 		inline void operator+=(const Border& k);				///< @brief Grow rectangle by the specified border.
 		inline void operator-=(const Border& k);
-		inline Rect operator+(const Border& k) const;
-		inline Rect operator-(const Border& k) const;
+		inline RectT<Type> operator+(const Border& k) const;
+		inline RectT<Type> operator-(const Border& k) const;
 
 		//.____ Properties __________________________________________
 
-		int	x;		///< Start position in pixels along the X axis.
-		int y;		///< Start position in pixels along the Y axis.
-		int w;		///< Width, i.e. length of rectangle along the X axis.
-		int h;		///< Height, i.e. length of rectangle along the Y axis.
-	};
-
-	//____ RectF ________________________________________________________________
-
-	class RectF
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		RectF() : x(0.f), y(0.f), w(0.f), h(0.f) {}
-		RectF( float x, float y, float w, float h ) : x(x), y(y), w(w), h(h) {}
-		RectF( const Rect& r ) : x((float)r.x), y((float)r.y), w((float)r.w), h((float)r.h) {}
-		RectF( const RectF& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}
-		RectF( const RectF& r1, const RectF& r2 );
-		RectF(const CoordF& pos, const SizeF& size) : x(pos.x), y(pos.y), w(size.w), h(size.h) {}
-
-		//.____ Misc ______________________________________________
-
-		bool intersection( const RectF& r1, const RectF& r2 );
-
-		//.____ Operators ___________________________________________
-
-		inline bool operator==(const RectF& rect) const;
-		inline bool operator!=(const RectF& rect) const;
-
-		//.____ Properties __________________________________________
-
-		float x, y, w, h;
+		Type	x;		///< Start position in pixels along the X axis.
+		Type	y;		///< Start position in pixels along the Y axis.
+		Type	w;		///< Width, i.e. length of rectangle along the X axis.
+		Type	h;		///< Height, i.e. length of rectangle along the Y axis.
 	};
 
 
-	//_____________________________________________________________________________
-	inline Coord::Coord( const Rect& rect )
+	//____ Rect() _______________________________________________________________
+	/**
+	 * Create rectangle from intersection of specified rectangles.
+	 *
+	 * @param r1	First intersecting rectangle.
+	 * @param r2	Second intersecting rectangle.
+	 *
+	 * If specified rectangles don't intersect, width and height will be set to zero.
+	 *
+	 **/
+	template<typename Type>
+	RectT<Type>::RectT(const RectT<Type>& r1, const RectT<Type>& r2)
 	{
-		x = rect.x;
-		y = rect.y;
+		intersection(r1, r2);
 	}
 
-	//_____________________________________________________________________________
-	inline Coord Coord::operator=(const Rect& r)
+	/**
+	 * Create rectangle to cover the area between the specified coordinates.
+	 *
+	 * @param p1	Coordinate specifying any corner of the rectangle.
+	 * @param p2	Coordinate specifying the opposite corner of the rectangle,
+	 * 				diagonally across the rectangle from p1.
+	 *
+	 * The order of the parameters are irrelevant.
+	 *
+	 **/
+
+	template<typename Type>
+	RectT<Type>::RectT(const CoordT<Type>& p1, const CoordT<Type>& p2)
 	{
-		x = r.x;
-		y = r.y;
-		return *this;
+		if (p1.x < p2.x)
+		{
+			x = p1.x;
+			w = p2.x - p1.x;
+		}
+		else
+		{
+			x = p2.x;
+			w = p1.x - p2.x;
+		}
+
+		if (p1.y < p2.y)
+		{
+			y = p1.y;
+			h = p2.y - p1.y;
+		}
+		else
+		{
+			y = p2.y;
+			h = p1.y - p2.y;
+		}
 	}
 
-	//_____________________________________________________________________________
-	inline Size Coord::toSize()
-	{
-		return Size(x,y);
-	}
 
-	//_____________________________________________________________________________
-	inline CoordF::CoordF(const RectF& rect)
-	{
-		x = rect.x;
-		y = rect.y;
-	}
-
-	//_____________________________________________________________________________
-	inline CoordF CoordF::operator=(const RectF& r)
-	{
-		x = r.x;
-		y = r.y;
-		return *this;
-	}
-
-
-	//_____________________________________________________________________________
-	inline SizeF CoordF::toSize()
-	{
-		return SizeF(x, y);
-	}
-
-	//_____________________________________________________________________________
-	inline Size Border::size() const
-	{
-		return Size( ((int)left)+right, ((int)top)+bottom );
-	}
-
-	//_____________________________________________________________________________
-	inline Size::Size( const Rect& rect )
-	{
-		w = rect.w;
-		h = rect.h;
-	}
-
-	//_____________________________________________________________________________
-	inline Size Size::operator=(const Rect& k)
-	{
-		w = k.w;
-		h = k.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	inline void Size::limit( const Size& min, const Size& max )
-	{
-		if( w < min.w )
-			w = min.w;
-		if( h < min.h )
-			h = min.h;
-
-		if( w > max.w )
-			w = max.w;
-		if( h > max.h )
-			h = max.h;
-	}
-
-	//_____________________________________________________________________________
-	inline SizeF::SizeF(const RectF& rect)
-	{
-		w = rect.w;
-		h = rect.h;
-	}
-
-	//_____________________________________________________________________________
-	inline SizeF SizeF::operator=(const RectF& k)
-	{
-		w = k.w;
-		h = k.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	inline void SizeF::limit(const SizeF& min, const SizeF& max)
-	{
-		if (w < min.w)
-			w = min.w;
-		if (h < min.h)
-			h = min.h;
-
-		if (w > max.w)
-			w = max.w;
-		if (h > max.h)
-			h = max.h;
-	}
 
 	//___________________________________________________________________________
 	/**
@@ -677,7 +498,8 @@ namespace wg
 	 *
 	 * @return True if coordinate is within the bounds of the rectangle.
 	 **/
-	inline bool Rect::contains( int x, int y ) const
+	template<typename Type>
+	inline bool RectT<Type>::contains( Type x, Type y ) const
 	{
 		if( x >= this->x && x < this->x + w && y >= this->y && y < this->y + h )
 			return true;
@@ -693,18 +515,19 @@ namespace wg
 	 *
 	 * @return True if coordinate is within the bounds of the rectangle.
 	 **/
-	inline bool Rect::contains( const Coord& coord ) const
+	template<typename Type>
+	inline bool RectT<Type>::contains( const CoordT<Type>& coord ) const
 	{
-		int a = coord.x - x;
-		int b = coord.y - y;
-		int c = (x + w) - (coord.x);
-		int d = (y + h) - (coord.y);
+//		int a = coord.x - x;
+//		int b = coord.y - y;
+//		int c = (x + w) - (coord.x);
+//		int d = (y + h) - (coord.y);
 
-		return (a | b | c | d) >= 0;
+//		return (a | b | c | d) >= 0;
 
-//		if( _coord.x >= x && _coord.x < x + w && _coord.y >= y && _coord.y < y + h )
-//			return true;
-//		return false;
+		if( coord.x >= x && coord.x < x + w && coord.y >= y && coord.y < y + h )
+			return true;
+		return false;
 	}
 
 	//_____________________________________________________________________________
@@ -715,18 +538,19 @@ namespace wg
 	 *
 	 * @return True if the parameter rectangle is fully within the bounds of our rectangle.
 	 **/
-	inline bool Rect::contains( const Rect& rect ) const
+	template<typename Type>
+	inline bool RectT<Type>::contains( const RectT<Type>& rect ) const
 	{
-		int a = rect.x - x;
-		int b = rect.y - y;
-		int c = (x + w) - (rect.x + rect.w);
-		int d = (y + h) - (rect.y + rect.h);
+//		int a = rect.x - x;
+//		int b = rect.y - y;
+//		int c = (x + w) - (rect.x + rect.w);
+//		int d = (y + h) - (rect.y + rect.h);
 
-		return (a | b | c | d) >= 0;
+//		return (a | b | c | d) >= 0;
 
-//		if( _rect.x >= x && _rect.y >= y && _rect.x + _rect.w <= x + w &&  _rect.y + _rect.h <= y + h )
-//			return true;
-//		return false;
+		if( rect.x >= x && rect.y >= y && rect.x + rect.w <= x + w &&  rect.y + rect.h <= y + h )
+			return true;
+		return false;
 	}
 
 	//_____________________________________________________________________________
@@ -737,9 +561,10 @@ namespace wg
 	 *
 	 * @return Coordinate limited to the rectangles geometry.
 	 **/
-	 inline Coord Rect::limit( const Coord& coord ) const
+	template<typename Type>
+	 inline CoordT<Type> RectT<Type>::limit( const CoordT<Type>& coord ) const
 	{
-		Coord out = coord;
+		CoordT<Type> out = coord;
 		if( out.x < x )
 			out.x = x;
 		if( out.y < y )
@@ -761,7 +586,8 @@ namespace wg
 	 *
 	 * @return True if rectangles intersects.
 	 **/
-	inline bool Rect::intersectsWith( const Rect& rect ) const
+	 template<typename Type>
+	 inline bool RectT<Type>::intersectsWith( const RectT<Type>& rect ) const
 	{
 		if(left() >= rect.right()) return false;
 		if(right() <= rect.left()) return false;
@@ -775,7 +601,8 @@ namespace wg
 	/**
 	 * Normal assignment operator.
 	 **/
-	inline void Rect::operator=( const Rect& r2 )
+	 template<typename Type>
+	 inline void RectT<Type>::operator=( const RectT<Type>& r2 )
 	{
 		x = r2.x;
 		y = r2.y;
@@ -787,7 +614,8 @@ namespace wg
 	/**
 	 * Set rectangle to specified size. Position is cleared.
 	 **/
-	inline void Rect::operator=( const Size& sz)
+	 template<typename Type>
+	 inline void RectT<Type>::operator=( const SizeT<Type>& sz)
 	{
 		x=0;
 		y=0;
@@ -799,7 +627,8 @@ namespace wg
 	/**
 	 * Set rectangle to specified position. Size is cleared.
 	 **/
-	inline void Rect::operator=( const Coord& c)
+	 template<typename Type>
+	 inline void RectT<Type>::operator=( const CoordT<Type>& c)
 	{
 		x=c.x;
 		y=c.y;
@@ -811,7 +640,8 @@ namespace wg
 	/**
 	 * Standard comparison operator
 	 **/
-	inline bool Rect::operator==( const Rect& rect) const
+	 template<typename Type>
+	 inline bool RectT<Type>::operator==( const RectT<Type>& rect) const
 	{
 		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
 	}
@@ -820,7 +650,8 @@ namespace wg
 	/**
 	 * Standard comparison operator
 	 **/
-	inline bool Rect::operator!=( const Rect& rect) const
+	 template<typename Type>
+	 inline bool RectT<Type>::operator!=( const RectT<Type>& rect) const
 	{
 		return !(*this == rect);
 	}
@@ -829,7 +660,8 @@ namespace wg
 	/**
 	 * Increase size of rectangle.
 	 **/
-	inline void Rect::operator+=(const Size& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator+=(const SizeT<Type>& k)
 	{
 		w += k.w;
 		h += k.h;
@@ -839,7 +671,8 @@ namespace wg
 	/**
 	 * Decrease size of rectangle.
 	 **/
-	inline void Rect::operator-=(const Size& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator-=(const SizeT<Type>& k)
 	{
 		w -= k.w;
 		h -= k.h;
@@ -849,9 +682,10 @@ namespace wg
 	 * Get rectangle with size increased by Size.
 	 **/
 
-	inline Rect Rect::operator+(const Size& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator+(const SizeT<Type>& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x;
 		res.y = y;
 		res.w = w + k.w;
@@ -864,9 +698,10 @@ namespace wg
 	 * Get rectangle with size decreased with Size.
 	 **/
 
-	inline Rect Rect::operator-(const Size& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator-(const SizeT<Type>& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x;
 		res.y = y;
 		res.w = w - k.w;
@@ -880,7 +715,8 @@ namespace wg
 	 * Increase position of rectangle.
 	 **/
 
-	inline void Rect::operator+=(const Coord& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator+=(const CoordT<Type>& k)
 	{
 		x += k.x;
 		y += k.y;
@@ -891,7 +727,8 @@ namespace wg
 	 * Decrease position of rectangle.
 	 **/
 
-	inline void Rect::operator-=(const Coord& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator-=(const CoordT<Type>& k)
 	{
 		x -= k.x;
 		y -= k.y;
@@ -902,9 +739,10 @@ namespace wg
 	 * Get rectangle with position increased with Coord.
 	 **/
 
-	inline Rect Rect::operator+(const Coord& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator+(const CoordT<Type>& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x + k.x;
 		res.y = y + k.y;
 		res.w = w;
@@ -916,9 +754,10 @@ namespace wg
 	/**
 	 * Get rectangle with position decreased with Coord.
 	 **/
-	inline Rect Rect::operator-(const Coord& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator-(const CoordT<Type>& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x - k.x;
 		res.y = y - k.y;
 		res.w = w;
@@ -933,7 +772,8 @@ namespace wg
 	 *
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
-	inline void Rect::operator+=(const Border& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator+=(const Border& k)
 	{
 		x -= k.left;
 		y -= k.top;
@@ -948,7 +788,8 @@ namespace wg
 	 * Shrink rectangle by the specified border.
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
-	inline void Rect::operator-=(const Border& k)
+	 template<typename Type>
+	 inline void RectT<Type>::operator-=(const Border& k)
 	{
 		x += k.left;
 		y += k.top;
@@ -964,9 +805,10 @@ namespace wg
 	 * Returns a rectangle grown by the border.
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
-	inline Rect Rect::operator+(const Border& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator+(const Border& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x - k.left;
 		res.y = y- k.top;
 		res.w = w + k.left + k.right;
@@ -981,9 +823,10 @@ namespace wg
 	 * Returns a rectangle shrunk by the border.
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
-	inline Rect Rect::operator-(const Border& k) const
+	 template<typename Type>
+	 inline RectT<Type> RectT<Type>::operator-(const Border& k) const
 	{
-		Rect res;
+		RectT<Type> res;
 		res.x = x + k.left;
 		res.y = y + k.top;
 		res.w = w - (k.left + k.right);
@@ -996,7 +839,8 @@ namespace wg
 	/**
 	 * Set position (members x and y) of the rectangle.
 	 **/
-	inline void Rect::setPos( const Coord& p )
+	 template<typename Type>
+	 inline void RectT<Type>::setPos( const CoordT<Type>& p )
 	{
 		x = p.x;
 		y = p.y;
@@ -1006,7 +850,8 @@ namespace wg
 	/**
 	 * Set the size (members w and h) of the rectangle.
 	 **/
-	inline void Rect::setSize( const Size& sz )
+	 template<typename Type>
+	 inline void RectT<Type>::setSize( const SizeT<Type>& sz )
 	{
 		w = sz.w;
 		h = sz.h;
@@ -1016,7 +861,8 @@ namespace wg
 	/**
 	 * Get width of the rectangle (member variable w).
 	 **/
-	inline int Rect::width() const
+	 template<typename Type>
+	 inline Type RectT<Type>::width() const
 	{
 		return w;
 	}
@@ -1025,7 +871,8 @@ namespace wg
 	/**
 	 * Get height of the rectangle (member variable h).
 	 **/
-	inline int Rect::height() const
+	 template<typename Type>
+	 inline Type RectT<Type>::height() const
 	{
 		return h;
 	}
@@ -1034,25 +881,28 @@ namespace wg
 	/**
 	 * Get size (width and height) of the rectangle.
 	 **/
-	inline Size Rect::size() const
+	 template<typename Type>
+	 inline SizeT<Type> RectT<Type>::size() const
 	{
-		return Size(w,h);
+		return SizeT<Type>(w,h);
 	}
 
 	//_____________________________________________________________________________
 	/**
 	 * Get position (members x and y) of the rectangle.
 	 **/
-	inline Coord Rect::pos() const
+	 template<typename Type>
+	 inline CoordT<Type> RectT<Type>::pos() const
 	{
-		return Coord(x,y);
+		return CoordT<Type>(x,y);
 	}
 
 	//_____________________________________________________________________________
 	/**
 	 * Get X coordinate of left edge. This is equal to member variable x.
 	 **/
-	inline int Rect::left() const
+	 template<typename Type>
+	 inline Type RectT<Type>::left() const
 	{
 		return x;
 	}
@@ -1061,7 +911,8 @@ namespace wg
 	/**
 	 * Get Y coordinate of top edge. This is equal to member variable y.
 	 **/
-	inline int Rect::top() const
+	 template<typename Type>
+	 inline Type RectT<Type>::top() const
 	{
 		return y;
 	}
@@ -1070,7 +921,8 @@ namespace wg
 	/**
 	 * Get X coordinate of right edge. This is equal to member variables x + w.
 	 **/
-	inline int Rect::right() const
+	 template<typename Type>
+	 inline Type RectT<Type>::right() const
 	{
 		return x + w;
 	}
@@ -1079,7 +931,8 @@ namespace wg
 	/**
 	 * Get Y coordinate of bottom edge. This is equal to member variables y + h.
 	 **/
-	inline int Rect::bottom() const
+	 template<typename Type>
+	 inline Type RectT<Type>::bottom() const
 	{
 		return y + h;
 	}
@@ -1087,7 +940,8 @@ namespace wg
 	/**
 	 * 	Check if rectangle has no area (width or height is zero).
 	 **/
-	inline bool	Rect::isEmpty() const
+	 template<typename Type>
+	 inline bool	RectT<Type>::isEmpty() const
 	{
 		return (w==0||h==0)?true:false;
 	}
@@ -1096,7 +950,8 @@ namespace wg
 	/**
 	 * Sets all values to zero.
 	 **/
-	inline void Rect::clear()
+	 template<typename Type>
+	 inline void RectT<Type>::clear()
 	{
 		x = 0;
 		y = 0;
@@ -1104,25 +959,458 @@ namespace wg
 		h = 0;
 	}
 
+	 //____ intersection() ________________________________________________________________
+	 /**
+	  * @brief Set rectangle to intersection of specified rectangles.
+	  *
+	  * Set rectangle to intersection of specified rectangles.
+	  *
+	  * @param r1	First intersecting rectangle.
+	  * @param r2	Second intersecting rectangle.
+	  *
+	  * If specified rectangles don't intersect, width and height will be set to zero.
+	  *
+	  * @return	True if the specified rectangles intersected.
+	  **/
+	 template<typename Type>
+	 bool RectT<Type>::intersection(const RectT<Type>& _r1, const RectT<Type>& _r2)
+	 {
+		 int		x1, y1;						// So we can use ourself as inparameter.
+		 int		x2, y2;
 
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool RectF::operator==( const RectF& rect) const
+		 if (_r1.x > _r2.x)
+			 x1 = _r1.x;
+		 else
+			 x1 = _r2.x;
+
+		 if (_r1.y > _r2.y)
+			 y1 = _r1.y;
+		 else
+			 y1 = _r2.y;
+
+		 if (_r1.x + _r1.w < _r2.x + _r2.w)
+			 x2 = _r1.x + _r1.w;
+		 else
+			 x2 = _r2.x + _r2.w;
+
+		 if (_r1.y + _r1.h < _r2.y + _r2.h)
+			 y2 = _r1.y + _r1.h;
+		 else
+			 y2 = _r2.y + _r2.h;
+
+		 x = x1;
+		 y = y1;
+		 w = x2 - x;
+		 h = y2 - y;
+
+		 if (w <= 0 || h <= 0)
+		 {
+			 w = 0;
+			 h = 0;
+			 return	false;
+		 }
+
+		 return	true;
+	 }
+
+	 //____ getUnion() ________________________________________________________________
+	 /**
+	  * @brief Get the union of specified rectangles.
+	  *
+	  * Get the union of specified rectangles.
+	  *
+	  * @param r1	First rectangle.
+	  * @param r2	Second rectangle.
+	  *
+	  * The union of the rectangles is the smallest rectangle that contains both.
+	  *
+	  * @return	A rectangle that is the union of the specified rectangles.
+	  **/
+
+	  //TODO: Inconsistency between how Union and Intersection methods work. Both should be members of static.
+
+	 template<typename Type>
+	 RectT<Type> RectT<Type>::getUnion(const RectT<Type>& r1, const RectT<Type>& r2)
+	 {
+		 RectT<Type> out;
+		 out.x = r1.x < r2.x ? r1.x : r2.x;
+		 out.y = r1.y < r2.y ? r1.y : r2.y;
+		 out.w = (r1.x + r1.w > r2.x + r2.w ? r1.x + r1.w : r2.x + r2.w) - out.x;
+		 out.h = (r1.y + r1.h > r2.y + r2.h ? r1.y + r1.h : r2.y + r2.h) - out.y;
+		 return out;
+	 }
+
+
+	 //____ shrink() _____________________________________________________________
+	 /**
+	  * @brief Shrink the rectangle by the specified borders.
+	  *
+	  * Shrink the rectangle by the specified borders.
+	  *
+	  * @param top	Width in pixels of top border.
+	  * @param right Width in pixels of right border.
+	  * @param bottom Width in pixels of bottom border.
+	  * @param left Width in pixels of left border.
+	  *
+	  * Width and height of rectangle is shrunk by the thickness of the borders.
+	  * Top and left borders also affects the position of the rectangle.
+	  *
+	  * The rectangle is constrained to a minimum width and height of 0.
+	  **/
+
+	 template<typename Type>
+	 void RectT<Type>::shrink(Type top, Type right, Type bottom, Type left)
+	 {
+		 x += left;
+		 y += top;
+		 w -= right + left;
+		 h -= bottom + top;
+
+		 if (w < 0)
+			 w = 0;
+
+		 if (h < 0)
+			 h = 0;
+	 }
+
+	 /**
+	  * @brief Shrink the rectangle by the specified border.
+	  *
+	  * Shrink the rectangle by the specified border.
+	  *
+	  * @param border	Border by which to shrink the rectangle.
+	  *
+	  * Width and height of rectangle is shrunk by the thickness of the borders.
+	  * Top and left borders also affects the position of the rectangle.
+	  *
+	  * The rectangle is constrained to a minimum width and height of 0.
+	  **/
+
+	 template<typename Type>
+	 void RectT<Type>::shrink(const Border &_borders)
+	 {
+		 x += _borders.left;
+		 y += _borders.top;
+		 w -= _borders.width();
+		 h -= _borders.height();
+
+		 if (w < 0)
+			 w = 0;
+
+		 if (h < 0)
+			 h = 0;
+	 }
+
+	 //____ grow() _____________________________________________________________
+	 /**
+	  * @brief Grow the rectangle by the specified borders.
+	  *
+	  * Grow the rectangle by the specified borders.
+	  *
+	  * @param top	Width in pixels of top border.
+	  * @param right Width in pixels of right border.
+	  * @param bottom Width in pixels of bottom border.
+	  * @param left Width in pixels of left border.
+	  *
+	  * Width and height of rectangle is increased by the thickness of the borders.
+	  * Top and left borders also affects the position of the rectangle.
+	  **/
+
+	 template<typename Type>
+	 void RectT<Type>::grow(Type top, Type right, Type bottom, Type left)
+	 {
+		 x -= left;
+		 y -= top;
+		 w += right + left;
+		 h += bottom + top;
+	 }
+
+	 /**
+	  * @brief Grow the rectangle by the specified border.
+	  *
+	  * Grow the rectangle by the specified border.
+	  *
+	  * @param border	Border by which to grow the rectangle.
+	  *
+	  * Width and height of rectangle is increased by the thickness of the borders.
+	  * Top and left borders also affects the position of the rectangle.
+	  **/
+	 template<typename Type>
+	 void RectT<Type>::grow(const Border &_borders)
+	 {
+		 x -= _borders.left;
+		 y -= _borders.top;
+		 w += _borders.width();
+		 h += _borders.height();
+	 }
+
+	 //____ growToContain() _______________________________________________________
+	 /**
+	  * @brief	Grow the reactangle to contain the specified coordinate.
+	  *
+	  * Grow the reactangle to contain the specified coordinate.
+	  *
+	  * @param	x	Horizontal position of coordinate.
+	  * @param	y	Vertical position of coordinate.
+	  *
+	  * Position of rectangle is affected if coordinate is above or left of coordinate.
+	  **/
+	 template<typename Type>
+	 void RectT<Type>::growToContain(Type _x, Type _y)
+	 {
+		 if (_x < x)
+		 {
+			 w += x - _x;
+			 x = _x;
+		 }
+		 else if (_x > x + w)
+		 {
+			 w = _x - x;
+		 }
+
+		 if (_y < y)
+		 {
+			 h += y - _y;
+			 y = _y;
+		 }
+		 else if (_y > y + h)
+		 {
+			 h = _y - y;
+		 }
+	 }
+
+	 /**
+	  * @brief	Grow the reactangle to contain the specified coordinate.
+	  *
+	  * Grow the reactangle to contain the specified coordinate.
+	  *
+	  * @param	coord	Coordinate the rectangle is grown to contain.
+	  *
+	  * Position of rectangle is affected if coordinate is above or left of coordinate.
+	  **/
+	 template<typename Type>
+	 void RectT<Type>::growToContain(const CoordT<Type>& _coord)
+	 {
+		 if (_coord.x < x)
+		 {
+			 w += x - _coord.x;
+			 x = _coord.x;
+		 }
+		 else if (_coord.x > x + w)
+		 {
+			 w = _coord.x - x;
+		 }
+
+		 if (_coord.y < y)
+		 {
+			 h += y - _coord.y;
+			 y = _coord.y;
+		 }
+		 else if (_coord.y > y + h)
+		 {
+			 h = _coord.y - y;
+		 }
+	 }
+
+	 /**
+	  * @brief	Grow the reactangle to contain the specified rectangle.
+	  *
+	  * Grow the reactangle to contain the specified rectangle.
+	  *
+	  * @param	r	Rectangle that shall be contained.
+	  *
+	  * Position of our rectangle is affected if parameter rectangle is (partly or fully) above or left of coordinate.
+	  **/
+
+	 template<typename Type>
+	 void RectT<Type>::growToContain(const RectT<Type>& r)
+	 {
+		 if (r.x < x)
+		 {
+			 w += x - r.x;
+			 x = r.x;
+		 }
+
+		 if (r.y < y)
+		 {
+			 h += y - r.y;
+			 y = r.y;
+		 }
+
+		 if (r.x + r.w > x + w)
+		 {
+			 w = r.x + r.w - x;
+		 }
+
+		 if (r.y + r.h > y + h)
+		 {
+			 h = r.y + r.h - y;
+		 }
+	 }
+
+
+
+	 //____ intersectsWithOrContains() _______________________________________________________
+
+	 template<typename Type>
+	 bool RectT<Type>::intersectsWithOrContains(CoordT<Type> p1, CoordT<Type> p2, int precision) const
+	 {
+		 // NOTE: This needs to be kept in sync with ClipLine() so they always return same result for same input.
+
+		 Type x1 = x;
+		 Type x2 = x + w;
+
+		 // We go from left to right when working with the X coordinates
+
+		 if (p2.x < p1.x)
+			 std::swap(p1, p2);
+
+		 // Verify that x-coordinates are within range
+
+		 if (p1.x >= x2 || p2.x <= x1)
+			 return false;
+
+		 // Calculate angles now before we destroy any values
+		 
+		 Type angleX;
+		 if( std::is_integral<Type>::value )
+			angleX = ((p2.y - p1.y) << precision) / (1 + p2.x - p1.x);		// Change in Y for each increase of X.
+		 else
+			angleX = (p2.y - p1.y) / (1 + p2.x - p1.x);					// Change in Y for each increase of X.
+
+
+		 // Clip line so no coord is outside rectangles x-dimensions
+
+		 if (std::is_integral<Type>::value)
+		 {
+			 if (p1.x < x1)
+				 p1.y = p1.y + ((x1 - p1.x)*angleX >> precision);
+
+			 if (p2.x > x2)
+				 p2.y = p2.y - ((p2.x - x2)*angleX >> precision);
+		 }
+		 else
+		 {
+			 if (p1.x < x1)
+				 p1.y = p1.y + (x1 - p1.x)*angleX;
+
+			 if (p2.x > x2)
+				 p2.y = p2.y - (p2.x - x2)*angleX;
+		 }
+
+		 // We go from top to bottom when working with the Y coordinates
+
+		 if (p2.y < p1.y)
+			 std::swap(p1.y, p2.y);
+
+		 // Verify that clipped line intersects in y-dimension.
+
+		 if (p1.y >= y + h || p2.y <= y)
+			 return false;
+
+		 return true;
+	 }
+
+	 //____ clipLine() _____________________________________________________________
+
+	template<typename Type>
+	bool RectT<Type>::clipLine(CoordT<Type>* p1, CoordT<Type>* p2, int precision) const
 	{
-		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
-	}
+		// NOTE: This needs to be kept in sync with IntersectsOrContains() so they always return same result for same input.
 
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool RectF::operator!=( const RectF& rect) const
-	{
-		return !(*this == rect);
-	}
+		Type x1 = x;
+		Type x2 = x + w;
+		Type y1 = y;
+		Type y2 = y + h;
 
+		// We go from left to right when working with the X coordinates
+
+		if (p2->x < p1->x)
+			std::swap(p1, p2);
+
+		// Verify that x-coordinates are within range
+
+		if (p1->x >= x2 || p2->x <= x1)
+			return false;
+
+		// Calculate both angles now before we destroy precision
+		Type angleX, angleY;
+		if (std::is_integral<Type>::value)
+		{
+			angleX = ((p2->y - p1->y) << precision) / (1 + p2->x - p1->x);		// Change in Y for each increase of X.
+			angleY = ((p2->x - p1->x) << precision) / (1 + std::abs(p2->y - p1->y));		// Change in X for each increase of Y.
+		}
+		else
+		{
+			angleX = (p2->y - p1->y) / (1 + p2->x - p1->x);					// Change in Y for each increase of X.
+			angleY = (p2->x - p1->x) / (1 + std::abs(p2->y - p1->y));		// Change in X for each increase of Y.
+		}
+
+		// Clip line so no coord is outside rectangles x-dimensions
+
+		if (p1->x < x1)
+		{
+			if (std::is_integral<Type>::value)
+				p1->y = p1->y + ((x1 - p1->x)*angleX >> precision);
+			else
+				p1->y = p1->y + (x1 - p1->x)*angleX;
+			p1->x = x2;
+		}
+
+		if (p2->x > x2)
+		{
+			if (std::is_integral<Type>::value)
+				p2->y = p2->y - ((p2->x - x2)*angleX >> precision);
+			else
+				p2->y = p2->y - (p2->x - x2)*angleX;
+
+			p2->x = x2;
+		}
+
+		 // We go from top to bottom when working with the Y coordinates
+
+		 if (p2->y < p1->y)
+		 {
+			 std::swap(p1, p2);
+			 angleY = -angleY;
+		 }
+
+		 // Verify that clipped line intersects in y-dimension.
+
+		 if (p1->y >= y2 || p2->y <= y1)
+			 return false;
+
+		 // Clip line so no coord is outside rectangles y-dimensions
+
+		 if (p1->y < y1)
+		 {
+			 if (std::is_integral<Type>::value)
+				 p1->x = p1->x + ((y1 - p1->y)*angleY >> precision);
+			 else
+				 p1->x = p1->x + (y1 - p1->y)*angleY;
+
+			 p1->y = y1;
+		 }
+
+		 if (p2->y > y2)
+		 {
+			 if (std::is_integral<Type>::value)
+				 p2->x = p2->x - ((p2->y - y2)*angleY >> precision);
+			 else
+				p2->x = p2->x - (p2->y - y2)*angleY;
+			 p2->y = y2;
+		 }
+
+		 return true;
+	 }
+
+
+
+	 //_____________________________________________________________________________
+	 inline Size Border::size() const
+	 {
+		 return Size(((int)left) + right, ((int)top) + bottom);
+	 }
 
 	//=======================================================================================
 

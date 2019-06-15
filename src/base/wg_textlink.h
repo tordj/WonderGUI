@@ -28,12 +28,10 @@
 
 
 #include <wg_pointers.h>
+#include <wg_geo.h>
 
 namespace wg
 {
-
-	class Coord;
-
 	class TextStyle;
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	WeakPtr<TextStyle>		TextStyle_wp;

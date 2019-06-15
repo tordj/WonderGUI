@@ -1659,7 +1659,7 @@ namespace wg
 
 		// Clipping
 
-		RectF clip(rect, m_clipBounds);
+		RectF clip(rect, RectF(m_clipBounds));
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -1685,7 +1685,7 @@ namespace wg
 		{
 			Color color = fillColor;
 
-			RectF  patch(rect, m_pClipRects[i]);
+			RectF  patch(rect, RectF(m_pClipRects[i]));
 			if (patch.w == 0.f || patch.h == 0.f)
 				continue;
 

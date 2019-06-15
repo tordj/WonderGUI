@@ -500,6 +500,12 @@
     <ClInclude Include="..\..\..\src\widgets\layers\wg_dragndroplayer.h">
       <Filter>widgets\layers</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_context.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_point.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -843,6 +849,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\layers\wg_dragndroplayer.cpp">
       <Filter>widgets\layers</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_context.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_point.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_payload.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
