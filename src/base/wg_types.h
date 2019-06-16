@@ -262,8 +262,12 @@ namespace wg
 							///< Color Blending: DstRGBA = SrcRGBA - TintRGBA
 		Multiply,			///< Blitting: RGB Multiply, alpha is ignored.
 							///< Color Blending: DstRGB = SrcRGBA * TintRGBA/255
-		Invert				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
+		Invert,				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
+		Min,				///< Blitting: Minimum value of each RGBA component.
+							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA
+		Max,				///< Blitting: Maximum value of each RGBA component.
+							///< Color Blending: DstRGBA = max(SrcRGBA,DstRGBA)
 	};
 
 	//____ PointerStyle __________________________________________________________

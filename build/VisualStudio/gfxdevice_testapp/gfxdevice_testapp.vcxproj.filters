@@ -57,5 +57,8 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blittests.h">
       <Filter>testsuites</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blendtests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

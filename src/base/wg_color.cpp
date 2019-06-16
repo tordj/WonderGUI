@@ -23,6 +23,8 @@
 #include <wg_color.h>
 #include <wg_util.h>
 
+#include <algorithm>
+
 namespace wg
 {
 
@@ -271,6 +273,21 @@ namespace wg
 		return color;
 	}
 
+	//____ min() ___________________________________________________________________
+
+	Color Color::min(Color color1, Color color2)
+	{
+		return Color(std::min(color1.r, color2.r),std::min(color1.g,color2.g),std::min(color1.b,color2.b),std::min(color1.a,color2.a));
+	}
+
+	//____ max() ____________________________________________________________________
+
+	Color Color::max(Color color1, Color color2)
+	{
+		return Color(std::max(color1.r, color2.r), std::max(color1.g, color2.g), std::max(color1.b, color2.b), std::max(color1.a, color2.a));
+	}
+
+
 	//____ blend()___________________________________________________________________
 
 	Color Color::blend( Color baseColor, Color blendColor, BlendMode operation )
@@ -290,6 +307,10 @@ namespace wg
 				return baseColor * blendColor;
 			case BlendMode::Subtract:
 				return baseColor - blendColor;
+			case BlendMode::Min:
+				return min(baseColor, blendColor);
+			case BlendMode::Max:
+				return max(baseColor, blendColor);
 			case BlendMode::Replace:
 			default:
 				return blendColor;

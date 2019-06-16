@@ -1786,6 +1786,18 @@ namespace wg
 			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
 			break;
 
+		case BlendMode::Min:
+			glBlendEquation(GL_MIN);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
+			break;
+
+		case BlendMode::Max:
+			glBlendEquation(GL_MAX);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_ONE, GL_ONE);
+			break;
+
 		case BlendMode::Ignore:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
