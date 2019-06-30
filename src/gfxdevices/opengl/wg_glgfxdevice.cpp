@@ -400,6 +400,9 @@ namespace wg
 		if (!pSurface || pSurface->className() != GlSurface::CLASSNAME)
 			return false;
 
+		if (pSurface->pixelFormat() == PixelFormat::I8)
+			return false;
+
 		m_pCanvas = pSurface;
 		m_canvasSize = pSurface->size();
 		m_clipCanvas = m_canvasSize;
