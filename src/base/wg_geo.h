@@ -975,8 +975,8 @@ namespace wg
 	 template<typename Type>
 	 bool RectT<Type>::intersection(const RectT<Type>& _r1, const RectT<Type>& _r2)
 	 {
-		 int		x1, y1;						// So we can use ourself as inparameter.
-		 int		x2, y2;
+		 Type		x1, y1;						// So we can use ourself as inparameter.
+		 Type		x2, y2;
 
 		 if (_r1.x > _r2.x)
 			 x1 = _r1.x;

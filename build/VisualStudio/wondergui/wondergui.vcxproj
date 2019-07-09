@@ -175,6 +175,7 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_irovaluedisplay.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_iselectablechildren.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_iselectablechildren.impl.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_ishadows.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_islidespan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_ispan.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_itextdisplay.h" />
@@ -206,6 +207,7 @@
     <ClInclude Include="..\..\..\src\widgets\layers\wg_layer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_modallayer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_popuplayer.h" />
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_shadowlayer.h" />
     <ClInclude Include="..\..\..\src\widgets\lists\wg_list.h" />
     <ClInclude Include="..\..\..\src\widgets\lists\wg_packlist.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_flexpanel.h" />
@@ -301,6 +303,7 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_irotextdisplay.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_irovaluedisplay.cpp" />
+    <ClCompile Include="..\..\..\src\interfaces\wg_ishadows.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_islidespan.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_ispan.cpp" />
     <ClCompile Include="..\..\..\src\interfaces\wg_ivaluedisplay.cpp" />
@@ -326,6 +329,7 @@
     <ClCompile Include="..\..\..\src\widgets\layers\wg_layer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_modallayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_popuplayer.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_shadowlayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\lists\wg_list.cpp" />
     <ClCompile Include="..\..\..\src\widgets\lists\wg_packlist.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_flexpanel.cpp" />

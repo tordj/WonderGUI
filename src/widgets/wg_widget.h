@@ -86,6 +86,7 @@ namespace wg
 		friend class LambdaPanel;
 		friend class SplitPanel;
 		friend class DragNDropLayer;
+		friend class ShadowLayer;
 
 		friend class Component;
 		friend class Slot;

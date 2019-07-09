@@ -965,7 +965,7 @@ namespace wg
 
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-					uint8_t outB, outG, outR, outA;
+					uint8_t outB = 0, outG = 0, outR = 0, outA = 0;
 
 					int accB = 0;
 					int accG = 0;

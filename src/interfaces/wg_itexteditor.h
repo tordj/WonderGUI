@@ -31,9 +31,9 @@
 namespace wg
 {
 
-	class IROTextDisplayEditor;
-	typedef	StrongInterfacePtr<IROTextDisplayEditor>	EditText_p;
-	typedef	WeakInterfacePtr<IROTextDisplayEditor>	EditText_wp;
+	class ITextEditor;
+	typedef	StrongInterfacePtr<ITextEditor>	EditText_p;
+	typedef	WeakInterfacePtr<ITextEditor>	EditText_wp;
 
 	/**
 	 * @brief Interface for text which can be modified through the UI
@@ -43,12 +43,12 @@ namespace wg
 	 *
 	 */
 
-	class IROTextDisplayEditor : public ITextDisplay
+	class ITextEditor : public ITextDisplay
 	{
 	public:
 		/** @private */
 
-		IROTextDisplayEditor(CTextEditor * pComponent) : ITextDisplay(pComponent) {}
+		ITextEditor(CTextEditor * pComponent) : ITextDisplay(pComponent) {}
 
 		//.____ State __________________________________________________
 
@@ -110,139 +110,139 @@ namespace wg
 
 
 	//_____________________________________________________________________________
-	inline void IROTextDisplayEditor::setEditMode(TextEditMode mode)
+	inline void ITextEditor::setEditMode(TextEditMode mode)
 	{
 		_comp()->setEditMode(mode);
 	}
 
 	//_____________________________________________________________________________
-	inline TextEditMode IROTextDisplayEditor::editMode() const
+	inline TextEditMode ITextEditor::editMode() const
 	{
 		return _comp()->editMode();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::isSelectable() const
+	inline bool ITextEditor::isSelectable() const
 	{
 		return !(_comp()->editMode() == TextEditMode::Static);
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::isEditable() const
+	inline bool ITextEditor::isEditable() const
 	{
 		return (_comp()->editMode() == TextEditMode::Editable);
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::append( const CharSeq& seq )
+	inline int ITextEditor::append( const CharSeq& seq )
 	{
 		return _comp()->append( seq );
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::insert( int ofs, const CharSeq& seq )
+	inline int ITextEditor::insert( int ofs, const CharSeq& seq )
 	{
 		return _comp()->insert(ofs, seq);
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::replace( int ofs, int nDelete, const CharSeq& seq )
+	inline int ITextEditor::replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		return _comp()->replace(ofs, nDelete, seq);
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::erase( int ofs, int len )
+	inline int ITextEditor::erase( int ofs, int len )
 	{
 		return _comp()->erase(ofs,len);
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::select( int begin, int end )
+	inline bool ITextEditor::select( int begin, int end )
 	{
 		return _comp()->select(begin,end);
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::selectAll()
+	inline bool ITextEditor::selectAll()
 	{
 		return _comp()->selectAll();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::unselect()
+	inline bool ITextEditor::unselect()
 	{
 		return _comp()->unselect();
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::eraseSelected()
+	inline int ITextEditor::eraseSelected()
 	{
 		return _comp()->eraseSelected();
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::selectionBegin() const
+	inline int ITextEditor::selectionBegin() const
 	{
 		return _comp()->selectionBegin();
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::selectionEnd() const
+	inline int ITextEditor::selectionEnd() const
 	{
 		return _comp()->selectionEnd();
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::selectionSize() const
+	inline int ITextEditor::selectionSize() const
 	{
 		return _comp()->selectionSize();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::setCaretOfs( int ofs )
+	inline bool ITextEditor::setCaretOfs( int ofs )
 	{
 		return _comp()->setCaretOfs(ofs);
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::caretOfs() const
+	inline int ITextEditor::caretOfs() const
 	{
 		return _comp()->caretOfs();
 	}
 
 	//_____________________________________________________________________________
-	inline int IROTextDisplayEditor::caretPut( const CharSeq& seq )
+	inline int ITextEditor::caretPut( const CharSeq& seq )
 	{
 		return _comp()->caretPut(seq);
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::caretPut( uint16_t c )
+	inline bool ITextEditor::caretPut( uint16_t c )
 	{
 		return _comp()->caretPut(c);
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::caretLineBegin()
+	inline bool ITextEditor::caretLineBegin()
 	{
 		return _comp()->caretLineBegin();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::caretLineEnd()
+	inline bool ITextEditor::caretLineEnd()
 	{
 		return _comp()->caretLineEnd();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::caretTextBegin()
+	inline bool ITextEditor::caretTextBegin()
 	{
 		return _comp()->caretTextBegin();
 	}
 
 	//_____________________________________________________________________________
-	inline bool IROTextDisplayEditor::caretTextEnd()
+	inline bool ITextEditor::caretTextEnd()
 	{
 		return _comp()->caretTextEnd();
 	}

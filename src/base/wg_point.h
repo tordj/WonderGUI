@@ -78,13 +78,13 @@ namespace wg
 		inline Point operator*(int x) const { Point res; res.value = value * x; return res; }
 		inline Point operator/(int x) const { Point res; res.value = value / x; return res; }
 
-		inline void operator*=(float x) { value *= x; }
-		inline void operator/=(float x) { value /= x; }
+		inline void operator*=(float x) { value = int(value * x); }
+		inline void operator/=(float x) { value = int(value / x); }
 		inline Point operator*(float x) const { Point res; res.value = int(value * x); return res; }
 		inline Point operator/(float x) const { Point res; res.value = int(value / x); return res; }
 
-		inline void operator*=(double x) { value *= x; }
-		inline void operator/=(double x) { value /= x; }
+		inline void operator*=(double x) { value = int(value * x); }
+		inline void operator/=(double x) { value = int(value / x); }
 		inline Point operator*(double x) const { Point res; res.value = int(value * x); return res; }
 		inline Point operator/(double x) const { Point res; res.value = int(value / x); return res; }
 

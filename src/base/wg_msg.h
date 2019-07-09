@@ -48,7 +48,7 @@ namespace wg
 
 	class IROTextDisplay;
 	class ITextDisplay;
-	class IROTextDisplayEditor;
+	class ITextEditor;
 	class Payload;
 
 	typedef WeakPtr<Object>		Object_wp;
@@ -59,8 +59,8 @@ namespace wg
 	typedef	StrongInterfacePtr<ITextDisplay>		ITextDisplay_p;
 	typedef	WeakInterfacePtr<ITextDisplay>		ITextDisplay_wp;
 
-	typedef	StrongInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_p;
-	typedef	WeakInterfacePtr<IROTextDisplayEditor>	IROTextDisplayEditor_wp;
+	typedef	StrongInterfacePtr<ITextEditor>	ITextEditor_p;
+	typedef	WeakInterfacePtr<ITextEditor>	ITextEditor_wp;
 
 	typedef    StrongPtr<Payload>  Payload_p;
 	typedef    WeakPtr<Payload>    Payload_wp;
@@ -1066,7 +1066,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( IROTextDisplayEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( ITextEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -1077,13 +1077,13 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		IROTextDisplayEditor_p			text() const;
+		ITextEditor_p			text() const;
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( IROTextDisplayEditor * pText, bool bFinal );
+		TextEditMsg( ITextEditor * pText, bool bFinal );
 
-		IROTextDisplayEditor_p			m_pText;
+		ITextEditor_p			m_pText;
 		bool				m_bFinal;
 	};
 

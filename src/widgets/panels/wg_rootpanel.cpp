@@ -114,7 +114,7 @@ namespace wg
 	{
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
-		else
+		else 
 			m_bHasGeo = true;
 
 		m_geo = geo;

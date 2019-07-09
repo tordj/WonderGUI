@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		IROTextDisplayEditor		text;
+		ITextEditor		text;
 
 		//.____ Identification __________________________________________
 

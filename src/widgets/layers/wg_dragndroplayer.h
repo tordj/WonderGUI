@@ -24,7 +24,6 @@
 #define WG_DRAGNDROPLAYER_DOT_H
 #pragma once
 
-#include <vector>
 #include <wg_layer.h>
 #include <wg_payload.h>
 #include <wg_key.h>
@@ -75,7 +74,7 @@ namespace wg
 		const LayerSlot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void            _onRequestRender(const Rect& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const Rect& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
 
 		// Overloaded from Widget
 

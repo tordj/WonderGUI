@@ -1384,7 +1384,7 @@ namespace wg
 		return m_pText;
 	}
 
-	TextEditMsg::TextEditMsg( IROTextDisplayEditor * pText, bool bFinal )
+	TextEditMsg::TextEditMsg( ITextEditor * pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->object();
