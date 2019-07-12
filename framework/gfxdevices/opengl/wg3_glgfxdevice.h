@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -31,7 +31,7 @@
 #	ifdef __APPLE__
 #		include <OpenGL/gl3.h>
 #	else
-#		include <GLES3/gl3.h>
+#		include <GL/glew.h>
 #	endif
 #endif
 
@@ -47,6 +47,8 @@ namespace wg
 
 	class GlGfxDevice : public GfxDevice
 	{
+		friend class GlSurface;
+
 	public:
 
 		//.____ Creation __________________________________________
@@ -56,34 +58,37 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const;
-		const char *			className(void) const;
+		bool					isInstanceOf(const char * pClassName) const override;
+		const char *			className(void) const override;
 		static const char		CLASSNAME[];
 		static GlGfxDevice_p	cast(Object * pObject);
-		const char *			surfaceClassName(void) const;
+		const char *			surfaceClassName(void) const override;
 
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory();
+		SurfaceFactory_p		surfaceFactory() override;
 
 		//.____ Geometry _________________________________________________
 
 		bool	setCanvas(Size canvasSize);
-		bool	setCanvas(Surface * pCanvas);
+		bool	setCanvas(Surface * pCanvas) override;
 
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const Rect * pRectangles);
-		void	clearClipList();
+		bool	setClipList(int nRectangles, const Rect * pRectangles) override;
+		void	clearClipList() override;
 		void	setTintColor(Color color) override;
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
+
+        bool    isCanvasReady() const;
 
 		//.____ Rendering ________________________________________________
 
 		bool	beginRender() override;
 		bool	endRender() override;
+		void	flush();
 
 		void	fill(const Rect& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -126,6 +131,7 @@ namespace wg
 		void	_setBlitSource(GlSurface * pSurf);
 
 		inline void	_beginDrawCommand(Command cmd);
+		inline void	_beginDrawCommandWithSource(Command cmd);
 		inline void	_beginDrawCommandWithInt(Command cmd, int data);
 		inline void	_beginClippedDrawCommand(Command cmd );
 		inline void	_beginStateCommand(Command cmd, int dataSize);
@@ -157,7 +163,7 @@ namespace wg
 
 		static const int c_commandBufferSize = 256;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats. 
+		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
@@ -172,12 +178,17 @@ namespace wg
 		int				m_canvasYstart;
 		int				m_canvasYmul;
 
+		Size            m_emptyCanvasSize;
+
 		// Device programs
 
 		GLuint  m_fillProg;
 		GLuint  m_aaFillProg;
 		GLuint  m_blitProg;
 		GLint	m_blitProgTexSizeLoc;
+
+		GLuint  m_alphaBlitProg;
+		GLint	m_alphaBlitProgTexSizeLoc;
 
 		GLuint  m_clutBlitNearestProg;
 		GLint	m_clutBlitNearestProgTexSizeLoc;
@@ -241,6 +252,8 @@ namespace wg
 
 		Rect	m_clipListBuffer[c_clipListBufferSize];
 
+		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
+
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;
@@ -257,8 +270,11 @@ namespace wg
 
 		static int s_bindingPointCanvasUBO;
 
-  
-		// 
+		GlGfxDevice *			m_pPrevActiveDevice; // Storage for previous active device when we become active.
+
+		static GlGfxDevice *	s_pActiveDevice;	// Pointer at GL device currently in rendering state.
+
+		//
 
 		static const char fillVertexShader[];
 		static const char fillFragmentShader[];
@@ -274,11 +290,14 @@ namespace wg
 		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
 		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
 
+		static const char alphaBlitFragmentShader[];
+
 		static const char clutBlitNearestVertexShader[];
 		static const char clutBlitNearestFragmentShader[];
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
 
+		//
 
 	};
 
@@ -293,6 +312,25 @@ namespace wg
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+	}
+
+	inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
+	{
+		if (m_commandOfs > c_commandBufferSize - 2)
+			_executeBuffer();
+
+		m_cmd = cmd;
+		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
+		m_cmdBeginVertexOfs = m_vertexOfs;
+		m_commandBuffer[m_commandOfs++] = cmd;
+
+		static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
+
+		if( m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 	inline void GlGfxDevice::_beginDrawCommandWithInt(Command cmd, int data)
@@ -305,6 +343,9 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 		m_commandBuffer[m_commandOfs++] = data;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 
@@ -318,7 +359,13 @@ namespace wg
 			m_clipCurrOfs = m_clipWriteOfs;
 
 			for (int i = 0; i < m_nClipRects; i++)
-				m_clipListBuffer[m_clipWriteOfs++] = m_pClipRects[i];
+            {
+                Rect clip = m_pClipRects[i];
+                if( m_canvasYstart != 0 )
+                    clip.y = m_canvasSize.h - (clip.y + clip.h);
+
+                m_clipListBuffer[m_clipWriteOfs++] = clip;
+            }
 		}
 
 		m_cmd = cmd;
@@ -327,6 +374,9 @@ namespace wg
 		m_commandBuffer[m_commandOfs++] = cmd;
 		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
 		m_commandBuffer[m_commandOfs++] = m_nClipRects;
+
+		if (m_pCanvas)
+			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
 

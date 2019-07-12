@@ -188,7 +188,7 @@ void WgCanvasCapsule::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * p
             break;
 
         default:
-            pHandler->ForwardEvent(pEvent);
+            WgCapsule::_onEvent(pEvent,pHandler);
             break;
     }
 
@@ -205,7 +205,7 @@ WgBlendMode WgCanvasCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgCanvasCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
     // Make sure we have children
 
@@ -261,38 +261,36 @@ void WgCanvasCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
     WgBlendMode        oldBM;
     WgColor            oldTC;
 
-    oldBM = pDevice->GetBlendMode();
-    oldTC = pDevice->GetTintColor();
+    oldBM = pDevice->blendMode();
+    oldTC = pDevice->tintColor();
 
 
     if (!renderStack.IsEmpty())
     {
-        WgSurface * pOldCanvas = pDevice->Canvas();
-        pDevice->SetCanvas(m_pCanvas);
+        auto pOldCanvas = pDevice->canvas();
+        pDevice->setCanvas(m_pCanvas->RealSurface());
 
-        pDevice->SetBlendMode(WgBlendMode::Replace);
-        pDevice->SetTintColor(WgColor::White);
+        pDevice->setBlendMode(WgBlendMode::Replace);
+        pDevice->setTintColor(WgColor::White);
 
-        for( const WgRect * pRect = renderStack.Begin() ; pRect != renderStack.End() ; pRect++ )
-        {
-            pDevice->Fill(*pRect, WgColor::Transparent);
-        }
+        pDevice->setClipList(renderStack.Size(), renderStack.Begin());
+        pDevice->fill(WgColor::Transparent);
 
-        pDevice->SetBlendMode(WgBlendMode::Blend);
+        pDevice->setBlendMode(WgBlendMode::Blend);
 
         m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
-        pDevice->SetCanvas(pOldCanvas);
+        pDevice->setCanvas(pOldCanvas);
 
     }
 
     // Set our tint color and blend mode for blitting from back canvas to screen.
 
-    pDevice->SetBlendMode(m_blendMode);
+    pDevice->setBlendMode(m_blendMode);
 
     if( m_tintMode == WG_TINTMODE_OPAQUE )
-        pDevice->SetTintColor(m_tintColor);
+        pDevice->setTintColor(m_tintColor);
     else    // MULTIPLY
-        pDevice->SetTintColor(m_tintColor*oldTC);
+        pDevice->setTintColor(m_tintColor*oldTC);
 
     // Render patches
 
@@ -300,21 +298,22 @@ void WgCanvasCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
     // Reset old blend mode and tint color
 
-    pDevice->SetBlendMode(oldBM);
-    pDevice->SetTintColor(oldTC);
+    pDevice->setBlendMode(oldBM);
+    pDevice->setTintColor(oldTC);
 }
 
 //____ _onRender() ____________________________________________________________
 
-void WgCanvasCapsule::_onRender(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip)
+void WgCanvasCapsule::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window)
 {
     // Make sure to render any skin we might have
 
-    WgWidget::_onRender(pDevice, _canvas, _window, _clip);
+    WgWidget::_onRender(pDevice, _canvas, _window);
 
     // Copy from our back canvas to the screen canvas
 
-    pDevice->ClipBlitFromCanvas(_clip, m_pCanvas, { 0,0,_canvas.w,_canvas.h }, _canvas.x, _canvas.y);
+    pDevice->setBlitSource(m_pCanvas->RealSurface());
+    pDevice->blit( WgCoord(_canvas.x, _canvas.y), { 0,0,_canvas.w,_canvas.h });
 }
 
 

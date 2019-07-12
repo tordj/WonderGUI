@@ -450,15 +450,6 @@ WgRect WgUtil::OrigoToRect( WgOrigo origo, WgSize base, WgSize rect )
 	}
 }
 
-//____ FallbackState() ________________________________________________________
-
-WgState WgUtil::FallbackState(WgState state, int step)
-{
-	static int mask[12] = { 0x1E, 0xE, 0xD, 0xC, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x1, 0x0 };
-
-    return WgState((WgStateEnum) (int(wg::StateEnum(state)) & mask[step]));
-}
-
 //____ StateToMode() __________________________________________________________
 
 WgMode WgUtil::StateToMode(WgState state)
@@ -467,11 +458,22 @@ WgMode WgUtil::StateToMode(WgState state)
 
 	if (!state.isEnabled())
 		mode = WG_MODE_DISABLED;
-	else if (state.isPressed() )
+	else if (state.isHovered() && state.isSelected())
+		mode = WG_MODE_SPECIAL;	
+	else if (state.isPressed() || state.isSelected())
 		mode = WG_MODE_SELECTED;
 	else if (state.isHovered())
 		mode = WG_MODE_MARKED;
 
 	return mode;
 }
+
+//____ ParametricBlendInOut() __________________________________________________________
+
+float WgUtil::ParametricBlendInOut(float t)
+{
+    float sqt = t*t;
+    return sqt / (2.0f * (sqt - t) + 1.0f);
+}
+
 

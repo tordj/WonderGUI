@@ -24,6 +24,7 @@
 #include <wg_types.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
+#include <wg_payload.h>
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
@@ -33,7 +34,8 @@
 
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Default),
 					m_markOpacity( 1 ), m_bEnabled(true), m_bOpaque(false),
-					m_bFocused(false), m_bSelected(false), m_bTabLock(false), m_bReceiveTick(false), m_scale(WG_SCALE_BASE)
+					m_bFocused(false), m_bSelected(false), m_bTabLock(false), m_bReceiveTick(false), m_scale(WG_SCALE_BASE),
+                    m_bPickable(false), m_bDropTarget(false)
 {
 
 }
@@ -94,15 +96,28 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 		return false;
 
 	m_id			= _pOrg->m_id;
-
+    m_pSkin         = _pOrg->m_pSkin;
+    m_scale         = _pOrg->m_scale;
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
 
 	m_tooltip		= _pOrg->m_tooltip;
 	m_markOpacity	= _pOrg->m_markOpacity;
 
-	m_bEnabled		= _pOrg->m_bEnabled;
-	m_bOpaque		= _pOrg->m_bOpaque;
-	m_bTabLock		= _pOrg->m_bTabLock;
+    m_bOpaque        = _pOrg->m_bOpaque;
+    m_bTabLock        = _pOrg->m_bTabLock;
+
+    m_bReceiveTick  = _pOrg->m_bReceiveTick;    // Set if Widget should reveive periodic Tick() events.
+
+    m_bEnabled        = _pOrg->m_bEnabled;
+    m_bSelectable     = _pOrg->m_bSelectable;
+
+    m_state           = _pOrg->m_state;
+
+    m_bPickable         = _pOrg->m_bPickable;
+    m_pickCategory     = _pOrg->m_pickCategory;
+    m_bDropTarget    = _pOrg->m_bDropTarget;
+
+    
 
 	_onCloneContent( _pOrg );
 	return true;
@@ -201,6 +216,21 @@ WgCoord WgWidget::Local2absPoint( const WgCoord& cord ) const
 WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 {
     return (Abs2localPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
+}
+
+//____ setDropTarget() ____________________________________________________
+
+void WgWidget::setDropTarget(bool bDropTarget)
+{
+    m_bDropTarget = bDropTarget;
+}
+
+//____ setPickable() ____________________________________________________________
+
+void WgWidget::setPickable( bool bPickable, int category )
+{
+    m_bPickable = bPickable;
+    m_pickCategory = category;
 }
 
 
@@ -377,14 +407,10 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 
 //____ _renderPatches() ________________________________________________________
 
-void WgWidget::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
-	{
-		WgRect clip( _window, *pRect );
-		if( clip.w > 0 && clip.h > 0 )
-			_onRender( pDevice, _canvas, _window, clip );
-	}
+    pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+    _onRender( pDevice, _canvas, _window );
 }
 
 //____ Fillers _______________________________________________________________
@@ -402,7 +428,7 @@ void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRe
 	}
 }
 
-void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgWidget::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if (m_pSkin)
 	{
@@ -411,7 +437,7 @@ void WgWidget::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 //		state.setSelected(m_bSelected);
 //		state.setEnabled(m_bEnabled);
 
-		m_pSkin->Render(pDevice, m_state, _canvas, _clip, m_scale);
+		m_pSkin->Render(pDevice, m_state, _canvas, m_scale);
 	}
 }
 
@@ -430,9 +456,46 @@ void WgWidget::_onRefresh()
 	_requestRender();
 }
 
-void WgWidget::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
+void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-	pHandler->ForwardEvent( pEvent );
+    WgState state = m_state;
+    bool    bForward = true;
+    
+    switch( _pEvent->Type() )
+    {
+        case WG_EVENT_DROP_PICK:
+        {
+            auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
+            if (!pEvent->hasPayload())
+            {
+                const_cast<WgEvent::DropPick*>(pEvent)->setPayload(WgPayloadWidget::Create(this).GetRealPtr());
+            }
+            bForward = false;
+            break;
+        }
+        case WG_EVENT_DROP_ENTER:
+            state.setTargeted(true);
+            bForward = false;
+            break;
+        case WG_EVENT_DROP_LEAVE:
+            state.setTargeted(false);
+            bForward = false;
+            break;
+            
+        default:
+            break;
+    }
+    
+    if( state != m_state )
+    {
+        //TODO: We should have a virtual method for setting state, just like WG3.
+        
+        m_state = state;
+        _requestRender();
+    }
+    
+    if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent()) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
+        pHandler->ForwardEvent( _pEvent );
 }
 
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )

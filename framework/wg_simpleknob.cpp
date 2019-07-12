@@ -25,6 +25,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_base.h>
 
+#include <algorithm>
+
 #include "Debug.h"
 
 static const char	c_widgetType[] = {"Knob"};
@@ -96,7 +98,7 @@ void WgSimpleKnob::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 #define PI 3.141592653f
-void WgSimpleKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgSimpleKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 //    pDevice->Fill( _clip, WgColor::black );
 
@@ -107,7 +109,8 @@ void WgSimpleKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	{
         m_iNextPixel = 0;
         drawCircle(_canvas.x + sz/2, _canvas.y + sz/2, sz/2, sz/2);
-        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
+        pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
+//        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
         
         const float d = 45.0f;
         // Draw the index line
@@ -116,7 +119,8 @@ void WgSimpleKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 
         m_iNextPixel = 0;
         drawLine(_canvas.x + rad, _canvas.y + rad, _canvas.x + rad + x, _canvas.y + rad + y);
-        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
+        pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
+//        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
 	}
 }
 

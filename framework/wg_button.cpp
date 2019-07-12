@@ -244,7 +244,7 @@ void WgButton::_setScale( int scale )
 
 //____ _onRender() _____________________________________________________________
 
-void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if (m_pSkin)
     {
@@ -255,12 +255,8 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
         state.setPressed(m_bPressed);
         state.setEnabled(m_bEnabled);
 
-        m_pSkin->Render(pDevice, state, _canvas, _clip, m_scale);
+        m_pSkin->Render(pDevice, state, _canvas, m_scale);
     }
-
-    WgRect cli = _clip;
-    WgRect can = _canvas;
-    WgRect win = _window;
 
     WgBlock    block;
 
@@ -280,7 +276,7 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 	{
 		block = m_pBgGfx->GetBlock(m_mode, m_scale);
 
-		pDevice->ClipBlitBlock(_clip, block, _canvas);
+        WgGfxDevice::BlitBlock(pDevice, block, _canvas);
 		WgRect contentRect = block.ContentRect(_canvas);
 	}
 
@@ -292,7 +288,7 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 	// Render icon
 
 	if( m_pIconGfx )
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, m_scale), iconRect );
+        WgGfxDevice::BlitBlock( pDevice, m_pIconGfx->GetBlock(m_mode, m_scale), iconRect );
 
 	// Print text
 
@@ -303,8 +299,7 @@ void WgButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const Wg
 		if( m_pBgGfx )
 			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
 
-		WgRect clip(textRect,_clip);
-		pDevice->PrintText( clip, &m_text, textRect );
+        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}
 }
 
@@ -319,7 +314,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = true;
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -329,7 +324,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			{
 			}
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -342,7 +337,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			}
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -360,7 +355,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				m_bPressed = true;
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
@@ -369,7 +364,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				m_bPressed = false;
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -379,7 +374,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -389,13 +384,13 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
 
         default:
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent, pHandler);
             break;
 
 	}

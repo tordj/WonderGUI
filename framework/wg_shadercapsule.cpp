@@ -103,7 +103,7 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	// Set our tint color and blend mode.
 
@@ -113,15 +113,15 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 //	if( (_layer & m_layer) != 0 )
 	{
-		oldBM = pDevice->GetBlendMode();
-		oldTC = pDevice->GetTintColor();
+		oldBM = pDevice->blendMode();
+		oldTC = pDevice->tintColor();
 
-		pDevice->SetBlendMode(m_blendMode);
+		pDevice->setBlendMode(m_blendMode);
 
 		if( m_tintMode == WG_TINTMODE_OPAQUE )
-			pDevice->SetTintColor(m_tintColor);
+			pDevice->setTintColor(m_tintColor);
 		else	// MULTIPLY
-			pDevice->SetTintColor(m_tintColor*oldTC);
+			pDevice->setTintColor(m_tintColor*oldTC);
 	}
 
 	// Render children recursively
@@ -133,8 +133,8 @@ void WgShaderCapsule::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canv
 
 //	if( (_layer & m_layer) != 0 )
 	{
-		pDevice->SetBlendMode(oldBM);
-		pDevice->SetTintColor(oldTC);
+		pDevice->setBlendMode(oldBM);
+		pDevice->setTintColor(oldTC);
 	}
 }
 

@@ -120,11 +120,23 @@ void WgCheckBox::SetUncheckedIcon( const WgBlocksetPtr& pUnchecked )
 	_onRefresh();
 }
 
-
-
 //____ SetState() _____________________________________________________________
 
 bool WgCheckBox::SetState( bool _state )
+{
+	if( m_bChecked != _state )
+	{
+		m_bChecked = _state;
+		_requestRender();
+	}
+
+	return true;
+
+}
+
+//____ _setState() _____________________________________________________________
+
+bool WgCheckBox::_setState( bool _state )
 {
 	if( m_bChecked != _state )
 	{
@@ -229,14 +241,14 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 				if( !m_bPressed )
 				{
 					if( !m_bFlipOnRelease )
-						SetState( !m_bChecked );
+						_setState( !m_bChecked );
 					m_bPressed = true;
 					_requestRender();
 				}
 			}
 			else
-				pHandler->ForwardEvent( pEvent );
-			break;
+                WgWidget::_onEvent(pEvent,pHandler);
+            break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_CLICK:
@@ -246,8 +258,8 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-				pHandler->ForwardEvent( pEvent );
-			break;
+                WgWidget::_onEvent(pEvent,pHandler);
+            break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
@@ -259,17 +271,17 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 				{
 					m_bPressed = false;
 					if( m_bFlipOnRelease )
-						SetState( !m_bChecked );
+						_setState( !m_bChecked );
 					_requestRender();
 				}
 			}
 			else
-				pHandler->ForwardEvent( pEvent );
-			break;
+                WgWidget::_onEvent(pEvent,pHandler);
+            break;
 		}
 
         default:
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
             break;
 	}
 }
@@ -293,7 +305,7 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 
 //____ _onRender() ________________________________________________________
 
-void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	// Get correct mode
 
@@ -331,7 +343,7 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 
 	// Blit background
 
-	pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
+    WgGfxDevice::BlitBlock( pDevice, bgBlock, _canvas );
 
 	// Get the content rect and icon rect
 
@@ -348,7 +360,7 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 	// Blit icon
 
 	if( iconRect.w > 0 && iconRect.h > 0 )
-		pDevice->ClipBlitBlock( _clip, iconBlock, iconRect );
+        WgGfxDevice::BlitBlock( pDevice, iconBlock, iconRect );
 
 	// Print text
 
@@ -361,7 +373,7 @@ void WgCheckBox::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const 
 			m_text.SetBgBlockColors( pBgBlockset->TextColors() );
 
 
-		pDevice->PrintText( _clip, m_pText, textRect );
+        WgGfxDevice::PrintText( pDevice, m_pText, textRect );
 	}
 }
 

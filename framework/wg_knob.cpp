@@ -339,7 +339,7 @@ void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
             break;
 
     }
-    pHandler->ForwardEvent( pEvent );
+    WgWidget::_onEvent(pEvent,pHandler);
 
 }
 
@@ -395,7 +395,7 @@ void WgKnob::_onNewSize(const WgSize& size)
 
 //____ _renderPatches() _______________________________________________________
 
-void WgKnob::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
+void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 	if (!m_pSurf)
     {
@@ -410,30 +410,27 @@ void WgKnob::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const 
 		m_backBufferDirtyRect.clear();
 	}
 
-	WgColor orgTintColor = pDevice->GetTintColor();
+	WgColor orgTintColor = pDevice->tintColor();
 
-	pDevice->SetTintColor(m_kColor * orgTintColor);
+	pDevice->setTintColor(m_kColor * orgTintColor);
 
-	for (const WgRect * pRect = _pPatches->Begin(); pRect != _pPatches->End(); pRect++)
-	{
-		WgRect clip(_window, *pRect);
-		if (clip.w > 0 && clip.h > 0)
-			_onRender(pDevice, _canvas, _window, clip);
-	}
+    pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+    _onRender(pDevice, _canvas, _window);
 
-	pDevice->SetTintColor(orgTintColor);
+	pDevice->setTintColor(orgTintColor);
 
 }
 
 //____ _onRender() _____________________________________________________________
-void WgKnob::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
 
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
-    pDevice->ClipBlit(_clip, m_pSurf,{0,0,m_size},contentRect.x,contentRect.y);
+    pDevice->setBlitSource(m_pSurf->RealSurface());
+    pDevice->blit(WgCoord(contentRect.x,contentRect.y),{0,0,m_size});
 }
 
 //____ _redrawBackBuffer() ____________________________________________________
@@ -490,6 +487,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 	float y_inv = 0.0f;
 	int color = 0;
 	float r, in, out, weight, R, a;
+    const bool bDrawFromMiddle = DrawFromMiddle();
 	for (int yc = region.y; yc< region.y + region.h*oversampling; yc++)
 	{
 		// [-1, 1] coordinates
@@ -555,7 +553,150 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 					// 1. Determine current state(s).
 					DrawState CurrentDrawState;
 
-					if (a_end_const > 2 * PI)
+					// const float mid_line_width = 0.1f;
+					const float mid_line_width = 0.07f;
+
+                    if(bDrawFromMiddle)
+                    {
+                        // Regular case.
+                        a_start = a_start_const;
+                        a_end = a_end_const;
+                        a_value = a_value_const;
+
+                        
+
+                        // a: current angle we're drawing
+                        // a_value: parameter value (angle)
+                        // a_start/a_end: circle segment start/end (angle)
+
+                        float a_mid = (a_end-a_start) * 0.5f + a_start;
+
+						
+
+						if (a_value < a_mid) //Before midpoint
+                        {
+							// DBGM(DBG_GUI, ("fabs(a_value - PI) = %f, before mid", fabs(a_value - PI)));
+							if(a < a_start)
+							{
+								CurrentDrawState = DrawState::eDrawNothing;
+							}
+
+							else if(a >= a_start && a < a_start + ANGLE_AA_WIDTH && a_value > a_start + ANGLE_AA_WIDTH) //OK. left edge of background
+							{
+								CurrentDrawState = DrawState::eDrawBackgroundAABegin;
+							}
+							else if(a >= a_start && a < a_value) 
+							{
+								CurrentDrawState = DrawState::eDrawBackground;
+							}							
+
+
+							
+
+
+							else if(a >= a_value && a < a_value + ANGLE_AA_WIDTH) //om a_mid - a_value < mid_line_width, rita foreground
+							{											  // a_mid - mid_line_width < a_value
+								if(a_value < a_mid - ANGLE_AA_WIDTH)
+									CurrentDrawState = DrawState::eDrawForegroundAALeftEdge;
+								else
+									CurrentDrawState = DrawState::eDrawForeground;
+							}
+							else if(a >= a_value + ANGLE_AA_WIDTH && a < a_mid)
+							{
+								CurrentDrawState = DrawState::eDrawForeground;
+							}
+							else if(a >= a_mid  && a < a_mid + mid_line_width )
+							{
+								//Right edge of light blue
+								CurrentDrawState = DrawState::eDrawForeground;
+							}
+
+							
+							else if(a >= a_end - ANGLE_AA_WIDTH && a < a_end) //OK. Right edge of background
+							{
+								CurrentDrawState = DrawState::eDrawBackgroundAAEnd;
+							}
+							else if(a >= a_mid + mid_line_width  && a < a_end - ANGLE_AA_WIDTH) //After midpoint
+							{
+								CurrentDrawState = DrawState::eDrawBackground;
+							}
+							
+
+							else if(a > a_end)								
+								CurrentDrawState = DrawState::eDrawNothing;
+
+
+
+								//To draw line in middle when value close to 0.5f
+							if(a >= a_mid - mid_line_width && a < a_mid + mid_line_width && (fabs(a_value - a_mid) < mid_line_width))
+							{
+//								DBGM(DBG_GUI, ("Close to 0.5"));
+								// if(a < a_mid - mid_line_width + ANGLE_AA_WIDTH)// && a_value < a_mid - mid_line_width + ANGLE_AA_WIDTH)
+								// 	CurrentDrawState = DrawState::eDrawForegroundAALeftEdge;
+								// else
+									CurrentDrawState = DrawState::eDrawForeground;	
+							}
+
+
+                        }
+                        else //After midpoint
+                        {
+//							DBGM(DBG_GUI, ("fabs(a_value - PI) = %f, after mid", fabs(a_value - PI)));
+							if(a < a_start)
+								CurrentDrawState = DrawState::eDrawNothing;
+							else if(a >= a_start && a < a_start + ANGLE_AA_WIDTH)
+							{								
+								CurrentDrawState = DrawState::eDrawBackgroundAABegin;
+							}
+							else if(a >= a_start && a < a_mid )
+							{
+								CurrentDrawState = DrawState::eDrawBackground;
+							}
+
+							
+							else if(a >= a_mid - mid_line_width && a < a_mid)
+							{
+								CurrentDrawState = DrawState::eDrawForeground;
+							}
+							else if(a >= a_mid  && a < a_value - ANGLE_AA_WIDTH)
+							{
+								CurrentDrawState = DrawState::eDrawForeground;
+							}
+							else if(a >= a_value - ANGLE_AA_WIDTH && a < a_value)
+							{
+								//Right edge of light blue
+								if(a_value >= a_mid + ANGLE_AA_WIDTH)
+									CurrentDrawState = DrawState::eDrawForegroundAAEnd;
+								else
+									CurrentDrawState = DrawState::eDrawForeground;
+							}
+
+
+							if(a >= a_end - ANGLE_AA_WIDTH && a < a_end && a_value < a_end - ANGLE_AA_WIDTH)
+							{
+								CurrentDrawState = DrawState::eDrawBackgroundAAEnd;
+							}
+							else if(a >= a_value && a < a_end - ANGLE_AA_WIDTH)
+							{
+								CurrentDrawState = DrawState::eDrawBackground;
+							}
+
+							else if(a > a_end)
+								CurrentDrawState = DrawState::eDrawNothing;
+
+							if(a > a_mid - mid_line_width && a <= a_mid + mid_line_width && (fabs(a_value - a_mid) < mid_line_width))
+							{
+//								DBGM(DBG_GUI, ("Close to 0.5"));
+
+								// if(a > a_mid + mid_line_width - ANGLE_AA_WIDTH && a_value > a_mid + mid_line_width - ANGLE_AA_WIDTH)
+								// 	CurrentDrawState = DrawState::eDrawForegroundAARightEdge;
+								// else 
+									CurrentDrawState = DrawState::eDrawForeground;	
+							}
+
+                        }
+                    } //end case draw from middle
+                    else if (a_end_const > 2 * PI)
 					{
 						// Special case: end angle larger than 2π.
 						a_start = a_start_const;
@@ -694,6 +835,23 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 						col = kBackTransp;
 						break;
 					}
+					case DrawState::eDrawForegroundAALeftEdge:
+					{
+						//AA for left side of light blue area when start from middle
+
+						const float ww = (a - a_value)*(1.0f / ANGLE_AA_WIDTH);
+
+						if (m_bPressed | m_bPointerInside)
+							col = WgColor(255, 255, 255, 255);
+						else
+							col = kForeground;
+						
+						col = Blend(col, kBackground, ww);
+
+						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						break;
+					}
+
 					case DrawState::eDrawForegroundAABegin:
 					{
 						// Draw anti-alias of beginning of foreground.
@@ -731,6 +889,23 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 						// 20 is 1/0.05, which is the angle that's being AAd.
 						const float ww = (a - (a_value - ANGLE_AA_WIDTH)) * (1.0f / ANGLE_AA_WIDTH);
+
+						if (m_bPressed | m_bPointerInside)
+							col = WgColor(255, 255, 255, 255);
+						else
+							col = kForeground;
+
+						col = Blend(kBackground, col, ww);
+						col = Blend(col, kBackTransp, weight); // CIRCLE AA
+						break;
+					}
+					case DrawState::eDrawForegroundAARightEdge:
+					{
+						float a_mid = (a_end - a_start) * 0.5f + a_start; 
+
+						//Draw anti-alias of right edge of foreground, by the middle of the circle.
+
+						const float ww = ((a_mid + mid_line_width) - a)*(1.0f / ANGLE_AA_WIDTH);
 
 						if (m_bPressed | m_bPointerInside)
 							col = WgColor(255, 255, 255, 255);

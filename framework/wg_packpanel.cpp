@@ -22,6 +22,7 @@
 
 #include <wg_packpanel.h>
 #include <wg_base.h>
+#include <algorithm>
 
 static const char	c_widgetType[] = {"PackPanel"};
 static const char	c_hookType[] = {"PackHook"};
@@ -33,6 +34,7 @@ WgPackHook::WgPackHook( WgPackPanel * pParent )
 {
 	m_pParent = pParent;
 	m_weight = 1.f;
+    m_baseline = 0.f;
 }
 
 //____ WgPackHook::Type() _____________________________________________________
@@ -71,6 +73,21 @@ bool WgPackHook::SetWeight( float weight )
 	return true;
 }
 
+//____ WgPackHook::SetBaseline() ______________________________________________
+
+bool WgPackHook::SetBaseline( float baseline )
+{
+    wg::limit(baseline, 0.f, 1.f);
+    
+    if( baseline != m_baseline )
+    {
+        m_baseline = baseline;
+        Parent()->_refreshBaseline();
+    }
+    return true;
+}
+
+
 //____ WgPackHook::_parent() __________________________________________________
 
 WgContainer * WgPackHook::_parent() const
@@ -83,7 +100,9 @@ WgContainer * WgPackHook::_parent() const
 WgPackPanel::WgPackPanel()
 {
 	m_bHorizontal = true;
+    m_bBaselineMode = false;
     m_pSizeBroker = 0;
+    m_bSiblingsOverlap = false;
 }
 
 //____ Destructor _____________________________________________________________
@@ -131,6 +150,17 @@ void WgPackPanel::SetSizeBroker( WgSizeBroker * pBroker )
 		_updatePreferredPixelSize();
 		_refreshChildGeo();
 	}
+}
+
+//____ SetBaselineMode() ______________________________________________________
+
+void WgPackPanel::SetBaselineMode( bool bBaseline )
+{
+    if( bBaseline != m_bBaselineMode )
+    {
+        m_bBaselineMode = bBaseline;
+        _refreshBaseline();
+    }
 }
 
 //____ PreferredPixelSize() _______________________________________________________
@@ -306,13 +336,28 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 		{
 			WgPackHook * p = FirstHook();
 
-			while( p )
-			{
-				if( p->IsVisible() )
-					width += p->_paddedMatchingPixelWidth( height, m_scale );
-
-				p = p->Next();
-			}
+            if( m_bBaselineMode )
+            {
+                while( p )
+                {
+                    if( p->IsVisible() )
+                    {
+                        int h = std::min( height, p->m_preferredSize.h );
+                        width += p->_paddedMatchingPixelWidth( h, m_scale );
+                    }
+                    p = p->Next();
+                }
+            }
+            else
+            {
+                while( p )
+                {
+                    if( p->IsVisible() )
+                        width += p->_paddedMatchingPixelWidth( height, m_scale );
+                    
+                    p = p->Next();
+                }
+            }
 		}
 	}
 	return width;
@@ -322,13 +367,13 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 
 void WgPackPanel::_setScale(int scale)
 {
-    m_bBlockRequestResize = true;
-    m_bResizeRequestedWhileBlocked = false;
-    WgVectorPanel::_setScale(scale);
-    m_bBlockRequestResize = false;
-    
-    if (m_bResizeRequestedWhileBlocked)
-        _refreshAllWidgets();
+	m_bBlockRequestResize = true;
+	m_bResizeRequestedWhileBlocked = false;
+	WgVectorPanel::_setScale(scale);
+	m_bBlockRequestResize = false;
+
+	if (m_bResizeRequestedWhileBlocked)
+		_refreshAllWidgets();
 }
 
 
@@ -405,10 +450,10 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 
 	//
 	
-    if (m_bBlockRequestResize)
-        m_bResizeRequestedWhileBlocked = true;
-    else
-        _refreshAllWidgets();
+	if (m_bBlockRequestResize)
+		m_bResizeRequestedWhileBlocked = true;
+	else
+		_refreshAllWidgets();
 }
 
 //____ _onWidgetAppeared() ______________________________________________________
@@ -485,54 +530,136 @@ void WgPackPanel::_updatePreferredPixelSize()
 		
 		WgPackHook * pH = FirstHook();
 		WgSizeBrokerItem * pI = pItemArea;
-		while( pH )
-		{
-			if( pH->IsVisible() )
-			{
-				int b = m_bHorizontal?pH->_paddedMatchingPixelHeight(pI->output, m_scale):pH->_paddedMatchingPixelWidth(pI->output, m_scale);
-				if( b > breadth )
-					breadth = b;			
-				pI++;
-			}
-			pH = pH->Next();
-		}
-		
+        
+        if( m_bBaselineMode )
+        {
+            int maxAscend = 0;
+            int maxDescend = 0;
+            
+            while( pH )
+            {
+                if( pH->IsVisible() )
+                {
+                    int b = m_bHorizontal?pH->_paddedMatchingPixelHeight(pI->output, m_scale):pH->_paddedMatchingPixelWidth(pI->output, m_scale);
+                    
+                    int ascend = b * pH->m_baseline;
+                    int descend = b - ascend;
+                    
+                    if( ascend > maxAscend )
+                        maxAscend = ascend;
+                    
+                    if( descend > maxDescend )
+                        maxDescend = descend;
+                    
+                    pI++;
+                }
+                pH = pH->Next();
+                breadth = maxAscend + maxDescend;
+            }
+        }
+        else
+        {
+            while( pH )
+            {
+                if( pH->IsVisible() )
+                {
+                    int b = m_bHorizontal?pH->_paddedMatchingPixelHeight(pI->output, m_scale):pH->_paddedMatchingPixelWidth(pI->output, m_scale);
+                    if( b > breadth )
+                        breadth = b;
+                    pI++;
+                }
+                pH = pH->Next();
+            }
+        }
+        
 		// Release temporary memory area
 		
 		WgBase::MemStackRelease(arrayBytes);
-		
 	}
 	else
 	{
-		WgPackHook * p = FirstHook();
+		WgPackHook * pH = FirstHook();
 
-		if( m_bHorizontal )
-		{
-            while( p )
+        if( m_bBaselineMode )
+        {
+            int maxAscend = 0;
+            int maxDescend = 0;
+            
+            if( m_bHorizontal )
             {
-				if( p->IsVisible() )
-				{
-					length += p->m_preferredSize.w;
-	                if( p->m_preferredSize.h > breadth )
-	                    breadth = p->m_preferredSize.h;
-				}
-				p = p->Next();
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        length += pH->m_preferredSize.w;
+                        
+                        int b = pH->m_preferredSize.h;
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
             }
-		}
-		else
-		{
-            while( p )
+            else
             {
-				if( p->IsVisible() )
-				{
-					length += p->m_preferredSize.h;
-					if( p->m_preferredSize.w > breadth )
-					    breadth = p->m_preferredSize.w;
-				}
-                p = p->Next();
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        length += pH->m_preferredSize.h;
+
+                        int b = pH->m_preferredSize.h;
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
             }
-		}
-	}
+            
+            breadth = maxAscend + maxDescend;
+        }
+        else
+        {
+            if( m_bHorizontal )
+            {
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        length += pH->m_preferredSize.w;
+                        if( pH->m_preferredSize.h > breadth )
+                            breadth = pH->m_preferredSize.h;
+                    }
+                    pH = pH->Next();
+                }
+            }
+            else
+            {
+                while( pH)
+                {
+                    if( pH->IsVisible() )
+                    {
+                        length += pH->m_preferredSize.h;
+                        if( pH->m_preferredSize.w > breadth )
+                            breadth = pH->m_preferredSize.w;
+                    }
+                    pH = pH->Next();
+                }
+            }
+        }
+    }
 
 	//
 	
@@ -544,6 +671,15 @@ void WgPackPanel::_updatePreferredPixelSize()
 		_requestResize();
 //	}
 }
+
+//____ _refreshBaseline() ________________________________________________________
+
+void WgPackPanel::_refreshBaseline()
+{
+    _updatePreferredPixelSize();
+    _refreshChildGeo();
+}
+
 
 //____ _refreshChildGeo() _________________________________________________________
 
@@ -562,6 +698,11 @@ void WgPackPanel::_refreshChildGeo()
 	int givenLength = m_bHorizontal?size.w:size.h;
 	int givenBreadth = m_bHorizontal?size.h:size.w;
 
+    // Allocate temporary space for childrens individual sizes
+    
+    int childGeosBytes = sizeof(WgRect)*m_hooks.Size();
+    WgRect * pChildGeos = reinterpret_cast<WgRect*>(WgBase::MemStackAlloc(childGeosBytes));
+    
 	// Optimized special case, just copy preferred to length.
 	//TODO: We probably need to use MatchingPixelWidth()/MatchingPixelHeight() here anyway... prefered length might change with given breadth
 
@@ -569,64 +710,48 @@ void WgPackPanel::_refreshChildGeo()
 	{
 		WgCoord pos = contentRect.pos();
 		WgPackHook * p = FirstHook();
-        WgRect geo;
-		while( p )
-		{
-			if( p->IsVisible() )
-			{
-				geo.x = pos.x;
-				geo.y = pos.y;
-				if( m_bHorizontal )
-				{
-					geo.w = p->m_preferredSize.w;
-					geo.h = size.h;
-					pos.x += p->m_preferredSize.w;
-				}
-				else
-				{
-					geo.w = size.w;
-					geo.h = p->m_preferredSize.h;
-					pos.y += p->m_preferredSize.h;
-				}
-				geo -= p->m_padding.scale(m_scale);
-            
-				if( geo != p->m_geo )
-				{
-					_requestRender(geo);
-        
-					int oldW = p->m_geo.w;
-					int oldH = p->m_geo.h;
-					p->m_geo = geo;
-					if( geo.w != oldW || geo.h != oldH )
-						p->m_pWidget->_onNewSize( geo.size() );
+        WgRect * pGeo = pChildGeos;
+
+        if( m_bHorizontal )
+        {
+            while( p )
+            {
+                pGeo->x = pos.x;
+                pGeo->y = pos.y;
                 
-				}
-			}
-			else
-			{
-				p->m_geo.x = pos.x;
-				p->m_geo.y = pos.y;
-				if( m_bHorizontal )
-				{
-					geo.w = 0;
-					geo.h = size.h;
-				}
-				else
-				{
-					geo.w = size.w;
-					geo.h = 0;
-				}
-                
-                if( p->m_geo.w != 0 && p->m_geo.h != 0 )
+                if( p->IsVisible() )
                 {
-                   _requestRender(p->m_geo);
-                    p->m_geo.w = geo.w;
-                    p->m_geo.h = geo.h;
-                    p->m_pWidget->_onNewSize( geo.size() );
+                    pGeo->w = p->m_preferredSize.w;
+                    pos.x += p->m_preferredSize.w;
                 }
-			}
-			p = p->Next();
-		}
+                else
+                    pGeo->w = 0;
+
+                p = p->Next();
+                pGeo++;
+            }
+        }
+        else
+        {
+            while( p )
+            {
+                pGeo->x = pos.x;
+                pGeo->y = pos.y;
+                
+                if( p->IsVisible() )
+                {
+                    pGeo->h = p->m_preferredSize.h;
+                    pos.y += p->m_preferredSize.h;
+                }
+                else
+                    pGeo->h = 0;
+
+                p = p->Next();
+                pGeo++;
+            }
+
+        }
+        
 	}
 	else
 	{
@@ -645,70 +770,187 @@ void WgPackPanel::_refreshChildGeo()
 		WgSizeBrokerItem * pI = pItemArea;
 
 		WgCoord pos = contentRect.pos();
-		WgRect geo;
-		while( pH )
-		{
-			if( pH->IsVisible() )
-			{
-				geo.x = pos.x;
-				geo.y = pos.y;
-				if( m_bHorizontal )
-				{	
-					geo.w = pI->output;
-					geo.h = size.h;
-					pos.x += pI->output;
-				}
-				else
-				{	
-					geo.w = size.w;
-					geo.h = pI->output;
-					pos.y += pI->output;
-				}
-				geo -= pH->m_padding.scale(m_scale);
-			
-				if( geo != pH->m_geo )
-				{					
-					_requestRender(geo);
-					_requestRender(pH->m_geo);
+        WgRect * pGeo = pChildGeos;
 
-					int oldW = pH->m_geo.w;
-					int oldH = pH->m_geo.h;
-					pH->m_geo = geo;
-					if( geo.w != oldW || geo.h != oldH )
-						pH->m_pWidget->_onNewSize( geo.size() );
-				}
-				pI++;
-			}
-			else
-			{
-				pH->m_geo.x = pos.x;
-				pH->m_geo.y = pos.y;
-				if( m_bHorizontal )
-				{
-					geo.w = 0;
-					geo.h = size.h;
-				}
-				else
-				{
-					geo.w = size.w;
-					geo.h = 0;
-				}
-                
-                if( pH->m_geo.w != 0 && pH->m_geo.h != 0 )
+        if( m_bHorizontal )
+        {
+            while( pH )
+            {
+                pGeo->x = pos.x;
+                pGeo->y = pos.y;
+                if( pH->IsVisible() )
                 {
-                    _requestRender(pH->m_geo);
-                    pH->m_geo.w = geo.w;
-                    pH->m_geo.h = geo.h;
-                    pH->m_pWidget->_onNewSize( geo.size() );
+                    pGeo->w = pI->output;
+                    pos.x += pI->output;
+                    pI++;
                 }
-			}
-			pH = pH->Next();
-		}
+                else
+                    pGeo->w = 0;
+
+                pH = pH->Next();
+                pGeo++;
+            }
+        }
+        else
+        {
+            while( pH )
+            {
+                pGeo->x = pos.x;
+                pGeo->y = pos.y;
+                if( pH->IsVisible() )
+                {
+                    pGeo->h = pI->output;
+                    pos.y += pI->output;
+                    pI++;
+                }
+                else
+                    pGeo->h = 0;
+
+                pH = pH->Next();
+                pGeo++;
+            }
+        }
 		
 		// Release SizeBroker array
 		
 		WgBase::MemStackRelease(arrayBytes);
 	}
+ 
+    // Make adjustments to breadth according to mode and possibly adjust position.
+    
+    if( m_bBaselineMode )
+    {
+        WgPackHook * p = FirstHook();
+        WgRect * pGeo = pChildGeos;
+
+        int baseLineOfs = 0;
+        
+        if( m_bHorizontal )
+        {
+            while( p )
+            {
+                if( pGeo->w == p->m_preferredSize.w )
+                    pGeo->h = p->m_preferredSize.h;
+                else
+                    pGeo->h = p->_paddedMatchingPixelHeight(pGeo->w, m_scale);
+
+                int ascend = pGeo->h * p->m_baseline;
+                if( ascend > baseLineOfs )
+                    baseLineOfs = ascend;
+                
+                p = p->Next();
+                pGeo++;
+            }
+            
+            p = FirstHook();
+            pGeo = pChildGeos;
+            while( p )
+            {
+                // Todo adjust y,h so that it fits.
+                
+                int ascend = pGeo->h * p->m_baseline;
+                pGeo->y = baseLineOfs - ascend;
+                p = p->Next();
+                pGeo++;
+            }
+        }
+        else
+        {
+            while( p )
+            {
+                if( pGeo->h == p->m_preferredSize.h )
+                    pGeo->w = p->m_preferredSize.w;
+                else
+                    pGeo->w = p->_paddedMatchingPixelWidth(pGeo->h, m_scale);
+
+                int ascend = pGeo->w * p->m_baseline;
+                if( ascend > baseLineOfs )
+                    baseLineOfs = ascend;
+
+                p = p->Next();
+                pGeo++;
+            }
+            
+            p = FirstHook();
+            pGeo = pChildGeos;
+            while( p )
+            {
+                // Todo adjust x,w so that it fits.
+                
+                int ascend = pGeo->w * p->m_baseline;
+                pGeo->x = baseLineOfs - ascend;
+                p = p->Next();
+                pGeo++;
+            }
+        }
+
+        m_baseline = baseLineOfs/(float) givenBreadth;
+    }
+    else
+    {
+        WgPackHook * p = FirstHook();
+        WgRect * pGeo = pChildGeos;
+
+        if( m_bHorizontal )
+        {
+            while( p )
+            {
+                pGeo->h = size.h;
+                p = p->Next();
+                pGeo++;
+            }
+        }
+        else
+        {
+            while( p )
+            {
+                pGeo->w = size.w;
+                p = p->Next();
+                pGeo++;
+            }
+        }
+    }
+    
+    
+    // Update childrens real geo
+    
+    WgPackHook * p = FirstHook();
+    WgRect * pNewGeo = pChildGeos;
+    
+    while( p )
+    {
+        if( p->IsVisible() )
+        {
+            WgRect geo = (* pNewGeo) - p->m_padding.scale(m_scale);
+            if( geo != p->m_geo )
+            {
+                _requestRender(p->m_geo);
+                _requestRender(geo);
+
+                int oldW = p->m_geo.w;
+                int oldH = p->m_geo.h;
+                p->m_geo = geo;
+                if( geo.w != oldW || geo.h != oldH )
+                    p->m_pWidget->_onNewSize( geo.size() );
+            }
+        }
+        else
+        {
+            if( p->m_geo.w != 0 && p->m_geo.h != 0 )
+            {
+                _requestRender(p->m_geo);
+                p->m_geo.w = pNewGeo->w;
+                p->m_geo.h = pNewGeo->h;
+                p->m_pWidget->_onNewSize( pNewGeo->size() );
+            }
+        }
+        p = p->Next();
+        pNewGeo++;
+    }
+ 
+    // Release temporary memory
+    
+    WgBase::MemStackRelease(childGeosBytes);
 }
 
 //____ _populateSizeBrokerArray() ___________________________________________

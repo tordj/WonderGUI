@@ -37,8 +37,8 @@
 #include <wg_surface_soft.h>
 #include <wg_surfacefactory_soft.h>
 #include <wg_glsurface.h>
-#include <wg_gfxdevice_soft.h>
-#include <wg_glgfxdevice.h>
+#include <wg3_softgfxdevice.h>
+#include <wg3_glgfxdevice.h>
 #include <wg_surfacefactory_soft.h>
 #include "sdl_wglib.h"
 #include <wg_boxskin.h>
@@ -68,13 +68,13 @@ void manuBlendTest();
 
 
 WgSurfaceFactory *	g_pSurfaceFactory = nullptr;
-WgGfxDevice *		g_pGfxDevice = nullptr;
+wg::GfxDevice_p		g_pGfxDevice = nullptr;
 
 
 extern std::ostream cout;
 
 bool			eventLoop( WgEventHandler * pHandler );
-WgRootPanel * 		setupGUI( WgGfxDevice * pDevice );
+WgRootPanel * 		setupGUI( wg::GfxDevice * pDevice );
 
 void cbInitDrag( const WgEvent::Event* _pEvent, WgWidget * pWidget );
 void cbDragWidget( const WgEvent::Event* _pEvent, WgWidget * pWidget );
@@ -212,7 +212,7 @@ int main ( int argc, char** argv )
 
 
 	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(width,height), type, (unsigned char *) pScreen->pixels, pScreen->pitch );
-	g_pGfxDevice = new WgGfxDeviceSoft( pCanvas );
+    g_pGfxDevice = wg::SoftGfxDevice::create( pCanvas->RealSurface() );
 
 	g_pSurfaceFactory = new WgSurfaceFactorySoft();
 #endif
@@ -538,7 +538,7 @@ int main ( int argc, char** argv )
 	// Exit WonderGUI
 
 	delete pRoot;
-	delete g_pGfxDevice;
+    g_pGfxDevice = nullptr;
 
 	WgBase::Exit();
 
@@ -570,6 +570,7 @@ void updateOscilloscope( WgOscilloscope * pOsc, int ofs, float freq, float ampli
 
 void manuBlendTest()
 {
+/*
     WgSurfaceSoft * pCanvas = new WgSurfaceSoft({ 2800,2800 }, WgPixelType::BGR_8);
 
 	WgSurfaceFactory * pFactory = new WgSurfaceFactorySoft();
@@ -634,12 +635,13 @@ void manuBlendTest()
 	delete pBackImg;
 	delete pFrontImg;
 	delete pDevice;
+*/
 }
 
 
 //____ setupGUI() ______________________________________________________________
 
-WgRootPanel * setupGUI(WgGfxDevice * pDevice)
+WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 {
 	WgResDB * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", *g_pSurfaceFactory);
 	if (!pDB)

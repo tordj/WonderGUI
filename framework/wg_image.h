@@ -49,6 +49,10 @@ public:
 	void			SetSource( const WgBlocksetPtr& pBlockset );
 	WgBlocksetPtr	GetSource() const { return m_pGfx; }
 
+    void            SetImage( WgSurface * pSurface, bool bDeleteWhenDone );
+    WgSurface*      GetImage() const { return m_pImage; }
+
+    
 	WgSize			PreferredPixelSize() const;
 
 	int				MatchingPixelHeight(int pixelWidth) const;
@@ -58,7 +62,7 @@ public:
 protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onEnable();
 	void	_onDisable();
@@ -68,6 +72,9 @@ protected:
 private:
 
 	WgBlocksetPtr	m_pGfx;
+    
+    WgSurface *     m_pImage = nullptr;
+    bool            m_bDeleteImageWhenDone = false;
 };
 
 

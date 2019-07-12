@@ -31,7 +31,6 @@
 
 class WgWidgetHolder;
 class WgContainer;
-class WgGfxDevice;
 class WgWidget;
 class WgRootPanel;
 class WgRectLink;

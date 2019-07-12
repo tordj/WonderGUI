@@ -38,10 +38,10 @@ WgColorSkin::WgColorSkin( WgColor col )
 }
 
 	
-void WgColorSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const
+void WgColorSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const
 {
     
-	pDevice->Fill( WgRect(_clip, _canvas), m_color );
+	pDevice->fill(_canvas, m_color );
 }
 	
 bool WgColorSkin::IsOpaque() const

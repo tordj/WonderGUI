@@ -95,6 +95,16 @@ void WgBase::Exit()
 	s_pData = 0;
 }
 
+//____ SetContext() __________________________________________________________
+
+void WgBase::SetContext( const WgContext& context )
+{
+    assert( s_pData != 0 );
+
+    s_pData->context = context;
+}
+
+
 //____ AllocWeakPtrHub() ______________________________________________________
 
 WgWeakPtrHub * WgBase::AllocWeakPtrHub()

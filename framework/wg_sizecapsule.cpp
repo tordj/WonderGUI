@@ -54,11 +54,10 @@ const char * WgSizeCapsule::GetClass()
 
 void WgSizeCapsule::SetPreferredSize( WgSize _size )
 {
-    
-	if( _size != m_pixelsPreferred )
+	if( _size != m_pointsPreferred )
 	{
 		m_pointsPreferred = _size;
-        m_pixelsPreferred = WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
+		m_pixelsPreferred = WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
 		_requestResize();
 	}
 }

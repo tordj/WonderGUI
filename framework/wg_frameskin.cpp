@@ -39,19 +39,19 @@ WgFrameSkin::WgFrameSkin( int thickness, WgColor col )
 }
 
 	
-void WgFrameSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const
+void WgFrameSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const
 {
 	int thickness = m_thickness * scale >> WG_SCALE_BINALS;
 
-    WgRect top( WgRect(_canvas.x, _canvas.y, _canvas.w, thickness), _clip );
-    WgRect left( WgRect(_canvas.x, _canvas.y+thickness, thickness, _canvas.h - thickness*2), _clip );
-    WgRect right( WgRect(_canvas.x + _canvas.w - thickness, _canvas.y+thickness, thickness, _canvas.h - thickness*2), _clip );
-    WgRect bottom( WgRect(_canvas.x, _canvas.y + _canvas.h - thickness, _canvas.w, thickness), _clip );
+    WgRect top( _canvas.x, _canvas.y, _canvas.w, thickness);
+    WgRect left( _canvas.x, _canvas.y+thickness, thickness, _canvas.h - thickness*2);
+    WgRect right( _canvas.x + _canvas.w - thickness, _canvas.y+thickness, thickness, _canvas.h - thickness*2);
+    WgRect bottom( _canvas.x, _canvas.y + _canvas.h - thickness, _canvas.w, thickness);
     
-	pDevice->Fill( top, m_color );
-	pDevice->Fill( left, m_color );
-	pDevice->Fill( right, m_color );
-	pDevice->Fill( bottom, m_color );
+	pDevice->fill( top, m_color );
+	pDevice->fill( left, m_color );
+	pDevice->fill( right, m_color );
+	pDevice->fill( bottom, m_color );
 }
 	
 bool WgFrameSkin::IsOpaque() const

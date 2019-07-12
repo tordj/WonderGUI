@@ -108,7 +108,7 @@ public:
 	void				SetMetaData( void * pData, int byts );
 	void				ClearMetaData();
 
-    
+    wg::Surface *       RealSurface() const { return m_pRealSurface; }
     
 	
 	// Softube specific...

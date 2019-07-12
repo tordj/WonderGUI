@@ -39,9 +39,15 @@
 #	include <wg_skin.h>
 #endif
 
+#ifndef WG_PATCHES_DOT_H
+#    include <wg_patches.h>
+#endif
+
 
 #include <functional>
 #include <vector>
+
+class WgSurfaceFactory;
 
 //____ WgChart ____________________________________________________________
 
@@ -116,6 +122,10 @@ public:
 	void	SetSampleRangeResponder(std::function<void(WgChart * pWidget, float firstSample, float lastSample)> func);	// Called when widgets sample range has changed.
 	void	SetValueRangeResponder(std::function<void(WgChart * pWidget, float topValue, float bottomValue)> func);		// Called when widgets value range has changed.
 
+    bool    SetBitmapCaching( int beginWaveId, int endWaveId, WgSurfaceFactory * pFactory );
+    void    ClearBitmapCaching();
+
+    
 	void	SetScale(int scale) { _setScale(scale); }
 
 
@@ -161,9 +171,12 @@ protected:
 		WgTextpropPtr		pTextStyle;
 	};
 
+    void    _updateBitmapCache( wg::GfxDevice * pDevice );
+    void    _renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& waveCanvas );
 
+    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onNewSize( const WgSize& size );
 	void	_setScale( int scale );
@@ -175,7 +188,10 @@ protected:
 
 	void	_requestRenderOnNewSamples(	int begOrgSamples, int nbOrgTopSamples, int * pOrgTopSamples, int nbOrgBottomSamples, int * pOrgBottomSamples,
 										int begNewSamples, int nbNewTopSamples, int * pNewTopSamples, int nbNewBottomSamples, int * pNewBottomSamples,
-										int orgDefaultSample, int newDefaultSample, float maxLineThickness );
+										int orgDefaultSample, int newDefaultSample, float maxLineThickness, bool bInCache );
+    void    _requestRenderInCache();
+    void    _requestRenderInCache( const WgRect& rect );
+
 	bool	_updateDynamics();
 	WgCoord	_placeLabel(WgCoord startPoint, WgOrigo alignment, WgCoord labelOffset, WgSize labelSize ) const;
 
@@ -219,6 +235,13 @@ private:
 	std::function<void(WgChart * pWidget, WgSize newSize)>	m_resizeResponder;
 	std::function<void(WgChart * pWidget, float firstSample, float lastSample)> m_sampleRangeResponder;
 	std::function<void(WgChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
+
+    WgSurfaceFactory *  m_pSurfaceFactory = nullptr;
+    WgSurface *         m_pCacheBitmap = nullptr;
+    WgPatches           m_cacheDirt;
+    
+    int                 m_cacheFirst = 0;
+    int                 m_cacheLast = 0;
 };
 
 

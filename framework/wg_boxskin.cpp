@@ -25,6 +25,8 @@
 #include <wg_geo.h>
 #include <wg_util.h>
 
+#include <algorithm>
+
 #ifdef SOFTUBE_USE_PACE_FUSION
 #include "PaceFusion.h"
 #endif
@@ -152,30 +154,30 @@ void WgBoxSkin::SetStateColor( WgStateEnum state, WgColor color, WgColor frameCo
 #ifdef SOFTUBE_USE_PACE_FUSION
 PACE_FUSION_NO_USER_CALLBACK
 #endif
-void WgBoxSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const
+void WgBoxSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const
 {
 	int i = WgUtil::_stateToIndex(state);
 	if( m_frame.width() + m_frame.height() == 0 )
 	{
-		pDevice->Fill( _clip, m_color[i] );
+		pDevice->fill( _canvas, m_color[i] );
 	}
 	else
 	{
 		WgBorders frame(m_frame.top *scale >> WG_SCALE_BINALS, m_frame.right *scale >> WG_SCALE_BINALS, m_frame.bottom *scale >> WG_SCALE_BINALS, m_frame.left *scale >> WG_SCALE_BINALS);
 
-		WgRect top( WgRect(_canvas.x, _canvas.y, _canvas.w, frame.top), _clip );
-		WgRect left( WgRect(_canvas.x, _canvas.y+frame.top, frame.left, _canvas.h - frame.height()), _clip );
-		WgRect right( WgRect(_canvas.x + _canvas.w - frame.right, _canvas.y+frame.top, frame.right, _canvas.h - frame.height()), _clip );
-		WgRect bottom( WgRect(_canvas.x, _canvas.y + _canvas.h - frame.bottom, _canvas.w, frame.bottom), _clip );
-		WgRect center( _canvas - frame, _clip );
+		WgRect top(_canvas.x, _canvas.y, _canvas.w, frame.top);
+		WgRect left(_canvas.x, _canvas.y+frame.top, frame.left, _canvas.h - frame.height());
+		WgRect right( _canvas.x + _canvas.w - frame.right, _canvas.y+frame.top, frame.right, _canvas.h - frame.height());
+		WgRect bottom( _canvas.x, _canvas.y + _canvas.h - frame.bottom, _canvas.w, frame.bottom);
+		WgRect center( _canvas - frame );
 
-		pDevice->Fill( top, m_frameColor[i] );
-		pDevice->Fill( left, m_frameColor[i] );
-		pDevice->Fill( right, m_frameColor[i] );
-		pDevice->Fill( bottom, m_frameColor[i] );
+		pDevice->fill( top, m_frameColor[i] );
+		pDevice->fill( left, m_frameColor[i] );
+		pDevice->fill( right, m_frameColor[i] );
+		pDevice->fill( bottom, m_frameColor[i] );
 
 		if( center.w > 0 || center.h > 0 )
-			pDevice->Fill( center, m_color[i] );
+			pDevice->fill( center, m_color[i] );
 	}
 }
 

@@ -318,7 +318,7 @@ void WgVolumeMeter::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		break;
 
 		default:
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
 		break;
 	}
 }
@@ -326,7 +326,7 @@ void WgVolumeMeter::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 //____ _onRender() _____________________________________________________________________
 
-void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	int p = m_iSidePadding;
 	
@@ -360,29 +360,24 @@ void WgVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 			stepY = 0.f;
 			break;
 	}
-	
-	WgRectF	clip( _clip );
+  
+    if( ledRect.w <= 0.f || ledRect.h <= 0.f )
+        return;
     
 	for( int i = 0 ; i < m_nLEDs ; i++ )
 	{
-   
-		WgRectF rect(ledRect, clip);
-		
-		if( rect.w > 0.f && rect.h > 0.f )
-		{
-			int section;
+        int section;
 
-			if( i < m_nSectionLEDs[0] )
-				section = 0;
-			else if( i < m_nSectionLEDs[0] + m_nSectionLEDs[1] )
-				section = 1;
-			else
-				section = 2;
-					
-			WgColor color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
+        if( i < m_nSectionLEDs[0] )
+            section = 0;
+        else if( i < m_nSectionLEDs[0] + m_nSectionLEDs[1] )
+            section = 1;
+        else
+            section = 2;
+        
+        WgColor color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
-			pDevice->FillSubPixel( rect, color);
-        }
+        pDevice->fill( ledRect, color);
 
 		ledRect.x += stepX;
 		ledRect.y += stepY;

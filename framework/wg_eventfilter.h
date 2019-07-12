@@ -167,16 +167,6 @@ public:
 	static WgEventFilter	AnimationUpdate();
 	static WgEventFilter	AnimationUpdate( WgAnimPlayer * pWidget );
 
-	static WgEventFilter	TabSelect();
-	static WgEventFilter	TabSelect( WgTablist * pWidget );
-	static WgEventFilter	TabSelect( WgTablist * pWidget, int id );
-
-	static WgEventFilter	TabPress();
-	static WgEventFilter	TabPress( int button );
-	static WgEventFilter	TabPress( WgTablist * pWidget );
-	static WgEventFilter	TabPress( WgTablist * pWidget, int button );
-	static WgEventFilter	TabPress( WgTablist * pWidget, int button, int id );
-
 	static WgEventFilter	EditvalueModify();
 	static WgEventFilter	EditvalueModify( WgValueEditor * pWidget );
 

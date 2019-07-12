@@ -14,7 +14,8 @@ cd ../../WonderGUI/src
 cp wondergui.h	../../wg2/_kato_wg3/imports
 
 cd base
-cp wg_blob.* wg_color.* wg_enumextras.* wg_geo.* wg_gfxdevice.* \
+cp wg_object.h \
+   wg_blob.* wg_color.* wg_enumextras.* wg_geo.* wg_gfxdevice.* \
    wg_nullgfxdevice.* \
    wg_pointers.* \
    wg_stronginterfaceptr.* \
@@ -33,6 +34,7 @@ cp wg_interface.* \
 
 cd ../gfxdevices/opengl
 cp wg_glgfxdevice.* \
+   wg_glshaders.* \
    wg_glsurface.* \
    wg_glsurfacefactory.* \
    ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl

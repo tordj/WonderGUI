@@ -25,6 +25,8 @@
 #include <wg_geo.h>
 #include <wg_util.h>
 
+#include <algorithm>
+
 
 //____ create() _______________________________________________________________
 
@@ -67,10 +69,10 @@ WgBlockSkinPtr WgBlockSkin::CreateEnable( WgSurface * pSurface, WgSize blockSize
 
 WgBlockSkinPtr WgBlockSkin::CreateClickable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
-	if( !pSurface || blockFrame.width() >= blockGeo.w || blockFrame.height() >= blockGeo.h ||
-		pSurface->PixelSize().w < blockStartOfs.x + blockGeo.w + blockPitch.w*3 ||
-		pSurface->PixelSize().h < blockStartOfs.y + blockGeo.h + blockPitch.h*3 )
-		return 0;
+	// if( !pSurface || blockFrame.width() >= blockGeo.w || blockFrame.height() >= blockGeo.h ||
+	// 	pSurface->PixelSize().w < blockStartOfs.x + blockGeo.w + blockPitch.w*3 ||
+	// 	pSurface->PixelSize().h < blockStartOfs.y + blockGeo.h + blockPitch.h*3 )
+	// 	return 0;
 
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -503,7 +505,7 @@ void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo sectio
 
 //____ render() _______________________________________________________________
 
-void WgBlockSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const
+void WgBlockSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const
 {
 	if( !m_pSurface )
 		return;
@@ -515,83 +517,31 @@ void WgBlockSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _c
 	WgColor oldTint;
 	if (m_tintColor != WgColor::White)
 	{
-		oldTint = pDevice->GetTintColor();
-		pDevice->SetTintColor(oldTint*m_tintColor);
+		oldTint = pDevice->tintColor();
+		pDevice->setTintColor(oldTint*m_tintColor);
 	}
 
 	WgBlendMode oldBlendMode;
 	if (m_bHasBlendMode)
 	{
-		oldBlendMode = pDevice->GetBlendMode();
-		pDevice->SetBlendMode(m_blendMode);
+		oldBlendMode = pDevice->blendMode();
+		pDevice->setBlendMode(m_blendMode);
 	}
 
     const WgRect&	src		= WgRect(pState->ofs, m_dimensions);
 
-	// Shortcuts & optimizations for common special cases.
 
-	if( src.w == _canvas.w && src.h == _canvas.h && scale == m_scale )
-	{
-		pDevice->ClipBlit( _clip, m_pSurface, src, _canvas.pos().x, _canvas.pos().y);
-		goto cleanup;
-	}
+    const WgBorders&    sourceBorders = m_frame.scale(m_scale);
+    const WgBorders     canvasBorders = m_frame.scale(scale);
 
-    if( m_frame.left + m_frame.top + m_frame.right + m_frame.bottom == 0 )
-	{
-        pDevice->ClipStretchBlit( _clip, m_pSurface, src, _canvas );
-		goto cleanup;
-	}
-	{
-		// Need local context for declaration to allow the gotos above to jump over them.
-
-		const WgBorders&    sourceBorders = m_frame.scale(m_scale);
-		const WgBorders     canvasBorders = m_frame.scale(scale);
-    
-    
-		if( src.w == _canvas.w )
-		{
-			pDevice->ClipBlitVertStretchBar( _clip, m_pSurface, src, sourceBorders, _canvas, canvasBorders );
-			goto cleanup;
-		}
-
-		// Render upper row (top-left corner, top stretch area and top-right corner)
-
-		if( canvasBorders.top > 0 )
-		{
-			WgRect sourceRect( src.x, src.y, src.w, sourceBorders.top );
-			WgRect destRect( _canvas.x, _canvas.y, _canvas.w, canvasBorders.top );
-
-			pDevice->ClipBlitHorrStretchBar( _clip, m_pSurface, sourceRect, sourceBorders, destRect, canvasBorders );
-		}
-
-		// Render mid row (left and right stretch area and middle section)
-
-		if( _canvas.h - canvasBorders.height() > 0 )
-		{
-			WgRect sourceRect( src.x, src.y + sourceBorders.top, src.w, src.h - sourceBorders.height() );
-			WgRect destRect( _canvas.x, _canvas.y + canvasBorders.top, _canvas.w, _canvas.h - canvasBorders.height() );
-
-			pDevice->ClipBlitHorrStretchBar( _clip, m_pSurface, sourceRect, sourceBorders, destRect, canvasBorders );
-		}
-
-		// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
-
-		if( canvasBorders.bottom > 0 )
-		{
-			WgRect sourceRect( src.x, src.y + src.h - sourceBorders.bottom, src.w, sourceBorders.bottom );
-			WgRect destRect( _canvas.x, _canvas.y + _canvas.h - canvasBorders.bottom, _canvas.w, canvasBorders.bottom );
-
-			pDevice->ClipBlitHorrStretchBar( _clip, m_pSurface, sourceRect, sourceBorders, destRect, canvasBorders );
-		}
-	}
-
-cleanup:
+    pDevice->setBlitSource(m_pSurface->RealSurface());
+    pDevice->blitNinePatch(_canvas, canvasBorders, src, sourceBorders);
 
 	if (m_bHasBlendMode)
-		pDevice->SetBlendMode(oldBlendMode);
+		pDevice->setBlendMode(oldBlendMode);
 
 	if (m_tintColor != WgColor::White)
-		pDevice->SetTintColor(oldTint);
+		pDevice->setTintColor(oldTint);
 }
 
 

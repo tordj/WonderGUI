@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <algorithm>
+#include <cmath>
 
 #include <wg3_gfxdevice.h>
 #include <wg3_geo.h>
@@ -29,11 +30,11 @@
 
 using namespace std;
 
-namespace wg 
+namespace wg
 {
-	
+
 	const char GfxDevice::CLASSNAME[] = {"GfxDevice"};
-	
+
 	int GfxDevice::s_gfxDeviceCount = 0;
 	int *	GfxDevice::s_pCurveTab = nullptr;
 
@@ -81,13 +82,13 @@ namespace wg
 															{ 0,1,1,0 } };			// Rot270FlipY
 */
 
-	
+
 
 
 
 
 	//____ Constructor _____________________________________________________________
-	
+
 	GfxDevice::GfxDevice( Size canvasSize )
 	{
 		m_tintColor 		= Color(255,255,255);
@@ -104,7 +105,7 @@ namespace wg
 		}
 		s_gfxDeviceCount++;
 	}
-	
+
 	//____ Destructor _________________________________________________________
 
 	GfxDevice::~GfxDevice()
@@ -118,29 +119,29 @@ namespace wg
 
 
 	//____ isInstanceOf() _________________________________________________________
-	
+
 	bool GfxDevice::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
-	
+
 		return Object::isInstanceOf(pClassName);
 	}
-	
+
 	//____ className() ____________________________________________________________
-	
+
 	const char * GfxDevice::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
-	
+
 	//____ cast() _________________________________________________________________
-	
+
 	GfxDevice_p GfxDevice::cast( Object * pObject )
 	{
 		if( pObject && pObject->isInstanceOf(CLASSNAME) )
 			return GfxDevice_p( static_cast<GfxDevice*>(pObject) );
-	
+
 		return 0;
 	}
 
@@ -151,9 +152,9 @@ namespace wg
 		if (nRectangles == 0)
 		{
 			m_clipCanvas = m_canvasSize;
-			m_clipBounds = m_canvasSize;
+            m_clipBounds = {0,0,0,0};
 			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
+			m_nClipRects = 0;
 			return true;
 		}
 
@@ -169,7 +170,7 @@ namespace wg
 		m_clipBounds = bounds;
 		return true;
 	}
-	
+
 	//____ clearClipList() __________________________________________________________
 
 	void GfxDevice::clearClipList()
@@ -181,24 +182,24 @@ namespace wg
 	}
 
 	//____ setTintColor() __________________________________________________________
-	
+
 	void GfxDevice::setTintColor( Color color )
 	{
 		m_tintColor = color;
 	}
-	
+
 	//____ setBlendMode() __________________________________________________________
-	
+
 	bool GfxDevice::setBlendMode( BlendMode blendMode )
 	{
 		if (blendMode == BlendMode::Undefined)
 			m_blendMode = BlendMode::Blend;
 		else
 			m_blendMode = blendMode;
-			
+
 		return true;
 	}
-	
+
 	//____ setBlitSource() ____________________________________________________
 
 	bool GfxDevice::setBlitSource(Surface * pSource)
@@ -208,14 +209,14 @@ namespace wg
 	}
 
 	//____ beginRender() ___________________________________________________________
-	
+
 	bool GfxDevice::beginRender()
 	{
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
-	
+
 	//____ endRender() ________________________________________________________
-	
+
 	bool GfxDevice::endRender()
 	{
 		return true;	// Assumed to be ok if device doesn't have its own method.
@@ -259,7 +260,7 @@ namespace wg
 
 
 	//____ blit() __________________________________________________________________
-	
+
 	void GfxDevice::blit(Coord dest)
 	{
 		assert(m_pBlitSource != nullptr);
@@ -310,14 +311,14 @@ namespace wg
 
 
 	//____ stretchBlit() ___________________________________________________________
-	
+
 	void GfxDevice::stretchBlit(const Rect& dest )
 	{
 		assert(m_pBlitSource != nullptr);
 
 		stretchBlit(dest, Rect(0, 0, m_pBlitSource->size()) );
 	}
-	
+
 	void GfxDevice::stretchBlit(const Rect& dest, const Rect& _src )
 	{
 		assert(m_pBlitSource != nullptr);
@@ -346,7 +347,7 @@ namespace wg
 
 		transformBlit(dest, { src.x, src.y }, mtx);
 	}
-	
+
 	void GfxDevice::stretchBlit(const Rect& dest, const RectF& src)
 	{
 		assert(m_pBlitSource != nullptr);
@@ -372,7 +373,7 @@ namespace wg
 	}
 
 	//____ stretchFlipBlit() _____________________________________________________
-	
+
 	void GfxDevice::stretchFlipBlit(const Rect& dest, GfxFlip flip)
 	{
 		assert(m_pBlitSource != nullptr);
@@ -437,7 +438,7 @@ namespace wg
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, { src.x,src.y }, mtx);
+		transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -471,7 +472,7 @@ namespace wg
 		transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
-	
+
 	//____ blitNinePatch() ________________________________________________
 
 	void GfxDevice::blitNinePatch(const Rect& dstRect, const Border& dstFrame, const Rect& srcRect, const Border& srcFrame)
@@ -486,7 +487,7 @@ namespace wg
 
 		if (srcFrame.isEmpty() || dstFrame.isEmpty())
 		{
-			stretchBlit(dstRect.pos(), srcRect);
+			stretchBlit(dstRect, srcRect);
 			return;
 		}
 
@@ -662,14 +663,14 @@ namespace wg
 
 			for (int i = startColumn; i <= length + startColumn; i++)
 			{
-				pEdges[0] = pTopBorderTrace[i * 2];
+                if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+                    swap(pTopBorderTrace, pBottomBorderTrace);
+
+                pEdges[0] = pTopBorderTrace[i * 2];
 				pEdges[1] = pTopBorderTrace[i * 2 + 1];
 
 				pEdges[2] = pBottomBorderTrace[i * 2];
 				pEdges[3] = pBottomBorderTrace[i * 2 + 1];
-
-				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
-					swap(pTopBorderTrace, pBottomBorderTrace);
 
 				if (pEdges[2] < pEdges[1])
 				{
@@ -681,14 +682,14 @@ namespace wg
 				pEdges += 4;
 			}
 
-			// Render the segments 
+			// Render the segments
 
 			Color	col[5];
 
 			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
-			col[3] = pBottomBorder->color;
+			col[3] = pTopBorder->color;
 			col[4] = Color::Transparent;
 
 			transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
@@ -726,7 +727,7 @@ namespace wg
 				pEdges += 5;
 			}
 
-			// Render the segments 
+			// Render the segments
 
 			Color	col[6];
 
@@ -824,8 +825,8 @@ namespace wg
 				int xEnd = (centerOfs + radiusX[edge]) >> 8;				// Last pixel-edge inside curve.
 
 
-				int curveInc = (int)(((int64_t)65536) * 256 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
-				int curvePos = (((radiusX[edge] - centerOfs) & 0xFF) * ((int64_t)curveInc)) >> 8;
+				int curveInc = int(((int64_t)65536) * 256 * (c_nCurveTabEntries - 1) / radiusX[edge]); // Keep as many decimals as possible, this is important!
+				int curvePos = int((((radiusX[edge] - centerOfs) & 0xFF) * ((int64_t)curveInc)) >> 8);
 
 				if (clipLeft > 0)
 				{
@@ -960,9 +961,9 @@ namespace wg
 		int nOldClipRects = m_nClipRects;
 
 		setClipList(nTopClips, pTopClips);
-		drawSegments(outerRect, 5, col, samplePoints, pBuffer, 4);
+        drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer, 4);
 		setClipList(nBottomClips, pBottomClips);
-		drawSegments(outerRect, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
+		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
 		setClipList(nOldClipRects, pOldClipRects);
 
 		// Free temporary work memory
@@ -988,27 +989,27 @@ namespace wg
 
 
 	//____ blitHorrBar() ______________________________________________________
-	
+
 	void GfxDevice::blitHorrBar( 	  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
 		/*
 			This can be optimized by handling clipping directly instead of calling clipBlit().
 		*/
-	
+
 		// Blit left edge
-	
+
 		Rect	r( _src.x, _src.y, _borders.left, _src.h );
 		blit( dest, r );
-	
+
 		_len -= _borders.width();			// Remove left and right edges from len.
 		dest.x += _borders.left;
-	
+
 		// Blit tiling part
-	
+
 		r.x += _borders.left;
 		r.w = _src.w - _borders.width();
-	
+
 		if( _bTile )
 		{
 			while( _len > r.w )
@@ -1029,36 +1030,36 @@ namespace wg
 			stretchBlit( Rect(dest, _len, r.h), r );
 			dest.x += _len;
 		}
-	
+
 		// Blit right edge
-	
+
 		r.x = _src.x + _src.w - _borders.right;
 		r.w = _borders.right;
 		blit( dest, r );
 	}
-	
+
 	//____ blitVertBar() ______________________________________________________
-	
+
 	void GfxDevice::blitVertBar(	  	const Rect& _src, const Border& _borders,
 									  	bool _bTile, Coord dest, int _len )
 	{
 		/*
 			This can be optimized by handling clipping directly instead of calling clipBlit().
 		*/
-	
+
 		// Blit top edge
-	
+
 		Rect	r( _src.x, _src.y, _src.w, _borders.top );
 		blit( dest, r );
-	
+
 		_len -= _borders.height();			// Remove top and bottom edges from len.
 		dest.y += _borders.top;
-	
+
 		// Blit tiling part
-	
+
 		r.y += _borders.top;
 		r.h = _src.h - _borders.height();
-	
+
 		if( _bTile )
 		{
 			while( _len > r.h )
@@ -1079,14 +1080,14 @@ namespace wg
 			stretchBlit( Rect(dest, r.w, _len), r );
 			dest.y += _len;
 		}
-	
+
 		// Blit bottom edge
-	
+
 		r.y = _src.y + _src.h - _borders.bottom;
 		r.h = _borders.bottom;
 		blit( dest, r );
 	}
-	
+
 	//____ _genCurveTab() ___________________________________________________________
 
 	void GfxDevice::_genCurveTab()

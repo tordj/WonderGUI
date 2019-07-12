@@ -88,7 +88,7 @@ public:
 protected:
 
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
@@ -113,9 +113,7 @@ protected:
 	WgText			m_text;
 
 	WgBlocksetPtr	m_pIconGfx;
-
-	WgState			m_state;
-
+	
 	bool			m_bReturnPressed;
 
 	WgWidget *		m_pPopup = nullptr;

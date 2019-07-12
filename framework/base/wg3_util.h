@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -30,7 +30,6 @@
 namespace wg
 {
 
-	class Rect;
 	class Surface;
 
 	//____ Util _________________________________________________________________
@@ -51,23 +50,24 @@ namespace wg
 
 		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 
-	    inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
-
-		StateEnum	fallbackState(StateEnum state, int pass = 0);
+		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 
 		int			bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices);
 
 		inline int _stateToIndex(StateEnum state)
 		{
-			static int	s_stateToIndexTable[StateEnum_MaxValue + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 13 };
+			static int	s_stateToIndexTable[StateEnum_MaxValue + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11,
+																		0, 0, 0, 0, 12, 13, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0,
+																		16, 0, 0, 0, 0, 0, 0, 0, 17 };
 			return s_stateToIndexTable[(uint8_t)state];
 		}
 
 		inline StateEnum _indexToState(int index)
 		{
-			static StateEnum	s_indexToStateTable[StateEnum_Nb] = { StateEnum::Normal, StateEnum::Focused, StateEnum::Hovered, StateEnum::HoveredFocused, StateEnum::Pressed,
-				StateEnum::PressedFocused, StateEnum::Selected, StateEnum::SelectedFocused, StateEnum::SelectedHovered, StateEnum::SelectedHoveredFocused,
-				StateEnum::SelectedPressed, StateEnum::SelectedPressedFocused, StateEnum::Disabled, StateEnum::DisabledSelected };
+			static StateEnum	s_indexToStateTable[StateEnum_Nb] = { StateEnum::Normal, StateEnum::Focused, StateEnum::Hovered, StateEnum::HoveredFocused,
+				StateEnum::Pressed, StateEnum::PressedFocused, StateEnum::Selected, StateEnum::SelectedFocused, StateEnum::SelectedHovered,
+				StateEnum::SelectedHoveredFocused, StateEnum::SelectedPressed, StateEnum::SelectedPressedFocused, StateEnum::Targeted,
+				StateEnum::TargetedFocused, StateEnum::TargetedSelected, StateEnum::TargetedSelectedFocused, StateEnum::Disabled, StateEnum::DisabledSelected };
 
 			return s_indexToStateTable[index];
 		}

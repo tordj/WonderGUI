@@ -253,12 +253,12 @@ void WgTaborderCapsule::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler
 				}
 			}
 			else
-				pHandler->ForwardEvent(_pEvent);
+                WgCapsule::_onEvent(pEvent,pHandler);
 		}
 		break;
 
 		default:
-			pHandler->ForwardEvent(_pEvent);
+            WgCapsule::_onEvent(_pEvent,pHandler);
 			break;
 	}
 

@@ -594,9 +594,20 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 
 bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgWidget * pRecipient )
 {
-	if( !_pEvent || !pRecipient )
+	if( !_pEvent)
 		return false;
+    
+    const_cast<WgEvent::Event *>(_pEvent)->m_pForwardTo = pRecipient;
+    return true;
+}
 
+//____ _forwardEvent() __________________________________________________________
+
+bool WgEventHandler::_forwardEvent( const WgEvent::Event * _pEvent )
+{
+    WgWidget * pRecipient = _pEvent->m_pForwardTo.GetRealPtr();
+
+    
 	WgEvent::Event * pEvent = 0;
 
 	switch( _pEvent->Type() ) 
@@ -706,6 +717,8 @@ void WgEventHandler::_processEventQueue()
 {
 	while( !m_eventQueue.empty() )
 	{
+        bool    bEavesdropped = false;
+        
 		WgEvent::Event * pEvent = m_eventQueue.front();
 
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
@@ -716,7 +729,10 @@ void WgEventHandler::_processEventQueue()
 		{
 			WgWidget * pWidget = pEvent->Widget();
 			if( pWidget )
+            {
 				pWidget->_onEvent( pEvent, this );
+                bEavesdropped = _handleEavesdropping( pWidget, pEvent );
+            }
 		}
 		else
 		{
@@ -724,17 +740,43 @@ void WgEventHandler::_processEventQueue()
 		}
 		_processEventCallbacks( pEvent );
 
+        if( pEvent->m_pForwardTo  != nullptr )
+            _forwardEvent( pEvent );
+
+        if( pEvent->m_pFinalRecipient )
+            pEvent->m_pFinalRecipient->_onEvent( pEvent, this );
+        
 		m_eventQueue.pop_front();
 		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
 
 		// Delete event object unless its a BUTTON_PRESS, BUTTON_RELEASE or KEY_PRESS event for NO SPECIFIC WIDGET,
 		// which are kept in m_pLatestPressEvents, m_pLatestReleaseEvents and m_keysDown respectively.
 
-		if( pEvent->IsForWidget() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
-			pEvent->Type() != WG_EVENT_MOUSEBUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS) )
+		if( !bEavesdropped && (pEvent->IsForWidget() || (pEvent->Type() !=  WG_EVENT_MOUSEBUTTON_PRESS &&
+			pEvent->Type() != WG_EVENT_MOUSEBUTTON_RELEASE && pEvent->Type() != WG_EVENT_KEY_PRESS)) )
 			delete pEvent;
 	}
 }
+
+//____ _handleEavesdropping() ________________________________________________
+
+bool WgEventHandler::_handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent )
+{
+    auto pWidget = pReceiver->Parent();
+    while( pWidget )
+    {
+        if( pWidget->IsEavesdropping() )
+        {
+            //NOTE: We only support one eavesdropper for each event in WG2, since we don't reference count the eavesdropped message.
+            QueueEvent( new WgEvent::Eavesdrop( pWidget, pEvent ) );
+            return true;
+        }
+        pWidget = pWidget->Parent();
+    }
+    
+    return false;
+}
+
 
 //____ _postTickEvents() ______________________________________________________
 
@@ -989,6 +1031,16 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
+        
+        // Skip posting KEY_REPEAT for modifier keys
+        
+        int keyCode = pInfo->pEvent->TranslatedKeyCode();
+        if( keyCode == WG_KEY_SHIFT || keyCode == WG_KEY_CONTROL || keyCode == WG_KEY_ALT ||
+            keyCode == WG_KEY_SUPER || keyCode == WG_KEY_MAC_CONTROL || keyCode == WG_KEY_WIN_START )
+            continue;
+        
+        //
+        
 		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
 
 		int fraction = timePassed - keyDelay;

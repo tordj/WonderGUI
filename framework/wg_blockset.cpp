@@ -395,7 +395,7 @@ WgBorders WgBlockset::Padding( int scale ) const
 
 WgCoord WgBlockset::ContentShift( WgMode mode, int scale ) const
 {
-	return (WgCoord(m_contentShift[mode])*scale)/WG_SCALE_BASE;
+    return (WgCoord(m_contentShift[mode].x, m_contentShift[mode].y)*scale)/WG_SCALE_BASE;
 }
 
 

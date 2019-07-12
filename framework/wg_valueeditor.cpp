@@ -238,7 +238,7 @@ void WgValueEditor::_onRefresh( void )
 
 //____ _onRender() _____________________________________________________________
 
-void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgValueEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	// Leave if we have nothing to print
 
@@ -263,7 +263,7 @@ void WgValueEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	// Print the text
 
-	pDevice->PrintText( _clip, &m_text, canvas - m_viewOfs );
+    WgGfxDevice::PrintText( pDevice, &m_text, canvas - m_viewOfs );
 }
 
 //____ _regenText() ____________________________________________________________
@@ -730,19 +730,19 @@ void WgValueEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
 			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
-				pHandler->ForwardEvent( pEvent );
-		
+            WgWidget::_onEvent(pEvent,pHandler);
+
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( event != WG_EVENT_CHARACTER )
-		pHandler->ForwardEvent( pEvent );
+        WgWidget::_onEvent(pEvent,pHandler);
 }
 
 //____ _selectAll() ___________________________________________________________

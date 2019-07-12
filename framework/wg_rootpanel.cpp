@@ -47,12 +47,12 @@ WgRootPanel::WgRootPanel()
 }
 
 
-WgRootPanel::WgRootPanel( WgGfxDevice * pGfxDevice )
+WgRootPanel::WgRootPanel( wg::GfxDevice * pGfxDevice )
 {
 	m_bVisible = true;
 	m_bHasGeo = false;
 	if( pGfxDevice )
-		m_geo = pGfxDevice->CanvasSize();
+		m_geo = pGfxDevice->canvasSize();
 	m_pGfxDevice = pGfxDevice;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
@@ -68,12 +68,12 @@ WgRootPanel::~WgRootPanel()
 
 //____ SetGfxDevice() _________________________________________________________
 
-bool WgRootPanel::SetGfxDevice( WgGfxDevice * pDevice )
+bool WgRootPanel::SetGfxDevice( wg::GfxDevice * pDevice )
 {
 	m_pGfxDevice = pDevice;
 
 	if( m_pGfxDevice && !m_bHasGeo && m_hook.Widget() )
-		m_hook.Widget()->_onNewSize( m_pGfxDevice->CanvasSize() );
+		m_hook.Widget()->_onNewSize( m_pGfxDevice->canvasSize() );
 
 	return true;
 }
@@ -102,9 +102,9 @@ WgRect WgRootPanel::PixelGeo() const
 		return m_geo;
 	else if( m_pGfxDevice )
 	{
-		WgRect r( WgCoord(0,0), m_pGfxDevice->CanvasSize() );
-		if( r.w == 0 || r.h == 0 )
-			int x = 0;
+		WgRect r( WgCoord(0,0), m_pGfxDevice->canvasSize() );
+//		if( r.w == 0 || r.h == 0 )
+//			int x = 0;
 		return r;
 	}
 	else
@@ -253,7 +253,7 @@ bool WgRootPanel::BeginRender()
 	
 	// Initialize GfxDevice
 
-	return m_pGfxDevice->BeginRender();
+	return m_pGfxDevice->beginRender();
 }
 
 
@@ -300,7 +300,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		
 		for( const WgRect * pRect = m_afterglowRects[0].Begin() ; pRect != m_afterglowRects[0].End() ; pRect++ )
 		{
-			m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Focused, *pRect, clip, WG_SCALE_BASE );		// Overlays are not scaled
+			m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Focused, *pRect, WG_SCALE_BASE );		// Overlays are not scaled
 		}		
 
 		// Render overlays that have turned into afterglow
@@ -309,7 +309,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].Begin() ; pRect != m_afterglowRects[1].End() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Normal, *pRect, clip, WG_SCALE_BASE );	// Overlays are not scaled
+				m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Normal, *pRect, WG_SCALE_BASE );	// Overlays are not scaled
 			}		
 		}
 
@@ -335,7 +335,7 @@ bool WgRootPanel::EndRender( void )
 	m_updatedPatches.Add(&m_dirtyPatches);
 	m_dirtyPatches.Clear();
 
-	return m_pGfxDevice->EndRender();
+	return m_pGfxDevice->endRender();
 }
 
 

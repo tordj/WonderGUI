@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -96,9 +96,9 @@ double Util::squareRoot(double a)
 
 		*** Babylonian method cannot get exact zero but approximately value of the square_root
 	*/
-	double z = a;	
+	double z = a;
 	double rst = 0.0;
-	int max = 8;	// to define maximum digit 
+	int max = 8;	// to define maximum digit
 	int i;
 	double j = 1.0;
 	for(i = max ; i > 0 ; i--){
@@ -109,17 +109,17 @@ double Util::squareRoot(double a)
 			{
 				j++;
 				if(j >= 10) break;
-				
+
 			}
 			j--; //correct the extra value by minus one to j
 			z -= (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)); //find value of z
 
 			rst += j * powerOfTen(i);	// find sum of a
-			
-			j = 1.0;
-		
 
-		}		
+			j = 1.0;
+
+
+		}
 
 	}
 
@@ -129,12 +129,12 @@ double Util::squareRoot(double a)
 			while( z - (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)) >= 0)
 			{
 				j++;
-				if(j >= 10) break;				
+				if(j >= 10) break;
 			}
 			j--;
 			z -= (( 2 * rst ) + ( j * powerOfTen(i)))*( j * powerOfTen(i)); //find value of z
 
-			rst += j * powerOfTen(i);	// find sum of a			
+			rst += j * powerOfTen(i);	// find sum of a
 			j = 1.0;
 		}
 	}
@@ -489,35 +489,28 @@ double Util::powerOfTen(int num){
 		return defaultSize;
 	}
 
-	//____ fallbackState() ________________________________________________________
-
-	StateEnum Util::fallbackState(StateEnum state, int pass)
-	{
-		static int mask[12] = { 0x1E, 0xE, 0xD, 0xC, 0x9, 0x8, 0x7, 0x6, 0x5, 0x4, 0x1, 0x0 };
-
-		return StateEnum((StateEnum)((int)state & mask[pass]));
-	}
-
-
-
 	//____ bestStateIndexMatch() ___________________________________________________
 
 	int Util::bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices)
 	{
-		static uint32_t mask[StateEnum_Nb] = {	0,
-											1,
-											2,
-											4 + 2 + 1,
-											8 + 2,
-											16 + 8 + 4 + 2 + 1,
-											32,
-											64 + 32 + 1,
-											128 + 32 + 2,
-											256 + 128 + 64 + 32 + 4 + 2 + 1,
-											512 + 128 + 32 + 8 + 2,
-											1024 + 512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1,
-											2048,
-											4096 + 2048 + 32
+		static uint32_t mask[StateEnum_Nb] = {	1,
+											2+1,
+											4+1,
+											8 + 4 + 2 + 1,
+											16 + 4 + 1,
+											32 + 16 + 8 + 4 + 2 + 1,
+											64 + 1,
+											128 + 64 + 2 + 1,
+											256 + 64 + 4 + 1,
+											512 + 256 + 128 + 64 + 8 + 4 + 2 + 1,
+											1024 + 256 + 64 + 16 + 4 + 1,
+											2048 + 1024 + 512 + 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1,
+											4096 + 4 + 1,
+											8192 + 4096 + 8 + 4 + 2 + 1,
+											16384 + 4096 + 256 + 64 + 4 + 1,
+											32768 + 16384 + 8192 + 4096 + 512 + 256 + 128 + 64 + 8 + 4 + 2 + 1,
+											65536 + 1,
+											65536*2 + 65536 + 64 + 1
 										};
 
 		int candidates = uint32_t(availableStateIndices) & mask[wantedStateIndex];

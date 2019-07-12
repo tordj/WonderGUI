@@ -28,6 +28,8 @@
 #include 	<wg_pen.h>
 #include 	<wg_eventhandler.h>
 
+#include <algorithm>
+
 static const char	c_widgetType[] = {"LineEditor"};
 
 //____ Constructor ____________________________________________________________
@@ -185,9 +187,9 @@ void WgLineEditor::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgLineEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	WgWidget::_onRender(pDevice, _canvas, _window, _clip);
+	WgWidget::_onRender(pDevice, _canvas, _window);
 
 	WgRect textCanvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
@@ -230,7 +232,7 @@ void WgLineEditor::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	else
 		pText->hideCursor();
 
-	pDevice->PrintText( WgRect(_clip,textCanvas), pText, r );
+    WgGfxDevice::PrintText( pDevice, pText, r );
 
 	if( pText != &m_text )
 		delete pText;
@@ -455,19 +457,19 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
 			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
-				pHandler->ForwardEvent( pEvent );
-		
+            WgWidget::_onEvent(pEvent,pHandler);
+
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( event != WG_EVENT_CHARACTER )
-		pHandler->ForwardEvent( pEvent );
+        WgWidget::_onEvent(pEvent,pHandler);
 }
 
 

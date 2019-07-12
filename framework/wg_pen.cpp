@@ -35,14 +35,13 @@ WgPen::WgPen()
 	_init();
 }
 
-WgPen::WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip )
+WgPen::WgPen( wg::GfxDevice * pDevice, const WgCoord& origo )
 {
 	_init();
 
 	m_pDevice	= pDevice;
 	m_origo		= origo;
 	m_pos		= origo;
-	SetClipRect( clip );
 }
 
 //____ _init() _________________________________________________________________
@@ -67,21 +66,8 @@ void WgPen::_init()
 	m_bShowCRLF = false;
 
 	m_tabWidth = 80;
-
-	m_bClip = false;
 	
 	m_scale = WG_SCALE_BASE;
-}
-
-//____ SetClipRect() __________________________________________________________
-
-void WgPen::SetClipRect( const WgRect& clip )
-{
-	m_clipRect = clip;
-	if( m_clipRect.x == 0 && m_clipRect.y == 0 && m_clipRect.w == 0 && m_clipRect.h == 0 )
-		m_bClip = false;
-	else
-		m_bClip = true;
 }
 
 
@@ -274,10 +260,9 @@ void WgPen::BlitChar() const
 		int x = m_pos.x + pSrc->bearingX;
 		int y = m_pos.y + pSrc->bearingY;
 
-		if( m_bClip )
-			m_pDevice->ClipBlit( m_clipRect, pSrc->pSurface, pSrc->rect, x, y);
-		else
-			m_pDevice->Blit( pSrc->pSurface, pSrc->rect, x, y);
+        m_pDevice->setBlitSource(pSrc->pSurface->RealSurface());            //TODO: Optimize!!!!
+        
+        m_pDevice->blit( WgCoord(x,y), pSrc->rect);
 	}
 }
 
@@ -323,21 +308,18 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 		case WgCursor::NORMAL:
 			break;
 		case WgCursor::TINTED:
-			tintColor = m_pDevice->GetTintColor();
-			m_pDevice->SetTintColor( tintColor * instance.text()->getColor() );
+			tintColor = m_pDevice->tintColor();
+			m_pDevice->setTintColor( tintColor * instance.text()->getColor() );
 			break;
 		case WgCursor::INVERT_BG:
-			blendMode = m_pDevice->GetBlendMode();
-			m_pDevice->SetBlendMode(WgBlendMode::Invert);
+			blendMode = m_pDevice->blendMode();
+			m_pDevice->setBlendMode(WgBlendMode::Invert);
 			break;
 	}
 
 	//
 
-	if( m_bClip )
-		m_pDevice->ClipBlitBlock( m_clipRect, block, WgRect(m_pos + bearing, size) );
-	else
-		m_pDevice->BlitBlock( block, WgRect(m_pos + bearing, size) );
+    WgGfxDevice::BlitBlock(m_pDevice, block, WgRect(m_pos + bearing, size));
 
 	// Restore tintcolor/blendmode.
 
@@ -346,10 +328,10 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 		case WgCursor::NORMAL:
 			break;
 		case WgCursor::TINTED:
-			m_pDevice->SetTintColor( tintColor );
+			m_pDevice->setTintColor( tintColor );
 			break;
 		case WgCursor::INVERT_BG:
-			m_pDevice->SetBlendMode( blendMode );
+			m_pDevice->setBlendMode( blendMode );
 			break;
 	}
 

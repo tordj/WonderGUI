@@ -464,14 +464,14 @@ void WgWidgetSlider::_updateMinSize()
 
 //____ _renderButton() _________________________________________________________
 
-void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block )
+void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, const WgBlock& _block )
 {
 	if (m_bHorizontal)
 		_dest.w = _block.Width() *m_scale / _block.SurfaceScale();
 	else
 		_dest.h = _block.Height() *m_scale / _block.SurfaceScale();
 
-		pDevice->ClipBlitBlock( _clip, _block, _dest );
+    WgGfxDevice::BlitBlock( pDevice, _block, _dest );
 
 		if( m_bHorizontal )
 			_dest.x += _dest.w;
@@ -481,16 +481,16 @@ void WgWidgetSlider::_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, 
 
 //____ _onRender() ________________________________________________________
 
-void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgWidgetSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	WgRect	dest = _canvas;
 
 	// Render header buttons
 
 	if (m_pBtnBwdGfx && (m_btnLayout & HEADER_BWD))
-		_renderButton(pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD], m_scale));
+		_renderButton(pDevice, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_HEADER_BWD], m_scale));
 	if( m_pBtnFwdGfx && (m_btnLayout & HEADER_FWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD],m_scale) );
+		_renderButton( pDevice, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_HEADER_FWD],m_scale) );
 
 	// Render background (if any).
 
@@ -500,7 +500,7 @@ void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		dest.h = PixelSize().h - m_headerLen - m_footerLen;
 
 	if( m_pBgGfx )
-		pDevice->ClipBlitBlock( _clip, m_pBgGfx->GetBlock(m_mode[C_BG],m_scale), dest );
+        WgGfxDevice::BlitBlock( pDevice, m_pBgGfx->GetBlock(m_mode[C_BG],m_scale), dest );
 
 	// Render the bar
 
@@ -516,7 +516,7 @@ void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		else
 			barDest = WgRect( dest.x, dest.y + barPos, dest.w, barLen );
 
-		pDevice->ClipBlitBlock( _clip, m_pBarGfx->GetBlock(m_mode[C_BAR],m_scale), barDest );
+        WgGfxDevice::BlitBlock( pDevice, m_pBarGfx->GetBlock(m_mode[C_BAR],m_scale), barDest );
 	}
 
 	// Render footer buttons
@@ -527,10 +527,10 @@ void WgWidgetSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		dest.y += dest.h;
 
 	if( m_pBtnBwdGfx && (m_btnLayout & FOOTER_BWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD],m_scale) );
+		_renderButton( pDevice, dest, m_pBtnBwdGfx->GetBlock(m_mode[C_FOOTER_BWD],m_scale) );
 
 	if( m_pBtnFwdGfx && (m_btnLayout & FOOTER_FWD) )
-		_renderButton( pDevice, _clip, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD],m_scale) );
+		_renderButton( pDevice, dest, m_pBtnFwdGfx->GetBlock(m_mode[C_FOOTER_FWD],m_scale) );
 }
 
 //____ _onAlphaTest() ______________________________________________________
@@ -671,7 +671,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-				return;
+				break;
 
 			_unmarkReqRender();
 			Component c = _findMarkedComponent(pos);
@@ -721,7 +721,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-				return;
+				break;
 
 			Component c = _findMarkedComponent(pos);
 
@@ -785,7 +785,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 		case WG_EVENT_MOUSEBUTTON_REPEAT:
 		{
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-				return;
+				break;
 
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 				return;
@@ -830,7 +830,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 		case WG_EVENT_MOUSEBUTTON_DRAG:
 		{
 			if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-				return;
+				break;
 
 			if( m_mode[C_BAR] == WG_MODE_SELECTED )
 			{
@@ -839,7 +839,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 				if( m_sliderSize < 1.f)
 					sliderPos = ((float)(pointerOfs - m_dragBarPressOfs)) / (length - barLen);
 
-				wg::limit( sliderPos, 0.f, 1.f );
+                wg::limit( sliderPos, 0.f, 1.f );
 
 				if( sliderPos != m_sliderPos )
 				{
@@ -880,10 +880,10 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
 	}
 	else if( pEvent->Type() != WG_EVENT_MOUSEWHEEL_ROLL )
-		pHandler->ForwardEvent( pEvent );
+        WgWidget::_onEvent(pEvent,pHandler);
 
 }
 

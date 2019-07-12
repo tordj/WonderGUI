@@ -50,12 +50,12 @@ public:
 	
 protected:
 	
-	void			_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void			_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void			_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
 	void			_onNewSize( const WgSize& size );
 	
-	void			_renderBar( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip );
+    void			_renderBar( wg::GfxDevice * pDevice, int nb, const WgRect& _rect );
 	void 			_requestRenderPartial( WgSize sz, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
 	void			_updateIValues( WgSize sz );
 	int 			_calcIHold( float holdValue, WgSize canvas );

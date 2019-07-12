@@ -201,11 +201,11 @@ protected:
 		WgTextpropPtr		pTextStyle;
 	};
 
-	void	_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
+    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
 
 	void	_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onNewSize( const WgSize& size );
 	void	_setScale( int scale );
@@ -217,10 +217,10 @@ protected:
 	Wave *	_getWave(int waveId);
 	const Wave *	_getWave(int waveId) const;
 
-	void	_renderWaveSegment(WgGfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
+    void	_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
 
 	void		_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop, int * pOutBottom, const WgScrollChart::Wave& wave, double startTimeStamp, double endTimeStamp, float timestampInc);
-	void		_renderGridLines(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip);
+    void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
 
 	float			_thickestLine() const;
 

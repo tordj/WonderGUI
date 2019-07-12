@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -27,39 +27,38 @@
 #include <wg3_types.h>
 #include <wg3_gfxdevice.h>
 
-namespace wg 
+namespace wg
 {
-	
+
 	class Surface;
-	class Rect;
 	class Color;
-	
+
 	class NullGfxDevice;
 	typedef	StrongPtr<NullGfxDevice>	NullGfxDevice_p;
 	typedef	WeakPtr<NullGfxDevice>	NullGfxDevice_wp;
-	
+
 	class NullGfxDevice : public GfxDevice
 	{
 	public:
 		//.____ Creation ________________________________________________
 
 		static NullGfxDevice_p	create( Size size );
-	
+
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static NullGfxDevice_p	cast( Object * pObject );
-		const char *			surfaceClassName( void ) const;
+		const char *			surfaceClassName( void ) const override;
 
 		//.____ Misc _______________________________________________________
 
-		SurfaceFactory_p		surfaceFactory();
+		SurfaceFactory_p		surfaceFactory() override;
 
 		//.____ Geometry _________________________________________________
 
-		bool		setCanvas(Surface * pCanvas);
+		bool		setCanvas(Surface * pCanvas) override;
 
 		//.____ Rendering ________________________________________________
 
@@ -80,7 +79,7 @@ namespace wg
 		~NullGfxDevice();
 
 	};
-	
+
 
 } // namespace wg
 #endif //WG3_NULLGFXDEVICE_DOT_H

@@ -311,6 +311,39 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
+        case WG_EVENT_DROP_PICK:
+            id = "DropPick";
+            break;
+        case WG_EVENT_DROP_PROBE:
+            id = "DropProbe";
+            break;
+        case WG_EVENT_DROP_ENTER:
+            id = "DropEnter";
+            break;
+        case WG_EVENT_DROP_MOVE:
+            id = "DropMove";
+            break;
+        case WG_EVENT_DROP_LEAVE:
+            id = "DropLeave";
+            break;
+        case WG_EVENT_DROP_DELIVER:
+            id = "DropDeliver";
+            break;
+        case WG_EVENT_DROP_CANCEL:
+            id = "DropCancel";
+            break;
+        case WG_EVENT_DROP_COMPLETE:
+            id = "DropComplete";
+            break;
+
+		case WG_EVENT_LANES_DROP:
+			id = "LanesDrop";
+			break;
+
+        case WG_EVENT_SELECTED:
+            id = "Selected";
+            break;
+
 		case WG_EVENT_BUTTON_PRESS:
 			id = "ButtonPress";
 			break;
@@ -341,28 +374,11 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "selected=%d", (int) (static_cast<const WgEvent::RadiobuttonToggle*>(_pEvent)->IsSelected()) );
 			break;
 
-		default:
-			id = "Unknown Event";
-			break;
-
 		case WG_EVENT_ANIMATION_UPDATE:
 		{
 			id = "AnimationUpdate";
 			const WgEvent::AnimationUpdate * pEvent = static_cast<const WgEvent::AnimationUpdate*>(_pEvent);
 			sprintf( params, "frame=%d fraction=%f", pEvent->Frame(), pEvent->Fraction() );
-			break;
-		}
-
-		case WG_EVENT_TAB_SELECT:
-			id = "TabSelect";
-			sprintf( params, "tabId=%d", static_cast<const WgEvent::TabSelect*>(_pEvent)->TabId() );
-			break;
-
-		case WG_EVENT_TAB_PRESS:
-		{
-			id = "TabPress";
-			const WgEvent::TabPress * pEvent = static_cast<const WgEvent::TabPress*>(_pEvent);
-			sprintf( params, "tabId=%d mouseButton=%d", pEvent->TabId(), pEvent->MouseButton() );
 			break;
 		}
 
@@ -389,7 +405,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "pos=%f length=%f", pEvent->Pos(), pEvent->Length() );
 			break;
 		}
-				
+
 		case WG_EVENT_SLIDER_STEP_FWD:
 		{
 			id = "SliderStepFwd";
@@ -490,7 +506,10 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
 			break;
 
-
+        default:
+            id = "Unknown Event";
+            sprintf( params, " type enum=%d", (_pEvent)->Type() );
+            break;
 	};
 
 	widget = _formatWidget( _pEvent );
@@ -616,7 +635,7 @@ string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEven
 		}
 	}
 
-	
+
 
 }
 

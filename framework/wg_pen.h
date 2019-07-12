@@ -56,13 +56,12 @@ friend class WgFont;
 
 public:
 	WgPen();
-	WgPen( WgGfxDevice * pDevice, const WgCoord& origo, const WgRect& clip = WgRect() );
+    WgPen( wg::GfxDevice * pDevice, const WgCoord& origo );
 //	WgPen( const WgTextpropPtr& pTextprop, const WgTextpropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( pTextprop, pCharProp, mode ); }
 //	WgPen( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( hTextprop, hCharProp, mode ); }
 	~WgPen() {}
 
-	void					SetClipRect( const WgRect& clip );
-	inline void				SetDevice( WgGfxDevice * pDevice ) { m_pDevice = pDevice; }
+    inline void				SetDevice( wg::GfxDevice * pDevice ) { m_pDevice = pDevice; }
 	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; _onAttrChanged(); }
 	void					SetScale( int scale );
 
@@ -102,9 +101,6 @@ public:
 //	inline WgCoord			GetBlitPos() const { return WgCoord( m_pos.x + m_pGlyph->BearingX(), m_pos.y + m_pGlyph->BearingY() ); }
 //	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
 //	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
-
-	inline const WgRect&	GetClipRect() const { return m_clipRect; }
-	inline bool				HasClipRect() const { return m_bClip; }
 
 	inline WgFont *			GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
@@ -159,11 +155,8 @@ private:
 
 	int				m_tabWidth;		// Tab width in pixels.
 
-	WgGfxDevice *	m_pDevice;		// Device used for blitting.
+    wg::GfxDevice_p	m_pDevice;		// Device used for blitting.
 	WgTextNode *	m_pTextNode;	// TextManager used for scaling/layouting the text.
-
-	bool			m_bClip;		// Set if we have a clipping rectangle.
-	WgRect			m_clipRect;		// Clipping rectangle used for ClipBlit().
 
 	int				m_scale;		// Widget scale, for text sizes.
 

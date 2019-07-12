@@ -39,6 +39,8 @@ WgImage::WgImage()
 
 WgImage::~WgImage()
 {
+    if( m_bDeleteImageWhenDone )
+        delete m_pImage;
 }
 
 //____ Type() _________________________________________________________________
@@ -86,12 +88,43 @@ void WgImage::SetSource( const WgBlocksetPtr& pBlockset )
 	}
 }
 
+//____ SetImage() ______________________________________________________________
+
+void WgImage::SetImage( WgSurface * pSurface, bool bDeleteWhenDone )
+{
+    if( m_pImage == pSurface )
+    {
+        m_bDeleteImageWhenDone = bDeleteWhenDone;
+        return;
+    }
+    
+    if( m_bDeleteImageWhenDone )
+        delete m_pImage;
+    
+    m_pImage = pSurface;
+    m_bDeleteImageWhenDone = bDeleteWhenDone;
+    
+    _requestResize();
+    _requestRender();
+}
+
+
 //____ PreferredPixelSize() _____________________________________________________________
 
 WgSize WgImage::PreferredPixelSize() const
 {
-	if( m_pGfx )
+    if( m_pImage )
+    {
+        WgSize sz = m_pImage->PixelSize();
+        if( m_pSkin )
+            sz += m_pSkin->ContentPadding(m_scale);
+        
+        return sz;
+    }
+	else if( m_pGfx )
 		return m_pGfx->Size(m_scale);
+    else if( m_pSkin )
+        return m_pSkin->PreferredSize(m_scale);
 
 	return WgSize(1,1);
 }
@@ -100,22 +133,52 @@ WgSize WgImage::PreferredPixelSize() const
 
 int  WgImage::MatchingPixelHeight(int pixelWidth) const
 {
-	if (!m_pGfx)
-		return 1;
+    WgSize imageSize;
+    WgSize paddingSize;
 
-	WgSize imageSize = m_pGfx->Size(WG_SCALE_BASE);
-	return pixelWidth * imageSize.h / imageSize.w;
+    if( m_pImage )
+    {
+        imageSize = m_pImage->PixelSize();
+        if( m_pSkin )
+            paddingSize = m_pSkin->ContentPadding(m_scale);
+    }
+	else if (m_pGfx)
+		imageSize = m_pGfx->Size(WG_SCALE_BASE);
+    else if(m_pSkin)
+        imageSize = m_pSkin->PreferredSize(WG_SCALE_BASE);
+    else
+        return 1;
+
+    if( imageSize.w == 0 )
+       return 0;
+    
+	return ((pixelWidth-paddingSize.w) * imageSize.h / imageSize.w) + paddingSize.h;
 }
 
 //____ MatchingPixelWeight() _____________________________________________________________
 
 int  WgImage::MatchingPixelWidth(int pixelHeight) const
 {
-	if (!m_pGfx)
-		return 1;
+    WgSize imageSize;
+    WgSize paddingSize;
+    
+    if( m_pImage )
+    {
+        imageSize = m_pImage->PixelSize();
+        if( m_pSkin )
+            paddingSize = m_pSkin->ContentPadding(m_scale);
+    }
+    else if (m_pGfx)
+        imageSize = m_pGfx->Size(WG_SCALE_BASE);
+    else if(m_pSkin)
+        imageSize = m_pSkin->PreferredSize(WG_SCALE_BASE);
+    else
+        return 1;
 
-	WgSize imageSize = m_pGfx->Size(WG_SCALE_BASE);
-	return pixelHeight * imageSize.w / imageSize.h;
+    if( imageSize.h == 0 )
+        return 0;
+
+	return ((pixelHeight-paddingSize.h) * imageSize.w / imageSize.h) + paddingSize.w;
 }
 
 
@@ -132,60 +195,77 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	WgWidget::_onRender(pDevice, _canvas, _window, _clip);
+	WgWidget::_onRender(pDevice, _canvas, _window);
 
 	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
-	if( !m_pGfx )
-		return;
-
-	WgBlock	block;
-	if( m_bEnabled )
-		block = m_pGfx->GetBlock(WG_MODE_NORMAL, m_scale);
-	else
-		block = m_pGfx->GetBlock(WG_MODE_DISABLED, m_scale);
-
-	pDevice->ClipBlitBlock( _clip, block, canvas);
+    if( m_pImage )
+    {
+        pDevice->setBlitSource(m_pImage->RealSurface());
+        pDevice->stretchBlit(canvas);
+    }
+	else if( m_pGfx )
+    {
+        WgBlock    block;
+        if( m_bEnabled )
+            block = m_pGfx->GetBlock(WG_MODE_NORMAL, m_scale);
+        else
+            block = m_pGfx->GetBlock(WG_MODE_DISABLED, m_scale);
+        
+        WgGfxDevice::BlitBlock( pDevice, block, canvas);
+    }
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgImage::_onAlphaTest( const WgCoord& ofs )
 {
-	if( !m_pGfx )
-		return	false;												// No visible pixel, so don't accept the mark...
+    WgSize sz = PixelSize();
+    
+    if( m_pImage )
+    {
+        if( m_pSkin && m_pSkin->MarkTest(ofs, sz, m_state, m_markOpacity, m_scale) )
+            return true;
 
-	WgMode mode = WG_MODE_NORMAL;
-	if( !m_bEnabled )
-		mode = WG_MODE_DISABLED;
+        WgRect canvas = m_pSkin ? m_pSkin->ContentRect(sz, m_state, m_scale) : WgRect(sz);       
+        if( canvas.contains(ofs) )
+        {
+            WgSize imgSize = m_pImage->PixelSize();
+        
+            WgCoord surfOfs = { (ofs.x - canvas.x)*imgSize.w/canvas.w, (ofs.y - canvas.y)*imgSize.h/canvas.h };
+            m_pImage->GetOpacity(surfOfs);
+        }
+    }
+	else if( m_pGfx )
+    {
+        WgMode mode = WG_MODE_NORMAL;
+        if( !m_bEnabled )
+            mode = WG_MODE_DISABLED;
+        
+        return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,m_scale), WgRect(0,0,sz.w,sz.h), m_markOpacity );
+    }
+    else if( m_pSkin )
+    {
+        return m_pSkin->MarkTest(ofs, sz, m_state, m_markOpacity, m_scale);
+    }
 
-	WgSize sz = PixelSize();
-
-	return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,m_scale), WgRect(0,0,sz.w,sz.h), m_markOpacity );
+    return false;
 }
 
 //____ _onEnable() _____________________________________________________________
 
 void WgImage::_onEnable()
 {
-	if( m_pGfx )
-	{
-		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
-			_requestRender();
-	}
+    _requestRender();
 }
 
 //____ _onDisable() ____________________________________________________________
 
 void WgImage::_onDisable()
 {
-	if( m_pGfx )
-	{
-		if( !m_pGfx->SameBlock(WG_MODE_NORMAL, WG_MODE_DISABLED) )
-			_requestRender();
-	}
+    _requestRender();
 }
 
 //____ _setScale() ____________________________________________________________
@@ -194,7 +274,7 @@ void WgImage::_setScale( int scale )
 {
     WgWidget::_setScale(scale);
 
-    if( m_pGfx )
+    if( m_pGfx || m_pSkin || m_pImage )
         _requestResize();
 }
 

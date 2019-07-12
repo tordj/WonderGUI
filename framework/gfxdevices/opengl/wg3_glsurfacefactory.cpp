@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -36,7 +36,7 @@ namespace wg
 	//____ isInstanceOf() _________________________________________________________
 
 	bool GlSurfaceFactory::isInstanceOf( const char * pClassName ) const
-	{ 
+	{
 		if( pClassName==CLASSNAME )
 			return true;
 
@@ -46,8 +46,8 @@ namespace wg
 	//____ className() ____________________________________________________________
 
 	const char * GlSurfaceFactory::className( void ) const
-	{ 
-		return CLASSNAME; 
+	{
+		return CLASSNAME;
 	}
 
 	//____ cast() _________________________________________________________________
@@ -71,7 +71,7 @@ namespace wg
 
 	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, int flags, const Color * pClut ) const
 	{
-        return GlSurface::create(size,format,flags,pClut);
+		return GlSurface::create(size,format,flags,pClut);
 	}
 
 
@@ -79,12 +79,12 @@ namespace wg
 	{
 		return GlSurface::create(size, format, pBlob, pitch, flags, pClut);
 	}
-	
+
 	Surface_p GlSurfaceFactory::createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
 	{
 		return GlSurface::create(size,format, pPixels, pitch, pPixelDescription, flags, pClut);
 	}
-	
+
 	Surface_p GlSurfaceFactory::createSurface( Surface * pOther, int flags ) const
 	{
 		return GlSurface::create( pOther,flags );

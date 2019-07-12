@@ -30,9 +30,9 @@
 
 #include <wg3_geo.h>
 
-typedef wg::Coord8		WgCoord8;
-typedef wg::Coord16		WgCoord16;
-typedef wg::Coord16		WgUCoord8;
+typedef wg::CoordT<int8_t>		WgCoord8;
+typedef wg::CoordT<int16_t>		WgCoord16;
+typedef wg::CoordT<uint8_t>		WgUCoord8;
 
 typedef wg::Coord		WgCoord;
 typedef wg::CoordF		WgCoordF;

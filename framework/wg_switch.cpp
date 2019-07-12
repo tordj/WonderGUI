@@ -20,10 +20,10 @@
 
 =========================================================================*/
 
-
-
 #include <wg_switch.h>
 #include <wg_gfxdevice.h>
+
+#include <algorithm>
 
 static const char	c_widgetType[] = {"Switch"};
 
@@ -125,7 +125,7 @@ void WgSwitch::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgSwitch::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgSwitch::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	int sz = std::min( _canvas.w,_canvas.h );
 

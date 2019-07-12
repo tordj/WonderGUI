@@ -419,11 +419,11 @@ void WgOscilloscope::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() ____________________________________________________________
 
-void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	// Render background
 	if( m_pBG )
-		m_pBG->Render( pDevice, WgStateEnum::Normal, _canvas, _clip, m_scale );
+		m_pBG->Render( pDevice, WgStateEnum::Normal, _canvas, m_scale );
 
 	float centerX = _canvas.x + _canvas.w/2.f;
 	float centerY = _canvas.y + _canvas.h/2.f;
@@ -434,14 +434,14 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 	for( int i = 0; i < m_nHGridLines; i++ )
 	{
 		int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-		pDevice->ClipDrawLine( _clip, WgCoord(_canvas.x,ofsY), WgDirection::Right, _canvas.w, m_gridColor );
+		pDevice->drawLine( WgCoord(_canvas.x,ofsY), WgDirection::Right, _canvas.w, m_gridColor );
 	}
 
 	// Draw VGridLines
 	for( int i = 0; i < m_nVGridLines; i++ )
 	{
 		int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-		pDevice->ClipDrawLine( _clip, WgCoord(ofsX,_canvas.y), WgDirection::Down, _canvas.h, m_gridColor );
+		pDevice->drawLine( WgCoord(ofsX,_canvas.y), WgDirection::Down, _canvas.h, m_gridColor );
 	}
 
     // Nothing to draw (yet)
@@ -454,12 +454,15 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		
 //	antiAlias(_clip.w, _clip.x, m_pDisplayPoints + _clip.x - _canvas.x);
 
+/*
 	if( _clip.x > _canvas.x )
 		_antiAlias(_clip.w+1, m_pDisplayPoints + _clip.x - _canvas.x-1, WgCoord( _clip.x-1, _canvas.y ) );
 	else
 		_antiAlias(_clip.w, m_pDisplayPoints + _clip.x - _canvas.x, WgCoord( _clip.x, _canvas.y ) );
-
-	pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
+*/
+    
+    _antiAlias(_canvas.w, m_pDisplayPoints, _canvas.pos() );
+	pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 
 	// Blit markers
 
@@ -474,7 +477,7 @@ void WgOscilloscope::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, co
 		dest.x = x - dest.w / 2;
 		dest.y = y - dest.h / 2;
 
-		pDevice->ClipBlitBlock( _clip, m_pMarkerGfx->GetBlock(WG_MODE_NORMAL,m_scale), dest );
+        WgGfxDevice::BlitBlock( pDevice, m_pMarkerGfx->GetBlock(WG_MODE_NORMAL,m_scale), dest );
 	}
 
 }

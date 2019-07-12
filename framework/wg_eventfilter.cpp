@@ -29,7 +29,6 @@
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
 #include <wg_animplayer.h>
-#include <wg_tablist.h>
 #include <wg_valueeditor.h>
 
 #ifdef SOFTUBE_USE_PACE_FUSION
@@ -530,50 +529,6 @@ WgEventFilter	WgEventFilter::AnimationUpdate( WgAnimPlayer * pWidget )
 	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pWidget, _filterTypeWidget );
 }
 
-//____ TabSelect() _____________________________________________________________
-
-WgEventFilter	WgEventFilter::TabSelect()
-{
-	return WgEventFilter( WG_EVENT_TAB_SELECT, 0, _filterTabSelect );
-}
-
-WgEventFilter	WgEventFilter::TabSelect( WgTablist * pWidget )
-{
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget, _filterTabSelect );
-}
-
-WgEventFilter	WgEventFilter::TabSelect( WgTablist * pWidget, int id )
-{
-	return WgEventFilter( WG_EVENT_TAB_SELECT, pWidget, _filterTabSelect, id );
-}
-
-//____ TabPress() _____________________________________________________________
-
-WgEventFilter	WgEventFilter::TabPress()
-{
-	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress );
-}
-
-WgEventFilter	WgEventFilter::TabPress( int button )
-{
-	return WgEventFilter( WG_EVENT_TAB_PRESS, 0, _filterTabPress, button );
-}
-
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget )
-{
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress );
-}
-
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget, int button )
-{
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress, button );
-}
-
-WgEventFilter	WgEventFilter::TabPress( WgTablist * pWidget, int button, int id )
-{
-	return WgEventFilter( WG_EVENT_TAB_PRESS, pWidget, _filterTabPress, button, id );
-}
-
 //____ EditvalueModify() _______________________________________________________
 
 WgEventFilter	WgEventFilter::EditvalueModify()
@@ -893,34 +848,7 @@ bool WgEventFilter::_filterMouseWheelRollEvents( const WgEvent::Event * pEvent, 
 	return false;
 }
 
-bool WgEventFilter::_filterTabSelect( const WgEvent::Event * pEvent, const WgEventFilter& filter )
-{
-	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
-	{
-		if( filter.m_data1 == 0 )
-			return true;
-		else
-		{
-			const WgEvent::TabSelect * p = static_cast<const WgEvent::TabSelect*>(pEvent);
 
-			if( p->TabId() == filter.m_data1 )
-				return true;
-		}
-	}
-	return false;
-}
-
-bool WgEventFilter::_filterTabPress( const WgEvent::Event * pEvent, const WgEventFilter& filter )
-{
-	if( pEvent->Type() == filter.EventType() && (!filter.Widget() || filter.Widget() == pEvent->Widget()) )
-	{
-		const WgEvent::TabPress * p = static_cast<const WgEvent::TabPress*>(pEvent);
-
-		if( (filter.m_data1 == 0 || filter.m_data1 == p->MouseButton()) && (filter.m_data2 == 0 || filter.m_data2 == p->TabId()) )
-			return true;
-	}
-	return false;
-}
 
 bool WgEventFilter::_filterMenuitemEvent( const WgEvent::Event * pEvent, const WgEventFilter& filter )
 {

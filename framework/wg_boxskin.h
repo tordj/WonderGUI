@@ -37,19 +37,20 @@ class WgBoxSkin : public WgExtendedSkin
 {
 public:
 	static WgBoxSkinPtr	Create();
-	static WgBoxSkinPtr Create( WgColor color, WgBorders frame, WgColor frameColor );
+	static WgBoxSkinPtr Create( WgColor color, WgBorders frame = 0, WgColor frameColor = WgColor::White);
 	
 	~WgBoxSkin() {};
 
-	void	SetColor( WgColor color );
-	void	SetFrameColor( WgColor color );
-	void	SetFrameThickness( WgBorders frame );
-	void	SetFrame( WgBorders frame, WgColor color );
+
+    void    SetColor( WgColor color );
+    void    SetFrameColor( WgColor color );
+    void    SetFrameThickness( WgBorders frame );
+    void    SetFrame( WgBorders frame, WgColor color );
 
 	void	SetStateColor( WgStateEnum state, WgColor color );
 	void	SetStateColor( WgStateEnum state, WgColor color, WgColor frameColor );
 
-	void Render( WgGfxDevice * pDevice, WgState mode, const WgRect& _canvas, const WgRect& _clip, int scale ) const;
+    void Render( wg::GfxDevice * pDevice, WgState mode, const WgRect& _canvas, int scale ) const;
 	
 	WgSize	MinSize(int scale) const;
 	WgSize	PreferredSize(int scale) const;

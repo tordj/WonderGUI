@@ -144,7 +144,10 @@ WgSize WgFlowPanel::PreferredPixelSize() const
 
 int WgFlowPanel::MatchingPixelHeight( int width ) const
 {
-	int height = 0;
+    if( m_pSkin )
+        width -= m_pSkin->ContentPadding(m_scale).w;
+
+    int height = 0;
 
 	if( m_bHorizontal )
 	{
@@ -370,6 +373,10 @@ void WgFlowPanel::_updatePreferredPixelSize()
 	//
 	
 	WgSize size = m_bHorizontal?WgSize(length,breadth):WgSize(breadth,length);
+    
+    if( m_pSkin )
+        size += m_pSkin->ContentPadding(m_scale);
+    
 	if( size != m_preferredSize )
 	{
 		m_preferredSize = size;
@@ -385,10 +392,12 @@ void WgFlowPanel::_refreshChildGeo()
         return;
     
 	WgRect canvas = PixelSize();
+    if( m_pSkin )
+        canvas = m_pSkin->ContentRect(canvas, m_state, m_scale);
 	
 	WgFlowHook * pH = FirstHook();
 
-	WgRect	row;
+	WgRect	row( canvas.x, canvas.y, 0,0 );
 	WgRect  newGeo;
 	while (pH)
 	{
@@ -399,7 +408,7 @@ void WgFlowPanel::_refreshChildGeo()
 			if (sz.w > canvas.w)
 			{
 				row.y += row.h;
-				row.x = 0;
+				row.x = canvas.x;
 				row.h = 0;
 				row.w = 0;
 
@@ -417,7 +426,7 @@ void WgFlowPanel::_refreshChildGeo()
 				if (sz.w + row.w > canvas.w)
 				{
 					row.y += row.h;
-					row.x = 0;
+					row.x = canvas.x;
 					row.w = 0;
 					row.h = 0;
 				}
@@ -431,7 +440,7 @@ void WgFlowPanel::_refreshChildGeo()
 				if (sz.h > row.h)
 					row.h = sz.h;
 			}
-
+            
 			if (newGeo != pH->m_geo)
 			{
 				_requestRender(newGeo);

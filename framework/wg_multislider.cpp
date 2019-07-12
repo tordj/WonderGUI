@@ -26,6 +26,7 @@
 #include <wg_multislider.h>
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
+#include <wg_base.h>
 
 static const char	c_widgetType[] = {"MultiSlider"};
 
@@ -1186,9 +1187,9 @@ void WgMultiSlider::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgMultiSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	WgWidget::_onRender(pDevice, _canvas, _window, _clip);
+	WgWidget::_onRender(pDevice, _canvas, _window);
 
 	for (auto& slider : m_sliders)
 	{
@@ -1199,7 +1200,7 @@ void WgMultiSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		{
 			WgRect bgGeo = _sliderSkinGeo(slider, sliderGeo);
 
-			if (bgGeo.intersectsWith(_clip))
+            if( bgGeo.intersectsWith(pDevice->clipBounds()) )
 			{
 				WgState	emptyPartState = slider.sliderState;
 				WgState filledPartState = slider.sliderState;
@@ -1207,53 +1208,119 @@ void WgMultiSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 
 				if (pBgSkin->IsStateIdentical(emptyPartState, filledPartState))
-					pBgSkin->Render(pDevice, emptyPartState, bgGeo, _clip, m_scale);
+					pBgSkin->Render(pDevice, emptyPartState, bgGeo, m_scale);
 				else
 				{
+                    // Different parts of background should be rendered in different states.
+                    // We need to split the background into one "filled" part and one or two "empty" parts.
+                    
 					WgCoord divider = { sliderGeo.x + (int)(slider.handlePos.x*sliderGeo.w), sliderGeo.y + (int)(slider.handlePos.y*sliderGeo.h) };
-
+                    
+                    WgRect filledPart;
+                    WgRect emptyPart1;
+                    WgRect emptyPart2;
+                    
 					switch (slider.origo)
 					{
 					case WgOrigo::NorthWest:
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,divider.y,bgGeo.w, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						filledPart = { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,divider.y - bgGeo.y };
+						emptyPart1 = { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, divider.y - bgGeo.y };
+						emptyPart2 = { bgGeo.x,divider.y,bgGeo.w, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::North:
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,bgGeo.w,divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x, divider.y, bgGeo.w, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						filledPart = { bgGeo.x,bgGeo.y,bgGeo.w,divider.y - bgGeo.y };
+						emptyPart1 = { bgGeo.x, divider.y, bgGeo.w, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::NorthEast:
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,divider.y,bgGeo.w, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						emptyPart1 = { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,divider.y - bgGeo.y };
+						filledPart = { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, divider.y - bgGeo.y };
+						emptyPart2 = { bgGeo.x,divider.y,bgGeo.w, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::East:
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,bgGeo.h }), m_scale);
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.h }), m_scale);
+						emptyPart1 = { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,bgGeo.h };
+						filledPart = { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.h };
 						break;
 					case WgOrigo::SouthEast:
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,bgGeo.w, divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,divider.y,divider.x - bgGeo.x,bgGeo.y + bgGeo.h - divider.y }), m_scale);
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { divider.x, divider.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						emptyPart1 = { bgGeo.x,bgGeo.y,bgGeo.w, divider.y - bgGeo.y };
+						emptyPart2 = { bgGeo.x,divider.y,divider.x - bgGeo.x,bgGeo.y + bgGeo.h - divider.y };
+						filledPart = { divider.x, divider.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::South:
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,bgGeo.w,divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { bgGeo.x, divider.y, bgGeo.w, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						emptyPart1 = { bgGeo.x,bgGeo.y,bgGeo.w,divider.y - bgGeo.y };
+						filledPart = { bgGeo.x, divider.y, bgGeo.w, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::SouthWest:
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,bgGeo.w, divider.y - bgGeo.y }), m_scale);
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { bgGeo.x,divider.y,divider.x - bgGeo.x,bgGeo.y + bgGeo.h - divider.y }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { divider.x, divider.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.y + bgGeo.h - divider.y }), m_scale);
+						emptyPart1 = { bgGeo.x,bgGeo.y,bgGeo.w, divider.y - bgGeo.y };
+						filledPart = { bgGeo.x,divider.y,divider.x - bgGeo.x,bgGeo.y + bgGeo.h - divider.y };
+						emptyPart2 = { divider.x, divider.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.y + bgGeo.h - divider.y };
 						break;
 					case WgOrigo::West:
-						pBgSkin->Render(pDevice, filledPartState, bgGeo, WgRect(_clip, { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,bgGeo.h }), m_scale);
-						pBgSkin->Render(pDevice, emptyPartState, bgGeo, WgRect(_clip, { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.h }), m_scale);
+						filledPart = { bgGeo.x,bgGeo.y,divider.x - bgGeo.x,bgGeo.h };
+						emptyPart1 = { divider.x, bgGeo.y, bgGeo.x + bgGeo.w - divider.x, bgGeo.h };
 						break;
 
 					default:
 						assert(0);
 					}
+
+                    // Prepare for custom cliplists
+                    
+                    const WgRect * pOldClipList = pDevice->clipList();
+                    int     oldClipListSize = pDevice->clipListSize();
+                    
+                    int allocSize = oldClipListSize*sizeof(WgRect)*2;
+                    WgRect * pRects = (WgRect*) WgBase::MemStackAlloc( allocSize );
+
+                    // Generate cliplist for filledPart
+
+                    int nRects = 0;
+                    for( int i = 0 ; i < oldClipListSize ; i++ )
+                    {
+                        pRects[nRects] = WgRect(pOldClipList[i], filledPart );
+                        if( !pRects[nRects].isEmpty() )
+                            nRects++;
+                    }
+                    
+                    // Render filled part
+                    
+                    if( nRects > 0 )
+                    {
+                        pDevice->setClipList(nRects, pRects);
+                        pBgSkin->Render(pDevice, filledPartState, bgGeo, m_scale);
+                    }
+                    
+                    // Generate cliplist for emptyPart1
+                    
+                    nRects = 0;
+                    for( int i = 0 ; i < oldClipListSize ; i++ )
+                    {
+                        pRects[nRects] = WgRect(pOldClipList[i], emptyPart1 );
+                        if( !pRects[nRects].isEmpty() )
+                            nRects++;
+                    }
+
+                    // Add cliplist for emptyPart2
+                    
+                    for( int i = 0 ; i < oldClipListSize ; i++ )
+                    {
+                        pRects[nRects] = WgRect(pOldClipList[i], emptyPart2 );
+                        if( !pRects[nRects].isEmpty() )
+                            nRects++;
+                    }
+
+                    // Render empty part
+                    
+                    if( nRects > 0 )
+                    {
+                        pDevice->setClipList(nRects, pRects);
+                        pBgSkin->Render(pDevice, emptyPartState, bgGeo, m_scale);
+                    }
+
+                    // Clean up
+
+                    pDevice->setClipList(oldClipListSize, pOldClipList);
+                    WgBase::MemStackRelease(allocSize);
+                    
 				}
 
 			}
@@ -1263,7 +1330,7 @@ void WgMultiSlider::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 		if (pHandleSkin)
 		{
 			WgRect sliderHandleGeo = _sliderHandleGeo(slider, sliderGeo);
-			pHandleSkin->Render(pDevice, slider.handleState, sliderHandleGeo, _clip, m_scale);
+			pHandleSkin->Render(pDevice, slider.handleState, sliderHandleGeo, m_scale);
 		}
 	}
 }

@@ -131,7 +131,6 @@ public:
 	void			SetDelays(int popupOpenDelay, int popupFadeInDelay, int popupCloseDelay, int popupFadeOutDelay);
 
 protected:
-	virtual WgWidget* _newOfMyType() const { return new WgPopupLayer(); };
 
 	WgPopupLayer *	_getPopupLayer() const { return const_cast<WgPopupLayer*>(this); }
 	 
@@ -171,7 +170,7 @@ protected:
 
 	// Overloaded from container
 
-	void			_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
+    void			_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
 //		void			_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
 //		void			_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 
