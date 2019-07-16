@@ -82,6 +82,8 @@ namespace wg
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
 
+		bool    isCanvasReady() const;
+
 		//.____ Rendering ________________________________________________
 
 		bool	beginRender() override;
@@ -161,7 +163,7 @@ namespace wg
 
 		static const int c_commandBufferSize = 256;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 32768;				// Size of extras buffer, in GLfloats.
+		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
@@ -357,7 +359,13 @@ namespace wg
 			m_clipCurrOfs = m_clipWriteOfs;
 
 			for (int i = 0; i < m_nClipRects; i++)
-				m_clipListBuffer[m_clipWriteOfs++] = m_pClipRects[i];
+			{
+				Rect clip = m_pClipRects[i];
+				if( m_canvasYstart != 0 )
+					clip.y = m_canvasSize.h - (clip.y + clip.h);
+
+				m_clipListBuffer[m_clipWriteOfs++] = clip;
+			}
 		}
 
 		m_cmd = cmd;

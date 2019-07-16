@@ -1600,6 +1600,9 @@ namespace wg
 
 		}
 
+		setTintColor(WgColor::White);
+		setBlendMode(WgBlendMode::Blend);
+        
 		return true;
 	}
 
@@ -2990,8 +2993,13 @@ namespace wg
 	{
 		// Init mulTab
 
+		//TODO: Both of these causes artefacts, but in different ways. What to do?
+
 		for (int i = 0; i < 256; i++)
-			s_mulTab[i] = i * 256 + i + 1;
+			s_mulTab[i] = 65536 * i / 255;
+
+//		for (int i = 0; i < 256; i++)
+//			s_mulTab[i] = i * 256 + i + 1;
 
 		// Init lineThicknessTable
 

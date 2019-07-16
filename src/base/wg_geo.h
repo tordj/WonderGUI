@@ -27,6 +27,9 @@
 
 #include <wg_types.h>
 
+#include <utility>
+#include <cstdlib>
+
 namespace wg
 {
 

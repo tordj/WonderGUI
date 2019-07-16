@@ -152,9 +152,9 @@ namespace wg
 		if (nRectangles == 0)
 		{
 			m_clipCanvas = m_canvasSize;
-			m_clipBounds = m_canvasSize;
+			m_clipBounds = {0,0,0,0};
 			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
+			m_nClipRects = 0;
 			return true;
 		}
 
@@ -487,7 +487,7 @@ namespace wg
 
 		if (srcFrame.isEmpty() || dstFrame.isEmpty())
 		{
-			stretchBlit(dstRect.pos(), srcRect);
+			stretchBlit(dstRect, srcRect);
 			return;
 		}
 
@@ -663,14 +663,14 @@ namespace wg
 
 			for (int i = startColumn; i <= length + startColumn; i++)
 			{
+				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+					swap(pTopBorderTrace, pBottomBorderTrace);
+
 				pEdges[0] = pTopBorderTrace[i * 2];
 				pEdges[1] = pTopBorderTrace[i * 2 + 1];
 
 				pEdges[2] = pBottomBorderTrace[i * 2];
 				pEdges[3] = pBottomBorderTrace[i * 2 + 1];
-
-				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
-					swap(pTopBorderTrace, pBottomBorderTrace);
 
 				if (pEdges[2] < pEdges[1])
 				{
@@ -961,9 +961,9 @@ namespace wg
 		int nOldClipRects = m_nClipRects;
 
 		setClipList(nTopClips, pTopClips);
-		drawSegments(outerRect, 5, col, samplePoints, pBuffer, 4);
+		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer, 4);
 		setClipList(nBottomClips, pBottomClips);
-		drawSegments(outerRect, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
+		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
 		setClipList(nOldClipRects, pOldClipRects);
 
 		// Free temporary work memory

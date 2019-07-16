@@ -75,7 +75,7 @@ namespace wg
 	template<typename T> inline T max(const T &a, const T &b) { return a > b ? a : b; }
 	template<typename T> inline T max(const T &a, const T &b, const T &c) { if( a > b ) return a > c ? a : c; else return b > c ? b : c; }
 
-	template<typename T> inline void limit(T& x, T min, T max) { if( x < min) x = min; if( x > max) x = max; }
+	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
 	//____ StateEnum ____________________________________________________
 

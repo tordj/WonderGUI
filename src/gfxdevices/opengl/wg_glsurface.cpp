@@ -191,10 +191,14 @@ namespace wg
 
 	void GlSurface::_setupGlTexture(void * pPixelsToUpload)
 	{
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+
+        
 		glGenTextures(1, &m_texture);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
@@ -226,12 +230,16 @@ namespace wg
 			assert(glGetError() == 0);
 
 			glGenTextures(1, &m_clutTexture);
-			glActiveTexture(GL_TEXTURE2);
+//			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
 			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, m_clutBufferId);
 
 			assert(glGetError() == 0);
 		}
+
+		setScaleMode(m_scaleMode);
+
+		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		assert(glGetError() == 0);
 	}
@@ -350,21 +358,25 @@ namespace wg
 
 		if (m_pClut == nullptr)
 		{
+			GLint oldBinding;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+			glBindTexture(GL_TEXTURE_2D, m_texture);
+
 			switch (mode)
 			{
 			case ScaleMode::Interpolate:
-				glBindTexture(GL_TEXTURE_2D, m_texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 
 			case ScaleMode::Nearest:
 			default:
-				glBindTexture(GL_TEXTURE_2D, m_texture);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 				break;
 			}
+
+			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
 
 		Surface::setScaleMode(mode);
@@ -431,10 +443,10 @@ namespace wg
 		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
 			return 0;
 
-		m_pPixels = (uint8_t*) m_pBlob->data();
+		m_pPixels = ((uint8_t*) m_pBlob->data()) + region.y*m_pitch + region.x*m_pixelSize;
 		m_lockRegion = region;
 		m_accessMode = mode;
-		return m_pPixels += (m_size.w*region.y+region.x)*m_pixelSize;
+		return m_pPixels;
 	}
 
 
@@ -448,9 +460,14 @@ namespace wg
 
 		if( m_accessMode != AccessMode::ReadOnly )
 		{
+			GLint oldBinding;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+            
 			glBindTexture( GL_TEXTURE_2D, m_texture );
-			glTexSubImage2D( GL_TEXTURE_2D, 0, 0, 0, m_size.w, m_size.h, m_accessFormat, m_pixelDataType, m_pBlob->data() );
-	//		glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, GL_RGBA, GL_UNSIGNED_BYTE, 0 );
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
+			glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, m_accessFormat, m_pixelDataType, m_pPixels );
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+			glBindTexture( GL_TEXTURE_2D, oldBinding );
 		}
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
@@ -535,6 +552,9 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+
 		glGenTextures( 1, &m_texture );
 		glBindTexture( GL_TEXTURE_2D, m_texture );
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
@@ -545,6 +565,8 @@ namespace wg
 
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
 					 m_accessFormat, m_pixelDataType, m_pBlob->data() );
+
+		glBindTexture( GL_TEXTURE_2D, oldBinding );
 
 		assert( glGetError() == 0);
 	}
@@ -590,9 +612,13 @@ namespace wg
 			break;
 		}
 
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, type, m_pBlob->data());
+
+		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		GLenum err;
 		assert(0 == (err = glGetError()));
