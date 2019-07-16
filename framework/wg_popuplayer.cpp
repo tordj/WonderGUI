@@ -833,6 +833,9 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 		}
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
+			if (m_popupHooks.IsEmpty())
+				break;
+
 			auto pEv = static_cast<const WgEvent::MouseButtonPress*>(pEvent);
 
 			auto pSource = static_cast<WgWidget*>(pEvent->ForwardedFrom() );
