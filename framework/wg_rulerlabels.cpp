@@ -123,7 +123,7 @@ WgSize WgRulerLabels::PreferredPixelSize() const
 
 //____ _onRender() _____________________________________________________________________
 
-void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if( m_direction == WgDirection::Up || m_direction == WgDirection::Down )
 	{
@@ -153,7 +153,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );				
+            WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );
 			pLabel = pLabel->Next();
 		}
 	}
@@ -185,7 +185,7 @@ void WgRulerLabels::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 					break;
 			}
 			
-			pDevice->PrintText( _clip, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );				
+            WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );				
 			pLabel = pLabel->Next();
 		}
 	}

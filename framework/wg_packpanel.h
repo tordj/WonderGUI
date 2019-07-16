@@ -43,6 +43,10 @@ public:
 	bool	SetWeight( float weight );
 	float	Weight() { return m_weight; }
 
+    bool    SetBaseline( float baseline );
+    float   Baseline() { return m_baseline; }
+
+    
 	WgPackHook *	Prev() const { return _prev(); }
 	WgPackHook *	Next() const { return _next(); }
 	WgPackPanel*		Parent() const;
@@ -55,6 +59,7 @@ protected:
 	WgContainer * _parent() const;
 	
 	float			m_weight;			// Weight for space allocation.
+    float           m_baseline;         // Baseline position (0.0-1.0) for widget.
 	WgRect			m_geo;				// Real geo of child (no padding included).
 	WgSize			m_preferredSize;	// Cached padded preferred size from the child.
 	WgPackPanel *	m_pParent;
@@ -88,6 +93,10 @@ public:
 	void			SetSizeBroker( WgSizeBroker* pBroker );
 	WgSizeBroker *	SizeBroker() const { return m_pSizeBroker; }
 
+    void            SetBaselineMode( bool bBaseline );
+    bool            BaselineMode( bool bBaseline ) const { return m_bBaselineMode; }
+    float           Baseline() const { return m_baseline; }
+    
 	int				MatchingPixelHeight( int width ) const;
 	int				MatchingPixelWidth( int height ) const;
 
@@ -98,7 +107,7 @@ protected:
     // Overloaded from Widget
     
 	void			_onNewSize( const WgSize& size );
-    void            _setScale(int scale);
+	void			_setScale(int scale);
 
     
 	// Overloaded from Container
@@ -124,17 +133,21 @@ protected:
 	
 	//
 	
+    void            _refreshBaseline();
 	void			_refreshChildGeo();
 	void			_updatePreferredPixelSize();
 	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const;
 	int				_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forcedBreadth ) const;
 
 	bool			m_bHorizontal;
+    bool            m_bBaselineMode;
+    float           m_baseline;
+    
 	WgSizeBroker * 	m_pSizeBroker;
 	WgSize			m_preferredSize;
-    
-    bool            m_bBlockRequestResize = false;
-    bool            m_bResizeRequestedWhileBlocked = false;
+
+	bool			m_bBlockRequestResize = false;
+	bool			m_bResizeRequestedWhileBlocked = false;
 
 };
 

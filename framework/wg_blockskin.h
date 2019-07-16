@@ -57,7 +57,7 @@ public:
 	
 	//.____ Rendering ________________________________________________
 
-	void	Render( WgGfxDevice * pDevice, WgState state,  const WgRect& _canvas, const WgRect& _clip, int scale ) const override;
+    void	Render( wg::GfxDevice * pDevice, WgState state,  const WgRect& _canvas, int scale ) const override;
 	
 	//.____ Geometry _________________________________________________
 

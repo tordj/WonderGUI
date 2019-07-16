@@ -44,7 +44,7 @@
 #	include <wg_textprop.h>
 #endif
 
-
+#include <wg3_gfxdevice.h>
 
 #ifdef WG_USE_FREETYPE
 
@@ -59,6 +59,14 @@ class WgMemPool;
 class WgWeakPtrHub;
 class WgMemStack;
 class WgCursor;
+class WgSurfaceFactory;
+
+struct WgContext
+{
+    wg::GfxDevice_p pDevice = nullptr;
+    WgSurfaceFactory * pFactory = nullptr;
+    float         scale = 1.f;
+};
 
 class WgBase
 {
@@ -72,7 +80,8 @@ public:
 	static inline FT_Library	GetFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
 #endif
 
-
+    static void     SetContext( const WgContext& context );
+    static const WgContext *     Context() { assert(s_pData!=0); return &s_pData->context; }
 
 //	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& GetDefaultTextManager();
@@ -120,6 +129,8 @@ private:
 
 	struct Data
 	{
+        WgContext           context;
+        
 		WgTextpropPtr		pDefaultTextprop;
 		WgTextpropPtr		pDefaultSelectionProp;
 		WgTextpropPtr		pDefaultLinkProp;
@@ -152,7 +163,6 @@ private:
 
     static int      s_iSoftubeNumberOfInstances;
 	static Data *	s_pData;
-
 };
 
 

@@ -106,7 +106,7 @@ class	WgWidgetSlider : public WgWidget
 
 	protected:
 		void	_onCloneContent( const WgWidget * _pOrg );
-		void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+        void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void	_onRefresh();
 		bool	_onAlphaTest( const WgCoord& ofs );
@@ -165,7 +165,7 @@ class	WgWidgetSlider : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-		void		_renderButton( WgGfxDevice * pDevice, const WgRect& _clip, WgRect& _dest, const WgBlock& _block );
+    void		_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, const WgBlock& _block );
 		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
 		bool		_markTestSlider( WgCoord ofs );
 		void		_headerFooterChanged();

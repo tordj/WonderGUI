@@ -1165,14 +1165,14 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 		break;
 
 		default:
-			pHandler->ForwardEvent(_pEvent);
+            WgWidget::_onEvent(_pEvent,pHandler);
 		break;
 	}
 }
 
 //____ _renderPatches() ________________________________________________________
 
-void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
@@ -1189,14 +1189,15 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 
 	WgRect	dirtBounds = patches.Union();
 
+    
 	// Render Window background color
 
 	if( m_bgColor.a != 0 )
 	{
 		WgRect window = m_elements[WINDOW].m_windowGeo + _canvas.pos();
 
-		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-			pDevice->ClipFill(*pRect, window, m_bgColor );
+        pDevice->setClipList(patches.Size(), patches.Begin());
+        pDevice->fill( window, m_bgColor );
 	}
 
 	//
@@ -1204,7 +1205,9 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 	if( m_elements[WINDOW].Widget() )
 	{
 		WgRect canvas = m_elements[WINDOW].m_canvasGeo + _canvas.pos();
-		WgRect window( canvas, m_elements[WINDOW].m_windowGeo + _canvas.pos() );	// Use intersection in case canvas is smaller than window.
+		WgRect window( canvas, m_elements[WINDOW].m_windowGeo + _canvas.pos() );
+        
+        // Use intersection in case canvas is smaller than window.
 
 		if( window.intersectsWith(dirtBounds) )
 			m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &patches );
@@ -1226,14 +1229,9 @@ void WgScrollPanel::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas
 	if( m_pFillerBlocks && m_geoFiller.w != 0 && m_geoFiller.h != 0 )
 	{
 		WgRect canvas = m_geoFiller + _canvas.pos();
-
-		for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-		{
-			WgRect clip( canvas, *pRect );
-			if( clip.w > 0 || clip.h > 0 )
-				pDevice->ClipBlitBlock( clip, m_pFillerBlocks->GetBlock( mode, m_scale ), canvas );
-		}
-
+        
+        pDevice->setClipList(patches.Size(), patches.Begin());
+        WgGfxDevice::BlitBlock( pDevice, m_pFillerBlocks->GetBlock( mode, m_scale ), canvas );
 	}
 }
 

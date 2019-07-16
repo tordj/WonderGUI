@@ -42,6 +42,7 @@ const char * WgCapsule::CapsuleHook::ClassType()
 WgCapsule::WgCapsule()
 {
 	m_hook.m_pParent = this;
+    m_bSiblingsOverlap = false;
 }
 
 
@@ -75,8 +76,7 @@ WgHook * WgCapsule::SetChild( WgWidget * pWidget )
 	m_hook._attachWidget(pWidget);
 	pWidget->_onNewSize(PixelSize());
 
-	_requestRender();
-	_requestResize();
+	_childAddedRemovedOrReplaced();
 	return &m_hook;
 }
 
@@ -88,8 +88,7 @@ bool WgCapsule::DeleteChild()
 	if( pWidget )
 	{
 		delete pWidget;
-		_requestRender();
-		_requestResize();
+		_childAddedRemovedOrReplaced();
 		return true;
 	}
 
@@ -102,10 +101,7 @@ WgWidget * WgCapsule::ReleaseChild()
 {
 	WgWidget * pWidget = m_hook._releaseWidget();
 	if( pWidget )
-	{
-		_requestRender();
-		_requestResize();
-	}
+		_childAddedRemovedOrReplaced();
 
 	return pWidget;
 }
@@ -175,6 +171,14 @@ WgSize WgCapsule::PreferredPixelSize() const
 		return WgSize(1,1);
 }
 
+//____ _childAddedRemovedOrReplaced() _________________________________________
+
+void WgCapsule::_childAddedRemovedOrReplaced()
+{
+	_requestRender();
+	_requestResize();
+}
+
 //____ _onCollectPatches() _____________________________________________________
 
 void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
@@ -216,6 +220,14 @@ void WgCapsule::_onRenderRequested(const WgRect& rect)
 {
 	_requestRender(rect);
 }
+
+//____ _onResizeRequested() ___________________________________________________
+
+void WgCapsule::_onResizeRequested()
+{
+	_requestResize();
+}
+
 
 //____ _firstHook() ____________________________________________________________
 

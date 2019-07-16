@@ -52,7 +52,7 @@ static inline const float wg_round(const float x) {return floorf(x+0.5f);}
 								// that better handles broken unicode strings.
 								// Ignored if WG_USE_UTF8 isn't defined.
 
-//#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
+#define WG_USE_FREETYPE			// Disable if you don't care for vector fonts and want to skip
 								// dependency on freetype.
 
 

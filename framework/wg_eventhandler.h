@@ -124,6 +124,7 @@ private:
 	void 	_postTickEvents( int ticks );
 	void 	_processEventQueue();
 
+    bool    _forwardEvent( const WgEvent::Event * _pEvent );
 
 	void	_finalizeEvent( WgEvent::Event * pEvent );
 	void	_processGeneralEvent( WgEvent::Event * pEvent );
@@ -166,7 +167,8 @@ private:
 	WgWidget * _updateEnteredWidgets( WgWidget * pMarkedWidget );
 	
 	void	_addTickReceiver( WgWidget * pWidget );
-		
+    bool    _handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent );
+    
 	//
 
 	WgRootPanel *		m_pRoot;

@@ -65,8 +65,8 @@ public:
 
 protected:
     void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
-    void            _renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-    void            _onRender(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip);
+    void            _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+    void            _onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
     void            _onCloneContent( const WgWidget * _pOrg );
     WgBlendMode     _getBlendMode() const;
 

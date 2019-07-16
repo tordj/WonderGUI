@@ -25,7 +25,7 @@
 
 #include <wg_extendedskin.h>
 #include <wg_surface.h>
-
+#include <wg3_types.h>
 
 	
 class WgMultiBlockSkin;
@@ -53,7 +53,7 @@ public:
 	
 	//.____ Rendering ________________________________________________
 
-	void	Render( WgGfxDevice * pDevice, WgState state,  const WgRect& _canvas, const WgRect& _clip, int scale ) const override;
+    void	Render( wg::GfxDevice * pDevice, WgState state,  const WgRect& _canvas, int scale ) const override;
 	
 	//.____ Geometry _________________________________________________
 
@@ -88,7 +88,10 @@ private:
 	{
 		WgSurface *		pSurface;
 		WgBlendMode		blendMode;
-		WgCoord			blockOfs[WG_NB_STATES];		// Block for each state
+        wg::Bitmask<uint32_t>   stateBlockMask = 0;
+        wg::Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
+        
+        WgCoord			blockOfs[WG_NB_STATES];		// Block for each state
 		WgColor			tintColor[WG_NB_STATES];
 //		WgOrigo			placementOrigo;
 //		WgCoord			placementOfs;

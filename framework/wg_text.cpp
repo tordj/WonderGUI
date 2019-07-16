@@ -45,6 +45,8 @@
 #include <wg_widget.h>
 #include <wg_util.h>
 
+#include <algorithm>
+
 //____ Constructor ____________________________________________________________
 
 

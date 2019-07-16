@@ -40,18 +40,17 @@
 #	include <wg_skin.h>
 #endif
 
-class WgGfxDevice;
 class WgWidget;
 
 class WgRootPanel : public WgWidgetHolder
 {
 public:
 	WgRootPanel();
-	WgRootPanel( WgGfxDevice * pGfxDevice );
+    WgRootPanel( wg::GfxDevice * pGfxDevice );
 	~WgRootPanel();
 
-	bool					SetGfxDevice( WgGfxDevice * pDevice );
-	inline WgGfxDevice * 	GfxDevice() const { return m_pGfxDevice; };
+    bool					SetGfxDevice( wg::GfxDevice * pDevice );
+    inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
 
 	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
@@ -154,7 +153,7 @@ protected:
 	std::deque<WgPatches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 
-	WgGfxDevice *		m_pGfxDevice;
+    wg::GfxDevice *		m_pGfxDevice;
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;

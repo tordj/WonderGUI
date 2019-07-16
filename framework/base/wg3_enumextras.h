@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -61,7 +61,7 @@ namespace wg
 	const static GfxFlip         GfxFlip_min         = GfxFlip::Normal;
 
 	const static CodePage        CodePage_max        = CodePage::_874;
-	const static BlendMode       BlendMode_max       = BlendMode::Invert;
+	const static BlendMode       BlendMode_max       = BlendMode::Max;
 	const static PointerStyle    PointerStyle_max    = PointerStyle::ResizeWE;
 	const static MouseButton     MouseButton_max     = MouseButton::X2;
 	const static AnimMode        AnimMode_max        = AnimMode::BackwardPingPong;
@@ -83,7 +83,7 @@ namespace wg
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
 
 	const static int             CodePage_size       = (int)CodePage::_874 + 1;
-	const static int             BlendMode_size      = (int)BlendMode::Invert + 1;
+	const static int             BlendMode_size      = (int)BlendMode::Max + 1;
 	const static int             PointerStyle_size   = (int)PointerStyle::ResizeWE + 1;
 	const static int             MouseButton_size    = (int)MouseButton::X2 + 1;
 	const static int             AnimMode_size       = (int)AnimMode::BackwardPingPong + 1;

@@ -516,7 +516,7 @@ public:
 	WgPatches		patches;
 };
 
-void WgPopupLayer::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
+void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 
 	// We start by eliminating dirt outside our geometry
@@ -529,11 +529,10 @@ void WgPopupLayer::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, 
 			patches.Push(WgRect(*pRect, _canvas));
 	}
 
-
 	// Render container itself
 
-	for (const WgRect * pRect = patches.Begin(); pRect != patches.End(); pRect++)
-		_onRender(pDevice, _canvas, _window, *pRect);
+    pDevice->setClipList(patches.Size(), patches.Begin());
+    _onRender(pDevice, _canvas, _window);
 
 
 	// Render children
@@ -564,7 +563,7 @@ void WgPopupLayer::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 		p->patches.Push(&patches);
 		if( p->pSlot->state != WgPopupHook::State::Opening && p->pSlot->state != WgPopupHook::State::Closing )
-			p->pSlot->m_pWidget->_onMaskPatches(patches, p->geo, p->geo, pDevice->GetBlendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			p->pSlot->m_pWidget->_onMaskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 		if (patches.IsEmpty())
 			break;
@@ -595,10 +594,10 @@ void WgPopupLayer::_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, 
 			p->pSlot->m_pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
 		else
 		{
-			WgColor oldTint = pDevice->GetTintColor();
-			pDevice->SetTintColor(oldTint*tint);
+			WgColor oldTint = pDevice->tintColor();
+			pDevice->setTintColor(oldTint*tint);
 			p->pSlot->m_pWidget->_renderPatches(pDevice, p->geo, p->geo, &p->patches);
-			pDevice->SetTintColor(oldTint);
+			pDevice->setTintColor(oldTint);
 		}
 	}
 }
@@ -639,9 +638,6 @@ void WgPopupLayer::_onCloneContent( const WgWidget * _pOrg )
 	
 void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
 {
-	WgLayer::_onEvent(pEvent, pHandler);
-		
-
 	switch( pEvent->Type() )
 	{
 		case WG_EVENT_TICK:
@@ -871,10 +867,7 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
             break;
 	}
 
-	// Final solution: forward to our parent.
-
-	pHandler->ForwardEvent(pEvent);
-
+    WgLayer::_onEvent(pEvent, pHandler);
 }
 	
 //____ _closeAutoOpenedUntil() _________________________________________________
@@ -1087,7 +1080,12 @@ WgHook* WgPopupLayer::_firstHook() const
 
 WgHook* WgPopupLayer::_lastHook() const
 {
-	return m_popupHooks.Last();
+    auto p =m_popupHooks.Last();
+    if( p )
+        return p;
+    if (m_baseHook.Widget())
+        return const_cast<BaseHook*>(&m_baseHook);
+    return nullptr;
 }
 
 //____ _firstHookWithGeo() _____________________________________________________

@@ -100,7 +100,8 @@ public:
     void    SetWidth(float width) { m_iWidth = width; }
     void    SetAngles(float angleStart, float angleEnd);
 	void    SetAngleOffset(float offset);
-
+    void    SetDrawFromMiddle(bool bDrawFromMiddle) { m_bDrawFromMiddle = bDrawFromMiddle; }
+    bool    DrawFromMiddle() { return m_bDrawFromMiddle; }
     float   GetAngleStart() const { return m_fAngleStart; }
     float   GetAngleEnd() const { return m_fAngleEnd; }
 
@@ -115,8 +116,8 @@ public:
 
 protected:
     void    _onCloneContent( const WgWidget * _pOrg );
-	void	_renderPatches(WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
-	void    _onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip);
+    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
+    void    _onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
     bool    _onAlphaTest( const WgCoord& ofs );
     void    _onEnable();
     void    _onDisable();
@@ -140,6 +141,8 @@ private:
         eDrawBackgroundAABegin,
         eDrawBackground,
         eDrawBackgroundAAEnd,
+        eDrawForegroundAALeftEdge,
+        eDrawForegroundAARightEdge
     };
 
 	WgRect	_calcUdateRect(float newAngleStart, float newAngleEnd, float newValue);
@@ -171,6 +174,7 @@ private:
     int m_iNumSteps = 0;
     float m_iWidth = 0.40f;
     float m_fAngleOffset = 0.0f;
+    bool m_bDrawFromMiddle = false;
 
     WgSize m_size = WgSize(0,0);
 

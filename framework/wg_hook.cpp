@@ -42,7 +42,8 @@ WgHook::~WgHook()
 
 void WgHook::_attachWidget( WgWidget * pWidget )
 {
-	assert( pWidget->Parent() == 0 );
+    assert( pWidget != nullptr );
+	assert( pWidget->Parent() == nullptr );
 
 	if( m_pWidget )
 		m_pWidget->_onNewHook(0);

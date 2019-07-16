@@ -99,7 +99,7 @@ public:
 protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -110,15 +110,13 @@ protected:
 	void	_onLostInputFocus();
 	void 	_setScale( int scale );
 
-
+    WgText                m_text;
+    bool                  m_bHasFocus;
+    int                   m_maxLines;
+    bool                  m_bResetCursorOnFocus;
 private:
 	void	_textModified();
 	bool	_insertCharAtCursor( Uint16 c );
-
-	WgText				m_text;
-	bool				m_bHasFocus;
-	int					m_maxLines;
-	bool				m_bResetCursorOnFocus;
 };
 
 

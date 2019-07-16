@@ -26,6 +26,7 @@
 #include <wg_base.h>
 #include <wg_texttool.h>
 #include <wg_util.h>
+#include <wg_surfacefactory.h>
 
 #include <algorithm>
 
@@ -62,6 +63,8 @@ WgChart::WgChart()
 
 WgChart::~WgChart()
 {
+    if( m_pCacheBitmap )
+        delete m_pCacheBitmap;
 }
 
 //____ Type() _________________________________________________________________
@@ -106,9 +109,11 @@ WgSize WgChart::PreferredPixelSize() const
 
 void WgChart::SetSkin(const WgSkinPtr& pSkin)
 {
+    //TODO: Might need resampling if content padding has changed.
+    
 	m_pSkin = pSkin;
 	_requestResize();		// Just in case
-	_requestRender();
+	_requestRenderInCache();
 }
 
 //____ SetCanvasPadding() _____________________________________________________
@@ -123,7 +128,7 @@ void WgChart::SetCanvasPadding(WgBorders padding)
 	{
 		m_pixelPadding = pixelPadding;
 		_resampleAllWaves();
-		_requestRender();
+		_requestRenderInCache();
 	}
 }
 
@@ -139,7 +144,7 @@ WgBorders WgChart::CanvasPadding() const
 void WgChart::ClearWaves()
 {
 	m_waves.clear();
-	_requestRender();
+	_requestRenderInCache();
 }
 
 //____ AddWave() ______________________________________________________________
@@ -174,7 +179,11 @@ bool WgChart::HideWave(int waveId)
 	if (p->bHidden == false)
 	{
 		p->bHidden = true;
-		_requestRender();
+
+        if( waveId >= m_cacheFirst && waveId <= m_cacheLast )
+            _requestRenderInCache();
+        else
+            _requestRender();
 	}
 	return true;
 }
@@ -190,8 +199,11 @@ bool WgChart::UnhideWave(int waveId)
 	if (p->bHidden == true)
 	{
 		p->bHidden = false;
-		_requestRender();
-	}
+        if( waveId >= m_cacheFirst && waveId <= m_cacheLast )
+            _requestRenderInCache();
+        else
+            _requestRender();
+    }
 	return true;
 }
 
@@ -204,7 +216,7 @@ void WgChart::HideAllWaves()
 		if (!wave.bHidden)
 		{
 			wave.bHidden = true;
-			_requestRender();
+			_requestRenderInCache();
 		}
 	}
 }
@@ -218,7 +230,7 @@ void WgChart::UnhideAllWaves()
 		if (wave.bHidden)
 		{
 			wave.bHidden = false;
-			_requestRender();
+			_requestRenderInCache();
 		}
 	}
 }
@@ -242,7 +254,10 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 	p->bottomLineThickness = bottomLineThickness;
 	p->bottomLineColor = bottomLineColor;
 
-	_requestRender();
+    if( waveId >= m_cacheFirst && waveId <= m_cacheLast )
+        _requestRenderInCache();
+    else
+        _requestRender();
 	return true;
 }
 
@@ -316,7 +331,7 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 	if ( bResampleAll )
 	{
 		_resampleAllWaves();
-		_requestRender();
+		_requestRenderInCache();
 	}
 	else
 		_resampleWave(pWave, true);
@@ -339,7 +354,7 @@ bool WgChart::SetFixedValueRange(float topValue, float bottomValue)
 		_resampleAllWaves();
 		if (m_valueRangeResponder)
 			m_valueRangeResponder(this, topValue, bottomValue);
-		_requestRender();
+		_requestRenderInCache();
 	}
 
 	return true;
@@ -354,7 +369,7 @@ void WgChart::SetDynamicValueRange()
 		m_bDynamicValueRange = true;
 		_updateDynamics();
 		_resampleAllWaves();
-		_requestRender();
+		_requestRenderInCache();
 //		if (m_valueRangeResponder)
 //			m_valueRangeResponder(this, m_topValue, m_bottomValue);
 	}
@@ -388,7 +403,7 @@ bool WgChart::SetFixedSampleRange(float firstSample, float lastSample)
 		_resampleAllWaves();				//TODO: Optimize! Can skip if fractional start offset and width is same.
 		if (m_sampleRangeResponder)
 			m_sampleRangeResponder(this, firstSample, lastSample);
-		_requestRender();
+		_requestRenderInCache();
 	}
 	return true;
 }
@@ -417,7 +432,7 @@ void WgChart::SetDynamicSampleRange()
 		m_bDynamicSampleRange = true;
 		_updateDynamics();
 		_resampleAllWaves();
-		_requestRender();
+		_requestRenderInCache();
 
 //		if (m_sampleRangeResponder)
 //			m_sampleRangeResponder(this, m_firstSample, m_lastValue);
@@ -510,6 +525,48 @@ void WgChart::SetValueRangeResponder(std::function<void(WgChart * pWidget, float
 		func(this, m_topValue, m_bottomValue);
 }
 
+//____ SetBitmapCaching() ____________________________________________________________
+
+bool WgChart::SetBitmapCaching( int firstWaveId, int lastWaveId, WgSurfaceFactory * pFactory )
+{
+    if( firstWaveId < 1 || firstWaveId > lastWaveId || lastWaveId >= m_waveIdCounter || pFactory == nullptr )
+        return false;
+    
+    m_cacheFirst = firstWaveId;
+    m_cacheLast = lastWaveId;
+    
+    if( pFactory != m_pSurfaceFactory )
+    {
+        if( m_pCacheBitmap )
+        {
+            delete m_pCacheBitmap;
+            m_pCacheBitmap = nullptr;
+            m_cacheDirt.Clear();
+        }
+        
+        m_pSurfaceFactory = pFactory;
+    }
+
+    return true;
+}
+
+//____ ClearBitmapCaching() __________________________________________________________
+
+void WgChart::ClearBitmapCaching()
+{
+    m_cacheFirst    = 0;
+    m_cacheLast     = 0;
+    
+    if( m_pCacheBitmap )
+    {
+        delete m_pCacheBitmap;
+        m_pCacheBitmap = nullptr;
+    }
+    m_pSurfaceFactory = nullptr;
+    m_cacheDirt.Clear();
+}
+
+
 //____ _onCloneContent() _______________________________________________________
 
 void WgChart::_onCloneContent( const WgWidget * _pOrg )
@@ -519,13 +576,77 @@ void WgChart::_onCloneContent( const WgWidget * _pOrg )
 	m_defaultSize = pOrg->m_defaultSize;
 }
 
+//____ _renderPatches() ________________________________________________________
+
+void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+{
+    if( m_cacheFirst > 0 )
+    {
+        if( !m_pCacheBitmap )
+        {
+            m_pCacheBitmap = m_pSurfaceFactory->CreateSurface( _canvas.size() );
+            m_cacheDirt.Add( _canvas.size() );
+        }
+        
+        if( !m_cacheDirt.IsEmpty() )
+            _updateBitmapCache( pDevice );
+    }
+    
+    WgWidget::_renderPatches( pDevice, _canvas, _window, _pPatches );
+}
+
+//____ _updateBitmapCache() ____________________________________________________
+
+void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
+{
+    auto pOldCanvas = pDevice->canvas();
+
+    WgColor oldTint = pDevice->tintColor();
+    WgBlendMode oldBlend = pDevice->blendMode();
+    const WgRect * pOldClipList = pDevice->clipList();
+    int     oldClipListSize = pDevice->clipListSize();
+    
+    pDevice->setCanvas(m_pCacheBitmap->RealSurface());
+    pDevice->setBlendMode(WgBlendMode::Replace);
+    pDevice->setTintColor(WgColor::White);
+
+    pDevice->setClipList(m_cacheDirt.Size(), m_cacheDirt.Begin());
+    pDevice->fill(WgColor::Transparent);
+
+    pDevice->setBlendMode(WgBlendMode::Blend);
+
+    WgRect canvas = m_pSkin ? m_pSkin->ContentRect(m_pCacheBitmap->PixelSize(), WgStateEnum::Normal, m_scale) : WgRect(0,0,m_pCacheBitmap->PixelSize());
+    WgRect waveCanvas = canvas - m_pixelPadding;
+
+ 
+    m_cacheDirt.Clip( { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h } );
+
+    for( int i = m_cacheFirst-1 ; i <= m_cacheLast-1 ; i++ )
+        _renderWave( m_waves[i], pDevice, waveCanvas );
+
+/*
+    pDirt = m_cacheDirt.Begin();
+    while( pDirt < m_cacheDirt.End() )
+    {
+        WgRect waveClip(*pDirt, { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h });        // Samples stay within padding, values may stretch outside.
+        for( int i = m_cacheFirst-1 ; i <= m_cacheLast-1 ; i++ )
+            _renderWave( m_waves[i], pDevice, waveCanvas, waveClip );
+        pDirt++;
+    }
+*/
+    m_cacheDirt.Clear();
+    pDevice->setCanvas(pOldCanvas);
+    pDevice->setTintColor(oldTint);
+    pDevice->setBlendMode(oldBlend);
+    pDevice->setClipList(oldClipListSize, pOldClipList);
+}
 
 //____ _onRender() _____________________________________________________________
 
-void WgChart::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	WgWidget::_onRender(pDevice, _canvas, _window, _clip);
-
+	WgWidget::_onRender(pDevice, _canvas, _window);
+    
 	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
 	// Preparations for both grid and wave drawing
@@ -540,11 +661,11 @@ void WgChart::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 		for (auto& line : m_sampleGridLines)
 		{
 			int xOfs = waveCanvas.x + (int) ((line.pos - m_firstSample) * sampleScale);
-			pDevice->ClipDrawLine(_clip, { xOfs, canvas.y }, WgDirection::Down, canvas.h, line.color, line.thickness * m_scale / WG_SCALE_BASE);
+			pDevice->drawLine({ xOfs, canvas.y }, WgDirection::Down, canvas.h, line.color, line.thickness * m_scale / WG_SCALE_BASE);
 
 			if (!line.label.IsEmpty())
 			{
-				WgPen	pen(pDevice, _canvas, _clip);
+				WgPen	pen(pDevice, _canvas);
 				WgTextAttr attr;
 
 				WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
@@ -567,10 +688,10 @@ void WgChart::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 				WgCoord labelPos = _placeLabel({ xOfs,canvas.y+canvas.h }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
 
 				if (m_sampleLabelStyle.pSkin)
-					m_sampleLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, _clip, m_scale);
+					m_sampleLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
-				pDevice->PrintLine(pen, attr, line.label.Chars());
+                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
 			}
 		}
 	}
@@ -588,11 +709,11 @@ void WgChart::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
-			pDevice->ClipDrawLine(_clip, { canvas.x, yOfs }, WgDirection::Right, canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE );
+			pDevice->drawLine({ canvas.x, yOfs }, WgDirection::Right, canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE );
 
 			if (!line.label.IsEmpty())
 			{
-				WgPen	pen(pDevice, _canvas, _clip);
+				WgPen	pen(pDevice, _canvas);
 				WgTextAttr attr;
 
 				WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
@@ -615,48 +736,80 @@ void WgChart::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgR
 				WgCoord labelPos = _placeLabel({ canvas.x, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
-					m_valueLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, _clip, m_scale );
+					m_valueLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale );
 
 				pen.SetPos(labelPos + textOfs);
-				pDevice->PrintLine(pen, attr, line.label.Chars());
+                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
 			}
 		}
 	}
 
-
 	// Render waves
 
-	WgRect waveClip(_clip, { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h });		// Samples stay within padding, values may stretch outside.
-
-	for (auto& wave : m_waves)
+    const WgRect * pOldClipList = pDevice->clipList();
+    int     oldClipListSize = pDevice->clipListSize();
+    
+	WgRect waveClip( waveCanvas.x, canvas.y, waveCanvas.w, canvas.h );		// Samples stay within padding, values may stretch outside.
+    
+    int allocSize = oldClipListSize*sizeof(WgRect);
+    WgRect * pRects = (WgRect*) WgBase::MemStackAlloc( allocSize );
+    int nRects = 0;
+    
+    for( int i = 0 ; i < oldClipListSize ; i++ )
+    {
+        pRects[nRects] = WgRect(pOldClipList[i], waveClip );
+        if( !pRects[nRects].isEmpty() )
+            nRects++;
+    }
+    
+    pDevice->setClipList(nRects, pRects);
+    
+    for( int i = 0 ; i < m_waves.size() ; i++ )
 	{
-		if (wave.bHidden || wave.nSamples == 0)
-			continue;
-
-		int xOfs = wave.resampledFirst;
-
-		WgWaveLine top, bottom;
-
-		top.color = wave.topLineColor;
-		top.thickness = wave.topLineThickness*m_scale/WG_SCALE_BASE;
-		top.length = (int) wave.resampledTop.size();
-		top.pWave = wave.resampledTop.data();
-		top.hold = wave.resampledDefault;
-
-		bottom.color = wave.bottomLineColor;
-		bottom.thickness = wave.bottomLineThickness*m_scale/WG_SCALE_BASE;
-		bottom.length = (int)wave.resampledBottom.size();
-		bottom.pWave = wave.resampledBottom.data();
-		bottom.hold = wave.resampledDefault;
-
-		int length = std::max(top.length, bottom.length)-1;
-
-        if(length >= 1)
+        if( i == m_cacheFirst-1 )
         {
-            pDevice->ClipDrawHorrWave(waveClip, WgCoord(waveCanvas.x + xOfs, waveCanvas.y), length, top, bottom, wave.frontFill, wave.backFill);
+            pDevice->setBlitSource(m_pCacheBitmap->RealSurface());
+            pDevice->blit( WgCoord(_canvas.x, _canvas.y), _canvas.size() );
+            i = m_cacheLast-1;
         }
+        else
+            _renderWave( m_waves[i], pDevice, waveCanvas );
 	}
 
+    pDevice->setClipList(oldClipListSize, pOldClipList);
+    WgBase::MemStackRelease(allocSize);
+}
+
+//____ _renderWave() __________________________________________________________
+
+void WgChart::_renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& waveCanvas )
+{
+    if (wave.bHidden || wave.nSamples == 0)
+       return;
+    
+    int xOfs = wave.resampledFirst;
+    
+    WgWaveLine top, bottom;
+    
+    top.color = wave.topLineColor;
+    top.thickness = wave.topLineThickness*m_scale/WG_SCALE_BASE;
+    top.length = (int) wave.resampledTop.size();
+    top.pWave = wave.resampledTop.data();
+    top.hold = wave.resampledDefault;
+    
+    bottom.color = wave.bottomLineColor;
+    bottom.thickness = wave.bottomLineThickness*m_scale/WG_SCALE_BASE;
+    bottom.length = (int)wave.resampledBottom.size();
+    bottom.pWave = wave.resampledBottom.data();
+    bottom.hold = wave.resampledDefault;
+    
+    int length = std::max(top.length, bottom.length)-1;
+    
+    if(length >= 1)
+    {
+        pDevice->drawWave(WgRect(waveCanvas.x + xOfs, waveCanvas.y, length, waveCanvas.h), &top, &bottom, wave.frontFill, wave.backFill);
+//        pDevice->ClipDrawHorrWave(waveClip, WgCoord(waveCanvas.x + xOfs, waveCanvas.y), length, top, bottom, wave.frontFill, wave.backFill);
+    }
 }
 
 //____ _placeLabel() __________________________________________________________
@@ -715,7 +868,7 @@ void WgChart::_setScale(int scale)
 
 	SetCanvasPadding(m_pointPadding);		// Update m_pixelPadding and resample if needed.
 	_requestResize();
-	_requestRender();
+	_requestRenderInCache();
 }
 
 
@@ -901,9 +1054,11 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		int begNewSamples = newFirst;
 		float maxLineThickness = std::max(pWave->topLineThickness, pWave->bottomLineThickness)*m_scale / WG_SCALE_BASE;
 
+        bool bInCache = (pWave >= _getWave(m_cacheFirst) && pWave < _getWave(m_cacheLast) );
+        
 		_requestRenderOnNewSamples(	begOrgSamples, pWave->resampledTop.size(), &pWave->resampledTop[0], pWave->resampledBottom.size(), &pWave->resampledBottom[0],
 									begNewSamples, nbNewTopSamples, pNewTopSamples, nbNewBottomSamples, pNewBottomSamples,
-									pWave->resampledDefault, newDefault, maxLineThickness );
+									pWave->resampledDefault, newDefault, maxLineThickness, bInCache );
 
 		// Replace old samples with new. Reversed order of Bottom/Top samples so that we free stack memory in right order.
 
@@ -940,7 +1095,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 
 void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSamples, int * pOrgTopSamples, int nbOrgBottomSamples, int * pOrgBottomSamples,
 											int begNewSamples, int nbNewTopSamples, int * pNewTopSamples, int nbNewBottomSamples, int * pNewBottomSamples,
-											int orgDefaultSample, int newDefaultSample, float maxLineThickness ) 
+											int orgDefaultSample, int newDefaultSample, float maxLineThickness, bool bInCache )
 {
 	// Calculate size of our sample canvas
 
@@ -1086,15 +1241,36 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 			int dirtHeight = std::max(topDirtOfs + topDirtHeight, bottomDirtOfs + bottomDirtHeight) - dirtTop;
 
 			if (dirtHeight > 0)
-				_requestRender({ canvas.x + sectionBeg, canvas.y + dirtTop, sectionWidth, dirtHeight });
+            {
+                WgRect rect( canvas.x + sectionBeg, canvas.y + dirtTop, sectionWidth, dirtHeight );
+                
+                if( bInCache )
+                    _requestRenderInCache(rect);
+                else
+                    _requestRender(rect);
+            }
 		}
 		else
 		{
 			if (topDirtHeight > 0)
-				_requestRender({ canvas.x + sectionBeg, canvas.y + topDirtOfs, sectionWidth, topDirtHeight });
+            {
+                WgRect rect( canvas.x + sectionBeg, canvas.y + topDirtOfs, sectionWidth, topDirtHeight );
+                
+                if( bInCache )
+                    _requestRenderInCache(rect);
+                else
+                    _requestRender(rect);
+            }
 
 			if (bottomDirtHeight > 0)
-				_requestRender({ canvas.x + sectionBeg, canvas.y + bottomDirtOfs, sectionWidth, bottomDirtHeight });
+            {
+                WgRect rect( canvas.x + sectionBeg, canvas.y + bottomDirtOfs, sectionWidth, bottomDirtHeight );
+                
+                if( bInCache )
+                    _requestRenderInCache(rect);
+                else
+                    _requestRender(rect);
+            }
 		}
 
 
@@ -1104,6 +1280,23 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 	}
 
 }
+
+//____ _requestRenderInCache() ___________________________________________________
+
+void WgChart::_requestRenderInCache()
+{
+    if( m_pCacheBitmap )
+        m_cacheDirt.Add( m_pCacheBitmap->PixelSize() );
+    _requestRender();
+}
+
+void WgChart::_requestRenderInCache( const WgRect& rect )
+{
+    if( m_pCacheBitmap )
+        m_cacheDirt.Add( rect );
+    _requestRender(rect);
+}
+
 
 //____ _lineFragmentMinMax() ______________________________________________________
 

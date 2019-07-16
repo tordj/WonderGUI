@@ -27,13 +27,13 @@
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
 #include <wg_animplayer.h>
-#include <wg_tablist.h>
 #include <wg_valuedisplay.h>
 #include <wg_valueeditor.h>
 #include <wg_slider.h>
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_multislider.h>
+#include <wg_payload.h>
 
 namespace WgEvent
 {
@@ -473,7 +473,135 @@ namespace WgEvent
 		return m_style;
 	}
 
+    //____ Eavesdrop _______________________________________________________________
+    
+    Eavesdrop::Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent )
+    {
+        m_type             = WG_EVENT_EAVESDROP;
+        m_pEvent           = pEvent;
+        m_bIsForWidget    = true;
+        m_pWidget         = pEavesdropper;
+    }
+    
+    Eavesdrop::~Eavesdrop()
+    {
+        delete m_pEvent;
+    }
+    
+    WgEvent::Event * Eavesdrop::Event() const
+    {
+        return m_pEvent;
+    }
+    
+    void Eavesdrop::_cloneContentFrom( const WgEvent::Event * _pOrg )
+    {
+        assert(false);              // Not allowed to clone! Needs a deep cloning of pointed to widget.
 
+        const Tick * pOrg = static_cast<const Tick*>(_pOrg);
+        
+        Event::_cloneContentFrom( pOrg );
+    }
+    
+    
+    //____ DragNDrop _______________________________________________________________
+    
+    DragNDrop::DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+    {
+        m_type = type;
+        m_pWidget = pSource;
+        m_bIsForWidget = true;
+        m_pickCategory = pickCategory;
+        m_pPayload = pPayload;
+        m_pPickedFrom = pPickedFrom;
+        m_pFinalRecipient = pFinalReceiver;
+    }
+
+    void DragNDrop::_cloneContentFrom( const Event * _pOrg )
+    {
+        const DragNDrop * pOrg = static_cast<const DragNDrop*>(_pOrg);
+
+        m_pPayload = pOrg->m_pPayload;
+        m_pPickedFrom = pOrg->m_pPickedFrom;
+        m_pickCategory = pOrg->m_pickCategory;
+    }
+
+    DropPick::DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver )
+    : DragNDrop( WG_EVENT_DROP_PICK, pSource, 0, nullptr, pSource, pFinalReceiver ),
+    m_dragWidgetPointerOfs(WgCoord()-pickOfs),
+    m_pickOfs(pickOfs),
+    m_bDeleteWhenDone(true),
+    m_pDragWidget(nullptr)
+    {
+    }
+
+    void DropPick::setPayload( WgPayload * pPayload )
+    {
+        m_pPayload = pPayload;
+    }
+    
+    void DropPick::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
+    {
+        m_pDragWidget = pWidget;
+        m_dragWidgetPointerOfs = pixelPointerOfs;
+        m_bDeleteWhenDone = bDeleteWhenDone;
+    }
+
+    DropProbe::DropProbe( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+    : DragNDrop( WG_EVENT_DROP_PROBE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+    m_bAccepted(false)
+    {
+    }
+
+    DropEnter::DropEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+    : DragNDrop( WG_EVENT_DROP_ENTER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+    m_pDragWidget(pDragWidget)
+    {
+    }
+
+    void DropEnter::setDragWidget( WgWidget * pWidget )
+    {
+        m_pDragWidget = pWidget;
+    }
+
+    DropMove::DropMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+    : DragNDrop( WG_EVENT_DROP_MOVE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+    m_pDragWidget(pDragWidget)
+    {
+    }
+
+    void DropMove::setDragWidget( WgWidget * pWidget )
+    {
+        m_pDragWidget = pWidget;
+    }
+
+    
+    DropLeave::DropLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom )
+    : DragNDrop( WG_EVENT_DROP_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+    {
+    }
+    
+    DropDeliver::DropDeliver( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+    : DragNDrop( WG_EVENT_DROP_DELIVER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+    m_bAccepted(false)
+    {
+    }
+
+    WgWidget * DropDeliver::deliveredTo() const
+    {
+        return m_pWidget.GetRealPtr();
+    }
+
+    DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, WgPayload * pPayload )
+    : DragNDrop( WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr )
+    {
+    }
+
+    DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, WgPayload * pPayload )
+    : DragNDrop( WG_EVENT_DROP_COMPLETE, pPicked, pickCategory, pPayload, pPicked, nullptr ),
+    m_pDeliveree(pDeliveree)
+    {
+    }
+    
 	//____ ButtonPress _________________________________________________________
 
 	ButtonPress::ButtonPress( WgButton * pWidget )
@@ -598,47 +726,6 @@ namespace WgEvent
 	float AnimationUpdate::Fraction() const
 	{
 		return m_fraction;
-	}
-
-	//____ Tablist event methods _______________________________________________
-
-	WgTablist * TablistEvent::Tablist() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgTablist*>(pWidget);
-		else
-			return 0;
-	}
-
-	TabSelect::TabSelect( WgTablist * pWidget, int tabId )
-	{
-		m_type 		= WG_EVENT_TAB_SELECT;
-		m_pWidget 	= pWidget;
-		m_tabId 	= tabId;
-	}
-
-	int TabSelect::TabId() const
-	{
-		return m_tabId;
-	}
-
-	TabPress::TabPress( WgTablist * pWidget, int tabId, int mouseButton )
-	{
-		m_type 		= WG_EVENT_TAB_PRESS;
-		m_pWidget 	= pWidget;
-		m_tabId 	= tabId;
-		m_button	= mouseButton;
-	}
-
-	int TabPress::TabId() const
-	{
-		return m_tabId;
-	}
-
-	int TabPress::MouseButton() const
-	{
-		return m_button;
 	}
 
 	//____ Editvalue event methods ___________________________________________
@@ -871,29 +958,6 @@ namespace WgEvent
 		m_bIsForWidget	= true;
 		m_pWidget 		= pWidget;
 	}
-
-	//____ Table event methods _________________________________________________
-  
-	WgTablePanel * TableCellEvent::Table() const
-	{
-          /*
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget && pWidget->Type() == WgMenu::GetClass() )
-			return static_cast<WgTablePanel*>(pWidget);
-          */
-		return 0;		
-	}
-	
-	int TableCellEvent::Row() const
-	{
-		return m_row;
-	}
-	
-	int TableCellEvent::Column() const
-	{
-		return m_column;
-	}
-	
 
 	//____ MultiSlider event methods __________________________________________
 

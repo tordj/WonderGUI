@@ -267,7 +267,7 @@ void WgPopupOpener::_setScale( int scale )
 
 //____ _onRender() _____________________________________________________________
 
-void WgPopupOpener::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	WgState useState = m_state;
 	if (m_bOpen)
@@ -275,12 +275,8 @@ void WgPopupOpener::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 
 	if (m_pSkin)
     {
-        m_pSkin->Render(pDevice, useState, _canvas, _clip, m_scale);
+        m_pSkin->Render(pDevice, useState, _canvas, m_scale);
     }
-
-    WgRect cli = _clip;
-    WgRect can = _canvas;
-    WgRect win = _window;
 
     WgBlock    block;
 
@@ -304,7 +300,7 @@ void WgPopupOpener::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	// Render icon
 
 	if( m_pIconGfx )
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(mode, m_scale), iconRect );
+        WgGfxDevice::BlitBlock( pDevice, m_pIconGfx->GetBlock(mode, m_scale), iconRect );
 
 	// Print text
 
@@ -312,8 +308,7 @@ void WgPopupOpener::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	{
 		m_text.setMode(mode);
 
-		WgRect clip(textRect,_clip);
-		pDevice->PrintText( clip, &m_text, textRect );
+        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}
 }
 
@@ -378,7 +373,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if (button == 1)
 				m_state.setPressed(true);
 			else
-				pHandler->ForwardEvent(pEvent);
+                WgWidget::_onEvent(pEvent,pHandler);
 
 			if (!m_bOpenOnHover && button == 1)
 			{
@@ -400,7 +395,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if( button == 1 )
 				m_state.setPressed(false);
 			else
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent,pHandler);
 			break;
 		}
 
@@ -408,7 +403,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-				pHandler->ForwardEvent( pEvent );
+                WgWidget::_onEvent(pEvent,pHandler);
 			break;
 		}
 
@@ -422,7 +417,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		}
 
         default:
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent,pHandler);
             break;
 
 	}

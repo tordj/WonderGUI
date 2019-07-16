@@ -587,7 +587,7 @@ void WgModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pH
 	
 	// Forward all events
 	
-	pHandler->ForwardEvent( _pEvent );
+    WgLayer::_onEvent(_pEvent,pHandler);
 }
 
 //____ _firstHook() ___________________________________________________________

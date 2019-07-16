@@ -44,7 +44,7 @@ static const char	c_surfaceType[] = {"OpenGL"};
 
 WgSize WgGlSurface::MaxSize()
 {
-	return _convert(wg::GlSurface::maxSize());
+	return wg::GlSurface::maxSize();
 }
 
 
@@ -53,15 +53,13 @@ WgSize WgGlSurface::MaxSize()
 
 WgGlSurface::WgGlSurface( WgSize size, WgPixelType type )
 {
-	m_pRealSurface = wg::GlSurface::create(_convert(size), _convert(type));
+	m_pRealSurface = wg::GlSurface::create(size,type);
 }
 
 
 WgGlSurface::WgGlSurface( WgSize size, WgPixelType type, uint8_t * pPixels, int pitch,  const WgPixelFormat& pixelFormat )
 {
-	wg::PixelDescription	format;
-	_convert(pixelFormat, format);
-	m_pRealSurface = wg::GlSurface::create(_convert(size), _convert(type), pPixels, pitch, &format);
+	m_pRealSurface = wg::GlSurface::create(size, type, pPixels, pitch, &pixelFormat);
 }
 
 

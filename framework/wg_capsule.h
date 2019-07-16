@@ -70,9 +70,9 @@ protected:
 
 		// Standard Hook methods
 
-		WgCoord			PixelPos() const { return m_pParent->PixelPos(); }
+		WgCoord			PixelPos() const { return WgCoord(); }
 		WgSize			PixelSize() const { 	return m_pParent->PixelSize(); }
-		WgRect			PixelGeo() const { return m_pParent->PixelGeo(); }
+        WgRect			PixelGeo() const { return { 0,0, m_pParent->PixelSize() }; }
 
 		WgCoord			ScreenPixelPos() const { return m_pParent->ScreenPixelPos(); }
 		WgRect			ScreenPixelGeo() const { return m_pParent->ScreenPixelGeo(); }
@@ -82,7 +82,7 @@ protected:
 	protected:
 		void			_requestRender() { m_pParent->_onRenderRequested(); }
 		void			_requestRender( const WgRect& rect ) { m_pParent->_onRenderRequested(rect); }
-		void			_requestResize() { m_pParent->_requestResize(); }
+		void			_requestResize() { m_pParent->_onResizeRequested(); }
 
 		WgHook *		_prevHook() const { return 0; }
 		WgHook *		_nextHook() const { return 0; }
@@ -108,6 +108,9 @@ protected:
 
 	virtual void	_onRenderRequested();
 	virtual void	_onRenderRequested(const WgRect& rect);
+	virtual void	_onResizeRequested();
+
+	virtual void	_childAddedRemovedOrReplaced();
 
 
 	WgHook*			_firstHook() const;

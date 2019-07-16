@@ -42,7 +42,7 @@ public:
 	
 	~WgColorSkin() {};
 	
-	void	Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const;
+    void	Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const;
 	bool	IsOpaque() const;
 	bool	IsOpaque(WgState state) const;
 	bool	IsOpaque( const WgRect& rect, const WgSize& canvasSize, WgState state, int scale ) const;

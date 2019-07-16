@@ -92,7 +92,7 @@ WgSize WgFpsDisplay::PreferredPixelSize() const
 
 //____ _onRender() ________________________________________________________
 
-void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 
 	const int	cCurrentFrames = 10;
@@ -137,7 +137,7 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	WgChar	temp2[40];
 	const char *	pTemp;
 
-	WgPen	pen( pDevice, _canvas, _clip );
+	WgPen	pen( pDevice, _canvas);
 	WgTextAttr attr;
 
 	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
@@ -152,28 +152,28 @@ void WgFpsDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, cons
 	sprintf( temp, "Now: %.2f", fpsCurrent );
 	WgTextTool::readString( pTemp, temp2, 39 );
 
-	pDevice->PrintLine( pen, attr, temp2 );
+    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Min: %.2f", fpsMin );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
+    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Avg: %.2f", fpsAvg );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
+    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Max: %.2f", fpsMax );
 	WgTextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-	pDevice->PrintLine( pen, attr, temp2 );
+    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 }
 
 
@@ -195,6 +195,7 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			_requestRender();
 		}
 		default:
+            WgWidget::_onEvent(pEvent,pHandler);
 			break;
 	}
 }

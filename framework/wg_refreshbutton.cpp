@@ -271,7 +271,7 @@ void WgRefreshButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * 
 
 //____ _onRender() _____________________________________________________________
 
-void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgRefreshButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	// Render background or animation
 
@@ -291,13 +291,13 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 								_canvas.y + (_canvas.h - animBlock.Height())/2,
 								animBlock.Size() );
 
-				pDevice->ClipBlitBlock( _clip, animBlock, dest );
+                WgGfxDevice::BlitBlock( pDevice, animBlock, dest );
 			}
 			break;
 
 			case BUTTON_STRETCHED:
 			{
-				pDevice->ClipBlitBlock( _clip, animBlock, _canvas );
+                WgGfxDevice::BlitBlock( pDevice, animBlock, _canvas );
 			}
 			break;
 
@@ -307,7 +307,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 	}
 	else
 	{
-		pDevice->ClipBlitBlock( _clip, bgBlock, _canvas );
+        WgGfxDevice::BlitBlock( pDevice, bgBlock, _canvas );
 	}
 
 	// Get content rect with displacement.
@@ -334,10 +334,10 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 
 		WgBlock animBlock = m_pRefreshAnim->GetBlock( m_animTimer, m_scale );
 
-		pDevice->ClipBlitBlock( _clip, animBlock, iconRect );
+        WgGfxDevice::BlitBlock( pDevice, animBlock, iconRect );
 	}
 	else if( m_pIconGfx )
-		pDevice->ClipBlitBlock( _clip, m_pIconGfx->GetBlock(m_mode, m_scale), iconRect );
+        WgGfxDevice::BlitBlock( pDevice, m_pIconGfx->GetBlock(m_mode, m_scale), iconRect );
 
 	// Print text
 
@@ -355,8 +355,7 @@ void WgRefreshButton::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, c
 		if( m_pBgGfx )
 			pText->SetBgBlockColors( m_pBgGfx->TextColors() );
 
-		WgRect clip(textRect,_clip);
-		pDevice->PrintText( clip, pText, textRect );
+        WgGfxDevice::PrintText( pDevice, pText, textRect );
 	}
 }
 

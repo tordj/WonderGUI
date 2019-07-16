@@ -119,9 +119,9 @@ void WgValueDisplay::_regenText()
 
 //____ _onRender() _____________________________________________________________
 
-void WgValueDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgValueDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	pDevice->PrintText( _clip, &m_text, _canvas );
+    WgGfxDevice::PrintText( pDevice, &m_text, _canvas );
 }
 
 //____ _onCloneContent() _______________________________________________________

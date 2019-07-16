@@ -214,7 +214,7 @@ protected:
 
 	void	_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
 	void	_onCloneContent( const WgWidget * _pOrg ) override;
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip ) override;
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window ) override;
 	bool	_onAlphaTest( const WgCoord& ofs ) override;
 	void	_setScale(int scale) override;
 

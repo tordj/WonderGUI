@@ -32,7 +32,9 @@
 
 //____ Constructor _____________________________________________________________
 
-WgContainer::WgContainer() : m_bSiblingsOverlap(true)
+WgContainer::WgContainer()
+: m_bSiblingsOverlap(true),
+  m_bEavesdropping(false)
 {
 }
 
@@ -178,6 +180,13 @@ void WgContainer::SetScale( int scale )
 		_setScale(scale);
 }
 
+//____ SetEavesdropping() ______________________________________________________________
+
+void WgContainer::SetEavesdropping( bool bEavesdropping )
+{
+    m_bEavesdropping = bEavesdropping;
+}
+
 
 //____ _onNewRoot() ___________________________________________________________
 
@@ -289,7 +298,7 @@ public:
 	WgPatches	patches;
 };
 
-void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
@@ -305,8 +314,8 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 	// Render container itself
 
-	for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
-		_onRender(pDevice, _canvas, _window, *pRect );
+    pDevice->setClipList(patches.Size(), patches.Begin());
+    _onRender(pDevice, _canvas, _window );
 
 
 	// Render children
@@ -342,7 +351,7 @@ void WgContainer::_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, 
 
 			p->patches.Push( &patches );
 
-			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->GetBlendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if( patches.IsEmpty() )
 				break;

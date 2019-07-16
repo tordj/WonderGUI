@@ -180,14 +180,14 @@ WgString WgTextDisplay::GetTooltipString() const
 
 //____ _onRender() ________________________________________________________
 
-void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    WgWidget::_onRender(pDevice,_canvas,_window,_clip);
+    WgWidget::_onRender(pDevice,_canvas,_window);
 
 	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
 
-    m_text.setMode(WG_MODE_NORMAL);
-//	m_text.setMode(WgUtil::StateToMode(m_state));
+	//    m_text.setMode(WG_MODE_NORMAL);
+	//    m_text.setMode(WgUtil::StateToMode(m_state));
 
 	WgText * pText = &m_text;
 
@@ -196,7 +196,7 @@ void WgTextDisplay::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, con
 	else
 		m_text.hideCursor();
 
-	pDevice->PrintText( _clip, pText, canvas );
+    WgGfxDevice::PrintText( pDevice, pText, canvas );
 
 	if( pText != &m_text )
 		delete pText;
@@ -435,7 +435,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (!bSwallowed)
 	{
-		pHandler->ForwardEvent(pEvent);
+        WgWidget::_onEvent( pEvent, pHandler );
 	}
 }
 

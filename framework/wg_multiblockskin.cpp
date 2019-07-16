@@ -24,8 +24,10 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg3_util.h>
 
 #include <assert.h>
+#include <algorithm>
 
 //____ create() _______________________________________________________________
 
@@ -100,19 +102,15 @@ int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord blockStartOfs, WgSize 
 
 	layer.blendMode = WgBlendMode::Blend;
 	layer.pSurface = pSurf;
-
+    layer.stateBlockMask = 0;
+    
 	if (pSurf->IsOpaque())
 		m_bIsOpaque = true;
 
 	//
 
-	bool	bSlotUsed[WG_NB_STATES];
-
 	for (int i = 0; i < WG_NB_STATES; i++)
-	{
 		layer.tintColor[i] = WgColor::White;
-		bSlotUsed[i] = false;
-	}
 
 	//
 
@@ -120,29 +118,23 @@ int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord blockStartOfs, WgSize 
 	for (WgStateEnum state : stateBlocks)
 	{
 		int index = WgUtil::_stateToIndex(state);
-
-		bSlotUsed[index] = true;
+        
+        layer.stateBlockMask.setBit(index);
 		layer.blockOfs[index] = blockStartOfs + WgCoord(blockPitch.w*ofs, blockPitch.h*ofs);
 		ofs++;
 	}
 
 	//
 
-	assert(bSlotUsed[WgUtil::_stateToIndex(WgStateEnum::Normal)]);				// A block for state normal is required.
-
+    assert(layer.stateBlockMask.bit(0) == true);                // A block for state normal is required.
+    
 	// Fill in fallback states and update opacity flag
 
 	for (int i = 0; i < WG_NB_STATES; i++)
 	{
-		if (!bSlotUsed[i])
+        if (!layer.stateBlockMask.bit(i))
 		{
-			WgState state = WgUtil::_indexToState(i);
-
-			int step = 0;
-			int fallbackIndex = WgUtil::_stateToIndex(WgUtil::FallbackState(state,step++));
-			while (!bSlotUsed[fallbackIndex])
-				fallbackIndex = WgUtil::_stateToIndex(WgUtil::FallbackState(state, step++));
-
+            int fallbackIndex = wg::Util::bestStateIndexMatch(i, layer.stateBlockMask);
 			layer.blockOfs[i] = layer.blockOfs[fallbackIndex];
 		}
 
@@ -177,15 +169,8 @@ bool WgMultiBlockSkin::SetLayerTint(int layerIdx, std::initializer_list<WgStateC
 {
 	auto& layer = m_layers.at(layerIdx-1);
 
-	// 
-
-	bool	bSlotUsed[WG_NB_STATES];
-
+    // Set default color for normal state.
 	layer.tintColor[0] = WgColor::White;
-	bSlotUsed[0] = true;						// StateColor doesn't need to be specified for normal state, assumed to be white if not included
-
-	for (int i = 1; i < WG_NB_STATES; i++)
-		bSlotUsed[i] = false;
 
 	//
 
@@ -200,24 +185,18 @@ bool WgMultiBlockSkin::SetLayerTint(int layerIdx, std::initializer_list<WgStateC
 		if (oldAlpha != stateColor.color.a)
 			_updateStateOpacity(index);
 
-		bSlotUsed[index] = true;
+        layer.stateColorMask.setBit(index);
 	}
 
 	// Fill in fallback states and update opacity flag
 
 	for (int i = 0; i < WG_NB_STATES; i++)
 	{
-		if (!bSlotUsed[i])
+        if (!layer.stateColorMask.bit(i))
 		{
-			WgState state = WgUtil::_indexToState(i);
-
-			int step = 0;
-			int fallbackIndex = WgUtil::_stateToIndex(WgUtil::FallbackState(state, step++));
-			while (!bSlotUsed[fallbackIndex])
-				fallbackIndex = WgUtil::_stateToIndex(WgUtil::FallbackState(state, step++));
-
 			uint8_t		oldAlpha = layer.tintColor[i].a;
 
+            int fallbackIndex = wg::Util::bestStateIndexMatch(i, layer.stateBlockMask);
 			layer.tintColor[i] = layer.tintColor[fallbackIndex];
 
 			if (oldAlpha != layer.tintColor[i].a )
@@ -251,15 +230,15 @@ bool WgMultiBlockSkin::SetLayerBlendMode(int layerIdx, WgBlendMode blendMode)
 
 //____ render() _______________________________________________________________
 
-void WgMultiBlockSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const
+void WgMultiBlockSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const
 {
 	if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 		return;
 
 	int stateIndex = WgUtil::_stateToIndex(state);
 
-	WgBlendMode orgBlendMode = pDevice->GetBlendMode();
-	WgColor		orgTintColor = pDevice->GetTintColor();
+	WgBlendMode orgBlendMode = pDevice->blendMode();
+	WgColor		orgTintColor = pDevice->tintColor();
 
 	WgBlendMode blendMode = orgBlendMode;
 	WgColor		tintColor = orgTintColor;
@@ -270,79 +249,33 @@ void WgMultiBlockSkin::Render( WgGfxDevice * pDevice, WgState state, const WgRec
 		if (layer.blendMode != blendMode)
 		{
 			blendMode = layer.blendMode;
-			pDevice->SetBlendMode(blendMode);
+			pDevice->setBlendMode(blendMode);
 		}
 
 		if (layer.tintColor[stateIndex] != tintColor )
 		{
 			tintColor = layer.tintColor[stateIndex];
 			mixedTint = orgTintColor * tintColor;
-			pDevice->SetTintColor(mixedTint);
+			pDevice->setTintColor(mixedTint);
 		}
 
 
+        
 		const WgRect&	src = WgRect(layer.blockOfs[stateIndex], m_blockSize);
-
-		// Shortcuts & optimizations for common special cases.
-
-		if (src.w == _canvas.w && src.h == _canvas.h && scale == m_scale)
-		{ 
-			pDevice->ClipBlit(_clip, layer.pSurface, src, _canvas.pos().x, _canvas.pos().y);
-			continue;
-		}
-
-		if (m_frame.left + m_frame.top + m_frame.right + m_frame.bottom == 0)
-		{
-			pDevice->ClipStretchBlit(_clip, layer.pSurface, src, _canvas);
-			continue;
-		}
 
 		const WgBorders&    sourceBorders = m_frame.scale(m_scale);
 		const WgBorders     canvasBorders = m_frame.scale(scale);
 
-		if (src.w == _canvas.w)
-		{
-			pDevice->ClipBlitVertStretchBar(_clip, layer.pSurface, src, sourceBorders, _canvas, canvasBorders);
-			continue;
-		}
-
-		// Render upper row (top-left corner, top stretch area and top-right corner)
-
-		if (canvasBorders.top > 0)
-		{
-			WgRect sourceRect(src.x, src.y, src.w, sourceBorders.top);
-			WgRect destRect(_canvas.x, _canvas.y, _canvas.w, canvasBorders.top);
-
-			pDevice->ClipBlitHorrStretchBar(_clip, layer.pSurface, sourceRect, sourceBorders, destRect, canvasBorders);
-		}
-
-		// Render mid row (left and right stretch area and middle section)
-
-		if (_canvas.h - canvasBorders.height() > 0)
-		{
-			WgRect sourceRect(src.x, src.y + sourceBorders.top, src.w, src.h - sourceBorders.height());
-			WgRect destRect(_canvas.x, _canvas.y + canvasBorders.top, _canvas.w, _canvas.h - canvasBorders.height());
-
-			pDevice->ClipBlitHorrStretchBar(_clip, layer.pSurface, sourceRect, sourceBorders, destRect, canvasBorders);
-		}
-
-		// Render lowest row (bottom-left corner, bottom stretch area and bottom-right corner)
-
-		if (canvasBorders.bottom > 0)
-		{
-			WgRect sourceRect(src.x, src.y + src.h - sourceBorders.bottom, src.w, sourceBorders.bottom);
-			WgRect destRect(_canvas.x, _canvas.y + _canvas.h - canvasBorders.bottom, _canvas.w, canvasBorders.bottom);
-
-			pDevice->ClipBlitHorrStretchBar(_clip, layer.pSurface, sourceRect, sourceBorders, destRect, canvasBorders);
-		}
-
+        pDevice->setBlitSource(layer.pSurface->RealSurface());
+        pDevice->blitNinePatch(_canvas, canvasBorders, src, sourceBorders);
+        
 	}
 
 	if (mixedTint != orgTintColor)
-		pDevice->SetTintColor(orgTintColor);
+		pDevice->setTintColor(orgTintColor);
 
 	if (blendMode != orgBlendMode)
-		pDevice->SetBlendMode(orgBlendMode);
+		pDevice->setBlendMode(orgBlendMode);
 }
 
 

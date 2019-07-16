@@ -182,6 +182,9 @@ void WgLayer::_onBaseChanged()
 {
 	_onRequestRender( WgRect(0,0,m_size), 0 );
 	_requestResize();
+    
+    if (m_baseHook.Widget())
+        m_baseHook.Widget()->_onNewSize(m_size);
 }
 
 //_____________________________________________________________________________

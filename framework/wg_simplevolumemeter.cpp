@@ -2,6 +2,9 @@
 #include <wg_simplevolumemeter.h>
 #include <wg_gfxdevice.h>
 
+#include <algorithm>
+
+
 static const char	c_widgetType[] = {"SimpleVolumeMeter"};
 
 
@@ -326,7 +329,7 @@ void WgSimpleVolumeMeter::_onNewSize( const WgSize& size )
 
 //____ _onRender() _____________________________________________________________________
 
-void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgSimpleVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if( !m_bEnabled )
 		return;
@@ -346,14 +349,14 @@ void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canva
 			r.y += m_iSidePadding;
 		}
 
-		_renderBar( pDevice, 0, r, _clip );
+		_renderBar( pDevice, 0, r );
 
 		if (m_direction == WgDirection::Up || m_direction == WgDirection::Down)
 			r.x += r.w + m_iGap;
 		else
 			r.y += r.h + m_iGap;
 
-		_renderBar( pDevice, 1, r, _clip );
+		_renderBar( pDevice, 1, r );
 		
 	}
 	else 
@@ -370,13 +373,13 @@ void WgSimpleVolumeMeter::_onRender( WgGfxDevice * pDevice, const WgRect& _canva
 			r.h = r.h - 2 * m_iSidePadding;
 			r.y += m_iSidePadding;
 		}
-		_renderBar( pDevice, 0, r, _clip );
+		_renderBar( pDevice, 0, r );
 	}
 }
 
 //____ _renderBar()_____________________________________________________________
 
-void WgSimpleVolumeMeter::_renderBar( WgGfxDevice * pDevice, int nb, const WgRect& _rect, const WgRect& _clip )
+void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgRect& _rect )
 {
 	int peakHeight 	= m_iPeak[nb];
 	int holdOfs 	= m_iHold[nb];
@@ -418,9 +421,9 @@ void WgSimpleVolumeMeter::_renderBar( WgGfxDevice * pDevice, int nb, const WgRec
 			}
 
 			if (m_pHoldSkin)
-				m_pHoldSkin->Render(pDevice, WgStateEnum::Normal, _rect, _clip, m_scale);
+				m_pHoldSkin->Render(pDevice, WgStateEnum::Normal, _rect, m_scale);
 			else
-				pDevice->Fill( WgRect( r, _clip ), c );
+				pDevice->fill( r, c );
 		}
 		else if( holdOfs > peakHeight )
 			peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
@@ -452,7 +455,7 @@ void WgSimpleVolumeMeter::_renderBar( WgGfxDevice * pDevice, int nb, const WgRec
 			break;
 		}
 
-		m_pPeakSkin->Render(pDevice, WgStateEnum::Normal, r, _clip, m_scale);
+		m_pPeakSkin->Render(pDevice, WgStateEnum::Normal, r, m_scale);
 	}
 	else
 	{
@@ -488,7 +491,7 @@ void WgSimpleVolumeMeter::_renderBar( WgGfxDevice * pDevice, int nb, const WgRec
 				break;
 			}
 
-			pDevice->Fill(WgRect(r, _clip), m_sectionColors[i]);
+			pDevice->fill(r, m_sectionColors[i]);
 
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;

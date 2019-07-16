@@ -349,7 +349,7 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 		break;
 
 		default:
-			pHandler->ForwardEvent( pEvent );
+            WgWidget::_onEvent(pEvent, pHandler);
 		break;
 	}
 }
@@ -360,26 +360,26 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 #ifdef SOFTUBE_USE_PACE_FUSION
 PACE_FUSION_NO_USER_CALLBACK
 #endif
-void WgAnimPlayer::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
     if( m_kTintColor.argb != 0)
     {
-        pDevice->SetTintColor( m_kTintColor );
+        pDevice->setTintColor( m_kTintColor );
     }
     
 	if( m_pAnim && m_bEnabled )
-		pDevice->ClipBlitBlock( _clip, m_animFrame, _canvas );
+        WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
 	else if( m_pStaticBlock )
 	{
 		WgMode mode = WG_MODE_NORMAL;
 		if( !m_bEnabled )
 			mode = WG_MODE_DISABLED;
 
-		pDevice->ClipBlitBlock( _clip, m_pStaticBlock->GetBlock(mode,m_scale), _canvas );
+        WgGfxDevice::BlitBlock( pDevice, m_pStaticBlock->GetBlock(mode,m_scale), _canvas );
 	}
     
     // Reset tint color
-    pDevice->SetTintColor( WgColor( 0xff, 0xff, 0xff, 0xff ) );
+    pDevice->setTintColor( WgColor( 0xff, 0xff, 0xff, 0xff ) );
 }
 
 //____ _onRefresh() _______________________________________________________

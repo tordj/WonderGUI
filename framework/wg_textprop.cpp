@@ -104,6 +104,12 @@ void WgTextprop::SetColor( WgColor col, WgMode mode )
 	{
 		m_modeProp[mode].m_bColored	= true;
 		m_modeProp[mode].m_color	= col;
+
+		if( mode == WG_MODE_SELECTED )
+		{
+			m_modeProp[WG_MODE_SPECIAL].m_bColored	= true;
+			m_modeProp[WG_MODE_SPECIAL].m_color	= col;
+		}
 	}
 }
 

@@ -112,10 +112,10 @@ void WgFiller::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgFiller::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip )
+void WgFiller::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
 	if( m_pColors )
-		pDevice->Fill( _clip, m_pColors->Color(m_mode) );
+		pDevice->fill( _canvas, m_pColors->Color(m_mode) );
 }
 
 //____ _onAlphaTest() ___________________________________________________________

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -72,7 +72,7 @@ public:
 	WgBlocksetPtr	GetCheckedSource() const { return m_pBlockChecked; }
 	WgBlocksetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
 
-	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked, 
+	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked,
 							  const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
 	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
 	void			SetCheckedIcon( const WgBlocksetPtr& pChecked );
@@ -96,12 +96,12 @@ public:
 
 	WgSize			PreferredPixelSize() const;
 	bool			IsAutoEllipsisDefault() const { return false; };
-	
+
 
 protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-	void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
@@ -109,8 +109,9 @@ protected:
 	void	_onEnable();
 	void	_onDisable();
 	void 	_setScale( int scale );
-	
-	
+
+	bool	_setState( bool state );
+
 	bool			m_bChecked;
 
 	virtual void	_iconModified();
@@ -121,10 +122,10 @@ private:
 
 	void	_refreshTextArea();
 	bool	_markTestTextArea( int _x, int _y );
-	
 
 
-	bool			m_bOver;						// Set when mouse is over.							
+
+	bool			m_bOver;						// Set when mouse is over.
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 

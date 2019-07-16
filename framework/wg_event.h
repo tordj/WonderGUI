@@ -49,19 +49,20 @@ class WgButton;
 class WgCheckBox;
 class WgRadioButton;
 class WgAnimPlayer;
-class WgTablist;
 class WgValueDisplay;
 class WgValueEditor;
 class WgWidgetSlider;
 class WgMenu;
 class WgPopupLayer;
 class WgModalLayer;
-class WgTablePanel;
 class WgInterfaceEditText;
 class WgText;
 class WgMultiSlider;
+class WgPayload;
+class WgDragNDropLayer;
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
+typedef class WgSmartPtr<WgPayload> WgPayloadPtr;
 
 namespace WgEvent
 {
@@ -69,6 +70,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 		friend class ::WgWidget;
+        friend class Eavesdrop;
 
 		public:
 			WgEventType		Type() const { return m_type; }
@@ -103,6 +105,9 @@ namespace WgEvent
 			WgCoord			m_pointerLocalPixelPos;	// Widget-relative position of pointer. Same as m_pointerScreenPixelPos if Widget not set.
 			WgCoord			m_pointerScreenPixelPos;	// Screen position of pointer.
             int             m_pointScale;
+            WgWidgetWeakPtr m_pFinalRecipient;
+        
+            WgWidgetWeakPtr m_pForwardTo;
 	};
 
 	class MouseButtonEvent : public Event
@@ -282,7 +287,157 @@ namespace WgEvent
 		WgPointerStyle	m_style;
 	};
 
+    
+    class Eavesdrop : public Event
+    {
+        friend class ::WgEventHandler;
+    public:
+        
+        WgEvent::Event *    Event() const;
+    protected:
+        Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent );
+        ~Eavesdrop();
+        virtual void     _cloneContentFrom( const WgEvent::Event * pOrg );
+        
+        WgEvent::Event *   m_pEvent;
+        
+        
+    };
+    
+    //____ DragNDrop events _____________________________________________________
+    
+    class DragNDrop : public Event
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        WgPayloadPtr       payload() const { return m_pPayload; }
+        WgWidgetWeakPtr    pickedFrom() const { return m_pPickedFrom; }
+        int                pickCategory() const { return m_pickCategory; }
+        
+    protected:
+        DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        virtual void     _cloneContentFrom( const Event * pOrg );
 
+        WgPayloadPtr        m_pPayload;
+        WgWidgetWeakPtr    m_pPickedFrom;
+        int                 m_pickCategory;
+    };
+    
+    class DropPick : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        void                setPayload( WgPayload * pPayload );
+        bool                hasPayload() const { return m_pPayload; }
+        
+        WgCoord               pickOfs() const { return m_pickOfs; }
+        bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
+        
+        void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
+        bool                hasDragWidget() const { return m_pDragWidget; }
+        WgWidget *          dragWidget() const { return m_pDragWidget; }
+        WgCoord               dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
+        
+    protected:
+        DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver );
+        
+        WgWidget *            m_pDragWidget;
+        WgCoord               m_dragWidgetPointerOfs;
+        WgCoord               m_pickOfs;
+        bool                  m_bDeleteWhenDone;
+    };
+    
+    class DropProbe : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
+        bool            isAccepted() const { return m_bAccepted; }
+        
+    protected:
+        DropProbe( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        
+        bool        m_bAccepted;
+    };
+    
+    class DropEnter : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        void                setDragWidget( WgWidget * pWidget );
+        WgWidget *          dragWidget() const { return m_pDragWidget; }
+        
+    protected:
+        DropEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+        
+        WgWidget *          m_pDragWidget;
+    };
+    
+    class DropMove : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        void                setDragWidget( WgWidget * pWidget );
+        WgWidget *          dragWidget() const { return m_pDragWidget; }
+        
+    protected:
+        DropMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+        
+        WgWidget *          m_pDragWidget;
+    };
+    
+    class DropLeave : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+        
+    protected:
+        DropLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+    };
+    
+    class DropDeliver : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        WgWidget *      deliveredTo() const;
+        void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
+        bool            isAccepted() const { return m_bAccepted; }
+        
+    protected:
+        DropDeliver( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        
+        bool        m_bAccepted;
+    };
+    
+    class DropCancel : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+        
+    protected:
+        DropCancel( WgWidget * pPickedFrom, int pickCategory, WgPayload * pPayload );
+        
+    };
+    
+    class DropComplete : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+        WgWidget *      deliveredTo() const { return m_pDeliveree; }
+        
+    protected:
+        DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, WgPayload * pPayload );
+        
+        WgWidget *     m_pDeliveree;
+    };
+
+    
+    
 	//____ WgButton events _______________________________________________
 
 	class ButtonPress : public Event
@@ -464,34 +619,6 @@ namespace WgEvent
 	private:
 		int		m_frame;
 		float	m_fraction;
-	};
-
-	//____ WgTablist events _______________________________________________
-
-	class TablistEvent : public Event
-	{
-	public:
-		WgTablist *	Tablist() const;
-	};
-
-	class TabSelect : public TablistEvent
-	{
-	public:
-		TabSelect( WgTablist * pWidget, int tabId );
-		int		TabId() const;
-	private:
-		int		m_tabId;
-	};
-
-	class TabPress : public TablistEvent
-	{
-	public:
-		TabPress( WgTablist * pWidget, int tabId, int mouseButton );
-		int		TabId() const;
-		int		MouseButton() const;
-	private:
-		int		m_tabId;
-		int		m_button;
 	};
 
 	//____ WgValueEditor events _____________________________________
@@ -686,36 +813,6 @@ namespace WgEvent
 		friend class ::WgModalLayer;
 	protected:
 		ModalBlockedRelease( int button, WgWidget * pModalWidget );
-	};
-
-	//____ WgTablePanel events _________________________________________________
-
-	class TableCellEvent : public Event
-	{
-	public:
-		WgTablePanel * 	Table() const;
-		int				Row() const;
-		int				Column() const;
-		WgWidget *		CellContent() const;
-		
-	protected:
-		int				m_row;
-		int				m_column;
-		WgWidgetWeakPtr	m_pCellContent;
-	};
-
-	class TableCellMarked : public TableCellEvent
-	{
-		friend class ::WgTablePanel;
-	protected:
-		TableCellMarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
-	};
-
-	class TableCellUnmarked : public TableCellEvent
-	{
-		friend class ::WgTablePanel;
-	protected:
-		TableCellUnmarked( WgTablePanel * pTable, int row, int column, WgWidget * pCellContent );
 	};
 
 	//____ WgMultiSlider events _______________________________________________

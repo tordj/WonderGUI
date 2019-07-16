@@ -48,6 +48,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 	friend class WgRootPanel;
 	friend class WgFlexPanel;
 	friend class WgModalLayer;
+    friend class WgDragNDropLayer;
 	friend class WgTablePanel;
 	friend class WgScrollPanel;
 	friend class WgStackPanel;
@@ -86,7 +87,9 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		void					SetScale( int scale );
 		int						Scale() const { return m_scale; }
 
-
+        void                    SetEavesdropping( bool bEavesdropping );
+        bool                    IsEavesdropping() const { return m_bEavesdropping; }
+    
 	protected:
 		WgContainer();
 		virtual ~WgContainer() {};
@@ -98,7 +101,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 		virtual void	_setScale( int scale );
 
-		virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+        virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
@@ -117,6 +120,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		virtual void	_onCloneContent( const WgContainer * _pOrg );
 
 		bool		m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+        bool        m_bEavesdropping;
 };
 
 #endif //WG_CONTAINER_DOT_H

@@ -50,7 +50,6 @@
 #endif
 
 
-class WgGfxDevice;
 class Wg_Interface_TextHolder;
 class WgContainer;
 class WgPanel;
@@ -70,6 +69,7 @@ friend class WgFlexHook;
 friend class WgModalHook;
 friend class WgListHook;
 friend class WgStackHook;
+friend class WgDragNDropHook;
 
 friend class WgRootPanel;
 friend class WgFlexPanel;
@@ -85,11 +85,15 @@ friend class WgPanel;
 friend class WgPackPanel;
 friend class WgShaderCapsule;
 friend class WgCanvasCapsule;
+friend class WgFixCapsule;
 friend class WgPopupLayer;
 friend class WgFlowPanel;
+friend class WgDragNDropLayer;
 
 friend class WgTableRow;
 
+friend class WgZoomOutCapsule;
+    
 public:
 	WgWidget();
 	virtual ~WgWidget();
@@ -145,7 +149,7 @@ public:
 	WgRect			ScreenPixelGeo() const { if( m_pHook ) return m_pHook->ScreenPixelGeo(); return WgRect(0,0,256,256); }
 
 	bool			GrabFocus() { if( m_pHook ) return m_pHook->_requestFocus(); return false; }
-	bool			ReleaseFocus() { if( m_pHook ) return m_pHook->_releaseFocus(); return false; }
+	bool			ReleaseFocus() { if( m_pHook && m_bFocused ) return m_pHook->_releaseFocus(); return false; }
 	bool			IsFocused() { return m_bFocused; }
 	WgContainer *	Parent() const { if( m_pHook ) return m_pHook->_parent(); return 0; }
 	WgWidgetHolder* Holder() const { if( m_pHook ) return m_pHook->_holder(); return 0; }
@@ -197,6 +201,12 @@ public:
 
 	virtual WgMode	Mode() const;
 
+    virtual void        setPickable( bool bPickable, int category = 0 );
+    bool                isPickable() const { return m_bPickable; }
+    int                 pickCategory() const { return m_pickCategory; }
+    
+    void                setDropTarget( bool bDropTarget );
+    bool                isDropTarget() const { return m_bDropTarget; }
 
 protected:
 
@@ -219,11 +229,11 @@ protected:
 
 	// To be overloaded by Widget
 
-	virtual void	_renderPatches( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+    virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
-	virtual void	_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip );
+    virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_setScale( int scale );
 	virtual void	_onRefresh();
@@ -264,6 +274,10 @@ protected:
 
     WgState         m_state;
 
+    bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
+    uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
+    
+    bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;

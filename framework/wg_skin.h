@@ -34,8 +34,9 @@
 #	include <wg_types.h>
 #endif
 
+#include <wg3_gfxdevice.h>
+
 class WgSkin;
-class WgGfxDevice;
 
 typedef	WgSmartPtr<WgSkin>	WgSkinPtr;
 
@@ -45,7 +46,7 @@ class WgSkin : public WgRefCounted
 public:
 	virtual ~WgSkin() {};
 	
-	virtual void Render( WgGfxDevice * pDevice, WgState state, const WgRect& _canvas, const WgRect& _clip, int scale ) const = 0;
+    virtual void Render( wg::GfxDevice * pDevice, WgState state, const WgRect& _canvas, int scale ) const = 0;
 
 	virtual WgSize	MinSize( int scale ) const = 0;
 	virtual WgSize	PreferredSize( int scale ) const = 0;

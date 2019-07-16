@@ -261,12 +261,13 @@ void WgScaleImage::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _onRender() _____________________________________________________________
 
-void WgScaleImage::_onRender( WgGfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, const WgRect& _clip)
+void WgScaleImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window)
 {
 	if( !m_pGenSurface )
 		return;
 
-	pDevice->ClipBlit( _clip, m_pGenSurface, _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y );
+    pDevice->setBlitSource(m_pGenSurface->RealSurface());
+    pDevice->blit( { _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y } );
 }
 
 //____ _onAlphaTest() ___________________________________________________________
