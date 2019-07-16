@@ -10,7 +10,6 @@ mkdir gfxdevices/software
 cd ..
 
 
-cp ../framework/wondergui.h exports/wondergui.h
 cp -r ../framework/base exports/
 cp -r ../framework/interfaces exports/
 cp -r ../framework/gfxdevices exports/

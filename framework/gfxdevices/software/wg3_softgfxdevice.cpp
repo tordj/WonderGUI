@@ -965,7 +965,7 @@ namespace wg
 
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-					uint8_t outB, outG, outR, outA;
+					uint8_t outB = 0, outG = 0, outR = 0, outA = 0;
 
 					int accB = 0;
 					int accG = 0;
@@ -1600,8 +1600,8 @@ namespace wg
 
 		}
 
-        setTintColor(WgColor::White);
-        setBlendMode(WgBlendMode::Blend);
+		setTintColor(WgColor::White);
+		setBlendMode(WgBlendMode::Blend);
         
 		return true;
 	}
@@ -2993,8 +2993,10 @@ namespace wg
 	{
 		// Init mulTab
 
-        for (int i = 0; i < 256; i++)
-            s_mulTab[i] = 65536 * i / 255;
+		//TODO: Both of these causes artefacts, but in different ways. What to do?
+
+		for (int i = 0; i < 256; i++)
+			s_mulTab[i] = 65536 * i / 255;
 
 //		for (int i = 0; i < 256; i++)
 //			s_mulTab[i] = i * 256 + i + 1;

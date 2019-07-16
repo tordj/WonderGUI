@@ -152,7 +152,7 @@ namespace wg
 		if (nRectangles == 0)
 		{
 			m_clipCanvas = m_canvasSize;
-            m_clipBounds = {0,0,0,0};
+			m_clipBounds = {0,0,0,0};
 			m_pClipRects = &m_clipCanvas;
 			m_nClipRects = 0;
 			return true;
@@ -663,10 +663,10 @@ namespace wg
 
 			for (int i = startColumn; i <= length + startColumn; i++)
 			{
-                if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
-                    swap(pTopBorderTrace, pBottomBorderTrace);
+				if (pTopBorderTrace[i * 2] > pBottomBorderTrace[i * 2])
+					swap(pTopBorderTrace, pBottomBorderTrace);
 
-                pEdges[0] = pTopBorderTrace[i * 2];
+				pEdges[0] = pTopBorderTrace[i * 2];
 				pEdges[1] = pTopBorderTrace[i * 2 + 1];
 
 				pEdges[2] = pBottomBorderTrace[i * 2];
@@ -689,7 +689,7 @@ namespace wg
 			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
-			col[3] = pTopBorder->color;
+			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
 			transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
@@ -961,7 +961,7 @@ namespace wg
 		int nOldClipRects = m_nClipRects;
 
 		setClipList(nTopClips, pTopClips);
-        drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer, 4);
+		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer, 4);
 		setClipList(nBottomClips, pBottomClips);
 		drawSegments({clip.x,outerRect.y,clip.w,outerRect.h}, 5, col, samplePoints, pBuffer + samplePoints * 4, 4);
 		setClipList(nOldClipRects, pOldClipRects);

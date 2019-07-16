@@ -191,8 +191,8 @@ namespace wg
 
 	void GlSurface::_setupGlTexture(void * pPixelsToUpload)
 	{
-        GLint oldBinding;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
         
 		glGenTextures(1, &m_texture);
@@ -237,9 +237,9 @@ namespace wg
 			assert(glGetError() == 0);
 		}
 
-        setScaleMode(m_scaleMode);
+		setScaleMode(m_scaleMode);
 
-        glBindTexture(GL_TEXTURE_2D, oldBinding);
+		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		assert(glGetError() == 0);
 	}
@@ -358,9 +358,9 @@ namespace wg
 
 		if (m_pClut == nullptr)
 		{
-            GLint oldBinding;
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
-            glBindTexture(GL_TEXTURE_2D, m_texture);
+			GLint oldBinding;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+			glBindTexture(GL_TEXTURE_2D, m_texture);
 
 			switch (mode)
 			{
@@ -376,7 +376,7 @@ namespace wg
 				break;
 			}
 
-            glBindTexture(GL_TEXTURE_2D, oldBinding);
+			glBindTexture(GL_TEXTURE_2D, oldBinding);
 		}
 
 		Surface::setScaleMode(mode);
@@ -460,14 +460,14 @@ namespace wg
 
 		if( m_accessMode != AccessMode::ReadOnly )
 		{
-            GLint oldBinding;
-            glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+			GLint oldBinding;
+			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
             
 			glBindTexture( GL_TEXTURE_2D, m_texture );
-            glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
 			glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, m_accessFormat, m_pixelDataType, m_pPixels );
-            glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
-            glBindTexture( GL_TEXTURE_2D, oldBinding );
+			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+			glBindTexture( GL_TEXTURE_2D, oldBinding );
 		}
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
@@ -552,8 +552,8 @@ namespace wg
 	{
 		assert(glGetError() == 0);
 
-        GLint oldBinding;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
 		glGenTextures( 1, &m_texture );
 		glBindTexture( GL_TEXTURE_2D, m_texture );
@@ -566,7 +566,7 @@ namespace wg
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
 					 m_accessFormat, m_pixelDataType, m_pBlob->data() );
 
-        glBindTexture( GL_TEXTURE_2D, oldBinding );
+		glBindTexture( GL_TEXTURE_2D, oldBinding );
 
 		assert( glGetError() == 0);
 	}
@@ -612,13 +612,13 @@ namespace wg
 			break;
 		}
 
-        GLint oldBinding;
-        glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, type, m_pBlob->data());
 
-        glBindTexture(GL_TEXTURE_2D, oldBinding);
+		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		GLenum err;
 		assert(0 == (err = glGetError()));
