@@ -122,7 +122,7 @@ public:
 
 	bool largeCircle(GfxDevice * pDevice, const Rect& canvas)
 	{
-		pDevice->drawElipse(canvas, 20.f, Color::Aquamarine, 2.f, Color::White);
+		pDevice->drawElipse(static_cast<RectF>(canvas), 20.f, Color::Aquamarine, 2.f, Color::White);
 		return true;
 	}
 

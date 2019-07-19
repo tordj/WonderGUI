@@ -25,8 +25,7 @@
 #pragma once
 
 #include <wg_base.h>
-#include <wg_context.h>
-
+//#include <wg_context.h>
 
 namespace wg
 {
@@ -107,14 +106,14 @@ namespace wg
 
 	};
 
-	Point fromPixel(int pixel)
+	inline Point fromPixel(int pixel)
 	{
 		Point p;
 		p.value = pixel << 2;
 		return p;
 	}
 
-	Point fromPixel(float pixel)
+	inline Point fromPixel(float pixel)
 	{
 		Point p;
 		p.value = (int)(pixel*4);
@@ -122,33 +121,33 @@ namespace wg
 	}
 
 
-	int toPixel(Point p)
+	inline int toPixel(Point p)
 	{
 		return p.value >> 2;
 	}
 
-	int toPixel(int point) 
+	inline int toPixel(int point) 
 	{ 
 		return (point * Base::pixelQuartersPerPoint()) >> 2;
 	}
 
-	float toPixel(float point) 
+	inline float toPixel(float point) 
 	{ 
 		return (point * Base::scale());
 	}
 
 
-	int roundToPixel(Point p)
+	inline int roundToPixel(Point p)
 	{
 		return (p.value + 2) >> 2;
 	}
 
-	int roundToPixel(int point)
+	inline int roundToPixel(int point)
 	{
 		return (point * Base::pixelQuartersPerPoint()+2) >> 2;
 	}
 
-	int roundToPixel(float point)
+	inline int roundToPixel(float point)
 	{
 		return (int)(point * Base::scale());
 	}

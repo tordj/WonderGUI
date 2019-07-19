@@ -26,12 +26,14 @@
 //=============================================================================
 
 #include <wg_types.h>
+#include <wg_point.h>
 
 #include <utility>
 #include <cstdlib>
 
 namespace wg
 {
+	class Point;
 
 	template<class T> class CoordT;
 	template<class T> class SizeT;
@@ -39,12 +41,15 @@ namespace wg
 
 	typedef	CoordT<int>		Coord;
 	typedef CoordT<float>	CoordF;
+	typedef CoordT<Point>	CoordP;
 
 	typedef	SizeT<int>		Size;
 	typedef SizeT<float>	SizeF;
+	typedef SizeT<Point>	SizeP;
 
 	typedef	RectT<int>		Rect;
 	typedef RectT<float>	RectF;
+	typedef RectT<Point>	RectP;
 
 
 	/**
@@ -63,7 +68,24 @@ namespace wg
 
 		CoordT() : x(0), y(0) {}
 		CoordT(Type x, Type y) : x(x), y(y) {}
+		CoordT(const CoordT<Type>& coord) : x(coord.x), y(coord.y) {}
 		CoordT(const RectT<Type>& rect);
+
+		template<typename T>
+		explicit CoordT(const CoordT<T>& r) : x((Type)r.x), y((Type)r.y) {}
+
+		template<typename T>
+		explicit CoordT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y) {}
+
+		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator CoordP() const { return CoordP(x, y); }
+
+		// CoordP can be IMPLICITLY cast to all CoordT<>
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
 
 		//.____ Misc ______________________________________________
 
@@ -206,6 +228,25 @@ namespace wg
 		SizeT( const RectT<Type>& rect );
 		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
+		// These explicit constructors enables us to cast from Rect and Size of different kind.
+
+		template<typename T>
+		explicit SizeT(const SizeT<T>& r) : w((Type)r.w), h((Type)r.h) {}
+
+		template<typename T>
+		explicit SizeT(const RectT<T>& r) : w((Type)r.w), h((Type)r.h) {}
+
+		// All arithmetic versions of Size can be IMPLICITLY cast to SizeP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator SizeP() const { return SizeP(w, h); }
+
+		// SizeP can be IMPLICITLY cast to all SizeT<>
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
+
+
 		//.____ Misc ______________________________________________
 
 		inline void limit( const SizeT<Type>& min, const SizeT<Type>& max );
@@ -326,8 +367,6 @@ namespace wg
 																			///<
 																			///< Create a copy of specified rectangle.
 
-		template<typename T>
-		RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}		///< @brief Create a copy of specified rectangle.
 
 
 		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
@@ -357,6 +396,30 @@ namespace wg
 																			///<
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
+
+		// All versions of Rect, Coord and Size can be cast to any Rect EXPLICITLY.
+
+		template<typename T>
+		explicit RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}		///< @brief Create a copy of specified rectangle.
+
+		template<typename T>
+		explicit RectT(const CoordT<T>& p) : x((Type)p.x), y((Type)p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
+																			///<
+																			///< Create rectangle of specified position and size of (0,0).
+																			///< @param p		Coordinate containing position for rectangle.
+		template<typename T>
+		explicit RectT(const SizeT<T>& sz) : x(0), y(0), w((Type)sz.w), h((Type)sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
+
+		// All arithmetic versions of Rect can be IMPLICITLY cast to RectP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator RectP() const { return RectP(x, y, w, h); }
+
+		// RectP can be IMPLICITLY cast to all RectT<>
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }
+
 
 		//.____ Misc ______________________________________________
 
