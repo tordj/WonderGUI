@@ -1600,8 +1600,8 @@ namespace wg
 
 		}
 
-		setTintColor(WgColor::White);
-		setBlendMode(WgBlendMode::Blend);
+		setTintColor(Color::White);
+		setBlendMode(BlendMode::Blend);
         
 		return true;
 	}

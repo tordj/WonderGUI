@@ -14,7 +14,9 @@
 #	include <SDL2/SDL_image.h>
 #endif
 
+
 #include <wondergui.h>
+
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
@@ -26,14 +28,7 @@
 
 
 #include <wg_freetypefont.h>
-#include <wg_packlist.h>
 #include "testwidget.h"
-#include <wg_popupopener.h>
-#include <wg_multiblockskin.h>
-#include <wg_dragndroplayer.h>
-
-#include <wg_point.h>
-#include <wg_context.h>
 
 using namespace wg;
 
@@ -77,6 +72,76 @@ int main(int argc, char** argv)
 	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 	printf("LambdaPanelSlot is safe to relocate: %d\n", LambdaPanelSlot::safe_to_relocate);
 
+
+	// Point test
+/*
+	Base::init();
+
+	auto pContext0 = Context::create();
+
+	pContext0->setScale(2.25f);
+
+	Base::setActiveContext(pContext0);
+
+	CoordP a(1, 2);
+
+	CoordF b = a;
+	Coord c = a;
+
+	float pixX = toPixel(float(a.x));
+	float pixY = toPixel(float(a.y));
+
+	Coord d(fromPixel(pixX), fromPixel(pixY));
+
+
+	Coord cI1 = CoordP(1.f, 2.f);
+	 
+//	Coord cI2 = CoordF(1.f, 2.f);									// Should fail!
+	Coord cI3 = static_cast<Coord>(CoordF(1.f, 2.f));
+
+	Coord cI4 = RectP(1.f, 2.f, 3.f, 4.f);
+
+//	Coord cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	Coord cI6 = static_cast<Coord>(RectF(1.f, 2.f, 3.f, 4.f));
+
+
+	Size sI1 = SizeP(1.f, 2.f);
+
+//	Size sI2 = SizeF(1.f, 2.f);										// Should fail!
+	Size sI3 = static_cast<Size>(SizeF(1.f, 2.f));
+
+	Size sI4 = RectP(1.f, 2.f, 3.f, 4.f);
+
+//	Size cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	Size sI6 = static_cast<Size>(RectF(1.f, 2.f, 3.f, 4.f));
+
+
+	Rect rI1 = RectP(1, 2, 3, 4);
+
+//	Rect rI2 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	Rect rI3 = static_cast<Rect>(RectF(1.f, 2.f, 3.f, 4.f));
+
+	Rect rI4 = CoordP(1.f, 2.f);
+
+//	Rect rI5 = CoordF(1.f, 2.f);									// Should fail!
+	Rect rI6 = static_cast<Rect>(CoordF(1.f, 2.f));
+
+	Rect rI7 = SizeP(1.f, 2.f);
+
+//	Rect rI8 = SizeF(1.f, 2.f);										// Should fail!
+	Rect rI9 = static_cast<Rect>(SizeF(1.f, 2.f));
+
+
+	CoordP cP1 = CoordF(1.f, 2.f);	
+	CoordP cP2 = RectF(1.f, 2.f, 3.f, 4.f);
+
+	SizeP sP1 = SizeF(1.f, 2.f);	
+	SizeP sP2 = RectF(1.f, 2.f, 3.f, 4.f);
+
+	RectP rP1 = RectF(1.f, 2.f, 3.f, 4.f);
+	RectP rP2 = CoordF(1.f, 2.f);
+	RectP rP3 = SizeF(1.f, 2.f);
+*/
 
 	//------------------------------------------------------
 	// Init SDL
