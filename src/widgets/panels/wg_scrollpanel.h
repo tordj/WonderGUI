@@ -48,7 +48,7 @@ namespace wg
 	public:
 		ScrollbarSlot() : bAutoHide(false), bAutoScroll(false) {}
 
-		Rect			geo;
+		RectI			geo;
 		bool			bAutoHide;
 		bool			bAutoScroll;
 		Direction		placement;
@@ -59,7 +59,7 @@ namespace wg
 	class ViewSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		ViewSlot() : widthPolicy(SizeQolicy::Default), heightPolicy(SizeQolicy::Default), contentOrigo(Origo::NorthWest) {}
+		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
 
 		int			paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -72,21 +72,21 @@ namespace wg
 		float		windowOffsetY() const;
 
 		bool		updateCanvasGeo();
-		Size		sizeFromPolicy(Size specifiedSize) const;
+		SizeI		sizeFromPolicy(SizeI specifiedSize) const;
 
-		bool		setWindowPos(Coord pos);
+		bool		setWindowPos(CoordI pos);
 		bool		setWindowOffset(CoordF ofs);
 		bool		setWindowOffsetX(float ofs);
 		bool		setWindowOffsetY(float ofs);
 
-		Rect			windowGeo;		// Geometry of Widgets window inside parent.
-		Rect			canvasGeo;		// Geometry of Widgets canvas.
+		RectI			windowGeo;		// Geometry of Widgets window inside parent.
+		RectI			canvasGeo;		// Geometry of Widgets canvas.
 
-		SizeQolicy		widthPolicy;
-		SizeQolicy		heightPolicy;
+		SizePolicy		widthPolicy;
+		SizePolicy		heightPolicy;
 		Origo			contentOrigo;		// Origo when content is smaller than window
-		Size			contentSize;
-		Coord			viewPixOfs;
+		SizeI			contentSize;
+		CoordI			viewPixOfs;
 	};
 
 	//____ ViewEntryHolder _______________________________________________
@@ -94,11 +94,11 @@ namespace wg
 	class ViewEntryHolder : public ChildHolder /** @private */
 	{
 	public:
-		virtual bool		_setWindowPos(Coord pos) = 0;
+		virtual bool		_setWindowPos(CoordI pos) = 0;
 		virtual bool		_setWindowOffset(CoordF ofs) = 0;
 		virtual bool		_step(Direction dir, int nSteps = 1) = 0;
 		virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
-		virtual void		_requestRender(const Rect& rect) = 0;
+		virtual void		_requestRender(const RectI& rect) = 0;
 		virtual void		_updateViewGeo() = 0;
 	};
 
@@ -118,26 +118,26 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		Size		canvasSize() const { return m_pSlot->contentSize; };
+		SizeI		canvasSize() const { return m_pSlot->contentSize; };
 
 		void		setOrigo(Origo origo);
 		Origo		origo() const { return m_pSlot->contentOrigo; }
 
-		void		setWidthPolicy(SizeQolicy policy);
-		SizeQolicy	widthPolicy() const { return m_pSlot->widthPolicy; }
+		void		setWidthPolicy(SizePolicy policy);
+		SizePolicy	widthPolicy() const { return m_pSlot->widthPolicy; }
 
-		void		setHeightPolicy(SizeQolicy policy);
-		SizeQolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
+		void		setHeightPolicy(SizePolicy policy);
+		SizePolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
 
-		Rect		windowRect() const;
-		Coord		windowPos() const { return m_pSlot->viewPixOfs; };
-		Size		windowSize() const;
+		RectI		windowRect() const;
+		CoordI		windowPos() const { return m_pSlot->viewPixOfs; };
+		SizeI		windowSize() const;
 
 		RectF		windowSection() const;
 		CoordF		windowOffset() const;
 		SizeF		windowFraction() const;
 
-		bool		setWindowPos( Coord pos );
+		bool		setWindowPos( CoordI pos );
 		bool		setWindowOffset( CoordF ofs);
 
 		//.____ Control _______________________________________________________
@@ -227,7 +227,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size				preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
+		SizeI				preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
 
 		/*
 		NEED TO BE IMPLEMENTED!!!
@@ -263,9 +263,9 @@ namespace wg
 		bool	viewCenterOnPixelX( int x );
 		bool	viewCenterOnPixelY( int y );
 
-		bool	viewInclude( Rect& rect );
-		bool	viewIncludeX( Rect& rect );
-		bool	viewIncludeY( Rect& rect );
+		bool	viewInclude( RectI& rect );
+		bool	viewIncludeX( RectI& rect );
+		bool	viewIncludeY( RectI& rect );
 		*/
 
 
@@ -278,29 +278,29 @@ namespace wg
 
 		// Overloaded from Widget
 
-		virtual void _setSize(const Size& size);
+		virtual void _setSize(const SizeI& size);
 
 		void		_receive(Msg * pMsg);
-		void		_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches);
-		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
-		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
+		void		_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches);
+		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
+		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
 
-		bool		_alphaTest(const Coord& ofs);
+		bool		_alphaTest(const CoordI& ofs);
 		void		_cloneContent(const Widget * _pOrg);
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos(Slot * pSlot) const;
-		Size		_childSize(Slot * pSlot) const;
+		CoordI		_childPos(Slot * pSlot) const;
+		SizeI		_childSize(Slot * pSlot) const;
 
 		void		_childRequestRender(Slot * pSlot);
-		void		_childRequestRender(Slot * pSlot, const Rect& rect);
+		void		_childRequestRender(Slot * pSlot, const RectI& rect);
 		void		_childRequestResize(Slot * pSlot);
 
 		Widget *	_prevChild(const Slot * pSlot) const;
 		Widget *	_nextChild(const Slot * pSlot) const;
 
-		Rect		_childWindowSection(Slot * pSlot) const;
+		RectI		_childWindowSection(Slot * pSlot) const;
 
 		void		_releaseChild(Slot * pSlot);
 
@@ -308,13 +308,13 @@ namespace wg
 
 		void			_setWidget(Slot * pSlot, Widget * pWidget);
 		Object *		_object() { return this;  }
-		inline void		_requestRender(const Rect& rect) { Panel::_requestRender(rect); }
+		inline void		_requestRender(const RectI& rect) { Panel::_requestRender(rect); }
 		inline void		_requestRender() { Panel::_requestRender(); }
 		virtual void	_updateViewGeo() { _updateElementGeo(m_size); }
 
 		// Overloaded from Container
 
-		Widget *	_findWidget(const Coord& pos, SearchMode mode);
+		Widget *	_findWidget(const CoordI& pos, SearchMode mode);
 
 		Widget *	_firstChild() const;
 		Widget *	_lastChild() const;
@@ -346,9 +346,9 @@ namespace wg
 		};
 
 
-		Size		_calcContentSize(Size mySize);
-		void		_updateElementGeo(Size mySize);
-		bool		_setWindowPos(Coord pos);
+		SizeI		_calcContentSize(SizeI mySize);
+		void		_updateElementGeo(SizeI mySize);
+		bool		_setWindowPos(CoordI pos);
 		bool		_setWindowOffset(CoordF ofs);
 
 
@@ -369,7 +369,7 @@ namespace wg
 		ScrollbarSlot	m_scrollbarSlots[2];			// xScroll and yScroll widgets in that order.
 
 		Skin_p		m_pCornerSkin;
-		Rect		m_cornerGeo;
+		RectI		m_cornerGeo;
 
 		int			m_wheelForScroll;					// What wheel should be used for scrolling. (0=none)
 		bool		m_bOverlayScrollbars;

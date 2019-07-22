@@ -203,12 +203,12 @@ namespace wg
 	 * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
 	 */
 
-	bool Widget::markTest( const Coord& ofs )
+	bool Widget::markTest( const CoordI& ofs )
 	{
 		if( m_markOpacity <= 0 || ofs.x < 0 || ofs.y < 0 )
 			return false;
 
-		Size sz = size();
+		SizeI sz = size();
 
 		if( ofs.x >= sz.w || ofs.y >= sz.h )
 			return false;
@@ -290,9 +290,9 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 
-	 Coord Widget::toGlobal( const Coord& coord ) const
+	 CoordI Widget::toGlobal( const CoordI& coord ) const
 	{
-		Coord c = globalPos();
+		CoordI c = globalPos();
 		c.x += coord.x;
 		c.y += coord.y;
 		return c;
@@ -314,10 +314,10 @@ namespace wg
 	 * @return Coordinate in gobal coordinate system
 	 */
 
-	Coord Widget::toLocal( const Coord& coord ) const
+	CoordI Widget::toLocal( const CoordI& coord ) const
 	{
-		Coord c = globalPos();
-		return Coord( coord.x - c.x, coord.y - c.y );
+		CoordI c = globalPos();
+		return CoordI( coord.x - c.x, coord.y - c.y );
 	}
 
 	//____ matchingHeight() _______________________________________________________
@@ -376,12 +376,12 @@ namespace wg
 	 * @return The preferred size of the widget in pixels.
 	 */
 
-	Size Widget::preferredSize() const
+	SizeI Widget::preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->preferredSize();
 		else
-			return Size(0,0);
+			return SizeI(0,0);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -400,12 +400,12 @@ namespace wg
 	 * @return The minimum size of the widget in pixels.
 	 */
 
-	Size Widget::minSize() const
+	SizeI Widget::minSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->minSize();
 		else
-			return Size(0,0);
+			return SizeI(0,0);
 	}
 
 	//____ receive() _______________________________________________________________
@@ -455,9 +455,9 @@ namespace wg
 	 * @return The maximum size of the widget in pixels.
 	 */
 
-	Size Widget::maxSize() const
+	SizeI Widget::maxSize() const
 	{
-		return Size(2<<24,2<<24);
+		return SizeI(2<<24,2<<24);
 	}
 
 	//____ setPickable() ____________________________________________________________
@@ -481,7 +481,7 @@ namespace wg
 
 	//____ _renderPatches() ________________________________________________________
 
-	void Widget::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
+	void Widget::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
 	{
 		pDevice->setClipList(patches.size(), patches.begin());
 		_render( pDevice, _canvas, _window );
@@ -489,24 +489,24 @@ namespace wg
 
 	//____ onCollectPatches()  ____________________________________________________
 
-	void Widget::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Widget::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{
-			container.add( Rect( geo, clip ) );
+			container.add( RectI( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void Widget::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Widget::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( Rect( geo, clip ) );
+			patches.sub( RectI( geo, clip ) );
 		}
 	}
 
 	//____ _render() ____________________________________________________________
 
-	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Widget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		if( m_pSkin )
 			m_pSkin->render( pDevice, _canvas, m_state );
@@ -514,7 +514,7 @@ namespace wg
 
 	//____ _setSize() ___________________________________________________________
 
-	void Widget::_setSize( const Size& size )
+	void Widget::_setSize( const SizeI& size )
 	{
 		m_size = size;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
@@ -639,19 +639,19 @@ namespace wg
 
 	//____ _alphaTest() _________________________________________________________
 
-	bool Widget::_alphaTest( const Coord& ofs )
+	bool Widget::_alphaTest( const CoordI& ofs )
 	{
 		if( m_pSkin )
-			return m_pSkin->markTest( ofs, Rect(0,0,m_size), m_state, m_markOpacity );
+			return m_pSkin->markTest( ofs, RectI(0,0,m_size), m_state, m_markOpacity );
 
 		return false;
 	}
 
 	//____ _windowPadding() _______________________________________________________
 
-	Size Widget::_windowPadding() const
+	SizeI Widget::_windowPadding() const
 	{
-		return Size(0,0);
+		return SizeI(0,0);
 	}
 
 	//____ _componentRequestRender() _________________________________________________________
@@ -661,7 +661,7 @@ namespace wg
 		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_componentRequestRender( const Component * pComponent, const Rect& rect )
+	void Widget::_componentRequestRender( const Component * pComponent, const RectI& rect )
 	{
 		_requestRender( rect + _componentPos( pComponent ) );
 	}
@@ -685,30 +685,30 @@ namespace wg
 
 	void Widget::_componentRequestInView( const Component * pComponent )
 	{
-		Rect r = _componentPos( pComponent );
+		RectI r = _componentPos( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio )
+	void Widget::_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio )
 	{
-		Coord ofs = _componentPos( pComponent );
+		CoordI ofs = _componentPos( pComponent );
 		_requestInView( preferred + ofs, prio + ofs );
 	}
 
 
 	//____ _componentPos() ______________________________________________________________
 
-	Coord Widget::_componentPos( const Component * pComponent ) const
+	CoordI Widget::_componentPos( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentOfs( m_state );
 		else
-			return Coord();
+			return CoordI();
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	Size Widget::_componentSize( const Component * pComponent ) const
+	SizeI Widget::_componentSize( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->contentPadding();
@@ -718,24 +718,24 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	Rect Widget::_componentGeo( const Component * pComponent ) const
+	RectI Widget::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentRect( m_size, m_state );
 		else
-			return Rect( 0,0,m_size );
+			return RectI( 0,0,m_size );
 	}
 
 	//____ _globalComponentPos() ________________________________________________________
 
-	Coord Widget::_globalComponentPos( const Component * pComponent ) const
+	CoordI Widget::_globalComponentPos( const Component * pComponent ) const
 	{
 		return _componentPos( pComponent ) + globalPos();
 	}
 
 	//____ _globalComponentGeo() ______________________________________________________________
 
-	Rect Widget::_globalComponentGeo( const Component * pComponent ) const
+	RectI Widget::_globalComponentGeo( const Component * pComponent ) const
 	{
 		return _componentGeo( pComponent ) + globalPos();
 	}

@@ -88,9 +88,9 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size TextEditor::preferredSize() const
+	SizeI TextEditor::preferredSize() const
 	{
-		Size contentSize = m_text.preferredSize();
+		SizeI contentSize = m_text.preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -100,11 +100,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void TextEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void TextEditor::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas;
+		RectI canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
@@ -164,7 +164,7 @@ namespace wg
 
 	//____ _setSize() ________________________________________________
 
-	void TextEditor::_setSize( const Size& size )
+	void TextEditor::_setSize( const SizeI& size )
 	{
 		Widget::_setSize( size );
 

@@ -143,7 +143,7 @@ namespace wg
 		pText->_requestRender();
 	}
 
-	void  TextMapper::_setComponentDirty( CText * pText, const Rect& rect )
+	void  TextMapper::_setComponentDirty( CText * pText, const RectI& rect )
 	{
 		pText->_requestRender( rect );
 	}

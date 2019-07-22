@@ -86,11 +86,11 @@ namespace wg
 		GfxOutStream&	operator<< (int32_t);
 		GfxOutStream&	operator<< (float);
 
-		GfxOutStream&	operator<< (const Coord&);
+		GfxOutStream&	operator<< (const CoordI&);
 		GfxOutStream&	operator<< (const CoordF&);
-		GfxOutStream&	operator<< (const Size&);
+		GfxOutStream&	operator<< (const SizeI&);
 		GfxOutStream&	operator<< (const SizeF&);
-		GfxOutStream&	operator<< (const Rect&);
+		GfxOutStream&	operator<< (const RectI&);
 		GfxOutStream&	operator<< (const RectF&);
 
 		GfxOutStream&	operator<< (Color);

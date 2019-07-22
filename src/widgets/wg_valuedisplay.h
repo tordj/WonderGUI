@@ -58,7 +58,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size	preferredSize() const;
+		SizeI	preferredSize() const;
 
 	protected:
 		ValueDisplay();
@@ -67,7 +67,7 @@ namespace wg
 
 		void	_refresh();
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void	_setState( State state );
 		void	_setSkin( Skin * pSkin );
 

@@ -95,7 +95,7 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	Size CText::preferredSize() const
+	SizeI CText::preferredSize() const
 	{
 		return _textMapper()->preferredSize(this);
 	}
@@ -116,14 +116,14 @@ namespace wg
 
 	//____ charAtPos() ___________________________________________________________
 
-	int CText::charAtPos( Coord pos ) const
+	int CText::charAtPos( CoordI pos ) const
 	{
 		return _textMapper()->charAtPos(this,pos);
 	}
 
 	//____ charRect() ____________________________________________________________
 
-	Rect CText::charRect( int charOfs ) const
+	RectI CText::charRect( int charOfs ) const
 	{
 		return _textMapper()->charRect(this, charOfs);
 	}
@@ -145,26 +145,26 @@ namespace wg
 
 	//____ setSize() _____________________________________________________________
 
-	void CText::setSize( Size size )
+	void CText::setSize( SizeI size )
 	{
 		if( size == m_size )
 			return;
 
-		Size oldSize = m_size;
+		SizeI oldSize = m_size;
 		m_size = size;
 		_textMapper()->onResized(this,size, oldSize);
 	}
 
 	//_____ render() _____________________________________________________________
 
-	void  CText::render( GfxDevice * pDevice, const Rect& _canvas )
+	void  CText::render( GfxDevice * pDevice, const RectI& _canvas )
 	{
 		_textMapper()->render(this, pDevice, _canvas);
 	}
 
 	//____ rectForRange() __________________________________________________________
 
-	Rect  CText::rectForRange( int ofs, int length ) const
+	RectI  CText::rectForRange( int ofs, int length ) const
 	{
 		return _textMapper()->rectForRange(this, ofs, length);
 	}

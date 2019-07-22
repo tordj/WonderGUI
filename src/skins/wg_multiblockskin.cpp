@@ -35,7 +35,7 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	MultiBlockSkin_p MultiBlockSkin::create(Size blockSize, Border frame)
+	MultiBlockSkin_p MultiBlockSkin::create(SizeI blockSize, BorderI frame)
 	{
 		return MultiBlockSkin_p(new MultiBlockSkin(blockSize,frame));
 	}
@@ -43,7 +43,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	MultiBlockSkin::MultiBlockSkin(Size blockSize, Border frame)
+	MultiBlockSkin::MultiBlockSkin(SizeI blockSize, BorderI frame)
 	{
 		m_blockSizeQoints	= blockSize;
 		m_frame				= frame;
@@ -82,7 +82,7 @@ namespace wg
 
 	//____ addLayer() _____________________________________________________________
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, Coord ofs)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI ofs)
 	{
 		// HACK!
 
@@ -115,7 +115,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, Coord blockStartOfs, Coord blockPitch, const std::initializer_list<State>& stateBlocks)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, CoordI blockPitch, const std::initializer_list<State>& stateBlocks)
 	{
 		// HACK!
 
@@ -174,9 +174,9 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, Coord blockStartOfs )
+	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, CoordI blockStartOfs )
 	{
-		Coord blockPitch;
+		CoordI blockPitch;
 
 		if (orientation == Orientation::Horizontal)
 			blockPitch.x = m_blockSizeQoints.w + spacing;
@@ -273,7 +273,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
+	void MultiBlockSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
@@ -304,10 +304,10 @@ namespace wg
 
 			pDevice->setBlitSource(layer.pSurface);
 
-			const Rect&	src = Rect(layer.blockOfs[stateIndex], m_blockSize);
+			const RectI&	src = RectI(layer.blockOfs[stateIndex], m_blockSize);
 
-			const Border&    sourceBorders = m_frame;
-			const Border     canvasBorders = toPixels(m_frame);
+			const BorderI&    sourceBorders = m_frame;
+			const BorderI     canvasBorders = toPixels(m_frame);
 
 			pDevice->blitNinePatch( _canvas, canvasBorders, src, sourceBorders );
 		}
@@ -350,7 +350,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool MultiBlockSkin::markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
@@ -359,7 +359,7 @@ namespace wg
 
 		for (auto& layer : m_layers)
 		{
-			Coord srcOfs = layer.blockOfs[stateIndex];
+			CoordI srcOfs = layer.blockOfs[stateIndex];
 			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, { srcOfs,m_blockSize }, canvas, opacityTreshold, m_frame);
 			if (bMarked)
 				return true;
@@ -380,7 +380,7 @@ namespace wg
 		return m_bIsOpaque;
 	}
 
-	bool MultiBlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool MultiBlockSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return m_bIsOpaque;
 	}

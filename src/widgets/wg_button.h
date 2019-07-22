@@ -72,7 +72,7 @@ namespace wg
 		virtual int		matchingHeight( int width ) const override;
 	//	virtual int		matchingWidth( int height ) const override;
 
-		Size			preferredSize() const override;
+		SizeI			preferredSize() const override;
 
 	protected:
 		Button();
@@ -80,17 +80,17 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new Button(); };
 
 		virtual void	_receive( Msg * pMsg ) override;
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
 		void			_refresh() override;
 		virtual void	_cloneContent( const Widget * _pOrg ) override;
-		bool			_alphaTest( const Coord& ofs ) override;
-		virtual void	_setSize( const Size& size ) override;
+		bool			_alphaTest( const CoordI& ofs ) override;
+		virtual void	_setSize( const SizeI& size ) override;
 		void			_setState( State state ) override;
 
 
-		Coord			_componentPos( const Component * pComponent ) const override;
-		Size			_componentSize( const Component * pComponent ) const override;
-		Rect			_componentGeo( const Component * pComponent ) const override;
+		CoordI			_componentPos( const Component * pComponent ) const override;
+		SizeI			_componentSize( const Component * pComponent ) const override;
+		RectI			_componentGeo( const Component * pComponent ) const override;
 
 
 

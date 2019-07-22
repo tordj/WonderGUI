@@ -446,7 +446,7 @@ namespace wg
 			pSlot->glyph.bearingY = yBearing;
 			pSlot->glyph.kerningIndex = char_index;
 			pSlot->glyph.pSurf = pSlot->pSurf->pSurf;
-			pSlot->glyph.rect = Rect(pSlot->rect.x, pSlot->rect.y, width, height);
+			pSlot->glyph.rect = RectI(pSlot->rect.x, pSlot->rect.y, width, height);
 
 			//
 
@@ -485,7 +485,7 @@ namespace wg
 			// Fill in missing slot details
 
 			pSlot->pGlyph = pGlyph;
-			pSlot->bitmap.rect = Rect(pSlot->rect.x, pSlot->rect.y, width, height);
+			pSlot->bitmap.rect = RectI(pSlot->rect.x, pSlot->rect.y, width, height);
 			pSlot->bitmap.bearingX = m_ftFace->glyph->bitmap_left;
 			pSlot->bitmap.bearingY = -m_ftFace->glyph->bitmap_top;
 
@@ -684,7 +684,7 @@ namespace wg
 		CacheSlot * pSlot = s_cacheSlots[index].last();
 		if( pSlot == 0 || pSlot->pGlyph != 0 )
 		{
-			addCacheSlots( &s_cacheSlots[index], Size(size,size), 16 );
+			addCacheSlots( &s_cacheSlots[index], SizeI(size,size), 16 );
 			pSlot = s_cacheSlots[index].last();
 		}
 
@@ -699,11 +699,11 @@ namespace wg
 		Creates all slots that can fit into this surface and adds them to the specified chain.
 	*/
 
-	int FreeTypeFont::addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots )
+	int FreeTypeFont::addCacheSlots( Chain<CacheSlot> * pChain, const SizeI& slotSize, int minSlots )
 	{
 		// Create and add the cache surface
 
-		Size texSize = calcTextureSize( slotSize, 16 );
+		SizeI texSize = calcTextureSize( slotSize, 16 );
 
 		Surface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
 		pSurf->fill( Color( 255,255,255,0 ) );
@@ -713,7 +713,7 @@ namespace wg
 
 		// Create the slots
 
-		Rect	slot( 0, 0, slotSize );
+		RectI	slot( 0, 0, slotSize );
 		int		nSlots = 0;
 
 		for( slot.y = 0 ; slot.y + slotSize.h < texSize.h ; slot.y += slotSize.h + 1 )
@@ -733,7 +733,7 @@ namespace wg
 
 	//____ maxSlotsInSurface() ____________________________________________________
 
-	int FreeTypeFont::maxSlotsInSurface( const Size& surf, const Size& slot )
+	int FreeTypeFont::maxSlotsInSurface( const SizeI& surf, const SizeI& slot )
 	{
 		int rows = (surf.w+1)/(slot.w+1);			// +1 since we need one pixel spacing between each slot.
 		int columns = (surf.h+1)/(surf.h+1);
@@ -744,9 +744,9 @@ namespace wg
 
 	//____ calcTextureSize() ______________________________________________________
 
-	Size FreeTypeFont::calcTextureSize( const Size& slotSize, int nSlots )
+	SizeI FreeTypeFont::calcTextureSize( const SizeI& slotSize, int nSlots )
 	{
-		Size	surfSize( 128, 128 );
+		SizeI	surfSize( 128, 128 );
 
 		while( maxSlotsInSurface(surfSize, slotSize) < nSlots )
 		{
@@ -756,8 +756,8 @@ namespace wg
 				surfSize.w *= 2;
 			else
 			{
-				if( maxSlotsInSurface( Size( surfSize.w, surfSize.h*2 ), slotSize ) >
-					maxSlotsInSurface( Size( surfSize.w*2, surfSize.h ), slotSize ) )
+				if( maxSlotsInSurface( SizeI( surfSize.w, surfSize.h*2 ), slotSize ) >
+					maxSlotsInSurface( SizeI( surfSize.w*2, surfSize.h ), slotSize ) )
 					surfSize.h *= 2;
 				else
 					surfSize.w *= 2;

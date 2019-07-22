@@ -38,19 +38,19 @@ namespace wg
 	template<class T> class SizeT;
 	template<class T> class RectT;
 
-	typedef	CoordT<int>		Coord;
+	typedef	CoordT<int>		CoordI;
 	typedef CoordT<float>	CoordF;
 	typedef CoordT<QPix>	CoordQ;
 
-	typedef BorderT<int>	Border;
+	typedef BorderT<int>	BorderI;
 	typedef BorderT<float>	BorderF;
 	typedef BorderT<QPix>	BorderQ;
 
-	typedef	SizeT<int>		Size;
+	typedef	SizeT<int>		SizeI;
 	typedef SizeT<float>	SizeF;
 	typedef SizeT<QPix>		SizeQ;
 
-	typedef	RectT<int>		Rect;
+	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
 	typedef RectT<QPix>		RectQ;
 
@@ -62,7 +62,7 @@ namespace wg
 		horizontal distance from origo moving from left to right and y is
 		the vertical distance moving downwards.
 
-		Coord specifies the position in discrete pixels (integer precision).
+		CoordI specifies the position in discrete pixels (integer precision).
 	**/
 	template<class Type> class CoordT
 	{
@@ -88,7 +88,7 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordQ and RectQ
+		// All arithmetic versions of CoordI can be IMPLICITLY cast to CoordQ and RectQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
 		inline operator CoordQ() const { return CoordQ(x, y); }
@@ -155,7 +155,7 @@ namespace wg
 
 
 
-	//____ Border ______________________________________________________________
+	//____ BorderI ______________________________________________________________
 	/**
 		@brief Specifies the thickness of the border of a rectangular area, measured in pixels.
 
@@ -206,7 +206,7 @@ namespace wg
 
 		inline operator SizeT<Type>() const { return SizeT<Type>(left + right, top + bottom); }
 
-		// All arithmetic versions of Border can be IMPLICITLY cast to CoordQ
+		// All arithmetic versions of BorderI can be IMPLICITLY cast to CoordQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
 		inline operator BorderQ() const { return BorderQ(top, right, bottom, left); }
@@ -250,7 +250,7 @@ namespace wg
 		SizeT( const RectT<Type>& rect ) : w(rect.w), h(rect.h) {}
 		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
-		// These explicit constructors enables us to cast from Rect and Size of different kind.
+		// These explicit constructors enables us to cast from RectI and SizeI of different kind.
 
 		template<typename T>
 		explicit SizeT(const SizeT<T>& r) : w((Type)r.w), h((Type)r.h) {}
@@ -268,7 +268,7 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Size can be IMPLICITLY cast to SizeQ and RectQ
+		// All arithmetic versions of SizeI can be IMPLICITLY cast to SizeQ and RectQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
 		inline operator SizeQ() const { return SizeQ(w, h); }
@@ -362,7 +362,7 @@ namespace wg
 		Increasing x and y will always move the rectangle to the right and down respectively.
 
 		Members are not checked or truncated so width and height are allowed to contain negative values
-		but various WonderGUI methods accepting a Rect as parameter might not be able to handle it.
+		but various WonderGUI methods accepting a RectI as parameter might not be able to handle it.
 
 	**/
 
@@ -411,7 +411,7 @@ namespace wg
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
 
-		// All versions of Rect, Coord and Size can be cast to any Rect EXPLICITLY.
+		// All versions of Rect, CoordI and SizeI can be cast to any RectI EXPLICITLY.
 
 		template<typename T>
 		explicit RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}
@@ -470,7 +470,7 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Rect can be IMPLICITLY cast to RectQ, CoordQ and SizeQ
+		// All arithmetic versions of RectI can be IMPLICITLY cast to RectQ, CoordQ and SizeQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
 		inline operator RectQ() const { return RectQ(x, y, w, h); }
@@ -516,7 +516,7 @@ namespace wg
 	};
 
 
-	//____ Rect() _______________________________________________________________
+	//____ RectI() _______________________________________________________________
 	/**
 	 * Create rectangle from intersection of specified rectangles.
 	 *
@@ -1141,7 +1141,7 @@ namespace wg
 	  *
 	  * Shrink the rectangle by the specified border.
 	  *
-	  * @param border	Border by which to shrink the rectangle.
+	  * @param border	BorderI by which to shrink the rectangle.
 	  *
 	  * Width and height of rectangle is shrunk by the thickness of the borders.
 	  * Top and left borders also affects the position of the rectangle.
@@ -1193,7 +1193,7 @@ namespace wg
 	  *
 	  * Grow the rectangle by the specified border.
 	  *
-	  * @param border	Border by which to grow the rectangle.
+	  * @param border	BorderI by which to grow the rectangle.
 	  *
 	  * Width and height of rectangle is increased by the thickness of the borders.
 	  * Top and left borders also affects the position of the rectangle.

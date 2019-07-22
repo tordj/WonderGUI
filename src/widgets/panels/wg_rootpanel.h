@@ -78,8 +78,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool				setGeo( const Rect& geo );
-		Rect				geo() const;
+		bool				setGeo( const RectI& geo );
+		RectI				geo() const;
 
 		//.____ State _________________________________________________
 
@@ -92,10 +92,10 @@ namespace wg
 
 
 		bool				render();
-		bool				render( const Rect& clip );
+		bool				render( const RectI& clip );
 
 		bool				beginRender();
-		bool				renderSection( const Rect& clip );
+		bool				renderSection( const RectI& clip );
 		bool				endRender();
 
 
@@ -114,15 +114,15 @@ namespace wg
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 
-		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
+		Widget_p			findWidget( const CoordI& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
 
 		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
-		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
+		inline const RectI*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
 
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
-		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
+		inline const RectI*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
 
-		inline void	addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
+		inline void	addDirtyPatch( const RectI& rect ) { m_dirtyPatches.add( rect ); }
 
 
 	protected:
@@ -133,26 +133,26 @@ namespace wg
 
 		// WidgetHolder methods
 
-		Coord			_childPos( Slot * pSlot ) const;
-		Coord			_childGlobalPos( Slot * pSlot ) const;
+		CoordI			_childPos( Slot * pSlot ) const;
+		CoordI			_childGlobalPos( Slot * pSlot ) const;
 
-		Size			_childSize( Slot * pSlot ) const;
+		SizeI			_childSize( Slot * pSlot ) const;
 
 		bool			_isChildVisible( Slot * pSlot ) const;
-		Rect			_childWindowSection( Slot * pSlot ) const;
+		RectI			_childWindowSection( Slot * pSlot ) const;
 
 		Container *  	_childParent();
 		RootPanel *		_root();
 
 		void			_childRequestRender( Slot * pSlot );
-		void			_childRequestRender( Slot * pSlot, const Rect& rect );
+		void			_childRequestRender( Slot * pSlot, const RectI& rect );
 		void			_childRequestResize( Slot * pSlot );
 
 		bool			_childRequestFocus( Slot * pSlot, Widget * pWidget );
 		bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget );
 
 		void			_childRequestInView( Slot * pSlot );
-		void			_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea );
+		void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
 
 		Widget *		_prevChild( const Slot * pSlot ) const;
 		Widget *		_nextChild( const Slot * pSlot ) const;
@@ -168,7 +168,7 @@ namespace wg
 
 		//
 
-		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
+		Widget *			_findWidget( const CoordI& ofs, SearchMode mode );
 
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
@@ -185,7 +185,7 @@ namespace wg
 
 		GfxDevice_p			m_pGfxDevice;
 		Slot				m_child;
-		Rect				m_geo;
+		RectI				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;
 

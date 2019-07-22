@@ -80,7 +80,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 	protected:
 		AnimPlayer();
@@ -88,10 +88,10 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new AnimPlayer(); };
 
 		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void			_refresh();
 		void			_receive( Msg * pMsg );
-		bool			_alphaTest( const Coord& ofs );
+		bool			_alphaTest( const CoordI& ofs );
 		void			_setState( State state );
 
 		void			_playPosUpdated();

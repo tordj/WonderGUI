@@ -59,7 +59,7 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		int				matchingHeight( int width ) const;
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 	protected:
 		TextEditor();
@@ -67,8 +67,8 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new TextEditor(); };
 
 		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		void			_setSize( const Size& size );
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		void			_setSize( const SizeI& size );
 		void			_refresh();
 		void			_receive( Msg * pMsg );
 		void			_setState( State state );

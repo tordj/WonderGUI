@@ -41,7 +41,7 @@ namespace wg
 	class SplitPanelSlot : public Slot 	/** @private */
 	{
 	public:
-		Rect	geo;
+		RectI	geo;
 	};
 
 
@@ -70,7 +70,7 @@ namespace wg
 		void			setOrientation(Orientation orientaiton);
 		Orientation		orientation() const { return m_bHorizontal ? Orientation::Horizontal : Orientation::Vertical; }
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 		//.____ Appearance _________________________________________________
 
@@ -112,17 +112,17 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_setSize(const Size& size);
+		void		_setSize(const SizeI& size);
 		void		_setState(State state);
 		void		_refresh();
 		void		_receive(Msg * pMsg);
 
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
+		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 
-		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
-		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
+		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
+		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
 
-		bool		_alphaTest(const Coord& ofs);
+		bool		_alphaTest(const CoordI& ofs);
 		void		_cloneContent(const Widget * _pOrg);
 
 		// Overloaded from Container
@@ -141,11 +141,11 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos(Slot * pSlot) const;
-		Size		_childSize(Slot * pSlot) const;
+		CoordI		_childPos(Slot * pSlot) const;
+		SizeI		_childSize(Slot * pSlot) const;
 
 		void		_childRequestRender(Slot * pSlot);
-		void		_childRequestRender(Slot * pSlot, const Rect& rect);
+		void		_childRequestRender(Slot * pSlot, const RectI& rect);
 		void		_childRequestResize(Slot * pSlot);
 
 		Widget *	_prevChild(const Slot * pSlot) const;
@@ -155,13 +155,13 @@ namespace wg
 
 
 		bool			m_bHorizontal;
-		Size			m_preferredSize;
+		SizeI			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
 		Skin_p			m_pHandleSkin;
 		int				m_handleThickness;			// Set to 0 to use default from handleSkin.
-		Rect			m_handleGeo;
+		RectI			m_handleGeo;
 		State			m_handleState;
 		int				m_handlePressOfs;
 

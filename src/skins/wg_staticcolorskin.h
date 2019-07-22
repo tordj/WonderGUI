@@ -50,7 +50,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void	render( GfxDevice * pDevice, const Rect& canvas, State state ) const override;
+		void	render( GfxDevice * pDevice, const RectI& canvas, State state ) const override;
 
 		//.____ Geometry _________________________________________________
 
@@ -65,11 +65,11 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
+		bool	markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const override;
 
 		bool	isOpaque() const override;
 		bool	isOpaque(State state) const override;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
+		bool	isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const override;
 
 		bool	isStateIdentical( State state, State comparedTo ) const override;
 

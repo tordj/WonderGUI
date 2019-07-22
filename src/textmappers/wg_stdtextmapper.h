@@ -81,17 +81,17 @@ namespace wg
 		virtual void	addComponent( CText * pText );
 		virtual void	removeComponent( CText * pText );
 
-		virtual int		charAtPos( const CText * pText, Coord pos ) const;
-		virtual Coord	charPos( const CText * pText, int charOfs ) const;	// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charRect( const CText * pText, int charOfs ) const;
+		virtual int		charAtPos( const CText * pText, CoordI pos ) const;
+		virtual CoordI	charPos( const CText * pText, int charOfs ) const;	// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual RectI	charRect( const CText * pText, int charOfs ) const;
 		virtual int		charLine( const CText * pText, int charOfs ) const;
 
 //		virtual int		charLineOfs( const CText * pText, int charOfs ) const;
-//		virtual Coord	lineTopLeftPos( const CText * pText, int line ) const;
-//		virtual Coord	lineBaselinePos( const CText * pText, int line ) const;
+//		virtual CoordI	lineTopLeftPos( const CText * pText, int line ) const;
+//		virtual CoordI	lineBaselinePos( const CText * pText, int line ) const;
 //		virtual int		lineWidth( const CText * pText, int line ) const;
 //		virtual int		lineHeight( const CText * pText, int line ) const;
-//		virtual Rect	lineGeo( const CText * pText, int line ) const;
+//		virtual RectI	lineGeo( const CText * pText, int line ) const;
 //		virtual int		lines( const CText * pText ) const;
 
 		virtual int		lineBegin( const CText * pText, int lineNb ) const;
@@ -102,13 +102,13 @@ namespace wg
 
 
 		virtual void 	receive( Msg * pMsg );
-		virtual void 	render( CText * pText, GfxDevice * pDevice, const Rect& canvas );
+		virtual void 	render( CText * pText, GfxDevice * pDevice, const RectI& canvas );
 
 		virtual void	caretMove( CText * pText, int newOfs );
 		virtual void	selectionChange( CText * pText, int newSelectOfs, int newCaretOfs );
 
 		virtual void	onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded );
-		virtual void	onResized( CText * pText, Size newSize, Size oldSize );
+		virtual void	onResized( CText * pText, SizeI newSize, SizeI oldSize );
 		virtual void	onStateChanged( CText * pText, State newState, State oldState );
 		virtual void	onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle );
 		virtual void	onCharStyleChanged( CText * pText, int ofs, int len );
@@ -116,17 +116,17 @@ namespace wg
 
 
 
-		virtual Size	preferredSize( const CText * pText ) const;
+		virtual SizeI	preferredSize( const CText * pText ) const;
 		virtual int		matchingWidth( const CText * pText, int height ) const;
 		virtual int		matchingHeight( const CText * pText, int width ) const;
 
-		virtual Rect	rectForRange( const CText * pText, int ofs, int length ) const;
-		virtual Rect	rectForCaret( const CText * pText ) const;
+		virtual RectI	rectForRange( const CText * pText, int ofs, int length ) const;
+		virtual RectI	rectForCaret( const CText * pText ) const;
 
 		virtual String 	tooltip( const CText * pText ) const;
 
 		virtual Direction 	textDirection( CText * pText, int charOfs ) const;
-		virtual int		caretToPos( CText * pText, Coord pos, int& wantedLineOfs ) const;
+		virtual int		caretToPos( CText * pText, CoordI pos, int& wantedLineOfs ) const;
 		virtual int		caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const;
 		virtual int		caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const;
 		virtual int		caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const;
@@ -147,8 +147,8 @@ namespace wg
 		struct BlockHeader
 		{
 			int nbLines;
-			Size preferredSize;
-			Size textSize;
+			SizeI preferredSize;
+			SizeI textSize;
 		};
 
 		struct LineInfo
@@ -173,8 +173,8 @@ namespace wg
 
 		void			_updateLineInfo(CText * pText, void * pBlock, const CharBuffer * pBuffer );
 
-		Size			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
-		Size			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
+		SizeI			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
+		SizeI			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
 
 
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
@@ -189,8 +189,8 @@ namespace wg
 		int				_textPosY( const BlockHeader * pHeader, int canvasHeight ) const;
 		int				_charPosX( const CText * pText, int charOfs ) const;
 
-		void 			_renderBack( CText * pText, GfxDevice * pDevice, const Rect& canvas );
-		void 			_renderBackSection( CText * pText, GfxDevice * pDevice, const Rect& canvas,
+		void 			_renderBack( CText * pText, GfxDevice * pDevice, const RectI& canvas );
+		void 			_renderBackSection( CText * pText, GfxDevice * pDevice, const RectI& canvas,
 											int begChar, int endChar, Color color );
 
 

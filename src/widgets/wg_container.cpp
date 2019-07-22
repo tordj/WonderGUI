@@ -92,7 +92,7 @@ namespace wg
 
 
 
-	 Coord Container::_childGlobalPos( Slot * pSlot ) const
+	 CoordI Container::_childGlobalPos( Slot * pSlot ) const
 	 {
 		 return _childPos(pSlot) + globalPos();
 	 }
@@ -102,9 +102,9 @@ namespace wg
 		 return true;
 	 }
 
-	Rect Container::_childWindowSection( Slot * pSlot ) const
+	RectI Container::_childWindowSection( Slot * pSlot ) const
 	{
-		return Rect( 0,0, _childSize( pSlot ) );
+		return RectI( 0,0, _childSize( pSlot ) );
 	}
 
 	 Container * Container::_childParent()
@@ -131,16 +131,16 @@ namespace wg
 	 {
 		 if( m_pHolder )
 		 {
-			 Rect area( _childPos( pSlot ), _childSize( pSlot ) );
+			 RectI area( _childPos( pSlot ), _childSize( pSlot ) );
 			 m_pHolder->_childRequestInView( m_pSlot, area, area );
 		 }
 	 }
 
-	 void Container::_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	 void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	 {
 		 if( m_pHolder )
 		 {
-			 Coord pos( _childPos( pSlot ) );
+			 CoordI pos( _childPos( pSlot ) );
 			 m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		 }
 	 }
@@ -157,7 +157,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget * Container::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * Container::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
 		SlotWithGeo	child;
 		_firstSlotWithGeo(child);
@@ -248,14 +248,14 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pWidget(0) {}
-		WidgetRenderContext( Widget * pWidget, const Rect& geo ) : pWidget(pWidget), geo(geo) {}
+		WidgetRenderContext( Widget * pWidget, const RectI& geo ) : pWidget(pWidget), geo(geo) {}
 
 		Widget *	pWidget;
-		Rect		geo;
+		RectI		geo;
 		Patches	patches;
 	};
 
-	void Container::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches )
+	void Container::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
 	{
 		Patches patches( _patches );
 
@@ -266,7 +266,7 @@ namespace wg
 
 		// Render children
 
-		Rect	dirtBounds = pDevice->clipBounds();
+		RectI	dirtBounds = pDevice->clipBounds();
 
 		if( m_bSiblingsOverlap )
 		{
@@ -279,7 +279,7 @@ namespace wg
 			_firstSlotWithGeo( child );
 			while(child.pSlot)
 			{
-				Rect geo = child.geo + _canvas.pos();
+				RectI geo = child.geo + _canvas.pos();
 
 				if( geo.intersectsWith( dirtBounds ) )
 					renderList.push_back( WidgetRenderContext(child.pSlot->pWidget, geo ) );
@@ -315,7 +315,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				Rect canvas = child.geo + _canvas.pos();
+				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					Patches childPatches(patches, canvas);
@@ -340,10 +340,10 @@ namespace wg
 
 	//____ _collectPatches() _______________________________________________________
 
-	void Container::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Container::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{
 		if( m_pSkin )
-			container.add( Rect( geo, clip ) );
+			container.add( RectI( geo, clip ) );
 		else
 		{
 			SlotWithGeo child;
@@ -359,11 +359,11 @@ namespace wg
 
 	//____ _maskPatches() __________________________________________________________
 
-	void Container::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Container::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( Rect(geo,clip) );
+			patches.sub( RectI(geo,clip) );
 		else
 		{
 			SlotWithGeo child;

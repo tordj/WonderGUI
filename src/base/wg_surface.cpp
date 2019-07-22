@@ -232,7 +232,7 @@ namespace wg
 
 	//____ _lockAndAdjustRegion() __________________________________________________
 
-	Rect Surface::_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region )
+	RectI Surface::_lockAndAdjustRegion( AccessMode modeNeeded, const RectI& region )
 	{
 		if( m_accessMode == AccessMode::None )
 		{
@@ -240,10 +240,10 @@ namespace wg
 			return region;
 		}
 		else if( m_accessMode != AccessMode::ReadWrite && m_accessMode != modeNeeded )
-			return Rect(0,0,0,0);
+			return RectI(0,0,0,0);
 
 		if( !m_lockRegion.contains( region ) )
-			return Rect(0,0,0,0);
+			return RectI(0,0,0,0);
 
 		return region - m_lockRegion.pos();
 	}
@@ -266,7 +266,7 @@ namespace wg
 
 	bool Surface::fill( Color col )
 	{
-		return fill( col, Rect(0,0,size()) );
+		return fill( col, RectI(0,0,size()) );
 	}
 
 	/**
@@ -284,11 +284,11 @@ namespace wg
 	 * pixel value most closely resembling the one specified.
 	 *
 	 **/
-	bool Surface::fill( Color col, const Rect& region )
+	bool Surface::fill( Color col, const RectI& region )
 	{
 
 		AccessMode oldMode = m_accessMode;
-		Rect rect = _lockAndAdjustRegion(AccessMode::WriteOnly,region);
+		RectI rect = _lockAndAdjustRegion(AccessMode::WriteOnly,region);
 
 		if( rect.w == 0 )
 			return false;
@@ -375,12 +375,12 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( Surface * pSrcSurface, Coord dst )
+	bool Surface::copyFrom( Surface * pSrcSurface, CoordI dst )
 	{
 		if( !pSrcSurface )
 			return false;
 
-		return copyFrom( pSrcSurface, Rect(0,0,pSrcSurface->size()), dst );
+		return copyFrom( pSrcSurface, RectI(0,0,pSrcSurface->size()), dst );
 	}
 
 	/**
@@ -399,7 +399,7 @@ namespace wg
 	 *
 	 * @return True if successful, otherwise false.
 	 **/
-	bool Surface::copyFrom( Surface * pSrcSurface, const Rect& _srcRect, Coord _dst )
+	bool Surface::copyFrom( Surface * pSrcSurface, const RectI& _srcRect, CoordI _dst )
 	{
 		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Unknown || m_pixelDescription.format == PixelFormat::Unknown )
 			return false;
@@ -409,8 +409,8 @@ namespace wg
 		AccessMode 	dstOldMode 		= m_accessMode;
 		AccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
 
-		Rect srcRect = pSrcSurface->_lockAndAdjustRegion( AccessMode::ReadOnly, _srcRect );
-		Rect dstRect = _lockAndAdjustRegion( AccessMode::WriteOnly, Rect(_dst.x,_dst.y,srcRect.w,srcRect.h) );
+		RectI srcRect = pSrcSurface->_lockAndAdjustRegion( AccessMode::ReadOnly, _srcRect );
+		RectI dstRect = _lockAndAdjustRegion( AccessMode::WriteOnly, RectI(_dst.x,_dst.y,srcRect.w,srcRect.h) );
 
 		// Do the copying
 
@@ -436,7 +436,7 @@ namespace wg
 	*/
 
 
-	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT )
+	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT )
 	{
 
 		if( srcRect.w <= 0 || dstRect.w <= 0 )

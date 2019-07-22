@@ -59,13 +59,13 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual Size		maxSize() const = 0;
+		virtual SizeI		maxSize() const = 0;
 
 		//.____ Misc _______________________________________________________
 
-		virtual Surface_p	createSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const = 0;
-		virtual Surface_p	createSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const = 0;
-		virtual Surface_p	createSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch,
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const = 0;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const = 0;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
 										   const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static,
 										   const Color * pClut = nullptr) const = 0;
 		virtual Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const = 0;

@@ -146,7 +146,7 @@ namespace wg
 	 * Set relative size and position of the scrollbar handle.
 	 *
 	 * @param pos	Position of the handle in the range 0.0 -> 1.0.
-	 * @param size	Size of the handle in the range 0.0001 -> 1.0.
+	 * @param size	SizeI of the handle in the range 0.0001 -> 1.0.
 	 *
 	 * Both parameters will be limited to their respective range.
 	 * The size of the handle will not get smaller than the skin of the
@@ -243,9 +243,9 @@ namespace wg
 	/**
 	 * Set relative size of scrollbar handle.
 	 *
-	 * @param	size		Size of the handle in the range 0.0001 -> 1.0.
+	 * @param	size		SizeI of the handle in the range 0.0001 -> 1.0.
 	 *
-	 * Size is limited to its range before applied.
+	 * SizeI is limited to its range before applied.
 	 *
 	 * The size of the handle will not get smaller than the skin of the
 	 * handle allows, but the value set is still the value later
@@ -571,9 +571,9 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size Scrollbar::preferredSize() const
+	SizeI Scrollbar::preferredSize() const
 	{
-		Size sz = m_minSize;
+		SizeI sz = m_minSize;
 
 		// Add 50 pixels in the scrollbars direction for best size.
 
@@ -597,7 +597,7 @@ namespace wg
 
 		if( m_pBgSkin )
 		{
-			Size sz = m_pBgSkin->minSize();
+			SizeI sz = m_pBgSkin->minSize();
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -607,7 +607,7 @@ namespace wg
 
 		if( m_pHandleSkin )
 		{
-			Size sz = m_pHandleSkin->minSize();
+			SizeI sz = m_pHandleSkin->minSize();
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -626,7 +626,7 @@ namespace wg
 
 		if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
 		{
-			Size sz = m_pBtnFwdSkin->preferredSize();
+			SizeI sz = m_pBtnFwdSkin->preferredSize();
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -636,7 +636,7 @@ namespace wg
 
 		if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
 		{
-			Size sz = m_pBtnBwdSkin->preferredSize();
+			SizeI sz = m_pBtnBwdSkin->preferredSize();
 
 			minW = max( minW, sz.w );
 			minH = max( minH, sz.h );
@@ -663,7 +663,7 @@ namespace wg
 
 	//____ _renderButton() _________________________________________________________
 
-	void Scrollbar::_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state )
+	void Scrollbar::_renderButton( GfxDevice * pDevice, RectI& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
 				_dest.w = pSkin->preferredSize().w;
@@ -680,11 +680,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void Scrollbar::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Scrollbar::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	dest = _canvas;
+		RectI	dest = _canvas;
 		if( m_pSkin )
 			dest = m_pSkin->contentRect(_canvas,m_state);
 
@@ -714,11 +714,11 @@ namespace wg
 			int handleLen;
 			_viewToPosLen( &handlePos, &handleLen );
 
-			Rect	handleDest;
+			RectI	handleDest;
 			if( m_bHorizontal )
-				handleDest = Rect( dest.x + handlePos, dest.y, handleLen, dest.h );
+				handleDest = RectI( dest.x + handlePos, dest.y, handleLen, dest.h );
 			else
-				handleDest = Rect( dest.x, dest.y + handlePos, dest.w, handleLen );
+				handleDest = RectI( dest.x, dest.y + handlePos, dest.w, handleLen );
 
 			m_pHandleSkin->render( pDevice, handleDest, m_states[C_HANDLE] );
 		}
@@ -739,7 +739,7 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool Scrollbar::_alphaTest( const Coord& ofs )
+	bool Scrollbar::_alphaTest( const CoordI& ofs )
 	{
 		if( _findMarkedComponent( ofs ) != C_NONE )
 			return true;
@@ -749,7 +749,7 @@ namespace wg
 
 	//____ _markTestButton() _______________________________________________________
 
-	bool Scrollbar::_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state )
+	bool Scrollbar::_markTestButton( CoordI ofs, RectI& _dest, Skin * pSkin, State state )
 	{
 			if( m_bHorizontal )
 				_dest.w = pSkin->preferredSize().w;
@@ -768,16 +768,16 @@ namespace wg
 
 	//____ _findMarkedComponent() __________________________________________________
 
-	Scrollbar::Component Scrollbar::_findMarkedComponent( Coord ofs )
+	Scrollbar::Component Scrollbar::_findMarkedComponent( CoordI ofs )
 	{
-		Rect canvas;
+		RectI canvas;
 
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect( Rect(0,0,size()),m_state);
+			canvas = m_pSkin->contentRect( RectI(0,0,size()),m_state);
 		else
-			canvas = Rect(0,0,size());
+			canvas = RectI(0,0,size());
 
-		Rect dest = canvas;
+		RectI dest = canvas;
 
 		// First of all, do a mark test against the header buttons...
 
@@ -819,7 +819,7 @@ namespace wg
 
 		// Do a mark test against the dragbar background.
 
-		Rect	r = canvas;
+		RectI	r = canvas;
 
 		if( m_bHorizontal )
 		{
@@ -856,16 +856,16 @@ namespace wg
 		_viewToPosLen( &handlePos, &handleLen );
 
 		MsgRouter_p	pHandler = Base::msgRouter();
-		Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+		CoordI pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 
 		int		pointerOfs;
 		int		length;
 
-		Rect contentRect;
+		RectI contentRect;
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(Rect(0,0,size()),m_state);
+			contentRect = m_pSkin->contentRect(RectI(0,0,size()),m_state);
 		else
-			contentRect = Rect(0,0,size());
+			contentRect = RectI(0,0,size());
 
 		if( m_bHorizontal )
 		{
@@ -1100,7 +1100,7 @@ namespace wg
 
 	//____ _markTestHandle() _______________________________________________________
 
-	bool Scrollbar::_markTestHandle( Coord ofs )
+	bool Scrollbar::_markTestHandle( CoordI ofs )
 	{
 		if( !m_pHandleSkin )
 			return false;
@@ -1108,7 +1108,7 @@ namespace wg
 		int   handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		Rect area(0,0,size());
+		RectI area(0,0,size());
 
 		if( m_pSkin )
 			area = m_pSkin->contentRect(area,m_state);

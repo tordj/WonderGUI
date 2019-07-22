@@ -61,7 +61,7 @@ namespace wg
 
 		// Overloaded from Panel
 
-		Widget *        _findWidget( const Coord& ofs, SearchMode mode ) override;
+		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
 
 		// Overloaded from WidgetHolder
 
@@ -74,18 +74,18 @@ namespace wg
 		const LayerSlot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const Rect& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const RectI& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
 
 		// Overloaded from Widget
 
 		void            _cloneContent( const Widget * _pOrg ) override;
 		void            _receive( Msg * pMsg ) override;
-		void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
+		void            _renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches ) override;
 
 		// Internal
 
-		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
-		void            _cancel( ModifierKeys modKeys, Coord pointerPos );
+		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, CoordI pointerPos );
+		void            _cancel( ModifierKeys modKeys, CoordI pointerPos );
 		void            _replaceDragWidget( Widget * pNewWidget );
 
 
@@ -110,7 +110,7 @@ namespace wg
 		Payload_p		m_pPayload;
 
 		int				m_dragStartTreshold = 3;
-		Coord           m_dragWidgetOfs;                // Drag widgets offset from pointer.
+		CoordI           m_dragWidgetOfs;                // Drag widgets offset from pointer.
 
 		Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
 		Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.

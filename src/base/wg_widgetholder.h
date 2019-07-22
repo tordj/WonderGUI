@@ -40,13 +40,13 @@ namespace wg
 	class WidgetHolder		/** @private */
 	{
 	public:
-		virtual Coord		_childPos( Slot * pSlot ) const = 0;				///< Get the local position of the widget.
-		virtual Coord		_childGlobalPos( Slot * pSlot ) const = 0;
+		virtual CoordI		_childPos( Slot * pSlot ) const = 0;				///< Get the local position of the widget.
+		virtual CoordI		_childGlobalPos( Slot * pSlot ) const = 0;
 
-		virtual Size		_childSize( Slot * pSlot ) const = 0;
+		virtual SizeI		_childSize( Slot * pSlot ) const = 0;
 
 		virtual bool		_isChildVisible( Slot * pSlot ) const = 0;
-		virtual Rect		_childWindowSection( Slot * pSlot ) const = 0;		// Returns the window section within the childs canvas.
+		virtual RectI		_childWindowSection( Slot * pSlot ) const = 0;		// Returns the window section within the childs canvas.
 
 
 		virtual Container * _childParent() = 0;
@@ -54,14 +54,14 @@ namespace wg
 
 
 		virtual void		_childRequestRender( Slot * pSlot ) = 0;
-		virtual void		_childRequestRender( Slot * pSlot, const Rect& rect ) = 0;
+		virtual void		_childRequestRender( Slot * pSlot, const RectI& rect ) = 0;
 		virtual void		_childRequestResize( Slot * pSlot ) = 0;
 
 		virtual bool		_childRequestFocus( Slot * pSlot, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
 		virtual bool		_childReleaseFocus( Slot * pSlot, Widget * pWidget ) = 0;
 
 		virtual void		_childRequestInView( Slot * pSlot ) = 0;
-		virtual void		_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
+		virtual void		_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) = 0;
 
 		virtual Widget *	_prevChild( const Slot * pSlot ) const = 0;
 		virtual Widget *	_nextChild( const Slot * pSlot ) const = 0;

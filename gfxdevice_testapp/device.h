@@ -17,7 +17,7 @@ public:
 
 	virtual const char * name() const = 0;
 
-	virtual bool			init(Size canvasSize, PixelFormat canvasFormat) = 0;
+	virtual bool			init(SizeI canvasSize, PixelFormat canvasFormat) = 0;
 	virtual void			exit() = 0;
 
 	virtual GfxDevice_p		beginRender() const = 0;
@@ -40,7 +40,7 @@ public:
 		return m_pName;
 	}
 
-	bool init(Size canvasSize, PixelFormat canvasFormat)
+	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat);
 		m_pDevice = SoftGfxDevice::create(m_pCanvas);
@@ -94,7 +94,7 @@ public:
 		return m_pName;
 	}
 
-	bool init(Size canvasSize, PixelFormat canvasFormat)
+	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = GlSurface::create(canvasSize, canvasFormat);
 		m_pDevice = GlGfxDevice::create(m_pCanvas);
@@ -150,7 +150,7 @@ public:
 		return m_pName;
 	}
 
-	bool init(Size canvasSize, PixelFormat canvasFormat)
+	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pStreamBuffer = GfxStreamPlug::create();
 

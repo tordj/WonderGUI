@@ -69,7 +69,7 @@ namespace wg
 																///<
 																///< Get the size of the blobs data.
 																///< The size of the content can only be retrieved if known by the blob.
-																///< @return Size of blob data or 0 if unknown.
+																///< @return SizeI of blob data or 0 if unknown.
 		void *			data() { return m_pData; }				///< @brief Get pointer to the data of the blob.
 																///<
 																///< Get a raw pointer to the data of the blob, which is either the object

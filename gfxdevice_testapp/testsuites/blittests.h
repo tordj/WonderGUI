@@ -19,7 +19,7 @@ public:
 		addTest("RotScaleBlit", &PatchBlitTests::setClockFace, &PatchBlitTests::rotScaleBlit, &PatchBlitTests::dummy);
 	}
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pClockFace = FileUtil::loadSurface("../resources/clockface_2500.png", pDevice->surfaceFactory());
 		if (!m_pClockFace)
@@ -32,13 +32,13 @@ public:
 
 		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::A8);
 
-		Rect	copySource = Rect(m_pClockFace->size()).center({ 400,400 });
+		RectI	copySource = RectI(m_pClockFace->size()).center({ 400,400 });
 		m_pAlphaOnly->copyFrom(m_pClockFace, copySource, { 0,0 });
 
 		return true;
 	}
 	 
-	bool exit(GfxDevice * pDevice, const Rect& canvas)
+	bool exit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pClockFace = nullptr;
 		m_pSplash = nullptr;
@@ -46,65 +46,65 @@ public:
 	}
 
 
-	bool dummy(GfxDevice * pDevice, const Rect& canvas)
+	bool dummy(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return true;
 	}
 
-	bool setClockFace(GfxDevice * pDevice, const Rect& canvas)
+	bool setClockFace(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pClockFace);
 		return true;
 	}
 
-	bool setSplash(GfxDevice * pDevice, const Rect& canvas)
+	bool setSplash(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pSplash);
 		return true;
 	}
 
-	bool setAlphaOnly(GfxDevice * pDevice, const Rect& canvas)
+	bool setAlphaOnly(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pAlphaOnly);
 		return true;
 	}
 
 
-	bool	blit(GfxDevice * pDevice, const Rect& canvas)
+	bool	blit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->blit(canvas);
 		return true;
 	}
 
-	bool	flipBlit90(GfxDevice * pDevice, const Rect& canvas)
+	bool	flipBlit90(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot90);
 		return true;
 	}
 
-	bool	flipBlit180(GfxDevice * pDevice, const Rect& canvas)
+	bool	flipBlit180(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot180);
 		return true;
 	}
 
-	bool	flipBlit270(GfxDevice * pDevice, const Rect& canvas)
+	bool	flipBlit270(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot270);
 		return true;
 	}
 
 
-	bool	rotScaleBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	rotScaleBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		CoordF center = { m_pClockFace->size().w / 2.f, m_pClockFace->size().h / 2.f };
 		pDevice->rotScaleBlit(canvas, center, rot, scale);
 		return true;
 	}
 
-	bool	stretchBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	stretchBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit(canvas, Rect( 0,0, m_pSplash->size() ) );
+		pDevice->stretchBlit(canvas, RectI( 0,0, m_pSplash->size() ) );
 		return true;
 	}
 

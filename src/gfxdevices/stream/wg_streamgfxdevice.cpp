@@ -38,7 +38,7 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StreamGfxDevice_p StreamGfxDevice::create( Size canvas, GfxOutStream& stream )
+	StreamGfxDevice_p StreamGfxDevice::create( SizeI canvas, GfxOutStream& stream )
 	{
 		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));
 		return p;
@@ -47,7 +47,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	StreamGfxDevice::StreamGfxDevice( Size canvas, GfxOutStream& stream ) : GfxDevice(canvas)
+	StreamGfxDevice::StreamGfxDevice( SizeI canvas, GfxOutStream& stream ) : GfxDevice(canvas)
 	{
 		m_pStream = &stream;
 		m_bRendering = false;
@@ -105,7 +105,7 @@ namespace wg
 
 	//____ setClipList() __________________________________________________________
 
-	bool StreamGfxDevice::setClipList(int nRectangles, const Rect * pRectangles)
+	bool StreamGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
 	{
 		if (GfxDevice::setClipList(nRectangles, pRectangles))
 		{
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ fill() __________________________________________________________________
 
-	void StreamGfxDevice::fill( const Rect& _rect, const Color& _col )
+	void StreamGfxDevice::fill( const RectI& _rect, const Color& _col )
 	{
 		if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
 			return;
@@ -250,7 +250,7 @@ namespace wg
 
 	//____ plotPixels() ________________________________________________________
 
-	void StreamGfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
+	void StreamGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
 	{
 		// Each pixel is packed down to 4 + 4 bytes: int16_t x, int16_t y, Color
 		// All coordinates comes first, then all colors.
@@ -294,7 +294,7 @@ namespace wg
 
 	//____ drawLine() __________________________________________________________
 
-	void StreamGfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
+	void StreamGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 16 };
 		(*m_pStream) << begin;
@@ -303,7 +303,7 @@ namespace wg
 		(*m_pStream) << thickness;
 	}
 
-	void StreamGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
+	void StreamGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 16 };
 		(*m_pStream) << begin;
@@ -315,7 +315,7 @@ namespace wg
 
 	//____ blit() __________________________________________________________________
 
-	void StreamGfxDevice::blit(Coord dest, const Rect& _src)
+	void StreamGfxDevice::blit(CoordI dest, const RectI& _src)
 	{
 		if (_src.w < 1 || _src.h < 1)
 			return;
@@ -327,7 +327,7 @@ namespace wg
 
 	//____ stretchBlit() ___________________________________________________
 
-	void StreamGfxDevice::stretchBlit(const Rect& dest, const RectF& source)
+	void StreamGfxDevice::stretchBlit(const RectI& dest, const RectF& source)
 	{
 
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::StretchBlit, 24 };
@@ -337,7 +337,7 @@ namespace wg
 
 	//____ transformBlit() _____________________________________________
 
-	void StreamGfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	void StreamGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SimpleTransformBlit, 18 };
 		(*m_pStream) << dest;
@@ -345,7 +345,7 @@ namespace wg
 		(*m_pStream) << simpleTransform;
 	}
 
-	void StreamGfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
+	void StreamGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::ComplexTransformBlit, 34 };
 		(*m_pStream) << dest;
@@ -355,7 +355,7 @@ namespace wg
 
 	//____ transformDrawSegments() ______________________________________
 
-	void StreamGfxDevice::transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
+	void StreamGfxDevice::transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 		//NOTE: Precision of edge data is scaled down to 4 binals and there is a limitation of 4095 pixels height of the segment waveform to keep data compact.
 

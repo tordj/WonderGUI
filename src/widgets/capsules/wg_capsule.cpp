@@ -102,27 +102,27 @@ namespace wg
 
 	//____ preferredSize() ___________________________________________________________
 
-	Size Capsule::preferredSize() const
+	SizeI Capsule::preferredSize() const
 	{
 		if( m_child.pWidget )
 			return m_child.pWidget->preferredSize();
 		else
-			return Size(1,1);
+			return SizeI(1,1);
 	}
 
 	//____ _childPos() ___________________________________________________________
 
-	Coord Capsule::_childPos( Slot * pSlot ) const
+	CoordI Capsule::_childPos( Slot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentOfs( m_state );
 
-		return Coord();
+		return CoordI();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	Size Capsule::_childSize( Slot * pSlot ) const
+	SizeI Capsule::_childSize( Slot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->contentPadding();
@@ -142,7 +142,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( Slot * pSlot, const Rect& rect )
+	void Capsule::_childRequestRender( Slot * pSlot, const RectI& rect )
 	{
 		if( m_pSkin )
 			_requestRender( rect + m_pSkin->contentOfs( m_state ));
@@ -174,7 +174,7 @@ namespace wg
 
 	//____ _collectPatches() _____________________________________________________
 
-	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void Capsule::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{
 		if( m_child.pWidget )
 			m_child.pWidget->_collectPatches( container, geo, clip );
@@ -182,7 +182,7 @@ namespace wg
 
 	//____ _maskPatches() ________________________________________________________
 
-	void Capsule::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void Capsule::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
 		if( m_child.pWidget )
 			m_child.pWidget->_maskPatches( patches, geo, clip, blendMode );
@@ -197,7 +197,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void Capsule::_setSize( const Size& size )
+	void Capsule::_setSize( const SizeI& size )
 	{
 		Container::_setSize( size );
 
@@ -224,7 +224,7 @@ namespace wg
 	void Capsule::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		package.pSlot = &m_child;
-		package.geo = Rect(0,0,m_size);
+		package.geo = RectI(0,0,m_size);
 	}
 
 	//____ _nextSlotWithGeo() ______________________________________________________

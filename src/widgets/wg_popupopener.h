@@ -73,7 +73,7 @@ namespace wg
 		virtual int		matchingHeight(int width) const override;
 		//	virtual int		matchingWidth( int height ) const override;
 
-		Size			preferredSize() const override;
+		SizeI			preferredSize() const override;
 
 
 	protected:
@@ -82,8 +82,8 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new PopupOpener(); };
 
 		void			_cloneContent(const Widget * _pOrg) override;
-		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
-		void			_setSize(const Size& size) override;
+		void			_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void			_setSize(const SizeI& size) override;
 		void			_refresh() override;
 		void			_receive(Msg * pMsg) override;
 		void			_setState(State state) override;
@@ -93,9 +93,9 @@ namespace wg
 		void			_open();
 		void			_close();
 
-		Coord			_componentPos(const Component * pComponent) const override;
-		Size			_componentSize(const Component * pComponent) const override;
-		Rect			_componentGeo(const Component * pComponent) const override;
+		CoordI			_componentPos(const Component * pComponent) const override;
+		SizeI			_componentSize(const Component * pComponent) const override;
+		RectI			_componentGeo(const Component * pComponent) const override;
 
 
 

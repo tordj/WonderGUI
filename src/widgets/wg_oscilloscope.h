@@ -85,7 +85,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size	preferredSize() const;
+		SizeI	preferredSize() const;
 
 
 
@@ -95,16 +95,16 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new Oscilloscope(); };
 
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		void	_setSize( const Size& size );
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		void	_setSize( const SizeI& size );
 
 		static const int PixelBufferSize = 16000;
 
 
 	private:
-		void	_updateRenderSegments( int nSegments, Rect * pSegments );
-		void	_resampleLinePoints( Size sz );
-		void 	_antiAlias(const int nPoints, const float *pYval, Coord canvasOfs );
+		void	_updateRenderSegments( int nSegments, RectI * pSegments );
+		void	_resampleLinePoints( SizeI sz );
+		void 	_antiAlias(const int nPoints, const float *pYval, CoordI canvasOfs );
 
 
 		static inline int ipart(double x) { return (int)floor(x); }
@@ -143,7 +143,7 @@ namespace wg
 
 		// Anti-alias
 		int m_iNextPixel;
-		Coord m_pAAPix[PixelBufferSize];
+		CoordI m_pAAPix[PixelBufferSize];
 		Color m_pAACol[PixelBufferSize];
 	};
 

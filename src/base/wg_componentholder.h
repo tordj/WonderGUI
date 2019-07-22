@@ -39,19 +39,19 @@ namespace wg
 		virtual Object * _object() = 0;
 		virtual const Object * _object() const = 0;
 
-		virtual Coord	_componentPos( const Component * pComponent ) const = 0;
-		virtual Size	_componentSize( const Component * pComponent ) const = 0;
-		virtual Rect	_componentGeo( const Component * pComponent ) const = 0;
-		virtual Coord	_globalComponentPos( const Component * pComponent ) const = 0;
-		virtual Rect	_globalComponentGeo( const Component * pComponent ) const = 0;
+		virtual CoordI	_componentPos( const Component * pComponent ) const = 0;
+		virtual SizeI	_componentSize( const Component * pComponent ) const = 0;
+		virtual RectI	_componentGeo( const Component * pComponent ) const = 0;
+		virtual CoordI	_globalComponentPos( const Component * pComponent ) const = 0;
+		virtual RectI	_globalComponentGeo( const Component * pComponent ) const = 0;
 
 		virtual void	_componentRequestRender( const Component * pComponent ) = 0;
-		virtual void	_componentRequestRender( const Component * pComponent, const Rect& rect ) = 0;
+		virtual void	_componentRequestRender( const Component * pComponent, const RectI& rect ) = 0;
 		virtual void	_componentRequestResize( const Component * pComponent ) = 0;
 
  		virtual void	_componentRequestFocus( const Component * pComponent ) = 0;
 		virtual void	_componentRequestInView( const Component * pComponent ) = 0;
-		virtual void	_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio ) = 0;
+		virtual void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) = 0;
 
 
 

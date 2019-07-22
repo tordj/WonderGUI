@@ -75,7 +75,7 @@ namespace wg
 			return r;
 		}
 
-		inline Border toPixels(Border points)
+		inline BorderI toPixels(BorderI points)
 		{
 			return { (points.right * Base::pixelQuartersPerPoint()) >> 2, (points.bottom * Base::pixelQuartersPerPoint()) >> 2,
 					 (points.left * Base::pixelQuartersPerPoint()) >> 2, (points.top * Base::pixelQuartersPerPoint()) >> 2 };
@@ -85,19 +85,19 @@ namespace wg
 		double squareRoot(double a);
 		double powerOfTen(int num);
 
-		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold );
+		bool		markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold );
 
-		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const Rect& source, const Rect& dest, int opacityTreshold, Border sourceFrame);
+		bool		markTestNinePatch( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& dest, int opacityTreshold, BorderI sourceFrame);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat );
 
-		Coord 		origoToOfs( Origo origo, Size base );
-		Rect		origoToRect( Origo origo, Size base, Size rect );
+		CoordI 		origoToOfs( Origo origo, SizeI base );
+		RectI		origoToRect( Origo origo, SizeI base, SizeI rect );
 
-		Size		scaleToFit(Size object, Size boundaries);
+		SizeI		scaleToFit(SizeI object, SizeI boundaries);
 
-		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizeQolicy policy );
+		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
 
 		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 

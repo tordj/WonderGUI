@@ -61,15 +61,15 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void	setSizes( Size min, Size preferred, Size max );
+		void	setSizes( SizeI min, SizeI preferred, SizeI max );
 
-		void	setPreferredSize( Size size );
-		void	setMinSize( Size size );
-		void	setMaxSize( Size size );
+		void	setPreferredSize( SizeI size );
+		void	setMinSize( SizeI size );
+		void	setMaxSize( SizeI size );
 
-		Size	preferredSize() const;
-		Size	minSize() const;
-		Size	maxSize() const;
+		SizeI	preferredSize() const;
+		SizeI	minSize() const;
+		SizeI	maxSize() const;
 
 		int		matchingHeight( int width ) const;
 		int		matchingWidth( int height ) const;
@@ -81,9 +81,9 @@ namespace wg
 
 	private:
 
-		Size			m_min;
-		Size			m_max;
-		Size			m_preferred;
+		SizeI			m_min;
+		SizeI			m_max;
+		SizeI			m_preferred;
 	};
 
 

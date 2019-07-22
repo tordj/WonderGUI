@@ -108,9 +108,9 @@ namespace wg
 
 	//____ preferredSize() _______________________________________________________
 
-	Size PackPanel::preferredSize() const
+	SizeI PackPanel::preferredSize() const
 	{
-		Size size = m_preferredContentSize;
+		SizeI size = m_preferredContentSize;
 		if (m_pSkin)
 			size += m_pSkin->contentPadding();
 
@@ -387,7 +387,7 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(Slot * pSlot, int nb, Border padding)
+	void PackPanel::_repadSlots(Slot * pSlot, int nb, BorderI padding)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackPanelSlot*)pSlot)[i].padding = padding;
@@ -396,7 +396,7 @@ namespace wg
 		_refreshChildGeo();
 	}
 
-	void PackPanel::_repadSlots(Slot * pSlot, int nb, const Border * pPaddings)
+	void PackPanel::_repadSlots(Slot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackPanelSlot*)pSlot)[i].padding = * pPaddings++;
@@ -431,14 +431,14 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	Coord PackPanel::_childPos(Slot * pSlot) const
+	CoordI PackPanel::_childPos(Slot * pSlot) const
 	{
 		return ((PackPanelSlot*)pSlot)->geo;
 	}
 
 	//____ _childSize() _______________________________________________________
 
-	Size PackPanel::_childSize(Slot * pSlot) const
+	SizeI PackPanel::_childSize(Slot * pSlot) const
 	{
 		return ((PackPanelSlot*)pSlot)->geo;
 	}
@@ -451,7 +451,7 @@ namespace wg
 
 	}
 
-	void PackPanel::_childRequestRender(Slot * pSlot, const Rect& rect)
+	void PackPanel::_childRequestRender(Slot * pSlot, const RectI& rect)
 	{
 		_requestRender(rect + ((PackPanelSlot*)pSlot)->geo.pos());
 	}
@@ -546,7 +546,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void PackPanel::_setSize( const Size& size )
+	void PackPanel::_setSize( const SizeI& size )
 	{
 		Panel::_setSize(size);
 		_refreshChildGeo(false);
@@ -620,7 +620,7 @@ namespace wg
 
 		//
 
-		Size size = m_bHorizontal?Size(length,breadth):Size(breadth,length);
+		SizeI size = m_bHorizontal?SizeI(length,breadth):SizeI(breadth,length);
 
 
 
@@ -641,8 +641,8 @@ namespace wg
 		if( m_children.isEmpty() )
 			return;
 
-		Size sz = size();
-		Coord contentOfs;
+		SizeI sz = size();
+		CoordI contentOfs;
 
 		if (m_pSkin)
 		{
@@ -659,8 +659,8 @@ namespace wg
 
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
-			Coord pos;
-			Rect geo;
+			CoordI pos;
+			RectI geo;
 			for (auto p = m_children.begin(); p != m_children.end(); p++)
 			{
 				if( p->bVisible )
@@ -733,8 +733,8 @@ namespace wg
 
 			SizeBrokerItem * pI = pItemArea;
 
-			Coord pos;
-			Rect geo;
+			CoordI pos;
+			RectI geo;
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
 				if( pS->bVisible )

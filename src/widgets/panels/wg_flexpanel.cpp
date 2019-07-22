@@ -68,7 +68,7 @@ namespace wg
 
 	//____ addMovable() ________________________________________________________
 
-	IFlexPanelChildren::iterator IFlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::addMovable( Widget * pWidget, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -104,7 +104,7 @@ namespace wg
 
 	//____ insertMovable() ________________________________________________________
 
-	IFlexPanelChildren::iterator IFlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::insertMovable( int index, Widget * pWidget, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -166,14 +166,14 @@ namespace wg
 		_setMovable(it._slot(), origo, hotspot);
 	}
 
-	void IFlexPanelChildren::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::setMovable(int index, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		//TODO: Assert
 
 		_setMovable(m_pSlotArray->slot(index), geometry, origo, hotspot);
 	}
 
-	void IFlexPanelChildren::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	void IFlexPanelChildren::setMovable( iterator it, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -349,14 +349,14 @@ namespace wg
 
 	//____ setGeo() ________________________________________________________
 
-	bool IFlexPanelChildren::setGeo( int index, const Rect& geometry )
+	bool IFlexPanelChildren::setGeo( int index, const RectI& geometry )
 	{
 		//TODO: Assert!
 
 		return _setGeo(m_pSlotArray->slot(index), geometry);
 	}
 
-	bool IFlexPanelChildren::setGeo(iterator it, const Rect& geometry)
+	bool IFlexPanelChildren::setGeo(iterator it, const RectI& geometry)
 	{
 		//TODO: Assert!
 
@@ -365,14 +365,14 @@ namespace wg
 
 	//____ geo() ________________________________________________________
 
-	Rect IFlexPanelChildren::geo( int index ) const
+	RectI IFlexPanelChildren::geo( int index ) const
 	{
 		//TODO: Assert
 
 		return _geo(m_pSlotArray->slot(index));
 	}
 
-	Rect IFlexPanelChildren::geo( iterator it ) const
+	RectI IFlexPanelChildren::geo( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -382,14 +382,14 @@ namespace wg
 
 	//____ setOfs() ________________________________________________________
 
-	bool IFlexPanelChildren::setOfs( int index, const Coord& ofs )
+	bool IFlexPanelChildren::setOfs( int index, const CoordI& ofs )
 	{
 		//TODO: Assert
 
 		return _setOfs(m_pSlotArray->slot(index), ofs);
 	}
 
-	bool IFlexPanelChildren::setOfs( iterator it, const Coord& ofs )
+	bool IFlexPanelChildren::setOfs( iterator it, const CoordI& ofs )
 	{
 		//TODO: Assert
 
@@ -398,14 +398,14 @@ namespace wg
 
 	//____ ofs() ________________________________________________________
 
-	Coord IFlexPanelChildren::ofs( int index ) const
+	CoordI IFlexPanelChildren::ofs( int index ) const
 	{
 		//TODO: Assert
 
 		return _ofs(m_pSlotArray->slot(index));
 	}
 
-	Coord IFlexPanelChildren::ofs( iterator it ) const
+	CoordI IFlexPanelChildren::ofs( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -414,14 +414,14 @@ namespace wg
 
 	//____ setSize() ________________________________________________________
 
-	bool IFlexPanelChildren::setSize( int index, const Size& size )
+	bool IFlexPanelChildren::setSize( int index, const SizeI& size )
 	{
 		//TODO: Assert
 
 		return _setSize(m_pSlotArray->slot(index), size );
 	}
 
-	bool IFlexPanelChildren::setSize( iterator it, const Size& size )
+	bool IFlexPanelChildren::setSize( iterator it, const SizeI& size )
 	{
 		//TODO: Assert
 
@@ -430,14 +430,14 @@ namespace wg
 
 	//____ size() ________________________________________________________
 
-	Rect IFlexPanelChildren::size( int index ) const
+	RectI IFlexPanelChildren::size( int index ) const
 	{
 		//TODO: Assert
 
 		return _size(m_pSlotArray->slot(index));
 	}
 
-	Rect IFlexPanelChildren::size( iterator it ) const
+	RectI IFlexPanelChildren::size( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -446,14 +446,14 @@ namespace wg
 
 	//____ move() ________________________________________________________
 
-	bool IFlexPanelChildren::move( int index, const Coord& ofs )
+	bool IFlexPanelChildren::move( int index, const CoordI& ofs )
 	{
 		//TODO: Assert
 
 		return _move(m_pSlotArray->slot(index), ofs);
 	}
 
-	bool IFlexPanelChildren::move( iterator it, const Coord& ofs )
+	bool IFlexPanelChildren::move( iterator it, const CoordI& ofs )
 	{
 		//TODO: Assert
 
@@ -500,7 +500,7 @@ namespace wg
 		{
 			p->bPinned = true;
 
-			Size sz = m_pHolder->_size();
+			SizeI sz = m_pHolder->_size();
 
 			p->topLeftPin = FlexPos(p->realGeo.x / (float)sz.w, p->realGeo.y / (float)sz.h);
 			p->bottomRightPin = FlexPos(p->realGeo.right() / (float)sz.w, p->realGeo.bottom() / (float)sz.h);
@@ -533,7 +533,7 @@ namespace wg
 		}
 	}
 
-	void IFlexPanelChildren::_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::_setMovable(FlexPanelSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		p->bPinned = false;
 		p->origo = origo;
@@ -591,7 +591,7 @@ namespace wg
 
 	//____ _setGeo() ________________________________________________________
 
-	bool IFlexPanelChildren::_setGeo(FlexPanelSlot * p, const Rect& geometry)
+	bool IFlexPanelChildren::_setGeo(FlexPanelSlot * p, const RectI& geometry)
 	{
 		if (p->bPinned)
 			return false;
@@ -604,17 +604,17 @@ namespace wg
 
 	//____ _geo() ________________________________________________________
 
-	Rect IFlexPanelChildren::_geo(FlexPanelSlot * p) const
+	RectI IFlexPanelChildren::_geo(FlexPanelSlot * p) const
 	{
 		if (p->bPinned)
-			return Rect();
+			return RectI();
 
 		return p->placementGeo;
 	}
 
 	//____ _setOfs() ________________________________________________________
 
-	bool IFlexPanelChildren::_setOfs( FlexPanelSlot * p, const Coord& ofs )
+	bool IFlexPanelChildren::_setOfs( FlexPanelSlot * p, const CoordI& ofs )
 	{
 		if( p->bPinned )
 			return false;
@@ -627,17 +627,17 @@ namespace wg
 
 	//____ _ofs() ________________________________________________________
 
-	Coord IFlexPanelChildren::_ofs( FlexPanelSlot * p ) const
+	CoordI IFlexPanelChildren::_ofs( FlexPanelSlot * p ) const
 	{
 		if( p->bPinned )
-			return Coord();
+			return CoordI();
 
 		return p->placementGeo.pos();
 	}
 
 	//____ _setSize() ________________________________________________________
 
-	bool IFlexPanelChildren::_setSize( FlexPanelSlot * p, const Size& size )
+	bool IFlexPanelChildren::_setSize( FlexPanelSlot * p, const SizeI& size )
 	{
 		if( p->bPinned )
 			return false;
@@ -650,17 +650,17 @@ namespace wg
 
 	//____ _size() ________________________________________________________
 
-	Rect IFlexPanelChildren::_size( FlexPanelSlot * p ) const
+	RectI IFlexPanelChildren::_size( FlexPanelSlot * p ) const
 	{
 		if( p->bPinned )
-			return Size();
+			return SizeI();
 
 		return p->placementGeo.size();
 	}
 
 	//____ _move() ________________________________________________________
 
-	bool IFlexPanelChildren::_move( FlexPanelSlot * p, const Coord& ofs )
+	bool IFlexPanelChildren::_move( FlexPanelSlot * p, const CoordI& ofs )
 	{
 		if( p->bPinned )
 			return false;
@@ -752,14 +752,14 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size FlexPanel::preferredSize() const
+	SizeI FlexPanel::preferredSize() const
 	{
-		Size minSize;
+		SizeI minSize;
 
 		FlexPanelSlot * p = m_children.begin();
 		while( p < m_children.end() )
 		{
-			minSize = Size::max(minSize,_sizeNeededForGeo(p));
+			minSize = SizeI::max(minSize,_sizeNeededForGeo(p));
 			p++;
 		}
 		return minSize;
@@ -788,7 +788,7 @@ namespace wg
 				FlexPanelSlot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					Rect cover(pTo->realGeo, p->realGeo);
+					RectI cover(pTo->realGeo, p->realGeo);
 
 					if (p->bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -802,7 +802,7 @@ namespace wg
 				FlexPanelSlot * p = pFrom;
 				while (p < pTo)
 				{
-					Rect cover(pTo->realGeo, p->realGeo);
+					RectI cover(pTo->realGeo, p->realGeo);
 
 					if (p->bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -877,7 +877,7 @@ namespace wg
 
 	//____ _onRequestRender() ______________________________________________________
 
-	void FlexPanel::_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot )
+	void FlexPanel::_onRequestRender( const RectI& rect, const FlexPanelSlot * pSlot )
 	{
 		if( !pSlot->bVisible )
 			return;
@@ -885,19 +885,19 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add( Rect( rect, Rect(0,0,size())) );
+		patches.add( RectI( rect, RectI(0,0,size())) );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for(FlexPanelSlot * pCover = m_children.begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
-				pCover->pWidget->_maskPatches( patches, pCover->realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
+				pCover->pWidget->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
 
-		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const RectI * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 
@@ -912,7 +912,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void FlexPanel::_setSize( const Size& size )
+	void FlexPanel::_setSize( const SizeI& size )
 	{
 		Panel::_setSize(size);
 
@@ -926,14 +926,14 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord FlexPanel::_childPos( Slot * pSlot ) const
+	CoordI FlexPanel::_childPos( Slot * pSlot ) const
 	{
 		return ((FlexPanelSlot*)pSlot)->realGeo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	Size FlexPanel::_childSize( Slot * pSlot ) const
+	SizeI FlexPanel::_childSize( Slot * pSlot ) const
 	{
 		return ((FlexPanelSlot*)pSlot)->realGeo.size();
 	}
@@ -946,7 +946,7 @@ namespace wg
 		_onRequestRender( pSlot->realGeo, pSlot );
 	}
 
-	void FlexPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
+	void FlexPanel::_childRequestRender( Slot * _pSlot, const RectI& rect )
 	{
 		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
@@ -1049,18 +1049,18 @@ namespace wg
 
 	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot )
 	{
-		Rect	newGeo;
+		RectI	newGeo;
 
 		if( pSlot->bPinned )
 		{
-			Coord topLeft = pSlot->topLeftPin.pos( m_size );
-			Coord bottomRight = pSlot->bottomRightPin.pos( m_size );
+			CoordI topLeft = pSlot->topLeftPin.pos( m_size );
+			CoordI bottomRight = pSlot->bottomRightPin.pos( m_size );
 
-			newGeo = Rect(topLeft,bottomRight);
+			newGeo = RectI(topLeft,bottomRight);
 
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 
-			Size sz = newGeo.size();
+			SizeI sz = newGeo.size();
 			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );
 			if( sz != newGeo.size() )
 			{
@@ -1074,12 +1074,12 @@ namespace wg
 		{
 			// Calculate size
 
-			Size sz = pSlot->placementGeo.isEmpty() ? pSlot->pWidget->preferredSize() : pSlot->placementGeo.size();
+			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->pWidget->preferredSize() : pSlot->placementGeo.size();
 			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );		// Respect widgets limits.
 
 			// Calculate position
 
-			Coord pos = pSlot->origo.pos( m_size );			// Origo,
+			CoordI pos = pSlot->origo.pos( m_size );			// Origo,
 			pos -= pSlot->hotspot.pos(sz);					// hotspot
 			pos += pSlot->placementGeo.pos();				// and Offset.
 
@@ -1098,7 +1098,7 @@ namespace wg
 					pos.y = m_size.h - sz.h;
 			}
 
-			newGeo = Rect( pos, sz );
+			newGeo = RectI( pos, sz );
 		}
 
 		// Request render and update positions.
@@ -1114,26 +1114,26 @@ namespace wg
 
 	//____ _sizeNeededForGeo() ________________________________________
 
-	Size FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot ) const
+	SizeI FlexPanel::_sizeNeededForGeo( FlexPanelSlot * pSlot ) const
 	{
-		Size sz;
+		SizeI sz;
 
 		if( pSlot->bPinned )
 		{
 			sz = pSlot->pWidget->preferredSize();
 
-			sz += Size( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
-			sz -= Size( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );
+			sz += SizeI( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
+			sz -= SizeI( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );
 
 			sz.w = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.x - pSlot->topLeftPin.origo.x));
 			sz.h = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.y - pSlot->topLeftPin.origo.y));
 		}
 		else
 		{
-			Rect geo = pSlot->placementGeo;
+			RectI geo = pSlot->placementGeo;
 
-			Coord hotspot = pSlot->hotspot.pos(geo.size());
-			Coord offset = geo.pos() + pSlot->origo.offset - hotspot;
+			CoordI hotspot = pSlot->hotspot.pos(geo.size());
+			CoordI offset = geo.pos() + pSlot->origo.offset - hotspot;
 
 			int leftOfOrigo = 0 - offset.x;
 			int rightOfOrigo = offset.x + geo.w;

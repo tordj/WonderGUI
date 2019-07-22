@@ -53,24 +53,24 @@ namespace wg
 		virtual void		setState( State state );
 		inline State		state() const { return m_state; }
 
-		virtual void		setSize( Size size );
-		inline Size			size() const { return m_size; }
+		virtual void		setSize( SizeI size );
+		inline SizeI			size() const { return m_size; }
 
-		virtual Size		preferredSize() const;
+		virtual SizeI		preferredSize() const;
 		virtual int			matchingWidth( int height ) const;
 		virtual int			matchingHeight( int width ) const;
 
-		virtual int			charAtPos( Coord pos ) const;
-		virtual Rect		charRect( int charOfs ) const;
+		virtual int			charAtPos( CoordI pos ) const;
+		virtual RectI		charRect( int charOfs ) const;
 		virtual int			charLine( int charOfs ) const;
 
 		virtual void		refresh();
 
 		virtual String		tooltip() const;
 
-		virtual void		render( GfxDevice * pDevice, const Rect& _canvas );
+		virtual void		render( GfxDevice * pDevice, const RectI& _canvas );
 
-		virtual Rect		rectForRange( int ofs, int length ) const;
+		virtual RectI		rectForRange( int ofs, int length ) const;
 
 		virtual String		getString() const;
 
@@ -85,7 +85,7 @@ namespace wg
 
 	protected:
 
-		Size				m_size;
+		SizeI				m_size;
 
 		union
 		{

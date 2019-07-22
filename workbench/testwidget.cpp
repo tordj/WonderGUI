@@ -77,9 +77,9 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________________
 
-	Size TestWidget::preferredSize() const
+	SizeI TestWidget::preferredSize() const
 	{
-		return Size(200,200);
+		return SizeI(200,200);
 	}
 
 	//____ start() _________________________________________________________________
@@ -109,7 +109,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void TestWidget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip )
+	void TestWidget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const RectI& _clip )
 	{
  //       pDevice->setBlendMode(BlendMode::Invert);
         
@@ -118,7 +118,7 @@ namespace wg
 		if( m_bPointsInitialized )
 		{
 		
-			pDevice->drawLine( Coord(_canvas.x, _canvas.y), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ), Color(255,000,000), 10.f );
+			pDevice->drawLine( CoordI(_canvas.x, _canvas.y), CoordI(_canvas.x + _canvas.w, _canvas.y + _canvas.h ), Color(255,000,000), 10.f );
 
 			for( int i = 0 ; i < 2 ; i+=2 )
 			{
@@ -141,14 +141,14 @@ namespace wg
 			{
                 const TickMsg_p pTick = TickMsg::cast(pMsg);
 				
-				Rect area( 0,0, size() );
+				RectI area( 0,0, size() );
 				
 				
 				if( !m_bPointsInitialized )
 				{
 					for( int i = 0 ; i < 2 ; i+=2 )
 					{
-						Coord& c = m_coord[i];
+						CoordI& c = m_coord[i];
 						
 						c.x = 0;
 						c.y = 0;
@@ -165,7 +165,7 @@ namespace wg
 				
 				for( int i = 0 ; i < 2 ; i++ )
 				{
-					Coord& c = m_coord[i];
+					CoordI& c = m_coord[i];
 					
 					if( c.x < area.x )
 						c.x = area.x;

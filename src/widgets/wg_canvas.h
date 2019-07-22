@@ -89,7 +89,7 @@ namespace wg
 		virtual int		matchingHeight(int width) const;
 		virtual int		matchingWidth( int height ) const;
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 
 	protected:
@@ -98,10 +98,10 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new Canvas(); };
 
 		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize(const Size& size);
+		void			_setSize(const SizeI& size);
 		virtual void	_setSkin(Skin * pSkin);
-		virtual void	_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window);
-		virtual	bool	_alphaTest(const Coord& ofs);
+		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
+		virtual	bool	_alphaTest(const CoordI& ofs);
 
 
 		CCanvas	m_canvas;

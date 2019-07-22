@@ -159,7 +159,7 @@ double Util::powerOfTen(int num){
 
 	//____ markTestStretchRect() __________________________________________________
 
-	bool Util::markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold )
+	bool Util::markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
@@ -187,7 +187,7 @@ double Util::powerOfTen(int num){
 
 	//____ markTestNinePatch() ________________________________________________
 
-	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const Rect& _source, const Rect& _dest, int opacityTreshold, Border sourceFrame)
+	bool Util::markTestNinePatch(CoordI ofs, Surface * pSurface, const RectI& _source, const RectI& _dest, int opacityTreshold, BorderI sourceFrame)
 	{
 		// Sanity check & shortcuts.
 
@@ -202,10 +202,10 @@ double Util::powerOfTen(int num){
 
 		//
 
-		Border destFrame = toPixels(sourceFrame);
+		BorderI destFrame = toPixels(sourceFrame);
 
-		Rect source;
-		Rect dest;
+		RectI source;
+		RectI dest;
 
 		if (ofs.x < _dest.x + destFrame.left)
 		{
@@ -561,18 +561,18 @@ double Util::powerOfTen(int num){
 
 	//____ sizeFromPolicy() __________________________________________________________
 
-	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizeQolicy policy )
+	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
 		{
-			case SizeQolicy::Default:
+			case SizePolicy::Default:
 				return defaultSize;
-			case SizeQolicy::Bound:
+			case SizePolicy::Bound:
 				return specifiedSize;
-			case SizeQolicy::Confined:
+			case SizePolicy::Confined:
 				if( defaultSize > specifiedSize )
 					return specifiedSize;
-			case SizeQolicy::Expanded:
+			case SizePolicy::Expanded:
 				if( defaultSize < specifiedSize )
 					return specifiedSize;
 		}
@@ -627,79 +627,79 @@ double Util::powerOfTen(int num){
 
 	//____ origoToOfs() ________________________________________________________
 
-	Coord Util::origoToOfs( Origo origo, Size base )
+	CoordI Util::origoToOfs( Origo origo, SizeI base )
 	{
 		switch( origo )
 		{
 			default:
 			case Origo::NorthWest:
-				return Coord(0,0);
+				return CoordI(0,0);
 
 			case Origo::North:
-				return Coord( base.w/2,0 );
+				return CoordI( base.w/2,0 );
 
 			case Origo::NorthEast:
-				return Coord( base.w,0 );
+				return CoordI( base.w,0 );
 
 			case Origo::East:
-				return Coord( base.w, base.h/2 );
+				return CoordI( base.w, base.h/2 );
 
 			case Origo::SouthEast:
-				return Coord( base.w, base.h );
+				return CoordI( base.w, base.h );
 
 			case Origo::South:
-				return Coord( base.w/2, base.h );
+				return CoordI( base.w/2, base.h );
 
 			case Origo::SouthWest:
-				return Coord( 0, base.h );
+				return CoordI( 0, base.h );
 
 			case Origo::West:
-				return Coord( 0, base.h/2 );
+				return CoordI( 0, base.h/2 );
 
 			case Origo::Center:
-				return Coord( base.w/2, base.h/2 );
+				return CoordI( base.w/2, base.h/2 );
 		}
 	}
 
 	//____ origoToRect() ________________________________________________________
 
-	Rect Util::origoToRect( Origo origo, Size base, Size rect )
+	RectI Util::origoToRect( Origo origo, SizeI base, SizeI rect )
 	{
 		switch( origo )
 		{
 			default:
 			case Origo::NorthWest:
-				return Rect(0,0, rect);
+				return RectI(0,0, rect);
 
 			case Origo::North:
-				return Rect( base.w/2 - rect.w/2, 0, rect );
+				return RectI( base.w/2 - rect.w/2, 0, rect );
 
 			case Origo::NorthEast:
-				return Rect( base.w - rect.w, 0, rect );
+				return RectI( base.w - rect.w, 0, rect );
 
 			case Origo::East:
-				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
+				return RectI( base.w - rect.w, base.h/2 - rect.h/2, rect );
 
 			case Origo::SouthEast:
-				return Rect( base.w - rect.w, base.h - rect.h, rect );
+				return RectI( base.w - rect.w, base.h - rect.h, rect );
 
 			case Origo::South:
-				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
+				return RectI( base.w/2 - rect.w/2, base.h - rect.h, rect );
 
 			case Origo::SouthWest:
-				return Rect( 0, base.h - rect.h, rect );
+				return RectI( 0, base.h - rect.h, rect );
 
 			case Origo::West:
-				return Rect( 0, base.h/2 - rect.h/2, rect );
+				return RectI( 0, base.h/2 - rect.h/2, rect );
 
 			case Origo::Center:
-				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
+				return RectI( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}
 	}
 
 	//____ scaleToFit() _______________________________________________________
 
-	Size Util::scaleToFit(Size object, Size boundaries)
+	SizeI Util::scaleToFit(SizeI object, SizeI boundaries)
 	{
 		float wScale = object.w / (float)boundaries.w;
 		float hScale = object.h / (float)boundaries.h;

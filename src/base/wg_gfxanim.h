@@ -56,14 +56,14 @@ namespace wg
 
 		//.____ Misc ________________________________________________
 
-		void		setSize( Size size );
-		Size		size() const { return m_size; }
+		void		setSize( SizeI size );
+		SizeI		size() const { return m_size; }
 
-		bool		insertFrame( int pos, Surface * pSurf, Coord ofs, int duration );
-		bool		insertFrame( GfxFrame * pBefore, Surface * pSurf, Coord ofs, int duration );
-		bool		addFrame( Surface * pSurf, Coord ofs, int duration );
-		int			addFrames( Surface * pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames = 0, Size spacing = Size() );
-		int			addFrames(Surface * pSurf, int duration, int nFrames = 0, Size spacing = Size() );
+		bool		insertFrame( int pos, Surface * pSurf, CoordI ofs, int duration );
+		bool		insertFrame( GfxFrame * pBefore, Surface * pSurf, CoordI ofs, int duration );
+		bool		addFrame( Surface * pSurf, CoordI ofs, int duration );
+		int			addFrames( Surface * pSurf, CoordI arrayOfs, SizeI arraySize, int duration, int nFrames = 0, SizeI spacing = SizeI() );
+		int			addFrames(Surface * pSurf, int duration, int nFrames = 0, SizeI spacing = SizeI() );
 
 		GfxFrame * getFrame( int64_t ticks, GfxFrame * pProximity = 0 ) const;
 
@@ -72,9 +72,9 @@ namespace wg
 
 	protected:
 		GfxAnim();
-		GfxAnim( Size size );
+		GfxAnim( SizeI size );
 
-		Size		m_size;
+		SizeI		m_size;
 	};
 
 	//____ Class GfxFrame _______________________________________________________
@@ -90,7 +90,7 @@ namespace wg
 		GfxFrame * getPrev(void) {return (GfxFrame *) KeyFrame::prev();};
 
 		Surface_p	pSurf;
-		Rect			rect;
+		RectI			rect;
 	};
 
 

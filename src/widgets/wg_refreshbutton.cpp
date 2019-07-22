@@ -181,9 +181,9 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void RefreshButton::_setSize( const Size& size )
+	void RefreshButton::_setSize( const SizeI& size )
 	{
-		Size contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
+		SizeI contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
 		m_refreshText.setSize(contentSize);
 
 		Button::_setSize( size );
@@ -258,7 +258,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void RefreshButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void RefreshButton::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		// Render background or animation
 
@@ -270,7 +270,7 @@ namespace wg
 			{
 				case BUTTON_CENTERED:
 				{
-					Rect dest = {	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
+					RectI dest = {	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
 									_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
 									pAnimFrame->rect.size() };
 
@@ -297,20 +297,20 @@ namespace wg
 
 		// Get content rect with displacement.
 
-		Rect contentRect = _canvas;
+		RectI contentRect = _canvas;
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect( _canvas, m_state );
 
 		// Get icon and text rect from content rect
 
-		Size iconSize;
+		SizeI iconSize;
 		if( !m_icon.isEmpty() )
 			iconSize = m_icon.skin()->preferredSize();
 		else if( m_animTarget == ICON && m_pRefreshAnim )
 			iconSize = m_pRefreshAnim->size();
 
-		Rect iconRect = m_icon.getIconRect( contentRect, iconSize );
-		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI iconRect = m_icon.getIconRect( contentRect, iconSize );
+		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
 
 
 		// Render icon or animation

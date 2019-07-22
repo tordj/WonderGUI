@@ -72,7 +72,7 @@ namespace wg
 		m_sortOrder = SortOrder::Ascending;
 		m_header.setSortOrder( SortOrder::Ascending );
 
-		m_maxEntrySize = Size(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
+		m_maxEntrySize = SizeI(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 
 		m_contentBreadth = 0;
 		m_contentLength = 0;
@@ -150,20 +150,20 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size PackList::preferredSize() const
+	SizeI PackList::preferredSize() const
 	{
-		Size sz = m_pSkin ? m_pSkin->contentPadding() : Size();
-		Size header = m_header.preferredSize();
+		SizeI sz = m_pSkin ? m_pSkin->contentPadding() : SizeI();
+		SizeI header = m_header.preferredSize();
 
 		if( m_bHorizontal )
 		{
-			sz +=  Size(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
+			sz +=  SizeI(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
 			if( header.h > sz.h )
 				sz.h = header.h;
 		}
 		else
 		{
-			sz += Size(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
+			sz += SizeI(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
 			if( header.w > sz.w )
 				sz.w = header.w;
 		}
@@ -188,7 +188,7 @@ namespace wg
 			int height = m_header.matchingHeight(width);
 			if( m_pSkin )
 			{
-				Size pad = m_pSkin->contentPadding();
+				SizeI pad = m_pSkin->contentPadding();
 				width -= pad.w;
 				height += pad.h;
 			}
@@ -211,7 +211,7 @@ namespace wg
 			int width = m_header.matchingWidth( height );
 			if( m_pSkin )
 			{
-				Size pad = m_pSkin->contentPadding();
+				SizeI pad = m_pSkin->contentPadding();
 				height -= pad.w;
 				width += pad.h;
 			}
@@ -236,7 +236,7 @@ namespace wg
 
 	//____ setMinEntrySize() ______________________________________________________
 
-	bool PackList::setMinEntrySize( Size min )
+	bool PackList::setMinEntrySize( SizeI min )
 	{
 		if( min == m_minEntrySize )
 			return true;
@@ -251,7 +251,7 @@ namespace wg
 
 	//____ setMaxEntrySize() ______________________________________________________
 
-	bool PackList::setMaxEntrySize( Size max )
+	bool PackList::setMaxEntrySize( SizeI max )
 	{
 		if( max == m_maxEntrySize )
 			return true;
@@ -267,35 +267,35 @@ namespace wg
 
 	//____ _collectPatches() ____________________________________________________
 
-	void PackList::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
+	void PackList::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{
 		if( m_pSkin )
-			container.add( Rect( geo, clip ) );
+			container.add( RectI( geo, clip ) );
 		else
 		{
 			if( m_bHorizontal )
-				container.add( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
+				container.add( RectI( RectI( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				container.add( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
+				container.add( RectI( RectI( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
 		}
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void PackList::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
+	void PackList::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-			patches.sub( Rect(geo,clip) );
+			patches.sub( RectI(geo,clip) );
 		else if( m_bOpaqueEntries && blendMode == BlendMode::Blend )
 		{
 			if( m_bHorizontal )
-				patches.sub( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
+				patches.sub( RectI( RectI( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
 			else
-				patches.sub( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
+				patches.sub( RectI( RectI( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
 		}
 		else
 		{
-			Rect	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
+			RectI	myClip(geo, clip);				// Need to limit clip to our geo. Otherwise children outside might mask what they shouldn't.
 			SlotWithGeo child;
 			_firstSlotWithGeo( child );
 
@@ -319,7 +319,7 @@ namespace wg
 
 	//____ _renderPatches() _______________________________________________________
 
-	void PackList::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches )
+	void PackList::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
 	{
 		// Set clipping
 
@@ -333,7 +333,7 @@ namespace wg
 		}
 		// Render children
 
-		Rect	dirtBounds = patches.getUnion();
+		RectI	dirtBounds = patches.getUnion();
 
 		{
 			SlotWithGeo child;
@@ -341,7 +341,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				Rect canvas = child.geo + _canvas.pos();
+				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					Patches childPatches(patches, canvas);
@@ -359,7 +359,7 @@ namespace wg
 		if( m_header.size().h != 0 )
 		{
 			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
-			Rect canvas = _headerGeo() + _canvas.pos();
+			RectI canvas = _headerGeo() + _canvas.pos();
 
 			m_header.render( pDevice, canvas );
 		}
@@ -368,7 +368,7 @@ namespace wg
 
 		if( m_pLassoSkin && m_lassoBegin != m_lassoEnd )
 		{
-			Rect lasso( m_lassoBegin, m_lassoEnd );
+			RectI lasso( m_lassoBegin, m_lassoEnd );
 			lasso += _canvas.pos();
 
 			m_pLassoSkin->render(pDevice, lasso, m_state );
@@ -378,11 +378,11 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void PackList::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void PackList::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		Rect contentRect = _listCanvas() + _canvas.pos();
+		RectI contentRect = _listCanvas() + _canvas.pos();
 
-		Rect clip = pDevice->clipBounds();
+		RectI clip = pDevice->clipBounds();
 
 		if( m_pSkin )
 		{
@@ -401,7 +401,7 @@ namespace wg
 
 			// Get entry geometry, skin and state
 
-			Rect entryGeo( contentRect );
+			RectI entryGeo( contentRect );
 			if( m_bHorizontal )
 			{
 				if( pSlot->ofs >= contentRect.w )
@@ -421,7 +421,7 @@ namespace wg
 
 			Skin * pEntrySkin	= m_pEntrySkin[i&0x1].rawPtr();
 			State	state		= pChild->state();
-	//		Rect	childGeo( entryGeo );
+	//		RectI	childGeo( entryGeo );
 
 			// Render entry skin, shrink child geo
 
@@ -440,14 +440,14 @@ namespace wg
 
 	//____ _setSize() ___________________________________________________________
 
-	void PackList::_setSize( const Size& _size )
+	void PackList::_setSize( const SizeI& _size )
 	{
 		List::_setSize(_size);
 
-		Size headerSize = m_bHorizontal ? Size(m_header.matchingWidth(_size.h), _size.h) : Size( _size.w, m_header.matchingHeight( _size.w ));
+		SizeI headerSize = m_bHorizontal ? SizeI(m_header.matchingWidth(_size.h), _size.h) : SizeI( _size.w, m_header.matchingHeight( _size.w ));
 		m_header.setSize( headerSize );
 
-		Size size = _size;
+		SizeI size = _size;
 		if( m_pSkin )
 			size -= m_pSkin->contentPadding();
 
@@ -474,7 +474,7 @@ namespace wg
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_setSize( Size(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					pWidget->_setSize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -483,7 +483,7 @@ namespace wg
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_setSize( Size(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					pWidget->_setSize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -517,7 +517,7 @@ namespace wg
 		{
 			Widget * pChild = pSlot->pWidget;
 
-			Size pref = _paddedLimitedPreferredSize( pChild );
+			SizeI pref = _paddedLimitedPreferredSize( pChild );
 
 			if( m_bHorizontal )
 			{
@@ -608,11 +608,11 @@ namespace wg
 
 	//____ _onLassoUpdated() ______________________________________________________
 
-	void PackList::_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso )
+	void PackList::_onLassoUpdated( const RectI& oldLasso, const RectI& newLasso )
 	{
 		// Get out content area
 
-		Rect listArea = _listArea();
+		RectI listArea = _listArea();
 
 		// Check if our lassos are inside content area or not.
 
@@ -747,7 +747,7 @@ namespace wg
 				pSlot[i].bVisible = false;
 
 				Widget * pChild = pSlot[i].pWidget;
-				Size pref = _paddedLimitedPreferredSize(pChild);
+				SizeI pref = _paddedLimitedPreferredSize(pChild);
 				if (m_bHorizontal)
 					_subFromContentPreferredSize(pref.w, pref.h);
 				else
@@ -775,7 +775,7 @@ namespace wg
 				pSlot[i].bVisible = true;
 
 				Widget * pChild = pSlot[i].pWidget;
-				Size pref = _paddedLimitedPreferredSize(pChild);
+				SizeI pref = _paddedLimitedPreferredSize(pChild);
 
 				if (m_bHorizontal)
 				{
@@ -805,7 +805,7 @@ namespace wg
 
 				m_contentLength += pSlot[i].length;
 
-				Rect childGeo;
+				RectI childGeo;
 				_getChildGeo(childGeo, pSlot + i);
 				pChild->_setSize(childGeo);
 			}
@@ -907,9 +907,9 @@ namespace wg
 
 	//____ _findEntry() ___________________________________________________________
 
-	ListSlot * PackList::_findEntry( const Coord& ofs )
+	ListSlot * PackList::_findEntry( const CoordI& ofs )
 	{
-		Rect list = _listArea();
+		RectI list = _listArea();
 
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -928,10 +928,10 @@ namespace wg
 
 	//____ _findWidget() __________________________________________________________
 
-	Widget * PackList::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * PackList::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
 		Widget * pResult = 0;
-		Rect list = _listArea();
+		RectI list = _listArea();
 
 		if( list.contains(ofs) && _listWindow().contains(ofs) )
 		{
@@ -944,7 +944,7 @@ namespace wg
 			if( entry != m_children.size() )
 			{
 				PackListSlot * pSlot = m_children.slot(entry);
-				Rect childGeo;
+				RectI childGeo;
 				_getChildGeo( childGeo, pSlot );
 				if( childGeo.contains(ofs) )
 				{
@@ -1022,7 +1022,7 @@ namespace wg
 
 	void PackList::_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd)
 	{
-		Rect box = _listArea();
+		RectI box = _listArea();
 
 		int beg = pBegin->ofs;
 		int end = pEnd < m_children.end() ? pEnd->ofs + pEnd->length : m_contentLength;
@@ -1061,7 +1061,7 @@ namespace wg
 
 	//____ _onEntrySkinChanged() __________________________________________________
 
-	void PackList::_onEntrySkinChanged( Size oldPadding, Size newPadding )
+	void PackList::_onEntrySkinChanged( SizeI oldPadding, SizeI newPadding )
 	{
 		_requestRender();
 
@@ -1097,7 +1097,7 @@ namespace wg
 
 	//____ _getEntryGeo() _________________________________________________________
 
-	void PackList::_getEntryGeo( Rect& geo, const ListSlot * _pSlot ) const
+	void PackList::_getEntryGeo( RectI& geo, const ListSlot * _pSlot ) const
 	{
 		const PackListSlot * pSlot = static_cast<const PackListSlot*>(_pSlot);
 
@@ -1118,7 +1118,7 @@ namespace wg
 
 	//____ _getChildGeo() _________________________________________________________
 
-	void PackList::_getChildGeo( Rect& geo, const PackListSlot * pSlot ) const
+	void PackList::_getChildGeo( RectI& geo, const PackListSlot * pSlot ) const
 	{
 		geo = _listArea();
 
@@ -1163,9 +1163,9 @@ namespace wg
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	Size PackList::_paddedLimitedPreferredSize( Widget * pChild )
+	SizeI PackList::_paddedLimitedPreferredSize( Widget * pChild )
 	{
-		Size sz = pChild->preferredSize();
+		SizeI sz = pChild->preferredSize();
 		sz += m_entryPadding;
 
 		// Apply limits
@@ -1191,11 +1191,11 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord PackList::_childPos( Slot * _pSlot ) const
+	CoordI PackList::_childPos( Slot * _pSlot ) const
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		Rect geo;
+		RectI geo;
 		_getChildGeo(geo, pSlot);
 
 		return geo.pos();
@@ -1203,11 +1203,11 @@ namespace wg
 
 	//____ _childSize() __________________________________________________________
 
-	Size PackList::_childSize( Slot * _pSlot ) const
+	SizeI PackList::_childSize( Slot * _pSlot ) const
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		Rect geo;
+		RectI geo;
 		_getChildGeo(geo, pSlot);
 
 		return geo.size();
@@ -1219,16 +1219,16 @@ namespace wg
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		Rect geo;
+		RectI geo;
 		_getChildGeo(geo, pSlot);
 		_requestRender(geo);
 	}
 
-	void PackList::_childRequestRender( Slot * _pSlot, const Rect& rect )
+	void PackList::_childRequestRender( Slot * _pSlot, const RectI& rect )
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		Rect geo;
+		RectI geo;
 		_getChildGeo(geo, pSlot);
 		geo.x += rect.x;
 		geo.y += rect.y;
@@ -1247,7 +1247,7 @@ namespace wg
 			return;
 
 		Widget * pChild = pSlot->pWidget;
-		Size prefEntrySize = _paddedLimitedPreferredSize(pChild);
+		SizeI prefEntrySize = _paddedLimitedPreferredSize(pChild);
 
 		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
 		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
@@ -1287,7 +1287,7 @@ namespace wg
 			_updateChildOfsFrom( pSlot );
 			_requestRenderChildren( pSlot, m_children.end() );
 
-			Rect childGeo;
+			RectI childGeo;
 			_getChildGeo(childGeo,pSlot);
 			pSlot->pWidget->_setSize(childGeo);
 		}
@@ -1364,9 +1364,9 @@ namespace wg
 
 	//____ _listArea() ____________________________________________________________
 
-	Rect PackList::_listArea() const
+	RectI PackList::_listArea() const
 	{
-		Rect r = _listCanvas();
+		RectI r = _listCanvas();
 		if( m_pSkin )
 			r = m_pSkin->contentRect( r, m_state );
 
@@ -1375,9 +1375,9 @@ namespace wg
 
 	//____ _listWindow() ____________________________________________________________
 
-	Rect PackList::_listWindow() const
+	RectI PackList::_listWindow() const
 	{
-		Rect r = _windowSection();		// Window in widgets own coordinate system.
+		RectI r = _windowSection();		// Window in widgets own coordinate system.
 
 		if( m_bHorizontal )
 		{
@@ -1394,42 +1394,42 @@ namespace wg
 
 	//____ _listCanvas() ____________________________________________________________
 
-	Rect PackList::_listCanvas() const
+	RectI PackList::_listCanvas() const
 	{
-		Size header = m_header.size();
+		SizeI header = m_header.size();
 
 		if( m_bHorizontal )
-			return Rect(header.w, 0, m_size.w - header.w, m_size.h );
+			return RectI(header.w, 0, m_size.w - header.w, m_size.h );
 		else
-			return Rect(0, header.h, m_size.w, m_size.h - header.h);	// List canvas in widgets own coordinate system.
+			return RectI(0, header.h, m_size.w, m_size.h - header.h);	// List canvas in widgets own coordinate system.
 	}
 
 	//____ _headerGeo() ___________________________________________________________
 
-	Rect PackList::_headerGeo() const
+	RectI PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return Rect( _windowSection().x, 0, m_header.size().w, m_size.h );
+			return RectI( _windowSection().x, 0, m_header.size().w, m_size.h );
 		else
-			return Rect( 0, _windowSection().y, m_size.w, m_header.size().h );
+			return RectI( 0, _windowSection().y, m_size.w, m_header.size().h );
 	}
 
 	//____ _windowPadding() _______________________________________________________
 
-	Size PackList::_windowPadding() const
+	SizeI PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return Size( m_header.size().w, 0 );
+			return SizeI( m_header.size().w, 0 );
 		else
-			return Size( 0, m_header.size().h );
+			return SizeI( 0, m_header.size().h );
 	}
 
 	//____ _refreshHeader() _______________________________________________________
 
 	void PackList::_refreshHeader()
 	{
-		Size wantedSize = m_header.preferredSize();
-		Size currentSize = m_header.size();
+		SizeI wantedSize = m_header.preferredSize();
+		SizeI currentSize = m_header.size();
 
 		bool	bRequestResize = false;
 
@@ -1513,24 +1513,24 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________________
 
-	Coord PackList::_componentPos( const Component * pComponent ) const
+	CoordI PackList::_componentPos( const Component * pComponent ) const
 	{
-		Coord c = m_bHorizontal ? Coord(_windowSection().x, 0 ) : Coord(0, _windowSection().y );
+		CoordI c = m_bHorizontal ? CoordI(_windowSection().x, 0 ) : CoordI(0, _windowSection().y );
 		return c;
 	}
 
 	//____ _componentSize() _________________________________________________________
 
-	Size PackList::_componentSize( const Component * pComponent ) const
+	SizeI PackList::_componentSize( const Component * pComponent ) const
 	{
 		return m_header.size();		// We store size internally in the header.
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	Rect PackList::_componentGeo( const Component * pComponent ) const
+	RectI PackList::_componentGeo( const Component * pComponent ) const
 	{
-		return Rect( _componentPos(pComponent), m_header.size() );
+		return RectI( _componentPos(pComponent), m_header.size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________

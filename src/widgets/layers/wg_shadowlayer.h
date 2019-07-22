@@ -65,9 +65,9 @@ namespace wg
 		int				matchingHeight(int width) const;
 		int				matchingWidth(int height) const;
 
-		Size			preferredSize() const;
-		Size			minSize() const;
-		Size			maxSize() const;
+		SizeI			preferredSize() const;
+		SizeI			minSize() const;
+		SizeI			maxSize() const;
 
 	protected:
 		ShadowLayer();
@@ -85,7 +85,7 @@ namespace wg
 		const LayerSlot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const Rect& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const RectI& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
 
 		// Overloaded from ShadowHolder
 
@@ -96,7 +96,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void            _cloneContent( const Widget * _pOrg ) override;
-		void            _renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches ) override;
+		void            _renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches ) override;
 		void            _receive(Msg * pMsg) override;
 
 

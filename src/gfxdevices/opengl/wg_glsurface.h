@@ -58,9 +58,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		static GlSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		static GlSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static GlSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
 		static GlSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
 
 		//.____ Identification __________________________________________
@@ -72,8 +72,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size		size() const;
-		static Size	maxSize();
+		SizeI		size() const;
+		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
 
@@ -82,13 +82,13 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(Coord coord) const;
-		uint8_t		alpha(Coord coord) const;
+		uint32_t	pixel(CoordI coord) const;
+		uint8_t		alpha(CoordI coord) const;
 
 		//.____ Control _______________________________________________________
 
 		uint8_t *	lock(AccessMode mode);
-		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
+		uint8_t *	lockRegion(AccessMode mode, const RectI& region);
 		void		unlock();
 
 		bool		unload();
@@ -102,9 +102,9 @@ namespace wg
 		inline	GLuint	getClutTexture() const { return m_clutTexture; }
 
 	private:
-		GlSurface( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
-		GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
 		GlSurface( Surface * pOther, int flags = SurfaceFlag::Static );
 		~GlSurface();
 
@@ -126,10 +126,10 @@ namespace wg
 		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
 		Blob_p      m_pBlob;
 
-		Size		m_size;				// Width and height in pixels.
-		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
+		SizeI		m_size;				// Width and height in pixels.
+		uint32_t	m_pixelSize;		// SizeI in bytes of a pixel.
 		GLenum		m_pixelDataType;
-		static Size	s_maxSize;
+		static SizeI	s_maxSize;
 
 	};
 } // namespace wg

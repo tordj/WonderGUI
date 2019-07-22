@@ -41,7 +41,7 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	GlGfxDevice_p GlGfxDevice::create( const Rect& viewport, int uboBindingPoint)
+	GlGfxDevice_p GlGfxDevice::create( const RectI& viewport, int uboBindingPoint)
 	{
 		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
 
@@ -69,12 +69,12 @@ namespace wg
 		setCanvas(pSurface);
 	}
 
-	GlGfxDevice::GlGfxDevice(const Rect& viewport, int uboBindingPoint) : GlGfxDevice(viewport.size(), uboBindingPoint)
+	GlGfxDevice::GlGfxDevice(const RectI& viewport, int uboBindingPoint) : GlGfxDevice(viewport.size(), uboBindingPoint)
 	{
 		setCanvas(viewport);
 	}
 
-	GlGfxDevice::GlGfxDevice( Size viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
+	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{
 		m_canvasYstart = viewportSize.h;
 		m_canvasYmul = -1;
@@ -248,7 +248,7 @@ namespace wg
 			GL_UNSIGNED_BYTE,		// type
 			GL_TRUE,				// normalized?
 			sizeof(Vertex),			// stride
-			(void*)sizeof(Coord)	// array buffer offset
+			(void*)sizeof(CoordI)	// array buffer offset
 		);
 
 		assert(glGetError() == 0);
@@ -258,7 +258,7 @@ namespace wg
 			1,                  // size
 			GL_INT,           // type
 			sizeof(Vertex),		// stride
-			(void*)(sizeof(Coord)+sizeof(Color))  // array buffer offset
+			(void*)(sizeof(CoordI)+sizeof(Color))  // array buffer offset
 		);
 
 		glVertexAttribPointer(
@@ -267,7 +267,7 @@ namespace wg
 			GL_FLOAT,				// type
 			GL_TRUE,				// normalized?
 			sizeof(Vertex),			// stride
-			(void*)(sizeof(Coord) + sizeof(Color) + sizeof(int) )  // array buffer offset
+			(void*)(sizeof(CoordI) + sizeof(Color) + sizeof(int) )  // array buffer offset
 		);
 
 
@@ -358,7 +358,7 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool GlGfxDevice::setCanvas( Size canvasSize )
+	bool GlGfxDevice::setCanvas( SizeI canvasSize )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
@@ -428,7 +428,7 @@ namespace wg
 
 	//____ setClipList() ______________________________________________________
 
-	bool GlGfxDevice::setClipList(int nRectangles, const Rect * pRectangles)
+	bool GlGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
 	{
 		if (GfxDevice::setClipList(nRectangles, pRectangles))
 		{
@@ -637,7 +637,7 @@ namespace wg
 
 	//____ fill() ____ [standard] __________________________________________________
 
-	void GlGfxDevice::fill(const Rect& rect, const Color& col)
+	void GlGfxDevice::fill(const RectI& rect, const Color& col)
 	{
 		assert(glGetError() == 0);
 
@@ -667,7 +667,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], rect);
+			RectI patch(m_pClipRects[i], rect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -722,10 +722,10 @@ namespace wg
 
 		// Create our outer rectangle
 
-		Rect outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
+		RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
 
 
-		Rect clip(outerRect, m_clipBounds);
+		RectI clip(outerRect, m_clipBounds);
 		if (clip.w == 0 || clip.h == 0)
 			return;
 
@@ -746,7 +746,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], outerRect);
+			RectI patch(m_pClipRects[i], outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -807,7 +807,7 @@ namespace wg
 
 	//____ plotPixels() ______________________________________________________
 
-	void GlGfxDevice::plotPixels(int nPixels, const Coord * pCoords, const Color * pColors)
+	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
 	{
 		assert(glGetError() == 0);
 
@@ -828,7 +828,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const Rect& clip = m_pClipRects[i];
+			const RectI& clip = m_pClipRects[i];
 			for (int pixel = 0; pixel < nPixels; pixel++)
 			{
 				if (clip.contains(pCoords[pixel]))
@@ -852,7 +852,7 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
 		assert(glGetError() == 0);
 
@@ -877,7 +877,7 @@ namespace wg
 
 		Color fillColor = color * m_tintColor;
 
-		Coord	c1, c2, c3, c4;
+		CoordI	c1, c2, c3, c4;
 
 		if (std::abs(begin.x - end.x) > std::abs(begin.y - end.y))
 		{
@@ -983,7 +983,7 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(Coord begin, Direction dir, int length, Color col, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
 	{
 		assert(glGetError() == 0);
 
@@ -1030,7 +1030,7 @@ namespace wg
 
 		// Create our outer rectangle
 
-		Rect outerRect((int)rect.x, (int)rect.y, ((int)(rect.x + rect.w + 0.999f)) - (int)rect.x, ((int)(rect.y + rect.h + 0.999f)) - (int)rect.y);
+		RectI outerRect((int)rect.x, (int)rect.y, ((int)(rect.x + rect.w + 0.999f)) - (int)rect.x, ((int)(rect.y + rect.h + 0.999f)) - (int)rect.y);
 
 		// Clip our rectangle
 
@@ -1058,7 +1058,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], outerRect);
+			RectI patch(m_pClipRects[i], outerRect);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				int	dx1 = patch.x;
@@ -1119,7 +1119,7 @@ namespace wg
 
 	//____ transformBlit() ____ [simple] __________________________________________________
 
-	void GlGfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	void GlGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
@@ -1143,7 +1143,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1221,7 +1221,7 @@ namespace wg
 
 	//____ transformBlit() ____ [complex] __________________________________________________
 
-	void GlGfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
+	void GlGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
@@ -1247,7 +1247,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1312,7 +1312,7 @@ namespace wg
 
 	//____ transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::transformDrawSegments( const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
+	void GlGfxDevice::transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
 	{
 		assert(glGetError() == 0);
 
@@ -1343,7 +1343,7 @@ namespace wg
 
 		// Do transformations
 
-		Rect dest = _dest;
+		RectI dest = _dest;
 
 		int uIncX = simpleTransform[0][0];
 		int vIncX = simpleTransform[0][1];
@@ -1389,7 +1389,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], dest);
+			RectI patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
@@ -1652,7 +1652,7 @@ namespace wg
 
 					for (int i = 0; i < clipListLen; i++)
 					{
-						Rect& clip = m_clipListBuffer[clipListOfs++];
+						RectI& clip = m_clipListBuffer[clipListOfs++];
 						glScissor(clip.x, clip.y, clip.w, clip.h);
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 					}

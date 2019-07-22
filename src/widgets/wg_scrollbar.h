@@ -108,7 +108,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size	preferredSize() const;
+		SizeI	preferredSize() const;
 
 		void				setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
 		inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
@@ -158,10 +158,10 @@ namespace wg
 		virtual	~Scrollbar();
 
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void	_receive( Msg * pMsg );
 		void	_refresh();
-		bool	_alphaTest( const Coord& ofs );
+		bool	_alphaTest( const CoordI& ofs );
 		void	_setState( State state );
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
@@ -201,7 +201,7 @@ namespace wg
 
 		State			m_states[C_NUMBER_OF_COMPONENTS];
 
-		Size			m_minSize;
+		SizeI			m_minSize;
 
 		ScrollbarTarget *m_pScrollbarTargetInterface;			// So we can access our target.
 		Widget_wp	m_pScrollbarTargetWidget;				// So we can check if target has been deleted.
@@ -215,10 +215,10 @@ namespace wg
 		void	_updateMinSize( void );
 
 
-		Component	_findMarkedComponent( Coord ofs );								// -1 = None.
-		void		_renderButton( GfxDevice * pDevice, Rect& _dest, Skin * pSkin, State state );
-		bool		_markTestButton( Coord ofs, Rect& _dest, Skin * pSkin, State state );
-		bool		_markTestHandle( Coord ofs );
+		Component	_findMarkedComponent( CoordI ofs );								// -1 = None.
+		void		_renderButton( GfxDevice * pDevice, RectI& _dest, Skin * pSkin, State state );
+		bool		_markTestButton( CoordI ofs, RectI& _dest, Skin * pSkin, State state );
+		bool		_markTestHandle( CoordI ofs );
 		void		_headerFooterChanged();
 		void		_unhoverReqRender();
 	};

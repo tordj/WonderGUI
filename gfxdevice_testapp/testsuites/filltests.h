@@ -13,7 +13,7 @@ public:
 	}
 
 
-	bool straightFill(GfxDevice * pDevice, const Rect& canvas)
+	bool straightFill(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Replace);
 		pDevice->fill(canvas, Color::RosyBrown);
@@ -22,7 +22,7 @@ public:
 		return true;
 	}
 
-	bool blendFill(GfxDevice * pDevice, const Rect& canvas)
+	bool blendFill(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setTintColor({ 255,255,255,128 });
 
@@ -33,7 +33,7 @@ public:
 		return true;
 	}
 
-	bool subPixelFill(GfxDevice * pDevice, const Rect& canvas)
+	bool subPixelFill(GfxDevice * pDevice, const RectI& canvas)
 	{
 		for (int i = 0; i < 5; i++)
 		{

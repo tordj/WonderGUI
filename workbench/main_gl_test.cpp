@@ -147,7 +147,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -160,7 +160,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				Coord distance( e.wheel.x, e.wheel.y );
+				CoordI distance( e.wheel.x, e.wheel.y );
 //				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 //					distance *= -1;
 			
@@ -225,7 +225,7 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 	
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
@@ -330,9 +330,9 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 
 
-	Coord	dragDistance = pMsg->draggedTotal();
+	CoordI	dragDistance = pMsg->draggedTotal();
 
-	Coord	ofs = dragStartPos + dragDistance;
+	CoordI	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
@@ -345,7 +345,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 {
-	static Coord posAtPress[MouseButton_Max];
+	static CoordI posAtPress[MouseButton_Max];
 	
 	auto	pWidget = Widget::cast(_pWidget);
 	FlexHook_p 	pHook = FlexHook::cast(pWidget->hook());
@@ -423,7 +423,7 @@ Surface_p generateTestSurface()
 								255,128,128, 128,255,128, 128,128,255,0,0,
 								255,128,0, 128,255,0, 0,128,255,0,0 };
 
-	Surface_p p = GlSurface::create( Size(3,3), PixelType::BGR_8, tex, 11 );
+	Surface_p p = GlSurface::create( SizeI(3,3), PixelType::BGR_8, tex, 11 );
 	p->setScaleMode(ScaleMode::Interpolate);
 	return p;
 }

@@ -102,7 +102,7 @@ namespace wg
 
 	//____ _renderPatches() ________________________________________________________
 
-	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches )
+	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
 	{
 		// Render our skin
 
@@ -130,7 +130,7 @@ namespace wg
 
 		// Render children recursively
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		RectI canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
 		if (canvas != _canvas)
 		{

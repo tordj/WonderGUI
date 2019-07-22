@@ -37,13 +37,13 @@ namespace wg
 	public:
 		PaddedSlot() : bVisible(false) {}
 
-		Size		paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
-		Size		paddedMinSize() const { return pWidget->minSize() + padding; }
-		Size		paddedMaxSize() const { return pWidget->maxSize() + padding; }
+		SizeI		paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
+		SizeI		paddedMinSize() const { return pWidget->minSize() + padding; }
+		SizeI		paddedMaxSize() const { return pWidget->maxSize() + padding; }
 		int			paddedMatchingWidth(int paddedHeight) const { return pWidget->matchingWidth(paddedHeight - padding.height()) + padding.width(); }
 		int			paddedMatchingHeight(int paddedWidth) const { return pWidget->matchingHeight(paddedWidth - padding.width()) + padding.height(); }
 
-		Border		padding;
+		BorderI		padding;
 		bool		bVisible;
 	};
 }

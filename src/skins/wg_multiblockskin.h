@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static MultiBlockSkin_p create(Size blockSize, Border frame = Border(0) );
+		static MultiBlockSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
 
 		//.____ Identification __________________________________________
 
@@ -58,7 +58,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void	render( GfxDevice * pDevice, const Rect& _canvas, State state ) const override;
+		void	render( GfxDevice * pDevice, const RectI& _canvas, State state ) const override;
 
 		//.____ Geometry _________________________________________________
 
@@ -69,9 +69,9 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		int		addLayer(Surface * pSurf, Coord ofs);
-		int		addLayer(Surface * pSurf, Coord blockStartOfs, Coord blockPitch, const std::initializer_list<State>& stateBlocks);		// DEPRECATED!!!
-		int		addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, Coord blockStartOfs = { 0,0 } );
+		int		addLayer(Surface * pSurf, CoordI ofs);
+		int		addLayer(Surface * pSurf, CoordI blockStartOfs, CoordI blockPitch, const std::initializer_list<State>& stateBlocks);		// DEPRECATED!!!
+		int		addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
 
 		bool	setLayerTint(int layerIdx, Color tintColor);
 		bool	setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors);
@@ -80,11 +80,11 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
+		bool	markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const override;
 
 		bool	isOpaque() const override;
 		bool	isOpaque( State state ) const override;
-		bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
+		bool	isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const override;
 
 		bool	isStateIdentical( State state, State comparedTo ) const override;
 
@@ -97,25 +97,25 @@ namespace wg
 			Bitmask<uint32_t>   stateBlockMask = 0;
 			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
-			Coord				blockOfs[StateEnum_Nb];		// Block for each state
+			CoordI				blockOfs[StateEnum_Nb];		// Block for each state
 			Color				tintColor[StateEnum_Nb];
 	//		Origo			placementOrigo;
-	//		Coord			placementOfs;
-	//		Size			dimensions;                   // Stored in pixels
+	//		CoordI			placementOfs;
+	//		SizeI			dimensions;                   // Stored in pixels
 	//		int				m_tiledSections;
 		};
 
 
-		MultiBlockSkin(Size blockSize, Border frame);
+		MultiBlockSkin(SizeI blockSize, BorderI frame);
 		~MultiBlockSkin() {};
 
 		void			_updateStateOpacity( int stateIdx );
 
-		Size			m_blockSizeQoints;					// Stored in points
+		SizeI			m_blockSizeQoints;					// Stored in points
 
-		Size			m_blockSize;						// Stored in pixels
+		SizeI			m_blockSize;						// Stored in pixels
 		bool			m_bIsOpaque;
-		Border			m_frame;                        // Stored in points
+		BorderI			m_frame;                        // Stored in points
 
 		std::vector<LayerData>	m_layers;
 

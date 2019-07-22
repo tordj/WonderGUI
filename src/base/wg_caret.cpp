@@ -121,7 +121,7 @@ namespace wg
 
 	//____ eolWidth() ______________________________________________________________
 
-	int Caret::eolWidth( const Size& eolCell ) const
+	int Caret::eolWidth( const SizeI& eolCell ) const
 	{
 		return wg::max( 1, eolCell.h / 16);
 	}
@@ -138,26 +138,26 @@ namespace wg
 
 	//____ dirtyRect() _____________________________________________________________
 
-	Rect Caret::dirtyRect( Rect cell ) const
+	RectI Caret::dirtyRect( RectI cell ) const
 	{
 		switch( m_mode )
 		{
 			case CaretMode::Overwrite:
 				return cell;
 			case CaretMode::Eol:
-				return Rect( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
+				return RectI( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
 			default: // CaretMode::Insert:
-				return Rect( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
+				return RectI( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
 		}
 	}
 
 	//____ render() ________________________________________________________________
 
-	void Caret::render( GfxDevice * pDevice, Rect cell )
+	void Caret::render( GfxDevice * pDevice, RectI cell )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{
-			Rect r = dirtyRect(cell);
+			RectI r = dirtyRect(cell);
 			BlendMode oldMode = pDevice->blendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
 			pDevice->fill( r, Color::White );

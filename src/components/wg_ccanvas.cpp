@@ -33,11 +33,11 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void CCanvas::render(GfxDevice * pDevice, const Rect& _canvas)
+	void CCanvas::render(GfxDevice * pDevice, const RectI& _canvas)
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 
-		Rect canvas = calcPresentationArea() + _canvas.pos();
+		RectI canvas = calcPresentationArea() + _canvas.pos();
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->stretchBlit(canvas);
@@ -45,10 +45,10 @@ namespace wg
 
 	//____ alphaTest() _______________________________________________________
 
-	bool CCanvas::alphaTest(const Coord& ofs, int markOpacity)
+	bool CCanvas::alphaTest(const CoordI& ofs, int markOpacity)
 	{
-		Rect canvas = calcPresentationArea();
-		Size bmpSize = m_pSurface->size();
+		RectI canvas = calcPresentationArea();
+		SizeI bmpSize = m_pSurface->size();
 
 		return Util::markTestStretchRect(ofs, m_pSurface, bmpSize, canvas, markOpacity);
 	}
@@ -61,7 +61,7 @@ namespace wg
 		if (!m_pDevice && !m_pFactory)
 			return;
 
-		Size sz = m_fixedSize;
+		SizeI sz = m_fixedSize;
 
 		if (sz.w == 0 && sz.h == 0)
 			sz = _size();
@@ -79,18 +79,18 @@ namespace wg
 
 	//____ calcPresentationArea() _______________________________________________
 
-	Rect CCanvas::calcPresentationArea() const
+	RectI CCanvas::calcPresentationArea() const
 	{
-		Size window = _size();
-		Size bitmapSize = m_pSurface->size();
+		SizeI window = _size();
+		SizeI bitmapSize = m_pSurface->size();
 
 		switch (m_presentationScaling)
 		{
-		case SizeQolicy2D::Scale:
+		case SizePolicy2D::Scale:
 			return Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
 
-		case SizeQolicy2D::Stretch:
-			return Rect(0,0,window);
+		case SizePolicy2D::Stretch:
+			return RectI(0,0,window);
 
 		default:
 			return Util::origoToRect(m_origo, window, bitmapSize);
@@ -147,9 +147,9 @@ namespace wg
 
 	//____ setSurfaceSize() ___________________________________________________
 
-	bool CCanvas::setSurfaceSize(Size sz)
+	bool CCanvas::setSurfaceSize(SizeI sz)
 	{
-		Size max = m_pDevice ? m_pDevice->surfaceFactory()->maxSize() : Size(65536,65536);
+		SizeI max = m_pDevice ? m_pDevice->surfaceFactory()->maxSize() : SizeI(65536,65536);
 
 		if (sz.w > max.w || sz.h > max.h)
 			return false;							// Requested size bigger than factory can create.
@@ -165,7 +165,7 @@ namespace wg
 
 	//____ setComponentSize() ___________________________________________________
 
-	void CCanvas::setComponentSize(Size sz)
+	void CCanvas::setComponentSize(SizeI sz)
 	{
 		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
 			regenSurface();
@@ -192,13 +192,13 @@ namespace wg
 
 	//____ setPresentationScaling() ____________________________________
 
-	void CCanvas::setPresentationScaling(SizeQolicy2D policy)
+	void CCanvas::setPresentationScaling(SizePolicy2D policy)
 	{
 		if (m_presentationScaling != policy)
 		{
-			Rect oldArea = calcPresentationArea();
+			RectI oldArea = calcPresentationArea();
 			m_presentationScaling = policy;
-			Rect newArea = calcPresentationArea();
+			RectI newArea = calcPresentationArea();
 
 			if (oldArea != newArea)
 			{
@@ -214,9 +214,9 @@ namespace wg
 	{
 		if (m_origo != origo)
 		{
-			Rect oldArea = calcPresentationArea();
+			RectI oldArea = calcPresentationArea();
 			m_origo = origo;
-			Rect newArea = calcPresentationArea();
+			RectI newArea = calcPresentationArea();
 
 			if (oldArea != newArea)
 			{
@@ -233,26 +233,26 @@ namespace wg
 		_requestRender(calcPresentationArea());
 	}
 
-	void CCanvas::present(Rect area)
+	void CCanvas::present(RectI area)
 	{
-		Rect dest = calcPresentationArea();
-		Size bitmapSize = m_pSurface->size();
+		RectI dest = calcPresentationArea();
+		SizeI bitmapSize = m_pSurface->size();
 
 		int x1 = area.x * dest.w / bitmapSize.w;
 		int x2 = (area.x + area.w) * dest.w / bitmapSize.w + 1;
 		int y1 = area.y * dest.h / bitmapSize.h;
 		int y2 = (area.y + area.h) * dest.h / bitmapSize.h + 1;
 
-		Rect a2 = Rect::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
+		RectI a2 = RectI::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
 
 		_requestRender(a2);
 	}
 
 	//____ preferredSize() ____________________________________________________
 
-	Size CCanvas::preferredSize() const
+	SizeI CCanvas::preferredSize() const
 	{
-		return m_fixedSize == Size()? Size(16,16) : m_fixedSize;
+		return m_fixedSize == SizeI()? SizeI(16,16) : m_fixedSize;
 	}
 
 } //namespace wg

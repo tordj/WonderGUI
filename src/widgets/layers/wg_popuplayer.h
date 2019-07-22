@@ -56,12 +56,12 @@ namespace wg
 			Closing,				// Popup is closing (fading out).
 		};
 
-		Rect		launcherGeo;		// Launcher geo relative sibling or parent.
+		RectI		launcherGeo;		// Launcher geo relative sibling or parent.
 		Origo		attachPoint;
 		bool		bAutoClose;			// Has been opened in auto-close mode.
 		State		state;
 		int			stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
-		Size		maxSize;
+		SizeI		maxSize;
 		Widget_wp	pOpener;			// Widget that opened this popup.
 		Widget_wp	pKeyFocus;			// Pointer at widget that held focus when this popup was ontop.
 	};
@@ -91,7 +91,7 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		int		size() const;
-		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX, INT_MAX));
+		void	push(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, SizeI maxSize = SizeI(INT_MAX, INT_MAX));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();
@@ -140,11 +140,11 @@ namespace wg
 		void			_restoreKeyboardFocus();
 		bool			_updateGeo(PopupSlot * pSlot, bool bInitialUpdate = false );
 		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
 
 		// Overloaded from Panel
 
-		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
+		Widget *		_findWidget( const CoordI& ofs, SearchMode mode );
 
 		// Overloaded from WidgetHolder
 
@@ -157,19 +157,19 @@ namespace wg
 		const LayerSlot * 	_endLayerSlots() const;
 		int				_sizeOfLayerSlot() const;
 
-		void			_onRequestRender(const Rect& rect, const LayerSlot * pSlot);	// rect is in our coordinate system.
+		void			_onRequestRender(const RectI& rect, const LayerSlot * pSlot);	// rect is in our coordinate system.
 
 		// Overloaded from container
 
-		void			_renderPatches(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches);
-//		void			_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
-//		void			_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
+		void			_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches);
+//		void			_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
+//		void			_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
 
 
 		// Overloaded from Widget
 
 		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize( const Size& size );
+		void			_setSize( const SizeI& size );
 		void			_receive( Msg * pMsg );
 
 

@@ -64,7 +64,7 @@ int main ( int argc, char** argv )
 
 	// Setup gfxdevice and gui
 
-	SoftSurface_p pCanvas = SoftSurface::create( Size(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch, 0 );
+	SoftSurface_p pCanvas = SoftSurface::create( SizeI(640,480), WG_PIXEL_ARGB_8, (unsigned char *) pScreen->pixels, pScreen->pitch, 0 );
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 	pGfxDevice->setBilinearFiltering( true );
 
@@ -90,22 +90,22 @@ int main ( int argc, char** argv )
 	Surface_p pCursorImg = sdl_wglib::loadSurface("../resources/cursors.png", SoftSurfaceFactory::create() );
 
 	GfxAnim_p pCursorEOL = GfxAnim::create();
-	pCursorEOL->setSize( Size(8,8) );
-	pCursorEOL->addFrames(pCursorImg, Coord(0,0), Size(2,1), 200 );
+	pCursorEOL->setSize( SizeI(8,8) );
+	pCursorEOL->addFrames(pCursorImg, CoordI(0,0), SizeI(2,1), 200 );
 	pCursorEOL->setPlayMode( WG_FORWARD_LOOPING );
 
 	GfxAnim_p pCursorINS = GfxAnim::create();
-	pCursorINS->setSize( Size(8,8) );
-	pCursorINS->addFrames( pCursorImg, Coord(0,8), Size(2,1), 200 );
+	pCursorINS->setSize( SizeI(8,8) );
+	pCursorINS->addFrames( pCursorImg, CoordI(0,8), SizeI(2,1), 200 );
 	pCursorINS->setPlayMode( WG_FORWARD_LOOPING );
 
 	WgCursorPtr pCursor = WgCursor::create();
 	pCursor->setAnim(WgCursor::EOL, pCursorEOL);
 	pCursor->setAnim(WgCursor::INS, pCursorINS);
 	pCursor->setAnim(WgCursor::OVR, pCursorEOL);
-	pCursor->setBearing(WgCursor::EOL, Coord(0,-8));
-	pCursor->setBearing(WgCursor::INS, Coord(0,-8));
-	pCursor->setBearing(WgCursor::OVR, Coord(0,-8));
+	pCursor->setBearing(WgCursor::EOL, CoordI(0,-8));
+	pCursor->setBearing(WgCursor::INS, CoordI(0,-8));
+	pCursor->setBearing(WgCursor::OVR, CoordI(0,-8));
 
 	Base::setDefaultCursor( pCursor );
 
@@ -122,7 +122,7 @@ int main ( int argc, char** argv )
 
 	RootPanel_p pRoot = setupGUI( pGfxDevice );
 
-	pRoot->findWidget( Coord(10,10), WG_SEARCH_ACTION_TARGET );
+	pRoot->findWidget( CoordI(10,10), WG_SEARCH_ACTION_TARGET );
 
    // program main loop
 
@@ -139,7 +139,7 @@ int main ( int argc, char** argv )
 			nDirtyRects = pRoot->nbDirtyRects();
 			for( int i = 0 ; i < nDirtyRects ; i++ )
 			{
-				const Rect * pR = pRoot->firstDirtyRect() + i;
+				const RectI * pR = pRoot->firstDirtyRect() + i;
 
 				dirtyRects[i].x = pR->x;
 				dirtyRects[i].y = pR->y;
@@ -151,7 +151,7 @@ int main ( int argc, char** argv )
 		{
 			nDirtyRects = 1;
 
-			const Rect r = pRoot->geo();
+			const RectI r = pRoot->geo();
 
 			dirtyRects[0].x = r.x;
 			dirtyRects[0].y = r.y;
@@ -287,7 +287,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	// Main Flex
 
 	FlexPanel_p pFlex = FlexPanel::create();
-	pBottom->addWidget( pFlex, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord(), Borders(10) );
+	pBottom->addWidget( pFlex, WG_NORTHWEST, CoordI(), WG_SOUTHEAST, CoordI(), Borders(10) );
 
 	// Background
 
@@ -299,7 +299,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	BlockSkin_p pBgSkin = BlockSkin::create();
 	pBgSkin->setSurface(pBackImg);
 	pBgSkin->setBlockGeo( pBackImg->size() );
-	pBgSkin->setStateBlock( WG_STATE_NORMAL, Coord(0,0) );
+	pBgSkin->setStateBlock( WG_STATE_NORMAL, CoordI(0,0) );
 	pBgSkin->setTiledCenter(true);
 	pFlex->setSkin( pBgSkin );
 
@@ -424,12 +424,12 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 //		pWindow->setContentSizePolicy( SizePolicy::WG_DEFAULT, SizePolicy::WG_BOUND );
 		pWindow->setContentSizePolicy( SizePolicy::WG_BOUND, SizePolicy::WG_DEFAULT );
 
-//		pFlex->addWidget(pWindow, Rect( 50,50,200,200) );
-		pFlex->addWidget(pWindow, Coord(50,50) );
+//		pFlex->addWidget(pWindow, RectI( 50,50,200,200) );
+		pFlex->addWidget(pWindow, CoordI(50,50) );
 
 		PackPanel_p pButtonPanel = PackPanel::create();
 		pButtonPanel->setOrientation( WG_VERTICAL );
-		pFlex->addWidget(pButtonPanel, Coord(300,50) );
+		pFlex->addWidget(pButtonPanel, CoordI(300,50) );
 
 
 		Button_p pButton = Button::cast(pDB->cloneWidget("button"));
@@ -479,7 +479,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 //		addResizablePanel( pFlex, pMenu, pEventHandler );
 		pMenu->grabFocus();
 
-//		pMenuPanel->OpenMenu( pMenu, Rect(10,10,100,10), WG_SOUTHWEST );
+//		pMenuPanel->OpenMenu( pMenu, RectI(10,10,100,10), WG_SOUTHWEST );
 
 	}
 */
@@ -510,7 +510,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	{
 		Surface * pImg = sdl_wglib::loadSurface("../resources/blocks.png", SoftSurfaceFactory() );
 
-		WgBlocksetPtr pMarkerBlock = WgBlockset::CreateFromRect( pImg, Rect(1,120,8,8) );
+		WgBlocksetPtr pMarkerBlock = WgBlockset::CreateFromRect( pImg, RectI(1,120,8,8) );
 
 		Oscilloscope * pOsc = new Oscilloscope();
 
@@ -576,13 +576,13 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	{
 		Filler * pCovered = new Filler();
 		pCovered->setColors( Colorset::create( Color::aliceblue ) );
-		pFlex->addWidget( pCovered, Rect( 10,10,20,20 ) );
+		pFlex->addWidget( pCovered, RectI( 10,10,20,20 ) );
 
 		g_pCovered = pCovered;
 
 		Filler * pCovering = new Filler();
 		pCovering->setColors( Colorset::create( Color::wheat ) );
-		FlexHook * pHook = pFlex->addWidget( pCovering, Rect( 0,0,50,50 ) );
+		FlexHook * pHook = pFlex->addWidget( pCovering, RectI( 0,0,50,50 ) );
 		pHook->setVisible(false);
 	}
 */
@@ -605,7 +605,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	Button * pButton = (Button*) pDB->cloneWidget( "button" );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pButton, 1), cbOpenModal, pModalButton );
 
-	FlexHook * pHook = pFlex->addWidget( pButton, Rect(0,0,100,100), WG_NORTHWEST );
+	FlexHook * pHook = pFlex->addWidget( pButton, RectI(0,0,100,100), WG_NORTHWEST );
 */
 	//
 /*
@@ -613,7 +613,7 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	pFlag1->SetSource( pSplashBlock );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonPress(pFlag1, 1), cbInitDrag, pFlag1 );
 
-	FlexHook * pHook = pFlex->addWidget( pFlag1, Coord(0,0), WG_CENTER );
+	FlexHook * pHook = pFlex->addWidget( pFlag1, CoordI(0,0), WG_CENTER );
 
 
 
@@ -621,14 +621,14 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 	pFlag2->SetSource( pFlagBlock );
 	pEventHandler->AddCallback( WgEventFilter::MouseButtonDrag(pFlag1, 1), cbDragWidget, pFlag1 );
 
-	pHook = pFlex->addWidget( pFlag2, Coord(100,100), WG_CENTER );
+	pHook = pFlex->addWidget( pFlag2, CoordI(100,100), WG_CENTER );
 
 	//
 */
 
 //	PackPanel_p pVBox = PackPanel::create();
 //	pVBox->setOrientation( WG_VERTICAL );
-//	pFlex->addWidget( pVBox, Coord(50,50), WG_NORTHWEST );
+//	pFlex->addWidget( pVBox, CoordI(50,50), WG_NORTHWEST );
 
 
 //	Image * pFlag3 = new Image();
@@ -645,11 +645,11 @@ RootPanel_p setupGUI( const GfxDevice_p& pDevice )
 
 
 //	SizeCapsule * pSizeCapsule = new SizeCapsule();
-//	pSizeCapsule->setMaxSize( Size(150,600) );
+//	pSizeCapsule->setMaxSize( SizeI(150,600) );
 //	pSizeCapsule->setWidget( pVBox );
-//	FlexHook * p = pFlex->addWidget( pVBox, Coord(50,50), WG_NORTHWEST );
+//	FlexHook * p = pFlex->addWidget( pVBox, CoordI(50,50), WG_NORTHWEST );
 //	p->setSizePolicy( WG_BOUND, WG_DEFAULT );
-//	p->setSize( Size(150,10 ) );
+//	p->setSize( SizeI(150,10 ) );
 
 //	TextDisplay * pText1 = new TextDisplay();
 //	pText1->setText("TEXTA1");
@@ -763,9 +763,9 @@ void cbDragWidget( const WgEventPtr& _pEvent, const Object_p& pObject )
 
 	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::cast(_pEvent);
 
-	Coord	dragDistance = pEvent->draggedTotal();
+	CoordI	dragDistance = pEvent->draggedTotal();
 
-	Coord	ofs = dragStartPos + dragDistance;
+	CoordI	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
@@ -778,7 +778,7 @@ void cbDragWidget( const WgEventPtr& _pEvent, const Object_p& pObject )
 
 void cbOpenModal( const WgEventPtr& _pEvent, const Object_p& pWidget )
 {
-	g_pModal->addModalWidget( Widget::cast(pWidget), Coord(), WG_SOUTHEAST );
+	g_pModal->addModalWidget( Widget::cast(pWidget), CoordI(), WG_SOUTHEAST );
 }
 
 //____ cbCloseModal() __________________________________________________________
@@ -795,9 +795,9 @@ void cbResize( const WgEventPtr& _pEvent, const Object_p& pWidget )
 	FlexHook * pHook =   static_cast<FlexHook*>( Widget::cast(pWidget)->hook().GetRealPtr() );
 	const WgMouseDragEventPtr pEvent = WgMouseDragEvent::cast(_pEvent);
 
-	Coord dragged = pEvent->draggedNow();
+	CoordI dragged = pEvent->draggedNow();
 
-	pHook->setSize( pHook->size() + Size(dragged.x,dragged.y) );
+	pHook->setSize( pHook->size() + SizeI(dragged.x,dragged.y) );
 }
 
 //____ cbIncreaseEntryPadding() _________________________________________________________
@@ -808,7 +808,7 @@ void cbIncreaseEntryPadding( const WgEventPtr& _pEvent, const Object_p& _pWidget
 
 	ExtendedSkin_p pSkin = ExtendedSkin::cast(pWidget->skin());
 		
-	Rect contentRect = pSkin->contentRect(Rect(0,0,100,100), WG_STATE_NORMAL );
+	RectI contentRect = pSkin->contentRect(RectI(0,0,100,100), WG_STATE_NORMAL );
 	Borders padding( contentRect.top(), 100 - contentRect.right(), 100 - contentRect.bottom(), contentRect.left() );
 
 	padding.top++;

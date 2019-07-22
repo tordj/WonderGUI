@@ -172,7 +172,7 @@ namespace wg
 
 				// Get link from character properties
 
-				Coord localPos = static_cast<InputMsg*>( pMsg.rawPtr() )->pointerPos() - _globalPos();
+				CoordI localPos = static_cast<InputMsg*>( pMsg.rawPtr() )->pointerPos() - _globalPos();
 				int markedChar = _textMapper()->charAtPos(this, localPos);
 				if( markedChar >= 0 )
 				{

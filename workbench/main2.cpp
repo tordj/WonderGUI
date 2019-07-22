@@ -86,50 +86,50 @@ int main(int argc, char** argv)
 	CoordQ a(1, 2);
 
 	CoordF b = a;
-	Coord c = a;
+	CoordI c = a;
 
 	float pixX = toPixel(float(a.x));
 	float pixY = toPixel(float(a.y));
 
-	Coord d(fromPixel(pixX), fromPixel(pixY));
+	CoordI d(fromPixel(pixX), fromPixel(pixY));
 
 
-	Coord cI1 = CoordQ(1.f, 2.f);
+	CoordI cI1 = CoordQ(1.f, 2.f);
 	 
-//	Coord cI2 = CoordF(1.f, 2.f);									// Should fail!
-	Coord cI3 = static_cast<Coord>(CoordF(1.f, 2.f));
+//	CoordI cI2 = CoordF(1.f, 2.f);									// Should fail!
+	CoordI cI3 = static_cast<CoordI>(CoordF(1.f, 2.f));
 
-	Coord cI4 = RectQ(1.f, 2.f, 3.f, 4.f);
+	CoordI cI4 = RectQ(1.f, 2.f, 3.f, 4.f);
 
-//	Coord cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
-	Coord cI6 = static_cast<Coord>(RectF(1.f, 2.f, 3.f, 4.f));
-
-
-	Size sI1 = SizeQ(1.f, 2.f);
-
-//	Size sI2 = SizeF(1.f, 2.f);										// Should fail!
-	Size sI3 = static_cast<Size>(SizeF(1.f, 2.f));
-
-	Size sI4 = RectQ(1.f, 2.f, 3.f, 4.f);
-
-//	Size cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
-	Size sI6 = static_cast<Size>(RectF(1.f, 2.f, 3.f, 4.f));
+//	CoordI cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	CoordI cI6 = static_cast<CoordI>(RectF(1.f, 2.f, 3.f, 4.f));
 
 
-	Rect rI1 = RectQ(1, 2, 3, 4);
+	SizeI sI1 = SizeQ(1.f, 2.f);
 
-//	Rect rI2 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
-	Rect rI3 = static_cast<Rect>(RectF(1.f, 2.f, 3.f, 4.f));
+//	SizeI sI2 = SizeF(1.f, 2.f);										// Should fail!
+	SizeI sI3 = static_cast<SizeI>(SizeF(1.f, 2.f));
 
-	Rect rI4 = CoordQ(1.f, 2.f);
+	SizeI sI4 = RectQ(1.f, 2.f, 3.f, 4.f);
 
-//	Rect rI5 = CoordF(1.f, 2.f);									// Should fail!
-	Rect rI6 = static_cast<Rect>(CoordF(1.f, 2.f));
+//	SizeI cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	SizeI sI6 = static_cast<SizeI>(RectF(1.f, 2.f, 3.f, 4.f));
 
-	Rect rI7 = SizeQ(1.f, 2.f);
 
-//	Rect rI8 = SizeF(1.f, 2.f);										// Should fail!
-	Rect rI9 = static_cast<Rect>(SizeF(1.f, 2.f));
+	RectI rI1 = RectQ(1, 2, 3, 4);
+
+//	RectI rI2 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
+	RectI rI3 = static_cast<RectI>(RectF(1.f, 2.f, 3.f, 4.f));
+
+	RectI rI4 = CoordQ(1.f, 2.f);
+
+//	RectI rI5 = CoordF(1.f, 2.f);									// Should fail!
+	RectI rI6 = static_cast<RectI>(CoordF(1.f, 2.f));
+
+	RectI rI7 = SizeQ(1.f, 2.f);
+
+//	RectI rI8 = SizeF(1.f, 2.f);										// Should fail!
+	RectI rI9 = static_cast<RectI>(SizeF(1.f, 2.f));
 
 
 	CoordQ cP1 = CoordF(1.f, 2.f);	
@@ -249,11 +249,11 @@ int main(int argc, char** argv)
 	//		format = PixelFormat::BGR_8;
 
 	//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
-	//	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+	//	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
 	//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
-	GlGfxDevice_p pGfxDevice = GlGfxDevice::create(Size(width, height));
+	GlGfxDevice_p pGfxDevice = GlGfxDevice::create(SizeI(width, height));
 
 	SurfaceFactory_p pSurfaceFactory = pGfxDevice->surfaceFactory();
 
@@ -282,7 +282,7 @@ int main(int argc, char** argv)
 
 	SDL_Surface * pFontSurf = IMG_Load("../resources/anuvverbubbla_8x8.png");
 	//	convertSDLFormat( &pixelDesc, pFontSurf->format );
-	Surface_p pFontImg = pSurfaceFactory->createSurface(Size(pFontSurf->w, pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*)pFontSurf->pixels, pFontSurf->pitch);
+	Surface_p pFontImg = pSurfaceFactory->createSurface(SizeI(pFontSurf->w, pFontSurf->h), PixelFormat::BGRA_8, (unsigned char*)pFontSurf->pixels, pFontSurf->pitch);
 	SDL_FreeSurface(pFontSurf);
 
 	BitmapFont_p pBmpFont = BitmapFont::create(pFontImg, pFontSpec);
@@ -315,48 +315,48 @@ int main(int argc, char** argv)
 
 	SDL_Surface * pSDLSurf = IMG_Load("../resources/simple_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pButtonSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, Border(3));
-	pSimpleButtonSkin->setContentPadding(Border(5));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, BorderI(3));
+	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pBackgroundSkin = BlockSkin::createStaticFromSurface(pBackgroundSurface);
 
 
 	pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface(pSplashSurface);
 
 
 	pSDLSurf = IMG_Load("../resources/state_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface(pStateButtonSurface, 0, Border(3));
-	pStateButtonSkin->setContentPadding(Border(5));
+	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface(pStateButtonSurface, 0, BorderI(3));
+	pStateButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface(pPressablePlateSurface, 0, Border(3));
-	pPressablePlateSkin->setContentPadding(Border(3));
+	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface(pPressablePlateSurface, 0, BorderI(3));
+	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	pSDLSurf = IMG_Load("../resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface(pListEntrySurface, 0, Border(2));
+	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface(pListEntrySurface, 0, BorderI(2));
 
 	pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pImgSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface(pImgSurface);
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
@@ -364,15 +364,15 @@ int main(int argc, char** argv)
 
 	pSDLSurf = IMG_Load("../resources/up_down_arrow.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface(pUpDownArrowSurface, 0, Border(0));
+	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface(pUpDownArrowSurface, 0, BorderI(0));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pSimpleIconSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, Border(0));
+	Skin_p pSimpleIconSkin = BlockSkin::createStaticFromSurface(pSimpleIconSurface, BorderI(0));
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and
@@ -391,14 +391,14 @@ int main(int argc, char** argv)
 
 	/*	Filler_p pBackground = Filler::create();
 		pBackground->setSkin( ColorSkin::create(Color::aqua) );
-		pFlexPanel->addWidget(pBackground, WG_NORTHWEST, Coord(), WG_SOUTHEAST, Coord());
+		pFlexPanel->addWidget(pBackground, WG_NORTHWEST, CoordI(), WG_SOUTHEAST, CoordI());
 	*/
 
 
-	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, Border(5), { {StateEnum::Hovered, Color::Green} });
+	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, BorderI(5), { {StateEnum::Hovered, Color::Green} });
 	//	pTestSkin->setBlendMode(BlendMode::Add);
 
-	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
 	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
@@ -410,14 +410,14 @@ int main(int argc, char** argv)
 	pImage0->setSkin(pTestSkin);
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-	pBasePanel->children.add(pImage0, [](Widget * pWidget, Size size) {return Rect(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
+	pBasePanel->children.add(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
 
 	//	Image_p pImage = Image::create();
 	//	pImage->setSkin( pSimpleButtonSkin );
-	//	pFlexPanel->children.addMovable( pImage, Rect(0,0,80*2,33*2), Origo::Center, Origo::Center );
+	//	pFlexPanel->children.addMovable( pImage, RectI(0,0,80*2,33*2), Origo::Center, Origo::Center );
 
 
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -452,9 +452,9 @@ int main(int argc, char** argv)
 
 	{
 		static Widget_p s_pPicked = nullptr;
-		static Coord	s_pickOfs;
+		static CoordI	s_pickOfs;
 
-		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
 		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
@@ -464,19 +464,19 @@ int main(int argc, char** argv)
 		pPickable1->setSkin(pTestSkin);
 		pPickable1->text.set( "Drag Me 1" );
 		pPickable1->setPickable(true, 1);
-		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+		pBasePanel->children.add(pPickable1, [](Widget * pWidget, SizeI size) {return RectI( 0,0,100,50 ); });
 
 		TextDisplay_p pPickable2 = TextDisplay::create();
 		pPickable2->setSkin(pTestSkin);
 		pPickable2->text.set("Drag Me 2");
 		pPickable2->setPickable(true, 2);
-		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+		pBasePanel->children.add(pPickable2, [](Widget * pWidget, SizeI size) {return RectI(size.w-100, 0, 100, 50); });
 
 		TextDisplay_p pTrash = TextDisplay::create();
 		pTrash->setSkin(pTestSkin);
 		pTrash->text.set("Trash Can");
 		pTrash->setDropTarget(true);
-		pBasePanel->children.add(pTrash, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+		pBasePanel->children.add(pTrash, [](Widget * pWidget, SizeI size) {return RectI(50, 200, 100, 50); });
 
 		pBasePanel->setDropTarget(true);
 
@@ -485,7 +485,7 @@ int main(int argc, char** argv)
 			auto pMsg = static_cast<DropPickMsg*>(_pMsg);
 			s_pPicked = pMsg->pickedFrom();
 			s_pickOfs = pMsg->pickOfs();
-			pMsg->setDragWidget(s_pPicked, Coord() - s_pickOfs );
+			pMsg->setDragWidget(s_pPicked, CoordI() - s_pickOfs );
 
 			pMsg->setPayload(Payload::create());
 		});
@@ -498,9 +498,9 @@ int main(int argc, char** argv)
 		Base::msgRouter()->addRoute(pBasePanel, MsgType::DropDeliver, [pBasePanel](Msg * _pMsg) {
 			auto pMsg = static_cast<DropProbeMsg*>(_pMsg);
 
-			Coord pos = pBasePanel->toLocal(pMsg->pointerPos()) - s_pickOfs;
+			CoordI pos = pBasePanel->toLocal(pMsg->pointerPos()) - s_pickOfs;
 
-			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, Size size) {return Rect(pos, 100, 50); });
+			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, SizeI size) {return RectI(pos, 100, 50); });
 			pMsg->accept();
 			
 		});
@@ -513,7 +513,7 @@ int main(int argc, char** argv)
 	
 /*
 	{
-		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, Border(4));
+		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
 		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
@@ -524,31 +524,31 @@ int main(int argc, char** argv)
 		pPickable1->setSkin(pTestSkin);
 		pPickable1->text.set( "Drag Me 1" );
 		pPickable1->setPickable(true, 1);
-		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+		pBasePanel->children.add(pPickable1, [](Widget * pWidget, SizeI size) {return RectI( 0,0,100,50 ); });
 
 		TextDisplay_p pPickable2 = TextDisplay::create();
 		pPickable2->setSkin(pTestSkin);
 		pPickable2->text.set("Drag Me 2");
 		pPickable2->setPickable(true, 2);
-		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+		pBasePanel->children.add(pPickable2, [](Widget * pWidget, SizeI size) {return RectI(size.w-100, 0, 100, 50); });
 
 		TextDisplay_p pDropTarget1 = TextDisplay::create();
 		pDropTarget1->setSkin(pTestSkin);
 		pDropTarget1->text.set("Drop 1 here");
 		pDropTarget1->setDropTarget(true);
-		pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+		pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, SizeI size) {return RectI(50, 200, 100, 50); });
 
 		TextDisplay_p pDropTargetAny = TextDisplay::create();
 		pDropTargetAny->setSkin(pDropTargetSkin);
 		pDropTargetAny->text.set("Drop any here");
 		pDropTargetAny->setDropTarget(true);
-		pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, Size size) {return Rect(size.w/2 - 25, 200, 100, 50); });
+		pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, SizeI size) {return RectI(size.w/2 - 25, 200, 100, 50); });
 
 		TextDisplay_p pDropTarget2 = TextDisplay::create();
 		pDropTarget2->setSkin(pDropTargetSkin);
 		pDropTarget2->text.set("Drop 2 here");
 		pDropTarget2->setDropTarget(true);
-		pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, Size size) {return Rect(size.w-150, 200, 100, 50); });
+		pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, SizeI size) {return RectI(size.w-150, 200, 100, 50); });
 
 
 
@@ -673,7 +673,7 @@ int main(int argc, char** argv)
 
 		for (auto& it : pVert->children)
 		{
-//			Rect r = it.geo;
+//			RectI r = it.geo;
 			printf("%s\n", it.className() );
 		}
 
@@ -687,14 +687,14 @@ int main(int argc, char** argv)
 		pOpener->label.set("OPEN");
 		pOpener->setPointerStyle(PointerStyle::Crosshair);
 
-		pBasePanel->children.add(pOpener, [](Widget*pWidget, Size parentSize) {return Rect(30, 30, 100, 100); });
+		pBasePanel->children.add(pOpener, [](Widget*pWidget, SizeI parentSize) {return RectI(30, 30, 100, 100); });
 
 
 		auto pMenu = PackPanel::create();
 		pMenu->setOrientation(Orientation::Vertical);
 //		pMenu->setSelectable(false);
 
-		auto pSkin = BoxSkin::create(Color::Red, Border(0), Color::Red );
+		auto pSkin = BoxSkin::create(Color::Red, BorderI(0), Color::Red );
 		pSkin->setContentPadding(12);
 		pMenu->setSkin(pSkin);
 
@@ -798,14 +798,14 @@ int main(int argc, char** argv)
 		pOuterSplit->first = pSplit;
 
 
-		pBasePanel->children.add(pOuterSplit, [](Widget*pWidget, Size parentSize) {return Rect(0, 0, 100, parentSize.h); });
+		pBasePanel->children.add(pOuterSplit, [](Widget*pWidget, SizeI parentSize) {return RectI(0, 0, 100, parentSize.h); });
 	}
 */
 
 /*
 	{
 		auto pPanel = LambdaPanel::create();
-		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); });
+		pBasePanel->children.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); });
 
 		Color cols[5] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {128,128,128}, {255,255,255} };
 
@@ -813,7 +813,7 @@ int main(int argc, char** argv)
 		{
 			auto pChild = Filler::create();
 			pChild->setSkin(ColorSkin::create(cols[i]));
-			pPanel->children.add(pChild, [&](Widget*p, Size sz) { return Rect(i * 10, i * 10, 100, 50);  });
+			pPanel->children.add(pChild, [&](Widget*p, SizeI sz) { return RectI(i * 10, i * 10, 100, 50);  });
 		}
 
 		pPanel->children.moveToFront(4);
@@ -824,7 +824,7 @@ int main(int argc, char** argv)
 /*
 	{
 		PackPanel_p pPanel = PackPanel::create();
-		pBasePanel->children.add(pPanel, [](Widget*p, Size sz) { return Rect(0, 0, sz.w, sz.h); } );
+		pBasePanel->children.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); } );
 
 		Widget_p widgets[5];
 
@@ -867,7 +867,7 @@ int main(int argc, char** argv)
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->vscrollbar = pScrollbar;
 
-		pBasePanel->children.add(pScrollPanel, [](Widget *p, Size sz) { return Rect(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
+		pBasePanel->children.add(pScrollPanel, [](Widget *p, SizeI sz) { return RectI(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
 	}
 
 
@@ -876,7 +876,7 @@ int main(int argc, char** argv)
 	{
 		PackList_p pList = PackList::create();
 
-		BoxSkin_p pHeaderSkin = BoxSkin::create( Color::Aquamarine, Border(2), Color::DarkRed );
+		BoxSkin_p pHeaderSkin = BoxSkin::create( Color::Aquamarine, BorderI(2), Color::DarkRed );
 		pHeaderSkin->setContentPadding( 8 );
 
 		pList->header.label.set("Label");
@@ -887,7 +887,7 @@ int main(int argc, char** argv)
 		pList->setSortFunction( sortWidgets );
 		pList->setSelectMode( SelectMode::MultiEntries );
 
-		BoxSkin_p pListSkin = BoxSkin::create( Color::Chocolate, Border(2), Color::Yellow );
+		BoxSkin_p pListSkin = BoxSkin::create( Color::Chocolate, BorderI(2), Color::Yellow );
 		pListSkin->setContentPadding( 8 );
 		pList->setSkin( pListSkin );
 
@@ -962,7 +962,7 @@ int main(int argc, char** argv)
 
  /*  {
 		TestWidget_p pTest = TestWidget::create();
-		pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
+		pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, BorderI(20) );
 		pTest->start();
 	}
 */
@@ -996,9 +996,9 @@ int main(int argc, char** argv)
 		pText->text.setCharStyle( pAnuv, 19, 20 );
 		pText->setSkin(ColorSkin::create(Color(0, 0, 0, 128)));
 
-		pExtraFlex->children.addMovable( pText, Rect( 10,10,100,100) );
+		pExtraFlex->children.addMovable( pText, RectI( 10,10,100,100) );
 
-		pBasePanel->children.add(pExtraFlex, [](Widget*pWidget, Size parentSize) { return Rect(parentSize); });
+		pBasePanel->children.add(pExtraFlex, [](Widget*pWidget, SizeI parentSize) { return RectI(parentSize); });
 
 //		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
 
@@ -1023,7 +1023,7 @@ int main(int argc, char** argv)
 
 /*
 	SizeCapsule_p pCapsule = SizeCapsule::create();
-	pCapsule->setMaxSize( Size(100,1000));
+	pCapsule->setMaxSize( SizeI(100,1000));
 	pFlexPanel->addWidget( pCapsule );
 
 	StackPanel_p pStack = StackPanel::create();
@@ -1050,7 +1050,7 @@ int main(int argc, char** argv)
 		ToggleButton_p pCheckbox = ToggleButton::create();
 		pCheckbox->label.set( "CHECKBOX" );
 		pCheckbox->setSkin( pStateButtonSkin );
-		pFlexPanel->addWidget( pCheckbox, Coord(10,20*i) );
+		pFlexPanel->addWidget( pCheckbox, CoordI(10,20*i) );
 		pGroup->add( pCheckbox );
 	}
 */
@@ -1076,7 +1076,7 @@ int main(int argc, char** argv)
 /*
 	FpsDisplay_p pFps = FpsDisplay::create();
 	pFps->setSkin( pPressablePlateSkin );
-	pFlexPanel->addWidget( pFps, Coord(0,0), Origo::SouthWest );
+	pFlexPanel->addWidget( pFps, CoordI(0,0), Origo::SouthWest );
 */
 
 	//------------------------------------------------------
@@ -1085,13 +1085,13 @@ int main(int argc, char** argv)
 
 	pSDLSurf = IMG_Load("../resources/flipping.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pFlippingSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pFlippingSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	pFlippingSurface->setScaleMode(ScaleMode::Interpolate);
 
 	pSDLSurf = IMG_Load("../resources/clockface_2500.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pClockSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	Surface_p pClockSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
 	pClockSurface->setScaleMode(ScaleMode::Interpolate);
 
@@ -1171,7 +1171,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -1184,7 +1184,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 
 			case SDL_MOUSEWHEEL:
 			{
-				Coord distance( e.wheel.x, e.wheel.y );
+				CoordI distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 					distance *= -1;
 
@@ -1249,7 +1249,7 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
@@ -1326,7 +1326,7 @@ void * loadFile( const char * pPath )
 }
 
 
-Coord dragStartPos;
+CoordI dragStartPos;
 
 //____ cbInitDrag() ___________________________________________________________
 
@@ -1357,9 +1357,9 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 
 
-	Coord	dragDistance = pMsg->draggedTotal();
+	CoordI	dragDistance = pMsg->draggedTotal();
 
-	Coord	ofs = dragStartPos + dragDistance;
+	CoordI	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
@@ -1374,7 +1374,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 {
 /*
-	static Coord posAtPress[MouseButton_Max];
+	static CoordI posAtPress[MouseButton_Max];
 
 	auto	pWidget = Widget::cast(_pWidget);
 	FlexHook_p 	pHook = FlexHook::cast(pWidget->hook());

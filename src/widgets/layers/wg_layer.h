@@ -41,7 +41,7 @@ namespace wg
 	class LayerSlot : public Slot		/** @private */
 	{
 	public:
-		Rect	geo;
+		RectI	geo;
 	};
 
 
@@ -89,18 +89,18 @@ namespace wg
 		int					matchingHeight( int width ) const;
 		int					matchingWidth( int height ) const;
 
-		Size				preferredSize() const;
+		SizeI				preferredSize() const;
 
 	protected:
 		Layer();
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( Slot * pSlot ) const;
-		Size		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const;
+		SizeI		_childSize( Slot * pSlot ) const;
 
 		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const Rect& rect );
+		void		_childRequestRender( Slot * pSlot, const RectI& rect );
 //		void		_childRequestResize( Slot * pSlot );
 
 		Widget *	_prevChild( const Slot * pSlot ) const;
@@ -124,12 +124,12 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_setSize(const Size& size);
+		void		_setSize(const SizeI& size);
 		void		_cloneContent( const Widget * _pOrg );
 
 		//
 
-		virtual	void	_onRequestRender( const Rect& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
+		virtual	void	_onRequestRender( const RectI& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
 
 		virtual const LayerSlot * _beginLayerSlots() const = 0;
 		virtual const LayerSlot * _endLayerSlots() const = 0;

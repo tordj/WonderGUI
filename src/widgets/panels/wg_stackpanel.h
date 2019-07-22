@@ -43,10 +43,10 @@ namespace wg
 	class StackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		StackPanelSlot() : origo(Origo::Center), SizeQolicy(SizeQolicy2D::Original) {}
+		StackPanelSlot() : origo(Origo::Center), SizePolicy(SizePolicy2D::Original) {}
 
 		Origo			origo;
-		SizeQolicy2D	SizeQolicy;
+		SizePolicy2D	SizePolicy;
 	};
 
 
@@ -78,11 +78,11 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void		setSizeQolicy( int index, SizeQolicy2D policy );
-		void		setSizeQolicy( iterator it, SizeQolicy2D policy );
+		void		setSizePolicy( int index, SizePolicy2D policy );
+		void		setSizePolicy( iterator it, SizePolicy2D policy );
 
-		SizeQolicy2D SizeQolicy( int index ) const;
-		SizeQolicy2D SizeQolicy( iterator it ) const;
+		SizePolicy2D SizePolicy( int index ) const;
+		SizePolicy2D SizePolicy( iterator it ) const;
 
 		void		setOrigo( int index, Origo origo );
 		void		setOrigo( iterator it, Origo origo );
@@ -92,7 +92,7 @@ namespace wg
 
 
 	protected:
-		void		_setSizeQolicy( StackPanelSlot * pSlot, SizeQolicy2D policy );
+		void		_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy );
 		void		_setOrigo( StackPanelSlot * pSlot, Origo origo );
 	};
 
@@ -129,7 +129,7 @@ namespace wg
 		int			matchingHeight( int width ) const;
 		int			matchingWidth( int height ) const;
 
-		Size		preferredSize() const;
+		SizeI		preferredSize() const;
 
 
 	protected:
@@ -140,7 +140,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void		_cloneContent( const Widget * _pOrg );
-		void		_setSize( const Size& size );
+		void		_setSize( const SizeI& size );
 
 		// Overloaded from Container
 
@@ -159,19 +159,19 @@ namespace wg
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
-		void		_repadSlots( Slot *, int nb, Border padding );
-		void		_repadSlots(Slot *, int nb, const Border * pPaddings);
+		void		_repadSlots( Slot *, int nb, BorderI padding );
+		void		_repadSlots(Slot *, int nb, const BorderI * pPaddings);
 		Object *	_object() { return this; }
 		WidgetHolder *	_widgetHolder() { return this; }
 
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( Slot * pSlot ) const;
-		Size		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const;
+		SizeI		_childSize( Slot * pSlot ) const;
 
 		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const Rect& rect );
+		void		_childRequestRender( Slot * pSlot, const RectI& rect );
 		void		_childRequestResize( Slot * pSlot );
 
 		Widget *	_prevChild( const Slot * pSlot ) const;
@@ -188,9 +188,9 @@ namespace wg
 		void	_unhideChildren( StackPanelSlot * pSlot, int nb );
 
 
-		Rect	_childGeo( const StackPanelSlot * pSlot ) const;
+		RectI	_childGeo( const StackPanelSlot * pSlot ) const;
 
-		Size	m_preferredSize;
+		SizeI	m_preferredSize;
 
 		SlotArray<StackPanelSlot>	m_children;
 	};

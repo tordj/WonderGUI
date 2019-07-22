@@ -114,23 +114,23 @@ namespace wg
 
 		//
 
-		virtual void	fill(const Rect& rect, const Color& col) override;
+		virtual void	fill(const RectI& rect, const Color& col) override;
 		virtual void	fill(const RectF& rect, const Color& col) override;
 
-		virtual void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
+		virtual void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		virtual void	drawLine(Coord begin, Coord end, Color color, float thickness = 1.f) override;
-		virtual void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		virtual void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
+		virtual void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
 
 		virtual bool	setBlitSource(Surface * pSource) override;
 
-		virtual void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
-		virtual void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
+		virtual void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		virtual void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		virtual void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+		virtual void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
-		virtual void	drawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
+		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
 
 		struct ColTrans
@@ -199,7 +199,7 @@ namespace wg
 		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint);
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-		static void _plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
 		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
@@ -235,7 +235,7 @@ namespace wg
 		//
 
 		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint);
-		typedef	void(*PlotListOp_p)(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
@@ -244,18 +244,18 @@ namespace wg
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
-		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const Rect& dest, Coord src, const int simpleTransform[2][2]);
-		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const Rect& dest, CoordF pos, const float matrix[2][2]);
+		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2]);
+		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2]);
 
 
-		void	_onePassSimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
-		void	_twoPassSimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
+		void	_onePassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
+		void	_twoPassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
 
-		void	_onePassComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
-		void	_twoPassComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
+		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
 
-		void	_dummySimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2]);
-		void	_dummyComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2]);
+		void	_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
+		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
 
 		//
 

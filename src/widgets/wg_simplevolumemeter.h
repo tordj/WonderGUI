@@ -54,7 +54,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 		//.____ Appearance _________________________________________________
 
@@ -78,16 +78,16 @@ namespace wg
 		virtual ~SimpleVolumeMeter();
 		virtual Widget* _newOfMyType() const { return new SimpleVolumeMeter(); };
 
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void			_cloneContent( const Widget * _pOrg );
-		bool			_alphaTest( const Coord& ofs );
-		void			_setSize( const Size& size );
+		bool			_alphaTest( const CoordI& ofs );
+		void			_setSize( const SizeI& size );
 		void			_setSkin( Skin * pSkin );
 
-		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect );
-		void 			_requestRenderPartial( const Rect& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
-		void			_updateValueDisplays( Size sz );
-		int 			_calcIHold( float holdValue, Size canvas );
+		void			_renderBar( GfxDevice * pDevice, int nb, const RectI& _rect );
+		void 			_requestRenderPartial( const RectI& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
+		void			_updateValueDisplays( SizeI sz );
+		int 			_calcIHold( float holdValue, SizeI canvas );
 
 
 		Direction		m_direction;

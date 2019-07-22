@@ -47,25 +47,25 @@ namespace wg
 		inline FlexPos() {}
 
 		inline FlexPos( Origo _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
-		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_offset) {}
+		inline FlexPos( Origo _origo, CoordI _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_offset) {}
 		inline FlexPos( Origo _origo, int _ofsX, int _ofsY ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_ofsX,_ofsY) {}
 
 		inline FlexPos( CoordF _origo ) : origo(_origo) {}
-		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(_offset) {}
+		inline FlexPos( CoordF _origo, CoordI _offset ) : origo(_origo), offset(_offset) {}
 		inline FlexPos( CoordF _origo, int _ofsX, int _ofsY )  : origo(_origo), offset(_ofsX,_ofsY) {}
 
 		inline FlexPos( float _origoX, float _origoY ) : origo(_origoX, _origoY) {}
-		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(_offset) {}
+		inline FlexPos( float _origoX, float _origoY, CoordI _offset ) : origo(_origoX, _origoY), offset(_offset) {}
 		inline FlexPos( float _origoX, float _origoY, int _ofsX, int _ofsY ) : origo(_origoX, _origoY), offset(_ofsX,_ofsY) {}
 
 		//.____ Geometry _______________________________________________________
 
-		Coord	pos( Size canvas ) const { return Coord( ((int)(origo.x*canvas.w+0.5f)) + offset.x, ((int)(origo.y*canvas.h+0.5f)) + offset.y ); }
+		CoordI	pos( SizeI canvas ) const { return CoordI( ((int)(origo.x*canvas.w+0.5f)) + offset.x, ((int)(origo.y*canvas.h+0.5f)) + offset.y ); }
 
 		//.____ Properties _____________________________________________________
 
 		CoordF	origo;
-		Coord	offset;
+		CoordI	offset;
 
 		//.____ Operators ______________________________________________________
 
@@ -89,7 +89,7 @@ namespace wg
 
 		bool			bPinned;
 		bool			bVisible;
-		Rect			realGeo;			// Widgets geo relative parent
+		RectI			realGeo;			// Widgets geo relative parent
 
 //		union
 //		{
@@ -97,7 +97,7 @@ namespace wg
 //			{
 				FlexPos			origo;
 				FlexPos			hotspot;
-				Rect			placementGeo;	// Widgets geo relative anchor and hotspot.
+				RectI			placementGeo;	// Widgets geo relative anchor and hotspot.
 //			};
 //			struct	// Stretched children
 //			{
@@ -115,7 +115,7 @@ namespace wg
 	{
 	public:
 		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot) = 0;
-		virtual Size	_size() const = 0;
+		virtual SizeI	_size() const = 0;
 
 	};
 
@@ -141,12 +141,12 @@ namespace wg
 
 		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
+		iterator	addMovable( Widget * pWidget, const RectI& geometry = RectI(), const FlexPos& origo = Origo::NorthWest,
 									const FlexPos& hotspot = Origo::NorthWest );
 
 		iterator	insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry,
+		iterator	insertMovable( int index, Widget * pWidget, const RectI& geometry,
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
 		//.____ State _________________________________________________________
@@ -160,8 +160,8 @@ namespace wg
 		void		setMovable( int index, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 		void		setMovable(iterator it, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
 
-		void		setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
-		void		setMovable(iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
+		void		setMovable( int index, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot );
+		void		setMovable(iterator it, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot);
 
 		bool		isMovable(int index) const;
 		bool		isMovable(iterator it) const;
@@ -185,26 +185,26 @@ namespace wg
 		FlexPos		hotspot( int index ) const;
 		FlexPos		hotspot( iterator it ) const;
 
-		bool		setGeo( int index, const Rect& geometry );
-		bool		setGeo( iterator it, const Rect& geometry);
+		bool		setGeo( int index, const RectI& geometry );
+		bool		setGeo( iterator it, const RectI& geometry);
 
-		Rect		geo( int index ) const;
-		Rect		geo( iterator it ) const;
+		RectI		geo( int index ) const;
+		RectI		geo( iterator it ) const;
 
-		bool		setOfs( int index, const Coord& ofs );
-		bool		setOfs( iterator it, const Coord& ofs);
+		bool		setOfs( int index, const CoordI& ofs );
+		bool		setOfs( iterator it, const CoordI& ofs);
 
-		Coord		ofs( int index ) const;
-		Coord		ofs( iterator it ) const;
+		CoordI		ofs( int index ) const;
+		CoordI		ofs( iterator it ) const;
 
-		bool		setSize( int index, const Size& size );
-		bool		setSize( iterator it, const Size& size);
+		bool		setSize( int index, const SizeI& size );
+		bool		setSize( iterator it, const SizeI& size);
 
-		Rect		size( int index ) const;
-		Rect		size( iterator it ) const;
+		RectI		size( int index ) const;
+		RectI		size( iterator it ) const;
 
-		bool		move( int index, const Coord& ofs );
-		bool		move( iterator it, const Coord& ofs);
+		bool		move( int index, const CoordI& ofs );
+		bool		move( iterator it, const CoordI& ofs);
 
 
 		// Methods for pinned children
@@ -220,7 +220,7 @@ namespace wg
 		void		_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
 
 		void		_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot);
-		void		_setMovable(FlexPanelSlot * p, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
+		void		_setMovable(FlexPanelSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot);
 
 //		FlexPanelSlot * _moveAbove(FlexPanelSlot * p, FlexPanelSlot * sibling);
 //		FlexPanelSlot *	_moveBelow(FlexPanelSlot * p, FlexPanelSlot * sibling);
@@ -233,16 +233,16 @@ namespace wg
 		bool		_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot);
 		FlexPos		_hotspot(FlexPanelSlot * p) const;
 
-		bool		_setGeo(FlexPanelSlot * p, const Rect& geometry);
-		Rect		_geo(FlexPanelSlot * p) const;
+		bool		_setGeo(FlexPanelSlot * p, const RectI& geometry);
+		RectI		_geo(FlexPanelSlot * p) const;
 
-		bool		_setOfs(FlexPanelSlot * p, const Coord& ofs);
-		Coord		_ofs(FlexPanelSlot * p) const;
+		bool		_setOfs(FlexPanelSlot * p, const CoordI& ofs);
+		CoordI		_ofs(FlexPanelSlot * p) const;
 
-		bool		_setSize(FlexPanelSlot * p, const Size& size);
-		Rect		_size(FlexPanelSlot * p) const;
+		bool		_setSize(FlexPanelSlot * p, const SizeI& size);
+		RectI		_size(FlexPanelSlot * p) const;
 
-		bool		_move(FlexPanelSlot * p, const Coord& ofs);
+		bool		_move(FlexPanelSlot * p, const CoordI& ofs);
 
 		// Methods for pinned children
 
@@ -292,7 +292,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size				preferredSize() const override;
+		SizeI				preferredSize() const override;
 
 	protected:
 		FlexPanel();
@@ -321,15 +321,15 @@ namespace wg
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
 		void		_refreshRealGeo(FlexPanelSlot * pSlot) override;
-		Size		_size() const override{ return m_size; }
+		SizeI		_size() const override{ return m_size; }
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( Slot * pSlot ) const override;
-		Size		_childSize( Slot * pSlot ) const override;
+		CoordI		_childPos( Slot * pSlot ) const override;
+		SizeI		_childSize( Slot * pSlot ) const override;
 
 		void		_childRequestRender( Slot * pSlot ) override;
-		void		_childRequestRender( Slot * pSlot, const Rect& rect ) override;
+		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
 		void		_childRequestResize( Slot * pSlot ) override;
 
 		Widget *	_prevChild( const Slot * pSlot ) const override;
@@ -340,11 +340,11 @@ namespace wg
 	private:
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_setSize( const Size& size ) override;
+		void		_setSize( const SizeI& size ) override;
 
-		void		_onRequestRender( const Rect& rect, const FlexPanelSlot * pSlot );
+		void		_onRequestRender( const RectI& rect, const FlexPanelSlot * pSlot );
 
-		Size		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
+		SizeI		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
 
 
 		SlotArray<FlexPanelSlot>	m_children;

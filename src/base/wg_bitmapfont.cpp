@@ -268,7 +268,7 @@ namespace wg
 
 			if(!m_glyphTab[tab][c].m_src.pSurface)
 			{
-				m_glyphTab[tab][c] = MyGlyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, Rect( x, y, w, h ) );
+				m_glyphTab[tab][c] = MyGlyph( advance, bearingX, bearingY, m_nGlyphs, this, pSurf, RectI( x, y, w, h ) );
 
 				if( advance != firstAdvance )
 					m_bMonospace = false;
@@ -352,7 +352,7 @@ namespace wg
 		m_src.pSurface = 0;
 	}
 
-	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const Rect& rect )
+	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;

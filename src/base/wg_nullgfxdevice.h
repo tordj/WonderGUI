@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation ________________________________________________
 
-		static NullGfxDevice_p	create( Size size );
+		static NullGfxDevice_p	create( SizeI size );
 
 		//.____ Identification __________________________________________
 
@@ -62,20 +62,20 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void	fill(const Rect& rect, const Color& col) override;
+		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
-		void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		void	drawLine(Coord begin, Coord end, Color color, float thickness) override;
+		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
 
-		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
-		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2]) override;
+		void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 	protected:
-		NullGfxDevice( Size size );
+		NullGfxDevice( SizeI size );
 		~NullGfxDevice();
 
 	};

@@ -61,7 +61,7 @@ namespace wg
 
 	//____ setContentPadding() ____________________________________________________
 
-	void ExtendedSkin::setContentPadding( Border padding )
+	void ExtendedSkin::setContentPadding( BorderI padding )
 	{
 		m_contentPadding = padding;
 	}
@@ -78,7 +78,7 @@ namespace wg
 
 	//____ setContentShift() ______________________________________________________
 
-	void ExtendedSkin::setContentShift(State state, Coord shift)
+	void ExtendedSkin::setContentShift(State state, CoordI shift)
 	{
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
@@ -89,7 +89,7 @@ namespace wg
 
 	//____ setContentShift() _____________________________________________________
 
-	void ExtendedSkin::setContentShift(std::initializer_list< std::pair<State, Coord> > stateShifts)
+	void ExtendedSkin::setContentShift(std::initializer_list< std::pair<State, CoordI> > stateShifts)
 	{
 		for (auto& shift : stateShifts)
 		{

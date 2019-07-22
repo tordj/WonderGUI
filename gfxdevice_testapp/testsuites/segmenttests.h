@@ -29,7 +29,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		// Generate rainbow segments
 
@@ -48,37 +48,37 @@ public:
 	}
 
 
-	bool	resetBlendMode(GfxDevice * pDevice, const Rect& canvas)
+	bool	resetBlendMode(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Blend);
 	}
 
-	bool	setBlendModeReplace(GfxDevice * pDevice, const Rect& canvas)
+	bool	setBlendModeReplace(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Replace);
 	}
 
-	bool	setBlendModeAdd(GfxDevice * pDevice, const Rect& canvas)
+	bool	setBlendModeAdd(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Add);
 	}
 
-	bool	setBlendModeSubtract(GfxDevice * pDevice, const Rect& canvas)
+	bool	setBlendModeSubtract(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Subtract);
 	}
 
-	bool	setBlendModeMultiply(GfxDevice * pDevice, const Rect& canvas)
+	bool	setBlendModeMultiply(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Multiply);
 	}
 
-	bool	setBlendModeInvert(GfxDevice * pDevice, const Rect& canvas)
+	bool	setBlendModeInvert(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return pDevice->setBlendMode(BlendMode::Invert);
 	}
 
-	bool rainbowSpread7(GfxDevice * pDevice, const Rect& canvas)
+	bool rainbowSpread7(GfxDevice * pDevice, const RectI& canvas)
 	{
 
 		pDevice->drawSegments(canvas, 7, m_rainbowColors, m_nRainbowEdges, &m_rainbowEdges[0][0], 7);
@@ -86,7 +86,7 @@ public:
 		return true;
 	}
 
-	bool rainbowSpread8(GfxDevice * pDevice, const Rect& canvas)
+	bool rainbowSpread8(GfxDevice * pDevice, const RectI& canvas)
 	{
 
 		pDevice->drawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, &m_rainbowEdges[0][0], 7);
@@ -95,7 +95,7 @@ public:
 	}
 
 
-	bool wildRainbow(GfxDevice * pDevice, const Rect& canvas)
+	bool wildRainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
 		Color colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 0,0,0,255 } };
 
@@ -120,13 +120,13 @@ public:
 		return true;
 	}
 
-	bool largeCircle(GfxDevice * pDevice, const Rect& canvas)
+	bool largeCircle(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawElipse(static_cast<RectF>(canvas), 20.f, Color::Aquamarine, 2.f, Color::White);
 		return true;
 	}
 
-	bool circles(GfxDevice * pDevice, const Rect& canvas)
+	bool circles(GfxDevice * pDevice, const RectI& canvas)
 	{
 		for (int y = 0; y < 10; y++)
 		{
@@ -139,7 +139,7 @@ public:
 		return true;
 	}
 
-	bool elipses(GfxDevice * pDevice, const Rect& canvas)
+	bool elipses(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawElipse({ 0.f,0.f,canvas.w*3/4.f, canvas.w*3/4/3.f}, 20.f, Color::Aquamarine, 5.f, Color::White);
 		pDevice->drawElipse({ canvas.w*3/4.f,0.f,canvas.w/4.f, canvas.h*1.f }, 20.f, Color::Aquamarine, 5.f, Color::White);
@@ -148,7 +148,7 @@ public:
 	}
 
 
-	bool brokenElipse(GfxDevice * pDevice, const Rect& canvas)
+	bool brokenElipse(GfxDevice * pDevice, const RectI& canvas)
 	{
 		int x = 0;
 		int y = 1;
@@ -159,7 +159,7 @@ public:
 	}
 
 
-	bool rainbow(GfxDevice * pDevice, const Rect& canvas)
+	bool rainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
 		int transform[2][2] = { 1,0,0,1 };
 
@@ -168,25 +168,25 @@ public:
 	}
 
 
-	bool flip90Rainbow(GfxDevice * pDevice, const Rect& canvas)
+	bool flip90Rainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot90);
 		return true;
 	}
 
-	bool flip180Rainbow(GfxDevice * pDevice, const Rect& canvas)
+	bool flip180Rainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot180);
 		return true;
 	}
 
-	bool flip270Rainbow(GfxDevice * pDevice, const Rect& canvas)
+	bool flip270Rainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot270);
 		return true;
 	}
 
-	bool precisionTest(GfxDevice * pDevice, const Rect& canvas)
+	bool precisionTest(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->plotPixels(4, m_precisionPlotCoords, m_precisionPlotColors);
 
@@ -207,7 +207,7 @@ private:
 	int		m_nRainbowEdges = 512 + 1;
 	int		m_rainbowEdges[512 + 1][7];
 
-	Coord	m_precisionPlotCoords[4] = { {1,1}, {1,2}, {1,3}, {1,4} };
+	CoordI	m_precisionPlotCoords[4] = { {1,1}, {1,2}, {1,3}, {1,4} };
 	Color	m_precisionPlotColors[4] = { {42,42,42,255}, {128,128,128,255}, {213,213,213,255}, {255,255,255,255} };
 
 	int		m_precisionEdges[2][4] = { {0 * 256+128, 6 * 256, 6 * 256, 6 * 256}, {3 * 256+128, 6 * 256, 6 * 256, 6 * 256} };

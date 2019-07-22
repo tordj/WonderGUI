@@ -74,7 +74,7 @@ namespace wg
 
 	//____ setImage() _____________________________________________________________
 
-	void Image::setImage( Surface * pSurface, const Rect& rect )
+	void Image::setImage( Surface * pSurface, const RectI& rect )
 	{
 		if( pSurface != m_pSurface || rect != m_rect )
 		{
@@ -85,7 +85,7 @@ namespace wg
 			m_pSurface = pSurface;
 
 			if( pSurface )
-				m_rect = Rect( rect, Rect(pSurface->size()) );
+				m_rect = RectI( rect, RectI(pSurface->size()) );
 			else
 				m_rect.clear();
 
@@ -120,7 +120,7 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size Image::preferredSize() const
+	SizeI Image::preferredSize() const
 	{
 		if( m_pSurface )
 		{
@@ -147,13 +147,13 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Image::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest;
+			RectI dest;
 			if( m_pSkin )
 				dest = m_pSkin->contentRect( _canvas, state() );
 			else
@@ -166,11 +166,11 @@ namespace wg
 
 	//____ _alphaTest() ___________________________________________________________
 
-	bool Image::_alphaTest( const Coord& ofs )
+	bool Image::_alphaTest( const CoordI& ofs )
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest;
+			RectI dest;
 			if( m_pSkin )
 				dest = m_pSkin->contentRect( m_size, state() );
 			else

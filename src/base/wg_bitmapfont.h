@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		inline bool			setSize( int size ) { return (size == m_size);};						// Size is just a dummy for BitmapFont...
+		inline bool			setSize( int size ) { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
 		inline int			size() { return m_size; }
 
 		Glyph_p				getGlyph( uint16_t chr );
@@ -83,7 +83,7 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const Rect& rect );
+			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect );
 
 			const GlyphBitmap * getBitmap() { return &m_src; }
 

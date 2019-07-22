@@ -47,8 +47,8 @@ namespace wg
 	const static Origo           Origo_min           = Origo::NorthWest;
 	const static Direction       Direction_min       = Direction::Up;
 	const static Orientation     Orientation_min     = Orientation::Horizontal;
-	const static SizeQolicy      SizeQolicy_min      = SizeQolicy::Default;
-	const static SizeQolicy2D    SizeQolicy2D_min    = SizeQolicy2D::Original;
+	const static SizePolicy      SizePolicy_min      = SizePolicy::Default;
+	const static SizePolicy2D    SizePolicy2D_min    = SizePolicy2D::Original;
 	const static MsgType         MsgType_min         = MsgType::Dummy;
 	const static SortOrder       SortOrder_min       = SortOrder::None;
 	const static SelectMode      SelectMode_min      = SelectMode::Unselectable;
@@ -69,8 +69,8 @@ namespace wg
 	const static Origo           Origo_max           = Origo::Center;
 	const static Direction       Direction_max       = Direction::Left;
 	const static Orientation     Orientation_max     = Orientation::Vertical;
-	const static SizeQolicy      SizeQolicy_max      = SizeQolicy::Expanded;
-	const static SizeQolicy2D    SizeQolicy2D_max    = SizeQolicy2D::Scale;
+	const static SizePolicy      SizePolicy_max      = SizePolicy::Expanded;
+	const static SizePolicy2D    SizePolicy2D_max    = SizePolicy2D::Scale;
 	const static MsgType         MsgType_max         = MsgType::ModalBlockedRelease;
 	const static SortOrder       SortOrder_max       = SortOrder::Descending;
 	const static SelectMode      SelectMode_max      = SelectMode::FlipOnSelect;
@@ -91,8 +91,8 @@ namespace wg
 	const static int             Origo_size          = (int)Origo::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Orientation_size    = (int)Orientation::Vertical + 1;
-	const static int             SizeQolicy_size     = (int)SizeQolicy::Expanded + 1;
-	const static int             SizeQolicy2D_size   = (int)SizeQolicy2D::Scale + 1;
+	const static int             SizePolicy_size     = (int)SizePolicy::Expanded + 1;
+	const static int             SizePolicy2D_size   = (int)SizePolicy2D::Scale + 1;
 	const static int             MsgType_size        = (int)MsgType::ModalBlockedRelease + 1;
 	const static int             SortOrder_size      = (int)SortOrder::Descending + 1;
 	const static int             SelectMode_size     = (int)SelectMode::FlipOnSelect + 1;
@@ -113,8 +113,8 @@ namespace wg
 	const char * toString(Origo);
 	const char * toString(Direction);
 	const char * toString(Orientation);
-	const char * toString(SizeQolicy);
-	const char * toString(SizeQolicy2D);
+	const char * toString(SizePolicy);
+	const char * toString(SizePolicy2D);
 	const char * toString(MsgType);
 	const char * toString(SortOrder);
 	const char * toString(SelectMode);

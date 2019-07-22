@@ -110,7 +110,7 @@ namespace wg
 
 	//_____ setGeo() _____________________________________________________________
 
-	bool RootPanel::setGeo( const Rect& geo )
+	bool RootPanel::setGeo( const RectI& geo )
 	{
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
@@ -123,14 +123,14 @@ namespace wg
 
 	//____ geo() __________________________________________________________________
 
-	Rect RootPanel::geo() const
+	RectI RootPanel::geo() const
 	{
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
-			return Rect( Coord(0,0), m_pGfxDevice->canvasSize() );
+			return RectI( CoordI(0,0), m_pGfxDevice->canvasSize() );
 		else
-			return Rect(0,0,0,0);
+			return RectI(0,0,0,0);
 	}
 
 	//____ _setWidget() ____________________________________________________________
@@ -214,7 +214,7 @@ namespace wg
 		return render( geo() );
 	}
 
-	bool RootPanel::render( const Rect& clip )
+	bool RootPanel::render( const RectI& clip )
 	{
 		if( !beginRender() )
 			return false;
@@ -277,15 +277,15 @@ namespace wg
 
 	//____ renderSection() __________________________________________________________
 
-	bool RootPanel::renderSection( const Rect& _clip )
+	bool RootPanel::renderSection( const RectI& _clip )
 	{
 		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-		Rect canvas = geo();
-		Rect clip( _clip, canvas );
+		RectI canvas = geo();
+		RectI clip( _clip, canvas );
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
@@ -315,7 +315,7 @@ namespace wg
 
 			// Render our new overlays
 
-			for( const Rect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
+			for( const RectI * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 			{
 				m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused );
 			}
@@ -324,7 +324,7 @@ namespace wg
 
 			if( m_afterglowRects.size() > 1 )
 			{
-				for( const Rect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
+				for( const RectI * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 				{
 					m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal );
 				}
@@ -354,7 +354,7 @@ namespace wg
 
 	//____ _findWidget() _____________________________________________________________
 
-	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget * RootPanel::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
 		if( !geo().contains(ofs) || !m_child.pWidget )
 			return 0;
@@ -379,17 +379,17 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	Coord RootPanel::_childPos( Slot * pSlot ) const
+	CoordI RootPanel::_childPos( Slot * pSlot ) const
 	{
 		return geo().pos();
 	}
 
-	Coord RootPanel::_childGlobalPos( Slot * pSlot ) const
+	CoordI RootPanel::_childGlobalPos( Slot * pSlot ) const
 	{
 		return geo().pos();
 	}
 
-	Size RootPanel::_childSize( Slot * pSlot ) const
+	SizeI RootPanel::_childSize( Slot * pSlot ) const
 	{
 		return geo().size();
 	}
@@ -399,7 +399,7 @@ namespace wg
 		return true;
 	}
 
-	Rect RootPanel::_childWindowSection( Slot * pSlot ) const
+	RectI RootPanel::_childWindowSection( Slot * pSlot ) const
 	{
 		return geo();
 	}
@@ -421,10 +421,10 @@ namespace wg
 			addDirtyPatch( geo() );
 	}
 
-	void RootPanel::_childRequestRender( Slot * pSlot, const Rect& rect )
+	void RootPanel::_childRequestRender( Slot * pSlot, const RectI& rect )
 	{
 		if( m_bVisible )
-			addDirtyPatch( Rect( geo().pos() + rect.pos(), rect.size() ) );
+			addDirtyPatch( RectI( geo().pos() + rect.pos(), rect.size() ) );
 	}
 	void RootPanel::_childRequestResize( Slot * pSlot )
 	{
@@ -458,7 +458,7 @@ namespace wg
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView( Slot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
+	void RootPanel::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		// Do nothing, root ignores inView requests.
 	}

@@ -38,7 +38,7 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CIconDisplay::set( Skin * pSkin, Origo origo, Border padding, float scale, bool bOverlap )
+	bool CIconDisplay::set( Skin * pSkin, Origo origo, BorderI padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
 		m_origo 	= origo;
@@ -56,7 +56,7 @@ namespace wg
 	{
 		m_pSkin 	= 0;
 		m_origo 	= Origo::West;
-		m_padding 	= Border(0);
+		m_padding 	= BorderI(0);
 		m_scale 	= 0.f;
 		m_bOverlap 	= false;
 
@@ -92,7 +92,7 @@ namespace wg
 
 	//____ setPadding() _______________________________________________________
 
-	void CIconDisplay::setPadding( Border borders )
+	void CIconDisplay::setPadding( BorderI borders )
 	{
 		if( borders != m_padding )
 		{
@@ -130,17 +130,17 @@ namespace wg
 
 	*/
 
-	Rect CIconDisplay::getIconRect( const Rect& contentRect ) const
+	RectI CIconDisplay::getIconRect( const RectI& contentRect ) const
 	{
 		if( m_pSkin )
 			return getIconRect(contentRect, m_pSkin->preferredSize());
 		else
-			return Rect();
+			return RectI();
 	}
 
-	Rect CIconDisplay::getIconRect( const Rect& contentRect, const Size& iconSize ) const
+	RectI CIconDisplay::getIconRect( const RectI& contentRect, const SizeI& iconSize ) const
 	{
-		Rect rect;
+		RectI rect;
 
 		int w = iconSize.w;
 		int h = iconSize.h;
@@ -169,7 +169,7 @@ namespace wg
 			w += m_padding.width();
 			h += m_padding.height();
 
-			rect = Util::origoToRect( m_origo, contentRect.size(), Size(w,h) );
+			rect = Util::origoToRect( m_origo, contentRect.size(), SizeI(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}
@@ -181,9 +181,9 @@ namespace wg
 
 	//____ getTextRect() _____________________________________________________
 
-	Rect CIconDisplay::getTextRect( const Rect& contentRect, const Rect& iconRect ) const
+	RectI CIconDisplay::getTextRect( const RectI& contentRect, const RectI& iconRect ) const
 	{
-		Rect textRect = contentRect;
+		RectI textRect = contentRect;
 
 		if( !m_bOverlap && iconRect.w > 0 && iconRect.h > 0 )
 		{
@@ -246,12 +246,12 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size CIconDisplay::preferredSize() const
+	SizeI CIconDisplay::preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->preferredSize() + m_padding;
 
-		return Size();
+		return SizeI();
 	}
 
 

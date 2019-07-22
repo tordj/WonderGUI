@@ -81,7 +81,7 @@ int main ( int argc, char** argv )
 		format = PixelFormat::BGR_8;
 
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
 
 	// Wg create the GfxDevice that will be used for all rendering, providing
@@ -104,7 +104,7 @@ int main ( int argc, char** argv )
 	// No error handling or such to keep this example short and simple.
 
 	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
 
 	// First we create and add a FlexPanel to the RootPanel.
 	// The RootPanel can only take one child, but the FlexPanel
@@ -137,7 +137,7 @@ int main ( int argc, char** argv )
 	// For best performance you should add widgets from front to back and avoid insert.
 
 	Button_p pButton = Button::create();
-	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) ) );
+	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, BorderI(3) ) );
 	pFlexPanel->children.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
 	// Finally we add a callback to the click-event of the button.
@@ -214,7 +214,7 @@ void translateEvents( RootPanel_p pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				Base::inputHandler()->setPointer( pRoot, Coord(e.motion.x,e.motion.y));
+				Base::inputHandler()->setPointer( pRoot, CoordI(e.motion.x,e.motion.y));
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -266,7 +266,7 @@ void updateWindowRects( RootPanel_p pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )

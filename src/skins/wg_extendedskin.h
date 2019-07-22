@@ -50,7 +50,7 @@ namespace wg
 		virtual SizeQ	preferredSize() const override;
 		virtual SizeQ	sizeForContent( const SizeQ contentSize ) const override;
 
-		virtual void	setContentPadding( Border padding );
+		virtual void	setContentPadding( BorderI padding );
 		virtual SizeQ	contentPadding() const override;
 		virtual CoordQ	contentOfs( State state ) const override;
 		virtual RectQ	contentRect( const RectQ& canvas, State state ) const override;
@@ -58,8 +58,8 @@ namespace wg
 		//.____ Behavior _______________________________________________________
 
 		virtual void	clearContentShift();
-		virtual void	setContentShift(State state, Coord shift);
-		virtual void	setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
+		virtual void	setContentShift(State state, CoordI shift);
+		virtual void	setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
 		virtual CoordQ	contentShift(State state) const;
 
 		//.____ Misc ____________________________________________________
@@ -70,8 +70,8 @@ namespace wg
 	protected:
 		void _refreshUnsetStates();
 
-		Border				m_contentPadding;
-		Coord				m_contentShift[StateEnum_Nb];
+		BorderI				m_contentPadding;
+		CoordI				m_contentShift[StateEnum_Nb];
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 

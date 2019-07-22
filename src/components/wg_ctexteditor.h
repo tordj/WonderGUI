@@ -57,7 +57,7 @@ namespace wg
 		int				erase( int ofs, int len );
 
 		void			setState( State state );
-		void			render( GfxDevice * pDevice, const Rect& _canvas );
+		void			render( GfxDevice * pDevice, const RectI& _canvas );
 
 
 		void			setEditMode( TextEditMode mode );
@@ -103,7 +103,7 @@ namespace wg
 		bool			caretTextBegin();
 		bool			caretTextEnd();
 
-		bool			caretToPos( Coord pos);			// Move caret as close as possible to the given position.
+		bool			caretToPos( CoordI pos);			// Move caret as close as possible to the given position.
 		bool			caretSelectWord();
 		bool			caretSelectLine();				// Full line with hard line ending.
 

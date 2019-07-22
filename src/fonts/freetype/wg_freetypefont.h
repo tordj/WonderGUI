@@ -156,7 +156,7 @@ namespace wg
 		class CacheSlot : public Link
 		{
 		public:
-			CacheSlot( CacheSurf * _pSurf, const Rect& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf; pGlyph = 0; }
+			CacheSlot( CacheSurf * _pSurf, const RectI& _rect ) { access = 0; pSurf = _pSurf; rect = _rect; bitmap.pSurface = pSurf->pSurf; pGlyph = 0; }
 
 			LINK_METHODS( CacheSlot );
 
@@ -166,7 +166,7 @@ namespace wg
 			MyGlyph *			pGlyph;
 
 			CacheSurf *		pSurf;
-			Rect			rect;				// Rect for the slot - not the glyph itself as in GlyphBitmap which might be smaller.
+			RectI			rect;				// RectI for the slot - not the glyph itself as in GlyphBitmap which might be smaller.
 		};
 
 
@@ -204,9 +204,9 @@ namespace wg
 
 
 		static CacheSlot *	getCacheSlot( int width, int height );
-		static int			addCacheSlots( Chain<CacheSlot> * pChain, const Size& slotSize, int minSlots );
-		static int			maxSlotsInSurface( const Size& surf, const Size& slot );
-		static Size			calcTextureSize( const Size& slotSize, int nSlots );
+		static int			addCacheSlots( Chain<CacheSlot> * pChain, const SizeI& slotSize, int minSlots );
+		static int			maxSlotsInSurface( const SizeI& surf, const SizeI& slot );
+		static SizeI			calcTextureSize( const SizeI& slotSize, int nSlots );
 
 		static bool			s_bFreeTypeInitialized;
 		static FT_Library	s_freeTypeLibrary;

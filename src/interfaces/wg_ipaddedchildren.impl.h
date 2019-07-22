@@ -39,7 +39,7 @@ namespace wg
 //	using		Children<SlotType, HolderType>::m_pHolder;
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, Border padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, BorderI padding)
 	{
 		//TODO: Assert
 
@@ -48,7 +48,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator it, Border padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator it, BorderI padding)
 	{
 		//TODO: Assert
 
@@ -57,7 +57,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, Border padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, BorderI padding)
 	{
 		//TODO: Assert
 
@@ -66,7 +66,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, Border padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, BorderI padding)
 	{
 		//TODO: Assert
 
@@ -77,7 +77,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, const std::initializer_list<BorderI> padding)
 	{
 		//TODO: Assert
 
@@ -86,7 +86,7 @@ namespace wg
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, const std::initializer_list<Border> padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, const std::initializer_list<BorderI> padding)
 	{
 		//TODO: Assert
 

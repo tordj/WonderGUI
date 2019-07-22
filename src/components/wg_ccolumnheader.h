@@ -52,16 +52,16 @@ namespace wg
 		void			setState( State state );
 		inline State	state() const { return m_state; }
 
-		void			setSize( Size size );
-		inline Size		size() const { return m_size; }
+		void			setSize( SizeI size );
+		inline SizeI		size() const { return m_size; }
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 		int				matchingWidth( int height ) const;
 		int				matchingHeight( int width ) const;
 
 		bool			receive( Msg * pMsg );
 
-		void			render( GfxDevice * pDevice, const Rect& _canvas );
+		void			render( GfxDevice * pDevice, const RectI& _canvas );
 
 
 	protected:
@@ -69,19 +69,19 @@ namespace wg
 		Object *		_object() override;
 		const Object *	_object() const override;
 
-		Coord	_componentPos( const Component * pComponent ) const override;
-		Size	_componentSize( const Component * pComponent ) const override;
-		Rect	_componentGeo( const Component * pComponent ) const override;
-		Coord	_globalComponentPos( const Component * pComponent ) const override;
-		Rect	_globalComponentGeo( const Component * pComponent ) const override;
+		CoordI	_componentPos( const Component * pComponent ) const override;
+		SizeI	_componentSize( const Component * pComponent ) const override;
+		RectI	_componentGeo( const Component * pComponent ) const override;
+		CoordI	_globalComponentPos( const Component * pComponent ) const override;
+		RectI	_globalComponentGeo( const Component * pComponent ) const override;
 
 		void	_componentRequestRender( const Component * pComponent ) override;
-		void	_componentRequestRender( const Component * pComponent, const Rect& rect ) override;
+		void	_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
 		void	_componentRequestResize( const Component * pComponent ) override;
 
 		void	_componentRequestFocus( const Component * pComponent ) override;
 		void	_componentRequestInView( const Component * pComponent ) override;
-		void	_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio ) override;
+		void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) override;
 
 		void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) override;
 
@@ -89,7 +89,7 @@ namespace wg
 		Skin_p			m_pSkin;
 
 		State			m_state;
-		Size			m_size;
+		SizeI			m_size;
 
 		bool			m_bPressed;
 		SortOrder		m_sortOrder;

@@ -34,7 +34,7 @@ namespace wg
 
 	Filler::Filler()
 	{
-		m_preferredSize = Size(-1,-1);
+		m_preferredSize = SizeI(-1,-1);
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ setPreferredSize() _______________________________________________________
 
-	void Filler::setPreferredSize( const Size& size )
+	void Filler::setPreferredSize( const SizeI& size )
 	{
 		if( size != m_preferredSize )
 		{
@@ -84,7 +84,7 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________________
 
-	Size Filler::preferredSize() const
+	SizeI Filler::preferredSize() const
 	{
 		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
 			return m_preferredSize;

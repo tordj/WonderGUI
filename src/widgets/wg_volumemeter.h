@@ -73,7 +73,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 		void            setSidePadding( float padding ) { m_fSidePadding = padding; }
 
 
@@ -83,10 +83,10 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
 
 		void			_receive( Msg * pMsg );
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void			_cloneContent( const Widget * _pOrg );
-		bool			_alphaTest( const Coord& ofs );
-		void			_setSize( const Size& size );
+		bool			_alphaTest( const CoordI& ofs );
+		void			_setSize( const SizeI& size );
 
 		RouteId			m_tickRouteId;
 

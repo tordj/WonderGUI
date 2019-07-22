@@ -40,18 +40,18 @@ namespace wg
 	public:
 		Component( ComponentHolder * pHolder ) : m_pHolder(pHolder) {}
 
-		inline Coord	_pos() const  { return m_pHolder->_componentPos(this); }
-		inline Size		_size() const { return m_pHolder->_componentSize(this); }
-		inline Rect		_geo() const { return m_pHolder->_componentGeo(this); }
-		inline Coord	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
-		inline Rect		_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
+		inline CoordI	_pos() const  { return m_pHolder->_componentPos(this); }
+		inline SizeI		_size() const { return m_pHolder->_componentSize(this); }
+		inline RectI		_geo() const { return m_pHolder->_componentGeo(this); }
+		inline CoordI	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
+		inline RectI		_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
 
 
 		inline void		_requestRender() const { m_pHolder->_componentRequestRender(this); }
-		inline void		_requestRender( const Rect& rect ) const { m_pHolder->_componentRequestRender(this, rect); }
+		inline void		_requestRender( const RectI& rect ) const { m_pHolder->_componentRequestRender(this, rect); }
 		inline void		_requestResize() const { m_pHolder->_componentRequestResize(this); }
 		inline void		_requestVisibility() const { m_pHolder->_componentRequestInView( this ); }
-		inline void		_requestVisibility( const Rect& preferred, const Rect& prio ) const { m_pHolder->_componentRequestInView( this, preferred, prio ); }
+		inline void		_requestVisibility( const RectI& preferred, const RectI& prio ) const { m_pHolder->_componentRequestInView( this, preferred, prio ); }
 		inline void		_requestFocus() const { m_pHolder->_componentRequestFocus(this); }
 
 		inline void		_notify( ComponentNotif notification, void * pData ) { m_pHolder->_receiveComponentNotif( this, notification, pData ); }

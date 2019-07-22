@@ -39,12 +39,12 @@ namespace wg
 		return BoxSkin_p(new BoxSkin());
 	}
 
-	BoxSkin_p BoxSkin::create(Border frame, Color fillColor, Color frameColor )
+	BoxSkin_p BoxSkin::create(BorderI frame, Color fillColor, Color frameColor )
 	{
 		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
 	}
 
-	BoxSkin_p BoxSkin::create(Border frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
+	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
 	{
 		BoxSkin_p p = new BoxSkin();
 
@@ -70,7 +70,7 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	BoxSkin::BoxSkin(Border frame, Color fillColor, Color frameColor )
+	BoxSkin::BoxSkin(BorderI frame, Color fillColor, Color frameColor )
 	{
 		m_frame = frame;
 		setColors(fillColor, frameColor);
@@ -113,7 +113,7 @@ namespace wg
 
 	//____ setFrame() ____________________________________________________
 
-	void BoxSkin::setFrame(Border frame)
+	void BoxSkin::setFrame(BorderI frame)
 	{
 		bool hadFrame = (m_frame.width() + m_frame.height() > 0);
 		bool hasFrame = (frame.width() + frame.height() > 0);
@@ -180,7 +180,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
+	void BoxSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
@@ -196,13 +196,13 @@ namespace wg
 		}
 		else
 		{
-			Border frame = toPixels(m_frame);
+			BorderI frame = toPixels(m_frame);
 
-			Rect top( _canvas.x, _canvas.y, _canvas.w, frame.top );
-			Rect left( _canvas.x, _canvas.y+frame.top, frame.left, _canvas.h - frame.height() );
-			Rect right( _canvas.x + _canvas.w - frame.right, _canvas.y+frame.top, frame.right, _canvas.h - frame.height() );
-			Rect bottom( _canvas.x, _canvas.y + _canvas.h - frame.bottom, _canvas.w, frame.bottom );
-			Rect center( _canvas - frame );
+			RectI top( _canvas.x, _canvas.y, _canvas.w, frame.top );
+			RectI left( _canvas.x, _canvas.y+frame.top, frame.left, _canvas.h - frame.height() );
+			RectI right( _canvas.x + _canvas.w - frame.right, _canvas.y+frame.top, frame.right, _canvas.h - frame.height() );
+			RectI bottom( _canvas.x, _canvas.y + _canvas.h - frame.bottom, _canvas.w, frame.bottom );
+			RectI center( _canvas - frame );
 
 			pDevice->fill( top, m_frameColor[i] );
 			pDevice->fill( left, m_frameColor[i] );
@@ -241,15 +241,15 @@ namespace wg
 
 	SizeQ BoxSkin::sizeForContent( const SizeQ contentSize ) const
 	{
-		Size content = ExtendedSkin::sizeForContent(contentSize);
-		Size frame = m_frame.size();
+		SizeI content = ExtendedSkin::sizeForContent(contentSize);
+		SizeI frame = m_frame.size();
 
 		return wg::SizeQ::max(content, frame);
 	}
 
 	//____ markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool BoxSkin::markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -262,7 +262,7 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			Rect center = canvas - toPixels(m_frame);
+			RectI center = canvas - toPixels(m_frame);
 			if( center.contains(ofs) )
 				opacity = m_fillColor[i].a;
 			else
@@ -288,12 +288,12 @@ namespace wg
 		return false;
 	}
 
-	bool BoxSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BoxSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		if( m_bOpaque )
 			return true;
 
-		Rect center = Rect(canvasSize) - m_frame;
+		RectI center = RectI(canvasSize) - m_frame;
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 255;

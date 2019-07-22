@@ -72,7 +72,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const Coord& c)
+	GfxOutStream&  GfxOutStream::operator<< (const CoordI& c)
 	{
 		m_pHolder->_pushShort(c.x);
 		m_pHolder->_pushShort(c.y);
@@ -86,7 +86,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const Size& sz)
+	GfxOutStream&  GfxOutStream::operator<< (const SizeI& sz)
 	{
 		m_pHolder->_pushShort(sz.w);
 		m_pHolder->_pushShort(sz.h);
@@ -100,7 +100,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const Rect& rect)
+	GfxOutStream&  GfxOutStream::operator<< (const RectI& rect)
 	{
 		m_pHolder->_pushShort(rect.x);
 		m_pHolder->_pushShort(rect.y);

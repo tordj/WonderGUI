@@ -66,7 +66,7 @@ namespace wg
 		private:
 			Widget_wp	m_pWidget;
 			Skin_p		m_pSkin;
-			Rect		m_geo;
+			RectI		m_geo;
 		};
 
 		using		iterator = std::vector<Shadow>::iterator;

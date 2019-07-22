@@ -517,7 +517,7 @@ namespace wg
 	//____ plot_list() ________________________________________________________
 
 	template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot_list(const Rect& clip, int nCoords, const Coord * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
 	{
 		int tintB, tintG, tintR, tintA;
 
@@ -1396,7 +1396,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	SoftGfxDevice::SoftGfxDevice() : GfxDevice(Size(0,0))
+	SoftGfxDevice::SoftGfxDevice() : GfxDevice(SizeI(0,0))
 	{
 		m_bEnableCustomFunctions = false;
 		m_bUseCustomFunctions = false;
@@ -1409,7 +1409,7 @@ namespace wg
 
 	}
 
-	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():Size() )
+	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():SizeI() )
 	{
 		m_bEnableCustomFunctions = false;
 		m_bUseCustomFunctions = false;
@@ -1481,9 +1481,9 @@ namespace wg
 		if( !pCanvas )
 		{
 			m_pCanvas		= nullptr;
-			m_canvasSize	= Size();
-			m_clipCanvas	= Rect();
-			m_clipBounds	= Rect();
+			m_canvasSize	= SizeI();
+			m_clipCanvas	= RectI();
+			m_clipBounds	= RectI();
 			m_pClipRects	= &m_clipCanvas;
 			m_nClipRects	= 1;
 
@@ -1631,7 +1631,7 @@ namespace wg
 
 	//____ fill() ______________________________________________________
 
-	void SoftGfxDevice::fill(const Rect& rect, const Color& col)
+	void SoftGfxDevice::fill(const RectI& rect, const Color& col)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels )
 			return;
@@ -1666,7 +1666,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect patch(m_pClipRects[i], rect);
+			RectI patch(m_pClipRects[i], rect);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -1819,7 +1819,7 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLine(Coord beg, Coord end, Color color, float thickness)
+	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, Color color, float thickness)
 	{
 		if (!m_pCanvas || !m_pCanvasPixels)
 			return;
@@ -1868,7 +1868,7 @@ namespace wg
 			{
 				// Do clipping
 
-				const Rect& clip = m_pClipRects[i];
+				const RectI& clip = m_pClipRects[i];
 
 				int _length = length;
 				int _pos = pos;
@@ -1919,7 +1919,7 @@ namespace wg
 			{
 				// Do clipping
 
-				const Rect& clip = m_pClipRects[i];
+				const RectI& clip = m_pClipRects[i];
 
 				int _length = length;
 				int _pos = pos;
@@ -1952,7 +1952,7 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(Coord _begin, Direction dir, int _length, Color _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, Color _col, float thickness)
 	{
 		//TODO: Optimize!
 
@@ -1975,9 +1975,9 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			const Rect& clip = m_pClipRects[i];
+			const RectI& clip = m_pClipRects[i];
 
-			Coord begin = _begin;
+			CoordI begin = _begin;
 			int length = _length;
 
 			switch (dir)
@@ -2121,9 +2121,9 @@ namespace wg
 
 	//____ transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::transformDrawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int _simpleTransform[2][2])
+	void SoftGfxDevice::transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int _simpleTransform[2][2])
 	{
-		Rect dest = _dest;
+		RectI dest = _dest;
 
 		SegmentEdge edges[c_maxSegments-1];
 
@@ -2155,7 +2155,7 @@ namespace wg
 
 		// Calculate start coordinate
 
-		Coord start = dest.pos();
+		CoordI start = dest.pos();
 
 		if (simpleTransform[0][0] + simpleTransform[1][0] < 0)
 			start.x += dest.w - 1;
@@ -2218,7 +2218,7 @@ namespace wg
 		{
 			// Clip patch
 
-			Rect patch(dest, m_pClipRects[patchIdx] );
+			RectI patch(dest, m_pClipRects[patchIdx] );
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -2309,9 +2309,9 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void SoftGfxDevice::drawSegments(const Rect& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch)
+	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch)
 	{
-		Rect dest = _dest;
+		RectI dest = _dest;
 
 		SegmentEdge edges[c_maxSegments - 1];
 
@@ -2348,7 +2348,7 @@ namespace wg
 		{
 			// Clip patch
 
-			Rect patch(dest, m_pClipRects[patchIdx]);
+			RectI patch(dest, m_pClipRects[patchIdx]);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
@@ -2563,7 +2563,7 @@ namespace wg
 
 	//____ plotPixels() _________________________________________________
 
-	void SoftGfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
+	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
 	{
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
@@ -2613,14 +2613,14 @@ namespace wg
 
 	//____ transformBlit() [simple] ____________________________________
 
-	void SoftGfxDevice::transformBlit(const Rect& dest, Coord _src, const int simpleTransform[2][2])
+	void SoftGfxDevice::transformBlit(const RectI& dest, CoordI _src, const int simpleTransform[2][2])
 	{
 		// Clip and render the patches
 
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		const Rect& clip = dest;
+		const RectI& clip = dest;
 
 		// Step forward _src by half a pixel, so we start from correct pixel.
 
@@ -2631,11 +2631,11 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect  patch = m_pClipRects[i];
+			RectI  patch = m_pClipRects[i];
 
-			Coord src = _src;
+			CoordI src = _src;
 
-			Coord	patchOfs = patch.pos() - dest.pos();
+			CoordI	patchOfs = patch.pos() - dest.pos();
 
 
 			if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
@@ -2680,7 +2680,7 @@ namespace wg
 
 	//____ transformBlit() [complex] ____________________________________
 
-	void SoftGfxDevice::transformBlit(const Rect& dest, CoordF _src, const float complexTransform[2][2])
+	void SoftGfxDevice::transformBlit(const RectI& dest, CoordF _src, const float complexTransform[2][2])
 	{
 		// Clip and render the patches
 
@@ -2692,15 +2692,15 @@ namespace wg
 		_src.x += 0.5f * complexTransform[0][0] + 0.5f * complexTransform[1][0];
 		_src.y += 0.5f * complexTransform[1][1] + 0.5f * complexTransform[0][1];
 
-		const Rect& clip = dest;
+		const RectI& clip = dest;
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Rect  patch = m_pClipRects[i];
+			RectI  patch = m_pClipRects[i];
 
 			CoordF src = _src;
 
-			Coord	patchOfs = patch.pos() - dest.pos();
+			CoordI	patchOfs = patch.pos() - dest.pos();
 
 
 			if ((clip.x > patch.x) || (clip.x + clip.w < patch.x + patch.w) ||
@@ -2746,7 +2746,7 @@ namespace wg
 
 	//____ _onePassSimpleBlit() _____________________________________________
 
-	void SoftGfxDevice::_onePassSimpleBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	void SoftGfxDevice::_onePassSimpleBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2768,7 +2768,7 @@ namespace wg
 
 	//____ _twoPassSimpleBlit() _____________________________________________
 
-	void SoftGfxDevice::_twoPassSimpleBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	void SoftGfxDevice::_twoPassSimpleBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		SoftSurface * pSource = m_pBlitSource;
 
@@ -2820,7 +2820,7 @@ namespace wg
 
 	//____ _onePassComplexBlit() ____________________________________________
 
-	void SoftGfxDevice::_onePassComplexBlit(const Rect& dest, CoordF pos, const float transformMatrix[2][2])
+	void SoftGfxDevice::_onePassComplexBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2])
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2842,7 +2842,7 @@ namespace wg
 
 	//____ _twoPassComplexBlit() ____________________________________________
 
-	void SoftGfxDevice::_twoPassComplexBlit(const Rect& dest, CoordF pos, const float transformMatrix[2][2])
+	void SoftGfxDevice::_twoPassComplexBlit(const RectI& dest, CoordF pos, const float transformMatrix[2][2])
 	{
 		const SoftSurface * pSource = m_pBlitSource;
 
@@ -2899,14 +2899,14 @@ namespace wg
 
 	//____ _dummySimpleBlit() _________________________________________________
 
-	void SoftGfxDevice::_dummySimpleBlit(const Rect& dest, Coord pos, const int simpleTransform[2][2])
+	void SoftGfxDevice::_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2])
 	{
 		// Do nothing but prevent crashing or need to check for nullpointer ;)
 	}
 
 	//____ _dummyComplexBlit() ________________________________________________
 
-	void SoftGfxDevice::_dummyComplexBlit(const Rect& dest, CoordF pos, const float matrix[2][2])
+	void SoftGfxDevice::_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2])
 	{
 		// Do nothing but prevent crashing or need to check for nullpointer ;)
 	}

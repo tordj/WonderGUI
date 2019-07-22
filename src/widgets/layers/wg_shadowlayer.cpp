@@ -108,48 +108,48 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________________
 
-	Size ShadowLayer::preferredSize() const
+	SizeI ShadowLayer::preferredSize() const
 	{
-		Size prefFront;
-		Size prefBase;
+		SizeI prefFront;
+		SizeI prefBase;
 
 		if (m_baseSlot.pWidget)
 			prefBase = m_baseSlot.pWidget->preferredSize();
 		if (m_frontSlot.pWidget)
 			prefFront = m_frontSlot.pWidget->preferredSize();
 
-		return Size::max(prefFront, prefBase);
+		return SizeI::max(prefFront, prefBase);
 
 	}
 
 	//____ minSize() _________________________________________________________________
 
-	Size ShadowLayer::minSize() const
+	SizeI ShadowLayer::minSize() const
 	{
-		Size minFront;
-		Size minBase;
+		SizeI minFront;
+		SizeI minBase;
 
 		if (m_baseSlot.pWidget)
 			minBase = m_baseSlot.pWidget->minSize();
 		if (m_frontSlot.pWidget)
 			minFront = m_frontSlot.pWidget->minSize();
 
-		return Size::min(minFront, minBase);
+		return SizeI::min(minFront, minBase);
 	}
 
 	//____ maxSize() _________________________________________________________________
 
-	Size ShadowLayer::maxSize() const
+	SizeI ShadowLayer::maxSize() const
 	{
-		Size maxFront;
-		Size maxBase;
+		SizeI maxFront;
+		SizeI maxBase;
 
 		if (m_baseSlot.pWidget)
 			maxBase = m_baseSlot.pWidget->maxSize();
 		if (m_frontSlot.pWidget)
 			maxFront = m_frontSlot.pWidget->maxSize();
 
-		return Size::max(maxFront, maxBase);
+		return SizeI::max(maxFront, maxBase);
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -199,7 +199,7 @@ namespace wg
 
 	//____ _onRequestRender() _______________________________________________
 
-	void ShadowLayer::_onRequestRender(const Rect& rect, const LayerSlot * pSlot)
+	void ShadowLayer::_onRequestRender(const RectI& rect, const LayerSlot * pSlot)
 	{
 		// Widgets from base slot can be masked by widgets from front slot.
 
@@ -210,11 +210,11 @@ namespace wg
 
 			// Remove portions of patches that are covered by opaque front widgets
 
-			m_frontSlot.pWidget->_maskPatches(patches, size(), Rect(0, 0, 65536, 65536), _getBlendMode());
+			m_frontSlot.pWidget->_maskPatches(patches, size(), RectI(0, 0, 65536, 65536), _getBlendMode());
 
 			// Make request render calls
 
-			for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+			for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
 				_requestRender(*pRect);
 		}
 		else
@@ -234,7 +234,7 @@ namespace wg
 	{
 		for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
 		{
-			Size sz = it->widget()->size();
+			SizeI sz = it->widget()->size();
 			sz += it->shadow()->contentPadding();
 
 
@@ -279,9 +279,9 @@ namespace wg
 
 	//____ _renderPatches() __________________________________________________________
 
-	void ShadowLayer::_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches )
+	void ShadowLayer::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
 	{
-		Rect contentGeo = _canvas;
+		RectI contentGeo = _canvas;
 
 		// Generate masked patches for our skin, baseSlot widget, and shadow.
 

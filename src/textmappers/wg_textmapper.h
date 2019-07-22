@@ -59,9 +59,9 @@ namespace wg
 		virtual void	addComponent( CText * pText ) = 0;
 		virtual void	removeComponent( CText * pText ) = 0;
 
-		virtual int		charAtPos( const CText * pText, Coord pos ) const = 0;
-		virtual Coord	charPos( const CText * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual Rect	charRect( const CText * pText, int charOfs ) const = 0;
+		virtual int		charAtPos( const CText * pText, CoordI pos ) const = 0;
+		virtual CoordI	charPos( const CText * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual RectI	charRect( const CText * pText, int charOfs ) const = 0;
 		virtual int		charLine( const CText * pText, int charOfs ) const = 0;
 		virtual int		lineBegin( const CText * pText, int lineNb ) const = 0;
 		virtual int		lineEnd( const CText * pText, int lineNb ) const = 0;
@@ -70,7 +70,7 @@ namespace wg
 		virtual int		wordEnd( const CText * pText, int charOfs ) const = 0;
 
 
-		virtual void 	render( CText * pText, GfxDevice * pDevice, const Rect& canvas ) = 0;
+		virtual void 	render( CText * pText, GfxDevice * pDevice, const RectI& canvas ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
 		// A selection change implies a caret move.
@@ -81,19 +81,19 @@ namespace wg
 		//
 
 		virtual void	onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onResized( CText * pText, Size newSize, Size oldSize ) = 0;
+		virtual void	onResized( CText * pText, SizeI newSize, SizeI oldSize ) = 0;
 		virtual void	onStateChanged( CText * pText, State newState, State oldState ) = 0;
 		virtual void	onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
 		virtual void	onCharStyleChanged( CText * pText, int ofs = 0, int len = INT_MAX ) = 0;
 		virtual void	onRefresh( CText * pText ) = 0;
 
 
-		virtual Size	preferredSize( const CText * pText ) const = 0;
+		virtual SizeI	preferredSize( const CText * pText ) const = 0;
 		virtual int		matchingWidth( const CText * pText, int height ) const = 0;
 		virtual int		matchingHeight( const CText * pText, int width ) const = 0;
 
-		virtual Rect	rectForRange( const CText * pText, int ofs, int length ) const = 0;
-		virtual Rect	rectForCaret( const CText * pText ) const = 0;
+		virtual RectI	rectForRange( const CText * pText, int ofs, int length ) const = 0;
+		virtual RectI	rectForCaret( const CText * pText ) const = 0;
 
 		virtual String	tooltip( const CText * pText ) const;
 
@@ -101,7 +101,7 @@ namespace wg
 		// Methods for supporting a caret
 
 		virtual Direction 	textDirection( CText * pText, int charOfs ) const = 0;
-		virtual int			caretToPos( CText * pText, Coord pos, int& wantedLineOfs ) const = 0;
+		virtual int			caretToPos( CText * pText, CoordI pos, int& wantedLineOfs ) const = 0;
 		virtual int			caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
 		virtual int			caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
 		virtual int			caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const = 0;
@@ -132,7 +132,7 @@ namespace wg
 		void			_setComponentDataInt( CText * pText, int data );
 
 		void			_setComponentDirty( CText * pText );
-		void			_setComponentDirty( CText * pText, const Rect& rect );
+		void			_setComponentDirty( CText * pText, const RectI& rect );
 		void			_requestComponentResize( CText * pText );
 
 	};

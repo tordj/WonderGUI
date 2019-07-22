@@ -42,7 +42,7 @@ namespace wg
 		virtual ~CIconDisplay() {};
 
 
-		bool			set( Skin * pIconGfx, Origo origo = Origo::West, Border padding = Border(0),
+		bool			set( Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),
 									float _scale = 0.f, bool _bOverlap = false );
 		void			clear();
 
@@ -50,29 +50,29 @@ namespace wg
 
 		bool			setScale( float scaleFactor );
 		void			setOrigo( Origo origo );
-		void			setPadding( Border borders );
+		void			setPadding( BorderI borders );
 		void			setOverlap( bool bOverlap );
 		void			setSkin( Skin * pSkin );
 
 		float			scale() const { return m_scale; }
 		Origo			origo() const { return m_origo; }
-		Border			padding() const { return m_padding; }
+		BorderI			padding() const { return m_padding; }
 		bool			overlap() const { return m_bOverlap; }
 		Skin_p			skin() const { return  m_pSkin; }
 
 
-		Rect			getIconRect( const Rect& contentRect ) const;
-		Rect			getIconRect( const Rect& contentRect, const Size& iconSize ) const;
-		Rect			getTextRect( const Rect& contentRect, const Rect& iconRect ) const;
+		RectI			getIconRect( const RectI& contentRect ) const;
+		RectI			getIconRect( const RectI& contentRect, const SizeI& iconSize ) const;
+		RectI			getTextRect( const RectI& contentRect, const RectI& iconRect ) const;
 		void			onCloneContent( const CIconDisplay * _pOrg );
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 	protected:
 
 		Origo			m_origo;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
-		Border		m_padding;
+		BorderI		m_padding;
 		Skin_p		m_pSkin;
 
 	};

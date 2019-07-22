@@ -34,12 +34,12 @@ namespace wg
 {
 	const char GlSurface::CLASSNAME[] = {"GlSurface"};
 
-	Size	GlSurface::s_maxSize;
+	SizeI	GlSurface::s_maxSize;
 
 
 	//____ maxSize() _______________________________________________________________
 
-	Size GlSurface::maxSize()
+	SizeI GlSurface::maxSize()
 	{
 		if (s_maxSize.w == 0)
 		{
@@ -54,9 +54,9 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-	GlSurface_p	GlSurface::create( Size size, PixelFormat format, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
-		Size max = maxSize();
+		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
@@ -66,9 +66,9 @@ namespace wg
 		return GlSurface_p(new GlSurface(size,format,flags,pClut));
 	}
 
-	GlSurface_p	GlSurface::create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
-		Size max = maxSize();
+		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
@@ -78,9 +78,9 @@ namespace wg
 		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
 	}
 
-	GlSurface_p	GlSurface::create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
-		Size max = maxSize();
+		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
@@ -96,8 +96,8 @@ namespace wg
 		if (!pOther)
 			return GlSurface_p();
 
-		Size max = maxSize();
-		Size size = pOther->size();
+		SizeI max = maxSize();
+		SizeI size = pOther->size();
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
@@ -109,7 +109,7 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 
-	GlSurface::GlSurface( Size size, PixelFormat format, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
 		assert(glGetError() == 0);
 		_setPixelDetails(format);
@@ -131,7 +131,7 @@ namespace wg
 	}
 
 
-	GlSurface::GlSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
 		// Set general information
 
@@ -144,7 +144,7 @@ namespace wg
 		_setupGlTexture(m_pBlob->data());
 	}
 
-	GlSurface::GlSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 	   _setPixelDetails(format);
 		m_size	= size;
@@ -385,7 +385,7 @@ namespace wg
 
 	//____ size() ______________________________________________________________
 
-	Size GlSurface::size() const
+	SizeI GlSurface::size() const
 	{
 		return m_size;
 	}
@@ -418,14 +418,14 @@ namespace wg
 		//
 
 		m_pPixels = (uint8_t*) m_pBlob->data();
-		m_lockRegion = Rect(0,0,m_size);
+		m_lockRegion = RectI(0,0,m_size);
 		m_accessMode = mode;
 		return m_pPixels;
 	}
 
 	//____ lockRegion() __________________________________________________________________
 
-	uint8_t * GlSurface::lockRegion( AccessMode mode, const Rect& region )
+	uint8_t * GlSurface::lockRegion( AccessMode mode, const RectI& region )
 	{
 		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
 			return 0;
@@ -478,7 +478,7 @@ namespace wg
 
 	//____ pixel() ______________________________________________________________
 
-	uint32_t GlSurface::pixel( Coord coord ) const
+	uint32_t GlSurface::pixel( CoordI coord ) const
 	{
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
@@ -511,7 +511,7 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t GlSurface::alpha( Coord coord ) const
+	uint8_t GlSurface::alpha( CoordI coord ) const
 	{
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();

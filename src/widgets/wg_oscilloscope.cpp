@@ -98,9 +98,9 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size Oscilloscope::preferredSize() const
+	SizeI Oscilloscope::preferredSize() const
 	{
-		return Size(80,64);
+		return SizeI(80,64);
 	}
 
 
@@ -201,13 +201,13 @@ namespace wg
 				delete [] m_pLinePoints;
 				m_pLinePoints = 0;
 				m_nLinePoints = 0;
-				_resampleLinePoints( Size() );
+				_resampleLinePoints( SizeI() );
 				_requestRender();
 			}
 			return;
 		}
 
-		Size sz = Size();
+		SizeI sz = SizeI();
 
 		// Resize array if needed
 
@@ -233,8 +233,8 @@ namespace wg
 			nSegments = (sz.w+15)/segWidth;
 		}
 
-		int allocSize = sizeof(Rect)*nSegments;
-		Rect * pSegments = reinterpret_cast<Rect*>(Base::memStackAlloc(allocSize));
+		int allocSize = sizeof(RectI)*nSegments;
+		RectI * pSegments = reinterpret_cast<RectI*>(Base::memStackAlloc(allocSize));
 
 
 		int ofs = 0;
@@ -265,10 +265,10 @@ namespace wg
 
 	//____ _updateRenderSegments()__________________________________________________
 
-	void Oscilloscope::_updateRenderSegments( int nSegments, Rect * pSegments )
+	void Oscilloscope::_updateRenderSegments( int nSegments, RectI * pSegments )
 	{
 
-		Rect * pSeg = pSegments;
+		RectI * pSeg = pSegments;
 
 		for( int seg = 0 ; seg < nSegments ; seg++ )
 		{
@@ -310,7 +310,7 @@ namespace wg
 
 	//____ _resampleLinePoints()____________________________________________________
 
-	void Oscilloscope::_resampleLinePoints( Size sz )
+	void Oscilloscope::_resampleLinePoints( SizeI sz )
 	{
 		if( m_nLinePoints == 0 || sz.w == 0 )
 		{
@@ -400,7 +400,7 @@ namespace wg
 
 	//____ _setSize()_____________________________________________________________
 
-	void Oscilloscope::_setSize( const Size& size )
+	void Oscilloscope::_setSize( const SizeI& size )
 	{
 		Widget::_setSize( size );
 
@@ -419,7 +419,7 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void Oscilloscope::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Oscilloscope::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
@@ -432,14 +432,14 @@ namespace wg
 		for( int i = 0; i < m_nHGridLines; i++ )
 		{
 			int ofsY = (int) (m_pHGridLines[i] * scaleY + centerY);
-			pDevice->drawLine( Coord(_canvas.x,ofsY), Direction::Right, _canvas.w, m_gridColor );
+			pDevice->drawLine( CoordI(_canvas.x,ofsY), Direction::Right, _canvas.w, m_gridColor );
 		}
 
 		// Draw VGridLines
 		for( int i = 0; i < m_nVGridLines; i++ )
 		{
 			int ofsX = (int) (m_pVGridLines[i] * scaleX + centerX);
-			pDevice->drawLine( Coord(ofsX,_canvas.y), Direction::Down, _canvas.h, m_gridColor );
+			pDevice->drawLine( CoordI(ofsX,_canvas.y), Direction::Down, _canvas.h, m_gridColor );
 		}
 
 		// Nothing to draw (yet)
@@ -452,12 +452,12 @@ namespace wg
 
 	//	antiAlias(_clip.w, _clip.x, m_pDisplayPoints + _clip.x - _canvas.x);
 
-		Rect clip = pDevice->clipBounds();
+		RectI clip = pDevice->clipBounds();
 
 		if( clip.x > _canvas.x )
-			_antiAlias(clip.w+1, m_pDisplayPoints + clip.x - _canvas.x-1, Coord( clip.x-1, _canvas.y ) );
+			_antiAlias(clip.w+1, m_pDisplayPoints + clip.x - _canvas.x-1, CoordI( clip.x-1, _canvas.y ) );
 		else
-			_antiAlias(clip.w, m_pDisplayPoints + clip.x - _canvas.x, Coord( clip.x, _canvas.y ) );
+			_antiAlias(clip.w, m_pDisplayPoints + clip.x - _canvas.x, CoordI( clip.x, _canvas.y ) );
 
 		pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 
@@ -467,7 +467,7 @@ namespace wg
 		{
 			for( int i = 0; i < m_nMarkers; i++ )
 			{
-				Rect dest;
+				RectI dest;
 
 				int x = m_pMarkers[i].x;
 				int y = (int) (m_pMarkers[i].y*scaleY+centerY);
@@ -485,7 +485,7 @@ namespace wg
 	{
 	  if(m_iNextPixel < PixelBufferSize-1)
 	  {
-		  m_pAAPix[m_iNextPixel] = Coord(x, y);
+		  m_pAAPix[m_iNextPixel] = CoordI(x, y);
 		  m_pAACol[m_iNextPixel] = m_lineColor;
 		  m_pAACol[m_iNextPixel].a = (uint8_t) (255*alpha);
 
@@ -501,7 +501,7 @@ namespace wg
 
 
 	// Xiaolin Wu's line algorithm
-	void Oscilloscope::_antiAlias(const int nPoints, const float *pYval, Coord ofs )
+	void Oscilloscope::_antiAlias(const int nPoints, const float *pYval, CoordI ofs )
 	{
 		int   x0i,x1i;
 		float x0,x1,y0,y1,yprev;

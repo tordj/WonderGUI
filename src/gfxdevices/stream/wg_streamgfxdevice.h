@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( Size canvas, GfxOutStream& stream );
+		static StreamGfxDevice_p	create( SizeI canvas, GfxOutStream& stream );
 
 		//.____ Identification __________________________________________
 
@@ -61,7 +61,7 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const Rect * pRectangles) override;
+		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
 		void	setTintColor( Color color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
@@ -73,56 +73,56 @@ namespace wg
 		bool	endRender() override;
 
 //		void	fill(const Color& col) override;
-		void	fill( const Rect& rect, const Color& col ) override;
+		void	fill( const RectI& rect, const Color& col ) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
-		void    plotPixels( int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void    plotPixels( int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		void	drawLine( Coord begin, Coord end, Color color, float thickness = 1.f ) override;
-		void	drawLine( Coord begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine( CoordI begin, CoordI end, Color color, float thickness = 1.f ) override;
+		void	drawLine( CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
 
-//		void	blit(Coord dest) override;
-		void	blit(Coord dest, const Rect& srcrect ) override;
+//		void	blit(CoordI dest) override;
+		void	blit(CoordI dest, const RectI& srcrect ) override;
 
-//		void	flipBlit(Coord dest, GfxFlip flip) override;
-//		void	flipBlit(Coord dest, const Rect& src, GfxFlip flip) override;
+//		void	flipBlit(CoordI dest, GfxFlip flip) override;
+//		void	flipBlit(CoordI dest, const RectI& src, GfxFlip flip) override;
 
-//		void	stretchBlit(const Rect& dest) override;
-//		void	stretchBlit(const Rect& dest, const Rect& src) override;
-		void	stretchBlit(const Rect& dest, const RectF& src) override;
+//		void	stretchBlit(const RectI& dest) override;
+//		void	stretchBlit(const RectI& dest, const RectI& src) override;
+		void	stretchBlit(const RectI& dest, const RectF& src) override;
 
-//		void	stretchFlipBlit(const Rect& dest, GfxFlip flip) override;
-//		void	stretchFlipBlit(const Rect& dest, const Rect& src, GfxFlip flip) override;
-//		void	stretchFlipBlit(const Rect& dest, const RectF& src, GfxFlip flip) override;
+//		void	stretchFlipBlit(const RectI& dest, GfxFlip flip) override;
+//		void	stretchFlipBlit(const RectI& dest, const RectI& src, GfxFlip flip) override;
+//		void	stretchFlipBlit(const RectI& dest, const RectF& src, GfxFlip flip) override;
 
-//		void	rotScaleBlit(const Rect& dest, CoordF srcCenter, float rotationDegrees, float scale) override;
+//		void	rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale) override;
 
 		// Draw segments methods
 
-//		void	drawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
-//		void	flipDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip) override;
+//		void	drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill) override;
+//		void	flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip) override;
 
 //		void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black) override;
 
-//		void	drawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch) override;
-//		void	flipDrawSegments(const Rect& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip) override;
+//		void	drawSegments(const RectI& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch) override;
+//		void	flipDrawSegments(const RectI& dest, int nSegments, Color * pSegmentColors, int nEdges, int * pEdges, int edgeStripPitch, GfxFlip flip) override;
 
 		// Low level methods
 
-		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
-		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-//		void	transformDrawWave(const Rect& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]) override;
-		void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2]) override;
+//		void	transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]) override;
+		void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 
 
 	protected:
-		StreamGfxDevice( Size canvas, GfxOutStream& stream );
+		StreamGfxDevice( SizeI canvas, GfxOutStream& stream );
 		~StreamGfxDevice();
 
-		void _addPatches(int nPatches, const Rect * pPatches);
+		void _addPatches(int nPatches, const RectI * pPatches);
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;

@@ -44,8 +44,8 @@ namespace wg
 		PackPanelSlot() : weight(1.f) {}
 
 		float			weight;			// Weight for space allocation.
-		Rect			geo;			// Real geo of child (no padding included).
-		Size			preferredSize;	// Cached padded preferred size from the child.
+		RectI			geo;			// Real geo of child (no padding included).
+		SizeI			preferredSize;	// Cached padded preferred size from the child.
 	};
 
 
@@ -89,7 +89,7 @@ namespace wg
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 		//.____ Behavior ________________________________________________________
 
@@ -104,7 +104,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_setSize( const Size& size );
+		void			_setSize( const SizeI& size );
 
 
 		// Overloaded from Container
@@ -125,8 +125,8 @@ namespace wg
 		void		_willRemoveSlots( Slot * pSlot, int nb );
 		void		_hideSlots( Slot *, int nb );
 		void		_unhideSlots( Slot *, int nb );
-		void		_repadSlots( Slot *, int nb, Border padding );
-		void		_repadSlots(Slot *, int nb, const Border * pPaddings);
+		void		_repadSlots( Slot *, int nb, BorderI padding );
+		void		_repadSlots(Slot *, int nb, const BorderI * pPaddings);
 		void		_reweightSlots(Slot * pSlot, int nb, float weight);
 		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights);
 		Object *	_object() { return this; }
@@ -136,11 +136,11 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos( Slot * pSlot ) const;
-		Size		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const;
+		SizeI		_childSize( Slot * pSlot ) const;
 
 		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const Rect& rect );
+		void		_childRequestRender( Slot * pSlot, const RectI& rect );
 		void		_childRequestResize( Slot * pSlot );
 
 		Widget *	_prevChild( const Slot * pSlot ) const;
@@ -163,7 +163,7 @@ namespace wg
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
-		Size			m_preferredContentSize;
+		SizeI			m_preferredContentSize;
 
 	};
 

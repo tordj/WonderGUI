@@ -109,21 +109,21 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline Coord		pos() const;
-		inline Size			size() const;
-		inline Rect			geo() const;
-		inline Coord		globalPos() const;
-		inline Rect			globalGeo() const;
+		inline CoordI		pos() const;
+		inline SizeI			size() const;
+		inline RectI			geo() const;
+		inline CoordI		globalPos() const;
+		inline RectI			globalGeo() const;
 
-		Coord				toGlobal( const Coord& coord ) const;
-		Coord				toLocal( const Coord& coord ) const;
+		CoordI				toGlobal( const CoordI& coord ) const;
+		CoordI				toLocal( const CoordI& coord ) const;
 
 		virtual int			matchingHeight( int width ) const;
 		virtual int			matchingWidth( int height ) const;
 
-		virtual Size		preferredSize() const;
-		virtual Size		minSize() const;
-		virtual Size		maxSize() const;
+		virtual SizeI		preferredSize() const;
+		virtual SizeI		minSize() const;
+		virtual SizeI		maxSize() const;
 
 
 		//.____ Hierarchy _________________________________________________
@@ -179,7 +179,7 @@ namespace wg
 
 		//.____ Misc _________________________________________________________________
 
-		virtual bool		markTest( const Coord& ofs );
+		virtual bool		markTest( const CoordI& ofs );
 		void 				receive( Msg * pMsg ) override;
 
 		inline void			refresh() { _refresh(); }
@@ -206,56 +206,56 @@ namespace wg
 		// Convenient calls to holder
 
 		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
-		inline void		_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
+		inline void		_requestRender( const RectI& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void		_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
-		inline void		_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
+		inline void		_requestInView( const RectI& mustHaveArea, const RectI& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
 
 		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
 		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
 
-		inline Rect		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return Rect(); }
+		inline RectI		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectI(); }
 
 		// To be overloaded by Widget
 
-		virtual void	_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& patches );
-		virtual void	_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		virtual void	_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		virtual void	_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches );
+		virtual void	_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
+		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
 
 		Widget *		_clone() const;
 		virtual void	_cloneContent( const Widget * _pOrg );
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
 		virtual void	_refresh();
-		virtual void	_setSize( const Size& size );
+		virtual void	_setSize( const SizeI& size );
 		virtual void	_setSkin( Skin * pSkin );
 		virtual void	_setState( State state );
 
 		virtual void	_receive( Msg * pMsg );
-		virtual	bool	_alphaTest( const Coord& ofs );
+		virtual	bool	_alphaTest( const CoordI& ofs );
 
-		virtual Size	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+		virtual SizeI	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for components to access
 
 		virtual Object * _object() override;
 		virtual const Object * _object() const override;
 
-		virtual Coord	_componentPos( const Component * pComponent ) const override;
-		virtual Size	_componentSize( const Component * pComponent ) const override;
-		virtual Rect	_componentGeo( const Component * pComponent ) const override;
-		virtual Coord	_globalComponentPos( const Component * pComponent ) const override;
-		virtual Rect	_globalComponentGeo( const Component * pComponent ) const override;
+		virtual CoordI	_componentPos( const Component * pComponent ) const override;
+		virtual SizeI	_componentSize( const Component * pComponent ) const override;
+		virtual RectI	_componentGeo( const Component * pComponent ) const override;
+		virtual CoordI	_globalComponentPos( const Component * pComponent ) const override;
+		virtual RectI	_globalComponentGeo( const Component * pComponent ) const override;
 
 		virtual void	_componentRequestRender( const Component * pComponent ) override;
-		virtual void	_componentRequestRender( const Component * pComponent, const Rect& rect ) override;
+		virtual void	_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
 		virtual void	_componentRequestResize( const Component * pComponent ) override;
 
  		virtual void	_componentRequestFocus( const Component * pComponent ) override;
 		virtual void	_componentRequestInView( const Component * pComponent ) override;
-		virtual void	_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio ) override;
+		virtual void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) override;
 
 		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) override;
 
@@ -277,7 +277,7 @@ namespace wg
 		bool			m_bSelectable;	// Set if widget is allowed to be selected.
 
 		State			m_state;
-		Size			m_size;
+		SizeI			m_size;
 
 		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
 		uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
@@ -328,11 +328,11 @@ namespace wg
 	 *
 	 * @return Local position in pixels.
 	 */
-	Coord Widget::pos() const
+	CoordI Widget::pos() const
 	{
 		if( m_pHolder )
 			return m_pHolder->_childPos( m_pSlot );
-		return Coord(0,0);
+		return CoordI(0,0);
 	}
 
 
@@ -343,7 +343,7 @@ namespace wg
 	 *
 	 * @return Width and height in pixels.
 	 */
-	Size Widget::size() const
+	SizeI Widget::size() const
 	{
 		return m_size;
 	}
@@ -357,11 +357,11 @@ namespace wg
 	 *
 	 * @return Local geometry in pixels.
 	 */
-	Rect Widget::geo() const
+	RectI Widget::geo() const
 	{
 		if( m_pHolder )
-			return Rect(m_pHolder->_childPos( m_pSlot ),m_size);
-		return Rect(0,0,m_size);
+			return RectI(m_pHolder->_childPos( m_pSlot ),m_size);
+		return RectI(0,0,m_size);
 	}
 
 	/**
@@ -371,11 +371,11 @@ namespace wg
 	 *
 	 * @return Global position in pixels.
 	 */
-	Coord Widget::globalPos() const
+	CoordI Widget::globalPos() const
 	{
 		if( m_pHolder )
 			return m_pHolder->_childGlobalPos( m_pSlot );
-		return Coord(0,0);
+		return CoordI(0,0);
 	}
 
 	/**
@@ -387,11 +387,11 @@ namespace wg
 	 *
 	 * @return Global geometry in pixels.
 	 */
-	Rect Widget::globalGeo() const
+	RectI Widget::globalGeo() const
 	{
 		if( m_pHolder )
-			return Rect(m_pHolder->_childGlobalPos( m_pSlot ), m_size);
-		return Rect(0,0,m_size);
+			return RectI(m_pHolder->_childGlobalPos( m_pSlot ), m_size);
+		return RectI(0,0,m_size);
 	}
 
 	/**

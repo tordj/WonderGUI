@@ -49,36 +49,36 @@ namespace wg
 		CCanvas(ComponentHolder * pHolder, ICanvas * pInterface);
 		virtual ~CCanvas() {};
 
-		void			render(GfxDevice * pDevice, const Rect& _canvas);
-		bool			alphaTest(const Coord& ofs, int markOpacity);
+		void			render(GfxDevice * pDevice, const RectI& _canvas);
+		bool			alphaTest(const CoordI& ofs, int markOpacity);
 
 
 		void			regenSurface();
-		Rect			calcPresentationArea() const;
+		RectI			calcPresentationArea() const;
 
 
 		bool			setDevice(GfxDevice * pDevice);
 		bool			setSurfaceFactory(SurfaceFactory * pFactory);
 		void			setLostCallback(std::function<void(ICanvas*)> func);
 		bool			setPixelFormat(PixelFormat format);
-		bool			setSurfaceSize(Size sz);
-		void			setComponentSize(Size sz);
+		bool			setSurfaceSize(SizeI sz);
+		void			setComponentSize(SizeI sz);
 		void			setBackColor(Color color);
 		void			clear();
-		void			setPresentationScaling(SizeQolicy2D policy);
+		void			setPresentationScaling(SizePolicy2D policy);
 		void			setOrigo(Origo origo);
 		void			present();
-		void			present(Rect area);
-		Size			preferredSize() const;
+		void			present(RectI area);
+		SizeI			preferredSize() const;
 
 
 	protected:
 		GfxDevice_p		m_pDevice;
 		SurfaceFactory_p m_pFactory;
 		Surface_p		m_pSurface;
-		Size			m_fixedSize;
+		SizeI			m_fixedSize;
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
-		SizeQolicy2D	m_presentationScaling	= SizeQolicy2D::Original;
+		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
 		Color			m_backColor				= Color::White;
 		ICanvas *	m_pInterface;

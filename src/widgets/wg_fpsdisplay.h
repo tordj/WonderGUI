@@ -62,7 +62,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size	preferredSize() const;
+		SizeI	preferredSize() const;
 
 	protected:
 		FpsDisplay();
@@ -71,7 +71,7 @@ namespace wg
 
 		void		_receive( Msg * pMsg );
 		void		_setState( State state );
-		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
+		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void		_cloneContent( const Widget * _pOrg );
 
 	private:

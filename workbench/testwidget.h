@@ -44,7 +44,7 @@ namespace wg
 		static const char	CLASSNAME[];
 		static TestWidget_p	cast( const Object_p& pObject );
 
-		Size	preferredSize() const;
+		SizeI	preferredSize() const;
 
 		void	start();
 		void	stop();
@@ -58,12 +58,12 @@ namespace wg
 	
 		void			_cloneContent( const Widget * _pOrg );
 		virtual void	_receive( const Msg_p& pMsg );
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Rect& _clip );
+		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const RectI& _clip );
 
 	private:
 
         RouteId m_tickRouteId;
-		Coord 	m_coord[2];
+		CoordI 	m_coord[2];
 		int		m_speed[2];
 		bool	m_bPointsInitialized;
 		bool	m_bAnimated;

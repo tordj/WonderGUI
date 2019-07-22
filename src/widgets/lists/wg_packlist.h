@@ -131,17 +131,17 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		Size				preferredSize() const override;
+		SizeI				preferredSize() const override;
 		int					matchingHeight(int width) const override;
 		int					matchingWidth(int height) const override;
 
 		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 
-		bool				setMinEntrySize(Size min);
-		bool				setMaxEntrySize(Size max);
-		Size				minEntrySize() const { return m_minEntrySize; }
-		Size				maxEntrySize() const { return m_maxEntrySize; }
+		bool				setMinEntrySize(SizeI min);
+		bool				setMaxEntrySize(SizeI max);
+		SizeI				minEntrySize() const { return m_minEntrySize; }
+		SizeI				maxEntrySize() const { return m_maxEntrySize; }
 
 		//.____ Behavior ________________________________________________________
 
@@ -159,16 +159,16 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip ) override;
-		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode ) override;
+		void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
+		void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_renderPatches( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window, const Patches& _patches ) override;
-		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
-		void			_setSize( const Size& size ) override;
+		void			_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_setSize( const SizeI& size ) override;
 		void			_refresh() override;
 
 		void			_receive( Msg * pMsg ) override;
-		Size			_windowPadding() const override;
+		SizeI			_windowPadding() const override;
 
 
 		// Overloaded from PackListChildrenHolder
@@ -196,15 +196,15 @@ namespace wg
 
 		// Overloaded from List
 
-		ListSlot *		_findEntry(const Coord& ofs) override;
-		void			_getEntryGeo(Rect& geo, const ListSlot * pSlot) const override;
+		ListSlot *		_findEntry(const CoordI& ofs) override;
+		void			_getEntryGeo(RectI& geo, const ListSlot * pSlot) const override;
 
-		Rect			_listArea() const override;
-		Rect			_listWindow() const override;
-		Rect			_listCanvas() const override;
+		RectI			_listArea() const override;
+		RectI			_listWindow() const override;
+		RectI			_listCanvas() const override;
 
-		void			_onEntrySkinChanged(Size oldPadding, Size newPadding) override;
-		void			_onLassoUpdated(const Rect& oldLasso, const Rect& newLasso) override;
+		void			_onEntrySkinChanged(SizeI oldPadding, SizeI newPadding) override;
+		void			_onLassoUpdated(const RectI& oldLasso, const RectI& newLasso) override;
 
 		ListSlot *		_beginSlots() const override;
 		ListSlot *		_endSlots() const override;
@@ -215,16 +215,16 @@ namespace wg
 		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void			_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		Widget * 		_findWidget(const Coord& ofs, SearchMode mode) override;
+		Widget * 		_findWidget(const CoordI& ofs, SearchMode mode) override;
 
 
 		// Overloaded from WidgetHolder
 
-		Coord		_childPos(Slot * pSlot) const override;
-		Size		_childSize(Slot * pSlot) const override;
+		CoordI		_childPos(Slot * pSlot) const override;
+		SizeI		_childSize(Slot * pSlot) const override;
 
 		void		_childRequestRender(Slot * pSlot) override;
-		void		_childRequestRender(Slot * pSlot, const Rect& rect) override;
+		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
 		void		_childRequestResize(Slot * pSlot) override;
 
 		Widget *	_prevChild(const Slot * pSlot) const override;
@@ -234,9 +234,9 @@ namespace wg
 
 		// Overloaded from ComponentHolder
 
-		Coord	_componentPos(const Component * pComponent) const override;
-		Size	_componentSize(const Component * pComponent) const override;
-		Rect	_componentGeo(const Component * pComponent) const override;
+		CoordI	_componentPos(const Component * pComponent) const override;
+		SizeI	_componentSize(const Component * pComponent) const override;
+		RectI	_componentGeo(const Component * pComponent) const override;
 
 		void	_receiveComponentNotif(Component * pComponent, ComponentNotif notification, void * pData) override;
 
@@ -248,14 +248,14 @@ namespace wg
 		void			_updateChildOfsFrom( PackListSlot* pSlot );
 
 
-		void			_getChildGeo( Rect& geo, const PackListSlot * pSlot ) const;
+		void			_getChildGeo( RectI& geo, const PackListSlot * pSlot ) const;
 		int				_getEntryAt( int pixelofs ) const;
-		Rect			_headerGeo() const;
+		RectI			_headerGeo() const;
 
 		void			_refreshHeader();
 		void			_refreshList();
 
-		Size			_paddedLimitedPreferredSize( Widget * pChild );
+		SizeI			_paddedLimitedPreferredSize( Widget * pChild );
 		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
 		int				_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight );
 
@@ -273,9 +273,9 @@ namespace wg
 		int					m_contentBreadth;
 		int					m_contentLength;
 
-		Size				m_entryPadding;
-		Size				m_minEntrySize;
-		Size				m_maxEntrySize;
+		SizeI				m_entryPadding;
+		SizeI				m_minEntrySize;
+		SizeI				m_maxEntrySize;
 
 		//----
 

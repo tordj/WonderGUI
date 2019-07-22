@@ -38,7 +38,7 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::add( Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -50,7 +50,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -62,7 +62,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -74,7 +74,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	void ILambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void ILambdaPanelChildren::setFunction(int index, std::function<RectI(Widget * pWidget, SizeI parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -82,7 +82,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	void ILambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void ILambdaPanelChildren::setFunction(iterator pos, std::function<RectI(Widget * pWidget, SizeI parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -90,7 +90,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(int index) const
+	std::function<RectI(Widget * pWidget, SizeI parentSize)> ILambdaPanelChildren::function(int index) const
 	{
 		//TODO: Assert
 
@@ -98,7 +98,7 @@ namespace wg
 		return pSlot->pFunc;
 	}
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(iterator pos) const
+	std::function<RectI(Widget * pWidget, SizeI parentSize)> ILambdaPanelChildren::function(iterator pos) const
 	{
 		//TODO: Assert
 
@@ -150,7 +150,7 @@ namespace wg
 
 	//____ setMinSize() _________________________________________________________________
 
-	bool LambdaPanel::setMinSize(Size min)
+	bool LambdaPanel::setMinSize(SizeI min)
 	{
 		//TODO: Assert >= 0.
 
@@ -172,7 +172,7 @@ namespace wg
 
 	//____ setMaxSize() ________________________________________________________
 
-	bool LambdaPanel::setMaxSize(Size max)
+	bool LambdaPanel::setMaxSize(SizeI max)
 	{
 		//TODO: Assert >= 0.
 
@@ -194,7 +194,7 @@ namespace wg
 
 	//____ setSizeLimits() _____________________________________________________
 
-	bool LambdaPanel::setSizeLimits( Size min, Size max )
+	bool LambdaPanel::setSizeLimits( SizeI min, SizeI max )
 	{
 		//TODO: Assert >= 0.
 
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ setPreferredSize() __________________________________________________
 
-	bool LambdaPanel::setPreferredSize(Size pref)
+	bool LambdaPanel::setPreferredSize(SizeI pref)
 	{
 		//TODO: Assert >= 0.
 
@@ -226,7 +226,7 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________
 
-	Size LambdaPanel::preferredSize() const
+	SizeI LambdaPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -382,7 +382,7 @@ namespace wg
 				LambdaPanelSlot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					Rect cover(pTo->geo, p->geo);
+					RectI cover(pTo->geo, p->geo);
 
 					if (p->bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -396,7 +396,7 @@ namespace wg
 				LambdaPanelSlot * p = pFrom;
 				while (p < pTo)
 				{
-					Rect cover(pTo->geo, p->geo);
+					RectI cover(pTo->geo, p->geo);
 
 					if (p->bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -409,14 +409,14 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	Coord LambdaPanel::_childPos( Slot * pSlot ) const
+	CoordI LambdaPanel::_childPos( Slot * pSlot ) const
 	{
 		return ((LambdaPanelSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	Size LambdaPanel::_childSize( Slot * pSlot ) const
+	SizeI LambdaPanel::_childSize( Slot * pSlot ) const
 	{
 		return ((LambdaPanelSlot*)pSlot)->geo.size();
 	}
@@ -429,7 +429,7 @@ namespace wg
 		_onRequestRender( pSlot->geo, pSlot );
 	}
 
-	void LambdaPanel::_childRequestRender( Slot * _pSlot, const Rect& rect )
+	void LambdaPanel::_childRequestRender( Slot * _pSlot, const RectI& rect )
 	{
 		LambdaPanelSlot * pSlot = static_cast<LambdaPanelSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->geo.pos(), pSlot );
@@ -485,7 +485,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void LambdaPanel::_setSize( const Size& size )
+	void LambdaPanel::_setSize( const SizeI& size )
 	{
 		Panel::_setSize( size );
 
@@ -497,7 +497,7 @@ namespace wg
 
 	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot)
 	{
-		Rect geo = pSlot->pFunc(pSlot->pWidget, m_size );
+		RectI geo = pSlot->pFunc(pSlot->pWidget, m_size );
 
 
 		if (geo != pSlot->geo)
@@ -507,8 +507,8 @@ namespace wg
 				// Clip our geometry and put it in a dirtyrect-list
 
 				Patches patches;
-				patches.add(Rect(pSlot->geo, Rect(0, 0, size())));
-				patches.add(Rect(geo, Rect(0, 0, size())));
+				patches.add(RectI(pSlot->geo, RectI(0, 0, size())));
+				patches.add(RectI(geo, RectI(0, 0, size())));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
@@ -516,14 +516,14 @@ namespace wg
 				while (pCover < m_children.end())
 				{
 					if (pCover->bVisible && (pCover->geo.intersectsWith(pSlot->geo) || pCover->geo.intersectsWith(geo)) )
-						pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+						pCover->pWidget->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 
 					pCover++;
 				}
 
 				// Make request render calls
 
-				for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+				for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
 			}
@@ -537,7 +537,7 @@ namespace wg
 
 	//____ _onRequestRender() ____________________________________________________
 
-	void LambdaPanel::_onRequestRender( const Rect& rect, const LambdaPanelSlot * pSlot )
+	void LambdaPanel::_onRequestRender( const RectI& rect, const LambdaPanelSlot * pSlot )
 	{
 		if (!pSlot->bVisible)
 			return;
@@ -545,19 +545,19 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add(Rect(rect, Rect(0, 0, size())));
+		patches.add(RectI(rect, RectI(0, 0, size())));
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for (LambdaPanelSlot * pCover = m_children.begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->bVisible && pCover->geo.intersectsWith(rect))
-				pCover->pWidget->_maskPatches(patches, pCover->geo, Rect(0, 0, 65536, 65536), _getBlendMode());
+				pCover->pWidget->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 		}
 
 		// Make request render calls
 
-		for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+		for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
 
 	}

@@ -50,7 +50,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const = 0;
+		virtual void 	render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
 
 		//.____ Geometry _________________________________________________
 
@@ -65,11 +65,11 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		virtual bool	markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const = 0;
+		virtual bool	markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const = 0;
 
 		virtual bool	isOpaque() const = 0;
 		virtual bool	isOpaque( State state ) const = 0;
-		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const = 0;
+		virtual bool	isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const = 0;
 
 		virtual bool	isStateIdentical( State state, State comparedTo ) const = 0;
 

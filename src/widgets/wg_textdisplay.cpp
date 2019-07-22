@@ -100,9 +100,9 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size TextDisplay::preferredSize() const
+	SizeI TextDisplay::preferredSize() const
 	{
-		Size contentSize = m_text.preferredSize();
+		SizeI contentSize = m_text.preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -132,11 +132,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void TextDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void TextDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas;
+		RectI canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
@@ -170,7 +170,7 @@ namespace wg
 	{
 		Widget::_receive(pMsg);
 	/*
-		Rect canvas = geo();
+		RectI canvas = geo();
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(canvas, m_state);
 
@@ -194,10 +194,10 @@ namespace wg
 
 	void TextDisplay::_setSkin( Skin * pSkin )
 	{
-		Size oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+		SizeI oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
 		Widget::_setSkin(pSkin);
 
-		Size newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
 			m_text.setSize(newTextCanvas);
@@ -205,11 +205,11 @@ namespace wg
 
 	//____ _setSize() ________________________________________________
 
-	void TextDisplay::_setSize( const Size& size )
+	void TextDisplay::_setSize( const SizeI& size )
 	{
 		Widget::_setSize(size);
 
-		Size textSize = size;
+		SizeI textSize = size;
 		if( m_pSkin )
 			textSize -= m_pSkin->contentPadding();
 

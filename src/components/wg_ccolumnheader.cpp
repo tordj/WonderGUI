@@ -69,7 +69,7 @@ namespace wg
 
 	//____ setSize() ____________________________________________________________
 
-	void CColumnHeader::setSize( Size size )
+	void CColumnHeader::setSize( SizeI size )
 	{
 		if( m_size != size )
 		{
@@ -80,13 +80,13 @@ namespace wg
 
 	//____ preferredSize() _______________________________________________________
 
-	Size CColumnHeader::preferredSize() const
+	SizeI CColumnHeader::preferredSize() const
 	{
-		Size iconSize = icon.preferredSize();
-		Size arrowSize = arrow.preferredSize();
-		Size textSize = label.preferredSize();
+		SizeI iconSize = icon.preferredSize();
+		SizeI arrowSize = arrow.preferredSize();
+		SizeI textSize = label.preferredSize();
 
-		Size size;
+		SizeI size;
 
 		//TODO: Assumes icon/arrow origos to not be NORTH, SOUTH or CENTER.
 		//TODO: Assumes text not wrapping.
@@ -135,8 +135,8 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				Coord ofs = pMsg->pointerPos();
-				Rect geo = _globalGeo();
+				CoordI ofs = pMsg->pointerPos();
+				RectI geo = _globalGeo();
 				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() ||
 					(Base::inputHandler()->isButtonPressed(MouseButton::Left) && m_bPressed));
 				if( bHovered != m_state.isHovered() )
@@ -162,8 +162,8 @@ namespace wg
 			case MsgType::MousePress:
 			{
 				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
-				Coord ofs = pMsg->pointerPos();
-				Rect geo = _globalGeo();
+				CoordI ofs = pMsg->pointerPos();
+				RectI geo = _globalGeo();
 				if(pMsg->button() == MouseButton::Left && geo.contains(ofs))
 				{
 					m_bPressed = true;
@@ -180,7 +180,7 @@ namespace wg
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( m_bPressed )
 				{
-					Coord ofs = pMsg->pointerPos();
+					CoordI ofs = pMsg->pointerPos();
 					bool bHovered = _globalGeo().contains(ofs);
 					if( bHovered != m_state.isHovered() )
 					{
@@ -203,7 +203,7 @@ namespace wg
 					m_state.setPressed(false);
 					_requestRender();
 
-					Coord ofs = pMsg->pointerPos();
+					CoordI ofs = pMsg->pointerPos();
 					if( _globalGeo().contains(ofs) )
 					{
 						if( m_sortOrder == SortOrder::Ascending )
@@ -225,9 +225,9 @@ namespace wg
 
 	//____ render() ____________________________________________________________
 
-	void CColumnHeader::render( GfxDevice * pDevice, const Rect& _canvas )
+	void CColumnHeader::render( GfxDevice * pDevice, const RectI& _canvas )
 	{
-		Rect canvas( _canvas );
+		RectI canvas( _canvas );
 
 		if( m_pSkin )
 		{
@@ -235,9 +235,9 @@ namespace wg
 			canvas = m_pSkin->contentRect( canvas, m_state );
 		}
 
-		Rect sortRect = arrow.getIconRect( canvas );
-		Rect labelRect = arrow.getTextRect( canvas, sortRect );
-		Rect iconRect = icon.getIconRect( labelRect );
+		RectI sortRect = arrow.getIconRect( canvas );
+		RectI labelRect = arrow.getTextRect( canvas, sortRect );
+		RectI iconRect = icon.getIconRect( labelRect );
 		labelRect = icon.getTextRect( labelRect, iconRect );
 
 		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
@@ -266,41 +266,41 @@ namespace wg
 		return Component::_object();
 	}
 
-	Coord CColumnHeader::_componentPos( const Component * pComponent ) const
+	CoordI CColumnHeader::_componentPos( const Component * pComponent ) const
 	{
-		Coord	p = _pos();
+		CoordI	p = _pos();
 		if( m_pSkin )
 			p += m_pSkin->contentOfs(m_state);
 		return p;
 	}
 
-	Size CColumnHeader::_componentSize( const Component * pComponent ) const
+	SizeI CColumnHeader::_componentSize( const Component * pComponent ) const
 	{
-		Size	s  = m_size;
+		SizeI	s  = m_size;
 		if( m_pSkin )
 			s -= m_pSkin->contentPadding();
 		return s;
 	}
 
-	Rect CColumnHeader::_componentGeo( const Component * pComponent ) const
+	RectI CColumnHeader::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->contentRect( m_size, m_state );
 		else
-			return Rect( 0,0,m_size );
+			return RectI( 0,0,m_size );
 	}
 
-	Coord CColumnHeader::_globalComponentPos( const Component * pComponent ) const
+	CoordI CColumnHeader::_globalComponentPos( const Component * pComponent ) const
 	{
-		Coord	p = _globalPos();
+		CoordI	p = _globalPos();
 		if( m_pSkin )
 			p += m_pSkin->contentOfs(m_state);
 		return p;
 	}
 
-	Rect CColumnHeader::_globalComponentGeo( const Component * pComponent ) const
+	RectI CColumnHeader::_globalComponentGeo( const Component * pComponent ) const
 	{
-		Rect	geo = _globalGeo();
+		RectI	geo = _globalGeo();
 		if( m_pSkin )
 			geo = m_pSkin->contentRect(geo, m_state);
 		return geo;
@@ -311,7 +311,7 @@ namespace wg
 		return _requestRender();		//TODO: Only request render on what is needed
 	}
 
-	void CColumnHeader::_componentRequestRender( const Component * pComponent, const Rect& rect )
+	void CColumnHeader::_componentRequestRender( const Component * pComponent, const RectI& rect )
 	{
 		return _requestRender(rect);	//TODO: Only request render on what is needed
 	}
@@ -330,7 +330,7 @@ namespace wg
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}
-	void CColumnHeader::_componentRequestInView( const Component * pComponent, const Rect& preferred, const Rect& prio )
+	void CColumnHeader::_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio )
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}

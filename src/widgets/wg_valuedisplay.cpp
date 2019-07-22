@@ -72,9 +72,9 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________________
 
-	Size ValueDisplay::preferredSize() const
+	SizeI ValueDisplay::preferredSize() const
 	{
-		Size size = m_value.preferredSize();
+		SizeI size = m_value.preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(size);
@@ -93,7 +93,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void ValueDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 		m_value.render(pDevice, _canvas);

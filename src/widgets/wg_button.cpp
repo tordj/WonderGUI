@@ -88,7 +88,7 @@ namespace wg
 
 		if( !m_text.isEmpty() )
 		{
-			Size padding;
+			SizeI padding;
 
 			if( m_pSkin )
 				padding = m_pSkin->contentPadding();
@@ -106,9 +106,9 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size Button::preferredSize() const
+	SizeI Button::preferredSize() const
 	{
-		Size preferred;
+		SizeI preferred;
 
 		if( !m_text.isEmpty() )
 			preferred = m_text.preferredSize();
@@ -134,16 +134,16 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________
 
-	void Button::_setSize( const Size& _size )
+	void Button::_setSize( const SizeI& _size )
 	{
 		Widget::_setSize(_size);
 
-		Rect	contentRect(0,0,_size);
+		RectI	contentRect(0,0,_size);
 
 		if( m_pSkin )
 			contentRect -= m_pSkin->contentPadding();
 
-		Rect textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
+		RectI textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
 		m_text.setSize( textRect );
 	}
@@ -151,19 +151,19 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void Button::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void Button::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	contentRect = _canvas;
+		RectI	contentRect = _canvas;
 
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = m_icon.getIconRect( contentRect );
-		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI iconRect = m_icon.getIconRect( contentRect );
+		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
 
 		// Render icon
 
@@ -321,7 +321,7 @@ namespace wg
 
 	//____ _alphaTest() ___________________________________________________________
 
-	bool Button::_alphaTest( const Coord& ofs )
+	bool Button::_alphaTest( const CoordI& ofs )
 	{
 		if( m_icon.skin() )
 		{
@@ -333,60 +333,60 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	Coord Button::_componentPos( const Component * pComponent ) const
+	CoordI Button::_componentPos( const Component * pComponent ) const
 	{
-		Rect	contentRect = m_size;
+		RectI	contentRect = m_size;
 
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = m_icon.getIconRect( contentRect );
+		RectI iconRect = m_icon.getIconRect( contentRect );
 
 		if( pComponent == &m_icon )
 			return iconRect.pos();
 
-		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
 		return textRect.pos();
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	Size Button::_componentSize( const Component * pComponent ) const
+	SizeI Button::_componentSize( const Component * pComponent ) const
 	{
-		Size	sz = m_size;
+		SizeI	sz = m_size;
 
 		if( m_pSkin )
 			sz -= m_pSkin->contentPadding();
 
-		Rect iconRect = m_icon.getIconRect( sz );
+		RectI iconRect = m_icon.getIconRect( sz );
 
 		if( pComponent == &m_icon )
 			return iconRect.size();
 
-		Rect textRect = m_icon.getTextRect( sz, iconRect );
+		RectI textRect = m_icon.getTextRect( sz, iconRect );
 		return textRect.size();
 
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
-	Rect Button::_componentGeo( const Component * pComponent ) const
+	RectI Button::_componentGeo( const Component * pComponent ) const
 	{
-		Rect	contentRect = m_size;
+		RectI	contentRect = m_size;
 
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 
-		Rect iconRect = m_icon.getIconRect( contentRect );
+		RectI iconRect = m_icon.getIconRect( contentRect );
 
 		if( pComponent == &m_icon )
 			return iconRect;
 
-		Rect textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
 		return textRect;
 	}
 

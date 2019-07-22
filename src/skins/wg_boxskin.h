@@ -41,8 +41,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create(Border frame, Color fillColor, Color frameColor );
-		static BoxSkin_p	create(Border frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static BoxSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
+		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Rendering ________________________________________________
 
-		void		render( GfxDevice * pDevice, const Rect& _canvas, State state ) const override;
+		void		render( GfxDevice * pDevice, const RectI& _canvas, State state ) const override;
 
 		//.____ Geometry _________________________________________________
 
@@ -66,7 +66,7 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setFrame( Border frame );
+		void		setFrame( BorderI frame );
 
 		void						setColors(Color fill, Color frame);
 		void						setColors(State state, Color fill, Color frame);
@@ -76,24 +76,24 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
+		bool		markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const override;
 
 		bool		isOpaque() const override;
 		bool		isOpaque( State state ) const override;
-		bool		isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
+		bool		isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const override;
 
 		bool		isStateIdentical( State state, State comparedTo ) const override;
 
 	private:
 		BoxSkin();
-		BoxSkin(Border frame, Color fillColor, Color frameColor  );
+		BoxSkin(BorderI frame, Color fillColor, Color frameColor  );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
 		bool		m_bOpaque;
-		Border		m_frame;
+		BorderI		m_frame;
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;

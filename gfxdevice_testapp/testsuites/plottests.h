@@ -10,7 +10,7 @@ public:
 		addTest("Plot", &PlotTests::plot );
 	}
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_coords[0] = { 1,1 };
 		m_coords[1] = { 3,1 };
@@ -42,7 +42,7 @@ public:
 	}
 
 
-	bool plot(GfxDevice * pDevice, const Rect& canvas)
+	bool plot(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->plotPixels( c_nbCoords, m_coords, m_colors );
 		return true;
@@ -50,7 +50,7 @@ public:
 
 	const static int c_nbCoords = 1000;
 
-	Coord	m_coords[c_nbCoords];
+	CoordI	m_coords[c_nbCoords];
 	Color	m_colors[c_nbCoords];
 
 };

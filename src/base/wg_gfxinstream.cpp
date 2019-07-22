@@ -86,7 +86,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Coord& coord)
+	GfxInStream& GfxInStream::operator>> (CoordI& coord)
 	{
 		coord.x = m_pHolder->_pullShort();
 		coord.y = m_pHolder->_pullShort();
@@ -100,7 +100,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Size& sz)
+	GfxInStream& GfxInStream::operator>> (SizeI& sz)
 	{
 		sz.w = m_pHolder->_pullShort();
 		sz.h = m_pHolder->_pullShort();
@@ -114,7 +114,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Rect& rect)
+	GfxInStream& GfxInStream::operator>> (RectI& rect)
 	{
 		rect.x = m_pHolder->_pullShort();
 		rect.y = m_pHolder->_pullShort();

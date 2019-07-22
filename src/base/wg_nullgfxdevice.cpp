@@ -30,12 +30,12 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	NullGfxDevice_p NullGfxDevice::create( Size size )
+	NullGfxDevice_p NullGfxDevice::create( SizeI size )
 	{
 		return NullGfxDevice_p(new NullGfxDevice(size));
 	}
 
-	NullGfxDevice::NullGfxDevice( Size size ) : GfxDevice(size)
+	NullGfxDevice::NullGfxDevice( SizeI size ) : GfxDevice(size)
 	{
 	}
 
@@ -93,7 +93,7 @@ namespace wg
 	}
 
 
-	void NullGfxDevice::fill(const Rect& rect, const Color& col)
+	void NullGfxDevice::fill(const RectI& rect, const Color& col)
 	{
 	}
 
@@ -101,23 +101,23 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::plotPixels(int nCoords, const Coord * pCoords, const Color * pColors)
+	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
 	{
 	}
 
-	void NullGfxDevice::drawLine(Coord begin, Coord end, Color color, float thickness)
+	void NullGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
 	}
 
-	void NullGfxDevice::transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2])
+	void NullGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2])
+	void NullGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2])
+	void NullGfxDevice::transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 	}
 

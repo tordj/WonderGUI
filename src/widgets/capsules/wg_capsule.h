@@ -71,7 +71,7 @@ namespace wg
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 	protected:
 		Capsule();
@@ -79,11 +79,11 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		Coord		_childPos( Slot * pSlot ) const;
-		Size		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const;
+		SizeI		_childSize( Slot * pSlot ) const;
 
 		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const Rect& rect );
+		void		_childRequestRender( Slot * pSlot, const RectI& rect );
 		void		_childRequestResize( Slot * pSlot );
 
 		Widget *	_prevChild( const Slot * pSlot ) const;
@@ -108,10 +108,10 @@ namespace wg
 
 		//
 
-		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
-		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
+		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
+		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
 		void		_cloneContent( const Widget * _pOrg );
-		void		_setSize( const Size& size );
+		void		_setSize( const SizeI& size );
 
 
 

@@ -212,9 +212,9 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________________
 
-	Size VolumeMeter::preferredSize() const
+	SizeI VolumeMeter::preferredSize() const
 	{
-		Size	sz = m_direction == Direction::Up || m_direction == Direction::Down ? Size(10,5*m_nLEDs) : Size( 5*m_nLEDs,10);
+		SizeI	sz = m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(10,5*m_nLEDs) : SizeI( 5*m_nLEDs,10);
 
 		if( m_pSkin )
 			return m_pSkin->sizeForContent( sz );
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ _setSize() ____________________________________________________________________
 
-	void VolumeMeter::_setSize( const Size& size )
+	void VolumeMeter::_setSize( const SizeI& size )
 	{
 		Widget::_setSize( size );
 
@@ -317,8 +317,8 @@ namespace wg
 
 				if( firstRenderLED != -1 )
 				{
-					Size sz = Size();
-					Rect rect;
+					SizeI sz = SizeI();
+					RectI rect;
 
 					int meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
 
@@ -371,11 +371,11 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void VolumeMeter::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect canvas;
+		RectI canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
@@ -462,7 +462,7 @@ namespace wg
 
 	//____ _alphaTest() ____________________________________________________________________
 
-	bool VolumeMeter::_alphaTest( const Coord& ofs )
+	bool VolumeMeter::_alphaTest( const CoordI& ofs )
 	{
 		return Widget::_alphaTest(ofs);
 	}

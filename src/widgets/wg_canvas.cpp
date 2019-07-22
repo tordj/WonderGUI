@@ -76,7 +76,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		Size sz = m_canvas.preferredSize();
+		SizeI sz = m_canvas.preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16;
@@ -91,7 +91,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		Size sz = m_canvas.preferredSize();
+		SizeI sz = m_canvas.preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16;
@@ -101,9 +101,9 @@ namespace wg
 
 	//____ preferredSize() ____________________________________________________
 
-	Size Canvas::preferredSize() const
+	SizeI Canvas::preferredSize() const
 	{
-		Size sz = m_canvas.preferredSize();
+		SizeI sz = m_canvas.preferredSize();
 		if (sz.w == sz.h == 0)
 			sz = { 16,16 };
 
@@ -122,7 +122,7 @@ namespace wg
 
 	//____ _setSize() _________________________________________________________
 
-	void Canvas::_setSize(const Size& size)
+	void Canvas::_setSize(const SizeI& size)
 	{
 		Widget::_setSize(size);
 		m_canvas.setComponentSize(size);
@@ -132,36 +132,36 @@ namespace wg
 
 	void Canvas::_setSkin(Skin * pSkin)
 	{
-		Size oldPadding = m_pSkin ? m_pSkin->contentPadding() : Size();
+		SizeI oldPadding = m_pSkin ? m_pSkin->contentPadding() : SizeI();
 
 		Widget::_setSkin(pSkin);
 
-		Size newPadding = m_pSkin ? m_pSkin->contentPadding() : Size();
+		SizeI newPadding = m_pSkin ? m_pSkin->contentPadding() : SizeI();
 		if (newPadding != oldPadding)
 			m_canvas.setComponentSize(m_size - newPadding);
 	}
 
 	//____ _render() __________________________________________________________
 
-	void Canvas::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
+	void Canvas::_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window)
 	{
 		//TODO: Support bitmap being of different surface kind than destination.
 
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect componentCanvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		RectI componentCanvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
-		m_canvas.render(pDevice, componentCanvas); // , Rect(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
+		m_canvas.render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool Canvas::_alphaTest(const Coord& _ofs)
+	bool Canvas::_alphaTest(const CoordI& _ofs)
 	{
 		if (Widget::_alphaTest(_ofs))
 			return true;
 
-		Coord ofs;
+		CoordI ofs;
 		if( m_pSkin )
 			ofs -= m_pSkin->contentOfs(m_state);
 

@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create(const Rect& viewport, int uboBindingPoint = 0);
+		static GlGfxDevice_p	create(const RectI& viewport, int uboBindingPoint = 0);
 		static GlGfxDevice_p	create(GlSurface * pCanvas, int uboBindingPoint = 0);
 
 		//.____ Identification __________________________________________
@@ -71,12 +71,12 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(Size canvasSize);
+		bool	setCanvas(SizeI canvasSize);
 		bool	setCanvas(Surface * pCanvas) override;
 
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const Rect * pRectangles) override;
+		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
 		void	setTintColor(Color color) override;
 		bool	setBlendMode(BlendMode blendMode) override;
@@ -90,23 +90,23 @@ namespace wg
 		bool	endRender() override;
 		void	flush();
 
-		void	fill(const Rect& rect, const Color& col) override;
+		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
-		void    plotPixels(int nCoords, const Coord * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		void	drawLine(Coord begin, Coord end, Color color, float thickness) override;
-		void	drawLine(Coord begin, Direction dir, int length, Color col, float thickness) override;
+		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
+		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness) override;
 
-		void	transformBlit(const Rect& dest, Coord src, const int simpleTransform[2][2]) override;
-		void	transformBlit(const Rect& dest, CoordF src, const float complexTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	transformDrawSegments(const Rect& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+		void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 
 	protected:
-		GlGfxDevice(Size viewportSize, int uboBindingPoint);
-		GlGfxDevice(const Rect& viewport, int uboBindingPoint);
+		GlGfxDevice(SizeI viewportSize, int uboBindingPoint);
+		GlGfxDevice(const RectI& viewport, int uboBindingPoint);
 		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
 		~GlGfxDevice();
 
@@ -162,10 +162,10 @@ namespace wg
 
 
 		static const int c_commandBufferSize = 256;
-		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
-		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
-		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_vertexBufferSize = 16384;				// SizeI of vertex buffer, in number of vertices.
+		static const int c_extrasBufferSize = 65536*4;				// SizeI of extras buffer, in GLfloats.
+		static const int c_surfaceBufferSize = 1024;				// SizeI of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_clipListBufferSize = 4096;				// SizeI of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -178,7 +178,7 @@ namespace wg
 		int				m_canvasYstart;
 		int				m_canvasYmul;
 
-		Size            m_emptyCanvasSize;
+		SizeI            m_emptyCanvasSize;
 
 		// Device programs
 
@@ -221,7 +221,7 @@ namespace wg
 
 		struct Vertex
 		{
-			Coord	coord;
+			CoordI	coord;
 			Color	color;
 			int		extrasOfs;						// Offset into extras buffer.
 			CoordF	uv;
@@ -250,7 +250,7 @@ namespace wg
 
 		GlSurface_p m_surfaceBuffer[c_surfaceBufferSize];
 
-		Rect	m_clipListBuffer[c_clipListBufferSize];
+		RectI	m_clipListBuffer[c_clipListBufferSize];
 
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
 
@@ -360,7 +360,7 @@ namespace wg
 
 			for (int i = 0; i < m_nClipRects; i++)
 			{
-				Rect clip = m_pClipRects[i];
+				RectI clip = m_pClipRects[i];
 				if( m_canvasYstart != 0 )
 					clip.y = m_canvasSize.h - (clip.y + clip.h);
 

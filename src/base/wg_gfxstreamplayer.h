@@ -65,7 +65,7 @@ namespace wg
 		GfxStreamPlayer(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
-		Rect				m_clipRects[GfxStream::c_maxClipRects];
+		RectI				m_clipRects[GfxStream::c_maxClipRects];
 
 		GfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
@@ -81,7 +81,7 @@ namespace wg
 
 		struct SegmentInfo
 		{
-			Rect	dest;
+			RectI	dest;
 			int		nSegments;
 			Color	colors[GfxDevice::c_maxSegments];
 			int		nEdgeStrips;

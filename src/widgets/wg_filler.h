@@ -64,8 +64,8 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void	setPreferredSize( const Size& size );
-		Size	preferredSize() const;
+		void	setPreferredSize( const SizeI& size );
+		SizeI	preferredSize() const;
 
 	protected:
 		Filler();
@@ -75,7 +75,7 @@ namespace wg
 		void	_cloneContent( const Widget * _pOrg );
 
 	private:
-		Size			m_preferredSize;
+		SizeI			m_preferredSize;
 	};
 
 

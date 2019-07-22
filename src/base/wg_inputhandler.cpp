@@ -247,9 +247,9 @@ namespace wg
 	//____ setPointer() ___________________________________________________________
 
 
-	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
+	void InputHandler::setPointer( RootPanel * pRoot, CoordI pos, int64_t timestamp )
 	{
-		Coord	prevPointerPos = m_pointerPos;
+		CoordI	prevPointerPos = m_pointerPos;
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
 
@@ -430,7 +430,7 @@ namespace wg
 
 		if( m_latestPressTimestamps[(int)button] + m_doubleClickTimeTreshold > timestamp )
 		{
-			Coord distance = m_pointerPos - m_latestPressPosition[(int)button];
+			CoordI distance = m_pointerPos - m_latestPressPosition[(int)button];
 
 			if( distance.x <= m_doubleClickDistanceTreshold &&
 				distance.x >= -m_doubleClickDistanceTreshold &&
@@ -711,7 +711,7 @@ namespace wg
 
 	//____ setWheelRoll() __________________________________________________________
 
-	void InputHandler::setWheelRoll( int wheel, Coord distance, int64_t timestamp )
+	void InputHandler::setWheelRoll( int wheel, CoordI distance, int64_t timestamp )
 	{
 		if( m_pMarkedWidget )
 		{

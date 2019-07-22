@@ -72,14 +72,14 @@ namespace wg
 			bool freeEntry( void * pEntry );
 
 			void *		pMemBlock;			// Memory area containing our entries.
-			int			blockSize;			// Size of memory area containing our entries.
+			int			blockSize;			// SizeI of memory area containing our entries.
 			int			nAllocEntries;		// Number of entires currently in used.
 			int			nCleanEntries;		// Number of clean entries, all entries after this
 											// are free AND uninitzialised.
 			int			maxEntries;			// Number of entries in block.
 			int			firstFreeEntry;		// Number of first free entry, entry contains number of next
 											// unless firstFreeEntry==nCleanEntries.
-			int			entrySize;			// Size of each individual entry.
+			int			entrySize;			// SizeI of each individual entry.
 
 		};
 

@@ -247,12 +247,12 @@ namespace wg
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 
-				Coord	now		= pMsg->currPos();
-				Coord 	prev	= pMsg->prevPos();
-				Coord	start	= pMsg->startPos();
+				CoordI	now		= pMsg->currPos();
+				CoordI 	prev	= pMsg->prevPos();
+				CoordI	start	= pMsg->startPos();
 
-				Coord	dragNow	= pMsg->draggedNow();
-				Coord	dragTotal=pMsg->draggedTotal();
+				CoordI	dragNow	= pMsg->draggedNow();
+				CoordI	dragTotal=pMsg->draggedTotal();
 
 				snprintf( params, c_paramLen, " button=%s position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
 						_formatMouseButton(pMsg->button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
@@ -482,7 +482,7 @@ namespace wg
 
 	string MsgLogger::_formatPointerPos( InputMsg * _pMsg ) const
 	{
-		Coord globalPos = _pMsg->pointerPos();
+		CoordI globalPos = _pMsg->pointerPos();
 
 
 		char	temp[64];

@@ -44,7 +44,7 @@ namespace wg
 		const static bool safe_to_relocate = false;
 
 		Origo		origo;
-		Rect		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+		RectI		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 		Widget_wp	pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 
@@ -79,8 +79,8 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
+		iterator	add( Widget * pWidget, const RectI& geometry, Origo origo = Origo::NorthWest );
+		iterator	add( Widget * pWidget, const CoordI& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, RectI(pos,0,0), origo); }
 
 		//.____ Geometry ______________________________________________________
 
@@ -89,30 +89,30 @@ namespace wg
 		Origo		origo( int index ) const;
 		Origo		origo( iterator it ) const;
 
-		void		setGeo( int index, const Rect& geometry );
-		void		setGeo( iterator it, const Rect& geometry );
-		Rect		geo( int index ) const;
-		Rect		geo( iterator it ) const;
+		void		setGeo( int index, const RectI& geometry );
+		void		setGeo( iterator it, const RectI& geometry );
+		RectI		geo( int index ) const;
+		RectI		geo( iterator it ) const;
 
-		void		setOfs( int index, const Coord& ofs );
-		void		setOfs( iterator it, const Coord& ofs );
-		Coord		ofs( int index ) const;
-		Coord		ofs( iterator it ) const;
+		void		setOfs( int index, const CoordI& ofs );
+		void		setOfs( iterator it, const CoordI& ofs );
+		CoordI		ofs( int index ) const;
+		CoordI		ofs( iterator it ) const;
 
-		void		setSize( int index, const Size& size );
-		void		setSize( iterator it, const Size& size );
-		Size		size( int index ) const;
-		Size		size( iterator it ) const;
+		void		setSize( int index, const SizeI& size );
+		void		setSize( iterator it, const SizeI& size );
+		SizeI		size( int index ) const;
+		SizeI		size( iterator it ) const;
 
-		void		move( int index, const Coord& ofs );
-		void		move( iterator it, const Coord& ofs );
+		void		move( int index, const CoordI& ofs );
+		void		move( iterator it, const CoordI& ofs );
 
 	protected:
 		void 		_setOrigo(ModalSlot * p, const Origo origo);
-		void 		_setGeo(ModalSlot * p, const Rect& geometry);
-		void 		_setOfs(ModalSlot * p, const Coord& ofs);
-		void 		_setSize(ModalSlot * p, const Size& size);
-		void 		_move( ModalSlot * p, const Coord& ofs );
+		void 		_setGeo(ModalSlot * p, const RectI& geometry);
+		void 		_setOfs(ModalSlot * p, const CoordI& ofs);
+		void 		_setSize(ModalSlot * p, const SizeI& size);
+		void 		_move( ModalSlot * p, const CoordI& ofs );
 	};
 
 
@@ -145,7 +145,7 @@ namespace wg
 		int				matchingHeight( int width ) const;
 		int				matchingWidth( int height ) const;
 
-		Size			preferredSize() const;
+		SizeI			preferredSize() const;
 
 	protected:
 		ModalLayer();
@@ -162,7 +162,7 @@ namespace wg
 
 		// Overloaded from Panel
 
-		Widget *		_findWidget( const Coord& ofs, SearchMode mode );
+		Widget *		_findWidget( const CoordI& ofs, SearchMode mode );
 
 		// Overloaded from WidgetHolder
 
@@ -188,7 +188,7 @@ namespace wg
 		// Overloaded from Widget
 
 		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize( const Size& size );
+		void			_setSize( const SizeI& size );
 		void			_receive( Msg * pMsg );
 
 

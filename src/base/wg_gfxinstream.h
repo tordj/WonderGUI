@@ -89,11 +89,11 @@ namespace wg
 		GfxInStream& operator>> (float&);
 
 
-		GfxInStream& operator>> (Coord&);
+		GfxInStream& operator>> (CoordI&);
 		GfxInStream& operator>> (CoordF&);
-		GfxInStream& operator>> (Size&);
+		GfxInStream& operator>> (SizeI&);
 		GfxInStream& operator>> (SizeF&);
-		GfxInStream& operator>> (Rect&);
+		GfxInStream& operator>> (RectI&);
 		GfxInStream& operator>> (RectF&);
 		GfxInStream& operator>> (Color&);
 		GfxInStream& operator>> (Direction&);

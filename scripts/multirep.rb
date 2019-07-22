@@ -2,7 +2,7 @@
 
 require 'tempfile'
 
-Task = Struct.new( :search, :replace )
+Task = Struct.new( :regexp, :replace )
 
 $version = 1.0
 $statementFile = nil
@@ -48,7 +48,7 @@ def loadStatements( file )
 				printf( "ERROR: Too many search/replace separators in this line:\n%s\n", line )
 				exit
 			end
-			$tasks << Task.new( pairs[0], pairs[1] )
+			$tasks << Task.new( generateRegexp( $match, pairs[0] ), pairs[1] )
 	 	end
 	end
 end
@@ -96,7 +96,7 @@ for fileName in $*
 	content = IO.readlines(fileName)
 
 	for task in $tasks
-		content.map! { |line| line.gsub( generateRegexp( $match, task[:search] ),task[:replace]) }
+		content.map! { |line| line.gsub( task[:regexp],task[:replace]) }
 	end
 
 	f = File.new( fileName, "w")

@@ -45,9 +45,9 @@ namespace wg
 
 		 //.____ Creation __________________________________________
 
-		static SoftSurface_p	create( Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static SoftSurface_p	create( Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static SoftSurface_p	create( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static SoftSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static SoftSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static SoftSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
 		static SoftSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
 
 		//.____ Identification __________________________________________
@@ -59,8 +59,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size		size() const;
-		static Size	maxSize();
+		SizeI		size() const;
+		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
 
@@ -68,13 +68,13 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel( Coord coord ) const;
-		uint8_t		alpha( Coord coord ) const;
+		uint32_t	pixel( CoordI coord ) const;
+		uint8_t		alpha( CoordI coord ) const;
 
 		//.____ Control _______________________________________________________
 
 		uint8_t *	lock( AccessMode mode );
-		uint8_t *	lockRegion( AccessMode mode, const Rect& region );
+		uint8_t *	lockRegion( AccessMode mode, const RectI& region );
 		void		unlock();
 
 		//.____  Internal ____________________________________________________
@@ -83,15 +83,15 @@ namespace wg
 
 
 	protected:
-		SoftSurface( Size size, PixelFormat format, const Color * pClut );
-		SoftSurface( Size size, PixelFormat format, Blob * pBlob, int pitch, const Color * pClut );
-		SoftSurface( Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
 		SoftSurface( Surface * pOther );
 
 		virtual ~SoftSurface();
 
 		Blob_p		m_pBlob;
-		Size		m_size;
+		SizeI		m_size;
 		uint8_t*	m_pData;
 	};
 

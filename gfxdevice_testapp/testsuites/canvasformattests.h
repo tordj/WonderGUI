@@ -14,7 +14,7 @@ public:
 		addTest("DrawToBGR_565", &CanvasFormatTests::init_BGR_565, &CanvasFormatTests::drawPrimitives, &CanvasFormatTests::exit_drawToSurface);
 	}
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_8);
 		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
@@ -25,37 +25,37 @@ public:
 		return true;
 	}
 
-	bool	init_BGR_8(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_BGR_8(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas = m_pCanvasBGR_8;
 		return init_drawToSurface(pDevice, canvas);
 	}
 
-	bool	init_BGRA_8(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_BGRA_8(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas = m_pCanvasBGRA_8;
 		return init_drawToSurface(pDevice, canvas);
 	}
 
-	bool	init_BGRX_8(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_BGRX_8(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas = m_pCanvasBGRX_8;
 		return init_drawToSurface(pDevice, canvas);
 	}
 
-	bool	init_BGRA_4(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_BGRA_4(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas = m_pCanvasBGRA_4;
 		return init_drawToSurface(pDevice, canvas);
 	}
 
-	bool	init_BGR_565(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_BGR_565(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas = m_pCanvasBGR_565;
 		return init_drawToSurface(pDevice, canvas);
 	}
 
-	bool	init_drawToSurface(GfxDevice * pDevice, const Rect& canvas)
+	bool	init_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas->fill(Color::Transparent);
 		m_pSavedCanvas = pDevice->canvas();
@@ -65,7 +65,7 @@ public:
 		return true;
 	}
 
-	bool	exit_drawToSurface(GfxDevice * pDevice, const Rect& canvas)
+	bool	exit_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setCanvas(m_pSavedCanvas);
 		pDevice->setClipList(m_savedClipListSize, m_pSavedClipList);
@@ -76,18 +76,18 @@ public:
 	}
 
 
-	bool	drawPrimitives(GfxDevice * pDevice, const Rect& canvas)
+	bool	drawPrimitives(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawLine(canvas.pos() + Coord(10, 10), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 20), Color::Red, 3.f);
-		pDevice->drawLine(canvas.pos() + Coord(10, 20), canvas.pos() + Coord(canvas.size().w, canvas.size().h) - Coord(10, 10), Color(0, 0, 255, 128), 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), Color::Red, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color(0, 0, 255, 128), 3.f);
 
-		pDevice->drawLine(canvas.pos() + Coord(5, 100), canvas.pos() + Coord(40,101), Color::Green, 3.f);
-		pDevice->drawLine(canvas.pos() + Coord(5, 105), canvas.pos() + Coord(6, 145), Color::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 100), canvas.pos() + CoordI(40,101), Color::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 105), canvas.pos() + CoordI(6, 145), Color::Green, 3.f);
 
 
-		Coord	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
-		Size	fillSize = { 50,50 };
-		Coord	stepping = { 60, 0 };
+		CoordI	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
+		SizeI	fillSize = { 50,50 };
+		CoordI	stepping = { 60, 0 };
 
 		pDevice->fill({ fillOfs, fillSize }, Color::Red);
 		pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
@@ -104,7 +104,7 @@ private:
 
 	Surface_p		m_pActiveCanvas;
 	Surface_p		m_pSavedCanvas;
-	const Rect *	m_pSavedClipList;
+	const RectI *	m_pSavedClipList;
 	int				m_savedClipListSize;
 
 	Surface_p		m_pCanvasBGR_8;

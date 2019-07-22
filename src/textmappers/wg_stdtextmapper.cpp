@@ -164,7 +164,7 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 
-	int StdTextMapper::charAtPos( const CText * pText, Coord pos ) const
+	int StdTextMapper::charAtPos( const CText * pText, CoordI pos ) const
 	{
 		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -175,7 +175,7 @@ namespace wg
 
 	//_____ charPos() ______________________________________________________
 
-	Coord StdTextMapper::charPos( const CText * pText, int charOfs ) const
+	CoordI StdTextMapper::charPos( const CText * pText, int charOfs ) const
 	{
 		int line = charLine(pText, charOfs);
 
@@ -185,12 +185,12 @@ namespace wg
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 		ofsY += pLine->base;
 
-		return Coord(ofsX,ofsY);
+		return CoordI(ofsX,ofsY);
 	}
 
 	//____ charRect() ________________________________________________________
 
-	Rect StdTextMapper::charRect( const CText * pText, int charOfs ) const
+	RectI StdTextMapper::charRect( const CText * pText, int charOfs ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -236,7 +236,7 @@ namespace wg
 		else if( pLast->code() == 32 )
 			width = pFont->whitespaceAdvance();
 
-		return Rect(xOfs,yOfs,width,pLineInfo->height);
+		return RectI(xOfs,yOfs,width,pLineInfo->height);
 	}
 
 	//____ charLine() ________________________________________________________
@@ -386,7 +386,7 @@ namespace wg
 
 	//____ _render()___________________________________________________________
 
-	void StdTextMapper::render( CText * pText, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::render( CText * pText, GfxDevice * pDevice, const RectI& canvas )
 	{
 
 		void * pBlock = _dataBlock(pText);
@@ -394,7 +394,7 @@ namespace wg
 		LineInfo * pLineInfo = _lineInfo(pBlock);
 		const Char * pCharArray = _charBuffer(pText)->chars();
 
-		Coord lineStart = canvas.pos();
+		CoordI lineStart = canvas.pos();
 		lineStart.y += _textPosY( pHeader, canvas.h );
 
 		TextAttr		baseAttr;
@@ -446,7 +446,7 @@ namespace wg
 
 		//
 
-		const Rect& clip = pDevice->clipBounds();
+		const RectI& clip = pDevice->clipBounds();
 
 		for( int i = 0 ; i < pHeader->nbLines ; i++ )
 		{
@@ -458,7 +458,7 @@ namespace wg
 				Glyph_p	pGlyph;
 				Glyph_p	pPrevGlyph =  0;
 
-				Coord pos = lineStart;
+				CoordI pos = lineStart;
 				pos.y += pLineInfo->base;
 
 				bool bRecalcColor = false;
@@ -530,7 +530,7 @@ namespace wg
 
 						const GlyphBitmap * pBitmap = pGlyph->getBitmap();
 						pDevice->setBlitSource(pBitmap->pSurface);
-						pDevice->blit( Coord(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
+						pDevice->blit( CoordI(pos.x + pBitmap->bearingX, pos.y + pBitmap->bearingY), pBitmap->rect  );
 
 						pos.x += pGlyph->advance();
 					}
@@ -563,7 +563,7 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 
-	void StdTextMapper::_renderBack( CText * pText, GfxDevice * pDevice, const Rect& canvas )
+	void StdTextMapper::_renderBack( CText * pText, GfxDevice * pDevice, const RectI& canvas )
 	{
 		const Char * pCharArray = _charBuffer(pText)->chars();
 		const Char * pBeg = pCharArray;
@@ -601,20 +601,20 @@ namespace wg
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( CText * pText, GfxDevice * pDevice, const Rect& canvas,
+	void StdTextMapper::_renderBackSection( CText * pText, GfxDevice * pDevice, const RectI& canvas,
 											int begChar, int endChar, Color color )
 	{
 
-		Coord begPos = charPos( pText, begChar );
+		CoordI begPos = charPos( pText, begChar );
 		LineInfo * pBegLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, begChar );
 
-		Coord endPos = charPos( pText, endChar );
+		CoordI endPos = charPos( pText, endChar );
 		LineInfo * pEndLine = _lineInfo( _dataBlock(pText) ) + charLine( pText, endChar );
 
 
 		if( pBegLine == pEndLine )
 		{
-			Rect area;
+			RectI area;
 			area.x = canvas.x + begPos.x;
 			area.y = canvas.y + begPos.y - pBegLine->base;
 			area.w = endPos.x - begPos.x;
@@ -626,7 +626,7 @@ namespace wg
 		{
 			LineInfo * pLine = pBegLine;
 
-			Rect area;
+			RectI area;
 			area.x = canvas.x + begPos.x;
 			area.y = canvas.y + begPos.y - pLine->base;
 			area.w = pLine->width - (begPos.x - _linePosX( pLine, canvas.w));
@@ -684,7 +684,7 @@ namespace wg
 
 	void StdTextMapper::selectionChange( CText * pText, int selectOfs, int caretOfs )
 	{
-		Rect dirt;
+		RectI dirt;
 
 		const EditState * pEditState = pText->_editState();
 
@@ -727,7 +727,7 @@ namespace wg
 
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( CText * pText, Size newSize, Size oldSize )
+	void StdTextMapper::onResized( CText * pText, SizeI newSize, SizeI oldSize )
 	{
 		if (m_bLineWrap)
 			onRefresh(pText);
@@ -803,18 +803,18 @@ namespace wg
 
 	//___ rectForRange() _________________________________________________________
 
-	Rect StdTextMapper::rectForRange( const CText * pText, int ofs, int length ) const
+	RectI StdTextMapper::rectForRange( const CText * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
 
-		Size canvas = pText->size();
+		SizeI canvas = pText->size();
 
 
-		Coord begPos = charPos(pText, begChar);
+		CoordI begPos = charPos(pText, begChar);
 		const LineInfo * pBegLine = _lineInfo(_dataBlock(pText)) + charLine(pText, begChar);
 
-		Coord endPos = charPos(pText, endChar);
+		CoordI endPos = charPos(pText, endChar);
 		const LineInfo * pEndLine = _lineInfo(_dataBlock(pText)) + charLine(pText, endChar);
 
 		int x1, x2, y1, y2;
@@ -862,18 +862,18 @@ namespace wg
 			y2 += pLine->height;
 		}
 
-		return Rect( x1, y1, x2-x1, y2-y1);
+		return RectI( x1, y1, x2-x1, y2-y1);
 	}
 
 	//____ rectForCaret() ______________________________________________________
 
 	// Includes left/right margin where applicable.
 
-	Rect StdTextMapper::rectForCaret( const CText * pText ) const
+	RectI StdTextMapper::rectForCaret( const CText * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		if( !pText->_editState()->bCaret || !pCaret )
-			return Rect();
+			return RectI();
 
 		return pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs) );
 	}
@@ -888,7 +888,7 @@ namespace wg
 
 	//____ caretToPos() _____________________________________________________
 
-	int StdTextMapper::caretToPos( CText * pText, Coord pos, int& wantedLineOfs ) const
+	int StdTextMapper::caretToPos( CText * pText, CoordI pos, int& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -1009,7 +1009,7 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	Size StdTextMapper::preferredSize( const CText * pText ) const
+	SizeI StdTextMapper::preferredSize( const CText * pText ) const
 	{
 		return _header(_dataBlock(pText))->preferredSize;
 	}
@@ -1110,7 +1110,7 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeI eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1261,7 +1261,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeI eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1296,7 +1296,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeI eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
 					int w = pCaret->eolWidth(eolCellSize);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1409,7 +1409,7 @@ namespace wg
 	void StdTextMapper::_updateLineInfo( CText * pText, void * pBlock, const CharBuffer * pBuffer )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
-		Size preferredSize;
+		SizeI preferredSize;
 
 
 		if (m_bLineWrap)
@@ -1435,7 +1435,7 @@ namespace wg
 
 	//____ _updateWrapLineInfo() ________________________________________________
 
-	Size StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
+	SizeI StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pChars = pBuffer->chars();
@@ -1443,7 +1443,7 @@ namespace wg
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
 
-		Size size;
+		SizeI size;
 
 		TextAttr		attr;
 		Font_p 			pFont;
@@ -1506,7 +1506,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeI eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1541,7 +1541,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					SizeI eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
 					int w = pCaret->eolWidth(eolCellSize);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1663,13 +1663,13 @@ namespace wg
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	Size StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+	SizeI StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
 												State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 		const Char * pChars = pBuffer->chars();
 
-		Size		size;
+		SizeI		size;
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr( state, &baseAttr );
@@ -1752,7 +1752,7 @@ namespace wg
 
 				if( pCaret )
 				{
-					Size eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
+					SizeI eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
 					int w = pCaret->eolWidth( eolCellSize );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;

@@ -58,15 +58,15 @@ namespace wg
 
 		//.____ Appearance ________________________________________________________
 
-		void				setImage( Surface * pSurface, const Rect& rect );	///< @brief Set image to display.
+		void				setImage( Surface * pSurface, const RectI& rect );	///< @brief Set image to display.
 		void				setImage( Surface * pSurface );						///< @brief Set image to display.
 
 		inline Surface_p	imageSurface() const;											///< @brief Get surface of image displayed.
-		inline Rect			imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
+		inline RectI			imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 
 		//.____ Geometry ____________________________________________
 
-		Size				preferredSize() const;
+		SizeI				preferredSize() const;
 
 	protected:
 		Image();
@@ -74,13 +74,13 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new Image(); };
 
 		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
-		bool	_alphaTest( const Coord& ofs );
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		bool	_alphaTest( const CoordI& ofs );
 
 	private:
 
 		Surface_p	m_pSurface;
-		Rect			m_rect;
+		RectI			m_rect;
 
 	};
 
@@ -90,7 +90,7 @@ namespace wg
 		return m_pSurface;
 	}
 
-	Rect Image::imageRect() const
+	RectI Image::imageRect() const
 	{
 		return m_rect;
 	}

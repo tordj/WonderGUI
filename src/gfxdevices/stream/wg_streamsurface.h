@@ -46,9 +46,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static StreamSurface_p	create( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( GfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
 		static StreamSurface_p	create( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 
 		//.____ Identification __________________________________________
@@ -60,8 +60,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size		size() const;
-		static Size	maxSize();
+		SizeI		size() const;
+		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
 
@@ -70,35 +70,35 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(Coord coord) const;
-		uint8_t		alpha(Coord coord) const;
+		uint32_t	pixel(CoordI coord) const;
+		uint8_t		alpha(CoordI coord) const;
 
 		//.____ Control _______________________________________________________
 
 		uint8_t *	lock(AccessMode mode);
-		uint8_t *	lockRegion(AccessMode mode, const Rect& region);
+		uint8_t *	lockRegion(AccessMode mode, const RectI& region);
 		void		unlock();
 
 		//.____  Rendering ____________________________________________________
 
 		bool		fill(Color col);
-		bool		fill(Color col, const Rect& region);
-		bool		copyFrom(Surface * pSrcSurf, const Rect& srcRect, Coord dst);
-		bool		copyFrom(Surface * pSrcSurf, Coord dst);
+		bool		fill(Color col, const RectI& region);
+		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst);
+		bool		copyFrom(Surface * pSrcSurf, CoordI dst);
 
 
 		//.____ Misc __________________________________________________________
 
 
 	private:
-		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, int flags, const Color * pClut );
-		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
-		StreamSurface( GfxOutStream& stream, Size size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
+		StreamSurface( GfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
 		StreamSurface( GfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 		~StreamSurface();
 
-		short		_sendCreateSurface(Size size, PixelFormat format, int flags, const Color * pClut);
-		void		_sendPixels(Rect rect, const uint8_t * pSource, int pitch);
+		short		_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color * pClut);
+		void		_sendPixels(RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);
 
@@ -108,7 +108,7 @@ namespace wg
 		Blob_p			m_pBlob;
 		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
 
-		Size			m_size;				// Width and height in pixels.
+		SizeI			m_size;				// Width and height in pixels.
 
 
 

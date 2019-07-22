@@ -360,17 +360,17 @@ namespace wg
 		Vertical
 	};
 
-	//____ SizeQolicy ___________________________________________________________
+	//____ SizePolicy ___________________________________________________________
 	/**
-		SizeQolicy is used by certain containers, including FlexPanel and ScrollPanel,
-		to limit/control the geometry of children. Different SizeQolicies can be set
+		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,
+		to limit/control the geometry of children. Different Sizepolicies can be set
 		for horizontal and vertical size.
 
 		It is used in combination with a size specified by parent. In the case of
 		ScrollPanel it is the size of the window to the scrollarea. In the case of
 		FlexPanel, it is a size specified for the child.
 	*/
-	enum class SizeQolicy : uint8_t		//. autoExtras
+	enum class SizePolicy : uint8_t		//. autoExtras
 	{
 		Default = 0,			///< Childs size is unaffected by size specified by parent, so it gets its preferred size.
 		Bound,				///< Child is bound to the exact size specified by parent.
@@ -379,9 +379,9 @@ namespace wg
 	};
 
 
-	//____ SizeQolicy2D ___________________________________________________________
+	//____ SizePolicy2D ___________________________________________________________
 
-	enum class SizeQolicy2D : uint8_t	//. autoExtras
+	enum class SizePolicy2D : uint8_t	//. autoExtras
 	{
 		Original,						///< Object maintains its original size.
 		Stretch,						///< Object is stretched to fill the space, ignoring aspect ratio.

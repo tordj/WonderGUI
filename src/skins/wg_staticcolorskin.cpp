@@ -73,7 +73,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
+	void StaticColorSkin::render( GfxDevice * pDevice, const RectI& canvas, State state ) const
 	{
 		pDevice->fill( canvas, m_color );
 	}
@@ -90,7 +90,7 @@ namespace wg
 		return m_color.a == 255 ? true : false;
 	}
 
-	bool StaticColorSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool StaticColorSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return m_color.a == 255 ? true : false;
 	}
@@ -139,7 +139,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool StaticColorSkin::markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
 	}

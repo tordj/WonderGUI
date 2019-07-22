@@ -45,7 +45,7 @@ namespace wg
 		//.____ Properties _________________________________
 
 		Surface_p 	pSurface;
-		Rect		rect;
+		RectI		rect;
 		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
 		int8_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};

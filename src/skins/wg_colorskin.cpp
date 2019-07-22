@@ -152,7 +152,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void ColorSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
+	void ColorSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -169,7 +169,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool ColorSkin::markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -189,7 +189,7 @@ namespace wg
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	bool ColorSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool ColorSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}

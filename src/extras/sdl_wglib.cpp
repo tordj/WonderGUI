@@ -69,7 +69,7 @@ namespace sdl_wglib
 
 			case	SDL_MOUSEMOTION:
 			{
-				pHandler->QueueEvent( WgMouseMoveEvent::create( Coord( event.motion.x, event.motion.y ) ) );
+				pHandler->QueueEvent( WgMouseMoveEvent::create( CoordI( event.motion.x, event.motion.y ) ) );
 				break;
 			}
 
@@ -119,7 +119,7 @@ namespace sdl_wglib
 			return 0;
 		}
 
-		if( !pSurf->copyFrom( wrapper, Coord(0,0) ) )
+		if( !pSurf->copyFrom( wrapper, CoordI(0,0) ) )
 		{
 			printf("Unable to copy loaded bitmap '%s' to surface.\n", path);
 			return 0;
@@ -152,68 +152,68 @@ namespace sdl_wglib
 		if( !pSurface )
 			return 0;
 
-		BlockSkin_p	pHScrollbarBwdButtonSkin = BlockSkin::createClickable( pSurface, Size(17,17), Coord(1,HSLIDER_BTN_OFS), Size(19,0), Border(3) );
-		pHScrollbarBwdButtonSkin->setContentPadding(Border(4));
+		BlockSkin_p	pHScrollbarBwdButtonSkin = BlockSkin::createClickable( pSurface, SizeI(17,17), CoordI(1,HSLIDER_BTN_OFS), SizeI(19,0), BorderI(3) );
+		pHScrollbarBwdButtonSkin->setContentPadding(BorderI(4));
 
-		BlockSkin_p	pHScrollbarFwdButtonSkin = BlockSkin::createClickable( pSurface, Size(17,17), Coord(77,HSLIDER_BTN_OFS), Size(19,0), Border(3) );
-		pHScrollbarFwdButtonSkin->setContentPadding(Border(4));
+		BlockSkin_p	pHScrollbarFwdButtonSkin = BlockSkin::createClickable( pSurface, SizeI(17,17), CoordI(77,HSLIDER_BTN_OFS), SizeI(19,0), BorderI(3) );
+		pHScrollbarFwdButtonSkin->setContentPadding(BorderI(4));
 
-		BlockSkin_p	pVScrollbarBwdButtonSkin = BlockSkin::createClickable( pSurface, Size(17,17), Coord(1,VSLIDER_BTN_OFS), Size(19,0), Border(3) );
-		pVScrollbarBwdButtonSkin->setContentPadding(Border(4));
+		BlockSkin_p	pVScrollbarBwdButtonSkin = BlockSkin::createClickable( pSurface, SizeI(17,17), CoordI(1,VSLIDER_BTN_OFS), SizeI(19,0), BorderI(3) );
+		pVScrollbarBwdButtonSkin->setContentPadding(BorderI(4));
 
-		BlockSkin_p	pVScrollbarFwdButtonSkin = BlockSkin::createClickable( pSurface, Size(17,17), Coord(77,VSLIDER_BTN_OFS), Size(19,0), Border(3) );
-		pVScrollbarFwdButtonSkin->setContentPadding(Border(4));
+		BlockSkin_p	pVScrollbarFwdButtonSkin = BlockSkin::createClickable( pSurface, SizeI(17,17), CoordI(77,VSLIDER_BTN_OFS), SizeI(19,0), BorderI(3) );
+		pVScrollbarFwdButtonSkin->setContentPadding(BorderI(4));
 
-		BlockSkin_p	pScrollbarHandleSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1,SLIDER_OFS), Size(10,0), Border(2) );
-		pScrollbarHandleSkin->setContentPadding(Border(3));
+		BlockSkin_p	pScrollbarHandleSkin = BlockSkin::createClickable( pSurface, SizeI(8,8), CoordI(1,SLIDER_OFS), SizeI(10,0), BorderI(2) );
+		pScrollbarHandleSkin->setContentPadding(BorderI(3));
 
-		BlockSkin_p	pScrollbarBackSkin = BlockSkin::createStatic( pSurface, Rect(1,SLIDER_BACK_OFS,5,5), Border(2) );
-		pScrollbarBackSkin->setContentPadding(Border(2));
+		BlockSkin_p	pScrollbarBackSkin = BlockSkin::createStatic( pSurface, RectI(1,SLIDER_BACK_OFS,5,5), BorderI(2) );
+		pScrollbarBackSkin->setContentPadding(BorderI(2));
 
-//		WgBlocksetPtr pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, Rect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
-//		pResizeButtonBlocks->setFrame(Border(3));
+//		WgBlocksetPtr pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, RectI(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
+//		pResizeButtonBlocks->setFrame(BorderI(3));
 
-		BlockSkin_p	pCheckboxIconSkin = BlockSkin::createClickSelectableWidget( pSurface, Size(11,11), Coord(1,CHECKBOX_OFS), Size(13,0), Border(2) );
-		pCheckboxIconSkin->setContentPadding(Border(3));
+		BlockSkin_p	pCheckboxIconSkin = BlockSkin::createClickSelectableWidget( pSurface, SizeI(11,11), CoordI(1,CHECKBOX_OFS), SizeI(13,0), BorderI(2) );
+		pCheckboxIconSkin->setContentPadding(BorderI(3));
 
-		BlockSkin_p	pRadiobuttonIconSkin = BlockSkin::createClickSelectableWidget( pSurface, Size(11,11), Coord(1,RADIOBUTTON_OFS), Size(13,0) );
-		pRadiobuttonIconSkin->setContentPadding(Border(3));
+		BlockSkin_p	pRadiobuttonIconSkin = BlockSkin::createClickSelectableWidget( pSurface, SizeI(11,11), CoordI(1,RADIOBUTTON_OFS), SizeI(13,0) );
+		pRadiobuttonIconSkin->setContentPadding(BorderI(3));
 
-		BlockSkin_p pButtonSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1,BUTTON_OFS), Size(10,0), Border(3) );
-		pButtonSkin->setContentPadding(Border(4));
-		pButtonSkin->setContentShift( StateEnum::Pressed, Coord(2,2) );
+		BlockSkin_p pButtonSkin = BlockSkin::createClickable( pSurface, SizeI(8,8), CoordI(1,BUTTON_OFS), SizeI(10,0), BorderI(3) );
+		pButtonSkin->setContentPadding(BorderI(4));
+		pButtonSkin->setContentShift( StateEnum::Pressed, CoordI(2,2) );
 
-		BlockSkin_p pHSplitSkin = BlockSkin::createStatic(pSurface, Rect(1,SPLITS_AND_FRAME_OFS,8,2), Border(0) );
+		BlockSkin_p pHSplitSkin = BlockSkin::createStatic(pSurface, RectI(1,SPLITS_AND_FRAME_OFS,8,2), BorderI(0) );
 
-		BlockSkin_p pVSplitBlocks = BlockSkin::createStatic(pSurface, Rect(11,SPLITS_AND_FRAME_OFS,2,8), Border(0) );
+		BlockSkin_p pVSplitBlocks = BlockSkin::createStatic(pSurface, RectI(11,SPLITS_AND_FRAME_OFS,2,8), BorderI(0) );
 
-		BlockSkin_p pFrameSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1, SPLITS_AND_FRAME_OFS), Size(10,0), Border(2) );
-		pFrameSkin->setContentPadding(Border(3));
+		BlockSkin_p pFrameSkin = BlockSkin::createClickable( pSurface, SizeI(8,8), CoordI(1, SPLITS_AND_FRAME_OFS), SizeI(10,0), BorderI(2) );
+		pFrameSkin->setContentPadding(BorderI(3));
 
-//		WgBlocksetPtr pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, Rect(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
-//		pComboboxBlocks->setFrame(Border(1,1,20,1));
-//		pComboboxBlocks->setPadding(Border(2,2,21,2));
+//		WgBlocksetPtr pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, RectI(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
+//		pComboboxBlocks->setFrame(BorderI(1,1,20,1));
+//		pComboboxBlocks->setPadding(BorderI(2,2,21,2));
 
-		BlockSkin_p pListEntrySkin = BlockSkin::createClickSelectable( pSurface, Size(8,6), Coord(1,LISTENTRY_OFS), Size(10,0), Border(1) );
-		pListEntrySkin->setContentPadding(Border(4));
+		BlockSkin_p pListEntrySkin = BlockSkin::createClickSelectable( pSurface, SizeI(8,6), CoordI(1,LISTENTRY_OFS), SizeI(10,0), BorderI(1) );
+		pListEntrySkin->setContentPadding(BorderI(4));
 
-		BlockSkin_p pSortArrowSkin = BlockSkin::createClickSelectable( pSurface, Size(11,6), Coord(1,SORT_ARROW_OFS), Size(13,0), Border(0) );
+		BlockSkin_p pSortArrowSkin = BlockSkin::createClickSelectable( pSurface, SizeI(11,6), CoordI(1,SORT_ARROW_OFS), SizeI(13,0), BorderI(0) );
 
-		BlockSkin_p pSmileyIconSkin = BlockSkin::createClickSelectable( pSurface, Size(12,12), Coord(1, SMILEY_OFS), Size(14,0), Border(0) );
+		BlockSkin_p pSmileyIconSkin = BlockSkin::createClickSelectable( pSurface, SizeI(12,12), CoordI(1, SMILEY_OFS), SizeI(14,0), BorderI(0) );
 
 
-		BlockSkin_p pBgCheckeredGreySkin = BlockSkin::createStatic( pSurface, Rect(0,TILES_OFS,64,64) );
+		BlockSkin_p pBgCheckeredGreySkin = BlockSkin::createStatic( pSurface, RectI(0,TILES_OFS,64,64) );
 		pBgCheckeredGreySkin->setTiledCenter(true);
 		pBgCheckeredGreySkin->optimizeRenderMethods();
 
-		BlockSkin_p pBgBlueGradientSkin = BlockSkin::createStatic( pSurface, Rect(1*64,TILES_OFS,64,64) );
+		BlockSkin_p pBgBlueGradientSkin = BlockSkin::createStatic( pSurface, RectI(1*64,TILES_OFS,64,64) );
 		pBgBlueGradientSkin->optimizeRenderMethods();
 
 
 //		ColorsetPtr pSelectionColors = Colorset::create( Color(0x0), Color(0x40FFFFFF), Color(0x80FFFFFF), Color(0x40000000), Color(0x0) );
 
-		BlockSkin_p pPlateSkin = BlockSkin::createClickable( pSurface, Size(8,8), Coord(1,PLATE_OFS), Size(10,0), Border(3) );
-		pPlateSkin->setContentPadding(Border(4));
+		BlockSkin_p pPlateSkin = BlockSkin::createClickable( pSurface, SizeI(8,8), CoordI(1,PLATE_OFS), SizeI(10,0), BorderI(3) );
+		pPlateSkin->setContentPadding(BorderI(4));
 		pPlateSkin->optimizeRenderMethods();
 
 		ResDB_p pDB = ResDB::create();
@@ -279,7 +279,7 @@ namespace sdl_wglib
 
 		Menu_p pMenu = Menu::create();
 		pMenu->setSkin( pPlateSkin, 16, 16 );
-		pMenu->setSeparatorSkin( pHSplitSkin, Border(1) );
+		pMenu->setSeparatorSkin( pHSplitSkin, BorderI(1) );
 		pMenu->setCheckBoxSkin( pCheckboxIconSkin );
 		pMenu->setRadioButtonSkin( pRadiobuttonIconSkin );
 		pMenu->setScrollbarSkins( pScrollbarBackSkin, pScrollbarHandleSkin, pVScrollbarBwdButtonSkin, pVScrollbarFwdButtonSkin );

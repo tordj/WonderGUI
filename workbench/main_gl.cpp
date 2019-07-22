@@ -168,7 +168,7 @@ int main ( int argc, char** argv )
 
 	
 
-	GlGfxDevice_p pGfxDevice = GlGfxDevice::create( Size(width,height) );
+	GlGfxDevice_p pGfxDevice = GlGfxDevice::create( SizeI(width,height) );
 
 	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
 	
@@ -191,7 +191,7 @@ int main ( int argc, char** argv )
 
     
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
-	GlSurface_p pFontImg = GlSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (uint8_t*) pFontSurf->pixels, pFontSurf->pitch );
+	GlSurface_p pFontImg = GlSurface::create( SizeI(pFontSurf->w,pFontSurf->h), PixelFormat::BGRA_8, (uint8_t*) pFontSurf->pixels, pFontSurf->pitch );
 	SDL_FreeSurface( pFontSurf );
     assert( glGetError() == 0 );
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
@@ -213,36 +213,36 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	GlSurface_p pButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	GlSurface_p pButtonSurface = GlSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
-	pSimpleButtonSkin->setContentPadding( Border(5) );
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, BorderI(3) );
+	pSimpleButtonSkin->setContentPadding( BorderI(5) );
 
 	pSDLSurf = IMG_Load( "../resources/state_button.bmp" );
     convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	GlSurface_p pStateButtonSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	GlSurface_p pStateButtonSurface = GlSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, Border(3) );
-	pStateButtonSkin->setContentPadding( Border(5) );
+	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface( pStateButtonSurface, 0, BorderI(3) );
+	pStateButtonSkin->setContentPadding( BorderI(5) );
     
 	pSDLSurf = IMG_Load( "../resources/grey_pressable_plate.bmp" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	GlSurface_p pPressablePlateSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	GlSurface_p pPressablePlateSurface = GlSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, Border(3) );
-	pPressablePlateSkin->setContentPadding( Border(3) );
+	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface( pPressablePlateSurface, 0, BorderI(3) );
+	pPressablePlateSkin->setContentPadding( BorderI(3) );
     
 	pSDLSurf = IMG_Load( "../resources/list_entry.png" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	GlSurface_p pListEntrySurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	GlSurface_p pListEntrySurface = GlSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, Border(3) );
+	Skin_p pListEntrySkin = BlockSkin::createClickableFromSurface( pListEntrySurface, 0, BorderI(3) );
     
 	pSDLSurf = IMG_Load( "../resources/frog.jpg" );
 	convertSDLFormat( &pixelDesc, pSDLSurf->format );
-	GlSurface_p pImgSurface = GlSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
+	GlSurface_p pImgSurface = GlSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, Border(3) );
+	BlockSkin_p pImgSkin = BlockSkin::createStaticFromSurface( pImgSurface, BorderI(3) );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and 
@@ -257,7 +257,7 @@ int main ( int argc, char** argv )
 
 	Image_p pImage = Image::create();
 	pImage->setSkin( pSimpleButtonSkin );
-	pFlexPanel->children.addMovable( pImage, Rect(0,0,80,33), Origo::Center );
+	pFlexPanel->children.addMovable( pImage, RectI(0,0,80,33), Origo::Center );
 
 
 //	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -327,7 +327,7 @@ int main ( int argc, char** argv )
 /*
     {
         TestWidget_p pTest = TestWidget::create();
-        pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, Border(20) );
+        pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, BorderI(20) );
         pTest->start();
     }
 */
@@ -354,7 +354,7 @@ int main ( int argc, char** argv )
 		pText->text.setCharStyle( pRed, 10, 3 );
 		pText->text.setCharStyle( pAnuv, 19, 20 );
 		
-		pExtraFlex->addWidget( pText, Rect( 10,10,100,100) );
+		pExtraFlex->addWidget( pText, RectI( 10,10,100,100) );
 
 		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
 
@@ -434,41 +434,41 @@ int main ( int argc, char** argv )
 
 //        pGfxDevice->setTintColor(Color::Red );
         
-//        pGfxDevice->fill( Rect(1,1,320-2,400-2), Color::Aquamarine);
+//        pGfxDevice->fill( RectI(1,1,320-2,400-2), Color::Aquamarine);
 
         
 //       pGfxDevice->wg::GfxDevice::blit( pButtonSurface, 50, 50 );
-//        pGfxDevice->wg::GfxDevice::stretchBlit(pButtonSurface, Rect(50,50,160,40));
+//        pGfxDevice->wg::GfxDevice::stretchBlit(pButtonSurface, RectI(50,50,160,40));
 
         
 
         Color plotColors[400];
-        Coord plotCoords[400];
+        CoordI plotCoords[400];
         
         for( int i = 0 ; i < 400 ; i++ )
         {
             plotColors[i] = Color::Red;
-            plotCoords[i] = Coord(i,i);
+            plotCoords[i] = CoordI(i,i);
         }
         
         
-//       pGfxDevice->clipPlotPixels( Rect(0,0,width,height), 100, plotCoords, plotColors);
+//       pGfxDevice->clipPlotPixels( RectI(0,0,width,height), 100, plotCoords, plotColors);
 
         
 //        for(int x = 0 ; x < 200 ; x++ )
 //        {
-//            pGfxDevice->clipDrawVertLine(Rect(0,0,width,height), Coord(x*2,x), 40, Color::Aquamarine);
+//            pGfxDevice->clipDrawVertLine(RectI(0,0,width,height), CoordI(x*2,x), 40, Color::Aquamarine);
 //        }
 
         
-//        pGfxDevice->clipDrawHorrLine(Rect(10,10,width-20,height-20), Coord(0,20), 800, Color::Aquamarine);
-//        pGfxDevice->clipDrawVertLine(Rect(10,10,width-20,height-20), Coord(20,0), 800, Color::Aquamarine);
+//        pGfxDevice->clipDrawHorrLine(RectI(10,10,width-20,height-20), CoordI(0,20), 800, Color::Aquamarine);
+//        pGfxDevice->clipDrawVertLine(RectI(10,10,width-20,height-20), CoordI(20,0), 800, Color::Aquamarine);
 
         
         
-//        pGfxDevice->drawLine( Coord(10,10), Coord(200,40), Color::Red, 3.f );
+//        pGfxDevice->drawLine( CoordI(10,10), CoordI(200,40), Color::Red, 3.f );
         
-//        pGfxDevice->fill(Rect(21, 21, 100, 100 ), Color::AntiqueWhite );
+//        pGfxDevice->fill(RectI(21, 21, 100, 100 ), Color::AntiqueWhite );
 //        pGfxDevice->fillSubPixel(RectF(21.8f, 21.5f, 0.4f, 0.4f ), Color::AntiqueWhite );
         
         pGfxDevice->endRender();
@@ -522,7 +522,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -535,7 +535,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				Coord distance( e.wheel.x, e.wheel.y );
+				CoordI distance( e.wheel.x, e.wheel.y );
 //				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 //					distance *= -1;
 			
@@ -600,7 +600,7 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 	
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
@@ -702,9 +702,9 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 
 
-	Coord	dragDistance = pMsg->draggedTotal();
+	CoordI	dragDistance = pMsg->draggedTotal();
 
-	Coord	ofs = dragStartPos + dragDistance;
+	CoordI	ofs = dragStartPos + dragDistance;
 
 //	printf( "AccDistance: %d, %d\n", dragDistance.x, dragDistance.y );
 	printf( "ofs: %d, %d   start: %d %d   distance: %d, %d\n", ofs.x, ofs.y, dragStartPos.x, dragStartPos.y, dragDistance.x, dragDistance.y );
@@ -719,7 +719,7 @@ void cbDragWidget( const Msg_p& _pMsg, const Object_p& pObject )
 
 void cbMoveResize( const Msg * _pMsg )
 {
-	static Coord posAtPress[(int)MouseButton_max];
+	static CoordI posAtPress[(int)MouseButton_max];
 	
 //	Widget_p _pWidget = _pMsg->source();
 	Object_p _pWidget = _pMsg->source();
@@ -803,7 +803,7 @@ Surface_p generateTestSurface()
 								255,128,128, 128,255,128, 128,128,255,0,0,
 								255,128,0, 128,255,0, 0,128,255,0,0 };
 
-	Surface_p p = GlSurface::create( Size(3,3), PixelFormat::BGR_8, tex, 11 );
+	Surface_p p = GlSurface::create( SizeI(3,3), PixelFormat::BGR_8, tex, 11 );
 	p->setScaleMode(ScaleMode::Interpolate);
 	return p;
 }

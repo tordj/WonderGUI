@@ -19,7 +19,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		// Generate simple wave
 
@@ -67,49 +67,49 @@ public:
 
 
 
-	bool simpleWave(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWave(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red);
 		return true;
 	}
 
-	bool simpleWaveRot90(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot90(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot90);
 		return true;
 	}
 
-	bool simpleWaveRot180(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot180(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot180);
 		return true;
 	}
 
-	bool simpleWaveRot270(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveRot270(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot270);
 		return true;
 	}
 
-	bool simpleWaveFlipX(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveFlipX(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipX);
 		return true;
 	}
 
-	bool simpleWaveFlipY(GfxDevice * pDevice, const Rect& canvas)
+	bool simpleWaveFlipY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipY);
 		return true;
 	}
 
-	bool backfaceWave(GfxDevice * pDevice, const Rect& canvas)
+	bool backfaceWave(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, Color::Green, Color::Red );
 		return true;
 	}
 
-	bool backfaceWaveSameColor(GfxDevice * pDevice, const Rect& canvas)
+	bool backfaceWaveSameColor(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, Color::Green, Color::Green);
 		return true;

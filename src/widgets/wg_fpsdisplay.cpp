@@ -106,9 +106,9 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________________
 
-	Size FpsDisplay::preferredSize() const
+	SizeI FpsDisplay::preferredSize() const
 	{
-		Size contentSize = m_labelsText.preferredSize();
+		SizeI contentSize = m_labelsText.preferredSize();
 
 		TextAttr attr;
 		m_valuesText._style()->exportAttr( State(StateEnum::Normal), &attr );
@@ -131,11 +131,11 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void FpsDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect content;
+		RectI content;
 		if( m_pSkin )
 			content = m_pSkin->contentRect( _canvas, m_state );
 		else

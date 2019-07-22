@@ -86,18 +86,18 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________________
 
-	Size RulerLabels::preferredSize() const
+	SizeI RulerLabels::preferredSize() const
 	{
 		//TODO: calculation of length is not good.
 
-		Size preferred;
+		SizeI preferred;
 
 		if( m_direction == Direction::Up || m_direction == Direction::Down )
 		{
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				Size sz = pLabel->text.preferredSize();
+				SizeI sz = pLabel->text.preferredSize();
 				if( sz.w > preferred.w )
 					preferred.w = sz.w;
 
@@ -110,7 +110,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				Size sz = pLabel->text.preferredSize();
+				SizeI sz = pLabel->text.preferredSize();
 				preferred.w += sz.w;
 
 				if( sz.h > preferred.h )
@@ -129,11 +129,11 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void RulerLabels::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas;
+		RectI canvas;
 		if( m_pSkin )
 			canvas = m_pSkin->contentRect(_canvas,m_state);
 		else
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->text.render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
+				pLabel->text.render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->text.render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ) );
+				pLabel->text.render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -219,7 +219,7 @@ namespace wg
 
 	//____ _alphaTest() ____________________________________________________________________
 
-	bool RulerLabels::_alphaTest( const Coord& ofs )
+	bool RulerLabels::_alphaTest( const CoordI& ofs )
 	{
 		return Widget::_alphaTest(ofs);
 	}
@@ -242,26 +242,26 @@ namespace wg
 
 	//____ _componentPos() __________________________________________________________
 
-	Coord RulerLabels::_componentPos( const Component * pComponent ) const
+	CoordI RulerLabels::_componentPos( const Component * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return Coord();
+		return CoordI();
 	}
 
 	//____ _componentSize() _________________________________________________________
 
-	Size RulerLabels::_componentSize( const Component * pComponent ) const
+	SizeI RulerLabels::_componentSize( const Component * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return Size();
+		return SizeI();
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	Rect RulerLabels::_componentGeo( const Component * pComponent ) const
+	RectI RulerLabels::_componentGeo( const Component * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return Rect();
+		return RectI();
 	}
 
 	//____ _componentRequestResize() __________________________________________________

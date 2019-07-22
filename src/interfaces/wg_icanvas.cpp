@@ -166,7 +166,7 @@ namespace wg
 	/**
 	*	@brief Sets a fixed size for the surface.
 	*
-	*	@param Size		The size for the surface, no smaller than {1,1} and no larger than
+	*	@param SizeI		The size for the surface, no smaller than {1,1} and no larger than
 	*					allowed by the SurfaceFactory in use, or {0,0} to return the surface to dynamic
 	*					resizing.
 	*
@@ -179,7 +179,7 @@ namespace wg
 	*	@return		False if specified size was out of allowed range.
 	**/
 
-	bool ICanvas::setSize(Size sz)
+	bool ICanvas::setSize(SizeI sz)
 	{
 		return m_pComponent->setSurfaceSize(sz);
 	}
@@ -195,7 +195,7 @@ namespace wg
 
 	bool ICanvas::isSizeFixed() const
 	{
-		return m_pComponent->m_fixedSize == Size(0, 0) ? false : true;
+		return m_pComponent->m_fixedSize == SizeI(0, 0) ? false : true;
 	}
 
 	//____ size() _____________________________________________________________
@@ -205,11 +205,11 @@ namespace wg
 	*	Gets the dimensions of the surface, which might be different from the dimensions
 	*	of this CCanvas component if a fixed size has been set.
 	*
-	*	@return Size of surface OR specified fixed size if no surface present and fixed
+	*	@return SizeI of surface OR specified fixed size if no surface present and fixed
 	*			size has been set OR {0,0} if neither.
 	**/
 
-	Size ICanvas::size() const
+	SizeI ICanvas::size() const
 	{
 		return m_pComponent->m_pSurface ? m_pComponent->m_pSurface->size() : m_pComponent->m_fixedSize;
 	}
@@ -255,9 +255,9 @@ namespace wg
 	*	Specifies how a fixed size surface is stretched or scaled when the surface is
 	*	of a different size than the CCanvas component.
 	*
-	*	Default value is SizeQolicy2D::Original.
+	*	Default value is SizePolicy2D::Original.
 	**/
-	void ICanvas::setPresentationScaling(SizeQolicy2D policy)
+	void ICanvas::setPresentationScaling(SizePolicy2D policy)
 	{
 		m_pComponent->setPresentationScaling(policy);
 	}
@@ -269,7 +269,7 @@ namespace wg
 	*	Gets how a fixed size surface is scaled to cover the CCanvas components area.
 	**/
 
-	SizeQolicy2D ICanvas::presentationScaling() const
+	SizePolicy2D ICanvas::presentationScaling() const
 	{
 		return m_pComponent->m_presentationScaling;
 	}
@@ -309,7 +309,7 @@ namespace wg
 	*	of the surface during its next render update.
 	*
 	*	If only parts of the surface has been changed, you can use one or several calls to
-	*	present(Rect) instead to increase performance.
+	*	present(RectI) instead to increase performance.
 	*
 	**/
 
@@ -327,7 +327,7 @@ namespace wg
 	*	forcing a redraw with the content of the surface during its next render update.
 	*
 	**/
-	void ICanvas::present(Rect area)
+	void ICanvas::present(RectI area)
 	{
 		m_pComponent->present(area);
 	}

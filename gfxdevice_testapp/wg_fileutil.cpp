@@ -126,7 +126,7 @@ namespace wg
 			px = PixelFormat::BGR_8;
 
 
-		auto pSurface = pFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, 0, pClut);
+		auto pSurface = pFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, 0, pClut);
 		SDL_FreeSurface(pSDLSurf);
 		return pSurface;
 	}

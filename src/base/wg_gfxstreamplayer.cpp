@@ -173,7 +173,7 @@ namespace wg
 
 		case GfxChunkId::Fill:
 		{
-			Rect	rect;
+			RectI	rect;
 			Color	col;
 
 			*m_pStream >> rect;
@@ -208,7 +208,7 @@ namespace wg
 
 			// Unpack Coordinates
 
-			Coord * pDest = (Coord*)pBuffer;
+			CoordI * pDest = (CoordI*)pBuffer;
 			int16_t * pSrc = (int16_t*) (pBuffer + bufferSize - header.size);
 
 			for (int i = 0; i < nPixels; i++)
@@ -219,7 +219,7 @@ namespace wg
 
 			//
 
-			m_pDevice->plotPixels(nPixels, (Coord*)pBuffer, (Color*)(pBuffer + header.size / 2));
+			m_pDevice->plotPixels(nPixels, (CoordI*)pBuffer, (Color*)(pBuffer + header.size / 2));
 
 			Base::memStackRelease(bufferSize);
 			break;
@@ -227,8 +227,8 @@ namespace wg
 
 		case GfxChunkId::DrawLineFromTo:
 		{
-			Coord	begin;
-			Coord	end;
+			CoordI	begin;
+			CoordI	end;
 			Color	color;
 			float	thickness;
 
@@ -243,7 +243,7 @@ namespace wg
 
 		case GfxChunkId::DrawLineStraight:
 		{
-			Coord		begin;
+			CoordI		begin;
 			Direction	dir;
 			uint16_t	length;
 			Color		color;
@@ -261,8 +261,8 @@ namespace wg
 
 		case GfxChunkId::Blit:
 		{
-			Coord		dest;
-			Rect		source;
+			CoordI		dest;
+			RectI		source;
 
 			*m_pStream >> dest;
 			*m_pStream >> source;
@@ -273,7 +273,7 @@ namespace wg
 
 		case GfxChunkId::StretchBlit:
 		{
-			Rect		dest;
+			RectI		dest;
 			RectF		source;
 
 			*m_pStream >> dest;
@@ -285,8 +285,8 @@ namespace wg
 
 		case GfxChunkId::SimpleTransformBlit:
 		{
-			Rect dest;
-			Coord src;
+			RectI dest;
+			CoordI src;
 			int transform[2][2];
 
 			*m_pStream >> dest;
@@ -299,7 +299,7 @@ namespace wg
 
 		case GfxChunkId::ComplexTransformBlit:
 		{
-			Rect dest;
+			RectI dest;
 			CoordF src;
 			float transform[2][2];
 
@@ -313,7 +313,7 @@ namespace wg
 
 		case GfxChunkId::TransformDrawSegments:
 		{
-			Rect		dest;
+			RectI		dest;
 			uint16_t	nSegments;
 			uint16_t	nEdgeStrips;
 
@@ -368,7 +368,7 @@ namespace wg
 		{
 			uint16_t	surfaceId;
 			PixelFormat	type;
-			Size		size;
+			SizeI		size;
 			uint16_t	flags;
 
 			*m_pStream >> surfaceId;
@@ -421,7 +421,7 @@ namespace wg
 		case GfxChunkId::BeginSurfaceUpdate:
 		{
 			uint16_t	surfaceId;
-			Rect		rect;
+			RectI		rect;
 
 			*m_pStream >> surfaceId;
 			*m_pStream >> rect;
@@ -448,7 +448,7 @@ namespace wg
 		case GfxChunkId::FillSurface:
 		{
 			uint16_t	surfaceId;
-			Rect		region;
+			RectI		region;
 			Color		col;
 
 			*m_pStream >> surfaceId;
@@ -463,8 +463,8 @@ namespace wg
 		{
 			uint16_t	destSurfaceId;
 			uint16_t	sourceSurfaceId;
-			Rect		sourceRect;
-			Coord		dest;
+			RectI		sourceRect;
+			CoordI		dest;
 
 			*m_pStream >> destSurfaceId;
 			*m_pStream >> sourceSurfaceId;

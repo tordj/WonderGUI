@@ -69,7 +69,7 @@ namespace wg
 
 	//____ setPreferredSize() _____________________________________________________
 
-	void SizeCapsule::setPreferredSize( Size size )
+	void SizeCapsule::setPreferredSize( SizeI size )
 	{
 		if( size != m_preferred )
 		{
@@ -80,7 +80,7 @@ namespace wg
 
 	//____ setSizes() _____________________________________________________________
 
-	void SizeCapsule::setSizes( Size min, Size preferred, Size max )
+	void SizeCapsule::setSizes( SizeI min, SizeI preferred, SizeI max )
 	{
 		m_min = min;
 		m_preferred = preferred;
@@ -90,7 +90,7 @@ namespace wg
 
 	//____ setMinSize() ___________________________________________________________
 
-	void SizeCapsule::setMinSize( Size size )
+	void SizeCapsule::setMinSize( SizeI size )
 	{
 		if( size != m_min )
 		{
@@ -101,7 +101,7 @@ namespace wg
 
 	//____ setMaxSize() ___________________________________________________________
 
-	void SizeCapsule::setMaxSize( Size size )
+	void SizeCapsule::setMaxSize( SizeI size )
 	{
 		if( size != m_max )
 		{
@@ -112,11 +112,11 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size SizeCapsule::preferredSize() const
+	SizeI SizeCapsule::preferredSize() const
 	{
 		if( m_child.pWidget )
 		{
-			Size pref = m_child.pWidget->preferredSize();
+			SizeI pref = m_child.pWidget->preferredSize();
 
 			if( m_preferred.w != 0 )
 				pref.w = m_preferred.w;
@@ -128,8 +128,8 @@ namespace wg
 			//TODO: Check so we don't have any corner cases that breaks the constraints and
 			// and that priorities between preferred height/width are reasonable.
 
-			Size min = minSize();
-			Size max = maxSize();
+			SizeI min = minSize();
+			SizeI max = maxSize();
 
 			if( pref.w < min.w )
 			{
@@ -179,21 +179,21 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size SizeCapsule::minSize() const
+	SizeI SizeCapsule::minSize() const
 	{
 
 		if( m_child.pWidget )
-			return Size::max(m_min,m_child.pWidget->minSize());
+			return SizeI::max(m_min,m_child.pWidget->minSize());
 		else
 			return m_min;
 	}
 
 	//____ maxSize() ______________________________________________________________
 
-	Size SizeCapsule::maxSize() const
+	SizeI SizeCapsule::maxSize() const
 	{
 		if( m_child.pWidget )
-			return Size::min(m_max,m_child.pWidget->maxSize());
+			return SizeI::min(m_max,m_child.pWidget->maxSize());
 		else
 			return m_max;
 	}

@@ -26,7 +26,7 @@
 namespace wg
 {
 	TextStyle ** TextStyleManager::s_pLookupTable = 0;		// Pointer at handle->pointer lookup table.
-	int			TextStyleManager::s_capacity = 0;			// Size in entries for lookup table.
+	int			TextStyleManager::s_capacity = 0;			// SizeI in entries for lookup table.
 	int			TextStyleManager::s_size = 0;
 	int			TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
 

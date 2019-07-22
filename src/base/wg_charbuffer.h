@@ -221,7 +221,7 @@ namespace wg
 		{
 			int			m_lockCnt;
 			int			m_refCnt;
-			int			m_size;					// Size in number of Char of buffer.
+			int			m_size;					// SizeI in number of Char of buffer.
 			int			m_beg;					// Beginning of chars.
 			int			m_len;					// Number of chars.
 		};

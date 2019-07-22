@@ -105,10 +105,10 @@ namespace wg
 
 	//____ preferredSize() __________________________________________________
 
-	Size ToggleButton::preferredSize() const
+	SizeI ToggleButton::preferredSize() const
 	{
-		Size iconPreferredSize;
-		Size textPreferredSize;
+		SizeI iconPreferredSize;
+		SizeI textPreferredSize;
 
 		if( !m_label.isEmpty() )
 			textPreferredSize = m_label.preferredSize();
@@ -122,7 +122,7 @@ namespace wg
 
 		// Apply the skin
 
-		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
+		SizeI preferredSize = SizeI::max( iconPreferredSize, textPreferredSize );
 
 		if( m_pSkin )
 			preferredSize = m_pSkin->sizeForContent( preferredSize );
@@ -269,17 +269,17 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
+	void ToggleButton::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
 		// Get the content rect and icon rect
 
-		Rect contentRect	= _canvas;
+		RectI contentRect	= _canvas;
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(_canvas, m_state );
 
-		Rect iconRect		= m_icon.getIconRect( contentRect );
+		RectI iconRect		= m_icon.getIconRect( contentRect );
 
 		// Blit icon
 
@@ -290,7 +290,7 @@ namespace wg
 
 	 	if( !m_label.isEmpty() )
 		{
-			Rect	textRect = m_icon.getTextRect( contentRect, iconRect );
+			RectI	textRect = m_icon.getTextRect( contentRect, iconRect );
 			m_label.render( pDevice, textRect );
 		}
 	}
@@ -306,11 +306,11 @@ namespace wg
 
 	//____ _setSize() _______________________________________________________
 
-	void ToggleButton::_setSize( const Size& size )
+	void ToggleButton::_setSize( const SizeI& size )
 	{
 		Widget::_setSize( size );
 
-		Rect contentRect	= Rect(0,0,size);
+		RectI contentRect	= RectI(0,0,size);
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 
@@ -336,13 +336,13 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( int _x, int _y )
 	{
-		Rect contentRect	= Rect(0,0,size());
+		RectI contentRect	= RectI(0,0,size());
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 
 		contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
-		if( m_label.charAtPos( Coord(_x,_y) - contentRect.pos() ) != -1 )
+		if( m_label.charAtPos( CoordI(_x,_y) - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;
@@ -350,15 +350,15 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool ToggleButton::_alphaTest( const Coord& ofs )
+	bool ToggleButton::_alphaTest( const CoordI& ofs )
 	{
-		Size	bgSize		= size();
+		SizeI	bgSize		= size();
 
-		Rect	contentRect = Rect(0,0,bgSize);
+		RectI	contentRect = RectI(0,0,bgSize);
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect( contentRect, m_state );
 
-		Rect	iconRect	= m_icon.getIconRect( contentRect );
+		RectI	iconRect	= m_icon.getIconRect( contentRect );
 
 		switch( m_clickArea )
 		{
@@ -366,7 +366,7 @@ namespace wg
 			{
 				// Extend iconRect so it connects with textArea before we compare
 
-				Rect	textRect = m_icon.getTextRect( contentRect, iconRect);
+				RectI	textRect = m_icon.getTextRect( contentRect, iconRect);
 
 				if( iconRect.x + iconRect.w < textRect.x )
 					iconRect.w = textRect.x - iconRect.x;

@@ -44,7 +44,7 @@ namespace wg
 
 	//____ add() _________________________________________________________________
 
-	IModalChildren::iterator IModalChildren::add(Widget * pWidget, const Rect& geometry, Origo origo)
+	IModalChildren::iterator IModalChildren::add(Widget * pWidget, const RectI& geometry, Origo origo)
 	{
 		//TODO: Assert
 
@@ -92,14 +92,14 @@ namespace wg
 
 	//____ setGeo() ______________________________________________________________
 
-	void IModalChildren::setGeo(int index, const Rect& geometry)
+	void IModalChildren::setGeo(int index, const RectI& geometry)
 	{
 		//TODO: Assert
 
 		_setGeo(m_pSlotArray->slot(index), geometry);
 	}
 
-	void IModalChildren::setGeo(iterator it, const Rect& geometry)
+	void IModalChildren::setGeo(iterator it, const RectI& geometry)
 	{
 		//TODO: Assert
 
@@ -108,14 +108,14 @@ namespace wg
 
 	//____ geo() _________________________________________________________________
 
-	Rect IModalChildren::geo(int index) const
+	RectI IModalChildren::geo(int index) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->geo;
 	}
 
-	Rect IModalChildren::geo(iterator it) const
+	RectI IModalChildren::geo(iterator it) const
 	{
 		//TODO: Assert
 
@@ -124,14 +124,14 @@ namespace wg
 
 	//____ setOfs() ______________________________________________________________
 
-	void IModalChildren::setOfs(int index, const Coord& ofs)
+	void IModalChildren::setOfs(int index, const CoordI& ofs)
 	{
 		//TODO: Assert
 
 		_setOfs(m_pSlotArray->slot(index), ofs);
 	}
 
-	void IModalChildren::setOfs(iterator it, const Coord& ofs)
+	void IModalChildren::setOfs(iterator it, const CoordI& ofs)
 	{
 		//TODO: Assert
 
@@ -140,14 +140,14 @@ namespace wg
 
 	//____ ofs() _________________________________________________________________
 
-	Coord IModalChildren::ofs(int index) const
+	CoordI IModalChildren::ofs(int index) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->geo.pos();
 	}
 
-	Coord IModalChildren::ofs(iterator it) const
+	CoordI IModalChildren::ofs(iterator it) const
 	{
 		//TODO: Assert
 
@@ -156,14 +156,14 @@ namespace wg
 
 	//____ setSize() __________________________________________________________
 
-	void IModalChildren::setSize(int index, const Size& size)
+	void IModalChildren::setSize(int index, const SizeI& size)
 	{
 		//TODO: Assert
 
 		_setSize(m_pSlotArray->slot(index), size);
 	}
 
-	void IModalChildren::setSize(iterator it, const Size& size)
+	void IModalChildren::setSize(iterator it, const SizeI& size)
 	{
 		//TODO: Assert
 
@@ -172,14 +172,14 @@ namespace wg
 
 	//____ size() ______________________________________________________________
 
-	Size IModalChildren::size( int index ) const
+	SizeI IModalChildren::size( int index ) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->geo.size();
 	}
 
-	Size IModalChildren::size( iterator it ) const
+	SizeI IModalChildren::size( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -188,14 +188,14 @@ namespace wg
 
 	//____ move() ______________________________________________________________
 
-	void IModalChildren::move( int index, const Coord& ofs )
+	void IModalChildren::move( int index, const CoordI& ofs )
 	{
 		//TODO: Assert
 
 		_move(m_pSlotArray->slot(index), ofs);
 	}
 
-	void IModalChildren::move( iterator it, const Coord& ofs )
+	void IModalChildren::move( iterator it, const CoordI& ofs )
 	{
 		//TODO: Assert
 
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ _setGeo() ______________________________________________________________
 
-	void IModalChildren::_setGeo(ModalSlot * p, const Rect& geometry)
+	void IModalChildren::_setGeo(ModalSlot * p, const RectI& geometry)
 	{
 		p->placementGeo = geometry;
 		m_pHolder->_refreshRealGeo(p);
@@ -220,14 +220,14 @@ namespace wg
 
 	//____ _setOfs() ______________________________________________________________
 
-	void IModalChildren::_setOfs(ModalSlot * p, const Coord& ofs)
+	void IModalChildren::_setOfs(ModalSlot * p, const CoordI& ofs)
 	{
 		p->placementGeo.setPos(ofs);
 		m_pHolder->_refreshRealGeo(p);
 	}
 	//____ _setSize() __________________________________________________________
 
-	void IModalChildren::_setSize(ModalSlot * p, const Size& size)
+	void IModalChildren::_setSize(ModalSlot * p, const SizeI& size)
 	{
 		p->placementGeo.setSize(size);
 		m_pHolder->_refreshRealGeo(p);
@@ -235,7 +235,7 @@ namespace wg
 
 	//____ _move() ______________________________________________________________
 
-	void IModalChildren::_move( ModalSlot * p, const Coord& ofs )
+	void IModalChildren::_move( ModalSlot * p, const CoordI& ofs )
 	{
 		p->placementGeo += ofs;
 		m_pHolder->_refreshRealGeo(p);
@@ -245,7 +245,7 @@ namespace wg
 
 	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
-		Size sz = pSlot->placementGeo.size();
+		SizeI sz = pSlot->placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
 			sz = pSlot->pWidget->preferredSize();
@@ -259,15 +259,15 @@ namespace wg
 		if( sz.h <= 0 )
 			sz.h = 1;
 
-		Coord ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
+		CoordI ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
 		ofs += pSlot->placementGeo.pos();
 
-		Rect newGeo( ofs, sz );
+		RectI newGeo( ofs, sz );
 
 		if( newGeo != pSlot->geo )
 		{
 			_onRequestRender(pSlot->geo, pSlot);
-			pSlot->geo = Rect( ofs, sz );
+			pSlot->geo = RectI( ofs, sz );
 			_onRequestRender(pSlot->geo, pSlot);
 		}
 	}
@@ -353,17 +353,17 @@ namespace wg
 
 	//____ preferredSize() _____________________________________________________________
 
-	Size ModalLayer::preferredSize() const
+	SizeI ModalLayer::preferredSize() const
 	{
 		if( m_baseSlot.pWidget )
 			return m_baseSlot.pWidget->preferredSize();
 		else
-			return Size(1,1);
+			return SizeI(1,1);
 	}
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  ModalLayer::_findWidget( const Coord& ofs, SearchMode mode )
+	Widget *  ModalLayer::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
@@ -529,7 +529,7 @@ namespace wg
 			ModalSlot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				Rect cover(pTo->geo, p->geo);
+				RectI cover(pTo->geo, p->geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -543,7 +543,7 @@ namespace wg
 			ModalSlot * p = pFrom;
 			while (p < pTo)
 			{
-				Rect cover(pTo->geo, p->geo);
+				RectI cover(pTo->geo, p->geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
@@ -591,7 +591,7 @@ namespace wg
 
 	//____ _setSize() ___________________________________________________________
 
-	void ModalLayer::_setSize( const Size& sz )
+	void ModalLayer::_setSize( const SizeI& sz )
 	{
 		Layer::_setSize(sz);
 

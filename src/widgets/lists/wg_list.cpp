@@ -77,19 +77,19 @@ namespace wg
 
 	void List::setEntrySkin( Skin * pSkin )
 	{
-		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : Size();
+		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : SizeI();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : Size() );
+		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : SizeI() );
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
-//		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : Size();
-		Size padding[2];
+//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : SizeI();
+		SizeI padding[2];
 
 		if( pOddEntrySkin )
 			padding[0] = pOddEntrySkin->contentPadding();
@@ -104,7 +104,7 @@ namespace wg
 		m_pEntrySkin[1] = pEvenEntrySkin;
 		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPadding() : Size() );
+		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPadding() : SizeI() );
 		return true;
 	}
 
@@ -153,7 +153,7 @@ namespace wg
 				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry->pWidget != m_pHoveredChild.rawPtr() )
 				{
-					Rect geo;
+					RectI geo;
 					if( m_pHoveredChild )
 					{
 						_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() );
@@ -172,7 +172,7 @@ namespace wg
 				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( m_pHoveredChild && !pEntry )
 				{
-					Rect geo;
+					RectI geo;
 					_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() );
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
@@ -186,11 +186,11 @@ namespace wg
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
-					Coord ofs = toLocal(pMsg->pointerPos());
+					CoordI ofs = toLocal(pMsg->pointerPos());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 
-					Rect listArea = _listArea();
+					RectI listArea = _listArea();
 					ListSlot * pEntry = _findEntry(ofs);
 
 					ofs = listArea.limit(ofs);
@@ -268,7 +268,7 @@ namespace wg
 			case MsgType::MouseRelease:
 				if( m_selectMode != SelectMode::Unselectable && MouseReleaseMsg::cast(_pMsg)->button() == MouseButton::Left )
 				{
-					Rect dirtyRect( m_lassoBegin, m_lassoEnd );
+					RectI dirtyRect( m_lassoBegin, m_lassoEnd );
 					_requestRender(dirtyRect);
 
 					m_lassoBegin = m_lassoEnd;
@@ -289,15 +289,15 @@ namespace wg
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
-					Coord ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
+					CoordI ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
 					ofs = _listWindow().limit(ofs);
 
-					Rect oldLasso( m_lassoBegin, m_lassoEnd );
-					Rect newLasso( m_lassoBegin, ofs );
+					RectI oldLasso( m_lassoBegin, m_lassoEnd );
+					RectI newLasso( m_lassoBegin, ofs );
 
 					_onLassoUpdated( oldLasso, newLasso );
 
-					Rect dirtyRect = oldLasso;
+					RectI dirtyRect = oldLasso;
 					dirtyRect.growToContain( ofs );
 					_requestRender( dirtyRect );
 					m_lassoEnd = ofs;
@@ -438,11 +438,11 @@ namespace wg
 
 		// Request render for the range
 
-		Rect geoFirst;
-		Rect geoLast;
+		RectI geoFirst;
+		RectI geoLast;
 		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
-		_requestRender( Rect::getUnion(geoFirst,geoLast) );
+		_requestRender( RectI::getUnion(geoFirst,geoLast) );
 
 		// Reserve ItemInfo array of right size if we are going to post message
 

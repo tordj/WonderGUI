@@ -344,7 +344,7 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	bool ResDB::addLegoSource( const std::string& id, const std::string& surface, Rect rect, uint32_t nStates, MetaData * pMetaData )
+	bool ResDB::addLegoSource( const std::string& id, const std::string& surface, RectI rect, uint32_t nStates, MetaData * pMetaData )
 	{
 		assert(m_mapLegoSources.find(id) == m_mapLegoSources.end());
 		if(m_mapLegoSources.find(id) == m_mapLegoSources.end())

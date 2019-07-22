@@ -1,0 +1,4 @@
+Rect&	= RectI&
+Coord&	= CoordI&
+Size& = SizeI&
+Border& = BorderI&

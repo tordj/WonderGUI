@@ -36,7 +36,7 @@ namespace wg
 	}
 
 
-	GfxAnim::GfxAnim( Size size )
+	GfxAnim::GfxAnim( SizeI size )
 	{
 		m_size = size;
 	}
@@ -70,14 +70,14 @@ namespace wg
 
 	//____ setSize() ______________________________________________________________
 
-	void GfxAnim::setSize( Size size )
+	void GfxAnim::setSize( SizeI size )
 	{
 		m_size = size;
 	}
 
 	//____ insertFrame() __________________________________________________________
 
-	bool GfxAnim::insertFrame( int pos, Surface * pSurf, Coord ofs, int duration )
+	bool GfxAnim::insertFrame( int pos, Surface * pSurf, CoordI ofs, int duration )
 	{
 		if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 			return false;
@@ -86,7 +86,7 @@ namespace wg
 		GfxFrame * pFrame = new GfxFrame();
 
 		pFrame->pSurf = pSurf;
-		pFrame->rect = Rect(ofs,m_size);
+		pFrame->rect = RectI(ofs,m_size);
 
 		bool bOk = Anim::_insertKeyFrame( pos, pFrame, duration );
 
@@ -96,7 +96,7 @@ namespace wg
 		return bOk;
 	}
 
-	bool GfxAnim::insertFrame( GfxFrame * pBefore, Surface * pSurf, Coord ofs, int duration )
+	bool GfxAnim::insertFrame( GfxFrame * pBefore, Surface * pSurf, CoordI ofs, int duration )
 	{
 		if( !pSurf )
 			return false;
@@ -104,7 +104,7 @@ namespace wg
 		GfxFrame * pFrame = new GfxFrame;
 
 		pFrame->pSurf = pSurf;
-		pFrame->rect = Rect(ofs,m_size);
+		pFrame->rect = RectI(ofs,m_size);
 
 		bool bOk = Anim::_insertKeyFrame( pBefore, pFrame, duration );
 
@@ -116,7 +116,7 @@ namespace wg
 
 	//____ addFrame() _____________________________________________________________
 
-	bool GfxAnim::addFrame( Surface * pSurf, Coord ofs, int duration )
+	bool GfxAnim::addFrame( Surface * pSurf, CoordI ofs, int duration )
 	{
 		if( !pSurf || pSurf->width() < (int)(ofs.x + m_size.w) || pSurf->height() < (int)(ofs.y + m_size.h) )
 			return false;
@@ -124,7 +124,7 @@ namespace wg
 		GfxFrame * pFrame = new GfxFrame;
 
 		pFrame->pSurf = pSurf;
-		pFrame->rect = Rect(ofs,m_size);
+		pFrame->rect = RectI(ofs,m_size);
 
 		bool bOk = Anim::_addKeyFrame( pFrame, duration );
 
@@ -137,21 +137,21 @@ namespace wg
 
 	//____ addFrames() ____________________________________________________________
 
-	int GfxAnim::addFrames( Surface * pSurf, int duration, int nFrames, Size spacing )
+	int GfxAnim::addFrames( Surface * pSurf, int duration, int nFrames, SizeI spacing )
 	{
 		if( !pSurf )
 			return 0;
 
-		Size arraySize;
+		SizeI arraySize;
 
 		arraySize.w = (pSurf->width()+spacing.w) / (m_size.w+spacing.w);
 		arraySize.h = (pSurf->height()+spacing.h) / (m_size.h+spacing.h);
 
-		return addFrames( pSurf, Coord(0,0), arraySize, duration, nFrames, spacing );
+		return addFrames( pSurf, CoordI(0,0), arraySize, duration, nFrames, spacing );
 	}
 
 
-	int GfxAnim::addFrames( Surface * pSurf, Coord arrayOfs, Size arraySize, int duration, int nFrames, Size spacing )
+	int GfxAnim::addFrames( Surface * pSurf, CoordI arrayOfs, SizeI arraySize, int duration, int nFrames, SizeI spacing )
 	{
 		int nFramesX = arraySize.w;
 		int nFramesY = arraySize.h;
@@ -175,7 +175,7 @@ namespace wg
 				GfxFrame * pFrame = new GfxFrame;
 
 				pFrame->pSurf = pSurf;
-				pFrame->rect = Rect( arrayOfs.x + x*(m_size.w+spacing.w), arrayOfs.y + y*(m_size.h+spacing.h), m_size );
+				pFrame->rect = RectI( arrayOfs.x + x*(m_size.w+spacing.w), arrayOfs.y + y*(m_size.h+spacing.h), m_size );
 
 				bool bOk = Anim::_addKeyFrame( pFrame, duration );
 

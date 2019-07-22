@@ -72,21 +72,21 @@ namespace wg
 		bool			setPixelFormat(PixelFormat format);
 		PixelFormat		pixelFormat() const;
 
-		bool			setSize(Size sz);
+		bool			setSize(SizeI sz);
 		bool			isSizeFixed() const;
-		Size			size() const;
+		SizeI			size() const;
 
 		void			setBackColor(Color color);
 		Color			backColor() const;
 
-		void			setPresentationScaling(SizeQolicy2D policy);
-		SizeQolicy2D	presentationScaling() const;
+		void			setPresentationScaling(SizePolicy2D policy);
+		SizePolicy2D	presentationScaling() const;
 
 		void			setOrigo(Origo origo);
 		Origo			origo() const;
 
 		void			present();
-		void			present(Rect area);
+		void			present(RectI area);
 
 		Surface_wp		surface() const;
 

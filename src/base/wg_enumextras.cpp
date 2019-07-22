@@ -163,7 +163,7 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(SizeQolicy i)
+	const char * toString(SizePolicy i)
 	{
 		static const char * names[] = { 
 			"Default = 0",
@@ -174,7 +174,7 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(SizeQolicy2D i)
+	const char * toString(SizePolicy2D i)
 	{
 		static const char * names[] = { 
 			"Original",

@@ -90,7 +90,7 @@ namespace wg
 
 	//____ preferredSize() _______________________________________________________
 
-	Size  SplitPanel::preferredSize() const
+	SizeI  SplitPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -167,10 +167,10 @@ namespace wg
 
 	void SplitPanel::_updatePreferredSize()
 	{
-		Size firstSz;
-		Size secondSz;
+		SizeI firstSz;
+		SizeI secondSz;
 
-		Size sz;
+		SizeI sz;
 
 		if (m_firstChild.pWidget)
 			firstSz = m_firstChild.pWidget->preferredSize();
@@ -198,7 +198,7 @@ namespace wg
 		if (m_pSkin)
 		{
 			sz += m_pSkin->contentPadding();
-			Size skinSz = m_pSkin->preferredSize();
+			SizeI skinSz = m_pSkin->preferredSize();
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;
 			if (skinSz.h > sz.h)
@@ -217,12 +217,12 @@ namespace wg
 
 	bool SplitPanel::_updateGeo(int handleMovement)
 	{
-		Rect geo = m_size;
-		Rect contentGeo = m_pSkin ? m_pSkin->contentRect(geo, m_state) : geo;
+		RectI geo = m_size;
+		RectI contentGeo = m_pSkin ? m_pSkin->contentRect(geo, m_state) : geo;
 
-		Rect firstChildGeo;
-		Rect secondChildGeo;
-		Rect handleGeo;
+		RectI firstChildGeo;
+		RectI secondChildGeo;
+		RectI handleGeo;
 
 		// Calculate new lengths using broker
 
@@ -248,15 +248,15 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			firstChildGeo = Rect(contentGeo.x, contentGeo.y, firstChildLength, contentGeo.h);
-			secondChildGeo = Rect(contentGeo.x + contentGeo.w - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
-			handleGeo = Rect(contentGeo.x + firstChildLength, contentGeo.y, handleThickness, contentGeo.h );
+			firstChildGeo = RectI(contentGeo.x, contentGeo.y, firstChildLength, contentGeo.h);
+			secondChildGeo = RectI(contentGeo.x + contentGeo.w - secondChildLength, contentGeo.y, secondChildLength, contentGeo.h);
+			handleGeo = RectI(contentGeo.x + firstChildLength, contentGeo.y, handleThickness, contentGeo.h );
 		}
 		else
 		{
-			firstChildGeo = Rect(contentGeo.x, contentGeo.y, contentGeo.w, firstChildLength);
-			secondChildGeo = Rect(contentGeo.x, contentGeo.y + contentGeo.h - secondChildLength, contentGeo.w, secondChildLength);
-			handleGeo = Rect(contentGeo.x, contentGeo.y + firstChildLength, contentGeo.w, handleThickness);
+			firstChildGeo = RectI(contentGeo.x, contentGeo.y, contentGeo.w, firstChildLength);
+			secondChildGeo = RectI(contentGeo.x, contentGeo.y + contentGeo.h - secondChildLength, contentGeo.w, secondChildLength);
+			handleGeo = RectI(contentGeo.x, contentGeo.y + firstChildLength, contentGeo.w, handleThickness);
 		}
 
 		// Request render and set sizes
@@ -378,7 +378,7 @@ namespace wg
 				if (m_handleState.isPressed())
 					return;
 
-				Coord pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+				CoordI pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
 
 				bool bHovered = m_handleGeo.contains(pos);
 				handleState.setHovered(bHovered);
@@ -400,7 +400,7 @@ namespace wg
 				if (p->button() != MouseButton::Left)
 					return;
 
-				Coord pos = p->pointerPos() - globalPos();
+				CoordI pos = p->pointerPos() - globalPos();
 				if (m_handleGeo.contains(pos))
 				{
 					m_handlePressOfs = m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y;
@@ -434,7 +434,7 @@ namespace wg
 
 				if (handleState.isPressed())
 				{
-					Coord pos = p->pointerPos() - globalPos();
+					CoordI pos = p->pointerPos() - globalPos();
 					int diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);
@@ -459,7 +459,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void SplitPanel::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
+	void SplitPanel::_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window)
 	{
 		Panel::_render(pDevice, _canvas, _window);
 
@@ -470,17 +470,17 @@ namespace wg
 
 	//____ _collectPatches() __________________________________________________
 
-	void SplitPanel::_collectPatches(Patches& container, const Rect& geo, const Rect& clip)
+	void SplitPanel::_collectPatches(Patches& container, const RectI& geo, const RectI& clip)
 	{
 		if (m_pSkin)
-			container.add(Rect(geo, clip));
+			container.add(RectI(geo, clip));
 		else
 		{
 			if (m_firstChild.pWidget)
 				m_firstChild.pWidget->_collectPatches(container, m_firstChild.geo + geo.pos(), clip );
 
 			if( m_pHandleSkin )
-				container.add(Rect(m_handleGeo, clip));
+				container.add(RectI(m_handleGeo, clip));
 
 			if (m_secondChild.pWidget)
 				m_secondChild.pWidget->_collectPatches(container, m_secondChild.geo + geo.pos(), clip );
@@ -489,19 +489,19 @@ namespace wg
 
 	//____ _maskPatches() _____________________________________________________
 
-	void SplitPanel::_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode)
+	void SplitPanel::_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode)
 	{
 		{
 			//TODO: Don't just check isOpaque() globally, check rect by rect.
 			if ((m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace)
-				patches.sub(Rect(geo, clip));
+				patches.sub(RectI(geo, clip));
 			else
 			{
 				if (m_firstChild.pWidget)
 					m_firstChild.pWidget->_maskPatches(patches, m_firstChild.geo + geo.pos(), clip, blendMode );
 
 				if (m_pHandleSkin && m_pHandleSkin->isOpaque() )
-					patches.sub(Rect(m_handleGeo, clip));
+					patches.sub(RectI(m_handleGeo, clip));
 
 				if (m_secondChild.pWidget)
 					m_secondChild.pWidget->_maskPatches(patches, m_secondChild.geo + geo.pos(), clip, blendMode );
@@ -511,7 +511,7 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool SplitPanel::_alphaTest(const Coord& ofs)
+	bool SplitPanel::_alphaTest(const CoordI& ofs)
 	{
 		bool bHit = Panel::_alphaTest(ofs);
 
@@ -530,7 +530,7 @@ namespace wg
 
 	//____ _setSize() _________________________________________________________
 
-	void SplitPanel::_setSize(const Size& size)
+	void SplitPanel::_setSize(const SizeI& size)
 	{
 		Panel::_setSize(size);
 		_updateGeo();
@@ -617,14 +617,14 @@ namespace wg
 
 	//_____ _childPos() _______________________________________________________
 
-	Coord SplitPanel::_childPos(Slot * pSlot) const
+	CoordI SplitPanel::_childPos(Slot * pSlot) const
 	{
 		return static_cast<SplitPanelSlot*>(pSlot)->geo.pos();
 	}
 
 	//_____ _childSize() ______________________________________________________
 
-	Size SplitPanel::_childSize(Slot * pSlot) const
+	SizeI SplitPanel::_childSize(Slot * pSlot) const
 	{
 		return static_cast<SplitPanelSlot*>(pSlot)->geo.size();
 	}
@@ -636,7 +636,7 @@ namespace wg
 		_requestRender(static_cast<SplitPanelSlot*>(pSlot)->geo);
 	}
 
-	void SplitPanel::_childRequestRender(Slot * pSlot, const Rect& rect)
+	void SplitPanel::_childRequestRender(Slot * pSlot, const RectI& rect)
 	{
 		_requestRender(rect + static_cast<SplitPanelSlot*>(pSlot)->geo.pos());
 	}

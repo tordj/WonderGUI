@@ -33,7 +33,7 @@ namespace wg
 	 *
 	 * Create an empty blob of the specified size.
 	 *
-	 * @param size Size in bytes of area to allocate.
+	 * @param size SizeI in bytes of area to allocate.
 	 *
 	 * Allocates a memory buffer of the given size and wraps it into a Blob.
 	 * The memory buffer will not move and can be accessed randomly at any
@@ -78,7 +78,7 @@ namespace wg
 	 *
 	 * @param pData			Pointer at the data to be considered the content of the Blob.
 	 *
-	 * @param size			Size of the data pointed to by pData.
+	 * @param size			SizeI of the data pointed to by pData.
 	 *
 	 * @param destructor 	Lambda function that is called to destroy the data
 	 * 						when the Blob is destroyed.

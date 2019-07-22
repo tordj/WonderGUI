@@ -15,7 +15,7 @@ public:
 
 	}
 
-	bool init(GfxDevice * pDevice, const Rect& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pLeaves = FileUtil::loadSurface("../resources/BLAETTER.GIF", pDevice->surfaceFactory());
 		if (!m_pLeaves)
@@ -30,38 +30,38 @@ public:
 		return true;
 	}
 
-	bool exit(GfxDevice * pDevice, const Rect& canvas)
+	bool exit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pLeaves = nullptr;
 		return true;
 	}
 
 
-	bool dummy(GfxDevice * pDevice, const Rect& canvas)
+	bool dummy(GfxDevice * pDevice, const RectI& canvas)
 	{
 		return true;
 	}
 
-	bool setNearestPicture(GfxDevice * pDevice, const Rect& canvas)
+	bool setNearestPicture(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pLeaves);
 		return true;
 	}
 
-	bool setInterpolatedPicture(GfxDevice * pDevice, const Rect& canvas)
+	bool setInterpolatedPicture(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pLeavesInterpolated);
 		return true;
 	}
 
 
-	bool	blit(GfxDevice * pDevice, const Rect& canvas)
+	bool	blit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->blit(canvas);
 		return true;
 	}
 
-	bool	flipBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	flipBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->flipBlit(canvas, GfxFlip::Rot270);
 		return true;
@@ -69,16 +69,16 @@ public:
 
 
 
-	bool	rotScaleBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	rotScaleBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		CoordF center = { m_pLeaves->size().w / 2.f, m_pLeaves->size().h / 2.f };
 		pDevice->rotScaleBlit(canvas, center, rot, scale);
 		return true;
 	}
 
-	bool	stretchBlit(GfxDevice * pDevice, const Rect& canvas)
+	bool	stretchBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->stretchBlit(canvas, Rect(0, 0, m_pLeaves->size()));
+		pDevice->stretchBlit(canvas, RectI(0, 0, m_pLeaves->size()));
 		return true;
 	}
 

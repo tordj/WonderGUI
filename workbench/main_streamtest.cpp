@@ -44,15 +44,15 @@ void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, cons
 
 void playDelayFrames(GfxDevice_p pDevice, int nFrames);
 
-void playRectangleDance(GfxDevice_p pDevice, Rect canvas);
+void playRectangleDance(GfxDevice_p pDevice, RectI canvas);
 
-void playInitButtonRow(GfxDevice_p pDevice, Rect canvas);
+void playInitButtonRow(GfxDevice_p pDevice, RectI canvas);
 void playButtonPress(GfxDevice_p pDevice, int button);
 void playButtonRelease(GfxDevice_p pDevice, int button);
 void playSetSlider(GfxDevice_p pDevice, float percentage);
 
 
-Coord positionSprite(Size dimensions, int tick, int nb, int amount);
+Coord positionSprite(SizeI dimensions, int tick, int nb, int amount);
 
 
 
@@ -167,7 +167,7 @@ int main ( int argc, char** argv )
 		type = PixelType::BGR_8;
 		
 	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);	
-	SoftSurface_p pCanvas = SoftSurface::create( Size(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
+	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), type, pCanvasBlob, pWinSurf->pitch );
 
 	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 
@@ -193,7 +193,7 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pFontSurf = IMG_Load( "../resources/anuvverbubbla_8x8.png" );
 //	convertSDLFormat( &format, pFontSurf->format );
-	SoftSurface_p pFontImg = SoftSurface::create( Size(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
+	SoftSurface_p pFontImg = SoftSurface::create( SizeI(pFontSurf->w,pFontSurf->h), PixelType::BGRA_8, (unsigned char*) pFontSurf->pixels, pFontSurf->pitch);
 	SDL_FreeSurface( pFontSurf );
 		
 	BitmapFont_p pBmpFont = BitmapFont::create( pFontImg, pFontSpec );
@@ -223,14 +223,14 @@ int main ( int argc, char** argv )
 
 	SDL_Surface * pSDLSurf = IMG_Load( "../resources/simple_button.bmp" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pButtonSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, Border(3) );
-	pSimpleButtonSkin->setContentPadding( Border(5) );
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface( pButtonSurface, 0, BorderI(3) );
+	pSimpleButtonSkin->setContentPadding( BorderI(5) );
 
 	pSDLSurf = IMG_Load( "../resources/splash.png" );
 	convertSDLFormat( &format, pSDLSurf->format );
-	SoftSurface_p pSplashSurface = SoftSurface::create( Size( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
+	SoftSurface_p pSplashSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelType::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, &format );
 	SDL_FreeSurface( pSDLSurf );
 	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface( pSplashSurface );
 */
@@ -256,7 +256,7 @@ int main ( int argc, char** argv )
 
    {
         TestWidget_p pTest = TestWidget::create();
-		pBasePanel->children.add(pTest, [](Widget* pWidget, Size size) { return Rect(10, 10, 100, 100); });
+		pBasePanel->children.add(pTest, [](Widget* pWidget, SizeI size) { return RectI(10, 10, 100, 100); });
         pTest->start();
     }
 	*/
@@ -405,7 +405,7 @@ int main ( int argc, char** argv )
 
 	auto pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&format, pSDLSurf->format);
-	Surface_p pSplashSurface = pSurfaceFactory->createSurface(Size(pSDLSurf->w, pSDLSurf->h), PixelType::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
+	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelType::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format);
 	SDL_FreeSurface(pSDLSurf);
 
 
@@ -522,7 +522,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 				
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, Coord(e.motion.x,e.motion.y) );
+				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
 				break;
 				
 			case SDL_MOUSEBUTTONDOWN:
@@ -535,7 +535,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				
 			case SDL_MOUSEWHEEL:
 			{
-				Coord distance( e.wheel.x, e.wheel.y );
+				CoordI distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
 					distance *= -1;
 			
@@ -600,7 +600,7 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 	
-	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
+	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
@@ -701,11 +701,11 @@ void convertSDLFormat( PixelFormat * pWGFormat, const SDL_PixelFormat * pSDLForm
 
 //____ playRectangleDance() _________________________________________________
 
-void playRectangleDance(GfxDevice_p pDevice, Rect canvas )
+void playRectangleDance(GfxDevice_p pDevice, RectI canvas )
 {
 	int ticker = 0;
-	Size spriteSize(100, 100);
-	Size moveDim(canvas.w - spriteSize.w, canvas.h - spriteSize.h);
+	SizeI spriteSize(100, 100);
+	SizeI moveDim(canvas.w - spriteSize.w, canvas.h - spriteSize.h);
 
 	while (ticker < 600)
 	{
@@ -721,11 +721,11 @@ void playRectangleDance(GfxDevice_p pDevice, Rect canvas )
 	}
 }
 
-Coord positionSprite(Size dimensions, int tick, int nb, int amount)
+Coord positionSprite(SizeI dimensions, int tick, int nb, int amount)
 {
 	const float PI = 3.14159265f;
 
-	Coord	radius = { dimensions.w / 2, dimensions.h / 2 };
+	CoordI	radius = { dimensions.w / 2, dimensions.h / 2 };
 
 	if (tick < 90)
 		radius *= sin(tick*PI / 180);
@@ -734,7 +734,7 @@ Coord positionSprite(Size dimensions, int tick, int nb, int amount)
 		radius *= 1.f - sin((tick - (600 - 90))*PI / 180);
 
 
-	Coord c;
+	CoordI c;
 	c.x = (int)(cos((tick + nb*360.f / amount)*PI / 180)*radius.x + dimensions.w / 2);
 	c.y = (int)(sin((tick + nb*360.f / amount)*PI / 180)*radius.y + dimensions.h / 2);
 	return c;
@@ -759,7 +759,7 @@ Rect	buttonRect;
 Coord	buttonPitch;
 Rect	sliderRect;
 
-void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
+void playInitButtonRow(GfxDevice_p pDevice, RectI canvas)
 {
 	// Init lamps
 
@@ -770,11 +770,11 @@ void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
 
 	pDevice->fill({ 0,0,canvas.w,canvas.h / 4 }, Color::LightGray);
 
-	Rect r = buttonRect;
+	RectI r = buttonRect;
 	for (int i = 0; i < 4; i++)
 	{
 		pDevice->fill(r, Color::White);
-		pDevice->fill(r - Border(4), Color::DarkBlue);
+		pDevice->fill(r - BorderI(4), Color::DarkBlue);
 		r += buttonPitch;
 	}
 
@@ -785,7 +785,7 @@ void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
 	pDevice->fill({0, canvas.h / 4, canvas.w, canvas.h / 8}, Color::LightGray);
 
 	pDevice->fill( sliderRect, Color::White);
-	sliderRect -= Border(4);
+	sliderRect -= BorderI(4);
 	pDevice->fill( sliderRect, Color::DarkBlue);
 
 	pDevice->endRender();
@@ -794,14 +794,14 @@ void playInitButtonRow(GfxDevice_p pDevice, Rect canvas)
 void playButtonPress(GfxDevice_p pDevice, int button)
 {
 	pDevice->beginRender();
-	pDevice->fill(buttonRect + buttonPitch*button - Border(4), Color::LightBlue);
+	pDevice->fill(buttonRect + buttonPitch*button - BorderI(4), Color::LightBlue);
 	pDevice->endRender();
 }
 
 void playButtonRelease(GfxDevice_p pDevice, int button)
 {
 	pDevice->beginRender();
-	pDevice->fill(buttonRect + buttonPitch*button - Border(4), Color::DarkBlue);
+	pDevice->fill(buttonRect + buttonPitch*button - BorderI(4), Color::DarkBlue);
 	pDevice->endRender();
 }
 void playSetSlider(GfxDevice_p pDevice, float percentage)

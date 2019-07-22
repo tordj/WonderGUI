@@ -505,7 +505,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void CTextEditor::render( GfxDevice * pDevice, const Rect& _canvas )
+	void CTextEditor::render( GfxDevice * pDevice, const RectI& _canvas )
 	{
 		_textMapper()->render(this, pDevice, _canvas );
 	}
@@ -913,7 +913,7 @@ namespace wg
 
 	//____ _caretToPos() __________________________________________________________
 
-	bool CTextEditor::caretToPos( Coord pos)
+	bool CTextEditor::caretToPos( CoordI pos)
 	{
 		int ofs = _textMapper()->caretToPos(this,pos, m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
@@ -990,8 +990,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		Rect preferred = _textMapper()->rectForRange(this, beg, end - beg);
-		Rect prio = _textMapper()->rectForCaret(this);
+		RectI preferred = _textMapper()->rectForRange(this, beg, end - beg);
+		RectI prio = _textMapper()->rectForCaret(this);
 
 		_requestVisibility(preferred, prio);
 	}
