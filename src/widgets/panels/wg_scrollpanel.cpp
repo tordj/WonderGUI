@@ -120,16 +120,16 @@ namespace wg
 
 		switch (widthPolicy)
 		{
-		case SizePolicy::Default:
+		case SizeQolicy::Default:
 		{
 			sz.h = Util::sizeFromPolicy(defaultSize.h, specifiedSize.h, heightPolicy);
 			sz.w = paddedMatchingWidth(sz.h);
 			break;
-		case SizePolicy::Bound:
+		case SizeQolicy::Bound:
 			sz.w = specifiedSize.w;
 			sz.h = Util::sizeFromPolicy(paddedMatchingHeight(sz.w), specifiedSize.h, heightPolicy);
 			break;
-		case SizePolicy::Confined:
+		case SizeQolicy::Confined:
 			if (defaultSize.w > specifiedSize.w)
 			{
 				sz.w = specifiedSize.w;
@@ -143,7 +143,7 @@ namespace wg
 					sz.w = specifiedSize.w;
 			}
 			break;
-		case SizePolicy::Expanded:
+		case SizeQolicy::Expanded:
 			if (defaultSize.w < specifiedSize.w)
 			{
 				sz.w = specifiedSize.w;
@@ -307,7 +307,7 @@ namespace wg
 			m_pHolder->_requestRender(m_pSlot->windowGeo);
 	}
 
-	void ViewEntry::setWidthPolicy(SizePolicy policy)
+	void ViewEntry::setWidthPolicy(SizeQolicy policy)
 	{
 		if (policy != m_pSlot->widthPolicy)
 		{
@@ -316,7 +316,7 @@ namespace wg
 		}
 	}
 
-	void ViewEntry::setHeightPolicy(SizePolicy policy)
+	void ViewEntry::setHeightPolicy(SizeQolicy policy)
 	{
 		if (policy != m_pSlot->heightPolicy)
 		{

@@ -45,7 +45,7 @@ namespace wg
 
 	MultiBlockSkin::MultiBlockSkin(Size blockSize, Border frame)
 	{
-		m_blockSizePoints	= blockSize;
+		m_blockSizeQoints	= blockSize;
 		m_frame				= frame;
 		m_bIsOpaque			= false;
 
@@ -87,8 +87,8 @@ namespace wg
 		// HACK!
 
 //		m_scale = pSurf->ScaleFactor();
-//		m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
-		m_blockSize = m_blockSizePoints;
+//		m_blockSize = (m_blockSizeQoints*m_scale) / WG_SCALE_BASE;
+		m_blockSize = m_blockSizeQoints;
 
 		//
 
@@ -120,8 +120,8 @@ namespace wg
 		// HACK!
 
 //		m_scale = pSurf->ScaleFactor();
-//		m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
-		m_blockSize = m_blockSizePoints;
+//		m_blockSize = (m_blockSizeQoints*m_scale) / WG_SCALE_BASE;
+		m_blockSize = m_blockSizeQoints;
 
 		//
 
@@ -179,9 +179,9 @@ namespace wg
 		Coord blockPitch;
 
 		if (orientation == Orientation::Horizontal)
-			blockPitch.x = m_blockSizePoints.w + spacing;
+			blockPitch.x = m_blockSizeQoints.w + spacing;
 		else
-			blockPitch.y = m_blockSizePoints.h + spacing;
+			blockPitch.y = m_blockSizeQoints.h + spacing;
 
 		return addLayer(pSurf, blockStartOfs, blockPitch, stateBlocks);
 	}
@@ -322,30 +322,30 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	SizeP MultiBlockSkin::minSize() const
+	SizeQ MultiBlockSkin::minSize() const
 	{
-		SizeP content = ExtendedSkin::minSize();
-		SizeP frame = pixelAligned(m_frame);
-		return SizeP::max(content, frame);
+		SizeQ content = ExtendedSkin::minSize();
+		SizeQ frame = pixelAligned(m_frame);
+		return SizeQ::max(content, frame);
 	}
 
 	//____ preferredSize() ________________________________________________________
 
-	SizeP MultiBlockSkin::preferredSize() const
+	SizeQ MultiBlockSkin::preferredSize() const
 	{
-		SizeP content = ExtendedSkin::preferredSize();
-		SizeP frame = pixelAligned(m_frame);
-		return SizeP::max(content, frame);
+		SizeQ content = ExtendedSkin::preferredSize();
+		SizeQ frame = pixelAligned(m_frame);
+		return SizeQ::max(content, frame);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	SizeP MultiBlockSkin::sizeForContent( const SizeP contentSize ) const
+	SizeQ MultiBlockSkin::sizeForContent( const SizeQ contentSize ) const
 	{
-		SizeP sz = ExtendedSkin::sizeForContent(contentSize);
-		SizeP min = pixelAligned(m_frame);
+		SizeQ sz = ExtendedSkin::sizeForContent(contentSize);
+		SizeQ min = pixelAligned(m_frame);
 
-		return SizeP::max(sz, min);
+		return SizeQ::max(sz, min);
 	}
 
 	//____ markTest() _____________________________________________________________

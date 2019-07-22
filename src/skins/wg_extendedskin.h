@@ -46,21 +46,21 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual SizeP	minSize() const override;
-		virtual SizeP	preferredSize() const override;
-		virtual SizeP	sizeForContent( const SizeP contentSize ) const override;
+		virtual SizeQ	minSize() const override;
+		virtual SizeQ	preferredSize() const override;
+		virtual SizeQ	sizeForContent( const SizeQ contentSize ) const override;
 
 		virtual void	setContentPadding( Border padding );
-		virtual SizeP	contentPadding() const override;
-		virtual CoordP	contentOfs( State state ) const override;
-		virtual RectP	contentRect( const RectP& canvas, State state ) const override;
+		virtual SizeQ	contentPadding() const override;
+		virtual CoordQ	contentOfs( State state ) const override;
+		virtual RectQ	contentRect( const RectQ& canvas, State state ) const override;
 
 		//.____ Behavior _______________________________________________________
 
 		virtual void	clearContentShift();
 		virtual void	setContentShift(State state, Coord shift);
 		virtual void	setContentShift(std::initializer_list< std::pair<State, Coord> > StateShifts);
-		virtual CoordP	contentShift(State state) const;
+		virtual CoordQ	contentShift(State state) const;
 
 		//.____ Misc ____________________________________________________
 

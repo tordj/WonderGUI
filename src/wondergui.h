@@ -64,8 +64,8 @@
 #include <wg_paddedslot.h>
 #include <wg_patches.h>
 #include <wg_payload.h>
-#include <wg_point.h>
 #include <wg_pointers.h>
+#include <wg_qpix.h>
 #include <wg_receiver.h>
 #include <wg_resdb.h>
 #include <wg_resloader.h>

@@ -86,10 +86,10 @@ namespace wg
 
 		switch (m_presentationScaling)
 		{
-		case SizePolicy2D::Scale:
+		case SizeQolicy2D::Scale:
 			return Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
 
-		case SizePolicy2D::Stretch:
+		case SizeQolicy2D::Stretch:
 			return Rect(0,0,window);
 
 		default:
@@ -192,7 +192,7 @@ namespace wg
 
 	//____ setPresentationScaling() ____________________________________
 
-	void CCanvas::setPresentationScaling(SizePolicy2D policy)
+	void CCanvas::setPresentationScaling(SizeQolicy2D policy)
 	{
 		if (m_presentationScaling != policy)
 		{

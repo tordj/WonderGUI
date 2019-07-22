@@ -103,36 +103,36 @@ namespace wg
 
 	//____ contentShift() ________________________________________________________
 
-	CoordP ExtendedSkin::contentShift(State state) const
+	CoordQ ExtendedSkin::contentShift(State state) const
 	{
 		int index = _stateToIndex(state);
-		return pixelAligned( CoordP(m_contentShift[index]) );
+		return pixelAligned( CoordQ(m_contentShift[index]) );
 	}
 
 	//____ minSize() ______________________________________________________________
 
-	SizeP ExtendedSkin::minSize() const
+	SizeQ ExtendedSkin::minSize() const
 	{
 		return pixelAligned(m_contentPadding);
 	}
 
 	//____ preferredSize() ______________________________________________________________
 
-	SizeP ExtendedSkin::preferredSize() const
+	SizeQ ExtendedSkin::preferredSize() const
 	{
 		return pixelAligned(m_contentPadding);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	SizeP ExtendedSkin::sizeForContent( const SizeP contentSize ) const
+	SizeQ ExtendedSkin::sizeForContent( const SizeQ contentSize ) const
 	{
 		return contentSize + pixelAligned(m_contentPadding);
 	}
 
 	//____ contentPadding() _______________________________________________________
 
-	SizeP ExtendedSkin::contentPadding() const
+	SizeQ ExtendedSkin::contentPadding() const
 	{
 		return pixelAligned(m_contentPadding);
 	}
@@ -140,16 +140,16 @@ namespace wg
 
 	//____ contentRect() __________________________________________________________
 
-	RectP ExtendedSkin::contentRect( const RectP& canvas, State state ) const
+	RectQ ExtendedSkin::contentRect( const RectQ& canvas, State state ) const
 	{
-		return (canvas - pixelAligned(m_contentPadding)) + pixelAligned(CoordP(m_contentShift[_stateToIndex(state)]));
+		return (canvas - pixelAligned(m_contentPadding)) + pixelAligned(CoordQ(m_contentShift[_stateToIndex(state)]));
 	}
 
 	//____ contentofs() __________________________________________________________
 
-	CoordP ExtendedSkin::contentOfs( State state ) const
+	CoordQ ExtendedSkin::contentOfs( State state ) const
 	{
-		return pixelAligned(CoordP( m_contentPadding.left, m_contentPadding.right)) + pixelAligned(CoordP(m_contentShift[_stateToIndex(state)]));
+		return pixelAligned(CoordQ( m_contentPadding.left, m_contentPadding.right)) + pixelAligned(CoordQ(m_contentShift[_stateToIndex(state)]));
 	}
 
 

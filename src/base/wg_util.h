@@ -39,17 +39,17 @@ namespace wg
 
 		//____ pixelAligned() _________________________________________________________
 
-		inline CoordP pixelAligned(CoordP input)
+		inline CoordQ pixelAligned(CoordQ input)
 		{
-			CoordP p = input;
+			CoordQ p = input;
 			p.x.pixelAlign();
 			p.y.pixelAlign();
 			return p;
 		}
 
-		inline BorderP pixelAligned(BorderP input)
+		inline BorderQ pixelAligned(BorderQ input)
 		{
-			BorderP b = input;
+			BorderQ b = input;
 			b.top.pixelAlign();
 			b.left.pixelAlign();
 			b.bottom.pixelAlign();
@@ -57,17 +57,17 @@ namespace wg
 			return b;
 		}
 
-		inline SizeP pixelAligned(SizeP input)
+		inline SizeQ pixelAligned(SizeQ input)
 		{
-			SizeP sz = input;
+			SizeQ sz = input;
 			sz.w.pixelAlign();
 			sz.h.pixelAlign();
 			return sz;
 		}
 
-		inline RectP pixelAligned(RectP input)
+		inline RectQ pixelAligned(RectQ input)
 		{
-			RectP r = input;
+			RectQ r = input;
 			r.x.pixelAlign();
 			r.y.pixelAlign();
 			r.w.pixelAlign();
@@ -97,7 +97,7 @@ namespace wg
 
 		Size		scaleToFit(Size object, Size boundaries);
 
-		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
+		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizeQolicy policy );
 
 		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 

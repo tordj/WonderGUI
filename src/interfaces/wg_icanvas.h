@@ -79,8 +79,8 @@ namespace wg
 		void			setBackColor(Color color);
 		Color			backColor() const;
 
-		void			setPresentationScaling(SizePolicy2D policy);
-		SizePolicy2D	presentationScaling() const;
+		void			setPresentationScaling(SizeQolicy2D policy);
+		SizeQolicy2D	presentationScaling() const;
 
 		void			setOrigo(Origo origo);
 		Origo			origo() const;

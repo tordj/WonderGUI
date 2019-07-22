@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 
 	Base::setActiveContext(pContext0);
 
-	CoordP a(1, 2);
+	CoordQ a(1, 2);
 
 	CoordF b = a;
 	Coord c = a;
@@ -94,53 +94,53 @@ int main(int argc, char** argv)
 	Coord d(fromPixel(pixX), fromPixel(pixY));
 
 
-	Coord cI1 = CoordP(1.f, 2.f);
+	Coord cI1 = CoordQ(1.f, 2.f);
 	 
 //	Coord cI2 = CoordF(1.f, 2.f);									// Should fail!
 	Coord cI3 = static_cast<Coord>(CoordF(1.f, 2.f));
 
-	Coord cI4 = RectP(1.f, 2.f, 3.f, 4.f);
+	Coord cI4 = RectQ(1.f, 2.f, 3.f, 4.f);
 
 //	Coord cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
 	Coord cI6 = static_cast<Coord>(RectF(1.f, 2.f, 3.f, 4.f));
 
 
-	Size sI1 = SizeP(1.f, 2.f);
+	Size sI1 = SizeQ(1.f, 2.f);
 
 //	Size sI2 = SizeF(1.f, 2.f);										// Should fail!
 	Size sI3 = static_cast<Size>(SizeF(1.f, 2.f));
 
-	Size sI4 = RectP(1.f, 2.f, 3.f, 4.f);
+	Size sI4 = RectQ(1.f, 2.f, 3.f, 4.f);
 
 //	Size cI5 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
 	Size sI6 = static_cast<Size>(RectF(1.f, 2.f, 3.f, 4.f));
 
 
-	Rect rI1 = RectP(1, 2, 3, 4);
+	Rect rI1 = RectQ(1, 2, 3, 4);
 
 //	Rect rI2 = RectF(1.f, 2.f, 3.f, 4.f);							// Should fail!
 	Rect rI3 = static_cast<Rect>(RectF(1.f, 2.f, 3.f, 4.f));
 
-	Rect rI4 = CoordP(1.f, 2.f);
+	Rect rI4 = CoordQ(1.f, 2.f);
 
 //	Rect rI5 = CoordF(1.f, 2.f);									// Should fail!
 	Rect rI6 = static_cast<Rect>(CoordF(1.f, 2.f));
 
-	Rect rI7 = SizeP(1.f, 2.f);
+	Rect rI7 = SizeQ(1.f, 2.f);
 
 //	Rect rI8 = SizeF(1.f, 2.f);										// Should fail!
 	Rect rI9 = static_cast<Rect>(SizeF(1.f, 2.f));
 
 
-	CoordP cP1 = CoordF(1.f, 2.f);	
-	CoordP cP2 = RectF(1.f, 2.f, 3.f, 4.f);
+	CoordQ cP1 = CoordF(1.f, 2.f);	
+	CoordQ cP2 = RectF(1.f, 2.f, 3.f, 4.f);
 
-	SizeP sP1 = SizeF(1.f, 2.f);	
-	SizeP sP2 = RectF(1.f, 2.f, 3.f, 4.f);
+	SizeQ sP1 = SizeF(1.f, 2.f);	
+	SizeQ sP2 = RectF(1.f, 2.f, 3.f, 4.f);
 
-	RectP rP1 = RectF(1.f, 2.f, 3.f, 4.f);
-	RectP rP2 = CoordF(1.f, 2.f);
-	RectP rP3 = SizeF(1.f, 2.f);
+	RectQ rP1 = RectF(1.f, 2.f, 3.f, 4.f);
+	RectQ rP2 = CoordF(1.f, 2.f);
+	RectQ rP3 = SizeF(1.f, 2.f);
 */
 
 	//------------------------------------------------------

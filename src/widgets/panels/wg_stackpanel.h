@@ -43,10 +43,10 @@ namespace wg
 	class StackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		StackPanelSlot() : origo(Origo::Center), sizePolicy(SizePolicy2D::Original) {}
+		StackPanelSlot() : origo(Origo::Center), SizeQolicy(SizeQolicy2D::Original) {}
 
 		Origo			origo;
-		SizePolicy2D	sizePolicy;
+		SizeQolicy2D	SizeQolicy;
 	};
 
 
@@ -78,11 +78,11 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void		setSizePolicy( int index, SizePolicy2D policy );
-		void		setSizePolicy( iterator it, SizePolicy2D policy );
+		void		setSizeQolicy( int index, SizeQolicy2D policy );
+		void		setSizeQolicy( iterator it, SizeQolicy2D policy );
 
-		SizePolicy2D sizePolicy( int index ) const;
-		SizePolicy2D sizePolicy( iterator it ) const;
+		SizeQolicy2D SizeQolicy( int index ) const;
+		SizeQolicy2D SizeQolicy( iterator it ) const;
 
 		void		setOrigo( int index, Origo origo );
 		void		setOrigo( iterator it, Origo origo );
@@ -92,7 +92,7 @@ namespace wg
 
 
 	protected:
-		void		_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy );
+		void		_setSizeQolicy( StackPanelSlot * pSlot, SizeQolicy2D policy );
 		void		_setOrigo( StackPanelSlot * pSlot, Origo origo );
 	};
 

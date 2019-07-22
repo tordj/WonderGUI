@@ -59,7 +59,7 @@ namespace wg
 	class ViewSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
+		ViewSlot() : widthPolicy(SizeQolicy::Default), heightPolicy(SizeQolicy::Default), contentOrigo(Origo::NorthWest) {}
 
 		int			paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -82,8 +82,8 @@ namespace wg
 		Rect			windowGeo;		// Geometry of Widgets window inside parent.
 		Rect			canvasGeo;		// Geometry of Widgets canvas.
 
-		SizePolicy		widthPolicy;
-		SizePolicy		heightPolicy;
+		SizeQolicy		widthPolicy;
+		SizeQolicy		heightPolicy;
 		Origo			contentOrigo;		// Origo when content is smaller than window
 		Size			contentSize;
 		Coord			viewPixOfs;
@@ -123,11 +123,11 @@ namespace wg
 		void		setOrigo(Origo origo);
 		Origo		origo() const { return m_pSlot->contentOrigo; }
 
-		void		setWidthPolicy(SizePolicy policy);
-		SizePolicy	widthPolicy() const { return m_pSlot->widthPolicy; }
+		void		setWidthPolicy(SizeQolicy policy);
+		SizeQolicy	widthPolicy() const { return m_pSlot->widthPolicy; }
 
-		void		setHeightPolicy(SizePolicy policy);
-		SizePolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
+		void		setHeightPolicy(SizeQolicy policy);
+		SizeQolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
 
 		Rect		windowRect() const;
 		Coord		windowPos() const { return m_pSlot->viewPixOfs; };

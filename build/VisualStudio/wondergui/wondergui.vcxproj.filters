@@ -503,14 +503,14 @@
     <ClInclude Include="..\..\..\src\base\wg_context.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_point.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\layers\wg_shadowlayer.h">
       <Filter>widgets\layers</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_ishadows.h">
       <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_qpix.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -857,9 +857,6 @@
       <Filter>widgets\layers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_context.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_point.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_payload.cpp">

@@ -26,15 +26,13 @@
 //=============================================================================
 
 #include <wg_types.h>
-#include <wg_point.h>
+#include <wg_qpix.h>
 
 #include <utility>
 #include <cstdlib>
 
 namespace wg
 {
-	class Point;
-
 	template<class T> class CoordT;
 	template<class T> class BorderT;
 	template<class T> class SizeT;
@@ -42,19 +40,19 @@ namespace wg
 
 	typedef	CoordT<int>		Coord;
 	typedef CoordT<float>	CoordF;
-	typedef CoordT<Point>	CoordP;
+	typedef CoordT<QPix>	CoordQ;
 
 	typedef BorderT<int>	Border;
 	typedef BorderT<float>	BorderF;
-	typedef BorderT<Point>	BorderP;
+	typedef BorderT<QPix>	BorderQ;
 
 	typedef	SizeT<int>		Size;
 	typedef SizeT<float>	SizeF;
-	typedef SizeT<Point>	SizeP;
+	typedef SizeT<QPix>		SizeQ;
 
 	typedef	RectT<int>		Rect;
 	typedef RectT<float>	RectF;
-	typedef RectT<Point>	RectP;
+	typedef RectT<QPix>		RectQ;
 
 
 	/**
@@ -90,15 +88,15 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordP and RectP
+		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordQ and RectQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator CoordP() const { return CoordP(x, y); }
+		inline operator CoordQ() const { return CoordQ(x, y); }
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator RectP() const { return RectP(x, y, 0, 0); }
+		inline operator RectQ() const { return RectQ(x, y, 0, 0); }
 
-		// CoordP can be IMPLICITLY cast to all CoordT<> and RectT<>
+		// CoordQ can be IMPLICITLY cast to all CoordT<> and RectT<>
 
 		template<typename T, class = std::enable_if_t< std::is_class<Type>::value >>
 		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
@@ -208,12 +206,12 @@ namespace wg
 
 		inline operator SizeT<Type>() const { return SizeT<Type>(left + right, top + bottom); }
 
-		// All arithmetic versions of Border can be IMPLICITLY cast to CoordP
+		// All arithmetic versions of Border can be IMPLICITLY cast to CoordQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator BorderP() const { return BorderP(top, right, bottom, left); }
+		inline operator BorderQ() const { return BorderQ(top, right, bottom, left); }
 
-		// BorderP can be IMPLICITLY cast to all BorderT<>
+		// BorderQ can be IMPLICITLY cast to all BorderT<>
 
 		template<typename T, class = std::enable_if_t< std::is_class<Type>::value>>
 		inline operator BorderT<T>() const { return BorderT<T>(top, right, bottom, left); }
@@ -270,16 +268,16 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Size can be IMPLICITLY cast to SizeP and RectP
+		// All arithmetic versions of Size can be IMPLICITLY cast to SizeQ and RectQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator SizeP() const { return SizeP(w, h); }
+		inline operator SizeQ() const { return SizeQ(w, h); }
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator RectP() const { return RectP(0, 0, w, h); }
+		inline operator RectQ() const { return RectQ(0, 0, w, h); }
 
 
-		// SizeP can be IMPLICITLY cast to all SizeT<> and RectT<>
+		// SizeQ can be IMPLICITLY cast to all SizeT<> and RectT<>
 
 		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
 		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
@@ -472,18 +470,18 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		// All arithmetic versions of Rect can be IMPLICITLY cast to RectP, CoordP and SizeP
+		// All arithmetic versions of Rect can be IMPLICITLY cast to RectQ, CoordQ and SizeQ
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator RectP() const { return RectP(x, y, w, h); }
+		inline operator RectQ() const { return RectQ(x, y, w, h); }
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator CoordP() const { return CoordP(x, y); }
+		inline operator CoordQ() const { return CoordQ(x, y); }
 
 		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator SizeP() const { return SizeP(w, h); }
+		inline operator SizeQ() const { return SizeQ(w, h); }
 
-		// RectP can be IMPLICITLY cast to all RectT<>, Coord<> and Size<>
+		// RectQ can be IMPLICITLY cast to all RectT<>, Coord<> and Size<>
 
 		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
 		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }

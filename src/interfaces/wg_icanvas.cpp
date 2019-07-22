@@ -255,9 +255,9 @@ namespace wg
 	*	Specifies how a fixed size surface is stretched or scaled when the surface is
 	*	of a different size than the CCanvas component.
 	*
-	*	Default value is SizePolicy2D::Original.
+	*	Default value is SizeQolicy2D::Original.
 	**/
-	void ICanvas::setPresentationScaling(SizePolicy2D policy)
+	void ICanvas::setPresentationScaling(SizeQolicy2D policy)
 	{
 		m_pComponent->setPresentationScaling(policy);
 	}
@@ -269,7 +269,7 @@ namespace wg
 	*	Gets how a fixed size surface is scaled to cover the CCanvas components area.
 	**/
 
-	SizePolicy2D ICanvas::presentationScaling() const
+	SizeQolicy2D ICanvas::presentationScaling() const
 	{
 		return m_pComponent->m_presentationScaling;
 	}

@@ -65,7 +65,7 @@ namespace wg
 		void			setComponentSize(Size sz);
 		void			setBackColor(Color color);
 		void			clear();
-		void			setPresentationScaling(SizePolicy2D policy);
+		void			setPresentationScaling(SizeQolicy2D policy);
 		void			setOrigo(Origo origo);
 		void			present();
 		void			present(Rect area);
@@ -78,7 +78,7 @@ namespace wg
 		Surface_p		m_pSurface;
 		Size			m_fixedSize;
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
-		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
+		SizeQolicy2D	m_presentationScaling	= SizeQolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
 		Color			m_backColor				= Color::White;
 		ICanvas *	m_pInterface;

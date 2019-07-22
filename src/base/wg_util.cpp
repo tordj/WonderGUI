@@ -561,18 +561,18 @@ double Util::powerOfTen(int num){
 
 	//____ sizeFromPolicy() __________________________________________________________
 
-	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
+	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizeQolicy policy )
 	{
 		switch( policy )
 		{
-			case SizePolicy::Default:
+			case SizeQolicy::Default:
 				return defaultSize;
-			case SizePolicy::Bound:
+			case SizeQolicy::Bound:
 				return specifiedSize;
-			case SizePolicy::Confined:
+			case SizeQolicy::Confined:
 				if( defaultSize > specifiedSize )
 					return specifiedSize;
-			case SizePolicy::Expanded:
+			case SizeQolicy::Expanded:
 				if( defaultSize < specifiedSize )
 					return specifiedSize;
 		}

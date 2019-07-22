@@ -36,33 +36,33 @@ namespace wg
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 
 
-	void IStackPanelChildren::setSizePolicy( int index, SizePolicy2D policy )
+	void IStackPanelChildren::setSizeQolicy( int index, SizeQolicy2D policy )
 	{
 		//TODO: Assert!
 
-		_setSizePolicy( m_pSlotArray->slot(index), policy );
+		_setSizeQolicy( m_pSlotArray->slot(index), policy );
 	}
 
-	void IStackPanelChildren::setSizePolicy( iterator it, SizePolicy2D policy )
+	void IStackPanelChildren::setSizeQolicy( iterator it, SizeQolicy2D policy )
 	{
 		//TODO: Assert!
 
-		_setSizePolicy( it._slot(), policy );
+		_setSizeQolicy( it._slot(), policy );
 	}
 
 
-	SizePolicy2D IStackPanelChildren::sizePolicy( int index ) const
+	SizeQolicy2D IStackPanelChildren::SizeQolicy( int index ) const
 	{
 		//TODO: Assert!
 
-		return m_pSlotArray->slot(index)->sizePolicy;
+		return m_pSlotArray->slot(index)->SizeQolicy;
 	}
 
-	SizePolicy2D IStackPanelChildren::sizePolicy( iterator it ) const
+	SizeQolicy2D IStackPanelChildren::SizeQolicy( iterator it ) const
 	{
 		//TODO: Assert!
 
-		return it._slot()->sizePolicy;
+		return it._slot()->SizeQolicy;
 	}
 
 
@@ -96,12 +96,12 @@ namespace wg
 	}
 
 
-	void IStackPanelChildren::_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy )
+	void IStackPanelChildren::_setSizeQolicy( StackPanelSlot * pSlot, SizeQolicy2D policy )
 	{
-		if( policy != pSlot->sizePolicy )
+		if( policy != pSlot->SizeQolicy )
 		{
 			Rect oldGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
-			pSlot->sizePolicy = policy;
+			pSlot->SizeQolicy = policy;
 			Rect newGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
 
 			if (newGeo.size() != oldGeo.size())
@@ -603,10 +603,10 @@ namespace wg
 		if( base.w <= 0 || base.h <= 0 )
 			return Rect(0,0,0,0);
 
-		switch( pSlot->sizePolicy )
+		switch( pSlot->SizeQolicy )
 		{
 			default:
-		case SizePolicy2D::Original:
+		case SizeQolicy2D::Original:
 			{
 				Size	size = pSlot->pWidget->preferredSize();
 				Rect geo = Util::origoToRect( pSlot->origo, base, size );
@@ -624,11 +624,11 @@ namespace wg
 				}
 				return geo;
 			}
-			case SizePolicy2D::Stretch:
+			case SizeQolicy2D::Stretch:
 			{
 				return base;
 			}
-			case SizePolicy2D::Scale:
+			case SizeQolicy2D::Scale:
 			{
 				Size	orgSize = pSlot->pWidget->preferredSize();
 				Size	size;
