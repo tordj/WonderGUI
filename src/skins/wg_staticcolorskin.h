@@ -54,13 +54,13 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size	minSize() const override;
-		Size	preferredSize() const override;
-		Size	sizeForContent( const Size contentSize ) const override;
+		SizeP	minSize() const override;
+		SizeP	preferredSize() const override;
+		SizeP	sizeForContent( const SizeP contentSize ) const override;
 
-		Size	contentPadding() const override;
-		Coord	contentOfs( State state ) const override;
-		Rect	contentRect( const Rect& canvas, State state ) const override;
+		SizeP	contentPadding() const override;
+		CoordP	contentOfs( State state ) const override;
+		RectP	contentRect( const RectP& canvas, State state ) const override;
 
 
 		//.____ Misc ____________________________________________________

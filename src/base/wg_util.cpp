@@ -185,6 +185,96 @@ double Util::powerOfTen(int num){
 		return (alpha >= opacityTreshold);
 	}
 
+	//____ markTestNinePatch() ________________________________________________
+
+	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const Rect& _source, const Rect& _dest, int opacityTreshold, Border sourceFrame)
+	{
+		// Sanity check & shortcuts.
+
+		if (sourceFrame.isEmpty())
+			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
+
+		if (!pSurface || !_dest.contains(ofs.x, ofs.y) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
+			return false;
+
+		if (pSurface->isOpaque() || opacityTreshold <= 0)
+			return true;
+
+		//
+
+		Border destFrame = toPixels(sourceFrame);
+
+		Rect source;
+		Rect dest;
+
+		if (ofs.x < _dest.x + destFrame.left)
+		{
+			// left section
+			source.x = _source.x;
+			source.w = sourceFrame.left;
+			dest.x = _dest.x;
+			dest.w = destFrame.left;
+		}
+		else if (ofs.x < _dest.x + _dest.w - destFrame.right)
+		{
+			// mid section
+			source.x = _source.x + sourceFrame.left;
+			source.w = _source.w - sourceFrame.width();
+			dest.x = _dest.x + destFrame.left;
+			dest.w = _dest.w - destFrame.width();
+		}
+		else
+		{
+			// right section
+			source.x = _source.x + _source.w - sourceFrame.right;
+			source.w = sourceFrame.right;
+			dest.x = _dest.x + _dest.w - destFrame.right;
+			dest.w = destFrame.right;
+		}
+
+		if (ofs.y < _dest.y + destFrame.top)
+		{
+			// left section
+			source.y = _source.y;
+			source.h = sourceFrame.top;
+			dest.y = _dest.y;
+			dest.h = destFrame.top;
+		}
+		else if (ofs.y < _dest.y + _dest.h - destFrame.bottom)
+		{
+			// mid section
+			source.y = _source.y + sourceFrame.top;
+			source.h = _source.h - sourceFrame.height();
+			dest.y = _dest.y + destFrame.top;
+			dest.h = _dest.h - destFrame.height();
+		}
+		else
+		{
+			// right section
+			source.y = _source.y + _source.h - sourceFrame.bottom;
+			source.h = sourceFrame.bottom;
+			dest.y = _dest.y + _dest.h - destFrame.bottom;
+			dest.h = destFrame.right;
+		}
+
+		// Make coordinates relative area.
+
+		ofs.x -= dest.x;
+		ofs.y -= dest.y;
+
+		// Convert offset in area to offset in bitmap.
+
+		ofs.x = (int)(ofs.x / ((double)dest.w) * source.w);
+		ofs.y = (int)(ofs.y / ((double)dest.h) * source.h);
+
+		// Do alpha test
+
+		int alpha = pSurface->alpha(source.x + ofs.x, source.y + ofs.y);
+
+		return (alpha >= opacityTreshold);
+	}
+
+
 
 
 	//____ pixelFormatToDescription() _____________________________________________________

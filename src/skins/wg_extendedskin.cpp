@@ -103,53 +103,53 @@ namespace wg
 
 	//____ contentShift() ________________________________________________________
 
-	Coord ExtendedSkin::contentShift(State state) const
+	CoordP ExtendedSkin::contentShift(State state) const
 	{
 		int index = _stateToIndex(state);
-		return m_contentShift[index];
+		return pixelAligned( CoordP(m_contentShift[index]) );
 	}
 
 	//____ minSize() ______________________________________________________________
 
-	Size ExtendedSkin::minSize() const
+	SizeP ExtendedSkin::minSize() const
 	{
-		return Size(m_contentPadding.width(), m_contentPadding.height() );
+		return pixelAligned(m_contentPadding);
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ preferredSize() ______________________________________________________________
 
-	Size ExtendedSkin::preferredSize() const
+	SizeP ExtendedSkin::preferredSize() const
 	{
-		return Size(m_contentPadding.width(), m_contentPadding.height() );
+		return pixelAligned(m_contentPadding);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size ExtendedSkin::sizeForContent( const Size contentSize ) const
+	SizeP ExtendedSkin::sizeForContent( const SizeP contentSize ) const
 	{
-		return contentSize + m_contentPadding;
+		return contentSize + pixelAligned(m_contentPadding);
 	}
 
 	//____ contentPadding() _______________________________________________________
 
-	Size ExtendedSkin::contentPadding() const
+	SizeP ExtendedSkin::contentPadding() const
 	{
-		return m_contentPadding.size();
+		return pixelAligned(m_contentPadding);
 	}
 
 
 	//____ contentRect() __________________________________________________________
 
-	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
+	RectP ExtendedSkin::contentRect( const RectP& canvas, State state ) const
 	{
-		return (canvas - m_contentPadding) + m_contentShift[_stateToIndex(state)];
+		return (canvas - pixelAligned(m_contentPadding)) + pixelAligned(CoordP(m_contentShift[_stateToIndex(state)]));
 	}
 
 	//____ contentofs() __________________________________________________________
 
-	Coord ExtendedSkin::contentOfs( State state ) const
+	CoordP ExtendedSkin::contentOfs( State state ) const
 	{
-		return Coord( m_contentPadding.left, m_contentPadding.right) + m_contentShift[_stateToIndex(state)];
+		return pixelAligned(CoordP( m_contentPadding.left, m_contentPadding.right)) + pixelAligned(CoordP(m_contentShift[_stateToIndex(state)]));
 	}
 
 

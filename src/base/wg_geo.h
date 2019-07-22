@@ -36,12 +36,17 @@ namespace wg
 	class Point;
 
 	template<class T> class CoordT;
+	template<class T> class BorderT;
 	template<class T> class SizeT;
 	template<class T> class RectT;
 
 	typedef	CoordT<int>		Coord;
 	typedef CoordT<float>	CoordF;
 	typedef CoordT<Point>	CoordP;
+
+	typedef BorderT<int>	Border;
+	typedef BorderT<float>	BorderF;
+	typedef BorderT<Point>	BorderP;
 
 	typedef	SizeT<int>		Size;
 	typedef SizeT<float>	SizeF;
@@ -77,15 +82,6 @@ namespace wg
 		template<typename T>
 		explicit CoordT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y) {}
 
-		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordP
-
-		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator CoordP() const { return CoordP(x, y); }
-
-		// CoordP can be IMPLICITLY cast to all CoordT<>
-
-		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
-		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
 
 		//.____ Misc ______________________________________________
 
@@ -94,31 +90,50 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
+		// All arithmetic versions of Coord can be IMPLICITLY cast to CoordP and RectP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator CoordP() const { return CoordP(x, y); }
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator RectP() const { return RectP(x, y, 0, 0); }
+
+		// CoordP can be IMPLICITLY cast to all CoordT<> and RectT<>
+
+		template<typename T, class = std::enable_if_t< std::is_class<Type>::value >>
+		inline operator CoordT<T>() const { return CoordT<T>(x, y); }
+
+		template<typename T, class = std::enable_if_t< std::is_class<Type>::value >>
+		inline operator RectT<T>() const { return RectT<T>(x, y, 0, 0); }
+
+		//
+
 		inline CoordT<Type> operator=(const CoordT<Type>& k) { x = k.x; y = k.y; return *this; }
-		inline CoordT<Type> operator=(const RectT<Type>& r);
 
 		inline bool operator==(const CoordT<Type>& k) const { if (x == k.x && y == k.y) return true; return false; }
 		inline bool operator!=(const CoordT<Type>& k) const { if (x != k.x || y != k.y) return true; return false; }
 
-		inline void operator+=(const CoordT<Type>& k) { x += k.x; y += k.y; }
-		inline void operator-=(const CoordT<Type>& k) { x -= k.x; y -= k.y; }
+		inline CoordT<Type>& operator+=(const CoordT<Type>& k) { x += k.x; y += k.y; return *this; }
+		inline CoordT<Type>& operator-=(const CoordT<Type>& k) { x -= k.x; y -= k.y; return *this; }
 		inline CoordT<Type> operator+(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x + k.x; res.y = y + k.y; return res; }
 		inline CoordT<Type> operator-(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x - k.x; res.y = y - k.y; return res; }
 
-		inline void operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); }
-		inline void operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); }
-		inline CoordT<Type> operator*(double v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
-		inline CoordT<Type> operator/(double v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+		inline CoordT<Type>& operator*=(int v) { x = (Type)(x*v); y = (Type)(x*v); return *this; }
+		inline CoordT<Type>& operator/=(int v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
+		inline CoordT<Type> operator*(int v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
+		inline CoordT<Type> operator/(int v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
 
-		inline void operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); }
-		inline void operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); }
+		inline CoordT<Type>& operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
+		inline CoordT<Type>& operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
 		inline CoordT<Type> operator*(float v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
 		inline CoordT<Type> operator/(float v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
 
-		inline void operator*=(int v) { x = (Type)(x*v); y = (Type)(x*v); }
-		inline void operator/=(int v) { x = (Type)(x / v); y = (Type)(y / v); }
-		inline CoordT<Type> operator*(int v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
-		inline CoordT<Type> operator/(int v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+		inline CoordT<Type>& operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
+		inline CoordT<Type>& operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
+		inline CoordT<Type> operator*(double v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
+		inline CoordT<Type> operator/(double v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+
+
 
 		//.____ Properties __________________________________________
 
@@ -131,15 +146,6 @@ namespace wg
 	{
 		x = rect.x;
 		y = rect.y;
-	}
-
-	//_____________________________________________________________________________
-	template<typename Type>
-	inline CoordT<Type> CoordT<Type>::operator=(const RectT<Type>& r)
-	{
-		x = r.x;
-		y = r.y;
-		return *this;
 	}
 
 	//_____________________________________________________________________________
@@ -168,43 +174,61 @@ namespace wg
 		Negative values are in most cases not accepted and result in unspecified behavior.
 	**/
 
-	class Border
+	template<class Type> class BorderT
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		Border() : top(0), right(0), bottom(0), left(0) {}
-		Border( short topBottom, short leftRight ) : top(topBottom), right(leftRight), bottom(topBottom), left(leftRight) {}
-		Border( short top, short leftRight, short bottom ) : top(top), right(leftRight), bottom(bottom), left(leftRight) {}
-		Border( short top, short right, short bottom, short left ) : top(top), right(right), bottom(bottom), left(left) {}
-		Border( short all ) : top(all), right(all), bottom(all), left(all) {}
+		BorderT() : top(0), right(0), bottom(0), left(0) {}
+		BorderT( Type topBottom, Type leftRight ) : top(topBottom), right(leftRight), bottom(topBottom), left(leftRight) {}
+		BorderT( Type top, Type leftRight, Type bottom ) : top(top), right(leftRight), bottom(bottom), left(leftRight) {}
+		BorderT( Type top, Type right, Type bottom, Type left ) : top(top), right(right), bottom(bottom), left(left) {}
+		BorderT( Type all ) : top(all), right(all), bottom(all), left(all) {}
+
+		template<typename T>
+		explicit BorderT(const BorderT<T>& b) : top((Type)b.top), right((Type)b.right), right((Type)b.bottom), right((Type)b.left) {}
+
 
 		//.____ Misc ______________________________________________
 
-		inline void		set( short all ) { left = right = top = bottom = all; }
-		inline void		set( short topBottom, short leftRight ) { top = bottom = topBottom; left = right = leftRight; }
-		inline void		set( short top, short leftRight, short bottom ) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
-		inline void		set( short top, short right, short bottom, short left ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
+		inline void		set( Type all ) { left = right = top = bottom = all; }
+		inline void		set( Type topBottom, Type leftRight ) { top = bottom = topBottom; left = right = leftRight; }
+		inline void		set( Type top, Type leftRight, Type bottom ) { this->top = top; this->bottom = bottom; this->left = this->right = leftRight; }
+		inline void		set( Type top, Type right, Type bottom, Type left ) { this->top = top; this->bottom = bottom; this->left = left; this->right = right; }
 
-		inline Size		size() const;
-		inline int		width() const { return ((int)left)+right; }
-		inline int		height() const { return ((int)top)+bottom; }
+		inline SizeT<Type>	size() const;
+		inline Type		width() const { return left+right; }
+		inline Type		height() const { return top+bottom; }
 		inline void		clear()			{ left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
-		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
+		inline bool		isEmpty() const { return (left + top + right + bottom) == 0; }
 
-		inline Border	scale(int scale) const { return Border( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
+		inline BorderT<Type>	scale(int scale) const { return BorderT<Type>( top*scale / 4096,right*scale / 4096,bottom*scale / 4096,left*scale / 4096); } // Only for WG2 compatibility!
 
 		//.____ Operators ___________________________________________
 
-		bool			operator==(const Border& borders) const { return left == borders.left &&
+		inline operator SizeT<Type>() const { return SizeT<Type>(left + right, top + bottom); }
+
+		// All arithmetic versions of Border can be IMPLICITLY cast to CoordP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator BorderP() const { return BorderP(top, right, bottom, left); }
+
+		// BorderP can be IMPLICITLY cast to all BorderT<>
+
+		template<typename T, class = std::enable_if_t< std::is_class<Type>::value>>
+		inline operator BorderT<T>() const { return BorderT<T>(top, right, bottom, left); }
+
+		//
+
+		bool			operator==(const BorderT<Type>& borders) const { return left == borders.left &&
 																			right == borders.right &&
 																			top == borders.top &&
 																			bottom == borders.bottom; }
-		bool			operator!=(const Border& borders) const { return !(*this == borders); }
+		bool			operator!=(const BorderT<Type>& borders) const { return !(*this == borders); }
 
 		//.____ Properties __________________________________________
 
-		short		top, right, bottom, left;
+		Type		top, right, bottom, left;
 	};
 
 
@@ -225,7 +249,7 @@ namespace wg
 		SizeT() : w(0), h(0) {}
 		SizeT( Type width, Type height ) : w(width), h(height) {}
 		SizeT( const SizeT<Type>& size ) : w(size.w), h(size.h) {}
-		SizeT( const RectT<Type>& rect );
+		SizeT( const RectT<Type>& rect ) : w(rect.w), h(rect.h) {}
 		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
 		// These explicit constructors enables us to cast from Rect and Size of different kind.
@@ -235,16 +259,6 @@ namespace wg
 
 		template<typename T>
 		explicit SizeT(const RectT<T>& r) : w((Type)r.w), h((Type)r.h) {}
-
-		// All arithmetic versions of Size can be IMPLICITLY cast to SizeP
-
-		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator SizeP() const { return SizeP(w, h); }
-
-		// SizeP can be IMPLICITLY cast to all SizeT<>
-
-		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
-		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
 
 
 		//.____ Misc ______________________________________________
@@ -256,36 +270,55 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
+		// All arithmetic versions of Size can be IMPLICITLY cast to SizeP and RectP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator SizeP() const { return SizeP(w, h); }
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator RectP() const { return RectP(0, 0, w, h); }
+
+
+		// SizeP can be IMPLICITLY cast to all SizeT<> and RectT<>
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator RectT<T>() const { return RectT<T>(0, 0, w, h); }
+
+		//
+
 		inline SizeT<Type> operator=(const SizeT<Type>& k)	{ w = k.w; h = k.h; return *this; }
-		inline SizeT<Type> operator=(const RectT<Type>& k);
 
 		inline bool operator==(const SizeT<Type>& k) const	{ if( w == k.w && h == k.h ) return true; return false; }
 		inline bool operator!=(const SizeT<Type>& k) const	{ if( w != k.w || h != k.h ) return true; return false; }
 
-		inline void operator+=(const SizeT<Type>& k)				{ w += k.w; h += k.h; }
-		inline void operator-=(const SizeT<Type>& k)				{ w -= k.w; h -= k.h; }
+		inline SizeT<Type>& operator+=(const SizeT<Type>& k)		{ w += k.w; h += k.h; return *this;}
+		inline SizeT<Type>& operator-=(const SizeT<Type>& k)		{ w -= k.w; h -= k.h; return *this;}
 		inline SizeT<Type> operator+(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w + k.w; res.h = h + k.h; return res; }
 		inline SizeT<Type> operator-(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w - k.w; res.h = h - k.h; return res; }
 
-		inline void operator+=(const Border& k)			{ w += k.left + k.right; h += k.top + k.bottom; }
-		inline void operator-=(const Border& k)			{ w -= k.left + k.right; h -= k.top + k.bottom; }
-		inline SizeT<Type> operator+(const Border& k) const	{ SizeT<Type> res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-		inline SizeT<Type> operator-(const Border& k) const	{ SizeT<Type> res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+		inline SizeT<Type>& operator+=(const BorderT<Type>& k)		{ w += k.left + k.right; h += k.top + k.bottom; return *this; }
+		inline SizeT<Type>& operator-=(const BorderT<Type>& k)		{ w -= k.left + k.right; h -= k.top + k.bottom; return *this;}
+		inline SizeT<Type> operator+(const BorderT<Type>& k) const	{ SizeT<Type> res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
+		inline SizeT<Type> operator-(const BorderT<Type>& k) const	{ SizeT<Type> res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
 
-		inline void operator*=(double x)				{ w = (Type) (w*x); h = (Type) (h*x); }
-		inline void operator/=(double x)				{ w = (Type) (w/x); h = (Type) (h/x); }
-		inline SizeT<Type> operator*(double x) const	{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
-		inline SizeT<Type> operator/(double x) const	{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
-
-		inline void operator*=(float x)				{ w = (Type) (w*x); h = (Type) (h*x); }
-		inline void operator/=(float x)				{ w = (Type) (w/x); h = (Type) (h/x); }
-		inline SizeT<Type> operator*(float x) const	{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
-		inline SizeT<Type> operator/(float x) const	{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
-
-		inline void operator*=(int x)				{ w *= x; h *= x; }
-		inline void operator/=(int x)				{ w /= x; h /= x; }
+		inline SizeT<Type>& operator*=(int x)		{ w *= x; h *= x; return *this; }
+		inline SizeT<Type>& operator/=(int x)		{ w /= x; h /= x; return *this; }
 		inline SizeT<Type> operator*(int x) const	{ SizeT<Type> res; res.w = w * x; res.h = h * x; return res; }
 		inline SizeT<Type> operator/(int x) const	{ SizeT<Type> res; res.w = w / x; res.h = h / x; return res; }
+
+		inline SizeT<Type>& operator*=(float x)		{ w = (Type)(w*x); h = (Type)(h*x); return *this; }
+		inline SizeT<Type>& operator/=(float x)		{ w = (Type)(w / x); h = (Type)(h / x); return *this; }
+		inline SizeT<Type> operator*(float x) const { SizeT<Type> res; res.w = (Type)(w*x); res.h = (Type)(h*x); return res; }
+		inline SizeT<Type> operator/(float x) const { SizeT<Type> res; res.w = (Type)(w / x); res.h = (Type)(h / x); return res; }
+
+		inline SizeT<Type>& operator*=(double x)	{ w = (Type) (w*x); h = (Type) (h*x); return *this; }
+		inline SizeT<Type>& operator/=(double x)	{ w = (Type) (w/x); h = (Type) (h/x); return *this; }
+		inline SizeT<Type> operator*(double x) const{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
+		inline SizeT<Type> operator/(double x) const{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
+
 
 		static inline SizeT<Type> min( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
 		static inline SizeT<Type> max( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w>sz2.w?sz1.w:sz2.w, sz1.h>sz2.h?sz1.h:sz2.h ); }
@@ -296,23 +329,6 @@ namespace wg
 		Type	h;		///< Height of the rectangular area in pixels.
 
 	};
-
-	//_____________________________________________________________________________
-	template<typename Type>
-	inline SizeT<Type>::SizeT(const RectT<Type>& rect)
-	{
-		w = rect.w;
-		h = rect.h;
-	}
-
-	//_____________________________________________________________________________
-	template<typename Type>
-	inline SizeT<Type> SizeT<Type>::operator=(const RectT<Type>& k)
-	{
-		w = k.w;
-		h = k.h;
-		return *this;
-	}
 
 	//_____________________________________________________________________________
 	template<typename Type>
@@ -400,25 +416,13 @@ namespace wg
 		// All versions of Rect, Coord and Size can be cast to any Rect EXPLICITLY.
 
 		template<typename T>
-		explicit RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}		///< @brief Create a copy of specified rectangle.
+		explicit RectT(const RectT<T>& r) : x((Type)r.x), y((Type)r.y), w((Type)r.w), h((Type)r.h) {}
 
 		template<typename T>
-		explicit RectT(const CoordT<T>& p) : x((Type)p.x), y((Type)p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
-																			///<
-																			///< Create rectangle of specified position and size of (0,0).
-																			///< @param p		Coordinate containing position for rectangle.
+		explicit RectT(const CoordT<T>& p) : x((Type)p.x), y((Type)p.y), w(0), h(0) {}
+
 		template<typename T>
-		explicit RectT(const SizeT<T>& sz) : x(0), y(0), w((Type)sz.w), h((Type)sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
-
-		// All arithmetic versions of Rect can be IMPLICITLY cast to RectP
-
-		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
-		inline operator RectP() const { return RectP(x, y, w, h); }
-
-		// RectP can be IMPLICITLY cast to all RectT<>
-
-		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
-		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }
+		explicit RectT(const SizeT<T>& sz) : x(0), y(0), w((Type)sz.w), h((Type)sz.h) {}
 
 
 		//.____ Misc ______________________________________________
@@ -426,10 +430,10 @@ namespace wg
 		inline void setPos( const CoordT<Type>& p );					///< @brief Set position of rectangle.
 		inline void setSize( const SizeT<Type>& sz );					///< @brief Set size of rectangle.
 
-		void shrink( const Border &borders );
+		void shrink( const BorderT<Type> &borders );
 		void shrink( Type top, Type right, Type bottom, Type left );
 
-		void grow( const Border &borders );
+		void grow( const BorderT<Type> &borders );
 		void grow( Type top, Type right, Type bottom, Type left );
 
 		bool intersection( const RectT<Type>& r1, const RectT<Type>& r2 );
@@ -468,28 +472,42 @@ namespace wg
 
 		//.____ Operators ___________________________________________
 
-		inline void operator=(const RectT<Type>&);					///< @brief Normal assignment operator.
-		inline void operator=(const SizeT<Type>& sz);				///< @brief Set rectangle to specified size. Position is cleared.
-		inline void operator=(const CoordT<Type>& c);				///< @brief Set rectangle to specified position. Size is cleared.
+		// All arithmetic versions of Rect can be IMPLICITLY cast to RectP, CoordP and SizeP
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator RectP() const { return RectP(x, y, w, h); }
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator CoordP() const { return CoordP(x, y); }
+
+		template<class = std::enable_if_t< std::is_arithmetic<Type>::value>>
+		inline operator SizeP() const { return SizeP(w, h); }
+
+		// RectP can be IMPLICITLY cast to all RectT<>, Coord<> and Size<>
+
+		template<typename T, class = std::enable_if_t< std::is_arithmetic<Type>::value == false>>
+		inline operator RectT<T>() const { return RectT<T>(x, y, w, h); }
+
+		//
+
+		inline RectT<Type>& operator=(const RectT<Type>&);					///< @brief Normal assignment operator.
 		inline bool operator==(const RectT<Type>& rect) const;
 		inline bool operator!=(const RectT<Type>& rect) const;
 
-		inline void operator+=(const SizeT<Type>& k);				///< @brief Increase size of rectangle.
-		inline void operator-=(const SizeT<Type>& k);				///< @brief Decrease size of rectangle.
+		inline RectT<Type>& operator+=(const SizeT<Type>& k);				///< @brief Increase size of rectangle.
+		inline RectT<Type>& operator-=(const SizeT<Type>& k);				///< @brief Decrease size of rectangle.
 		inline RectT<Type> operator+(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size increased by Size.
 		inline RectT<Type> operator-(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size decreased by Size.
 
-
-
-		inline void operator+=(const CoordT<Type>& k); 				///< @brief Increase position of rectangle.
-		inline void operator-=(const CoordT<Type>& k);				///< @brief Decrease position of rectangle.
+		inline RectT<Type>& operator+=(const CoordT<Type>& k); 				///< @brief Increase position of rectangle.
+		inline RectT<Type>& operator-=(const CoordT<Type>& k);				///< @brief Decrease position of rectangle.
 		inline RectT<Type> operator+(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position increased by Coord.
 		inline RectT<Type> operator-(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
 
-		inline void operator+=(const Border& k);				///< @brief Grow rectangle by the specified border.
-		inline void operator-=(const Border& k);
-		inline RectT<Type> operator+(const Border& k) const;
-		inline RectT<Type> operator-(const Border& k) const;
+		inline RectT<Type>& operator+=(const BorderT<Type>& k);				///< @brief Grow rectangle by the specified border.
+		inline RectT<Type>& operator-=(const BorderT<Type>& k);
+		inline RectT<Type> operator+(const BorderT<Type>& k) const;
+		inline RectT<Type> operator-(const BorderT<Type>& k) const;
 
 		//.____ Properties __________________________________________
 
@@ -668,38 +686,13 @@ namespace wg
 	 * Normal assignment operator.
 	 **/
 	 template<typename Type>
-	 inline void RectT<Type>::operator=( const RectT<Type>& r2 )
+	 inline RectT<Type>& RectT<Type>::operator=( const RectT<Type>& r2 )
 	{
 		x = r2.x;
 		y = r2.y;
 		w = r2.w;
 		h = r2.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Set rectangle to specified size. Position is cleared.
-	 **/
-	 template<typename Type>
-	 inline void RectT<Type>::operator=( const SizeT<Type>& sz)
-	{
-		x=0;
-		y=0;
-		w=sz.w;
-		h=sz.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Set rectangle to specified position. Size is cleared.
-	 **/
-	 template<typename Type>
-	 inline void RectT<Type>::operator=( const CoordT<Type>& c)
-	{
-		x=c.x;
-		y=c.y;
-		w=0;
-		h=0;
+		return *this;
 	}
 
 	//_____________________________________________________________________________
@@ -727,10 +720,11 @@ namespace wg
 	 * Increase size of rectangle.
 	 **/
 	 template<typename Type>
-	 inline void RectT<Type>::operator+=(const SizeT<Type>& k)
+	 inline RectT<Type>& RectT<Type>::operator+=(const SizeT<Type>& k)
 	{
 		w += k.w;
 		h += k.h;
+		return *this;
 	}
 
 	//_____________________________________________________________________________
@@ -738,10 +732,11 @@ namespace wg
 	 * Decrease size of rectangle.
 	 **/
 	 template<typename Type>
-	 inline void RectT<Type>::operator-=(const SizeT<Type>& k)
+	 inline RectT<Type>& RectT<Type>::operator-=(const SizeT<Type>& k)
 	{
 		w -= k.w;
 		h -= k.h;
+		return *this;
 	}
 	//_____________________________________________________________________________
 	/**
@@ -782,10 +777,11 @@ namespace wg
 	 **/
 
 	 template<typename Type>
-	 inline void RectT<Type>::operator+=(const CoordT<Type>& k)
+	 inline RectT<Type>& RectT<Type>::operator+=(const CoordT<Type>& k)
 	{
 		x += k.x;
 		y += k.y;
+		return *this;
 	}
 
 	//_____________________________________________________________________________
@@ -794,10 +790,11 @@ namespace wg
 	 **/
 
 	 template<typename Type>
-	 inline void RectT<Type>::operator-=(const CoordT<Type>& k)
+	 inline RectT<Type>& RectT<Type>::operator-=(const CoordT<Type>& k)
 	{
 		x -= k.x;
 		y -= k.y;
+		return *this;
 	}
 
 	//_____________________________________________________________________________
@@ -839,12 +836,13 @@ namespace wg
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
 	 template<typename Type>
-	 inline void RectT<Type>::operator+=(const Border& k)
+	 inline RectT<Type>& RectT<Type>::operator+=(const BorderT<Type>& k)
 	{
 		x -= k.left;
 		y -= k.top;
 		w += k.left + k.right;
 		h += k.top + k.bottom;
+		return &this;
 	}
 
 	//_____________________________________________________________________________
@@ -855,12 +853,13 @@ namespace wg
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
 	 template<typename Type>
-	 inline void RectT<Type>::operator-=(const Border& k)
+	 inline RectT<Type>& RectT<Type>::operator-=(const BorderT<Type>& k)
 	{
 		x += k.left;
 		y += k.top;
 		w -= k.left + k.right;
 		h -= k.top + k.bottom;
+		return *this;
 	}
 
 
@@ -872,7 +871,7 @@ namespace wg
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
 	 template<typename Type>
-	 inline RectT<Type> RectT<Type>::operator+(const Border& k) const
+	 inline RectT<Type> RectT<Type>::operator+(const BorderT<Type>& k) const
 	{
 		RectT<Type> res;
 		res.x = x - k.left;
@@ -890,7 +889,7 @@ namespace wg
 	 * The position of the rectangle is affected by the top and left borders.
 	 **/
 	 template<typename Type>
-	 inline RectT<Type> RectT<Type>::operator-(const Border& k) const
+	 inline RectT<Type> RectT<Type>::operator-(const BorderT<Type>& k) const
 	{
 		RectT<Type> res;
 		res.x = x + k.left;
@@ -1153,7 +1152,7 @@ namespace wg
 	  **/
 
 	 template<typename Type>
-	 void RectT<Type>::shrink(const Border &_borders)
+	 void RectT<Type>::shrink(const BorderT<Type> &_borders)
 	 {
 		 x += _borders.left;
 		 y += _borders.top;
@@ -1202,7 +1201,7 @@ namespace wg
 	  * Top and left borders also affects the position of the rectangle.
 	  **/
 	 template<typename Type>
-	 void RectT<Type>::grow(const Border &_borders)
+	 void RectT<Type>::grow(const BorderT<Type> &_borders)
 	 {
 		 x -= _borders.left;
 		 y -= _borders.top;
@@ -1473,12 +1472,16 @@ namespace wg
 
 
 	 //_____________________________________________________________________________
-	 inline Size Border::size() const
+
+	template<typename Type>
+	SizeT<Type> BorderT<Type>::size() const
 	 {
-		 return Size(((int)left) + right, ((int)top) + bottom);
+		 return SizeT<Type>(left + right, top + bottom);
 	 }
 
 	//=======================================================================================
+
+
 
 } // namespace wg
 #endif	//WG_GEO_DOT_H

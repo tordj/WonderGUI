@@ -471,7 +471,7 @@ namespace wg
 
 		Coord blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(_canvas, m_frame, { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch(_canvas, toPixels(m_frame), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
@@ -479,95 +479,38 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size BlockSkin::minSize() const
+	SizeP BlockSkin::minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-		Size frame = m_frame.size();
-		return Size( wg::max(content.w, frame.w), wg::max(content.h, frame.h) );
+		SizeP content = ExtendedSkin::minSize();
+		SizeP frame = pixelAligned(m_frame);
+		return SizeP::max( content, frame );
 	}
 
 	//____ preferredSize() ________________________________________________________
 
-	Size BlockSkin::preferredSize() const
+	SizeP BlockSkin::preferredSize() const
 	{
-		Size sz = ExtendedSkin::preferredSize();
-		return Size( wg::max(m_dimensions.w,sz.w),wg::max(m_dimensions.h,sz.h) );
+		SizeP content = ExtendedSkin::minSize();
+		SizeP frame = pixelAligned(m_frame);
+		return SizeP::max(content, frame);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size BlockSkin::sizeForContent( const Size contentSize ) const
+	SizeP BlockSkin::sizeForContent( const SizeP contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = m_frame.size();
+		SizeP sz = ExtendedSkin::sizeForContent(contentSize);
+		SizeP min = pixelAligned(m_frame);
 
-		return Size( wg::max(sz.w,min.w), wg::max(sz.h,min.h) );
+		return SizeP::max(sz, min);
 	}
 
 	//____ markTest() _____________________________________________________________
 
 	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
-		if( !m_pSurface || !canvas.contains(_ofs) )
-			return false;
-
-		int alpha;
-		if( isOpaque( state ) )
-			alpha = 255;
-		else
-		{
-			Coord ofs = _ofs - canvas.pos();
-
-			// Determine in which section the cordinate is (0-2 for x and y).
-
-			int	xSection = 0;
-			int ySection = 0;
-
-			if( ofs.x >= canvas.w - m_frame.right )
-				xSection = 2;
-			else if( ofs.x > m_frame.left )
-				xSection = 1;
-
-			if( ofs.y >= canvas.h - m_frame.bottom )
-				ySection = 2;
-			else if( ofs.y > m_frame.top )
-				ySection = 1;
-
-			// Convert ofs.x to X-offset in bitmap, taking stretch/tile section into account.
-
-			if( xSection == 2 )
-			{
-				ofs.x = m_dimensions.w - (canvas.w - ofs.x);
-			}
-			else if( xSection == 1 )
-			{
-				int tileAreaWidth = m_dimensions.w - m_frame.width();
-
-				double screenWidth = canvas.w - m_frame.width();	// Width of stretch-area on screen.
-				ofs.x = (int) ((ofs.x-m_frame.left)/screenWidth * tileAreaWidth + m_frame.left);
-			}
-
-
-			// Convert ofs.y to Y-offset in bitmap, taking stretch/tile section into account.
-
-			if( ySection == 2 )
-			{
-				ofs.y = m_dimensions.h - (canvas.h - ofs.y);
-			}
-			else if( ySection == 1 )
-			{
-				int tileAreaHeight = m_dimensions.h - m_frame.height();
-
-				double screenHeight = canvas.h - m_frame.height();	// Height of stretch-area on screen.
-				ofs.y = (int) ((ofs.y-m_frame.top)/screenHeight * tileAreaHeight + m_frame.top);
-			}
-
-			Coord srcOfs = m_stateBlocks[_stateToIndex(state)];
-
-			alpha = m_pSurface->alpha(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
-		}
-
-		return ( alpha >= opacityTreshold);
+		Coord srcOfs = m_stateBlocks[_stateToIndex(state)];
+		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
 	}
 
 	//____ isOpaque() _____________________________________________________________

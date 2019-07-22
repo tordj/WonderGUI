@@ -46,14 +46,14 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static ColorSkin_p	cast( Object * pObject );
 
 		//.____ Rendering ________________________________________________
 
-		void		render( GfxDevice * pDevice, const Rect& _canvas, State state ) const;
+		void		render( GfxDevice * pDevice, const Rect& _canvas, State state ) const override;
 
 		//.____ Appearance _________________________________________________
 
@@ -69,13 +69,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const;
+		bool		markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const override;
 
-		bool		isOpaque() const;
-		bool		isOpaque( State state ) const;
-		bool		isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		bool		isOpaque() const override;
+		bool		isOpaque( State state ) const override;
+		bool		isOpaque( const Rect& rect, const Size& canvasSize, State state ) const override;
 
-		bool		isStateIdentical( State state, State comparedTo ) const;
+		bool		isStateIdentical( State state, State comparedTo ) const override;
 
 	private:
 		ColorSkin();

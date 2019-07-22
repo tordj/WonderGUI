@@ -196,11 +196,13 @@ namespace wg
 		}
 		else
 		{
-			Rect top( _canvas.x, _canvas.y, _canvas.w, m_frame.top );
-			Rect left( _canvas.x, _canvas.y+m_frame.top, m_frame.left, _canvas.h - m_frame.height() );
-			Rect right( _canvas.x + _canvas.w - m_frame.right, _canvas.y+m_frame.top, m_frame.right, _canvas.h - m_frame.height() );
-			Rect bottom( _canvas.x, _canvas.y + _canvas.h - m_frame.bottom, _canvas.w, m_frame.bottom );
-			Rect center( _canvas - m_frame );
+			Border frame = toPixels(m_frame);
+
+			Rect top( _canvas.x, _canvas.y, _canvas.w, frame.top );
+			Rect left( _canvas.x, _canvas.y+frame.top, frame.left, _canvas.h - frame.height() );
+			Rect right( _canvas.x + _canvas.w - frame.right, _canvas.y+frame.top, frame.right, _canvas.h - frame.height() );
+			Rect bottom( _canvas.x, _canvas.y + _canvas.h - frame.bottom, _canvas.w, frame.bottom );
+			Rect center( _canvas - frame );
 
 			pDevice->fill( top, m_frameColor[i] );
 			pDevice->fill( left, m_frameColor[i] );
@@ -217,32 +219,32 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size BoxSkin::minSize() const
+	SizeP BoxSkin::minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-		Size frame = m_frame.size();
+		SizeP content = ExtendedSkin::minSize();
+		SizeP frame = pixelAligned(m_frame);
 
-		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
+		return wg::SizeP::max(content,frame);
 	}
 
 	//____ preferredSize() ________________________________________________________
 
-	Size BoxSkin::preferredSize() const
+	SizeP BoxSkin::preferredSize() const
 	{
-		Size content = ExtendedSkin::preferredSize();
-		Size frame = m_frame.size();
+		SizeP content = ExtendedSkin::minSize();
+		SizeP frame = pixelAligned(m_frame);
 
-		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
+		return wg::SizeP::max(content, frame);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size BoxSkin::sizeForContent( const Size contentSize ) const
+	SizeP BoxSkin::sizeForContent( const SizeP contentSize ) const
 	{
 		Size content = ExtendedSkin::sizeForContent(contentSize);
 		Size frame = m_frame.size();
 
-		return Size( wg::max(content.w,frame.w), wg::max(content.h,frame.h) );
+		return wg::SizeP::max(content, frame);
 	}
 
 	//____ markTest() _____________________________________________________________
@@ -260,7 +262,7 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			Rect center = canvas - m_frame;
+			Rect center = canvas - toPixels(m_frame);
 			if( center.contains(ofs) )
 				opacity = m_fillColor[i].a;
 			else

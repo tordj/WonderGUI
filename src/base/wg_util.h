@@ -36,10 +36,59 @@ namespace wg
 
 	namespace Util		/** @private */
 	{
+
+		//____ pixelAligned() _________________________________________________________
+
+		inline CoordP pixelAligned(CoordP input)
+		{
+			CoordP p = input;
+			p.x.pixelAlign();
+			p.y.pixelAlign();
+			return p;
+		}
+
+		inline BorderP pixelAligned(BorderP input)
+		{
+			BorderP b = input;
+			b.top.pixelAlign();
+			b.left.pixelAlign();
+			b.bottom.pixelAlign();
+			b.right.pixelAlign();
+			return b;
+		}
+
+		inline SizeP pixelAligned(SizeP input)
+		{
+			SizeP sz = input;
+			sz.w.pixelAlign();
+			sz.h.pixelAlign();
+			return sz;
+		}
+
+		inline RectP pixelAligned(RectP input)
+		{
+			RectP r = input;
+			r.x.pixelAlign();
+			r.y.pixelAlign();
+			r.w.pixelAlign();
+			r.h.pixelAlign();
+			return r;
+		}
+
+		inline Border toPixels(Border points)
+		{
+			return { (points.right * Base::pixelQuartersPerPoint()) >> 2, (points.bottom * Base::pixelQuartersPerPoint()) >> 2,
+					 (points.left * Base::pixelQuartersPerPoint()) >> 2, (points.top * Base::pixelQuartersPerPoint()) >> 2 };
+		}
+
+
 		double squareRoot(double a);
 		double powerOfTen(int num);
 
 		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const Rect& source, const Rect& area, int opacityTreshold );
+
+		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const Rect& source, const Rect& dest, int opacityTreshold, Border sourceFrame);
+
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat );
 
@@ -107,6 +156,7 @@ namespace wg
 			return _limitUint8Table[value+256];
 		}
 	}
+
 
 
 

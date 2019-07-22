@@ -306,24 +306,8 @@ namespace wg
 
 			const Rect&	src = Rect(layer.blockOfs[stateIndex], m_blockSize);
 
-			// Shortcuts & optimizations for common special cases.
-
-			if (src.w == _canvas.w && src.h == _canvas.h /*&& scale == m_scale */)
-			{
-				pDevice->blit( _canvas.pos(), src );
-				continue;
-			}
-
-			if (m_frame.left + m_frame.top + m_frame.right + m_frame.bottom == 0)
-			{
-				pDevice->stretchBlit( _canvas, src );
-				continue;
-			}
-
-//			const Border&    sourceBorders = m_frame.scale(m_scale);
-//			const Border     canvasBorders = m_frame.scale(scale);
 			const Border&    sourceBorders = m_frame;
-			const Border     canvasBorders = m_frame;
+			const Border     canvasBorders = toPixels(m_frame);
 
 			pDevice->blitNinePatch( _canvas, canvasBorders, src, sourceBorders );
 		}
@@ -338,30 +322,30 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size MultiBlockSkin::minSize() const
+	SizeP MultiBlockSkin::minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-//		Size frame = m_frame.scale(scale).size();
-		Size frame = m_frame.size();
-		return Size( max(content.w, frame.w), max(content.h, frame.h) );
+		SizeP content = ExtendedSkin::minSize();
+		SizeP frame = pixelAligned(m_frame);
+		return SizeP::max(content, frame);
 	}
 
 	//____ preferredSize() ________________________________________________________
 
-	Size MultiBlockSkin::preferredSize() const
+	SizeP MultiBlockSkin::preferredSize() const
 	{
-		Size sz = ExtendedSkin::preferredSize();
-		return Size( max(m_blockSize.w,sz.w), max(m_blockSize.h,sz.h) );
+		SizeP content = ExtendedSkin::preferredSize();
+		SizeP frame = pixelAligned(m_frame);
+		return SizeP::max(content, frame);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size MultiBlockSkin::sizeForContent( const Size contentSize ) const
+	SizeP MultiBlockSkin::sizeForContent( const SizeP contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = m_frame.size();
+		SizeP sz = ExtendedSkin::sizeForContent(contentSize);
+		SizeP min = pixelAligned(m_frame);
 
-		return Size( max(sz.w,min.w), max(sz.h,min.h) );
+		return SizeP::max(sz, min);
 	}
 
 	//____ markTest() _____________________________________________________________
@@ -375,86 +359,9 @@ namespace wg
 
 		for (auto& layer : m_layers)
 		{
-			int alpha = 0;
-			if (isOpaque(state))
-				alpha = 255;
-			else if( layer.blendMode == BlendMode::Blend )
-			{
-				Coord ofs = _ofs - canvas.pos();
-
-//				Border canvasFrame = m_frame.scale(scale);
-//				Border sourceFrame = m_frame.scale(m_scale);
-				Border canvasFrame = m_frame;
-				Border sourceFrame = m_frame;
-
-				// Determine in which section the cordinate is (0-2 for x and y).
-
-				int	xSection = 0;
-				int ySection = 0;
-
-				if (ofs.x >= canvas.w - canvasFrame.right)
-					xSection = 2;
-				else if (ofs.x > canvasFrame.left)
-					xSection = 1;
-
-				if (ofs.y >= canvas.h - canvasFrame.bottom)
-					ySection = 2;
-				else if (ofs.y > canvasFrame.top)
-					ySection = 1;
-
-				// Convert ofs.x to X-offset in bitmap, taking stretch/tile section into account.
-
-				if (xSection == 0)
-				{
-//					ofs.x = (ofs.x * m_scale) / scale;
-				}
-				else if (xSection == 2)
-				{
-					ofs.x = ofs.x - (canvas.w - canvasFrame.right);           // Offset in right border of canvas
-//					ofs.x = (ofs.x * m_scale) / scale;            // Scale from canvas to source coordinates
-					ofs.x += m_blockSize.w - sourceFrame.right;          // Add offset for right border
-				}
-				else if (xSection == 1)
-				{
-					int tileAreaWidth = m_blockSize.w - sourceFrame.width();
-
-					int canvasStretchWidth = canvas.w - canvasFrame.width();	// Width of stretch-area on screen.
-
-					ofs.x = ofs.x - canvasFrame.left;               // Offset in middle section of canvas
-//					ofs.x = (ofs.x * m_scale) / scale;        // Scale from canvas to source offset
-					ofs.x = (int)((ofs.x / (float)canvasStretchWidth)*tileAreaWidth) + sourceFrame.left;
-				}
-
-
-				// Convert ofs.y to Y-offset in bitmap, taking stretch/tile section into account.
-
-				if (ySection == 0)
-				{
-//					ofs.y = (ofs.y * m_scale) / scale;
-				}
-				if (ySection == 2)
-				{
-					ofs.y = ofs.y - (canvas.h - canvasFrame.bottom);           // Offset in bottom border of canvas
-//					ofs.y = (ofs.y * m_scale) / scale;            // Scale from canvas to source coordinates
-					ofs.y += m_blockSize.h - sourceFrame.bottom;          // Add offset for bottom border
-				}
-				else if (ySection == 1)
-				{
-					int tileAreaHeight = m_blockSize.h - sourceFrame.height();
-
-					int canvasStretchHeight = canvas.h - canvasFrame.height();	// Height of stretch-area on screen.
-
-					ofs.y = ofs.y - canvasFrame.top;               // Offset in middle section of canvas
-//					ofs.y = (ofs.y * m_scale) / scale;        // Scale from canvas to source offset
-					ofs.y = (int)((ofs.y / (float)canvasStretchHeight)*tileAreaHeight) + sourceFrame.top;
-				}
-
-				Coord srcOfs = layer.blockOfs[stateIndex];
-
-				alpha = layer.pSurface->alpha(srcOfs.x + ofs.x, srcOfs.y + ofs.y);
-			}
-
-			if (alpha >= opacityTreshold)
+			Coord srcOfs = layer.blockOfs[stateIndex];
+			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, { srcOfs,m_blockSize }, canvas, opacityTreshold, m_frame);
+			if (bMarked)
 				return true;
 		}
 
