@@ -54,13 +54,13 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual SizeQ	minSize() const = 0;
-		virtual SizeQ	preferredSize() const = 0;
-		virtual SizeQ	sizeForContent( const SizeQ contentSize ) const = 0;
+		virtual Size	minSize() const = 0;
+		virtual Size	preferredSize() const = 0;
+		virtual Size	sizeForContent( const Size contentSize ) const = 0;
 
-		virtual SizeQ	contentPadding() const = 0;
-		virtual CoordQ	contentOfs( State state ) const = 0;
-		virtual RectQ	contentRect( const RectQ& canvas, State state ) const = 0;
+		virtual Size	contentPadding() const = 0;
+		virtual Coord	contentOfs( State state ) const = 0;
+		virtual Rect	contentRect( const Rect& canvas, State state ) const = 0;
 
 
 		//.____ Misc ____________________________________________________

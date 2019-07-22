@@ -62,10 +62,10 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeQ	minSize() const override;
-		SizeQ	preferredSize() const override;
+		Size	minSize() const override;
+		Size	preferredSize() const override;
 
-		SizeQ	sizeForContent( const SizeQ contentSize ) const override;
+		Size	sizeForContent( const Size contentSize ) const override;
 
 		//.____ Appearance _________________________________________________
 
@@ -111,7 +111,7 @@ namespace wg
 
 		void			_updateStateOpacity( int stateIdx );
 
-		SizeI			m_blockSizeQoints;					// Stored in points
+		SizeI			m_blockSizePoints;					// Stored in points
 
 		SizeI			m_blockSize;						// Stored in pixels
 		bool			m_bIsOpaque;

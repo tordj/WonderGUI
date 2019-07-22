@@ -64,10 +64,10 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeQ	minSize() const override;
-		SizeQ	preferredSize() const override;
+		Size	minSize() const override;
+		Size	preferredSize() const override;
 
-		SizeQ	sizeForContent( const SizeQ contentSize ) const override;
+		Size	sizeForContent( const Size contentSize ) const override;
 
 		//.____ Appearance _________________________________________________
 

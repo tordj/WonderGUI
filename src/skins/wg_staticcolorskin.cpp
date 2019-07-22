@@ -97,42 +97,42 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	SizeQ StaticColorSkin::minSize() const
+	Size StaticColorSkin::minSize() const
 	{
-		return SizeQ();
+		return Size();
 	}
 
 	//____ preferredSize() ______________________________________________________________
 
-	SizeQ StaticColorSkin::preferredSize() const
+	Size StaticColorSkin::preferredSize() const
 	{
-		return SizeQ();
+		return Size();
 	}
 
 	//____ contentPadding() ______________________________________________________________
 
-	SizeQ StaticColorSkin::contentPadding() const
+	Size StaticColorSkin::contentPadding() const
 	{
-		return SizeQ();
+		return Size();
 	}
 
 	//____ contentOfs() ______________________________________________________________
 
-	CoordQ StaticColorSkin::contentOfs( State state ) const
+	Coord StaticColorSkin::contentOfs( State state ) const
 	{
-		return CoordQ();
+		return Coord();
 	}
 
 	//____ sizeForContent() ___________________________________________________
 
-	SizeQ  StaticColorSkin::sizeForContent( const SizeQ contentSize ) const
+	Size  StaticColorSkin::sizeForContent( const Size contentSize ) const
 	{
 		return contentSize;
 	}
 
 	//____ contentRect() ______________________________________________________
 
-	RectQ  StaticColorSkin::contentRect( const RectQ& canvas, State state ) const
+	Rect  StaticColorSkin::contentRect( const Rect& canvas, State state ) const
 	{
 		return canvas;
 	}

@@ -39,17 +39,17 @@ namespace wg
 
 		//____ pixelAligned() _________________________________________________________
 
-		inline CoordQ pixelAligned(CoordQ input)
+		inline Coord pixelAligned(Coord input)
 		{
-			CoordQ p = input;
+			Coord p = input;
 			p.x.pixelAlign();
 			p.y.pixelAlign();
 			return p;
 		}
 
-		inline BorderQ pixelAligned(BorderQ input)
+		inline Border pixelAligned(Border input)
 		{
-			BorderQ b = input;
+			Border b = input;
 			b.top.pixelAlign();
 			b.left.pixelAlign();
 			b.bottom.pixelAlign();
@@ -57,17 +57,17 @@ namespace wg
 			return b;
 		}
 
-		inline SizeQ pixelAligned(SizeQ input)
+		inline Size pixelAligned(Size input)
 		{
-			SizeQ sz = input;
+			Size sz = input;
 			sz.w.pixelAlign();
 			sz.h.pixelAlign();
 			return sz;
 		}
 
-		inline RectQ pixelAligned(RectQ input)
+		inline Rect pixelAligned(Rect input)
 		{
-			RectQ r = input;
+			Rect r = input;
 			r.x.pixelAlign();
 			r.y.pixelAlign();
 			r.w.pixelAlign();

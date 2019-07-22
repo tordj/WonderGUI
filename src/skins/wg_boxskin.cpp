@@ -219,32 +219,32 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	SizeQ BoxSkin::minSize() const
+	Size BoxSkin::minSize() const
 	{
-		SizeQ content = ExtendedSkin::minSize();
-		SizeQ frame = pixelAligned(m_frame);
+		Size content = ExtendedSkin::minSize();
+		Size frame = pixelAligned(m_frame);
 
-		return wg::SizeQ::max(content,frame);
+		return Size::max(content,frame);
 	}
 
 	//____ preferredSize() ________________________________________________________
 
-	SizeQ BoxSkin::preferredSize() const
+	Size BoxSkin::preferredSize() const
 	{
-		SizeQ content = ExtendedSkin::minSize();
-		SizeQ frame = pixelAligned(m_frame);
+		Size content = ExtendedSkin::minSize();
+		Size frame = pixelAligned(m_frame);
 
-		return wg::SizeQ::max(content, frame);
+		return Size::max(content, frame);
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	SizeQ BoxSkin::sizeForContent( const SizeQ contentSize ) const
+	Size BoxSkin::sizeForContent( const Size contentSize ) const
 	{
 		SizeI content = ExtendedSkin::sizeForContent(contentSize);
 		SizeI frame = m_frame.size();
 
-		return wg::SizeQ::max(content, frame);
+		return Size::max(content, frame);
 	}
 
 	//____ markTest() _____________________________________________________________
