@@ -396,7 +396,7 @@ namespace wg
 		if (placement != m_pSlot->placement)
 		{
 			m_pSlot->placement = placement;
-			m_pHolder->_updateElementGeo(m_pHolder->size());
+			m_pHolder->_updateElementGeo(m_pHolder->m_size);
 		}
 		return true;
 	}
@@ -633,7 +633,7 @@ namespace wg
 		if( bOverlay != m_bOverlayScrollbars )
 		{
 			m_bOverlayScrollbars = bOverlay;
-			_updateElementGeo( size() );
+			_updateElementGeo( m_size );
 		}
 	}
 
@@ -707,7 +707,7 @@ namespace wg
 			ScrollbarSlot * p = &m_scrollbarSlots[i];
 			if (p->bVisible && p->pWidget && p->geo.contains(pos))
 			{
-				if (mode != SearchMode::MarkPolicy || p->pWidget->markTest(pos - p->geo.pos()))
+				if (mode != SearchMode::MarkPolicy || p->markTest(pos - p->geo.pos()))
 					return p->pWidget;
 			}
 		}
@@ -726,7 +726,7 @@ namespace wg
 					if( pFound )
 						return pFound;
 				}
-				else if( mode != SearchMode::MarkPolicy || p->pWidget->markTest( pos - p->canvasGeo.pos() ) )
+				else if( mode != SearchMode::MarkPolicy || p->markTest( pos - p->canvasGeo.pos() ) )
 					return p->pWidget;
 			}
 
@@ -734,14 +734,14 @@ namespace wg
 
 			if( m_pSkin )
 			{
-				if( m_pSkin->markTest( pos - p->windowGeo.pos() + p->viewPixOfs, p->contentSize, m_state, m_markOpacity ) )
+				if( m_pSkin->_markTest( pos - p->windowGeo.pos() + p->viewPixOfs, p->contentSize, m_state, m_markOpacity ) )
 					return this;
 			}
 		}
 
 		// Check our little corner square and geometry
 
-		if( mode == SearchMode::Geometry || markTest( pos ) )
+		if( mode == SearchMode::Geometry || _markTest( pos ) )
 			return this;
 
 		//
@@ -749,9 +749,9 @@ namespace wg
 		return nullptr;
 	}
 
-	//____ preferredSize() ___________________________________________________________
+	//____ _preferredSize() ___________________________________________________________
 
-	SizeI ScrollPanel::preferredSize() const
+	SizeI ScrollPanel::_preferredSize() const
 	{
 		SizeI sz;
 
@@ -790,10 +790,10 @@ namespace wg
 		//
 
 		if( !m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
-			mySize.h -= m_scrollbarSlots[0].pWidget->preferredSize().h;
+			mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 
 		if (!m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget)
-			mySize.w -= m_scrollbarSlots[1].pWidget->preferredSize().w;
+			mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 
 		//
 
@@ -801,23 +801,23 @@ namespace wg
 
 		if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget )
 		{
-			mySize.w -= m_scrollbarSlots[1].pWidget->preferredSize().w;
+			mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 			contentSize = m_viewSlot.sizeFromPolicy( mySize );
 
 			if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
 			{
-				mySize.h -= m_scrollbarSlots[0].pWidget->preferredSize().h;
+				mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 				contentSize = m_viewSlot.sizeFromPolicy( mySize );
 			}
 		}
 		else if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
 		{
-			mySize.h -= m_scrollbarSlots[0].pWidget->preferredSize().h;
+			mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 			contentSize = m_viewSlot.sizeFromPolicy( mySize );
 
 			if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget )
 			{
-				mySize.w -= m_scrollbarSlots[1].pWidget->preferredSize().w;
+				mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 				contentSize = m_viewSlot.sizeFromPolicy( mySize );
 			}
 		}
@@ -1069,7 +1069,7 @@ namespace wg
 
 				if( pMsg->wheel() == m_wheelForScroll )
 				{
-					if( m_viewSlot.windowGeo.contains( toLocal(pMsg->pointerPos())) )
+					if( m_viewSlot.windowGeo.contains( _toLocal(pMsg->pointerPos())) )
 					{
 						CoordI dist = pMsg->distance();
 						if( dist.x < 0 )
@@ -1112,7 +1112,7 @@ namespace wg
 			SizeI skinSize = SizeI::max(m_viewSlot.contentSize, m_viewSlot.windowGeo);
 			RectI skinCanvas = RectI( skinWindow.pos() - m_viewSlot.viewPixOfs, skinSize );
 
-			m_pSkin->render( pDevice, skinCanvas, m_state );
+			m_pSkin->_render( pDevice, skinCanvas, m_state );
 		}
 
 		// Render corner piece
@@ -1120,7 +1120,7 @@ namespace wg
 		if (m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
 		{
 			RectI canvas = m_cornerGeo + _canvas.pos();
-			m_pCornerSkin->render(pDevice, canvas, m_state);
+			m_pCornerSkin->_render(pDevice, canvas, m_state);
 		}
 
 		// Render view recursively
@@ -1218,12 +1218,12 @@ namespace wg
 	{
 		if( m_pSkin && m_viewSlot.windowGeo.contains( ofs ) )
 		{
-			return m_pSkin->markTest( ofs, m_viewSlot.canvasGeo, m_state, m_markOpacity );
+			return m_pSkin->_markTest( ofs, m_viewSlot.canvasGeo, m_state, m_markOpacity );
 		}
 
 		if( m_pCornerSkin && m_cornerGeo.contains( ofs ) )
 		{
-			return m_pCornerSkin->markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
+			return m_pCornerSkin->_markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
 		}
 
 		return false;
@@ -1360,7 +1360,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestResize( Slot * pSlot )
 	{
-		_updateElementGeo( size() );
+		_updateElementGeo( m_size );
 	}
 
 	//____ _prevChild() __________________________________________________________

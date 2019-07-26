@@ -39,6 +39,26 @@ namespace wg
 
 		//____ pixelAligned() _________________________________________________________
 
+		inline BorderI pixelAligned(BorderI input)
+		{
+			return { input.top & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC };
+		}
+
+		inline SizeI pixelAligned(SizeI input)
+		{
+			return { input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
+		}
+
+		inline CoordI pixelAligned(CoordI input)
+		{
+			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC };
+		}
+
+		inline RectI pixelAligned(RectI input)
+		{
+			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC, input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
+		}
+
 		inline Coord pixelAligned(Coord input)
 		{
 			Coord p = input;
@@ -75,12 +95,112 @@ namespace wg
 			return r;
 		}
 
-		inline BorderI toPixels(BorderI points)
+		inline CoordI pointsToRawAligned(CoordI points)
+		{
+			return { (points.x* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+		}
+
+		inline SizeI pointsToRawAligned(SizeI points)
+		{
+			return { (points.w* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+		}
+
+		inline BorderI pointsToRawAligned(BorderI points)
+		{
+			return { (points.top* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.right* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.bottom* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.left* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+		}
+
+		inline RectI pointsToRawAligned(RectI points)
+		{
+			return { (points.x* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.w* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+		}
+
+
+		inline CoordI rawToPixels(CoordI quarterPixels)
+		{
+			return { quarterPixels.x >> 2, quarterPixels.y >> 2 };
+		}
+
+		inline SizeI rawToPixels(SizeI quarterPixels)
+		{
+			return { quarterPixels.w >> 2, quarterPixels.h >> 2 };
+		}
+
+		inline BorderI rawToPixels(BorderI quarterPixels)
+		{
+			return { quarterPixels.top >> 2, quarterPixels.right >> 2, quarterPixels.bottom >> 2, quarterPixels.left >> 2 };
+		}
+
+		inline RectI rawToPixels(RectI quarterPixels)
+		{
+			return { quarterPixels.x >> 2, quarterPixels.y >> 2, quarterPixels.w >> 2, quarterPixels.h >> 2 };
+		}
+
+
+		inline BorderI pointsToPixels(BorderI points)
 		{
 			return { (points.right * Base::pixelQuartersPerPoint()) >> 2, (points.bottom * Base::pixelQuartersPerPoint()) >> 2,
 					 (points.left * Base::pixelQuartersPerPoint()) >> 2, (points.top * Base::pixelQuartersPerPoint()) >> 2 };
 		}
 
+/*
+		inline Coord pixelsToQPix(CoordI pixels)
+		{
+			return Coord(QPix::fromPixel(pixels.x), QPix::fromPixel(pixels.y));
+		}
+
+		inline Size pixelsToQPix(SizeI pixels)
+		{
+			return Size(QPix::fromPixel(pixels.w), QPix::fromPixel(pixels.h));
+		}
+
+		inline Rect pixelsToQPix(RectI pixels)
+		{
+			return Rect(QPix::fromPixel(pixels.x), QPix::fromPixel(pixels.y), QPix::fromPixel(pixels.w), QPix::fromPixel(pixels.h));
+		}
+*/
+		inline Coord rawToQpix(CoordI raw)
+		{
+			Coord c;
+			c.x.value = raw.x;
+			c.y.value = raw.y;
+			return c;
+		}
+
+		inline Size rawToQpix(SizeI raw)
+		{
+			Size sz;
+			sz.w.value = raw.w;
+			sz.h.value = raw.h;
+			return sz;
+		}
+
+		inline Rect rawToQpix(RectI raw)
+		{
+			Rect r;
+			r.x.value = raw.x;
+			r.y.value = raw.y;
+			r.w.value = raw.w;
+			r.h.value = raw.h;
+			return r;
+		}
+
+		inline CoordI qpixToRaw(Coord c)
+		{
+			return { c.x.value, c.y.value };
+		}
+
+		inline SizeI qpixToRaw(Size sz)
+		{
+			return { sz.w.value, sz.h.value };
+		}
+
+		inline RectI qpixToRaw(Rect r)
+		{
+			return { r.x.value, r.y.value, r.w.value, r.h.value };
+		}
 
 		double squareRoot(double a);
 		double powerOfTen(int num);

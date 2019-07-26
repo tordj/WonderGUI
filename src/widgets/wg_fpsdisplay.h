@@ -54,25 +54,23 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static FpsDisplay_p	cast( Object * pObject );
 
 
-		//.____ Geometry ____________________________________________
-
-		SizeI	preferredSize() const;
-
 	protected:
 		FpsDisplay();
 		virtual ~FpsDisplay();
-		virtual Widget* _newOfMyType() const { return new FpsDisplay(); };
+		virtual Widget* _newOfMyType() const override { return new FpsDisplay(); };
 
-		void		_receive( Msg * pMsg );
-		void		_setState( State state );
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void		_cloneContent( const Widget * _pOrg );
+		SizeI		_preferredSize() const override;
+
+		void		_receive( Msg * pMsg ) override;
+		void		_setState( State state ) override;
+		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void		_cloneContent( const Widget * _pOrg ) override;
 
 	private:
 

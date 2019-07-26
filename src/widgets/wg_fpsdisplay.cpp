@@ -104,9 +104,9 @@ namespace wg
 	}
 
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	SizeI FpsDisplay::preferredSize() const
+	SizeI FpsDisplay::_preferredSize() const
 	{
 		SizeI contentSize = m_labelsText.preferredSize();
 
@@ -123,7 +123,7 @@ namespace wg
 			contentSize.h = valueHeight;
 
 		if( m_pSkin )
-			return m_pSkin->sizeForContent(contentSize);
+			return m_pSkin->_sizeForContent(contentSize);
 		else
 			return contentSize;
 	}
@@ -137,7 +137,7 @@ namespace wg
 
 		RectI content;
 		if( m_pSkin )
-			content = m_pSkin->contentRect( _canvas, m_state );
+			content = m_pSkin->_contentRect( _canvas, m_state );
 		else
 			content = _canvas;
 

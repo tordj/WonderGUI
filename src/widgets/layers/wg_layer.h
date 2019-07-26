@@ -79,53 +79,52 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Layer_p	cast( Object * pObject );
-
-		//.____ Geometry ____________________________________________
-
-		int					matchingHeight( int width ) const;
-		int					matchingWidth( int height ) const;
-
-		SizeI				preferredSize() const;
 
 	protected:
 		Layer();
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos( Slot * pSlot ) const;
-		SizeI		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const override;
+		SizeI		_childSize( Slot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const RectI& rect );
-//		void		_childRequestResize( Slot * pSlot );
+		void		_childRequestRender( Slot * pSlot ) override;
+		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
+//		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const;
-		Widget *	_nextChild( const Slot * pSlot ) const;
+		Widget *	_prevChild( const Slot * pSlot ) const override;
+		Widget *	_nextChild( const Slot * pSlot ) const override;
 
-		void		_releaseChild( Slot * pSlot );
+		void		_releaseChild( Slot * pSlot ) override;
 
 		// Overloaded from Container
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
 		// Overloaded from ChildHolder
 
-		void		_setWidget( Slot * pSlot, Widget * pNewWidget );
-		Object *	_object() { return this; }
+		void		_setWidget( Slot * pSlot, Widget * pNewWidget ) override;
+		Object *	_object() override { return this; }
 
 		// Overloaded from Widget
 
-		void		_setSize(const SizeI& size);
-		void		_cloneContent( const Widget * _pOrg );
+		void		_setSize(const SizeI& size) override;
+		void		_cloneContent( const Widget * _pOrg ) override;
+
+		int			_matchingHeight(int width) const override;
+		int			_matchingWidth(int height) const override;
+
+		SizeI		_preferredSize() const override;
+
 
 		//
 

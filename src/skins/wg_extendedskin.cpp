@@ -66,6 +66,12 @@ namespace wg
 		m_contentPadding = padding;
 	}
 
+	Size ExtendedSkin::contentPaddingAdapted() const
+	{
+		return Util::rawToQpix(_contentPadding());
+	}
+
+
 	//____ clearContentShift() ________________________________________________
 
 	void ExtendedSkin::clearContentShift()
@@ -101,63 +107,73 @@ namespace wg
 		_refreshUnsetStates();
 	}
 
-	//____ contentShift() ________________________________________________________
+	//____ contentShift() ________________________________________________
 
-	Coord ExtendedSkin::contentShift(State state) const
+	CoordI ExtendedSkin::contentShift(State state) const
 	{
 		int index = _stateToIndex(state);
-		return pixelAligned( Coord(m_contentShift[index]) );
+		if (m_contentShiftStateMask.bit(index))
+			return m_contentShift[index];
+
+		return CoordI();
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ contentShiftAdapted() ________________________________________________________
 
-	Size ExtendedSkin::minSize() const
+	Coord ExtendedSkin::contentShiftAdapted(State state) const
 	{
-		return pixelAligned(m_contentPadding);
+		int index = _stateToIndex(state);
+		return pixelAligned(Coord(m_contentShift[index]));
 	}
-
-	//____ preferredSize() ______________________________________________________________
-
-	Size ExtendedSkin::preferredSize() const
-	{
-		return pixelAligned(m_contentPadding);
-	}
-
-	//____ sizeForContent() _______________________________________________________
-
-	Size ExtendedSkin::sizeForContent( const Size contentSize ) const
-	{
-		return contentSize + pixelAligned(m_contentPadding);
-	}
-
-	//____ contentPadding() _______________________________________________________
-
-	Size ExtendedSkin::contentPadding() const
-	{
-		return pixelAligned(m_contentPadding);
-	}
-
-
-	//____ contentRect() __________________________________________________________
-
-	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
-	{
-		return (canvas - pixelAligned(m_contentPadding)) + pixelAligned(Coord(m_contentShift[_stateToIndex(state)]));
-	}
-
-	//____ contentofs() __________________________________________________________
-
-	Coord ExtendedSkin::contentOfs( State state ) const
-	{
-		return pixelAligned(Coord( m_contentPadding.left, m_contentPadding.right)) + pixelAligned(Coord(m_contentShift[_stateToIndex(state)]));
-	}
-
 
 	//____ isStateIdentical() ______________________________________________________
 
-	bool ExtendedSkin::isStateIdentical( State state, State comparedTo ) const
+	bool ExtendedSkin::isStateIdentical(State state, State comparedTo) const
 	{
-		return ( m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)] );
+		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
+	}
+
+	//____ _minSize() ______________________________________________________________
+
+	SizeI ExtendedSkin::_minSize() const
+	{
+		return pointsToRawAligned(m_contentPadding);
+	}
+
+	//____ _preferredSize() ______________________________________________________________
+
+	SizeI ExtendedSkin::_preferredSize() const
+	{
+		return pointsToRawAligned(m_contentPadding);
+	}
+
+	//____ _sizeForContent() _______________________________________________________
+
+	SizeI ExtendedSkin::_sizeForContent( const SizeI contentSize ) const
+	{
+		return contentSize + pointsToRawAligned(m_contentPadding);
+	}
+
+	//____ _contentPadding() _______________________________________________________
+
+	SizeI ExtendedSkin::_contentPadding() const
+	{
+		return pointsToRawAligned(m_contentPadding);
+	}
+
+
+	//____ _contentRect() __________________________________________________________
+
+	RectI ExtendedSkin::_contentRect( const RectI& canvas, State state ) const
+	{
+		return (canvas - pointsToRawAligned(m_contentPadding)) + pointsToRawAligned(m_contentShift[_stateToIndex(state)]);
+	}
+
+	//____ _contentofs() __________________________________________________________
+
+	CoordI ExtendedSkin::_contentOfs( State state ) const
+	{
+		return pointsToRawAligned(CoordI( m_contentPadding.left, m_contentPadding.right)) + pointsToRawAligned(m_contentShift[_stateToIndex(state)]);
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

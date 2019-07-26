@@ -31,8 +31,8 @@ namespace wg
 {
 
 	class Filler;
-	typedef	StrongPtr<Filler>		Filler_p;
-	typedef	WeakPtr<Filler>	Filler_wp;
+	typedef	StrongPtr<Filler>	Filler_p;
+	typedef	WeakPtr<Filler>		Filler_wp;
 
 	//____ Filler ____________________________________________________________
 	/**
@@ -57,22 +57,22 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Filler_p		cast( Object * pObject );
 
 		//.____ Geometry ____________________________________________
 
 		void	setPreferredSize( const SizeI& size );
-		SizeI	preferredSize() const;
 
 	protected:
 		Filler();
 		virtual ~Filler();
-		virtual Widget* _newOfMyType() const { return new Filler(); };
+		virtual Widget* _newOfMyType() const override { return new Filler(); };
 
-		void	_cloneContent( const Widget * _pOrg );
+		SizeI	_preferredSize() const override;
+		void	_cloneContent( const Widget * _pOrg ) override;
 
 	private:
 		SizeI			m_preferredSize;

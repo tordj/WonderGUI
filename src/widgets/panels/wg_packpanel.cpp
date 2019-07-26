@@ -106,20 +106,20 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _______________________________________________________
+	//____ _preferredSize() _______________________________________________________
 
-	SizeI PackPanel::preferredSize() const
+	SizeI PackPanel::_preferredSize() const
 	{
 		SizeI size = m_preferredContentSize;
 		if (m_pSkin)
-			size += m_pSkin->contentPadding();
+			size += m_pSkin->_contentPadding();
 
 		return size;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int PackPanel::matchingHeight( int width ) const
+	int PackPanel::_matchingHeight( int width ) const
 	{
 		int height = 0;
 
@@ -194,14 +194,14 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			height += m_pSkin->contentPadding().h;
+			height += m_pSkin->_contentPadding().h;
 
 		return height;
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	int PackPanel::matchingWidth( int height ) const
+	int PackPanel::_matchingWidth( int height ) const
 	{
 		int width = 0;
 
@@ -276,7 +276,7 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			width += m_pSkin->contentPadding().w;
+			width += m_pSkin->_contentPadding().w;
 
 		return width;
 	}
@@ -641,13 +641,13 @@ namespace wg
 		if( m_children.isEmpty() )
 			return;
 
-		SizeI sz = size();
+		SizeI sz = m_size;
 		CoordI contentOfs;
 
 		if (m_pSkin)
 		{
-			sz -= m_pSkin->contentPadding();
-			contentOfs = m_pSkin->contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
+			sz -= m_pSkin->_contentPadding();
+			contentOfs = m_pSkin->_contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
 		}
 
 		int wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;

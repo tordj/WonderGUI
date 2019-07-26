@@ -60,15 +60,6 @@ namespace wg
 		static const char       CLASSNAME[];
 		static ShadowLayer_p  cast( Object * pObject );
 
-		//.____ Geometry _________________________________________________
-
-		int				matchingHeight(int width) const;
-		int				matchingWidth(int height) const;
-
-		SizeI			preferredSize() const;
-		SizeI			minSize() const;
-		SizeI			maxSize() const;
-
 	protected:
 		ShadowLayer();
 		virtual ~ShadowLayer();
@@ -89,11 +80,18 @@ namespace wg
 
 		// Overloaded from ShadowHolder
 
-		Object * _object();
-		void	_didAddShadows(int nb);
-		void	_willRemoveShadows(int ofs, int nb);
+		Object * _object() override;
+		void	_didAddShadows(int nb) override;
+		void	_willRemoveShadows(int ofs, int nb) override;
 
 		// Overloaded from Widget
+
+		int				_matchingHeight(int width) const override;
+		int				_matchingWidth(int height) const override;
+
+		SizeI			_preferredSize() const override;
+		SizeI			_minSize() const override;
+		SizeI			_maxSize() const override;
 
 		void            _cloneContent( const Widget * _pOrg ) override;
 		void            _renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches ) override;

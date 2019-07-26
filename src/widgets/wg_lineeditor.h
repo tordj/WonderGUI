@@ -54,14 +54,12 @@ namespace wg
 		static LineEditor_p	cast( Object * pObject );
 
 
-		//.____ Geometry ____________________________________________
-
-		SizeI			preferredSize() const override;
-
 	protected:
 		LineEditor();
 		virtual ~LineEditor();
 		virtual Widget* _newOfMyType() const override { return new LineEditor(); }
+
+		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;

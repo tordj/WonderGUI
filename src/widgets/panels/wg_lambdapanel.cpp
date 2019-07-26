@@ -224,9 +224,9 @@ namespace wg
 		return true;
 	}
 
-	//____ preferredSize() _____________________________________________________
+	//____ _preferredSize() _____________________________________________________
 
-	SizeI LambdaPanel::preferredSize() const
+	SizeI LambdaPanel::_preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -507,8 +507,8 @@ namespace wg
 				// Clip our geometry and put it in a dirtyrect-list
 
 				Patches patches;
-				patches.add(RectI(pSlot->geo, RectI(0, 0, size())));
-				patches.add(RectI(geo, RectI(0, 0, size())));
+				patches.add(RectI(pSlot->geo, RectI(0, 0, m_size)));
+				patches.add(RectI(geo, RectI(0, 0, m_size)));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
@@ -545,7 +545,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add(RectI(rect, RectI(0, 0, size())));
+		patches.add(RectI(rect, RectI(0, 0, m_size)));
 
 		// Remove portions of patches that are covered by opaque upper siblings
 

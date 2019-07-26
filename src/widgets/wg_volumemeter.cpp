@@ -210,14 +210,16 @@ namespace wg
 	}
 
 
-	//____ preferredSize() ________________________________________________________________
+	//____ _preferredSize() ________________________________________________________________
 
-	SizeI VolumeMeter::preferredSize() const
+	SizeI VolumeMeter::_preferredSize() const
 	{
 		SizeI	sz = m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(10,5*m_nLEDs) : SizeI( 5*m_nLEDs,10);
 
+		sz *= Base::pixelQuartersPerPoint();
+
 		if( m_pSkin )
-			return m_pSkin->sizeForContent( sz );
+			return m_pSkin->_sizeForContent( sz );
 		else
 			return sz;
 	}
@@ -377,7 +379,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
+			canvas = m_pSkin->_contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
 

@@ -116,7 +116,7 @@ namespace wg
 			m_fSectionHeight[1] = middleFraction;
 			m_fSectionHeight[2] = topFraction;
 
-			SizeI canvasSize = m_pSkin ? SizeI() - m_pSkin->contentPadding() : SizeI();
+			SizeI canvasSize = m_pSkin ? SizeI() - m_pSkin->_contentPadding() : SizeI();
 
 			_updateValueDisplays( canvasSize );
 			_requestRender();
@@ -133,7 +133,7 @@ namespace wg
 		{
 			m_fHoldHeight = fraction;
 
-			SizeI size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 			_updateValueDisplays( size );
 			_requestRender();
 		}
@@ -149,7 +149,7 @@ namespace wg
 		m_fPeak[0] = peak;
 		m_fHold[0] = hold;
 
-		RectI canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : RectI(size());
+		RectI canvas = m_pSkin ? m_pSkin->_contentRect( m_size, m_state ) : RectI(m_size);
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 		int  iPeak = (int) (peak * length);
@@ -183,7 +183,7 @@ namespace wg
 		m_fHold[0] = leftHold;
 		m_fHold[1] = rightHold;
 
-		RectI canvas = m_pSkin ? m_pSkin->contentRect( size(), m_state ) : RectI(size());
+		RectI canvas = m_pSkin ? m_pSkin->_contentRect( m_size, m_state ) : RectI(m_size);
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
@@ -217,7 +217,7 @@ namespace wg
 		{
 			m_direction = direction;
 
-			SizeI size = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 			_updateValueDisplays(size);
 			_requestResize();
 			_requestRender();
@@ -317,11 +317,11 @@ namespace wg
 		return ofs;
 	}
 
-	//____ preferredSize() ________________________________________________________________
+	//____ _preferredSize() ________________________________________________________________
 
-	SizeI SimpleVolumeMeter::preferredSize() const
+	SizeI SimpleVolumeMeter::_preferredSize() const
 	{
-		return m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9);
+		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * Base::pixelQuartersPerPoint();
 	}
 
 	//____ _setSize() ____________________________________________________________________
@@ -330,7 +330,7 @@ namespace wg
 	{
 		Widget::_setSize( size );
 
-		SizeI canvasSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
+		SizeI canvasSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
 
 		_updateValueDisplays( canvasSize );
 	}
@@ -341,8 +341,8 @@ namespace wg
 	{
 		SizeI sz = SizeI();
 
-		RectI oldCanvas = m_pSkin ? m_pSkin->contentRect(sz,m_state) : RectI(sz);
-		RectI newCanvas = pSkin ? pSkin->contentRect(sz,m_state) : RectI(sz);
+		RectI oldCanvas = m_pSkin ? m_pSkin->_contentRect(sz,m_state) : RectI(sz);
+		RectI newCanvas = pSkin ? pSkin->_contentRect(sz,m_state) : RectI(sz);
 
 		Widget::_setSkin( pSkin );
 
@@ -361,7 +361,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
+			canvas = m_pSkin->_contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
 
@@ -560,7 +560,7 @@ namespace wg
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
 
-		SizeI canvasSize = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+		SizeI canvasSize = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 		_updateValueDisplays( canvasSize );
 	}
 

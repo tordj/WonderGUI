@@ -290,9 +290,6 @@ namespace wg
 		void				setConfineWidgets( bool bConfineWidgets );
 		bool				isConfiningWidgets() const { return m_bConfineWidgets; }
 
-		//.____ Geometry ____________________________________________
-
-		SizeI				preferredSize() const override;
 
 	protected:
 		FlexPanel();
@@ -338,6 +335,8 @@ namespace wg
 		void		_releaseChild(Slot * pSlot) override;
 
 	private:
+
+		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setSize( const SizeI& size ) override;

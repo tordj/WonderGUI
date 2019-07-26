@@ -75,9 +75,9 @@ namespace wg
 		return 0;
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI LineEditor::preferredSize() const
+	SizeI LineEditor::_preferredSize() const
 	{
 		//TODO: Use real text size as preferred size instead. They should use a SizeCapsule to limit the size if needed.
 
@@ -100,7 +100,7 @@ namespace wg
 		}
 
 		if( m_pSkin )
-			return m_pSkin->sizeForContent( contentSize );
+			return m_pSkin->_sizeForContent( contentSize );
 		else
 			return contentSize;
 	}
@@ -113,7 +113,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect( _canvas, m_state );
+			canvas = m_pSkin->_contentRect( _canvas, m_state );
 		else
 			canvas = _canvas;
 /*
@@ -226,7 +226,7 @@ namespace wg
 		Widget::_setSize( size );
 
 		if( m_pSkin )
-			m_text.setSize( SizeI(m_text.preferredSize().w, size.h - m_pSkin->contentPadding().h ) );
+			m_text.setSize( SizeI(m_text.preferredSize().w, size.h - m_pSkin->_contentPadding().h ) );
 		else
 			m_text.setSize( SizeI( m_text.preferredSize().w, size.h ) );
 	}
@@ -238,7 +238,7 @@ namespace wg
 		CoordI c(-m_textScrollOfs, 0);
 
 		if( m_pSkin )
-			return m_pSkin->contentOfs( m_state ) + c;
+			return m_pSkin->_contentOfs( m_state ) + c;
 		else
 			return c;
 	}
@@ -248,7 +248,7 @@ namespace wg
 	SizeI LineEditor::_componentSize( const Component * pComponent ) const
 	{
 		if( m_pSkin )
-			return SizeI( m_text.preferredSize().w, m_size.h - m_pSkin->contentPadding().h );
+			return SizeI( m_text.preferredSize().w, m_size.h - m_pSkin->_contentPadding().h );
 		else
 			return SizeI( m_text.preferredSize().w, m_size.h );
 	}
@@ -259,7 +259,7 @@ namespace wg
 	{
 		if( m_pSkin )
 		{
-			RectI r = m_pSkin->contentRect( m_size, m_state );
+			RectI r = m_pSkin->_contentRect( m_size, m_state );
 			r.x -= m_textScrollOfs;
 			r.w = m_text.preferredSize().w;
 			return r;
@@ -275,7 +275,7 @@ namespace wg
 		RectI visible(0, 0, m_size);
 
 		if (m_pSkin)
-			visible = m_pSkin->contentRect(m_size, m_state);
+			visible = m_pSkin->_contentRect(m_size, m_state);
 
 		_requestRender(visible);
 	}
@@ -289,7 +289,7 @@ namespace wg
 
 		if( m_pSkin )
 		{
-			visible = m_pSkin->contentRect( m_size, m_state );
+			visible = m_pSkin->_contentRect( m_size, m_state );
 			dirt += visible.pos();
 		}
 
@@ -306,7 +306,7 @@ namespace wg
 
 		int height = m_size.h;
 		if( m_pSkin )
-			height -= m_pSkin->contentPadding().h;
+			height -= m_pSkin->_contentPadding().h;
 
 		if( preferred.h != height )
 			_requestResize();
@@ -321,9 +321,9 @@ namespace wg
 		int scrollOfs = m_textScrollOfs;
 		SizeI canvas = pComponent->_size();
 
-		SizeI window = size();
+		SizeI window = m_size;
 		if( m_pSkin )
-			window -= m_pSkin->contentPadding();
+			window -= m_pSkin->_contentPadding();
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;

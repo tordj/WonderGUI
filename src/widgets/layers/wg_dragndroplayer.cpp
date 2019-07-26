@@ -94,7 +94,7 @@ namespace wg
 				if (pRes)
 					return pRes;
 			}
-			else if (mode == SearchMode::Geometry || m_baseSlot.pWidget->markTest(ofs))
+			else if (mode == SearchMode::Geometry || m_baseSlot.markTest(ofs))
 				return m_baseSlot.pWidget;
 		}
 		else if( mode == SearchMode::Geometry )
@@ -112,7 +112,7 @@ namespace wg
 		else
 		{
 			auto p = static_cast<LayerSlot*>(pSlot);
-			p->geo.setSize(p->pWidget->preferredSize());
+			p->geo.setSize(p->preferredSize());
 			p->pWidget->_setSize(p->geo);
 
 			//TODO: Should we request render (on both sizes) too?
@@ -196,7 +196,7 @@ namespace wg
 						CoordI total = pMsg->draggedTotal();
 						if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
 						{
-							CoordI pickOfs = pMsg->startPos() - m_pPicked->globalPos();
+							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
 							m_dragState = DragState::Picked;
 						}
@@ -213,7 +213,7 @@ namespace wg
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
-						CoordI ofs = toLocal(pMsg->pointerPos());
+						CoordI ofs = _toLocal(pMsg->pointerPos());
 
 						Widget * pProbed = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -240,7 +240,7 @@ namespace wg
 
 // MOVE TO TICK!                        // Check if our target has changed
 
-						CoordI ofs = toLocal(pMsg->pointerPos());
+						CoordI ofs = _toLocal(pMsg->pointerPos());
 
 						Widget * pHovered = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -359,8 +359,8 @@ namespace wg
 					{
 						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = pMsg->dragWidgetPointerOfs();
-						dragWidgetSize = pDragWidget->preferredSize();
 						m_dragSlot.replaceWidget(this, pDragWidget);
+						dragWidgetSize = m_dragSlot.preferredSize();
 					}
 					else
 					{
@@ -368,7 +368,7 @@ namespace wg
 						dragWidgetSize = m_pPicked->size();                             //TODO: Possible source of error, if picked widget changes size before the render call.
 					}
 
-					CoordI mousePos = toLocal(pMsg->pointerPos());
+					CoordI mousePos = _toLocal(pMsg->pointerPos());
 					m_dragSlot.geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
 
 					_requestRender(m_dragSlot.geo);
@@ -496,12 +496,14 @@ namespace wg
 
 	void DragNDropLayer::_replaceDragWidget( Widget * pNewWidget )
 	{
-		SizeI newSize = pNewWidget ? pNewWidget->preferredSize() : SizeI(0,0);
-		SizeI maxSize = SizeI::max(m_dragSlot.geo.size(),newSize);
 
 		if (pNewWidget)
 			pNewWidget->releaseFromParent();
 		m_dragSlot.replaceWidget(this, pNewWidget );
+
+		SizeI newSize = pNewWidget ? m_dragSlot.preferredSize() : SizeI(0, 0);
+		SizeI maxSize = SizeI::max(m_dragSlot.geo.size(), newSize);
+
 		m_dragSlot.geo.setSize(newSize);
 
 		_requestRender({ m_dragSlot.geo.pos(), maxSize });

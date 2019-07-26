@@ -99,10 +99,6 @@ namespace wg
 		void				setFlipOnRelease( bool bFlipOnRelease );
 		inline bool			flipOnRelease();
 
-		//.____ Geometry ____________________________________________
-
-		SizeI				preferredSize() const override;
-
 		//.____ Misc _________________________________________________________________
 
 		inline ToggleGroup_p toggleGroup() const;
@@ -112,6 +108,7 @@ namespace wg
 		virtual ~ToggleButton();
 		virtual Widget* _newOfMyType() const override { return new ToggleButton(); };
 
+		SizeI	_preferredSize() const override;
 		void	_cloneContent( const Widget * _pOrg ) override;
 		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void	_receive( Msg * pMsg ) override;

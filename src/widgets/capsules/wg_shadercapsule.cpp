@@ -130,7 +130,7 @@ namespace wg
 
 		// Render children recursively
 
-		RectI canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		RectI canvas = m_pSkin ? m_pSkin->_contentRect(_canvas, m_state) : _canvas;
 
 		if (canvas != _canvas)
 		{

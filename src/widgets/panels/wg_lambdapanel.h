@@ -121,8 +121,6 @@ namespace wg
 		bool				setSizeLimits( SizeI min, SizeI max );
 		bool				setPreferredSize(SizeI pref);
 
-		SizeI				preferredSize() const override;
-
 	protected:
 		LambdaPanel();
 		virtual ~LambdaPanel();
@@ -166,6 +164,8 @@ namespace wg
 		void		_releaseChild(Slot * pSlot) override;
 
 	private:
+
+		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_setSize( const SizeI& size ) override;

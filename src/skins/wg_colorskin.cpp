@@ -150,31 +150,14 @@ namespace wg
 		return m_color[i];
 	}
 
-	//____ render() _______________________________________________________________
+	//____ isStateIdentical() ____________________________________________________
 
-	void ColorSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	bool ColorSkin::isStateIdentical(State state, State comparedTo) const
 	{
-		BlendMode	oldBlendMode = pDevice->blendMode();
+		int i1 = _stateToIndex(state);
+		int i2 = _stateToIndex(comparedTo);
 
-		if (m_blendMode != oldBlendMode )
-			pDevice->setBlendMode(m_blendMode);
-
-		int i = _stateToIndex(state);
-
-		pDevice->fill( _canvas, m_color[i] );
-
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(oldBlendMode);
-	}
-
-	//____ markTest() _____________________________________________________________
-
-	bool ColorSkin::markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
-	{
-		if( !canvas.contains(ofs) )
-			return false;
-
-		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
+		return (m_color[i1] == m_color[i2] && ExtendedSkin::isStateIdentical(state, comparedTo));
 	}
 
 	//____ isOpaque() _____________________________________________________________
@@ -184,24 +167,43 @@ namespace wg
 		return m_bOpaque;
 	}
 
-	bool ColorSkin::isOpaque( State state ) const
+	bool ColorSkin::isOpaque(State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	bool ColorSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	//____ _isOpaque() _____________________________________________________________
+
+	bool ColorSkin::_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	//____ isStateIdentical() ____________________________________________________
+	//____ _render() _______________________________________________________________
 
-	bool ColorSkin::isStateIdentical( State state, State comparedTo ) const
+	void ColorSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		BlendMode	oldBlendMode = pDevice->blendMode();
 
-		return (m_color[i1] == m_color[i2] && ExtendedSkin::isStateIdentical(state, comparedTo));
+		if (m_blendMode != oldBlendMode )
+			pDevice->setBlendMode(m_blendMode);
+
+		int i = _stateToIndex(state);
+
+		pDevice->fill( rawToPixels(_canvas), m_color[i] );
+
+		if (m_blendMode != oldBlendMode)
+			pDevice->setBlendMode(oldBlendMode);
+	}
+
+	//____ _markTest() _____________________________________________________________
+
+	bool ColorSkin::_markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	{
+		if( !canvas.contains(ofs) )
+			return false;
+
+		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
 	}
 
 	//____ _updateOpaqueFlag() ____________________________________________________

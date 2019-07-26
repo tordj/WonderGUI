@@ -317,7 +317,7 @@ namespace wg
 
 			for( const RectI * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 			{
-				m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused );
+				m_pDebugOverlay->_render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused );
 			}
 
 			// Render overlays that have turned into afterglow
@@ -326,7 +326,7 @@ namespace wg
 			{
 				for( const RectI * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 				{
-					m_pDebugOverlay->render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal );
+					m_pDebugOverlay->_render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal );
 				}
 			}
 		}

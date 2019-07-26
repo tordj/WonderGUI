@@ -79,29 +79,27 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Canvas_p		cast( Object * pObject );
-
-		//.____ Geometry ____________________________________________
-
-		virtual int		matchingHeight(int width) const;
-		virtual int		matchingWidth( int height ) const;
-
-		SizeI			preferredSize() const;
 
 
 	protected:
 		Canvas();
 		virtual ~Canvas();
-		virtual Widget* _newOfMyType() const { return new Canvas(); };
+		virtual Widget* _newOfMyType() const override { return new Canvas(); };
 
-		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize(const SizeI& size);
-		virtual void	_setSkin(Skin * pSkin);
-		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
-		virtual	bool	_alphaTest(const CoordI& ofs);
+		virtual int		_matchingHeight(int width) const override;
+		virtual int		_matchingWidth(int height) const override;
+
+		SizeI			_preferredSize() const override;
+
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_setSize(const SizeI& size) override;
+		virtual void	_setSkin(Skin * pSkin) override;
+		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		virtual	bool	_alphaTest(const CoordI& ofs) override;
 
 
 		CCanvas	m_canvas;

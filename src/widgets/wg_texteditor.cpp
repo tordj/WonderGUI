@@ -74,26 +74,28 @@ namespace wg
 		return 0;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int TextEditor::matchingHeight( int width ) const
+	int TextEditor::_matchingHeight( int width ) const
 	{
+		//TODO: Remove skin contentPadding before calculations.
+
 		int textHeight = m_text.matchingHeight( width );
 
 		if( m_pSkin )
-			textHeight += m_pSkin->contentPadding().h;
+			textHeight += m_pSkin->_contentPadding().h;
 
 		return textHeight;
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI TextEditor::preferredSize() const
+	SizeI TextEditor::_preferredSize() const
 	{
 		SizeI contentSize = m_text.preferredSize();
 
 		if( m_pSkin )
-			return m_pSkin->sizeForContent(contentSize);
+			return m_pSkin->_sizeForContent(contentSize);
 		else
 			return contentSize;
 	}
@@ -106,7 +108,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
+			canvas = m_pSkin->_contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
 
@@ -169,7 +171,7 @@ namespace wg
 		Widget::_setSize( size );
 
 		if( m_pSkin )
-			m_text.setSize(size - m_pSkin->contentPadding());
+			m_text.setSize(size - m_pSkin->_contentPadding());
 		else
 			m_text.setSize(size);
 	}

@@ -103,9 +103,9 @@ namespace wg
 		m_bFlipOnRelease = bFlipOnRelease;
 	}
 
-	//____ preferredSize() __________________________________________________
+	//____ _preferredSize() __________________________________________________
 
-	SizeI ToggleButton::preferredSize() const
+	SizeI ToggleButton::_preferredSize() const
 	{
 		SizeI iconPreferredSize;
 		SizeI textPreferredSize;
@@ -115,7 +115,7 @@ namespace wg
 
 		if( !m_icon.isEmpty() )
 		{
-			iconPreferredSize = m_icon.skin()->preferredSize() + m_icon.padding().size();
+			iconPreferredSize = m_icon.skin()->_preferredSize() + m_icon.padding().size();
 
 			//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
 		}
@@ -125,7 +125,7 @@ namespace wg
 		SizeI preferredSize = SizeI::max( iconPreferredSize, textPreferredSize );
 
 		if( m_pSkin )
-			preferredSize = m_pSkin->sizeForContent( preferredSize );
+			preferredSize = m_pSkin->_sizeForContent( preferredSize );
 
 		return preferredSize;
 	}
@@ -277,14 +277,14 @@ namespace wg
 
 		RectI contentRect	= _canvas;
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(_canvas, m_state );
+			contentRect = m_pSkin->_contentRect(_canvas, m_state );
 
 		RectI iconRect		= m_icon.getIconRect( contentRect );
 
 		// Blit icon
 
 		if( m_icon.isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-			m_icon.skin()->render( pDevice, iconRect, m_state );
+			m_icon.skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 
@@ -312,7 +312,7 @@ namespace wg
 
 		RectI contentRect	= RectI(0,0,size);
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
 		m_label.setSize( m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect )) );
 	}
@@ -336,9 +336,9 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( int _x, int _y )
 	{
-		RectI contentRect	= RectI(0,0,size());
+		RectI contentRect	= RectI(0,0,m_size);
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
 		contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
@@ -352,11 +352,11 @@ namespace wg
 
 	bool ToggleButton::_alphaTest( const CoordI& ofs )
 	{
-		SizeI	bgSize		= size();
+		SizeI	bgSize		= m_size;
 
 		RectI	contentRect = RectI(0,0,bgSize);
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect( contentRect, m_state );
+			contentRect = m_pSkin->_contentRect( contentRect, m_state );
 
 		RectI	iconRect	= m_icon.getIconRect( contentRect );
 
@@ -396,7 +396,7 @@ namespace wg
 			case ALPHA:			// Alpha test on background and icon.
 			{
 				if( Widget::_alphaTest( ofs ) ||
-					( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity )) )
+					( !m_icon.isEmpty() && m_icon.skin()->_markTest( ofs, iconRect, m_state, m_markOpacity )) )
 					return true;
 
 				return false;
@@ -405,7 +405,7 @@ namespace wg
 				return true;
 			case ICON:			// Only the icon (alpha test) is clickable.
 			{
-				if( !m_icon.isEmpty() && m_icon.skin()->markTest( ofs, iconRect, m_state, m_markOpacity ) )
+				if( !m_icon.isEmpty() && m_icon.skin()->_markTest( ofs, iconRect, m_state, m_markOpacity ) )
 					return true;
 
 				return false;

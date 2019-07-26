@@ -83,16 +83,13 @@ namespace wg
 		void	clearMarkers();
 		void	addMarker( int xOfs, float yOfs );
 
-		//.____ Geometry ____________________________________________
-
-		SizeI	preferredSize() const;
-
-
 
 	protected:
 		Oscilloscope();
 		virtual ~Oscilloscope();
 		virtual Widget* _newOfMyType() const { return new Oscilloscope(); };
+
+		SizeI	_preferredSize() const;
 
 		void	_cloneContent( const Widget * _pOrg );
 		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );

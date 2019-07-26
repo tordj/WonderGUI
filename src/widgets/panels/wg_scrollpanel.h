@@ -225,10 +225,6 @@ namespace wg
 		static const char		CLASSNAME[];
 		static ScrollPanel_p	cast(Object * pObject);
 
-		//.____ Geometry _________________________________________________
-
-		SizeI				preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
-
 		/*
 		NEED TO BE IMPLEMENTED!!!
 
@@ -279,6 +275,8 @@ namespace wg
 		// Overloaded from Widget
 
 		virtual void _setSize(const SizeI& size);
+
+		SizeI		_preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
 
 		void		_receive(Msg * pMsg);
 		void		_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches);

@@ -96,11 +96,11 @@ namespace wg
 		return 0;
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	SizeI Oscilloscope::preferredSize() const
+	SizeI Oscilloscope::_preferredSize() const
 	{
-		return SizeI(80,64);
+		return SizeI(80,64) * Base::pixelQuartersPerPoint();
 	}
 
 
@@ -472,11 +472,11 @@ namespace wg
 				int x = m_pMarkers[i].x;
 				int y = (int) (m_pMarkers[i].y*scaleY+centerY);
 
-				dest.setSize( m_pMarkerSkin->preferredSize() );
+				dest.setSize( m_pMarkerSkin->_preferredSize() );
 				dest.x = x - dest.w / 2;
 				dest.y = y - dest.h / 2;
 
-				m_pMarkerSkin->render( pDevice, dest, State(StateEnum::Normal) );
+				m_pMarkerSkin->_render( pDevice, dest, State(StateEnum::Normal) );
 			}
 		}
 	}

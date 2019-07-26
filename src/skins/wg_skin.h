@@ -48,35 +48,41 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Skin_p		cast( Object * pObject );
 
-		//.____ Rendering ________________________________________________
-
-		virtual void 	render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
-
 		//.____ Geometry _________________________________________________
 
-		virtual Size	minSize() const = 0;
-		virtual Size	preferredSize() const = 0;
-		virtual Size	sizeForContent( const Size contentSize ) const = 0;
-
-		virtual Size	contentPadding() const = 0;
-		virtual Coord	contentOfs( State state ) const = 0;
-		virtual Rect	contentRect( const Rect& canvas, State state ) const = 0;
-
+		Size			minSize() const;
+		Size			preferredSize() const;
 
 		//.____ Misc ____________________________________________________
 
-		virtual bool	markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const = 0;
-
 		virtual bool	isOpaque() const = 0;
 		virtual bool	isOpaque( State state ) const = 0;
-		virtual bool	isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const = 0;
+		bool			isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 
 		virtual bool	isStateIdentical( State state, State comparedTo ) const = 0;
+
+		//.____ Internal ______________________________________________________
+
+		virtual bool	_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const = 0;
+		virtual bool	_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const = 0;
+
+		virtual SizeI	_minSize() const = 0;
+		virtual SizeI	_preferredSize() const = 0;
+		virtual SizeI	_sizeForContent(const SizeI contentSize) const = 0;
+
+		virtual SizeI	_contentPadding() const = 0;
+		virtual CoordI	_contentOfs(State state) const = 0;
+		virtual RectI	_contentRect(const RectI& canvas, State state) const = 0;
+
+		virtual void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
+
 
 	protected:
 		Skin() {};
 	};
 
+
+	
 
 } // namespace wg
 #endif //WG_SKIN_DOT_H

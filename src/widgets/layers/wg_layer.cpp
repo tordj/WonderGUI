@@ -64,32 +64,32 @@ namespace wg
 
 
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int Layer::matchingHeight( int width ) const
+	int Layer::_matchingHeight( int width ) const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->matchingHeight( width );
+			return m_baseSlot.matchingHeight( width );
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width);
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	int Layer::matchingWidth( int height ) const
+	int Layer::_matchingWidth( int height ) const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->matchingWidth( height );
+			return m_baseSlot.matchingWidth( height );
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height);
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI Layer::preferredSize() const
+	SizeI Layer::_preferredSize() const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->preferredSize();
+			return m_baseSlot.preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -224,7 +224,7 @@ namespace wg
 	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
 		pSlot->replaceWidget(this, pNewWidget);
-		pNewWidget->_setSize(size());			//TODO: Should be content size here (and in all other _setWidget() methods?)
+		pNewWidget->_setSize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 
 		_onRequestRender( RectI(0,0,m_size), 0 );
 		_requestResize();

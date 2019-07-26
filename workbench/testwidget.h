@@ -44,8 +44,6 @@ namespace wg
 		static const char	CLASSNAME[];
 		static TestWidget_p	cast( const Object_p& pObject );
 
-		SizeI	preferredSize() const;
-
 		void	start();
 		void	stop();
 
@@ -56,6 +54,7 @@ namespace wg
 
 		virtual Widget* _newOfMyType() const { return new TestWidget(); };
 	
+		SizeI			_preferredSize() const;
 		void			_cloneContent( const Widget * _pOrg );
 		virtual void	_receive( const Msg_p& pMsg );
 		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const RectI& _clip );

@@ -67,17 +67,16 @@ namespace wg
 		void			setDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
 		bool			downWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
 
-		//.____ Geometry ____________________________________________
-
-		virtual int		matchingHeight( int width ) const override;
-	//	virtual int		matchingWidth( int height ) const override;
-
-		SizeI			preferredSize() const override;
-
 	protected:
 		Button();
 		virtual ~Button();
 		virtual Widget* _newOfMyType() const override { return new Button(); };
+
+		virtual int		_matchingHeight(int width) const override;
+		//	virtual int		_matchingWidth( int height ) const override;
+
+		SizeI			_preferredSize() const override;
+
 
 		virtual void	_receive( Msg * pMsg ) override;
 		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;

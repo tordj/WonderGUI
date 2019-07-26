@@ -47,14 +47,10 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
+		bool						isInstanceOf( const char * pClassName ) const override;
+		const char *				className( void ) const override;
 		static const char			CLASSNAME[];
 		static SimpleVolumeMeter_p	cast( Object * pObject );
-
-		//.____ Geometry ____________________________________________
-
-		SizeI			preferredSize() const;
 
 		//.____ Appearance _________________________________________________
 
@@ -76,13 +72,14 @@ namespace wg
 	protected:
 		SimpleVolumeMeter();
 		virtual ~SimpleVolumeMeter();
-		virtual Widget* _newOfMyType() const { return new SimpleVolumeMeter(); };
+		virtual Widget* _newOfMyType() const override { return new SimpleVolumeMeter(); };
 
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_cloneContent( const Widget * _pOrg );
-		bool			_alphaTest( const CoordI& ofs );
-		void			_setSize( const SizeI& size );
-		void			_setSkin( Skin * pSkin );
+		SizeI			_preferredSize() const override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		bool			_alphaTest( const CoordI& ofs ) override;
+		void			_setSize( const SizeI& size ) override;
+		void			_setSkin( Skin * pSkin ) override;
 
 		void			_renderBar( GfxDevice * pDevice, int nb, const RectI& _rect );
 		void 			_requestRenderPartial( const RectI& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );

@@ -148,92 +148,6 @@ namespace wg
 		_sortEntries();
 	}
 
-	//____ preferredSize() ________________________________________________________
-
-	SizeI PackList::preferredSize() const
-	{
-		SizeI sz = m_pSkin ? m_pSkin->contentPadding() : SizeI();
-		SizeI header = m_header.preferredSize();
-
-		if( m_bHorizontal )
-		{
-			sz +=  SizeI(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
-			if( header.h > sz.h )
-				sz.h = header.h;
-		}
-		else
-		{
-			sz += SizeI(m_contentPreferredBreadth,m_contentPreferredLength + header.h );
-			if( header.w > sz.w )
-				sz.w = header.w;
-		}
-
-		return sz;
-	}
-
-	//____ matchingHeight() _______________________________________________________
-
-	int PackList::matchingHeight( int width ) const
-	{
-		if( m_bHorizontal )
-		{
-			int height = m_contentPreferredBreadth;
-			if( m_pSkin )
-				height += m_pSkin->contentPadding().h;
-
-			return std::max(height, m_header.preferredSize().h);
-		}
-		else
-		{
-			int height = m_header.matchingHeight(width);
-			if( m_pSkin )
-			{
-				SizeI pad = m_pSkin->contentPadding();
-				width -= pad.w;
-				height += pad.h;
-			}
-			width -= m_entryPadding.w;
-
-			for( auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++ )
-				height += pSlot->pWidget->matchingHeight(width);
-
-			height += m_entryPadding.h*m_children.size();
-			return height;
-		}
-	}
-
-	//____ matchingWidth() _______________________________________________________
-
-	int PackList::matchingWidth( int height ) const
-	{
-		if( m_bHorizontal )
-		{
-			int width = m_header.matchingWidth( height );
-			if( m_pSkin )
-			{
-				SizeI pad = m_pSkin->contentPadding();
-				height -= pad.w;
-				width += pad.h;
-			}
-			height -= m_entryPadding.h;
-
-			for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
-				width += pSlot->pWidget->matchingWidth(width);
-
-			width += m_entryPadding.w*m_children.size();
-			return width;
-		}
-		else
-		{
-			int width = m_contentPreferredBreadth;
-			if( m_pSkin )
-				width += m_pSkin->contentPadding().w;
-
-			return std::max(width, m_header.preferredSize().w);
-		}
-	}
-
-
 	//____ setMinEntrySize() ______________________________________________________
 
 	bool PackList::setMinEntrySize( SizeI min )
@@ -262,6 +176,91 @@ namespace wg
 		m_maxEntrySize = max;
 		_refreshList();
 		return true;
+	}
+
+	//____ _preferredSize() ________________________________________________________
+
+	SizeI PackList::_preferredSize() const
+	{
+		SizeI sz = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+		SizeI header = m_header.preferredSize();
+
+		if (m_bHorizontal)
+		{
+			sz += SizeI(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
+			if (header.h > sz.h)
+				sz.h = header.h;
+		}
+		else
+		{
+			sz += SizeI(m_contentPreferredBreadth, m_contentPreferredLength + header.h);
+			if (header.w > sz.w)
+				sz.w = header.w;
+		}
+
+		return sz;
+	}
+
+	//____ _matchingHeight() _______________________________________________________
+
+	int PackList::_matchingHeight(int width) const
+	{
+		if (m_bHorizontal)
+		{
+			int height = m_contentPreferredBreadth;
+			if (m_pSkin)
+				height += m_pSkin->_contentPadding().h;
+
+			return std::max(height, m_header.preferredSize().h);
+		}
+		else
+		{
+			int height = m_header.matchingHeight(width);
+			if (m_pSkin)
+			{
+				SizeI pad = m_pSkin->_contentPadding();
+				width -= pad.w;
+				height += pad.h;
+			}
+			width -= m_entryPadding.w;
+
+			for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
+				height += pSlot->matchingHeight(width);
+
+			height += m_entryPadding.h*m_children.size();
+			return height;
+		}
+	}
+
+	//____ _matchingWidth() _______________________________________________________
+
+	int PackList::_matchingWidth(int height) const
+	{
+		if (m_bHorizontal)
+		{
+			int width = m_header.matchingWidth(height);
+			if (m_pSkin)
+			{
+				SizeI pad = m_pSkin->_contentPadding();
+				height -= pad.w;
+				width += pad.h;
+			}
+			height -= m_entryPadding.h;
+
+			for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
+				width += pSlot->matchingWidth(width);
+
+			width += m_entryPadding.w*m_children.size();
+			return width;
+		}
+		else
+		{
+			int width = m_contentPreferredBreadth;
+			if (m_pSkin)
+				width += m_pSkin->_contentPadding().w;
+
+			return std::max(width, m_header.preferredSize().w);
+		}
 	}
 
 
@@ -371,7 +370,7 @@ namespace wg
 			RectI lasso( m_lassoBegin, m_lassoEnd );
 			lasso += _canvas.pos();
 
-			m_pLassoSkin->render(pDevice, lasso, m_state );
+			m_pLassoSkin->_render(pDevice, lasso, m_state );
 		}
 	}
 
@@ -386,8 +385,8 @@ namespace wg
 
 		if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, contentRect, m_state );
-			contentRect = m_pSkin->contentRect( contentRect, m_state );
+			m_pSkin->_render( pDevice, contentRect, m_state );
+			contentRect = m_pSkin->_contentRect( contentRect, m_state );
 		}
 
 		int startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
@@ -427,8 +426,8 @@ namespace wg
 
 			if( pEntrySkin )
 			{
-				pEntrySkin->render( pDevice, entryGeo, state );
-	//			childGeo = pEntrySkin->contentRect( entryGeo, state );
+				pEntrySkin->_render( pDevice, entryGeo, state );
+	//			childGeo = pEntrySkin->_contentRect( entryGeo, state );
 			}
 
 			// Render child
@@ -449,7 +448,7 @@ namespace wg
 
 		SizeI size = _size;
 		if( m_pSkin )
-			size -= m_pSkin->contentPadding();
+			size -= m_pSkin->_contentPadding();
 
 		int newContentBreadth;
 
@@ -469,7 +468,7 @@ namespace wg
 
 				if( m_bHorizontal )
 				{
-					int newEntryLength = _paddedLimitedMatchingWidth(pWidget, newContentBreadth );
+					int newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
 					pSlot->ofs = ofs;
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
@@ -478,7 +477,7 @@ namespace wg
 				}
 				else
 				{
-					int newEntryLength = _paddedLimitedMatchingHeight(pWidget, newContentBreadth );
+					int newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
 					pSlot->ofs = ofs;
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
@@ -506,7 +505,7 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->contentPadding();
+			m_entryPadding = m_pEntrySkin[0]->_contentPadding();
 
 		m_contentPreferredLength = 0;
 		m_contentPreferredBreadth = 0;
@@ -515,9 +514,7 @@ namespace wg
 
 		for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
 		{
-			Widget * pChild = pSlot->pWidget;
-
-			SizeI pref = _paddedLimitedPreferredSize( pChild );
+			SizeI pref = _paddedLimitedPreferredSize( pSlot );
 
 			if( m_bHorizontal )
 			{
@@ -529,7 +526,7 @@ namespace wg
 				if( pref.h == m_contentBreadth )
 					pSlot->length = pref.w;
 				else
-					pSlot->length	= _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
+					pSlot->length	= _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
 				pSlot->prefBreadth = pref.h;
 				ofs += pSlot->length;
 
@@ -544,7 +541,7 @@ namespace wg
 				if( pref.w == m_contentBreadth )
 					pSlot->length = pref.h;
 				else
-					pSlot->length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
+					pSlot->length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
 				pSlot->prefBreadth = pref.w;
 				ofs += pSlot->length;
 			}
@@ -746,8 +743,7 @@ namespace wg
 			{
 				pSlot[i].bVisible = false;
 
-				Widget * pChild = pSlot[i].pWidget;
-				SizeI pref = _paddedLimitedPreferredSize(pChild);
+				SizeI pref = _paddedLimitedPreferredSize(pSlot);
 				if (m_bHorizontal)
 					_subFromContentPreferredSize(pref.w, pref.h);
 				else
@@ -775,7 +771,7 @@ namespace wg
 				pSlot[i].bVisible = true;
 
 				Widget * pChild = pSlot[i].pWidget;
-				SizeI pref = _paddedLimitedPreferredSize(pChild);
+				SizeI pref = _paddedLimitedPreferredSize(pSlot);
 
 				if (m_bHorizontal)
 				{
@@ -786,7 +782,7 @@ namespace wg
 					if (pref.h == m_contentBreadth)
 						pSlot[i].length = pref.w;
 					else
-						pSlot[i].length = _paddedLimitedMatchingWidth(pChild, m_contentBreadth);
+						pSlot[i].length = _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
 					pSlot[i].prefBreadth = pref.h;
 				}
 				else
@@ -798,7 +794,7 @@ namespace wg
 					if (pref.w == m_contentBreadth)
 						pSlot[i].length = pref.h;
 					else
-						pSlot[i].length = _paddedLimitedMatchingHeight(pChild, m_contentBreadth);
+						pSlot[i].length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
 					pSlot[i].prefBreadth = pref.w;
 
 				}
@@ -952,7 +948,7 @@ namespace wg
 					{
 						pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - childGeo.pos(), mode );
 					}
-					else if( mode == SearchMode::Geometry || pSlot->pWidget->markTest( ofs - childGeo.pos() ) )
+					else if( mode == SearchMode::Geometry || pSlot->markTest( ofs - childGeo.pos() ) )
 					{
 							pResult = pSlot->pWidget;
 					}
@@ -966,7 +962,7 @@ namespace wg
 
 		// Check against ourselves
 
-		if( !pResult && ( mode == SearchMode::Geometry || markTest(ofs)) )
+		if( !pResult && ( mode == SearchMode::Geometry || _markTest(ofs)) )
 			pResult = this;
 
 		return pResult;
@@ -1139,33 +1135,33 @@ namespace wg
 		{
 			int index = m_children.index( pSlot );
 			if( m_pEntrySkin[index&0x1] )
-				geo = m_pEntrySkin[index&0x1]->contentRect( geo, pSlot->pWidget->state() );
+				geo = m_pEntrySkin[index&0x1]->_contentRect( geo, pSlot->pWidget->state() );
 		}
 	}
 
 	//____ _paddedLimitedMatchingHeight() _________________________________________
 
-	int PackList::_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth )
+	int PackList::_paddedLimitedMatchingHeight( Slot * pSlot, int paddedWidth )
 	{
-		int height = pChild->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
+		int height = pSlot->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
 		limit( height, m_minEntrySize.h, m_maxEntrySize.h );
 		return height;
 	}
 
 	//____ _paddedLimitedMatchingWidth() _________________________________________
 
-	int PackList::_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight )
+	int PackList::_paddedLimitedMatchingWidth( Slot * pSlot, int paddedHeight )
 	{
-		int width = pChild->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
+		int width = pSlot->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
 		limit( width, m_minEntrySize.w, m_maxEntrySize.w );
 		return width;
 	}
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	SizeI PackList::_paddedLimitedPreferredSize( Widget * pChild )
+	SizeI PackList::_paddedLimitedPreferredSize( Slot * pSlot )
 	{
-		SizeI sz = pChild->preferredSize();
+		SizeI sz = pSlot->preferredSize();
 		sz += m_entryPadding;
 
 		// Apply limits
@@ -1177,12 +1173,12 @@ namespace wg
 
 		if( sz.w > m_maxEntrySize.w )
 		{
-			int h = pChild->matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
+			int h = pSlot->matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
 			limit(h, m_minEntrySize.h, m_maxEntrySize.h );
 		}
 		else if( sz.h > m_maxEntrySize.h )
 		{
-			int w = pChild->matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
+			int w = pSlot->matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
 			limit(w, m_minEntrySize.w, m_maxEntrySize.w );
 		}
 
@@ -1246,8 +1242,7 @@ namespace wg
 		if( !pSlot->bVisible  || m_minEntrySize == m_maxEntrySize )
 			return;
 
-		Widget * pChild = pSlot->pWidget;
-		SizeI prefEntrySize = _paddedLimitedPreferredSize(pChild);
+		SizeI prefEntrySize = _paddedLimitedPreferredSize(pSlot);
 
 		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
 		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
@@ -1274,7 +1269,7 @@ namespace wg
 		if( prefBreadth == m_contentBreadth )
 			length = prefLength;
 		else
-			length = m_bHorizontal ? _paddedLimitedMatchingWidth(pChild, m_contentBreadth ) : _paddedLimitedMatchingHeight(pChild, m_contentBreadth );
+			length = m_bHorizontal ? _paddedLimitedMatchingWidth(pSlot, m_contentBreadth ) : _paddedLimitedMatchingHeight(pSlot, m_contentBreadth );
 
 		// Update if length has changed
 
@@ -1368,7 +1363,7 @@ namespace wg
 	{
 		RectI r = _listCanvas();
 		if( m_pSkin )
-			r = m_pSkin->contentRect( r, m_state );
+			r = m_pSkin->_contentRect( r, m_state );
 
 		return r;
 	}

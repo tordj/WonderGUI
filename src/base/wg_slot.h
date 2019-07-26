@@ -100,6 +100,18 @@ namespace wg
 			}
 		}
 
+		inline SizeI	size() const { return pWidget->m_size; }
+
+		inline int		matchingHeight(int width) const { return pWidget->_matchingHeight(width); }
+		inline int		matchingWidth(int height) const { return pWidget->_matchingWidth(height); }
+
+		inline SizeI	preferredSize() const { return pWidget->_preferredSize(); }
+		inline SizeI	minSize() const { return pWidget->_minSize(); }
+		inline SizeI	maxSize() const { return pWidget->_maxSize(); }
+
+		inline bool		markTest(const CoordI& ofs) const { return pWidget->_markTest(ofs); };
+
+
 		Widget *	pWidget;
 	};
 

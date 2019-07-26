@@ -32,8 +32,6 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-	 	SizeI			preferredSize() const override;
-
 		void			setDirection( Direction direction );
 		inline Direction direction() const { return m_direction; }
 
@@ -47,6 +45,8 @@ namespace wg
 		RulerLabels();
 		virtual ~RulerLabels();
 		virtual Widget* _newOfMyType() const override { return new RulerLabels(); };
+
+		SizeI			_preferredSize() const override;
 
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;

@@ -51,28 +51,27 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static TextEditor_p	cast( Object * pObject );
 
-		//.____ Geometry ____________________________________________
-
-		int				matchingHeight( int width ) const;
-		SizeI			preferredSize() const;
 
 	protected:
 		TextEditor();
 		virtual ~TextEditor();
 		virtual Widget* _newOfMyType() const { return new TextEditor(); };
 
-		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_setSize( const SizeI& size );
-		void			_refresh();
-		void			_receive( Msg * pMsg );
-		void			_setState( State state );
-		void			_setSkin( Skin * pSkin );
+		int				_matchingHeight(int width) const override;
+		SizeI			_preferredSize() const override;
+
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_setSize( const SizeI& size ) override;
+		void			_refresh() override;
+		void			_receive( Msg * pMsg ) override;
+		void			_setState( State state ) override;
+		void			_setSkin( Skin * pSkin ) override;
 
 	private:
 

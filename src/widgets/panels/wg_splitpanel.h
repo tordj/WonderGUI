@@ -60,8 +60,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const;
-		const char *			className(void) const;
+		bool					isInstanceOf(const char * pClassName) const override;
+		const char *			className(void) const override;
 		static const char		CLASSNAME[];
 		static SplitPanel_p		cast(Object * pObject);
 
@@ -69,8 +69,6 @@ namespace wg
 
 		void			setOrientation(Orientation orientaiton);
 		Orientation		orientation() const { return m_bHorizontal ? Orientation::Horizontal : Orientation::Vertical; }
-
-		SizeI			preferredSize() const;
 
 		//.____ Appearance _________________________________________________
 
@@ -112,46 +110,48 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_setSize(const SizeI& size);
-		void		_setState(State state);
-		void		_refresh();
-		void		_receive(Msg * pMsg);
+		SizeI		_preferredSize() const override;
 
-		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
+		void		_setSize(const SizeI& size) override;
+		void		_setState(State state) override;
+		void		_refresh() override;
+		void		_receive(Msg * pMsg) override;
 
-		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
-		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
+		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
 
-		bool		_alphaTest(const CoordI& ofs);
-		void		_cloneContent(const Widget * _pOrg);
+		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip) override;
+		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode) override;
+
+		bool		_alphaTest(const CoordI& ofs) override;
+		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo(SlotWithGeo& package) const;
-		void		_nextSlotWithGeo(SlotWithGeo& package) const;
+		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 
 		// Overloaded from ChildHolder
 
-		void	_setWidget(Slot * pSlot, Widget * pNewWidget);
-		Object * _object() { return this; }
+		void	_setWidget(Slot * pSlot, Widget * pNewWidget) override;
+		Object * _object() override { return this; }
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos(Slot * pSlot) const;
-		SizeI		_childSize(Slot * pSlot) const;
+		CoordI		_childPos(Slot * pSlot) const override;
+		SizeI		_childSize(Slot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot);
-		void		_childRequestRender(Slot * pSlot, const RectI& rect);
-		void		_childRequestResize(Slot * pSlot);
+		void		_childRequestRender(Slot * pSlot) override;
+		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(Slot * pSlot) override;
 
-		Widget *	_prevChild(const Slot * pSlot) const;
-		Widget *	_nextChild(const Slot * pSlot) const;
+		Widget *	_prevChild(const Slot * pSlot) const override;
+		Widget *	_nextChild(const Slot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot);
+		void		_releaseChild(Slot * pSlot) override;
 
 
 		bool			m_bHorizontal;

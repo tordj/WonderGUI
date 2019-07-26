@@ -750,9 +750,9 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI FlexPanel::preferredSize() const
+	SizeI FlexPanel::_preferredSize() const
 	{
 		SizeI minSize;
 
@@ -885,7 +885,7 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add( RectI( rect, RectI(0,0,size())) );
+		patches.add( RectI( rect, RectI(0,0,m_size)) );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
@@ -1061,7 +1061,7 @@ namespace wg
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 
 			SizeI sz = newGeo.size();
-			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );
+			sz.limit( pSlot->minSize(), pSlot->maxSize() );
 			if( sz != newGeo.size() )
 			{
 				newGeo.x += newGeo.w - sz.w / 2;
@@ -1074,8 +1074,8 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->pWidget->preferredSize() : pSlot->placementGeo.size();
-			sz.limit( pSlot->pWidget->minSize(), pSlot->pWidget->maxSize() );		// Respect widgets limits.
+			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->preferredSize() : pSlot->placementGeo.size();
+			sz.limit( pSlot->minSize(), pSlot->maxSize() );		// Respect widgets limits.
 
 			// Calculate position
 
@@ -1120,7 +1120,7 @@ namespace wg
 
 		if( pSlot->bPinned )
 		{
-			sz = pSlot->pWidget->preferredSize();
+			sz = pSlot->preferredSize();
 
 			sz += SizeI( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
 			sz -= SizeI( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );

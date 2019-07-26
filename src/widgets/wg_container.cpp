@@ -94,7 +94,7 @@ namespace wg
 
 	 CoordI Container::_childGlobalPos( Slot * pSlot ) const
 	 {
-		 return _childPos(pSlot) + globalPos();
+		 return _childPos(pSlot) + _globalPos();
 	 }
 
 	 bool Container::_isChildVisible( Slot * pSlot ) const
@@ -172,7 +172,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || child.pSlot->pWidget->markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || child.pSlot->markTest( ofs - child.geo.pos() ) )
 					return child.pSlot->pWidget;
 			}
 			_nextSlotWithGeo( child );
@@ -180,7 +180,7 @@ namespace wg
 
 		// Check against ourselves
 
-		if( mode == SearchMode::Geometry || markTest(ofs) )
+		if( mode == SearchMode::Geometry || _markTest(ofs) )
 			return this;
 
 		return nullptr;

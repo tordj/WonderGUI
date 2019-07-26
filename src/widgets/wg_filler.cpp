@@ -82,14 +82,14 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	SizeI Filler::preferredSize() const
+	SizeI Filler::_preferredSize() const
 	{
 		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
 			return m_preferredSize;
 		else
-			return Widget::preferredSize();
+			return Widget::_preferredSize();
 	}
 
 

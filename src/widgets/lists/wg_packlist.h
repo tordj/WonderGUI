@@ -131,10 +131,6 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		SizeI				preferredSize() const override;
-		int					matchingHeight(int width) const override;
-		int					matchingWidth(int height) const override;
-
 		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 
@@ -158,6 +154,10 @@ namespace wg
 		Widget*			_newOfMyType() const override { return new PackList(); }
 
 		// Overloaded from Widget
+
+		SizeI			_preferredSize() const override;
+		int				_matchingHeight(int width) const override;
+		int				_matchingWidth(int height) const override;
 
 		void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
 		void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
@@ -255,9 +255,9 @@ namespace wg
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeI			_paddedLimitedPreferredSize( Widget * pChild );
-		int				_paddedLimitedMatchingHeight( Widget * pChild, int paddedWidth );
-		int				_paddedLimitedMatchingWidth( Widget * pChild, int paddedHeight );
+		SizeI			_paddedLimitedPreferredSize( Slot * pSlot );
+		int				_paddedLimitedMatchingHeight( Slot * pSlot, int paddedWidth );
+		int				_paddedLimitedMatchingWidth( Slot * pSlot, int paddedHeight );
 
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);

@@ -82,15 +82,15 @@ namespace wg
 		virtual bool		setCanvas(Surface * pCanvas) = 0;
 		Surface_p			canvas() const { return m_pCanvas; }
 
-		inline SizeI			canvasSize() const { return m_canvasSize; }
+		inline SizeI		canvasSize() const { return m_canvasSize; }
 
 		//.____ State _________________________________________________
 
 		virtual bool		setClipList(int nRectangles, const RectI * pRectangles);
 		virtual void		clearClipList();
-		inline const RectI * clipList() const { return m_pClipRects; }
+		inline const RectI*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
-		inline RectI			clipBounds() const { return m_clipBounds; }
+		inline RectI		clipBounds() const { return m_clipBounds; }
 
 		virtual void		setTintColor( Color color );
 		inline const Color&	tintColor() const { return m_tintColor; }

@@ -183,7 +183,7 @@ namespace wg
 
 	void RefreshButton::_setSize( const SizeI& size )
 	{
-		SizeI contentSize = m_pSkin ? size - m_pSkin->contentPadding() : size;
+		SizeI contentSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
 		m_refreshText.setSize(contentSize);
 
 		Button::_setSize( size );
@@ -292,20 +292,20 @@ namespace wg
 		}
 		else if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, _canvas, m_state );
+			m_pSkin->_render( pDevice, _canvas, m_state );
 		}
 
 		// Get content rect with displacement.
 
 		RectI contentRect = _canvas;
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect( _canvas, m_state );
+			contentRect = m_pSkin->_contentRect( _canvas, m_state );
 
 		// Get icon and text rect from content rect
 
 		SizeI iconSize;
 		if( !m_icon.isEmpty() )
-			iconSize = m_icon.skin()->preferredSize();
+			iconSize = m_icon.skin()->_preferredSize();
 		else if( m_animTarget == ICON && m_pRefreshAnim )
 			iconSize = m_pRefreshAnim->size();
 
@@ -324,7 +324,7 @@ namespace wg
 			pDevice->stretchBlit( iconRect, pAnimFrame->rect );
 		}
 		else if( !m_icon.isEmpty() )
-			m_icon.skin()->render( pDevice, iconRect, m_state );
+			m_icon.skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 

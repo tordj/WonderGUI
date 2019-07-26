@@ -49,8 +49,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static VolumeMeter_p	cast( Object * pObject );
 
@@ -73,20 +73,20 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		SizeI			preferredSize() const;
 		void            setSidePadding( float padding ) { m_fSidePadding = padding; }
 
 
 	protected:
 		VolumeMeter();
 		virtual ~VolumeMeter();
-		virtual Widget* _newOfMyType() const { return new VolumeMeter(); };
+		virtual Widget* _newOfMyType() const override { return new VolumeMeter(); };
 
-		void			_receive( Msg * pMsg );
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_cloneContent( const Widget * _pOrg );
-		bool			_alphaTest( const CoordI& ofs );
-		void			_setSize( const SizeI& size );
+		SizeI			_preferredSize() const override;
+		void			_receive( Msg * pMsg ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		bool			_alphaTest( const CoordI& ofs ) override;
+		void			_setSize( const SizeI& size ) override;
 
 		RouteId			m_tickRouteId;
 

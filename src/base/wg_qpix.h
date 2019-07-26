@@ -31,11 +31,6 @@ namespace wg
 {
 	class QPix
 	{
-		friend QPix fromPixel(int pixel);
-		friend QPix fromPixel(float pixel);
-
-		friend int toPixel(QPix p);
-		friend int roundToPixel(QPix);
 
 	public:
 		//.____ Creation __________________________________________
@@ -162,12 +157,16 @@ namespace wg
 
 		//.____ Misc ______________________________________________
 
-		inline int rawValue() const { return value; }
-
-		inline void setRaw(int rawValue) { value = rawValue; }
 		inline void setPixel(int pixelValue) { value = pixelValue << 2; }
 		inline void setPoint(int pointValue) { value = pointValue * Base::pixelQuartersPerPoint(); }
 
+		static inline QPix fromPixel(int pixel) { QPix p; p.value = pixel << 2; return p; }
+		static inline QPix fromPixel(float pixel) { QPix p; p.value = (int)(pixel * 4); return p; }
+		static inline QPix fromPixel(double pixel) { QPix p; p.value = (int)(pixel * 4); return p; }
+
+		static inline QPix rawToQpix(int rawValue) { QPix p; p.value = rawValue; return p; }
+
+		inline int roundToPixel() { return (value * Base::pixelQuartersPerPoint() + 2) >> 2; }
 		inline void	pixelAlign() { value = (value + 2) & 0xFFFFFFFC; }
 
 		union
@@ -183,19 +182,6 @@ namespace wg
 
 	};
 
-	inline QPix fromPixel(int pixel)
-	{
-		QPix p;
-		p.value = pixel << 2;
-		return p;
-	}
-
-	inline QPix fromPixel(float pixel)
-	{
-		QPix p;
-		p.value = (int)(pixel * 4);
-		return p;
-	}
 
 
 	inline int toPixel(QPix p)

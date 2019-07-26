@@ -77,25 +77,25 @@ namespace wg
 
 	void List::setEntrySkin( Skin * pSkin )
 	{
-		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : SizeI();
+		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPadding() : SizeI();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPadding() : SizeI() );
+		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentPadding() : SizeI() );
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
-//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPadding() : SizeI();
+//		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPadding() : SizeI();
 		SizeI padding[2];
 
 		if( pOddEntrySkin )
-			padding[0] = pOddEntrySkin->contentPadding();
+			padding[0] = pOddEntrySkin->_contentPadding();
 
 		if( pEvenEntrySkin )
-			padding[1] = pEvenEntrySkin->contentPadding();
+			padding[1] = pEvenEntrySkin->_contentPadding();
 
 		if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
 			return false;
@@ -104,7 +104,7 @@ namespace wg
 		m_pEntrySkin[1] = pEvenEntrySkin;
 		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPadding() : SizeI() );
+		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentPadding() : SizeI() );
 		return true;
 	}
 
@@ -150,7 +150,7 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry->pWidget != m_pHoveredChild.rawPtr() )
 				{
 					RectI geo;
@@ -169,7 +169,7 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPos()));
 				if( m_pHoveredChild && !pEntry )
 				{
 					RectI geo;
@@ -186,7 +186,7 @@ namespace wg
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = toLocal(pMsg->pointerPos());
+					CoordI ofs = _toLocal(pMsg->pointerPos());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 
@@ -289,7 +289,7 @@ namespace wg
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
+					CoordI ofs = _listArea().limit(_toLocal(pMsg->pointerPos()));
 					ofs = _listWindow().limit(ofs);
 
 					RectI oldLasso( m_lassoBegin, m_lassoEnd );

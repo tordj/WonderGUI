@@ -471,7 +471,7 @@ namespace wg
 		// Post BUTTON_RELEASE events for widget that was pressed
 
 		Widget * pWidget = m_latestPressWidgets[(int)button].rawPtr();
-		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
+		bool bIsInside = pWidget ? Util::qpixToRaw(pWidget->globalGeo()).contains( m_pointerPos ) : false;
 
 		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
 		pMsg->setCopyTo(pWidget);

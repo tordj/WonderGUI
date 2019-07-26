@@ -77,21 +77,21 @@ namespace wg
 	}
 
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int Button::matchingHeight( int width ) const
+	int Button::_matchingHeight( int width ) const
 	{
 		int height = 0;
 
 		if( m_pSkin )
-			height = m_pSkin->preferredSize().h;
+			height = m_pSkin->_preferredSize().h;
 
 		if( !m_text.isEmpty() )
 		{
 			SizeI padding;
 
 			if( m_pSkin )
-				padding = m_pSkin->contentPadding();
+				padding = m_pSkin->_contentPadding();
 
 			int heightForText = m_text.matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
@@ -104,9 +104,9 @@ namespace wg
 	}
 
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI Button::preferredSize() const
+	SizeI Button::_preferredSize() const
 	{
 		SizeI preferred;
 
@@ -114,7 +114,7 @@ namespace wg
 			preferred = m_text.preferredSize();
 
 		if( m_pSkin )
-			preferred = m_pSkin->sizeForContent(preferred);
+			preferred = m_pSkin->_sizeForContent(preferred);
 
 		//TODO: Take icon into account.
 
@@ -141,7 +141,7 @@ namespace wg
 		RectI	contentRect(0,0,_size);
 
 		if( m_pSkin )
-			contentRect -= m_pSkin->contentPadding();
+			contentRect -= m_pSkin->_contentPadding();
 
 		RectI textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
 
@@ -158,7 +158,7 @@ namespace wg
 		RectI	contentRect = _canvas;
 
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(_canvas, m_state);
+			contentRect = m_pSkin->_contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -168,7 +168,7 @@ namespace wg
 		// Render icon
 
 		if( m_icon.skin() )
-			m_icon.skin()->render( pDevice, iconRect, m_state );
+			m_icon.skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 
@@ -338,7 +338,7 @@ namespace wg
 		RectI	contentRect = m_size;
 
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+			contentRect = m_pSkin->_contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -358,7 +358,7 @@ namespace wg
 		SizeI	sz = m_size;
 
 		if( m_pSkin )
-			sz -= m_pSkin->contentPadding();
+			sz -= m_pSkin->_contentPadding();
 
 		RectI iconRect = m_icon.getIconRect( sz );
 
@@ -377,7 +377,7 @@ namespace wg
 		RectI	contentRect = m_size;
 
 		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+			contentRect = m_pSkin->_contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 

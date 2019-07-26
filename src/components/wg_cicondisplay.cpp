@@ -133,7 +133,7 @@ namespace wg
 	RectI CIconDisplay::getIconRect( const RectI& contentRect ) const
 	{
 		if( m_pSkin )
-			return getIconRect(contentRect, m_pSkin->preferredSize());
+			return getIconRect(contentRect, m_pSkin->_preferredSize());
 		else
 			return RectI();
 	}
@@ -249,7 +249,7 @@ namespace wg
 	SizeI CIconDisplay::preferredSize() const
 	{
 		if( m_pSkin )
-			return m_pSkin->preferredSize() + m_padding;
+			return m_pSkin->_preferredSize() + m_padding;
 
 		return SizeI();
 	}

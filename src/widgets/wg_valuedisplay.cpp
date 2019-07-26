@@ -70,14 +70,14 @@ namespace wg
 	}
 
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	SizeI ValueDisplay::preferredSize() const
+	SizeI ValueDisplay::_preferredSize() const
 	{
 		SizeI size = m_value.preferredSize();
 
 		if( m_pSkin )
-			return m_pSkin->sizeForContent(size);
+			return m_pSkin->_sizeForContent(size);
 		else
 			return size;
 	}

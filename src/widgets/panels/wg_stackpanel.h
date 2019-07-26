@@ -119,65 +119,62 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static StackPanel_p	cast( Object * pObject );
-
-		//.____ Geometry ____________________________________________
-
-		int			matchingHeight( int width ) const;
-		int			matchingWidth( int height ) const;
-
-		SizeI		preferredSize() const;
-
 
 	protected:
 		StackPanel();
 		virtual ~StackPanel();
-		virtual Widget* _newOfMyType() const { return new StackPanel(); };
+		virtual Widget* _newOfMyType() const override { return new StackPanel(); };
 
 		// Overloaded from Widget
 
-		void		_cloneContent( const Widget * _pOrg );
-		void		_setSize( const SizeI& size );
+		int			_matchingHeight(int width) const override;
+		int			_matchingWidth(int height) const override;
+
+		SizeI		_preferredSize() const override;
+
+		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_setSize( const SizeI& size ) override;
 
 		// Overloaded from Container
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 		// Overloaded from PaddedChildrenHolder
 
-		Slot *		_incSlot(Slot * pSlot) const;
-		Slot *		_decSlot(Slot * pSlot) const;
-		void		_didAddSlots( Slot * pSlot, int nb );
-		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
-		void		_willRemoveSlots( Slot * pSlot, int nb );
-		void		_hideSlots( Slot *, int nb );
-		void		_unhideSlots( Slot *, int nb );
-		void		_repadSlots( Slot *, int nb, BorderI padding );
-		void		_repadSlots(Slot *, int nb, const BorderI * pPaddings);
-		Object *	_object() { return this; }
-		WidgetHolder *	_widgetHolder() { return this; }
+		Slot *		_incSlot(Slot * pSlot) const override;
+		Slot *		_decSlot(Slot * pSlot) const override;
+		void		_didAddSlots( Slot * pSlot, int nb ) override;
+		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
+		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
+		void		_hideSlots( Slot *, int nb ) override;
+		void		_unhideSlots( Slot *, int nb ) override;
+		void		_repadSlots( Slot *, int nb, BorderI padding ) override;
+		void		_repadSlots(Slot *, int nb, const BorderI * pPaddings) override;
+		Object *	_object() override { return this; }
+		WidgetHolder *	_widgetHolder() override { return this; }
 
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos( Slot * pSlot ) const;
-		SizeI		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const override;
+		SizeI		_childSize( Slot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const RectI& rect );
-		void		_childRequestResize( Slot * pSlot );
+		void		_childRequestRender( Slot * pSlot ) override;
+		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const;
-		Widget *	_nextChild( const Slot * pSlot ) const;
+		Widget *	_prevChild( const Slot * pSlot ) const override;
+		Widget *	_nextChild( const Slot * pSlot ) const override;
 
-		void		_releaseChild(Slot * pSlot);
+		void		_releaseChild(Slot * pSlot) override;
 
 		// Internal to StackPanel
 

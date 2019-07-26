@@ -100,15 +100,13 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool		isInstanceOf( const char * pClassName ) const override;
+		const char *className( void ) const override;
 		static const char	CLASSNAME[];
 		static Scrollbar_p	cast( Object * pObject );
 
 
 		//.____ Geometry ____________________________________________
-
-		SizeI	preferredSize() const;
 
 		void				setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
 		inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
@@ -157,12 +155,14 @@ namespace wg
 		Scrollbar();
 		virtual	~Scrollbar();
 
-		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void	_receive( Msg * pMsg );
-		void	_refresh();
-		bool	_alphaTest( const CoordI& ofs );
-		void	_setState( State state );
+		SizeI	_preferredSize() const override;
+
+		void	_cloneContent( const Widget * _pOrg ) override;
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void	_receive( Msg * pMsg ) override;
+		void	_refresh() override;
+		bool	_alphaTest( const CoordI& ofs ) override;
+		void	_setState( State state ) override;
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
 

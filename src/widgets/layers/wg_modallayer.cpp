@@ -248,11 +248,11 @@ namespace wg
 		SizeI sz = pSlot->placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
-			sz = pSlot->pWidget->preferredSize();
+			sz = pSlot->preferredSize();
 		else if( sz.w == 0 )
-			sz.w = pSlot->pWidget->matchingWidth(sz.h);
+			sz.w = pSlot->matchingWidth(sz.h);
 		else if( sz.h == 0 )
-			sz.h = pSlot->pWidget->matchingHeight(sz.w);
+			sz.h = pSlot->matchingHeight(sz.w);
 
 		if( sz.w <= 0 )
 			sz.w = 1;
@@ -331,32 +331,32 @@ namespace wg
 		return 0;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int ModalLayer::matchingHeight( int width ) const
+	int ModalLayer::_matchingHeight( int width ) const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->matchingHeight( width );
+			return m_baseSlot.matchingHeight( width );
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width);
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	int ModalLayer::matchingWidth( int height ) const
+	int ModalLayer::_matchingWidth( int height ) const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->matchingWidth( height );
+			return m_baseSlot.matchingWidth( height );
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height);
 	}
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI ModalLayer::preferredSize() const
+	SizeI ModalLayer::_preferredSize() const
 	{
 		if( m_baseSlot.pWidget )
-			return m_baseSlot.pWidget->preferredSize();
+			return m_baseSlot.preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -382,7 +382,7 @@ namespace wg
 				}
 				else
 				{
-					if( pSlot->pWidget->markTest(ofs - pSlot->geo.pos()) )
+					if( pSlot->markTest(ofs - pSlot->geo.pos()) )
 						return pSlot->pWidget;
 					else
 						return this;

@@ -106,7 +106,7 @@ namespace wg
 		//
 
 		if( m_pSkin )
-			size = m_pSkin->sizeForContent(size);
+			size = m_pSkin->_sizeForContent(size);
 
 		return size;
 	}
@@ -231,8 +231,8 @@ namespace wg
 
 		if( m_pSkin )
 		{
-			m_pSkin->render( pDevice, canvas, m_state );
-			canvas = m_pSkin->contentRect( canvas, m_state );
+			m_pSkin->_render( pDevice, canvas, m_state );
+			canvas = m_pSkin->_contentRect( canvas, m_state );
 		}
 
 		RectI sortRect = arrow.getIconRect( canvas );
@@ -244,11 +244,11 @@ namespace wg
 		{
 			State iconState = m_state;
 			iconState.setSelected( m_sortOrder == SortOrder::Descending );
-			arrow.skin()->render( pDevice, sortRect, iconState );
+			arrow.skin()->_render( pDevice, sortRect, iconState );
 		}
 
 		if( !icon.isEmpty() )
-			icon.skin()->render( pDevice, iconRect, m_state );
+			icon.skin()->_render( pDevice, iconRect, m_state );
 
 		if( !label.isEmpty() )
 			label.render( pDevice, labelRect );
@@ -270,7 +270,7 @@ namespace wg
 	{
 		CoordI	p = _pos();
 		if( m_pSkin )
-			p += m_pSkin->contentOfs(m_state);
+			p += m_pSkin->_contentOfs(m_state);
 		return p;
 	}
 
@@ -278,14 +278,14 @@ namespace wg
 	{
 		SizeI	s  = m_size;
 		if( m_pSkin )
-			s -= m_pSkin->contentPadding();
+			s -= m_pSkin->_contentPadding();
 		return s;
 	}
 
 	RectI CColumnHeader::_componentGeo( const Component * pComponent ) const
 	{
 		if( m_pSkin )
-			return m_pSkin->contentRect( m_size, m_state );
+			return m_pSkin->_contentRect( m_size, m_state );
 		else
 			return RectI( 0,0,m_size );
 	}
@@ -294,7 +294,7 @@ namespace wg
 	{
 		CoordI	p = _globalPos();
 		if( m_pSkin )
-			p += m_pSkin->contentOfs(m_state);
+			p += m_pSkin->_contentOfs(m_state);
 		return p;
 	}
 
@@ -302,7 +302,7 @@ namespace wg
 	{
 		RectI	geo = _globalGeo();
 		if( m_pSkin )
-			geo = m_pSkin->contentRect(geo, m_state);
+			geo = m_pSkin->_contentRect(geo, m_state);
 		return geo;
 	}
 

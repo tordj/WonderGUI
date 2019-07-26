@@ -74,42 +74,6 @@ namespace wg
 		return 0;
 	}
 
-	//____ matchingWidth() _______________________________________________________
-
-	int TextDisplay::matchingWidth( int height ) const
-	{
-		int textWidth = m_text.matchingWidth( height );
-
-		if( m_pSkin )
-			textWidth += m_pSkin->contentPadding().w;
-
-		return textWidth;
-	}
-
-	//____ matchingHeight() _______________________________________________________
-
-	int TextDisplay::matchingHeight( int width ) const
-	{
-		int textHeight = m_text.matchingHeight( width );
-
-		if( m_pSkin )
-			textHeight += m_pSkin->contentPadding().h;
-
-		return textHeight;
-	}
-
-	//____ preferredSize() _____________________________________________________________
-
-	SizeI TextDisplay::preferredSize() const
-	{
-		SizeI contentSize = m_text.preferredSize();
-
-		if( m_pSkin )
-			return m_pSkin->sizeForContent(contentSize);
-		else
-			return contentSize;
-	}
-
 	//____ pointerStyle() ________________________________________
 
 	PointerStyle TextDisplay::pointerStyle() const
@@ -130,6 +94,46 @@ namespace wg
 			return m_text.tooltip();
 	}
 
+	//____ _matchingWidth() _______________________________________________________
+
+	int TextDisplay::_matchingWidth(int height) const
+	{
+		//TODO: Need to remove padding before calculations as well.
+
+		int textWidth = m_text.matchingWidth(height);
+
+		if (m_pSkin)
+			textWidth += m_pSkin->_contentPadding().w;
+
+		return textWidth;
+	}
+
+	//____ _matchingHeight() _______________________________________________________
+
+	int TextDisplay::_matchingHeight(int width) const
+	{
+		//TODO: Need to remove padding before calculations as well.
+
+		int textHeight = m_text.matchingHeight(width);
+
+		if (m_pSkin)
+			textHeight += m_pSkin->_contentPadding().h;
+
+		return textHeight;
+	}
+
+	//____ _preferredSize() _____________________________________________________________
+
+	SizeI TextDisplay::_preferredSize() const
+	{
+		SizeI contentSize = m_text.preferredSize();
+
+		if (m_pSkin)
+			return m_pSkin->_sizeForContent(contentSize);
+		else
+			return contentSize;
+	}
+
 	//____ _render() ________________________________________________________
 
 	void TextDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
@@ -138,7 +142,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
+			canvas = m_pSkin->_contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
 
@@ -172,7 +176,7 @@ namespace wg
 	/*
 		RectI canvas = geo();
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(canvas, m_state);
+			canvas = m_pSkin->_contentRect(canvas, m_state);
 
 		m_text.receive( pMsg, pHandler, canvas );
 	*/
@@ -194,10 +198,10 @@ namespace wg
 
 	void TextDisplay::_setSkin( Skin * pSkin )
 	{
-		SizeI oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+		SizeI oldTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 		Widget::_setSkin(pSkin);
 
-		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPadding() : m_size;
+		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
 			m_text.setSize(newTextCanvas);
@@ -211,7 +215,7 @@ namespace wg
 
 		SizeI textSize = size;
 		if( m_pSkin )
-			textSize -= m_pSkin->contentPadding();
+			textSize -= m_pSkin->_contentPadding();
 
 		m_text.setSize( textSize );
 	}

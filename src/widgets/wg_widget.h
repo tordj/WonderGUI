@@ -109,21 +109,21 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline CoordI		pos() const;
-		inline SizeI			size() const;
-		inline RectI			geo() const;
-		inline CoordI		globalPos() const;
-		inline RectI			globalGeo() const;
+		inline Coord		pos() const;
+		inline Size			size() const;
+		inline Rect			geo() const;
+		inline Coord		globalPos() const;
+		inline Rect			globalGeo() const;
 
-		CoordI				toGlobal( const CoordI& coord ) const;
-		CoordI				toLocal( const CoordI& coord ) const;
+		inline Coord		toGlobal( const Coord& coord ) const;
+		inline Coord		toLocal( const Coord& coord ) const;
 
-		virtual int			matchingHeight( int width ) const;
-		virtual int			matchingWidth( int height ) const;
+		inline QPix			matchingHeight( QPix width ) const;
+		inline QPix			matchingWidth( QPix height ) const;
 
-		virtual SizeI		preferredSize() const;
-		virtual SizeI		minSize() const;
-		virtual SizeI		maxSize() const;
+		inline Size			preferredSize() const;
+		inline Size			minSize() const;
+		inline Size			maxSize() const;
 
 
 		//.____ Hierarchy _________________________________________________
@@ -179,7 +179,7 @@ namespace wg
 
 		//.____ Misc _________________________________________________________________
 
-		virtual bool		markTest( const CoordI& ofs );
+		inline bool			markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override;
 
 		inline void			refresh() { _refresh(); }
@@ -199,11 +199,30 @@ namespace wg
 
 		virtual BlendMode	_getBlendMode() const;
 
-
 		virtual Widget* 	_newOfMyType() const = 0;
+
+		virtual bool	_markTest(const CoordI& ofs);
+
+
+		// Methods for geometry in quarterpixels
+
+		inline CoordI	_globalPos() const { return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI(); }
+		inline RectI	_globalGeo() const { return  m_pHolder ? RectI(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectI(0, 0, m_size); }
+
+		CoordI			_toGlobal(const CoordI& coord) const;
+		CoordI			_toLocal(const CoordI& coord) const;
+
+		virtual int		_matchingHeight(int width) const;
+		virtual int		_matchingWidth(int height) const;
+
+		virtual SizeI	_preferredSize() const;
+		virtual SizeI	_minSize() const;
+		virtual SizeI	_maxSize() const;
 
 
 		// Convenient calls to holder
+
+
 
 		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
 		inline void		_requestRender( const RectI& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
@@ -328,11 +347,11 @@ namespace wg
 	 *
 	 * @return Local position in pixels.
 	 */
-	CoordI Widget::pos() const
+	Coord Widget::pos() const
 	{
 		if( m_pHolder )
-			return m_pHolder->_childPos( m_pSlot );
-		return CoordI(0,0);
+			return Util::rawToQpix(m_pHolder->_childPos( m_pSlot ));
+		return Coord(0,0);
 	}
 
 
@@ -343,9 +362,9 @@ namespace wg
 	 *
 	 * @return Width and height in pixels.
 	 */
-	SizeI Widget::size() const
+	Size Widget::size() const
 	{
-		return m_size;
+		return Util::rawToQpix(m_size);
 	}
 
 	/**
@@ -357,11 +376,11 @@ namespace wg
 	 *
 	 * @return Local geometry in pixels.
 	 */
-	RectI Widget::geo() const
+	Rect Widget::geo() const
 	{
 		if( m_pHolder )
-			return RectI(m_pHolder->_childPos( m_pSlot ),m_size);
-		return RectI(0,0,m_size);
+			return Rect(Util::rawToQpix(m_pHolder->_childPos( m_pSlot )),Util::rawToQpix(m_size));
+		return Rect(0,0,m_size);
 	}
 
 	/**
@@ -371,11 +390,9 @@ namespace wg
 	 *
 	 * @return Global position in pixels.
 	 */
-	CoordI Widget::globalPos() const
+	Coord Widget::globalPos() const
 	{
-		if( m_pHolder )
-			return m_pHolder->_childGlobalPos( m_pSlot );
-		return CoordI(0,0);
+		return Util::rawToQpix(_globalPos());
 	}
 
 	/**
@@ -387,12 +404,186 @@ namespace wg
 	 *
 	 * @return Global geometry in pixels.
 	 */
-	RectI Widget::globalGeo() const
+	Rect Widget::globalGeo() const
 	{
-		if( m_pHolder )
-			return RectI(m_pHolder->_childGlobalPos( m_pSlot ), m_size);
-		return RectI(0,0,m_size);
+		return Util::rawToQpix(_globalGeo());
 	}
+
+	//____ toGlobal() __________________________
+	/**
+	 * @brief Convert coordinate from local to global coordinate system
+	 *
+	 * Convert coordinate from local to global coordinate system
+	 *
+	 * @param coord		Coordinate in widgets local coordinate system.
+	 *
+	 * Please note that the widgets local coordinate system originates from the top-left
+	 * corner of its box geometry and is NOT the same as the (parents) local coordinate
+	 * system in which it lives.
+	 * The coordinate (0,0) is always the top-left corner of the widget.
+	 *
+	 * @return Coordinate in gobal coordinate system
+	 */
+
+	Coord Widget::toGlobal(const Coord& coord) const
+	{
+		return Util::rawToQpix(_toGlobal(Util::qpixToRaw(coord)) );
+	}
+
+	//____ toLocal() ____________________________________________________________
+	/**
+	 * @brief Convert coordinate from local to global coordinate system
+	 *
+	 * Convert coordinate from local to global coordinate system
+	 *
+	 * @param coord		Coordinate in widgets local coordinate system.
+	 *
+	 * Please note that the widgets local coordinate system originates from the top-left
+	 * corner of its box geometry and is NOT the same as the (parents) local coordinate
+	 * system in which it lives.
+	 * The coordinate (0,0) is always the top-left corner of the widget.
+	 *
+	 * @return Coordinate in gobal coordinate system
+	 */
+
+	Coord Widget::toLocal(const Coord& coord) const
+	{
+		return Util::rawToQpix(_toLocal(Util::qpixToRaw(coord)));
+	}
+
+
+	//____ matchingHeight() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred height for the specified width.
+	 *
+	 * Get the widgets preferred height for the specified width.
+	 *
+	 * @param width		Width in pixels.
+	 *
+	 * This method is used by containers to get the preferred height of a widget for which
+	 * it has already decided the width.
+	 *
+	 * @return The preferred height for the given width in pixels.
+	 */
+
+	QPix Widget::matchingHeight(QPix width) const
+	{
+		return QPix::rawToQpix(_matchingHeight(width.value));
+	}
+
+	//____ matchingWidth() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred width for the specified height.
+	 *
+	 * Get the widgets preferred width for the specified height.
+	 *
+	 * @param height	Height in pixels.
+	 *
+	 * This method is used by containers to get the preferred width of a widget for which
+	 * it has already decided the height.
+	 *
+	 * @return The preferred width for the given height in pixels.
+	 */
+
+	QPix Widget::matchingWidth(QPix height) const
+	{
+		return QPix::rawToQpix(_matchingWidth(height.value));
+	}
+
+	//____ preferredSize() ________________________________________________________
+	/**
+	 * @brief Get the widgets preferred size.
+	 *
+	 * Get the widgets preferred size.
+	 *
+	 * Each widget has its own preferred size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * A container holding a widget will strive to give the widget its preferred size, given
+	 * the constraints and limitations the container needs to work with. If a container can't
+	 * give a widget its preferred size, it is likely to decide the closest width or height
+	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
+	 * after which it will decide the size of the child and notify it.
+	 *
+	 * @return The preferred size of the widget in pixels.
+	 */
+
+	Size Widget::preferredSize() const
+	{
+		return Util::rawToQpix(_preferredSize());
+	}
+
+
+	//____ minSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended minimum size.
+	 *
+	 * Get the widgets recommended minimum size.
+	 *
+	 * Each widget has its own minimum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The minimum size is only a hint for the container, which should strive to not
+	 * make a child smaller than its minimum size, but is allowed to set the child to
+	 * any size it decides, including 0.0.
+	 *
+	 * @return The minimum size of the widget in pixels.
+	 */
+
+	Size Widget::minSize() const
+	{
+		return Util::rawToQpix(_minSize());
+	}
+
+	//____ maxSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended maximum size.
+	 *
+	 * Get the widgets recommended maximum size.
+	 *
+	 * Each widget has its own maximum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The maximum size is only a hint for the container, which should strive to not
+	 * make a child larger than its maximum size, but is allowed to set the child to
+	 * any reasonable size it decides.
+	 *
+	 * @return The maximum size of the widget in pixels.
+	 */
+
+	Size Widget::maxSize() const
+	{
+		return Util::rawToQpix(_maxSize());
+	}
+
+
+	//____ markTest() _____________________________________________________________
+	/**
+	 * @brief Check if specified coordinate is inside or outside of widget.
+	 *
+	 * Check if specified coordinate is inside or outside of widget.
+	 *
+	 * @param ofs	Coordinate to check in widgets own coordinate system.
+	 *
+	 * This method first checks if the specified coordinate is inside the widgets
+	 * box geometry. If it is, a second check is performed against the widgets
+	 * alpha value (transparency) at the specified coordinate.
+	 * If the alpha value is equal to or higher than the widgets MarkOpacity value, the
+	 * test succeeds and MarkTest returns true.
+	 *
+	 * MarkOpacity is by default set to 1, which means that all but totally transparent pixels
+	 * will be marked. See setMarkOpacity() for more info.
+	 *
+	 * This method is mainly used to determine if the pointer hovers over the widget or not.
+	 *
+	 * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
+	 */
+
+	bool Widget::markTest(const Coord& ofs)
+	{
+		return _markTest(Util::qpixToRaw(ofs));
+	}
+
 
 	/**
 	 * @brief	Return the state of widget.

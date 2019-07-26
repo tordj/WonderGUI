@@ -88,14 +88,6 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _______________________________________________________
-
-	SizeI  SplitPanel::preferredSize() const
-	{
-		return m_preferredSize;
-	}
-
-
 	//____ setHandleSkin() _______________________________________________________
 
 	void SplitPanel::setHandleSkin(Skin * pSkin)
@@ -151,6 +143,12 @@ namespace wg
 		_updateGeo();
 	}
 
+	//____ _preferredSize() _______________________________________________________
+
+	SizeI  SplitPanel::_preferredSize() const
+	{
+		return m_preferredSize;
+	}
 
 	//____ _handleThickness() ____________________________________________________
 
@@ -158,7 +156,7 @@ namespace wg
 	{
 		int thickness = m_handleThickness;
 		if (thickness == 0 && m_pHandleSkin)
-			thickness = m_bHorizontal ? m_pHandleSkin->preferredSize().w : m_pHandleSkin->preferredSize().h;
+			thickness = m_bHorizontal ? m_pHandleSkin->_preferredSize().w : m_pHandleSkin->_preferredSize().h;
 		return thickness;
 	}
 
@@ -173,32 +171,32 @@ namespace wg
 		SizeI sz;
 
 		if (m_firstChild.pWidget)
-			firstSz = m_firstChild.pWidget->preferredSize();
+			firstSz = m_firstChild.preferredSize();
 
 		if (m_secondChild.pWidget)
-			secondSz = m_secondChild.pWidget->preferredSize();
+			secondSz = m_secondChild.preferredSize();
 
 		if (m_bHorizontal)
 		{
 			sz.w = firstSz.w + secondSz.w + _handleThickness();
 			sz.h = max(firstSz.h, secondSz.h);
-			if (m_pHandleSkin && m_pHandleSkin->preferredSize().h > sz.h)
-				sz.h = m_pHandleSkin->preferredSize().h;
+			if (m_pHandleSkin && m_pHandleSkin->_preferredSize().h > sz.h)
+				sz.h = m_pHandleSkin->_preferredSize().h;
 		}
 		else
 		{
 			sz.w = max(firstSz.w, secondSz.w);
 			sz.h = firstSz.h + secondSz.h + _handleThickness();
-			if (m_pHandleSkin && m_pHandleSkin->preferredSize().w > sz.w)
-				sz.w = m_pHandleSkin->preferredSize().w;
+			if (m_pHandleSkin && m_pHandleSkin->_preferredSize().w > sz.w)
+				sz.w = m_pHandleSkin->_preferredSize().w;
 		}
 
 		// Take skins padding and preferred size into account
 
 		if (m_pSkin)
 		{
-			sz += m_pSkin->contentPadding();
-			SizeI skinSz = m_pSkin->preferredSize();
+			sz += m_pSkin->_contentPadding();
+			SizeI skinSz = m_pSkin->_preferredSize();
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;
 			if (skinSz.h > sz.h)
@@ -218,7 +216,7 @@ namespace wg
 	bool SplitPanel::_updateGeo(int handleMovement)
 	{
 		RectI geo = m_size;
-		RectI contentGeo = m_pSkin ? m_pSkin->contentRect(geo, m_state) : geo;
+		RectI contentGeo = m_pSkin ? m_pSkin->_contentRect(geo, m_state) : geo;
 
 		RectI firstChildGeo;
 		RectI secondChildGeo;
@@ -314,28 +312,28 @@ namespace wg
 		{
 			if (pFirst)
 			{
-				minLengthFirst = pFirst->minSize().w;
-				maxLengthFirst = pFirst->maxSize().w;
+				minLengthFirst = m_firstChild.minSize().w;
+				maxLengthFirst = m_firstChild.maxSize().w;
 			}
 
 			if (pSecond)
 			{
-				minLengthSecond = pSecond->minSize().w;
-				maxLengthSecond = pSecond->maxSize().w;
+				minLengthSecond = m_secondChild.minSize().w;
+				maxLengthSecond = m_secondChild.maxSize().w;
 			}
 		}
 		else
 		{
 			if (pFirst)
 			{
-				minLengthFirst = pFirst->minSize().h;
-				maxLengthFirst = pFirst->maxSize().h;
+				minLengthFirst = m_firstChild.minSize().h;
+				maxLengthFirst = m_firstChild.maxSize().h;
 			}
 
 			if (pSecond)
 			{
-				minLengthSecond = pSecond->minSize().h;
-				maxLengthSecond = pSecond->maxSize().h;
+				minLengthSecond = m_secondChild.minSize().h;
+				maxLengthSecond = m_secondChild.maxSize().h;
 			}
 		}
 
@@ -378,7 +376,7 @@ namespace wg
 				if (m_handleState.isPressed())
 					return;
 
-				CoordI pos = InputMsg::cast(pMsg)->pointerPos() - globalPos();
+				CoordI pos = InputMsg::cast(pMsg)->pointerPos() - _globalPos();
 
 				bool bHovered = m_handleGeo.contains(pos);
 				handleState.setHovered(bHovered);
@@ -400,7 +398,7 @@ namespace wg
 				if (p->button() != MouseButton::Left)
 					return;
 
-				CoordI pos = p->pointerPos() - globalPos();
+				CoordI pos = p->pointerPos() - _globalPos();
 				if (m_handleGeo.contains(pos))
 				{
 					m_handlePressOfs = m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y;
@@ -434,7 +432,7 @@ namespace wg
 
 				if (handleState.isPressed())
 				{
-					CoordI pos = p->pointerPos() - globalPos();
+					CoordI pos = p->pointerPos() - _globalPos();
 					int diff = (m_bHorizontal ? pos.x - m_handleGeo.x : pos.y - m_handleGeo.y) - m_handlePressOfs;
 
 					_updateGeo(diff);
@@ -464,7 +462,7 @@ namespace wg
 		Panel::_render(pDevice, _canvas, _window);
 
 		if (m_pHandleSkin)
-			m_pHandleSkin->render(pDevice, m_handleGeo, m_handleState);
+			m_pHandleSkin->_render(pDevice, m_handleGeo, m_handleState);
 	}
 
 
@@ -516,7 +514,7 @@ namespace wg
 		bool bHit = Panel::_alphaTest(ofs);
 
 		if( !bHit && m_pHandleSkin )
-			bHit = m_pHandleSkin->markTest(ofs, m_handleGeo, m_handleState, m_markOpacity);
+			bHit = m_pHandleSkin->_markTest(ofs, m_handleGeo, m_handleState, m_markOpacity);
 
 		return bHit;
 	}

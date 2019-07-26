@@ -269,14 +269,31 @@ namespace wg
 		return true;
 	}
 
+	//____ isStateIdentical() _____________________________________________________
+
+	bool MultiBlockSkin::isStateIdentical(State state, State comparedTo) const
+	{
+		int i1 = _stateToIndex(state);
+		int i2 = _stateToIndex(comparedTo);
+
+		for (auto& layer : m_layers)
+		{
+			if (layer.blockOfs[i1] != layer.blockOfs[i2] || layer.tintColor[i1] != layer.tintColor[i2])
+				return false;
+		}
+
+		return ExtendedSkin::isStateIdentical(state, comparedTo);
+	}
 
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void MultiBlockSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void MultiBlockSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
+
+		RectI canvas = rawToPixels(_canvas);
 
 		int stateIndex = _stateToIndex(state);
 
@@ -307,9 +324,9 @@ namespace wg
 			const RectI&	src = RectI(layer.blockOfs[stateIndex], m_blockSize);
 
 			const BorderI&    sourceBorders = m_frame;
-			const BorderI     canvasBorders = toPixels(m_frame);
+			const BorderI     canvasBorders = pointsToPixels(m_frame);
 
-			pDevice->blitNinePatch( _canvas, canvasBorders, src, sourceBorders );
+			pDevice->blitNinePatch( canvas, canvasBorders, src, sourceBorders );
 		}
 
 		if (mixedTint != orgTintColor)
@@ -320,37 +337,37 @@ namespace wg
 	}
 
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size MultiBlockSkin::minSize() const
+	SizeI MultiBlockSkin::_minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-		Size frame = pixelAligned(m_frame);
-		return Size::max(content, frame);
+		SizeI content = ExtendedSkin::_minSize();
+		SizeI frame = pointsToRawAligned(m_frame);
+		return SizeI::max(content, frame);
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size MultiBlockSkin::preferredSize() const
+	SizeI MultiBlockSkin::_preferredSize() const
 	{
-		Size content = ExtendedSkin::preferredSize();
-		Size frame = pixelAligned(m_frame);
-		return Size::max(content, frame);
+		SizeI content = ExtendedSkin::_preferredSize();
+		SizeI frame = pointsToRawAligned(m_frame);
+		return SizeI::max(content, frame);
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size MultiBlockSkin::sizeForContent( const Size contentSize ) const
+	SizeI MultiBlockSkin::_sizeForContent( const SizeI contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = pixelAligned(m_frame);
+		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
+		SizeI min = pointsToRawAligned(m_frame);
 
-		return Size::max(sz, min);
+		return SizeI::max(sz, min);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool MultiBlockSkin::_markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
@@ -380,25 +397,11 @@ namespace wg
 		return m_bIsOpaque;
 	}
 
-	bool MultiBlockSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	//____ _isOpaque() _____________________________________________________________
+
+	bool MultiBlockSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return m_bIsOpaque;
-	}
-
-	//____ isStateIdentical() _____________________________________________________
-
-	bool MultiBlockSkin::isStateIdentical( State state, State comparedTo ) const
-	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
-
-		for (auto& layer : m_layers)
-		{
-			if (layer.blockOfs[i1] != layer.blockOfs[i2] || layer.tintColor[i1] != layer.tintColor[i2])
-				return false;
-		}
-
-		return ExtendedSkin::isStateIdentical(state, comparedTo);
 	}
 
 	//____ _updateStateOpacity() __________________________________________________

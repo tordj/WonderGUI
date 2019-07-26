@@ -84,9 +84,9 @@ namespace wg
 
 
 
-	//____ preferredSize() ________________________________________________________________
+	//____ _preferredSize() ________________________________________________________________
 
-	SizeI RulerLabels::preferredSize() const
+	SizeI RulerLabels::_preferredSize() const
 	{
 		//TODO: calculation of length is not good.
 
@@ -121,7 +121,7 @@ namespace wg
 		}
 
 		if( m_pSkin )
-			return m_pSkin->sizeForContent(preferred);
+			return m_pSkin->_sizeForContent(preferred);
 		else
 			return preferred;
 	}
@@ -135,7 +135,7 @@ namespace wg
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas,m_state);
+			canvas = m_pSkin->_contentRect(_canvas,m_state);
 		else
 			canvas = _canvas;
 

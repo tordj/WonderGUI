@@ -202,7 +202,7 @@ double Util::powerOfTen(int num){
 
 		//
 
-		BorderI destFrame = toPixels(sourceFrame);
+		BorderI destFrame = pointsToPixels(sourceFrame);
 
 		RectI source;
 		RectI dest;

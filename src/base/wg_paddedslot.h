@@ -37,11 +37,11 @@ namespace wg
 	public:
 		PaddedSlot() : bVisible(false) {}
 
-		SizeI		paddedPreferredSize() const { return pWidget->preferredSize() + padding; }
-		SizeI		paddedMinSize() const { return pWidget->minSize() + padding; }
-		SizeI		paddedMaxSize() const { return pWidget->maxSize() + padding; }
-		int			paddedMatchingWidth(int paddedHeight) const { return pWidget->matchingWidth(paddedHeight - padding.height()) + padding.width(); }
-		int			paddedMatchingHeight(int paddedWidth) const { return pWidget->matchingHeight(paddedWidth - padding.width()) + padding.height(); }
+		SizeI		paddedPreferredSize() const { return preferredSize() + padding; }
+		SizeI		paddedMinSize() const { return minSize() + padding; }
+		SizeI		paddedMaxSize() const { return maxSize() + padding; }
+		int			paddedMatchingWidth(int paddedHeight) const { return matchingWidth(paddedHeight - padding.height()) + padding.width(); }
+		int			paddedMatchingHeight(int paddedWidth) const { return matchingHeight(paddedWidth - padding.width()) + padding.height(); }
 
 		BorderI		padding;
 		bool		bVisible;

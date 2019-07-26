@@ -118,19 +118,19 @@ namespace wg
 
 
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI Image::preferredSize() const
+	SizeI Image::_preferredSize() const
 	{
 		if( m_pSurface )
 		{
 			if( m_pSkin )
-				return m_pSkin->sizeForContent( m_rect.size() );
+				return m_pSkin->_sizeForContent( m_rect.size() );
 			else
 				return m_rect.size();
 		}
 
-		return Widget::preferredSize();
+		return Widget::_preferredSize();
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -155,7 +155,7 @@ namespace wg
 		{
 			RectI dest;
 			if( m_pSkin )
-				dest = m_pSkin->contentRect( _canvas, state() );
+				dest = m_pSkin->_contentRect( _canvas, state() );
 			else
 				dest = _canvas;
 
@@ -172,7 +172,7 @@ namespace wg
 		{
 			RectI dest;
 			if( m_pSkin )
-				dest = m_pSkin->contentRect( m_size, state() );
+				dest = m_pSkin->_contentRect( m_size, state() );
 			else
 				dest = m_size;
 

@@ -46,25 +46,29 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual Size	minSize() const override;
-		virtual Size	preferredSize() const override;
-		virtual Size	sizeForContent( const Size contentSize ) const override;
 
-		virtual void	setContentPadding( BorderI padding );
-		virtual Size	contentPadding() const override;
-		virtual Coord	contentOfs( State state ) const override;
-		virtual Rect	contentRect( const Rect& canvas, State state ) const override;
+		void			setContentPadding( BorderI padding );
+		inline BorderI	contentPadding() const { return m_contentPadding; }
+		Size			contentPaddingAdapted() const;
 
 		//.____ Behavior _______________________________________________________
 
-		virtual void	clearContentShift();
-		virtual void	setContentShift(State state, CoordI shift);
-		virtual void	setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
-		virtual Coord	contentShift(State state) const;
+		void			clearContentShift();
+		void			setContentShift(State state, CoordI shift);
+		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
+		CoordI			contentShift(State state) const;
+		Coord			contentShiftAdapted(State state) const;
 
 		//.____ Misc ____________________________________________________
 
 		virtual	bool	isStateIdentical( State state, State comparedTo ) const override;
+
+		virtual SizeI	_minSize() const override;
+		virtual SizeI	_preferredSize() const override;
+		virtual SizeI	_sizeForContent(const SizeI contentSize) const override;
+		virtual SizeI	_contentPadding() const override;
+		virtual CoordI	_contentOfs(State state) const override;
+		virtual RectI	_contentRect(const RectI& canvas, State state) const override;
 
 
 	protected:
@@ -74,7 +78,6 @@ namespace wg
 		CoordI				m_contentShift[StateEnum_Nb];
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
-
 
 
 } // namespace wg

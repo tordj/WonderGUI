@@ -66,13 +66,6 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( Object * pObject );
 
-		//.____ Geometry _________________________________________________
-
-		int				matchingHeight( int width ) const;
-		int				matchingWidth( int height ) const;
-
-		SizeI			preferredSize() const;
-
 	protected:
 		Capsule();
 		virtual ~Capsule();
@@ -106,7 +99,13 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
 
-		//
+		// Overloaded from Widget
+
+		int			_matchingHeight(int width) const;
+		int			_matchingWidth(int height) const;
+
+		SizeI		_preferredSize() const;
+
 
 		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
 		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );

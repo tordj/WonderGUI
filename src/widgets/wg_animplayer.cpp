@@ -227,9 +227,9 @@ namespace wg
 		return true;
 	}
 
-	//____ preferredSize() ___________________________________________________________
+	//____ _preferredSize() ___________________________________________________________
 
-	SizeI AnimPlayer::preferredSize() const
+	SizeI AnimPlayer::_preferredSize() const
 	{
 		SizeI	sz;
 
@@ -237,7 +237,7 @@ namespace wg
 			sz = m_pAnim->size();
 
 		if( m_pSkin )
-			sz = m_pSkin->sizeForContent(sz);
+			sz = m_pSkin->_sizeForContent(sz);
 
 		return sz;
 	}

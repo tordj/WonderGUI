@@ -160,7 +160,7 @@ namespace wg
 
 		//
 
-		RectI geo(0,0,SizeI::min(pSlot->pWidget->preferredSize(),SizeI::min(pSlot->maxSize,m_size)));
+		RectI geo(0,0,SizeI::min(pSlot->preferredSize(),SizeI::min(pSlot->maxSize,m_size)));
 
 		switch( pSlot->attachPoint )
 		{
@@ -318,7 +318,7 @@ namespace wg
 			pSlot->geo = geo;
 			_onRequestRender(pSlot->geo,pSlot);
 
-			if( pSlot->pWidget->size() != geo.size() )
+			if( pSlot->size() != geo.size() )
 				pSlot->pWidget->_setSize(geo.size());
 
 			return true;
@@ -348,7 +348,7 @@ namespace wg
 				{
 					if( pSlot->pWidget->isContainer() )
 						pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - pSlot->geo.pos(), mode );
-					else if( pSlot->pWidget->markTest( ofs - pSlot->geo.pos() ) )
+					else if( pSlot->markTest( ofs - pSlot->geo.pos() ) )
 						pResult = pSlot->pWidget;
 				}
 				pSlot++;
@@ -363,10 +363,10 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
 
-					CoordI 	absPos 		= ofs + globalPos();
-					RectI	openerGeo 	= pOpener->globalGeo();
+					CoordI 	absPos 		= ofs + _globalPos();
+					RectI	openerGeo 	= Util::qpixToRaw(pOpener->globalGeo());
 
-					if( openerGeo.contains(absPos) && pOpener->markTest( absPos - openerGeo.pos() ) )
+					if( openerGeo.contains(absPos) && pOpener->_markTest( absPos - openerGeo.pos() ) )
 						pResult = pOpener;
 				}
 
@@ -624,7 +624,7 @@ namespace wg
 				if (m_popups.isEmpty())
 					break;
 
-				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPos() - globalPos();
+				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPos() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
@@ -732,10 +732,10 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
 
-					CoordI 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPos();
-					RectI	openerGeo = pOpener->globalGeo();
+					Coord 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPos();
+					Rect	openerGeo = pOpener->globalGeo();
 
-					if (pOpener->markTest(absPos - openerGeo.pos()))
+					if (pOpener->_markTest(absPos - openerGeo.pos()))
 						break;
 				}
 

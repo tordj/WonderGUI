@@ -134,62 +134,60 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static ModalLayer_p	cast( Object * pObject );
 
 
-		//.____ Geometry ____________________________________________
-
-		int				matchingHeight( int width ) const;
-		int				matchingWidth( int height ) const;
-
-		SizeI			preferredSize() const;
-
 	protected:
 		ModalLayer();
 		virtual ~ModalLayer();
-		virtual Widget* _newOfMyType() const { return new ModalLayer(); };
+		virtual Widget* _newOfMyType() const  override { return new ModalLayer(); };
 
 
 	private:
 
-		ModalLayer *	_getModalLayer() const { return const_cast<ModalLayer*>(this); }
+		ModalLayer *	_getModalLayer() const  override { return const_cast<ModalLayer*>(this); }
 
 		void			_updateKeyboardFocus();
 		void			_refreshRealGeo( ModalSlot * pSlot );
 
 		// Overloaded from Panel
 
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode );
+		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 
 		// Overloaded from WidgetHolder
 
-		void			_childRequestResize( Slot * pSlot );
-		void			_releaseChild(Slot * pSlot);
+		void			_childRequestResize( Slot * pSlot ) override;
+		void			_releaseChild(Slot * pSlot) override;
 
 		// Methods for ModalChildren
 
-		Slot *			_incSlot(Slot * pSlot) const;
-		Slot *			_decSlot(Slot * pSlot) const;
-		void			_didAddSlots(Slot * pSlot, int nb);
-		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb);
-		void			_willRemoveSlots(Slot * pSlot, int nb);
-		Object *		_object() { return this;  }
-		WidgetHolder *	_widgetHolder() { return this; }
+		Slot *			_incSlot(Slot * pSlot) const override;
+		Slot *			_decSlot(Slot * pSlot) const override;
+		void			_didAddSlots(Slot * pSlot, int nb) override;
+		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
+		void			_willRemoveSlots(Slot * pSlot, int nb) override;
+		Object *		_object() override { return this;  }
+		WidgetHolder *	_widgetHolder() override { return this; }
 
 		// Overloaded from Layer
 
-		const LayerSlot * 	_beginLayerSlots() const;
-		const LayerSlot * 	_endLayerSlots() const;
-		int				_sizeOfLayerSlot() const;
+		const LayerSlot * 	_beginLayerSlots() const override;
+		const LayerSlot * 	_endLayerSlots() const override;
+		int				_sizeOfLayerSlot() const override;
 
 		// Overloaded from Widget
 
-		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize( const SizeI& size );
-		void			_receive( Msg * pMsg );
+		int				_matchingHeight(int width) const override;
+		int				_matchingWidth(int height) const override;
+
+		SizeI			_preferredSize() const override;
+
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_setSize( const SizeI& size ) override;
+		void			_receive( Msg * pMsg ) override;
 
 
 		Widget_wp			m_pBaseKeyFocus;

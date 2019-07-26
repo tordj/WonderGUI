@@ -51,25 +51,23 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool		isInstanceOf( const char * pClassName ) const override;
+		const char *className( void ) const override;
 		static const char	CLASSNAME[];
 		static ValueDisplay_p	cast( Object * pObject );
 
-		//.____ Geometry ____________________________________________
-
-		SizeI	preferredSize() const;
 
 	protected:
 		ValueDisplay();
 		virtual ~ValueDisplay();
-		virtual Widget* _newOfMyType() const { return new ValueDisplay(); };
+		virtual Widget* _newOfMyType() const override { return new ValueDisplay(); };
 
-		void	_refresh();
-		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void	_setState( State state );
-		void	_setSkin( Skin * pSkin );
+		SizeI	_preferredSize() const override;
+		void	_refresh() override;
+		void	_cloneContent( const Widget * _pOrg ) override;
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void	_setState( State state ) override;
+		void	_setSkin( Skin * pSkin ) override;
 
 	private:
 

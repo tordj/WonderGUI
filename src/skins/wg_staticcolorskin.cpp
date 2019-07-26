@@ -23,12 +23,14 @@
 #include <wg_staticcolorskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
+#include <wg_util.h>
 
 namespace wg
 {
 
 	const char StaticColorSkin::CLASSNAME[] = {"StaticColorSkin"};
 
+	using namespace Util;
 
 	//____ create() _______________________________________________________________
 
@@ -71,11 +73,11 @@ namespace wg
 		return 0;
 	}
 
-	//____ render() ______________________________________________________________
+	//____ isStateIdentical() _________________________________________________
 
-	void StaticColorSkin::render( GfxDevice * pDevice, const RectI& canvas, State state ) const
+	bool StaticColorSkin::isStateIdentical(State state, State comparedTo) const
 	{
-		pDevice->fill( canvas, m_color );
+		return true;
 	}
 
 	//____ isOpaque() ______________________________________________________________
@@ -90,65 +92,68 @@ namespace wg
 		return m_color.a == 255 ? true : false;
 	}
 
-	bool StaticColorSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	//____ _isOpaque() ______________________________________________________________
+
+	bool StaticColorSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return m_color.a == 255 ? true : false;
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _render() ______________________________________________________________
 
-	Size StaticColorSkin::minSize() const
+	void StaticColorSkin::_render(GfxDevice * pDevice, const RectI& canvas, State state) const
 	{
-		return Size();
+		pDevice->fill(rawToPixels(canvas), m_color);
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size StaticColorSkin::preferredSize() const
+	SizeI StaticColorSkin::_minSize() const
 	{
-		return Size();
+		return SizeI();
 	}
 
-	//____ contentPadding() ______________________________________________________________
+	//____ _preferredSize() ______________________________________________________________
 
-	Size StaticColorSkin::contentPadding() const
+	SizeI StaticColorSkin::_preferredSize() const
 	{
-		return Size();
+		return SizeI();
 	}
 
-	//____ contentOfs() ______________________________________________________________
+	//____ _contentPadding() ______________________________________________________________
 
-	Coord StaticColorSkin::contentOfs( State state ) const
+	SizeI StaticColorSkin::_contentPadding() const
 	{
-		return Coord();
+		return SizeI();
 	}
 
-	//____ sizeForContent() ___________________________________________________
+	//____ _contentOfs() ______________________________________________________________
 
-	Size  StaticColorSkin::sizeForContent( const Size contentSize ) const
+	CoordI StaticColorSkin::_contentOfs( State state ) const
+	{
+		return CoordI();
+	}
+
+	//____ _sizeForContent() ___________________________________________________
+
+	SizeI StaticColorSkin::_sizeForContent( const SizeI contentSize ) const
 	{
 		return contentSize;
 	}
 
-	//____ contentRect() ______________________________________________________
+	//____ _contentRect() ______________________________________________________
 
-	Rect  StaticColorSkin::contentRect( const Rect& canvas, State state ) const
+	RectI StaticColorSkin::_contentRect( const RectI& canvas, State state ) const
 	{
 		return canvas;
 	}
 
-	//____ markTest() _________________________________________________________
+	//____ _markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool StaticColorSkin::_markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool StaticColorSkin::isStateIdentical( State state, State comparedTo ) const
-	{
-		return true;
-	}
 
 } // namespace wg

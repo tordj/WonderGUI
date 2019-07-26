@@ -80,34 +80,34 @@ namespace wg
 	}
 
 
-	//____ matchingHeight() ________________________________________________________
+	//____ _matchingHeight() ________________________________________________________
 
-	int Capsule::matchingHeight( int width ) const
+	int Capsule::_matchingHeight( int width ) const
 	{
 		if( m_child.pWidget )
-			return m_child.pWidget->matchingHeight( width );
+			return m_child.matchingHeight( width );
 		else
-			return Widget::matchingHeight(width);
+			return Widget::_matchingHeight(width);
 	}
 
 	//____ matchingWidth() ________________________________________________________
 
-	int Capsule::matchingWidth( int height ) const
+	int Capsule::_matchingWidth( int height ) const
 	{
 		if( m_child.pWidget )
-			return m_child.pWidget->matchingWidth( height );
+			return m_child.matchingWidth( height );
 		else
-			return Widget::matchingWidth(height);
+			return Widget::_matchingWidth(height);
 	}
 
 	//____ preferredSize() ___________________________________________________________
 
-	SizeI Capsule::preferredSize() const
+	SizeI Capsule::_preferredSize() const
 	{
 		if( m_child.pWidget )
-			return m_child.pWidget->preferredSize();
+			return m_child.preferredSize();
 		else
-			return SizeI(1,1);
+			return SizeI(0,0);
 	}
 
 	//____ _childPos() ___________________________________________________________
@@ -115,7 +115,7 @@ namespace wg
 	CoordI Capsule::_childPos( Slot * pSlot ) const
 	{
 		if( m_pSkin )
-			return m_pSkin->contentOfs( m_state );
+			return m_pSkin->_contentOfs( m_state );
 
 		return CoordI();
 	}
@@ -125,7 +125,7 @@ namespace wg
 	SizeI Capsule::_childSize( Slot * pSlot ) const
 	{
 		if( m_pSkin )
-			return m_size - m_pSkin->contentPadding();
+			return m_size - m_pSkin->_contentPadding();
 
 		return m_size;
 	}
@@ -135,7 +135,7 @@ namespace wg
 	void Capsule::_childRequestRender( Slot * pSlot )
 	{
 		if( m_pSkin )
-			_requestRender( m_pSkin->contentRect( m_size, m_state ));
+			_requestRender( m_pSkin->_contentRect( m_size, m_state ));
 		else
 			_requestRender();
 	}
@@ -145,7 +145,7 @@ namespace wg
 	void Capsule::_childRequestRender( Slot * pSlot, const RectI& rect )
 	{
 		if( m_pSkin )
-			_requestRender( rect + m_pSkin->contentOfs( m_state ));
+			_requestRender( rect + m_pSkin->_contentOfs( m_state ));
 		else
 			_requestRender( rect );
 	}
@@ -250,7 +250,7 @@ namespace wg
 		pSlot->replaceWidget( this, pWidget );
 
 		if( pWidget )
-			pWidget->_setSize(size());
+			pWidget->_setSize(m_size);
 
 		_requestRender();
 		_requestResize();

@@ -455,9 +455,9 @@ namespace wg
 		m_frame = frame;
 	}
 
-	//____ render() _______________________________________________________________
+	//____ _render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void BlockSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -471,43 +471,43 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(_canvas, toPixels(m_frame), { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch( rawToPixels(_canvas), pointsToPixels(m_frame), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
 	}
 
-	//____ minSize() ______________________________________________________________
+	//____ _minSize() ______________________________________________________________
 
-	Size BlockSkin::minSize() const
+	SizeI BlockSkin::_minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-		Size frame = pixelAligned(m_frame);
-		return Size::max( content, frame );
+		SizeI content = ExtendedSkin::_minSize();
+		SizeI frame = pointsToRawAligned(m_frame);
+		return SizeI::max( content, frame );
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	Size BlockSkin::preferredSize() const
+	SizeI BlockSkin::_preferredSize() const
 	{
-		Size content = ExtendedSkin::minSize();
-		Size frame = pixelAligned(m_frame);
-		return Size::max(content, frame);
+		SizeI content = ExtendedSkin::_preferredSize();
+		SizeI frame = pointsToRawAligned(m_frame);
+		return SizeI::max(content, frame);
 	}
 
-	//____ sizeForContent() _______________________________________________________
+	//____ _sizeForContent() _______________________________________________________
 
-	Size BlockSkin::sizeForContent( const Size contentSize ) const
+	SizeI BlockSkin::_sizeForContent( const SizeI contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = pixelAligned(m_frame);
+		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
+		SizeI min = pointsToRawAligned(m_frame);
 
-		return Size::max(sz, min);
+		return SizeI::max(sz, min);
 	}
 
-	//____ markTest() _____________________________________________________________
+	//____ _markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool BlockSkin::_markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
 		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
@@ -525,7 +525,9 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	bool BlockSkin::isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	//____ _isOpaque() _____________________________________________________________
+
+	bool BlockSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}

@@ -51,8 +51,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Image_p		cast( Object * pObject );
 
@@ -64,18 +64,15 @@ namespace wg
 		inline Surface_p	imageSurface() const;											///< @brief Get surface of image displayed.
 		inline RectI			imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
 
-		//.____ Geometry ____________________________________________
-
-		SizeI				preferredSize() const;
-
 	protected:
 		Image();
 		virtual ~Image();
-		virtual Widget* _newOfMyType() const { return new Image(); };
+		virtual Widget* _newOfMyType() const override { return new Image(); };
 
-		void	_cloneContent( const Widget * _pOrg );
-		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		bool	_alphaTest( const CoordI& ofs );
+		SizeI	_preferredSize() const override;
+		void	_cloneContent( const Widget * _pOrg ) override;
+		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		bool	_alphaTest( const CoordI& ofs ) override;
 
 	private:
 

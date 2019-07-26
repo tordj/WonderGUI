@@ -20,6 +20,7 @@
 
 =========================================================================*/
 #include <wg_skin.h>
+#include <wg_util.h>
 
 namespace wg
 {
@@ -52,5 +53,27 @@ namespace wg
 
 		return 0;
 	}
+
+	//____ minSize() __________________________________________________________
+
+	Size Skin::minSize() const
+	{
+		return Util::rawToQpix(_minSize());
+	}
+
+	//____ preferredSize() ____________________________________________________
+
+	Size Skin::preferredSize() const
+	{
+		return Util::rawToQpix(_preferredSize());
+	}
+
+	//____ isOpaque() _________________________________________________________
+
+	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	{
+		return _isOpaque(Util::qpixToRaw(rect), Util::qpixToRaw(canvasSize), state);
+	}
+
 
 } // namespace wg

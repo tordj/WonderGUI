@@ -165,9 +165,9 @@ namespace wg
 		return 0;
 	}
 
-	//____ matchingHeight() _______________________________________________________
+	//____ _matchingHeight() _______________________________________________________
 
-	int StackPanel::matchingHeight( int width ) const
+	int StackPanel::_matchingHeight( int width ) const
 	{
 		int height = 0;
 
@@ -176,7 +176,7 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			int h = pSlot->pWidget->matchingHeight(width);
+			int h = pSlot->matchingHeight(width);
 			if( h > height )
 				height = h;
 			pSlot++;
@@ -185,9 +185,9 @@ namespace wg
 		return height;
 	}
 
-	//____ matchingWidth() _______________________________________________________
+	//____ _matchingWidth() _______________________________________________________
 
-	int StackPanel::matchingWidth( int height ) const
+	int StackPanel::_matchingWidth( int height ) const
 	{
 		int width = 0;
 
@@ -196,7 +196,7 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			int h = pSlot->pWidget->matchingWidth(height);
+			int h = pSlot->matchingWidth(height);
 			if( h > height )
 				height = h;
 			pSlot++;
@@ -206,9 +206,9 @@ namespace wg
 	}
 
 
-	//____ preferredSize() _____________________________________________________________
+	//____ _preferredSize() _____________________________________________________________
 
-	SizeI StackPanel::preferredSize() const
+	SizeI StackPanel::_preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -365,7 +365,7 @@ namespace wg
 
 	SizeI StackPanel::_childSize( Slot * pSlot ) const
 	{
-		return ((StackPanelSlot *) pSlot)->pWidget->size();
+		return pSlot->size();
 	}
 
 	//____ _childRequestRender() ______________________________________________
@@ -608,7 +608,7 @@ namespace wg
 			default:
 		case SizePolicy2D::Original:
 			{
-				SizeI	size = pSlot->pWidget->preferredSize();
+				SizeI	size = pSlot->preferredSize();
 				RectI geo = Util::origoToRect( pSlot->origo, base, size );
 
 				if( geo.w > base.w )
@@ -630,7 +630,7 @@ namespace wg
 			}
 			case SizePolicy2D::Scale:
 			{
-				SizeI	orgSize = pSlot->pWidget->preferredSize();
+				SizeI	orgSize = pSlot->preferredSize();
 				SizeI	size;
 
 				float	fracX = orgSize.w / (float) base.w;

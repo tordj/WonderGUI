@@ -54,13 +54,6 @@ namespace wg
 		static const char		CLASSNAME[];
 		static TextDisplay_p	cast( Object * pObject );
 
-		//.____ Geometry ____________________________________________
-
-		int				matchingWidth( int height ) const;
-		int				matchingHeight( int width ) const;
-		SizeI			preferredSize() const;
-
-
 		//.____ Appearance _________________________________________________
 
 		PointerStyle	pointerStyle() const;
@@ -70,15 +63,19 @@ namespace wg
 	protected:
 		TextDisplay();
 		virtual ~TextDisplay();
-		virtual Widget* _newOfMyType() const { return new TextDisplay(); };
+		virtual Widget* _newOfMyType() const override { return new TextDisplay(); };
 
-		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_setSize( const SizeI& size );
-		void			_refresh();
-		void			_receive( Msg * pMsg );
-		void			_setState( State state );
-		void			_setSkin( Skin * pSkin );
+		int				_matchingWidth(int height) const override;
+		int				_matchingHeight(int width) const override;
+		SizeI			_preferredSize() const override;
+
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_setSize( const SizeI& size ) override;
+		void			_refresh() override;
+		void			_receive( Msg * pMsg ) override;
+		void			_setState( State state ) override;
+		void			_setSkin( Skin * pSkin ) override;
 
 	private:
 

@@ -54,8 +54,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static SizeCapsule_p	cast( Object * pObject );
 
@@ -67,17 +67,18 @@ namespace wg
 		void	setMinSize( SizeI size );
 		void	setMaxSize( SizeI size );
 
-		SizeI	preferredSize() const;
-		SizeI	minSize() const;
-		SizeI	maxSize() const;
-
-		int		matchingHeight( int width ) const;
-		int		matchingWidth( int height ) const;
 
 	protected:
 		SizeCapsule();
 		virtual ~SizeCapsule();
 		virtual Widget* _newOfMyType() const { return new SizeCapsule(); };
+
+		SizeI	_preferredSize() const override;
+		SizeI	_minSize() const override;
+		SizeI	_maxSize() const override;
+
+		int		_matchingHeight(int width) const override;
+		int		_matchingWidth(int height) const override;
 
 	private:
 

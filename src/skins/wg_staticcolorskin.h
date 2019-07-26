@@ -48,30 +48,29 @@ namespace wg
 		static const char	CLASSNAME[];
 		static StaticColorSkin_p	cast( Object * pObject );
 
-		//.____ Rendering ________________________________________________
-
-		void	render( GfxDevice * pDevice, const RectI& canvas, State state ) const override;
-
-		//.____ Geometry _________________________________________________
-
-		Size	minSize() const override;
-		Size	preferredSize() const override;
-		Size	sizeForContent( const Size contentSize ) const override;
-
-		Size	contentPadding() const override;
-		Coord	contentOfs( State state ) const override;
-		Rect	contentRect( const Rect& canvas, State state ) const override;
-
-
 		//.____ Misc ____________________________________________________
 
-		bool	markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const override;
 
 		bool	isOpaque() const override;
 		bool	isOpaque(State state) const override;
-		bool	isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const override;
 
 		bool	isStateIdentical( State state, State comparedTo ) const override;
+
+		//.____ Internal ______________________________________________________
+
+		bool	_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const override;
+		bool	_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const override;
+
+		void	_render(GfxDevice * pDevice, const RectI& canvas, State state) const override;
+
+		SizeI	_minSize() const override;
+		SizeI	_preferredSize() const override;
+		SizeI	_sizeForContent(const SizeI contentSize) const override;
+
+		SizeI	_contentPadding() const override;
+		CoordI	_contentOfs(State state) const override;
+		RectI	_contentRect(const RectI& canvas, State state) const override;
+
 
 	private:
 		StaticColorSkin( Color col );

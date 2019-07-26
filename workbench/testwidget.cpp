@@ -75,11 +75,11 @@ namespace wg
 		return 0;
 	}
 
-	//____ preferredSize() __________________________________________________________
+	//____ _preferredSize() __________________________________________________________
 
-	SizeI TestWidget::preferredSize() const
+	SizeI TestWidget::_preferredSize() const
 	{
-		return SizeI(200,200);
+		return SizeI(200,200) * Base::pixelQuartersPerPoint();
 	}
 
 	//____ start() _________________________________________________________________
@@ -141,7 +141,7 @@ namespace wg
 			{
                 const TickMsg_p pTick = TickMsg::cast(pMsg);
 				
-				RectI area( 0,0, size() );
+				RectI area( 0,0, m_size );
 				
 				
 				if( !m_bPointsInitialized )

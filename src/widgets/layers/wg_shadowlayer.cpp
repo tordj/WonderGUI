@@ -76,78 +76,78 @@ namespace wg
 		return 0;
 	}
 
-	//____ matchingHeight() _________________________________________________________________
+	//____ _matchingHeight() _________________________________________________________________
 
-	int ShadowLayer::matchingHeight(int width) const
+	int ShadowLayer::_matchingHeight(int width) const
 	{
 		int matchFront = 0;
 		int matchBase = 0;
 
 		if (m_baseSlot.pWidget)
-			matchBase = m_baseSlot.pWidget->matchingHeight(width);
+			matchBase = m_baseSlot.matchingHeight(width);
 		if (m_frontSlot.pWidget)
-			matchFront = m_frontSlot.pWidget->matchingHeight(width);
+			matchFront = m_frontSlot.matchingHeight(width);
 
 		return std::max(matchFront, matchBase);
 	}
 
-	//____ matchingWidth() _________________________________________________________________
+	//____ _matchingWidth() _________________________________________________________________
 
-	int ShadowLayer::matchingWidth(int height) const
+	int ShadowLayer::_matchingWidth(int height) const
 	{
 		int matchFront = 0;
 		int matchBase = 0;
 
 		if (m_baseSlot.pWidget)
-			matchBase = m_baseSlot.pWidget->matchingWidth(height);
+			matchBase = m_baseSlot.matchingWidth(height);
 		if (m_frontSlot.pWidget)
-			matchFront = m_frontSlot.pWidget->matchingWidth(height);
+			matchFront = m_frontSlot.matchingWidth(height);
 
 		return std::max(matchFront, matchBase);
 	}
 
-	//____ preferredSize() _________________________________________________________________
+	//____ _preferredSize() _________________________________________________________________
 
-	SizeI ShadowLayer::preferredSize() const
+	SizeI ShadowLayer::_preferredSize() const
 	{
 		SizeI prefFront;
 		SizeI prefBase;
 
 		if (m_baseSlot.pWidget)
-			prefBase = m_baseSlot.pWidget->preferredSize();
+			prefBase = m_baseSlot.preferredSize();
 		if (m_frontSlot.pWidget)
-			prefFront = m_frontSlot.pWidget->preferredSize();
+			prefFront = m_frontSlot.preferredSize();
 
 		return SizeI::max(prefFront, prefBase);
 
 	}
 
-	//____ minSize() _________________________________________________________________
+	//____ _minSize() _________________________________________________________________
 
-	SizeI ShadowLayer::minSize() const
+	SizeI ShadowLayer::_minSize() const
 	{
 		SizeI minFront;
 		SizeI minBase;
 
 		if (m_baseSlot.pWidget)
-			minBase = m_baseSlot.pWidget->minSize();
+			minBase = m_baseSlot.minSize();
 		if (m_frontSlot.pWidget)
-			minFront = m_frontSlot.pWidget->minSize();
+			minFront = m_frontSlot.minSize();
 
 		return SizeI::min(minFront, minBase);
 	}
 
 	//____ maxSize() _________________________________________________________________
 
-	SizeI ShadowLayer::maxSize() const
+	SizeI ShadowLayer::_maxSize() const
 	{
 		SizeI maxFront;
 		SizeI maxBase;
 
 		if (m_baseSlot.pWidget)
-			maxBase = m_baseSlot.pWidget->maxSize();
+			maxBase = m_baseSlot.maxSize();
 		if (m_frontSlot.pWidget)
-			maxFront = m_frontSlot.pWidget->maxSize();
+			maxFront = m_frontSlot.maxSize();
 
 		return SizeI::max(maxFront, maxBase);
 	}
@@ -210,7 +210,7 @@ namespace wg
 
 			// Remove portions of patches that are covered by opaque front widgets
 
-			m_frontSlot.pWidget->_maskPatches(patches, size(), RectI(0, 0, 65536, 65536), _getBlendMode());
+			m_frontSlot.pWidget->_maskPatches(patches, m_size, RectI(0, 0, 65536, 65536), _getBlendMode());
 
 			// Make request render calls
 
@@ -235,7 +235,7 @@ namespace wg
 		for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
 		{
 			SizeI sz = it->widget()->size();
-			sz += it->shadow()->contentPadding();
+			sz += it->shadow()->_contentPadding();
 
 
 		}
@@ -296,9 +296,9 @@ namespace wg
 		if (m_pSkin)
 		{
 			pDevice->setClipList(patches.size(), patches.begin());
-			m_pSkin->render(pDevice, _canvas, m_state);
+			m_pSkin->_render(pDevice, _canvas, m_state);
 			
-			contentGeo = m_pSkin->contentRect(_canvas, m_state);
+			contentGeo = m_pSkin->_contentRect(_canvas, m_state);
 		}
 
 		// Render base slot widgets

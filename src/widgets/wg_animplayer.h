@@ -51,8 +51,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static AnimPlayer_p	cast( Object * pObject );
 
@@ -78,21 +78,19 @@ namespace wg
 		bool			stop();
 		bool			isPlaying() { return m_bPlaying; };
 
-		//.____ Geometry ____________________________________________
-
-		SizeI			preferredSize() const;
-
 	protected:
 		AnimPlayer();
 		virtual ~AnimPlayer();
-		virtual Widget* _newOfMyType() const { return new AnimPlayer(); };
+		virtual Widget* _newOfMyType() const override { return new AnimPlayer(); };
 
-		void			_cloneContent( const Widget * _pOrg );
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_refresh();
-		void			_receive( Msg * pMsg );
-		bool			_alphaTest( const CoordI& ofs );
-		void			_setState( State state );
+		SizeI			_preferredSize() const override;
+
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_refresh() override;
+		void			_receive( Msg * pMsg ) override;
+		bool			_alphaTest( const CoordI& ofs ) override;
+		void			_setState( State state ) override;
 
 		void			_playPosUpdated();
 
