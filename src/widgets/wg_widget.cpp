@@ -360,7 +360,7 @@ namespace wg
 		_render( pDevice, _canvas, _window );
 	}
 
-	//____ onCollectPatches()  ____________________________________________________
+	//____ _collectPatches()  ____________________________________________________
 
 	void Widget::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{

@@ -1249,15 +1249,15 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 	if( nRects == 0 )
 		return;
 
-	const RectI * pUpdatedRects = pRoot->firstUpdatedRect();
+	const Rect * pUpdatedRects = pRoot->firstUpdatedRect();
 	SDL_Rect * pSDLRects = (SDL_Rect*) Base::memStackAlloc( sizeof(SDL_Rect) * nRects );
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x;
-		pSDLRects[i].y = pUpdatedRects[i].y;
-		pSDLRects[i].w = pUpdatedRects[i].w;
-		pSDLRects[i].h = pUpdatedRects[i].h;
+		pSDLRects[i].x = pUpdatedRects[i].x.pixel;
+		pSDLRects[i].y = pUpdatedRects[i].y.pixel;
+		pSDLRects[i].w = pUpdatedRects[i].w.pixel;
+		pSDLRects[i].h = pUpdatedRects[i].h.pixel;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );

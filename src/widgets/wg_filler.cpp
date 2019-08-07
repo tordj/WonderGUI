@@ -27,6 +27,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char Filler::CLASSNAME[] = {"Filler"};
 
@@ -73,8 +74,10 @@ namespace wg
 
 	//____ setPreferredSize() _______________________________________________________
 
-	void Filler::setPreferredSize( const SizeI& size )
+	void Filler::setPreferredSize( const Size& _size )
 	{
+		SizeI size = qpixToRaw(_size);
+
 		if( size != m_preferredSize )
 		{
 			m_preferredSize = size;

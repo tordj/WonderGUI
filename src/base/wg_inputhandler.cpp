@@ -259,7 +259,7 @@ namespace wg
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
 
-		if( pRoot && pRoot->geo().contains( pos ) )
+		if( pRoot && pRoot->geo().contains( Coord(pos ) ) )		// TODOQPIX: Remove conversion when pos is turned into Coord.
 		{
 			m_pMarkedRoot = pRoot;
 			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );

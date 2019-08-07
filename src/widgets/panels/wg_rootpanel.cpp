@@ -25,14 +25,17 @@
 #include <wg_container.h>
 #include <wg_boxskin.h>
 #include <wg_inputhandler.h>
+#include <wg_util.h>
 
 #include <new>
 
 
 #include <wg_msgrouter.h>
 
+
 namespace wg
 {
+	using namespace Util;
 
 	const char RootPanel::CLASSNAME[] = {"RootPanel"};
 
@@ -55,7 +58,7 @@ namespace wg
 	RootPanel::RootPanel( GfxDevice * pGfxDevice ) : RootPanel()
 	{
 		if( pGfxDevice )
-			m_geo = pGfxDevice->canvasSize();
+			m_geo = pixelsToRaw( pGfxDevice->canvasSize() );
 		m_pGfxDevice = pGfxDevice;
 	}
 
@@ -102,33 +105,34 @@ namespace wg
 		m_pGfxDevice = pDevice;
 
 		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
-			m_child.pWidget->_setSize( m_pGfxDevice->canvasSize() );
+			m_child.pWidget->_setSize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 
-		addDirtyPatch( geo() );
+		addDirtyPatch( _geo() );
 		return true;
 	}
 
 	//_____ setGeo() _____________________________________________________________
 
-	bool RootPanel::setGeo( const RectI& geo )
+	bool RootPanel::setGeo( const Rect& geo )
 	{
+		m_geo = qpixToRaw( pixelAligned(geo) );
+
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
 		else 
 			m_bHasGeo = true;
 
-		m_geo = geo;
 		return true;
 	}
 
-	//____ geo() __________________________________________________________________
+	//____ _geo() __________________________________________________________________
 
-	RectI RootPanel::geo() const
+	RectI RootPanel::_geo() const
 	{
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
-			return RectI( CoordI(0,0), m_pGfxDevice->canvasSize() );
+			return RectI( CoordI(0,0), pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 		else
 			return RectI(0,0,0,0);
 	}
@@ -138,14 +142,14 @@ namespace wg
 	void RootPanel::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
 		if( pSlot->pWidget )
-			pSlot->pWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
+			pSlot->pWidget->_collectPatches( m_dirtyPatches, _geo(), _geo() );
 
 		pSlot->replaceWidget( this, pNewWidget );
 
 		if( pNewWidget )
 		{
 			pNewWidget->_setSize(m_geo.size());
-			pNewWidget->_collectPatches( m_dirtyPatches, geo(), geo() );
+			pNewWidget->_collectPatches( m_dirtyPatches, _geo(), _geo() );
 		}
 	}
 
@@ -168,7 +172,7 @@ namespace wg
 		if( bVisible != m_bVisible )
 		{
 			m_bVisible = bVisible;
-			addDirtyPatch( geo() );
+			addDirtyPatch( _geo() );
 		}
 		return true;
 	}
@@ -211,11 +215,13 @@ namespace wg
 
 	bool RootPanel::render()
 	{
-		return render( geo() );
+		return render( _geo() );
 	}
 
-	bool RootPanel::render( const RectI& clip )
+	bool RootPanel::render( const Rect& clip )
 	{
+
+
 		if( !beginRender() )
 			return false;
 
@@ -277,15 +283,15 @@ namespace wg
 
 	//____ renderSection() __________________________________________________________
 
-	bool RootPanel::renderSection( const RectI& _clip )
+	bool RootPanel::renderSection( const Rect& _clip )
 	{
 		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-		RectI canvas = geo();
-		RectI clip( _clip, canvas );
+		RectI canvas = _geo();
+		RectI clip( qpixToRaw( _clip ), canvas );
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
@@ -311,7 +317,9 @@ namespace wg
 		{
 			// Set clipping rectangle.
 
-			m_pGfxDevice->setClipList(1, &_clip);
+			RectI myClip = rawToPixels(clip);
+
+			m_pGfxDevice->setClipList(1, &myClip);
 
 			// Render our new overlays
 
@@ -356,7 +364,7 @@ namespace wg
 
 	Widget * RootPanel::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
-		if( !geo().contains(ofs) || !m_child.pWidget )
+		if( !_geo().contains(ofs) || !m_child.pWidget )
 			return 0;
 
 		if(m_child.pWidget &&m_child.pWidget->isContainer() )
@@ -381,17 +389,17 @@ namespace wg
 
 	CoordI RootPanel::_childPos( Slot * pSlot ) const
 	{
-		return geo().pos();
+		return _geo().pos();
 	}
 
 	CoordI RootPanel::_childGlobalPos( Slot * pSlot ) const
 	{
-		return geo().pos();
+		return _geo().pos();
 	}
 
 	SizeI RootPanel::_childSize( Slot * pSlot ) const
 	{
-		return geo().size();
+		return _geo().size();
 	}
 
 	bool RootPanel::_isChildVisible( Slot * pSlot ) const
@@ -401,7 +409,7 @@ namespace wg
 
 	RectI RootPanel::_childWindowSection( Slot * pSlot ) const
 	{
-		return geo();
+		return _geo();
 	}
 
 
@@ -418,13 +426,13 @@ namespace wg
 	void RootPanel::_childRequestRender( Slot * pSlot )
 	{
 		if( m_bVisible )
-			addDirtyPatch( geo() );
+			addDirtyPatch( _geo() );
 	}
 
 	void RootPanel::_childRequestRender( Slot * pSlot, const RectI& rect )
 	{
 		if( m_bVisible )
-			addDirtyPatch( RectI( geo().pos() + rect.pos(), rect.size() ) );
+			addDirtyPatch( RectI( _geo().pos() + rect.pos(), rect.size() ) );
 	}
 	void RootPanel::_childRequestResize( Slot * pSlot )
 	{

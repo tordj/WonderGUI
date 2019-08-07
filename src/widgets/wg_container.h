@@ -84,7 +84,7 @@ namespace wg
 
 			//.____ Misc _________________________________________________________________
 
-			virtual Widget_p		findWidget( const CoordI& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs,mode)); }
+			virtual Widget_p		findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget(Util::qpixToRaw(ofs),mode)); }
 			bool					contains(const Widget * pWidget) const;
 
 		protected:

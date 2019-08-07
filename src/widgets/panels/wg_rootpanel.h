@@ -78,8 +78,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool				setGeo( const RectI& geo );
-		RectI				geo() const;
+		bool				setGeo( const Rect& geo );
+		inline Rect			geo() const { return Util::rawToQpix(_geo()); };
 
 		//.____ State _________________________________________________
 
@@ -92,10 +92,10 @@ namespace wg
 
 
 		bool				render();
-		bool				render( const RectI& clip );
+		bool				render( const Rect& clip );
 
 		bool				beginRender();
-		bool				renderSection( const RectI& clip );
+		bool				renderSection( const Rect& clip );
 		bool				endRender();
 
 
@@ -114,15 +114,15 @@ namespace wg
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 
-		Widget_p			findWidget( const CoordI& ofs, SearchMode mode ) { return Widget_p(_findWidget(ofs-m_geo.pos(),mode)); }
+		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( Util::qpixToRaw(ofs)-m_geo.pos(),mode)); }
 
 		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
-		inline const RectI*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
+		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_dirtyPatches.begin()); }
 
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
-		inline const RectI*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
+		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_updatedPatches.begin()); }
 
-		inline void	addDirtyPatch( const RectI& rect ) { m_dirtyPatches.add( rect ); }
+		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( Util::qpixToRaw(rect) ); }
 
 
 	protected:
@@ -130,6 +130,7 @@ namespace wg
 		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
 
+		RectI			_geo() const;
 
 		// WidgetHolder methods
 

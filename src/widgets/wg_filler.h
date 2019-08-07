@@ -64,7 +64,7 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void	setPreferredSize( const SizeI& size );
+		void	setPreferredSize( const Size& size );
 
 	protected:
 		Filler();
