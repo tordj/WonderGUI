@@ -49,15 +49,15 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static TextDisplay_p	cast( Object * pObject );
 
 		//.____ Appearance _________________________________________________
 
-		PointerStyle	pointerStyle() const;
-		String			tooltipString() const;
+		PointerStyle	pointerStyle() const override;
+		String			tooltip() const override;
 
 
 	protected:

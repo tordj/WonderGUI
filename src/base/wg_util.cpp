@@ -162,7 +162,7 @@ double Util::powerOfTen(int num){
 	bool Util::markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
-		if( !pSurface || !area.contains(ofs.x,ofs.y) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
+		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
 			return false;
 
 		if( pSurface->isOpaque() || opacityTreshold <= 0 )
@@ -194,7 +194,7 @@ double Util::powerOfTen(int num){
 		if (sourceFrame.isEmpty())
 			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
 
-		if (!pSurface || !_dest.contains(ofs.x, ofs.y) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
+		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
 			return false;
 
 		if (pSurface->isOpaque() || opacityTreshold <= 0)

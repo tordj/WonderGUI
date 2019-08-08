@@ -151,7 +151,6 @@ namespace wg
 		ModalLayer *	_getModalLayer() const  override { return const_cast<ModalLayer*>(this); }
 
 		void			_updateKeyboardFocus();
-		void			_refreshRealGeo( ModalSlot * pSlot );
 
 		// Overloaded from Panel
 
@@ -162,7 +161,7 @@ namespace wg
 		void			_childRequestResize( Slot * pSlot ) override;
 		void			_releaseChild(Slot * pSlot) override;
 
-		// Methods for ModalChildren
+		// Methods for ModalChildrenHolder
 
 		Slot *			_incSlot(Slot * pSlot) const override;
 		Slot *			_decSlot(Slot * pSlot) const override;
@@ -171,6 +170,7 @@ namespace wg
 		void			_willRemoveSlots(Slot * pSlot, int nb) override;
 		Object *		_object() override { return this;  }
 		WidgetHolder *	_widgetHolder() override { return this; }
+        void            _refreshRealGeo( ModalSlot * pSlot ) override;
 
 		// Overloaded from Layer
 

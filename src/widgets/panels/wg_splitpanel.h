@@ -101,7 +101,7 @@ namespace wg
 	protected:
 		SplitPanel();
 		virtual ~SplitPanel();
-		virtual Widget* _newOfMyType() const { return new SplitPanel(); };
+		virtual Widget* _newOfMyType() const override { return new SplitPanel(); };
 
 		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();

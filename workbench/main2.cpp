@@ -91,7 +91,7 @@ int main(int argc, char** argv)
 	float pixX = toPixel(float(a.x));
 	float pixY = toPixel(float(a.y));
 
-	CoordI d(fromPixel(pixX), fromPixel(pixY));
+	CoordI d(QPix::fromPixel(pixX), QPix::fromPixel(pixY));
 
 
 	CoordI cI1 = Coord(1.f, 2.f);

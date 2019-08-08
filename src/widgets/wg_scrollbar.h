@@ -166,7 +166,7 @@ namespace wg
 
 		bool	_setHandle( float pos, float size );		// Set scrollbar pos/size without notifying target (but should post messages).
 
-		virtual Widget* _newOfMyType() const { return new Scrollbar(); };
+		virtual Widget* _newOfMyType() const override { return new Scrollbar(); };
 
 		enum Component
 		{

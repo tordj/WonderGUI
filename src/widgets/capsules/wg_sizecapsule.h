@@ -71,7 +71,7 @@ namespace wg
 	protected:
 		SizeCapsule();
 		virtual ~SizeCapsule();
-		virtual Widget* _newOfMyType() const { return new SizeCapsule(); };
+		virtual Widget* _newOfMyType() const override { return new SizeCapsule(); };
 
 		SizeI	_preferredSize() const override;
 		SizeI	_minSize() const override;

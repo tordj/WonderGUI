@@ -84,9 +84,9 @@ namespace wg
 		return m_pointerStyle;
 	}
 
-	//____ tooltipString() _____________________________________________________
+	//____ tooltip() _____________________________________________________
 
-	String TextDisplay::tooltipString() const
+	String TextDisplay::tooltip() const
 	{
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;

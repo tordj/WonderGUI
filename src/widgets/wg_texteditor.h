@@ -60,7 +60,7 @@ namespace wg
 	protected:
 		TextEditor();
 		virtual ~TextEditor();
-		virtual Widget* _newOfMyType() const { return new TextEditor(); };
+		virtual Widget* _newOfMyType() const override { return new TextEditor(); };
 
 		int				_matchingHeight(int width) const override;
 		SizeI			_preferredSize() const override;
