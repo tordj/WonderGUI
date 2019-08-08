@@ -9,7 +9,7 @@
   </Environment>
   <Project Name="gfxdevice_opengl" Path="gfxdevice_opengl.project" Active="No"/>
   <Project Name="font_freetype" Path="font_freetype.project" Active="No"/>
-  <Project Name="gfxdevice_stream" Path="gfxdevice_stream.project"/>
+  <Project Name="gfxdevice_stream" Path="gfxdevice_stream.project" Active="No"/>
   <BuildMatrix>
     <WorkspaceConfiguration Name="Debug" Selected="yes">
       <Environment/>

@@ -80,6 +80,7 @@ BASE = wg_anim.o \
   wg_charseq.o \
   wg_codepages.o \
   wg_color.o \
+  wg_context.o \
   wg_dummyfont.o \
   wg_enumextras.o \
   wg_font.o \
@@ -102,6 +103,7 @@ BASE = wg_anim.o \
   wg_nullgfxdevice.o \
   wg_object.o \
   wg_patches.o \
+  wg_payload.o \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
@@ -237,7 +239,7 @@ libwg_font_freetype.a : $(freetype_files)
 example01 : libwondergui.a libwg_gfx_software.a example01.o
 	$(CXX) -o $(OUTDIR)/example01 $(OBJDIR)/example01.o -L$(OUTDIR) -lSDL2 -lwg_gfx_software -lwondergui -lfreetype
 
-.PHONY : clean init
+.PHONY : clean init
 
 clean :
 	rm -rf $(VERSIONS)

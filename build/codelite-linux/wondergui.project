@@ -173,6 +173,9 @@
     <File Name="../../src/sizebrokers/wg_uniform_sizebroker.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="base">
+    <File Name="../../src/base/wg_payload.cpp"/>
+    <File Name="../../src/base/wg_context.h"/>
+    <File Name="../../src/base/wg_context.cpp"/>
     <File Name="../../src/base/wg_anim.cpp"/>
     <File Name="../../src/base/wg_anim.h"/>
     <File Name="../../src/base/wg_base.cpp"/>

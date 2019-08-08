@@ -89,6 +89,7 @@
         <Library Value="wondergui"/>
         <Library Value="freetype"/>
         <Library Value="GL"/>
+        <Library Value="GLEW"/>
       </Linker>
       <ResourceCompiler Options="" Required="no"/>
       <General OutputFile="$(IntermediateDirectory)/$(ProjectName)" IntermediateDirectory="./Debug" Command="$(ProjectPath)/$(OutDir)/$(ProjectName)" CommandArguments="" UseSeparateDebugArgs="no" DebugArguments="" WorkingDirectory="$(ProjectPath)/../../workbench" PauseExecWhenProcTerminates="no" IsGUIProgram="yes" IsEnabled="yes"/>
