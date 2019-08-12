@@ -640,7 +640,6 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgSize& canvas, WgState s
                 int canvasStretchWidth = canvas.w - canvasFrame.width();	// Width of stretch-area on screen.
 
                 ofs.x = ofs.x - canvasFrame.left;               // Offset in middle section of canvas
-                ofs.x = (ofs.x * m_scale) / scale;        // Scale from canvas to source offset
                 ofs.x = (int)((ofs.x / (float)canvasStretchWidth)*tileAreaWidth) + sourceFrame.left;
 			}
 		}
@@ -682,7 +681,6 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgSize& canvas, WgState s
                 int canvasStretchHeight = canvas.h - canvasFrame.height();	// Height of stretch-area on screen.
 
                 ofs.y = ofs.y - canvasFrame.top;               // Offset in middle section of canvas
-                ofs.y = (ofs.y * m_scale) / scale;        // Scale from canvas to source offset
                 ofs.y = (int)((ofs.y / (float)canvasStretchHeight)*tileAreaHeight) + sourceFrame.top;
 			}
 		}
