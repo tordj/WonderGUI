@@ -44,7 +44,7 @@ namespace wg
 
 		const static bool safe_to_relocate = false;
 
-		std::function<RectI(Widget * pWidget, SizeI parentSize)>	pFunc;
+		std::function<Rect(Widget * pWidget, Size parentSize)>	pFunc;
 		bool			bVisible;
 		RectI			geo;				// Widgets geo relative parent
 	};
@@ -73,18 +73,18 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	add( Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parenSize)> func );
+		iterator	add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func );
 
-		iterator	insert( int index, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func );
-		iterator	insert( iterator pos, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func );
+		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
+		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 
 		//.____ Geometry ______________________________________________________
 
-		void		setFunction( int index, std::function<RectI(Widget * pWidget, SizeI parentSize)> func);
-		void		setFunction( iterator pos, std::function<RectI(Widget * pWidget, SizeI parentSize)> func);
+		void		setFunction( int index, std::function<Rect(Widget * pWidget, Size parentSize)> func);
+		void		setFunction( iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func);
 
-		std::function<RectI(Widget * pWidget, SizeI parentSize)> function(int index) const;
-		std::function<RectI(Widget * pWidget, SizeI parentSize)> function(iterator pos) const;
+		std::function<Rect(Widget * pWidget, Size parentSize)> function(int index) const;
+		std::function<Rect(Widget * pWidget, Size parentSize)> function(iterator pos) const;
 
 		//.____ Misc __________________________________________________________
 
@@ -116,10 +116,10 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		bool				setMinSize(SizeI min);
-		bool				setMaxSize(SizeI max);
-		bool				setSizeLimits( SizeI min, SizeI max );
-		bool				setPreferredSize(SizeI pref);
+		bool				setMinSize(Size min);
+		bool				setMaxSize(Size max);
+		bool				setSizeLimits( Size min, Size max );
+		bool				setPreferredSize(Size pref);
 
 	protected:
 		LambdaPanel();

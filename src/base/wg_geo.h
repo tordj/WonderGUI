@@ -519,7 +519,7 @@ namespace wg
 	};
 
 
-	//____ RectI() _______________________________________________________________
+	//____ RectT() _______________________________________________________________
 	/**
 	 * Create rectangle from intersection of specified rectangles.
 	 *

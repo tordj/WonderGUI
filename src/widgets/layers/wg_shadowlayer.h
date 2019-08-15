@@ -94,7 +94,7 @@ namespace wg
 		SizeI			_maxSize() const override;
 
 		void            _cloneContent( const Widget * _pOrg ) override;
-		void            _renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches ) override;
+		void            _render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void            _receive(Msg * pMsg) override;
 
 

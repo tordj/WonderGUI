@@ -23,6 +23,8 @@
 #include <wg_util.h>
 #include <wg_geo.h>
 #include <wg_surface.h>
+#include <wg_gfxdevice.h>
+#include <wg_patches.h>
 
 namespace wg
 {
@@ -730,5 +732,84 @@ double Util::powerOfTen(int num){
 		return MultiplyDeBruijnBitPosition[(uint32_t)(value * 0x07C4ACDDU) >> 27];
 	}
 
+	//____ patchesToClipList() ____________________________________________________________________
+
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches )
+	{
+		int nOldRects 				= pDevice->clipListSize();
+		const RectI * pOldRects 	= pDevice->clipList();
+
+		int nRects = patches.size();
+		const RectI * pRects = patches.begin();
+		
+		int allocSize = nRects * sizeof(RectI);
+		
+		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		int nNewRects = 0;
+		
+		for( int i = 0 ; i < nRects ; i++ )
+		{
+			pNewRects[nNewRects] = rawToPixels( RectI(pRects[i], clip) );
+			if( !pNewRects[nNewRects].isEmpty() )
+				nNewRects++;
+		}
+		
+		pDevice->setClipList(nNewRects, pNewRects);
+		return { nOldRects, pOldRects, allocSize };
+	}
+
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Patches& patches )
+	{
+		int nOldRects 				= pDevice->clipListSize();
+		const RectI * pOldRects 	= pDevice->clipList();
+		
+		int nRects = patches.size();
+		const RectI * pRects = patches.begin();
+		
+		int allocSize = nRects * sizeof(RectI);
+		
+		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		
+		for( int i = 0 ; i < nRects ; i++ )
+			pNewRects[i] = rawToPixels( pRects[i] );
+		
+		pDevice->setClipList(nRects, pNewRects);
+		return { nOldRects, pOldRects, allocSize };
+	}
+
+	//____ limitClipList() ____________________________________________________________________
+
+	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const RectI& clip )
+	{
+		if( clip.contains(pDevice->clipBounds()))
+			return { 0, nullptr, 0 };
+		
+		int nRects 				= pDevice->clipListSize();
+		const RectI * pRects 	= pDevice->clipList();
+		int allocSize = nRects * sizeof(RectI);
+
+		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
+		int nNewRects = 0;
+		
+		for( int i = 0 ; i < nRects ; i++ )
+		{
+			if( pNewRects[nNewRects].intersection( pRects[i], clip ) )
+				nNewRects++;
+		}
+		
+		pDevice->setClipList(nNewRects, pNewRects);
+		return { nRects, pRects, allocSize };
+	}
+	
+	//____ popClipList() ____________________________________________________________________
+	
+	void Util::popClipList( GfxDevice * pDevice, const ClipPopData& popData )
+	{
+		if( popData.reservedMem > 0 )
+		{
+			pDevice->setClipList(popData.nRects, popData.pRects);
+			Base::memStackRelease(popData.reservedMem);
+		}
+	}
 
 } // namespace wg

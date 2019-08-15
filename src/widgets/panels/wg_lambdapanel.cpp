@@ -31,6 +31,8 @@
 
 namespace wg
 {
+    using namespace Util;
+    
 	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaChildrenHolder)
 
 	template class SlotArray<LambdaPanelSlot>;
@@ -38,7 +40,7 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::add( Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -50,7 +52,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -62,7 +64,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<RectI(Widget * pWidget, SizeI parentSize)> func )
+	ILambdaPanelChildren::iterator ILambdaPanelChildren::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -74,7 +76,7 @@ namespace wg
 		return iterator(pSlot, m_pHolder);
 	}
 
-	void ILambdaPanelChildren::setFunction(int index, std::function<RectI(Widget * pWidget, SizeI parentSize)> func)
+	void ILambdaPanelChildren::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -82,7 +84,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	void ILambdaPanelChildren::setFunction(iterator pos, std::function<RectI(Widget * pWidget, SizeI parentSize)> func)
+	void ILambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -90,7 +92,7 @@ namespace wg
 		pSlot->pFunc = func;
 	}
 
-	std::function<RectI(Widget * pWidget, SizeI parentSize)> ILambdaPanelChildren::function(int index) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(int index) const
 	{
 		//TODO: Assert
 
@@ -98,7 +100,7 @@ namespace wg
 		return pSlot->pFunc;
 	}
 
-	std::function<RectI(Widget * pWidget, SizeI parentSize)> ILambdaPanelChildren::function(iterator pos) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(iterator pos) const
 	{
 		//TODO: Assert
 
@@ -110,7 +112,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : children(&m_children,this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(INT_MAX,INT_MAX)
+	LambdaPanel::LambdaPanel() : children(&m_children,this), m_minSize(0,0), m_preferredSize(512*4,512*4), m_maxSize(INT_MAX,INT_MAX)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -150,10 +152,12 @@ namespace wg
 
 	//____ setMinSize() _________________________________________________________________
 
-	bool LambdaPanel::setMinSize(SizeI min)
+	bool LambdaPanel::setMinSize(Size _min)
 	{
 		//TODO: Assert >= 0.
 
+        SizeI min = qpixToRaw(_min);
+        
 		if( m_minSize != min )
 		{
 			if( min.w > m_maxSize.w || min.h > m_maxSize.h )
@@ -172,10 +176,12 @@ namespace wg
 
 	//____ setMaxSize() ________________________________________________________
 
-	bool LambdaPanel::setMaxSize(SizeI max)
+	bool LambdaPanel::setMaxSize(Size _max)
 	{
 		//TODO: Assert >= 0.
 
+        SizeI max = qpixToRaw(_max);
+        
  		if( m_maxSize != max )
 		{
 			if( max.w < m_minSize.w || max.h < m_minSize.h )
@@ -194,15 +200,15 @@ namespace wg
 
 	//____ setSizeLimits() _____________________________________________________
 
-	bool LambdaPanel::setSizeLimits( SizeI min, SizeI max )
+	bool LambdaPanel::setSizeLimits( Size min, Size max )
 	{
 		//TODO: Assert >= 0.
 
 		if( min.w > max.w || min.h > max.h )
 			return false;
 
-		m_minSize = min;
-		m_maxSize = max;
+		m_minSize = qpixToRaw(min);
+		m_maxSize = qpixToRaw(max);
 		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
 		limit( m_preferredSize.h, m_minSize.h, m_maxSize.h );
 
@@ -212,10 +218,12 @@ namespace wg
 
 	//____ setPreferredSize() __________________________________________________
 
-	bool LambdaPanel::setPreferredSize(SizeI pref)
+	bool LambdaPanel::setPreferredSize(Size _pref)
 	{
 		//TODO: Assert >= 0.
 
+        SizeI pref = qpixToRaw(_pref);
+        
 		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
 			return false;
 
@@ -497,8 +505,7 @@ namespace wg
 
 	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot)
 	{
-		RectI geo = pSlot->pFunc(pSlot->pWidget, m_size );
-
+		RectI geo = qpixToRaw( pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size) ));
 
 		if (geo != pSlot->geo)
 		{

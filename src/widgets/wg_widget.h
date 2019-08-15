@@ -239,7 +239,6 @@ namespace wg
 
 		// To be overloaded by Widget
 
-		virtual void	_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches );
 		virtual void	_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
 		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
 

@@ -31,6 +31,8 @@ namespace wg
 {
 
 	class Surface;
+	class GfxDevice;
+	class Patches;
 
 	//____ Util _________________________________________________________________
 
@@ -291,6 +293,18 @@ namespace wg
 		uint32_t mostSignificantBit(uint32_t value);
 
 
+		struct ClipPopData				/** @private */
+		{
+			int nRects;
+			const RectI * pRects;
+			int reservedMem;
+		};
+		
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
+		ClipPopData limitClipList( GfxDevice * pDevice, const RectI& clip );
+		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
+		
 
 		// A simple checksum algorithm that just performs a long division
 		// with a standard CRC polynomial. Quicker and less complex than a standard

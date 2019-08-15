@@ -36,6 +36,7 @@
 
 namespace wg
 {
+    using namespace Util;
 	const char DragNDropLayer::CLASSNAME[] = {"DragNDropLayer"};
 
 	//____ Constructor ____________________________________________________________
@@ -112,8 +113,7 @@ namespace wg
 		else
 		{
 			auto p = static_cast<LayerSlot*>(pSlot);
-			p->geo.setSize(p->preferredSize());
-			p->pWidget->_setSize(p->geo);
+			p->setSize(p->preferredSize());
 
 			//TODO: Should we request render (on both sizes) too?
 		}
@@ -510,35 +510,37 @@ namespace wg
 	}
 
 
-	//____ _renderPatches() __________________________________________________________
+	//____ _render() __________________________________________________________
 
-	void DragNDropLayer::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
+	void DragNDropLayer::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		// Generate drag widget as an image of picked widget if missing and needed./*/*
 
 		if( m_dragState == DragState::Dragging && !m_dragSlot.pWidget )
 		{
-			SizeI sz = m_pPicked->size();
+			SizeI sz = qpixToRaw(m_pPicked->size());
 
 			auto pFactory = pDevice->surfaceFactory();
-			auto pCanvas = pFactory->createSurface(sz,PixelFormat::BGRA_8);
+			auto pCanvas = pFactory->createSurface(rawToPixels(sz),PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
-			Patches patches;
-			patches.add( sz );
+            RectI noClip(rawToPixels(sz));
 
+            auto pOldClip   = pDevice->clipList();
+            int  nOldClip   = pDevice->clipListSize();
 			auto pOldCanvas = pDevice->canvas();
-			Color oldTint = pDevice->tintColor();
-			pDevice->setCanvas(pCanvas);
+			Color oldTint   = pDevice->tintColor();
 
+            pDevice->setClipList(1, &noClip);
+            pDevice->setCanvas(pCanvas);
 			pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
-			m_pPicked->_renderPatches(pDevice, sz, sz, patches);
+			m_pPicked->_render(pDevice, sz, sz);
 			pDevice->setCanvas(pOldCanvas);
 			pDevice->setTintColor(oldTint);
+            pDevice->setClipList(nOldClip, pOldClip);
 
 			auto pImage = Image::create();
 			pImage->setImage( pCanvas );
-			pImage->_setSize(sz);
 
 //            auto pImage = Filler::create();
 //            pImage->setPreferredSize({16,16});
@@ -546,9 +548,10 @@ namespace wg
 
 
 			m_dragSlot.replaceWidget(this, pImage);
+            m_dragSlot.setSize(sz);
 		}
 
-		Layer::_renderPatches(pDevice,_canvas,_window,patches);
+		Layer::_render(pDevice,_canvas,_window);
 	}
 
 

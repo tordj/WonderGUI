@@ -72,7 +72,7 @@ namespace wg
 		virtual ~ShaderCapsule();
 		virtual Widget* _newOfMyType() const { return new ShaderCapsule(); };
 
-		void		_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches );
+		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void		_cloneContent( const Widget * _pOrg );
 		BlendMode _getRenderMode() const;
 

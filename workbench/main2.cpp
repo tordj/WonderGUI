@@ -259,7 +259,7 @@ int main(int argc, char** argv)
 
 	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
 
-	//	pRoot->setDebugMode(true);
+		pRoot->setDebugMode(true);
 
 	Base::inputHandler()->setFocusedWindow(pRoot);
 
@@ -460,23 +460,23 @@ int main(int argc, char** argv)
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 
-		TextDisplay_p pPickable1 = TextDisplay::create();
+		auto pPickable1 = Filler::create();
 		pPickable1->setSkin(pTestSkin);
-		pPickable1->text.set( "Drag Me 1" );
+//		pPickable1->text.set( "Drag Me 1" );
 		pPickable1->setPickable(true, 1);
-		pBasePanel->children.add(pPickable1, [](Widget * pWidget, SizeI size) {return RectI( 0,0,100,50 ); });
+		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
 
-		TextDisplay_p pPickable2 = TextDisplay::create();
+		auto pPickable2 = Filler::create();
 		pPickable2->setSkin(pTestSkin);
-		pPickable2->text.set("Drag Me 2");
+//		pPickable2->text.set("Drag Me 2");
 		pPickable2->setPickable(true, 2);
-		pBasePanel->children.add(pPickable2, [](Widget * pWidget, SizeI size) {return RectI(size.w-100, 0, 100, 50); });
+		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
 
-		TextDisplay_p pTrash = TextDisplay::create();
+		auto pTrash = Filler::create();
 		pTrash->setSkin(pTestSkin);
-		pTrash->text.set("Trash Can");
+//		pTrash->text.set("Trash Can");
 		pTrash->setDropTarget(true);
-		pBasePanel->children.add(pTrash, [](Widget * pWidget, SizeI size) {return RectI(50, 200, 100, 50); });
+		pBasePanel->children.add(pTrash, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
 
 		pBasePanel->setDropTarget(true);
 
@@ -500,7 +500,7 @@ int main(int argc, char** argv)
 
 			CoordI pos = pBasePanel->toLocal(pMsg->pointerPos()) - s_pickOfs;
 
-			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, SizeI size) {return RectI(pos, 100, 50); });
+			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, Size size) {return Rect(pos, 100, 50); });
 			pMsg->accept();
 			
 		});

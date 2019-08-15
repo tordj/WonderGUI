@@ -41,6 +41,8 @@ namespace wg
 	class LayerSlot : public Slot		/** @private */
 	{
 	public:
+        inline void setSize( SizeI size ) { geo.setSize(size); Slot::setSize(size); }
+        
 		RectI	geo;
 	};
 

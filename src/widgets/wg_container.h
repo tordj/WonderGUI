@@ -134,7 +134,7 @@ namespace wg
 			virtual Widget * 		_findWidget( const CoordI& ofs, SearchMode mode );
 			virtual void			_setState( State state );
 
-			virtual void			_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches );
+			virtual void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
 			struct SlotWithGeo
 			{

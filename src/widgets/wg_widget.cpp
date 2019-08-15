@@ -352,14 +352,6 @@ namespace wg
 			return BlendMode::Blend;		// We always start out with BlendMode::Blend.
 	}
 
-	//____ _renderPatches() ________________________________________________________
-
-	void Widget::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
-	{
-		pDevice->setClipList(patches.size(), patches.begin());
-		_render( pDevice, _canvas, _window );
-	}
-
 	//____ _collectPatches()  ____________________________________________________
 
 	void Widget::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
@@ -384,7 +376,7 @@ namespace wg
 		if( m_pSkin )
 			m_pSkin->_render( pDevice, _canvas, m_state );
 	}
-
+    
 	//____ _setSize() ___________________________________________________________
 
 	void Widget::_setSize( const SizeI& size )

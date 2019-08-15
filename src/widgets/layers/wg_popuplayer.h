@@ -161,7 +161,7 @@ namespace wg
 
 		// Overloaded from container
 
-		void			_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches);
+		void			_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 //		void			_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
 //		void			_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
 

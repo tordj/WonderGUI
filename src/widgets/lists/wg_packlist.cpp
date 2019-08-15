@@ -32,6 +32,8 @@
 
 namespace wg
 {
+    using namespace Util;
+    
 	INSTANTIATE_SELECTABLECHILDREN(PackListSlot, PackListChildrenHolder)
 
 	template class SlotArray<PackListSlot>;
@@ -316,23 +318,72 @@ namespace wg
 		//TODO: Implement!!!
 	}
 
-	//____ _renderPatches() _______________________________________________________
+	//____ _render() _______________________________________________________
 
-	void PackList::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
+	void PackList::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		// Set clipping
-
-		pDevice->setClipList(patches.size(), patches.begin());
-
 		// Render container itself
 
-		if( m_pSkin )
-		{
-			_render(pDevice, _canvas, _window);
-		}
-		// Render children
+        RectI contentRect = _listCanvas() + _canvas.pos();
+        
+        RectI clip = pDevice->clipBounds();
+        
+        if( m_pSkin )
+        {
+            m_pSkin->_render( pDevice, contentRect, m_state );
+            contentRect = m_pSkin->_contentRect( contentRect, m_state );
+        }
+        
+        int startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
+        if( startOfs < 0 )
+            startOfs = 0;
+        
+        for( int i = _getEntryAt( startOfs ) ; i < m_children.size() ; i++ )
+        {
+            PackListSlot * pSlot = m_children.slot(i);
+            Widget * pChild = pSlot->pWidget;
+            
+            // Get entry geometry, skin and state
+            
+            RectI entryGeo( contentRect );
+            if( m_bHorizontal )
+            {
+                if( pSlot->ofs >= contentRect.w )
+                    break;
+                
+                entryGeo.x += pSlot->ofs;
+                entryGeo.w = pSlot->length;
+            }
+            else
+            {
+                if( pSlot->ofs >= contentRect.h )
+                    break;
+                
+                entryGeo.y += pSlot->ofs;
+                entryGeo.h = pSlot->length;
+            }
+            
+            Skin * pEntrySkin    = m_pEntrySkin[i&0x1].rawPtr();
+            State    state        = pChild->state();
+            //        RectI    childGeo( entryGeo );
+            
+            // Render entry skin, shrink child geo
+            
+            if( pEntrySkin )
+            {
+                pEntrySkin->_render( pDevice, entryGeo, state );
+                //            childGeo = pEntrySkin->_contentRect( entryGeo, state );
+            }
+            
+            // Render child
+            
+            //        pChild->_render( pDevice, childGeo, childGeo, _clip );
+            
+        }
 
-		RectI	dirtBounds = patches.getUnion();
+        // Render children
+
+        RectI	dirtBounds = pixelsToRaw(pDevice->clipBounds());
 
 		{
 			SlotWithGeo child;
@@ -343,15 +394,14 @@ namespace wg
 				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					Patches childPatches(patches, canvas);
-					if( !childPatches.isEmpty())
-						child.pSlot->pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
+                    ClipPopData clipPop = limitClipList(pDevice, rawToPixels(canvas));
+					if( pDevice->clipListSize() > 0 )
+						child.pSlot->pWidget->_render(pDevice, canvas, canvas);
+                    popClipList(pDevice,clipPop);
 				}
 				_nextSlotWithGeo( child );
 			}
 		}
-
-		pDevice->setClipList(patches.size(), patches.begin());
 
 		// Render header
 
@@ -371,69 +421,6 @@ namespace wg
 			lasso += _canvas.pos();
 
 			m_pLassoSkin->_render(pDevice, lasso, m_state );
-		}
-	}
-
-
-	//____ _render() ____________________________________________________________
-
-	void PackList::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
-	{
-		RectI contentRect = _listCanvas() + _canvas.pos();
-
-		RectI clip = pDevice->clipBounds();
-
-		if( m_pSkin )
-		{
-			m_pSkin->_render( pDevice, contentRect, m_state );
-			contentRect = m_pSkin->_contentRect( contentRect, m_state );
-		}
-
-		int startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
-		if( startOfs < 0 )
-			startOfs = 0;
-
-		for( int i = _getEntryAt( startOfs ) ; i < m_children.size() ; i++ )
-		{
-			PackListSlot * pSlot = m_children.slot(i);
-			Widget * pChild = pSlot->pWidget;
-
-			// Get entry geometry, skin and state
-
-			RectI entryGeo( contentRect );
-			if( m_bHorizontal )
-			{
-				if( pSlot->ofs >= contentRect.w )
-					break;
-
-				entryGeo.x += pSlot->ofs;
-				entryGeo.w = pSlot->length;
-			}
-			else
-			{
-				if( pSlot->ofs >= contentRect.h )
-					break;
-
-				entryGeo.y += pSlot->ofs;
-				entryGeo.h = pSlot->length;
-			}
-
-			Skin * pEntrySkin	= m_pEntrySkin[i&0x1].rawPtr();
-			State	state		= pChild->state();
-	//		RectI	childGeo( entryGeo );
-
-			// Render entry skin, shrink child geo
-
-			if( pEntrySkin )
-			{
-				pEntrySkin->_render( pDevice, entryGeo, state );
-	//			childGeo = pEntrySkin->_contentRect( entryGeo, state );
-			}
-
-			// Render child
-
-	//		pChild->_render( pDevice, childGeo, childGeo, _clip );
-
 		}
 	}
 

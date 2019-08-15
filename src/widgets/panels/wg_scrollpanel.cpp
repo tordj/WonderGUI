@@ -29,6 +29,8 @@
 
 namespace wg
 {
+    using namespace Util;
+    
 	const char ScrollPanel::CLASSNAME[] = {"ScrollPanel"};
 
 
@@ -1092,17 +1094,12 @@ namespace wg
 		}
 	}
 
-	//____ _renderPatches() ________________________________________________________
+	//____ _render() ________________________________________________________
 
-	void ScrollPanel::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches )
+	void ScrollPanel::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		// Set clipping
-
-		pDevice->setClipList(patches.size(), patches.begin());
-		RectI	dirtBounds = pDevice->clipBounds();
-
-
-
+        RectI dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+        
 		// Render Window background skin
 
 		if( m_pSkin )
@@ -1132,8 +1129,9 @@ namespace wg
 
 			if (window.intersectsWith(dirtBounds))
 			{
-				Patches childPatches(patches, window);
-				m_viewSlot.pWidget->_renderPatches(pDevice, canvas, window, childPatches);
+                ClipPopData clipPop = limitClipList(pDevice,rawToPixels(window));
+				m_viewSlot.pWidget->_render(pDevice, canvas, window);
+                popClipList(pDevice, clipPop);
 			}
 		}
 
@@ -1146,8 +1144,9 @@ namespace wg
 				RectI canvas = m_scrollbarSlots[i].geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					Patches childPatches(patches, canvas);
-					m_scrollbarSlots[i].pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
+                    ClipPopData clipPop = limitClipList(pDevice,rawToPixels(canvas));
+					m_scrollbarSlots[i].pWidget->_render(pDevice, canvas, canvas);
+                    popClipList(pDevice, clipPop);
 				}
 			}
 		}

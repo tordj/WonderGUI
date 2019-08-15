@@ -162,7 +162,6 @@ namespace wg
 		void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
 		void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches ) override;
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void			_setSize( const SizeI& size ) override;
 		void			_refresh() override;

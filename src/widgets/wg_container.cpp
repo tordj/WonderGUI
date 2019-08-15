@@ -26,10 +26,12 @@
 #include <wg_rootpanel.h>
 #include <wg_patches.h>
 #include <wg_gfxdevice.h>
+#include <wg_util.h>
 
 namespace wg
 {
-
+    using namespace Util;
+    
 	const char Container::CLASSNAME[] = {"Container"};
 
 	//____ Constructor _____________________________________________________________
@@ -242,7 +244,7 @@ namespace wg
 
 	}
 
-	//____ _renderPatches() _____________________________________________________
+	//____ _render() _____________________________________________________
 	// Default implementation for panel rendering patches.
 	class WidgetRenderContext
 	{
@@ -252,25 +254,22 @@ namespace wg
 
 		Widget *	pWidget;
 		RectI		geo;
-		Patches	patches;
+        ClipPopData clipPop;
 	};
 
-	void Container::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
+	void Container::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		Patches patches( _patches );
-
 		// Render container itself
 
-		pDevice->setClipList(patches.size(), patches.begin());
-		_render(pDevice, _canvas, _window );
+        if( m_pSkin )
+            m_pSkin->_render(pDevice, _canvas, m_state );
 
 		// Render children
 
-		RectI	dirtBounds = pDevice->clipBounds();
+		RectI	dirtBounds = pixelsToRaw( pDevice->clipBounds() );
 
 		if( m_bSiblingsOverlap )
 		{
-
 			// Create WidgetRenderContext's for siblings that might get dirty patches
 
 			std::vector<WidgetRenderContext> renderList;
@@ -287,13 +286,22 @@ namespace wg
 				_nextSlotWithGeo( child );
 			}
 
+            // Collect dirty patches from gfxDevice
+            
+            int nClipRects = pDevice->clipListSize();
+            auto pClipRects = pDevice->clipList();
+            Patches patches( nClipRects );
+            
+            for( int i = 0 ; i < nClipRects ; i++ )
+                patches.push(pixelsToRaw(pClipRects[i]));
+            
 			// Go through WidgetRenderContexts, push and mask dirt
 
 			for (unsigned int i = 0 ; i < renderList.size(); i++)
 			{
 				WidgetRenderContext * p = &renderList[i];
 
-				p->patches.trimPush( patches, p->geo );
+				p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 				p->pWidget->_maskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 				if( patches.isEmpty() )
@@ -305,7 +313,8 @@ namespace wg
 			for (int i = int(renderList.size()) - 1; i >= 0; i--)
 			{
 				WidgetRenderContext * p = &renderList[i];
-				p->pWidget->_renderPatches( pDevice, p->geo, p->geo, p->patches );
+				p->pWidget->_render( pDevice, p->geo, p->geo );
+                popClipList(pDevice,p->clipPop);
 			}
 		}
 		else
@@ -318,9 +327,12 @@ namespace wg
 				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					Patches childPatches(patches, canvas);
-					if( !childPatches.isEmpty() )
-						child.pSlot->pWidget->_renderPatches(pDevice, canvas, canvas, childPatches);
+                    ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
+
+					if( pDevice->clipListSize() > 0 )
+						child.pSlot->pWidget->_render(pDevice, canvas, canvas);
+                    
+                    popClipList( pDevice, popData );
 				}
 				_nextSlotWithGeo( child );
 			}

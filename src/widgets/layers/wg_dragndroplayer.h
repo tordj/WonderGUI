@@ -80,7 +80,7 @@ namespace wg
 
 		void            _cloneContent( const Widget * _pOrg ) override;
 		void            _receive( Msg * pMsg ) override;
-		void            _renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& patches ) override;
+		void            _render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 
 		// Internal
 

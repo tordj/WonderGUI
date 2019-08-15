@@ -26,7 +26,8 @@
 
 namespace wg
 {
-
+    using namespace Util;
+    
 	const char ShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
 
 	//____ Constructor ____________________________________________________________
@@ -100,20 +101,17 @@ namespace wg
 		return m_renderMode;
 	}
 
-	//____ _renderPatches() ________________________________________________________
+	//____ _render() ________________________________________________________
 
-	void ShaderCapsule::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
+	void ShaderCapsule::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		// Render our skin
 
-		if( m_pSkin )
-			Capsule::_renderPatches( pDevice, _canvas, _window, _patches );
+        if( m_pSkin )
+            m_pSkin->_render( pDevice, _canvas, m_state );
 
 		if (!m_child.pWidget)
 			return;
-
-		//
-
 
 
 		// Set our tint color and blend mode.
@@ -134,11 +132,12 @@ namespace wg
 
 		if (canvas != _canvas)
 		{
-			Patches trimmedPatches( _patches, canvas );
-			m_child.pWidget->_renderPatches(pDevice, canvas, canvas, trimmedPatches );
-		}
+            auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
+			m_child.pWidget->_render(pDevice, canvas, canvas );
+            popClipList(pDevice, savedClipData);
+        }
 		else
-			m_child.pWidget->_renderPatches( pDevice, canvas, canvas, _patches );
+			m_child.pWidget->_render( pDevice, canvas, canvas );
 
 		// Reset old blend mode and tint color
 

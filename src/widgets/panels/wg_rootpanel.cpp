@@ -107,7 +107,7 @@ namespace wg
 		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
 			m_child.pWidget->_setSize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 
-		addDirtyPatch( _geo() );
+        m_dirtyPatches.add( _geo() );
 		return true;
 	}
 
@@ -172,7 +172,7 @@ namespace wg
 		if( bVisible != m_bVisible )
 		{
 			m_bVisible = bVisible;
-			addDirtyPatch( _geo() );
+			m_dirtyPatches.add( _geo() );
 		}
 		return true;
 	}
@@ -308,7 +308,9 @@ namespace wg
 
 		if( dirtyPatches.size() > 0 )
 		{
-			m_child.pWidget->_renderPatches( m_pGfxDevice.rawPtr(), canvas, canvas, dirtyPatches );
+            ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
+			m_child.pWidget->_render( m_pGfxDevice.rawPtr(), canvas, canvas );
+            popClipList(m_pGfxDevice, clipPop);
 		}
 
 		// Handle updated rect overlays
@@ -426,13 +428,13 @@ namespace wg
 	void RootPanel::_childRequestRender( Slot * pSlot )
 	{
 		if( m_bVisible )
-			addDirtyPatch( _geo() );
+			m_dirtyPatches.add( _geo() );
 	}
 
 	void RootPanel::_childRequestRender( Slot * pSlot, const RectI& rect )
 	{
 		if( m_bVisible )
-			addDirtyPatch( RectI( _geo().pos() + rect.pos(), rect.size() ) );
+			m_dirtyPatches.add( RectI( _geo().pos() + rect.pos(), rect.size() ) );
 	}
 	void RootPanel::_childRequestResize( Slot * pSlot )
 	{

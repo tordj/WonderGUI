@@ -279,7 +279,7 @@ namespace wg
 		SizeI		_preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
 
 		void		_receive(Msg * pMsg);
-		void		_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches);
+		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
 		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
 

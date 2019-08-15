@@ -277,9 +277,9 @@ namespace wg
 
 	
 
-	//____ _renderPatches() __________________________________________________________
+	//____ _render() __________________________________________________________
 
-	void ShadowLayer::_renderPatches( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches )
+	void ShadowLayer::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		RectI contentGeo = _canvas;
 

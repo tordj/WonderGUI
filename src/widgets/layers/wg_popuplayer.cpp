@@ -32,6 +32,7 @@
 
 namespace wg
 {
+    using namespace Util;
 	template class SlotArray<PopupSlot>;
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
@@ -425,7 +426,7 @@ namespace wg
 			_requestRender( * pRect );
 	}
 
-	//____ _renderPatches() ___________________________________________________
+	//____ _render() ___________________________________________________
 
 	class WidgetRenderContext
 	{
@@ -435,25 +436,20 @@ namespace wg
 
 		PopupSlot *	pSlot;
 		RectI		geo;
-		Patches	patches;
+        ClipPopData clipPop;
 	};
 
-	void PopupLayer::_renderPatches(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const Patches& _patches)
+	void PopupLayer::_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window)
 	{
-		Patches patches( _patches );
+        // Render container itself
 
-		// Set clipping
-
-		pDevice->setClipList(patches.size(), patches.begin() );
-
-		// Render container itself
-
-		_render(pDevice, _canvas, _window);
+        if( m_pSkin )
+            m_pSkin->_render(pDevice, _canvas, m_state);
 
 		// Render children
 
-		RectI	dirtBounds = patches.getUnion();
-
+		RectI	dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+        
 		// Create WidgetRenderContext's for popups that might get dirty patches
 
 		std::vector<WidgetRenderContext> renderList;
@@ -470,13 +466,22 @@ namespace wg
 			pSlot++;
 		}
 
+        // Collect dirty patches from gfxDevice
+        
+        int nClipRects = pDevice->clipListSize();
+        auto pClipRects = pDevice->clipList();
+        Patches patches( nClipRects );
+        
+        for( int i = 0 ; i < nClipRects ; i++ )
+            patches.push(pixelsToRaw(pClipRects[i]));
+
 		// Go through WidgetRenderContexts, push and mask dirt
 
 		for (unsigned int i = 0; i < renderList.size(); i++)
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			p->patches.trimPush(patches, p->geo);
+            p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 			if( p->pSlot->state != PopupSlot::State::Opening && p->pSlot->state != PopupSlot::State::Closing )
 				p->pSlot->pWidget->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
@@ -487,8 +492,11 @@ namespace wg
 		// Any dirt left in patches is for base child, lets render that first
 
 		if (!patches.isEmpty())
-			m_baseSlot.pWidget->_renderPatches(pDevice, _canvas, _window, patches);
-
+        {
+            ClipPopData popData = patchesToClipList(pDevice, _window, patches);
+			m_baseSlot.pWidget->_render(pDevice, _canvas, _window);
+            popClipList(pDevice, popData);
+        }
 
 		// Go through WidgetRenderContexts and render the patches in reverse order (topmost popup rendered last).
 
@@ -505,14 +513,15 @@ namespace wg
 				tint.a = 255 - (255 * p->pSlot->stateCounter / m_closingFadeMs);
 
 			if (tint.a == 255)
-				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, p->patches);
+				p->pSlot->pWidget->_render(pDevice, p->geo, p->geo);
 			else
 			{
 				Color oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
-				p->pSlot->pWidget->_renderPatches(pDevice, p->geo, p->geo, p->patches);
+				p->pSlot->pWidget->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);
 			}
+            popClipList(pDevice,p->clipPop);
 		}
 	}
 
