@@ -23,9 +23,11 @@
 #include <wg_ctextdisplay.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
+#include <wg_util.h>
 
 namespace wg
 {
+	using namespace Util;
 
 	//____ Constructor _____________________________________________________________
 
@@ -172,7 +174,7 @@ namespace wg
 
 				// Get link from character properties
 
-				CoordI localPos = static_cast<InputMsg*>( pMsg.rawPtr() )->pointerPos() - _globalPos();
+				CoordI localPos = static_cast<InputMsg*>( pMsg.rawPtr() )->pointerPosRaw() - _globalPos();
 				int markedChar = _textMapper()->charAtPos(this, localPos);
 				if( markedChar >= 0 )
 				{

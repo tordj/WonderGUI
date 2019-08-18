@@ -505,7 +505,7 @@ namespace wg
 
 	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot)
 	{
-		RectI geo = qpixToRaw( pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size) ));
+		RectI geo = pixelAligned( qpixToRaw( pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size) )) );
 
 		if (geo != pSlot->geo)
 		{

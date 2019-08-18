@@ -247,14 +247,14 @@ namespace wg
 			{
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 
-				CoordI	now		= pMsg->currPos();
-				CoordI 	prev	= pMsg->prevPos();
-				CoordI	start	= pMsg->startPos();
+				CoordF	now		= pMsg->currPos();
+				CoordF 	prev	= pMsg->prevPos();
+				CoordF	start	= pMsg->startPos();
 
-				CoordI	dragNow	= pMsg->draggedNow();
-				CoordI	dragTotal=pMsg->draggedTotal();
+				CoordF	dragNow	= pMsg->draggedNow();
+				CoordF	dragTotal=pMsg->draggedTotal();
 
-				snprintf( params, c_paramLen, " button=%s position(start=%d,%d prev=%d,%d now=%d,%d) dragged(now=%d,%d total=%d,%d)",
+				snprintf( params, c_paramLen, " button=%s position(start=%.2f,%.2f prev=%.2f,%.2f now=%.2f,%.2f) dragged(now=%.2f,%.2f total=%.2f,%.2f)",
 						_formatMouseButton(pMsg->button()).c_str(), start.x, start.y, prev.x, prev.y, now.x, now.y, dragNow.x, dragNow.y, dragTotal.x, dragTotal.y );
 				break;
 			}
@@ -310,7 +310,7 @@ namespace wg
 			case MsgType::WheelRoll:
 			{
 				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
-				snprintf( params, c_paramLen, "wheel=%d distance=(%d,%d)", pMsg->wheel(), pMsg->distance().x, pMsg->distance().y );
+				snprintf(params, c_paramLen, "wheel=%d distance=(%.2f,%.2f)", pMsg->wheel(), (float) pMsg->distance().x, (float) pMsg->distance().y);
 				break;
 			}
 
@@ -482,12 +482,12 @@ namespace wg
 
 	string MsgLogger::_formatPointerPos( InputMsg * _pMsg ) const
 	{
-		CoordI globalPos = _pMsg->pointerPos();
+		Coord globalPos = _pMsg->pointerPos();
 
 
 		char	temp[64];
 
-		snprintf( temp, 64, " pointer=%d,%d", globalPos.x, globalPos.y );
+		snprintf( temp, 64, " pointer=%.2f,%.2f", (float) globalPos.x, (float) globalPos.y );
 
 		return string(temp);
 	}

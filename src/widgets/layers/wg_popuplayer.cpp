@@ -633,7 +633,7 @@ namespace wg
 				if (m_popups.isEmpty())
 					break;
 
-				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPos() - _globalPos();
+				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPosRaw() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
@@ -741,8 +741,8 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->pOpener.rawPtr();
 
-					Coord 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPos();
-					Rect	openerGeo = pOpener->globalGeo();
+					CoordI 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPosRaw();
+					Rect	openerGeo = pOpener->_globalGeo();
 
 					if (pOpener->_markTest(absPos - openerGeo.pos()))
 						break;

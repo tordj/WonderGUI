@@ -103,7 +103,7 @@ namespace wg
 		bool			caretTextBegin();
 		bool			caretTextEnd();
 
-		bool			caretToPos( CoordI pos);			// Move caret as close as possible to the given position.
+		inline bool		caretToPos(Coord pos) { return _caretToPos(Util::qpixToRaw(pos)); }			// Move caret as close as possible to the given position.
 		bool			caretSelectWord();
 		bool			caretSelectLine();				// Full line with hard line ending.
 
@@ -128,6 +128,7 @@ namespace wg
 
 
 		void			_caretToEnd();
+		bool			_caretToPos(CoordI pos);
 
 		TextEditMode	m_editMode;
 		EditState		m_editState;

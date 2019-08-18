@@ -1071,7 +1071,7 @@ namespace wg
 
 				if( pMsg->wheel() == m_wheelForScroll )
 				{
-					if( m_viewSlot.windowGeo.contains( _toLocal(pMsg->pointerPos())) )
+					if( m_viewSlot.windowGeo.contains( _toLocal(pMsg->pointerPosRaw())) )
 					{
 						CoordI dist = pMsg->distance();
 						if( dist.x < 0 )

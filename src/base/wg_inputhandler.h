@@ -71,9 +71,9 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void 		setPointer(RootPanel * pRoot, CoordI pos, int64_t timestamp = 0);
+		void 		setPointer(RootPanel * pRoot, Coord pos, int64_t timestamp = 0);
 		void 		setButton(MouseButton button, bool bPressed, int64_t timestamp = 0);
-		void 		setWheelRoll(int wheel, CoordI distance, int64_t timestamp = 0);
+		void 		setWheelRoll(int wheel, Coord distance, int64_t timestamp = 0);
 
 		void 		setFocusedWindow(RootPanel * pRoot);
 
@@ -156,7 +156,7 @@ namespace wg
 		RouteId			m_tickRoute;
 		int64_t			m_timeStamp;
 
-		CoordI			m_pointerPos;
+		Coord			m_pointerPos;
 
 		RootPanel_wp	m_pMarkedRoot;		// Root widget the pointer currently is "inside".
 		Widget_wp		m_pMarkedWidget;	// Widget the pointer currently is "inside". Empty if outside a modal widget.
@@ -176,7 +176,7 @@ namespace wg
 
 		Widget_wp		m_latestPressWidgets[MouseButton_size];		// Widget that received the latest press, for each button.
 		int64_t			m_latestPressTimestamps[MouseButton_size];	// Timestamp of the latest press, for each button.
-		CoordI			m_latestPressPosition[MouseButton_size];	// CoordI of the latest press, for each button.
+		Coord			m_latestPressPosition[MouseButton_size];	// CoordI of the latest press, for each button.
 		bool			m_latestPressDoubleClick[MouseButton_size];	// Set if latest press resulted in a double-click.
 
 		// Current key states
@@ -185,7 +185,7 @@ namespace wg
 		struct KeyDownInfo
 		{
 			int			nativeKeyCode;
-			Key		translatedKeyCode;
+			Key			translatedKeyCode;
 			int64_t		pressTimestamp;
 			Widget_wp	pWidget;
 		};

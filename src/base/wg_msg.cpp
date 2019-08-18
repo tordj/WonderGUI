@@ -232,7 +232,7 @@ namespace wg
 
 	const char FocusGainedMsg::CLASSNAME[] = {"FocusGainedMsg"};
 
-	FocusGainedMsg::FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
+	FocusGainedMsg::FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
 		m_type = MsgType::FocusGained;
 		m_pSource	= pWidget;
@@ -265,7 +265,7 @@ namespace wg
 
 	const char FocusLostMsg::CLASSNAME[] = {"FocusLostMsg"};
 
-	FocusLostMsg::FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
+	FocusLostMsg::FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
 		m_type = MsgType::FocusLost;
 		m_pSource	= pWidget;
@@ -298,7 +298,7 @@ namespace wg
 
 	const char MouseEnterMsg::CLASSNAME[] = {"MouseEnterMsg"};
 
-	MouseEnterMsg::MouseEnterMsg( char inputId, Object * pObject, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
+	MouseEnterMsg::MouseEnterMsg( char inputId, Object * pObject, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseEnter;
 		m_pSource	= pObject;
@@ -331,7 +331,7 @@ namespace wg
 
 	const char MouseLeaveMsg::CLASSNAME[] = {"MouseLeaveMsg"};
 
-	MouseLeaveMsg::MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
+	MouseLeaveMsg::MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseLeave;
 		m_pSource		= pSource;
@@ -362,7 +362,7 @@ namespace wg
 
 	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
 
-	MouseMoveMsg::MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
+	MouseMoveMsg::MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseMove;
 		m_pSource		= pSource;
@@ -394,7 +394,7 @@ namespace wg
 
 	const char MousePressMsg::CLASSNAME[] = {"MousePressMsg"};
 
-	MousePressMsg::MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MousePressMsg::MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MousePress;
 		m_pSource		= pSource;
@@ -425,7 +425,7 @@ namespace wg
 
 	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
 
-	MouseRepeatMsg::MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseRepeatMsg::MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRepeat;
 		m_pSource		= pSource;
@@ -458,7 +458,7 @@ namespace wg
 	const char MouseReleaseMsg::CLASSNAME[] = {"MouseReleaseMsg"};
 
 
-	MouseReleaseMsg::MouseReleaseMsg( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseReleaseMsg::MouseReleaseMsg( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::MouseRelease;
 		m_pSource		= pSource;
@@ -498,7 +498,7 @@ namespace wg
 
 	const char MouseClickMsg::CLASSNAME[] = {"MouseClickMsg"};
 
-	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseClick;
 		m_pSource		= pSource;
@@ -529,7 +529,7 @@ namespace wg
 
 	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
 
-	MouseDoubleClickMsg::MouseDoubleClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
+	MouseDoubleClickMsg::MouseDoubleClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
 		m_type = MsgType::MouseDoubleClick;
 		m_pSource		= pSource;
@@ -560,7 +560,7 @@ namespace wg
 
 	const char KeyPressMsg::CLASSNAME[] = {"KeyPressMsg"};
 
-	KeyPressMsg::KeyPressMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : KeyMsg(inputId,nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
+	KeyPressMsg::KeyPressMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyPress;
 		m_pSource		= pWidget;
@@ -592,7 +592,7 @@ namespace wg
 
 	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
 
-	KeyRepeatMsg::KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
+	KeyRepeatMsg::KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyRepeat;
 		m_pSource		= pWidget;
@@ -624,7 +624,7 @@ namespace wg
 
 	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
 
-	KeyReleaseMsg::KeyReleaseMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
+	KeyReleaseMsg::KeyReleaseMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::KeyRelease;
 		m_pSource		= pWidget;
@@ -732,7 +732,7 @@ namespace wg
 
 	const char WheelRollMsg::CLASSNAME[] = {"WheelRollMsg"};
 
-	WheelRollMsg::WheelRollMsg( char inputId, int wheel, CoordI distance, Widget * pWidget, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : InputMsg( inputId, modKeys, pointerPos, timestamp )
+	WheelRollMsg::WheelRollMsg( char inputId, int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( inputId, modKeys, pointerPos, timestamp )
 	{
 		m_type			= MsgType::WheelRoll;
 		m_wheel			= wheel;
@@ -746,7 +746,7 @@ namespace wg
 		return m_wheel;
 	}
 
-	CoordI WheelRollMsg::distance() const
+	Coord WheelRollMsg::distance() const
 	{
 		return m_distance;
 	}
@@ -845,7 +845,7 @@ namespace wg
 
 	const char DragNDropMsg::CLASSNAME[] = {"DragNDropMsg"};
 
-	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos )
+	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
 	{
 		m_type = type;
 		m_pSource = pSource;
@@ -889,9 +889,9 @@ namespace wg
 
 	const char DropPickMsg::CLASSNAME[] = {"DropPickMsg"};
 
-	DropPickMsg::DropPickMsg( Widget * pSource, CoordI pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos )
+	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
 	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
-	m_dragWidgetPointerOfs(CoordI()-pickOfs),
+	m_dragWidgetPointerOfs(Coord()-pickOfs),
 	m_pickOfs(pickOfs)
 	{
 	}
@@ -922,10 +922,10 @@ namespace wg
 		m_pPayload = pPayload;
 	}
 
-	void DropPickMsg::setDragWidget( Widget * pWidget, CoordI pixelPointerOfs )
+	void DropPickMsg::setDragWidget( Widget * pWidget, Coord pointerOfs )
 	{
 		m_pDragWidget = pWidget;
-		m_dragWidgetPointerOfs = pixelPointerOfs;
+		m_dragWidgetPointerOfs = pointerOfs;
 	}
 
 	Widget_p DropPickMsg::dragWidget() const
@@ -933,17 +933,21 @@ namespace wg
 		return m_pDragWidget;
 	}
 
-	CoordI DropPickMsg::dragWidgetPointerOfs() const
+	Coord DropPickMsg::dragWidgetPointerOfs() const
 	{
 		return m_dragWidgetPointerOfs;
 	}
 
+	CoordI DropPickMsg::dragWidgetPointerOfsRaw() const
+	{
+		return Util::qpixToRaw(m_dragWidgetPointerOfs);
+	}
 
 	//____ DropProbeMsg ___________________________________________________
 
 	const char DropProbeMsg::CLASSNAME[] = { "DropProbeMsg" };
 
-	DropProbeMsg::DropProbeMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos)
+	DropProbeMsg::DropProbeMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropProbe, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
 	{
 	}
@@ -979,7 +983,7 @@ namespace wg
 	const char DropEnterMsg::CLASSNAME[] = { "DropEnterMsg" };
 
 	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
-							   Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos)
+							   Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropEnter, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
@@ -1022,7 +1026,7 @@ namespace wg
 	const char DropMoveMsg::CLASSNAME[] = { "DropMoveMsg" };
 
 	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
-							 Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos)
+							 Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropMove, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_pDragWidget(pDragWidget)
 	{
@@ -1063,7 +1067,7 @@ namespace wg
 
 	const char DropLeaveMsg::CLASSNAME[] = { "DropLeaveMsg" };
 
-	DropLeaveMsg::DropLeaveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, CoordI pointerPos)
+	DropLeaveMsg::DropLeaveMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropLeave, pSource, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
@@ -1093,7 +1097,7 @@ namespace wg
 
 	const char DropDeliverMsg::CLASSNAME[] = { "DropDeliverMsg" };
 
-	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, CoordI pointerPos)
+	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
 		m_bAccepted(false)
 	{
@@ -1134,7 +1138,7 @@ namespace wg
 
 	const char DropCancelMsg::CLASSNAME[] = { "DropCancelMsg" };
 
-	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, CoordI pointerPos)
+	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropCancel, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
@@ -1164,7 +1168,7 @@ namespace wg
 
 	const char DropCompleteMsg::CLASSNAME[] = { "DropCompleteMsg" };
 
-	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, CoordI pointerPos)
+	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropComplete, pPicked, pickCategory, pPayload, pPicked, nullptr, modKeys, pointerPos),
 		m_pDeliveree(pDeliveree)
 	{
@@ -1676,7 +1680,7 @@ namespace wg
 
 	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
 
-	ModalMoveOutsideMsg::ModalMoveOutsideMsg( char inputId, Widget * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys, pointerPos, timestamp)
+	ModalMoveOutsideMsg::ModalMoveOutsideMsg( char inputId, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
 		m_type = MsgType::ModalMoveOutside;
 		m_pSource		= pSource;
@@ -1708,7 +1712,7 @@ namespace wg
 
 	const char ModalBlockedPressMsg::CLASSNAME[] = {"ModalBlockedPressMsg"};
 
-	ModalBlockedPressMsg::ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button, modKeys, pointerPos, timestamp )
+	ModalBlockedPressMsg::ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button, modKeys, pointerPos, timestamp )
 	{
 		m_type			= MsgType::ModalBlockedPress;
 		m_pSource 		= pSource;
@@ -1739,7 +1743,7 @@ namespace wg
 
 	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
 
-	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
+	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
 	{
 		m_type			= MsgType::ModalBlockedRelease;
 		m_pSource 		= pSource;
@@ -1772,7 +1776,7 @@ namespace wg
 	const char MouseDragMsg::CLASSNAME[] = {"MouseDragMsg"};
 
 
-	MouseDragMsg::MouseDragMsg( char inputId, MouseButton button, Object * pSource, const CoordI& startPos, const CoordI& prevPos, ModifierKeys modKeys, CoordI pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
+	MouseDragMsg::MouseDragMsg( char inputId, MouseButton button, Object * pSource, const Coord& startPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
 	{
 		m_type 			= MsgType::MouseDrag;
 		m_pSource		= pSource;
@@ -1802,29 +1806,54 @@ namespace wg
 		return 0;
 	}
 
-	CoordI MouseDragMsg::draggedTotal() const
+	Coord MouseDragMsg::draggedTotal() const
 	{
 		return m_pointerPos - m_startPos;
 	}
 
-	CoordI MouseDragMsg::draggedNow() const
+	Coord MouseDragMsg::draggedNow() const
 	{
 		return m_pointerPos - m_prevPos;
 	}
 
-	CoordI MouseDragMsg::currPos() const
+	Coord MouseDragMsg::currPos() const
 	{
 		return m_pointerPos;
 	}
 
-	CoordI MouseDragMsg::startPos() const
+	Coord MouseDragMsg::startPos() const
 	{
 		return m_startPos;
 	}
 
-	CoordI MouseDragMsg::prevPos() const
+	Coord MouseDragMsg::prevPos() const
 	{
 		return m_prevPos;
+	}
+
+	CoordI MouseDragMsg::draggedTotalRaw() const
+	{
+		return Util::qpixToRaw(m_pointerPos - m_startPos);
+	}
+
+	CoordI MouseDragMsg::draggedNowRaw() const
+	{
+		return Util::qpixToRaw( m_pointerPos - m_prevPos );
+	}
+
+	CoordI MouseDragMsg::currPosRaw() const
+	{
+		return Util::qpixToRaw( m_pointerPos );
+	}
+
+	CoordI MouseDragMsg::startPosRaw() const
+	{
+		return Util::qpixToRaw(m_startPos);
+	}
+
+	CoordI MouseDragMsg::prevPosRaw() const
+	{
+		return Util::qpixToRaw(m_prevPos);
 	}
 
 

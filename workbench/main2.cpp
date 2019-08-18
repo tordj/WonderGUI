@@ -259,7 +259,7 @@ int main(int argc, char** argv)
 
 	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
 
-		pRoot->setDebugMode(true);
+//		pRoot->setDebugMode(true);
 
 	Base::inputHandler()->setFocusedWindow(pRoot);
 
@@ -452,7 +452,7 @@ int main(int argc, char** argv)
 
 	{
 		static Widget_p s_pPicked = nullptr;
-		static CoordI	s_pickOfs;
+		static Coord	s_pickOfs;
 
 		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
@@ -485,7 +485,7 @@ int main(int argc, char** argv)
 			auto pMsg = static_cast<DropPickMsg*>(_pMsg);
 			s_pPicked = pMsg->pickedFrom();
 			s_pickOfs = pMsg->pickOfs();
-			pMsg->setDragWidget(s_pPicked, CoordI() - s_pickOfs );
+			pMsg->setDragWidget(s_pPicked, Coord() - s_pickOfs );
 
 			pMsg->setPayload(Payload::create());
 		});
@@ -1171,7 +1171,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				pInput->setPointer( pRoot, CoordI(e.motion.x,e.motion.y) );
+				pInput->setPointer(pRoot, { QPix::fromPixel(e.motion.x), QPix::fromPixel(e.motion.y) });
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:

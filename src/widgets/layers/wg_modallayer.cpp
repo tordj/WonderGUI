@@ -618,7 +618,7 @@ namespace wg
 		{
 			InputMsg_p pMsg = InputMsg::cast(_pMsg);
 
-			if( !m_modals.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
+			if( !m_modals.isEmpty() && _findWidget( pMsg->pointerPosRaw(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{

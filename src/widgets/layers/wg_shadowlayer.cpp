@@ -32,6 +32,8 @@
 
 namespace wg
 {
+	using namespace Util;
+
 	const char ShadowLayer::CLASSNAME[] = {"ShadowLayer"};
 
 	//____ Constructor ____________________________________________________________
@@ -285,17 +287,30 @@ namespace wg
 
 		// Generate masked patches for our skin, baseSlot widget, and shadow.
 
-		Patches patches(_patches);
+		ClipPopData clipPop;
 
-		if(m_frontSlot.pWidget)
+		if (m_frontSlot.pWidget)
+		{
+			// Collect dirty patches from gfxDevice
+
+			int nClipRects = pDevice->clipListSize();
+			auto pClipRects = pDevice->clipList();
+
+			Patches patches(nClipRects);
+
+			for (int i = 0; i < nClipRects; i++)
+				patches.push(pixelsToRaw(pClipRects[i]));
+
 			m_frontSlot.pWidget->_maskPatches(patches, _canvas, _canvas, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+
+			clipPop = patchesToClipList(pDevice, patches);
+		}
 
 
 		// If we have a skin, render it and modify contentGeo
 
 		if (m_pSkin)
 		{
-			pDevice->setClipList(patches.size(), patches.begin());
 			m_pSkin->_render(pDevice, _canvas, m_state);
 			
 			contentGeo = m_pSkin->_contentRect(_canvas, m_state);
@@ -304,7 +319,7 @@ namespace wg
 		// Render base slot widgets
 
 		if (m_baseSlot.pWidget)
-			m_baseSlot.pWidget->_renderPatches(pDevice, contentGeo, contentGeo, patches);
+			m_baseSlot.pWidget->_render(pDevice, contentGeo, contentGeo);
 
 		// Render shadows
 
@@ -312,7 +327,9 @@ namespace wg
 		//Render front slot widgets
 
 		if (m_frontSlot.pWidget)
-			m_frontSlot.pWidget->_renderPatches(pDevice, contentGeo, contentGeo, _patches);
+			m_frontSlot.pWidget->_render(pDevice, contentGeo, contentGeo);
+
+		popClipList(pDevice, clipPop);
 	}
 
 

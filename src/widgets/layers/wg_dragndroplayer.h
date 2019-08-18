@@ -84,8 +84,8 @@ namespace wg
 
 		// Internal
 
-		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, CoordI pointerPos );
-		void            _cancel( ModifierKeys modKeys, CoordI pointerPos );
+		void            _complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos );
+		void            _cancel( ModifierKeys modKeys, Coord pointerPos );
 		void            _replaceDragWidget( Widget * pNewWidget );
 
 

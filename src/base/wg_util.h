@@ -297,7 +297,7 @@ namespace wg
 		{
 			int nRects;
 			const RectI * pRects;
-			int reservedMem;
+			int reservedMem = 0;
 		};
 		
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );

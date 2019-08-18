@@ -193,8 +193,8 @@ namespace wg
 				{
 					case DragState::Picking:
 					{
-						CoordI total = pMsg->draggedTotal();
-						if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
+						CoordI total = pMsg->draggedTotalRaw();
+						if (abs(total.x) + abs(total.y) > m_dragStartTreshold*Base::pixelQuartersPerPoint())
 						{
 							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
@@ -205,15 +205,17 @@ namespace wg
 
 					case DragState::Dragging:
 					{
+						CoordI pointerPos = pMsg->pointerPosRaw();
+
 						// Move the drag-widget onscreen.
 
 						_requestRender(m_dragSlot.geo);
-						m_dragSlot.geo.setPos( pMsg->pointerPos() + m_dragWidgetOfs );
+						m_dragSlot.geo.setPos( pointerPos + m_dragWidgetOfs );
 						_requestRender(m_dragSlot.geo);
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
-						CoordI ofs = _toLocal(pMsg->pointerPos());
+						CoordI ofs = _toLocal(pointerPos);
 
 						Widget * pProbed = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -231,16 +233,18 @@ namespace wg
 
 					case DragState::Targeting:
 					{
+						CoordI pointerPos = pMsg->pointerPosRaw();
+
 						// Move the drag-widget onscreen.
 
 						_requestRender(m_dragSlot.geo);
-						m_dragSlot.geo.setPos( pMsg->pointerPos() + m_dragWidgetOfs );
+						m_dragSlot.geo.setPos( pointerPos + m_dragWidgetOfs );
 						_requestRender(m_dragSlot.geo);
 
 
 // MOVE TO TICK!                        // Check if our target has changed
 
-						CoordI ofs = _toLocal(pMsg->pointerPos());
+						CoordI ofs = _toLocal(pointerPos);
 
 						Widget * pHovered = _findWidget(ofs, SearchMode::ActionTarget );
 
@@ -358,19 +362,18 @@ namespace wg
 					if (pDragWidget)
 					{
 						pDragWidget->releaseFromParent();
-						m_dragWidgetOfs = pMsg->dragWidgetPointerOfs();
+						m_dragWidgetOfs = pMsg->dragWidgetPointerOfsRaw();
 						m_dragSlot.replaceWidget(this, pDragWidget);
 						dragWidgetSize = m_dragSlot.preferredSize();
 					}
 					else
 					{
-						m_dragWidgetOfs = CoordI(0,0) - pMsg->pickOfs();
+						m_dragWidgetOfs = CoordI(0,0) - pMsg->pickOfsRaw();
 						dragWidgetSize = m_pPicked->size();                             //TODO: Possible source of error, if picked widget changes size before the render call.
 					}
 
-					CoordI mousePos = _toLocal(pMsg->pointerPos());
-					m_dragSlot.geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
-
+					CoordI mousePos = _toLocal(pMsg->pointerPosRaw());
+					m_dragSlot.geo = { pixelAligned( CoordI(mousePos + m_dragWidgetOfs)), dragWidgetSize };
 					_requestRender(m_dragSlot.geo);
 					m_dragState = DragState::Dragging;
 				}
@@ -448,7 +451,7 @@ namespace wg
 
 	//____ _cancel() ________________________________________________________________
 
-	void DragNDropLayer::_cancel( ModifierKeys modKeys, CoordI pointerPos )
+	void DragNDropLayer::_cancel( ModifierKeys modKeys, Coord pointerPos )
 	{
 		if( m_tickRouteId )
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
@@ -473,7 +476,7 @@ namespace wg
 
 	//____ _complete() _______________________________________________________________
 
-	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, CoordI pointerPos )
+	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
 	{
 		assert( !m_pTargeted );
 

@@ -150,7 +150,7 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( pEntry && pEntry->pWidget != m_pHoveredChild.rawPtr() )
 				{
 					RectI geo;
@@ -169,7 +169,7 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPos()));
+				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( m_pHoveredChild && !pEntry )
 				{
 					RectI geo;
@@ -186,7 +186,7 @@ namespace wg
 				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = _toLocal(pMsg->pointerPos());
+					CoordI ofs = _toLocal(pMsg->pointerPosRaw());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 
@@ -289,7 +289,7 @@ namespace wg
 				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = _listArea().limit(_toLocal(pMsg->pointerPos()));
+					CoordI ofs = _listArea().limit(_toLocal(pMsg->pointerPosRaw()));
 					ofs = _listWindow().limit(ofs);
 
 					RectI oldLasso( m_lassoBegin, m_lassoEnd );

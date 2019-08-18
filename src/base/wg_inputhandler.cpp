@@ -247,7 +247,7 @@ namespace wg
 	//____ setPointer() ___________________________________________________________
 
 
-	void InputHandler::setPointer( RootPanel * pRoot, CoordI pos, int64_t timestamp )
+	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
 	{
 		CoordI	prevPointerPos = m_pointerPos;
 		if( timestamp == 0 )
@@ -259,7 +259,7 @@ namespace wg
 		Widget_p pNowMarked = 0;
 		Widget_p pWidgetTarget = 0;
 
-		if( pRoot && pRoot->geo().contains( Coord(pos ) ) )		// TODOQPIX: Remove conversion when pos is turned into Coord.
+		if( pRoot && pRoot->geo().contains( pos ) )
 		{
 			m_pMarkedRoot = pRoot;
 			pWidgetTarget = pRoot->findWidget( m_pointerPos, SearchMode::ActionTarget );
@@ -471,7 +471,7 @@ namespace wg
 		// Post BUTTON_RELEASE events for widget that was pressed
 
 		Widget * pWidget = m_latestPressWidgets[(int)button].rawPtr();
-		bool bIsInside = pWidget ? Util::qpixToRaw(pWidget->globalGeo()).contains( m_pointerPos ) : false;
+		bool bIsInside = pWidget ? pWidget->globalGeo().contains( m_pointerPos ) : false;
 
 		auto pMsg = MouseReleaseMsg::create( m_inputId, button, pWidget, bIsInside, m_modKeys, m_pointerPos, timestamp );
 		pMsg->setCopyTo(pWidget);
@@ -711,7 +711,7 @@ namespace wg
 
 	//____ setWheelRoll() __________________________________________________________
 
-	void InputHandler::setWheelRoll( int wheel, CoordI distance, int64_t timestamp )
+	void InputHandler::setWheelRoll( int wheel, Coord distance, int64_t timestamp )
 	{
 		if( m_pMarkedWidget )
 		{
