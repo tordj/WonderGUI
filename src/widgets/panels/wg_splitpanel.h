@@ -75,8 +75,8 @@ namespace wg
 		void			setHandleSkin(Skin * pSkin);
 		Skin_p			handleSkin() const { return m_pHandleSkin; }
 
-		void			setHandleThickness(int thickness);
-		int				handleThickness() const { return m_handleThickness;  }
+		void			setHandleThickness(QPix thickness);
+		QPix			handleThickness() const { return QPix::fromRaw(m_handleThickness);  }
 
 		//.____ Behavior _______________________________________________________
 
@@ -90,8 +90,8 @@ namespace wg
 		void			setScaleBehavior(ScaleBehavior behavior);
 		ScaleBehavior	scaleBehavior() const { return m_scaleBehavior; }
 
-		void			setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)> func);
-		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)> brokerFunction() const { return m_brokerFunc;  }
+		void			setBrokerFunction(std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)> func);
+		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)> brokerFunction() const { return m_brokerFunc;  }
 
 		//.____ Control ________________________________________________________
 
@@ -106,7 +106,7 @@ namespace wg
 		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
 		bool		_updateGeo(int handleMovement=0);
-		int			_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement);
+		QPix		_defaultBroker(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement);
 
 		// Overloaded from Widget
 
@@ -168,7 +168,7 @@ namespace wg
 		SplitPanelSlot	m_firstChild;
 		SplitPanelSlot	m_secondChild;
 
-		std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)>	m_brokerFunc;
+		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)>	m_brokerFunc;
 	};
 
 }

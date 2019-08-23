@@ -467,7 +467,7 @@ namespace wg
 
 	QPix Widget::matchingHeight(QPix width) const
 	{
-		return QPix::rawToQpix(_matchingHeight(width.value));
+		return QPix::fromRaw(_matchingHeight(width.raw));
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -486,7 +486,7 @@ namespace wg
 
 	QPix Widget::matchingWidth(QPix height) const
 	{
-		return QPix::rawToQpix(_matchingWidth(height.value));
+		return QPix::fromRaw(_matchingWidth(height.raw));
 	}
 
 	//____ preferredSize() ________________________________________________________

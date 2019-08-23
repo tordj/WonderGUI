@@ -159,6 +159,9 @@ namespace wg
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
 
+		int			_setItemLengths(SizeBrokerItem * pItems, int nItems, int totalLength) const;
+		int			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
+
 
 		SlotArray<PackPanelSlot> m_children;
 

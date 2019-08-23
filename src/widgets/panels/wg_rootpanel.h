@@ -122,7 +122,7 @@ namespace wg
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
 		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_updatedPatches.begin()); }
 
-		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( Util::qpixToRaw(rect) ); }
+		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( Util::qpixToRawAligned(rect) ); }
 
 
 	protected:

@@ -291,7 +291,7 @@ namespace wg
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
 		RectI canvas = _geo();
-		RectI clip( qpixToRaw( _clip ), canvas );
+		RectI clip( qpixToRawAligned( _clip ), canvas );
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 

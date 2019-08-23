@@ -61,11 +61,11 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void	setSizes( SizeI min, SizeI preferred, SizeI max );
+		bool	setSizes( Size min, Size preferred, Size max );
 
-		void	setPreferredSize( SizeI size );
-		void	setMinSize( SizeI size );
-		void	setMaxSize( SizeI size );
+		void	setPreferredSize( Size size );
+		void	setMinSize( Size size );
+		void	setMaxSize( Size size );
 
 
 	protected:

@@ -56,16 +56,16 @@ namespace wg
 
 	//____ setItemLengths() _______________________________________________________
 
-	int UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, int totalLength ) const
+	QPix UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const
 	{
 		if( nItems == 0 )
 			return 0;
 
 		// Gather some data we need
 
-		int staticLength = 0;               // Total preferred length of all static (non-stretching) items
-		int nUnifiedItems = 0;                // Number of static items
-		float extraWeight = 0;                // Total "extra weight", of all items with weight > 1.
+		QPix staticLength = 0;				// Total preferred length of all static (non-stretching) items
+		int nUnifiedItems = 0;              // Number of static items
+		float extraWeight = 0;              // Total "extra weight", of all items with weight > 1.
 
 		for( int i = 0 ; i < nItems ; i++ )
 		{
@@ -79,15 +79,15 @@ namespace wg
 
 		// Calculate baseLength and extraLengthPerWeightUnit
 
-		int unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : 0;
-		int paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
-		float paddingPerWeightUnit = extraWeight > 0 ? paddingLength / extraWeight : 0.f;
+		QPix unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : 0;
+		QPix paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
+		float paddingPerWeightUnit = extraWeight > 0 ? float(paddingLength) / extraWeight : 0.f;
 
 		// Loop through items and set their length
 
 		float paddingAcc = 0.0001f;
-		int total = 0;
-		int length;
+		QPix total = 0;
+		QPix length;
 
 		for( int i = 0 ; i < nItems ; i++ )
 		{
@@ -98,8 +98,8 @@ namespace wg
 			else if( pItems[i].weight > 1 )
 			{
 				paddingAcc += (pItems[i].weight-1) * paddingPerWeightUnit;
-				length = (int) paddingAcc;
-				paddingAcc -= (int) paddingAcc;
+				length = (QPix) paddingAcc;
+				paddingAcc -= (QPix) paddingAcc;
 			}
 			else
 				length = unifiedLength;
@@ -112,14 +112,14 @@ namespace wg
 
 	//____ setPreferredLengths() __________________________________________________
 
-	int UniformSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
+	QPix UniformSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
 		if( nItems == 0 )
 			return 0;
 
-		int unifiedLength = _findLongestUnified(pItems, nItems);
-		int total = 0;
-		int length;
+		QPix unifiedLength = _findLongestUnified(pItems, nItems);
+		QPix total = 0;
+		QPix length;
 
 		for( int i = 0 ; i < nItems ; i++ )
 		{
@@ -146,21 +146,13 @@ namespace wg
 
 	//____ _findLongestUnified() __________________________________________________
 
-	int UniformSizeBroker::_findLongestUnified( SizeBrokerItem * pItems, int nItems ) const
+	QPix UniformSizeBroker::_findLongestUnified( SizeBrokerItem * pItems, int nItems ) const
 	{
-		int longest = 0;
+		QPix longest = 0;
 		for( int i = 0 ; i < nItems ; i++ )
 			if( pItems[i].preferred > longest && pItems[i].weight == 1.f )
 				longest = pItems[i].preferred;
 		return longest;
-	}
-
-	//____ _setOutputs() __________________________________________________________
-
-	void UniformSizeBroker::_setOutputs( SizeBrokerItem * pItems, int nItems, int value ) const
-	{
-		for( int i = 0 ; i < nItems ; i++ )
-			pItems[i].output = value;
 	}
 
 

@@ -31,7 +31,7 @@ namespace wg
 	//____ Surface() ____________________________________________________________
 
 	Context::Context() : 
-		m_scale(0.f)
+		m_scale(1.f)
 	{
 	}
 
@@ -72,8 +72,8 @@ namespace wg
 
 	bool Context::setScale(float scale)
 	{
-		if (scale < 1.f || scale > 8.f || float(int(scale * 4)) != scale*4)
-			return false;
+//		if (scale < 1.f || scale > 8.f || float(int(scale * 4)) != scale*4)
+//			return false;
 
 		// Save scale
 

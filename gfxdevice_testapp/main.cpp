@@ -1094,6 +1094,11 @@ bool init_wondergui()
 {
 	Base::init();
 
+	Context_p pContext = Context::create();
+	pContext->setScale(1.5);
+	Base::setActiveContext(pContext);
+
+
 //	g_pBaseSurfaceFactory = GlSurfaceFactory::create();
 	g_pBaseSurfaceFactory = SoftSurfaceFactory::create();
 

@@ -26,6 +26,7 @@
 
 #include <wg_ihideablechildren.h>
 #include <wg_ihideablechildren.impl.h>
+#include <wg_util.h>
 
 #define INSTANTIATE_PADDEDCHILDREN(SlotType,HolderType) \
 	INSTANTIATE_HIDEABLECHILDREN( SlotType, HolderType ) \
@@ -39,63 +40,62 @@ namespace wg
 //	using		Children<SlotType, HolderType>::m_pHolder;
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, BorderI padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, Border padding)
 	{
 		//TODO: Assert
 
-		m_pHolder->_repadSlots(m_pSlotArray->slot(index), 1, padding);
+		m_pHolder->_repadSlots(m_pSlotArray->slot(index), 1, Util::qpixToRaw(padding));
 		return true;
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator it, BorderI padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator it, Border padding)
 	{
 		//TODO: Assert
 
-		m_pHolder->_repadSlots(it._slot(), 1, padding);
+		m_pHolder->_repadSlots(it._slot(), 1, Util::qpixToRaw(padding));
 		return true;
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, BorderI padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, Border padding)
 	{
 		//TODO: Assert
 
-		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, padding);
+		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, Util::qpixToRaw(padding));
 		return true;
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, BorderI padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, Border padding)
 	{
 		//TODO: Assert
 
 		auto pBeg = beg._slot();
 		auto pEnd = end._slot();
-		m_pHolder->_repadSlots(pBeg, int(pEnd-pBeg), padding);
+		m_pHolder->_repadSlots(pBeg, int(pEnd-pBeg), Util::qpixToRaw(padding));
 		return true;
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, const std::initializer_list<BorderI> padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
-		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, padding.begin());
+		m_pHolder->_repadSlots(m_pSlotArray->slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
 		return true;
 	}
 
 	template < class SlotType, class HolderType>
-	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, const std::initializer_list<BorderI> padding)
+	bool IPaddedChildren<SlotType, HolderType>::setPadding(iterator beg, iterator end, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
 		auto pBeg = beg._slot();
 		auto pEnd = end._slot();
-		m_pHolder->_repadSlots(pBeg, int(pEnd - pBeg), padding.begin());
+		m_pHolder->_repadSlots(pBeg, int(pEnd - pBeg), reinterpret_cast<const BorderI *>(padding.begin()));
 		return true;
 	}
-
 
 } // namespace wg
 

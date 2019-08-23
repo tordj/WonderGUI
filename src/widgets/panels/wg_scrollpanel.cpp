@@ -327,14 +327,14 @@ namespace wg
 		}
 	}
 
-	RectI ViewEntry::windowRect() const
+	Rect ViewEntry::windowRect() const
 	{
-		return RectI(m_pSlot->viewPixOfs, m_pSlot->windowGeo.size());
+		return Rect( rawToQpix(m_pSlot->viewPixOfs), rawToQpix(m_pSlot->windowGeo.size()));
 	}
 
-	SizeI ViewEntry::windowSize() const
+	Size ViewEntry::windowSize() const
 	{
-		return m_pSlot->windowGeo.size();
+		return rawToQpix(m_pSlot->windowGeo.size());
 	}
 
 	RectF ViewEntry::windowSection() const
@@ -352,9 +352,9 @@ namespace wg
 		return SizeF(m_pSlot->windowFractionX(), m_pSlot->windowFractionY());
 	}
 
-	bool ViewEntry::setWindowPos(CoordI pos)
+	bool ViewEntry::setWindowPos(Coord pos)
 	{
-		return m_pHolder->_setWindowPos(pos);
+		return m_pHolder->_setWindowPos(qpixToRaw(pos));
 	}
 
 	bool ViewEntry::setWindowOffset(CoordF ofs)
@@ -371,6 +371,29 @@ namespace wg
 	{
 		return m_pHolder->_jump(dir);
 	}
+
+	bool ViewEntry::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
+	{
+		//TODO: Implement!
+
+		return false;
+	}
+
+	void ViewEntry::setScrollBorder(Border border)
+	{
+		m_pSlot->scrollBorder = border;
+	}
+
+	void ViewEntry::setRubberBorder(Border border)
+	{
+		m_pSlot->rubberBorder = border;
+	}
+
+	void ViewEntry::setDragButton(MouseButton button)
+	{
+		m_pSlot->dragButton = button;
+	}
+
 
 	void ScrollbarEntry::setAutoHide(bool autohide)
 	{

@@ -31,6 +31,8 @@
 
 namespace wg
 {
+	using namespace Util;
+
 	INSTANTIATE_HIDEABLECHILDREN(FlexPanelSlot, FlexChildrenHolder)
 
 	template class SlotArray<FlexPanelSlot>;
@@ -68,7 +70,7 @@ namespace wg
 
 	//____ addMovable() ________________________________________________________
 
-	IFlexPanelChildren::iterator IFlexPanelChildren::addMovable( Widget * pWidget, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -76,7 +78,7 @@ namespace wg
 		FlexPanelSlot * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
-		pSlot->placementGeo = geometry;
+		pSlot->placementGeo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 		pSlot->hotspot = hotspot;
 
@@ -104,7 +106,7 @@ namespace wg
 
 	//____ insertMovable() ________________________________________________________
 
-	IFlexPanelChildren::iterator IFlexPanelChildren::insertMovable( int index, Widget * pWidget, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	IFlexPanelChildren::iterator IFlexPanelChildren::insertMovable( int index, Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -112,7 +114,7 @@ namespace wg
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
 
-		pSlot->placementGeo = geometry;
+		pSlot->placementGeo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 		pSlot->hotspot = hotspot;
 
@@ -166,18 +168,18 @@ namespace wg
 		_setMovable(it._slot(), origo, hotspot);
 	}
 
-	void IFlexPanelChildren::setMovable(int index, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	void IFlexPanelChildren::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		//TODO: Assert
 
-		_setMovable(m_pSlotArray->slot(index), geometry, origo, hotspot);
+		_setMovable(m_pSlotArray->slot(index), qpixToRaw(geometry), origo, hotspot);
 	}
 
-	void IFlexPanelChildren::setMovable( iterator it, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	void IFlexPanelChildren::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
-		_setMovable(it._slot(), geometry, origo, hotspot);
+		_setMovable(it._slot(), qpixToRaw(geometry), origo, hotspot);
 	}
 /*
 	//____ moveToBack() ________________________________________________________
@@ -349,115 +351,115 @@ namespace wg
 
 	//____ setGeo() ________________________________________________________
 
-	bool IFlexPanelChildren::setGeo( int index, const RectI& geometry )
+	bool IFlexPanelChildren::setGeo( int index, const Rect& geometry )
 	{
 		//TODO: Assert!
 
-		return _setGeo(m_pSlotArray->slot(index), geometry);
+		return _setGeo(m_pSlotArray->slot(index), qpixToRaw(geometry));
 	}
 
-	bool IFlexPanelChildren::setGeo(iterator it, const RectI& geometry)
+	bool IFlexPanelChildren::setGeo(iterator it, const Rect& geometry)
 	{
 		//TODO: Assert!
 
-		return _setGeo(it._slot(), geometry);
+		return _setGeo(it._slot(), qpixToRaw(geometry));
 	}
 
 	//____ geo() ________________________________________________________
 
-	RectI IFlexPanelChildren::geo( int index ) const
+	Rect IFlexPanelChildren::geo( int index ) const
 	{
 		//TODO: Assert
 
-		return _geo(m_pSlotArray->slot(index));
+		return rawToQpix(_geo(m_pSlotArray->slot(index)));
 	}
 
-	RectI IFlexPanelChildren::geo( iterator it ) const
+	Rect IFlexPanelChildren::geo( iterator it ) const
 	{
 		//TODO: Assert
 
-		return _geo(it._slot());
+		return rawToQpix(_geo(it._slot()));
 	}
 
 
 	//____ setOfs() ________________________________________________________
 
-	bool IFlexPanelChildren::setOfs( int index, const CoordI& ofs )
+	bool IFlexPanelChildren::setOfs( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 
-		return _setOfs(m_pSlotArray->slot(index), ofs);
+		return _setOfs(m_pSlotArray->slot(index), qpixToRaw(ofs));
 	}
 
-	bool IFlexPanelChildren::setOfs( iterator it, const CoordI& ofs )
+	bool IFlexPanelChildren::setOfs( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 
-		return _setOfs(it._slot(), ofs);
+		return _setOfs(it._slot(), qpixToRaw(ofs));
 	}
 
 	//____ ofs() ________________________________________________________
 
-	CoordI IFlexPanelChildren::ofs( int index ) const
+	Coord IFlexPanelChildren::ofs( int index ) const
 	{
 		//TODO: Assert
 
-		return _ofs(m_pSlotArray->slot(index));
+		return rawToQpix(_ofs(m_pSlotArray->slot(index)));
 	}
 
-	CoordI IFlexPanelChildren::ofs( iterator it ) const
+	Coord IFlexPanelChildren::ofs( iterator it ) const
 	{
 		//TODO: Assert
 
-		return _ofs(it._slot());
+		return rawToQpix(_ofs(it._slot()));
 	}
 
 	//____ setSize() ________________________________________________________
 
-	bool IFlexPanelChildren::setSize( int index, const SizeI& size )
+	bool IFlexPanelChildren::setSize( int index, const Size& size )
 	{
 		//TODO: Assert
 
-		return _setSize(m_pSlotArray->slot(index), size );
+		return _setSize(m_pSlotArray->slot(index), qpixToRaw(size) );
 	}
 
-	bool IFlexPanelChildren::setSize( iterator it, const SizeI& size )
+	bool IFlexPanelChildren::setSize( iterator it, const Size& size )
 	{
 		//TODO: Assert
 
-		return _setSize(it._slot(), size );
+		return _setSize(it._slot(), qpixToRaw(size) );
 	}
 
 	//____ size() ________________________________________________________
 
-	RectI IFlexPanelChildren::size( int index ) const
+	Rect IFlexPanelChildren::size( int index ) const
 	{
 		//TODO: Assert
 
-		return _size(m_pSlotArray->slot(index));
+		return rawToQpix(_size(m_pSlotArray->slot(index)));
 	}
 
-	RectI IFlexPanelChildren::size( iterator it ) const
+	Rect IFlexPanelChildren::size( iterator it ) const
 	{
 		//TODO: Assert
 
-		return _size(it._slot());
+		return rawToQpix(_size(it._slot()));
 	}
 
 	//____ move() ________________________________________________________
 
-	bool IFlexPanelChildren::move( int index, const CoordI& ofs )
+	bool IFlexPanelChildren::move( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 
-		return _move(m_pSlotArray->slot(index), ofs);
+		return _move(m_pSlotArray->slot(index), qpixToRaw(ofs));
 	}
 
-	bool IFlexPanelChildren::move( iterator it, const CoordI& ofs )
+	bool IFlexPanelChildren::move( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 
-		return _move(it._slot(), ofs);
+		return _move(it._slot(), qpixToRaw(ofs));
 	}
 
 	//____ topLeftCorner() ________________________________________________________
@@ -527,7 +529,7 @@ namespace wg
 			p->bPinned = false;
 			p->origo = origo;
 			p->hotspot = hotspot;
-			p->placementGeo = p->realGeo - origo.pos(m_pHolder->_size()) + hotspot.pos(p->realGeo);
+			p->placementGeo = p->realGeo - origo.rawPos(m_pHolder->_size()) + hotspot.rawPos(p->realGeo);
 
 			m_pHolder->_refreshRealGeo(p);
 		}
@@ -1053,8 +1055,8 @@ namespace wg
 
 		if( pSlot->bPinned )
 		{
-			CoordI topLeft = pSlot->topLeftPin.pos( m_size );
-			CoordI bottomRight = pSlot->bottomRightPin.pos( m_size );
+			CoordI topLeft = pSlot->topLeftPin.rawPos( m_size );
+			CoordI bottomRight = pSlot->bottomRightPin.rawPos( m_size );
 
 			newGeo = RectI(topLeft,bottomRight);
 
@@ -1079,8 +1081,8 @@ namespace wg
 
 			// Calculate position
 
-			CoordI pos = pSlot->origo.pos( m_size );			// Origo,
-			pos -= pSlot->hotspot.pos(sz);					// hotspot
+			CoordI pos = pSlot->origo.rawPos( m_size );			// Origo,
+			pos -= pSlot->hotspot.rawPos(sz);					// hotspot
 			pos += pSlot->placementGeo.pos();				// and Offset.
 
 			// Limit size/pos according to parent
@@ -1132,7 +1134,7 @@ namespace wg
 		{
 			RectI geo = pSlot->placementGeo;
 
-			CoordI hotspot = pSlot->hotspot.pos(geo.size());
+			CoordI hotspot = pSlot->hotspot.rawPos(geo.size());
 			CoordI offset = geo.pos() + pSlot->origo.offset - hotspot;
 
 			int leftOfOrigo = 0 - offset.x;

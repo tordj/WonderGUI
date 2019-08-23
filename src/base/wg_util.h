@@ -123,6 +123,11 @@ namespace wg
 
 		//____ rawToPixels() __________________________________________________
 
+		inline int rawToPixels(int quarterPixels)
+		{
+			return quarterPixels >> 2;
+		}
+
 		inline CoordI rawToPixels(const CoordI quarterPixels)
 		{
 			return { quarterPixels.x >> 2, quarterPixels.y >> 2 };
@@ -144,6 +149,11 @@ namespace wg
 		}
 
 		//____ pixelsToRaw() __________________________________________________
+
+		inline int pixelsToRaw(int pixels)
+		{
+			return pixels << 2;
+		}
 
 		inline CoordI pixelsToRaw(const CoordI pixels)
 		{
@@ -195,36 +205,36 @@ namespace wg
 		inline Coord rawToQpix(const CoordI raw)
 		{
 			Coord c;
-			c.x.value = raw.x;
-			c.y.value = raw.y;
+			c.x.raw = raw.x;
+			c.y.raw = raw.y;
 			return c;
 		}
 
 		inline Size rawToQpix(const SizeI raw)
 		{
 			Size sz;
-			sz.w.value = raw.w;
-			sz.h.value = raw.h;
+			sz.w.raw = raw.w;
+			sz.h.raw = raw.h;
 			return sz;
 		}
 
 		inline Border rawToQpix(const BorderI raw)
 		{
 			Border b;
-			b.top.value = raw.top;
-			b.right.value = raw.right;
-			b.bottom.value = raw.bottom;
-			b.left.value = raw.left;
+			b.top.raw = raw.top;
+			b.right.raw = raw.right;
+			b.bottom.raw = raw.bottom;
+			b.left.raw = raw.left;
 			return b;
 		}
 
 		inline Rect rawToQpix(const RectI& raw)
 		{
 			Rect r;
-			r.x.value = raw.x;
-			r.y.value = raw.y;
-			r.w.value = raw.w;
-			r.h.value = raw.h;
+			r.x.raw = raw.x;
+			r.y.raw = raw.y;
+			r.w.raw = raw.w;
+			r.h.raw = raw.h;
 			return r;
 		}
 
@@ -232,22 +242,44 @@ namespace wg
 
 		inline CoordI qpixToRaw(const Coord c)
 		{
-			return { c.x.value, c.y.value };
+			return { c.x.raw, c.y.raw };
 		}
 
 		inline SizeI qpixToRaw(const Size sz)
 		{
-			return { sz.w.value, sz.h.value };
+			return { sz.w.raw, sz.h.raw };
 		}
 
 		inline BorderI qpixToRaw(const Border b)
 		{
-			return { b.top.value, b.right.value, b.bottom.value, b.left.value };
+			return { b.top.raw, b.right.raw, b.bottom.raw, b.left.raw };
 		}
 
 		inline RectI qpixToRaw(const Rect& r)
 		{
-			return { r.x.value, r.y.value, r.w.value, r.h.value };
+			return { r.x.raw, r.y.raw, r.w.raw, r.h.raw };
+		}
+
+		//____ qpixToRawAligned() ____________________________________________________
+
+		inline CoordI qpixToRawAligned(const Coord c)
+		{
+			return { c.x.raw & (int) 0xFFFFFFFC, c.y.raw & (int) 0xFFFFFFFC };
+		}
+
+		inline SizeI qpixToRawAligned(const Size sz)
+		{
+			return { sz.w.raw & (int)0xFFFFFFFC, sz.h.raw & (int)0xFFFFFFFC };
+		}
+
+		inline BorderI qpixToRawAligned(const Border b)
+		{
+			return { b.top.raw & (int) 0xFFFFFFFC, b.right.raw & (int)0xFFFFFFFC, b.bottom.raw & (int)0xFFFFFFFC, b.left.raw & (int)0xFFFFFFFC };
+		}
+
+		inline RectI qpixToRawAligned(const Rect& r)
+		{
+			return { r.x.raw & (int)0xFFFFFFFC, r.y.raw & (int)0xFFFFFFFC, r.w.raw & (int)0xFFFFFFFC, r.h.raw & (int)0xFFFFFFFC };
 		}
 
 

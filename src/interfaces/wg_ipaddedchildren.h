@@ -55,17 +55,17 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		bool		setPadding(int index, BorderI padding);
-		bool		setPadding(iterator it, BorderI padding);
-		bool		setPadding(int index, int amount, BorderI padding);
-		bool		setPadding(iterator beg, iterator end, BorderI padding);
-		bool		setPadding(int index, int amount, const std::initializer_list<BorderI> padding);
-		bool		setPadding(iterator beg, iterator end, const std::initializer_list<BorderI> padding);
+		bool		setPadding(int index, Border padding);
+		bool		setPadding(iterator it, Border padding);
+		bool		setPadding(int index, int amount, Border padding);
+		bool		setPadding(iterator beg, iterator end, Border padding);
+		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
+		bool		setPadding(iterator beg, iterator end, const std::initializer_list<Border> padding);
 
 
 
-		inline BorderI	padding(int index) const { return m_pSlotArray->slot(index)->padding; }
-		inline BorderI	padding(iterator it) const { return it._slot()->padding; }
+		inline Border	padding(int index) const { return Util::rawToQpix(m_pSlotArray->slot(index)->padding); }
+		inline Border	padding(iterator it) const { return Util::rawToQpix(it._slot()->padding); }
 	};
 };
 

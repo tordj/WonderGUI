@@ -87,6 +87,13 @@ namespace wg
 		Origo			contentOrigo;		// Origo when content is smaller than window
 		SizeI			contentSize;
 		CoordI			viewPixOfs;
+
+		BorderI			scrollBorder;
+		BorderI			rubberBorder;
+		MouseButton		dragButton = MouseButton::None;
+
+
+
 	};
 
 	//____ ViewEntryHolder _______________________________________________
@@ -118,7 +125,7 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		SizeI		canvasSize() const { return m_pSlot->contentSize; };
+		Size		canvasSize() const { return m_pSlot->contentSize; };
 
 		void		setOrigo(Origo origo);
 		Origo		origo() const { return m_pSlot->contentOrigo; }
@@ -129,22 +136,31 @@ namespace wg
 		void		setHeightPolicy(SizePolicy policy);
 		SizePolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
 
-		RectI		windowRect() const;
-		CoordI		windowPos() const { return m_pSlot->viewPixOfs; };
-		SizeI		windowSize() const;
+		Rect		windowRect() const;
+		Coord		windowPos() const { return m_pSlot->viewPixOfs; };
+		Size		windowSize() const;
 
 		RectF		windowSection() const;
 		CoordF		windowOffset() const;
 		SizeF		windowFraction() const;
 
-		bool		setWindowPos( CoordI pos );
+		bool		setWindowPos( Coord pos );
 		bool		setWindowOffset( CoordF ofs);
+
+		bool		setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo = Origo::Center, Coord viewOfs = { 0,0 });
 
 		//.____ Control _______________________________________________________
 
 		bool		step( Direction dir );
 		bool		jump( Direction dir );
+
+		void		setScrollBorder(Border border);
+
+		void		setRubberBorder(Border border);
+
+		void		setDragButton(MouseButton button);
 	};
+
 
 	//____ ScrollbarEntry ______________________________________________________
 

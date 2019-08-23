@@ -24,6 +24,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	//____ Constructor _____________________________________________________________
 
@@ -97,35 +98,35 @@ namespace wg
 
 	SizeI CText::preferredSize() const
 	{
-		return _textMapper()->preferredSize(this);
+		return pixelsToRaw(_textMapper()->preferredSize(this));
 	}
 
 	//____ matchingWidth() _________________________________________________________
 
 	int CText::matchingWidth( int height ) const
 	{
-		return _textMapper()->matchingWidth(this, height);
+		return pixelsToRaw(_textMapper()->matchingWidth(this, rawToPixels(height)));
 	}
 
 	//____ matchingHeight() ________________________________________________________
 
 	int CText::matchingHeight( int width ) const
 	{
-		return _textMapper()->matchingHeight(this, width);
+		return pixelsToRaw(_textMapper()->matchingHeight(this, rawToPixels(width)));
 	}
 
 	//____ charAtPos() ___________________________________________________________
 
 	int CText::charAtPos( CoordI pos ) const
 	{
-		return _textMapper()->charAtPos(this,pos);
+		return _textMapper()->charAtPos(this,rawToPixels(pos));
 	}
 
 	//____ charRect() ____________________________________________________________
 
 	RectI CText::charRect( int charOfs ) const
 	{
-		return _textMapper()->charRect(this, charOfs);
+		return pixelsToRaw(_textMapper()->charRect(this, charOfs));
 	}
 
 	//____ charLine() ____________________________________________________________
@@ -152,21 +153,21 @@ namespace wg
 
 		SizeI oldSize = m_size;
 		m_size = size;
-		_textMapper()->onResized(this,size, oldSize);
+		_textMapper()->onResized(this,rawToPixels(size), rawToPixels(oldSize));
 	}
 
 	//_____ render() _____________________________________________________________
 
 	void  CText::render( GfxDevice * pDevice, const RectI& _canvas )
 	{
-		_textMapper()->render(this, pDevice, _canvas);
+		_textMapper()->render(this, pDevice, rawToPixels(_canvas));
 	}
 
 	//____ rectForRange() __________________________________________________________
 
 	RectI  CText::rectForRange( int ofs, int length ) const
 	{
-		return _textMapper()->rectForRange(this, ofs, length);
+		return rawToPixels(_textMapper()->rectForRange(this, ofs, length));
 	}
 
 	//____ tooltip() _______________________________________________________________

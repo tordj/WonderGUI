@@ -104,9 +104,11 @@ namespace wg
 
 	//____ setHandleThickness() __________________________________________________
 
-	void SplitPanel::setHandleThickness(int thickness)
+	void SplitPanel::setHandleThickness(QPix _thickness)
 	{
 		//TODO: Assert on negative value.
+
+		int thickness = _thickness.rawAligned();
 
 		if (thickness != m_handleThickness)
 		{
@@ -128,7 +130,7 @@ namespace wg
 
 	//____ setBrokerFunction() ___________________________________________________
 
-	void SplitPanel::setBrokerFunction(std::function<int(Widget * pFirst, Widget * pSecond, int totalLength, float fraction, int handleMovement)> func)
+	void SplitPanel::setBrokerFunction(std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float fraction, QPix handleMovement)> func)
 	{
 		m_brokerFunc = func;
 		_updateGeo();
@@ -227,13 +229,16 @@ namespace wg
 		int handleThickness = _handleThickness();
 
 		int totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h) - handleThickness;
+		QPix	length;
 		int firstChildLength;
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			firstChildLength = m_brokerFunc(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_splitFactor, handleMovement);
+			length = m_brokerFunc(m_firstChild.pWidget, m_secondChild.pWidget, QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
 		else
-			firstChildLength = _defaultBroker(m_firstChild.pWidget, m_secondChild.pWidget, totalLength, m_splitFactor, handleMovement);
+			length = _defaultBroker(m_firstChild.pWidget, m_secondChild.pWidget, QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+
+		firstChildLength = length.rawAligned();
 
 		secondChildLength = totalLength - firstChildLength;
 
@@ -281,11 +286,11 @@ namespace wg
 
 	//____ _defaultBroker() ___________________________________________________
 
-	int SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, int totalLength, float splitFactor, int handleMovement)
+	QPix SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)
 	{
 		int firstLength;
 
-		if (handleMovement == 0)
+		if (handleMovement.raw == 0)
 		{
 			switch (m_scaleBehavior)
 			{
@@ -301,7 +306,7 @@ namespace wg
 			}
 		}
 		else
-			firstLength = (m_bHorizontal ? m_firstChild.geo.w : m_firstChild.geo.h) + handleMovement;
+			firstLength = (m_bHorizontal ? m_firstChild.geo.w : m_firstChild.geo.h) + handleMovement.raw;
 
 		int minLengthFirst = 0;
 		int minLengthSecond = 0;

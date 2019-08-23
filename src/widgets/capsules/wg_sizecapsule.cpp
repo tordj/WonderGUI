@@ -24,6 +24,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char SizeCapsule::CLASSNAME[] = {"SizeCapsule"};
 
@@ -69,8 +70,9 @@ namespace wg
 
 	//____ setPreferredSize() _____________________________________________________
 
-	void SizeCapsule::setPreferredSize( SizeI size )
+	void SizeCapsule::setPreferredSize( Size _size )
 	{
+		SizeI size = qpixToRawAligned(_size);
 		if( size != m_preferred )
 		{
 			m_preferred = size;
@@ -80,18 +82,30 @@ namespace wg
 
 	//____ setSizes() _____________________________________________________________
 
-	void SizeCapsule::setSizes( SizeI min, SizeI preferred, SizeI max )
+	bool SizeCapsule::setSizes( Size _min, Size _preferred, Size _max )
 	{
-		m_min = min;
-		m_preferred = preferred;
-		m_max = max;
-		_requestResize();
+		if (_preferred.w > _max.w || _preferred.h > _max.h || _preferred.w < _min.w || _preferred.h < _min.h)
+			return false;
+
+		SizeI min = qpixToRawAligned(_min);
+		SizeI preferred = qpixToRawAligned(_preferred);
+		SizeI max = qpixToRawAligned(_max);
+
+		if (min != m_min || preferred != m_preferred || max != m_max)
+		{
+			m_min = min;
+			m_preferred = preferred;
+			m_max = max;
+			_requestResize();
+		}
+		return true;
 	}
 
 	//____ setMinSize() ___________________________________________________________
 
-	void SizeCapsule::setMinSize( SizeI size )
+	void SizeCapsule::setMinSize( Size _size )
 	{
+		SizeI size = qpixToRawAligned(_size);
 		if( size != m_min )
 		{
 			m_min = size;
@@ -101,8 +115,9 @@ namespace wg
 
 	//____ setMaxSize() ___________________________________________________________
 
-	void SizeCapsule::setMaxSize( SizeI size )
+	void SizeCapsule::setMaxSize( Size _size )
 	{
+		SizeI size = qpixToRawAligned(_size);
 		if( size != m_max )
 		{
 			m_max = size;

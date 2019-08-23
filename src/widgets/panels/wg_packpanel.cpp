@@ -31,6 +31,8 @@
 
 namespace wg
 {
+	using namespace Util;
+
 	INSTANTIATE_WEIGHTEDCHILDREN(PackPanelSlot, WeightedChildrenHolder)
 
 	template class SlotArray<PackPanelSlot>;
@@ -136,7 +138,7 @@ namespace wg
 
 				// Retrieve item lengths and find height of highest item.
 
-				m_pSizeBroker->setItemLengths( pItemArea, nItems, width );
+				_setItemLengths( pItemArea, nItems, width );
 
 				SizeBrokerItem * pI = pItemArea;
 
@@ -177,7 +179,7 @@ namespace wg
 
 				// Retrieve preferred length
 
-				height = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
+				height = _setPreferredLengths( pItemArea, nItems );
 
 				// Release temporary memory area
 
@@ -218,7 +220,7 @@ namespace wg
 
 				// Retrieve item lengths and find height of highest item.
 
-				m_pSizeBroker->setItemLengths( pItemArea, nItems, height );
+				_setItemLengths( pItemArea, nItems, height );
 
 				SizeBrokerItem * pI = pItemArea;
 
@@ -226,7 +228,7 @@ namespace wg
 				{
 					if( pS->bVisible )
 					{
-						int itemWidth = pS->paddedMatchingWidth( pI->output );
+						int itemWidth = pS->paddedMatchingWidth( pI->output.raw );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -259,7 +261,7 @@ namespace wg
 
 				// Retrieve preferred length
 
-				width = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
+				width = _setPreferredLengths( pItemArea, nItems );
 
 				// Release temporary memory area
 
@@ -571,14 +573,14 @@ namespace wg
 
 			// Retrieve preferred length and breadth
 
-			length = m_pSizeBroker->setPreferredLengths( pItemArea, nItems );
+			length = _setPreferredLengths( pItemArea, nItems );
 
 			SizeBrokerItem * pI = pItemArea;
 			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
 			{
 				if( pS->bVisible )
 				{
-					int b = m_bHorizontal?pS->paddedMatchingHeight(pI->output):pS->paddedMatchingWidth(pI->output);
+					int b = m_bHorizontal?pS->paddedMatchingHeight(pI->output.raw):pS->paddedMatchingWidth(pI->output.raw);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -729,7 +731,7 @@ namespace wg
 
 			// Retrieve length and set geo for all children, call _requestRender() and _setSize() where needed.
 
-			m_pSizeBroker->setItemLengths( pItemArea, nItems, givenLength );
+			_setItemLengths( pItemArea, nItems, givenLength );
 
 			SizeBrokerItem * pI = pItemArea;
 
@@ -743,15 +745,15 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->output;
+						geo.w = pI->output.raw;
 						geo.h = sz.h;
-						pos.x += pI->output;
+						pos.x += pI->output.raw;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->output;
-						pos.y += pI->output;
+						geo.h = pI->output.raw;
+						pos.y += pI->output.raw;
 					}
 					geo -= pS->padding;
 					geo += contentOfs;
@@ -809,9 +811,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = pS->preferredSize.w;
-					pI->min = pS->paddedMinSize().w;
-					pI->max = pS->paddedMaxSize().w;
+					pI->preferred = QPix::fromRaw(pS->preferredSize.w);
+					pI->min = QPix::fromRaw(pS->paddedMinSize().w);
+					pI->max = QPix::fromRaw(pS->paddedMaxSize().w);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -823,9 +825,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = pS->preferredSize.h;
-					pI->min = pS->paddedMinSize().h;
-					pI->max = pS->paddedMaxSize().h;
+					pI->preferred = QPix::fromRaw(pS->preferredSize.h);
+					pI->min = QPix::fromRaw(pS->paddedMinSize().h);
+					pI->max = QPix::fromRaw(pS->paddedMaxSize().h);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -845,9 +847,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = pS->paddedMatchingWidth(forcedBreadth);
-					pI->min = pS->paddedMinSize().w;
-					pI->max = pS->paddedMaxSize().w;
+					pI->preferred = QPix::fromRaw(pS->paddedMatchingWidth(forcedBreadth));
+					pI->min = QPix::fromRaw(pS->paddedMinSize().w);
+					pI->max = QPix::fromRaw(pS->paddedMaxSize().w);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -859,9 +861,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = pS->paddedMatchingHeight(forcedBreadth);
-					pI->min = pS->paddedMinSize().h;
-					pI->max = pS->paddedMaxSize().h;
+					pI->preferred = QPix::fromRaw(pS->paddedMatchingHeight(forcedBreadth));
+					pI->min = QPix::fromRaw(pS->paddedMinSize().h);
+					pI->max = QPix::fromRaw(pS->paddedMaxSize().h);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -870,5 +872,44 @@ namespace wg
 
 		return int(pI - pArray);
 	}
+
+	//____ _setItemLengths() ___________________________________________________________
+
+	int PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, int availableLength) const
+	{
+		QPix totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, QPix::fromRaw(availableLength) );
+
+		// Align outputs so we end up on pixel boundaries
+
+		int reminder = 0;
+		for (int i = 0; i < nItems; i++)
+		{
+			reminder += pItems->output.raw;
+			pItems->output.raw = reminder & 0xFFFFFFFC;
+			reminder &= 0x3;
+		}
+
+		return totalLength.raw & 0xFFFFFFFC;
+	}
+
+	//____ _setPreferredLengths() _______________________________________________________
+
+	int PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
+	{
+		QPix totalLength = m_pSizeBroker->setPreferredLengths(pItems, nItems);
+
+		// Align outputs so we end up on pixel boundaries
+
+		int reminder = 0;
+		for (int i = 0; i < nItems; i++)
+		{
+			reminder += pItems->output.raw;
+			pItems->output.raw = reminder & 0xFFFFFFFC;
+			reminder &= 0x3;
+		}
+
+		return totalLength.raw & 0xFFFFFFFC;
+	}
+
 
 } // namespace wg
