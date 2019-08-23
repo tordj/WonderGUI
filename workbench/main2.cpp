@@ -12,6 +12,7 @@
 #else
 #	include <SDL2/SDL.h>
 #	include <SDL2/SDL_image.h>
+#   include <GL/glew.h>
 #endif
 
 
@@ -165,7 +166,7 @@ int main(int argc, char** argv)
 	SDL_GLContext context = SDL_GL_CreateContext(pWin);
 
 
-#ifdef WIN32
+#ifndef __APPLE__
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 #endif
