@@ -228,7 +228,7 @@ namespace wg
 			pLast->stylePtr()->addToAttr( _state(pText), &attr );
 
 		Font * pFont = attr.pFont.rawPtr();
-		pFont->setSize(attr.size*Base::pixelQuartersPerPoint()/4);
+		pFont->setSize(attr.size);
 
 		Glyph_p pGlyph = _getGlyph( pFont, pLast->code() );
 		if( pGlyph )
@@ -337,7 +337,7 @@ namespace wg
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
 				}
 			}
@@ -485,7 +485,7 @@ namespace wg
 								bRecalcColor = true;		// Font tint-color is changed.
 
 							pFont = attr.pFont;
-							pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+							pFont->setSize(attr.size);
 							pPrevGlyph = 0;								// No kerning against across different fonts or character of different size.
 						}
 
@@ -1101,7 +1101,7 @@ namespace wg
 				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
@@ -1241,7 +1241,7 @@ namespace wg
 				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
@@ -1486,7 +1486,7 @@ namespace wg
 				if (pFont != attr.pFont || attr.size != oldFontSize)
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
@@ -1705,7 +1705,7 @@ namespace wg
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or fontsizes.
 				}
 
@@ -2023,7 +2023,7 @@ namespace wg
 				if( pFont != attr.pFont || attr.size != oldFontSize )
 				{
 					pFont = attr.pFont;
-					pFont->setSize(attr.size*Base::pixelQuartersPerPoint() / 4);
+					pFont->setSize(attr.size);
 					pPrevGlyph = 0;								// No kerning against across different fonts or characters of different size.
 				}
 			}

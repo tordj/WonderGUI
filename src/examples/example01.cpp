@@ -214,7 +214,7 @@ void translateEvents( RootPanel_p pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				Base::inputHandler()->setPointer( pRoot, CoordI(e.motion.x,e.motion.y));
+				Base::inputHandler()->setPointer( pRoot, Coord(QPix::fromPixel(e.motion.x), QPix::fromPixel(e.motion.y)));
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:

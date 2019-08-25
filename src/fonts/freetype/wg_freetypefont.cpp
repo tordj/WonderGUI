@@ -181,7 +181,7 @@ namespace wg
 			if( size == m_ftCharSize )
 				return true;
 
-			int ftSize = size + m_sizeOffset;
+			int ftSize = (size + m_sizeOffset)*Base::pixelQuartersPerPoint()/4;
 
 			// Sanity check
 

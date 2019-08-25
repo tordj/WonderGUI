@@ -1095,7 +1095,7 @@ bool init_wondergui()
 	Base::init();
 
 	Context_p pContext = Context::create();
-	pContext->setScale(1.5);
+	pContext->setScale(1.0);
 	Base::setActiveContext(pContext);
 
 
@@ -1267,7 +1267,7 @@ bool process_system_events(const RootPanel_p& pRoot)
 			return false;
 
 		case SDL_MOUSEMOTION:
-			pInput->setPointer(pRoot, CoordI(e.motion.x, e.motion.y));
+			pInput->setPointer(pRoot, Coord(QPix::fromPixel(e.motion.x), QPix::fromPixel(e.motion.y)));
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:
@@ -1280,7 +1280,7 @@ bool process_system_events(const RootPanel_p& pRoot)
 
 		case SDL_MOUSEWHEEL:
 		{
-			CoordI distance(e.wheel.x, e.wheel.y);
+			Coord distance(e.wheel.x, e.wheel.y);
 			if (e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED)
 				distance *= -1;
 
