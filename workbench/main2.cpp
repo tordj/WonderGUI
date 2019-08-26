@@ -423,6 +423,43 @@ int main(int argc, char** argv)
 
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
+	
+	// Test ShadowLayer
+	
+	{
+		
+		auto pShadowLayer = ShadowLayer::create();
+		auto pFrontLayer = FlexPanel::create();
+		auto pBaseLayer = FlexPanel::create();
+		
+		pRoot->child = pShadowLayer;
+	
+		pShadowLayer->base = pBaseLayer;
+		pShadowLayer->front = pFrontLayer;
+		
+		
+		auto pFiller1 = Filler::create();
+		auto pFiller2 = Filler::create();
+		auto pFiller3 = Filler::create();
+		
+		pFiller1->setSkin(ColorSkin::create(Color::DarkKhaki));
+		pFrontLayer->children.addMovable(pFiller1, {0,0,50,50} );
+
+		pFiller2->setSkin(ColorSkin::create(Color::DarkSlateBlue));
+		pFrontLayer->children.addMovable(pFiller2, {50,50,50,50} );
+
+		pFiller3->setSkin(ColorSkin::create(Color::DarkSeaGreen));
+		pFrontLayer->children.addMovable(pFiller3, {100,100,50,50} );
+
+		auto pBackground = Filler::create();
+		pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
+		pBaseLayer->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+		
+	}
+	
+	
+	
+	
 	// Test IChild and IChildIterator baseclasses
 /*
 	{
@@ -450,7 +487,7 @@ int main(int argc, char** argv)
 */
 
 	// Test drag n drop support
-
+/*
 	{
 		static Widget_p s_pPicked = nullptr;
 		static Coord	s_pickOfs;
@@ -509,7 +546,7 @@ int main(int argc, char** argv)
 
 
 	}
-
+*/
 	
 	
 /*

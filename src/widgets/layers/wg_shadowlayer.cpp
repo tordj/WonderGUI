@@ -38,7 +38,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	ShadowLayer::ShadowLayer() : front(&m_baseSlot, this), shadows(this,&m_shadows)
+	ShadowLayer::ShadowLayer() : front(&m_frontSlot, this), shadows(this,&m_shadows)
 	{
 		m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
 	}
@@ -169,7 +169,7 @@ namespace wg
 			Layer::_releaseChild(pSlot);
 		else
 		{
-			pSlot->replaceWidget(this, nullptr);
+			m_frontSlot.replaceWidget(this, nullptr);
 			_requestRender({ 0, 0, m_size } );
 			_requestResize();
 		}
@@ -236,10 +236,23 @@ namespace wg
 	{
 		for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
 		{
-			SizeI sz = it->widget()->size();
-			sz += it->shadow()->_contentPadding();
+            CoordI pos;
+            _descendantPos(it->widget(), pos);
+            
+            RectI geo = it->shadow()->_contentRect( {pos, it->widget()->m_size}, StateEnum::Normal );
+            _setShadowGeo(&(*it), geo);
 
-
+            Patches patches;
+            patches.add(geo);
+            
+            // Remove portions of patches that are covered by opaque front widgets
+            
+            m_frontSlot.pWidget->_maskPatches(patches, m_size, m_size, _getBlendMode());
+            
+            // Make request render calls
+            
+            for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+                _requestRender(*pRect);
 		}
 
 
@@ -249,7 +262,22 @@ namespace wg
 
 	void ShadowLayer::_willRemoveShadows(int ofs, int nb)
 	{
-
+        for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
+        {
+            RectI geo = _shadowGeo(&(*it));
+            
+            Patches patches;
+            patches.add(geo);
+            
+            // Remove portions of patches that are covered by opaque front widgets
+            
+            m_frontSlot.pWidget->_maskPatches(patches, m_size, m_size, _getBlendMode());
+            
+            // Make request render calls
+            
+            for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+                _requestRender(*pRect);
+        }
 	}
 
 	//____ _cloneContent() ____________________________________________________
@@ -267,6 +295,71 @@ namespace wg
 		{
 			case MsgType::Tick:
 			{
+                //TODO: Should not be on tick, but on pre-render stage.
+                //TODO: Needs to work with absent frontLayer;
+                //TODO: Should check that shadow casting children are descendants of our frontLayer, not us.
+
+                // Check for removed children and changes to geo that will affect shadows.
+                
+                Patches patches;
+
+                for( auto it = m_shadows.begin() ; it < m_shadows.end() ; it++ )
+                {
+                    Widget * pWidget = it->widget();
+                    Shadow * pShadow = &(*it);
+                    
+                    // Remove shadow for deleted widget.
+                    
+                    if( pWidget == nullptr )
+                    {
+                        patches.add( _shadowGeo(pShadow) );
+                        it = m_shadows.erase(it);
+                    }
+                    
+                    //
+                    
+                    CoordI pos;
+                    if( _descendantPos(pWidget, pos))
+                    {
+                        // Widget is still our descendant, check
+                        // so its geo has not changed.
+                        
+                        RectI geo = {pos, pWidget->m_size };
+                        RectI oldGeo = _shadowGeo(pShadow);
+                        if( geo != oldGeo )
+                        {
+                            patches.add(oldGeo);
+                            patches.add(geo);
+                            _setShadowGeo(pShadow, geo);
+                        }
+                    }
+                    else
+                    {
+                        // Widget is currently not a descendant of us,
+                        // hide the shadow.
+                        
+                        RectI geo = _shadowGeo(pShadow);
+                        if( !geo.isEmpty() )
+                        {
+                            patches.add(geo);
+                            _setShadowGeo(pShadow, {0,0,0,0} );
+                        }
+                    }
+                }
+                
+                // Early out if there is nothing to update in shadow layer.
+                
+                if( patches.isEmpty() )
+                    break;
+                
+                // Mask foreground from shadow updates and request render on the remains.
+                
+                if( m_frontSlot.pWidget )
+                    m_frontSlot.pWidget->_maskPatches(patches, m_size, m_size, BlendMode::Blend);
+                
+                for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+                    _requestRender(*pRect);
+
 				break;
 			}
 
@@ -321,15 +414,34 @@ namespace wg
 		if (m_baseSlot.pWidget)
 			m_baseSlot.pWidget->_render(pDevice, contentGeo, contentGeo);
 
-		// Render shadows
+        // Update shadow layer
+/*
+        auto oldCanvas = pDevice->canvas();
+        auto oldBlendMode = pDevice->blendMode();
+        
+        pDevice->setCanvas(m_pShadowSurface);
+        pDevice->setBlendMode(BlendMode::Max);
 
+        for( auto& shadow : m_shadows )
+        {
+            shadow.shadow()->_render(pDevice, _shadowGeo(&shadow) + contentGeo.pos(), StateEnum::Normal);
+        }
+        
+        pDevice->setBlendMode(oldBlendMode);
+        pDevice->setCanvas(oldCanvas);
 
+        // Render shadows
+
+        pDevice->setBlitSource(m_pShadowSurface);
+        pDevice->blit( {0,0} );
+*/
 		//Render front slot widgets
 
-		if (m_frontSlot.pWidget)
+        popClipList(pDevice, clipPop);
+
+        if (m_frontSlot.pWidget)
 			m_frontSlot.pWidget->_render(pDevice, contentGeo, contentGeo);
 
-		popClipList(pDevice, clipPop);
 	}
 
 

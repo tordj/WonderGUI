@@ -108,6 +108,7 @@ namespace wg
 				void		_releaseChild( Slot * pSlot );
 			*/
 
+            bool                    _descendantPos( Widget * pDescendant, CoordI& pos );         // Descendants position in our local coordinate system, return false if isn't a descendant.
 
 			virtual CoordI			_childGlobalPos( Slot * pSlot ) const;
 

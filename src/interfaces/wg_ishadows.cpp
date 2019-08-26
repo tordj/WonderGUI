@@ -30,7 +30,7 @@ namespace wg
 	{
 		if (!m_pShadows->empty())
 		{
-			m_pHolder->_willRemoveShadows(0, m_pShadows->size());
+			m_pHolder->_willRemoveShadows(0, (int) m_pShadows->size());
 			m_pShadows->clear();
 		}
 	}
