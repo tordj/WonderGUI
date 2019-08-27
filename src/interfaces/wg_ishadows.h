@@ -28,6 +28,7 @@
 #include <wg_pointers.h>
 #include <wg_widget.h>
 #include <wg_skin.h>
+#include <wg_shadow.h>
 
 #include <vector>
 
@@ -38,7 +39,7 @@ namespace wg
 	typedef	WeakInterfacePtr<IShadows>		IShadows_wp;
 
 	//____ ShadowHolder ___________________________________________________
-
+	
 	class ShadowHolder /** @private */
 	{
 	public:
@@ -46,6 +47,9 @@ namespace wg
 
 		virtual void	_didAddShadows(int nb) = 0;
 		virtual void	_willRemoveShadows(int ofs, int nb) = 0;
+		
+		inline void		_setShadowGeo( Shadow * pShadow, const RectI& geo ) { pShadow->m_geo = geo; }
+		inline RectI	_shadowGeo( Shadow * pShadow ) { return pShadow->m_geo; }
 	};
 
 	//____ IShadows ______________________________________________________________
@@ -53,21 +57,6 @@ namespace wg
 	class IShadows : public Interface
 	{
 	public:
-
-		class Shadow
-		{
-		public:
-			/** @private */
-			Shadow(Widget* pWidget, Skin* pSkin) : m_pWidget(pWidget), m_pSkin(pSkin) {}
-
-			Widget_p	widget() const { return m_pWidget.rawPtr(); }
-			Skin_p		shadow() const { return m_pSkin; }
-
-		private:
-			Widget_wp	m_pWidget;
-			Skin_p		m_pSkin;
-			RectI		m_geo;
-		};
 
 		using		iterator = std::vector<Shadow>::iterator;
 		using		const_iterator = std::vector<Shadow>::const_iterator;
@@ -83,7 +72,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		int			size() const { return m_pShadows->size(); }
+		int			size() const { return (int) m_pShadows->size(); }
 		int			isEmpty() const { return m_pShadows->empty(); }
 
 		void		clear();

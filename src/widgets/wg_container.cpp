@@ -92,62 +92,94 @@ namespace wg
 		return false;
 	}
 
+    //____ _descendantPos() _____________________________________________________
+    
+    bool Container::_descendantPos( Widget * pDescendant, CoordI& pos )
+    {
+        pos.clear();
+        
+        Widget * p = pDescendant;
+        while( p != this )
+        {
+            if( p == nullptr )
+                return false;
+            
+            auto pHolder = p->_holder();
+            pos += pHolder->_childPos( p->_slot() );
+            p = pHolder->_childParent();
+        }
 
+        return true;
+    }
 
-	 CoordI Container::_childGlobalPos( Slot * pSlot ) const
-	 {
-		 return _childPos(pSlot) + _globalPos();
-	 }
+    //____ _childGlobalPos() _______________________________________________________
+    
+    CoordI Container::_childGlobalPos( Slot * pSlot ) const
+    {
+        return _childPos(pSlot) + _globalPos();
+    }
 
-	 bool Container::_isChildVisible( Slot * pSlot ) const
-	 {
-		 return true;
-	 }
+    //____ _isChildVisible() ________________________________________________________
+    
+    bool Container::_isChildVisible( Slot * pSlot ) const
+    {
+        return true;
+    }
 
+    //____ _childWindowSection() ____________________________________________________
+    
 	RectI Container::_childWindowSection( Slot * pSlot ) const
 	{
 		return RectI( 0,0, _childSize( pSlot ) );
 	}
 
-	 Container * Container::_childParent()
-	 {
-		 return this;
-	 }
+    //____ _childParent() ____________________________________________________________
 
-	 RootPanel * Container::_root()
-	 {
-		 return m_pHolder ? m_pHolder->_root() : nullptr;
-	 }
+    Container * Container::_childParent()
+    {
+        return this;
+    }
 
-	 bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
-	 {
-		 return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
-	 }
+    //____ _root() ___________________________________________________________________
 
-	 bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
-	 {
-		 return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
-	 }
+    RootPanel * Container::_root()
+    {
+        return m_pHolder ? m_pHolder->_root() : nullptr;
+    }
+    
+    //____ _childRequestFocus() ______________________________________________________
 
-	 void Container::_childRequestInView( Slot * pSlot )
-	 {
-		 if( m_pHolder )
-		 {
-			 RectI area( _childPos( pSlot ), _childSize( pSlot ) );
-			 m_pHolder->_childRequestInView( m_pSlot, area, area );
-		 }
-	 }
+    bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
+    {
+        return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
+    }
 
-	 void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
-	 {
-		 if( m_pHolder )
-		 {
-			 CoordI pos( _childPos( pSlot ) );
-			 m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
-		 }
-	 }
+    //____ _ChildReleaseFocus() ______________________________________________________
+    
+    bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
+    {
+        return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
+    }
 
+    //____ _childRequestInView() _____________________________________________________
+    
+    void Container::_childRequestInView( Slot * pSlot )
+    {
+        if( m_pHolder )
+        {
+            RectI area( _childPos( pSlot ), _childSize( pSlot ) );
+            m_pHolder->_childRequestInView( m_pSlot, area, area );
+        }
+    }
 
+    void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+    {
+        if( m_pHolder )
+        {
+            CoordI pos( _childPos( pSlot ) );
+            m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
+        }
+    }
 
 
 	//____ _isPanel() ______________________________________________________________

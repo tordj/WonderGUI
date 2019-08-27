@@ -278,6 +278,11 @@
 		17169430229C6DA400196AB0 /* wg_popuplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17169428229C6DA400196AB0 /* wg_popuplayer.cpp */; };
 		17169431229C6DA400196AB0 /* wg_layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17169429229C6DA400196AB0 /* wg_layer.cpp */; };
 		17169432229C6DA400196AB0 /* wg_dragndroplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1716942A229C6DA400196AB0 /* wg_dragndroplayer.h */; };
+		1741F0212313D66A00029A27 /* wg_shadowlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F01F2313D66900029A27 /* wg_shadowlayer.cpp */; };
+		1741F0222313D66A00029A27 /* wg_shadowlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0202313D66900029A27 /* wg_shadowlayer.h */; };
+		1741F0252313D6B200029A27 /* wg_ishadows.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0232313D6B100029A27 /* wg_ishadows.h */; };
+		1741F0262313D6B200029A27 /* wg_ishadows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F0242313D6B100029A27 /* wg_ishadows.cpp */; };
+		1741F0282313E1BB00029A27 /* wg_shadow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0272313E1BA00029A27 /* wg_shadow.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -553,6 +558,11 @@
 		17169428229C6DA400196AB0 /* wg_popuplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_popuplayer.cpp; sourceTree = "<group>"; };
 		17169429229C6DA400196AB0 /* wg_layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_layer.cpp; sourceTree = "<group>"; };
 		1716942A229C6DA400196AB0 /* wg_dragndroplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_dragndroplayer.h; sourceTree = "<group>"; };
+		1741F01F2313D66900029A27 /* wg_shadowlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_shadowlayer.cpp; sourceTree = "<group>"; };
+		1741F0202313D66900029A27 /* wg_shadowlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_shadowlayer.h; sourceTree = "<group>"; };
+		1741F0232313D6B100029A27 /* wg_ishadows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_ishadows.h; sourceTree = "<group>"; };
+		1741F0242313D6B100029A27 /* wg_ishadows.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_ishadows.cpp; sourceTree = "<group>"; };
+		1741F0272313E1BA00029A27 /* wg_shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_shadow.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -734,6 +744,8 @@
 				17169321229C699900196AB0 /* wg_irovaluedisplay.h */,
 				1716931B229C699800196AB0 /* wg_iselectablechildren.h */,
 				17169326229C699900196AB0 /* wg_iselectablechildren.impl.h */,
+				1741F0242313D6B100029A27 /* wg_ishadows.cpp */,
+				1741F0232313D6B100029A27 /* wg_ishadows.h */,
 				17169323229C699900196AB0 /* wg_islidespan.cpp */,
 				17169324229C699900196AB0 /* wg_islidespan.h */,
 				1716932D229C699A00196AB0 /* wg_ispan.cpp */,
@@ -867,6 +879,7 @@
 				17169251229C68DD00196AB0 /* wg_resloader.h */,
 				17169276229C68E400196AB0 /* wg_scrollbartarget.cpp */,
 				17169216229C68D600196AB0 /* wg_scrollbartarget.h */,
+				1741F0272313E1BA00029A27 /* wg_shadow.h */,
 				1716924B229C68DC00196AB0 /* wg_slot.h */,
 				17169259229C68DF00196AB0 /* wg_slotarray.h */,
 				17169264229C68E100196AB0 /* wg_slotarray.impl.h */,
@@ -937,6 +950,8 @@
 		17F41B79225354AB008D1DE7 /* Layers */ = {
 			isa = PBXGroup;
 			children = (
+				1741F01F2313D66900029A27 /* wg_shadowlayer.cpp */,
+				1741F0202313D66900029A27 /* wg_shadowlayer.h */,
 				17169424229C6DA300196AB0 /* wg_dragndroplayer.cpp */,
 				1716942A229C6DA400196AB0 /* wg_dragndroplayer.h */,
 				17169429229C6DA400196AB0 /* wg_layer.cpp */,
@@ -972,6 +987,7 @@
 			files = (
 				17169420229C6B4A00196AB0 /* wg_stackpanel.h in Headers */,
 				1716936F229C69EA00196AB0 /* wg_staticcolorskin.h in Headers */,
+				1741F0282313E1BB00029A27 /* wg_shadow.h in Headers */,
 				17169303229C693500196AB0 /* wg_ctext.h in Headers */,
 				17169350229C699B00196AB0 /* wg_ivaluedisplay.h in Headers */,
 				17169336229C699B00196AB0 /* wg_irotextdisplay.h in Headers */,
@@ -988,6 +1004,7 @@
 				17169334229C699B00196AB0 /* wg_iweightedchildren.h in Headers */,
 				171692A2229C68E500196AB0 /* wg_chain.h in Headers */,
 				17169281229C68E500196AB0 /* wg_patches.h in Headers */,
+				1741F0222313D66A00029A27 /* wg_shadowlayer.h in Headers */,
 				171693D8229C6AA700196AB0 /* wg_animplayer.h in Headers */,
 				171692CD229C68E500196AB0 /* wg_blob.h in Headers */,
 				171692C4229C68E500196AB0 /* wg_color.h in Headers */,
@@ -1042,6 +1059,7 @@
 				1716942D229C6DA400196AB0 /* wg_layer.h in Headers */,
 				171693DD229C6AA700196AB0 /* wg_fpsdisplay.h in Headers */,
 				1716929D229C68E500196AB0 /* wg_msglogger.h in Headers */,
+				1741F0252313D6B200029A27 /* wg_ishadows.h in Headers */,
 				17169305229C693500196AB0 /* wg_cicondisplay.h in Headers */,
 				171692AF229C68E500196AB0 /* wg_surfacefactory.h in Headers */,
 				17169352229C699B00196AB0 /* wg_ichild.h in Headers */,
@@ -1189,6 +1207,7 @@
 				17169286229C68E500196AB0 /* wg_gfxstreamwriter.cpp in Sources */,
 				171692E1229C68E500196AB0 /* wg_textstylemanager.cpp in Sources */,
 				1716927D229C68E500196AB0 /* wg_charseq.cpp in Sources */,
+				1741F0262313D6B200029A27 /* wg_ishadows.cpp in Sources */,
 				171693D4229C6AA700196AB0 /* wg_rulerlabels.cpp in Sources */,
 				17169290229C68E500196AB0 /* wg_inputhandler.cpp in Sources */,
 				171692FB229C693500196AB0 /* wg_cicondisplay.cpp in Sources */,
@@ -1267,6 +1286,7 @@
 				17169345229C699B00196AB0 /* wg_islidespan.cpp in Sources */,
 				171692FC229C693500196AB0 /* wg_ccanvas.cpp in Sources */,
 				17169414229C6B4A00196AB0 /* wg_stackpanel.cpp in Sources */,
+				1741F0212313D66A00029A27 /* wg_shadowlayer.cpp in Sources */,
 				171692DA229C68E500196AB0 /* wg_dummyfont.cpp in Sources */,
 				171692E4229C68E500196AB0 /* wg_msglogger.cpp in Sources */,
 				17169347229C699B00196AB0 /* wg_irotextdisplay.cpp in Sources */,

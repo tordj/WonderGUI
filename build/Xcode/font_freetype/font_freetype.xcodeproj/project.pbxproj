@@ -7,14 +7,14 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		17F41BED22535990008D1DE7 /* wg_freetypefont.h in Headers */ = {isa = PBXBuildFile; fileRef = 17F41BEB22535990008D1DE7 /* wg_freetypefont.h */; };
-		17F41BEE22535990008D1DE7 /* wg_freetypefont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17F41BEC22535990008D1DE7 /* wg_freetypefont.cpp */; };
+		1741F0112313D41F00029A27 /* wg_freetypefont.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F00F2313D41F00029A27 /* wg_freetypefont.h */; };
+		1741F0122313D41F00029A27 /* wg_freetypefont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F0102313D41F00029A27 /* wg_freetypefont.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1741F00F2313D41F00029A27 /* wg_freetypefont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_freetypefont.h; path = ../../../src/fonts/freetype/wg_freetypefont.h; sourceTree = "<group>"; };
+		1741F0102313D41F00029A27 /* wg_freetypefont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_freetypefont.cpp; path = ../../../src/fonts/freetype/wg_freetypefont.cpp; sourceTree = "<group>"; };
 		17F41BE222535782008D1DE7 /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17F41BEB22535990008D1DE7 /* wg_freetypefont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_freetypefont.h; path = ../../../../src/fonts/freetype/wg_freetypefont.h; sourceTree = "<group>"; };
-		17F41BEC22535990008D1DE7 /* wg_freetypefont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_freetypefont.cpp; path = ../../../../src/fonts/freetype/wg_freetypefont.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -31,7 +31,8 @@
 		17F41BD922535782008D1DE7 = {
 			isa = PBXGroup;
 			children = (
-				17F41BEA225357A4008D1DE7 /* Code */,
+				1741F0102313D41F00029A27 /* wg_freetypefont.cpp */,
+				1741F00F2313D41F00029A27 /* wg_freetypefont.h */,
 				17F41BE322535782008D1DE7 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -44,15 +45,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		17F41BEA225357A4008D1DE7 /* Code */ = {
-			isa = PBXGroup;
-			children = (
-				17F41BEC22535990008D1DE7 /* wg_freetypefont.cpp */,
-				17F41BEB22535990008D1DE7 /* wg_freetypefont.h */,
-			);
-			path = Code;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
@@ -60,7 +52,7 @@
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17F41BED22535990008D1DE7 /* wg_freetypefont.h in Headers */,
+				1741F0112313D41F00029A27 /* wg_freetypefont.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -120,7 +112,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				17F41BEE22535990008D1DE7 /* wg_freetypefont.cpp in Sources */,
+				1741F0122313D41F00029A27 /* wg_freetypefont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -79,7 +79,7 @@ namespace wg
 
 		// Calculate baseLength and extraLengthPerWeightUnit
 
-		QPix unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : 0;
+		QPix unifiedLength = nUnifiedItems > 0 ? (totalLength - staticLength) / nUnifiedItems : QPix(0);
 		QPix paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
 		float paddingPerWeightUnit = extraWeight > 0 ? float(paddingLength) / extraWeight : 0.f;
 

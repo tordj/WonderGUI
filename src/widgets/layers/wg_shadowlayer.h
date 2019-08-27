@@ -80,9 +80,9 @@ namespace wg
 
 		// Overloaded from ShadowHolder
 
-		Object * _object() override;
-		void	_didAddShadows(int nb) override;
-		void	_willRemoveShadows(int ofs, int nb) override;
+		Object *        _object() override;
+		void	        _didAddShadows(int nb) override;
+		void	        _willRemoveShadows(int ofs, int nb) override;
 
 		// Overloaded from Widget
 
@@ -100,9 +100,9 @@ namespace wg
 
 		LayerSlot       m_frontSlot;
 		RouteId			m_tickRouteId;
-		Surface_p		m_shadowSurface;
+		Surface_p		m_pShadowSurface;
 
-		std::vector<IShadows::Shadow>	m_shadows;
+		std::vector<Shadow>	m_shadows;
 	};
 
 
