@@ -92,6 +92,7 @@ namespace wg
 		SizeI			_preferredSize() const override;
 		SizeI			_minSize() const override;
 		SizeI			_maxSize() const override;
+		void			_setSize(const SizeI& size) override;
 
 		void            _cloneContent( const Widget * _pOrg ) override;
 		void            _render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;

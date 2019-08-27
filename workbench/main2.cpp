@@ -183,7 +183,8 @@ int main(int argc, char** argv)
 	Base::init();
 
 	Context_p pContext = Context::create();
-	pContext->setScale(1.25);
+	pContext->setScale(1.0);
+	pContext->setSurfaceFactory(GlSurfaceFactory::create());
 	Base::setActiveContext(pContext);
 
 
@@ -427,7 +428,16 @@ int main(int argc, char** argv)
 	// Test ShadowLayer
 	
 	{
-		
+		auto pSDLSurf = IMG_Load("../resources/splash.png");
+		convertSDLFormat(&pixelDesc, pSDLSurf->format);
+		Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+		SDL_FreeSurface(pSDLSurf);
+		BlockSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
+		pShadowSkin->setContentPadding({0,128,128,0});
+		pImgSurface->setScaleMode(ScaleMode::Nearest);
+
+
+
 		auto pShadowLayer = ShadowLayer::create();
 		auto pFrontLayer = FlexPanel::create();
 		auto pBaseLayer = FlexPanel::create();
@@ -455,6 +465,9 @@ int main(int argc, char** argv)
 		pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
 		pBaseLayer->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 		
+		pShadowLayer->shadows.add( pFiller1, pShadowSkin );
+		pShadowLayer->shadows.add( pFiller2, pShadowSkin );
+		pShadowLayer->shadows.add( pFiller3, pShadowSkin );
 	}
 	
 	

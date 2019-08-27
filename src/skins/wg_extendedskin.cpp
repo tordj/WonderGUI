@@ -173,7 +173,7 @@ namespace wg
 
 	CoordI ExtendedSkin::_contentOfs( State state ) const
 	{
-		return pointsToRawAligned(CoordI( m_contentPadding.left, m_contentPadding.right)) + pointsToRawAligned(m_contentShift[_stateToIndex(state)]);
+		return pointsToRawAligned(CoordI( m_contentPadding.left, m_contentPadding.top)) + pointsToRawAligned(m_contentShift[_stateToIndex(state)]);
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

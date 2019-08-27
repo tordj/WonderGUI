@@ -801,6 +801,14 @@ double Util::powerOfTen(int num){
 		return { nRects, pRects, allocSize };
 	}
 	
+	//____ pushClipList() __________________________________________________________________
+
+	Util::ClipPopData Util::pushClipList(GfxDevice * pDevice)
+	{
+		return { pDevice->clipListSize(), pDevice->clipList(), 0 };
+	}
+
+
 	//____ popClipList() ____________________________________________________________________
 	
 	void Util::popClipList( GfxDevice * pDevice, const ClipPopData& popData )

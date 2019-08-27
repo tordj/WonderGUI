@@ -90,8 +90,8 @@ namespace wg
 
 	//____ setSurfaceFactory() ________________________________________________
 
-	void Context::setSurfaceFactory(SurfaceFactory * pDevice)
+	void Context::setSurfaceFactory(SurfaceFactory * pSurfaceFactory)
 	{
-		m_pSurfaceFactory = m_pSurfaceFactory;
+		m_pSurfaceFactory = pSurfaceFactory;
 	}
 }

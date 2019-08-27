@@ -27,6 +27,7 @@
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_base.h>
+#include <wg_context.h>
 
 #include <algorithm>
 
@@ -154,6 +155,17 @@ namespace wg
 		return SizeI::max(maxFront, maxBase);
 	}
 
+	//____ _setSize() _______________________________________________________________
+
+	void ShadowLayer::_setSize(const SizeI& size)
+	{
+		if (size != m_size)
+			m_pShadowSurface = nullptr;
+
+		Layer::_setSize(size);
+	}
+
+
 	//____ _childRequestResize() ______________________________________________
 
 	void ShadowLayer::_childRequestResize(Slot * pSlot)
@@ -239,8 +251,12 @@ namespace wg
             CoordI pos;
             _descendantPos(it->widget(), pos);
             
-            RectI geo = it->shadow()->_contentRect( {pos, it->widget()->m_size}, StateEnum::Normal );
-            _setShadowGeo(&(*it), geo);
+//            RectI geo = it->shadow()->_contentRect( {pos, it->widget()->m_size}, StateEnum::Normal );
+
+			Skin * pSkin = it->shadow();
+			RectI geo = { pos - pSkin->_contentOfs(StateEnum::Normal), pSkin->_sizeForContent(it->widget()->m_size) };
+
+			_setShadowGeo(&(*it), geo);
 
             Patches patches;
             patches.add(geo);
@@ -324,7 +340,12 @@ namespace wg
                         // Widget is still our descendant, check
                         // so its geo has not changed.
                         
-                        RectI geo = {pos, pWidget->m_size };
+//                        RectI geo = {pos, pWidget->m_size };
+
+						Skin * pSkin = pShadow->shadow();
+						RectI geo = { pos - pSkin->_contentOfs(StateEnum::Normal), pSkin->_sizeForContent(pWidget->m_size) };
+
+
                         RectI oldGeo = _shadowGeo(pShadow);
                         if( geo != oldGeo )
                         {
@@ -415,26 +436,58 @@ namespace wg
 			m_baseSlot.pWidget->_render(pDevice, contentGeo, contentGeo);
 
         // Update shadow layer
-/*
-        auto oldCanvas = pDevice->canvas();
-        auto oldBlendMode = pDevice->blendMode();
-        
-        pDevice->setCanvas(m_pShadowSurface);
-        pDevice->setBlendMode(BlendMode::Max);
 
-        for( auto& shadow : m_shadows )
-        {
-            shadow.shadow()->_render(pDevice, _shadowGeo(&shadow) + contentGeo.pos(), StateEnum::Normal);
-        }
-        
-        pDevice->setBlendMode(oldBlendMode);
-        pDevice->setCanvas(oldCanvas);
+		bool bFullSurfaceUpdate = !m_pShadowSurface;
 
-        // Render shadows
+		if (!m_pShadowSurface)
+		{
+			auto pSurfaceFactory = Base::activeContext()->surfaceFactory();
 
-        pDevice->setBlitSource(m_pShadowSurface);
-        pDevice->blit( {0,0} );
-*/
+			if (pSurfaceFactory)
+				m_pShadowSurface = pSurfaceFactory->createSurface(rawToPixels(m_size), PixelFormat::A8);
+		}
+		
+		if( m_pShadowSurface )
+		{
+			ClipPopData orgClipList = pushClipList(pDevice);
+			RectI		fullClipList;
+
+			if (bFullSurfaceUpdate)
+			{
+				fullClipList = { 0,0, rawToPixels(m_size) };
+				pDevice->setClipList(1, &fullClipList);
+			}
+
+			auto oldCanvas = pDevice->canvas();
+			auto oldBlendMode = pDevice->blendMode();
+
+			pDevice->setCanvas(m_pShadowSurface);
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(Color::Transparent);
+
+			pDevice->setBlendMode(BlendMode::Max);
+
+			for( auto& shadow : m_shadows )
+			{
+//				RectI geo = rawToPixels(_shadowGeo(&shadow) + contentGeo.pos());
+//				pDevice->fill( rawToPixels(_shadowGeo(&shadow) + contentGeo.pos()), Color::White);
+				
+				shadow.shadow()->_render(pDevice, _shadowGeo(&shadow) + contentGeo.pos(), StateEnum::Normal);
+			}	
+
+			if (bFullSurfaceUpdate)
+				popClipList(pDevice, orgClipList);
+
+			pDevice->setBlendMode(oldBlendMode);
+			pDevice->setCanvas(oldCanvas);
+
+			// Render shadows
+
+			pDevice->setBlitSource(m_pShadowSurface);
+			pDevice->blit( {0,0} );
+
+		}
+
 		//Render front slot widgets
 
         popClipList(pDevice, clipPop);

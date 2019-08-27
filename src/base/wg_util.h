@@ -338,6 +338,7 @@ namespace wg
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
 		ClipPopData limitClipList( GfxDevice * pDevice, const RectI& clip );
+		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
 		
 
