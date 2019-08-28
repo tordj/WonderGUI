@@ -79,7 +79,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual bool		setCanvas(Surface * pCanvas) = 0;
+		virtual bool		setCanvas(Surface * pCanvas, bool bResetClipRects = true ) = 0;
 		Surface_p			canvas() const { return m_pCanvas; }
 
 		inline SizeI		canvasSize() const { return m_canvasSize; }

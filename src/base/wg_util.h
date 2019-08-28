@@ -43,7 +43,7 @@ namespace wg
 
 		inline BorderI pixelAligned(const BorderI& input)
 		{
-			return { input.top & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC };
+			return { input.top & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC };
 		}
 
 		inline SizeI pixelAligned(const SizeI input)
@@ -180,8 +180,8 @@ namespace wg
 
 		inline BorderI pointsToPixels(const BorderI& points)
 		{
-			return { (points.right * Base::pixelQuartersPerPoint()) >> 2, (points.bottom * Base::pixelQuartersPerPoint()) >> 2,
-					 (points.left * Base::pixelQuartersPerPoint()) >> 2, (points.top * Base::pixelQuartersPerPoint()) >> 2 };
+			return { (points.top * Base::pixelQuartersPerPoint()) >> 2, (points.right * Base::pixelQuartersPerPoint()) >> 2,
+					 (points.bottom * Base::pixelQuartersPerPoint()) >> 2, (points.left * Base::pixelQuartersPerPoint()) >> 2 };
 		}
 
 /*

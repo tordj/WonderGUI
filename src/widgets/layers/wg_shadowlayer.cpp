@@ -78,7 +78,7 @@ namespace wg
 
 		return 0;
 	}
-
+    
 	//____ _matchingHeight() _________________________________________________________________
 
 	int ShadowLayer::_matchingHeight(int width) const
@@ -86,12 +86,15 @@ namespace wg
 		int matchFront = 0;
 		int matchBase = 0;
 
+        SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI(0,0);
+        width -= padding.w;
+
 		if (m_baseSlot.pWidget)
 			matchBase = m_baseSlot.matchingHeight(width);
 		if (m_frontSlot.pWidget)
 			matchFront = m_frontSlot.matchingHeight(width);
 
-		return std::max(matchFront, matchBase);
+		return std::max(matchFront, matchBase) + padding.h;
 	}
 
 	//____ _matchingWidth() _________________________________________________________________
@@ -101,12 +104,15 @@ namespace wg
 		int matchFront = 0;
 		int matchBase = 0;
 
+        SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI(0,0);
+        height -= padding.h;
+        
 		if (m_baseSlot.pWidget)
 			matchBase = m_baseSlot.matchingWidth(height);
 		if (m_frontSlot.pWidget)
 			matchFront = m_frontSlot.matchingWidth(height);
 
-		return std::max(matchFront, matchBase);
+		return std::max(matchFront, matchBase) + padding.w;
 	}
 
 	//____ _preferredSize() _________________________________________________________________
@@ -115,13 +121,14 @@ namespace wg
 	{
 		SizeI prefFront;
 		SizeI prefBase;
+        SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI(0,0);
 
 		if (m_baseSlot.pWidget)
 			prefBase = m_baseSlot.preferredSize();
 		if (m_frontSlot.pWidget)
 			prefFront = m_frontSlot.preferredSize();
 
-		return SizeI::max(prefFront, prefBase);
+		return SizeI::max(prefFront, prefBase) + padding;
 
 	}
 
@@ -131,13 +138,14 @@ namespace wg
 	{
 		SizeI minFront;
 		SizeI minBase;
+        SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI(0,0);
 
 		if (m_baseSlot.pWidget)
 			minBase = m_baseSlot.minSize();
 		if (m_frontSlot.pWidget)
 			minFront = m_frontSlot.minSize();
 
-		return SizeI::min(minFront, minBase);
+		return SizeI::max(minFront, minBase) + padding;
 	}
 
 	//____ maxSize() _________________________________________________________________
@@ -146,13 +154,14 @@ namespace wg
 	{
 		SizeI maxFront;
 		SizeI maxBase;
+        SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI(0,0);
 
 		if (m_baseSlot.pWidget)
 			maxBase = m_baseSlot.maxSize();
 		if (m_frontSlot.pWidget)
 			maxFront = m_frontSlot.maxSize();
 
-		return SizeI::max(maxFront, maxBase);
+		return SizeI::min(maxFront, maxBase) + padding;
 	}
 
 	//____ _setSize() _______________________________________________________________
@@ -160,10 +169,34 @@ namespace wg
 	void ShadowLayer::_setSize(const SizeI& size)
 	{
 		if (size != m_size)
-			m_pShadowSurface = nullptr;
-
+        {
+            m_pShadowSurface = nullptr;
+            
+            if( m_pSkin )
+                m_frontSlot.geo = m_pSkin->_contentRect(size, m_state);
+            else
+                m_frontSlot.geo = { 0,0,size };
+        }
 		Layer::_setSize(size);
 	}
+
+    //____ _setSkin() _______________________________________________________________
+
+    void ShadowLayer::_setSkin( Skin * pSkin )
+    {
+        //TODO: Update m_frontSlot.geo if content padding (for current state) has been affected.
+        
+        Layer::_setSkin(pSkin);
+    }
+    
+    //____ _setState() _______________________________________________________________
+
+    void ShadowLayer::_setState( State state )
+    {
+        //TODO: Update m_frontSlot.geo if content padding has been affected.
+        
+        Layer::_setState(state);
+    }
 
 
 	//____ _childRequestResize() ______________________________________________
@@ -182,7 +215,7 @@ namespace wg
 		else
 		{
 			m_frontSlot.replaceWidget(this, nullptr);
-			_requestRender({ 0, 0, m_size } );
+			_requestRender( m_frontSlot.geo );
 			_requestResize();
 		}
 	}
@@ -224,7 +257,7 @@ namespace wg
 
 			// Remove portions of patches that are covered by opaque front widgets
 
-			m_frontSlot.pWidget->_maskPatches(patches, m_size, RectI(0, 0, 65536, 65536), _getBlendMode());
+			m_frontSlot.pWidget->_maskPatches(patches, m_frontSlot.geo, m_frontSlot.geo, _getBlendMode());
 
 			// Make request render calls
 
@@ -232,7 +265,7 @@ namespace wg
 				_requestRender(*pRect);
 		}
 		else
-			_requestRender( rect );
+			_requestRender( rect + m_frontSlot.geo.pos() );
 	}
 
 	//____ _object() __________________________________________________________
@@ -397,7 +430,7 @@ namespace wg
 
 	void ShadowLayer::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		RectI contentGeo = _canvas;
+		RectI contentGeo = m_frontSlot.geo + _canvas.pos();
 
 		// Generate masked patches for our skin, baseSlot widget, and shadow.
 
@@ -415,21 +448,17 @@ namespace wg
 			for (int i = 0; i < nClipRects; i++)
 				patches.push(pixelsToRaw(pClipRects[i]));
 
-			m_frontSlot.pWidget->_maskPatches(patches, _canvas, _canvas, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+			m_frontSlot.pWidget->_maskPatches(patches, contentGeo, contentGeo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			clipPop = patchesToClipList(pDevice, patches);
 		}
 
 
-		// If we have a skin, render it and modify contentGeo
+		// If we have a skin, render it
 
 		if (m_pSkin)
-		{
 			m_pSkin->_render(pDevice, _canvas, m_state);
 			
-			contentGeo = m_pSkin->_contentRect(_canvas, m_state);
-		}
-
 		// Render base slot widgets
 
 		if (m_baseSlot.pWidget)
@@ -449,44 +478,41 @@ namespace wg
 		
 		if( m_pShadowSurface )
 		{
-			ClipPopData orgClipList = pushClipList(pDevice);
-			RectI		fullClipList;
-
-			if (bFullSurfaceUpdate)
-			{
-				fullClipList = { 0,0, rawToPixels(m_size) };
-				pDevice->setClipList(1, &fullClipList);
-			}
-
-			auto oldCanvas = pDevice->canvas();
+            auto oldCanvas = pDevice->canvas();
 			auto oldBlendMode = pDevice->blendMode();
 
-			pDevice->setCanvas(m_pShadowSurface);
-			pDevice->setBlendMode(BlendMode::Replace);
+            pDevice->setCanvas(m_pShadowSurface, false);
+
+            RectI        fullClipList;
+            ClipPopData orgClipList;
+            if (bFullSurfaceUpdate)
+            {
+                orgClipList = pushClipList(pDevice);
+                fullClipList = { 0,0, rawToPixels(m_size) };
+                pDevice->setClipList(1, &fullClipList);
+            }
+            
+            pDevice->setBlendMode(BlendMode::Replace);
 			pDevice->fill(Color::Transparent);
 
 			pDevice->setBlendMode(BlendMode::Max);
-
 			for( auto& shadow : m_shadows )
-			{
-//				RectI geo = rawToPixels(_shadowGeo(&shadow) + contentGeo.pos());
-//				pDevice->fill( rawToPixels(_shadowGeo(&shadow) + contentGeo.pos()), Color::White);
-				
 				shadow.shadow()->_render(pDevice, _shadowGeo(&shadow) + contentGeo.pos(), StateEnum::Normal);
-			}	
 
 			if (bFullSurfaceUpdate)
 				popClipList(pDevice, orgClipList);
 
-			pDevice->setBlendMode(oldBlendMode);
-			pDevice->setCanvas(oldCanvas);
+			pDevice->setCanvas(oldCanvas, false);
 
 			// Render shadows
 
+            pDevice->setBlendMode(BlendMode::Subtract);
 			pDevice->setBlitSource(m_pShadowSurface);
 			pDevice->blit( {0,0} );
 
-		}
+            pDevice->setBlendMode(oldBlendMode);
+
+        }
 
 		//Render front slot widgets
 

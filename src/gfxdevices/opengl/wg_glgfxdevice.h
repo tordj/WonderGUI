@@ -71,8 +71,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(SizeI canvasSize);
-		bool	setCanvas(Surface * pCanvas) override;
+		bool	setCanvas(SizeI canvasSize, bool bResetClipRects = true );
+		bool	setCanvas(Surface * pCanvas, bool bResetClipRects = true ) override;
 
 		//.____ State _________________________________________________
 

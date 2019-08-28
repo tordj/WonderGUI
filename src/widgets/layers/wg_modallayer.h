@@ -152,7 +152,7 @@ namespace wg
 
 		void			_updateKeyboardFocus();
 
-		// Overloaded from Panel
+		// Overloaded from Container
 
 		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 

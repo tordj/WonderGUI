@@ -151,9 +151,9 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 1024, height = 600;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL);
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL );
 
-	//	SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
+//		SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
@@ -184,6 +184,7 @@ int main(int argc, char** argv)
 
 	Context_p pContext = Context::create();
 	pContext->setScale(1.0);
+//	pContext->setSurfaceFactory(SoftSurfaceFactory::create());
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
 	Base::setActiveContext(pContext);
 
@@ -243,18 +244,19 @@ int main(int argc, char** argv)
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
 
-//	PixelFormat format = PixelFormat::Unknown;
+/*
+	PixelFormat format = PixelFormat::Unknown;
 
-	//	if( pWinSurf->format->BitsPerPixel == 32 )
-	//		format = PixelFormat::BGRA_8;
-	//	else if( pWinSurf->format->BitsPerPixel == 24 )
-	//		format = PixelFormat::BGR_8;
+		if( pWinSurf->format->BitsPerPixel == 32 )
+			format = PixelFormat::BGRA_8;
+		else if( pWinSurf->format->BitsPerPixel == 24 )
+			format = PixelFormat::BGR_8;
 
-	//	Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
-	//	SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
+		Blob_p pCanvasBlob = Blob::create( pWinSurf->pixels, 0);
+		SoftSurface_p pCanvas = SoftSurface::create( SizeI(pWinSurf->w,pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch );
 
-	//	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
-
+		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+*/
 	GlGfxDevice_p pGfxDevice = GlGfxDevice::create(SizeI(width, height));
 
 	SurfaceFactory_p pSurfaceFactory = pGfxDevice->surfaceFactory();
@@ -428,11 +430,12 @@ int main(int argc, char** argv)
 	// Test ShadowLayer
 	
 	{
-		auto pSDLSurf = IMG_Load("../resources/splash.png");
+		auto pSDLSurf = IMG_Load("../resources/shadow.png");
 		convertSDLFormat(&pixelDesc, pSDLSurf->format);
-		Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+		Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::A8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 		SDL_FreeSurface(pSDLSurf);
 		BlockSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
+		pShadowSkin->setFrame( {0,128,128,0} );
 		pShadowSkin->setContentPadding({0,128,128,0});
 		pImgSurface->setScaleMode(ScaleMode::Nearest);
 
@@ -468,6 +471,27 @@ int main(int argc, char** argv)
 		pShadowLayer->shadows.add( pFiller1, pShadowSkin );
 		pShadowLayer->shadows.add( pFiller2, pShadowSkin );
 		pShadowLayer->shadows.add( pFiller3, pShadowSkin );
+
+		pFiller1->setId( 7 );
+		
+		Base::msgRouter()->addRoute(pFiller1, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
+		{
+			MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+			pFrontLayer->children.move(0, pMsg->draggedNow() );
+		} );
+
+		Base::msgRouter()->addRoute(pFiller2, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
+									{
+										MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+										pFrontLayer->children.move(1, pMsg->draggedNow() );
+									} );
+
+		Base::msgRouter()->addRoute(pFiller3, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
+									{
+										MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+										pFrontLayer->children.move(2, pMsg->draggedNow() );
+									} );
+
 	}
 	
 	

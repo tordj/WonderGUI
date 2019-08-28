@@ -1473,7 +1473,7 @@ namespace wg
 
 	//____ setCanvas() _______________________________________________________________
 
-	bool SoftGfxDevice::setCanvas( Surface * pCanvas )
+	bool SoftGfxDevice::setCanvas( Surface * pCanvas, bool bResetClipRects )
 	{
 		if (m_pCanvas == pCanvas)
 			return true;			// Not an error.
@@ -1508,10 +1508,14 @@ namespace wg
 		m_pCanvas		= pCanvas;
 		m_canvasSize	= pCanvas->size();
 		m_clipCanvas	= { 0,0,m_canvasSize };
-		m_clipBounds	= { 0,0,m_canvasSize };
-		m_pClipRects = &m_clipCanvas;
-		m_nClipRects = 1;
 
+        if( bResetClipRects )
+        {
+            m_clipBounds	= { 0,0,m_canvasSize };
+            m_pClipRects = &m_clipCanvas;
+            m_nClipRects = 1;
+        }
+        
 		// Update stuff if we are rendering
 
 		if( m_pCanvasPixels )

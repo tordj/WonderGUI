@@ -59,7 +59,7 @@ namespace wg
 
 //        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
 
-		// Overloaded from Panel
+		// Overloaded from Container
 
 		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
 

@@ -358,7 +358,7 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool GlGfxDevice::setCanvas( SizeI canvasSize )
+	bool GlGfxDevice::setCanvas( SizeI canvasSize, bool bResetClipRects )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
@@ -368,11 +368,15 @@ namespace wg
 
 		m_pCanvas = nullptr;
 		m_canvasSize = canvasSize;
-		m_clipCanvas = m_canvasSize;
-		m_clipBounds = m_canvasSize;
-		m_pClipRects = &m_clipCanvas;
-		m_nClipRects = 1;
+        m_clipCanvas = m_canvasSize;
 
+        if( bResetClipRects )
+        {
+            m_clipBounds = m_canvasSize;
+            m_pClipRects = &m_clipCanvas;
+            m_nClipRects = 1;
+        }
+        
 		m_canvasYstart = canvasSize.h;
 		m_canvasYmul = -1;
 
@@ -390,13 +394,13 @@ namespace wg
 		return true;
 	}
 
-	bool GlGfxDevice::setCanvas( Surface * pSurface )
+	bool GlGfxDevice::setCanvas( Surface * pSurface, bool bResetClipRects )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
 
 		if( pSurface == nullptr )
-			return setCanvas( m_emptyCanvasSize );
+			return setCanvas( m_emptyCanvasSize, bResetClipRects );
 
 		if (!pSurface || pSurface->className() != GlSurface::CLASSNAME)
 			return false;
@@ -407,10 +411,14 @@ namespace wg
 		m_pCanvas = pSurface;
 		m_canvasSize = pSurface->size();
 		m_clipCanvas = m_canvasSize;
-		m_clipBounds = m_canvasSize;
-		m_pClipRects = &m_clipCanvas;
-		m_nClipRects = 1;
 
+        if( bResetClipRects )
+        {
+            m_clipBounds = m_canvasSize;
+            m_pClipRects = &m_clipCanvas;
+            m_nClipRects = 1;
+        }
+        
 		m_canvasYstart = 0;
 		m_canvasYmul = 1;
 

@@ -124,9 +124,13 @@ namespace wg
 			case GfxChunkId::SetCanvas:
 			{
 				uint16_t	surfaceId;
+				uint16_t	bResetClipList;
+
 				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> bResetClipList;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    resetClipList   = " << bResetClipList << std::endl;	//TODO: Should write true/false instead.
 				break;
 			}
 

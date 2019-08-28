@@ -142,7 +142,7 @@ namespace wg
 		void			_removeSlots(int ofs, int nb);
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
 
-		// Overloaded from Panel
+		// Overloaded from Container
 
 		Widget *		_findWidget( const CoordI& ofs, SearchMode mode );
 
@@ -161,13 +161,13 @@ namespace wg
 
 		// Overloaded from container
 
-		void			_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 //		void			_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
 //		void			_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
 
 
 		// Overloaded from Widget
 
+        void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const SizeI& size );
 		void			_receive( Msg * pMsg );
