@@ -44,7 +44,7 @@
 #	include <wg_textprop.h>
 #endif
 
-#include <wg3_gfxdevice.h>
+//#include <wg3_gfxdevice.h>
 
 #ifdef WG_USE_FREETYPE
 
@@ -61,12 +61,8 @@ class WgMemStack;
 class WgCursor;
 class WgSurfaceFactory;
 
-struct WgContext
-{
-    wg::GfxDevice_p pDevice = nullptr;
-    WgSurfaceFactory * pFactory = nullptr;
-    float         scale = 1.f;
-};
+struct WgContext;
+
 
 class WgBase
 {
@@ -81,7 +77,7 @@ public:
 #endif
 
     static void     SetContext( const WgContext& context );
-    static const WgContext *     Context() { assert(s_pData!=0); return &s_pData->context; }
+    static const WgContext *     Context() { assert(s_pData!=0); return s_pData->pContext; }
 
 //	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& GetDefaultTextManager();
@@ -129,7 +125,7 @@ private:
 
 	struct Data
 	{
-        WgContext           context;
+        WgContext *         pContext;
         
 		WgTextpropPtr		pDefaultTextprop;
 		WgTextpropPtr		pDefaultSelectionProp;

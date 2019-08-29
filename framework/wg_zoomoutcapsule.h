@@ -68,8 +68,9 @@ public:
     void            SetTint( WgColor tint );
     WgColor         Tint() const { return m_tint; }
     
-    WgRect          ContentArea() const;
-    
+    WgRect          ContentAreaPixels() const;
+    WgRect          ContentAreaPoints() const;
+
     WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
     
@@ -86,6 +87,7 @@ protected:
 
     WgRect  _screenshotArea( WgRect canvas ) const;
     WgRect  _buttonArea( WgRect canvas ) const;
+    void    _regenScreenshot();
 
     void    _updateButtonState( WgSize gizmoCanvas, WgCoord pointerPos );
     

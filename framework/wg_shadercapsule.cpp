@@ -22,6 +22,7 @@
 
 #include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
+#include <wg_patches.h>
 
 static const char	c_widgetType[] = {"ShaderCapsule"};
 
@@ -49,6 +50,17 @@ const char * WgShaderCapsule::Type( void ) const
 const char * WgShaderCapsule::GetClass()
 {
 	return c_widgetType;
+}
+
+//____ SetSkin() _______________________________________________________________
+
+void WgShaderCapsule::SetSkin( const WgSkinPtr& pSkin )
+{
+    if (pSkin != m_pSkin)
+    {
+        m_pSkin = pSkin;
+        _requestRender();
+    }
 }
 
 //____ SetColor() ______________________________________________________________
@@ -105,6 +117,11 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
+    pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+    
+    if( m_pSkin )
+        m_pSkin->Render( pDevice, m_state, _canvas, m_scale );
+    
 	// Set our tint color and blend mode.
 
 	WgBlendMode		oldBM;
@@ -127,8 +144,14 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 	// Render children recursively
 
 	if( m_hook.Widget() )
-		m_hook.Widget()->_renderPatches( pDevice, _canvas, _canvas, _pPatches );
-
+    {
+        WgRect childCanvas = _canvas;
+        if( m_pSkin )
+            childCanvas = m_pSkin->ContentRect( _canvas, m_state, m_scale );
+        
+		m_hook.Widget()->_renderPatches( pDevice, childCanvas, childCanvas, _pPatches );
+    }
+    
 	// Reset old blend mode and tint color
 
 //	if( (_layer & m_layer) != 0 )

@@ -62,6 +62,7 @@ protected:
     float           m_baseline;         // Baseline position (0.0-1.0) for widget.
 	WgRect			m_geo;				// Real geo of child (no padding included).
 	WgSize			m_preferredSize;	// Cached padded preferred size from the child.
+    int             m_preferredLengthForBreadth;    // Cached preferred length for current breadth of the child.
 	WgPackPanel *	m_pParent;
 };
 
@@ -148,6 +149,8 @@ protected:
 
 	bool			m_bBlockRequestResize = false;
 	bool			m_bResizeRequestedWhileBlocked = false;
+
+    bool            m_bChildGeoNeedsRefresh = false;
 
 };
 

@@ -35,7 +35,7 @@ static const char	c_surfaceType[] = {"Software"};
 
 WgSize WgSurfaceSoft::MaxSize()
 {
-	return _convert(wg::SoftSurface::maxSize());
+	return wg::SoftSurface::maxSize();
 }
 
 
@@ -43,18 +43,18 @@ WgSize WgSurfaceSoft::MaxSize()
 
 WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
 {
-	m_pRealSurface = wg::SoftSurface::create(_convert(size), type);
+	m_pRealSurface = wg::SoftSurface::create(size, type);
 }
 
 WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
 {
 	auto pBlob = wg::Blob::create(pPixels, nullptr);
-	m_pRealSurface = wg::SoftSurface::create(_convert(size), type, pBlob, pitch);
+	m_pRealSurface = wg::SoftSurface::create(size, type, pBlob, pitch);
 }
 
 WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgPixelFormat& pixelFormat )
 {
-	m_pRealSurface = wg::SoftSurface::create(_convert(size), type, pPixels, pitch, &pixelFormat);
+	m_pRealSurface = wg::SoftSurface::create(size, type, pPixels, pitch, &pixelFormat);
 }
 
 

@@ -87,12 +87,14 @@ WgContainer * WgDragNDropHook::_parent() const
 
 WgDragNDropLayer::WgDragNDropLayer() : m_dragHook(this)
 {
+    _startReceiveTicks();
 }
 
 //____ Destructor _____________________________________________________________
 
 WgDragNDropLayer::~WgDragNDropLayer()
 {
+    _stopReceiveTicks();
 }
 
 //____ Type() _________________________________________________________________
@@ -133,6 +135,43 @@ WgWidget * WgDragNDropLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
     return nullptr;
 }
+
+//____ Pick() _________________________________________________________________
+
+bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
+{
+    // Pick is not allowed if a widget already is picked.
+    
+    if( m_dragState != DragState::Idle && m_dragState != DragState::Picking )
+        return false;
+
+    // Verify that widget is descendant of us
+    
+    WgWidget * p = pWidget;
+    while( p != this )
+    {
+        if( p == nullptr )
+            return false;                       // Not a descendant of ours.
+
+        p = p->Parent();
+    }
+    
+    // Convert pickOfs from points to pixels.
+    
+    pickOfs.x = pickOfs.x * m_scale / WG_SCALE_BASE;
+    pickOfs.y = pickOfs.y * m_scale / WG_SCALE_BASE;
+
+    // Pick the widget.
+    
+    m_pPicked = pWidget;
+    m_pickCategory = pWidget->pickCategory();
+    
+    _eventHandler()->QueueEvent(new WgEvent::DropPick(m_pPicked.GetRealPtr(), pickOfs, this));
+    m_dragState = DragState::Picked;
+    
+    return true;
+}
+
 
 //____ _onRequestRender() _______________________________________________
 
@@ -261,6 +300,72 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 {
     switch (_pEvent->Type())
     {
+        case WG_EVENT_TICK:
+        {
+            switch( m_dragState )
+            {
+                case DragState::Dragging:
+                {
+                    // Check if we entered/left a (possible) target.
+                    
+                    WgCoord ofs = _pEvent->PointerPixelPos();
+                    
+                    WgWidget * pProbed = FindWidget(ofs, wg::SearchMode::ActionTarget );
+                    
+                    while (pProbed && pProbed != this && !pProbed->isDropTarget())
+                        pProbed = pProbed->Parent();
+                    
+                    if( pProbed && pProbed != this && pProbed != m_pProbed.GetRealPtr() )
+                    {
+                        m_pProbed = pProbed;
+                        pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), this ));
+                    }
+                    break;
+                }
+                case DragState::Targeting:
+                {
+                    // Check if our target has changed
+                    
+                    WgCoord ofs = _pEvent->PointerPixelPos();
+                    
+                    WgWidget * pHovered = FindWidget(ofs, wg::SearchMode::ActionTarget );
+                    
+                    while (pHovered && pHovered != this && !pHovered->isDropTarget())
+                        pHovered = pHovered->Parent();
+                    
+                    if( pHovered != m_pTargeted.GetRealPtr() )
+                    {
+                        // Untarget previous target. Probing possibly new target we leave for next round.
+                        
+                        if( m_pTargeted )
+                            pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ));
+                        
+                        m_pTargeted = nullptr;
+                        m_dragState = DragState::Dragging;
+                    }
+                    
+                    // Send move messages to targeted widget
+                    
+                    if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
+                    {
+                        WgCoord targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
+                        if( targetOfs != m_targetOfs )
+                        {
+                            m_targetOfs = targetOfs;
+                            pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
+                        }
+                    }
+                    break;
+                }
+                default:
+                    break;
+
+            }
+            
+            
+            break;
+        }
+            
         case WG_EVENT_MOUSEBUTTON_DRAG:
         {
             auto pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
@@ -292,21 +397,6 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                     m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
                     _requestRender(m_dragHook.m_geo);
 
-// MOVE TO TICK!						// Check if we entered/left a (possible) target.
-
-                    WgCoord ofs = pEvent->PointerPixelPos();
-
-                    WgWidget * pProbed = FindWidget(ofs, wg::SearchMode::ActionTarget );
-
-                    while (pProbed && pProbed != this && !pProbed->isDropTarget())
-                        pProbed = pProbed->Parent();
-
-                    if( pProbed && pProbed != this && pProbed != m_pProbed.GetRealPtr() )
-                    {
-                        m_pProbed = pProbed;
-                        pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), this ));
-                    }
-
                     break;
                 }
 
@@ -317,34 +407,6 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                     _requestRender(m_dragHook.m_geo);
                     m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
                     _requestRender(m_dragHook.m_geo);
-
-
-// MOVE TO TICK!                        // Check if our target has changed
-
-                    WgCoord ofs = pEvent->PointerPixelPos();
-
-                    WgWidget * pHovered = FindWidget(ofs, wg::SearchMode::ActionTarget );
-
-                    while (pHovered && pHovered != this && !pHovered->isDropTarget())
-                        pHovered = pHovered->Parent();
-
-                    if( pHovered != m_pTargeted.GetRealPtr() )
-                    {
-                        // Untarget previous target. Probing possibly new target we leave for next round.
-
-                        if( m_pTargeted )
-                            pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ));
-
-                        m_pTargeted = nullptr;
-                        m_dragState = DragState::Dragging;
-                    }
-
-                    // Send move messages to targeted widget
-
-                    if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
-                    {
-                        pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
-                    }
 
                     break;
                 }
@@ -461,7 +523,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                     m_bDeleteDraggedWhenDone = true;
                 }
 
-                WgCoord mousePos = Abs2localPixel(pEvent->PointerPixelPos());
+                WgCoord mousePos = Abs2localPixel(pEvent->PointerScreenPixelPos());
                 m_dragHook.m_geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
 
                 _requestRender(m_dragHook.m_geo);
@@ -487,6 +549,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
                 m_pProbed = nullptr;
                 m_pTargeted = pTargeted;
+                m_targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
                 m_dragState = DragState::Targeting;
             }
 

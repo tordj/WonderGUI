@@ -183,7 +183,8 @@ public:
 	int			ScrollWheelX() const { return m_wheelForScrollX; }
 	int			ScrollWheelY() const { return m_wheelForScrollY; }
 
-
+    void        SetOverlayScrollbars(bool bOverlay);
+    bool        OverlayScrollbars() const { return m_bOverlayScrollbars; }
 
 	bool		SetAutoscroll( bool bAutoX, bool bAutoY	);
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
@@ -223,6 +224,11 @@ public:
 
 	void				SetFillerBlocks( const WgBlocksetPtr& pBlocks );
 	WgBlocksetPtr		FillerBlocks() const { return m_pFillerBlocks; }
+
+
+    WgRect              ViewGeoPixels() const;                // Geometry of View window within WgScrollPanel widget.
+    WgRect              ContentInViewPixels() const;          // Section of content displayed in the view.
+    bool                PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo = WgOrigo::Center, WgCoord viewPosOffset = {0,0} );
 
 	// Overloaded from WgPanel
 
@@ -305,8 +311,7 @@ protected:
 	bool		_wheelRollX(int distance);
 	bool		_wheelRollY(int distance);
 
-
-	WgSize		m_contentSize;
+    WgSize		m_contentSize;
 
 	int			m_stepSizeX;
 	int			m_stepSizeY;
@@ -327,6 +332,7 @@ protected:
 	int			m_wheelForScrollX;		// What wheel should be used for horizontal scrolling. (0=none)
 	int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
 	
+    bool        m_bOverlayScrollbars;
 
 //	ViewWidgetCollection	m_elementsCollection;	// WgWidgetCollection for the elements widgets.
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
@@ -336,8 +342,8 @@ protected:
 	WgSizePolicy	m_heightPolicy;
 	WgOrigo	m_contentOrigo;		// Origo when content is smaller than window
 
-	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal
-
+	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal                                              
+                                              
 private:
 
 	WgHook*	_firstHook() const;

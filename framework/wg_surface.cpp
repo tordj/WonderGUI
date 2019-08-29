@@ -50,7 +50,7 @@ WgSurface::~WgSurface()
 
 WgSize WgSurface::PixelSize() const
 {
-	return _convert(m_pRealSurface->size());
+	return m_pRealSurface->size();
 }
 
 //____ PointSize() ______________________________________________________________
@@ -59,7 +59,7 @@ WgSize WgSurface::PointSize() const
 {
 	wg::Size sz = m_pRealSurface->size();
 
-    return _convert(sz) * WG_SCALE_BASE / m_scaleFactor;
+    return sz * WG_SCALE_BASE / m_scaleFactor;
 }
 
 
@@ -83,14 +83,14 @@ WgScaleMode WgSurface::scaleMode() const
 
 Uint32 WgSurface::GetPixel(WgCoord coord) const 
 { 
-	return m_pRealSurface->pixel(_convert(coord)); 
+	return m_pRealSurface->pixel(coord);
 }
 
 //____ GetOpacity() ___________________________________________________________
 
 Uint8 WgSurface::GetOpacity(WgCoord coord) const 
 { 
-	return m_pRealSurface->alpha(_convert(coord)); 
+	return m_pRealSurface->alpha(coord);
 };
 
 //____ Lock() _________________________________________________________________
@@ -120,7 +120,7 @@ WgAccessMode WgSurface::GetLockStatus() const
 
 WgRect WgSurface::GetLockRegion() const 
 { 
-	return _convert(m_pRealSurface->regionLocked());
+	return m_pRealSurface->regionLocked();
 }
 
 
@@ -128,14 +128,14 @@ WgRect WgSurface::GetLockRegion() const
 
 Uint32 WgSurface::Col2Pixel( const WgColor& col ) const
 {
-	return m_pRealSurface->colorToPixel(_convert(col));
+	return m_pRealSurface->colorToPixel(col);
 }
 
 //____ Pixel2Col() ____________________________________________________________
 
 WgColor WgSurface::Pixel2Col( Uint32 pixel ) const
 {
-	return _convert( m_pRealSurface->pixelToColor(pixel) );
+	return m_pRealSurface->pixelToColor(pixel);
 }
 
 //____ PixelFormat() __________________________________________________________
@@ -150,12 +150,12 @@ const WgPixelFormat *  WgSurface::PixelFormat()
 
 bool WgSurface::Fill( WgColor col )
 {
-	return m_pRealSurface->fill(_convert(col));
+	return m_pRealSurface->fill(col);
 }
 
 bool WgSurface::Fill( WgColor col, const WgRect& _rect )
 {
-	return m_pRealSurface->fill(_convert(col), _convert(_rect));
+	return m_pRealSurface->fill(col, _rect);
 }
 
 //_____ SetMetaData() _________________________________________________________
@@ -194,12 +194,12 @@ void WgSurface::ClearMetaData()
 
 bool WgSurface::CopyFrom( WgSurface * pSrcSurface, WgCoord dst )
 {
-	return m_pRealSurface->copyFrom(pSrcSurface->m_pRealSurface, _convert(dst));
+	return m_pRealSurface->copyFrom(pSrcSurface->m_pRealSurface, dst);
 }
 
 bool WgSurface::CopyFrom( WgSurface * pSrcSurface, const WgRect& _srcRect, WgCoord _dst )
 {
-	return m_pRealSurface->copyFrom(pSrcSurface->m_pRealSurface, _convert(_srcRect), _convert(_dst));
+	return m_pRealSurface->copyFrom(pSrcSurface->m_pRealSurface, _srcRect, _dst);
 }
 
 

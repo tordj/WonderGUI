@@ -38,6 +38,8 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgShaderCapsule(); };
 
+    void        SetSkin( const WgSkinPtr& pSkin );
+
 	void		SetColor( const WgColor& color);
 	void		SetTintMode( WgTintMode mode );
 	void		SetBlendMode( WgBlendMode mode );

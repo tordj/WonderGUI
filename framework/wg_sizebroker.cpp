@@ -44,21 +44,6 @@ int WgSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int _to
 	return totalLength;
 }
 
-int WgSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
-{
-	int totalLength = 0;
-	for( int i = 0 ; i < nItems ; i++ )
-	{	
-		totalLength += pItems[i].preferred;
-		pItems[i].output = pItems[i].preferred;
-	}
-	return totalLength;
-}
-
-bool WgSizeBroker::MayAlterPreferredLengths() const
-{
-	return false;
-}
 */
 
 int WgUniformSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
@@ -115,35 +100,7 @@ int WgUniformSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, 
     return total;
 }
 
-int WgUniformSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
-{
-    if( nItems == 0 )
-        return 0;
-    
-    int unifiedLength = _findLongestUnified(pItems, nItems);
-    int total = 0;
-    int length;
-    
-    for( int i = 0 ; i < nItems ; i++ )
-    {
-        if( pItems[i].weight == 0.f )
-            length = pItems[i].preferred;
-        else if( pItems[i].weight > 1.f )
-            length = 0;
-        else
-            length = unifiedLength;
-        
-        pItems[i].output = length;
-        total += length;
-    }
-    
-    return total;
-}
 
-bool WgUniformSizeBroker::MayAlterPreferredLengths() const
-{
-    return false; //true;
-}
 
 int WgUniformSizeBroker::_findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const
 {
@@ -157,11 +114,6 @@ int WgUniformSizeBroker::_findLongestUnified( WgSizeBrokerItem * pItems, int nIt
 
 int WgScalePreferredSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
 {
-    return SetPreferredLengths( pItems, nItems );
-}
-
-int WgScalePreferredSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const
-{
     int total = 0;
     for( int i = 0 ; i < nItems ; i++ )
     {
@@ -170,11 +122,6 @@ int WgScalePreferredSizeBroker::SetPreferredLengths( WgSizeBrokerItem * pItems, 
         total += def;
     }
     return total;
-}
-
-bool  WgScalePreferredSizeBroker::MayAlterPreferredLengths() const
-{
-    return true;
 }
 
 int WgScaleWeightSizeBroker::SetItemLengths(WgSizeBrokerItem * pItems, int nItems, int totalLength) const
@@ -219,34 +166,6 @@ int WgScaleWeightSizeBroker::SetItemLengths(WgSizeBrokerItem * pItems, int nItem
 		total += length;
 	}
 	return total;
-}
-
-int WgScaleWeightSizeBroker::SetPreferredLengths(WgSizeBrokerItem * pItems, int nItems) const
-{
-	if (nItems == 0)
-		return 0;
-
-	float lengthPerWeight = _findNeededLengthPerWeight(pItems, nItems);
-	int total = 0;
-	int length;
-
-	for (int i = 0; i < nItems; i++)
-	{
-		if (pItems[i].weight <= 0.f)
-			length = pItems[i].preferred;
-		else
-			length = int(lengthPerWeight*pItems[i].weight);
-
-		pItems[i].output = length;
-		total += length;
-	}
-
-	return total;
-}
-
-bool WgScaleWeightSizeBroker::MayAlterPreferredLengths() const
-{
-	return false; //true;
 }
 
 float WgScaleWeightSizeBroker::_findNeededLengthPerWeight(WgSizeBrokerItem * pItems, int nItems) const

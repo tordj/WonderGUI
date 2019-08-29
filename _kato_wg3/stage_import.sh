@@ -25,6 +25,8 @@ cp wg_object.h \
    wg_util.* \
    wg_weakinterfaceptr.* \
    wg_weakptr.* \
+   wg_qpix.* \
+   wg_patches.* \
    ../../../wg2/_kato_wg3/imports/base/
 
 cd ../interfaces

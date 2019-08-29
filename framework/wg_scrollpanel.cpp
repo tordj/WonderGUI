@@ -70,6 +70,8 @@ WgScrollPanel::WgScrollPanel()
 	
 	m_wheelForScrollX	= 2;
 	m_wheelForScrollY	= 1;
+    
+    m_bOverlayScrollbars = true;
 
 	m_elements[WINDOW]._setParent(this);
 	m_elements[XDRAG]._setParent(this);
@@ -96,6 +98,16 @@ const char * WgScrollPanel::GetClass( void )
 	return c_widgetType;
 }
 
+//____ SetOverlayScrollbars() ____________________________________________________
+
+void WgScrollPanel::SetOverlayScrollbars( bool bOverlay )
+{
+    if( bOverlay != m_bOverlayScrollbars )
+    {
+        m_bOverlayScrollbars = bOverlay;
+        _updateElementGeo( PixelSize() );
+    }
+}
 
 //____ StepUp() _______________________________________________________________
 
@@ -822,6 +834,33 @@ void  WgScrollPanel::SetContentSizePolicy( WgSizePolicy widthPolicy, WgSizePolic
 	}
 }
 
+//____ ViewGeoPixels() __________________________________________________________
+
+WgRect WgScrollPanel::ViewGeoPixels() const
+{
+    return m_elements[WINDOW].m_windowGeo;
+};
+
+//____ ContentInViewPixels() _____________________________________________________
+
+WgRect WgScrollPanel::ContentInViewPixels() const
+{
+    return { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
+};
+
+//____ PositionContentInViewPixels() ___________________________________________
+
+bool WgScrollPanel::PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo, WgCoord viewPosOffset )
+{
+    WgCoord pos = posInContent;
+    
+    pos -= WgUtil::OrigoToOfs( viewPosOrigo, m_elements[WINDOW].m_windowGeo.size() );
+    pos -= viewPosOffset;
+    
+    return SetViewPixelOfs(pos.x,pos.y);
+}
+
+
 //____ _calcContentSize() ______________________________________________________
 
 WgSize WgScrollPanel::_calcContentSize( WgSize mySize )
@@ -871,8 +910,10 @@ WgSize WgScrollPanel::_calcContentSize( WgSize mySize )
 
 //____ _updateElementGeo() _____________________________________________________
 
-void WgScrollPanel::_updateElementGeo( WgSize mySize )
+void WgScrollPanel::_updateElementGeo( WgSize _mySize )
 {
+    WgRect myRect = m_pSkin ? m_pSkin->ContentRect( _mySize, m_state, m_scale ) : WgRect(_mySize);
+    WgSize mySize = myRect.size();
 
 	WgSize newContentSize = _calcContentSize( mySize );
 
@@ -881,30 +922,30 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 
 	// First get "default geometry" for them all, ignoring overlaps.
 
-	newWindow = mySize;
+	newWindow = myRect;
 
 	if( m_elements[XDRAG].Widget() )
 	{
 		newDragX.h = m_elements[XDRAG].Widget()->PreferredPixelSize().h;
 		newDragX.w = newWindow.w;
-		newDragX.x = 0;
+		newDragX.x = newWindow.x;
 
 		if( m_bSliderBottom )
-			newDragX.y = newWindow.h - newDragX.h;
+			newDragX.y = newWindow.y + newWindow.h - newDragX.h;
 		else
-			newDragX.y = 0;
+			newDragX.y = newWindow.y;
 	}
 
 	if( m_elements[YDRAG].Widget() )
 	{
 		newDragY.w = m_elements[YDRAG].Widget()->PreferredPixelSize().w;
 		newDragY.h = newWindow.h;
-		newDragY.y = 0;
+		newDragY.y = newWindow.y;
 
 		if( m_bSliderRight )
-			newDragY.x = newWindow.w - newDragY.w;
+			newDragY.x = newWindow.x + newWindow.w - newDragY.w;
 		else
-			newDragY.x = 0;
+			newDragY.x = newWindow.x;
 	}
 
 	// Determine which dragbars we need to show, using basic rules
@@ -943,7 +984,7 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 	// If both dragbars are visible we need to avoid overlap
 	// and include a filler for the empty square.
 
-	if( bShowDragX && bShowDragY )
+	if( bShowDragX && bShowDragY && !m_bOverlayScrollbars )
 	{
 		newDragX.x = newWindow.x;
 		newDragX.w = newWindow.w;
@@ -957,6 +998,13 @@ void WgScrollPanel::_updateElementGeo( WgSize mySize )
 		newFiller.h = newDragX.h;
 	}
 
+    // Expand view area again if scrollbars are in overlay mode
+    // The previous calculations were still needed for correct
+    // scrollbar placement.
+    
+    if( m_bOverlayScrollbars )
+        newWindow = mySize;
+    
 	// Determine changes to views position and size over content before
 	// we overwrite old values, so we can emit right signals once all is updated.
 	// Update m_viewPixOfs at the same time.
@@ -1189,6 +1237,10 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 	WgRect	dirtBounds = patches.Union();
 
+    // Render skin
+    
+    if( m_pSkin )
+        m_pSkin->Render(pDevice, m_state, _canvas, m_scale);                // TODO: Optimize. Clip away window geometry if window background color is transparent.
     
 	// Render Window background color
 
@@ -1210,7 +1262,19 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
         // Use intersection in case canvas is smaller than window.
 
 		if( window.intersectsWith(dirtBounds) )
-			m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &patches );
+        {
+            // We need to eliminate dirt outside our view window
+            
+            WgPatches     winPatches( patches.Size() );
+            
+            for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+            {
+                if( window.intersectsWith( *pRect ) )
+                    winPatches.Push( WgRect(*pRect,window) );
+            }
+
+            m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &winPatches );
+        }
 	}
 	if( m_elements[XDRAG].m_bVisible )
 	{
@@ -1470,8 +1534,6 @@ WgHook * WgScrollPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	}
 	return 0;
 }
-
-
 
 //____ WgScrollHook::Destructor ___________________________________________________
 

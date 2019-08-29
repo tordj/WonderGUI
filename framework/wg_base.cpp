@@ -27,6 +27,7 @@
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
 #include <wg_memstack.h>
+#include <wg_context.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -48,6 +49,8 @@ void WgBase::Init()
     
 	assert( s_pData == 0 );
 	s_pData = new Data;
+    
+    s_pData->pContext = new WgContext;
 
 	s_pData->pDefaultCursor = 0;
 	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
@@ -88,7 +91,7 @@ void WgBase::Exit()
 	if( s_pData->bFreeTypeInitialized )
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
-
+    delete s_pData->pContext;
 	delete s_pData->pWeakPtrPool;
 	delete s_pData->pMemStack;
 	delete s_pData;
@@ -100,8 +103,7 @@ void WgBase::Exit()
 void WgBase::SetContext( const WgContext& context )
 {
     assert( s_pData != 0 );
-
-    s_pData->context = context;
+    * s_pData->pContext = context;
 }
 
 

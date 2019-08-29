@@ -32,6 +32,7 @@
 #include <wg_sizecapsule.h>
 #include <wg_shadercapsule.h>
 #include <wg_util.h>
+#include <wg_context.h>
 
 
 static const char	c_widgetType[] = {"ZoomOutCapsule"};
@@ -196,15 +197,25 @@ void WgZoomOutCapsule::SetTint( WgColor tint )
     }
 }
 
-//____ ContentArea() ____________________________________________________________
+//____ ContentAreaPixels() ____________________________________________________________
 
-WgRect WgZoomOutCapsule::ContentArea() const
+WgRect WgZoomOutCapsule::ContentAreaPixels() const
 {
         if(m_pScreenshot)
             return _screenshotArea(PixelSize());
         else
             return PixelSize();
 }
+
+//____ ContentAreaPoints() ____________________________________________________________
+
+WgRect WgZoomOutCapsule::ContentAreaPoints() const
+{
+    WgRect r = ContentAreaPixels();
+    
+    return { r.x*WG_SCALE_BASE/m_scale, r.y*WG_SCALE_BASE/m_scale, r.w*WG_SCALE_BASE/m_scale, r.h*WG_SCALE_BASE/m_scale };
+}
+
 
 //____ FindWidget() ____________________________________________________________
 
@@ -294,6 +305,13 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 
                 // Generate a screenshot
 
+                if( !m_pScreenshot && WgBase::Context()->pDevice )
+                {
+                    WgBase::Context()->pDevice->beginRender();
+                    _regenScreenshot();
+                    WgBase::Context()->pDevice->endRender();
+                }
+                
                 auto pSurface = WgBase::Context()->pFactory->CreateSurface(m_pScreenshot->PixelSize());
                 pSurface->CopyFrom( m_pScreenshot, {0,0} );
 
@@ -306,15 +324,9 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 auto pShader = new WgShaderCapsule();
                 pShader->SetColor( {255,255,255,64} );
                 pShader->SetChild(pImage);
-                
-                
+
                 pDragWidget->SetChild(pShader);
-                
-                
-//                auto pDragWidget = new WgImage();
                 pEv->setDragWidget( pDragWidget, screenshotArea.pos() - pickOfs  );
-                
-//                SetOutlineMode(true);
             }
             else
                 return;             // Avoid WgWidget from setting default payload.
@@ -358,6 +370,46 @@ void WgZoomOutCapsule::_updateButtonState( WgSize gizmoCanvas, WgCoord pointerPo
     }
 }
 
+//____ _regenScreenshot() _____________________________________________________
+
+void WgZoomOutCapsule::_regenScreenshot()
+{
+    WgSurfaceFactory * pFactory = WgBase::Context()->pFactory;
+    wg::GfxDevice * pDevice = WgBase::Context()->pDevice.rawPtr();
+
+    if( m_pScreenshot )
+        delete m_pScreenshot;
+
+    if( !pDevice || !pFactory )
+    {
+        m_pScreenshot = nullptr;
+        return;
+    }
+    
+    WgSize sz = PixelSize();
+    
+    m_pScreenshot = pFactory->CreateSurface(sz);
+    m_pScreenshot->Fill(WgColor::Transparent);
+    
+    WgPatches patches;
+    patches.Add(sz);
+    
+    auto pOldCanvas = pDevice->canvas();
+    WgColor oldTint = pDevice->tintColor();
+    WgBlendMode oldBlendMode = pDevice->blendMode();
+    pDevice->setCanvas(m_pScreenshot->RealSurface());
+    pDevice->setBlendMode(WgBlendMode::Blend);
+    
+    //            pDevice->SetTintColor( {oldTint.r, oldTint.g, oldTint.b, oldTint.a });
+    m_hook.Widget()->_renderPatches(pDevice, sz, sz, &patches);
+    
+    pDevice->setCanvas(pOldCanvas);
+    pDevice->setTintColor(oldTint);
+    pDevice->setBlendMode(oldBlendMode);
+
+}
+
+
 //____ _renderPatches() __________________________________________________________
 
 void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
@@ -366,41 +418,10 @@ void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _c
         WgCapsule::_renderPatches( pDevice, _canvas, _window, _pPatches );
     else
     {
-        WgSurfaceFactory * pFactory = WgBase::Context()->pFactory;
         
-        if( (m_pScreenshot == nullptr || _canvas.size() != m_pScreenshot->PixelSize()) && pFactory && m_hook.Widget() )
+        if( (m_pScreenshot == nullptr || _canvas.size() != m_pScreenshot->PixelSize()) && m_hook.Widget() )
         {
-           if( m_pScreenshot )
-               delete m_pScreenshot;
-            
-            WgSize sz = _canvas.size();
-            
-            m_pScreenshot = pFactory->CreateSurface(sz);
-            m_pScreenshot->Fill(WgColor::Transparent);
-            
-            
-            WgPatches patches;
-            patches.Add(sz);
-           
-            auto pOldCanvas = pDevice->canvas();
-            WgColor oldTint = pDevice->tintColor();
-            WgBlendMode oldBlendMode = pDevice->blendMode();
-            pDevice->setCanvas(m_pScreenshot->RealSurface());
-            pDevice->setBlendMode(WgBlendMode::Blend);
-            
-//            pDevice->SetTintColor( {oldTint.r, oldTint.g, oldTint.b, oldTint.a });
-            m_hook.Widget()->_renderPatches(pDevice, sz, sz, &patches);
-            
-            pDevice->setCanvas(pOldCanvas);
-            pDevice->setTintColor(oldTint);
-            pDevice->setBlendMode(oldBlendMode);
-            
-            
-//            auto pOldCanvas = pDevice->Canvas();
-//            pDevice->SetCanvas(pScreenshot);
-//            m_hook.Widget()->_renderPatches(pDevice, sz, sz, &patches );
-//            pDevice->SetCanvas(pOldCanvas);
-            
+            _regenScreenshot();
         }
         
         WgColor oldTint;

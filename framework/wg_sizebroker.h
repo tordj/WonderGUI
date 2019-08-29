@@ -40,8 +40,6 @@ public:
 	virtual ~WgSizeBroker();
     
 	virtual int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
-	virtual int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const = 0;
-	virtual bool MayAlterPreferredLengths() const = 0;
 
 protected:
 	WgSizeBroker();
@@ -55,8 +53,6 @@ public:
     ~WgUniformSizeBroker() {};
     
 	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool MayAlterPreferredLengths() const;
 
 protected:
     int     _findLongestUnified( WgSizeBrokerItem * pItems, int nItems ) const;
@@ -72,8 +68,6 @@ public:
     ~WgScalePreferredSizeBroker() {};
     
 	int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
-	int SetPreferredLengths( WgSizeBrokerItem * pItems, int nItems ) const;
-	bool MayAlterPreferredLengths() const;
     
 protected:
     
@@ -86,8 +80,6 @@ public:
 	~WgScaleWeightSizeBroker() {};
 
 	int SetItemLengths(WgSizeBrokerItem * pItems, int nItems, int totalLength) const;
-	int SetPreferredLengths(WgSizeBrokerItem * pItems, int nItems) const;
-	bool MayAlterPreferredLengths() const;
 
 protected:
 	float   _findNeededLengthPerWeight(WgSizeBrokerItem * pItems, int nItems) const;

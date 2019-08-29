@@ -29,7 +29,7 @@
 #include <wg_geo.h>
 #include <wg3_geo.h>
 
-
+/*
 inline WgCoord _convert(const wg::Coord& r) { return WgCoord(r.x, r.y); }
 //inline wg::Coord _convert(const WgCoord& r) { return wg::Coord(r.x, r.y); }
 
@@ -48,6 +48,6 @@ inline WgRectF _convert(const wg::RectF& r) { return WgRectF(r.x, r.y, r.w, r.h)
 
 inline WgColor _convert(wg::Color c) { return WgColor(c.argb); }
 //inline wg::Color _convert(WgColor c) { return wg::Color(c.argb); }
-
+*/
 
 

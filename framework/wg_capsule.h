@@ -70,12 +70,12 @@ protected:
 
 		// Standard Hook methods
 
-		WgCoord			PixelPos() const { return WgCoord(); }
-		WgSize			PixelSize() const { 	return m_pParent->PixelSize(); }
-        WgRect			PixelGeo() const { return { 0,0, m_pParent->PixelSize() }; }
+        WgCoord			PixelPos() const;
+        WgSize			PixelSize() const;
+        WgRect			PixelGeo() const;
 
-		WgCoord			ScreenPixelPos() const { return m_pParent->ScreenPixelPos(); }
-		WgRect			ScreenPixelGeo() const { return m_pParent->ScreenPixelGeo(); }
+        WgCoord			ScreenPixelPos() const;
+        WgRect			ScreenPixelGeo() const;
 
 		WgCapsule* 		Parent() const { return m_pParent; }
 

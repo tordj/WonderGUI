@@ -134,8 +134,11 @@ void WgPackPanel::SetOrientation( WgOrientation orientation )
 	if( m_bHorizontal != bHorizontal )
 	{
 		m_bHorizontal = bHorizontal;
-		_updatePreferredPixelSize();
-		_refreshChildGeo();
+        
+        m_bChildGeoNeedsRefresh = true;
+        _updatePreferredPixelSize();
+        if( m_bChildGeoNeedsRefresh )
+            _refreshChildGeo();
 	}
 }
 
@@ -147,8 +150,10 @@ void WgPackPanel::SetSizeBroker( WgSizeBroker * pBroker )
 	if( m_pSizeBroker != pBroker )
 	{
 		m_pSizeBroker = pBroker;
+        m_bChildGeoNeedsRefresh = true;
 		_updatePreferredPixelSize();
-		_refreshChildGeo();
+        if( m_bChildGeoNeedsRefresh )
+            _refreshChildGeo();
 	}
 }
 
@@ -226,35 +231,15 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 	}
 	else
 	{
-		if( m_pSizeBroker && m_pSizeBroker->MayAlterPreferredLengths() )
-		{
-			// Allocate and populate SizeBroker array
-		
-			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
-			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
-		
-			int nItems = _populateSizeBrokerArray(pItemArea, width);		
-		
-			// Retrieve preferred length
+        WgPackHook * p = FirstHook();
 
-			height = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
-				
-			// Release temporary memory area
-		
-			WgBase::MemStackRelease(arrayBytes);
-		}
-		else 
-		{
-			WgPackHook * p = FirstHook();
+        while( p )
+        {
+            if( p->IsVisible() )
+                height += p->_paddedMatchingPixelHeight( width, m_scale );
 
-			while( p )
-			{
-				if( p->IsVisible() )
-					height += p->_paddedMatchingPixelHeight( width, m_scale );
-
-				p = p->Next();
-			}
-		}
+            p = p->Next();
+        }
 	}
 	return height;
 }
@@ -315,50 +300,30 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 	}
 	else
 	{
-		if( m_pSizeBroker && m_pSizeBroker->MayAlterPreferredLengths() )
-		{
-			// Allocate and populate SizeBroker array
-		
-			int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
-			WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
-		
-			int nItems = _populateSizeBrokerArray(pItemArea, height);		
-		
-			// Retrieve preferred length
+        WgPackHook * p = FirstHook();
 
-			width = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
-				
-			// Release temporary memory area
-		
-			WgBase::MemStackRelease(arrayBytes);
-		}
-		else 
-		{
-			WgPackHook * p = FirstHook();
-
-            if( m_bBaselineMode )
+        if( m_bBaselineMode )
+        {
+            while( p )
             {
-                while( p )
+                if( p->IsVisible() )
                 {
-                    if( p->IsVisible() )
-                    {
-                        int h = std::min( height, p->m_preferredSize.h );
-                        width += p->_paddedMatchingPixelWidth( h, m_scale );
-                    }
-                    p = p->Next();
+                    int h = std::min( height, p->m_preferredSize.h );
+                    width += p->_paddedMatchingPixelWidth( h, m_scale );
                 }
+                p = p->Next();
             }
-            else
+        }
+        else
+        {
+            while( p )
             {
-                while( p )
-                {
-                    if( p->IsVisible() )
-                        width += p->_paddedMatchingPixelWidth( height, m_scale );
-                    
-                    p = p->Next();
-                }
+                if( p->IsVisible() )
+                    width += p->_paddedMatchingPixelWidth( height, m_scale );
+                
+                p = p->Next();
             }
-		}
+        }
 	}
 	return width;
 }
@@ -446,14 +411,85 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 	// Update cached preferred size of child
 	
 	WgPackHook * p = static_cast<WgPackHook*>(pHook);
-	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+    WgSize oldPreferred = p->m_preferredSize;
+    WgSize newPreferred = p->_paddedPreferredPixelSize(m_scale);
+    p->m_preferredSize = newPreferred;
+
+    int oldLengthForBreadth = p->m_preferredLengthForBreadth;
+    int newLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) : p->m_pWidget->MatchingPixelHeight(p->m_geo.w);
+    p->m_preferredLengthForBreadth = newLengthForBreadth;
+
+    // Early out if we can determine that the request will have no effect on geo
+    
+    bool bNeedFullPreferredSizeRefresh = false;
+
+	if( m_bBaselineMode )
+	{
+		bNeedFullPreferredSizeRefresh = true;
+	}
+	else
+	{
+        if( newPreferred == oldPreferred && newLengthForBreadth == oldLengthForBreadth )
+        {
+//            _requestResize();
+            return;
+        }
+
+        if( m_bHorizontal )
+		{
+		    if( newPreferred.h != oldPreferred.h && oldPreferred.h == m_preferredSize.h )
+		        bNeedFullPreferredSizeRefresh = true;
+		    
+		    if( newPreferred.h <=  m_preferredSize.h && oldPreferred.h < m_preferredSize.h )
+		    {
+		        if( newLengthForBreadth == oldLengthForBreadth )
+		            return;
+		    }
+		    
+		}
+		else
+		{
+		    if( newPreferred.w != oldPreferred.w && oldPreferred.w == m_preferredSize.w )
+		        bNeedFullPreferredSizeRefresh = true;
+
+		    if( newPreferred.w <=  m_preferredSize.w && oldPreferred.w < m_preferredSize.w )
+		    {
+		        if( newLengthForBreadth == oldLengthForBreadth )
+		            return;
+		    }
+		}
+	}
 
 	//
 	
 	if (m_bBlockRequestResize)
 		m_bResizeRequestedWhileBlocked = true;
 	else
-		_refreshAllWidgets();
+    {
+        m_bChildGeoNeedsRefresh = true;
+
+        if( bNeedFullPreferredSizeRefresh )
+            _updatePreferredPixelSize();
+        else
+        {
+            if( m_bHorizontal )
+            {
+                m_preferredSize.w += newPreferred.w - oldPreferred.w;
+                if( newPreferred.h > m_preferredSize.h )
+                    m_preferredSize.h = newPreferred.h;
+            }
+            else
+            {
+                m_preferredSize.h += newPreferred.h - oldPreferred.h;
+                if( newPreferred.w > m_preferredSize.w )
+                    m_preferredSize.w = newPreferred.w;
+            }
+            _requestResize();
+        }
+            
+        if( m_bChildGeoNeedsRefresh )
+            _refreshChildGeo();
+    }
 }
 
 //____ _onWidgetAppeared() ______________________________________________________
@@ -464,10 +500,37 @@ void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 	
 	WgPackHook * p = static_cast<WgPackHook*>(pInserted);
 	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
-	
-	//
-	
-	_refreshAllWidgets();
+
+    p->m_preferredLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) : p->m_pWidget->MatchingPixelHeight(p->m_geo.w);
+
+	// Update cached preferred size of us
+
+    _refreshAllWidgets();
+
+/*
+	if( m_bBaselineMode )
+	{
+		_refreshAllWidgets();
+	}
+	else
+	{
+		if( m_bHorizontal )
+		{
+		    m_preferredSize.w += p->m_preferredSize.w;
+		    m_preferredSize.h = std::max( m_preferredSize.h, p->m_preferredSize.h);
+		}
+		else
+		{
+		    m_preferredSize.h += p->m_preferredSize.h;
+		    m_preferredSize.w = std::max( m_preferredSize.w, p->m_preferredSize.w);
+		}
+		
+		m_bChildGeoNeedsRefresh = true;
+		_requestResize();
+		if( m_bChildGeoNeedsRefresh )
+		    _refreshChildGeo();
+	}
+*/
 }
 
 //____ _onWidgetDisappeared() ___________________________________________________
@@ -488,8 +551,10 @@ void WgPackPanel::_onWidgetsReordered()
 
 void WgPackPanel::_refreshAllWidgets()
 {
-	_updatePreferredPixelSize();
-	_refreshChildGeo();
+    m_bChildGeoNeedsRefresh = true;
+    _updatePreferredPixelSize();
+    if( m_bChildGeoNeedsRefresh )
+        _refreshChildGeo();
 }
 
 
@@ -515,33 +580,22 @@ void WgPackPanel::_updatePreferredPixelSize()
 	int length = 0;
 	int breadth = 0;
 
-	if( m_pSizeBroker && m_pSizeBroker->MayAlterPreferredLengths() )
-	{
-		// Allocate and populate SizeBroker array
-		
-		int arrayBytes = sizeof(WgSizeBrokerItem)*m_hooks.Size();
-		WgSizeBrokerItem * pItemArea = reinterpret_cast<WgSizeBrokerItem*>(WgBase::MemStackAlloc(arrayBytes));
-		
-		int nItems = _populateSizeBrokerArray(pItemArea);		
-		
-		// Retrieve preferred length and breadth
-		
-		length = m_pSizeBroker->SetPreferredLengths( pItemArea, nItems );
-		
-		WgPackHook * pH = FirstHook();
-		WgSizeBrokerItem * pI = pItemArea;
+    WgPackHook * pH = FirstHook();
+
+    if( m_bBaselineMode )
+    {
+        int maxAscend = 0;
+        int maxDescend = 0;
         
-        if( m_bBaselineMode )
+        if( m_bHorizontal )
         {
-            int maxAscend = 0;
-            int maxDescend = 0;
-            
             while( pH )
             {
                 if( pH->IsVisible() )
                 {
-                    int b = m_bHorizontal?pH->_paddedMatchingPixelHeight(pI->output, m_scale):pH->_paddedMatchingPixelWidth(pI->output, m_scale);
+                    length += pH->m_preferredSize.w;
                     
+                    int b = pH->m_preferredSize.h;
                     int ascend = b * pH->m_baseline;
                     int descend = b - ascend;
                     
@@ -550,11 +604,8 @@ void WgPackPanel::_updatePreferredPixelSize()
                     
                     if( descend > maxDescend )
                         maxDescend = descend;
-                    
-                    pI++;
                 }
                 pH = pH->Next();
-                breadth = maxAscend + maxDescend;
             }
         }
         else
@@ -563,100 +614,50 @@ void WgPackPanel::_updatePreferredPixelSize()
             {
                 if( pH->IsVisible() )
                 {
-                    int b = m_bHorizontal?pH->_paddedMatchingPixelHeight(pI->output, m_scale):pH->_paddedMatchingPixelWidth(pI->output, m_scale);
-                    if( b > breadth )
-                        breadth = b;
-                    pI++;
+                    length += pH->m_preferredSize.h;
+
+                    int b = pH->m_preferredSize.h;
+                    int ascend = b * pH->m_baseline;
+                    int descend = b - ascend;
+                    
+                    if( ascend > maxAscend )
+                        maxAscend = ascend;
+                    
+                    if( descend > maxDescend )
+                        maxDescend = descend;
                 }
                 pH = pH->Next();
             }
         }
         
-		// Release temporary memory area
-		
-		WgBase::MemStackRelease(arrayBytes);
-	}
-	else
-	{
-		WgPackHook * pH = FirstHook();
-
-        if( m_bBaselineMode )
+        breadth = maxAscend + maxDescend;
+    }
+    else
+    {
+        if( m_bHorizontal )
         {
-            int maxAscend = 0;
-            int maxDescend = 0;
-            
-            if( m_bHorizontal )
+            while( pH )
             {
-                while( pH )
+                if( pH->IsVisible() )
                 {
-                    if( pH->IsVisible() )
-                    {
-                        length += pH->m_preferredSize.w;
-                        
-                        int b = pH->m_preferredSize.h;
-                        int ascend = b * pH->m_baseline;
-                        int descend = b - ascend;
-                        
-                        if( ascend > maxAscend )
-                            maxAscend = ascend;
-                        
-                        if( descend > maxDescend )
-                            maxDescend = descend;
-                    }
-                    pH = pH->Next();
+                    length += pH->m_preferredSize.w;
+                    if( pH->m_preferredSize.h > breadth )
+                        breadth = pH->m_preferredSize.h;
                 }
+                pH = pH->Next();
             }
-            else
-            {
-                while( pH )
-                {
-                    if( pH->IsVisible() )
-                    {
-                        length += pH->m_preferredSize.h;
-
-                        int b = pH->m_preferredSize.h;
-                        int ascend = b * pH->m_baseline;
-                        int descend = b - ascend;
-                        
-                        if( ascend > maxAscend )
-                            maxAscend = ascend;
-                        
-                        if( descend > maxDescend )
-                            maxDescend = descend;
-                    }
-                    pH = pH->Next();
-                }
-            }
-            
-            breadth = maxAscend + maxDescend;
         }
         else
         {
-            if( m_bHorizontal )
+            while( pH)
             {
-                while( pH )
+                if( pH->IsVisible() )
                 {
-                    if( pH->IsVisible() )
-                    {
-                        length += pH->m_preferredSize.w;
-                        if( pH->m_preferredSize.h > breadth )
-                            breadth = pH->m_preferredSize.h;
-                    }
-                    pH = pH->Next();
+                    length += pH->m_preferredSize.h;
+                    if( pH->m_preferredSize.w > breadth )
+                        breadth = pH->m_preferredSize.w;
                 }
-            }
-            else
-            {
-                while( pH)
-                {
-                    if( pH->IsVisible() )
-                    {
-                        length += pH->m_preferredSize.h;
-                        if( pH->m_preferredSize.w > breadth )
-                            breadth = pH->m_preferredSize.w;
-                    }
-                    pH = pH->Next();
-                }
+                pH = pH->Next();
             }
         }
     }
@@ -676,8 +677,11 @@ void WgPackPanel::_updatePreferredPixelSize()
 
 void WgPackPanel::_refreshBaseline()
 {
+    m_bChildGeoNeedsRefresh = true;
     _updatePreferredPixelSize();
-    _refreshChildGeo();
+
+    if( m_bChildGeoNeedsRefresh )
+        _refreshChildGeo();
 }
 
 
@@ -685,6 +689,8 @@ void WgPackPanel::_refreshBaseline()
 
 void WgPackPanel::_refreshChildGeo()
 {
+    m_bChildGeoNeedsRefresh = false;
+
     if( m_hooks.IsEmpty() )
         return;
     
@@ -706,7 +712,7 @@ void WgPackPanel::_refreshChildGeo()
 	// Optimized special case, just copy preferred to length.
 	//TODO: We probably need to use MatchingPixelWidth()/MatchingPixelHeight() here anyway... prefered length might change with given breadth
 
-	if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->MayAlterPreferredLengths()) )
+	if( !m_pSizeBroker || wantedLength == givenLength )
 	{
 		WgCoord pos = contentRect.pos();
 		WgPackHook * p = FirstHook();

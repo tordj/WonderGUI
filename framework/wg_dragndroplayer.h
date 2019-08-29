@@ -36,23 +36,23 @@ class WgSurfaceFactory;
 class WgDragNDropHook : public WgLayerHook     /** @private */
 {
     friend class WgDragNDropLayer;
-    
+
 public:
     const char *Type(void) const;
     static const char * ClassType();
-    
+
     WgDragNDropLayer *    Parent() const;
-    
+
 protected:
-    
+
     WgDragNDropHook(WgDragNDropLayer * pParent) : m_pParent(pParent) {}
-    
+
     void        _requestResize();
-    
+
     WgHook *    _prevHook() const;
     WgHook *    _nextHook() const;
     WgContainer* _parent() const;
-    
+
     WgDragNDropLayer * m_pParent;
 };
 
@@ -70,15 +70,29 @@ public:
     static const char * GetClass();
     virtual WgWidget * NewOfMyType() const override { return new WgDragNDropLayer(); };
 
+    bool            Pick( WgWidget * pWidget, WgCoord pickOfs );
     void            SetSurfaceFactory( WgSurfaceFactory * pFactory ) { m_pSurfaceFactory = pFactory; }
-    
+
     WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
 
     bool            DeleteChild(WgWidget * pWidget) override { return 0; }
     WgWidget *      ReleaseChild(WgWidget * pWidget) override { return 0; }
-    
+
     bool            DeleteAllChildren() override { return 0; }
     bool            ReleaseAllChildren() override { return 0; }
+
+    enum DragState
+    {
+        Idle,
+        Picking,    // Mouse button pressed, awaiting drag to pass treshold
+        Picked,     // Drag passed treshold, DropPickMsg sent.
+        Dragging,   // We have a payload, a drag-widget and are dragging.
+        Targeting,  // We are hovering a widget that has accepted our target probing.
+        Delivering, // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
+    };
+
+    DragState GetDragState() const { return m_dragState; }
+
 protected:
 
     // Overloaded from Panel
@@ -88,13 +102,13 @@ protected:
     // Overloaded from Layer
 
     WgLayerHook *    _firstLayerHook() const override;
-    
+
     WgHook*          _firstHook() const override;        // Fist Hook returned is the normal child, then follows the dragged one.
     WgHook*          _lastHook() const override;        //
-    
+
     WgHook *        _firstHookWithGeo(WgRect& geo) const override;
     WgHook *        _nextHookWithGeo(WgRect& geo, WgHook * pHook) const override;
-    
+
     WgHook *        _lastHookWithGeo(WgRect& geo) const override;
     WgHook *        _prevHookWithGeo(WgRect& geo, WgHook * pHook) const override;
 
@@ -108,24 +122,14 @@ protected:
     void            _renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
 
     void            _replaceWidgetInHook(WgWidget * pNewWidget);
-    
+
     //
-    
+
     void            _complete( WgWidget * pDeliveredTo);
     void            _cancel();
     void            _replaceDragWidget( WgWidget * pNewWidget );
 
-    
-    
-    enum DragState
-    {
-        Idle,
-        Picking,		// Mouse button pressed, awaiting drag to pass treshold
-        Picked,			// Drag passed treshold, DropPickMsg sent.
-        Dragging,		// We have a payload, a drag-widget and are dragging.
-        Targeting,      // We are hovering a widget that has accepted our target probing.
-        Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
-    };
+
 
     DragState		m_dragState = DragState::Idle;
 
@@ -136,15 +140,15 @@ protected:
 
     int				m_dragStartTreshold = 3;
     WgCoord         m_dragWidgetOfs;               // Drag widgets offset from pointer.
-    
+
     WgWidgetWeakPtr   m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
     WgWidgetWeakPtr   m_pTargeted;                   // Widget targeted while in state Targeting.
-
-    WgSurfaceFactory * m_pSurfaceFactory = nullptr;
+    WgCoord           m_targetOfs;                  // Pointer ofs within targeted widget.
     
+    WgSurfaceFactory * m_pSurfaceFactory = nullptr;
+
     bool            m_bDeleteDraggedWhenDone = false;
 };
-    
 
 #endif //WG_DRAGNDROPLAYER_DOT_H
 

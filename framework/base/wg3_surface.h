@@ -66,10 +66,10 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual	Size		size() const = 0;					///< @brief Get the size of the surface.
+		virtual	SizeI		size() const = 0;					///< @brief Get the size of the surface.
 																///<
-																///< Get the width and height of the surface in a Size structure.
-																///< @return Size of the suface measured in pixels.
+																///< Get the width and height of the surface in a SizeI structure.
+																///< @return SizeI of the suface measured in pixels.
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 
@@ -93,7 +93,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		virtual uint32_t	pixel( Coord coord ) const = 0;		///< @brief Get pixel at specified coordinate.
+		virtual uint32_t	pixel( CoordI coord ) const = 0;		///< @brief Get pixel at specified coordinate.
 																///<
 																///< Get the raw pixel value from the specified coordinate of the surface.
 																///<
@@ -110,7 +110,7 @@ namespace wg
 
 		inline uint32_t		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
 
-		virtual uint8_t		alpha( Coord coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual uint8_t		alpha( CoordI coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
 																///<
 																///< Get the alpha value from the specified coordinate of the surface.
 																///<
@@ -163,7 +163,7 @@ namespace wg
 																///<
 																///< @return Pointer to start of pixel data or null if failed.
 
-		virtual uint8_t *	lockRegion( AccessMode mode, const Rect& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
+		virtual uint8_t *	lockRegion( AccessMode mode, const RectI& region ) = 0; ///< @brief Lock a limited region of the surface for direct access to pixel data.
 																///<
 																///< Locks a limited region of the surface to gain direct access to its pixel data.
 																///<
@@ -197,7 +197,7 @@ namespace wg
 																							///< @return AccessMode::ReadOnly, AccessMode::WriteOnly or AccessMode::ReadWrite if the surface is locked,
 																							///< otherwise AccessMode::None.
 
-		inline  Rect		regionLocked() const;											///< @brief Get the locked region of the surface.
+		inline  RectI		regionLocked() const;											///< @brief Get the locked region of the surface.
 		inline  int			pitch() const;													///< @brief Get the pitch of the locked region.
 		const PixelDescription *	pixelDescription() const { return &m_pixelDescription; }///< @brief Get the pixel description for the surface.
 		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
@@ -212,9 +212,9 @@ namespace wg
 		//.____  Rendering ____________________________________________________
 
 		virtual bool		fill( Color col );						///< @brief Fill surface with specified color.
-		virtual bool		fill( Color col, const Rect& region );	///< @brief Fill section of surface with specified color
-		virtual bool		copyFrom( Surface * pSrcSurf, const Rect& srcRect, Coord dst );	///< @brief Copy block of graphics from other surface
-		virtual bool		copyFrom( Surface * pSrcSurf, Coord dst );	///< @brief Copy other surface as a block
+		virtual bool		fill( Color col, const RectI& region );	///< @brief Fill section of surface with specified color
+		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
+		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );	///< @brief Copy other surface as a block
 
 
 	protected:
@@ -223,8 +223,8 @@ namespace wg
 
 		static const uint8_t *	s_pixelConvTabs[9];
 
-		Rect				_lockAndAdjustRegion( AccessMode modeNeeded, const Rect& region );
-		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const Rect& srcRect, const Rect& dstRect, const Color * pCLUT = nullptr );
+		RectI				_lockAndAdjustRegion( AccessMode modeNeeded, const RectI& region );
+		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT = nullptr );
 
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
@@ -234,7 +234,7 @@ namespace wg
 		AccessMode			m_accessMode;
 		Color *				m_pClut;			// Pointer at color lookup table. Always 256 entries long.
 		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.
-		Rect				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
+		RectI				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
 	};
 
@@ -278,7 +278,7 @@ namespace wg
 	 **/
 	uint32_t Surface::pixel( int x, int y ) const
 	{
-		return pixel( Coord(x,y) );
+		return pixel( CoordI(x,y) );
 	}
 
 	//____ alpha() ____________________________________________________________
@@ -298,7 +298,7 @@ namespace wg
 	 **/
 	uint8_t Surface::alpha( int x, int y ) const
 	{
-		return alpha( Coord(x,y) );
+		return alpha( CoordI(x,y) );
 	}
 
 	//____ regionLocked() _________________________________________________________
@@ -310,10 +310,10 @@ namespace wg
 	 * @return The region of the surface that is locked or an empty rectangle
 	 * (0,0,0,0) if surface isn't locked.
 	 **/
-	Rect Surface::regionLocked() const
+	RectI Surface::regionLocked() const
 	{
 		if( m_accessMode==AccessMode::None )
-			return Rect();
+			return RectI();
 		else
 			return m_lockRegion;
 	}

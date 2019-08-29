@@ -78,7 +78,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 	AdjustScaledArea(block, canvas);
 
 	// Sanity check & shortcuts.
-	if( !canvas.contains(ofs.x,ofs.y) )
+	if( !canvas.contains(ofs) )
 		return false;
 
 	int alpha;

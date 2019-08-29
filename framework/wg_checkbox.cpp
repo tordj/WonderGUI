@@ -405,6 +405,8 @@ void WgCheckBox::_setScale( int scale )
 	WgWidget::_setScale(scale);
 
 	m_text.SetScale(scale);
+
+        _requestResize();
 }
 
 
@@ -551,7 +553,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize), m_markOpacity )) ||
 				_markTestTextArea( ofs.x, ofs.y ) ||
-				iconRect.contains( ofs.x, ofs.y ) )
+				iconRect.contains( ofs ) )
 				return true;
 
 			return false;

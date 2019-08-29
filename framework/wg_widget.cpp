@@ -432,11 +432,6 @@ void WgWidget::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 {
 	if (m_pSkin)
 	{
-//		WgState	state;
-//		state.setFocused(m_bFocused);
-//		state.setSelected(m_bSelected);
-//		state.setEnabled(m_bEnabled);
-
 		m_pSkin->Render(pDevice, m_state, _canvas, m_scale);
 	}
 }
