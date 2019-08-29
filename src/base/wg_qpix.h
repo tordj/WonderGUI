@@ -24,6 +24,9 @@
 #define	WG_QPIX_DOT_H
 #pragma once
 
+#include <cstdint>
+
+
 namespace wg
 {
 	class QPix

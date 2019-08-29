@@ -25,6 +25,7 @@
 #include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
+#include <wg_base.h>
 
 namespace wg
 {
