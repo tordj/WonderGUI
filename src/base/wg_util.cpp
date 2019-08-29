@@ -813,7 +813,7 @@ double Util::powerOfTen(int num){
 	
 	void Util::popClipList( GfxDevice * pDevice, const ClipPopData& popData )
 	{
-		if( popData.reservedMem > 0 )
+		if( popData.bInitialized )
 		{
 			pDevice->setClipList(popData.nRects, popData.pRects);
 			Base::memStackRelease(popData.reservedMem);

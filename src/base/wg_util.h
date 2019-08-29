@@ -327,12 +327,13 @@ namespace wg
 
 		struct ClipPopData				/** @private */
 		{
-			ClipPopData() : reservedMem(0) {}
-			ClipPopData(int _nRects, const RectI * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem) {}
+			ClipPopData() : bInitialized(false) {}
+			ClipPopData(int _nRects, const RectI * _pRects, int _reservedMem ) : nRects(_nRects), pRects(_pRects), reservedMem(_reservedMem), bInitialized(true) {}
 
 			int nRects;
 			const RectI * pRects;
 			int reservedMem;
+			bool bInitialized;
 		};
 		
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );

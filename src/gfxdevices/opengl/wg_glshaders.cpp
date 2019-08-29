@@ -119,7 +119,7 @@ const char GlGfxDevice::alphaBlitFragmentShader[] =
 "void main()									"
 "{												"
 "   color = fragColor;							"
-"   color.r *= texture(texId, texUV).r;         "
+"   color.a *= texture(texId, texUV).r;         "
 "}												";
 
 

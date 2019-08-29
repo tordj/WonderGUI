@@ -347,7 +347,8 @@ namespace wg
                 //TODO: Should not be on tick, but on pre-render stage.
                 //TODO: Needs to work with absent frontLayer;
                 //TODO: Should check that shadow casting children are descendants of our frontLayer, not us.
-
+                //TODO: Should use A8 surface for shadow once GlGfxDevice can handle it (write to A8).
+                
                 // Check for removed children and changes to geo that will affect shadows.
                 
                 Patches patches;
@@ -473,7 +474,7 @@ namespace wg
 			auto pSurfaceFactory = Base::activeContext()->surfaceFactory();
 
 			if (pSurfaceFactory)
-				m_pShadowSurface = pSurfaceFactory->createSurface(rawToPixels(m_size), PixelFormat::A8);
+				m_pShadowSurface = pSurfaceFactory->createSurface(rawToPixels(m_size), PixelFormat::BGRA_8);
 		}
 		
 		if( m_pShadowSurface )
@@ -493,7 +494,7 @@ namespace wg
             }
             
             pDevice->setBlendMode(BlendMode::Replace);
-			pDevice->fill(Color::Transparent);
+            pDevice->fill( {255,255,255,0} );
 
 			pDevice->setBlendMode(BlendMode::Max);
 			for( auto& shadow : m_shadows )
