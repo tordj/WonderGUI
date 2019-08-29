@@ -321,7 +321,7 @@ namespace wg
 
 	SizeI SimpleVolumeMeter::_preferredSize() const
 	{
-		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * Base::pixelQuartersPerPoint();
+		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * QPix::pixelQuartersPerPoint();
 	}
 
 	//____ _setSize() ____________________________________________________________________

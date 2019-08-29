@@ -101,24 +101,24 @@ namespace wg
 
 		inline CoordI pointsToRawAligned(const CoordI points)
 		{
-			return { (points.x* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.x* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline SizeI pointsToRawAligned(const SizeI points)
 		{
-			return { (points.w* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.w* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline BorderI pointsToRawAligned(const BorderI& points)
 		{
-			return { (points.top* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.right* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
-					 (points.bottom* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.left* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.top* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.right* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.bottom* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.left* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline RectI pointsToRawAligned(const RectI& points)
 		{
-			return { (points.x* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
-					 (points.w* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* Base::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.x* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.w* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		//____ rawToPixels() __________________________________________________
@@ -180,8 +180,8 @@ namespace wg
 
 		inline BorderI pointsToPixels(const BorderI& points)
 		{
-			return { (points.top * Base::pixelQuartersPerPoint()) >> 2, (points.right * Base::pixelQuartersPerPoint()) >> 2,
-					 (points.bottom * Base::pixelQuartersPerPoint()) >> 2, (points.left * Base::pixelQuartersPerPoint()) >> 2 };
+			return { (points.top * QPix::pixelQuartersPerPoint()) >> 2, (points.right * QPix::pixelQuartersPerPoint()) >> 2,
+					 (points.bottom * QPix::pixelQuartersPerPoint()) >> 2, (points.left * QPix::pixelQuartersPerPoint()) >> 2 };
 		}
 
 /*

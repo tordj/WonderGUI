@@ -38,10 +38,6 @@ namespace wg
 
 	Base::Data *			Base::s_pData = 0;
 
-	float					Base::s_scale;						
-	int						Base::s_pixelQuartersPerPoint;				
-
-
 	//____ init() __________________________________________________________________
 
 	void Base::init()
@@ -73,8 +69,8 @@ namespace wg
 
 		TextTool::setDefaultBreakRules();
 
-		s_scale = 1.f;
-		s_pixelQuartersPerPoint = 4;
+		QPix::s_scale = 1.f;
+		QPix::s_pixelQuartersPerPoint = 4;
 
 	}
 
@@ -207,8 +203,8 @@ namespace wg
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
 
-		s_scale = pContext->scale();
-		s_pixelQuartersPerPoint = int(s_scale * 4.f);
+		QPix::s_scale = pContext->scale();
+		QPix::s_pixelQuartersPerPoint = int(pContext->scale() * 4.f);
 	}
 
 	//____ activeContext() ____________________________________________________

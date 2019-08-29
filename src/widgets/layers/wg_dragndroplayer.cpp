@@ -194,7 +194,7 @@ namespace wg
 					case DragState::Picking:
 					{
 						CoordI total = pMsg->draggedTotalRaw();
-						if (abs(total.x) + abs(total.y) > m_dragStartTreshold*Base::pixelQuartersPerPoint())
+						if (abs(total.x) + abs(total.y) > m_dragStartTreshold*QPix::pixelQuartersPerPoint())
 						{
 							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));

@@ -109,8 +109,6 @@ namespace wg
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 
-		inline static float		scale() { return s_scale; }
-		inline static int		pixelQuartersPerPoint() { return s_pixelQuartersPerPoint; }
 
 	private:
 
@@ -140,9 +138,6 @@ namespace wg
 		};
 
 		static Data *	s_pData;
-
-		static float	s_scale;						// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
-		static int		s_pixelQuartersPerPoint;		// Value to multiply point with to get quarter-pixels.
 	};
 
 

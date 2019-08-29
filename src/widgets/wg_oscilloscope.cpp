@@ -100,7 +100,7 @@ namespace wg
 
 	SizeI Oscilloscope::_preferredSize() const
 	{
-		return SizeI(80,64) * Base::pixelQuartersPerPoint();
+		return SizeI(80,64) * QPix::pixelQuartersPerPoint();
 	}
 
 

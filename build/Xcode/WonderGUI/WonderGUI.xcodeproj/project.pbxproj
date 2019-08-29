@@ -283,6 +283,7 @@
 		1741F0252313D6B200029A27 /* wg_ishadows.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0232313D6B100029A27 /* wg_ishadows.h */; };
 		1741F0262313D6B200029A27 /* wg_ishadows.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F0242313D6B100029A27 /* wg_ishadows.cpp */; };
 		1741F0282313E1BB00029A27 /* wg_shadow.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0272313E1BA00029A27 /* wg_shadow.h */; };
+		1741F02E2318063800029A27 /* wg_qpix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F02D2318063700029A27 /* wg_qpix.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -563,6 +564,7 @@
 		1741F0232313D6B100029A27 /* wg_ishadows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_ishadows.h; sourceTree = "<group>"; };
 		1741F0242313D6B100029A27 /* wg_ishadows.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_ishadows.cpp; sourceTree = "<group>"; };
 		1741F0272313E1BA00029A27 /* wg_shadow.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_shadow.h; sourceTree = "<group>"; };
+		1741F02D2318063700029A27 /* wg_qpix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_qpix.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -799,6 +801,7 @@
 				170F4D0122FC0AB800D8B773 /* wg_payload.cpp */,
 				170F4CFD22FC088700D8B773 /* wg_context.cpp */,
 				170F4CFE22FC088700D8B773 /* wg_context.h */,
+				1741F02D2318063700029A27 /* wg_qpix.cpp */,
 				170F4CFB22FC084900D8B773 /* wg_qpix.h */,
 				17169222229C68D700196AB0 /* wg_anim.cpp */,
 				17169247229C68DC00196AB0 /* wg_anim.h */,
@@ -1313,6 +1316,7 @@
 				171693D6229C6AA700196AB0 /* wg_button.cpp in Sources */,
 				1716937A229C69EA00196AB0 /* wg_extendedskin.cpp in Sources */,
 				1716935C229C69BF00196AB0 /* wg_uniform_sizebroker.cpp in Sources */,
+				1741F02E2318063800029A27 /* wg_qpix.cpp in Sources */,
 				17169302229C693500196AB0 /* wg_cvaluedisplay.cpp in Sources */,
 				170F4D0222FC0AB800D8B773 /* wg_payload.cpp in Sources */,
 				1716935D229C69BF00196AB0 /* wg_scalepreferred_sizebroker.cpp in Sources */,

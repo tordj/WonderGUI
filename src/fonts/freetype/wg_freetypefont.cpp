@@ -26,7 +26,7 @@
 
 #include <wg_userdefines.h>
 
-#include <wg_base.h>
+#include <wg_qpix.h>
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
@@ -181,7 +181,7 @@ namespace wg
 			if( size == m_ftCharSize )
 				return true;
 
-			int ftSize = (size + m_sizeOffset)*Base::pixelQuartersPerPoint()/4;
+			int ftSize = (size + m_sizeOffset)*QPix::pixelQuartersPerPoint()/4;
 
 			// Sanity check
 

@@ -216,7 +216,7 @@ namespace wg
 	{
 		SizeI	sz = m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(10,5*m_nLEDs) : SizeI( 5*m_nLEDs,10);
 
-		sz *= Base::pixelQuartersPerPoint();
+		sz *= QPix::pixelQuartersPerPoint();
 
 		if( m_pSkin )
 			return m_pSkin->_sizeForContent( sz );
