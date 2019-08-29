@@ -162,10 +162,10 @@ namespace wg
 
 
 		static const int c_commandBufferSize = 256;
-		static const int c_vertexBufferSize = 16384;				// SizeI of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 65536*4;				// SizeI of extras buffer, in GLfloats.
-		static const int c_surfaceBufferSize = 1024;				// SizeI of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
-		static const int c_clipListBufferSize = 4096;				// SizeI of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
+		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
+		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;

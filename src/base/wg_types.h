@@ -363,7 +363,7 @@ namespace wg
 	//____ SizePolicy ___________________________________________________________
 	/**
 		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,
-		to limit/control the geometry of children. Different Sizepolicies can be set
+		to limit/control the geometry of children. Different SizePolicies can be set
 		for horizontal and vertical size.
 
 		It is used in combination with a size specified by parent. In the case of

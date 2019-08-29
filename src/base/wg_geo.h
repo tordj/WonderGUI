@@ -364,7 +364,7 @@ namespace wg
 		Increasing x and y will always move the rectangle to the right and down respectively.
 
 		Members are not checked or truncated so width and height are allowed to contain negative values
-		but various WonderGUI methods accepting a RectI as parameter might not be able to handle it.
+		but various WonderGUI methods accepting a Rect as parameter might not be able to handle it.
 
 	**/
 

@@ -24,9 +24,6 @@
 #define	WG_QPIX_DOT_H
 #pragma once
 
-#include <wg_base.h>
-//#include <wg_context.h>
-
 namespace wg
 {
 	class QPix
