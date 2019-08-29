@@ -11,7 +11,6 @@ mkdir gfxdevices/software
 cd ..
 
 cd ../../WonderGUI/src
-cp wondergui.h	../../wg2/_kato_wg3/imports
 
 cd base
 cp wg_object.h \

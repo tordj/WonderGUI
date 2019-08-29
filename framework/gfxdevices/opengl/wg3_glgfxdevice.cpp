@@ -285,7 +285,7 @@ namespace wg
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, m_extrasBufferId);
-        glActiveTexture(GL_TEXTURE0);
+		glActiveTexture(GL_TEXTURE0);
 
 		assert(glGetError() == 0);
 	}
@@ -491,12 +491,13 @@ namespace wg
 		return true;
 	}
 
-    //____ isCanvasReady() ___________________________________________________________
+	//____ isCanvasReady() ___________________________________________________________
     
-    bool GlGfxDevice::isCanvasReady() const
-    {
-        return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
-    }
+	bool GlGfxDevice::isCanvasReady() const
+	{
+		return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
+	}
+
 	//____ beginRender() ___________________________________________________________
 
 	bool GlGfxDevice::beginRender()
@@ -942,35 +943,35 @@ namespace wg
 
 		}
 
-        m_vertexBufferData[m_vertexOfs].coord = c1;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c1;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
-        m_vertexBufferData[m_vertexOfs].coord = c2;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c2;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
-        m_vertexBufferData[m_vertexOfs].coord = c3;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c3;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
-        m_vertexBufferData[m_vertexOfs].coord = c1;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c1;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
-        m_vertexBufferData[m_vertexOfs].coord = c3;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c3;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
-        m_vertexBufferData[m_vertexOfs].coord = c4;
-        m_vertexBufferData[m_vertexOfs].color = fillColor;
-        m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
-        m_vertexOfs++;
+		m_vertexBufferData[m_vertexOfs].coord = c4;
+		m_vertexBufferData[m_vertexOfs].color = fillColor;
+		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+		m_vertexOfs++;
 
 		m_extrasBufferData[m_extrasOfs++] = s;
 		m_extrasBufferData[m_extrasOfs++] = w;
@@ -1322,7 +1323,7 @@ namespace wg
 
 		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
 
-        assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
+		assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
         
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
@@ -1850,7 +1851,7 @@ namespace wg
 				glActiveTexture(GL_TEXTURE2);
 				GLuint clutTex = pSurf->getClutTexture();
 				glBindTexture(GL_TEXTURE_BUFFER, clutTex);
-                glActiveTexture(GL_TEXTURE0);
+				glActiveTexture(GL_TEXTURE0);
 
 				assert(glGetError() == 0);
 			}

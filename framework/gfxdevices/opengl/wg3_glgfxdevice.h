@@ -82,7 +82,7 @@ namespace wg
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
 
-        bool    isCanvasReady() const;
+		bool    isCanvasReady() const;
 
 		//.____ Rendering ________________________________________________
 
@@ -359,13 +359,13 @@ namespace wg
 			m_clipCurrOfs = m_clipWriteOfs;
 
 			for (int i = 0; i < m_nClipRects; i++)
-            {
-                Rect clip = m_pClipRects[i];
-                if( m_canvasYstart != 0 )
-                    clip.y = m_canvasSize.h - (clip.y + clip.h);
+			{
+				Rect clip = m_pClipRects[i];
+				if( m_canvasYstart != 0 )
+					clip.y = m_canvasSize.h - (clip.y + clip.h);
 
-                m_clipListBuffer[m_clipWriteOfs++] = clip;
-            }
+				m_clipListBuffer[m_clipWriteOfs++] = clip;
+			}
 		}
 
 		m_cmd = cmd;
