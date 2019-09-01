@@ -45,14 +45,14 @@
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>..\framework;..\framework\opengl;..\framework\wg_soft;..\..\glew\include;..\..\freetype\include;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\framework;..\framework\opengl;..\framework\wg_soft;..\..\glew\include;..\..\freetype\include;..\framework\gfxdevices\opengl;..\framework\gfxdevices\software;..\framework\interfaces;..\framework\base;..;$(IncludePath)</IncludePath>
     <LibraryPath>..\Debug;..\..\SDL2\lib\x86;..\..\SDL2_image\lib\x86;..\..\glew\lib\Release\Win32;..\..\freetype\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>..\framework;..\framework\opengl;..\framework\wg_soft;..\..\glew\include;..\..\freetype\include;..;$(IncludePath)</IncludePath>
+    <IncludePath>..\framework;..\framework\opengl;..\framework\wg_soft;..\..\glew\include;..\..\freetype\include;..\framework\gfxdevices\opengl;..\framework\gfxdevices\software;..\framework\interfaces;..\framework\base;..;$(IncludePath)</IncludePath>
     <LibraryPath>..\Release;..\..\SDL2\lib\x86;..\..\SDL2_image\lib\x86;..\..\glew\lib\Release\Win32;..\..\freetype\lib;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
@@ -109,12 +109,10 @@
     <ClCompile Include="..\extras\sdl_wglib.cpp" />
     <ClCompile Include="..\framework\wg_knob.cpp" />
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="wg_gizmo_seq_circle_meter.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\extras\sdl_wglib.h" />
     <ClInclude Include="..\framework\wg_knob.h" />
-    <ClInclude Include="wg_gizmo_seq_circle_meter.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

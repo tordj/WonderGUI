@@ -57,9 +57,6 @@
 #include "testwidget.h"
 
 
-//Filip test
-#include "wg_gizmo_seq_circle_meter.h"
-
 
 void manuBlendTest();
 

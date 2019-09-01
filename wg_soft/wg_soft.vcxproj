@@ -11,18 +11,16 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\framework\wg_soft\wg3_softgfxdevice.cpp" />
-    <ClCompile Include="..\framework\wg_soft\wg3_softsurface.cpp" />
-    <ClCompile Include="..\framework\wg_soft\wg3_softsurfacefactory.cpp" />
-    <ClCompile Include="..\framework\wg_soft\wg_gfxdevice_soft.cpp" />
+    <ClCompile Include="..\framework\gfxdevices\software\wg3_softgfxdevice.cpp" />
+    <ClCompile Include="..\framework\gfxdevices\software\wg3_softsurface.cpp" />
+    <ClCompile Include="..\framework\gfxdevices\software\wg3_softsurfacefactory.cpp" />
     <ClCompile Include="..\framework\wg_soft\wg_surfacefactory_soft.cpp" />
     <ClCompile Include="..\framework\wg_soft\wg_surface_soft.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\framework\wg_soft\wg3_softgfxdevice.h" />
-    <ClInclude Include="..\framework\wg_soft\wg3_softsurface.h" />
-    <ClInclude Include="..\framework\wg_soft\wg3_softsurfacefactory.h" />
-    <ClInclude Include="..\framework\wg_soft\wg_gfxdevice_soft.h" />
+    <ClInclude Include="..\framework\gfxdevices\software\wg3_softgfxdevice.h" />
+    <ClInclude Include="..\framework\gfxdevices\software\wg3_softsurface.h" />
+    <ClInclude Include="..\framework\gfxdevices\software\wg3_softsurfacefactory.h" />
     <ClInclude Include="..\framework\wg_soft\wg_surfacefactory_soft.h" />
     <ClInclude Include="..\framework\wg_soft\wg_surface_soft.h" />
   </ItemGroup>
@@ -60,12 +58,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\framework\wg_soft;..\framework;$(IncludePath)</IncludePath>
+    <IncludePath>..\framework\wg_soft;..\framework;..\framework\gfxdevices\software;..\framework\base;..\framework\interfaces;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\framework\wg_soft;..\framework;$(IncludePath)</IncludePath>
+    <IncludePath>..\framework\wg_soft;..\framework;..\framework\gfxdevices\software;..\framework\base;..\framework\interfaces;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

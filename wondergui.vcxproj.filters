@@ -34,7 +34,6 @@
     <ClCompile Include="framework\wg_fpsdisplay.cpp" />
     <ClCompile Include="framework\wg_frameskin.cpp" />
     <ClCompile Include="framework\wg_gfxanim.cpp" />
-    <ClCompile Include="framework\wg_gfxdevice_null.cpp" />
     <ClCompile Include="framework\wg_glyphset.cpp" />
     <ClCompile Include="framework\wg_hook.cpp" />
     <ClCompile Include="framework\wg_iconholder.cpp" />
@@ -63,7 +62,6 @@
     <ClCompile Include="framework\wg_scrollchart.cpp" />
     <ClCompile Include="framework\wg_scrollpanel.cpp" />
     <ClCompile Include="framework\wg_shadercapsule.cpp" />
-    <ClCompile Include="framework\wg_simpleline.cpp" />
     <ClCompile Include="framework\wg_simplevolumemeter.cpp" />
     <ClCompile Include="framework\wg_sizebroker.cpp" />
     <ClCompile Include="framework\wg_sizecapsule.cpp" />
@@ -76,7 +74,6 @@
     <ClCompile Include="framework\wg_string.cpp" />
     <ClCompile Include="framework\wg_surface.cpp" />
     <ClCompile Include="framework\wg_switch.cpp" />
-    <ClCompile Include="framework\wg_tablist.cpp" />
     <ClCompile Include="framework\wg_tabordercapsule.cpp" />
     <ClCompile Include="framework\wg_text.cpp" />
     <ClCompile Include="framework\wg_textdisplay.cpp" />
@@ -84,7 +81,6 @@
     <ClCompile Include="framework\wg_textprop.cpp" />
     <ClCompile Include="framework\wg_textpropmanager.cpp" />
     <ClCompile Include="framework\wg_texttool.cpp" />
-    <ClCompile Include="framework\wg_tileholder.cpp" />
     <ClCompile Include="framework\wg_util.cpp" />
     <ClCompile Include="framework\wg_valuedisplay.cpp" />
     <ClCompile Include="framework\wg_valueeditor.cpp" />
@@ -96,23 +92,52 @@
     <ClCompile Include="framework\wg_widgetholder.cpp" />
     <ClCompile Include="framework\wg_blob.cpp" />
     <ClCompile Include="framework\wg_gfxdevice.cpp" />
-    <ClCompile Include="framework\wg3_blob.cpp" />
-    <ClCompile Include="framework\wg3_color.cpp" />
-    <ClCompile Include="framework\wg3_geo.cpp" />
-    <ClCompile Include="framework\wg3_gfxdevice.cpp" />
-    <ClCompile Include="framework\wg3_interface.cpp" />
-    <ClCompile Include="framework\wg3_object.cpp" />
-    <ClCompile Include="framework\wg3_surface.cpp" />
-    <ClCompile Include="framework\wg3_surfacefactory.cpp" />
-    <ClCompile Include="framework\wg3_util.cpp" />
-    <ClCompile Include="framework\wg3_nullgfxdevice.cpp" />
     <ClCompile Include="framework\wg_multislider.cpp" />
-    <ClCompile Include="framework\wg3_enumextras.cpp" />
     <ClCompile Include="framework\wg_multiblockskin.cpp" />
     <ClCompile Include="framework\wg_popuplayer.cpp" />
     <ClCompile Include="framework\wg_container.cpp" />
     <ClCompile Include="framework\wg_popupopener.cpp" />
     <ClCompile Include="framework\wg_modallayer.cpp" />
+    <ClCompile Include="framework\wg_shadowlayer.cpp" />
+    <ClCompile Include="framework\base\wg3_blob.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_color.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_enumextras.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_geo.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_gfxdevice.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_nullgfxdevice.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_object.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_patches.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_qpix.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_surface.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_surfacefactory.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_util.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\interfaces\wg3_interface.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Debug.h" />
@@ -152,7 +177,6 @@
     <ClInclude Include="framework\wg_frameskin.h" />
     <ClInclude Include="framework\wg_geo.h" />
     <ClInclude Include="framework\wg_gfxanim.h" />
-    <ClInclude Include="framework\wg_gfxdevice_null.h" />
     <ClInclude Include="framework\wg_glyphset.h" />
     <ClInclude Include="framework\wg_hook.h" />
     <ClInclude Include="framework\wg_iconholder.h" />
@@ -184,7 +208,6 @@
     <ClInclude Include="framework\wg_scrollchart.h" />
     <ClInclude Include="framework\wg_scrollpanel.h" />
     <ClInclude Include="framework\wg_shadercapsule.h" />
-    <ClInclude Include="framework\wg_simpleline.h" />
     <ClInclude Include="framework\wg_simplevolumemeter.h" />
     <ClInclude Include="framework\wg_sizebroker.h" />
     <ClInclude Include="framework\wg_sizecapsule.h" />
@@ -198,7 +221,6 @@
     <ClInclude Include="framework\wg_surface.h" />
     <ClInclude Include="framework\wg_surfacefactory.h" />
     <ClInclude Include="framework\wg_switch.h" />
-    <ClInclude Include="framework\wg_tablist.h" />
     <ClInclude Include="framework\wg_tabordercapsule.h" />
     <ClInclude Include="framework\wg_text.h" />
     <ClInclude Include="framework\wg_textdisplay.h" />
@@ -207,7 +229,6 @@
     <ClInclude Include="framework\wg_textprop.h" />
     <ClInclude Include="framework\wg_textpropmanager.h" />
     <ClInclude Include="framework\wg_texttool.h" />
-    <ClInclude Include="framework\wg_tileholder.h" />
     <ClInclude Include="framework\wg_types.h" />
     <ClInclude Include="framework\wg_userdefines.h" />
     <ClInclude Include="framework\wg_util.h" />
@@ -223,28 +244,79 @@
     <ClInclude Include="framework\wondergui.h" />
     <ClInclude Include="framework\wg_blob.h" />
     <ClInclude Include="framework\wg_gfxdevice.h" />
-    <ClInclude Include="framework\wg3_blob.h" />
-    <ClInclude Include="framework\wg3_color.h" />
-    <ClInclude Include="framework\wg3_geo.h" />
-    <ClInclude Include="framework\wg3_gfxdevice.h" />
-    <ClInclude Include="framework\wg3_interface.h" />
-    <ClInclude Include="framework\wg3_object.h" />
-    <ClInclude Include="framework\wg3_pointers.h" />
-    <ClInclude Include="framework\wg3_stronginterfaceptr.h" />
-    <ClInclude Include="framework\wg3_strongptr.h" />
-    <ClInclude Include="framework\wg3_surface.h" />
-    <ClInclude Include="framework\wg3_surfacefactory.h" />
-    <ClInclude Include="framework\wg3_types.h" />
-    <ClInclude Include="framework\wg3_util.h" />
-    <ClInclude Include="framework\wg3_weakinterfaceptr.h" />
-    <ClInclude Include="framework\wg3_weakptr.h" />
     <ClInclude Include="framework\wg_versionbridge.h" />
-    <ClInclude Include="framework\wg3_nullgfxdevice.h" />
-    <ClInclude Include="framework\wg3_base.h" />
     <ClInclude Include="framework\wg_multislider.h" />
-    <ClInclude Include="framework\wg3_enumextras.h" />
     <ClInclude Include="framework\wg_multiblockskin.h" />
     <ClInclude Include="framework\wg_popuplayer.h" />
     <ClInclude Include="framework\wg_popupopener.h" />
+    <ClInclude Include="framework\wg_shadowlayer.h" />
+    <ClInclude Include="framework\base\wg3_base.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_blob.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_color.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_enumextras.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_geo.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_gfxdevice.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_nullgfxdevice.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_object.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_patches.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_pointers.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_qpix.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_stronginterfaceptr.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_strongptr.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_surface.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_surfacefactory.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_types.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_util.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_weakinterfaceptr.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\base\wg3_weakptr.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\interfaces\wg3_interface.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Base">
+      <UniqueIdentifier>{eeb5df23-03ea-40ba-adfc-4d2071a94d54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="interfaces">
+      <UniqueIdentifier>{10e259aa-e8ee-48c4-9c74-81ca57a2b104}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
 </Project>
