@@ -20,6 +20,8 @@
 
 =========================================================================*/
 
+#include <cassert>
+
 #include <wg_event.h>
 #include <wg_key.h>
 #include <wg_widget.h>

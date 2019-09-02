@@ -33,7 +33,7 @@ class WgShadowLayer;
 
 class WgShadow
 {
-    friend class ShadowHolder;
+    friend class WgShadowLayer;
 public:
     /** @private */
     WgShadow(WgWidget* pWidget, WgSkin* pSkin, WgRect geo ) : m_pWidget(pWidget), m_pSkin(pSkin), m_geo(geo) {}
@@ -87,6 +87,17 @@ public:
     static const char * GetClass();
     virtual WgWidget * NewOfMyType() const override { return new WgShadowLayer(); };
 
+	WgHook *		SetFront(WgWidget * pWidget);
+	WgWidget *		Front();
+	bool			DeleteFront();
+	WgWidget *		ReleaseFront();
+
+	bool			DeleteChild(WgWidget * pWidget);
+	WgWidget *		ReleaseChild(WgWidget * pWidget);
+
+	bool			DeleteAllChildren();
+	bool			ReleaseAllChildren();
+
     int         NbShadows() const { return (int) m_shadows.size(); }
     
     void        ClearShadows();
@@ -105,10 +116,6 @@ public:
     WgSize          PreferredPixelSize() const override;
 
 protected:
-
-    // Overloaded from Panel
-    
-    void            _onRequestRender(const WgRect& rect, const WgLayerHook * pHook) override;    // rect is in our coordinate system.
     
     // Overloaded from Layer
     
@@ -123,10 +130,7 @@ protected:
     WgHook *        _lastHookWithGeo(WgRect& geo) const override;
     WgHook *        _prevHookWithGeo(WgRect& geo, WgHook * pHook) const override;
     
-    // Overloaded from WidgetHolder
-
-    void            _replaceWidgetInHook(WgWidget * pNewWidget);
-
+ 
     // Overloaded from Widget
 
     void            _onCloneContent(const WgWidget * _pOrg) override;
@@ -136,6 +140,11 @@ protected:
     void            _renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
     
     //
+
+	void			_willRemoveShadows(int ofs, int nb);
+	void			_onFrontChanged();
+
+
 
     WgShadowHook    m_frontHook;
     WgSurface *     m_pShadowSurface;

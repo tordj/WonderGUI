@@ -188,6 +188,27 @@ void WgContainer::SetEavesdropping( bool bEavesdropping )
 }
 
 
+//____ _descendantPos() _____________________________________________________
+
+bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
+{
+	pos.clear();
+
+	WgWidget * p = pDescendant;
+	while (p != this)
+	{
+		if (p == nullptr)
+			return false;
+
+		auto pHook = p->Hook();
+		pos += pHook->PixelPos();
+		p = pHook->Parent();
+	}
+
+	return true;
+}
+
+
 //____ _onNewRoot() ___________________________________________________________
 
 void WgContainer::_onNewRoot( WgRootPanel * pRoot )
