@@ -182,7 +182,7 @@ WgWidget * WgShadowLayer::ReleaseChild(WgWidget * pWidget)
 	else if (pWidget == m_frontHook.Widget())
 		return ReleaseFront();
 
-	return false;
+	return nullptr;
 }
 
 //____ DeleteAllChildren() ____________________________________________________
@@ -203,13 +203,13 @@ bool WgShadowLayer::ReleaseAllChildren()
 
 void WgShadowLayer::ClearShadows()
 {
-	_willRemoveShadows(0, m_shadows.size());
+	_willRemoveShadows(0, (int) m_shadows.size());
 	m_shadows.clear();
 }
 
 //____ AddShadow() ____________________________________________________________
 
-bool WgShadowLayer::AddShadow(WgWidget * pWidget, WgSkin * pShadow)
+bool WgShadowLayer::AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow)
 {
     if( !pWidget || !pShadow )
         return false;
@@ -219,7 +219,7 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, WgSkin * pShadow)
     
     WgRect geo = { pos - pShadow->ContentOfs(WgStateEnum::Normal, m_scale), pShadow->SizeForContent(pWidget->PixelSize(), m_scale) };
     
-    m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
+    m_shadows.push_back( WgShadow(pWidget,pShadow.GetRealPtr(),geo));
     
     WgPatches patches;
     patches.Add(geo);
@@ -500,7 +500,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 					if (!geo.isEmpty())
 					{
 						patches.Add(geo);
-						pShadow->m_geo = geo;
+                        pShadow->m_geo = {0,0,0,0};
 					}
 				}
 			}

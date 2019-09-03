@@ -92,16 +92,16 @@ public:
 	bool			DeleteFront();
 	WgWidget *		ReleaseFront();
 
-	bool			DeleteChild(WgWidget * pWidget);
-	WgWidget *		ReleaseChild(WgWidget * pWidget);
+	bool			DeleteChild(WgWidget * pWidget) override;
+	WgWidget *		ReleaseChild(WgWidget * pWidget) override;
 
-	bool			DeleteAllChildren();
-	bool			ReleaseAllChildren();
+	bool			DeleteAllChildren() override;
+	bool			ReleaseAllChildren() override;
 
     int         NbShadows() const { return (int) m_shadows.size(); }
     
     void        ClearShadows();
-    bool        AddShadow(WgWidget * pWidget, WgSkin * pShadow);
+    bool        AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow);
     
     void        RemoveShadow(int index);
     void        RemoveShadow(WgWidget * pWidget);

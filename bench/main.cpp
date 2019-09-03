@@ -51,6 +51,8 @@
 #include <wg_popupopener.h>
 #include <wg_popuplayer.h>
 #include <wg_blockset.h>
+#include <wg_shadowlayer.h>
+#include <wg_context.h>
 
 #include <wg3_softgfxdevice.h>
 
@@ -59,6 +61,7 @@
 
 
 void manuBlendTest();
+void shadowLayerTest( WgRootPanel * pRoot );
 
 
 //#define USE_OPEN_GL
@@ -213,7 +216,15 @@ int main ( int argc, char** argv )
 
 	g_pSurfaceFactory = new WgSurfaceFactorySoft();
 #endif
-	
+
+    WgContext context;
+    context.pFactory = g_pSurfaceFactory;
+    context.pDevice = g_pGfxDevice;
+    context.scale = 8192;
+    
+    WgBase::SetContext( context );
+
+    
 	//	pGfxDevice->SetBilinearFiltering( true );
 
 
@@ -271,7 +282,8 @@ int main ( int argc, char** argv )
 
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
-	
+
+    shadowLayerTest(pRoot);
 //	manuBlendTest();
 
 	// Setup debug overlays
@@ -634,6 +646,76 @@ void manuBlendTest()
 	delete pDevice;
 */
 }
+    
+//____ shadowLayerTest() _________________________________________________________
+
+void shadowLayerTest( WgRootPanel * pRoot )
+{
+    WgSurface * pImgSurface = sdl_wglib::LoadSurface("../resources/shadow.png", * g_pSurfaceFactory );
+    
+    WgBlockSkinPtr pShadowSkin = WgBlockSkin::CreateStaticFromSurface(pImgSurface, {0,128,128,0});
+    pShadowSkin->SetContentPadding({0,128,128,0});
+//    pImgSurface->SetScaleMode(WgScaleMode::Nearest);
+    
+    
+    
+    auto pShadowLayer = new WgShadowLayer();
+    auto pFrontLayer = new WgFlexPanel();
+    auto pBaseLayer = new WgFlexPanel();
+    
+    pRoot->SetChild( pShadowLayer );
+    
+    pShadowLayer->SetBase( pBaseLayer );
+    pShadowLayer->SetFront( pFrontLayer );
+    
+    
+    auto pFiller1 = new WgFiller();
+    auto pFiller2 = new WgFiller();
+    auto pFiller3 = new WgFiller();
+    
+    pFiller1->SetColors( WgColorset::Create(WgColor::DarkKhaki));
+    pFrontLayer->AddChild(pFiller1, {0,0,50,50} );
+    
+    pFiller2->SetColors( WgColorset::Create(WgColor::DarkSlateBlue));
+    pFrontLayer->AddChild(pFiller2, {50,50,50,50} );
+    
+    pFiller3->SetColors( WgColorset::Create(WgColor::DarkSeaGreen));
+    pFrontLayer->AddChild(pFiller3, {100,100,50,50} );
+    
+    auto pBackground = new WgFiller();
+    pBackground->SetColors(WgColorset::Create(WgColor::LightSalmon));
+    pBaseLayer->AddChild(pBackground, WgOrigo::NorthWest, WgOrigo::SouthEast);
+    
+    pShadowLayer->AddShadow( pFiller1, pShadowSkin );
+    pShadowLayer->AddShadow( pFiller2, pShadowSkin );
+    pShadowLayer->AddShadow( pFiller3, pShadowSkin );
+    
+    WgEventHandler * pEventHandler = pRoot->EventHandler();
+
+    pEventHandler->AddCallback(WgEventFilter::MouseButtonDrag(pFiller1, 1), [](const WgEvent::Event * pEvent, WgWidget *pWin)
+                               {
+                                   WgCoord drag = static_cast<const WgEvent::MouseButtonDrag*>(pEvent)->DraggedNowPoints();
+                                   
+                                   static_cast<WgFlexHook*>(pWin->Hook())->MovePoints(drag);
+                               }, pFiller1);
+
+    pEventHandler->AddCallback(WgEventFilter::MouseButtonDrag(pFiller2, 1), [](const WgEvent::Event * pEvent, WgWidget *pWin)
+                               {
+                                   WgCoord drag = static_cast<const WgEvent::MouseButtonDrag*>(pEvent)->DraggedNowPoints();
+                                   
+                                   static_cast<WgFlexHook*>(pWin->Hook())->MovePoints(drag);
+                               }, pFiller2);
+
+    pEventHandler->AddCallback(WgEventFilter::MouseButtonDrag(pFiller3, 1), [](const WgEvent::Event * pEvent, WgWidget *pWin)
+                               {
+                                   WgCoord drag = static_cast<const WgEvent::MouseButtonDrag*>(pEvent)->DraggedNowPoints();
+                                   
+                                   static_cast<WgFlexHook*>(pWin->Hook())->MovePoints(drag);
+                               }, pFiller3);
+
+}
+
+
 
 
 //____ setupGUI() ______________________________________________________________
@@ -646,7 +728,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	WgRootPanel * pRoot = new WgRootPanel(pDevice);
 
-	pRoot->SetScale(8192);
+    pRoot->SetScale(WgBase::Context()->scale);
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 

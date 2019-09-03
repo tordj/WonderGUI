@@ -197,11 +197,11 @@ bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
 	WgWidget * p = pDescendant;
 	while (p != this)
 	{
-		if (p == nullptr)
-			return false;
-
 		auto pHook = p->Hook();
-		pos += pHook->PixelPos();
+        if( pHook == nullptr )
+            return false;
+
+        pos += pHook->PixelPos();
 		p = pHook->Parent();
 	}
 
