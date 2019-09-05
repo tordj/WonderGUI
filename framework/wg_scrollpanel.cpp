@@ -872,38 +872,44 @@ WgSize WgScrollPanel::_calcContentSize( WgSize mySize )
 
 	//
 
-	if( !m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
-		mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
+    if(!m_bOverlayScrollbars)
+    {
+        if( !m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
+            mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
 
-	if( !m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
-		mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
+        if( !m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
+            mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
+    }
 
 	//
 
 	WgSize contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
 
-	if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
-	{
-		mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
-		contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
+    if(!m_bOverlayScrollbars)
+    {
+        if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
+        {
+            mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
+            contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
 
-		if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
-		{
-			mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
-			contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
-		}
-	}
-	else if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
-	{
-		mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
-		contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
+            if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
+            {
+                mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
+                contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
+            }
+        }
+        else if( contentSize.w > mySize.w && m_bAutoHideSliderX && m_elements[XDRAG].Widget() )
+        {
+            mySize.h -= m_elements[XDRAG].Widget()->PreferredPixelSize().h;
+            contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
 
-		if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
-		{
-			mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
-			contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
-		}
-	}
+            if( contentSize.h > mySize.h && m_bAutoHideSliderY && m_elements[YDRAG].Widget() )
+            {
+                mySize.w -= m_elements[YDRAG].Widget()->PreferredPixelSize().w;
+                contentSize = m_elements[WINDOW]._sizeFromPolicy( mySize, m_widthPolicy, m_heightPolicy, m_scale );
+            }
+        }
+    }
 
 	return contentSize;
 }
@@ -1003,7 +1009,7 @@ void WgScrollPanel::_updateElementGeo( WgSize _mySize )
     // scrollbar placement.
     
     if( m_bOverlayScrollbars )
-        newWindow = mySize;
+        newWindow = myRect;
     
 	// Determine changes to views position and size over content before
 	// we overwrite old values, so we can emit right signals once all is updated.

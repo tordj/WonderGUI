@@ -98,16 +98,19 @@ public:
 	bool			DeleteAllChildren() override;
 	bool			ReleaseAllChildren() override;
 
-    int         NbShadows() const { return (int) m_shadows.size(); }
+    int             NbShadows() const { return (int) m_shadows.size(); }
     
-    void        ClearShadows();
-    bool        AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow);
+    void            ClearShadows();
+    bool            AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow);
     
-    void        RemoveShadow(int index);
-    void        RemoveShadow(WgWidget * pWidget);
+    void            RemoveShadow(int index);
+    void            RemoveShadow(WgWidget * pWidget);
 
-    void        SetSkin(const WgSkinPtr& pSkin);        // Method added separately to those widgets that support skin so far.
+    void            SetSkin(const WgSkinPtr& pSkin);        // Method added separately to those widgets that support skin so far.
 
+    void            SetShadowTint( uint8_t alpha);
+    uint8_t         ShadowTint() { return m_shadowTint; }
+    
     // Overloaded from Widget
     
     int             MatchingPixelHeight( int width ) const override;
@@ -142,13 +145,17 @@ protected:
     //
 
 	void			_willRemoveShadows(int ofs, int nb);
+    void            _requestRenderShadows(int ofs, int nb);
+//    void            _requestRenderShadow( const WgRect& rect );
 	void			_onFrontChanged();
 
 
 
     WgShadowHook    m_frontHook;
-    WgSurface *     m_pShadowSurface;
-
+    WgSurface *     m_pShadowSurface = nullptr;
+    uint8_t         m_shadowTint = 255;
+//    WgPatches       m_shadowSurfaceDirt;
+    
     std::vector<WgShadow>	m_shadows;
     
 

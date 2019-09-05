@@ -269,6 +269,17 @@ void WgShadowLayer::SetSkin(const WgSkinPtr& pSkin)
 	}
 }
 
+//____ SetShadowTint() __________________________________________________________
+
+void WgShadowLayer::SetShadowTint( uint8_t alpha )
+{
+    if( m_shadowTint != alpha )
+    {
+        m_shadowTint = alpha;
+        _requestRenderShadows( 0, (int) m_shadows.size() );
+    }
+}
+
 //____ MatchingPixelHeight() _________________________________________________________________
 
 int WgShadowLayer::MatchingPixelHeight( int width ) const
@@ -325,6 +336,13 @@ WgSize WgShadowLayer::PreferredPixelSize() const
 
 void WgShadowLayer::_willRemoveShadows(int ofs, int nb)
 {
+    _requestRenderShadows(ofs,nb);
+}
+
+//____ _requestRenderShadows() ________________________________________________________
+
+void WgShadowLayer::_requestRenderShadows(int ofs, int nb)
+{
 	for (auto p = &m_shadows[ofs]; p != &m_shadows[ofs + nb]; p++)
 	{
 		WgPatches patches;
@@ -340,6 +358,15 @@ void WgShadowLayer::_willRemoveShadows(int ofs, int nb)
 			_requestRender(*pRect);
 	}
 }
+
+//____ _requestRenderShadow() _________________________________________________________
+/*
+void WgShadowLayer::_requestRenderShadow( const WgRect& rect )
+{
+    _requestRender(*pRect);
+//    m_shadowSurfaceDirty.Add(rect);
+}
+*/
 
 //____ _firstLayerHook() _______________________________________________________________
 
@@ -455,7 +482,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			WgPatches patches;
 
-			for (auto it = m_shadows.begin(); it < m_shadows.end(); it++)
+			for (auto it = m_shadows.begin(); it < m_shadows.end();)
 			{
 				WgWidget * pWidget = it->widget();
 				WgShadow * pShadow = &(*it);
@@ -466,6 +493,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				{
 					patches.Add(pShadow->m_geo);
 					it = m_shadows.erase(it);
+                    continue;
 				}
 
 				//
@@ -503,6 +531,8 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
                         pShadow->m_geo = {0,0,0,0};
 					}
 				}
+
+                it++;       // Only increase iterator if widget wasn't deleted.
 			}
 
 			// Early out if there is nothing to update in shadow layer.
@@ -594,6 +624,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		WgRect		fullClipList;
 		auto oldCanvas = pDevice->canvas();
 		auto oldBlendMode = pDevice->blendMode();
+        auto oldTint = pDevice->tintColor();
 
 		pDevice->setCanvas(m_pShadowSurface->RealSurface(),false);
 
@@ -605,7 +636,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		else
 			pDevice->setClipList(patches.Size(), patches.Begin());
 
-
+        pDevice->setTintColor( WgColor::White );
 		pDevice->setBlendMode(WgBlendMode::Replace);
 		pDevice->fill({ 255,255,255,0 });
 
@@ -619,12 +650,17 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 		pDevice->setCanvas(oldCanvas,false);
 
-		// Render shadows
+		// Render shadows from shadow layer
 
+        pDevice->setTintColor( { 255,255,255,m_shadowTint } );
 		pDevice->setBlendMode(WgBlendMode::Subtract);
 		pDevice->setBlitSource( m_pShadowSurface->RealSurface() );
-		pDevice->blit({ 0,0 });
+        pDevice->blit({ 0,0 });
 
+//        for (auto& shadow : m_shadows)
+//            pDevice->blit( shadow.m_geo.pos() + contentGeo.pos(), shadow.m_geo );
+
+        pDevice->setTintColor(oldTint);
 		pDevice->setBlendMode(oldBlendMode);
 
 	}

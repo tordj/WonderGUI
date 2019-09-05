@@ -195,7 +195,7 @@ bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
 	pos.clear();
 
 	WgWidget * p = pDescendant;
-	while (p != this)
+	while (p != this && p!= nullptr )
 	{
 		auto pHook = p->Hook();
         if( pHook == nullptr )
