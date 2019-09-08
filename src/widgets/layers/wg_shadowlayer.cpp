@@ -303,31 +303,55 @@ namespace wg
             for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
                 _requestRender(*pRect);
 		}
-
-
 	}
 
 	//____ _willRemoveShadows() _______________________________________________
 
 	void ShadowLayer::_willRemoveShadows(int ofs, int nb)
 	{
-        for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
-        {
-            RectI geo = _shadowGeo(&(*it));
-            
-            Patches patches;
-            patches.add(geo);
-            
-            // Remove portions of patches that are covered by opaque front widgets
-            
-            m_frontSlot.pWidget->_maskPatches(patches, m_size, m_size, _getBlendMode());
-            
-            // Make request render calls
-            
-            for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
-                _requestRender(*pRect);
-        }
+		_requestRenderShadows(ofs, nb);
 	}
+
+	//____ _requestRenderShadows() _______________________________________________
+
+	void ShadowLayer::_requestRenderShadows(int ofs, int nb)
+	{
+		for (auto it = m_shadows.end() - nb; it != m_shadows.end(); it++)
+		{
+			RectI geo = _shadowGeo(&(*it));
+
+			Patches patches;
+			patches.add(geo);
+
+			// Remove portions of patches that are covered by opaque front widgets
+
+			m_frontSlot.pWidget->_maskPatches(patches, m_size, m_size, _getBlendMode());
+
+			// Make request render calls
+
+			for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+				_requestRender(*pRect);
+		}
+	}
+
+	//____ _setShadowTint() ___________________________________________________
+
+	void ShadowLayer::_setShadowTint(uint8_t alpha)
+	{
+		if (alpha != m_shadowTint)
+		{
+			m_shadowTint = alpha;
+			_requestRenderShadows(0, (int)m_shadows.size());
+		}
+	}
+
+	//____ _shadowTint() ______________________________________________________
+
+	uint8_t ShadowLayer::_shadowTint() const
+	{
+		return m_shadowTint;
+	}
+
 
 	//____ _cloneContent() ____________________________________________________
 
@@ -481,6 +505,7 @@ namespace wg
 		{
             auto oldCanvas = pDevice->canvas();
 			auto oldBlendMode = pDevice->blendMode();
+			auto oldTint = pDevice->tintColor();
 
             pDevice->setCanvas(m_pShadowSurface, false);
 
@@ -493,6 +518,7 @@ namespace wg
                 pDevice->setClipList(1, &fullClipList);
             }
             
+			pDevice->setTintColor(Color::White);
             pDevice->setBlendMode(BlendMode::Replace);
             pDevice->fill( {255,255,255,0} );
 
@@ -505,12 +531,14 @@ namespace wg
 
 			pDevice->setCanvas(oldCanvas, false);
 
-			// Render shadows
+			// Render shadows from shadow layer
 
+			pDevice->setTintColor({ 255, 255, 255, m_shadowTint } );
             pDevice->setBlendMode(BlendMode::Subtract);
 			pDevice->setBlitSource(m_pShadowSurface);
 			pDevice->blit( {0,0} );
 
+			pDevice->setTintColor(oldTint);
             pDevice->setBlendMode(oldBlendMode);
 
         }

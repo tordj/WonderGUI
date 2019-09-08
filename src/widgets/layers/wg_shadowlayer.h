@@ -83,6 +83,8 @@ namespace wg
 		Object *        _object() override;
 		void	        _didAddShadows(int nb) override;
 		void	        _willRemoveShadows(int ofs, int nb) override;
+		void			_setShadowTint(uint8_t alpha) override;
+		uint8_t			_shadowTint() const override;
 
 		// Overloaded from Widget
 
@@ -100,10 +102,16 @@ namespace wg
 		void            _render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void            _receive(Msg * pMsg) override;
 
+		//
+
+		void			_requestRenderShadows(int ofs, int nb);
+
+
 
 		LayerSlot       m_frontSlot;
 		RouteId			m_tickRouteId;
 		Surface_p		m_pShadowSurface;
+		uint8_t			m_shadowTint;
 
 		std::vector<Shadow>	m_shadows;
 	};

@@ -47,7 +47,10 @@ namespace wg
 
 		virtual void	_didAddShadows(int nb) = 0;
 		virtual void	_willRemoveShadows(int ofs, int nb) = 0;
-		
+		virtual void	_setShadowTint(uint8_t alpha) = 0;
+		virtual uint8_t _shadowTint() const = 0;
+
+
 		inline void		_setShadowGeo( Shadow * pShadow, const RectI& geo ) { pShadow->m_geo = geo; }
 		inline RectI	_shadowGeo( Shadow * pShadow ) { return pShadow->m_geo; }
 	};
@@ -69,6 +72,11 @@ namespace wg
 		const Shadow& operator[](int index) const { return m_pShadows->operator[](index); }
 		inline IShadows& operator<<(std::tuple<Widget*, Skin*> shadow) { add(std::get<0>(shadow), std::get<1>(shadow)); return *this; }
 		inline IShadows& operator<<(std::initializer_list <std::tuple<Widget*, Skin*>> shadows) { add(shadows); return *this; }
+
+		//.____ Appearance ________________________________________________________
+
+		void		setTint(uint8_t alpha) { m_pHolder->_setShadowTint(alpha); }
+		uint8_t		tint() const { return m_pHolder->_shadowTint(); }
 
 		//.____ Content _______________________________________________________
 

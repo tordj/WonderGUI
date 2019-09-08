@@ -868,6 +868,9 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_ishadows.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_qpix.cpp">
+      <Filter>base</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />
