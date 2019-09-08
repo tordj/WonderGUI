@@ -91,7 +91,7 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		int		size() const;
-		void	push(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, SizeI maxSize = SizeI(INT_MAX, INT_MAX));
+		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();

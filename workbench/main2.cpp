@@ -183,7 +183,7 @@ int main(int argc, char** argv)
 	Base::init();
 
 	Context_p pContext = Context::create();
-	pContext->setScale(2.0);
+	pContext->setScale(1.0);
 //	pContext->setSurfaceFactory(SoftSurfaceFactory::create());
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
 	Base::setActiveContext(pContext);
