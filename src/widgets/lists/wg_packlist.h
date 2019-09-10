@@ -134,10 +134,10 @@ namespace wg
 		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 
-		bool				setMinEntrySize(SizeI min);
-		bool				setMaxEntrySize(SizeI max);
-		SizeI				minEntrySize() const { return m_minEntrySize; }
-		SizeI				maxEntrySize() const { return m_maxEntrySize; }
+		bool				setMinEntrySize(Size min);
+		bool				setMaxEntrySize(Size max);
+		Size				minEntrySize() const { return Util::rawToQpix(m_minEntrySize); }
+		Size				maxEntrySize() const { return Util::rawToQpix(m_maxEntrySize); }
 
 		//.____ Behavior ________________________________________________________
 

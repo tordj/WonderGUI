@@ -152,8 +152,10 @@ namespace wg
 
 	//____ setMinEntrySize() ______________________________________________________
 
-	bool PackList::setMinEntrySize( SizeI min )
+	bool PackList::setMinEntrySize( Size _min )
 	{
+		SizeI min = qpixToRaw(_min);
+
 		if( min == m_minEntrySize )
 			return true;
 
@@ -167,8 +169,10 @@ namespace wg
 
 	//____ setMaxEntrySize() ______________________________________________________
 
-	bool PackList::setMaxEntrySize( SizeI max )
+	bool PackList::setMaxEntrySize( Size _max )
 	{
+		SizeI max = qpixToRaw(_max);
+
 		if( max == m_maxEntrySize )
 			return true;
 

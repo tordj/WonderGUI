@@ -48,35 +48,6 @@ namespace wg
 	{
 	public:
 
-		struct CustomFunctionTable
-		{
-			int(*setCanvas)(void * pPixels, int pixelDescription, int pitch);
-			void(*beginRender)(void);
-			void(*endRender)(void);
-
-			void(*fillReplace)(int x, int y, int w, int h, uint32_t color);
-			void(*fillBlend)(int x, int y, int w, int h, uint32_t color);
-			void(*fillAdd)(int x, int y, int w, int h, uint32_t color);
-			void(*fillSubtract)(int x, int y, int w, int h, uint32_t color);
-			void(*fillMultiply)(int x, int y, int w, int h, uint32_t color);
-			void(*fillInvert)(int x, int y, int w, int h, uint32_t color);
-
-			void(*blitReplace)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-			void(*blitBlend)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-			void(*blitAdd)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-			void(*blitSubtract)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-			void(*blitMultiply)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-			void(*blitInvert)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY);
-
-			void(*tintBlitReplace)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-			void(*tintBlitBlend)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-			void(*tintBlitAdd)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-			void(*tintBlitSubtract)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-			void(*tintBlitMultiply)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-			void(*tintBlitInvert)(void * pSource, int pixelDescription, int pitch, int x, int y, int w, int h, int destX, int destY, uint32_t color);
-		};
-
-
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
@@ -93,10 +64,6 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		SurfaceFactory_p		surfaceFactory() override;
-
-		inline CustomFunctionTable *	customFunctions() { return &m_customFunctions; }
-		inline void						enableCustomFunctions(bool enable) { m_bEnableCustomFunctions = enable; };
-		inline bool						customFunctionsEnabled() const { return m_bEnableCustomFunctions; }
 
 		//.____ Geometry _________________________________________________
 
@@ -229,7 +196,6 @@ namespace wg
 
 		void	_initTables();
 		void	_updateBlitFunctions();
-		void	_clearCustomFunctionTable();
 		int 	_scaleLineThickness(float thickness, int slope);
 
 		//
@@ -311,11 +277,6 @@ namespace wg
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
 		int				m_canvasPitch;
-
-		bool			m_bEnableCustomFunctions;	// Externally set.
-		bool			m_bUseCustomFunctions;		// Internally set, based on m_bEnableCustomFunctions and return values from custom calls to beginRender and setCanvas.
-													//Use overrided drawing primitives if available.
-		CustomFunctionTable m_customFunctions;
 
 	};
 
