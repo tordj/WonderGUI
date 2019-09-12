@@ -25,6 +25,8 @@
 
 namespace wg
 {
+	using namespace Util;
+
 	CCanvas::CCanvas(ComponentHolder * pHolder, ICanvas * pInterface) : Component(pHolder)
 	{
 		m_pInterface = pInterface;
@@ -37,7 +39,7 @@ namespace wg
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 
-		RectI canvas = calcPresentationArea() + _canvas.pos();
+		RectI canvas = rawToPixels( calcPresentationArea() + _canvas.pos() );
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->stretchBlit(canvas);
@@ -64,7 +66,7 @@ namespace wg
 		SizeI sz = m_fixedSize;
 
 		if (sz.w == 0 && sz.h == 0)
-			sz = _size();
+			sz = rawToPixels(_size());
 
 		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
@@ -81,20 +83,26 @@ namespace wg
 
 	RectI CCanvas::calcPresentationArea() const
 	{
-		SizeI window = _size();
+		SizeI window = rawToPixels(_size());
 		SizeI bitmapSize = m_pSurface->size();
+
+		SizeI output;
 
 		switch (m_presentationScaling)
 		{
 		case SizePolicy2D::Scale:
-			return Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
-
+			output = Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
+			break;
 		case SizePolicy2D::Stretch:
-			return RectI(0,0,window);
-
+			output = RectI(0,0,window);
+			break;
 		default:
-			return Util::origoToRect(m_origo, window, bitmapSize);
+			SizeI scaledBitmapSize = pointsToPixels(bitmapSize);
+			output = Util::origoToRect(m_origo, window, scaledBitmapSize);
+			break;
 		}
+
+		return pixelsToRaw(output);
 	}
 
 
@@ -186,6 +194,8 @@ namespace wg
 
 	void CCanvas::clear()
 	{
+		//TODO: Use GfxDevice instead of slow Surface::fill();
+
 		if (m_pSurface)
 			m_pSurface->fill(m_backColor);
 	}
@@ -235,7 +245,7 @@ namespace wg
 
 	void CCanvas::present(RectI area)
 	{
-		RectI dest = calcPresentationArea();
+		RectI dest = rawToPixels(calcPresentationArea());
 		SizeI bitmapSize = m_pSurface->size();
 
 		int x1 = area.x * dest.w / bitmapSize.w;
@@ -245,14 +255,17 @@ namespace wg
 
 		RectI a2 = RectI::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
 
-		_requestRender(a2);
+		_requestRender(pixelsToRaw(a2));
 	}
 
 	//____ preferredSize() ____________________________________________________
 
 	SizeI CCanvas::preferredSize() const
 	{
-		return m_fixedSize == SizeI()? SizeI(16,16) : m_fixedSize;
+		// We use pointsToRaw here instead of pixelsToRaw since a pixel in our surface
+		// should be scaled to a point in UI.
+
+		return m_fixedSize.isEmpty()? SizeI(16*4,16*4) : pointsToRawAligned( m_fixedSize );
 	}
 
 } //namespace wg

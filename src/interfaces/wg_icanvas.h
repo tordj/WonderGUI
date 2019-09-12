@@ -72,7 +72,7 @@ namespace wg
 		bool			setPixelFormat(PixelFormat format);
 		PixelFormat		pixelFormat() const;
 
-		bool			setSize(SizeI sz);
+		bool			setSize(SizeI pixelSize);
 		bool			isSizeFixed() const;
 		SizeI			size() const;
 
@@ -86,7 +86,7 @@ namespace wg
 		Origo			origo() const;
 
 		void			present();
-		void			present(RectI area);
+		void			present(RectI pixelArea);
 
 		Surface_wp		surface() const;
 

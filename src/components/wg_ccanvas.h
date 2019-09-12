@@ -61,7 +61,7 @@ namespace wg
 		bool			setSurfaceFactory(SurfaceFactory * pFactory);
 		void			setLostCallback(std::function<void(ICanvas*)> func);
 		bool			setPixelFormat(PixelFormat format);
-		bool			setSurfaceSize(SizeI sz);
+		bool			setSurfaceSize(SizeI szPixels);
 		void			setComponentSize(SizeI sz);
 		void			setBackColor(Color color);
 		void			clear();
@@ -76,7 +76,7 @@ namespace wg
 		GfxDevice_p		m_pDevice;
 		SurfaceFactory_p m_pFactory;
 		Surface_p		m_pSurface;
-		SizeI			m_fixedSize;
+		SizeI			m_fixedSize;			// Fixed size of surface in pixels if set.
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;

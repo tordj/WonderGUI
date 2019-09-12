@@ -27,6 +27,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char Canvas::CLASSNAME[] = {"Canvas"};
 
@@ -81,7 +82,7 @@ namespace wg
 		SizeI sz = m_canvas.preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
-			return 16;
+			return 16*4;
 
 		return width * sz.h / sz.w;
 	}
@@ -98,7 +99,7 @@ namespace wg
 		SizeI sz = m_canvas.preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
-			return 16;
+			return 16*4;
 
 		return height * sz.w / sz.h;
 	}
@@ -109,7 +110,7 @@ namespace wg
 	{
 		SizeI sz = m_canvas.preferredSize();
 		if (sz.w == sz.h == 0)
-			sz = { 16,16 };
+			sz = { 16*4,16*4 };
 
 		if (m_pSkin)
 			sz += m_pSkin->_contentPadding();
