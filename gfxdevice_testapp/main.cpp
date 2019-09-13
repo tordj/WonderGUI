@@ -39,6 +39,7 @@
 #include <testsuites/segmenttests.h>
 #include <testsuites/wavetests.h>
 #include <testsuites/clutblittests.h>
+#include <testsuites/mipmaptests.h>
 
 using namespace wg;
 using namespace std;
@@ -624,6 +625,8 @@ void setup_tests()
 	add_testsuite(new SegmentTests(), new SegmentTests());
 	add_testsuite(new WaveTests(), new WaveTests());
 	add_testsuite(new ClutBlitTests(), new ClutBlitTests());
+	add_testsuite(new MipmapTests(), new MipmapTests());
+
 	regen_testentries();
 }
 
