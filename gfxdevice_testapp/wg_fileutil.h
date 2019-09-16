@@ -34,7 +34,7 @@ namespace wg
 	namespace FileUtil
 	{
 		Blob_p		loadBlob(const char * pPath);
-		Surface_p	loadSurface(const char * pPath, SurfaceFactory * pFactory );
+		Surface_p	loadSurface(const char * pPath, SurfaceFactory * pFactory, int flags = 0 );
 	}
 }
 

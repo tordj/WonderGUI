@@ -166,7 +166,7 @@ namespace wg
 	/**
 	*	@brief Sets a fixed size for the surface.
 	*
-	*	@param SizeI		The size for the surface, no smaller than {1,1} and no larger than
+	*	@param SizeI		The size for the surface in pixels, no smaller than {1,1} and no larger than
 	*					allowed by the SurfaceFactory in use, or {0,0} to return the surface to dynamic
 	*					resizing.
 	*
@@ -202,7 +202,7 @@ namespace wg
 	/**
 	*	@brief Gets the dimensions of the surface.
 	*
-	*	Gets the dimensions of the surface, which might be different from the dimensions
+	*	Gets the dimensions of the surface in pixels, which might be different from the dimensions
 	*	of this CCanvas component if a fixed size has been set.
 	*
 	*	@return SizeI of surface OR specified fixed size if no surface present and fixed
@@ -321,7 +321,7 @@ namespace wg
 	/**
 	*	@brief	Redraw part of the component with the content of the surface.
 	*
-	*	@param	area	The area of the surface that has been modified and needs to be presented.
+	*	@param	area	The area of the surface in pixels that has been modified and needs to be presented.
 	*
 	*	Marks the area of the component displaying the specified part of the surface as dirty,
 	*	forcing a redraw with the content of the surface during its next render update.

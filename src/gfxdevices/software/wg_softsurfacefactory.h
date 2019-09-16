@@ -39,7 +39,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static SoftSurfaceFactory_p	create() { return SoftSurfaceFactory_p(new SoftSurfaceFactory()); }
+		static SoftSurfaceFactory_p	create(int flags = SurfaceFlag::Static) { return SoftSurfaceFactory_p(new SoftSurfaceFactory(flags)); }
 
 		//.____ Identification __________________________________________
 
@@ -54,13 +54,16 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const override;
-		virtual Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color * pClut = nullptr) const override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color * pClut = nullptr) const override;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color * pClut = nullptr) const override;
+		virtual Surface_p	createSurface( Surface * pOther, int flags = 0 ) const override;
 
 	protected:
+		SoftSurfaceFactory(int flags) : m_flags(flags) {}
 		virtual ~SoftSurfaceFactory() {}
+
+		int		m_flags;
 	};
 
 	//========================================================================================

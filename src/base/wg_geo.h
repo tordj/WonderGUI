@@ -263,6 +263,7 @@ namespace wg
 
 		inline void limit( const SizeT<Type>& min, const SizeT<Type>& max );
 		inline void clear()		{ w = 0; h = 0; }
+		inline bool	isEmpty() const { return (w == 0 && h == 0); }
 
 		inline CoordT<Type> toCoord() { return CoordT<Type>(w,h); }
 

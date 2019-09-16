@@ -1,4 +1,4 @@
-/*=========================================================================
+﻿/*=========================================================================
 
 						 >>> WonderGUI <<<
 
@@ -125,7 +125,7 @@ namespace wg
 		else
 			m_pClut = nullptr;
 
-		_setupGlTexture(nullptr);
+		_setupGlTexture(nullptr, flags);
 
 		assert( glGetError() == 0 );
 	}
@@ -141,7 +141,7 @@ namespace wg
 		m_pBlob = pBlob;
 		m_pClut = const_cast<Color*>(pClut);
 
-		_setupGlTexture(m_pBlob->data());
+		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
@@ -163,7 +163,7 @@ namespace wg
 		else
 			m_pClut = nullptr;
 
-		_setupGlTexture(m_pBlob->data());
+		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
 
@@ -186,10 +186,10 @@ namespace wg
 		else
 			m_pClut = nullptr;
 
-		_setupGlTexture(m_pBlob->data());
+		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
-	void GlSurface::_setupGlTexture(void * pPixelsToUpload)
+	void GlSurface::_setupGlTexture(void * pPixelsToUpload, int flags)
 	{
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
@@ -199,15 +199,15 @@ namespace wg
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+//		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		assert(glGetError() == 0);
-
-		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
-			m_accessFormat, m_pixelDataType, pPixelsToUpload);
+		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
 		assert(glGetError() == 0);
+
 
 		if (m_pClut)
 		{
@@ -236,6 +236,12 @@ namespace wg
 
 			assert(glGetError() == 0);
 		}
+		else if (flags & SurfaceFlag::Mipmapped)
+		{
+			m_bMipmapped = true;
+			glGenerateMipmap(GL_TEXTURE_2D);
+		}
+
 
 		setScaleMode(m_scaleMode);
 
@@ -362,10 +368,11 @@ namespace wg
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 			glBindTexture(GL_TEXTURE_2D, m_texture);
 
+
 			switch (mode)
 			{
 			case ScaleMode::Interpolate:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 
@@ -399,6 +406,7 @@ namespace wg
 
 		return false;
 	}
+
 
 	//____ lock() __________________________________________________________________
 
@@ -467,6 +475,8 @@ namespace wg
 			glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
 			glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, m_accessFormat, m_pixelDataType, m_pPixels );
 			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
+			if (m_bMipmapped)
+				glGenerateMipmap(GL_TEXTURE_2D);
 			glBindTexture( GL_TEXTURE_2D, oldBinding );
 		}
 		m_accessMode = AccessMode::None;
@@ -557,15 +567,29 @@ namespace wg
 
 		glGenTextures( 1, &m_texture );
 		glBindTexture( GL_TEXTURE_2D, m_texture );
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_NEAREST);
-		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+
+		switch (m_scaleMode)
+		{
+		case ScaleMode::Interpolate:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+			break;
+
+		case ScaleMode::Nearest:
+		default:
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			break;
+		}
+
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP_TO_EDGE);
 		glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP_TO_EDGE);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		glTexImage2D( GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0,
 					 m_accessFormat, m_pixelDataType, m_pBlob->data() );
 
+		if( m_bMipmapped )
+			glGenerateMipmap(GL_TEXTURE_2D);
 		glBindTexture( GL_TEXTURE_2D, oldBinding );
 
 		assert( glGetError() == 0);
@@ -616,8 +640,9 @@ namespace wg
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
 		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glPixelStorei(GL_PACK_ROW_LENGTH, m_size.w);
 		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, type, m_pBlob->data());
-
+		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
 		GLenum err;

@@ -93,7 +93,7 @@ namespace wg
 
 	//____ loadSurface() ______________________________________________________
 
-	Surface_p	FileUtil::loadSurface(const char * pPath, SurfaceFactory * pFactory )
+	Surface_p	FileUtil::loadSurface(const char * pPath, SurfaceFactory * pFactory, int flags )
 	{
 		PixelDescription format;
 
@@ -128,7 +128,7 @@ namespace wg
 			px = PixelFormat::BGR_8;
 
 
-		auto pSurface = pFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, 0, pClut);
+		auto pSurface = pFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), px, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &format, flags, pClut);
 		SDL_FreeSurface(pSDLSurf);
 		return pSurface;
 	}

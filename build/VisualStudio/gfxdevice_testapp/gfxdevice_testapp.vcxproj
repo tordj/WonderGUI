@@ -31,6 +31,7 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\filltests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\linetests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blittests.h" />
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\mipmaptests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\plottests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\segmenttests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\testsuite.h" />

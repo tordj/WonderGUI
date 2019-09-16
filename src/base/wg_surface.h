@@ -78,18 +78,7 @@ namespace wg
 		virtual void		setScaleMode( ScaleMode mode );
 		ScaleMode			scaleMode() const { return m_scaleMode; }
 
-		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
-																///<
-																///< Check if surface is entirely opaque.
-																///<
-																///< A surface is opaque if it contains no transparent or semi-transparent
-																///< pixels at all and therefore is guaranteed to completely cover any graphics
-																///< behind it. This method is called regularly in time-critical sections of
-																///< the code to optimize rendering operations and therefore should not do any
-																///< time consuming operations.
-																///<
-																///< @return True if surface is guaranteed to only contain completely opaque pixels. False if
-																///< if it does contain (semi)transparent pixels or we simply just don't know.
+		bool				isMipmapped() const { return m_bMipmapped; }
 
 		//.____ Content _______________________________________________________
 
@@ -130,7 +119,24 @@ namespace wg
 		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
-		inline const Color * clut() const { return m_pClut; }
+		inline const Color* clut() const { return m_pClut; }
+
+		const PixelDescription*	pixelDescription() const { return &m_pixelDescription; }///< @brief Get the pixel description for the surface.
+		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
+
+		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
+																///<
+																///< Check if surface is entirely opaque.
+																///<
+																///< A surface is opaque if it contains no transparent or semi-transparent
+																///< pixels at all and therefore is guaranteed to completely cover any graphics
+																///< behind it. This method is called regularly in time-critical sections of
+																///< the code to optimize rendering operations and therefore should not do any
+																///< time consuming operations.
+																///<
+																///< @return True if surface is guaranteed to only contain completely opaque pixels. False if
+																///< if it does contain (semi)transparent pixels or we simply just don't know.
+
 
 		//.____ Control _______________________________________________________
 
@@ -199,8 +205,6 @@ namespace wg
 
 		inline  RectI		regionLocked() const;											///< @brief Get the locked region of the surface.
 		inline  int			pitch() const;													///< @brief Get the pitch of the locked region.
-		const PixelDescription *	pixelDescription() const { return &m_pixelDescription; }///< @brief Get the pixel description for the surface.
-		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
 		inline uint8_t *	pixels() const { return m_pPixels; }			///< @brief Get a pointer to the raw pixels of the locked region.
 																			///< Get a pointer to the first line of raw pixels of the locked region.
 																			///<
@@ -230,6 +234,7 @@ namespace wg
 		int					m_pitch;
 
 		ScaleMode			m_scaleMode;
+		bool				m_bMipmapped;
 
 		AccessMode			m_accessMode;
 		Color *				m_pClut;			// Pointer at color lookup table. Always 256 entries long.
