@@ -62,7 +62,7 @@
 
 void manuBlendTest();
 void shadowLayerTest( WgRootPanel * pRoot );
-
+void stretchBlitTest();
 
 //#define USE_OPEN_GL
 
@@ -135,7 +135,6 @@ static int TestThread(void *ptr)
 
 int main ( int argc, char** argv )
 {
-
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------

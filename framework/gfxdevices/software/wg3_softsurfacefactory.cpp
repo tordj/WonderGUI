@@ -69,22 +69,22 @@ namespace wg
 
 	Surface_p SoftSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) const
 	{
-		return SoftSurface::create(size,format,flags,pClut);
+		return SoftSurface::create(size,format,flags | m_flags,pClut);
 	}
 
 	Surface_p SoftSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) const
 	{
-		return SoftSurface::create(size,format, pBlob, pitch, flags, pClut);
+		return SoftSurface::create(size,format, pBlob, pitch, flags | m_flags, pClut);
 	}
 
 	Surface_p SoftSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
 	{
-		return SoftSurface::create(size,format, pPixels, pitch, pPixelDescription, flags, pClut);
+		return SoftSurface::create(size,format, pPixels, pitch, pPixelDescription, flags | m_flags, pClut);
 	}
 
 	Surface_p SoftSurfaceFactory::createSurface( Surface * pOther, int flags ) const
 	{
-		return SoftSurface::create( pOther, flags );
+		return SoftSurface::create( pOther, flags | m_flags);
 	}
 
 } // namespace wg

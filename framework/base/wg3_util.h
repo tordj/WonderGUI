@@ -178,10 +178,26 @@ namespace wg
 
 		//____ pointsToPixels() _______________________________________________
 
+		inline CoordI pointsToPixels(const CoordI& points)
+		{
+			return { (points.x * QPix::pixelQuartersPerPoint()) >> 2, (points.y * QPix::pixelQuartersPerPoint()) >> 2 };
+		}
+
+		inline SizeI pointsToPixels(const SizeI& points)
+		{
+			return { (points.w * QPix::pixelQuartersPerPoint()) >> 2, (points.h * QPix::pixelQuartersPerPoint()) >> 2 };
+		}
+
 		inline BorderI pointsToPixels(const BorderI& points)
 		{
 			return { (points.top * QPix::pixelQuartersPerPoint()) >> 2, (points.right * QPix::pixelQuartersPerPoint()) >> 2,
 					 (points.bottom * QPix::pixelQuartersPerPoint()) >> 2, (points.left * QPix::pixelQuartersPerPoint()) >> 2 };
+		}
+
+		inline RectI pointsToPixels(const RectI& points)
+		{
+			return { (points.x * QPix::pixelQuartersPerPoint()) >> 2, (points.y * QPix::pixelQuartersPerPoint()) >> 2,
+					 (points.w * QPix::pixelQuartersPerPoint()) >> 2, (points.h * QPix::pixelQuartersPerPoint()) >> 2 };
 		}
 
 /*

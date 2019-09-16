@@ -1398,27 +1398,21 @@ namespace wg
 
 	SoftGfxDevice::SoftGfxDevice() : GfxDevice(SizeI(0,0))
 	{
-		m_bEnableCustomFunctions = false;
-		m_bUseCustomFunctions = false;
 		m_pCanvas = nullptr;
 		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
-		_clearCustomFunctionTable();
 
 	}
 
 	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():SizeI() )
 	{
-		m_bEnableCustomFunctions = false;
-		m_bUseCustomFunctions = false;
 		m_pCanvas = pCanvas;
 		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		_initTables();
-		_clearCustomFunctionTable();
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -1525,14 +1519,6 @@ namespace wg
 			m_canvasPitch = m_pCanvas->pitch();
 
 			_updateBlitFunctions();
-
-			// Call custom function, let it decide if it can render or not.
-
-			if( m_bEnableCustomFunctions && m_customFunctions.setCanvas )
-			{
-				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) pCanvas->pixelFormat(), m_canvasPitch );
-				m_bUseCustomFunctions = retVal != 0;
-			}
 		}
 
 	return true;
@@ -1587,23 +1573,6 @@ namespace wg
 		if( !m_pCanvasPixels )
 			return false;
 
-		// Call custom functions
-
-		if( m_bEnableCustomFunctions )
-		{
-			if( m_customFunctions.beginRender )
-				m_customFunctions.beginRender();
-
-			if( m_customFunctions.setCanvas )
-			{
-				int retVal = m_customFunctions.setCanvas( m_pCanvasPixels, (int) m_pCanvas->pixelFormat(), m_canvasPitch );
-				m_bUseCustomFunctions = retVal != 0;
-			}
-			else
-				m_bUseCustomFunctions = true;
-
-		}
-
 		setTintColor(Color::White);
 		setBlendMode(BlendMode::Blend);
         
@@ -1616,11 +1585,6 @@ namespace wg
 	{
 		if( !m_pCanvasPixels )
 			return false;
-
-		// Call custom function.
-
-		if( m_bEnableCustomFunctions && m_customFunctions.endRender )
-			m_customFunctions.endRender();
 
 		// Clean up.
 
@@ -2019,6 +1983,7 @@ namespace wg
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
 				}
+                else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
 					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
@@ -2048,7 +2013,7 @@ namespace wg
 
 					int bodyThickness = endY - beginY - 2;
 					uint8_t * pBegin = m_pCanvasPixels + (beginY + 1) * m_canvasPitch + begin.x * pixelBytes;
-					pCenterOp(pBegin, pixelBytes, m_canvasPitch - bodyThickness * pixelBytes, bodyThickness, length, _col, colTrans);
+					pCenterOp(pBegin, pixelBytes, m_canvasPitch - length * pixelBytes, bodyThickness, length, _col, colTrans);
 				}
 
 				break;
@@ -2115,7 +2080,7 @@ namespace wg
 
 					int bodyThickness = endX - beginX - 2;
 					uint8_t * pBegin = m_pCanvasPixels + begin.y * m_canvasPitch + (beginX + 1) * pixelBytes;
-					pEdgeOp(pBegin, m_canvasPitch, pixelBytes - m_canvasPitch * bodyThickness, bodyThickness, length, _col, colTrans);
+					pCenterOp(pBegin, m_canvasPitch, pixelBytes - length * m_canvasPitch, bodyThickness, length, _col, colTrans);
 				}
 
 				break;
@@ -3627,7 +3592,7 @@ namespace wg
 		s_pass2OpTab[(int)BlendMode::Max][(int)PixelFormat::BGRA_4] = _simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Max, PixelFormat::BGRA_4>;
 		s_pass2OpTab[(int)BlendMode::Max][(int)PixelFormat::A8] = _simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Max, PixelFormat::A8>;
 
-		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] =_simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] =_simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGRA_8>;
 		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8] =_simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_8>;
 		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] =_simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_8>;
 		s_pass2OpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_565] =_simple_blit < PixelFormat::BGRA_8, 0, BlendMode::Invert, PixelFormat::BGR_565>;
@@ -3941,17 +3906,6 @@ namespace wg
 		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Invert, 0, PixelFormat::BGRA_4>;
 		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Invert, 0, PixelFormat::A8>;
 	}
-
-	//____ _clearCustomFunctionTable() ________________________________________
-
-	void SoftGfxDevice::_clearCustomFunctionTable()
-	{
-		int * p = reinterpret_cast<int*>(&m_customFunctions);
-
-		for( int i = 0 ; i < sizeof(CustomFunctionTable)/4 ; i++ )
-			p[i] = 0;
-	}
-
 
 	//____ _scaleLineThickness() ___________________________________________________
 

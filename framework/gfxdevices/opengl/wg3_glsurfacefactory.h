@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static GlSurfaceFactory_p	create() { return GlSurfaceFactory_p(new GlSurfaceFactory()); }
+		static GlSurfaceFactory_p	create( int flags = SurfaceFlag::Static ) { return GlSurfaceFactory_p(new GlSurfaceFactory(flags)); }
 
 		//.____ Identification __________________________________________
 
@@ -55,11 +55,18 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const override;
-		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
+		Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = 0, const Color * pClut = nullptr ) const override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = 0, const Color * pClut = nullptr ) const override;
+		Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = 0, const Color * pClut = nullptr ) const override;
+		Surface_p	createSurface( Surface * pOther, int flags = 0 ) const override;
+
+	protected:
+		GlSurfaceFactory(int flags) : m_flags(flags) {}
+
+		int m_flags;
+
 	};
+
 }
 
 
