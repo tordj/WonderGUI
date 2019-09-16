@@ -336,6 +336,17 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
             id = "DropComplete";
             break;
 
+        case WG_EVENT_DROPHOVER_ENTER:
+            id = "DropHoverEnter";
+            break;
+        case WG_EVENT_DROPHOVER_MOVE:
+            id = "DropHoverMove";
+            break;
+        case WG_EVENT_DROPHOVER_LEAVE:
+            id = "DropHoverLeave";
+            break;
+
+            
 		case WG_EVENT_LANES_DROP:
 			id = "LanesDrop";
 			break;
@@ -630,7 +641,7 @@ string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEven
 		default:
 		{
 			char	temp[64];
-			sprintf( temp, "%d (unkown enum)", _pEvent->Style() );
+			sprintf( temp, "%d (unkown enum)", (int) _pEvent->Style() );
 			return string(temp);
 		}
 	}

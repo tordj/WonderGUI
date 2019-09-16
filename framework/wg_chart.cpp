@@ -245,6 +245,13 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 	if (!p)
 		return false;
 	  
+    // HACK!
+    // This avoids the problem of top/bottom lines switching color when passing each other in all currently used cases.
+    
+    if( bottomLineThickness == 0.f )
+        bottomLineColor = topLineColor;
+    
+    
 	p->frontFill = frontFill;
 	p->backFill = backFill;
 

@@ -404,6 +404,7 @@ void WgFlowPanel::_refreshChildGeo()
 		if (pH->IsVisible())
 		{
 			WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
+            WgBorders padding = pH->m_padding.scale(m_scale);
 
 			if (sz.w > canvas.w)
 			{
@@ -414,10 +415,10 @@ void WgFlowPanel::_refreshChildGeo()
 
 				int paddedHeight = pH->_paddedMatchingPixelHeight(canvas.w, m_scale);
 
-				newGeo = {	row.x+pH->m_padding.left,
-								row.y+pH->m_padding.top,
-								canvas.w-pH->m_padding.width(),
-								paddedHeight-pH->m_padding.height() };
+				newGeo = {	row.x+padding.left,
+                            row.y+padding.top,
+							canvas.w-padding.width(),
+							paddedHeight-padding.height() };
 
 				row.y += paddedHeight;
 			}
@@ -431,9 +432,9 @@ void WgFlowPanel::_refreshChildGeo()
 					row.h = 0;
 				}
 
-				newGeo = {	row.x + row.w + pH->m_padding.left,
-								row.y + pH->m_padding.top,
-								sz - pH->m_padding.size() };
+				newGeo = {	row.x + row.w + padding.left,
+                            row.y + padding.top,
+							sz - padding.size() };
 
 				row.w += sz.w;
 

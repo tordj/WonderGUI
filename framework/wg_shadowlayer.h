@@ -146,7 +146,6 @@ protected:
 
 	void			_willRemoveShadows(int ofs, int nb);
     void            _requestRenderShadows(int ofs, int nb);
-//    void            _requestRenderShadow( const WgRect& rect );
 	void			_onFrontChanged();
 
 
@@ -154,7 +153,6 @@ protected:
     WgShadowHook    m_frontHook;
     WgSurface *     m_pShadowSurface = nullptr;
     uint8_t         m_shadowTint = 255;
-//    WgPatches       m_shadowSurfaceDirt;
     
     std::vector<WgShadow>	m_shadows;
     

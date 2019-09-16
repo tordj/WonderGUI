@@ -604,6 +604,24 @@ namespace WgEvent
     {
     }
     
+    
+    DropHoverEnter::DropHoverEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom )
+    : DragNDrop( WG_EVENT_DROPHOVER_ENTER, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+    {
+    }
+    
+    DropHoverMove::DropHoverMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom )
+    : DragNDrop( WG_EVENT_DROPHOVER_MOVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+    {
+    }
+    
+    DropHoverLeave::DropHoverLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom )
+    : DragNDrop( WG_EVENT_DROPHOVER_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+    {
+    }
+    
+    
+    
 	//____ ButtonPress _________________________________________________________
 
 	ButtonPress::ButtonPress( WgButton * pWidget )

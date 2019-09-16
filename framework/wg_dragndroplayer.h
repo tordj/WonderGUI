@@ -129,6 +129,10 @@ protected:
     void            _cancel();
     void            _replaceDragWidget( WgWidget * pNewWidget );
 
+    void            _updateDropHovered( WgCoord hoverPos );
+    void            _clearDropHovered();
+
+    int             _widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list );
 
 
     DragState		m_dragState = DragState::Idle;
@@ -144,6 +148,10 @@ protected:
     WgWidgetWeakPtr   m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
     WgWidgetWeakPtr   m_pTargeted;                   // Widget targeted while in state Targeting.
     WgCoord           m_targetOfs;                  // Pointer ofs within targeted widget.
+    
+    WgWidgetWeakPtr   m_pDropHovered;               // Widget curently hovered while in Dragging or Targeting stage.    
+    std::vector<WgWidgetWeakPtr>    m_vHoveredInside;    // All widgets that pointer is considered to be inside (= m_pDropHovered + its ancestors).
+
     
     WgSurfaceFactory * m_pSurfaceFactory = nullptr;
 

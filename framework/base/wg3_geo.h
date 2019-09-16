@@ -113,23 +113,23 @@ namespace wg
 
 		inline CoordT<Type>& operator+=(const CoordT<Type>& k) { x += k.x; y += k.y; return *this; }
 		inline CoordT<Type>& operator-=(const CoordT<Type>& k) { x -= k.x; y -= k.y; return *this; }
-		inline CoordT<Type> operator+(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x + k.x; res.y = y + k.y; return res; }
-		inline CoordT<Type> operator-(const CoordT<Type>& k) const { CoordT<Type> res; res.x = x - k.x; res.y = y - k.y; return res; }
+        inline CoordT<Type> operator+(const CoordT<Type>& k) const { return { x + k.x, y + k.y }; }
+        inline CoordT<Type> operator-(const CoordT<Type>& k) const { return { x - k.x, y - k.y }; }
 
 		inline CoordT<Type>& operator*=(int v) { x = (Type)(x*v); y = (Type)(x*v); return *this; }
 		inline CoordT<Type>& operator/=(int v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(int v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
-		inline CoordT<Type> operator/(int v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+        inline CoordT<Type> operator*(int v) const { return { (Type)(x*v), (Type)(y*v) }; }
+        inline CoordT<Type> operator/(int v) const { return { (Type)(x / v), (Type)(y / v) }; }
 
 		inline CoordT<Type>& operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
 		inline CoordT<Type>& operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(float v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
-		inline CoordT<Type> operator/(float v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+        inline CoordT<Type> operator*(float v) const { return { (Type)(x*v), (Type)(y*v) }; }
+        inline CoordT<Type> operator/(float v) const { return { (Type)(x / v), (Type)(y / v) }; }
 
 		inline CoordT<Type>& operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
 		inline CoordT<Type>& operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(double v) const { CoordT<Type> res; res.x = (Type)(x*v); res.y = (Type)(y*v); return res; }
-		inline CoordT<Type> operator/(double v) const { CoordT<Type> res; res.x = (Type)(x / v); res.y = (Type)(y / v); return res; }
+        inline CoordT<Type> operator*(double v) const { return { (Type)(x*v), (Type)(y*v) }; }
+        inline CoordT<Type> operator/(double v) const { return { (Type)(x / v), (Type)(y / v) }; }
 
 
 
@@ -218,6 +218,13 @@ namespace wg
 
 		//
 
+        
+        inline BorderT<Type>& operator+=(const BorderT<Type>& k)        { top += k.top; right += k.right; bottom += k.bottom; left += k.left; return *this; }
+        inline BorderT<Type>& operator-=(const BorderT<Type>& k)        { top -= k.top; right -= k.right; bottom -= k.bottom; left -= k.left; return *this;}
+        inline BorderT<Type> operator+(const BorderT<Type>& k) const    { return {top+k.top, right+k.right, bottom+k.bottom, left+k.left}; }
+        inline BorderT<Type> operator-(const BorderT<Type>& k) const    { return {top-k.top, right-k.right, bottom-k.bottom, left-k.left}; }
+
+
 		bool			operator==(const BorderT<Type>& borders) const { return left == borders.left &&
 																			right == borders.right &&
 																			top == borders.top &&
@@ -295,28 +302,28 @@ namespace wg
 
 		inline SizeT<Type>& operator+=(const SizeT<Type>& k)		{ w += k.w; h += k.h; return *this;}
 		inline SizeT<Type>& operator-=(const SizeT<Type>& k)		{ w -= k.w; h -= k.h; return *this;}
-		inline SizeT<Type> operator+(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w + k.w; res.h = h + k.h; return res; }
-		inline SizeT<Type> operator-(const SizeT<Type>& k) const	{ SizeT<Type> res; res.w = w - k.w; res.h = h - k.h; return res; }
+        inline SizeT<Type> operator+(const SizeT<Type>& k) const	{ return { w + k.w, h + k.h }; }
+        inline SizeT<Type> operator-(const SizeT<Type>& k) const	{ return { w - k.w, h - k.h }; }
 
 		inline SizeT<Type>& operator+=(const BorderT<Type>& k)		{ w += k.left + k.right; h += k.top + k.bottom; return *this; }
 		inline SizeT<Type>& operator-=(const BorderT<Type>& k)		{ w -= k.left + k.right; h -= k.top + k.bottom; return *this;}
-		inline SizeT<Type> operator+(const BorderT<Type>& k) const	{ SizeT<Type> res; res.w = w + k.left + k.right; res.h = h + k.top + k.bottom; return res; }
-		inline SizeT<Type> operator-(const BorderT<Type>& k) const	{ SizeT<Type> res; res.w = w - k.left - k.right; res.h = h - k.top - k.bottom; return res; return res; }
+        inline SizeT<Type> operator+(const BorderT<Type>& k) const	{ return { w + k.left + k.right, h + k.top + k.bottom }; }
+        inline SizeT<Type> operator-(const BorderT<Type>& k) const	{ return { w - k.left - k.right, h - k.top - k.bottom }; }
 
 		inline SizeT<Type>& operator*=(int x)		{ w *= x; h *= x; return *this; }
 		inline SizeT<Type>& operator/=(int x)		{ w /= x; h /= x; return *this; }
-		inline SizeT<Type> operator*(int x) const	{ SizeT<Type> res; res.w = w * x; res.h = h * x; return res; }
-		inline SizeT<Type> operator/(int x) const	{ SizeT<Type> res; res.w = w / x; res.h = h / x; return res; }
+        inline SizeT<Type> operator*(int x) const	{ return { w * x, h * x }; }
+        inline SizeT<Type> operator/(int x) const	{ return { w / x, h / x }; }
 
 		inline SizeT<Type>& operator*=(float x)		{ w = (Type)(w*x); h = (Type)(h*x); return *this; }
 		inline SizeT<Type>& operator/=(float x)		{ w = (Type)(w / x); h = (Type)(h / x); return *this; }
-		inline SizeT<Type> operator*(float x) const { SizeT<Type> res; res.w = (Type)(w*x); res.h = (Type)(h*x); return res; }
-		inline SizeT<Type> operator/(float x) const { SizeT<Type> res; res.w = (Type)(w / x); res.h = (Type)(h / x); return res; }
+        inline SizeT<Type> operator*(float x) const { return { (Type)(w*x), (Type)(h*x) }; }
+        inline SizeT<Type> operator/(float x) const { return { (Type)(w / x), (Type)(h / x) }; }
 
 		inline SizeT<Type>& operator*=(double x)	{ w = (Type) (w*x); h = (Type) (h*x); return *this; }
 		inline SizeT<Type>& operator/=(double x)	{ w = (Type) (w/x); h = (Type) (h/x); return *this; }
-		inline SizeT<Type> operator*(double x) const{ SizeT<Type> res; res.w = (Type) (w*x); res.h = (Type) (h*x); return res; }
-		inline SizeT<Type> operator/(double x) const{ SizeT<Type> res; res.w = (Type) (w/x); res.h = (Type) (h/x); return res; }
+        inline SizeT<Type> operator*(double x) const{ return { (Type) (w*x), (Type) (h*x) }; }
+        inline SizeT<Type> operator/(double x) const{ return { (Type) (w/x), (Type) (h/x) }; }
 
 
 		static inline SizeT<Type> min( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }

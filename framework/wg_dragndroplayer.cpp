@@ -391,6 +391,8 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
                 case DragState::Dragging:
                 {
+                    _updateDropHovered( pEvent->PointerPixelPos() );
+                    
                     // Move the drag-widget onscreen.
 
                     _requestRender(m_dragHook.m_geo);
@@ -402,6 +404,8 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
                 case DragState::Targeting:
                 {
+                    _updateDropHovered( pEvent->PointerPixelPos() );
+
                     // Move the drag-widget onscreen.
 
                     _requestRender(m_dragHook.m_geo);
@@ -604,6 +608,8 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
 void WgDragNDropLayer::_cancel()
 {
+    _clearDropHovered();
+
     if( m_dragHook.Widget() )
     {
         _requestRender(m_dragHook.m_geo);
@@ -627,6 +633,8 @@ void WgDragNDropLayer::_cancel()
 void WgDragNDropLayer::_complete( WgWidget * pDeliveredTo )
 {
     assert( !m_pTargeted );
+
+    _clearDropHovered();
 
     if( m_dragHook.m_pWidget )
     {
@@ -711,4 +719,59 @@ void WgDragNDropLayer::_replaceWidgetInHook(WgWidget * pNewWidget)
 //    _requestRender( m_dragHook.m_geo );
 }
 
+//____ _widgetPosInList() ________________________________________________________
+
+int WgDragNDropLayer::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
+{
+    for( size_t i = 0 ; i < list.size() ; i++ )
+        if( list[i].GetRealPtr() == pWidget )
+            return i;
+    
+    return -1;
+}
+
+//____ _updateDropHovered() _____________________________________________________
+
+void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
+{
+    WgWidget * pMarkedWidget = FindWidget(hoverPos, wg::SearchMode::ActionTarget);
+    
+    // Loop through our new widgets and check if they already
+    // were entered. Send MouseEnter to all new widgets and notice the first
+    // common ancestor .
+    
+    for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
+    {
+        int ofs = _widgetPosInList( pWidget, m_vHoveredInside );
+        if( ofs >= 0 )
+        {
+            _queueEvent( new WgEvent::DropHoverMove( m_vHoveredInside[ofs].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+            m_vHoveredInside[ofs] = 0;
+        }
+        else
+            _queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+    }
+    
+    // Send MouseLeave to those that were left.
+    
+    for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
+        if(m_vHoveredInside[i] )
+            _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+    
+    // Replace the old list with a new one.
+    
+    m_vHoveredInside.clear();
+    for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
+        m_vHoveredInside.push_back( pWidget );
+}
+
+//____ _clearDropHovered() _____________________________________________________
+
+void WgDragNDropLayer::_clearDropHovered()
+{
+    for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
+        _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+
+    m_vHoveredInside.clear();
+}
 

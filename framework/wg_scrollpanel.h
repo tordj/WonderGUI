@@ -230,6 +230,12 @@ public:
     WgRect              ContentInViewPixels() const;          // Section of content displayed in the view.
     bool                PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo = WgOrigo::Center, WgCoord viewPosOffset = {0,0} );
 
+    void                SetRubberBorder( const WgBorders& border );
+    void                EnableRubberBorder( bool bEnabled );
+  
+    bool                SetHoverScrollBorder( const WgBorders& border );
+    bool                SetHoverScrollSpeed( int maxPointsPerSecond );
+    
 	// Overloaded from WgPanel
 
 	WgWidget * FindWidget( const WgCoord& pos, WgSearchMode mode );
@@ -352,6 +358,19 @@ private:
 
 	WgBlocksetPtr	m_pFillerBlocks;
 	WgRect			m_geoFiller;
+    
+    WgBorders       m_rubberBorder;
+    bool            m_bRubberBorder = false;
+    int             m_rubberBorderPause = 0;
+    
+    WgBorders       m_hoverScrollBorder;
+    int             m_hoverScrollSpeed = 500;               // Max hover scroll speed in points/sec.
+    int             m_hoverScrollX = 0;                     // X-scroll (positive or negative) in pixels/sec.
+    int             m_hoverScrollY = 0;                     // Y-scroll (positive or negative) in pixels/sec.
+    int             m_hoverScrollRemainsX = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
+    int             m_hoverScrollRemainsY = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
+
+    std::vector<uint8_t>    m_hoverScrollCategories;        // DropPick-categories for which we activate scrollHover (none-set = all).
 };
 
 #endif //WG_SCROLLPANEL_DOT_H

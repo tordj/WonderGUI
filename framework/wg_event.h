@@ -437,6 +437,35 @@ namespace WgEvent
     };
 
     
+    class DropHoverEnter : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+    protected:
+        DropHoverEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+    };
+    
+    class DropHoverMove : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+    public:
+        
+    protected:
+        DropHoverMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+    };
+    
+    class DropHoverLeave : public DragNDrop
+    {
+        friend class ::WgDragNDropLayer;
+        
+    protected:
+        DropHoverLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+    };
+
+    
+    
+    
     
 	//____ WgButton events _______________________________________________
 

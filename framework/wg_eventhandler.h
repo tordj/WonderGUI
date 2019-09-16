@@ -83,6 +83,8 @@ public:
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }
 
+    WgCoord PointerPixelPos() const { return m_pointerPos; }
+
 	//----
 
 	void	AddCallback( void(*fp)( const WgEvent::Event * pEvent) );
