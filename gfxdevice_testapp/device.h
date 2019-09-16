@@ -97,7 +97,7 @@ public:
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = GlSurface::create(canvasSize, canvasFormat);
-		m_pDevice = GlGfxDevice::create(m_pCanvas);
+		m_pDevice = GlGfxDevice::create(m_pCanvas, 1);              // Needs a UBO binding point separate from other GfxDevice.
 		return true;
 	}
 

@@ -20,17 +20,18 @@
 
 =========================================================================*/
 
-#include <wg_fileutil.h>
-
 #ifdef WIN32
-#	include <SDL.h>
-#	include <SDL_image.h>
+#    include <SDL.h>
+#    include <SDL_image.h>
+#elif __APPLE__
+#    include <SDL2/SDL.h>
+#    include <SDL2_image/SDL_image.h>
 #else
-#	include <SDL2/SDL.h>
-#	include <SDL2/SDL_image.h>
+#    include <SDL2/SDL.h>
+#    include <SDL2/SDL_image.h>
 #endif
 
-
+#include "wg_fileutil.h"
 
 namespace wg
 {
@@ -70,7 +71,8 @@ namespace wg
 	{
 		FILE * fp;
 
-		errno_t err = fopen_s(&fp, pPath, "rb");
+//		errno_t err = fopen_s(&fp, pPath, "rb");
+        fp = fopen(pPath, "rb");
 		if (!fp)
 			return 0;
 

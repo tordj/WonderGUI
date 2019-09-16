@@ -5,6 +5,9 @@
       location = "group:font_freetype/font_freetype.xcodeproj">
    </FileRef>
    <FileRef
+      location = "group:gfxdevice_test/gfxdevice_test.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:gfxdevice_stream/gfxdevice_stream.xcodeproj">
    </FileRef>
    <FileRef

@@ -428,7 +428,7 @@ int main(int argc, char** argv)
 
 	
 	// Test ShadowLayer
-	
+/*
 	{
 		auto pSDLSurf = IMG_Load("../resources/shadow.png");
 		convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -494,7 +494,7 @@ int main(int argc, char** argv)
 
 	}
 	
-	
+*/
 	
 	
 	// Test IChild and IChildIterator baseclasses
@@ -524,7 +524,7 @@ int main(int argc, char** argv)
 */
 
 	// Test drag n drop support
-/*
+
 	{
 		static Widget_p s_pPicked = nullptr;
 		static Coord	s_pickOfs;
@@ -583,7 +583,7 @@ int main(int argc, char** argv)
 
 
 	}
-*/
+
 	
 	
 /*
