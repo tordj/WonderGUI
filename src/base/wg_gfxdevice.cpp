@@ -332,10 +332,10 @@ namespace wg
 			src.x += 0.5f;
 			src.y += 0.5f;
 
-			mtx[0][0] = (src.w-1) / (dest.w-1);
+			mtx[0][0] = (src.w-1) / dest.w;
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = (src.h-1) / (dest.h-1);
+			mtx[1][1] = (src.h-1) / dest.h;
 		}
 		else
 		{
@@ -356,10 +356,10 @@ namespace wg
 
 		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
-			mtx[0][0] = src.w / (dest.w - 1);
+			mtx[0][0] = src.w / dest.w;
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / (dest.h - 1);
+			mtx[1][1] = src.h / dest.h;
 		}
 		else
 		{
