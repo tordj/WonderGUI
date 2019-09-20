@@ -40,6 +40,7 @@
 #include <testsuites/wavetests.h>
 #include <testsuites/clutblittests.h>
 #include <testsuites/mipmaptests.h>
+#include <testsuites/blitconsistencytest.h>
 
 using namespace wg;
 using namespace std;
@@ -616,6 +617,7 @@ void setup_tests()
 {
 	destroy_tests();
 
+	add_testsuite(new BlitConsistencyTests(), new BlitConsistencyTests());
 	add_testsuite(new FillTests(), new FillTests());
 	add_testsuite(new BlendTests(), new BlendTests());
 	add_testsuite( new PlotTests(), new PlotTests());
@@ -626,6 +628,7 @@ void setup_tests()
 	add_testsuite(new WaveTests(), new WaveTests());
 	add_testsuite(new ClutBlitTests(), new ClutBlitTests());
 	add_testsuite(new MipmapTests(), new MipmapTests());
+
 
 	regen_testentries();
 }

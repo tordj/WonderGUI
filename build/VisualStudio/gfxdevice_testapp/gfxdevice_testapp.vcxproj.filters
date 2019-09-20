@@ -63,5 +63,8 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\mipmaptests.h">
       <Filter>testsuites</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blitconsistencytest.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
