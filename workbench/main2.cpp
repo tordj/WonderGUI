@@ -31,6 +31,9 @@
 #include <wg_freetypefont.h>
 #include "testwidget.h"
 
+//#define USE_OPEN_GL
+
+
 using namespace wg;
 
 void 			translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot );
@@ -39,6 +42,8 @@ void 			updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow );
 void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
 Blob_p 			loadBlob( const char * pPath );
+Surface_p		loadSurface(const std::string& path, PixelFormat pixFormat = PixelFormat::BGRA_8 );
+
 void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter );
@@ -57,6 +62,10 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 {
 	return p2->id() - p1->id();
 }
+
+
+bool shadowLayerTest(RootPanel_p pRoot);
+bool stretchBlitTest(RootPanel_p pRoot);
 
 
 
@@ -151,9 +160,11 @@ int main(int argc, char** argv)
 	SDL_Init(SDL_INIT_VIDEO);
 
 	int posX = 100, posY = 100, width = 1024, height = 600;
-	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL );
 
-//		SDL_Surface * pWinSurf = SDL_GetWindowSurface( pWin );
+
+#ifdef USE_OPEN_GL
+
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, SDL_WINDOW_OPENGL );
 
 	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
@@ -165,8 +176,7 @@ int main(int argc, char** argv)
 
 	SDL_GLContext context = SDL_GL_CreateContext(pWin);
 
-
-#ifndef __APPLE__
+#ifdef WIN32  
 	glewExperimental = GL_TRUE;
 	GLenum err = glewInit();
 #endif
@@ -176,6 +186,13 @@ int main(int argc, char** argv)
 	glClear(GL_COLOR_BUFFER_BIT);
 	glFlush();
 
+
+#else
+	SDL_Window * pWin = SDL_CreateWindow("Hello WonderGUI", posX, posY, width, height, 0);
+#endif
+
+
+
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
@@ -184,8 +201,31 @@ int main(int argc, char** argv)
 
 	Context_p pContext = Context::create();
 	pContext->setScale(1.0);
-//	pContext->setSurfaceFactory(SoftSurfaceFactory::create());
+
+#ifdef USE_OPEN_GL
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
+	pContext->setGfxDevice( GlGfxDevice::create(SizeI(width, height)));
+#else
+	{
+		SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
+
+		PixelFormat type = PixelFormat::Unknown;
+
+		if (pScreen->format->BitsPerPixel == 32)
+			type = PixelFormat::BGRA_8;
+		else if (pScreen->format->BitsPerPixel == 24)
+			type = PixelFormat::BGR_8;
+
+		Blob_p pBlob = Blob::create(pScreen->pixels, nullptr);
+
+		SoftSurface_p		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch);
+		GfxDevice_p			pDevice = SoftGfxDevice::create(pCanvas);
+		SurfaceFactory_p	pFactory = SoftSurfaceFactory::create();
+
+		pContext->setSurfaceFactory(pFactory);
+		pContext->setGfxDevice(pDevice);
+	}
+#endif
 	Base::setActiveContext(pContext);
 
 
@@ -257,9 +297,8 @@ int main(int argc, char** argv)
 
 		SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
 */
-	GlGfxDevice_p pGfxDevice = GlGfxDevice::create(SizeI(width, height));
-
-	SurfaceFactory_p pSurfaceFactory = pGfxDevice->surfaceFactory();
+	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
+	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
 	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
 
@@ -427,73 +466,8 @@ int main(int argc, char** argv)
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
 	
-	// Test ShadowLayer
-	
-	{
-		auto pSDLSurf = IMG_Load("../resources/shadow.png");
-		convertSDLFormat(&pixelDesc, pSDLSurf->format);
-		Surface_p pImgSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::A8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
-		SDL_FreeSurface(pSDLSurf);
-		BlockSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
-		pShadowSkin->setFrame( {0,128,128,0} );
-		pShadowSkin->setContentPadding({0,128,128,0});
-		pImgSurface->setScaleMode(ScaleMode::Nearest);
-
-
-
-		auto pShadowLayer = ShadowLayer::create();
-		auto pFrontLayer = FlexPanel::create();
-		auto pBaseLayer = FlexPanel::create();
-		
-		pRoot->child = pShadowLayer;
-	
-		pShadowLayer->base = pBaseLayer;
-		pShadowLayer->front = pFrontLayer;
-		
-		
-		auto pFiller1 = Filler::create();
-		auto pFiller2 = Filler::create();
-		auto pFiller3 = Filler::create();
-		
-		pFiller1->setSkin(ColorSkin::create(Color::DarkKhaki));
-		pFrontLayer->children.addMovable(pFiller1, {0,0,50,50} );
-
-		pFiller2->setSkin(ColorSkin::create(Color::DarkSlateBlue));
-		pFrontLayer->children.addMovable(pFiller2, {50,50,50,50} );
-
-		pFiller3->setSkin(ColorSkin::create(Color::DarkSeaGreen));
-		pFrontLayer->children.addMovable(pFiller3, {100,100,50,50} );
-
-		auto pBackground = Filler::create();
-		pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
-		pBaseLayer->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
-		
-		pShadowLayer->shadows.add( pFiller1, pShadowSkin );
-		pShadowLayer->shadows.add( pFiller2, pShadowSkin );
-		pShadowLayer->shadows.add( pFiller3, pShadowSkin );
-
-		pFiller1->setId( 7 );
-		
-		Base::msgRouter()->addRoute(pFiller1, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
-		{
-			MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-			pFrontLayer->children.move(0, pMsg->draggedNow() );
-		} );
-
-		Base::msgRouter()->addRoute(pFiller2, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
-									{
-										MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-										pFrontLayer->children.move(1, pMsg->draggedNow() );
-									} );
-
-		Base::msgRouter()->addRoute(pFiller3, MsgType::MouseDrag,[pFrontLayer](Msg* _pMsg)
-									{
-										MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-										pFrontLayer->children.move(2, pMsg->draggedNow() );
-									} );
-
-	}
-	
+//	shadowLayerTest(pRoot);
+	stretchBlitTest(pRoot);
 	
 	
 	
@@ -1518,4 +1492,119 @@ void convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSD
 	pWGFormat->B_bits = 8 - pSDLFormat->Bloss;
 	pWGFormat->A_bits = 8 - pSDLFormat->Aloss;
 
+}
+
+
+//____ loadSurface() ___________________________________________________________
+
+Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
+{
+	PixelDescription	pixelDesc;
+
+	auto pSDLSurf = IMG_Load(path.c_str());
+	if (pSDLSurf == nullptr)
+	{
+		printf("ERROR: Could not load '%s'\n", path.c_str());
+		exit(-1);
+	}
+
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pImgSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), pixFormat, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+
+	return pImgSurface;
+}
+
+
+//____ shadowLayerTest() ______________________________________________________
+
+bool shadowLayerTest( RootPanel_p pRoot )
+{
+	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
+	
+	BlockSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
+	pShadowSkin->setFrame({ 0,128,128,0 });
+	pShadowSkin->setContentPadding({ 0,128,128,0 });
+	pImgSurface->setScaleMode(ScaleMode::Nearest);
+
+
+	auto pShadowLayer = ShadowLayer::create();
+	auto pFrontLayer = FlexPanel::create();
+	auto pBaseLayer = FlexPanel::create();
+
+	pRoot->child = pShadowLayer;
+
+	pShadowLayer->base = pBaseLayer;
+	pShadowLayer->front = pFrontLayer;
+
+
+	auto pFiller1 = Filler::create();
+	auto pFiller2 = Filler::create();
+	auto pFiller3 = Filler::create();
+
+	pFiller1->setSkin(ColorSkin::create(Color::DarkKhaki));
+	pFrontLayer->children.addMovable(pFiller1, { 0,0,50,50 });
+
+	pFiller2->setSkin(ColorSkin::create(Color::DarkSlateBlue));
+	pFrontLayer->children.addMovable(pFiller2, { 50,50,50,50 });
+
+	pFiller3->setSkin(ColorSkin::create(Color::DarkSeaGreen));
+	pFrontLayer->children.addMovable(pFiller3, { 100,100,50,50 });
+
+	auto pBackground = Filler::create();
+	pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
+	pBaseLayer->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+
+	pShadowLayer->shadows.add(pFiller1, pShadowSkin);
+	pShadowLayer->shadows.add(pFiller2, pShadowSkin);
+	pShadowLayer->shadows.add(pFiller3, pShadowSkin);
+
+	pFiller1->setId(7);
+
+	Base::msgRouter()->addRoute(pFiller1, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	{
+		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+		pFrontLayer->children.move(0, pMsg->draggedNow());
+	});
+
+	Base::msgRouter()->addRoute(pFiller2, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	{
+		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+		pFrontLayer->children.move(1, pMsg->draggedNow());
+	});
+
+	Base::msgRouter()->addRoute(pFiller3, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
+	{
+		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
+		pFrontLayer->children.move(2, pMsg->draggedNow());
+	});
+
+	return true;
+}
+
+//____ stretchBlitTest() ______________________________________________________
+
+bool stretchBlitTest(RootPanel_p pRoot)
+{
+	Surface_p pImgSurface = loadSurface("../resources/white_frame_256x256.png", PixelFormat::BGR_8 );
+	pImgSurface->setScaleMode(ScaleMode::Interpolate);
+
+	auto pBack = FlexPanel::create();
+	pBack->setSkin(StaticColorSkin::create(Color::Blue));
+	pRoot->child = pBack;
+
+	auto pImage = Image::create();
+	pImage->setImage(pImgSurface, { 1,1,254,254 });
+	pBack->children.addMovable(pImage, { 10,10,256,256 } );
+
+	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
+	
+		Coord distance = static_cast<MouseDragMsg*>(pMsg)->draggedNow();
+
+		pBack->children.setSize(0, pImage->size()+Size(distance.x, distance.y) );
+	
+	});
+
+
+	return true;
 }

@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		inline bool			set( Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),
+		inline bool			set( Skin * pIconGfx, Origo origo = Origo::West, Border padding = Border(0),
 								 float scale = 0.f, bool bOverlap = false ) { return m_pComponent->set(pIconGfx,origo,padding,scale,bOverlap); }
 		inline void			clear() { m_pComponent->clear(); }
 
@@ -55,13 +55,13 @@ namespace wg
 
 		inline bool			setScale( float scaleFactor ) { return m_pComponent->setScale(scaleFactor); }
 		inline void			setOrigo( Origo origo ) { m_pComponent->setOrigo(origo); }
-		inline void			setPadding( BorderI padding ) { m_pComponent->setPadding(padding); }
+		inline void			setPadding( Border padding ) { m_pComponent->setPadding(Util::qpixToRaw(padding)); }
 		inline void			setOverlap( bool bOverlap ) { m_pComponent->setOverlap(bOverlap); }
 		inline void			setSkin( Skin * pSkin ) { m_pComponent->setSkin(pSkin); }
 
 		inline float		scale() const { return m_pComponent->scale(); }
 		inline Origo		origo() const { return m_pComponent->origo(); }
-		inline BorderI		padding() const { return m_pComponent->padding(); }
+		inline Border		padding() const { return Util::rawToQpix(m_pComponent->padding()); }
 		inline bool			overlap() const { return m_pComponent->overlap(); }
 		inline Skin_p		skin() const { return m_pComponent->skin(); }
 

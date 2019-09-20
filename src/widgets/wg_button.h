@@ -53,7 +53,7 @@ namespace wg
 		//.____ Interfaces _______________________________________
 
 		ITextDisplay		label;
-		IIconDisplay			icon;
+		IIconDisplay		icon;
 
 		//.____ Identification __________________________________________
 
@@ -93,8 +93,8 @@ namespace wg
 
 
 
-		CTextDisplay		m_text;
-		CIconDisplay		m_icon;
+		CTextDisplay	m_text;
+		CIconDisplay	m_icon;
 
 		bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 

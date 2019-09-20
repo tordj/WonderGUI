@@ -61,23 +61,23 @@ namespace wg
 		void				setImage( Surface * pSurface, const RectI& rect );	///< @brief Set image to display.
 		void				setImage( Surface * pSurface );						///< @brief Set image to display.
 
-		inline Surface_p	imageSurface() const;											///< @brief Get surface of image displayed.
-		inline RectI			imageRect() const;												///< @brief Get area of surface rectangle of image displayed.
+		inline Surface_p	imageSurface() const;								///< @brief Get surface of image displayed.
+		inline RectI		imageRect() const;									///< @brief Get area of surface rectangle of image displayed.
 
 	protected:
 		Image();
 		virtual ~Image();
 		virtual Widget* _newOfMyType() const override { return new Image(); };
 
-		SizeI	_preferredSize() const override;
-		void	_cloneContent( const Widget * _pOrg ) override;
-		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		bool	_alphaTest( const CoordI& ofs ) override;
+		SizeI		_preferredSize() const override;
+		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		bool		_alphaTest( const CoordI& ofs ) override;
 
 	private:
 
 		Surface_p	m_pSurface;
-		RectI			m_rect;
+		RectI		m_rect;
 
 	};
 

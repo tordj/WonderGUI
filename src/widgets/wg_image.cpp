@@ -29,7 +29,7 @@
 
 namespace wg
 {
-
+	using namespace Util;
 
 	const char Image::CLASSNAME[] = {"Image"};
 
@@ -160,7 +160,7 @@ namespace wg
 				dest = _canvas;
 
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( dest, m_rect );
+			pDevice->stretchBlit( rawToPixels(dest), m_rect );
 		}
 	}
 

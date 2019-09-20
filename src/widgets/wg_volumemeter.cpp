@@ -64,8 +64,6 @@ namespace wg
 		m_iSidePadding = 0;
 
 		m_bZeroInMiddle = false;
-		d = 1.0f/(float)(m_nLEDs-1);
-		d2 = 0.5f/(float)(m_nLEDs);
 
 		m_LEDStates.resize(m_nLEDs);
 		for(int i=0;i<m_nLEDs;i++)
@@ -165,8 +163,6 @@ namespace wg
 		}
 
 
-		d = 1.0f/(float)(m_nLEDs-1);
-		d2 = 0.5f/(float)(m_nLEDs);
 
 		m_LEDStates.resize(m_nLEDs);
 		for(int i=0;i<m_nLEDs;i++)
@@ -265,6 +261,10 @@ namespace wg
 					// NB: Hold is not implemented for Zero In Middle
 					if(m_bZeroInMiddle)
 					{
+						float d = 1.0f / (float)(m_nLEDs - 1);
+						float d2 = 0.5f / (float)(m_nLEDs);
+
+
 						float id = d*(float)i;
 
 						// This one is tricky...
@@ -319,7 +319,7 @@ namespace wg
 
 				if( firstRenderLED != -1 )
 				{
-					SizeI sz = SizeI();
+					SizeI sz = m_size;
 					RectI rect;
 
 					int meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
@@ -431,7 +431,7 @@ namespace wg
 
 				Color color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
-				pDevice->fill( ledRect, color);
+				pDevice->fill( ledRect/4.f, color);
 			}
 
 			ledRect.x += stepX;

@@ -374,42 +374,42 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		RectT() : x(0), y(0), w(0), h(0) {}								///< @brief Create rectangle with x, y, w and h set to 0.
+		RectT() : x(0), y(0), w(0), h(0) {}									///< @brief Create rectangle with x, y, w and h set to 0.
 																			///<
 																			///< Create rectangle with x, y, w and h set to 0.
 		RectT( Type x, Type y, Type w, Type h ) : x(x), y(y), w(w), h(h) {}	///< @brief Create rectangle with the given values.
 																			///<
 																			///< Create rectangle with the given values.
-		RectT( const RectT<Type>& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}		///< @brief Create a copy of specified rectangle.
+		RectT( const RectT<Type>& r ) : x(r.x), y(r.y), w(r.w), h(r.h) {}	///< @brief Create a copy of specified rectangle.
 																			///<
 																			///< Create a copy of specified rectangle.
 
 
 
-		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );						///< @brief Create rectangle from intersection of specified rectangles.
-		RectT( const CoordT<Type>& p1, const CoordT<Type>& p2 );						///< @brief	Create rectangle to cover the area between the specified coordinates.
-		RectT( const CoordT<Type>& p, const SizeT<Type>& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} 	///< @brief Create rectangle of specified position and size.
+		RectT( const RectT<Type>& r1, const RectT<Type>& r2 );				///< @brief Create rectangle from intersection of specified rectangles.
+		RectT( const CoordT<Type>& p1, const CoordT<Type>& p2 );			///< @brief	Create rectangle to cover the area between the specified coordinates.
+		RectT( const CoordT<Type>& p, const SizeT<Type>& sz ) : x(p.x), y(p.y), w(sz.w), h(sz.h) {} ///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param p 	Coordinate containing position for rectangle.
 																							///< @param sz	Coordinate containing size for rectangle.
-		RectT( const CoordT<Type>& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}			///< @brief Create rectangle of specified position and size.
+		RectT( const CoordT<Type>& p, int w, int h ) : x(p.x), y(p.y), w(w), h(h) {}		///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param p		Coordinate containing position for rectangle.
 																							///< @param w		Width for rectangle.
 																							///< @param h		Height for rectangle.
-		RectT( Type x, Type y, const SizeT<Type>& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}			///< @brief Create rectangle of specified position and size.
+		RectT( Type x, Type y, const SizeT<Type>& sz ) : x(x), y(y), w(sz.w), h(sz.h) {}	///< @brief Create rectangle of specified position and size.
 																							///<
 																							///< Create rectangle of specified position and size.
 																							///< @param x		Horizontal position for rectangle.
 																							///< @param y		Vertical position for rectangle.
 																							///< @param sz	Width and height for rectangle.
-		RectT( const CoordT<Type>& p ) : x(p.x), y(p.y), w(0), h(0) {}			///< @brief Create rectangle of specified position and size of (0,0).
+		RectT( const CoordT<Type>& p ) : x(p.x), y(p.y), w(0), h(0) {}		///< @brief Create rectangle of specified position and size of (0,0).
 																			///<
 																			///< Create rectangle of specified position and size of (0,0).
 																			///< @param p		Coordinate containing position for rectangle.
-		RectT( const SizeT<Type>& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}		///< @brief Create rectangle of specified size and position (0,0).
+		RectT( const SizeT<Type>& sz ) : x(0), y(0), w(sz.w), h(sz.h) {}	///< @brief Create rectangle of specified size and position (0,0).
 																			///<
 																			///< Create rectangle of specified size and position (0,0).
 																			///< @param sz	Width and height for rectangle.
@@ -443,7 +443,7 @@ namespace wg
 		inline bool	contains( const CoordT<Type>& coord ) const;		///< @brief Check if coordinate is within rectangle.
 		inline bool contains( const RectT<Type>& rect ) const;			///< @brief Check if rectangle is fully within our rectangle.
 
-		inline CoordT<Type> limit( const CoordT<Type>& coord ) const;			///< @brief Limit given coordinate to stay within rectangle.
+		inline CoordT<Type> limit( const CoordT<Type>& coord ) const;	///< @brief Limit given coordinate to stay within rectangle.
 		inline CoordT<Type> center() const { return {x+w/2,y+h/2}; }
 		inline RectT<Type> center(SizeT<Type> sz) const { return { x + (w-sz.w) / 2,y + (h-sz.h) / 2, sz }; }
 
@@ -453,18 +453,18 @@ namespace wg
 		bool		clipLine(CoordT<Type> * p1, CoordT<Type> * p2, int precision = 14) const;
 
 
-		inline Type width() const;								///< @brief Get the width of the rectangle.
-		inline Type height() const;								///< @brief Get the height of the rectangle.
+		inline Type width() const;										///< @brief Get the width of the rectangle.
+		inline Type height() const;										///< @brief Get the height of the rectangle.
 		inline SizeT<Type> size() const;								///< @brief Get the size of the rectangle.
 		inline CoordT<Type> pos() const;								///< @brief Get the position of the rectangle.
 
-		inline Type left() const;								///< @brief Get X coordinate of left border.
-		inline Type top() const;									///< @brief Get Y cordinate of top border.
-		inline Type right() const;								///< @brief Get X coordinate of right border.
-		inline Type bottom() const;								///< @brief Get Y coordinate of bottom border.
+		inline Type left() const;										///< @brief Get X coordinate of left border.
+		inline Type top() const;										///< @brief Get Y cordinate of top border.
+		inline Type right() const;										///< @brief Get X coordinate of right border.
+		inline Type bottom() const;										///< @brief Get Y coordinate of bottom border.
 
-		inline bool	isEmpty() const;							///< @brief Check if rectangle has no area.
-		inline void clear();									///< @brief Sets all values to zero.
+		inline bool	isEmpty() const;									///< @brief Check if rectangle has no area.
+		inline void clear();											///< @brief Sets all values to zero.
 
 		//.____ Operators ___________________________________________
 
@@ -498,18 +498,35 @@ namespace wg
 
 		inline RectT<Type>& operator+=(const SizeT<Type>& k);				///< @brief Increase size of rectangle.
 		inline RectT<Type>& operator-=(const SizeT<Type>& k);				///< @brief Decrease size of rectangle.
-		inline RectT<Type> operator+(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size increased by Size.
-		inline RectT<Type> operator-(const SizeT<Type>& k) const; 		///< @brief Returns rectangle with size decreased by Size.
+		inline RectT<Type> operator+(const SizeT<Type>& k) const; 			///< @brief Returns rectangle with size increased by Size.
+		inline RectT<Type> operator-(const SizeT<Type>& k) const; 			///< @brief Returns rectangle with size decreased by Size.
 
 		inline RectT<Type>& operator+=(const CoordT<Type>& k); 				///< @brief Increase position of rectangle.
 		inline RectT<Type>& operator-=(const CoordT<Type>& k);				///< @brief Decrease position of rectangle.
-		inline RectT<Type> operator+(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position increased by Coord.
-		inline RectT<Type> operator-(const CoordT<Type>& k) const; 		///< @brief Returns rectangle with position decreased by Coord.
+		inline RectT<Type> operator+(const CoordT<Type>& k) const; 			///< @brief Returns rectangle with position increased by Coord.
+		inline RectT<Type> operator-(const CoordT<Type>& k) const; 			///< @brief Returns rectangle with position decreased by Coord.
 
 		inline RectT<Type>& operator+=(const BorderT<Type>& k);				///< @brief Grow rectangle by the specified border.
 		inline RectT<Type>& operator-=(const BorderT<Type>& k);
 		inline RectT<Type> operator+(const BorderT<Type>& k) const;
 		inline RectT<Type> operator-(const BorderT<Type>& k) const;
+
+		inline RectT<Type>& operator*=(int v) { x *= v; y *= v; w *= v; h *= v; return *this; }
+		inline RectT<Type>& operator/=(int v) { x /= v; y /= v; w /= v; h /= v; return *this; }
+		inline RectT<Type> operator*(int v) const { return { x * v, y * v, w * v, h * v }; }
+		inline RectT<Type> operator/(int v) const { return { x / v, y / v, w / v, h / v }; }
+
+		inline RectT<Type>& operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); w = (Type)(w*v); h = (Type)(h*v); return *this; }
+		inline RectT<Type>& operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); w = (Type)(w / v); h = (Type)(h / v); return *this; }
+		inline RectT<Type> operator*(float v) const { return { (Type)(x*v), (Type)(y*v), (Type)(w*v), (Type)(h*v) }; }
+		inline RectT<Type> operator/(float v) const { return { (Type)(x/v), (Type)(y/v), (Type)(w/v), (Type)(h/v) }; }
+
+		inline RectT<Type>& operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); w = (Type)(w*v); h = (Type)(h*v); return *this; }
+		inline RectT<Type>& operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); w = (Type)(w / v); h = (Type)(h / v); return *this; }
+		inline RectT<Type> operator*(double v) const { return { (Type)(x*v), (Type)(y*v), (Type)(w*v), (Type)(h*v) }; }
+		inline RectT<Type> operator/(double v) const { return { (Type)(x / v), (Type)(y / v), (Type)(w / v), (Type)(h / v) }; }
+
+
 
 		//.____ Properties __________________________________________
 

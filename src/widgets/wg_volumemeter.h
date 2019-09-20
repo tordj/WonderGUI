@@ -105,8 +105,6 @@ namespace wg
 		int             m_iSidePadding;
 
 		bool            m_bZeroInMiddle;
-		float           d;
-		float           d2;
 
 		std::vector<float> m_LEDStates;
 
