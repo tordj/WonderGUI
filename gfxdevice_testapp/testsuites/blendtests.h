@@ -1,4 +1,4 @@
-#include <testsuites/testsuite.h>
+#include "testsuites/testsuite.h"
 
 class BlendTests : public TestSuite
 {

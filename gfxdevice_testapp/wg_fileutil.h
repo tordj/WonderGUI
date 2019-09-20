@@ -24,9 +24,9 @@
 #define WG_FILEUTIL_DOT_H
 #pragma once
 
-#include <wg_surface.h>
 #include <wg_surfacefactory.h>
 #include <wg_blob.h>
+#include <wg_surface.h>
 
 
 namespace wg

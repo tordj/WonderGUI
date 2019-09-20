@@ -498,7 +498,7 @@ int main(int argc, char** argv)
 */
 
 	// Test drag n drop support
-/*
+
 	{
 		static Widget_p s_pPicked = nullptr;
 		static Coord	s_pickOfs;
@@ -557,7 +557,7 @@ int main(int argc, char** argv)
 
 
 	}
-*/
+
 	
 	
 /*

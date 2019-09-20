@@ -1,11 +1,17 @@
 
 #ifdef WIN32
-#	include <SDL.h>
-#	include <SDL_image.h>
+#    include <SDL.h>
+#    include <SDL_image.h>
+#    include <GL/glew.h>
+#elif __APPLE__
+#    include <SDL2/SDL.h>
+#    include <SDL2_image/SDL_image.h>
 #else
-#	include <SDL2/SDL.h>
-#	include <SDL2/SDL_image.h>
+#    include <SDL2/SDL.h>
+#    include <SDL2/SDL_image.h>
+#   include <GL/glew.h>
 #endif
+
 
 #include <list>
 
@@ -19,19 +25,17 @@
 #include <gfxdevices/stream/wg_streamsurfacefactory.h>
 
 
-#	include <GL/glew.h>
+#include <gfxdevices/opengl/wg_glgfxdevice.h>
+#include <gfxdevices/opengl/wg_glsurface.h>
+#include <gfxdevices/opengl/wg_glsurfacefactory.h>
 
-//#include <gfxdevices/opengl/wg_glgfxdevice.h>
-//#include <gfxdevices/opengl/wg_glsurface.h>
-//#include <gfxdevices/opengl/wg_glsurfacefactory.h>
-
-#include <wg_fileutil.h>
-#include <device.h>
+#include "wg_fileutil.h"
+#include "device.h"
 
 //#include <testunit.h>
-#include <testsuites/testsuite.h>
-#include <testsuites/blendtests.h>
-#include <testsuites/filltests.h>
+#include "testsuites/testsuite.h"
+#include "testsuites/blendtests.h"
+#include "testsuites/filltests.h"
 #include <testsuites/plottests.h>
 #include <testsuites/linetests.h>
 #include <testsuites/canvasformattests.h>
@@ -347,12 +351,14 @@ void refresh_performance_display()
 			char value[128];
 
 			auto pValueTestee = TextDisplay::create();
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+//			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
 			pValueTestee->text.set(value);
 			pValueTestee->text.setTextMapper(g_pPerformanceValueMapper);
 
 			auto pValueRef = TextDisplay::create();
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+//			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
 			pValueRef->text.set(value);
 			pValueRef->text.setTextMapper(g_pPerformanceValueMapper);
 
@@ -389,8 +395,8 @@ Canvas_p create_canvas()
 {
 	auto pCanvas = Canvas::create();
 	pCanvas->canvas.setSize(g_canvasSize);
-	//	pCanvas->canvas.setDevice(GlGfxDevice::create({ 0,0,10,10 }));
-	pCanvas->canvas.setSurfaceFactory( SoftSurfaceFactory::create() );
+	//pCanvas->canvas.setDevice(GlGfxDevice::create({ 0,0,10,10 }));
+	pCanvas->canvas.setSurfaceFactory( GlSurfaceFactory::create() );
 	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;
 }
@@ -566,9 +572,9 @@ void setup_testdevices()
 	pSoftwareDevice->init(g_canvasSize, PixelFormat::BGRA_8);
 	g_testdevices.push_back(pSoftwareDevice);
 
-	auto pOpenGLDevice = new OpenGLDevice();
-	pOpenGLDevice->init(g_canvasSize, PixelFormat::BGRA_8);
-	g_testdevices.push_back(pOpenGLDevice);
+//	auto pOpenGLDevice = new OpenGLDevice();
+//	pOpenGLDevice->init(g_canvasSize, PixelFormat::BGRA_8);
+//	g_testdevices.push_back(pOpenGLDevice);
 
 	auto pStreamToSoftwareDevice = new StreamToSoftwareDevice();
 	pStreamToSoftwareDevice->init(g_canvasSize, PixelFormat::BGRA_8);
@@ -735,6 +741,12 @@ bool setup_chrome()
 	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, BorderI(3));
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
+
+    
+//    BoxSkin_p pPlateSkin = BoxSkin::create( Border(2), Color::Red, Color::Blue );
+//    BoxSkin_p pPressablePlateSkin = pPlateSkin;
+//    BoxSkin_p pSimpleButtonSkin = pPlateSkin;
+    
 	// Setup base layers
 
 	auto pLayerStack = StackPanel::create();
@@ -1100,16 +1112,20 @@ bool init_wondergui()
 {
 	Base::init();
 
+    g_pBaseGfxDevice = GlGfxDevice::create(g_windowSize, 0);
+    g_pBaseSurfaceFactory = GlSurfaceFactory::create();
+
+    // g_pBaseSurfaceFactory = SoftSurfaceFactory::create();
+    
+    // g_pBaseGfxDevice = SoftGfxDevice::create( SoftSurface::cast(g_pWindowSurface));
+
+    
 	Context_p pContext = Context::create();
-	pContext->setScale(1.0);
+    pContext->setScale(1.0);
+    pContext->setSurfaceFactory(g_pBaseSurfaceFactory);
 	Base::setActiveContext(pContext);
 
 
-//	g_pBaseSurfaceFactory = GlSurfaceFactory::create();
-	g_pBaseSurfaceFactory = SoftSurfaceFactory::create();
-
-//	g_pBaseGfxDevice = GlGfxDevice::create(g_windowSize);
-	g_pBaseGfxDevice = SoftGfxDevice::create( SoftSurface::cast(g_pWindowSurface));
 	g_pRoot = RootPanel::create(g_pBaseGfxDevice);
 
 //	g_pRoot->setDebugMode(true);
@@ -1175,19 +1191,20 @@ bool init_system( RectI windowGeo )
 	// make sure SDL cleans up before exit
 	atexit(SDL_Quit);
 
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h, SDL_WINDOW_OPENGL | SDL_WINDOW_ALLOW_HIGHDPI);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+    SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
+    SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
+
+    
+	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h, SDL_WINDOW_OPENGL /*| SDL_WINDOW_ALLOW_HIGHDPI*/);
 	if( pWin == nullptr )
 	{
 		printf("Unable to create SDL window: %s\n", SDL_GetError());
 		return false;
 	}
-
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
-	SDL_GL_SetAttribute(SDL_GL_STENCIL_SIZE, 8);
-	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
-
+    
 	SDL_GLContext context = SDL_GL_CreateContext(pWin);
 
 //	SDL_GL_SetSwapInterval(1);
@@ -1205,8 +1222,10 @@ bool init_system( RectI windowGeo )
 	glFlush();
 
 
+//    GlGfxDevice_p pGfxDevice = GlGfxDevice::create(windowGeo.size());
+//    GlGfxDevice::create( {100,100} );
 
-
+/*
 	SDL_Surface * pWinSurf = SDL_GetWindowSurface(pWin);
 	if (pWinSurf == nullptr)
 	{
@@ -1231,12 +1250,15 @@ bool init_system( RectI windowGeo )
 		}
 	}
 
+    GlGfxDevice_p pGfxDevice = GlGfxDevice::create(windowGeo.size());
+
+    
 	g_pSDLWindow = pWin;
 
 	Blob_p pCanvasBlob = Blob::create(pWinSurf->pixels, 0);
 	g_pWindowSurface = SoftSurface::create(SizeI(pWinSurf->w, pWinSurf->h), format, pCanvasBlob, pWinSurf->pitch);
-
-	IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
+*/
+    IMG_Init(IMG_INIT_JPG | IMG_INIT_PNG);
 
 	return true;
 }

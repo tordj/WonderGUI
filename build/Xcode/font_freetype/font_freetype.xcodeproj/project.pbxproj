@@ -7,18 +7,18 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1741F0112313D41F00029A27 /* wg_freetypefont.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F00F2313D41F00029A27 /* wg_freetypefont.h */; };
-		1741F0122313D41F00029A27 /* wg_freetypefont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F0102313D41F00029A27 /* wg_freetypefont.cpp */; };
+		175931802327C26A0020A40C /* wg_freetypefont.h in Headers */ = {isa = PBXBuildFile; fileRef = 1759317E2327C26A0020A40C /* wg_freetypefont.h */; };
+		175931812327C26A0020A40C /* wg_freetypefont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1759317F2327C26A0020A40C /* wg_freetypefont.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		1741F00F2313D41F00029A27 /* wg_freetypefont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_freetypefont.h; path = ../../../src/fonts/freetype/wg_freetypefont.h; sourceTree = "<group>"; };
-		1741F0102313D41F00029A27 /* wg_freetypefont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_freetypefont.cpp; path = ../../../src/fonts/freetype/wg_freetypefont.cpp; sourceTree = "<group>"; };
-		17F41BE222535782008D1DE7 /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		175931772327C24B0020A40C /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1759317E2327C26A0020A40C /* wg_freetypefont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_freetypefont.h; path = ../../../src/fonts/freetype/wg_freetypefont.h; sourceTree = "<group>"; };
+		1759317F2327C26A0020A40C /* wg_freetypefont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_freetypefont.cpp; path = ../../../src/fonts/freetype/wg_freetypefont.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		17F41BDF22535782008D1DE7 /* Frameworks */ = {
+		175931742327C24B0020A40C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -28,19 +28,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		17F41BD922535782008D1DE7 = {
+		1759316E2327C24B0020A40C = {
 			isa = PBXGroup;
 			children = (
-				1741F0102313D41F00029A27 /* wg_freetypefont.cpp */,
-				1741F00F2313D41F00029A27 /* wg_freetypefont.h */,
-				17F41BE322535782008D1DE7 /* Products */,
+				1759317F2327C26A0020A40C /* wg_freetypefont.cpp */,
+				1759317E2327C26A0020A40C /* wg_freetypefont.h */,
+				175931782327C24B0020A40C /* Products */,
 			);
 			sourceTree = "<group>";
 		};
-		17F41BE322535782008D1DE7 /* Products */ = {
+		175931782327C24B0020A40C /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				17F41BE222535782008D1DE7 /* libfont_freetype.a */,
+				175931772327C24B0020A40C /* libfont_freetype.a */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -48,24 +48,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXHeadersBuildPhase section */
-		17F41BE022535782008D1DE7 /* Headers */ = {
+		175931752327C24B0020A40C /* Headers */ = {
 			isa = PBXHeadersBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1741F0112313D41F00029A27 /* wg_freetypefont.h in Headers */,
+				175931802327C26A0020A40C /* wg_freetypefont.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXHeadersBuildPhase section */
 
 /* Begin PBXNativeTarget section */
-		17F41BE122535782008D1DE7 /* font_freetype */ = {
+		175931762327C24B0020A40C /* font_freetype */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 17F41BE622535782008D1DE7 /* Build configuration list for PBXNativeTarget "font_freetype" */;
+			buildConfigurationList = 1759317B2327C24B0020A40C /* Build configuration list for PBXNativeTarget "font_freetype" */;
 			buildPhases = (
-				17F41BDE22535782008D1DE7 /* Sources */,
-				17F41BDF22535782008D1DE7 /* Frameworks */,
-				17F41BE022535782008D1DE7 /* Headers */,
+				175931732327C24B0020A40C /* Sources */,
+				175931742327C24B0020A40C /* Frameworks */,
+				175931752327C24B0020A40C /* Headers */,
 			);
 			buildRules = (
 			);
@@ -73,53 +73,53 @@
 			);
 			name = font_freetype;
 			productName = font_freetype;
-			productReference = 17F41BE222535782008D1DE7 /* libfont_freetype.a */;
+			productReference = 175931772327C24B0020A40C /* libfont_freetype.a */;
 			productType = "com.apple.product-type.library.static";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		17F41BDA22535782008D1DE7 /* Project object */ = {
+		1759316F2327C24B0020A40C /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
 				LastUpgradeCheck = 0940;
 				ORGANIZATIONNAME = "Tord Jansson";
 				TargetAttributes = {
-					17F41BE122535782008D1DE7 = {
+					175931762327C24B0020A40C = {
 						CreatedOnToolsVersion = 9.4.1;
 					};
 				};
 			};
-			buildConfigurationList = 17F41BDD22535782008D1DE7 /* Build configuration list for PBXProject "font_freetype" */;
+			buildConfigurationList = 175931722327C24B0020A40C /* Build configuration list for PBXProject "font_freetype" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 17F41BD922535782008D1DE7;
-			productRefGroup = 17F41BE322535782008D1DE7 /* Products */;
+			mainGroup = 1759316E2327C24B0020A40C;
+			productRefGroup = 175931782327C24B0020A40C /* Products */;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				17F41BE122535782008D1DE7 /* font_freetype */,
+				175931762327C24B0020A40C /* font_freetype */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		17F41BDE22535782008D1DE7 /* Sources */ = {
+		175931732327C24B0020A40C /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1741F0122313D41F00029A27 /* wg_freetypefont.cpp in Sources */,
+				175931812327C26A0020A40C /* wg_freetypefont.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		17F41BE422535782008D1DE7 /* Debug */ = {
+		175931792327C24B0020A40C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -170,6 +170,10 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"../../../src/**",
+					"/usr/local/Cellar/freetype/2.10.1/include/freetype2/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -177,7 +181,7 @@
 			};
 			name = Debug;
 		};
-		17F41BE522535782008D1DE7 /* Release */ = {
+		1759317A2327C24B0020A40C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -222,29 +226,31 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = (
+					"../../../src/**",
+					"/usr/local/Cellar/freetype/2.10.1/include/freetype2/**",
+				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		17F41BE722535782008D1DE7 /* Debug */ = {
+		1759317C2327C24B0020A40C /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				HEADER_SEARCH_PATHS = "../../../src/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
 			name = Debug;
 		};
-		17F41BE822535782008D1DE7 /* Release */ = {
+		1759317D2327C24B0020A40C /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
-				HEADER_SEARCH_PATHS = "../../../src/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -253,25 +259,25 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		17F41BDD22535782008D1DE7 /* Build configuration list for PBXProject "font_freetype" */ = {
+		175931722327C24B0020A40C /* Build configuration list for PBXProject "font_freetype" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				17F41BE422535782008D1DE7 /* Debug */,
-				17F41BE522535782008D1DE7 /* Release */,
+				175931792327C24B0020A40C /* Debug */,
+				1759317A2327C24B0020A40C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		17F41BE622535782008D1DE7 /* Build configuration list for PBXNativeTarget "font_freetype" */ = {
+		1759317B2327C24B0020A40C /* Build configuration list for PBXNativeTarget "font_freetype" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				17F41BE722535782008D1DE7 /* Debug */,
-				17F41BE822535782008D1DE7 /* Release */,
+				1759317C2327C24B0020A40C /* Debug */,
+				1759317D2327C24B0020A40C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 17F41BDA22535782008D1DE7 /* Project object */;
+	rootObject = 1759316F2327C24B0020A40C /* Project object */;
 }
