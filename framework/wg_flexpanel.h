@@ -296,6 +296,7 @@ private:
     WgSize          _scaledPreferredPixelSize( WgWidget * pWidget );
 
 
+    void            _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgHook*			_firstHook() const { return FirstHook(); }

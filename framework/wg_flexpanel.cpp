@@ -1186,6 +1186,53 @@ WgSize WgFlexPanel::PreferredPixelSize() const
     }
 }
 
+//____ _onEvent() ______________________________________________________
+
+void WgFlexPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
+{
+    WgState state = m_state;
+
+    switch( _pEvent->Type() )
+    {
+        case WG_EVENT_MOUSE_ENTER:
+            state.setHovered(true);
+            break;
+            
+        case WG_EVENT_MOUSE_LEAVE:
+            state.setHovered(false);
+            break;
+
+        case WG_EVENT_MOUSEBUTTON_PRESS:
+        {
+            int button = static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button();
+            if( button == 1 )
+                state.setPressed(true);
+            break;
+        }
+            
+        case WG_EVENT_MOUSEBUTTON_RELEASE:
+        {
+            int button = static_cast<const WgEvent::MouseButtonPress*>(_pEvent)->Button();
+            if( button == 1 )
+                state.setPressed(false);
+            break;
+        }
+            
+        default:
+            break;
+    }
+    
+    if( state != m_state )
+    {
+        if( m_pSkin && !m_pSkin->IsStateIdentical(state, m_state) )
+            _requestRender();
+    
+        m_state = state;
+    }
+    
+    WgPanel::_onEvent( _pEvent, pHandler );
+}
+
 //____ _onRequestRender() ______________________________________________________
 
 void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook )

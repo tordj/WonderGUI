@@ -26,6 +26,8 @@
 
 using namespace std;
 
+static const char    c_surfaceType[] = {"Undefined"};
+
 //____ WgSurface() ____________________________________________________________
 
 WgSurface::WgSurface()
@@ -37,6 +39,17 @@ WgSurface::WgSurface()
     m_scaleFactor   = WG_SCALE_BASE;
     m_iResource      = -1;                           // handy for debugging
 }
+
+WgSurface::WgSurface( wg::Surface * pRealSurface )
+{
+    m_pRealSurface = pRealSurface;
+    
+    m_pMetaData        = 0;
+    m_nMetaBytes    = 0;
+    m_scaleFactor   = WG_SCALE_BASE;
+    m_iResource      = -1;                           // handy for debugging
+}
+
 
 //____ ~WgSurface() ____________________________________________________________
 
@@ -245,3 +258,11 @@ void WgSurface::PutPixels(const vector<int> &x, const vector<int> &y, const vect
 			break;
 	}
 }
+
+//____ Type() __________________________________________________________________
+
+const char * WgSurface::Type() const
+{
+    return c_surfaceType;
+}
+

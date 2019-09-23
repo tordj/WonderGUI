@@ -35,10 +35,10 @@ class WgSurfaceSoft : public WgSurface
 	friend class WgGfxDeviceSoft;
 
  public:
-	WgSurfaceSoft( WgSize size, WgPixelType type = WgPixelType::BGRA_8 );
-	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch );
-    WgSurfaceSoft( WgSize size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat );
-	WgSurfaceSoft( const WgSurfaceSoft * pOther );
+	WgSurfaceSoft( WgSize size, WgPixelType type = WgPixelType::BGRA_8, int flags = wg::SurfaceFlag::Static );
+	WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, int flags = wg::SurfaceFlag::Static );
+    WgSurfaceSoft( WgSize size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat, int flags = wg::SurfaceFlag::Static );
+	WgSurfaceSoft( const WgSurfaceSoft * pOther, int flags = 0  );
 	~WgSurfaceSoft();
 
 	const char *Type() const;

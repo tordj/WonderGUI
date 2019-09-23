@@ -51,21 +51,21 @@ WgSize WgGlSurface::MaxSize()
 //____ Constructor _____________________________________________________________
 
 
-WgGlSurface::WgGlSurface( WgSize size, WgPixelType type )
+WgGlSurface::WgGlSurface( WgSize size, WgPixelType type, int flags )
 {
-	m_pRealSurface = wg::GlSurface::create(size,type);
+	m_pRealSurface = wg::GlSurface::create(size,type,flags);
 }
 
 
-WgGlSurface::WgGlSurface( WgSize size, WgPixelType type, uint8_t * pPixels, int pitch,  const WgPixelFormat& pixelFormat )
+WgGlSurface::WgGlSurface( WgSize size, WgPixelType type, uint8_t * pPixels, int pitch,  const WgPixelFormat& pixelFormat, int flags )
 {
-	m_pRealSurface = wg::GlSurface::create(size, type, pPixels, pitch, &pixelFormat);
+	m_pRealSurface = wg::GlSurface::create(size, type, pPixels, pitch, &pixelFormat,flags);
 }
 
 
-WgGlSurface::WgGlSurface( WgSurface * pOther )
+WgGlSurface::WgGlSurface( WgSurface * pOther, int flags )
 {
-	m_pRealSurface = wg::GlSurface::create( ((WgGlSurface*)pOther)->m_pRealSurface);
+	m_pRealSurface = wg::GlSurface::create( ((WgGlSurface*)pOther)->m_pRealSurface,flags);
 }
 
 

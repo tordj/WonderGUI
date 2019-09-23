@@ -35,14 +35,14 @@ WgSize WgGlSurfaceFactory::MaxSize() const
 
 //____ createSurface() ________________________________________________________
 
-WgSurface * WgGlSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type ) const
+WgSurface * WgGlSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type, int flags ) const
 {
-    return 	new WgGlSurface(size,type);
+    return 	new WgGlSurface(size,type, m_flags | flags);
 }
 
 
 
-WgSurface * WgGlSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat ) const
+WgSurface * WgGlSurfaceFactory::CreateSurface( const WgSize& size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat, int flags ) const
 {
-    return 	new WgGlSurface(size,type,pPixels, pitch, pixelFormat);	
+    return 	new WgGlSurface(size,type,pPixels, pitch, pixelFormat, m_flags | flags);	
 }

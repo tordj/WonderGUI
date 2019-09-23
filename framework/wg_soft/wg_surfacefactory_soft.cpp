@@ -36,12 +36,12 @@ WgSize WgSurfaceFactorySoft::MaxSize() const
 
 //____ WgSurfaceFactorySoft::CreateSurface() ___________________________________
 
-WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type ) const
+WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type, int flags ) const
 {
-	return new WgSurfaceSoft( size, type );
+	return new WgSurfaceSoft( size, type, m_flags | flags );
 }
 
-WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat ) const
+WgSurface * WgSurfaceFactorySoft::CreateSurface( const WgSize& size, WgPixelType type, uint8_t * pPixels, int pitch, const WgPixelFormat& pixelFormat, int flags ) const
 {
-    return 	new WgSurfaceSoft(size,type,pPixels, pitch, pixelFormat);	
+    return 	new WgSurfaceSoft(size,type,pPixels, pitch, pixelFormat, m_flags | flags);	
 }

@@ -312,7 +312,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                     WgBase::Context()->pDevice->endRender();
                 }
                 
-                auto pSurface = WgBase::Context()->pFactory->CreateSurface(m_pScreenshot->PixelSize());
+                auto pSurface = WgBase::Context()->pFactory->CreateSurface(m_pScreenshot->PixelSize(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
                 pSurface->CopyFrom( m_pScreenshot, {0,0} );
 
                 auto pImage = new WgImage();
@@ -388,7 +388,8 @@ void WgZoomOutCapsule::_regenScreenshot()
     
     WgSize sz = PixelSize();
     
-    m_pScreenshot = pFactory->CreateSurface(sz);
+    m_pScreenshot = pFactory->CreateSurface(sz, WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped);
+    m_pScreenshot->setScaleMode( WgScaleMode::Interpolate );
     m_pScreenshot->Fill(WgColor::Transparent);
     
     WgPatches patches;

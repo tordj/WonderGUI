@@ -52,9 +52,11 @@
 #include <wg_popuplayer.h>
 #include <wg_blockset.h>
 #include <wg_shadowlayer.h>
-#include <wg_context.h>
 
+#include <wg3_context.h>
 #include <wg3_softgfxdevice.h>
+#include <wg3_softsurfacefactory.h>
+
 
 #include "testwidget.h"
 
@@ -62,13 +64,14 @@
 
 void manuBlendTest();
 void shadowLayerTest( WgRootPanel * pRoot );
-void stretchBlitTest();
+void scrollPanelTest( WgRootPanel * pRoot );
 
 //#define USE_OPEN_GL
 
 
 WgSurfaceFactory *	g_pSurfaceFactory = nullptr;
 wg::GfxDevice_p		g_pGfxDevice = nullptr;
+wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
 
 
 extern std::ostream cout;
@@ -199,6 +202,7 @@ int main ( int argc, char** argv )
 #ifdef USE_OPEN_GL
 	g_pGfxDevice = new WgGlGfxDevice( WgSize(width,height) );
 	g_pSurfaceFactory = new WgGlSurfaceFactory();
+    g_pModernSurfaceFactory = wg::GlSurfaceFactory::create();
 #else
 	SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
 
@@ -214,14 +218,14 @@ int main ( int argc, char** argv )
     g_pGfxDevice = wg::SoftGfxDevice::create( pCanvas->RealSurface() );
 
 	g_pSurfaceFactory = new WgSurfaceFactorySoft();
+    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
-    WgContext context;
-    context.pFactory = g_pSurfaceFactory;
-    context.pDevice = g_pGfxDevice;
-    context.scale = 8192;
-    
-    WgBase::SetContext( context );
+    auto pContext = wg::Context::create();
+    pContext->setScale(2);
+    pContext->setGfxDevice(g_pGfxDevice);
+    pContext->setSurfaceFactory( g_pModernSurfaceFactory );
+    WgBase::SetContext(pContext);
 
     
 	//	pGfxDevice->SetBilinearFiltering( true );
@@ -282,7 +286,8 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
-    shadowLayerTest(pRoot);
+    scrollPanelTest(pRoot);
+//    shadowLayerTest(pRoot);
 //	manuBlendTest();
 
 	// Setup debug overlays
@@ -645,7 +650,57 @@ void manuBlendTest()
 	delete pDevice;
 */
 }
+
+//____ scrollPanelTest() _________________________________________________________
+
+void scrollPanelTest( WgRootPanel * pRoot )
+{
+    WgBoxSkinPtr    pBgSkin = WgBoxSkin::Create(WgColor::Green, 2, WgColor::Red );
+    pBgSkin->SetContentPadding(2);
     
+    WgBoxSkinPtr    pButtonSkin = WgBoxSkin::Create(WgColor::Red, 2, WgColor::Black );
+//    pButtonSkin->SetContentPadding(6);
+
+    WgBoxSkinPtr    pBarSkin = WgBoxSkin::Create(WgColor::Grey, 2, WgColor::DarkGrey );
+    pBarSkin->SetContentPadding(6);
+
+    auto pScrollPanel = new WgScrollPanel();
+    
+    pScrollPanel->SetBgColor(WgColor::YellowGreen);
+    
+    auto pVSlider = new WgVSlider();
+    pVSlider->SetSkins(pBgSkin, pBarSkin, pButtonSkin, pButtonSkin );
+    pScrollPanel->SetVSlider(pVSlider);
+
+    auto pHSlider = new WgHSlider();
+    pHSlider->SetSkins(pBgSkin, pBarSkin, pButtonSkin, pButtonSkin );
+    pScrollPanel->SetHSlider(pHSlider);
+
+    auto pContent = new WgFlowPanel();
+    
+    for( int i = 0 ; i < 100 ; i++ )
+    {
+        auto pFiller = new WgFiller();
+        pFiller->SetPreferredPointSize({50,50});
+        
+        pFiller->SetColors( WgColorset::Create( WgColor( 255*(i%2),64*(i%4),32*(i%8) )));
+        
+        pContent->AddChild(pFiller);
+    }
+    
+/*
+    auto pText = new WgTextDisplay();
+    pText->SetTextProperties( WgBase::GetDefaultTextprop());
+    for( int i = 0 ; i < 50 ; i++ )
+        pText->AddText( "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." );
+  */
+    pScrollPanel->SetContent(pContent);
+    
+
+    pRoot->SetChild(pScrollPanel);
+}
+
+
 //____ shadowLayerTest() _________________________________________________________
 
 void shadowLayerTest( WgRootPanel * pRoot )
@@ -727,7 +782,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	WgRootPanel * pRoot = new WgRootPanel(pDevice);
 
-    pRoot->SetScale(WgBase::Context()->scale);
+    pRoot->SetScale(WgBase::Context()->scale()*4096);
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 

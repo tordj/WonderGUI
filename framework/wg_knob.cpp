@@ -453,7 +453,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 	const float rd_inv = 1.0f / rd;
 
 	const float r_outer = 1.0f - rd;
-	const float r_inner = 1.0f - rd - m_iWidth;
+	const float r_inner = 1.0f - rd - m_iWidth/(1.f+rd);
 
 	// Subtract 2π from the angles if the start angle is offsetted more than 2π.
 	const float K = (m_fAngleStart + m_fAngleOffset > 1.0f ? 1.0f : 0.0f);

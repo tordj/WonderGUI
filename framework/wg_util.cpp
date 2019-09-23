@@ -468,6 +468,35 @@ WgMode WgUtil::StateToMode(WgState state)
 	return mode;
 }
 
+//____ ModeToState() __________________________________________________________
+
+WgState WgUtil::ModeToState(WgMode mode)
+{
+    WgState state = WgStateEnum::Normal;
+    
+    switch( mode )
+    {
+        case WG_MODE_NORMAL:
+            state = WgStateEnum::Normal;
+            break;
+        case WG_MODE_MARKED:
+            state = WgStateEnum::Hovered;
+            break;
+        case WG_MODE_SELECTED:
+            state = WgStateEnum::SelectedPressed;
+            break;
+        case WG_MODE_SPECIAL:
+            state = WgStateEnum::SelectedHovered;
+            break;
+        case WG_MODE_DISABLED:
+            state = WgStateEnum::Disabled;
+            break;
+    }
+    
+    return state;
+}
+
+
 //____ ParametricBlendInOut() __________________________________________________________
 
 float WgUtil::ParametricBlendInOut(float t)

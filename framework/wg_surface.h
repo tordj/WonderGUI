@@ -50,11 +50,13 @@ class WgSurface
     
 
 public:
+    WgSurface( wg::Surface * pRealSurface );
+    
 	virtual ~WgSurface();
 
 	// Methods for reading dimensions and abilities.
 
-	virtual const char *Type() const = 0;
+	virtual const char *Type() const;
 	virtual	WgSize		PixelSize() const;
     virtual WgSize      PointSize() const;
     

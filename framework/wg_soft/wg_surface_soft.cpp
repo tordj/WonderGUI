@@ -41,26 +41,26 @@ WgSize WgSurfaceSoft::MaxSize()
 
 //____ Constructor ________________________________________________________________
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, int flags )
 {
-	m_pRealSurface = wg::SoftSurface::create(size, type);
+	m_pRealSurface = wg::SoftSurface::create(size, type, flags);
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, int flags )
 {
 	auto pBlob = wg::Blob::create(pPixels, nullptr);
-	m_pRealSurface = wg::SoftSurface::create(size, type, pBlob, pitch);
+	m_pRealSurface = wg::SoftSurface::create(size, type, pBlob, pitch, flags);
 }
 
-WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgPixelFormat& pixelFormat )
+WgSurfaceSoft::WgSurfaceSoft( WgSize size, WgPixelType type, Uint8 * pPixels, int pitch, const WgPixelFormat& pixelFormat, int flags )
 {
-	m_pRealSurface = wg::SoftSurface::create(size, type, pPixels, pitch, &pixelFormat);
+	m_pRealSurface = wg::SoftSurface::create(size, type, pPixels, pitch, &pixelFormat, flags);
 }
 
 
-WgSurfaceSoft::WgSurfaceSoft( const WgSurfaceSoft * pOther )
+WgSurfaceSoft::WgSurfaceSoft( const WgSurfaceSoft * pOther, int flags )
 {
-	m_pRealSurface = wg::SoftSurface::create(pOther->m_pRealSurface);
+	m_pRealSurface = wg::SoftSurface::create(pOther->m_pRealSurface, flags);
 }
 
 //____ Destructor ______________________________________________________________

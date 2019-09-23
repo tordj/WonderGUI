@@ -215,9 +215,12 @@ WgSize WgBoxSkin::SizeForContent( const WgSize contentSize, int scale ) const
 
 bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState state, int opacityTreshold, int scale ) const
 {
+    if( ofs.x < 0 || ofs.y < 0 || ofs.x > canvasSize.w || ofs.y > canvasSize.h )
+        return false;
+        
 	if( m_bOpaque )
 		return true;
-
+    
 	int i = WgUtil::_stateToIndex(state);
 
 	WgRect center = ContentRect(WgRect(canvasSize), state, scale);

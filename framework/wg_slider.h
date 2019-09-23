@@ -97,7 +97,9 @@ class	WgWidgetSlider : public WgWidget
 		bool	SetSliderPosPxlOfs( int x );
 		bool	SetSliderSize( float size );
 
-		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx );
+        bool    SetSkins( WgSkinPtr pBgSkin, WgSkinPtr pBarSkin, WgSkinPtr pBtnBwdSkin, WgSkinPtr pBtnFwdSkin );
+
+		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx ); // DEPRECATED!!!
 		bool	SetButtonLayout(  ButtonLayout layout );
 
 		bool	SetSliderTarget( WgSliderTarget * pTarget );
@@ -135,6 +137,12 @@ class	WgWidgetSlider : public WgWidget
 		WgBlocksetPtr	m_pBtnFwdGfx;
 		WgBlocksetPtr	m_pBtnBwdGfx;
 
+        WgSkinPtr       m_pBgSkin;
+        WgSkinPtr       m_pBarSkin;
+        WgSkinPtr       m_pBtnFwdSkin;
+        WgSkinPtr       m_pBtnBwdSkin;
+    
+    
 		float			m_sliderPos;
 		float			m_sliderSize;
 
@@ -165,8 +173,10 @@ class	WgWidgetSlider : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-    void		_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, const WgBlock& _block );
+        void		_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, const WgBlock& _block );
+        void        _renderButton( wg::GfxDevice * pDevice, WgRect& _dest, WgSkinPtr pSkin, WgState state );
 		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
+        bool        _markTestButton( WgCoord ofs, WgRect& _dest, WgSkinPtr pSkin, WgState state );
 		bool		_markTestSlider( WgCoord ofs );
 		void		_headerFooterChanged();
 		void		_unmarkReqRender();

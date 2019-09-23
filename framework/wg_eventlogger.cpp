@@ -517,6 +517,16 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
 			break;
 
+        case WG_EVENT_EAVESDROP:
+        {
+            id = "Eavesdrop";
+            WgEvent::Event * pOrgEvent = ((const WgEvent::Eavesdrop*)_pEvent)->Event();
+            string orgWidget = _formatWidget(pOrgEvent);
+            
+            sprintf( params, " org event=%d for %s", pOrgEvent->Type(), orgWidget.c_str() );
+            break;
+        }
+            
         default:
             id = "Unknown Event";
             sprintf( params, " type enum=%d", (_pEvent)->Type() );

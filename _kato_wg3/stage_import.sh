@@ -14,9 +14,15 @@ cd ../../WonderGUI/src
 
 cd base
 cp wg_object.h \
-   wg_blob.* wg_color.* wg_enumextras.* wg_geo.* wg_gfxdevice.* \
+   wg_blob.* \
+   wg_color.* \
+   wg_enumextras.* \
+   wg_geo.* \
+   wg_gfxdevice.* \
    wg_nullgfxdevice.* \
+   wg_patches.* \
    wg_pointers.* \
+   wg_qpix.* \
    wg_stronginterfaceptr.* \
    wg_strongptr.* \
    wg_surface.* \
@@ -25,8 +31,6 @@ cp wg_object.h \
    wg_util.* \
    wg_weakinterfaceptr.* \
    wg_weakptr.* \
-   wg_qpix.* \
-   wg_patches.* \
    ../../../wg2/_kato_wg3/imports/base/
 
 cd ../interfaces

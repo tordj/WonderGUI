@@ -39,6 +39,7 @@ namespace WgUtil
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }
 
 	WgMode		StateToMode(WgState state);
+    WgState     ModeToState(WgMode mode);
 
 
 	inline int _stateToIndex(WgStateEnum state)
