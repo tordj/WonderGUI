@@ -1,0 +1,3169 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Bucket
+   type = "0"
+   version = "2.0">
+   <Breakpoints>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_blockskin.cpp"
+            timestampString = "587292151.618193"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "640"
+            endingLineNumber = "640"
+            landmarkName = "WgBlockSkin::MarkTest( const WgCoord&amp; _ofs, const WgSize&amp; canvas, WgState state, int opacityTreshold, int scale )"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bench/main.cpp"
+            timestampString = "590941551.3894891"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "714"
+            endingLineNumber = "714"
+            landmarkName = "shadowLayerTest( WgRootPanel * pRoot )"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bench/main.cpp"
+            timestampString = "590941551.389868"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "712"
+            endingLineNumber = "712"
+            landmarkName = "shadowLayerTest( WgRootPanel * pRoot )"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "extras/sdl_wglib.cpp"
+            timestampString = "589191933.7931989"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "181"
+            endingLineNumber = "181"
+            landmarkName = "LoadSurface( const char * path, const WgSurfaceFactory&amp; factory )"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "extras/sdl_wglib.cpp"
+            timestampString = "589191933.793286"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "182"
+            endingLineNumber = "182"
+            landmarkName = "LoadSurface( const char * path, const WgSurfaceFactory&amp; factory )"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+            timestampString = "589198093.984983"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "861"
+            endingLineNumber = "861"
+            landmarkName = "SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans&amp; tint)"
+            landmarkType = "7">
+            <Locations>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198034.9989311"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.002619"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.006264"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.009938"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.013307"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.016137"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.019008"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.022055"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.025667"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.02931"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.032676"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.036104"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.039452"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.042268"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.045395"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.048853"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.052049"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.055118"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.05796"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.0609"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.0641921"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.067525"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.0711091"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.074609"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.078203"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.081704"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.085308"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.0887949"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.092309"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.095943"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.0992661"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.102582"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.105745"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.108936"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.112825"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.1165251"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.12049"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.123739"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.127354"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)0, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.130631"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "446">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.133721"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.137439"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.140928"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.14399"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.147637"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.151386"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.155275"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.158735"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.162016"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.165408"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.170092"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.17442"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.17822"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.1816061"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.184683"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.188076"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.191541"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.194796"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.197886"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.201195"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.204809"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.208307"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.2118649"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.215964"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.219402"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.2230721"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.22699"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.2311"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.235526"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.239642"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.243824"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.247211"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.250988"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.254244"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.258847"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.262794"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.26696"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.270923"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.274842"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)1, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.280057"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.2836469"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.287763"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.291608"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.29443"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.297832"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.301704"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.305302"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.309128"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.313388"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.317144"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.321051"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.324496"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.328601"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.33215"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.335775"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.339694"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.343428"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.346264"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.349232"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.352658"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.35579"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.359134"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.36309"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.366528"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.370037"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.373304"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.377048"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.3806469"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.384398"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.387148"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.390998"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.394555"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.397531"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.400538"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.405019"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.40899"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.413146"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.417519"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.421339"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)2, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.425599"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.4293669"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.432662"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.436958"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.440001"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.442829"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.446257"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.4530849"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.45619"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.462422"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.46662"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.474406"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.478398"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.4822299"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.4854209"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.487946"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.490715"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.493036"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.495574"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.498755"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.502913"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.505762"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.508679"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.5112489"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.5149471"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.518479"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.52215"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.525745"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.528877"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.5315059"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.534379"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.537853"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.540673"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.5433199"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.54752"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.551358"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.554651"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.558107"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.560972"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.564067"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)3, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.567289"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.570822"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.5741529"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.579392"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.583441"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)2, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.587992"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.59465"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.597795"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.601235"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.6051511"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)3, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.6087101"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.611578"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.614817"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.618085"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.621436"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)4, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.625105"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.628168"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.630865"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.633577"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.6370929"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)5, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.640574"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.644191"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.647933"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.650718"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.653927"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)6, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.656773"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.659698"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.662442"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.665188"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.66839"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)8, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.671699"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.674415"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.677066"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.6799411"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.682784"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)9, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.685465"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)4&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.688429"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)2&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.691268"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)6&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.694412"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)5&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.697693"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+               <Location
+                  shouldBeEnabled = "No"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "void wg::SoftGfxDevice::_fill&lt;(wg::BlendMode)7, (wg::SoftGfxDevice::TintMode)4, (wg::PixelFormat)8&gt;(unsigned char*, int, int, int, int, wg::Color, wg::SoftGfxDevice::ColTrans const&amp;)"
+                  moduleName = "bench"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/tord/Workspace/wg2/framework/gfxdevices/software/wg3_softgfxdevice.cpp"
+                  timestampString = "589198035.7007411"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "861"
+                  endingLineNumber = "861"
+                  offsetFromSymbolStart = "455">
+               </Location>
+            </Locations>
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "Yes"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_textdisplay.cpp"
+            timestampString = "590414052.984261"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "187"
+            endingLineNumber = "187"
+            landmarkName = "WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect&amp; _canvas, const WgRect&amp; _window )"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_slider.cpp"
+            timestampString = "590414516.057566"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "857"
+            endingLineNumber = "857"
+            landmarkName = "WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_slider.cpp"
+            timestampString = "590414516.057627"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "685"
+            endingLineNumber = "685"
+            landmarkName = "WgWidgetSlider::_findMarkedComponent( WgCoord ofs )"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_slider.cpp"
+            timestampString = "590414516.0576839"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "663"
+            endingLineNumber = "663"
+            landmarkName = "WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect&amp; _dest, WgSkinPtr pSkin, WgState state )"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+   </Breakpoints>
+</Bucket>

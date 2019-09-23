@@ -47,13 +47,13 @@
 #include <wg_chart.h>
 #include <wg_scrollchart.h>
 #include <wg_canvascapsule.h>
+#include <wg_context.h>
 
 #include <wg_popupopener.h>
 #include <wg_popuplayer.h>
 #include <wg_blockset.h>
 #include <wg_shadowlayer.h>
 
-#include <wg3_context.h>
 #include <wg3_softgfxdevice.h>
 #include <wg3_softsurfacefactory.h>
 
@@ -71,7 +71,7 @@ void scrollPanelTest( WgRootPanel * pRoot );
 
 WgSurfaceFactory *	g_pSurfaceFactory = nullptr;
 wg::GfxDevice_p		g_pGfxDevice = nullptr;
-wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
+//wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
 
 
 extern std::ostream cout;
@@ -202,7 +202,7 @@ int main ( int argc, char** argv )
 #ifdef USE_OPEN_GL
 	g_pGfxDevice = new WgGlGfxDevice( WgSize(width,height) );
 	g_pSurfaceFactory = new WgGlSurfaceFactory();
-    g_pModernSurfaceFactory = wg::GlSurfaceFactory::create();
+//    g_pModernSurfaceFactory = wg::GlSurfaceFactory::create();
 #else
 	SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
 
@@ -218,14 +218,14 @@ int main ( int argc, char** argv )
     g_pGfxDevice = wg::SoftGfxDevice::create( pCanvas->RealSurface() );
 
 	g_pSurfaceFactory = new WgSurfaceFactorySoft();
-    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
+//    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
-    auto pContext = wg::Context::create();
-    pContext->setScale(2);
-    pContext->setGfxDevice(g_pGfxDevice);
-    pContext->setSurfaceFactory( g_pModernSurfaceFactory );
-    WgBase::SetContext(pContext);
+    WgContext context;
+    context.scale = 1.f;
+    context.pDevice = g_pGfxDevice;
+    context.pFactory = g_pSurfaceFactory;
+    WgBase::SetContext(context);
 
     
 	//	pGfxDevice->SetBilinearFiltering( true );
@@ -782,7 +782,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	WgRootPanel * pRoot = new WgRootPanel(pDevice);
 
-    pRoot->SetScale(WgBase::Context()->scale()*4096);
+    pRoot->SetScale(WgBase::Context()->scale*4096);
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 
