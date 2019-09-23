@@ -114,7 +114,9 @@ namespace wg
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.
-		void		_refreshBackingBuffer();
+        bool        m_bMipmapStale = false;
+        
+        void		_refreshBackingBuffer();
 
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.

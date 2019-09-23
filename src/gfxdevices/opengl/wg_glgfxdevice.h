@@ -253,7 +253,10 @@ namespace wg
 		RectI	m_clipListBuffer[c_clipListBufferSize];
 
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-
+        GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
+        bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
+        
+        
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;

@@ -78,7 +78,7 @@ namespace wg
 		GfxDevice_p			m_pGfxDevice;		// GfxDevice that can be used by Widgets when needed.
 		SurfaceFactory_p	m_pSurfaceFactory;	// SurfaceFactory that can be used by Widgets when needed.
 
-		float	m_scale;					// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
+		float				m_scale;			// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
 	};
 
 } //namespace

@@ -1619,79 +1619,111 @@ namespace wg
 				}
 				case Command::Blit:
 				{
-					glUseProgram(m_cmdBlitProgram);
-					glEnableVertexAttribArray(2);
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_cmdBlitProgram);
+                        glEnableVertexAttribArray(2);
 
-					int nVertices = *pCmd++;
-
-
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
+                        
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				case Command::Fill:
 				{
-					glUseProgram(m_fillProg);
-					glDisableVertexAttribArray(2);
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_fillProg);
+                        glDisableVertexAttribArray(2);
 
-					int nVertices = *pCmd++;
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
+
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				case Command::FillSubPixel:
 				{
-					glUseProgram(m_aaFillProg);
-					glEnableVertexAttribArray(2);
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_aaFillProg);
+                        glEnableVertexAttribArray(2);
 
-					int nVertices = *pCmd++;
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
+
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				case Command::LineFromTo:
 				{
-					glUseProgram(m_lineFromToProg);
-					glEnableVertexAttribArray(2);
+                    int clipListOfs = *pCmd++;
+                    int clipListLen = *pCmd++;
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_lineFromToProg);
+                        glEnableVertexAttribArray(2);
 
-					int clipListOfs = *pCmd++;
-					int clipListLen = *pCmd++;
-					int nVertices = *pCmd++;
+                        for (int i = 0; i < clipListLen; i++)
+                        {
+                            RectI& clip = m_clipListBuffer[clipListOfs++];
+                            glScissor(clip.x, clip.y, clip.w, clip.h);
+                            glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        }
 
-					for (int i = 0; i < clipListLen; i++)
-					{
-						RectI& clip = m_clipListBuffer[clipListOfs++];
-						glScissor(clip.x, clip.y, clip.w, clip.h);
-						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					}
+                        glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
+                        vertexOfs += nVertices;
 
-					glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
-					vertexOfs += nVertices;
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				case Command::Plot:
 				{
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_plotProg);
+                        glDisableVertexAttribArray(2);
 
-					glUseProgram(m_plotProg);
-					glDisableVertexAttribArray(2);
+                        glDrawArrays(GL_POINTS, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
-					int nVertices = *pCmd++;
-					glDrawArrays(GL_POINTS, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				case Command::Segments:
 				{
 					int nEdges = (*pCmd++)-1;
-					glUseProgram(m_segmentsProg[nEdges]);
-					glEnableVertexAttribArray(2);
-					glEnableVertexAttribArray(3);
+                    int nVertices = *pCmd++;
+                    if( nVertices > 0 )
+                    {
+                        glUseProgram(m_segmentsProg[nEdges]);
+                        glEnableVertexAttribArray(2);
+                        glEnableVertexAttribArray(3);
 
-					int nVertices = *pCmd++;
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
-					glDisableVertexAttribArray(3);
+                        glDisableVertexAttribArray(3);
+
+                        if( m_bMipmappedActiveCanvas )
+                            m_pActiveCanvas->m_bMipmapStale = true;
+                    }
 					break;
 				}
 				default:
@@ -1727,8 +1759,10 @@ namespace wg
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
+                m_pActiveCanvas = nullptr;
+                m_bMipmappedActiveCanvas = false;
 
-				//TODO: Signal error that we could not set the specified canvas.
+                //TODO: Signal error that we could not set the specified canvas.
 
 				return;
 			}
@@ -1753,6 +1787,9 @@ namespace wg
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(canvasUBO), &m_canvasUBOBuffer);
 
 		assert(glGetError() == 0);
+        
+        m_pActiveCanvas = pCanvas;
+        m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
 	}
 
 	//____ _setBlendMode() _______________________________________________________
@@ -1836,6 +1873,12 @@ namespace wg
 		{
 			glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
 
+            if( pSurf->m_bMipmapStale )
+            {
+                glGenerateMipmap(GL_TEXTURE_2D);
+                pSurf->m_bMipmapStale = false;
+            }
+                
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
@@ -1888,7 +1931,7 @@ namespace wg
 
 	GLuint GlGfxDevice::_createGLProgram(const char * pVertexShader, const char * pFragmentShader)
 	{
-        GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 		glShaderSource(vertexShaderID, 1, &pVertexShader, NULL);
