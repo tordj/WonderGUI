@@ -170,8 +170,6 @@ namespace wg
 		assert(glGetError() == 0);
 
 
-
-
 		// Create and init Plot shader
 
 		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
@@ -562,6 +560,13 @@ namespace wg
 		_setBlendMode(m_blendMode);
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
+        // Set our textures extras buffer.
+        
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+        glActiveTexture(GL_TEXTURE0);
+        
+        
 		// Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
@@ -1304,11 +1309,21 @@ namespace wg
 				m_vertexOfs += 6;
 			}
 		}
-
-		m_extrasBufferData[m_extrasOfs++] = src.x;
-		m_extrasBufferData[m_extrasOfs++] = src.y;
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.x;
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.y;
+        
+        if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+        {
+            m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
+        }
+        else
+        {
+            m_extrasBufferData[m_extrasOfs++] = src.x;
+            m_extrasBufferData[m_extrasOfs++] = src.y;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
+        }
 
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];

@@ -7,8 +7,8 @@ public:
 	{
 		name = "BlitConsistencyTests";
 
-		addTest("BlitXInter", &BlitConsistencyTests::setPaletteInterpolate, &BlitConsistencyTests::blitX, &BlitConsistencyTests::cleanup);
-		addTest("BlitXNear", &BlitConsistencyTests::setPaletteNearest, &BlitConsistencyTests::blitX, &BlitConsistencyTests::cleanup);
+		addTest("Blit3x3Inter", &BlitConsistencyTests::setPaletteInterpolate, &BlitConsistencyTests::blitX, &BlitConsistencyTests::cleanup);
+		addTest("Blit3x3Near", &BlitConsistencyTests::setPaletteNearest, &BlitConsistencyTests::blitX, &BlitConsistencyTests::cleanup);
 
 		addTest("BlitPaletteInter", &BlitConsistencyTests::setPaletteInterpolate, &BlitConsistencyTests::blitPalette, &BlitConsistencyTests::cleanup);
 		addTest("BlitPaletteNear", &BlitConsistencyTests::setPaletteNearest, &BlitConsistencyTests::blitPalette, &BlitConsistencyTests::cleanup);
@@ -19,6 +19,8 @@ public:
 		addTest("BlitInsideFrameInter", &BlitConsistencyTests::setFrameInterpolate, &BlitConsistencyTests::blitInsideFrame, &BlitConsistencyTests::cleanup);
 		addTest("BlitInsideFrameNear", &BlitConsistencyTests::setFrameNearest, &BlitConsistencyTests::blitInsideFrame, &BlitConsistencyTests::cleanup);
 
+        addTest("BlitGridInter", &BlitConsistencyTests::setGridInterpolate, &BlitConsistencyTests::blitGrid, &BlitConsistencyTests::cleanup);
+        addTest("BlitGridNear", &BlitConsistencyTests::setGridNearest, &BlitConsistencyTests::blitGrid, &BlitConsistencyTests::cleanup);
 
 	}
 
@@ -31,7 +33,11 @@ public:
 		m_pFrame = FileUtil::loadSurface("../resources/white_frame_256x256.png", pDevice->surfaceFactory());
 		if (!m_pFrame)
 			return false;
-		
+
+        m_pGrid = FileUtil::loadSurface("../resources/grid_31x31.png", pDevice->surfaceFactory());
+        if (!m_pFrame)
+            return false;
+
 		return true;
 	}
 	 
@@ -77,13 +83,32 @@ public:
 		return true;
 	}
 
+    bool setGridInterpolate(GfxDevice * pDevice, const RectI& canvas)
+    {
+        m_pGrid->setScaleMode(ScaleMode::Interpolate);
+        pDevice->setBlitSource(m_pGrid);
+        return true;
+    }
+    
+    bool setGridNearest(GfxDevice * pDevice, const RectI& canvas)
+    {
+        m_pGrid->setScaleMode(ScaleMode::Nearest);
+        pDevice->setBlitSource(m_pGrid);
+        return true;
+    }
 
 	bool	blitPalette(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->stretchBlit({ 64,0,190,64 }, RectI( 1,1,3,3 ) );
 		pDevice->stretchBlit({ 0,64,64,190 }, RectI( 5,1,3,3 ) );
 		pDevice->stretchBlit({ 1,1,60,60 }, RectI(1,5,1,1) );
-		return true;
+
+        pDevice->stretchBlit({ 80,80,30,3 }, RectI(1, 1, 3, 3));
+
+        for( int i = 0 ; i < 10 ; i++ )
+            pDevice->stretchBlit({ 80,100+i*5,i,3 }, RectI(1, 1, 3, 3));
+
+        return true;
 	}
 
 	bool	blitFrame(GfxDevice * pDevice, const RectI& canvas)
@@ -108,9 +133,30 @@ public:
 		return true;
 	}
 
+    bool    blitGrid(GfxDevice * pDevice, const RectI& canvas)
+    {
+        pDevice->stretchBlit({ 0,0, canvas.w, 31 });
+
+        int ofsY = 31;
+        for( int y = 40; y > 0 ; y-- )
+        {
+            for( int i = 0; i < canvas.w ; i+=y )
+            {
+                if( m_pGrid->scaleMode() == ScaleMode::Interpolate )
+                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF((i)*30.f/(canvas.w-1), 0, y*30.f/(canvas.w-1), 10) );
+                else
+                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF((i)*31.f/(canvas.w-0.95), 0, y*31.f/(canvas.w-0.95), 10) );
+
+            }
+            ofsY += 10;
+        }
+
+        return true;
+    }
 
 
 private:
 	Surface_p	m_pPalette;
 	Surface_p	m_pFrame;
+    Surface_p   m_pGrid;
 };

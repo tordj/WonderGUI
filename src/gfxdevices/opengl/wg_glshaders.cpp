@@ -90,8 +90,8 @@ const char GlGfxDevice::blitVertexShader[] =
 "   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
 "   vec2 src = srcDst.xy;                                  "
 "   vec2 dst = srcDst.zw;                                  "
-"   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
-"   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
+"   texUV.x = src.x/texSize.x + ((pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / (texSize.x+0.02f); "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
+"   texUV.y = src.y/texSize.y + ((pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / (texSize.y+0.02f); "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
 "   fragColor = color;									   "
 "}                                                         ";
 

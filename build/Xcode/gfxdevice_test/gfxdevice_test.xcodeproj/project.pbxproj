@@ -34,6 +34,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		17426877233912EC00A76233 /* mipmaptests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mipmaptests.h; sourceTree = "<group>"; };
+		17426878233912EC00A76233 /* blitconsistencytest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blitconsistencytest.h; sourceTree = "<group>"; };
 		175931822327C2E50020A40C /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175C8F3A2327A96400C4F661 /* gfxdevice_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gfxdevice_test; sourceTree = BUILT_PRODUCTS_DIR; };
 		175C8F452327A98100C4F661 /* linetests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linetests.h; sourceTree = "<group>"; };
@@ -116,6 +118,8 @@
 		175C8F442327A98100C4F661 /* testsuites */ = {
 			isa = PBXGroup;
 			children = (
+				17426878233912EC00A76233 /* blitconsistencytest.h */,
+				17426877233912EC00A76233 /* mipmaptests.h */,
 				175C8F452327A98100C4F661 /* linetests.h */,
 				175C8F462327A98100C4F661 /* segmenttests.h */,
 				175C8F472327A98100C4F661 /* clutblittests.h */,

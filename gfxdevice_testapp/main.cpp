@@ -572,13 +572,17 @@ void setup_testdevices()
 	pSoftwareDevice->init(g_canvasSize, PixelFormat::BGRA_8);
 	g_testdevices.push_back(pSoftwareDevice);
 
-//	auto pOpenGLDevice = new OpenGLDevice();
-//	pOpenGLDevice->init(g_canvasSize, PixelFormat::BGRA_8);
-//	g_testdevices.push_back(pOpenGLDevice);
+//    auto pSoftwareDevice2 = new SoftwareDevice();
+//    pSoftwareDevice2->init(g_canvasSize, PixelFormat::BGRA_8);
+//    g_testdevices.push_back(pSoftwareDevice2);
 
-	auto pStreamToSoftwareDevice = new StreamToSoftwareDevice();
-	pStreamToSoftwareDevice->init(g_canvasSize, PixelFormat::BGRA_8);
-	g_testdevices.push_back( pStreamToSoftwareDevice);
+	auto pOpenGLDevice = new OpenGLDevice();
+	pOpenGLDevice->init(g_canvasSize, PixelFormat::BGRA_8);
+	g_testdevices.push_back(pOpenGLDevice);
+
+//	auto pStreamToSoftwareDevice = new StreamToSoftwareDevice();
+//	pStreamToSoftwareDevice->init(g_canvasSize, PixelFormat::BGRA_8);
+//	g_testdevices.push_back( pStreamToSoftwareDevice);
 
 
 
