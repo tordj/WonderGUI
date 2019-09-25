@@ -170,8 +170,6 @@ namespace wg
 		assert(glGetError() == 0);
 
 
-
-
 		// Create and init Plot shader
 
 		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
@@ -562,6 +560,13 @@ namespace wg
 		_setBlendMode(m_blendMode);
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
+        // Set our textures extras buffer.
+        
+        glActiveTexture(GL_TEXTURE1);
+        glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+        glActiveTexture(GL_TEXTURE0);
+        
+        
 		// Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
@@ -1304,11 +1309,21 @@ namespace wg
 				m_vertexOfs += 6;
 			}
 		}
-
-		m_extrasBufferData[m_extrasOfs++] = src.x;
-		m_extrasBufferData[m_extrasOfs++] = src.y;
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.x;
-		m_extrasBufferData[m_extrasOfs++] = (GLfloat) dest.y;
+        
+        if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+        {
+            m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
+        }
+        else
+        {
+            m_extrasBufferData[m_extrasOfs++] = src.x;
+            m_extrasBufferData[m_extrasOfs++] = src.y;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
+            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
+        }
 
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
@@ -1622,11 +1637,11 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-					glUseProgram(m_cmdBlitProgram);
-					glEnableVertexAttribArray(2);
+                        glUseProgram(m_cmdBlitProgram);
+                        glEnableVertexAttribArray(2);
 
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
                         
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1638,11 +1653,11 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-					glUseProgram(m_fillProg);
-					glDisableVertexAttribArray(2);
+                        glUseProgram(m_fillProg);
+                        glDisableVertexAttribArray(2);
 
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1654,11 +1669,11 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-					glUseProgram(m_aaFillProg);
-					glEnableVertexAttribArray(2);
+                        glUseProgram(m_aaFillProg);
+                        glEnableVertexAttribArray(2);
 
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1667,23 +1682,23 @@ namespace wg
 				}
 				case Command::LineFromTo:
 				{
-					int clipListOfs = *pCmd++;
-					int clipListLen = *pCmd++;
-					int nVertices = *pCmd++;
+                    int clipListOfs = *pCmd++;
+                    int clipListLen = *pCmd++;
+                    int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
                         glUseProgram(m_lineFromToProg);
                         glEnableVertexAttribArray(2);
 
-					for (int i = 0; i < clipListLen; i++)
-					{
-						RectI& clip = m_clipListBuffer[clipListOfs++];
-						glScissor(clip.x, clip.y, clip.w, clip.h);
-						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					}
+                        for (int i = 0; i < clipListLen; i++)
+                        {
+                            RectI& clip = m_clipListBuffer[clipListOfs++];
+                            glScissor(clip.x, clip.y, clip.w, clip.h);
+                            glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        }
 
-					glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
-					vertexOfs += nVertices;
+                        glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
+                        vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1695,11 +1710,11 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-					glUseProgram(m_plotProg);
-					glDisableVertexAttribArray(2);
+                        glUseProgram(m_plotProg);
+                        glDisableVertexAttribArray(2);
 
-					glDrawArrays(GL_POINTS, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_POINTS, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1712,14 +1727,14 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-					glUseProgram(m_segmentsProg[nEdges]);
-					glEnableVertexAttribArray(2);
-					glEnableVertexAttribArray(3);
+                        glUseProgram(m_segmentsProg[nEdges]);
+                        glEnableVertexAttribArray(2);
+                        glEnableVertexAttribArray(3);
 
-					glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-					vertexOfs += nVertices;
+                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        vertexOfs += nVertices;
 
-					glDisableVertexAttribArray(3);
+                        glDisableVertexAttribArray(3);
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
@@ -1762,7 +1777,7 @@ namespace wg
                 m_pActiveCanvas = nullptr;
                 m_bMipmappedActiveCanvas = false;
 
-				//TODO: Signal error that we could not set the specified canvas.
+                //TODO: Signal error that we could not set the specified canvas.
 
 				return;
 			}
@@ -1878,7 +1893,7 @@ namespace wg
                 glGenerateMipmap(GL_TEXTURE_2D);
                 pSurf->m_bMipmapStale = false;
             }
-
+                
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
@@ -1931,7 +1946,7 @@ namespace wg
 
 	GLuint GlGfxDevice::_createGLProgram(const char * pVertexShader, const char * pFragmentShader)
 	{
-        GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
+		GLuint vertexShaderID = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fragmentShaderID = glCreateShader(GL_FRAGMENT_SHADER);
 
 		glShaderSource(vertexShaderID, 1, &pVertexShader, NULL);

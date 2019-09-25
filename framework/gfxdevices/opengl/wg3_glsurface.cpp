@@ -1,4 +1,4 @@
-﻿/*=========================================================================
+/*=========================================================================
 
 						 >>> WonderGUI <<<
 
@@ -371,7 +371,7 @@ namespace wg
 			GLint oldBinding;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 			glBindTexture(GL_TEXTURE_2D, m_texture);
-
+            
 			switch (mode)
 			{
 			case ScaleMode::Interpolate:

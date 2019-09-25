@@ -116,7 +116,7 @@ namespace wg
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.
         bool        m_bMipmapStale = false;
         
-		void		_refreshBackingBuffer();
+        void		_refreshBackingBuffer();
 
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.

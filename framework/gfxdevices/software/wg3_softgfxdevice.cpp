@@ -2658,8 +2658,8 @@ namespace wg
 
 		// We should sample at middle of destination pixel, not topleft.
 
-		_src.x += 0.5f * complexTransform[0][0] + 0.5f * complexTransform[1][0];
-		_src.y += 0.5f * complexTransform[1][1] + 0.5f * complexTransform[0][1];
+//		_src.x += 0.5f * complexTransform[0][0] + 0.5f * complexTransform[1][0];
+//		_src.y += 0.5f * complexTransform[1][1] + 0.5f * complexTransform[0][1];
 
 		const RectI& clip = dest;
 
@@ -2797,8 +2797,8 @@ namespace wg
 
 		if (pSource->m_scaleMode == ScaleMode::Interpolate)
 		{
-			pos.x -= 0.5f;
-			pos.y -= 0.5f;
+//			pos.x -= 0.5f;
+//			pos.y -= 0.5f;
 		}
 
 		int dstPixelBytes = m_canvasPixelBits / 8;
@@ -2819,8 +2819,8 @@ namespace wg
 
 		if (pSource->m_scaleMode == ScaleMode::Interpolate)
 		{
-			pos.x -= 0.5f;
-			pos.y -= 0.5f;
+//			pos.x -= 0.5f;
+//			pos.y -= 0.5f;
 		}
 
 

@@ -329,20 +329,23 @@ namespace wg
 
 		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
 		{
-			src.x += 0.5f;
-			src.y += 0.5f;
+//			src.x += 0.5f;
+//			src.y += 0.5f;
 
-			mtx[0][0] = (src.w-1) / dest.w;
+			mtx[0][0] = (src.w-1) / (dest.w-1);
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = (src.h-1) / dest.h;
+			mtx[1][1] = (src.h-1) / (dest.h-1);
 		}
 		else
 		{
-			mtx[0][0] = src.w / dest.w;
+			// We want last src sample to be taken as close to the end of the source
+			// rectangle as possible in order to get a more balanced representation.
+			
+			mtx[0][0] = src.w / (dest.w-0.99);
 			mtx[0][1] = 0;
 			mtx[1][0] = 0;
-			mtx[1][1] = src.h / dest.h;
+			mtx[1][1] = src.h / (dest.h-0.99);
 		}
 
 		transformBlit(dest, { src.x, src.y }, mtx);
@@ -396,16 +399,16 @@ namespace wg
 			scaleX = srcW / (dest.w-1);
 			scaleY = srcH / (dest.h-1);
 
-			ofsX = src.x + 0.5f + srcW * blitFlipOffsets[(int)flip][0];
-			ofsY = src.y + 0.5f + srcH * blitFlipOffsets[(int)flip][1];
+			ofsX = src.x + srcW * blitFlipOffsets[(int)flip][0];
+			ofsY = src.y + srcH * blitFlipOffsets[(int)flip][1];
 		}
 		else
 		{
 			float srcW = (float)src.w;
 			float srcH = (float)src.h;
 
-			scaleX = srcW / dest.w;
-			scaleY = srcH / dest.h;
+			scaleX = srcW / (dest.w - 0.99f);
+			scaleY = srcH / (dest.h - 0.99f);
 
 			ofsX = src.x + (srcW - scaleX) * blitFlipOffsets[(int)flip][0];
 			ofsY = src.y + (srcH - scaleY) * blitFlipOffsets[(int)flip][1];

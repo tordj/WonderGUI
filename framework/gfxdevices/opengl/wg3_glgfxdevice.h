@@ -256,7 +256,7 @@ namespace wg
         GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
         bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
         
-
+        
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;
