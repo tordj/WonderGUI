@@ -22,10 +22,13 @@
 
 #include <wg_simplevolumemeter.h>
 #include <wg_gfxdevice.h>
+#include <wg_util.h>
 
 
 namespace wg
 {
+	using namespace Util;
+
 	const char SimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
 
 	//____ Constructor ____________________________________________________________
@@ -152,7 +155,7 @@ namespace wg
 		RectI canvas = m_pSkin ? m_pSkin->_contentRect( m_size, m_state ) : RectI(m_size);
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
-		int  iPeak = (int) (peak * length);
+		int  iPeak = alignRaw((int) (peak * length));
 
 		int iHold = _calcIHold(hold, canvas.size());
 
@@ -187,8 +190,8 @@ namespace wg
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
-		int	iPeakL = (int) leftPeak * length;
-		int	iPeakR = (int) rightPeak * length;
+		int	iPeakL = alignRaw(leftPeak * length);
+		int	iPeakR = alignRaw(rightPeak * length);
 		int iHoldL = _calcIHold(leftHold, canvas);
 		int iHoldR = _calcIHold(rightHold, canvas);
 
@@ -301,7 +304,7 @@ namespace wg
 		int height = m_iHoldHeight;
 
 		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;
-		int ofs = (int)(holdValue * canvasLength);
+		int ofs = alignRaw((int)(holdValue * canvasLength));
 
 		if( ofs > m_iSectionHeight[0] )
 		{
@@ -451,7 +454,7 @@ namespace wg
 					break;
 				}
 
-				pDevice->fill( r, c );
+				pDevice->fill( rawToPixels(r), c );
 			}
 			else if( holdOfs > peakHeight )
 				peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
@@ -495,7 +498,7 @@ namespace wg
 				break;
 			}
 
-			pDevice->fill( r, m_sectionColors[i] );
+			pDevice->fill( rawToPixels(r), m_sectionColors[i] );
 
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;
@@ -513,24 +516,24 @@ namespace wg
 		if (m_direction == Direction::Left || m_direction == Direction::Right)
 			std::swap(length, width);
 
-		m_iGap = (int)(width * m_fGap);
+		m_iGap = alignRaw((int)(width * m_fGap));
 		if( m_iGap == 0 && m_fGap > 0.f )
-			m_iGap = 1;
+			m_iGap = 4;
 
-		m_iSidePadding = (int) (width * m_fSidePadding);
+		m_iSidePadding = alignRaw((int) (width * m_fSidePadding));
 		if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
-			m_iSidePadding = 1;
+			m_iSidePadding = 4;
 
-		m_iHoldHeight = (int) m_fHoldHeight * length;
+		m_iHoldHeight = alignRaw((int) m_fHoldHeight * length);
 		if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
-			m_iHoldHeight = 1;
+			m_iHoldHeight = 4;
 
-		m_iSectionHeight[0] = (int) (m_fSectionHeight[0] * length + 0.5f);
-		m_iSectionHeight[1] =  ((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * length + 0.5f)) - m_iSectionHeight[0];
+		m_iSectionHeight[0] = alignRaw((int) (m_fSectionHeight[0] * length + 0.5f));
+		m_iSectionHeight[1] = alignRaw(((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * length + 0.5f))) - m_iSectionHeight[0];
 		m_iSectionHeight[2] = length - m_iSectionHeight[1] - m_iSectionHeight[0];
 
-		m_iPeak[0] = (int) m_fPeak[0] * length;
-		m_iPeak[1] = (int) m_fPeak[1] * length;
+		m_iPeak[0] = alignRaw((int) m_fPeak[0] * length);
+		m_iPeak[1] = alignRaw((int) m_fPeak[1] * length);
 
 		m_iHold[0] = _calcIHold(m_fHold[0], sz);
 		m_iHold[1] = _calcIHold(m_fHold[1], sz);
