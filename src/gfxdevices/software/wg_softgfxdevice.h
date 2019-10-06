@@ -183,7 +183,7 @@ namespace wg
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
@@ -211,17 +211,17 @@ namespace wg
 
 
 		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2]);
-		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 
 		void	_onePassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
 		void	_twoPassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
 
-		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
-		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
+		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 		void	_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
-		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 		//
 
@@ -241,11 +241,11 @@ namespace wg
 		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
 		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
 
 
 		static int			s_mulTab[256];
@@ -266,8 +266,10 @@ namespace wg
 
 		SimpleBlitOp_p		m_pSimpleBlitOnePassOp		= nullptr;
 		ComplexBlitOp_p		m_pComplexBlitOnePassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitClipOnePassOp = nullptr;
 		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp	= nullptr;
 		ComplexBlitOp_p		m_pComplexBlitFirstPassOp	= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitClipFirstPassOp = nullptr;
 		SimpleBlitOp_p		m_pBlitSecondPassOp			= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
 
 		//

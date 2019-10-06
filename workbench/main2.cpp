@@ -159,7 +159,7 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1024, height = 600;
+	int posX = 100, posY = 100, width = 1024, height = 768;
 
 
 #ifdef USE_OPEN_GL
@@ -1144,31 +1144,39 @@ int main(int argc, char** argv)
 	SDL_FreeSurface(pSDLSurf);
 	pClockSurface->setScaleMode(ScaleMode::Interpolate);
 
+	pSDLSurf = IMG_Load("../resources/frog.jpg");
+	convertSDLFormat(&pixelDesc, pSDLSurf->format);
+	Surface_p pFrogSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
+	SDL_FreeSurface(pSDLSurf);
+	pFrogSurface->setScaleMode(ScaleMode::Interpolate);
 
-	printf("Sin(0): %f\n", cos(0));
-	printf("Sin(90): %f\n", cos(3.1415/2));
 
 	while( !bQuit )
 	{
 		translateEvents( pInput, pRoot );
 
-//		SDL_LockSurface(pWinSurf);
 		pRoot->render();
+//		SDL_UpdateWindowSurface(pWin);
+		updateWindowRects(pRoot, pWin);
 
 
-//		SDL_UnlockSurface(pWinSurf);
+/*
+		auto pDevice = Base::activeContext()->gfxDevice();
+
+		pDevice->beginRender();
+		pDevice->fill(Color::Blue);
+		pDevice->setBlitSource(pFrogSurface);
+		pDevice->rotScaleBlit({ 0,0,width,height }, RectF(pFrogSurface->size()).center(), 0.f, 1.f);
+
+//		pDevice->rotScaleBlit({ 10,10,width - 20,height - 20 }, CoordF(1024/2,768/2), 30.f, 0.5f );
+
+//		pDevice->blit({ 0,0 });
+
+		pDevice->endRender();
 
 		SDL_UpdateWindowSurface(pWin);
+*/
 
-//		SDL_Rect	r;
-//		r.x = 0;
-//		r.y = 0;
-//		r.w = width;
-//		r.h = height;
-//		SDL_UpdateWindowSurfaceRects(pWin, &r, 1);
-
-
-//		updateWindowRects( pRoot, pWin );
 
 		SDL_Delay(16);
 	}
@@ -1594,7 +1602,8 @@ bool stretchBlitTest(RootPanel_p pRoot)
 	pRoot->child = pBack;
 
 	auto pImage = Image::create();
-	pImage->setImage(pImgSurface, { 1,1,254,254 });
+	pImage->setImage(pImgSurface, { 0,0,256,256 });
+//	pImage->setImage(pImgSurface, { 1,1,254,254 });
 	pBack->children.addMovable(pImage, { 10,10,256,256 } );
 
 	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
@@ -1605,6 +1614,6 @@ bool stretchBlitTest(RootPanel_p pRoot)
 	
 	});
 
-
 	return true;
 }
+
