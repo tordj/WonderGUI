@@ -27,6 +27,8 @@
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
 
+#include <algorithm>
+
 namespace wg
 {
     using namespace Util;
@@ -180,7 +182,7 @@ namespace wg
 		}
 		if (pos.y > contentSize.h - windowGeo.h)
 		{
-			pos.y = contentSize.h - windowGeo.h;
+			pos.y = std::max(0,contentSize.h - windowGeo.h);
 			retVal = false;
 		}
 
@@ -191,7 +193,7 @@ namespace wg
 		}
 		if (pos.x > contentSize.w - windowGeo.w)
 		{
-			pos.x = contentSize.w - windowGeo.w;
+			pos.x = std::max(0,contentSize.w - windowGeo.w);
 			retVal = false;
 		}
 
