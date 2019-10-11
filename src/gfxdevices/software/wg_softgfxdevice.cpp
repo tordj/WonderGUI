@@ -1174,29 +1174,6 @@ namespace wg
 		int lineIncX = (int)(matrix[1][0] * 32768);
 		int lineIncY = (int)(matrix[1][1] * 32768);
 
-		// Avoiding rand case of reading outside source.
-
-		if (pixelIncX > 0)
-			pixelIncX--;
-		else if (pixelIncX < 0)
-			pixelIncX++;
-
-		if (pixelIncY > 0)
-			pixelIncY--;
-		else if (pixelIncY < 0)
-			pixelIncY++;
-
-		if (lineIncX > 0)
-			lineIncX--;
-		else if (lineIncX < 0)
-			lineIncX++;
-
-		if (lineIncY > 0)
-			lineIncY--;
-		else if (lineIncY < 0)
-			lineIncY++;
-
-
 		int tintB, tintG, tintR, tintA;
 
 		if (TINTFLAGS & 0x1)
@@ -1219,8 +1196,6 @@ namespace wg
 				uint8_t srcB, srcG, srcR, srcA;
 				uint8_t * p = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch + (ofsX >> 15)*srcPixelBytes;
 
-
-
 				if (SCALEMODE == ScaleMode::Interpolate)
 				{
 					// Read separate source color components for our 2x2 pixel square.
@@ -1229,6 +1204,7 @@ namespace wg
 					uint8_t src12_b, src12_g, src12_r, src12_a;
 					uint8_t src21_b, src21_g, src21_r, src21_a;
 					uint8_t src22_b, src22_g, src22_r, src22_a;
+
 
 					if (SRCCLIP && ((ofsX | ofsY | (srcMax.w - (ofsX+32768+1)) | (srcMax.h - (ofsY+32768+1))) < 0))
 					{
@@ -1268,12 +1244,15 @@ namespace wg
 					}
 					else
 					{
-						assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768 + 1)) | (srcMax.h - (ofsY + 32768 + 1))) >= 0);
+						assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
+
+						int nextX = ofsX & 0x7FFF == 0 ? 0 : srcPixelBytes;
+						int nextY = ofsX & 0x7FFF == 0 ? 0 : srcPitch;
 
 						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel(p + nextX, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel(p + nextY, SRCFORMAT, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel(p + nextX + nextY, SRCFORMAT, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
 					}
 
 					// Interpolate our 2x2 source colors into one source color, srcX
