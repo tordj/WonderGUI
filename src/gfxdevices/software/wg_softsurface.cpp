@@ -270,13 +270,6 @@ namespace wg
 		}
 	}
 
-	//____ size() __________________________________________________________________
-
-	SizeI SoftSurface::size() const
-	{
-		return m_size;
-	}
-
 	//____ isOpaque() ______________________________________________________________
 
 	bool SoftSurface::isOpaque() const

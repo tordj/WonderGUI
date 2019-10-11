@@ -81,23 +81,19 @@ namespace wg
 
 		//
 
-		virtual void	fill(const RectI& rect, const Color& col) override;
-		virtual void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, const Color& col) override;
+		void	fill(const RectF& rect, const Color& col) override;
 
-		virtual void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		virtual void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
-		virtual void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
 
-		virtual bool	setBlitSource(Surface * pSource) override;
-
-		virtual void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		virtual void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
-
-		virtual void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
-
-		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
+		bool	setBlitSource(Surface * pSource) override;
+		void	rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale) override;
+		
+		void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
 
 		struct ColTrans
@@ -112,6 +108,12 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+
 
 		enum class TintMode
 		{
@@ -258,6 +260,7 @@ namespace wg
 		ColTrans			m_colTrans = { Color::White, nullptr, nullptr };	// Color transformation data
 
 		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
+		bool				m_bClipSource				= false;		// Set if complex transformBlit might need to do clipping.
 
 		SimpleBlitProxy_Op	m_pSimpleBlitOp				= nullptr;		// Function called to perform a simple blit.
 		ComplexBlitProxy_Op m_pComplexBlitOp			= nullptr;		// Function called to perform a complex blit.

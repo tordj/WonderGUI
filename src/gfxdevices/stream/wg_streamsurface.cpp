@@ -284,13 +284,6 @@ namespace wg
 		}
 	}
 
-	//____ size() ______________________________________________________________
-
-	SizeI StreamSurface::size() const
-	{
-		return m_size;
-	}
-
 	//____ isOpaque() ______________________________________________________________
 
 	bool StreamSurface::isOpaque() const

@@ -1130,9 +1130,9 @@ namespace wg
 
 	}
 
-	//____ transformBlit() ____ [simple] __________________________________________________
+	//____ _transformBlit() ____ [simple] __________________________________________________
 
-	void GlGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void GlGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
@@ -1232,9 +1232,9 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ transformBlit() ____ [complex] __________________________________________________
+	//____ _transformBlit() ____ [complex] __________________________________________________
 
-	void GlGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void GlGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 		assert(glGetError() == 0);
 
@@ -1333,9 +1333,9 @@ namespace wg
 		assert(glGetError() == 0);
 	}
 
-	//____ transformDrawSegments() ______________________________________________________
+	//____ _transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
+	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
 	{
 		assert(glGetError() == 0);
 

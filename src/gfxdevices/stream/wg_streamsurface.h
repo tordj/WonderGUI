@@ -60,7 +60,6 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeI		size() const;
 		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
@@ -107,10 +106,6 @@ namespace wg
 
 		Blob_p			m_pBlob;
 		uint8_t*		m_pAlphaLayer;		// Separate alpha layer if whole blob was not kept.
-
-		SizeI			m_size;				// Width and height in pixels.
-
-
 
 	};
 } // namespace wg

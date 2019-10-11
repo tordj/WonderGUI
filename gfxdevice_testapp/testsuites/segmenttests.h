@@ -161,9 +161,7 @@ public:
 
 	bool rainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
-		int transform[2][2] = { 1,0,0,1 };
-
-		pDevice->transformDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, transform);
+		pDevice->drawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7);
 		return true;
 	}
 

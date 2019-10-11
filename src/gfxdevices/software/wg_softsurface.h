@@ -59,7 +59,6 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeI		size() const;
 		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
@@ -91,7 +90,6 @@ namespace wg
 		virtual ~SoftSurface();
 
 		Blob_p		m_pBlob;
-		SizeI		m_size;
 		uint8_t*	m_pData;
 	};
 

@@ -109,15 +109,15 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void NullGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 	}
 
-	void NullGfxDevice::transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 	}
 

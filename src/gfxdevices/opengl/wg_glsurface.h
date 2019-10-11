@@ -72,7 +72,6 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		SizeI		size() const;
 		static SizeI	maxSize();
 
 		//.____ Appearance ____________________________________________________
@@ -128,8 +127,7 @@ namespace wg
 		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
 		Blob_p      m_pBlob;
 
-		SizeI		m_size;				// Width and height in pixels.
-		uint32_t	m_pixelSize;		// SizeI in bytes of a pixel.
+		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
 		GLenum		m_pixelDataType;
 		static SizeI	s_maxSize;
 

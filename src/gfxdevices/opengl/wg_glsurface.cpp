@@ -393,13 +393,6 @@ namespace wg
 		assert( glGetError() == 0 );
 	}
 
-	//____ size() ______________________________________________________________
-
-	SizeI GlSurface::size() const
-	{
-		return m_size;
-	}
-
 	//____ isOpaque() ______________________________________________________________
 
 	bool GlSurface::isOpaque() const

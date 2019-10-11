@@ -336,9 +336,9 @@ namespace wg
 		(*m_pStream) << source;
 	}
 
-	//____ transformBlit() _____________________________________________
+	//____ _transformBlit() _____________________________________________
 
-	void StreamGfxDevice::transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
+	void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::SimpleTransformBlit, 18 };
 		(*m_pStream) << dest;
@@ -346,7 +346,7 @@ namespace wg
 		(*m_pStream) << simpleTransform;
 	}
 
-	void StreamGfxDevice::transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
+	void StreamGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
 		(*m_pStream) << GfxStream::Header{ GfxChunkId::ComplexTransformBlit, 34 };
 		(*m_pStream) << dest;
@@ -354,9 +354,9 @@ namespace wg
 		(*m_pStream) << complexTransform;
 	}
 
-	//____ transformDrawSegments() ______________________________________
+	//____ _transformDrawSegments() ______________________________________
 
-	void StreamGfxDevice::transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
+	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
 	{
 		//NOTE: Precision of edge data is scaled down to 4 binals and there is a limitation of 4095 pixels height of the segment waveform to keep data compact.
 

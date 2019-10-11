@@ -295,7 +295,7 @@ namespace wg
 			*m_pStream >> src;
 			*m_pStream >> transform;
 
-			m_pDevice->transformBlit(dest, src, transform);
+			m_pDevice->_transformBlit(dest, src, transform);
 			break;
 		}
 
@@ -309,7 +309,7 @@ namespace wg
 			*m_pStream >> src;
 			*m_pStream >> transform;
 
-			m_pDevice->transformBlit(dest, src, transform);
+			m_pDevice->_transformBlit(dest, src, transform);
 			break;
 		}
 
@@ -360,7 +360,7 @@ namespace wg
 			m_seg.nLoadedSamples += nSamples;
 			if (m_seg.nLoadedSamples == m_seg.nTotalSamples)
 			{
-				m_pDevice->transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform);
+				m_pDevice->_transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform);
 				delete [] m_seg.pEdgeStrips;
 			}
 			break;
