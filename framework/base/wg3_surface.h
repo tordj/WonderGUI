@@ -55,6 +55,7 @@ namespace wg
 
 	class Surface : public Object
 	{
+		friend class GfxDevice;
 
 	public:
 		//.____ Identification __________________________________________
@@ -66,10 +67,10 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual	SizeI		size() const = 0;					///< @brief Get the size of the surface.
+		SizeI				size() const { return m_size; }		///< @brief Get the size in pixels of the surface.
 																///<
 																///< Get the width and height of the surface in a SizeI structure.
-																///< @return SizeI of the suface measured in pixels.
+																///< @return Size of the suface measured in pixels.
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 
@@ -232,6 +233,7 @@ namespace wg
 
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
+		SizeI				m_size;				// Width and height in pixels.
 
 		ScaleMode			m_scaleMode;
 		bool				m_bMipmapped;

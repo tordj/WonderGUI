@@ -81,23 +81,19 @@ namespace wg
 
 		//
 
-		virtual void	fill(const RectI& rect, const Color& col) override;
-		virtual void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, const Color& col) override;
+		void	fill(const RectF& rect, const Color& col) override;
 
-		virtual void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
-		virtual void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
-		virtual void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
 
-		virtual bool	setBlitSource(Surface * pSource) override;
-
-		virtual void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		virtual void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
-
-		virtual void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
-
-		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
+		bool	setBlitSource(Surface * pSource) override;
+		void	rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale) override;
+		
+		void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
 
 		struct ColTrans
@@ -112,6 +108,12 @@ namespace wg
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+
 
 		enum class TintMode
 		{
@@ -183,7 +185,7 @@ namespace wg
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
 
 		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
@@ -211,17 +213,17 @@ namespace wg
 
 
 		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2]);
-		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 
 		void	_onePassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
 		void	_twoPassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
 
-		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
-		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
+		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 		void	_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
-		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2]);
+		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
 
 		//
 
@@ -241,11 +243,11 @@ namespace wg
 		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
 		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];		// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];	// [SourceFormat][ScaleMode][TintMode]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
 
 
 		static int			s_mulTab[256];
@@ -258,6 +260,7 @@ namespace wg
 		ColTrans			m_colTrans = { Color::White, nullptr, nullptr };	// Color transformation data
 
 		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
+		bool				m_bClipSource				= false;		// Set if complex transformBlit might need to do clipping.
 
 		SimpleBlitProxy_Op	m_pSimpleBlitOp				= nullptr;		// Function called to perform a simple blit.
 		ComplexBlitProxy_Op m_pComplexBlitOp			= nullptr;		// Function called to perform a complex blit.
@@ -266,8 +269,10 @@ namespace wg
 
 		SimpleBlitOp_p		m_pSimpleBlitOnePassOp		= nullptr;
 		ComplexBlitOp_p		m_pComplexBlitOnePassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitClipOnePassOp = nullptr;
 		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp	= nullptr;
 		ComplexBlitOp_p		m_pComplexBlitFirstPassOp	= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitClipFirstPassOp = nullptr;
 		SimpleBlitOp_p		m_pBlitSecondPassOp			= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
 
 		//

@@ -199,18 +199,48 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 			WgPackHook * pH = FirstHook();
 			WgSizeBrokerItem * pI = pItemArea;
 
-			while( pH )
-			{
-				if( pH->IsVisible() )
-				{
-					int itemHeight = pH->_paddedMatchingPixelHeight( pI->output, m_scale );
-					if( itemHeight > height )
-						height = itemHeight;
-					pI++;
-				}
+            
+            if( m_bBaselineMode )
+            {
+                int maxAscend = 0;
+                int maxDescend = 0;
+                
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int b = pH->_paddedMatchingPixelHeight( pI->output, m_scale );
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
+                
+                height = maxAscend + maxDescend;
+            }
+            else
+            {
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int itemHeight = pH->_paddedMatchingPixelHeight( pI->output, m_scale );
+                        if( itemHeight > height )
+                            height = itemHeight;
+                        pI++;
+                    }
+                    
+                    pH = pH->Next();
+                }
 
-				pH = pH->Next();
-			}
+            }
+            
 
 			// Release temporary memory area
 		
@@ -220,13 +250,41 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 		{
 			WgPackHook * pH = FirstHook();
 
-			while( pH )
-			{
-				if( pH->IsVisible() && pH->m_preferredSize.h > height )
-						height = pH->m_preferredSize.h;
+            if( m_bBaselineMode )
+            {
+                int maxAscend = 0;
+                int maxDescend = 0;
+                
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int b = pH->m_preferredSize.h;
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
+                
+                height = maxAscend + maxDescend;
+            }
+            else
+            {
+                while( pH )
+                {
+                    if( pH->IsVisible() && pH->m_preferredSize.h > height )
+                        height = pH->m_preferredSize.h;
+                    
+                    pH = pH->Next();
+                }
 
-				pH = pH->Next();
-			}
+            }
 		}
 	}
 	else
@@ -268,18 +326,47 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 			WgPackHook * pH = FirstHook();
 			WgSizeBrokerItem * pI = pItemArea;
 
-			while( pH )
-			{
-				if( pH->IsVisible() )
-				{
-					int itemWidth = pH->_paddedMatchingPixelWidth( pI->output, m_scale );
-					if( itemWidth > width )
-						width = itemWidth;
-					pI++;
-				}
-
-				pH = pH->Next();
-			}
+            if( m_bBaselineMode )
+            {
+                int maxAscend = 0;
+                int maxDescend = 0;
+                
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int b = pH->_paddedMatchingPixelWidth( pI->output, m_scale );
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
+                
+                width = maxAscend + maxDescend;
+            }
+            else
+            {
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int itemWidth = pH->_paddedMatchingPixelWidth( pI->output, m_scale );
+                        if( itemWidth > width )
+                            width = itemWidth;
+                        pI++;
+                    }
+                    
+                    pH = pH->Next();
+                }
+                
+            }
+            
 
 			// Release temporary memory area
 		
@@ -289,13 +376,41 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 		{
 			WgPackHook * pH = FirstHook();
 
-			while( pH )
-			{
-				if( pH->IsVisible() && pH->m_preferredSize.w > width )
-						width = pH->m_preferredSize.w;
-
-				pH = pH->Next();
-			}
+            if( m_bBaselineMode )
+            {
+                int maxAscend = 0;
+                int maxDescend = 0;
+                
+                while( pH )
+                {
+                    if( pH->IsVisible() )
+                    {
+                        int b = pH->m_preferredSize.w;
+                        int ascend = b * pH->m_baseline;
+                        int descend = b - ascend;
+                        
+                        if( ascend > maxAscend )
+                            maxAscend = ascend;
+                        
+                        if( descend > maxDescend )
+                            maxDescend = descend;
+                    }
+                    pH = pH->Next();
+                }
+                
+                width = maxAscend + maxDescend;
+            }
+            else
+            {
+                while( pH )
+                {
+                    if( pH->IsVisible() && pH->m_preferredSize.w > width )
+                        width = pH->m_preferredSize.w;
+                    
+                    pH = pH->Next();
+                }
+                
+            }
 		}
 	}
 	else
@@ -416,7 +531,7 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
     p->m_preferredSize = newPreferred;
 
     int oldLengthForBreadth = p->m_preferredLengthForBreadth;
-    int newLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) : p->m_pWidget->MatchingPixelHeight(p->m_geo.w);
+    int newLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + p->m_padding.width(): p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + p->m_padding.height();
     p->m_preferredLengthForBreadth = newLengthForBreadth;
 
     // Early out if we can determine that the request will have no effect on geo
@@ -501,7 +616,7 @@ void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 	WgPackHook * p = static_cast<WgPackHook*>(pInserted);
 	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
 
-    p->m_preferredLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) : p->m_pWidget->MatchingPixelHeight(p->m_geo.w);
+    p->m_preferredLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + p->m_padding.width() : p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + p->m_padding.height();
 
 	// Update cached preferred size of us
 
@@ -710,7 +825,6 @@ void WgPackPanel::_refreshChildGeo()
     WgRect * pChildGeos = reinterpret_cast<WgRect*>(WgBase::MemStackAlloc(childGeosBytes));
     
 	// Optimized special case, just copy preferred to length.
-	//TODO: We probably need to use MatchingPixelWidth()/MatchingPixelHeight() here anyway... prefered length might change with given breadth
 
 	if( !m_pSizeBroker || wantedLength == givenLength )
 	{
@@ -720,6 +834,7 @@ void WgPackPanel::_refreshChildGeo()
 
         if( m_bHorizontal )
         {
+            int endPos = contentRect.x + contentRect.w;
             while( p )
             {
                 pGeo->x = pos.x;
@@ -727,8 +842,13 @@ void WgPackPanel::_refreshChildGeo()
                 
                 if( p->IsVisible() )
                 {
-                    pGeo->w = p->m_preferredSize.w;
-                    pos.x += p->m_preferredSize.w;
+                    int length = p->_paddedMatchingPixelWidth(givenBreadth,m_scale);
+
+                    if( pos.x + length > endPos )
+                        length = endPos - pos.x;
+                    
+                    pGeo->w = length;
+                    pos.x += length;
                 }
                 else
                     pGeo->w = 0;
@@ -739,6 +859,7 @@ void WgPackPanel::_refreshChildGeo()
         }
         else
         {
+            int endPos = contentRect.y + contentRect.h;
             while( p )
             {
                 pGeo->x = pos.x;
@@ -746,8 +867,13 @@ void WgPackPanel::_refreshChildGeo()
                 
                 if( p->IsVisible() )
                 {
-                    pGeo->h = p->m_preferredSize.h;
-                    pos.y += p->m_preferredSize.h;
+                    int length = p->_paddedMatchingPixelHeight(givenBreadth,m_scale);
+
+                    if( pos.y + length > endPos )
+                        length = endPos - pos.y;
+
+                    pGeo->h = length;
+                    pos.y += length;
                 }
                 else
                     pGeo->h = 0;

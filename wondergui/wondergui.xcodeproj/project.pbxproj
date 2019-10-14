@@ -220,7 +220,6 @@
 		1717914522CB46F900B10F51 /* wg_zoomoutcapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717913D22CB46F800B10F51 /* wg_zoomoutcapsule.cpp */; };
 		1717914622CB46F900B10F51 /* wg_payload.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717913E22CB46F800B10F51 /* wg_payload.h */; };
 		1717914722CB46F900B10F51 /* wg_dragndroplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */; };
-		1717914A22CB46F900B10F51 /* wg_charseq_dummy.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717914222CB46F800B10F51 /* wg_charseq_dummy.cpp */; };
 		1717914B22CB46F900B10F51 /* wg_dragndroplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717914322CB46F900B10F51 /* wg_dragndroplayer.h */; };
 		1717914C22CB46F900B10F51 /* wg_zoomoutcapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */; };
 		1717916922CB48C400B10F51 /* wg3_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717914E22CB48C000B10F51 /* wg3_surface.cpp */; };
@@ -476,7 +475,6 @@
 		1717913D22CB46F800B10F51 /* wg_zoomoutcapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_zoomoutcapsule.cpp; path = ../framework/wg_zoomoutcapsule.cpp; sourceTree = "<group>"; };
 		1717913E22CB46F800B10F51 /* wg_payload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_payload.h; path = ../framework/wg_payload.h; sourceTree = "<group>"; };
 		1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_dragndroplayer.cpp; path = ../framework/wg_dragndroplayer.cpp; sourceTree = "<group>"; };
-		1717914222CB46F800B10F51 /* wg_charseq_dummy.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_charseq_dummy.cpp; path = ../framework/wg_charseq_dummy.cpp; sourceTree = "<group>"; };
 		1717914322CB46F900B10F51 /* wg_dragndroplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_dragndroplayer.h; path = ../framework/wg_dragndroplayer.h; sourceTree = "<group>"; };
 		1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_zoomoutcapsule.h; path = ../framework/wg_zoomoutcapsule.h; sourceTree = "<group>"; };
 		1717914E22CB48C000B10F51 /* wg3_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surface.cpp; path = ../framework/base/wg3_surface.cpp; sourceTree = "<group>"; };
@@ -536,7 +534,6 @@
 				1741F03623190F4500029A27 /* wg_shadowlayer.h */,
 				1717918422CB48DD00B10F51 /* Interfaces */,
 				1717914D22CB48A000B10F51 /* Base */,
-				1717914222CB46F800B10F51 /* wg_charseq_dummy.cpp */,
 				1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */,
 				1717914322CB46F900B10F51 /* wg_dragndroplayer.h */,
 				1717913E22CB46F800B10F51 /* wg_payload.h */,
@@ -1028,7 +1025,6 @@
 				170F7BB32200773200B70B56 /* wg_slider.cpp in Sources */,
 				170F7BD32200773200B70B56 /* wg_animplayer.cpp in Sources */,
 				170F7B7B2200773200B70B56 /* wg_eventlogger.cpp in Sources */,
-				1717914A22CB46F900B10F51 /* wg_charseq_dummy.cpp in Sources */,
 				170F7BB92200773200B70B56 /* wg_tabordercapsule.cpp in Sources */,
 				170F7C522200773200B70B56 /* wg_charseq.cpp in Sources */,
 				170F7C252200773200B70B56 /* wg_eventhandler.cpp in Sources */,

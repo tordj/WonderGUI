@@ -56,6 +56,8 @@ public:
 	bool	SetFloating( const WgRect& pointGeometry, WgOrigo origo = WgOrigo::NorthWest );
 	bool	SetFloating( const WgRect& pointGeometry, int anchor, WgOrigo hotspot );
 
+    bool    SetPadding( WgBorders padding );
+
 
 	void	Top();								// Put us ontop all our silbings.
 	void	Bottom();							// Put us below all our siblings.

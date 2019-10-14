@@ -26,9 +26,11 @@
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 #include <wg_util.h>
+#include <wg3_util.h>
 
 static const char	c_widgetType[] = {"TextDisplay"};
 
+using namespace wg::Util;
 
 
 //____ WgTextDisplay() _________________________________________________________________
@@ -189,6 +191,8 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	//    m_text.setMode(WG_MODE_NORMAL);
 	//    m_text.setMode(WgUtil::StateToMode(m_state));
 
+    ClipPopData pop = limitClipList( pDevice, canvas );
+
 	WgText * pText = &m_text;
 
 	if( m_bFocused && IsEditable() )
@@ -198,6 +202,8 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
     WgGfxDevice::PrintText( pDevice, pText, canvas );
 
+    popClipList( pDevice, pop );
+    
 	if( pText != &m_text )
 		delete pText;
 }

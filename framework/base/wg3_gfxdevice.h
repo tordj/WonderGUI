@@ -146,13 +146,6 @@ namespace wg
 		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch);
 		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip);
 
-		// Low level methods
-
-		virtual void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2] ) = 0;
-		virtual void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2] ) = 0;
-
-		virtual void	transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]);
-		virtual void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) = 0;
 
 		// Special draw/blit methods
 
@@ -178,6 +171,15 @@ namespace wg
 	protected:
 		GfxDevice( SizeI canvasSize );
 		virtual ~GfxDevice();
+
+		//
+
+		virtual void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) = 0;
+		virtual void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) = 0;
+
+		virtual void	_transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]);
+		virtual void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) = 0;
+
 
 		// Static, shared data
 

@@ -65,6 +65,8 @@
 void manuBlendTest();
 void shadowLayerTest( WgRootPanel * pRoot );
 void scrollPanelTest( WgRootPanel * pRoot );
+void baselineTest( WgRootPanel * pRoot );
+void packPanelStressTest( WgRootPanel * pRoot );
 
 //#define USE_OPEN_GL
 
@@ -286,7 +288,10 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
-    scrollPanelTest(pRoot);
+    packPanelStressTest( pRoot );
+
+//    baselineTest( pRoot );
+//    scrollPanelTest(pRoot);
 //    shadowLayerTest(pRoot);
 //	manuBlendTest();
 
@@ -651,6 +656,106 @@ void manuBlendTest()
 */
 }
 
+//____ packPanelStressTest() _________________________________________________________
+
+void packPanelStressTest( WgRootPanel * pRoot )
+{
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    
+
+    auto pVPackSkin = WgBoxSkin::Create(WgColor::Blue, 10, WgColor::Red );
+    pVPackSkin->SetContentPadding(11);
+    
+    auto pVPack = new WgPackPanel();
+    pVPack->SetOrientation(WgOrientation::Vertical);
+    pVPack->SetSkin( pVPackSkin );
+
+    
+    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
+//    pTextSkin->SetContentPadding( {2,10,10,12} );
+    
+    auto pText1 = new WgTextDisplay();
+    pText1->SetText("TEXT 1 WITH AUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
+    pText1->SetSkin( pTextSkin );
+    pText1->SetTextWrap(true);
+
+    auto pText2 = new WgTextDisplay();
+    pText2->SetSkin( pTextSkin );
+    pText2->SetTextWrap(true);
+
+    pBaseFlex->AddChild(pVPack, {50,50,100,400});
+
+    pVPack->AddChild(pText1)->SetPadding( {0,0,0,0} );
+    pVPack->AddChild(pText2)->SetPadding( {10,10,10,10} );
+
+//    pText2->SetText("TEXA");
+    pText2->SetText("TEXT");
+
+    
+}
+
+//____ baselineTest() _________________________________________________________
+
+void baselineTest( WgRootPanel * pRoot )
+{
+    
+    auto pRootLane = new WgPackPanel();
+    pRootLane->SetBaselineMode(true);
+    
+    auto pSplitter = new WgFiller();
+    pSplitter->SetColors(WgColorset::Create(WgColor::Red));
+    pSplitter->SetPreferredPointSize({80,200});
+
+    auto pJoiner = new WgFiller();
+    pJoiner->SetColors(WgColorset::Create(WgColor::Blue));
+    pJoiner->SetPreferredPointSize({80,200});
+
+    auto pLanes = new WgPackPanel();
+    pLanes->SetOrientation(WgOrientation::Vertical);
+
+    auto pUpperLane = new WgPackPanel();
+    pUpperLane->SetBaselineMode(true);
+
+    auto pLowerLane = new WgPackPanel();
+    pLowerLane->SetBaselineMode(true);
+
+    pLanes->AddChild(pUpperLane);
+    pLanes->AddChild(pLowerLane);
+    
+    auto pUpperContent = new WgFiller();
+    pUpperContent->SetColors(WgColorset::Create(WgColor::Yellow));
+    pUpperContent->SetPreferredPointSize({80,200});
+
+    auto pLowerContent = new WgFiller();
+    pLowerContent->SetColors(WgColorset::Create(WgColor::Orange));
+    pLowerContent->SetPreferredPointSize({90,200});
+
+    pLanes->AddChild(pUpperContent);
+    pLanes->AddChild(pLowerContent);
+
+    auto pLastFiller = new WgFiller();
+    pLastFiller->SetColors(WgColorset::Create(WgColor::Orange));
+    pLastFiller->SetPreferredPointSize({90,200});
+
+    
+    pRootLane->AddChild(pSplitter)->SetBaseline(0.5f);
+
+
+    pRootLane->AddChild(pLanes)->SetBaseline(0.5f);
+    
+    pRootLane->AddChild(pJoiner)->SetBaseline(0.5f);
+
+    pRootLane->InsertChild(pLastFiller, pLanes)->SetBaseline(0.5f);
+
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    pBaseFlex->AddChild(pRootLane);
+    
+    pUpperContent->SetPreferredPointSize({80,250});
+}
+
+
 //____ scrollPanelTest() _________________________________________________________
 
 void scrollPanelTest( WgRootPanel * pRoot )
@@ -859,7 +964,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	
 
 	// Test Knob
-
+/*
 	WgKnob * pKnob = new WgKnob( new WgSurfaceFactorySoft() );
 	pKnob->SetOptimizeUpdateRect(true);
 
@@ -867,7 +972,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	pHook->SetAnchored( (int) WgOrigo::NorthWest, (int) WgOrigo::SouthEast);
 
 	g_pKnob = pKnob;
-
+*/
 
 //SeqCircleMeter test Filip
 /*

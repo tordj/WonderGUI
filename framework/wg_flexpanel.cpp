@@ -141,6 +141,18 @@ bool WgFlexHook::SetFloating( const WgRect& geometry, int anchor, WgOrigo hotspo
 	return true;
 }
 
+//____ WgFlexHook::SetPadding() ______________________________________________
+
+bool WgFlexHook::SetPadding( WgBorders padding )
+{
+    if( padding != m_padding )
+    {
+        m_padding = padding;
+        _refreshRealGeo();
+    }
+    return true;
+}
+
 //____ WgFlexHook::Top() ______________________________________________________
 
 void WgFlexHook::Top()

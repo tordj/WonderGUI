@@ -347,7 +347,7 @@ bool WgScrollPanel::SetViewPixelOfs( int x, int y )
     }
     if( y > m_contentSize.h - pixLenY )
 	{
-		y = m_contentSize.h - pixLenY;
+        y = std::max(0, m_contentSize.h - pixLenY);
 		retVal = false;
 	}
 
@@ -358,7 +358,7 @@ bool WgScrollPanel::SetViewPixelOfs( int x, int y )
     }
 	if( x > m_contentSize.w - pixLenX )
 	{
-		x = m_contentSize.w - pixLenX;
+        x = std::max(0, m_contentSize.w - pixLenX);
 		retVal = false;
 	}
 

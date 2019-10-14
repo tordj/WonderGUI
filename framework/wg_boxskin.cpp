@@ -223,7 +223,7 @@ bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState 
     
 	int i = WgUtil::_stateToIndex(state);
 
-	WgRect center = ContentRect(WgRect(canvasSize), state, scale);
+    WgRect center = WgRect(canvasSize) - m_frame.scale(scale);
 	if( center.contains(ofs) )
 		return m_color[i].a >= opacityTreshold;
 	else

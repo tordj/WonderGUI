@@ -47,8 +47,8 @@ public:
     void            SetButtonSkin(const WgSkinPtr& pSkin);
     WgSkinPtr       ButtonSkin() const { return m_pButtonSkin; };
     
-//	int				MatchingPixelHeight(int pixelWidth) const;
-//	int				MatchingPixelWidth(int pixelHeight) const;
+	int				MatchingPixelHeight(int pixelWidth) const;
+	int				MatchingPixelWidth(int pixelHeight) const;
 
     WgSize          MinPixelSize() const;
     void            SetMinPointSize( WgSize min );
@@ -77,6 +77,8 @@ public:
 protected:
     
     void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+    void    _onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
+    void    _onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
 	void	_onCloneContent( const WgWidget * _pOrg );
     void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );

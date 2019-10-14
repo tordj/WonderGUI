@@ -265,14 +265,14 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0]);
+		_transformBlit({ dest, m_pBlitSource->size() }, { 0,0 }, blitFlipTransforms[0]);
 	}
 
 	void GfxDevice::blit(CoordI dest, const RectI& src)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
+		_transformBlit({ dest, src.size() }, src.pos(), blitFlipTransforms[0]);
 	}
 
 	//____ flipBlit() _________________________________________________________
@@ -290,7 +290,7 @@ namespace wg
 		if (blitFlipTransforms[(int)flip][0][0] == 0)
 			swap(dstSize.w, dstSize.h);
 
-		transformBlit({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+		_transformBlit({ dest, dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
 	}
 
 	void GfxDevice::flipBlit(CoordI dest, const RectI& src, GfxFlip flip)
@@ -305,7 +305,7 @@ namespace wg
 			swap(dstSize.w, dstSize.h);
 
 
-		transformBlit({ dest, dstSize }, src.pos() + CoordI(ofsX, ofsY), blitFlipTransforms[(int)flip]);
+		_transformBlit({ dest, dstSize }, src.pos() + CoordI(ofsX, ofsY), blitFlipTransforms[(int)flip]);
 	}
 
 
@@ -323,32 +323,52 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
+		if (m_pBlitSource == nullptr || dest.w == 0 || dest.h == 0 || _src.w == 0 || _src.h == 0)
+			return;
 
-		float	mtx[2][2];
-
-		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		if (dest.w == _src.w && dest.h == _src.h)
 		{
-//			src.x += 0.5f;
-//			src.y += 0.5f;
+			// This is a 1:1 blit, let's use the fast alternative.
 
-			mtx[0][0] = (src.w-1) / (dest.w-1);
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = (src.h-1) / (dest.h-1);
+			_transformBlit( dest, _src.pos(), blitFlipTransforms[0]);
 		}
 		else
 		{
-			// We want last src sample to be taken as close to the end of the source
-			// rectangle as possible in order to get a more balanced representation.
-			
-			mtx[0][0] = src.w / (dest.w-0.99);
-			mtx[0][1] = 0;
-			mtx[1][0] = 0;
-			mtx[1][1] = src.h / (dest.h-0.99);
-		}
+			RectF src{ (float)_src.x, (float)_src.y, (float)_src.w, (float)_src.h };
 
-		transformBlit(dest, { src.x, src.y }, mtx);
+			float	mtx[2][2];
+
+			if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+			{
+	//			src.x += 0.5f;
+	//			src.y += 0.5f;
+
+				if (dest.w == 1)
+					mtx[0][0] = 0;
+				else
+					mtx[0][0] = (src.w-1) / (dest.w-1);
+
+				mtx[0][1] = 0;
+				mtx[1][0] = 0;
+
+				if( dest.h == 1)
+					mtx[1][1] = 0;
+				else
+					mtx[1][1] = (src.h-1) / (dest.h-1);
+			}
+			else
+			{
+				// We want last src sample to be taken as close to the end of the source
+				// rectangle as possible in order to get a more balanced representation.
+			
+				mtx[0][0] = src.w / (dest.w-0.99);
+				mtx[0][1] = 0;
+				mtx[1][0] = 0;
+				mtx[1][1] = src.h / (dest.h-0.99);
+			}
+
+			_transformBlit(dest, { src.x, src.y }, mtx);
+		}
 	}
 
 	void GfxDevice::stretchBlit(const RectI& dest, const RectF& src)
@@ -372,7 +392,7 @@ namespace wg
 			mtx[1][1] = src.h / dest.h;
 		}
 
-		transformBlit(dest, { src.x,src.y }, mtx );
+		_transformBlit(dest, { src.x,src.y }, mtx );
 	}
 
 	//____ stretchFlipBlit() _____________________________________________________
@@ -421,7 +441,7 @@ namespace wg
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, { ofsX, ofsY }, mtx);
+		_transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
 	void GfxDevice::stretchFlipBlit(const RectI& dest, const RectF& src, GfxFlip flip)
@@ -441,7 +461,7 @@ namespace wg
 		mtx[1][0] = scaleX * blitFlipTransforms[(int)flip][1][0];
 		mtx[1][1] = scaleY * blitFlipTransforms[(int)flip][1][1];
 
-		transformBlit(dest, { ofsX, ofsY }, mtx);
+		_transformBlit(dest, { ofsX, ofsY }, mtx);
 	}
 
 	//____ rotScaleBlit() _____________________________________________________
@@ -450,7 +470,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (scale <= 0.f)
+		if (scale <= 0.f || m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
 			return;
 
 		CoordF	src;
@@ -472,7 +492,7 @@ namespace wg
 		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
-		transformBlit(dest, { src.x,src.y }, mtx);
+		_transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
 
@@ -567,19 +587,19 @@ namespace wg
 
 	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill )
 	{
-		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
 
 	void GfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip )
 	{
-		transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
+		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
 	}
 
-	//____ transformDrawWave() ______________________________________________________
+	//____ _transformDrawWave() ______________________________________________________
 
-	void GfxDevice::transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2] )
+	void GfxDevice::_transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2] )
 	{
 		//TODO: If borders have different colors and cross, colors are not swapped.
 
@@ -695,7 +715,7 @@ namespace wg
 			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
-			transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
+			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
 
 		}
 		else
@@ -741,7 +761,7 @@ namespace wg
 			col[4] = pBottomBorder->color;
 			col[5] = Color::Transparent;
 
-			transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform);
+			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform);
 		}
 
 
@@ -980,14 +1000,14 @@ namespace wg
 
 	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )
 	{
-		transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
 	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip )
 	{
-		transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)flip] );
+		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)flip] );
 	}
 
 

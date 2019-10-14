@@ -137,6 +137,33 @@ WgSize WgZoomOutCapsule::PreferredPixelSize() const
     return preferred;
 }
 
+//____ MatchingPixelHeight() _____________________________________________________________
+
+int WgZoomOutCapsule::MatchingPixelHeight(int pixelWidth) const
+{
+    int matching = WgCapsule::MatchingPixelHeight(pixelWidth) * m_outerZoom;
+    
+    int min = m_minPointSize.h * m_scale / WG_SCALE_BASE;
+    
+    if( matching < min )
+        matching = min;
+    
+    return matching;
+}
+
+//____ MatchingPixelWidth() _____________________________________________________________
+
+int WgZoomOutCapsule::MatchingPixelWidth(int pixelHeight) const
+{
+    int matching = WgCapsule::MatchingPixelWidth(pixelHeight) * m_outerZoom;
+    
+    int min = m_minPointSize.w * m_scale / WG_SCALE_BASE;
+    
+    if( matching < min )
+        matching = min;
+        
+    return matching;
+}
 
 //____ SetInnerTransition() ______________________________________________________________
 
@@ -410,6 +437,27 @@ void WgZoomOutCapsule::_regenScreenshot()
 
 }
 
+//____ _onCollectPatches() ______________________________________________________
+
+void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+{
+    // Do the simple thing here
+    
+    container.Add( WgRect( geo, clip ) );
+}
+
+//____ _onMaskPatches() _________________________________________________________
+
+void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+{
+    if( m_innerZoom == 1.f )
+        WgCapsule::_onMaskPatches( patches, geo, clip, blendMode );
+    else
+    {
+        // Let's make this simple. We don't mask anything when zoomed out.
+    }
+}
+
 
 //____ _renderPatches() __________________________________________________________
 
@@ -446,19 +494,26 @@ void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _c
 
 void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    if( m_id == 0xDEADBEEF && _canvas.h > 500  )
-    {
-        int dummy = 0;
-    }
     
-	WgCapsule::_onRender(pDevice, _canvas, _window);
+//	WgCapsule::_onRender(pDevice, _canvas, _window);
 
     if( m_innerZoom < 1.f )
     {
+        WgColor oldTint = pDevice->tintColor();
+        
+        pDevice->setTintColor({oldTint.r, oldTint.g, oldTint.b, uint8_t(oldTint.a*WgUtil::ParametricBlendInOut(1.f-m_innerTransitionFactor)) });
+
+        if (m_pSkin)
+            m_pSkin->Render(pDevice, m_state, _canvas, m_scale);
+
         WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
 
         if( m_pButtonSkin )
             m_pButtonSkin->Render(pDevice, m_buttonState, _buttonArea(canvas), m_scale);
+
+        pDevice->setTintColor(oldTint);
+
+
     
         if( m_bOutlineMode )
         {

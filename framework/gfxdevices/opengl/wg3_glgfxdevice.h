@@ -98,10 +98,6 @@ namespace wg
 		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
 		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness) override;
 
-		void	transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
-		void	transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
-
-		void	transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
 
 
 	protected:
@@ -109,6 +105,12 @@ namespace wg
 		GlGfxDevice(const RectI& viewport, int uboBindingPoint);
 		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
 		~GlGfxDevice();
+
+		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
+		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
+
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+
 
 		enum Command
 		{

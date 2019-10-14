@@ -256,17 +256,17 @@ namespace wg
 
 		//____ qpixToRaw() ____________________________________________________
 
-		inline CoordI qpixToRaw(const Coord c)
+		inline CoordI qpixToRaw(const Coord& c)
 		{
 			return { c.x.raw, c.y.raw };
 		}
 
-		inline SizeI qpixToRaw(const Size sz)
+		inline SizeI qpixToRaw(const Size& sz)
 		{
 			return { sz.w.raw, sz.h.raw };
 		}
 
-		inline BorderI qpixToRaw(const Border b)
+		inline BorderI qpixToRaw(const Border& b)
 		{
 			return { b.top.raw, b.right.raw, b.bottom.raw, b.left.raw };
 		}
@@ -278,17 +278,17 @@ namespace wg
 
 		//____ qpixToRawAligned() ____________________________________________________
 
-		inline CoordI qpixToRawAligned(const Coord c)
+		inline CoordI qpixToRawAligned(const Coord& c)
 		{
 			return { c.x.raw & (int) 0xFFFFFFFC, c.y.raw & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI qpixToRawAligned(const Size sz)
+		inline SizeI qpixToRawAligned(const Size& sz)
 		{
 			return { sz.w.raw & (int)0xFFFFFFFC, sz.h.raw & (int)0xFFFFFFFC };
 		}
 
-		inline BorderI qpixToRawAligned(const Border b)
+		inline BorderI qpixToRawAligned(const Border& b)
 		{
 			return { b.top.raw & (int) 0xFFFFFFFC, b.right.raw & (int)0xFFFFFFFC, b.bottom.raw & (int)0xFFFFFFFC, b.left.raw & (int)0xFFFFFFFC };
 		}
@@ -297,6 +297,35 @@ namespace wg
 		{
 			return { r.x.raw & (int)0xFFFFFFFC, r.y.raw & (int)0xFFFFFFFC, r.w.raw & (int)0xFFFFFFFC, r.h.raw & (int)0xFFFFFFFC };
 		}
+
+		//____ alignRaw() ____________________________________________________
+
+		inline int alignRaw(const int c)
+		{
+			return c & (int)0xFFFFFFFC;
+		}
+
+
+		inline CoordI alignRaw(const CoordI& c)
+		{
+			return { c.x & (int)0xFFFFFFFC, c.y & (int)0xFFFFFFFC };
+		}
+
+		inline SizeI alignRaw(const SizeI& sz)
+		{
+			return { sz.w & (int)0xFFFFFFFC, sz.h & (int)0xFFFFFFFC };
+		}
+
+		inline BorderI alignRaw(const BorderI& b)
+		{
+			return { b.top & (int)0xFFFFFFFC, b.right & (int)0xFFFFFFFC, b.bottom & (int)0xFFFFFFFC, b.left & (int)0xFFFFFFFC };
+		}
+
+		inline RectI alignRaw(const RectI& r)
+		{
+			return { r.x & (int)0xFFFFFFFC, r.y & (int)0xFFFFFFFC, r.w & (int)0xFFFFFFFC, r.h & (int)0xFFFFFFFC };
+		}
+
 
 
 		double squareRoot(double a);
