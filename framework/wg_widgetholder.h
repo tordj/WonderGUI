@@ -84,6 +84,9 @@ class WgWidgetHolder
 		virtual bool 		_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting ) = 0;
 		virtual bool 		_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing ) = 0;
 
+        virtual void        _inViewRequested( WgHook * pChild ) = 0;
+        virtual void        _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) = 0;
+    
 		virtual WgHook*	_firstHook() const = 0;
 		virtual WgHook*	_lastHook() const = 0;
 };

@@ -26,11 +26,8 @@
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 #include <wg_util.h>
-#include <wg3_util.h>
 
 static const char	c_widgetType[] = {"TextDisplay"};
-
-using namespace wg::Util;
 
 
 //____ WgTextDisplay() _________________________________________________________________
@@ -112,7 +109,7 @@ int WgTextDisplay::MatchingPixelHeight( int width ) const
 	if (m_pSkin)
 		height = m_pSkin->PreferredSize(m_scale).h;
 
-	if (m_text.nbChars() != 0)
+	if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
 	{
 		WgSize padding;
 
@@ -137,7 +134,7 @@ WgSize WgTextDisplay::PreferredPixelSize() const
 		bestSize = m_pSkin->PreferredSize(m_scale);
 
 
-	if (m_text.nbChars() != 0)
+    if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
 	{
 		WgSize textSize = m_text.unwrappedSize();
 
@@ -191,8 +188,6 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	//    m_text.setMode(WG_MODE_NORMAL);
 	//    m_text.setMode(WgUtil::StateToMode(m_state));
 
-    ClipPopData pop = limitClipList( pDevice, canvas );
-
 	WgText * pText = &m_text;
 
 	if( m_bFocused && IsEditable() )
@@ -202,8 +197,6 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
     WgGfxDevice::PrintText( pDevice, pText, canvas );
 
-    popClipList( pDevice, pop );
-    
 	if( pText != &m_text )
 		delete pText;
 }
@@ -273,6 +266,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
             textCanvas = m_pSkin->ContentRect( textCanvas, WgStateEnum::Normal, m_scale );
 
 		m_pText->CursorGotoCoord( pEvent->PointerPixelPos(), textCanvas );
+        _bringCursorInView();
 
 		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
@@ -293,6 +287,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	else if( !m_bFocused && IsEditable() && type == WG_EVENT_MOUSEBUTTON_PRESS && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
 	{
 		GrabFocus();
+        _bringCursorInView();
 		bSwallowed = true;
 	}
 
@@ -315,6 +310,8 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			{
 				_insertCharAtCursor( '\t' );
 			}
+            
+            _bringCursorInView();
 			bSwallowed = true;
 		}
 	}
@@ -344,6 +341,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goLeft();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 			case WG_KEY_RIGHT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -354,6 +352,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goRight();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_UP:
@@ -362,6 +361,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				m_pText->CursorGoUp( 1, ScreenPixelGeo() );
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_DOWN:
@@ -370,6 +370,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				m_pText->CursorGoDown( 1, ScreenPixelGeo() );
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_BACKSPACE:
@@ -380,6 +381,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->delPrevChar();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_DELETE:
@@ -390,6 +392,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->delNextChar();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_HOME:
@@ -401,6 +404,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goBOL();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			case WG_KEY_END:
@@ -412,6 +416,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goEOL();
 				bSwallowed = true;
+                _bringCursorInView();
 				break;
 
 			default:
@@ -445,6 +450,30 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	}
 }
 
+//____ _bringCursorInView() _______________________________________________________
+
+void WgTextDisplay::_bringCursorInView()
+{
+    WgCursorInstance * pCursor = m_pText->GetCursor();
+
+    WgCoord cursorPos = { pCursor->ofsX(), pCursor->ofsY() };
+
+    WgTextAttr attr;
+    m_pText->GetBaseAttr(attr);
+    
+    auto pGlyphs = attr.pFont->GetGlyphset(attr.style, attr.size);
+    int glyphHeight = pGlyphs->GetHeight(attr.size);
+    int glyphWidth = pGlyphs->GetWhitespaceAdvance(attr.size);
+
+    if(m_pSkin)
+        cursorPos += m_pSkin->ContentOfs(m_state, m_scale);
+
+    WgRect mustHaveArea = { cursorPos.x - glyphWidth, cursorPos.y, glyphWidth*2, glyphHeight };
+    WgRect niceToHaveArea = { cursorPos.x - glyphWidth, cursorPos.y - glyphHeight/2, glyphWidth*2, glyphHeight*2 };
+
+    WgRect canvas = WgRect( 0,0, PixelSize() );
+    _requestInView( WgRect(mustHaveArea,canvas), WgRect(niceToHaveArea, canvas) );
+}
 
 //____ _onCloneContent() _______________________________________________________
 

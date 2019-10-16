@@ -89,6 +89,19 @@ bool WgHook::_releaseFocus()
 	return Parent()->_focusReleased(this, m_pWidget);
 }
 
+//____ _requestInView() ________________________________________________________
+
+void WgHook::_requestInView()
+{
+    Parent()->_inViewRequested(this);
+}
+
+void WgHook::_requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
+{
+    Parent()->_inViewRequested( this, mustHaveArea, niceToHaveArea );
+}
+
+
 //____ PointPos() ______________________________________________________________
 
 WgCoord WgHook::PointPos() const

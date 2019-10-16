@@ -1334,13 +1334,13 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
         }
             
 		case WG_EVENT_MOUSEWHEEL_ROLL:
-		{			
+		{
 			const WgEvent::MouseWheelRoll * pEvent = static_cast<const WgEvent::MouseWheelRoll*>(_pEvent);
 
 			if( m_elements[WINDOW].m_windowGeo.contains(pEvent->PointerPixelPos()) )
 			{
                 m_rubberBorderPause = 300;
-				int wheel = pEvent->Wheel();
+                int wheel = pEvent->Wheel();
 
 				if( wheel == m_wheelForScrollY )
 					_wheelRollY( pEvent->Distance() );
@@ -1358,7 +1358,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
                 WgCoord pos = _pEvent->PointerPixelPos();
                 
                 if( !m_elements[WINDOW].m_windowGeo.contains(pos) )
-		break;
+                    break;
 
                 WgBorders border = m_hoverScrollBorder.scale(m_scale);
                 WgRect center = m_elements[WINDOW].m_windowGeo - border;
@@ -1411,7 +1411,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
                 _stopReceiveTicks();
             break;
         }
-
+            
 		default:
             WgWidget::_onEvent(_pEvent,pHandler);
 		break;
@@ -1649,6 +1649,50 @@ bool WgScrollPanel::SetAutoscroll( bool bAutoX, bool bAutoY )
 	return true;
 }
 
+//_____________________________________________________________________________
+void WgScrollPanel::_inViewRequested( WgHook * pChild )
+{
+    // Our only child is always in view as much as possible, so just pass it on like any
+    // normal container.
+    
+    WgRect geo = pChild->PixelGeo();
+    _requestInView( geo, geo );
+}
+
+void WgScrollPanel::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
+{
+    WgRect window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
+    
+    for (int i = 0; i < 2; i++)
+    {
+        WgRect inside = i == 0 ? niceToHaveArea : mustHaveArea;
+        
+        int diffLeft = inside.x - window.x;
+        int diffRight = inside.right() - window.right();
+        int diffTop = inside.y - window.y;
+        int diffBottom = inside.bottom() - window.bottom();
+        
+        if( diffLeft > 0 && diffRight > 0  )
+            window.x += std::min(diffLeft, diffRight);
+        else if( diffLeft < 0 && diffRight < 0 )
+            window.x += std::max(diffLeft, diffRight);
+        
+        if( diffTop > 0 && diffBottom > 0 )
+            window.y += std::min(diffTop, diffBottom);
+        else if( diffTop < 0 && diffBottom < 0 )
+            window.y += std::max(diffTop, diffBottom);
+    }
+    
+    if( window.pos() != m_viewPixOfs )
+        SetViewPixelOfs( window.x, window.y );
+
+    // Forward to any outer ScrollPanel
+    
+    WgRect newMustHaveArea( mustHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
+    WgRect newNiceToHaveArea( niceToHaveArea - m_viewPixOfs + m_elements[WINDOW].m_windowGeo.pos(), m_elements[WINDOW].m_windowGeo );
+
+    _requestInView( newMustHaveArea, newNiceToHaveArea );
+}
 
 //_____________________________________________________________________________
 WgHook*	WgScrollPanel::_firstHook() const

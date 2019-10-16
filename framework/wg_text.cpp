@@ -355,7 +355,7 @@ int WgText::getSoftLineWidth( int line ) const
 
 int WgText::getSoftLineWidthPart( int _line, int startCol, int nCol ) const
 {
-	if( _line < 0 || _line >= nbSoftLines() || !m_pBaseProp->Font() )
+	if( _line < 0 || _line >= nbSoftLines() )
 		return 0;
 
 	const WgTextLine * pLine = getSoftLine(_line);

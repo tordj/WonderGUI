@@ -34,8 +34,13 @@
 #include <wg_gfxanim.h>
 #include <wg_util.h>
 #include <wg_pen.h>
+#include <wg3_util.h>
+
 
 #include <wg_versionbridge.h>
+
+using namespace wg::Util;
+
 //____ BlitBlock() ________________________________________________________
 
 void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, const WgRect& _canvas, bool bTriLinear, float mipmapbias)
@@ -87,6 +92,13 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 
 	WgSize	textSize( pText->width(), pText->height() );
 
+    // Limit cliplist if we might print outside our dest
+    
+    ClipPopData pop;
+    
+    if( textSize.w > dest.w || textSize.h > dest.h )
+       pop = limitClipList( pDevice, dest );
+    
 //	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 
 	const WgCursorInstance* pCursor = 0;
@@ -148,6 +160,8 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 
 		pos.y += pLines[i].lineSpacing;
 	}
+
+    popClipList( pDevice, pop );
 
 	if( dest.w >= textSize.w && (dest.h >= textSize.h || nLines == 1) )
 		return true;

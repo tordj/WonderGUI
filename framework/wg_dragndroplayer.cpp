@@ -516,6 +516,16 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                 if (pDragWidget)
                 {
                     _replaceWidgetInHook(pDragWidget);
+
+					// Ugly hack needed for AmpRoom to force a refresh of DragWidget geometry.
+					// Apparently the background image has f-cked  up geometry and I haven't investigated why. /Tord
+
+					if( m_scale == 4096 )
+					{
+						pDragWidget->_setScale(8192);
+						pDragWidget->_setScale(4096);
+					}
+
                     dragWidgetSize = pDragWidget->PreferredPixelSize();
                     m_dragWidgetOfs = pEvent->dragWidgetPointerOfs();
                     m_bDeleteDraggedWhenDone = pEvent->deleteDragWidgetWhenDone();
@@ -529,6 +539,11 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
                 WgCoord mousePos = Abs2localPixel(pEvent->PointerScreenPixelPos());
                 m_dragHook.m_geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
+				 
+				if (pDragWidget)
+				{
+//					pDragWidget->_onNewSize(dragWidgetSize);
+				}
 
                 _requestRender(m_dragHook.m_geo);
                 m_dragState = DragState::Dragging;

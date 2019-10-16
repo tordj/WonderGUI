@@ -504,11 +504,13 @@ int WgCursorInstance::ofsX() const
 
 int WgCursorInstance::ofsY() const
 {
-	//TODO: Need a better way...
+    int    ln = m_line;
+    int    col = m_column;
+    m_pText->posHard2Soft( ln, col );
 
-	int ofs = 0;
+    int ofs = 0;
 
-	for( int i = 0 ; i < (int) m_line ; i++ )
+	for( int i = 0 ; i < (int) ln ; i++ )
 		ofs += m_pText->softLineSpacing(i);
 
 	return ofs;

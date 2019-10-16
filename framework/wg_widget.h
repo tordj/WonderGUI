@@ -228,6 +228,10 @@ protected:
 	void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
 	void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
+    inline void        _requestInView() { if( m_pHook ) m_pHook->_requestInView(); }
+    inline void        _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) { if( m_pHook ) m_pHook->_requestInView( mustHaveArea, niceToHaveArea ); }
+
+    
 	// To be overloaded by Widget
 
     virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );

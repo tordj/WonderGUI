@@ -314,6 +314,9 @@ protected:
 
 	WgRect		_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrigo origo, WgCoord viewOfs );
 
+    void        _inViewRequested( WgHook * pChild );
+    void        _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+
 	bool		_wheelRollX(int distance);
 	bool		_wheelRollY(int distance);
 

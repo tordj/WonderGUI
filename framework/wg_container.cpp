@@ -241,6 +241,30 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 		return false;
 }
 
+//____ _inViewRequested() ______________________________________________________
+
+void WgContainer::_inViewRequested( WgHook * pChild )
+{
+    WgHook * p = Hook();
+    if( p )
+    {
+        WgRect geo = pChild->PixelGeo();
+        p->Holder()->_inViewRequested( p, geo, geo );
+    }
+}
+
+void WgContainer::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
+{
+    WgHook * p = Hook();
+    if( p )
+    {
+        WgCoord ofs = pChild->PixelPos();
+        p->Holder()->_inViewRequested( p, mustHaveArea+ofs, niceToHaveArea+ofs );
+    }
+}
+
+
+
 //____ _getModalLayer() _______________________________________________________
 
 WgModalLayer *  WgContainer::_getModalLayer() const

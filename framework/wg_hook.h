@@ -88,6 +88,10 @@ protected:
 	virtual bool	_requestFocus();
 	virtual bool	_releaseFocus();
 
+    virtual void    _requestInView();
+    virtual void    _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+
+    
 	//
 
 	virtual WgHook *	_prevHook() const = 0;

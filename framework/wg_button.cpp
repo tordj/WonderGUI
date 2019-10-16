@@ -246,30 +246,19 @@ void WgButton::_setScale( int scale )
 
 void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	if (m_pSkin)
-    {
-        WgState    state;
-        state.setFocused(m_bFocused);
-        state.setSelected(m_bSelected);
-        state.setHovered(m_bPointerInside);
-        state.setPressed(m_bPressed);
-        state.setEnabled(m_bEnabled);
-
-        m_pSkin->Render(pDevice, state, _canvas, m_scale);
-    }
+    WgState    state;
+    state.setFocused(m_bFocused);
+    state.setSelected(m_bSelected);
+    state.setHovered(m_bPointerInside);
+    state.setPressed(m_bPressed);
+    state.setEnabled(m_bEnabled);
 
     WgBlock    block;
-
     WgRect contentRect = _canvas;
 
     if (m_pSkin)
     {
-        WgState    state;
-        state.setFocused(m_bFocused);
-        state.setSelected(m_bSelected);
-        state.setHovered(m_bPointerInside);
-        state.setPressed(m_bPressed);
-        state.setEnabled(m_bEnabled);
+        m_pSkin->Render(pDevice, state, _canvas, m_scale);
         contentRect = m_pSkin->ContentRect(_canvas, state, m_scale);
     }
 	else if (m_pBgGfx)
@@ -293,13 +282,13 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 	// Print text
 
  	if( !m_text.IsEmpty() )
-	{
+	{        
 		m_text.setMode(m_mode);
 
 		if( m_pBgGfx )
 			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
 
-        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
+        WgGfxDevice::PrintText( pDevice, &m_text, textRect );        
 	}
 }
 

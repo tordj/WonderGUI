@@ -64,8 +64,8 @@ namespace sdl_wglib
 			case SDL_KEYDOWN:
 			{
 				g_pHandler->QueueEvent( new WgEvent::KeyPress( event.key.keysym.sym ) );
-//				if( event.key.keysym.unicode != 0 )
-//					g_pHandler->QueueEvent( new WgEvent::Character( event.key.keysym.unicode ) );
+				if( event.key.keysym.sym == SDLK_RETURN )
+                    g_pHandler->QueueEvent( new WgEvent::Character( 13 ) );
 				break;
 			}
 
@@ -105,7 +105,7 @@ namespace sdl_wglib
 					g_pHandler->QueueEvent( new WgEvent::MouseButtonRelease( event.button.button ) );	
 				break;
 			case SDL_TEXTINPUT:
-//				g_pHandler->QueueEvent(new WgEvent::Character((short)event.text.text));
+				g_pHandler->QueueEvent(new WgEvent::Character((short)event.text.text[0]));
 				break;
 
 		}

@@ -113,6 +113,9 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		bool 			_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );	// Needed until WgPanel inherits from WgWidget
 		bool 			_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );		// Needed until WgPanel inherits from WgWidget
 
+        void            _inViewRequested( WgHook * pChild );
+        void            _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+
 		virtual WgModalLayer *	_getModalLayer() const;
 		virtual WgPopupLayer*	_getPopupLayer() const;
 

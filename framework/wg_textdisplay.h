@@ -110,6 +110,9 @@ protected:
 	void	_onLostInputFocus();
 	void 	_setScale( int scale );
 
+    void    _bringCursorInView();
+
+    
     WgText                m_text;
     bool                  m_bHasFocus;
     int                   m_maxLines;

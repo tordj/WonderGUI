@@ -67,6 +67,7 @@ void shadowLayerTest( WgRootPanel * pRoot );
 void scrollPanelTest( WgRootPanel * pRoot );
 void baselineTest( WgRootPanel * pRoot );
 void packPanelStressTest( WgRootPanel * pRoot );
+void cursorInViewTest( WgRootPanel * pRoot );
 
 //#define USE_OPEN_GL
 
@@ -288,8 +289,9 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
-    packPanelStressTest( pRoot );
-
+    cursorInViewTest( pRoot );
+    
+//    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
 //    scrollPanelTest(pRoot);
 //    shadowLayerTest(pRoot);
@@ -692,6 +694,31 @@ void packPanelStressTest( WgRootPanel * pRoot )
 //    pText2->SetText("TEXA");
     pText2->SetText("TEXT");
 
+    
+}
+
+//____ cursorInViewTest() _________________________________________________________
+
+void cursorInViewTest( WgRootPanel * pRoot )
+{
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    
+    
+    auto pScrollPanel = new WgScrollPanel();
+    pScrollPanel->SetContentSizePolicy(WgSizePolicy::Bound, WgSizePolicy::Default);
+    
+    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
+    pTextSkin->SetContentPadding( {10,10,10,30} );
+    
+    auto pText = new WgTextDisplay();
+    pText->SetText("TEXT 1 WITH AUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
+    pText->SetSkin( pTextSkin );
+    pText->SetTextWrap(true);
+    pText->SetEditMode(WgTextEditMode::Editable);
+    
+    pScrollPanel->SetContent(pText);
+    pBaseFlex->AddChild(pScrollPanel, {50,50,150,50});
     
 }
 

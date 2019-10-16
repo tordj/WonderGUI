@@ -386,6 +386,19 @@ bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 		return false;
 }
 
+//____ _inViewRequested() ________________________________________________________
+
+void WgRootPanel::_inViewRequested( WgHook * pChild )
+{
+    // Do nothing.
+}
+
+void WgRootPanel::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
+{
+    // Do nothing.
+}
+
+
 ///////////////////////////////////////////////////////////////////////////////
 
 WgRootPanel::Hook::~Hook()
