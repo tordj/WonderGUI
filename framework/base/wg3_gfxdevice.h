@@ -106,6 +106,7 @@ namespace wg
 
 		virtual bool	beginRender();
 		virtual bool	endRender();
+        virtual bool    isRendering() { return m_bRendering; };
 
 		// Draw methods.
 
@@ -208,6 +209,7 @@ namespace wg
 		uint32_t	m_renderFlags;		// Current flags.
 
 		SizeI		m_canvasSize;
+        bool        m_bRendering = false;
 	};
 
 } // namespace wg
