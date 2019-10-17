@@ -156,7 +156,6 @@ namespace wg
 		void	_executeBuffer();
 
 		SurfaceFactory_p	m_pSurfaceFactory = nullptr;
-		bool				m_bRendering = false;
 
 		float	m_lineThicknessTable[17];
 

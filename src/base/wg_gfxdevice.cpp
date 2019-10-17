@@ -212,6 +212,10 @@ namespace wg
 
 	bool GfxDevice::beginRender()
 	{
+        if( m_bRendering )
+            return false;
+
+        m_bRendering = true;
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 
@@ -219,6 +223,10 @@ namespace wg
 
 	bool GfxDevice::endRender()
 	{
+        if( !m_bRendering )
+            return false;
+        
+        m_bRendering = false;
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 

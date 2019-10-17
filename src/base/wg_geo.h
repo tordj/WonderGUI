@@ -473,6 +473,8 @@ namespace wg
 		inline bool	isEmpty() const;							///< @brief Check if rectangle has no area.
 		inline void clear();									///< @brief Sets all values to zero.
 
+        inline CoordT<Type> distance( CoordT<Type> coord ) const;   ////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
+        
 		//.____ Operators ___________________________________________
 
 		// All arithmetic versions of RectI can be IMPLICITLY cast to Rect, Coord and Size
@@ -1388,7 +1390,28 @@ namespace wg
 		 return true;
 	 }
 
+    //_____________________________________________________________________________
 
+    template<typename Type>
+    CoordT<Type> RectT<Type>::distance( CoordT<Type> coord ) const
+    {
+        coord.x -= x;
+        if( coord.x >= 0 )
+        {
+            coord.x -= w;
+            if( coord.x < 0 )
+                coord.x = 0;
+        }
+
+        coord.y -= y;
+        if( coord.y >= 0 )
+        {
+            coord.y -= h;
+            if( coord.y < 0 )
+                coord.y = 0;
+        }
+        return coord;
+    }
 
 	 //_____________________________________________________________________________
 
