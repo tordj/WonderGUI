@@ -43,8 +43,8 @@ struct WgGlyphBitmap
 {
 	WgSurface*	pSurface;
 	WgRect		rect;
-	Sint8		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-	Sint8		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+	Sint16		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+	Sint16		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 };
 
 

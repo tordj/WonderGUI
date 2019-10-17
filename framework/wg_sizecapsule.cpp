@@ -127,10 +127,14 @@ WgSize WgSizeCapsule::PreferredPixelSize() const
 		if( m_pixelsPreferred.w != 0 )
 		{
 			pref.w = m_pixelsPreferred.w;
+            if( m_pixelsPreferred.h == 0 )
+                pref.h = m_hook.Widget()->MatchingPixelHeight(pref.w);
 		}
 		if( m_pixelsPreferred.h != 0 )
 		{
 			pref.h = m_pixelsPreferred.h;
+            if( m_pixelsPreferred.w == 0 )
+                pref.w = m_hook.Widget()->MatchingPixelWidth(pref.h);
 		}
 
 		// Constrain against min/max, taking MatchingPixelWidth/MatchingPixelHeight into account.
