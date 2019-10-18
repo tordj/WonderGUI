@@ -237,7 +237,7 @@ namespace wg
 		SizeI	_componentSize(const Component * pComponent) const override;
 		RectI	_componentGeo(const Component * pComponent) const override;
 
-		void	_receiveComponentNotif(Component * pComponent, ComponentNotif notification, void * pData) override;
+		void	_receiveComponentNotif(Component * pComponent, ComponentNotif notification, int value, void * pData) override;
 
 
 		// Internal

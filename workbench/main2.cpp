@@ -66,6 +66,7 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 
 bool shadowLayerTest(RootPanel_p pRoot);
 bool stretchBlitTest(RootPanel_p pRoot);
+bool scrollIntoViewTest(RootPanel_p pRoot);
 
 
 
@@ -467,8 +468,8 @@ int main(int argc, char** argv)
 
 	
 //	shadowLayerTest(pRoot);
-	stretchBlitTest(pRoot);
-	
+//	stretchBlitTest(pRoot);
+	scrollIntoViewTest(pRoot);
 	
 	
 	// Test IChild and IChildIterator baseclasses
@@ -496,7 +497,7 @@ int main(int argc, char** argv)
 
 	}
 */
-
+/*
 	// Test drag n drop support
 
 	{
@@ -557,7 +558,7 @@ int main(int argc, char** argv)
 
 
 	}
-
+*/
 	
 	
 /*
@@ -1150,25 +1151,44 @@ int main(int argc, char** argv)
 	SDL_FreeSurface(pSDLSurf);
 	pFrogSurface->setScaleMode(ScaleMode::Interpolate);
 
+	float rot = 0.1f;
+	float scale = 0.00101f;
+	float scaleInc = 0.00001f;
 
 	while( !bQuit )
 	{
+
 		translateEvents( pInput, pRoot );
 
 		pRoot->render();
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
 
-
 /*
+		rot += 0.1f;
+		scale += scaleInc;
+		if (scale > 0.01f)
+		{
+			scaleInc = -scaleInc;
+			scale = 0.01f;
+		}
+
+		if (scale < 0.f)
+		{
+			scaleInc = -scaleInc;
+			scale = 0.f;
+		}
+
+
 		auto pDevice = Base::activeContext()->gfxDevice();
 
 		pDevice->beginRender();
 		pDevice->fill(Color::Blue);
 		pDevice->setBlitSource(pFrogSurface);
-		pDevice->rotScaleBlit({ 0,0,width,height }, RectF(pFrogSurface->size()).center(), 0.f, 1.f);
+//		pDevice->rotScaleBlit({ 0,0,width,height }, RectF(pFrogSurface->size()).center(), 0.f, 1.f);
 
-//		pDevice->rotScaleBlit({ 10,10,width - 20,height - 20 }, CoordF(1024/2,768/2), 30.f, 0.5f );
+		pDevice->rotScaleBlit({ 10,10,width - 20,height - 20 }, CoordF(1024/2,768/2), rot, scale );
+
 
 //		pDevice->blit({ 0,0 });
 
@@ -1613,6 +1633,28 @@ bool stretchBlitTest(RootPanel_p pRoot)
 		pBack->children.setSize(0, pImage->size()+Size(distance.x, distance.y) );
 	
 	});
+
+	return true;
+}
+
+//____ scrollIntoViewTest() ______________________________________________________
+
+bool scrollIntoViewTest(RootPanel_p pRoot)
+{
+	auto pEditor = TextEditor::create();
+
+	pEditor->text.set("TEXT AREA.");
+	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
+
+	auto pScrollPanel = ScrollPanel::create();
+	pScrollPanel->view = pEditor;
+	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
+
+
+	auto pFlex = FlexPanel::create();
+	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
+
+	pRoot->child = pFlex;
 
 	return true;
 }

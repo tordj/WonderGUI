@@ -273,9 +273,9 @@ namespace wg
 
  		virtual void	_componentRequestFocus( const Component * pComponent ) override;
 		virtual void	_componentRequestInView( const Component * pComponent ) override;
-		virtual void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) override;
+		virtual void	_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
-		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) override;
+		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 		//
 

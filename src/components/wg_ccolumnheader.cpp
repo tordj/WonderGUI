@@ -210,7 +210,7 @@ namespace wg
 							m_sortOrder = SortOrder::Descending;
 						else
 							m_sortOrder = SortOrder::Ascending;
-						_notify( ComponentNotif::SortOrderChanged, nullptr );
+						_notify( ComponentNotif::SortOrderChanged, 0, nullptr );
 					}
 					pMsg->swallow();
 					return true;
@@ -330,12 +330,12 @@ namespace wg
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}
-	void CColumnHeader::_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio )
+	void CColumnHeader::_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave )
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}
 
-	void CColumnHeader::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData )
+	void CColumnHeader::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		// Do nothing, our sub components are not expected to send notifications.
 	}

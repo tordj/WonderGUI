@@ -46,7 +46,7 @@ namespace wg
 		inline int64_t		min() const { return m_minValue; }
 		inline int64_t		max() const { return m_maxValue; }
 
-		inline void			onValueModified() { _notify( ComponentNotif::ValueModified, nullptr ); }
+		inline void			onValueModified() { _notify( ComponentNotif::ValueModified, 0, nullptr ); }
 
 	protected:
 		int64_t				m_minValue;

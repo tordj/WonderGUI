@@ -68,7 +68,7 @@ namespace wg
 		void				goEof();
 
 	protected:
-		void				_onValueEdited() { _notify( ComponentNotif::ValueEdited, nullptr ); }
+		void				_onValueEdited() { _notify( ComponentNotif::ValueEdited, 0, nullptr ); }
 
 		TextEditMode		m_editMode;
 		Caret_p				m_pCaret;

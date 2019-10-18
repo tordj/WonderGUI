@@ -140,19 +140,19 @@ namespace wg
 
 	void  TextMapper::_setComponentDirty( CText * pText )
 	{
-		pText->_requestRender();
+		pText->_mapperRequestRender();
 	}
 
 	void  TextMapper::_setComponentDirty( CText * pText, const RectI& rect )
 	{
-		pText->_requestRender( rect );
+		pText->_mapperRequestRender( rect );
 	}
 
 	//____ _requestComponentResize() _______________________________________________
 
 	void TextMapper::_requestComponentResize( CText * pText )
 	{
-		pText->_requestResize();
+		pText->_mapperRequestResize();
 	}
 
 

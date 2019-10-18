@@ -143,9 +143,9 @@ public:
             for( int i = 0; i < canvas.w ; i+=y )
             {
                 if( m_pGrid->scaleMode() == ScaleMode::Interpolate )
-                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF((i)*30.f/(canvas.w-1), 0, y*30.f/(canvas.w-1), 10) );
+                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF(i*30.f/(canvas.w-1), 0, y*30.f/(canvas.w-1), 10) );
                 else
-                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF((i)*31.f/(canvas.w-0.95), 0, y*31.f/(canvas.w-0.95), 10) );
+                    pDevice->stretchBlit( {i,ofsY,y,10}, RectF(i*31.f/(canvas.w-0.99), 0, y*31.f/(canvas.w-0.99), 10) );
 
             }
             ofsY += 10;

@@ -1387,6 +1387,51 @@ namespace wg
 		_updateElementGeo( m_size );
 	}
 
+	//____ _childRequestInView() _________________________________________________
+
+	void ScrollPanel::_childRequestInView(Slot * pSlot)
+	{
+		// Do nothing special, view itself will always be in view.
+
+		Panel::_childRequestInView(pSlot);
+	}
+
+	void ScrollPanel::_childRequestInView(Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea)
+	{
+		RectI window = { m_viewSlot.viewPixOfs, m_viewSlot.windowGeo.size() };
+
+		for (int i = 0; i < 2; i++)
+		{
+			RectI inside = i == 0 ? niceToHaveArea : mustHaveArea;
+
+			int diffLeft = inside.x - window.x;
+			int diffRight = inside.right() - window.right();
+			int diffTop = inside.y - window.y;
+			int diffBottom = inside.bottom() - window.bottom();
+
+			if( diffLeft > 0 && diffRight > 0  )
+				window.x += min(diffLeft, diffRight);
+			else if( diffLeft < 0 && diffRight < 0 )
+				window.x += max(diffLeft, diffRight);
+
+			if( diffTop > 0 && diffBottom > 0 )
+				window.y += min(diffTop, diffBottom);
+			else if( diffTop < 0 && diffBottom < 0 )
+				window.y += max(diffTop, diffBottom);
+		}
+
+		if( window.pos() != m_viewSlot.windowGeo.pos() )
+			_setWindowPos( window.pos() );
+	
+		// Forward to any outer ScrollPanel
+
+		RectI newMustHaveArea(mustHaveArea - m_viewSlot.viewPixOfs + m_viewSlot.windowGeo.pos(), m_viewSlot.windowGeo);
+		RectI newNiceToHaveArea(niceToHaveArea - m_viewSlot.viewPixOfs + m_viewSlot.windowGeo.pos(), m_viewSlot.windowGeo);
+
+		_requestInView(newMustHaveArea, newNiceToHaveArea);
+	}
+
+
 	//____ _prevChild() __________________________________________________________
 
 	Widget * ScrollPanel::_prevChild( const Slot * pSlot ) const
@@ -1394,7 +1439,7 @@ namespace wg
 		if( pSlot == &m_scrollbarSlots[1] )
 			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_viewSlot.pWidget;
 
-		if(pSlot == &m_scrollbarSlots[0])
+		if( pSlot == &m_scrollbarSlots[0] )
 			return m_viewSlot.pWidget;
 
 		return nullptr;

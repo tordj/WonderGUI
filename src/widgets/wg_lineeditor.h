@@ -76,7 +76,7 @@ namespace wg
 		void			_componentRequestRender(const Component * pComponent) override;
 		void			_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
 		void			_componentRequestResize( const Component * pComponent ) override;
-		void			_componentRequestInView(const Component * pComponent, const RectI& preferred, const RectI& prio) override;
+		void			_componentRequestInView(const Component * pComponent, const RectI& mustHave, const RectI& niceToHave) override;
 
 	private:
 

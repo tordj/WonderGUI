@@ -1521,7 +1521,7 @@ namespace wg
 
 	//____ _receiveComponentNotif() _____________________________________________________
 
-	void PackList::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData )
+	void PackList::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{

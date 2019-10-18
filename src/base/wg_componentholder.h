@@ -51,11 +51,11 @@ namespace wg
 
  		virtual void	_componentRequestFocus( const Component * pComponent ) = 0;
 		virtual void	_componentRequestInView( const Component * pComponent ) = 0;
-		virtual void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) = 0;
+		virtual void	_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave ) = 0;
 
 
 
-		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) = 0;
+		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) = 0;
 
 	};
 

@@ -72,7 +72,7 @@ namespace wg
 
 
 	protected:
-		void	_onModified() { _notify( ComponentNotif::SpanModified, nullptr ); }
+		void	_onModified() { _notify( ComponentNotif::SpanModified, 0, nullptr ); }
 		int		_stepSize() { return 0; }	//TODO: Implement!!!
 		int		_skipSize() { return 0; }	//TODO: Implement!!!
 	};

@@ -25,6 +25,7 @@
 #include <wg_charseq.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
+#include <wg_util.h>
 
 // TODO: Go to next/previous word.
 // TODO: Correctly render selected text.
@@ -40,7 +41,7 @@
 
 namespace wg
 {
-
+	using namespace Util;
 
 	//____ Constructor _____________________________________________________________
 
@@ -507,7 +508,7 @@ namespace wg
 
 	void CTextEditor::render( GfxDevice * pDevice, const RectI& _canvas )
 	{
-		_textMapper()->render(this, pDevice, _canvas );
+		_textMapper()->render(this, pDevice, rawToPixels(_canvas) );
 	}
 
 	//____ setEditMode() _______________________________________________________
@@ -915,7 +916,7 @@ namespace wg
 
 	bool CTextEditor::_caretToPos( CoordI pos)
 	{
-		int ofs = _textMapper()->caretToPos(this,pos, m_editState.wantedOfs );
+		int ofs = _textMapper()->caretToPos(this, rawToPixels(pos), m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
 	}
 
@@ -990,8 +991,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		RectI preferred = _textMapper()->rectForRange(this, beg, end - beg);
-		RectI prio = _textMapper()->rectForCaret(this);
+		RectI preferred = pixelsToRaw(_textMapper()->rectForRange(this, beg, end - beg));
+		RectI prio = pixelsToRaw(_textMapper()->rectForCaret(this));
 
 		_requestVisibility(preferred, prio);
 	}

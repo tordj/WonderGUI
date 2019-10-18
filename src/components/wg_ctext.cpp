@@ -205,6 +205,13 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _mapperRequestRender() _______________________________________________
+
+	void CText::_mapperRequestRender(const RectI& rect)
+	{
+		_requestRender(pixelsToRaw(rect));
+	}
+
 
 
 } // namespace wg

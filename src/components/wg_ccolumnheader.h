@@ -81,9 +81,9 @@ namespace wg
 
 		void	_componentRequestFocus( const Component * pComponent ) override;
 		void	_componentRequestInView( const Component * pComponent ) override;
-		void	_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio ) override;
+		void	_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
-		void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData ) override;
+		void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 
 		Skin_p			m_pSkin;

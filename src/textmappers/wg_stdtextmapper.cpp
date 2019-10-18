@@ -2051,7 +2051,7 @@ namespace wg
 				{
 					case SelectMode::ClosestBegin:
 					{
-						if( posX - pCharBeg < distance - posX )
+						if( posX - pCharBeg <= distance - posX )
 							return int(pChar - pTextBegin);
 						else
 							return int(pChar+1 - pTextBegin);

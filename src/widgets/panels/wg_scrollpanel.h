@@ -311,6 +311,10 @@ namespace wg
 		void		_childRequestRender(Slot * pSlot, const RectI& rect);
 		void		_childRequestResize(Slot * pSlot);
 
+		void		_childRequestInView(Slot * pSlot);
+		void		_childRequestInView(Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea);
+
+
 		Widget *	_prevChild(const Slot * pSlot) const;
 		Widget *	_nextChild(const Slot * pSlot) const;
 

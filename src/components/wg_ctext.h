@@ -83,6 +83,10 @@ namespace wg
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		virtual const EditState * _editState() const;
 
+		inline void			_mapperRequestRender() { _requestRender(); }
+		void				_mapperRequestRender(const RectI& rect);
+		inline void			_mapperRequestResize() { _requestResize(); }
+
 	protected:
 
 		SizeI				m_size;

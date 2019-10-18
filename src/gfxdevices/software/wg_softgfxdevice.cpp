@@ -2722,10 +2722,6 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		// We should sample at middle of destination pixel, not topleft.
-
-//		_src.x += 0.5f * complexTransform[0][0] + 0.5f * complexTransform[1][0];
-//		_src.y += 0.5f * complexTransform[1][1] + 0.5f * complexTransform[0][1];
 
 		const RectI& clip = dest;
 

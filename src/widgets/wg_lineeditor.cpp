@@ -316,7 +316,7 @@ namespace wg
 
 	//____ _componentRequestInView() ____________________________________________
 
-	void LineEditor::_componentRequestInView(const Component * pComponent, const RectI& preferred, const RectI& prio)
+	void LineEditor::_componentRequestInView(const Component * pComponent, const RectI& mustHave, const RectI& niceToHave)
 	{
 		int scrollOfs = m_textScrollOfs;
 		SizeI canvas = pComponent->_size();
@@ -328,11 +328,11 @@ namespace wg
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;
 
-		if( prio.x < scrollOfs )
-			scrollOfs = prio.x;
+		if( mustHave.x < scrollOfs )
+			scrollOfs = mustHave.x;
 
-		if( prio.x + prio.w > scrollOfs + window.w )
-			scrollOfs = prio.x + prio.w - window.w;
+		if( mustHave.x + mustHave.w > scrollOfs + window.w )
+			scrollOfs = mustHave.x + mustHave.w - window.w;
 
 		if (scrollOfs != m_textScrollOfs)
 		{

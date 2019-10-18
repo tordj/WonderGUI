@@ -98,51 +98,55 @@ int main ( int argc, char** argv )
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and
 	// a button using scaled bitmaps.
+	// We do this inside a C++ scope so that the temporary smartpointers
+	// are automatically cleared when the scope is left and we don't
+	// have to think about clearing them manually.
 	//------------------------------------------------------
 
-	// First we load the 24-bit bmp containing the button graphics.
-	// No error handling or such to keep this example short and simple.
+	{
+		// First we load the 24-bit bmp containing the button graphics.
+		// No error handling or such to keep this example short and simple.
 
-	SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
-	SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+		SDL_Surface * pSDLSurf = SDL_LoadBMP( "../../../resources/simple_button.bmp" );
+		SoftSurface_p pButtonSurface = SoftSurface::create( SizeI( pSDLSurf->w, pSDLSurf->h ), PixelFormat::BGR_8, (unsigned char*) pSDLSurf->pixels, pSDLSurf->pitch, 0 );
+		SDL_FreeSurface(pSDLSurf);
 
-	// First we create and add a FlexPanel to the RootPanel.
-	// The RootPanel can only take one child, but the FlexPanel
-	// provides simple and powerful ways to layout multiple children.
+		// First we create and add a FlexPanel to the RootPanel.
+		// The RootPanel can only take one child, but the FlexPanel
+		// provides simple and powerful ways to layout multiple children.
 
-	FlexPanel_p pFlexPanel = FlexPanel::create();
-	pRoot->child = pFlexPanel;
+		FlexPanel_p pFlexPanel = FlexPanel::create();
+		pRoot->child = pFlexPanel;
 
-	// Now we create the background using the simplest widget
-	// type, the Filler and add it to the FlexPanel, making
-	// it stretch from the north-west to the south-east corners
-	// of the FlexPanel.
+		// Now we create the background using the simplest widget
+		// type, the Filler and add it to the FlexPanel, making
+		// it stretch from the north-west to the south-east corners
+		// of the FlexPanel.
 
-	Filler_p pBackground = Filler::create();
-	pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
-	pFlexPanel->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+		Filler_p pBackground = Filler::create();
+		pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
+		pFlexPanel->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
-	// Now we create the button, using a clickable skin built from
-	// the BMP with the button graphics. createClickableFromSurface()
-	// expects the surface to be divided horizontally in four equal
-	// sections containing the graphics for the button states NORMAL,
-	// HOVERED, PRESSED and DISABLED. We specify that there are no
-	// spacing between these four graphics blocks and that they have
-	// three pixel thick borders around that should not stretch.
-	// When adding it to the FlexPanel we specify its geometry in
-	// pixels and that it should be centered.
+		// Now we create the button, using a clickable skin built from the BMP
+		// with the button graphics. First we specify the Surface and a rectangle
+		// for the first image. Then follows the states that we have images for, 
+		// the border that creates the nine stretch-zones of the image 
+		// (NinePatch style) and the orientation in which the images are lined up.
+		// When adding it to the FlexPanel we specify its geometry in
+		// pixels and that it should be centered.
 
-	// Note: since WonderGUI orders widgets from front to back, we actually
-	// need to insert the button before the background, otherwise it is hidden behind.
-	// For best performance you should add widgets from front to back and avoid insert.
+		// Note: since WonderGUI orders widgets from front to back, we actually
+		// need to insert the button before the background, otherwise it is hidden behind.
+		// For best performance you should add widgets from front to back and avoid insert.
 
-	Button_p pButton = Button::create();
-	pButton->setSkin( BlockSkin::createClickableFromSurface( pButtonSurface, 0, BorderI(3) ) );
-	pFlexPanel->children.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
+		Button_p pButton = Button::create();
+		pButton->setSkin(BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Orientation::Vertical ));
+		pFlexPanel->children.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
-	// Finally we add a callback to the click-event of the button.
+		// Finally we add a callback to the click-event of the button.
 
-	Base::msgRouter()->addRoute(MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
+		Base::msgRouter()->addRoute(pButton, MsgType::Select, [&](Msg * pMsg) { bQuit = true; } );
+	}
 
 
 	//------------------------------------------------------
@@ -168,6 +172,13 @@ int main ( int argc, char** argv )
 
 		SDL_Delay(20);
 	}
+
+	// Cleanup. We should null all our smartpointers so that all objects are
+	// deleted before calling Base::exit().
+
+	pCanvas = nullptr;
+	pCanvasBlob = nullptr;
+	pRoot = nullptr;
 
 	// Exit WonderGUI
 
@@ -202,7 +213,9 @@ void translateEvents( RootPanel_p pRoot )
 
 	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
 
-	// Process all the SDL events in a loop
+	// Process all the SDL events in a loop.
+	// In this example we only use mouse input, but typically you
+	// would also need to translate keyboard events.
 
 	SDL_Event e;
 	while(SDL_PollEvent(&e)) {

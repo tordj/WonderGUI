@@ -550,14 +550,14 @@ namespace wg
 
 	void Widget::_componentRequestInView( const Component * pComponent )
 	{
-		RectI r = _componentPos( pComponent );
+		RectI r = _componentGeo( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const Component * pComponent, const RectI& preferred, const RectI& prio )
+	void Widget::_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave )
 	{
 		CoordI ofs = _componentPos( pComponent );
-		_requestInView( preferred + ofs, prio + ofs );
+		_requestInView(mustHave + ofs, niceToHave + ofs );
 	}
 
 
@@ -620,7 +620,7 @@ namespace wg
 
 	//____ _receiveComponentNotif() __________________________________________________
 
-	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, void * pData )
+	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		// By default we do nothing
 	}
