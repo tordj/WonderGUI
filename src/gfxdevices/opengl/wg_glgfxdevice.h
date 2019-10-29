@@ -88,7 +88,8 @@ namespace wg
 
 		bool	beginRender() override;
 		bool	endRender() override;
-		void	flush();
+        bool    isIdle() override;
+        void	flush();
 
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -179,8 +180,10 @@ namespace wg
 		int				m_canvasYstart;
 		int				m_canvasYmul;
 
-		SizeI            m_emptyCanvasSize;
+		SizeI           m_emptyCanvasSize;
 
+        GLsync          m_idleSync = 0;
+        
 		// Device programs
 
 		GLuint  m_fillProg;
