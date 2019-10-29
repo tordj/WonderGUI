@@ -308,6 +308,9 @@ namespace wg
 		glDeleteBuffers(1, &m_extrasBufferId);
 
 		glDeleteVertexArrays(1, &m_vertexArrayId);
+        
+        if( m_idleSync != 0 )
+            glDeleteSync(m_idleSync);
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -572,9 +575,6 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 
-		glFinish();
-
-
 		//
 
 		assert( glGetError() == 0 );
@@ -593,11 +593,6 @@ namespace wg
 
 		_endCommand();
 		_executeBuffer();
-
-		//
-
-//        glFlush();
-		glFinish();
 
 		// Restore render states from before beginRender()
 
@@ -623,7 +618,16 @@ namespace wg
 
 		//
 
-		assert(glGetError() == 0);
+        if( m_idleSync != 0 )
+            glDeleteSync(m_idleSync);
+        
+        m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+
+        //
+        
+        glFlush();
+        
+        assert(glGetError() == 0);
 		m_bRendering = false;
 
 		// Restore previously active device and exit
@@ -631,6 +635,21 @@ namespace wg
 		s_pActiveDevice = m_pPrevActiveDevice;
 		return true;
 	}
+
+    //____ isIdle() _____________________________________________________________________
+    
+    bool GlGfxDevice::isIdle()
+    {
+        if( m_bRendering )
+            return false;
+        
+        if( m_idleSync == 0 )
+            return true;
+        
+        GLint isSignaled = 0;
+        glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
+        return (isSignaled == GL_SIGNALED);
+    }
 
 	//____ flush() _______________________________________________________________
 

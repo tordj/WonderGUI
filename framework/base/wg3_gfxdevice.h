@@ -106,8 +106,9 @@ namespace wg
 
 		virtual bool	beginRender();
 		virtual bool	endRender();
-        virtual bool    isRendering() { return m_bRendering; };
-
+        virtual bool    isRendering();
+		virtual bool	isIdle();
+		
 		// Draw methods.
 
 		virtual void	fill(const Color& col);

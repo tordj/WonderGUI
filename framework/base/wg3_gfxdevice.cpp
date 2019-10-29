@@ -229,9 +229,55 @@ namespace wg
         m_bRendering = false;
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
+	
+	//____ isRendering() _______________________________________________________
+	/**
+	 * @brief Check if GfxDevice is in rendering state.
+	 *
+	 * Check if GfxDevice is in rendering state, e.g. beginRender() has been called
+	 * but not yet followed by endRender().
+	 *
+	 * Please note that GfxDevice might remain busy for an undefined time drawing
+	 * graphics after endRender() has been called if rendering is done
+	 * asynchronously. To determine if all graphics has been rendered to the
+	 * framebuffer you should call isIdle() instead.
+	 *
+	 * @return True if between beginRender()/endRender() calls.
+	 */
+	
+	bool GfxDevice::isRendering()
+	{
+		return m_bRendering;
+	};
 
+	//____ isIdle() ____________________________________________________________
+	/**
+	 * @brief Check if all rendering has completed.
+	 *
+	 * Check if GfxDevice has fully completed rendering all issued graphics commands
+	 * and the canvas content is up-to-date.
+	 *
+	 * This method will start returning false once beginRender() has been called
+	 * and return true again some time after endRender() has been called.
+	 *
+	 * @return True if all rendering has completed.
+	 */
+	
+	bool GfxDevice::isIdle()
+	{
+		return !m_bRendering;
+	}
+	
 	//____ fill() ______________________________________________________
-
+	/**
+	 * @brief Fill the canvas with specified color.
+	 *
+	 * Fills the entire canvas (or whatever areas are allowed by the
+	 * clip list) with the specified color.
+	 *
+	 * @return Nothing.
+	 */
+	
 	void GfxDevice::fill(const Color& col)
 	{
 		fill(m_canvasSize, col);
