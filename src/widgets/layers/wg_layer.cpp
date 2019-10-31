@@ -117,7 +117,7 @@ namespace wg
 			if( pCover->geo.intersectsWith( rect ) )
 				pCover->pWidget->_maskPatches( patches, pCover->geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
 
-			pCover = _incLayerSlot(pSlot,incNext);
+			pCover = _incLayerSlot(pCover,incNext);
 		}
 
 		// Make request render calls

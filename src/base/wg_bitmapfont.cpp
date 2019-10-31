@@ -302,7 +302,7 @@ namespace wg
 			{
 				char* pKerningSpec = TextTool::nextLine( pKerningStart );
 
-				int8_t* pNewKerningTable = new int8_t[ m_nGlyphs * m_nGlyphs ];
+				int16_t* pNewKerningTable = new int16_t[ m_nGlyphs * m_nGlyphs ];
 				int oldSize = sizeof( *m_pKerningTable ) * m_nKerningGlyphs * m_nKerningGlyphs;
 				int newSize = sizeof( *m_pKerningTable ) * m_nGlyphs * m_nGlyphs;
 				if( m_pKerningTable )
@@ -352,7 +352,7 @@ namespace wg
 		m_src.pSurface = 0;
 	}
 
-	BitmapFont::MyGlyph::MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect )
+	BitmapFont::MyGlyph::MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;

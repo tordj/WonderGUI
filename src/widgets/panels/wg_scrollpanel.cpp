@@ -1420,7 +1420,7 @@ namespace wg
 				window.y += max(diffTop, diffBottom);
 		}
 
-		if( window.pos() != m_viewSlot.windowGeo.pos() )
+		if( window.pos() != m_viewSlot.viewPixOfs )
 			_setWindowPos( window.pos() );
 	
 		// Forward to any outer ScrollPanel

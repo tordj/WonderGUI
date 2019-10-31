@@ -32,6 +32,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char StdTextMapper::CLASSNAME[] = {"StdTextMapper"};
 
@@ -409,6 +410,13 @@ namespace wg
 
 		BlendMode renderMode = pDevice->blendMode();
 
+		// Limit our cliplist if needed
+
+		ClipPopData popData;
+		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
+			limitClipList(pDevice, canvas);
+
+
 		// Render back colors
 
 		_renderBack( pText, pDevice, canvas );
@@ -556,6 +564,10 @@ namespace wg
 		{
 			pCaret->render( pDevice, charRect(pText, pEditState->caretOfs) + canvas.pos() );
 		}
+
+		// Pop any changes to cliplist.
+
+		popClipList(pDevice, popData);
 	}
 
 

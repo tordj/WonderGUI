@@ -83,7 +83,7 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( int advance, int8_t bearingX, int8_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect );
+			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect );
 
 			const GlyphBitmap * getBitmap() { return &m_src; }
 
@@ -96,7 +96,7 @@ namespace wg
 		MyGlyph * 	m_glyphTab[256];
 
 		int			m_nKerningGlyphs;
-		int8_t*		m_pKerningTable;
+		int16_t*	m_pKerningTable;
 
 		int			m_nGlyphs;
 		bool		m_bMonospace;

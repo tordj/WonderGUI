@@ -28,6 +28,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char LineEditor::CLASSNAME[] = {"LineEditor"};
 
@@ -111,64 +112,17 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectI canvas;
-		if( m_pSkin )
-			canvas = m_pSkin->_contentRect( _canvas, m_state );
-		else
-			canvas = _canvas;
-/*
-		//TODO: Move this somewhere else where it belongs.
+		RectI canvas = m_pSkin ? m_pSkin->_contentRect( _canvas, m_state ) : _canvas;
 
-		if( m_text.editMode() != TextEditMode::Static  )
-		{
-			if( m_text.hasSelection() || m_text.editMode() == TextEditMode::Editable )
-			{
-				int selBeg = m_text.selectionBegin();
-				int selEnd = m_text.selectionEnd();
-
-				int beg = selBeg;
-				int end = selEnd;
-
-				if( beg > end )
-					std::swap( beg, end );
-
-				if( beg > 0 )
-					beg--;
-
-				if( end < m_text.length() )
-					end++;
-
-				RectI r = m_text.rectForRange( beg, end - beg );
-
-				int prio1 = r.x;
-				int prio2 = r.x + r.w;
-
-				if( selBeg < selEnd )
-					std::swap( prio1, prio2 );
-
-				if( prio2 < m_textScrollOfs )
-					m_textScrollOfs = prio2;
-
-				if (prio2 > m_textScrollOfs + canvas.w)
-					m_textScrollOfs = prio2 - canvas.w;
-
-				if (prio1 < m_textScrollOfs)
-					m_textScrollOfs = prio1;
-
-				if (prio1 > m_textScrollOfs + canvas.w)
-					m_textScrollOfs = prio1 - canvas.w;
-			}
-		}
-		else
-			m_textScrollOfs = 0;
-*/
 		//
 
 		RectI textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
 
-//		RectI textClip(_clip, canvas);		//TODO: Text should not be rendered outside widgets contentRect. Maybe do this inside m_text.render?
+		// We need to clip to canvas since textCanvas can go outside our canvas.
 
+		auto pop = limitClipList(pDevice, rawToPixels(canvas) );
 		m_text.render(pDevice, textCanvas );
+		popClipList(pDevice, pop);
 	}
 
 	//____ _refresh() _______________________________________________________

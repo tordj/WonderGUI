@@ -491,7 +491,7 @@ namespace wg
 
 		// Any dirt left in patches is for base child, lets render that first
 
-		if (!patches.isEmpty())
+		if (m_baseSlot.pWidget && !patches.isEmpty())
         {
             ClipPopData popData = patchesToClipList(pDevice, _window, patches);
 			m_baseSlot.pWidget->_render(pDevice, _canvas, _window);

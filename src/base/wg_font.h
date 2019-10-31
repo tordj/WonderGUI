@@ -46,8 +46,8 @@ namespace wg
 
 		Surface_p 	pSurface;
 		RectI		rect;
-		int8_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-		int8_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+		int16_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+		int16_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 
 

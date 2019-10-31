@@ -372,10 +372,10 @@ namespace wg
 
 		if( mode == SearchMode::ActionTarget )
 		{
-			ModalSlot * pSlot = m_modals.last();
-
-			if( pSlot )
+			if( !m_modals.isEmpty() )
 			{
+				ModalSlot * pSlot = m_modals.last();
+
 				if( pSlot->pWidget->isContainer() )
 				{
 					Widget * pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - pSlot->geo.pos(), mode );
@@ -401,8 +401,8 @@ namespace wg
 				else
 					return m_baseSlot.pWidget;
 			}
-			else
-				return 0;
+
+			return nullptr;
 		}
 
 		// For the rest of the modes we can rely on the default method.
@@ -450,10 +450,10 @@ namespace wg
 		Widget * 	pSavedFocus = nullptr;
 		Slot *		pBranch	= nullptr;
 
-		while( pSlot > m_modals.first() && pSlot->geo.isEmpty() )
+		while( pSlot >= m_modals.first() && pSlot->geo.isEmpty() )
 			pSlot--;
 
-		if( pSlot > m_modals.first() )
+		if( pSlot >= m_modals.first() )
 		{
 			pSavedFocus = pSlot->pKeyFocus.rawPtr();
 			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
@@ -462,7 +462,7 @@ namespace wg
 		else if( m_baseSlot.pWidget )
 		{
 			pSavedFocus = m_pBaseKeyFocus.rawPtr();
-			m_pBaseKeyFocus = 0;								// Needs to be cleared for the future.
+			m_pBaseKeyFocus = nullptr;								// Needs to be cleared for the future.
 			pBranch = &m_baseSlot;
 		}
 

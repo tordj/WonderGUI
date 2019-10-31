@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_capsule.h>
+#include <wg_patches.h>
 
 namespace wg
 {
@@ -85,7 +86,11 @@ namespace wg
 	int Capsule::_matchingHeight( int width ) const
 	{
 		if( m_child.pWidget )
-			return m_child.matchingHeight( width );
+		{
+			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+
+			return m_child.matchingHeight( width-padding.w ) + padding.h;
+		}
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -95,7 +100,11 @@ namespace wg
 	int Capsule::_matchingWidth( int height ) const
 	{
 		if( m_child.pWidget )
-			return m_child.matchingWidth( height );
+		{
+			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+
+			return m_child.matchingWidth(height - padding.h) + padding.w;
+		}
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -104,10 +113,15 @@ namespace wg
 
 	SizeI Capsule::_preferredSize() const
 	{
-		if( m_child.pWidget )
+		if (m_child.pWidget)
+		{
+			if (m_pSkin)
+				return m_child.preferredSize() + m_pSkin->_contentPadding();
+
 			return m_child.preferredSize();
+		}
 		else
-			return SizeI(0,0);
+			return Widget::_preferredSize();
 	}
 
 	//____ _childPos() ___________________________________________________________
@@ -176,15 +190,24 @@ namespace wg
 
 	void Capsule::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
 	{
-		if( m_child.pWidget )
-			m_child.pWidget->_collectPatches( container, geo, clip );
+		if( m_pSkin )
+			container.add(RectI(geo, clip));
+		else if (m_child.pWidget)
+			m_child.pWidget->_collectPatches(container, geo, clip);
 	}
 
 	//____ _maskPatches() ________________________________________________________
 
 	void Capsule::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
-		if( m_child.pWidget )
+		if (m_pSkin)
+		{
+			if( m_pSkin->isOpaque( clip, geo.size(), m_state ) )
+				patches.sub(RectI(geo, clip));
+			else if( m_child.pWidget )
+				m_child.pWidget->_maskPatches(patches, m_pSkin->_contentRect(geo, m_state), clip, blendMode);
+		}
+		else if( m_child.pWidget )
 			m_child.pWidget->_maskPatches( patches, geo, clip, blendMode );
 	}
 
@@ -201,8 +224,11 @@ namespace wg
 	{
 		Container::_setSize( size );
 
-		if( m_child.pWidget )
-			m_child.pWidget->_setSize(size);
+		if (m_child.pWidget)
+		{
+			SizeI sz = m_pSkin ? size - m_pSkin->_contentPadding() : size;
+			m_child.pWidget->_setSize(sz);
+		}
 	}
 
 	//____ _firstChild() ____________________________________________________________
@@ -224,7 +250,7 @@ namespace wg
 	void Capsule::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		package.pSlot = &m_child;
-		package.geo = RectI(0,0,m_size);
+		package.geo = m_pSkin ? m_pSkin->_contentRect(RectI(0,0,m_size),m_state) : RectI(0, 0, m_size);
 	}
 
 	//____ _nextSlotWithGeo() ______________________________________________________
@@ -249,8 +275,11 @@ namespace wg
 	{
 		pSlot->replaceWidget( this, pWidget );
 
-		if( pWidget )
-			pWidget->_setSize(m_size);
+		if (pWidget)
+		{
+			SizeI sz = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+			pWidget->_setSize(sz);
+		}
 
 		_requestRender();
 		_requestResize();

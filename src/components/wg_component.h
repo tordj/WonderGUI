@@ -51,7 +51,7 @@ namespace wg
 		inline void		_requestRender(const RectI& rect) const { m_pHolder->_componentRequestRender(this, rect); }
 		inline void		_requestResize() const { m_pHolder->_componentRequestResize(this); }
 		inline void		_requestVisibility() const { m_pHolder->_componentRequestInView(this); }
-		inline void		_requestVisibility(const RectI& preferred, const RectI& prio) const { m_pHolder->_componentRequestInView(this, preferred, prio); }
+		inline void		_requestVisibility(const RectI& mustHave, const RectI& niceToHave) const { m_pHolder->_componentRequestInView(this, mustHave, niceToHave); }
 		inline void		_requestFocus() const { m_pHolder->_componentRequestFocus(this); }
 
 		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pHolder->_receiveComponentNotif(this, notification, value, pData); }

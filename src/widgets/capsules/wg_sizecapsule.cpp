@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_sizecapsule.h>
+#include <algorithm>
 
 namespace wg
 {
@@ -30,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	SizeCapsule::SizeCapsule() : m_max(INT_MAX,INT_MAX)
+	SizeCapsule::SizeCapsule()
 	{
 	}
 
@@ -84,7 +85,8 @@ namespace wg
 
 	bool SizeCapsule::setSizes( Size _min, Size _preferred, Size _max )
 	{
-		if (_preferred.w > _max.w || _preferred.h > _max.h || _preferred.w < _min.w || _preferred.h < _min.h)
+		if ( (_preferred.w >= 0 && (_preferred.w > _max.w || _preferred.w < _min.w )) || 
+			 (_preferred.h >= 0 && (_preferred.h > _max.h || _preferred.h < _min.h )) )
 			return false;
 
 		SizeI min = qpixToRawAligned(_min);
@@ -105,6 +107,8 @@ namespace wg
 
 	void SizeCapsule::setMinSize( Size _size )
 	{
+		//TODO: Add error handling.
+
 		SizeI size = qpixToRawAligned(_size);
 		if( size != m_min )
 		{
@@ -117,6 +121,8 @@ namespace wg
 
 	void SizeCapsule::setMaxSize( Size _size )
 	{
+		//TODO: Add error handling.
+
 		SizeI size = qpixToRawAligned(_size);
 		if( size != m_max )
 		{
@@ -129,74 +135,164 @@ namespace wg
 
 	SizeI SizeCapsule::_preferredSize() const
 	{
-		if( m_child.pWidget )
+		if (!m_child.pWidget)
 		{
-			SizeI pref = m_child.preferredSize();
+			SizeI size = { std::max(0, m_preferred.w), std::max(0, m_preferred.h) };
+			if (m_pSkin)
+				size += m_pSkin->_contentPadding();
 
-			if( m_preferred.w != 0 )
-				pref.w = m_preferred.w;
+			return size;
+		}
 
-			if( m_preferred.h != 0 )
+		//
+
+		SizeI pref;
+
+		if (m_preferred.w >= 0)
+		{
+			// Preferred width is forced, we only need to adapt height.
+
+			pref.w = m_preferred.w;
+			if (m_preferred.h >= 0)
 				pref.h = m_preferred.h;
-
-			// Constrain against min/max, taking MatchingWidth/MatchingHeight into account.
-			//TODO: Check so we don't have any corner cases that breaks the constraints and
-			// and that priorities between preferred height/width are reasonable.
-
-			SizeI min = _minSize();
-			SizeI max = _maxSize();
-
-			if( pref.w < min.w )
+			else
 			{
-				pref.w = min.w;
 				pref.h = _matchingHeight(pref.w);
-			}
 
-			if( pref.h < min.h )
-			{
-				pref.h = min.h;
-				pref.w = _matchingWidth(pref.h);
-				if( pref.w < min.w )
-					pref.w = min.w;
+				if (pref.h > m_max.h)
+					pref.h = m_max.h;
+				if (pref.h < m_min.h)
+					pref.h = m_min.h;
 			}
+		}
+		else if (m_preferred.h >= 0)
+		{
+			// Preferred height is forced, we only need to adapt width.
 
-			if( pref.w > max.w )
-			{
-				if( pref.h > max.h )
-					pref = max;
-				else
-				{
-					pref.w = max.w;
-					pref.h = _matchingHeight(pref.w);
-					if( pref.h > max.h )
-						pref.h = max.h;
-				}
-			}
-			else if( pref.h > max.h )
-			{
-				if( pref.w > max.w )
-					pref = max;
-				else
-				{
-					pref.h = max.h;
-					pref.w = _matchingWidth(pref.h);
-					if( pref.w > max.w )
-						pref.w = max.w;
-				}
-			}
-			return pref;
+			pref.h = m_preferred.w;
+			pref.w = _matchingWidth(pref.h);
+
+			if (pref.w > m_max.w)
+				pref.w = m_max.w;
+			if (pref.w < m_min.w)
+				pref.w = m_min.w;
 		}
 		else
 		{
-			return m_preferred;
+			// Preferred size not set in size capsule.
+			// We take preferred from child and check against our min/max.
+
+			pref = m_child.preferredSize();
+
+			if (pref.w > m_max.w && pref.h > m_max.h)
+			{
+				// Both width and height surpasses our max, get matching values for both and limit them to our min.
+
+				int matchW = _matchingWidth(m_max.h);
+				int matchH = _matchingHeight(m_max.w);
+
+				matchW = std::max(matchW, m_min.w);
+				matchH = std::max(matchH, m_min.h);
+
+				//
+
+				if (matchW > m_max.w && matchH > m_max.h)
+					pref = m_max;							// Both matching values are too big, so we will max in both dimensions.
+				else if (matchW <= m_max.w && matchH <= m_max.h)
+				{
+					// Both matching values are below max, so we can go either way here.
+					// Lets choose the one that gives the largest area.
+
+					if (matchW*m_max.h > matchH*m_max.w)
+					{
+						pref.w = matchW;
+						pref.h = m_max.h;
+					}
+					else
+					{
+						pref.w = m_max.w;
+						pref.h = matchH;
+					}
+				}
+				else
+				{
+					// If we get here, only one matching value is small enough.
+
+					if (matchW <= m_max.w)
+					{
+						pref.w = matchW;
+						pref.h = m_max.h;
+					}
+					else
+					{
+						pref.w = m_max.w;
+						pref.h = m_max.h;
+					}
+				}
+
+			}
+			else if (pref.w > m_max.w)
+			{
+				// Only width surpasses our max.
+
+				pref.w = m_max.w;
+				pref.h = _matchingHeight(pref.w);
+
+				if (pref.h > m_max.h)
+					pref.h = m_max.h;
+				if (pref.h < m_min.h)
+					pref.h = m_min.h;
+			}
+			else if (pref.h > m_max.h)
+			{
+				// Only height surpasses our max
+
+				pref.h = m_max.h;
+				pref.w = _matchingWidth(pref.h);
+
+				if (pref.w > m_max.w)
+					pref.w = m_max.w;
+				if (pref.w < m_min.w)
+					pref.w = m_min.w;
+
+			}
+			else
+			{
+				// Neither dimension surpasses our max, let's check against our min values.
+
+				if (pref.w < m_min.w)
+				{
+					pref.w = m_min.w;
+					pref.h = _matchingHeight(pref.w);
+
+					if (pref.h > m_max.h)
+						pref.h = m_max.h;
+					if (pref.h < m_min.h)
+						pref.h = m_min.h;
+				}
+				else if (pref.h < m_min.h)
+				{
+					pref.h = m_min.h;
+					pref.w = _matchingWidth(pref.h);
+
+					if (pref.w > m_max.w)
+						pref.w = m_max.w;
+					if (pref.w < m_min.w)
+						pref.w = m_min.w;
+				}
+			}
 		}
+
+		if (m_pSkin)
+			pref += m_pSkin->_contentPadding();
+
+		return pref;
 	}
 
 	//____ _minSize() ______________________________________________________________
 
 	SizeI SizeCapsule::_minSize() const
 	{
-
 		if( m_child.pWidget )
 			return SizeI::max(m_min,m_child.minSize());
 		else
@@ -217,7 +313,7 @@ namespace wg
 
 	int SizeCapsule::_matchingHeight( int width ) const
 	{
-		if( m_preferred.h != 0 )
+		if( m_preferred.h >= 0 )
 		{
 			int h = m_preferred.h;
 
@@ -243,7 +339,7 @@ namespace wg
 
 	int SizeCapsule::_matchingWidth( int height ) const
 	{
-		if( m_preferred.w != 0 )
+		if( m_preferred.w >= 0 )
 		{
 			int w = m_preferred.w;
 

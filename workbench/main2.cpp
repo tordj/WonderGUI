@@ -67,6 +67,11 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 bool shadowLayerTest(RootPanel_p pRoot);
 bool stretchBlitTest(RootPanel_p pRoot);
 bool scrollIntoViewTest(RootPanel_p pRoot);
+bool textClipTest(RootPanel_p pRoot);
+bool lineEditorTest(RootPanel_p pRoot);
+bool popupOpenerTest(RootPanel_p pRoot);
+bool scrollbarTest(RootPanel_p pRoot);
+bool modalLayerTest(RootPanel_p pRoot);
 
 
 
@@ -469,8 +474,13 @@ int main(int argc, char** argv)
 	
 //	shadowLayerTest(pRoot);
 //	stretchBlitTest(pRoot);
-	scrollIntoViewTest(pRoot);
-	
+//	scrollIntoViewTest(pRoot);
+//	textClipTest(pRoot);
+//	lineEditorTest(pRoot);
+//	popupOpenerTest(pRoot);
+//	scrollbarTest(pRoot);
+	modalLayerTest(pRoot);
+
 	
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -1659,3 +1669,137 @@ bool scrollIntoViewTest(RootPanel_p pRoot)
 	return true;
 }
 
+//____ textClipTest() ______________________________________________________
+
+bool textClipTest(RootPanel_p pRoot)
+{
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
+	pSkin->setContentPadding(10);
+
+	auto pEditor = TextEditor::create();
+
+	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
+	pEditor->setSkin( pSkin );
+
+	auto pFlex = FlexPanel::create();
+	pFlex->children.addMovable(pEditor, { 10,10,50,30 });
+
+	pRoot->child = pFlex;
+
+	return true;
+}
+
+//____ lineEditorTest() ______________________________________________________
+
+bool lineEditorTest(RootPanel_p pRoot)
+{
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
+	pSkin->setContentPadding(10);
+
+	auto pEditor = LineEditor::create();
+
+	pEditor->text.set("TEXT.");
+	pEditor->setSkin(pSkin);
+
+	auto pFlex = FlexPanel::create();
+	pFlex->children.addMovable(pEditor, { 10,100,50,30 });
+
+	pRoot->child = pFlex;
+
+	return true;
+}
+
+//____ popupOpenerTest() ______________________________________________________
+
+bool popupOpenerTest(RootPanel_p pRoot)
+{
+
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
+	pButtonSkin->setContentPadding(2);
+
+
+	auto pPopupLayer = PopupLayer::create();
+	pRoot->child = pPopupLayer;
+	pPopupLayer->setSkin(ColorSkin::create(Color::PaleGoldenrod));
+
+	auto pFlex = FlexPanel::create();
+	pPopupLayer->base = pFlex;
+
+	auto  pOpener = PopupOpener::create();
+	pOpener->setSkin(pButtonSkin);
+	pOpener->label.set("OPEN POPUP");
+	pFlex->children.addMovable(pOpener, { 50,50,50,30 });
+
+	auto pOpened = Filler::create();
+	pOpened->setSkin(pButtonSkin);
+	pOpened->setPreferredSize({ 50,100 });
+	pOpener->setPopup(pOpened);
+
+	return true;
+}
+
+//____ scrollbarTest() ______________________________________________________
+
+bool scrollbarTest(RootPanel_p pRoot)
+{
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
+	pButtonSkin->setContentPadding(5);
+
+
+	auto pEditor = TextEditor::create();
+
+	pEditor->text.set("TEXT AREA.");
+	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
+
+	auto pScrollPanel = ScrollPanel::create();
+	pScrollPanel->view = pEditor;
+	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
+
+	auto pVScrollbar = Scrollbar::create();
+	pVScrollbar->setFwdButtonSkin(pButtonSkin);
+	pVScrollbar->setBwdButtonSkin(pButtonSkin);
+	pVScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
+	pVScrollbar->setHandleSkin(pButtonSkin);
+
+	auto pHScrollbar = Scrollbar::create();
+	pHScrollbar->setFwdButtonSkin(pButtonSkin);
+	pHScrollbar->setBwdButtonSkin(pButtonSkin);
+	pHScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
+	pHScrollbar->setHandleSkin(pButtonSkin);
+
+
+	pScrollPanel->vscrollbar = pVScrollbar;
+	pScrollPanel->hscrollbar = pHScrollbar;
+
+
+
+	auto pFlex = FlexPanel::create();
+	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
+
+	pRoot->child = pFlex;
+
+	return true;
+}
+
+//____ modalLayerTest() ______________________________________________________
+
+bool modalLayerTest(RootPanel_p pRoot)
+{
+	lineEditorTest(pRoot);
+	Widget_p p = pRoot->child;
+
+	scrollbarTest(pRoot);
+
+	auto pLayer = ModalLayer::create();
+
+	pLayer->base = pRoot->child;
+//	Widget_p pTemp = pRoot->child;
+//	pLayer->base = pTemp;
+
+	pRoot->child = pLayer;
+
+
+	pLayer->modals << p;
+
+	return true;
+}

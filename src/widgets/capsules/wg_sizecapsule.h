@@ -40,6 +40,10 @@ namespace wg
 	/**
 	* @brief	A widget that controls the size of a single child.
 	*
+	* The SizeCapsule is used to change the size of a widget. This is done either by imposing 
+	* limits on its minimum and maximum size or by setting a specific preferred size.
+	* 
+	* Width and height can be controlled separately
 	* The SizeCapsule overrides the min, max and preferred size reported by its child, thus
 	* affecting its geometry. Exactly how the geometry is affected depends on the parent widget.
 	*
@@ -83,8 +87,8 @@ namespace wg
 	private:
 
 		SizeI			m_min;
-		SizeI			m_max;
-		SizeI			m_preferred;
+		SizeI			m_max = { INT_MAX,INT_MAX };
+		SizeI			m_preferred = { -1, -1 };
 	};
 
 

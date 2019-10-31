@@ -28,6 +28,7 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const char PopupOpener::CLASSNAME[] = { "PopupOpener" };
 
@@ -283,7 +284,7 @@ namespace wg
 		auto pLayer = _parent()->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popups.push(m_pPopup, this, _globalGeo(), m_attachPoint, m_bOpenOnHover );
+			pLayer->popups.push(m_pPopup, this, rawToQpix(_globalGeo()), m_attachPoint, m_bOpenOnHover );
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

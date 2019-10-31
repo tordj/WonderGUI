@@ -265,14 +265,14 @@ namespace wg
 
 	int Widget::_matchingHeight( int width ) const
 	{
-		return _preferredSize().h;		// Default is to stick with best height no matter what width.
+		return _preferredSize().h;		// Default is to stick with preferred height no matter what width.
 	}
 
 	//____ _matchingWidth() _______________________________________________________
 
 	int Widget::_matchingWidth( int height ) const
 	{
-		return _preferredSize().w;		// Default is to stick with best width no matter what height.
+		return _preferredSize().w;		// Default is to stick with preferred width no matter what height.
 	}
 
 	//____ _preferredSize() ________________________________________________________

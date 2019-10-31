@@ -852,7 +852,7 @@ namespace wg
 		y -= k.top;
 		w += k.left + k.right;
 		h += k.top + k.bottom;
-		return &this;
+		return *this;
 	}
 
 	//_____________________________________________________________________________

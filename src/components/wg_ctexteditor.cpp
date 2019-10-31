@@ -991,10 +991,10 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		RectI preferred = pixelsToRaw(_textMapper()->rectForRange(this, beg, end - beg));
-		RectI prio = pixelsToRaw(_textMapper()->rectForCaret(this));
+		RectI niceToHave = pixelsToRaw(_textMapper()->rectForRange(this, beg, end - beg));
+		RectI mustHave = pixelsToRaw(_textMapper()->rectForCaret(this));
 
-		_requestVisibility(preferred, prio);
+		_requestVisibility(mustHave, niceToHave);
 	}
 
 	//____ _updateInsertStyle() ________________________________________________
