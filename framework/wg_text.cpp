@@ -433,7 +433,7 @@ int WgText::unwrappedWidth() const
 			width = m_pHardLines[i].width;
 	}
 
-	return width;
+	return width + _cursorMaxWidth();
 }
 
 //____ unwrappedSize() _______________________________________________________
@@ -450,6 +450,8 @@ WgSize WgText::unwrappedSize() const
 		sz.h += m_pHardLines[i].lineSpacing;
 	}
 
+    sz.w += _cursorMaxWidth();
+    
 	sz.h += m_pHardLines[m_nHardLines-1].height - m_pHardLines[m_nHardLines-1].lineSpacing;
 	return sz;
 }

@@ -145,7 +145,7 @@ protected:
     float           m_baseline;
     
 	WgSizeBroker * 	m_pSizeBroker;
-	WgSize			m_preferredSize;
+	WgSize			m_preferredSize;                                    // Internal, excluding PackPanel's own skin padding.
 
 	bool			m_bBlockRequestResize = false;
 	bool			m_bResizeRequestedWhileBlocked = false;

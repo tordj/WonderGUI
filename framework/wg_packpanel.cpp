@@ -172,13 +172,16 @@ void WgPackPanel::SetBaselineMode( bool bBaseline )
 
 WgSize WgPackPanel::PreferredPixelSize() const
 {
-	return m_preferredSize;
+    return m_pSkin ? m_preferredSize + m_pSkin->ContentPadding(m_scale): m_preferredSize;
 }
 
 //____ MatchingPixelHeight() _______________________________________________________
 
 int WgPackPanel::MatchingPixelHeight( int width ) const
 {
+    if( m_pSkin )
+        width -= m_pSkin->ContentPadding(m_scale).w;
+    
 	int height = 0;
 
 	if( m_bHorizontal )
@@ -299,6 +302,10 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
             p = p->Next();
         }
 	}
+    
+    if( m_pSkin )
+        height += m_pSkin->ContentPadding(m_scale).h;
+
 	return height;
 }
 
@@ -306,7 +313,10 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 
 int WgPackPanel::MatchingPixelWidth( int height ) const
 {
-	int width = 0;
+    if( m_pSkin )
+        height -= m_pSkin->ContentPadding(m_scale).h;
+
+    int width = 0;
 
 	if( !m_bHorizontal )
 	{
@@ -440,6 +450,10 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
             }
         }
 	}
+    
+    if( m_pSkin )
+        width += m_pSkin->ContentPadding(m_scale).w;
+
 	return width;
 }
 
