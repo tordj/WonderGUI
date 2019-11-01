@@ -517,6 +517,10 @@ namespace wg
 		ValueModified,
 		ValueEdited,
 		SpanModified,
+		StepForward,
+		StepBackward,
+		JumpForward,
+		JumpBackward,
 		Other
 	};
 

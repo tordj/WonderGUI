@@ -218,9 +218,6 @@
     <ClInclude Include="..\..\..\src\widgets\wg_image.h">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\wg_oscilloscope.h">
-      <Filter>widgets</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -503,9 +500,6 @@
     <ClInclude Include="..\..\..\src\base\wg_context.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\layers\wg_shadowlayer.h">
-      <Filter>widgets\layers</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_ishadows.h">
       <Filter>interfaces</Filter>
     </ClInclude>
@@ -670,9 +664,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_image.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_oscilloscope.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -808,9 +799,6 @@
     <ClCompile Include="..\..\..\src\components\wg_cicondisplay.cpp">
       <Filter>components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\components\wg_cspan.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_ctext.cpp">
       <Filter>components</Filter>
     </ClCompile>
@@ -861,9 +849,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_payload.cpp">
       <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\layers\wg_shadowlayer.cpp">
-      <Filter>widgets\layers</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_ishadows.cpp">
       <Filter>interfaces</Filter>
