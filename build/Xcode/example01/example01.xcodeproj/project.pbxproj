@@ -7,126 +7,144 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		175931802327C26A0020A40C /* wg_freetypefont.h in Headers */ = {isa = PBXBuildFile; fileRef = 1759317E2327C26A0020A40C /* wg_freetypefont.h */; };
-		175931812327C26A0020A40C /* wg_freetypefont.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1759317F2327C26A0020A40C /* wg_freetypefont.cpp */; };
+		1750B451236DF696002E00E1 /* example01.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1750B450236DF696002E00E1 /* example01.cpp */; };
+		1750B454236DF732002E00E1 /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1750B453236DF732002E00E1 /* libgfxdevice_software.a */; };
+		1750B456236DF732002E00E1 /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1750B455236DF732002E00E1 /* libWonderGUI.a */; };
+		1750B459236DF774002E00E1 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1750B457236DF773002E00E1 /* SDL2_image.framework */; };
+		1750B45A236DF774002E00E1 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1750B458236DF773002E00E1 /* SDL2.framework */; };
+		1750B45D236DF77F002E00E1 /* OpenGL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1750B45C236DF77F002E00E1 /* OpenGL.framework */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXCopyFilesBuildPhase section */
+		1750B444236DF616002E00E1 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = /usr/share/man/man1/;
+			dstSubfolderSpec = 0;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 1;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
 /* Begin PBXFileReference section */
-		175931772327C24B0020A40C /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		1759317E2327C26A0020A40C /* wg_freetypefont.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_freetypefont.h; path = ../../../src/fonts/freetype/wg_freetypefont.h; sourceTree = "<group>"; };
-		1759317F2327C26A0020A40C /* wg_freetypefont.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_freetypefont.cpp; path = ../../../src/fonts/freetype/wg_freetypefont.cpp; sourceTree = "<group>"; };
+		1750B450236DF696002E00E1 /* example01.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = example01.cpp; path = ../../../src/examples/example01.cpp; sourceTree = "<group>"; };
+		1750B453236DF732002E00E1 /* libgfxdevice_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1750B455236DF732002E00E1 /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		1750B457236DF773002E00E1 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		1750B458236DF773002E00E1 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		1750B45B236DF774002E00E1 /* example01 */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = example01; sourceTree = BUILT_PRODUCTS_DIR; };
+		1750B45C236DF77F002E00E1 /* OpenGL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGL.framework; path = System/Library/Frameworks/OpenGL.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		175931742327C24B0020A40C /* Frameworks */ = {
+		1750B443236DF616002E00E1 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1750B45D236DF77F002E00E1 /* OpenGL.framework in Frameworks */,
+				1750B459236DF774002E00E1 /* SDL2_image.framework in Frameworks */,
+				1750B45A236DF774002E00E1 /* SDL2.framework in Frameworks */,
+				1750B456236DF732002E00E1 /* libWonderGUI.a in Frameworks */,
+				1750B454236DF732002E00E1 /* libgfxdevice_software.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		1759316E2327C24B0020A40C = {
+		1750B43D236DF615002E00E1 = {
 			isa = PBXGroup;
 			children = (
-				1759317F2327C26A0020A40C /* wg_freetypefont.cpp */,
-				1759317E2327C26A0020A40C /* wg_freetypefont.h */,
-				175931782327C24B0020A40C /* Products */,
+				1750B450236DF696002E00E1 /* example01.cpp */,
+				1750B452236DF732002E00E1 /* Frameworks */,
+				1750B45B236DF774002E00E1 /* example01 */,
 			);
 			sourceTree = "<group>";
 			usesTabs = 1;
 		};
-		175931782327C24B0020A40C /* Products */ = {
+		1750B452236DF732002E00E1 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				175931772327C24B0020A40C /* libfont_freetype.a */,
+				1750B45C236DF77F002E00E1 /* OpenGL.framework */,
+				1750B457236DF773002E00E1 /* SDL2_image.framework */,
+				1750B458236DF773002E00E1 /* SDL2.framework */,
+				1750B453236DF732002E00E1 /* libgfxdevice_software.a */,
+				1750B455236DF732002E00E1 /* libWonderGUI.a */,
 			);
-			name = Products;
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
-/* Begin PBXHeadersBuildPhase section */
-		175931752327C24B0020A40C /* Headers */ = {
-			isa = PBXHeadersBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				175931802327C26A0020A40C /* wg_freetypefont.h in Headers */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXHeadersBuildPhase section */
-
 /* Begin PBXNativeTarget section */
-		175931762327C24B0020A40C /* font_freetype */ = {
+		1750B445236DF616002E00E1 /* example01 */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1759317B2327C24B0020A40C /* Build configuration list for PBXNativeTarget "font_freetype" */;
+			buildConfigurationList = 1750B44D236DF616002E00E1 /* Build configuration list for PBXNativeTarget "example01" */;
 			buildPhases = (
-				175931732327C24B0020A40C /* Sources */,
-				175931742327C24B0020A40C /* Frameworks */,
-				175931752327C24B0020A40C /* Headers */,
+				1750B442236DF616002E00E1 /* Sources */,
+				1750B443236DF616002E00E1 /* Frameworks */,
+				1750B444236DF616002E00E1 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = font_freetype;
-			productName = font_freetype;
-			productReference = 175931772327C24B0020A40C /* libfont_freetype.a */;
-			productType = "com.apple.product-type.library.static";
+			name = example01;
+			productName = example01;
+			productReference = 1750B45B236DF774002E00E1 /* example01 */;
+			productType = "com.apple.product-type.tool";
 		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
-		1759316F2327C24B0020A40C /* Project object */ = {
+		1750B43E236DF615002E00E1 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1000;
 				ORGANIZATIONNAME = "Tord Jansson";
 				TargetAttributes = {
-					175931762327C24B0020A40C = {
-						CreatedOnToolsVersion = 9.4.1;
+					1750B445236DF616002E00E1 = {
+						CreatedOnToolsVersion = 10.0;
 					};
 				};
 			};
-			buildConfigurationList = 175931722327C24B0020A40C /* Build configuration list for PBXProject "font_freetype" */;
+			buildConfigurationList = 1750B441236DF615002E00E1 /* Build configuration list for PBXProject "example01" */;
 			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
 			);
-			mainGroup = 1759316E2327C24B0020A40C;
-			productRefGroup = 175931782327C24B0020A40C /* Products */;
+			mainGroup = 1750B43D236DF615002E00E1;
+			productRefGroup = 1750B43D236DF615002E00E1;
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				175931762327C24B0020A40C /* font_freetype */,
+				1750B445236DF616002E00E1 /* example01 */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXSourcesBuildPhase section */
-		175931732327C24B0020A40C /* Sources */ = {
+		1750B442236DF616002E00E1 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				175931812327C26A0020A40C /* wg_freetypefont.cpp in Sources */,
+				1750B451236DF696002E00E1 /* example01.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin XCBuildConfiguration section */
-		175931792327C24B0020A40C /* Debug */ = {
+		1750B44B236DF616002E00E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -171,24 +189,21 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"../../../src/**",
-					"/usr/local/Cellar/freetype/2.10.1/include/freetype2/**",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
-				MTL_ENABLE_DEBUG_INFO = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = macosx;
 			};
 			name = Debug;
 		};
-		1759317A2327C24B0020A40C /* Release */ = {
+		1750B44C236DF616002E00E1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
 				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
@@ -227,58 +242,71 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				HEADER_SEARCH_PATHS = (
-					"../../../src/**",
-					"/usr/local/Cellar/freetype/2.10.1/include/freetype2/**",
-				);
 				MACOSX_DEPLOYMENT_TARGET = 10.13;
 				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
 				SDKROOT = macosx;
 			};
 			name = Release;
 		};
-		1759317C2327C24B0020A40C /* Debug */ = {
+		1750B44E236DF616002E00E1 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"../../../src/**",
+					../../../src,
+				);
 			};
 			name = Debug;
 		};
-		1759317D2327C24B0020A40C /* Release */ = {
+		1750B44F236DF616002E00E1 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CODE_SIGN_STYLE = Automatic;
-				EXECUTABLE_PREFIX = lib;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SKIP_INSTALL = YES;
+				USER_HEADER_SEARCH_PATHS = (
+					"../../../src/**",
+					../../../src,
+				);
 			};
 			name = Release;
 		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		175931722327C24B0020A40C /* Build configuration list for PBXProject "font_freetype" */ = {
+		1750B441236DF615002E00E1 /* Build configuration list for PBXProject "example01" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				175931792327C24B0020A40C /* Debug */,
-				1759317A2327C24B0020A40C /* Release */,
+				1750B44B236DF616002E00E1 /* Debug */,
+				1750B44C236DF616002E00E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1759317B2327C24B0020A40C /* Build configuration list for PBXNativeTarget "font_freetype" */ = {
+		1750B44D236DF616002E00E1 /* Build configuration list for PBXNativeTarget "example01" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1759317C2327C24B0020A40C /* Debug */,
-				1759317D2327C24B0020A40C /* Release */,
+				1750B44E236DF616002E00E1 /* Debug */,
+				1750B44F236DF616002E00E1 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
-	rootObject = 1759316F2327C24B0020A40C /* Project object */;
+	rootObject = 1750B43E236DF615002E00E1 /* Project object */;
 }

@@ -2,6 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
+      location = "group:example01/example01.xcodeproj">
+   </FileRef>
+   <FileRef
       location = "group:font_freetype/font_freetype.xcodeproj">
    </FileRef>
    <FileRef

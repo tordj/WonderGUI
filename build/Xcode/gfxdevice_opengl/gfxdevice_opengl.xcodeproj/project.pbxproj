@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -47,6 +47,7 @@
 				0CEBB53C1D82F68A009F8C08 /* Products */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		0CEBB53C1D82F68A009F8C08 /* Products */ = {
 			isa = PBXGroup;
@@ -118,7 +119,7 @@
 				};
 			};
 			buildConfigurationList = 0CEBB5361D82F68A009F8C08 /* Build configuration list for PBXProject "gfxdevice_opengl" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (

@@ -3,14 +3,11 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 50;
+	objectVersion = 51;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		175931832327C2E50020A40C /* libfont_freetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175931822327C2E50020A40C /* libfont_freetype.a */; };
-		175C8F552327A98200C4F661 /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175C8F4F2327A98100C4F661 /* device.cpp */; };
-		175C8F562327A98200C4F661 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175C8F522327A98200C4F661 /* main.cpp */; };
-		175C8F572327A98200C4F661 /* wg_fileutil.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175C8F542327A98200C4F661 /* wg_fileutil.cpp */; };
 		175C8F5A2327A9AA00C4F661 /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175C8F592327A9AA00C4F661 /* libgfxdevice_opengl.a */; };
 		175C8F5C2327A9AA00C4F661 /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175C8F5B2327A9AA00C4F661 /* libgfxdevice_software.a */; };
 		175C8F5E2327A9AB00C4F661 /* libgfxdevice_stream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 175C8F5D2327A9AB00C4F661 /* libgfxdevice_stream.a */; };
@@ -34,26 +31,9 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		17426877233912EC00A76233 /* mipmaptests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = mipmaptests.h; sourceTree = "<group>"; };
-		17426878233912EC00A76233 /* blitconsistencytest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blitconsistencytest.h; sourceTree = "<group>"; };
+		1750B45E236DFC58002E00E1 /* gfxdevice_testapp */ = {isa = PBXFileReference; lastKnownFileType = folder; name = gfxdevice_testapp; path = ../../../gfxdevice_testapp; sourceTree = "<group>"; };
 		175931822327C2E50020A40C /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175C8F3A2327A96400C4F661 /* gfxdevice_test */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gfxdevice_test; sourceTree = BUILT_PRODUCTS_DIR; };
-		175C8F452327A98100C4F661 /* linetests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = linetests.h; sourceTree = "<group>"; };
-		175C8F462327A98100C4F661 /* segmenttests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = segmenttests.h; sourceTree = "<group>"; };
-		175C8F472327A98100C4F661 /* clutblittests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = clutblittests.h; sourceTree = "<group>"; };
-		175C8F482327A98100C4F661 /* blendtests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blendtests.h; sourceTree = "<group>"; };
-		175C8F492327A98100C4F661 /* blittests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = blittests.h; sourceTree = "<group>"; };
-		175C8F4A2327A98100C4F661 /* testsuite.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = testsuite.h; sourceTree = "<group>"; };
-		175C8F4B2327A98100C4F661 /* plottests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = plottests.h; sourceTree = "<group>"; };
-		175C8F4C2327A98100C4F661 /* wavetests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wavetests.h; sourceTree = "<group>"; };
-		175C8F4D2327A98100C4F661 /* canvasformattests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = canvasformattests.h; sourceTree = "<group>"; };
-		175C8F4E2327A98100C4F661 /* filltests.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = filltests.h; sourceTree = "<group>"; };
-		175C8F4F2327A98100C4F661 /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device.cpp; path = ../../../../gfxdevice_testapp/device.cpp; sourceTree = "<group>"; };
-		175C8F502327A98200C4F661 /* device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = device.h; path = ../../../../gfxdevice_testapp/device.h; sourceTree = "<group>"; };
-		175C8F512327A98200C4F661 /* wg_fileutil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_fileutil.h; path = ../../../../gfxdevice_testapp/wg_fileutil.h; sourceTree = "<group>"; };
-		175C8F522327A98200C4F661 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../../gfxdevice_testapp/main.cpp; sourceTree = "<group>"; };
-		175C8F532327A98200C4F661 /* testunit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testunit.h; path = ../../../../gfxdevice_testapp/testunit.h; sourceTree = "<group>"; };
-		175C8F542327A98200C4F661 /* wg_fileutil.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_fileutil.cpp; path = ../../../../gfxdevice_testapp/wg_fileutil.cpp; sourceTree = "<group>"; };
 		175C8F592327A9AA00C4F661 /* libgfxdevice_opengl.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_opengl.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175C8F5B2327A9AA00C4F661 /* libgfxdevice_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		175C8F5D2327A9AB00C4F661 /* libgfxdevice_stream.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_stream.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -87,11 +67,12 @@
 		175C8F312327A96400C4F661 = {
 			isa = PBXGroup;
 			children = (
-				175C8F3C2327A96400C4F661 /* gfxdevice_test */,
+				1750B45E236DFC58002E00E1 /* gfxdevice_testapp */,
 				175C8F3B2327A96400C4F661 /* Products */,
 				175C8F582327A9AA00C4F661 /* Frameworks */,
 			);
 			sourceTree = "<group>";
+			usesTabs = 1;
 		};
 		175C8F3B2327A96400C4F661 /* Products */ = {
 			isa = PBXGroup;
@@ -99,40 +80,6 @@
 				175C8F3A2327A96400C4F661 /* gfxdevice_test */,
 			);
 			name = Products;
-			sourceTree = "<group>";
-		};
-		175C8F3C2327A96400C4F661 /* gfxdevice_test */ = {
-			isa = PBXGroup;
-			children = (
-				175C8F4F2327A98100C4F661 /* device.cpp */,
-				175C8F502327A98200C4F661 /* device.h */,
-				175C8F522327A98200C4F661 /* main.cpp */,
-				175C8F442327A98100C4F661 /* testsuites */,
-				175C8F532327A98200C4F661 /* testunit.h */,
-				175C8F542327A98200C4F661 /* wg_fileutil.cpp */,
-				175C8F512327A98200C4F661 /* wg_fileutil.h */,
-			);
-			path = gfxdevice_test;
-			sourceTree = "<group>";
-		};
-		175C8F442327A98100C4F661 /* testsuites */ = {
-			isa = PBXGroup;
-			children = (
-				17426878233912EC00A76233 /* blitconsistencytest.h */,
-				17426877233912EC00A76233 /* mipmaptests.h */,
-				175C8F452327A98100C4F661 /* linetests.h */,
-				175C8F462327A98100C4F661 /* segmenttests.h */,
-				175C8F472327A98100C4F661 /* clutblittests.h */,
-				175C8F482327A98100C4F661 /* blendtests.h */,
-				175C8F492327A98100C4F661 /* blittests.h */,
-				175C8F4A2327A98100C4F661 /* testsuite.h */,
-				175C8F4B2327A98100C4F661 /* plottests.h */,
-				175C8F4C2327A98100C4F661 /* wavetests.h */,
-				175C8F4D2327A98100C4F661 /* canvasformattests.h */,
-				175C8F4E2327A98100C4F661 /* filltests.h */,
-			);
-			name = testsuites;
-			path = ../../../../gfxdevice_testapp/testsuites;
 			sourceTree = "<group>";
 		};
 		175C8F582327A9AA00C4F661 /* Frameworks */ = {
@@ -186,7 +133,7 @@
 				};
 			};
 			buildConfigurationList = 175C8F352327A96400C4F661 /* Build configuration list for PBXProject "gfxdevice_test" */;
-			compatibilityVersion = "Xcode 9.3";
+			compatibilityVersion = "Xcode 10.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -207,9 +154,6 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				175C8F562327A98200C4F661 /* main.cpp in Sources */,
-				175C8F552327A98200C4F661 /* device.cpp in Sources */,
-				175C8F572327A98200C4F661 /* wg_fileutil.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -328,6 +272,7 @@
 		175C8F422327A96400C4F661 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CODE_SIGN_STYLE = Automatic;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -349,6 +294,7 @@
 		175C8F432327A96400C4F661 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "c++0x";
 				CODE_SIGN_STYLE = Automatic;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
