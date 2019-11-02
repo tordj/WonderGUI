@@ -1558,6 +1558,7 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 
 bool shadowLayerTest( RootPanel_p pRoot )
 {
+/*
 	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
 	
 	BlockSkin_p pShadowSkin = BlockSkin::createStaticFromSurface(pImgSurface);
@@ -1616,7 +1617,7 @@ bool shadowLayerTest( RootPanel_p pRoot )
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
 		pFrontLayer->children.move(2, pMsg->draggedNow());
 	});
-
+*/
 	return true;
 }
 

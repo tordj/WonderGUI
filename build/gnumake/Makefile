@@ -104,6 +104,7 @@ BASE = wg_anim.o \
   wg_object.o \
   wg_patches.o \
   wg_payload.o \
+  wg_qpix.o \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
@@ -133,6 +134,7 @@ INTERFACES = wg_icanvas.o \
   wg_interface.o \
   wg_irotextdisplay.o \
   wg_irovaluedisplay.o \
+  wg_ishadows.o \
   wg_islidespan.o \
   wg_ispan.o \
   wg_ivaluedisplay.o
@@ -165,7 +167,6 @@ WIDGETS = wg_animplayer.o \
   wg_fpsdisplay.o \
   wg_image.o \
   wg_lineeditor.o \
-  wg_oscilloscope.o \
   wg_popupopener.o \
   wg_refreshbutton.o \
   wg_rulerlabels.o \

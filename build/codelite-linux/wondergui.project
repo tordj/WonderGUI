@@ -87,8 +87,6 @@
     <File Name="../../src/widgets/wg_image.h"/>
     <File Name="../../src/widgets/wg_lineeditor.cpp"/>
     <File Name="../../src/widgets/wg_lineeditor.h"/>
-    <File Name="../../src/widgets/wg_oscilloscope.cpp"/>
-    <File Name="../../src/widgets/wg_oscilloscope.h"/>
     <File Name="../../src/widgets/wg_popupopener.cpp"/>
     <File Name="../../src/widgets/wg_popupopener.h"/>
     <File Name="../../src/widgets/wg_refreshbutton.cpp"/>
@@ -113,6 +111,8 @@
     <File Name="../../src/widgets/wg_widget.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
+    <File Name="../../src/interfaces/wg_ishadows.h"/>
+    <File Name="../../src/interfaces/wg_ishadows.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.h"/>
     <File Name="../../src/interfaces/wg_ichild.h"/>
@@ -173,6 +173,9 @@
     <File Name="../../src/sizebrokers/wg_uniform_sizebroker.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="base">
+    <File Name="../../src/base/wg_shadow.h"/>
+    <File Name="../../src/base/wg_qpix.h"/>
+    <File Name="../../src/base/wg_qpix.cpp"/>
     <File Name="../../src/base/wg_payload.cpp"/>
     <File Name="../../src/base/wg_context.h"/>
     <File Name="../../src/base/wg_context.cpp"/>

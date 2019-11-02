@@ -1,11 +1,19 @@
 #!/usr/bin/ruby
 # Preprocesses WonderGUI header files for Doxygen.
 
+#======================================
+# => printUsage
+#======================================
+
 def printUsage()
   puts "usage: doxify file1 [file2 [...]]"
   puts
 end
 
+
+#======================================
+# => doxify
+#======================================
 
 def doxify( lines )
 
@@ -44,6 +52,11 @@ def doxify( lines )
 
   return output
 end
+
+
+#======================================
+# => MAIN CODE
+#======================================
 
 
 if( $*.length < 1 )

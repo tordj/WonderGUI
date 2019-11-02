@@ -141,7 +141,6 @@
 #include <wg_layer.h>
 #include <wg_modallayer.h>
 #include <wg_popuplayer.h>
-#include <wg_shadowlayer.h>
 #include <wg_list.h>
 #include <wg_packlist.h>
 #include <wg_flexpanel.h>
@@ -160,7 +159,6 @@
 #include <wg_fpsdisplay.h>
 #include <wg_image.h>
 #include <wg_lineeditor.h>
-#include <wg_oscilloscope.h>
 #include <wg_popupopener.h>
 #include <wg_refreshbutton.h>
 #include <wg_rulerlabels.h>

@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CodeLite_Workspace Name="wondergui" Database="" Version="10.0.0">
   <Project Name="wondergui" Path="wondergui.project" Active="No"/>
-  <Project Name="workbench" Path="workbench.project" Active="Yes"/>
+  <Project Name="workbench" Path="workbench.project" Active="No"/>
   <Project Name="gfxdevice_software" Path="gfxdevice_software.project" Active="No"/>
-  <Project Name="example_01" Path="example_01.project" Active="No"/>
+  <Project Name="example_01" Path="example_01.project" Active="Yes"/>
   <Environment>
     <![CDATA[]]>
   </Environment>

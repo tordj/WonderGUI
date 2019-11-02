@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_softsurfacefactory.h>
-#include <wg_util.h>
 
 namespace wg
 {
