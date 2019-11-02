@@ -380,13 +380,13 @@ namespace wg
 			int reservedMem;
 			bool bInitialized;
 		};
-		
+
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
 		ClipPopData limitClipList( GfxDevice * pDevice, const RectI& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
-		
+
 
 		// A simple checksum algorithm that just performs a long division
 		// with a standard CRC polynomial. Quicker and less complex than a standard

@@ -88,8 +88,8 @@ namespace wg
 
 		bool	beginRender() override;
 		bool	endRender() override;
-        bool    isIdle() override;
-        void	flush();
+		bool    isIdle() override;
+		void	flush();
 
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -182,8 +182,8 @@ namespace wg
 
 		SizeI           m_emptyCanvasSize;
 
-        GLsync          m_idleSync = 0;
-        
+		GLsync          m_idleSync = 0;
+
 		// Device programs
 
 		GLuint  m_fillProg;
@@ -257,10 +257,10 @@ namespace wg
 		RectI	m_clipListBuffer[c_clipListBufferSize];
 
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-        GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
-        bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
-        
-        
+		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
+		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
+
+
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;

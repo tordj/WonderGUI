@@ -1559,13 +1559,13 @@ namespace wg
 		m_canvasSize	= pCanvas->size();
 		m_clipCanvas	= { 0,0,m_canvasSize };
 
-        if( bResetClipRects )
-        {
-            m_clipBounds	= { 0,0,m_canvasSize };
-            m_pClipRects = &m_clipCanvas;
-            m_nClipRects = 1;
-        }
-        
+		if( bResetClipRects )
+		{
+			m_clipBounds	= { 0,0,m_canvasSize };
+			m_pClipRects = &m_clipCanvas;
+			m_nClipRects = 1;
+		}
+
 		// Update stuff if we are rendering
 
 		if( m_pCanvasPixels )
@@ -1617,7 +1617,7 @@ namespace wg
 
 	bool SoftGfxDevice::beginRender()
 	{
-        if( m_bRendering || !m_pCanvas)
+		if( m_bRendering || !m_pCanvas)
 			return false;
 
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
@@ -1631,8 +1631,8 @@ namespace wg
 
 		setTintColor(Color::White);
 		setBlendMode(BlendMode::Blend);
-        
-        m_bRendering = true;
+
+		m_bRendering = true;
 		return true;
 	}
 
@@ -1651,7 +1651,7 @@ namespace wg
 		m_canvasPitch = 0;
 
 		_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
-        m_bRendering = false;
+		m_bRendering = false;
 		return true;
 	}
 
@@ -2041,7 +2041,7 @@ namespace wg
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, colTrans);
 				}
-                else
+				else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
 					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));

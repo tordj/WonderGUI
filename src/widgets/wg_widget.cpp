@@ -376,7 +376,7 @@ namespace wg
 		if( m_pSkin )
 			m_pSkin->_render( pDevice, _canvas, m_state );
 	}
-    
+
 	//____ _setSize() ___________________________________________________________
 
 	void Widget::_setSize( const SizeI& size )

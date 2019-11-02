@@ -31,8 +31,8 @@
 
 namespace wg
 {
-    using namespace Util;
-    
+	using namespace Util;
+
 	INSTANTIATE_HIDEABLECHILDREN(LambdaPanelSlot, LambdaChildrenHolder)
 
 	template class SlotArray<LambdaPanelSlot>;
@@ -156,8 +156,8 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-        SizeI min = qpixToRaw(_min);
-        
+		SizeI min = qpixToRaw(_min);
+
 		if( m_minSize != min )
 		{
 			if( min.w > m_maxSize.w || min.h > m_maxSize.h )
@@ -180,8 +180,8 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-        SizeI max = qpixToRaw(_max);
-        
+		SizeI max = qpixToRaw(_max);
+
  		if( m_maxSize != max )
 		{
 			if( max.w < m_minSize.w || max.h < m_minSize.h )
@@ -222,8 +222,8 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-        SizeI pref = qpixToRaw(_pref);
-        
+		SizeI pref = qpixToRaw(_pref);
+
 		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
 			return false;
 

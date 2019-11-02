@@ -212,10 +212,10 @@ namespace wg
 
 	bool GfxDevice::beginRender()
 	{
-        if( m_bRendering )
-            return false;
+		if( m_bRendering )
+			return false;
 
-        m_bRendering = true;
+		m_bRendering = true;
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
 
@@ -223,13 +223,13 @@ namespace wg
 
 	bool GfxDevice::endRender()
 	{
-        if( !m_bRendering )
-            return false;
-        
-        m_bRendering = false;
+		if( !m_bRendering )
+			return false;
+
+		m_bRendering = false;
 		return true;	// Assumed to be ok if device doesn't have its own method.
 	}
-	
+
 	//____ isRendering() _______________________________________________________
 	/**
 	 * @brief Check if GfxDevice is in rendering state.
@@ -244,7 +244,7 @@ namespace wg
 	 *
 	 * @return True if between beginRender()/endRender() calls.
 	 */
-	
+
 	bool GfxDevice::isRendering()
 	{
 		return m_bRendering;
@@ -262,12 +262,12 @@ namespace wg
 	 *
 	 * @return True if all rendering has completed.
 	 */
-	
+
 	bool GfxDevice::isIdle()
 	{
 		return !m_bRendering;
 	}
-	
+
 	//____ fill() ______________________________________________________
 	/**
 	 * @brief Fill the canvas with specified color.
@@ -277,7 +277,7 @@ namespace wg
 	 *
 	 * @return Nothing.
 	 */
-	
+
 	void GfxDevice::fill(const Color& col)
 	{
 		fill(m_canvasSize, col);
@@ -414,7 +414,7 @@ namespace wg
 			{
 				// We want last src sample to be taken as close to the end of the source
 				// rectangle as possible in order to get a more balanced representation.
-			
+
 				mtx[0][0] = src.w / (dest.w-0.99);
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;

@@ -129,8 +129,8 @@ int main ( int argc, char** argv )
 
 		// Now we create the button, using a clickable skin built from the BMP
 		// with the button graphics. First we specify the Surface and a rectangle
-		// for the first image. Then follows the states that we have images for, 
-		// the border that creates the nine stretch-zones of the image 
+		// for the first image. Then follows the states that we have images for,
+		// the border that creates the nine stretch-zones of the image
 		// (NinePatch style) and the orientation in which the images are lined up.
 		// When adding it to the FlexPanel we specify its geometry in
 		// pixels and that it should be centered.

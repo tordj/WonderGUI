@@ -170,7 +170,7 @@ namespace wg
 		void			_willRemoveSlots(Slot * pSlot, int nb) override;
 		Object *		_object() override { return this;  }
 		WidgetHolder *	_widgetHolder() override { return this; }
-        void            _refreshRealGeo( ModalSlot * pSlot ) override;
+		void            _refreshRealGeo( ModalSlot * pSlot ) override;
 
 		// Overloaded from Layer
 

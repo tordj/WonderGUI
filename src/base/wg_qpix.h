@@ -183,13 +183,13 @@ namespace wg
 		inline static int		pixelQuartersPerPoint() { return s_pixelQuartersPerPoint; }
 		inline static float		scale() { return s_scale; }
 
-		
+
 	protected:
-		
+
 		static int		s_pixelQuartersPerPoint;
 		static float	s_scale;						// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
 	};
-	
-	
+
+
 } // namespace wg
 #endif //WG_QPIX_DOT_H

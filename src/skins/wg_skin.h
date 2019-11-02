@@ -82,7 +82,7 @@ namespace wg
 	};
 
 
-	
+
 
 } // namespace wg
 #endif //WG_SKIN_DOT_H

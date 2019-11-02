@@ -148,7 +148,7 @@ namespace wg
 		else
 			(*m_pStream) << (short) 0;
 
-        (*m_pStream) << (short) bResetClipRects;
+		(*m_pStream) << (short) bResetClipRects;
 
 		return true;
 	}

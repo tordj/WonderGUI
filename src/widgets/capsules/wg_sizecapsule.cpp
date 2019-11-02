@@ -85,7 +85,7 @@ namespace wg
 
 	bool SizeCapsule::setSizes( Size _min, Size _preferred, Size _max )
 	{
-		if ( (_preferred.w >= 0 && (_preferred.w > _max.w || _preferred.w < _min.w )) || 
+		if ( (_preferred.w >= 0 && (_preferred.w > _max.w || _preferred.w < _min.w )) ||
 			 (_preferred.h >= 0 && (_preferred.h > _max.h || _preferred.h < _min.h )) )
 			return false;
 

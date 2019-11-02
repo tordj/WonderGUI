@@ -742,19 +742,19 @@ double Util::powerOfTen(int num){
 
 		int nRects = patches.size();
 		const RectI * pRects = patches.begin();
-		
+
 		int allocSize = nRects * sizeof(RectI);
-		
+
 		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
-		
+
 		for( int i = 0 ; i < nRects ; i++ )
 		{
 			pNewRects[nNewRects] = rawToPixels( RectI(pRects[i], clip) );
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
-		
+
 		pDevice->setClipList(nNewRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };
 	}
@@ -763,17 +763,17 @@ double Util::powerOfTen(int num){
 	{
 		int nOldRects 				= pDevice->clipListSize();
 		const RectI * pOldRects 	= pDevice->clipList();
-		
+
 		int nRects = patches.size();
 		const RectI * pRects = patches.begin();
-		
+
 		int allocSize = nRects * sizeof(RectI);
-		
+
 		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
-		
+
 		for( int i = 0 ; i < nRects ; i++ )
 			pNewRects[i] = rawToPixels( pRects[i] );
-		
+
 		pDevice->setClipList(nRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };
 	}
@@ -784,24 +784,24 @@ double Util::powerOfTen(int num){
 	{
 		if( clip.contains(pDevice->clipBounds()))
 			return { 0, nullptr, 0 };
-		
+
 		int nRects 				= pDevice->clipListSize();
 		const RectI * pRects 	= pDevice->clipList();
 		int allocSize = nRects * sizeof(RectI);
 
 		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
 		int nNewRects = 0;
-		
+
 		for( int i = 0 ; i < nRects ; i++ )
 		{
 			if( pNewRects[nNewRects].intersection( pRects[i], clip ) )
 				nNewRects++;
 		}
-		
+
 		pDevice->setClipList(nNewRects, pNewRects);
 		return { nRects, pRects, allocSize };
 	}
-	
+
 	//____ pushClipList() __________________________________________________________________
 
 	Util::ClipPopData Util::pushClipList(GfxDevice * pDevice)
@@ -811,7 +811,7 @@ double Util::powerOfTen(int num){
 
 
 	//____ popClipList() ____________________________________________________________________
-	
+
 	void Util::popClipList( GfxDevice * pDevice, const ClipPopData& popData )
 	{
 		if( popData.bInitialized )

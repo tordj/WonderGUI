@@ -26,8 +26,8 @@
 
 namespace wg
 {
-    using namespace Util;
-    
+	using namespace Util;
+
 	const char ShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
 
 	//____ Constructor ____________________________________________________________
@@ -107,8 +107,8 @@ namespace wg
 	{
 		// Render our skin
 
-        if( m_pSkin )
-            m_pSkin->_render( pDevice, _canvas, m_state );
+		if( m_pSkin )
+			m_pSkin->_render( pDevice, _canvas, m_state );
 
 		if (!m_child.pWidget)
 			return;
@@ -132,10 +132,10 @@ namespace wg
 
 		if (canvas != _canvas)
 		{
-            auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
+			auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
 			m_child.pWidget->_render(pDevice, canvas, canvas );
-            popClipList(pDevice, savedClipData);
-        }
+			popClipList(pDevice, savedClipData);
+		}
 		else
 			m_child.pWidget->_render( pDevice, canvas, canvas );
 

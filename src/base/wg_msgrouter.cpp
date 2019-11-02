@@ -425,7 +425,7 @@ namespace wg
 
 			if( pMsg->type() == MsgType::MouseDrag )
 				int dummy = 0;
-			
+
 			do
 			{
 				if( pMsg->hasCopyTo()  )

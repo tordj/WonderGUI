@@ -39,7 +39,7 @@ namespace wg
 	typedef	WeakInterfacePtr<IShadows>		IShadows_wp;
 
 	//____ ShadowHolder ___________________________________________________
-	
+
 	class ShadowHolder /** @private */
 	{
 	public:

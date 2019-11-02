@@ -3,8 +3,9 @@
 
 
 def printUsage()
-  puts "usage: code_cleanup file1 [file2 [...]]"
+  puts "usage: code_cleanup file_or_directory1 [file_or_directory2 [...]]"
   puts
+  puts "specifying a directory runs cleanup on all files recursively."
 end
 
 
@@ -41,15 +42,26 @@ if( $*.length < 1 )
   exit
 end
 
-for fileName in $*
+for param in $*
 
-  puts "Cleaning up: #{fileName}"
+	fileNames = [] 
 
-  content = cleanup( IO.readlines(fileName) )
+	if( File.directory?(param) )
+		fileNames = Dir[param + '/**/*'].reject {|fn| File.directory?(fn) }
+	else
+		fileNames << param
+	end
 
-  f = File.new( fileName, "wb")
-	f.puts content
-	f.close
 
+	for file in fileNames
+
+		puts "Cleaning up: #{file}"
+
+  		content = cleanup( IO.readlines(file) )
+
+  		f = File.new( file, "wb")
+		f.puts content
+		f.close
+	end
 
 end

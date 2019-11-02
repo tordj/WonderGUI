@@ -106,9 +106,9 @@ namespace wg
 
 		virtual bool	beginRender();
 		virtual bool	endRender();
-        virtual bool    isRendering();
+		virtual bool    isRendering();
 		virtual bool	isIdle();
-		
+
 		// Draw methods.
 
 		virtual void	fill(const Color& col);
@@ -210,7 +210,7 @@ namespace wg
 		uint32_t	m_renderFlags;		// Current flags.
 
 		SizeI		m_canvasSize;
-        bool        m_bRendering = false;
+		bool        m_bRendering = false;
 	};
 
 } // namespace wg

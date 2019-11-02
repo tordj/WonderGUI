@@ -31,8 +31,8 @@
 
 namespace wg
 {
-    using namespace Util;
-    
+	using namespace Util;
+
 	const char ScrollPanel::CLASSNAME[] = {"ScrollPanel"};
 
 
@@ -1123,8 +1123,8 @@ namespace wg
 
 	void ScrollPanel::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-        RectI dirtBounds = pixelsToRaw( pDevice->clipBounds() );
-        
+		RectI dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+
 		// Render Window background skin
 
 		if( m_pSkin )
@@ -1154,9 +1154,9 @@ namespace wg
 
 			if (window.intersectsWith(dirtBounds))
 			{
-                ClipPopData clipPop = limitClipList(pDevice,rawToPixels(window));
+				ClipPopData clipPop = limitClipList(pDevice,rawToPixels(window));
 				m_viewSlot.pWidget->_render(pDevice, canvas, window);
-                popClipList(pDevice, clipPop);
+				popClipList(pDevice, clipPop);
 			}
 		}
 
@@ -1169,9 +1169,9 @@ namespace wg
 				RectI canvas = m_scrollbarSlots[i].geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-                    ClipPopData clipPop = limitClipList(pDevice,rawToPixels(canvas));
+					ClipPopData clipPop = limitClipList(pDevice,rawToPixels(canvas));
 					m_scrollbarSlots[i].pWidget->_render(pDevice, canvas, canvas);
-                    popClipList(pDevice, clipPop);
+					popClipList(pDevice, clipPop);
 				}
 			}
 		}
@@ -1422,7 +1422,7 @@ namespace wg
 
 		if( window.pos() != m_viewSlot.viewPixOfs )
 			_setWindowPos( window.pos() );
-	
+
 		// Forward to any outer ScrollPanel
 
 		RectI newMustHaveArea(mustHaveArea - m_viewSlot.viewPixOfs + m_viewSlot.windowGeo.pos(), m_viewSlot.windowGeo);

@@ -107,7 +107,7 @@ namespace wg
 		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
 			m_child.pWidget->_setSize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 
-        m_dirtyPatches.add( _geo() );
+		m_dirtyPatches.add( _geo() );
 		return true;
 	}
 
@@ -119,7 +119,7 @@ namespace wg
 
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
-		else 
+		else
 			m_bHasGeo = true;
 
 		return true;
@@ -308,9 +308,9 @@ namespace wg
 
 		if( dirtyPatches.size() > 0 )
 		{
-            ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
+			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
 			m_child.pWidget->_render( m_pGfxDevice.rawPtr(), canvas, canvas );
-            popClipList(m_pGfxDevice, clipPop);
+			popClipList(m_pGfxDevice, clipPop);
 		}
 
 		// Handle updated rect overlays

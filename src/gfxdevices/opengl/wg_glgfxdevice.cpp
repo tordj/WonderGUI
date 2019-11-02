@@ -308,9 +308,9 @@ namespace wg
 		glDeleteBuffers(1, &m_extrasBufferId);
 
 		glDeleteVertexArrays(1, &m_vertexArrayId);
-        
-        if( m_idleSync != 0 )
-            glDeleteSync(m_idleSync);
+
+		if( m_idleSync != 0 )
+			glDeleteSync(m_idleSync);
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -369,15 +369,15 @@ namespace wg
 
 		m_pCanvas = nullptr;
 		m_canvasSize = canvasSize;
-        m_clipCanvas = m_canvasSize;
+		m_clipCanvas = m_canvasSize;
 
-        if( bResetClipRects )
-        {
-            m_clipBounds = m_canvasSize;
-            m_pClipRects = &m_clipCanvas;
-            m_nClipRects = 1;
-        }
-        
+		if( bResetClipRects )
+		{
+			m_clipBounds = m_canvasSize;
+			m_pClipRects = &m_clipCanvas;
+			m_nClipRects = 1;
+		}
+
 		m_canvasYstart = canvasSize.h;
 		m_canvasYmul = -1;
 
@@ -413,13 +413,13 @@ namespace wg
 		m_canvasSize = pSurface->size();
 		m_clipCanvas = m_canvasSize;
 
-        if( bResetClipRects )
-        {
-            m_clipBounds = m_canvasSize;
-            m_pClipRects = &m_clipCanvas;
-            m_nClipRects = 1;
-        }
-        
+		if( bResetClipRects )
+		{
+			m_clipBounds = m_canvasSize;
+			m_pClipRects = &m_clipCanvas;
+			m_nClipRects = 1;
+		}
+
 		m_canvasYstart = 0;
 		m_canvasYmul = 1;
 
@@ -501,7 +501,7 @@ namespace wg
 	}
 
 	//____ isCanvasReady() ___________________________________________________________
-    
+
 	bool GlGfxDevice::isCanvasReady() const
 	{
 		return (glCheckFramebufferStatus(GL_FRAMEBUFFER) == GL_FRAMEBUFFER_COMPLETE);
@@ -563,13 +563,13 @@ namespace wg
 		_setBlendMode(m_blendMode);
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
-        // Set our textures extras buffer.
-        
-        glActiveTexture(GL_TEXTURE1);
-        glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
-        glActiveTexture(GL_TEXTURE0);
-        
-        
+		// Set our textures extras buffer.
+
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+		glActiveTexture(GL_TEXTURE0);
+
+
 		// Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
@@ -618,16 +618,16 @@ namespace wg
 
 		//
 
-        if( m_idleSync != 0 )
-            glDeleteSync(m_idleSync);
-        
-        m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+		if( m_idleSync != 0 )
+			glDeleteSync(m_idleSync);
 
-        //
-        
-        glFlush();
-        
-        assert(glGetError() == 0);
+		m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+
+		//
+
+		glFlush();
+
+		assert(glGetError() == 0);
 		m_bRendering = false;
 
 		// Restore previously active device and exit
@@ -636,20 +636,20 @@ namespace wg
 		return true;
 	}
 
-    //____ isIdle() _____________________________________________________________________
-    
-    bool GlGfxDevice::isIdle()
-    {
-        if( m_bRendering )
-            return false;
-        
-        if( m_idleSync == 0 )
-            return true;
-        
-        GLint isSignaled = 0;
-        glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
-        return (isSignaled == GL_SIGNALED);
-    }
+	//____ isIdle() _____________________________________________________________________
+
+	bool GlGfxDevice::isIdle()
+	{
+		if( m_bRendering )
+			return false;
+
+		if( m_idleSync == 0 )
+			return true;
+
+		GLint isSignaled = 0;
+		glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
+		return (isSignaled == GL_SIGNALED);
+	}
 
 	//____ flush() _______________________________________________________________
 
@@ -1328,21 +1328,21 @@ namespace wg
 				m_vertexOfs += 6;
 			}
 		}
-        
-        if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
-        {
-            m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
-            m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
-            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
-            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
-        }
-        else
-        {
-            m_extrasBufferData[m_extrasOfs++] = src.x;
-            m_extrasBufferData[m_extrasOfs++] = src.y;
-            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
-            m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
-        }
+
+		if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+		{
+			m_extrasBufferData[m_extrasOfs++] = src.x + 0.5f;
+			m_extrasBufferData[m_extrasOfs++] = src.y + 0.5f;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
+		}
+		else
+		{
+			m_extrasBufferData[m_extrasOfs++] = src.x;
+			m_extrasBufferData[m_extrasOfs++] = src.y;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
+			m_extrasBufferData[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
+		}
 
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
@@ -1366,7 +1366,7 @@ namespace wg
 		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
 
 		assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
-        
+
 		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
 		{
 			m_nSegments = nSegments;
@@ -1653,111 +1653,111 @@ namespace wg
 				}
 				case Command::Blit:
 				{
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_cmdBlitProgram);
-                        glEnableVertexAttribArray(2);
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_cmdBlitProgram);
+						glEnableVertexAttribArray(2);
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
-                        
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+						vertexOfs += nVertices;
+
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				case Command::Fill:
 				{
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_fillProg);
-                        glDisableVertexAttribArray(2);
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_fillProg);
+						glDisableVertexAttribArray(2);
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
+						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+						vertexOfs += nVertices;
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				case Command::FillSubPixel:
 				{
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_aaFillProg);
-                        glEnableVertexAttribArray(2);
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_aaFillProg);
+						glEnableVertexAttribArray(2);
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
+						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+						vertexOfs += nVertices;
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				case Command::LineFromTo:
 				{
-                    int clipListOfs = *pCmd++;
-                    int clipListLen = *pCmd++;
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_lineFromToProg);
-                        glEnableVertexAttribArray(2);
+					int clipListOfs = *pCmd++;
+					int clipListLen = *pCmd++;
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_lineFromToProg);
+						glEnableVertexAttribArray(2);
 
-                        for (int i = 0; i < clipListLen; i++)
-                        {
-                            RectI& clip = m_clipListBuffer[clipListOfs++];
-                            glScissor(clip.x, clip.y, clip.w, clip.h);
-                            glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        }
+						for (int i = 0; i < clipListLen; i++)
+						{
+							RectI& clip = m_clipListBuffer[clipListOfs++];
+							glScissor(clip.x, clip.y, clip.w, clip.h);
+							glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+						}
 
-                        glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
-                        vertexOfs += nVertices;
+						glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
+						vertexOfs += nVertices;
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				case Command::Plot:
 				{
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_plotProg);
-                        glDisableVertexAttribArray(2);
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_plotProg);
+						glDisableVertexAttribArray(2);
 
-                        glDrawArrays(GL_POINTS, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
+						glDrawArrays(GL_POINTS, vertexOfs, nVertices);
+						vertexOfs += nVertices;
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				case Command::Segments:
 				{
 					int nEdges = (*pCmd++)-1;
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_segmentsProg[nEdges]);
-                        glEnableVertexAttribArray(2);
-                        glEnableVertexAttribArray(3);
+					int nVertices = *pCmd++;
+					if( nVertices > 0 )
+					{
+						glUseProgram(m_segmentsProg[nEdges]);
+						glEnableVertexAttribArray(2);
+						glEnableVertexAttribArray(3);
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
+						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+						vertexOfs += nVertices;
 
-                        glDisableVertexAttribArray(3);
+						glDisableVertexAttribArray(3);
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
+						if( m_bMipmappedActiveCanvas )
+							m_pActiveCanvas->m_bMipmapStale = true;
+					}
 					break;
 				}
 				default:
@@ -1793,10 +1793,10 @@ namespace wg
 			if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
 			{
 				glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                m_pActiveCanvas = nullptr;
-                m_bMipmappedActiveCanvas = false;
+				m_pActiveCanvas = nullptr;
+				m_bMipmappedActiveCanvas = false;
 
-                //TODO: Signal error that we could not set the specified canvas.
+				//TODO: Signal error that we could not set the specified canvas.
 
 				return;
 			}
@@ -1821,9 +1821,9 @@ namespace wg
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(canvasUBO), &m_canvasUBOBuffer);
 
 		assert(glGetError() == 0);
-        
-        m_pActiveCanvas = pCanvas;
-        m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
+
+		m_pActiveCanvas = pCanvas;
+		m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
 	}
 
 	//____ _setBlendMode() _______________________________________________________
@@ -1907,12 +1907,12 @@ namespace wg
 		{
 			glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
 
-            if( pSurf->m_bMipmapStale )
-            {
-                glGenerateMipmap(GL_TEXTURE_2D);
-                pSurf->m_bMipmapStale = false;
-            }
-                
+			if( pSurf->m_bMipmapStale )
+			{
+				glGenerateMipmap(GL_TEXTURE_2D);
+				pSurf->m_bMipmapStale = false;
+			}
+
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 

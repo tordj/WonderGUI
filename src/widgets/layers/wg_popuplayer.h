@@ -167,7 +167,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-        void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
+		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 		void			_cloneContent( const Widget * _pOrg );
 		void			_setSize( const SizeI& size );
 		void			_receive( Msg * pMsg );

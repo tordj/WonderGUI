@@ -30,8 +30,8 @@
 
 namespace wg
 {
-    using namespace Util;
-    
+	using namespace Util;
+
 	const char Container::CLASSNAME[] = {"Container"};
 
 	//____ Constructor _____________________________________________________________
@@ -92,94 +92,94 @@ namespace wg
 		return false;
 	}
 
-    //____ _descendantPos() _____________________________________________________
-    
-    bool Container::_descendantPos( Widget * pDescendant, CoordI& pos )
-    {
-        pos.clear();
-        
-        Widget * p = pDescendant;
-        while( p != this )
-        {
-            if( p == nullptr )
-                return false;
-            
-            auto pHolder = p->_holder();
-            pos += pHolder->_childPos( p->_slot() );
-            p = pHolder->_childParent();
-        }
+	//____ _descendantPos() _____________________________________________________
 
-        return true;
-    }
+	bool Container::_descendantPos( Widget * pDescendant, CoordI& pos )
+	{
+		pos.clear();
 
-    //____ _childGlobalPos() _______________________________________________________
-    
-    CoordI Container::_childGlobalPos( Slot * pSlot ) const
-    {
-        return _childPos(pSlot) + _globalPos();
-    }
+		Widget * p = pDescendant;
+		while( p != this )
+		{
+			if( p == nullptr )
+				return false;
 
-    //____ _isChildVisible() ________________________________________________________
-    
-    bool Container::_isChildVisible( Slot * pSlot ) const
-    {
-        return true;
-    }
+			auto pHolder = p->_holder();
+			pos += pHolder->_childPos( p->_slot() );
+			p = pHolder->_childParent();
+		}
 
-    //____ _childWindowSection() ____________________________________________________
-    
+		return true;
+	}
+
+	//____ _childGlobalPos() _______________________________________________________
+
+	CoordI Container::_childGlobalPos( Slot * pSlot ) const
+	{
+		return _childPos(pSlot) + _globalPos();
+	}
+
+	//____ _isChildVisible() ________________________________________________________
+
+	bool Container::_isChildVisible( Slot * pSlot ) const
+	{
+		return true;
+	}
+
+	//____ _childWindowSection() ____________________________________________________
+
 	RectI Container::_childWindowSection( Slot * pSlot ) const
 	{
 		return RectI( 0,0, _childSize( pSlot ) );
 	}
 
-    //____ _childParent() ____________________________________________________________
+	//____ _childParent() ____________________________________________________________
 
-    Container * Container::_childParent()
-    {
-        return this;
-    }
+	Container * Container::_childParent()
+	{
+		return this;
+	}
 
-    //____ _root() ___________________________________________________________________
+	//____ _root() ___________________________________________________________________
 
-    RootPanel * Container::_root()
-    {
-        return m_pHolder ? m_pHolder->_root() : nullptr;
-    }
-    
-    //____ _childRequestFocus() ______________________________________________________
+	RootPanel * Container::_root()
+	{
+		return m_pHolder ? m_pHolder->_root() : nullptr;
+	}
 
-    bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
-    {
-        return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
-    }
+	//____ _childRequestFocus() ______________________________________________________
 
-    //____ _ChildReleaseFocus() ______________________________________________________
-    
-    bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
-    {
-        return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
-    }
+	bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
+	{
+		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
+	}
 
-    //____ _childRequestInView() _____________________________________________________
-    
-    void Container::_childRequestInView( Slot * pSlot )
-    {
-        if( m_pHolder )
-        {
-            RectI area( _childPos( pSlot ), _childSize( pSlot ) );
-            m_pHolder->_childRequestInView( m_pSlot, area, area );
-        }
-    }
+	//____ _ChildReleaseFocus() ______________________________________________________
 
-    void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
-    {
-        if( m_pHolder )
-        {
-            CoordI pos( _childPos( pSlot ) );
-            m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
-        }
-    }
+	bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
+	{
+		return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
+	}
+
+	//____ _childRequestInView() _____________________________________________________
+
+	void Container::_childRequestInView( Slot * pSlot )
+	{
+		if( m_pHolder )
+		{
+			RectI area( _childPos( pSlot ), _childSize( pSlot ) );
+			m_pHolder->_childRequestInView( m_pSlot, area, area );
+		}
+	}
+
+	void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	{
+		if( m_pHolder )
+		{
+			CoordI pos( _childPos( pSlot ) );
+			m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
+		}
+	}
 
 
 	//____ _isPanel() ______________________________________________________________
@@ -286,15 +286,15 @@ namespace wg
 
 		Widget *	pWidget;
 		RectI		geo;
-        ClipPopData clipPop;
+		ClipPopData clipPop;
 	};
 
 	void Container::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		// Render container itself
 
-        if( m_pSkin )
-            m_pSkin->_render(pDevice, _canvas, m_state );
+		if( m_pSkin )
+			m_pSkin->_render(pDevice, _canvas, m_state );
 
 		// Render children
 
@@ -318,15 +318,15 @@ namespace wg
 				_nextSlotWithGeo( child );
 			}
 
-            // Collect dirty patches from gfxDevice
-            
-            int nClipRects = pDevice->clipListSize();
-            auto pClipRects = pDevice->clipList();
-            Patches patches( nClipRects );
-            
-            for( int i = 0 ; i < nClipRects ; i++ )
-                patches.push(pixelsToRaw(pClipRects[i]));
-            
+			// Collect dirty patches from gfxDevice
+
+			int nClipRects = pDevice->clipListSize();
+			auto pClipRects = pDevice->clipList();
+			Patches patches( nClipRects );
+
+			for( int i = 0 ; i < nClipRects ; i++ )
+				patches.push(pixelsToRaw(pClipRects[i]));
+
 			// Go through WidgetRenderContexts, push and mask dirt
 
 			for (unsigned int i = 0 ; i < renderList.size(); i++)
@@ -346,7 +346,7 @@ namespace wg
 			{
 				WidgetRenderContext * p = &renderList[i];
 				p->pWidget->_render( pDevice, p->geo, p->geo );
-                popClipList(pDevice,p->clipPop);
+				popClipList(pDevice,p->clipPop);
 			}
 		}
 		else
@@ -359,12 +359,12 @@ namespace wg
 				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-                    ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
+					ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
 
 					if( pDevice->clipListSize() > 0 )
 						child.pSlot->pWidget->_render(pDevice, canvas, canvas);
-                    
-                    popClipList( pDevice, popData );
+
+					popClipList( pDevice, popData );
 				}
 				_nextSlotWithGeo( child );
 			}

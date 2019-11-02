@@ -30,7 +30,7 @@ namespace wg
 
 	//____ Surface() ____________________________________________________________
 
-	Context::Context() : 
+	Context::Context() :
 		m_scale(1.f)
 	{
 	}

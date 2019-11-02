@@ -36,7 +36,7 @@
 
 namespace wg
 {
-    using namespace Util;
+	using namespace Util;
 	const char DragNDropLayer::CLASSNAME[] = {"DragNDropLayer"};
 
 	//____ Constructor ____________________________________________________________
@@ -527,20 +527,20 @@ namespace wg
 			auto pCanvas = pFactory->createSurface(rawToPixels(sz),PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
-            RectI noClip(rawToPixels(sz));
+			RectI noClip(rawToPixels(sz));
 
-            auto pOldClip   = pDevice->clipList();
-            int  nOldClip   = pDevice->clipListSize();
+			auto pOldClip   = pDevice->clipList();
+			int  nOldClip   = pDevice->clipListSize();
 			auto pOldCanvas = pDevice->canvas();
 			Color oldTint   = pDevice->tintColor();
 
-            pDevice->setClipList(1, &noClip);
-            pDevice->setCanvas(pCanvas);
+			pDevice->setClipList(1, &noClip);
+			pDevice->setCanvas(pCanvas);
 			pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
 			m_pPicked->_render(pDevice, sz, sz);
 			pDevice->setCanvas(pOldCanvas);
 			pDevice->setTintColor(oldTint);
-            pDevice->setClipList(nOldClip, pOldClip);
+			pDevice->setClipList(nOldClip, pOldClip);
 
 			auto pImage = Image::create();
 			pImage->setImage( pCanvas );
@@ -551,7 +551,7 @@ namespace wg
 
 
 			m_dragSlot.replaceWidget(this, pImage);
-            m_dragSlot.setSize(sz);
+			m_dragSlot.setSize(sz);
 		}
 
 		Layer::_render(pDevice,_canvas,_window);
