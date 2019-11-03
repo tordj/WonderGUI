@@ -260,10 +260,7 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = (
-					"../../../src/**",
-					../../../src,
-				);
+				USER_HEADER_SEARCH_PATHS = "../../../src/**";
 			};
 			name = Debug;
 		};
@@ -278,10 +275,7 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				USER_HEADER_SEARCH_PATHS = (
-					"../../../src/**",
-					../../../src,
-				);
+				USER_HEADER_SEARCH_PATHS = "../../../src/**";
 			};
 			name = Release;
 		};
