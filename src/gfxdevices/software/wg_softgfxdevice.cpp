@@ -1247,7 +1247,7 @@ namespace wg
 						assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
 
 						int nextX = (ofsX & 0x7FFF) == 0 ? 0 : srcPixelBytes;
-						int nextY = (ofsX & 0x7FFF) == 0 ? 0 : srcPitch;
+						int nextY = (ofsY & 0x7FFF) == 0 ? 0 : srcPitch;
 
 						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
 						_read_pixel(p + nextX, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
