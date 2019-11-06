@@ -38,7 +38,6 @@ namespace wg
 
 	Button::Button() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
 	{
-		m_bDownOutside	 = false;
 		m_bPressed 		 = false;
 		m_bReturnPressed = false;
 	}
@@ -255,10 +254,7 @@ namespace wg
 		}
 
 
-		if( m_bReturnPressed || (m_bPressed && (m_bDownOutside || state.isHovered() )) )
-			state.setPressed(true);
-		else
-			state.setPressed(false);
+		state.setPressed(m_bReturnPressed || m_bPressed);
 
 		if( state != m_state )
 			_setState(state);
@@ -275,33 +271,6 @@ namespace wg
 		//TODO: Handling of icon and text.
 	}
 
-	//____ setDownWhenMouseOutside() _______________________________________________
-	/**
-	 * Set whether the button will stay in pressed state even if the mouse goes outside.
-	 *
-	 * @param bDown		True if button should stay pressed.
-	 *
-	 * If set to True and the button is pushed, it will stay in its pressed state until the mouse button
-	 * is released no matter how the mouse pointer is moved.
-	 *
-	 * If set to false, the button will return to its normal state when when the mouse
-	 * pointer leaves the widget but go back to the pressed state if mouse pointer re-enters the
-	 * widgets without the mouse button having been released.
-	 *
-	 * The effect is only cosmetic, the way that messages are posted is not affected.
-	 *
-	 * The default setting is false.
-	 *
-	 * This little odd setting is useful when using buttons as click-areas for resizing or
-	 * dragging widgets around on the screen. The button will then not switch between
-	 * pressed and unpressed states as the pointer momentarily moves outside the button
-	 * before the callback that updates the geometry is called.
-	 *
-	 **/
-	void Button::setDownWhenMouseOutside( bool bDown )
-	{
-			m_bDownOutside		= bDown;
-	}
 
 	//____ _cloneContent() _______________________________________________________
 
@@ -316,7 +285,6 @@ namespace wg
 		//TODO: Support cloning for text components.
 	//	m_text.clone(&pOrg->m_text);
 
-		m_bDownOutside	= pOrg->m_bDownOutside;
 	}
 
 	//____ _alphaTest() ___________________________________________________________

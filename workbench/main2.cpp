@@ -64,14 +64,14 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 }
 
 
-bool shadowLayerTest(RootPanel_p pRoot);
-bool stretchBlitTest(RootPanel_p pRoot);
-bool scrollIntoViewTest(RootPanel_p pRoot);
-bool textClipTest(RootPanel_p pRoot);
-bool lineEditorTest(RootPanel_p pRoot);
-bool popupOpenerTest(RootPanel_p pRoot);
-bool scrollbarTest(RootPanel_p pRoot);
-bool modalLayerTest(RootPanel_p pRoot);
+bool shadowLayerTest(ISlot_p pSlot);
+bool stretchBlitTest(ISlot_p pSlot);
+bool scrollIntoViewTest(ISlot_p pSlot);
+bool textClipTest(ISlot_p pSlot);
+bool lineEditorTest(ISlot_p pSlot);
+bool popupOpenerTest(ISlot_p pSlot);
+bool scrollbarTest(ISlot_p pSlot);
+bool modalLayerTest(ISlot_p pSlot);
 
 
 
@@ -472,14 +472,14 @@ int main(int argc, char** argv)
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
 
 	
-//	shadowLayerTest(pRoot);
-//	stretchBlitTest(pRoot);
-//	scrollIntoViewTest(pRoot);
-//	textClipTest(pRoot);
-//	lineEditorTest(pRoot);
-//	popupOpenerTest(pRoot);
-//	scrollbarTest(pRoot);
-	modalLayerTest(pRoot);
+//	shadowLayerTest(pRoot->child.ptr());
+//	stretchBlitTest(pRoot->child.ptr());
+//	scrollIntoViewTest(pRoot->child.ptr());
+//	textClipTest(pRoot->child.ptr());
+//	lineEditorTest(pRoot->child.ptr());
+//	popupOpenerTest(pRoot->child.ptr());
+//	scrollbarTest(pRoot->child.ptr());
+	modalLayerTest(&pRoot->child);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1556,7 +1556,7 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 
 //____ shadowLayerTest() ______________________________________________________
 
-bool shadowLayerTest( RootPanel_p pRoot )
+bool shadowLayerTest(ISlot_p pEntry )
 {
 /*
 	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
@@ -1623,14 +1623,14 @@ bool shadowLayerTest( RootPanel_p pRoot )
 
 //____ stretchBlitTest() ______________________________________________________
 
-bool stretchBlitTest(RootPanel_p pRoot)
+bool stretchBlitTest(ISlot_p pEntry)
 {
 	Surface_p pImgSurface = loadSurface("../resources/white_frame_256x256.png", PixelFormat::BGR_8 );
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 	auto pBack = FlexPanel::create();
 	pBack->setSkin(StaticColorSkin::create(Color::Blue));
-	pRoot->child = pBack;
+	* pEntry = pBack;
 
 	auto pImage = Image::create();
 	pImage->setImage(pImgSurface, { 0,0,256,256 });
@@ -1650,7 +1650,7 @@ bool stretchBlitTest(RootPanel_p pRoot)
 
 //____ scrollIntoViewTest() ______________________________________________________
 
-bool scrollIntoViewTest(RootPanel_p pRoot)
+bool scrollIntoViewTest(ISlot_p pEntry)
 {
 	auto pEditor = TextEditor::create();
 
@@ -1665,14 +1665,14 @@ bool scrollIntoViewTest(RootPanel_p pRoot)
 	auto pFlex = FlexPanel::create();
 	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
 
-	pRoot->child = pFlex;
+	* pEntry = pFlex;
 
 	return true;
 }
 
 //____ textClipTest() ______________________________________________________
 
-bool textClipTest(RootPanel_p pRoot)
+bool textClipTest(ISlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1685,14 +1685,14 @@ bool textClipTest(RootPanel_p pRoot)
 	auto pFlex = FlexPanel::create();
 	pFlex->children.addMovable(pEditor, { 10,10,50,30 });
 
-	pRoot->child = pFlex;
+	* pEntry = pFlex;
 
 	return true;
 }
 
 //____ lineEditorTest() ______________________________________________________
 
-bool lineEditorTest(RootPanel_p pRoot)
+bool lineEditorTest(ISlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1705,14 +1705,14 @@ bool lineEditorTest(RootPanel_p pRoot)
 	auto pFlex = FlexPanel::create();
 	pFlex->children.addMovable(pEditor, { 10,100,50,30 });
 
-	pRoot->child = pFlex;
+	* pEntry = pFlex;
 
 	return true;
 }
 
 //____ popupOpenerTest() ______________________________________________________
 
-bool popupOpenerTest(RootPanel_p pRoot)
+bool popupOpenerTest(ISlot_p pEntry)
 {
 
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
@@ -1720,7 +1720,7 @@ bool popupOpenerTest(RootPanel_p pRoot)
 
 
 	auto pPopupLayer = PopupLayer::create();
-	pRoot->child = pPopupLayer;
+	* pEntry = pPopupLayer;
 	pPopupLayer->setSkin(ColorSkin::create(Color::PaleGoldenrod));
 
 	auto pFlex = FlexPanel::create();
@@ -1741,7 +1741,7 @@ bool popupOpenerTest(RootPanel_p pRoot)
 
 //____ scrollbarTest() ______________________________________________________
 
-bool scrollbarTest(RootPanel_p pRoot)
+bool scrollbarTest(ISlot_p pEntry)
 {
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
 	pButtonSkin->setContentPadding(5);
@@ -1777,27 +1777,27 @@ bool scrollbarTest(RootPanel_p pRoot)
 	auto pFlex = FlexPanel::create();
 	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
 
-	pRoot->child = pFlex;
+	* pEntry = pFlex;
 
 	return true;
 }
 
 //____ modalLayerTest() ______________________________________________________
 
-bool modalLayerTest(RootPanel_p pRoot)
+bool modalLayerTest(ISlot_p pEntry)
 {
-	lineEditorTest(pRoot);
-	Widget_p p = pRoot->child;
+	lineEditorTest(pEntry);
+	Widget_p p = *pEntry;
 
-	scrollbarTest(pRoot);
+	scrollbarTest(pEntry);
 
 	auto pLayer = ModalLayer::create();
 
-	pLayer->base = pRoot->child;
+	pLayer->base = *pEntry;
 //	Widget_p pTemp = pRoot->child;
 //	pLayer->base = pTemp;
 
-	pRoot->child = pLayer;
+	*pEntry = pLayer;
 
 
 	pLayer->modals << p;

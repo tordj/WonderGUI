@@ -62,11 +62,6 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Button_p	cast( Object * pObject );
 
-		//.____ Behavior ____________________________________________
-
-		void			setDownWhenMouseOutside( bool bDown );					///< @brief Set if button should stay in pressed state even if mouse goes outside.
-		bool			downWhenMouseOutside() const { return m_bDownOutside; }	///< @brief Check if button will stay in pressed state even if mouse goes outside.
-
 	protected:
 		Button();
 		virtual ~Button();
@@ -95,8 +90,6 @@ namespace wg
 
 		CTextDisplay	m_text;
 		CIconDisplay	m_icon;
-
-		bool			m_bDownOutside;			// Button remains down when pressed and mouse gets outside?
 
 		bool			m_bPressed;				// Set when left mousebutton was pressed inside.
 		bool			m_bReturnPressed;

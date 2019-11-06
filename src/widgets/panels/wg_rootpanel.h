@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_ichild.h>
+#include <wg_islot.h>
 
 namespace wg
 {
@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected WidgetHolder, protected ChildHolder
+	class RootPanel : public Object, protected WidgetHolder, protected SlotHolder
 	{
 		friend class Container;
 		friend class InputHandler;
@@ -67,7 +67,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		IChild<Slot,ChildHolder>	child;
+		ISlot				child;
 
 		//.____ Identification __________________________________________
 

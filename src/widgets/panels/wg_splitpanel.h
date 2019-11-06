@@ -27,7 +27,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_ichild.h>
+#include <wg_islot.h>
 
 
 namespace wg
@@ -45,7 +45,7 @@ namespace wg
 	};
 
 
-	class SplitPanel : public Panel, protected ChildHolder
+	class SplitPanel : public Panel, protected SlotHolder
 	{
 
 	public:
@@ -55,8 +55,8 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IChild<SplitPanelSlot,ChildHolder>	first;
-		IChild<SplitPanelSlot,ChildHolder>	second;
+		ISlot			first;
+		ISlot			second;
 
 		//.____ Identification __________________________________________
 

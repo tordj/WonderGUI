@@ -158,7 +158,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cvaluedisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cvalueeditor.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icanvas.h" />
-    <ClInclude Include="..\..\..\src\interfaces\wg_ichild.h" />
+    <ClInclude Include="..\..\..\src\interfaces\wg_islot.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_ichildren.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_ichildren.impl.h" />
     <ClInclude Include="..\..\..\src\interfaces\wg_icolumnheader.h" />

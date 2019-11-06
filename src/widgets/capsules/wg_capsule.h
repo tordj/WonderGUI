@@ -25,8 +25,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_ichild.h>
-#include <wg_slot.h>
+#include <wg_islot.h>
 
 
 namespace wg
@@ -51,13 +50,13 @@ namespace wg
 	* such as size, tint and transparency.
 	*/
 
-	class Capsule : public Container, protected ChildHolder
+	class Capsule : public Container, protected SlotHolder
 	{
 	public:
 
 		//.____ Interfaces _______________________________________
 
-		IChild<Slot,ChildHolder> child;
+		ISlot		child;
 
 		//.____ Identification __________________________________________
 

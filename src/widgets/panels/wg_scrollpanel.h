@@ -30,7 +30,7 @@
 #include <wg_panel.h>
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
-#include <wg_ichild.h>
+#include <wg_islot.h>
 #include <wg_paddedslot.h>
 
 
@@ -96,9 +96,9 @@ namespace wg
 
 	};
 
-	//____ ViewEntryHolder _______________________________________________
+	//____ IViewSlotHolder _______________________________________________
 
-	class ViewEntryHolder : public ChildHolder /** @private */
+	class IViewSlotHolder : public SlotHolder /** @private */
 	{
 	public:
 		virtual bool		_setWindowPos(CoordI pos) = 0;
@@ -110,34 +110,34 @@ namespace wg
 	};
 
 
-	//____ ViewEntry ______________________________________________________
+	//____ IViewSlot ______________________________________________________
 
-	class ViewEntry : public IChild<ViewSlot, ViewEntryHolder>
+	class IViewSlot : public ISlot
 	{
 	public:
 		/** @private */
 
-		ViewEntry(ViewSlot * pSlot, ViewEntryHolder * pHolder) : IChild(pSlot, pHolder) {}
+		IViewSlot(ViewSlot * pSlot, IViewSlotHolder * pHolder) : ISlot(pSlot, pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
-		ViewEntry operator=(Widget * pWidget);
+		IViewSlot operator=(Widget * pWidget);
 
 		//.____ Geometry ______________________________________________________
 
-		Size		canvasSize() const { return m_pSlot->contentSize; };
+		Size		canvasSize() const { return _slot()->contentSize; };
 
 		void		setOrigo(Origo origo);
-		Origo		origo() const { return m_pSlot->contentOrigo; }
+		Origo		origo() const { return _slot()->contentOrigo; }
 
 		void		setWidthPolicy(SizePolicy policy);
-		SizePolicy	widthPolicy() const { return m_pSlot->widthPolicy; }
+		SizePolicy	widthPolicy() const { return _slot()->widthPolicy; }
 
 		void		setHeightPolicy(SizePolicy policy);
-		SizePolicy	heightPolicy() const { return m_pSlot->heightPolicy; }
+		SizePolicy	heightPolicy() const { return _slot()->heightPolicy; }
 
 		Rect		windowRect() const;
-		Coord		windowPos() const { return m_pSlot->viewPixOfs; };
+		Coord		windowPos() const { return _slot()->viewPixOfs; };
 		Size		windowSize() const;
 
 		RectF		windowSection() const;
@@ -159,6 +159,15 @@ namespace wg
 		void		setRubberBorder(Border border);
 
 		void		setDragButton(MouseButton button);
+
+	private:
+
+		inline IViewSlotHolder * _holder() { return static_cast<IViewSlotHolder*>(m_pHolder); }
+		inline const IViewSlotHolder * _holder() const { return static_cast<IViewSlotHolder*>(m_pHolder); }
+
+		inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
+		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
+
 	};
 
 
@@ -219,9 +228,9 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected ViewEntryHolder
+	class ScrollPanel : public Panel, protected IViewSlotHolder
 	{
-		friend class ViewEntry;
+		friend class IViewSlot;
 		friend class ScrollbarEntry;
 	public:
 
@@ -231,7 +240,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ViewEntry		view;
+		IViewSlot		view;
 		ScrollbarEntry	hscrollbar, vscrollbar;
 
 		//.____ Identification __________________________________________

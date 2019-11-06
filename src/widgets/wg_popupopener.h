@@ -24,8 +24,6 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_ichild.h>
-#include <wg_ctextdisplay.h>
 #include <wg_itextdisplay.h>
 #include <wg_iicondisplay.h>
 
@@ -97,8 +95,8 @@ namespace wg
 
 
 		Widget_p		m_pPopup;
-		CTextDisplay		m_text;
-		CIconDisplay		m_icon;
+		CTextDisplay	m_text;
+		CIconDisplay	m_icon;
 
 		Origo			m_attachPoint;
 		bool			m_bOpenOnHover;

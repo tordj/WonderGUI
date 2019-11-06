@@ -99,7 +99,6 @@
 #include <wg_cvaluedisplay.h>
 #include <wg_cvalueeditor.h>
 #include <wg_icanvas.h>
-#include <wg_ichild.h>
 #include <wg_ichildren.h>
 #include <wg_icolumnheader.h>
 #include <wg_idynamicchildren.h>
@@ -113,6 +112,7 @@
 #include <wg_iselectablechildren.h>
 #include <wg_ishadows.h>
 #include <wg_islidespan.h>
+#include <wg_islot.h>
 #include <wg_ispan.h>
 #include <wg_itextdisplay.h>
 #include <wg_itexteditor.h>

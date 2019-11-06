@@ -291,109 +291,109 @@ namespace wg
 		return len;
 	}
 
-	ViewEntry ViewEntry::operator=(Widget * pWidget)
+	IViewSlot IViewSlot::operator=(Widget * pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
-		m_pHolder->_setWidget(m_pSlot, pWidget);
+		_holder()->_setWidget(m_pSlot, pWidget);
 		return *this;
 	}
 
-	void ViewEntry::setOrigo(Origo origo)
+	void IViewSlot::setOrigo(Origo origo)
 	{
-		if (origo == m_pSlot->contentOrigo)
+		if (origo == _slot()->contentOrigo)
 			return;
 
-		m_pSlot->contentOrigo = origo;
+		_slot()->contentOrigo = origo;
 
-		bool bModified = m_pSlot->updateCanvasGeo();
+		bool bModified = _slot()->updateCanvasGeo();
 		if (bModified)
-			m_pHolder->_requestRender(m_pSlot->windowGeo);
+			_holder()->_requestRender(_slot()->windowGeo);
 	}
 
-	void ViewEntry::setWidthPolicy(SizePolicy policy)
+	void IViewSlot::setWidthPolicy(SizePolicy policy)
 	{
-		if (policy != m_pSlot->widthPolicy)
+		if (policy != _slot()->widthPolicy)
 		{
-			m_pSlot->widthPolicy = policy;
-			m_pHolder->_updateViewGeo();
+			_slot()->widthPolicy = policy;
+			_holder()->_updateViewGeo();
 		}
 	}
 
-	void ViewEntry::setHeightPolicy(SizePolicy policy)
+	void IViewSlot::setHeightPolicy(SizePolicy policy)
 	{
-		if (policy != m_pSlot->heightPolicy)
+		if (policy != _slot()->heightPolicy)
 		{
-			m_pSlot->heightPolicy = policy;
-			m_pHolder->_updateViewGeo();
+			_slot()->heightPolicy = policy;
+			_holder()->_updateViewGeo();
 		}
 	}
 
-	Rect ViewEntry::windowRect() const
+	Rect IViewSlot::windowRect() const
 	{
-		return Rect( rawToQpix(m_pSlot->viewPixOfs), rawToQpix(m_pSlot->windowGeo.size()));
+		return Rect( rawToQpix(_slot()->viewPixOfs), rawToQpix(_slot()->windowGeo.size()));
 	}
 
-	Size ViewEntry::windowSize() const
+	Size IViewSlot::windowSize() const
 	{
-		return rawToQpix(m_pSlot->windowGeo.size());
+		return rawToQpix(_slot()->windowGeo.size());
 	}
 
-	RectF ViewEntry::windowSection() const
+	RectF IViewSlot::windowSection() const
 	{
-		return RectF(m_pSlot->windowOffsetX(), m_pSlot->windowOffsetY(), m_pSlot->windowFractionX(), m_pSlot->windowFractionY());
+		return RectF(_slot()->windowOffsetX(), _slot()->windowOffsetY(), _slot()->windowFractionX(), _slot()->windowFractionY());
 	}
 
-	CoordF ViewEntry::windowOffset() const
+	CoordF IViewSlot::windowOffset() const
 	{
-		return CoordF( m_pSlot->windowOffsetX(), m_pSlot->windowOffsetY() );
+		return CoordF(_slot()->windowOffsetX(), _slot()->windowOffsetY() );
 	}
 
-	SizeF ViewEntry::windowFraction() const
+	SizeF IViewSlot::windowFraction() const
 	{
-		return SizeF(m_pSlot->windowFractionX(), m_pSlot->windowFractionY());
+		return SizeF(_slot()->windowFractionX(), _slot()->windowFractionY());
 	}
 
-	bool ViewEntry::setWindowPos(Coord pos)
+	bool IViewSlot::setWindowPos(Coord pos)
 	{
-		return m_pHolder->_setWindowPos(qpixToRaw(pos));
+		return _holder()->_setWindowPos(qpixToRaw(pos));
 	}
 
-	bool ViewEntry::setWindowOffset(CoordF ofs)
+	bool IViewSlot::setWindowOffset(CoordF ofs)
 	{
-		return m_pHolder->_setWindowOffset(ofs);
+		return _holder()->_setWindowOffset(ofs);
 	}
 
-	bool ViewEntry::step(Direction dir)
+	bool IViewSlot::step(Direction dir)
 	{
-		return m_pHolder->_step(dir);
+		return _holder()->_step(dir);
 	}
 
-	bool ViewEntry::jump(Direction dir)
+	bool IViewSlot::jump(Direction dir)
 	{
-		return m_pHolder->_jump(dir);
+		return _holder()->_jump(dir);
 	}
 
-	bool ViewEntry::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
+	bool IViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
 	{
 		//TODO: Implement!
 
 		return false;
 	}
 
-	void ViewEntry::setScrollBorder(Border border)
+	void IViewSlot::setScrollBorder(Border border)
 	{
-		m_pSlot->scrollBorder = border;
+		_slot()->scrollBorder = border;
 	}
 
-	void ViewEntry::setRubberBorder(Border border)
+	void IViewSlot::setRubberBorder(Border border)
 	{
-		m_pSlot->rubberBorder = border;
+		_slot()->rubberBorder = border;
 	}
 
-	void ViewEntry::setDragButton(MouseButton button)
+	void IViewSlot::setDragButton(MouseButton button)
 	{
-		m_pSlot->dragButton = button;
+		_slot()->dragButton = button;
 	}
 
 

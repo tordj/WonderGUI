@@ -413,9 +413,6 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_icanvas.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ichild.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_ichildren.h">
       <Filter>interfaces</Filter>
     </ClInclude>
@@ -505,6 +502,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_qpix.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_islot.h">
+      <Filter>interfaces</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

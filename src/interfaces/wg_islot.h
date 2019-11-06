@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_ICHILD_DOT_H
-#define	WG_ICHILD_DOT_H
+#ifndef	WG_ISLOT_DOT_H
+#define	WG_ISLOT_DOT_H
 #pragma once
 
 #include <wg_interface.h>
@@ -31,14 +31,13 @@
 
 namespace wg
 {
+	class ISlot;
+	typedef	StrongInterfacePtr<ISlot>	ISlot_p;
+	typedef	WeakInterfacePtr<ISlot>	ISlot_wp;
 
-//	template<class SlotType, class HolderType> class Child;
-//	typedef	StrongInterfacePtr<Child<class SlotType, class HolderType>,Interface_p>	Child_p;
-//	typedef	WeakInterfacePtr<Child<class SlotType, class HolderType>,Interface_wp>	Child_wp;
+	//____ SlotHolder ____________________________________________________
 
-	//____ ChildHolder ____________________________________________________
-
-	class ChildHolder		/** @private */
+	class SlotHolder		/** @private */
 	{
 	public:
 		virtual void		_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
@@ -46,23 +45,22 @@ namespace wg
 	};
 
 
-	//____ IChild __________________________________________________________
+	//____ ISlot __________________________________________________________
 
-	template<class SlotType, class HolderType> class IChild : public Interface
+	class ISlot : public Interface
 	{
 
 	public:
 
 		/** @private */
 
-		IChild( SlotType * pSlot, HolderType * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+		ISlot( Slot * pSlot, SlotHolder * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 
 		//.____ Operators __________________________________________
 
-		template<typename T, typename H>
-		inline IChild<SlotType, HolderType> operator=(IChild<T, H>& iChild) { Widget_p pWidget = iChild.m_pSlot->pWidget; if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->pWidget; if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 
-		inline IChild<SlotType, HolderType> operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+		inline ISlot operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
 
 		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }
@@ -79,17 +77,17 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline StrongInterfacePtr<IChild<SlotType, HolderType>>	ptr() { return StrongInterfacePtr<IChild<SlotType, HolderType>>(this); }
+		inline StrongInterfacePtr<ISlot>	ptr() { return StrongInterfacePtr<ISlot>(this); }
 
 
 	protected:
 		Object * _object() const {	return m_pHolder->_object(); }
 
-		SlotType *		m_pSlot;
-		HolderType *	m_pHolder;
+		Slot *			m_pSlot;
+		SlotHolder *	m_pHolder;
 	};
 
 
 
 } // namespace wg
-#endif //WG_ICHILD_DOT_H
+#endif //WG_ISLOT_DOT_H

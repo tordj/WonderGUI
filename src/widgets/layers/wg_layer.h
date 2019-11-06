@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_ichild.h>
+#include <wg_islot.h>
 
 
 namespace wg
@@ -69,14 +69,14 @@ namespace wg
 	 *
 	 **/
 
-	class Layer : public Container, protected ChildHolder
+	class Layer : public Container, protected SlotHolder
 	{
 
 	public:
 
 		//.____ Interfaces _______________________________________
 
-		IChild<Slot,ChildHolder> base;
+		ISlot		base;
 
 
 		//.____ Identification __________________________________________
