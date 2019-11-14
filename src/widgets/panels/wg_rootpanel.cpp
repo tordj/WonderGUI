@@ -244,6 +244,13 @@ namespace wg
 		if( !m_pGfxDevice || !m_child.pWidget )
 			return false;						// No GFX-device or no widgets to render.
 
+        // Handle preRender calls.
+        
+        for( auto& pWidget : m_preRenderCalls )
+            pWidget->_preRender();
+        
+        m_preRenderCalls.clear();
+        
 		// Handle debug overlays.
 
 		if( m_bDebugMode )

@@ -203,6 +203,7 @@ namespace wg
 
 		virtual bool	_markTest(const CoordI& ofs);
 
+        bool            _requestPreRenderCall();
 
 		// Methods for geometry in quarterpixels
 
@@ -230,7 +231,6 @@ namespace wg
 		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
 		inline void		_requestInView( const RectI& mustHaveArea, const RectI& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
-
 		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
 		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
@@ -244,7 +244,9 @@ namespace wg
 
 		Widget *		_clone() const;
 		virtual void	_cloneContent( const Widget * _pOrg );
-		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+
+        virtual void    _preRender();
+        virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
 		virtual void	_refresh();
 		virtual void	_setSize( const SizeI& size );

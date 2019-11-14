@@ -369,6 +369,30 @@ namespace wg
 		}
 	}
 
+    //____ _requestPreRenderCall() ___________________________________________________
+    
+    bool Widget::_requestPreRenderCall()
+    {
+        if( !_holder() )
+            return false;
+        
+        RootPanel * pRoot = _holder()->_root();
+        if( !pRoot )
+            return false;
+        
+        pRoot->_addPreRenderCall(this);
+        return true;
+    }
+
+    
+    //____ _preRender() ____________________________________________________________
+    
+    void Widget::_preRender()
+    {
+        // By default we do nothing.
+    }
+
+    
 	//____ _render() ____________________________________________________________
 
 	void Widget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
