@@ -912,11 +912,11 @@ namespace wg
 		//TODO: Implement
 	}
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void FlexPanel::_setSize( const SizeI& size )
+	void FlexPanel::_resize( const SizeI& size )
 	{
-		Panel::_setSize(size);
+		Panel::_resize(size);
 
 		FlexPanelSlot * p = m_children.begin();
 		while( p < m_children.end() )
@@ -959,7 +959,7 @@ namespace wg
 	void FlexPanel::_childRequestResize( Slot * _pSlot )
 	{
 		FlexPanelSlot * pSlot = static_cast<FlexPanelSlot*>(_pSlot);
-		_refreshRealGeo(pSlot);
+		_refreshRealGeo(pSlot, true);
 	}
 
 
@@ -1049,27 +1049,27 @@ namespace wg
 
 	//____ _refreshRealGeo() ___________________________________________
 
-	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot )
+	void FlexPanel::_refreshRealGeo( FlexPanelSlot * pSlot, bool bForceResize )
 	{
-		RectI	newGeo;
+		RectI	geo;
 
 		if( pSlot->bPinned )
 		{
 			CoordI topLeft = pSlot->topLeftPin.rawPos( m_size );
 			CoordI bottomRight = pSlot->bottomRightPin.rawPos( m_size );
 
-			newGeo = RectI(topLeft,bottomRight);
+			geo = RectI(topLeft,bottomRight);
 
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 
-			SizeI sz = newGeo.size();
+			SizeI sz = geo.size();
 			sz.limit( pSlot->minSize(), pSlot->maxSize() );
-			if( sz != newGeo.size() )
+			if( sz != geo.size() )
 			{
-				newGeo.x += newGeo.w - sz.w / 2;
-				newGeo.y += newGeo.h - sz.h / 2;
-				newGeo.w = sz.w;
-				newGeo.h = sz.h;
+				geo.x += geo.w - sz.w / 2;
+				geo.y += geo.h - sz.h / 2;
+				geo.w = sz.w;
+				geo.h = sz.h;
 			}
 		}
 		else
@@ -1100,18 +1100,20 @@ namespace wg
 					pos.y = m_size.h - sz.h;
 			}
 
-			newGeo = RectI( pos, sz );
+			geo = RectI( pos, sz );
 		}
 
 		// Request render and update positions.
 
-		if( newGeo != pSlot->realGeo )
+		if (geo != pSlot->realGeo)
 		{
-			_onRequestRender( pSlot->realGeo, pSlot );
-			pSlot->realGeo = newGeo;
-			pSlot->pWidget->_setSize(newGeo);
-			_onRequestRender( pSlot->realGeo, pSlot );
+			_onRequestRender(pSlot->realGeo, pSlot);
+			pSlot->realGeo = geo;
+			_onRequestRender(pSlot->realGeo, pSlot);
 		}
+
+		if (bForceResize || pSlot->size() != geo.size())
+			pSlot->setSize(geo);
 	}
 
 	//____ _sizeNeededForGeo() ________________________________________

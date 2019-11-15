@@ -164,11 +164,11 @@ namespace wg
 		Widget::_setSkin(pSkin);
 	}
 
-	//____ _setSize() ________________________________________________
+	//____ _resize() ________________________________________________
 
-	void TextEditor::_setSize( const SizeI& size )
+	void TextEditor::_resize( const SizeI& size )
 	{
-		Widget::_setSize( size );
+		Widget::_resize( size );
 
 		if( m_pSkin )
 			m_text.setSize(size - m_pSkin->_contentPadding());

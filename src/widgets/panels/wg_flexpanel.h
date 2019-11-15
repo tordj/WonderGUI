@@ -112,7 +112,7 @@ namespace wg
 	class FlexChildrenHolder : public HideableChildrenHolder /** @private */
 	{
 	public:
-		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot) = 0;
+		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false) = 0;
 		virtual SizeI	_size() const = 0;
 
 	};
@@ -315,7 +315,7 @@ namespace wg
 		void		_unhideSlots( Slot *, int nb ) override;
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
-		void		_refreshRealGeo(FlexPanelSlot * pSlot) override;
+		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false) override;
 		SizeI		_size() const override{ return m_size; }
 
 		// Overloaded from WidgetHolder
@@ -337,7 +337,7 @@ namespace wg
 		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_setSize( const SizeI& size ) override;
+		void		_resize( const SizeI& size ) override;
 
 		void		_onRequestRender( const RectI& rect, const FlexPanelSlot * pSlot );
 

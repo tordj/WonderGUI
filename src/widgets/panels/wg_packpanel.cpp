@@ -90,8 +90,8 @@ namespace wg
 		if( m_bHorizontal != bHorizontal )
 		{
 			m_bHorizontal = bHorizontal;
-			_updatePreferredSize();
-			_refreshChildGeo();
+			_refreshGeometries();
+
 		}
 	}
 
@@ -103,8 +103,8 @@ namespace wg
 		if( m_pSizeBroker.rawPtr() != pBroker )
 		{
 			m_pSizeBroker = pBroker;
-			_updatePreferredSize();
-			_refreshChildGeo();
+			_refreshGeometries();
+
 		}
 	}
 
@@ -362,8 +362,7 @@ namespace wg
 		// into account that SizeBroker might have weird rules and might affect
 		// sizes in various ways when children change place...
 
-		_updatePreferredSize();
-		_refreshChildGeo();
+		_refreshGeometries();
 	}
 
 	//____ _willRemoveSlots() _________________________________________________
@@ -394,8 +393,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			((PackPanelSlot*)pSlot)[i].padding = padding;
 
-		_updatePreferredSize();
-		_refreshChildGeo();
+		_refreshGeometries();
 	}
 
 	void PackPanel::_repadSlots(Slot * pSlot, int nb, const BorderI * pPaddings)
@@ -403,8 +401,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			((PackPanelSlot*)pSlot)[i].padding = * pPaddings++;
 
-		_updatePreferredSize();
-		_refreshChildGeo();
+		_refreshGeometries();
 	}
 
 	//____ _reweightSlots() ______________________________________________________
@@ -415,9 +412,9 @@ namespace wg
 			((PackPanelSlot*)pSlot)[i].weight = weight;
 
 		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
-			_updatePreferredSize();
-
-		_refreshChildGeo();
+			_refreshGeometries();
+		else
+			_refreshChildGeo();
 	}
 
 	void PackPanel::_reweightSlots(Slot * pSlot, int nb, const float * pWeights)
@@ -426,9 +423,9 @@ namespace wg
 			((PackPanelSlot*)pSlot)[i].weight = * pWeights++;
 
 		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
-			_updatePreferredSize();
-
-		_refreshChildGeo();
+			_refreshGeometries();
+		else
+			_refreshChildGeo();
 	}
 
 	//____ _childPos() _______________________________________________________
@@ -466,8 +463,9 @@ namespace wg
 
 		PackPanelSlot * pSlot = static_cast<PackPanelSlot*>(_pSlot);
 		pSlot->preferredSize = pSlot->paddedPreferredSize();
+		pSlot->bResizeRequired = true;
 
-		_refreshAllWidgets();
+		_refreshGeometries();
 	}
 
 	//____ _prevChild() _______________________________________________________
@@ -515,7 +513,7 @@ namespace wg
 			}
 		}
 
-		_refreshAllWidgets();
+		_refreshGeometries();
 	}
 
 	//____ _hideChildren() _______________________________________________________
@@ -525,7 +523,7 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			pSlot[i].bVisible = false;
 
-		_refreshAllWidgets();
+		_refreshGeometries();
 	}
 
 
@@ -536,28 +534,38 @@ namespace wg
 		_refreshChildGeo();
 	}
 */
-	//____ _refreshAllWidgets() _____________________________________________________
+	//____ _refreshGeometries() _____________________________________________________
 
-	void PackPanel::_refreshAllWidgets()
+	void PackPanel::_refreshGeometries()
 	{
-		_updatePreferredSize();
-		_refreshChildGeo();
+		// Recalculate preferred sizes for widget and content.
+
+		SizeI newPreferredContentSize = _calcPreferredSize();
+		SizeI newPreferredSize = m_pSkin ? newPreferredContentSize + m_pSkin->_contentPadding() : newPreferredContentSize;
+
+		// request resize or just refresh child geo, depending on what is needed.
+
+		if (newPreferredContentSize != m_preferredContentSize || newPreferredSize != m_size)
+		{
+			m_preferredContentSize = newPreferredContentSize;
+			_requestResize();
+		}
+		else
+			_refreshChildGeo();
 	}
 
 
+	//____ _resize() ____________________________________________________________
 
-	//____ _setSize() ____________________________________________________________
-
-	void PackPanel::_setSize( const SizeI& size )
+	void PackPanel::_resize( const SizeI& size )
 	{
-		Panel::_setSize(size);
+		Panel::_resize(size);
 		_refreshChildGeo(false);
 	}
 
+	//____ _calcPreferredSize() ______________________________________________________
 
-	//____ _updatePreferredSize() ______________________________________________________
-
-	void PackPanel::_updatePreferredSize()
+	SizeI PackPanel::_calcPreferredSize()
 	{
 		int length = 0;
 		int breadth = 0;
@@ -622,18 +630,7 @@ namespace wg
 
 		//
 
-		SizeI size = m_bHorizontal?SizeI(length,breadth):SizeI(breadth,length);
-
-
-
-//TODO: This optimization was incorrect. Wrap-text might need a different MatchingHeight although preferred size remains the same.
-// This happens when a line, that isn't the longest line, needs to wrap. Find a better optimization.
-
-//		if( size != m_preferredContentSize )
-		{
-			m_preferredContentSize = size;
-			_requestResize();
-		}
+		return m_bHorizontal?SizeI(length,breadth):SizeI(breadth,length);
 	}
 
 	//____ _refreshChildGeo() _________________________________________________________
@@ -696,7 +693,10 @@ namespace wg
 						int oldH = p->geo.h;
 						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							p->pWidget->_setSize( geo.size() );
+						{
+							p->pWidget->_resize( geo.size() );
+							p->bResizeRequired = false;
+						}
 
 					}
 				}
@@ -718,6 +718,12 @@ namespace wg
 						geo.h = 0;
 					}
 				}
+
+				if( p->bResizeRequired )
+				{
+					p->pWidget->_resize(geo.size());
+					p->bResizeRequired = false;
+				}
 			}
 		}
 		else
@@ -737,9 +743,9 @@ namespace wg
 
 			CoordI pos;
 			RectI geo;
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto p = m_children.begin(); p != m_children.end(); p++)
 			{
-				if( pS->bVisible )
+				if( p->bVisible )
 				{
 					geo.x = pos.x;
 					geo.y = pos.y;
@@ -755,31 +761,34 @@ namespace wg
 						geo.h = pI->output.raw;
 						pos.y += pI->output.raw;
 					}
-					geo -= pS->padding;
+					geo -= p->padding;
 					geo += contentOfs;
 
-					if( geo != pS->geo )
+					if( geo != p->geo )
 					{
 						if( bRequestRender )
 						{
 							_requestRender(geo);
-							_requestRender(pS->geo);
+							_requestRender(p->geo);
 						}
-						int oldW = pS->geo.w;
-						int oldH = pS->geo.h;
-						pS->geo = geo;
+						int oldW = p->geo.w;
+						int oldH = p->geo.h;
+						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
-							pS->pWidget->_setSize( geo.size() );
+						{
+							p->pWidget->_resize( geo.size() );
+							p->bResizeRequired = false;
+						}
 					}
 					pI++;
 				}
 				else
 				{
-					if( bRequestRender && pS->geo.w != 0 && pS->geo.h != 0 )
-						_requestRender(pS->geo);
+					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
+						_requestRender(p->geo);
 
-					pS->geo.x = pos.x + contentOfs.x;
-					pS->geo.y = pos.y + contentOfs.y;
+					p->geo.x = pos.x + contentOfs.x;
+					p->geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -790,6 +799,12 @@ namespace wg
 						geo.w = sz.w;
 						geo.h = 0;
 					}
+				}
+
+				if (p->bResizeRequired)
+				{
+					p->pWidget->_resize(geo.size());
+					p->bResizeRequired = false;
 				}
 			}
 

@@ -247,7 +247,7 @@ namespace wg
 		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
 		virtual void	_refresh();
-		virtual void	_setSize( const SizeI& size );
+		virtual void	_resize( const SizeI& size );
 		virtual void	_setSkin( Skin * pSkin );
 		virtual void	_setState( State state );
 

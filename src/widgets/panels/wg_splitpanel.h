@@ -112,7 +112,7 @@ namespace wg
 
 		SizeI		_preferredSize() const override;
 
-		void		_setSize(const SizeI& size) override;
+		void		_resize(const SizeI& size) override;
 		void		_setState(State state) override;
 		void		_refresh() override;
 		void		_receive(Msg * pMsg) override;

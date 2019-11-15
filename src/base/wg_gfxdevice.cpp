@@ -415,10 +415,10 @@ namespace wg
 				// We want last src sample to be taken as close to the end of the source
 				// rectangle as possible in order to get a more balanced representation.
 
-				mtx[0][0] = src.w / (dest.w-0.99);
+				mtx[0][0] = src.w / (dest.w-0.99f);
 				mtx[0][1] = 0;
 				mtx[1][0] = 0;
-				mtx[1][1] = src.h / (dest.h-0.99);
+				mtx[1][1] = src.h / (dest.h-0.99f);
 			}
 
 			_transformBlit(dest, { src.x, src.y }, mtx);

@@ -362,7 +362,7 @@ namespace wg
 		{
 			_updateGeo(&pSlot[i]);
 			if (pSlot[i].bVisible == false)
-				_onRequestRender(pSlot[i].geo, pSlot);
+				_onRequestRender(pSlot[i].geo, pSlot);		//TODO: This looks weird...
 		}
 	}
 
@@ -447,7 +447,7 @@ namespace wg
 
 	void LambdaPanel::_childRequestResize( Slot * pSlot )
 	{
-		_updateGeo(static_cast<LambdaPanelSlot*>(pSlot));
+		_updateGeo(static_cast<LambdaPanelSlot*>(pSlot), true);
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -491,11 +491,11 @@ namespace wg
 		//TODO: Implement
 	}
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void LambdaPanel::_setSize( const SizeI& size )
+	void LambdaPanel::_resize( const SizeI& size )
 	{
-		Panel::_setSize( size );
+		Panel::_resize( size );
 
 		for (auto& slot : m_children)
 			_updateGeo(&slot);
@@ -503,8 +503,10 @@ namespace wg
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot)
+	void LambdaPanel::_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize )
 	{
+		//TODO: Don't requestRender if slot is hidden.
+
 		RectI geo = pixelAligned( qpixToRaw( pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size) )) );
 
 		if (geo != pSlot->geo)
@@ -538,8 +540,8 @@ namespace wg
 
 		pSlot->geo = geo;
 
-		pSlot->pWidget->_setSize(geo.size());
-
+		if (bForceResize || pSlot->size() != geo.size())
+			pSlot->setSize(geo);
 	}
 
 	//____ _onRequestRender() ____________________________________________________

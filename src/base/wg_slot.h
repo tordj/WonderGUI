@@ -101,7 +101,7 @@ namespace wg
 		}
 
 		inline SizeI	size() const { return pWidget->m_size; }
-		inline void		setSize( SizeI size ) const { pWidget->_setSize(size); }
+		inline void		setSize( SizeI size ) const { pWidget->_resize(size); }
 
 		inline int		matchingHeight(int width) const { return pWidget->_matchingHeight(width); }
 		inline int		matchingWidth(int height) const { return pWidget->_matchingWidth(height); }

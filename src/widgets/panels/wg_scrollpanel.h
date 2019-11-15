@@ -299,7 +299,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		virtual void _setSize(const SizeI& size);
+		virtual void _resize(const SizeI& size);
 
 		SizeI		_preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
 
@@ -374,7 +374,7 @@ namespace wg
 
 
 		SizeI		_calcContentSize(SizeI mySize);
-		void		_updateElementGeo(SizeI mySize);
+		void		_updateElementGeo(SizeI mySize, Slot * pForceUpdate = nullptr );
 		bool		_setWindowPos(CoordI pos);
 		bool		_setWindowOffset(CoordF ofs);
 

@@ -377,9 +377,9 @@ namespace wg
 			m_pSkin->_render( pDevice, _canvas, m_state );
 	}
 
-	//____ _setSize() ___________________________________________________________
+	//____ _resize() ___________________________________________________________
 
-	void Widget::_setSize( const SizeI& size )
+	void Widget::_resize( const SizeI& size )
 	{
 		m_size = size;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.

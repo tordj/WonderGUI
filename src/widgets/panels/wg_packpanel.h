@@ -41,11 +41,10 @@ namespace wg
 	class PackPanelSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		PackPanelSlot() : weight(1.f) {}
-
-		float			weight;			// Weight for space allocation.
-		RectI			geo;			// Real geo of child (no padding included).
-		SizeI			preferredSize;	// Cached padded preferred size from the child.
+		bool			bResizeRequired = false;
+		float			weight = 1.f;				// Weight for space allocation.
+		RectI			geo;						// Real geo of child (no padding included).
+		SizeI			preferredSize;				// Cached padded preferred size from the child.
 	};
 
 
@@ -99,7 +98,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_setSize( const SizeI& size ) override;
+		void			_resize( const SizeI& size ) override;
 
 		int				_matchingHeight(int width) const override;
 		int				_matchingWidth(int height) const override;
@@ -154,8 +153,8 @@ namespace wg
 		void		_hideChildren(PackPanelSlot * pSlot, int nb);
 		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
 
-		void		_refreshAllWidgets();
-		void		_updatePreferredSize();
+		void		_refreshGeometries();
+		SizeI		_calcPreferredSize();
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
 

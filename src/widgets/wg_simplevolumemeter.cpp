@@ -327,11 +327,11 @@ namespace wg
 		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * QPix::pixelQuartersPerPoint();
 	}
 
-	//____ _setSize() ____________________________________________________________________
+	//____ _resize() ____________________________________________________________________
 
-	void SimpleVolumeMeter::_setSize( const SizeI& size )
+	void SimpleVolumeMeter::_resize( const SizeI& size )
 	{
-		Widget::_setSize( size );
+		Widget::_resize( size );
 
 		SizeI canvasSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
 

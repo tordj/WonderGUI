@@ -113,7 +113,7 @@ namespace wg
 		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void	_receive( Msg * pMsg ) override;
 		void	_refresh() override;
-		void	_setSize( const SizeI& size ) override;
+		void	_resize( const SizeI& size ) override;
 		bool	_alphaTest( const CoordI& ofs ) override;
 		void	_setState( State state ) override;
 		void	_setSkin( Skin * pSkin ) override;

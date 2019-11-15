@@ -131,11 +131,11 @@ namespace wg
 		Widget::_setState(state);
 	}
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void Button::_setSize( const SizeI& _size )
+	void Button::_resize( const SizeI& _size )
 	{
-		Widget::_setSize(_size);
+		Widget::_resize(_size);
 
 		RectI	contentRect(0,0,_size);
 

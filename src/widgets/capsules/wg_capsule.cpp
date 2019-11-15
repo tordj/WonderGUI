@@ -218,16 +218,16 @@ namespace wg
 		Container::_cloneContent( _pOrg );
 	}
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void Capsule::_setSize( const SizeI& size )
+	void Capsule::_resize( const SizeI& size )
 	{
-		Container::_setSize( size );
+		Container::_resize( size );
 
 		if (m_child.pWidget)
 		{
 			SizeI sz = m_pSkin ? size - m_pSkin->_contentPadding() : size;
-			m_child.pWidget->_setSize(sz);
+			m_child.pWidget->_resize(sz);
 		}
 	}
 
@@ -278,7 +278,7 @@ namespace wg
 		if (pWidget)
 		{
 			SizeI sz = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
-			pWidget->_setSize(sz);
+			pWidget->_resize(sz);
 		}
 
 		_requestRender();

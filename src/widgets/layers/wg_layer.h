@@ -42,6 +42,7 @@ namespace wg
 	{
 	public:
 		inline void setSize( SizeI size ) { geo.setSize(size); Slot::setSize(size); }
+		inline void setGeo(RectI _geo) { geo = _geo; Slot::setSize(geo.size()); }
 
 		RectI	geo;
 	};
@@ -119,7 +120,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_setSize(const SizeI& size) override;
+		void		_resize(const SizeI& size) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
 		int			_matchingHeight(int width) const override;

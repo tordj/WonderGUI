@@ -854,7 +854,7 @@ namespace wg
 
 	//____ _updateElementGeo() _____________________________________________________
 
-	void ScrollPanel::_updateElementGeo( SizeI mySize )
+	void ScrollPanel::_updateElementGeo( SizeI mySize, Slot* pForceUpdate )
 	{
 
 		SizeI newContentSize = _calcContentSize( mySize );
@@ -1034,8 +1034,13 @@ namespace wg
 			// Notify content of its new size.
 
 			if (m_viewSlot.pWidget)
-				m_viewSlot.pWidget->_setSize(newContentSize);
+				m_viewSlot.pWidget->_resize(newContentSize);
 		}
+		else if( pForceUpdate == &m_viewSlot && m_viewSlot.pWidget )
+			m_viewSlot.pWidget->_resize(newContentSize);
+
+
+
 		// If something visible has changed we need to update element geometry and request render.
 		// This is more optimized than it looks like...
 
@@ -1051,14 +1056,21 @@ namespace wg
 
 			_requestRender();
 
-			// Notify scrollbars of their new size.
+			// Notify scrollbars of their new size if needed.
 
-			if( bShowDragX )
-				m_scrollbarSlots[0].pWidget->_setSize(newDragX.size());
-			if( bShowDragY )
-				m_scrollbarSlots[1].pWidget->_setSize(newDragY.size());
+			if( (bShowDragX && newDragX.size() != m_scrollbarSlots[0].size()) || pForceUpdate == &m_scrollbarSlots[0])
+				m_scrollbarSlots[0].pWidget->_resize(newDragX.size());
+			if( (bShowDragY && newDragY.size() != m_scrollbarSlots[1].size()) || pForceUpdate == &m_scrollbarSlots[1])
+				m_scrollbarSlots[1].pWidget->_resize(newDragY.size());
 		}
+		else
+		{
+			if (pForceUpdate == &m_scrollbarSlots[0] && m_scrollbarSlots[0].pWidget)
+				m_scrollbarSlots[0].pWidget->_resize(newDragX.size());
 
+			if (pForceUpdate == &m_scrollbarSlots[1] && m_scrollbarSlots[1].pWidget)
+				m_scrollbarSlots[1].pWidget->_resize(newDragX.size());
+		}
 
 
 		// Notify scrollbars of any change to content size, view size or view offset.
@@ -1073,11 +1085,11 @@ namespace wg
 
 
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void ScrollPanel::_setSize( const SizeI& size )
+	void ScrollPanel::_resize( const SizeI& size )
 	{
-		Panel::_setSize(size);
+		Panel::_resize(size);
 
 		_updateElementGeo( size );
 	}
@@ -1384,7 +1396,7 @@ namespace wg
 
 	void ScrollPanel::_childRequestResize( Slot * pSlot )
 	{
-		_updateElementGeo( m_size );
+		_updateElementGeo( m_size, pSlot );
 	}
 
 	//____ _childRequestInView() _________________________________________________

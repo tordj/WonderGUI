@@ -220,11 +220,11 @@ namespace wg
 			return sz;
 	}
 
-	//____ _setSize() ____________________________________________________________________
+	//____ _resize() ____________________________________________________________________
 
-	void VolumeMeter::_setSize( const SizeI& size )
+	void VolumeMeter::_resize( const SizeI& size )
 	{
-		Widget::_setSize( size );
+		Widget::_resize( size );
 
 		switch (m_direction)
 		{

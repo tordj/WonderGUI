@@ -173,11 +173,11 @@ namespace wg
 		Widget::_setSkin(pSkin);
 	}
 
-	//____ _setSize() ________________________________________________
+	//____ _resize() ________________________________________________
 
-	void LineEditor::_setSize( const SizeI& size )
+	void LineEditor::_resize( const SizeI& size )
 	{
-		Widget::_setSize( size );
+		Widget::_resize( size );
 
 		if( m_pSkin )
 			m_text.setSize( SizeI(m_text.preferredSize().w, size.h - m_pSkin->_contentPadding().h ) );

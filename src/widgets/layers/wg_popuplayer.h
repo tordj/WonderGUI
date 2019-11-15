@@ -138,7 +138,7 @@ namespace wg
 
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
-		bool			_updateGeo(PopupSlot * pSlot, bool bInitialUpdate = false );
+		void			_updateGeo(PopupSlot * pSlot, bool bForceResize = false);
 		void			_removeSlots(int ofs, int nb);
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
 
@@ -169,7 +169,7 @@ namespace wg
 
 		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
 		void			_cloneContent( const Widget * _pOrg );
-		void			_setSize( const SizeI& size );
+		void			_resize( const SizeI& size );
 		void			_receive( Msg * pMsg );
 
 

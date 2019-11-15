@@ -168,8 +168,8 @@ namespace wg
 		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_setSize( const SizeI& size ) override;
-		void		_updateGeo(LambdaPanelSlot * pSlot);
+		void		_resize( const SizeI& size ) override;
+		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false);
 
 		void		_onRequestRender( const RectI& rect, const LambdaPanelSlot * pSlot );
 

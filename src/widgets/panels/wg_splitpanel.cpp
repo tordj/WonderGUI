@@ -270,11 +270,11 @@ namespace wg
 
 			m_firstChild.geo = firstChildGeo;
 			if( m_firstChild.pWidget )
-				m_firstChild.pWidget->_setSize(firstChildGeo);
+				m_firstChild.pWidget->_resize(firstChildGeo);
 
 			m_secondChild.geo = secondChildGeo;
 			if (m_secondChild.pWidget)
-				m_secondChild.pWidget->_setSize(secondChildGeo);
+				m_secondChild.pWidget->_resize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
 
@@ -531,11 +531,11 @@ namespace wg
 		//TODO: Implement!!!
 	}
 
-	//____ _setSize() _________________________________________________________
+	//____ _resize() _________________________________________________________
 
-	void SplitPanel::_setSize(const SizeI& size)
+	void SplitPanel::_resize(const SizeI& size)
 	{
-		Panel::_setSize(size);
+		Panel::_resize(size);
 		_updateGeo();
 	}
 
@@ -610,7 +610,7 @@ namespace wg
 		auto pSlot = static_cast<SplitPanelSlot*>(_pSlot);
 
 		pSlot->replaceWidget(this, pNewWidget);
-		pNewWidget->_setSize(pSlot->geo);
+		pNewWidget->_resize(pSlot->geo);
 		_updatePreferredSize();
 		bool bGeoChanged =_updateGeo();
 		if (!bGeoChanged)
@@ -648,7 +648,10 @@ namespace wg
 
 	void SplitPanel::_childRequestResize(Slot * pSlot)
 	{
-		//TODO: Implement!!!
+		//TODO: Implement better solution, should be able to adapt width !!!
+
+		auto p = static_cast<SplitPanelSlot*>(pSlot);
+		p->setSize(p->geo);
 	}
 
 	//____ _prevChild() _______________________________________________________

@@ -304,11 +304,11 @@ namespace wg
 		//TODO: Handling of icon and text?
 	}
 
-	//____ _setSize() _______________________________________________________
+	//____ _resize() _______________________________________________________
 
-	void ToggleButton::_setSize( const SizeI& size )
+	void ToggleButton::_resize( const SizeI& size )
 	{
-		Widget::_setSize( size );
+		Widget::_resize( size );
 
 		RectI contentRect	= RectI(0,0,size);
 		if( m_pSkin )

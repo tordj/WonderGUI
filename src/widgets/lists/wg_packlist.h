@@ -163,7 +163,7 @@ namespace wg
 		void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		void			_setSize( const SizeI& size ) override;
+		void			_resize( const SizeI& size ) override;
 		void			_refresh() override;
 
 		void			_receive( Msg * pMsg ) override;

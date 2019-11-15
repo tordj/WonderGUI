@@ -428,11 +428,11 @@ namespace wg
 		}
 	}
 
-	//____ _setSize() ___________________________________________________________
+	//____ _resize() ___________________________________________________________
 
-	void PackList::_setSize( const SizeI& _size )
+	void PackList::_resize( const SizeI& _size )
 	{
-		List::_setSize(_size);
+		List::_resize(_size);
 
 		SizeI headerSize = m_bHorizontal ? SizeI(m_header.matchingWidth(_size.h), _size.h) : SizeI( _size.w, m_header.matchingHeight( _size.w ));
 		m_header.setSize( headerSize );
@@ -464,7 +464,7 @@ namespace wg
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_setSize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					pWidget->_resize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -473,7 +473,7 @@ namespace wg
 					pSlot->length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_setSize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					pWidget->_resize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -794,7 +794,7 @@ namespace wg
 
 				RectI childGeo;
 				_getChildGeo(childGeo, pSlot + i);
-				pChild->_setSize(childGeo);
+				pChild->_resize(childGeo);
 			}
 		}
 
@@ -1228,60 +1228,64 @@ namespace wg
 
 	void PackList::_childRequestResize( Slot * _pSlot )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
-
-		if( !pSlot->bVisible  || m_minEntrySize == m_maxEntrySize )
-			return;
-
-		SizeI prefEntrySize = _paddedLimitedPreferredSize(pSlot);
-
-		int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
-		int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
-
 		bool	bReqResize = false;
 
-		// Update preferred sizes
+		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		if( prefBreadth != pSlot->prefBreadth || prefLength != pSlot->length )
+		if (pSlot->bVisible && m_minEntrySize != m_maxEntrySize)
 		{
-			// NOTE: Order here is important!
+			SizeI prefEntrySize = _paddedLimitedPreferredSize(pSlot);
 
-			_addToContentPreferredSize( prefLength, prefBreadth );
-			int oldPrefBreadth = pSlot->prefBreadth;
-			pSlot->prefBreadth = prefBreadth;
-			_subFromContentPreferredSize( pSlot->length, oldPrefBreadth );
+			int prefLength = m_bHorizontal ? prefEntrySize.w : prefEntrySize.h;
+			int prefBreadth = m_bHorizontal ? prefEntrySize.h : prefEntrySize.w;
 
-			bReqResize = true;
+			// Update preferred sizes
+
+			if( prefBreadth != pSlot->prefBreadth || prefLength != pSlot->length )
+			{
+				// NOTE: Order here is important!
+
+				_addToContentPreferredSize( prefLength, prefBreadth );
+				int oldPrefBreadth = pSlot->prefBreadth;
+				pSlot->prefBreadth = prefBreadth;
+				_subFromContentPreferredSize( pSlot->length, oldPrefBreadth );
+
+				bReqResize = true;
+			}
+
+			// Calculate new length
+
+			int length;
+			if( prefBreadth == m_contentBreadth )
+				length = prefLength;
+			else
+				length = m_bHorizontal ? _paddedLimitedMatchingWidth(pSlot, m_contentBreadth ) : _paddedLimitedMatchingHeight(pSlot, m_contentBreadth );
+
+			// Update if length has changed
+
+			if( length != pSlot->length )
+			{
+				m_contentLength += length - pSlot->length;
+				pSlot->length = length;
+				bReqResize = true;
+
+				_updateChildOfsFrom( pSlot );
+				_requestRenderChildren( pSlot, m_children.end() );
+
+				RectI childGeo;
+				_getChildGeo(childGeo,pSlot);
+				pSlot->pWidget->_resize(childGeo);
+			}
 		}
-
-		// Calculate new length
-
-		int length;
-		if( prefBreadth == m_contentBreadth )
-			length = prefLength;
-		else
-			length = m_bHorizontal ? _paddedLimitedMatchingWidth(pSlot, m_contentBreadth ) : _paddedLimitedMatchingHeight(pSlot, m_contentBreadth );
-
-		// Update if length has changed
-
-		if( length != pSlot->length )
-		{
-			m_contentLength += length - pSlot->length;
-			pSlot->length = length;
-			bReqResize = true;
-
-			_updateChildOfsFrom( pSlot );
-			_requestRenderChildren( pSlot, m_children.end() );
-
-			RectI childGeo;
-			_getChildGeo(childGeo,pSlot);
-			pSlot->pWidget->_setSize(childGeo);
-		}
-
-
 
 		if( bReqResize )
 			_requestResize();
+
+		// Always set size on request since our _resize() won't do it unless breadth has changed.
+
+		RectI geo;
+		_getChildGeo(geo, pSlot);
+		pSlot->setSize(geo.size());
 	}
 
 	//____ _prevChild() __________________________________________________________

@@ -154,7 +154,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	bool PopupLayer::_updateGeo(PopupSlot* pSlot, bool bInitialUpdate )
+	void PopupLayer::_updateGeo(PopupSlot* pSlot, bool bForceResize)
 	{
 		// Get size of parent and correct launcherGeo
 
@@ -312,20 +312,15 @@ namespace wg
 
 		// Update geometry if it has changed.
 
-		if( geo != pSlot->geo )
+		if (geo != pSlot->geo)
 		{
-			if( !bInitialUpdate )
-				_onRequestRender(pSlot->geo,pSlot);
+			_onRequestRender(pSlot->geo, pSlot);
 			pSlot->geo = geo;
-			_onRequestRender(pSlot->geo,pSlot);
-
-			if( pSlot->size() != geo.size() )
-				pSlot->pWidget->_setSize(geo.size());
-
-			return true;
+			_onRequestRender(pSlot->geo, pSlot);
 		}
-		else
-			return false;
+
+		if (bForceResize || pSlot->size() != geo.size())
+			pSlot->setSize(geo);
 	}
 
 
@@ -543,11 +538,11 @@ namespace wg
 
 
 
-	//____ _setSize() ___________________________________________________________
+	//____ _resize() ___________________________________________________________
 
-	void PopupLayer::_setSize( const SizeI& sz )
+	void PopupLayer::_resize( const SizeI& sz )
 	{
-		Layer::_setSize(sz);
+		Layer::_resize(sz);
 	}
 
 	//____ _cloneContent() ______________________________________________________
@@ -842,7 +837,7 @@ namespace wg
 		if( pSlot == &m_baseSlot )
 			_requestResize();
 		else
-			_updateGeo( (PopupSlot *) pSlot );
+			_updateGeo( (PopupSlot *) pSlot, true );
 	}
 
 	//____ _releaseChild() _____________________________________________________
@@ -874,7 +869,7 @@ namespace wg
 
 		pSlot->replaceWidget(this, _pPopup);
 
-		_updateGeo(pSlot, true);
+		_updateGeo(pSlot);
 		_stealKeyboardFocus();
 
 		if (m_tickRouteId == 0)

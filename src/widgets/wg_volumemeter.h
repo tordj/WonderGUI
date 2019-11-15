@@ -86,7 +86,7 @@ namespace wg
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const CoordI& ofs ) override;
-		void			_setSize( const SizeI& size ) override;
+		void			_resize( const SizeI& size ) override;
 
 		RouteId			m_tickRouteId;
 

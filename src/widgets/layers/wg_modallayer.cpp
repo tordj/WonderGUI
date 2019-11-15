@@ -245,7 +245,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot )	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		SizeI sz = pSlot->placementGeo.size();
 
@@ -264,14 +264,17 @@ namespace wg
 		CoordI ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
 		ofs += pSlot->placementGeo.pos();
 
-		RectI newGeo( ofs, sz );
+		RectI geo( ofs, sz );
 
-		if( newGeo != pSlot->geo )
+		if (geo != pSlot->geo)
 		{
 			_onRequestRender(pSlot->geo, pSlot);
-			pSlot->geo = RectI( ofs, sz );
+			pSlot->geo = geo;
 			_onRequestRender(pSlot->geo, pSlot);
 		}
+
+		if (bForceResize || pSlot->size() != geo.size())
+			pSlot->setSize(geo);
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -281,7 +284,10 @@ namespace wg
 		if( pSlot == &m_baseSlot )
 			_requestResize();
 		else
-			_refreshRealGeo( (ModalSlot *) pSlot );
+		{
+			auto p = static_cast<ModalSlot*>(pSlot);
+			_refreshRealGeo( p, true );
+		}
 	}
 
 	//____ _releaseChild() ____________________________________________________
@@ -593,9 +599,9 @@ namespace wg
 
 	//____ _setSize() ___________________________________________________________
 
-	void ModalLayer::_setSize( const SizeI& sz )
+	void ModalLayer::_resize( const SizeI& sz )
 	{
-		Layer::_setSize(sz);
+		Layer::_resize(sz);
 
 		// Refresh modal widgets geometry, their positions might have changed.
 

@@ -78,7 +78,7 @@ namespace wg
 		void			_refresh() override;
 		virtual void	_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const CoordI& ofs ) override;
-		virtual void	_setSize( const SizeI& size ) override;
+		virtual void	_resize( const SizeI& size ) override;
 		void			_setState( State state ) override;
 
 

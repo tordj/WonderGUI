@@ -96,7 +96,7 @@ namespace wg
 		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_setSize(const SizeI& size) override;
+		void			_resize(const SizeI& size) override;
 		virtual void	_setSkin(Skin * pSkin) override;
 		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
 		virtual	bool	_alphaTest(const CoordI& ofs) override;

@@ -224,20 +224,20 @@ namespace wg
 	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
 		pSlot->replaceWidget(this, pNewWidget);
-		pNewWidget->_setSize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+		pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 
 		_onRequestRender( RectI(0,0,m_size), 0 );
 		_requestResize();
 	}
 
-	//____ _setSize() _______________________________________________________
+	//____ _resize() _______________________________________________________
 
-	void Layer::_setSize(const SizeI& size)
+	void Layer::_resize(const SizeI& size)
 	{
-		Container::_setSize(size);
+		Container::_resize(size);
 
 		if (m_baseSlot.pWidget)
-			m_baseSlot.pWidget->_setSize(size);
+			m_baseSlot.pWidget->_resize(size);
 	}
 
 

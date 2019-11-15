@@ -113,9 +113,12 @@ namespace wg
 		else
 		{
 			auto p = static_cast<LayerSlot*>(pSlot);
-			p->setSize(p->preferredSize());
 
-			//TODO: Should we request render (on both sizes) too?
+			Size pref = p->preferredSize();
+			Size max = Size::max(pref, p->geo.size());
+
+			_requestRender(Rect({ 0,0,m_size }, { p->geo.pos(), max }));
+			p->setSize(pref);
 		}
 	}
 

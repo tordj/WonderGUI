@@ -137,7 +137,7 @@ namespace wg
 		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_setSize( const SizeI& size ) override;
+		void		_resize( const SizeI& size ) override;
 
 		// Overloaded from Container
 

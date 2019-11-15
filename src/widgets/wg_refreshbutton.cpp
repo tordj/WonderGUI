@@ -179,14 +179,14 @@ namespace wg
 	}
 
 
-	//____ _setSize() ____________________________________________________________
+	//____ _resize() ____________________________________________________________
 
-	void RefreshButton::_setSize( const SizeI& size )
+	void RefreshButton::_resize( const SizeI& size )
 	{
 		SizeI contentSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
 		m_refreshText.setSize(contentSize);
 
-		Button::_setSize( size );
+		Button::_resize( size );
 	}
 
 

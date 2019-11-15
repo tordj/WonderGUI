@@ -207,11 +207,11 @@ namespace wg
 			m_text.setSize(newTextCanvas);
 	}
 
-	//____ _setSize() ________________________________________________
+	//____ _resize() ________________________________________________
 
-	void TextDisplay::_setSize( const SizeI& size )
+	void TextDisplay::_resize( const SizeI& size )
 	{
-		Widget::_setSize(size);
+		Widget::_resize(size);
 
 		SizeI textSize = size;
 		if( m_pSkin )

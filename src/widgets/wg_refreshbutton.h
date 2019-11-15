@@ -106,7 +106,7 @@ namespace wg
 		void			_receive( Msg * pMsg );
 		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 		void			_cloneContent( const Widget * _pOrg );
-		virtual void 	_setSize( const SizeI& size );
+		virtual void 	_resize( const SizeI& size );
 
 
 		RouteId			m_tickRouteId;

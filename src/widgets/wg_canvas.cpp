@@ -125,11 +125,11 @@ namespace wg
 		Widget::_cloneContent( _pOrg );
 	}
 
-	//____ _setSize() _________________________________________________________
+	//____ _resize() _________________________________________________________
 
-	void Canvas::_setSize(const SizeI& size)
+	void Canvas::_resize(const SizeI& size)
 	{
-		Widget::_setSize(size);
+		Widget::_resize(size);
 		m_canvas.setComponentSize(size);
 	}
 

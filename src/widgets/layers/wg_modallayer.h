@@ -57,7 +57,7 @@ namespace wg
 	class ModalChildrenHolder : public DynamicChildrenHolder		/** @private */
 	{
 	public:
-		virtual void	_refreshRealGeo(ModalSlot * pSlot) = 0;
+		virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
 	};
 
 	class IModalChildren;
@@ -170,7 +170,7 @@ namespace wg
 		void			_willRemoveSlots(Slot * pSlot, int nb) override;
 		Object *		_object() override { return this;  }
 		WidgetHolder *	_widgetHolder() override { return this; }
-		void            _refreshRealGeo( ModalSlot * pSlot ) override;
+		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;
 
 		// Overloaded from Layer
 
@@ -186,7 +186,7 @@ namespace wg
 		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_setSize( const SizeI& size ) override;
+		void			_resize( const SizeI& size ) override;
 		void			_receive( Msg * pMsg ) override;
 
 

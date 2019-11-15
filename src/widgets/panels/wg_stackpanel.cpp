@@ -108,7 +108,7 @@ namespace wg
 			{
 				((StackPanel*)m_pHolder)->_requestRender(oldGeo);
 				((StackPanel*)m_pHolder)->_requestRender(newGeo);
-				pSlot->pWidget->_setSize(newGeo.size());
+				pSlot->pWidget->_resize(newGeo.size());
 			}
 		};
 	}
@@ -222,11 +222,13 @@ namespace wg
 		//TODO: Implement
 	}
 
-	//____ _setSize() ___________________________________________________________
+	//____ _resize() ___________________________________________________________
 
-	void StackPanel::_setSize( const SizeI& size )
+	void StackPanel::_resize( const SizeI& size )
 	{
-		Panel::_setSize(size);
+		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
+
+		Panel::_resize(size);
 		_adaptChildrenToSize();
 	}
 
@@ -409,6 +411,8 @@ namespace wg
 
 	void StackPanel::_childRequestResize( Slot * pSlot )
 	{
+		SizeI oldPreferred = m_preferredSize;
+
 		_refreshPreferredSize();
 	}
 
@@ -481,7 +485,7 @@ namespace wg
 			if( !pSlot[i].bVisible )
 			{
 				pSlot[i].bVisible = true;
-				pSlot[i].pWidget->_setSize(_childGeo(pSlot).size() );
+				pSlot[i].pWidget->_resize(_childGeo(pSlot).size() );
 				_childRequestRender( pSlot + i );
 			}
 		}
@@ -589,7 +593,7 @@ namespace wg
 		while( pSlot != pEnd )
 		{
 			if( pSlot->bVisible )
-				pSlot->pWidget->_setSize( _childGeo(pSlot) );
+				pSlot->pWidget->_resize( _childGeo(pSlot) );
 			pSlot++;
 		}
 	}

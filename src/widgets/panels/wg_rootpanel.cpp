@@ -105,7 +105,7 @@ namespace wg
 		m_pGfxDevice = pDevice;
 
 		if( m_pGfxDevice && !m_bHasGeo && m_child.pWidget )
-			m_child.pWidget->_setSize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
+			m_child.pWidget->_resize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 
 		m_dirtyPatches.add( _geo() );
 		return true;
@@ -148,7 +148,7 @@ namespace wg
 
 		if( pNewWidget )
 		{
-			pNewWidget->_setSize(m_geo.size());
+			pNewWidget->_resize(m_geo.size());
 			pNewWidget->_collectPatches( m_dirtyPatches, _geo(), _geo() );
 		}
 	}
@@ -438,7 +438,7 @@ namespace wg
 	}
 	void RootPanel::_childRequestResize( Slot * pSlot )
 	{
-		// Do nothing, root ignores resize requests.
+		pSlot->setSize(m_geo.size());
 	}
 
 	bool RootPanel::_childRequestFocus( Slot * pSlot, Widget * pWidget )
