@@ -178,7 +178,7 @@ namespace wg
 
 		// Internal to StackPanel
 
-		void 	_refreshPreferredSize();
+		SizeI 	_calcPreferredSize();
 		void	_adaptChildrenToSize();
 
 		void	_hideChildren( StackPanelSlot * pSlot, int nb );

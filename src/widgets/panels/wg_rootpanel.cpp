@@ -394,36 +394,49 @@ namespace wg
 		return _geo().pos();
 	}
 
+	//____ _childGlobalPos() __________________________________________________
+
 	CoordI RootPanel::_childGlobalPos( Slot * pSlot ) const
 	{
 		return _geo().pos();
 	}
+
+	//____ _childSize() __________________________________________________
 
 	SizeI RootPanel::_childSize( Slot * pSlot ) const
 	{
 		return _geo().size();
 	}
 
+	//____ _isChildVisible() __________________________________________________
+
 	bool RootPanel::_isChildVisible( Slot * pSlot ) const
 	{
 		return true;
 	}
+
+	//____ _childWindowSection() __________________________________________________
 
 	RectI RootPanel::_childWindowSection( Slot * pSlot ) const
 	{
 		return _geo();
 	}
 
+	//____ _childParent() __________________________________________________
 
 	Container * RootPanel::_childParent()
 	{
 		return nullptr;
 	}
 
+	//____ _root() __________________________________________________
+
 	RootPanel * RootPanel::_root()
 	{
 		return this;
 	}
+
+	//____ _childRequestRender() __________________________________________________
 
 	void RootPanel::_childRequestRender( Slot * pSlot )
 	{
@@ -436,10 +449,15 @@ namespace wg
 		if( m_bVisible )
 			m_dirtyPatches.add( RectI( _geo().pos() + rect.pos(), rect.size() ) );
 	}
+
+	//____ _childRequestResize() __________________________________________________
+
 	void RootPanel::_childRequestResize( Slot * pSlot )
 	{
 		pSlot->setSize(m_geo.size());
 	}
+
+	//____ _childRequestFocus() __________________________________________________
 
 	bool RootPanel::_childRequestFocus( Slot * pSlot, Widget * pWidget )
 	{
@@ -450,6 +468,8 @@ namespace wg
 		m_pFocusedChild = pWidget;
 		return Base::inputHandler()->_focusChanged( this, pOldFocus, pWidget );
 	}
+
+	//____ _childReleaseFocus() __________________________________________________
 
 	bool RootPanel::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
 	{
@@ -464,6 +484,8 @@ namespace wg
 		return Base::inputHandler()->_focusChanged( this, pOldFocus, m_child.pWidget);
 	}
 
+	//____ _childRequestInView() __________________________________________________
+
 	void RootPanel::_childRequestInView( Slot * pSlot )
 	{
 		// Do nothing, root ignores inView requests.
@@ -473,10 +495,14 @@ namespace wg
 		// Do nothing, root ignores inView requests.
 	}
 
+	//____ _prevChild() __________________________________________________
+
 	Widget * RootPanel::_prevChild( const Slot * pSlot ) const
 	{
 		return nullptr;
 	}
+
+	//____ _nextChild() __________________________________________________
 
 	Widget * RootPanel::_nextChild( const Slot * pSlot ) const
 	{

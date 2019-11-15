@@ -80,23 +80,27 @@ namespace wg
 	{
 		//TODO: Assert
 
-		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		LambdaPanelSlot * pSlot = m_pSlotArray->slot(index);
 		pSlot->pFunc = func;
+
+		m_pHolder->_updateSlotGeo(pSlot, 1);
 	}
 
 	void ILambdaPanelChildren::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
-		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		LambdaPanelSlot * pSlot = pos._slot();
 		pSlot->pFunc = func;
+
+		m_pHolder->_updateSlotGeo(pSlot, 1);
 	}
 
 	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaPanelChildren::function(int index) const
 	{
 		//TODO: Assert
 
-		LambdaPanelSlot * pSlot = m_pSlotArray->insert(index);
+		LambdaPanelSlot * pSlot = m_pSlotArray->slot(index);
 		return pSlot->pFunc;
 	}
 
@@ -104,7 +108,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		LambdaPanelSlot * pSlot = m_pSlotArray->insert(pos._slot());
+		LambdaPanelSlot * pSlot = pos._slot();
 		return pSlot->pFunc;
 	}
 
@@ -507,7 +511,12 @@ namespace wg
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
-		RectI geo = pixelAligned( qpixToRaw( pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size) )) );
+		RectI geo;
+			
+		if (pSlot->pFunc)
+			geo = pixelAligned(qpixToRaw(pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size))));
+		else
+			geo = { 0,0,pSlot->preferredSize() };
 
 		if (geo != pSlot->geo)
 		{

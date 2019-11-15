@@ -333,9 +333,12 @@ namespace wg
 		for( int i = 0 ; i < nb ; i++ )
 			((StackPanelSlot*)pSlot)[i].padding = padding;
 
-		_refreshPreferredSize();
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
+
+		SizeI newPreferred =_calcPreferredSize();
+		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
+			_requestResize();
 	}
 
 	void StackPanel::_repadSlots(Slot * pSlot, int nb, const BorderI * pPaddings)
@@ -343,9 +346,12 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 			((StackPanelSlot*)pSlot)[i].padding = * pPaddings++;
 
-		_refreshPreferredSize();
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
+
+		SizeI newPreferred = _calcPreferredSize();
+		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
+			_requestResize();
 	}
 
 
@@ -411,9 +417,19 @@ namespace wg
 
 	void StackPanel::_childRequestResize( Slot * pSlot )
 	{
-		SizeI oldPreferred = m_preferredSize;
+		SizeI newPreferred = _calcPreferredSize();
 
-		_refreshPreferredSize();
+		if( newPreferred != m_preferredSize || m_preferredSize != m_size )
+		{
+			m_preferredSize = newPreferred;
+			_requestResize();
+		}
+		else
+		{
+			pSlot->setSize(_childGeo((StackPanelSlot*)pSlot).size());
+			_requestRender();
+		}
+
 	}
 
 	//____ _prevChild() __________________________________________________________
@@ -553,9 +569,9 @@ namespace wg
 	}
 */
 
-	//____ _refreshPreferredSize() _____________________________________________________
+	//____ _calcPreferredSize() _____________________________________________________
 
-	void StackPanel::_refreshPreferredSize()
+	SizeI StackPanel::_calcPreferredSize()
 	{
 		SizeI	preferredSize;
 
@@ -575,12 +591,7 @@ namespace wg
 			pSlot++;
 		}
 
-//TODO: We can't trust that same preferredSize results in same matchingHeight. We need to find a more robust optimization.
-//		if( m_preferredSize != preferredSize)
-		{
-			m_preferredSize = preferredSize;
-			_requestResize();
-		}
+		return preferredSize;
 	}
 
 	//____ _adaptChildrenToSize() ___________________________________________________________
