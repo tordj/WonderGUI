@@ -60,8 +60,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Capsule_p	cast( Object * pObject );
 
@@ -71,45 +71,45 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		CoordI		_childPos( Slot * pSlot ) const;
-		SizeI		_childSize( Slot * pSlot ) const;
+		CoordI		_childPos( Slot * pSlot ) const override;
+		SizeI		_childSize( Slot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot );
-		void		_childRequestRender( Slot * pSlot, const RectI& rect );
-		void		_childRequestResize( Slot * pSlot );
+		void		_childRequestRender( Slot * pSlot ) override;
+		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const;
-		Widget *	_nextChild( const Slot * pSlot ) const;
+		Widget *	_prevChild( const Slot * pSlot ) const override;
+		Widget *	_nextChild( const Slot * pSlot ) const override;
 
-		void		_releaseChild( Slot * pSlot );
+		void		_releaseChild( Slot * pSlot ) override;
 
 		// Overloaded from ChildHolder
 
-		Object *	_object();
-		const Object * _object() const;
+		Object *	_object() override;
+		const Object * _object() const override;
 
-		void		_setWidget( Slot * pSlot, Widget * pWidget );
+		void		_setWidget( Slot * pSlot, Widget * pWidget ) override;
 
 		// Overloaded from Container
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const;
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 		// Overloaded from Widget
 
-		int			_matchingHeight(int width) const;
-		int			_matchingWidth(int height) const;
+		int			_matchingHeight(int width) const override;
+		int			_matchingWidth(int height) const override;
 
-		SizeI		_preferredSize() const;
+		SizeI		_preferredSize() const override;
 
 
-		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
-		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
-		void		_cloneContent( const Widget * _pOrg );
-		void		_resize( const SizeI& size );
+		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
+		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
+		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_resize( const SizeI& size ) override;
 
 
 

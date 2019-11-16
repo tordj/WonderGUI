@@ -67,7 +67,7 @@ namespace wg
 		inline int				append( const CharSeq& seq ) { return m_pComponent->append(seq); }
 		inline int				insert( int ofs, const CharSeq& seq ) { return m_pComponent->insert(ofs,seq); }
 		inline int				replace( int ofs, int len, const CharSeq& seq ) { return m_pComponent->replace(ofs,len,seq); }
-		inline int				remove( int ofs, int len ) { return m_pComponent->remove(ofs,len); }
+		inline int				erase( int ofs, int len ) { return m_pComponent->erase(ofs,len); }
 
 		//.____ Appearance _____________________________________________
 

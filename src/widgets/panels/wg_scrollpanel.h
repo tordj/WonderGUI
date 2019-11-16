@@ -218,7 +218,7 @@ namespace wg
 
 
 	protected:
-		Object * _object() const;
+		Object * _object() const override;
 
 		ScrollbarSlot *	m_pSlot;
 		ScrollPanel * m_pHolder;
@@ -245,8 +245,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const;
-		const char *			className(void) const;
+		bool					isInstanceOf(const char * pClassName) const override;
+		const char *			className(void) const override;
 		static const char		CLASSNAME[];
 		static ScrollPanel_p	cast(Object * pObject);
 
@@ -275,7 +275,7 @@ namespace wg
 		void		setCornerSkin(Skin * pSkin);
 		Skin_p		cornerSkin() const { return m_pCornerSkin; }
 
-		virtual void setSkin(Skin * pSkin);
+		virtual void setSkin(Skin * pSkin) override;
 
 		//.____ Misc _________________________________________________________________
 
@@ -295,76 +295,76 @@ namespace wg
 	protected:
 		ScrollPanel();
 		virtual ~ScrollPanel();
-		virtual Widget* _newOfMyType() const { return new ScrollPanel(); };
+		virtual Widget* _newOfMyType() const override { return new ScrollPanel(); };
 
 		// Overloaded from Widget
 
-		virtual void _resize(const SizeI& size);
+		virtual void _resize(const SizeI& size) override;
 
-		SizeI		_preferredSize() const;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
+		SizeI		_preferredSize() const override;				// = preferred size of scrollbars in the geometry, fixed value if scrollbars are missing.
 
-		void		_receive(Msg * pMsg);
-		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
-		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip);
-		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode);
+		void		_receive(Msg * pMsg) override;
+		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip) override;
+		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode) override;
 
-		bool		_alphaTest(const CoordI& ofs);
-		void		_cloneContent(const Widget * _pOrg);
+		bool		_alphaTest(const CoordI& ofs) override;
+		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos(Slot * pSlot) const;
-		SizeI		_childSize(Slot * pSlot) const;
+		CoordI		_childPos(Slot * pSlot) const override;
+		SizeI		_childSize(Slot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot);
-		void		_childRequestRender(Slot * pSlot, const RectI& rect);
-		void		_childRequestResize(Slot * pSlot);
+		void		_childRequestRender(Slot * pSlot) override;
+		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(Slot * pSlot) override;
 
-		void		_childRequestInView(Slot * pSlot);
-		void		_childRequestInView(Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea);
+		void		_childRequestInView(Slot * pSlot) override;
+		void		_childRequestInView(Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
 
 
-		Widget *	_prevChild(const Slot * pSlot) const;
-		Widget *	_nextChild(const Slot * pSlot) const;
+		Widget *	_prevChild(const Slot * pSlot) const override;
+		Widget *	_nextChild(const Slot * pSlot) const override;
 
-		RectI		_childWindowSection(Slot * pSlot) const;
+		RectI		_childWindowSection(Slot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot);
+		void		_releaseChild(Slot * pSlot) override;
 
 		// Overloaded from ChildHolder
 
-		void			_setWidget(Slot * pSlot, Widget * pWidget);
-		Object *		_object() { return this;  }
-		inline void		_requestRender(const RectI& rect) { Panel::_requestRender(rect); }
+		void			_setWidget(Slot * pSlot, Widget * pWidget) override;
+		Object *		_object() override { return this;  }
+		inline void		_requestRender(const RectI& rect) override { Panel::_requestRender(rect); }
 		inline void		_requestRender() { Panel::_requestRender(); }
-		virtual void	_updateViewGeo() { _updateElementGeo(m_size); }
+		virtual void	_updateViewGeo() override { _updateElementGeo(m_size); }
 
 		// Overloaded from Container
 
-		Widget *	_findWidget(const CoordI& pos, SearchMode mode);
+		Widget *	_findWidget(const CoordI& pos, SearchMode mode) override;
 
-		Widget *	_firstChild() const;
-		Widget *	_lastChild() const;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-		void		_firstSlotWithGeo(SlotWithGeo& package) const;
-		void		_nextSlotWithGeo(SlotWithGeo& package) const;
+		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		// Internal
 
 		class MyScrollbarTarget : public ScrollbarTarget
 		{
 		public:
-			float		_stepFwd();
-			float		_stepBwd();
-			float		_jumpFwd();
-			float		_jumpBwd();
-			float		_wheelRolled(int distance);
+			float		_stepFwd() override;
+			float		_stepBwd() override;
+			float		_jumpFwd() override;
+			float		_jumpBwd() override;
+			float		_wheelRolled(int distance) override;
 
-			float		_setPosition(float fraction);
+			float		_setPosition(float fraction) override;
 
-			Widget*		_getWidget();
-			float		_getHandlePosition();
-			float		_getHandleSize();
+			Widget*		_getWidget() override;
+			float		_getHandlePosition() override;
+			float		_getHandleSize() override;
 
 			void		_updateScrollbar(float pos, float size) { ScrollbarTarget::_updateScrollbar(pos, size); }
 
@@ -375,12 +375,12 @@ namespace wg
 
 		SizeI		_calcContentSize(SizeI mySize);
 		void		_updateElementGeo(SizeI mySize, Slot * pForceUpdate = nullptr );
-		bool		_setWindowPos(CoordI pos);
-		bool		_setWindowOffset(CoordF ofs);
+		bool		_setWindowPos(CoordI pos) override;
+		bool		_setWindowOffset(CoordF ofs) override;
 
 
-		bool		_step(Direction dir, int nSteps = 1);
-		bool		_jump(Direction dir, int nJumps = 1);
+		bool		_step(Direction dir, int nSteps = 1) override;
+		bool		_jump(Direction dir, int nJumps = 1) override;
 		bool		_wheelRoll(Direction dir, int nSteps = 1);
 
 		int			_defaultStepFunction(Direction dir, int steps);

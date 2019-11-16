@@ -1,0 +1,31 @@
+{
+	"folders": [
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/base"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/components"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/fonts"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/interfaces"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/sizebrokers"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/skins"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/textmappers"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/valueformatters"
+		},
+		{
+			"path": "/home/tord/Workspace/WonderGUI/src/widgets"
+		}
+	]
+}

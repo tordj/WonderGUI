@@ -198,6 +198,13 @@ namespace wg
 		return 0;
 	}
 
+	//____ selectionSize() __________________________________________________________
+
+	int CText::selectionSize() const
+	{
+		return 0;
+	}
+
 	//____ _editState() ________________________________________________________
 
 	const EditState * CText::_editState() const

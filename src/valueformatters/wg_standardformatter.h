@@ -45,15 +45,15 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
+		bool						isInstanceOf( const char * pClassName ) const override;
+		const char *				className( void ) const override;
 		static const char			CLASSNAME[];
 		static StandardFormatter_p	cast( Object * pObject );
 
 		//.____ Misc __________________________________________________
 
-		String 		format( int64_t value, int scale ) const;
-		String 		format( double value ) const;
+		String 		format( int64_t value, int scale ) const override;
+		String 		format( double value ) const override;
 
 	protected:
 		StandardFormatter();

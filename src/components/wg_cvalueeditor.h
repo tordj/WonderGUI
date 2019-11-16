@@ -58,9 +58,10 @@ namespace wg
 
 		void				select( int ofs, int len );
 		void				selectAll();
-		inline int			selectionBegin() const { return m_selBeg; }
-		inline int			selectionLength() const { return m_selEnd - m_selBeg; }
 		void				clearSelection();
+		inline int			selectionBegin() const override { return m_selBeg; }
+		inline int			selectionEnd() const override { return m_selEnd; }
+		inline int			selectionSize() const override { return m_selEnd - m_selBeg; }
 
 		void				goBol();
 		void				goEol();

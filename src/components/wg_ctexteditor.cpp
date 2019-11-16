@@ -450,7 +450,7 @@ namespace wg
 			_updateDisplayArea();
 		}
 
-		int ret = CTextDisplay::remove( ofs, len );
+		int ret = CTextDisplay::erase( ofs, len );
 		_updateDisplayArea();
 		return ret;
 	}

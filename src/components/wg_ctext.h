@@ -76,6 +76,7 @@ namespace wg
 
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;
+		virtual int			selectionSize() const;
 
 		// Alternative calls, guaranteed to return valid values.
 

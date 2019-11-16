@@ -114,7 +114,7 @@ namespace wg
 		void			freeObjectId(short id);
 
 	protected:
-		Object *				_object() const { return m_pHolder->_object(); }
+		Object *				_object() const  override { return m_pHolder->_object(); }
 
 		short					m_idCounter;
 

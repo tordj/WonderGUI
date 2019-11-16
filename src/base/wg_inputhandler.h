@@ -64,8 +64,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static InputHandler_p	cast( Object * pObject );
 
@@ -117,7 +117,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		void 		receive( Msg * pMsg );
+		void 		receive( Msg * pMsg ) override;
 
 		Key			translateKey( int native_keycode );
 

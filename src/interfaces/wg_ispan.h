@@ -59,7 +59,7 @@ namespace wg
 		inline ISpan_p			ptr() { return ISpan_p(this); }
 
 	protected:
-		virtual Object * 		_object() const;
+		virtual Object * 		_object() const override;
 
 		CSpan *		m_pComponent;
 	};

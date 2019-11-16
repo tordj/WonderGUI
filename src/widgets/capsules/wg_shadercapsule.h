@@ -52,8 +52,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static ShaderCapsule_p	cast( Object * pObject );
 
@@ -70,10 +70,10 @@ namespace wg
 	protected:
 		ShaderCapsule();
 		virtual ~ShaderCapsule();
-		virtual Widget* _newOfMyType() const { return new ShaderCapsule(); };
+		virtual Widget* _newOfMyType() const override { return new ShaderCapsule(); };
 
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void		_cloneContent( const Widget * _pOrg );
+		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void		_cloneContent( const Widget * _pOrg ) override;
 		BlendMode _getRenderMode() const;
 
 	private:

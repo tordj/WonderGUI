@@ -56,8 +56,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static MsgRouter_p	cast( Object * pObject );
 
@@ -134,9 +134,9 @@ namespace wg
 			ObjectRoute( Receiver * pReceiver, MsgType filter);
 			virtual ~ObjectRoute();
 
-			void 		dispatch(Msg * pMsg);
-			bool 		isAlive() const;
-			Receiver *	receiver() const;
+			void 		dispatch(Msg * pMsg) override;
+			bool 		isAlive() const override;
+			Receiver *	receiver() const override;
 
 		protected:
 			Receiver_wp			m_pReceiver;
@@ -150,9 +150,9 @@ namespace wg
 			FunctionRoute(std::function<void(Msg * pMsg)> func, MsgType filter);
 			virtual ~FunctionRoute();
 
-			void 		dispatch(Msg * pMsg);
-			bool 		isAlive() const;
-			Receiver *	receiver() const;
+			void 		dispatch(Msg * pMsg) override;
+			bool 		isAlive() const override;
+			Receiver *	receiver() const override;
 
 		protected:
 			std::function<void( Msg * pMsg )> m_func;

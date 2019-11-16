@@ -65,8 +65,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static RefreshButton_p	cast( Object * pObject );
 
@@ -101,12 +101,12 @@ namespace wg
 	protected:
 		RefreshButton();
 		virtual ~RefreshButton();
-		virtual Widget* _newOfMyType() const { return new RefreshButton(); };
+		virtual Widget* _newOfMyType() const override { return new RefreshButton(); };
 
-		void			_receive( Msg * pMsg );
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
-		void			_cloneContent( const Widget * _pOrg );
-		virtual void 	_resize( const SizeI& size );
+		void			_receive( Msg * pMsg ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		virtual void 	_resize( const SizeI& size ) override;
 
 
 		RouteId			m_tickRouteId;

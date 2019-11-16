@@ -81,7 +81,7 @@ namespace wg
 
 
 	protected:
-		Object * _object() const {	return m_pHolder->_object(); }
+		Object * _object() const override {	return m_pHolder->_object(); }
 
 		Slot *			m_pSlot;
 		SlotHolder *	m_pHolder;

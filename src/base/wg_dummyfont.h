@@ -44,32 +44,32 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static DummyFont_p	cast( Object * pObject );
 
 		//.____ Rendering ____________________________________________
 
-		bool			setSize( int size );
-		int				size();
+		bool			setSize( int size ) override;
+		int				size() override;
 
-		int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
-		Glyph_p			getGlyph( uint16_t chr );
+		int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		Glyph_p			getGlyph( uint16_t chr ) override;
 
-		int				lineGap();
-		int				whitespaceAdvance();
-		int				maxAdvance();
-		int				maxAscend();
-		int				maxDescend();
+		int				lineGap() override;
+		int				whitespaceAdvance() override;
+		int				maxAdvance() override;
+		int				maxAscend() override;
+		int				maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
-		int				nbGlyphs();
-		bool			hasGlyphs();
-		bool			isMonospace();
-		bool			isMonochrome();
-		bool			hasGlyph( uint16_t chr );
+		int				nbGlyphs() override;
+		bool			hasGlyphs() override;
+		bool			isMonospace() override;
+		bool			isMonochrome() override;
+		bool			hasGlyph( uint16_t chr ) override;
 
 
 
@@ -83,7 +83,7 @@ namespace wg
 		public:
 			DummyGlyph( Font * pFont );
 
-			const GlyphBitmap * getBitmap() { return &m_src; }
+			const GlyphBitmap * getBitmap() override { return &m_src; }
 			GlyphBitmap	m_src;
 		};
 

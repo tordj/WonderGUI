@@ -39,8 +39,8 @@ namespace wg
 
 		// ModValue methods
 
-		void				clear();
-		bool				set( int64_t value, int scale );
+		void				clear() override;
+		bool				set( int64_t value, int scale ) override;
 
 		bool				setRange( int64_t min, int64_t max );
 		inline int64_t		min() const { return m_minValue; }

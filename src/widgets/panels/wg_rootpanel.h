@@ -72,8 +72,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static RootPanel_p	cast( Object * pObject );
 
@@ -135,38 +135,38 @@ namespace wg
 
 		// WidgetHolder methods
 
-		CoordI			_childPos( Slot * pSlot ) const;
-		CoordI			_childGlobalPos( Slot * pSlot ) const;
+		CoordI			_childPos( Slot * pSlot ) const override;
+		CoordI			_childGlobalPos( Slot * pSlot ) const override;
 
-		SizeI			_childSize( Slot * pSlot ) const;
+		SizeI			_childSize( Slot * pSlot ) const override;
 
-		bool			_isChildVisible( Slot * pSlot ) const;
-		RectI			_childWindowSection( Slot * pSlot ) const;
+		bool			_isChildVisible( Slot * pSlot ) const override;
+		RectI			_childWindowSection( Slot * pSlot ) const override;
 
-		Container *  	_childParent();
-		RootPanel *		_root();
+		Container *  	_childParent() override;
+		RootPanel *		_root() override;
 
-		void			_childRequestRender( Slot * pSlot );
-		void			_childRequestRender( Slot * pSlot, const RectI& rect );
-		void			_childRequestResize( Slot * pSlot );
+		void			_childRequestRender( Slot * pSlot ) override;
+		void			_childRequestRender( Slot * pSlot, const RectI& rect ) override;
+		void			_childRequestResize( Slot * pSlot ) override;
 
-		bool			_childRequestFocus( Slot * pSlot, Widget * pWidget );
-		bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget );
+		bool			_childRequestFocus( Slot * pSlot, Widget * pWidget ) override;
+		bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget ) override;
 
-		void			_childRequestInView( Slot * pSlot );
-		void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
+		void			_childRequestInView( Slot * pSlot ) override;
+		void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
 
-		Widget *		_prevChild( const Slot * pSlot ) const;
-		Widget *		_nextChild( const Slot * pSlot ) const;
+		Widget *		_prevChild( const Slot * pSlot ) const override;
+		Widget *		_nextChild( const Slot * pSlot ) const override;
 
-		void			_releaseChild( Slot * pSlot );
+		void			_releaseChild( Slot * pSlot ) override;
 
 		// ChildHolder methods
 
-		Object *		_object();
-		const Object *	_object() const;
+		Object *		_object() override;
+//		const Object *	_object() const override;
 
-		void			_setWidget( Slot * pSlot, Widget * pNewWidget );
+		void			_setWidget( Slot * pSlot, Widget * pNewWidget ) override;
 
 		//
 

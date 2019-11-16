@@ -41,16 +41,16 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static UniformSizeBroker_p	cast( Object * pObject );
 
 		//.____ Misc __________________________________________________
 
-		QPix setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const;
-		QPix setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const;
-		bool mayAlterPreferredLengths() const;
+		QPix setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const override;
+		QPix setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
+		bool mayAlterPreferredLengths() const override;
 
 	protected:
 		UniformSizeBroker() {};

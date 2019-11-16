@@ -71,7 +71,7 @@ namespace wg
 
 
 	protected:
-		Object * 			_object() const { return m_pComponent->_object(); };
+		Object * 			_object() const override { return m_pComponent->_object(); };
 
 		CIconDisplay *			m_pComponent;
 	};

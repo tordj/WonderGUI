@@ -81,7 +81,7 @@ namespace wg
 		inline IROTextDisplay_p			ptr() { return IROTextDisplay_p(this); }
 
 	protected:
-		Object *				_object() const;
+		Object *				_object() const override;
 
 		CTextDisplay * 			m_pComponent;
 	};

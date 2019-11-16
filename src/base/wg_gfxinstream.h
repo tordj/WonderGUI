@@ -111,7 +111,7 @@ namespace wg
 		inline GfxInStream_p	ptr() { return GfxInStream_p(this); }
 
 	protected:
-		Object *				_object() const { return m_pHolder->_object(); }
+		Object *				_object() const override { return m_pHolder->_object(); }
 
 		GfxInStreamHolder * 	m_pHolder;
 	};

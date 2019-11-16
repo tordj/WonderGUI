@@ -61,8 +61,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static List_p		cast( Object * pObject );
 
@@ -87,20 +87,20 @@ namespace wg
 		List();
 		virtual ~List();
 
-		virtual void	_receive( Msg * pMsg );
+		virtual void	_receive( Msg * pMsg ) override;
 
-		void			_cloneContent( const Widget * _pOrg );
+		void			_cloneContent( const Widget * _pOrg ) override;
 
 		int				_selectSlot(ListSlot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
 		int				_selectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
 		int				_unselectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }
 
-		Widget*			_firstChild() const;
-		Widget*			_lastChild() const;
+		Widget*			_firstChild() const override;
+		Widget*			_lastChild() const override;
 
 
-		virtual void	_didAddSlots(Slot * pSlot, int nb);
-		virtual void	_willRemoveSlots(Slot * pSlot, int nb);
+		virtual void	_didAddSlots(Slot * pSlot, int nb) override;
+		virtual void	_willRemoveSlots(Slot * pSlot, int nb) override;
 		virtual void	_hideSlots(ListSlot * pSlot, int nb);
 		virtual void	_unhideSlots(ListSlot * pSlot, int nb);
 

@@ -63,7 +63,7 @@ namespace wg
 
 
 	protected:
-		Object * 			_object() const;
+		Object * 			_object() const override;
 
 		CColumnHeader *	m_pComponent;
 	};

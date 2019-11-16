@@ -46,34 +46,34 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static BitmapFont_p	cast( Object * pObject );
 
 		//.____ Rendering ______________________________________________________
 
-		inline bool			setSize( int size ) { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
-		inline int			size() { return m_size; }
+		inline bool			setSize( int size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
+		inline int			size() override { return m_size; }
 
-		Glyph_p				getGlyph( uint16_t chr );
-		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
+		Glyph_p				getGlyph( uint16_t chr ) override;
+		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 
-		inline int			lineGap() { return m_lineGap; }
-		inline int			whitespaceAdvance() { return m_spaceAdvance; }
-		inline int			maxAdvance() { return m_maxAdvance; }
-		inline int 			maxAscend() { return m_maxAscend; }
-		inline int 			maxDescend() { return m_maxDescend; }
+		inline int			lineGap() override { return m_lineGap; }
+		inline int			whitespaceAdvance() override { return m_spaceAdvance; }
+		inline int			maxAdvance() override { return m_maxAdvance; }
+		inline int 			maxAscend() override { return m_maxAscend; }
+		inline int 			maxDescend() override { return m_maxDescend; }
 
 		//.____ Misc ___________________________________________________________
 
 		void				insertGlyphs( Surface * pSurf, char* pGlyphSpec );
 
-		inline int			nbGlyphs() { return m_nGlyphs; }
-		inline bool			hasGlyphs() { return m_nGlyphs?true:false; }
-		bool				hasGlyph( uint16_t chr );
-		inline bool			isMonospace() { return m_bMonospace; }
-		inline bool			isMonochrome() { return m_bMonochrome; }
+		inline int			nbGlyphs() override { return m_nGlyphs; }
+		inline bool			hasGlyphs() override { return m_nGlyphs?true:false; }
+		bool				hasGlyph( uint16_t chr ) override;
+		inline bool			isMonospace() override { return m_bMonospace; }
+		inline bool			isMonochrome() override { return m_bMonochrome; }
 
 	protected:
 		BitmapFont( Surface * pSurf, char * pGlyphSpec );
@@ -85,7 +85,7 @@ namespace wg
 			MyGlyph();
 			MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect );
 
-			const GlyphBitmap * getBitmap() { return &m_src; }
+			const GlyphBitmap * getBitmap() override { return &m_src; }
 
 			void setAdvance( short advance ) { m_advance = advance; }
 

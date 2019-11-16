@@ -37,28 +37,28 @@ namespace wg
 	public:
 		CTextEditor( ComponentHolder * pHolder );
 
-		void			receive( Msg * pMsg );
+		void			receive( Msg * pMsg ) override;
 
 		// Overloaded so we can update caret and selection
 
-		void			clear();
+		void			clear() override;
+
+		void			set( const CharSeq& seq ) override;
+		void			set( const CharBuffer * buffer ) override;
+		void			set( const String& str ) override;
+
+		int				append( const CharSeq& seq ) override;
+		int				insert( int ofs, const CharSeq& seq ) override;
+		int				replace( int ofs, int nDelete, const CharSeq& seq ) override;
+		int				erase( int ofs, int len ) override;
+
+		void			setState( State state ) override;
+		void			render( GfxDevice * pDevice, const RectI& _canvas ) override;
+
 		bool			setMaxLines( int maxLines );
 		bool			setMaxChars( int maxChars );
 		int				maxLines() const { return m_maxLines; }
 		int				maxChars() const { return m_maxChars; }
-
-		void			set( const CharSeq& seq );
-		void			set( const CharBuffer * buffer );
-		void			set( const String& str );
-
-		int				append( const CharSeq& seq );
-		int				insert( int ofs, const CharSeq& seq );
-		int				replace( int ofs, int nDelete, const CharSeq& seq );
-		int				erase( int ofs, int len );
-
-		void			setState( State state );
-		void			render( GfxDevice * pDevice, const RectI& _canvas );
-
 
 		void			setEditMode( TextEditMode mode );
 		TextEditMode	editMode() const { return m_editMode; };
@@ -71,9 +71,9 @@ namespace wg
 		bool			unselect();
 		int				eraseSelected();
 
-		int				selectionBegin() const;				// Begin position of selection, might be after end position.
-		int				selectionEnd() const;
-		int				selectionSize() const;				// Number of characters that are selected.
+		int				selectionBegin() const override;			// Begin position of selection, might be after end position.
+		int				selectionEnd() const override;
+		int				selectionSize() const override;				// Number of characters that are selected.
 
 		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
@@ -124,7 +124,7 @@ namespace wg
 		void				_updateDisplayArea();
 		void				_updateInsertStyle();
 
-		const EditState * 	_editState() const;
+		const EditState * 	_editState() const override;
 
 
 		void			_caretToEnd();

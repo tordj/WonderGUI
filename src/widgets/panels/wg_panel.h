@@ -50,8 +50,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static Panel_p		cast( Object * pObject );
 
@@ -68,9 +68,9 @@ namespace wg
 		Panel();
 		virtual ~Panel() {};
 
-		bool			_isPanel() const;
-		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
-		virtual void	_cloneContent( const Widget * _pOrg );
+		bool			_isPanel() const override;
+		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
+		virtual void	_cloneContent( const Widget * _pOrg ) override;
 
 
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.

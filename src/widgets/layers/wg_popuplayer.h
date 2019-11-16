@@ -99,7 +99,7 @@ namespace wg
 		Widget_p at(int index) const;
 
 	protected:
-		Object *		_object() const;
+		Object *		_object() const override;
 		PopupLayer *	m_pHolder;
 
 	};
@@ -123,8 +123,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static PopupLayer_p	cast( Object * pObject );
 
@@ -132,9 +132,9 @@ namespace wg
 	protected:
 		PopupLayer();
 		virtual ~PopupLayer();
-		virtual Widget* _newOfMyType() const { return new PopupLayer(); };
+		virtual Widget* _newOfMyType() const override { return new PopupLayer(); };
 
-		PopupLayer *	_getPopupLayer() const { return const_cast<PopupLayer*>(this); }
+		PopupLayer *	_getPopupLayer() const override { return const_cast<PopupLayer*>(this); }
 
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
@@ -144,20 +144,20 @@ namespace wg
 
 		// Overloaded from Container
 
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode );
+		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 
 		// Overloaded from WidgetHolder
 
-		void			_childRequestResize(Slot * pSlot);
-		void			_releaseChild(Slot * pSlot);
+		void			_childRequestResize(Slot * pSlot) override;
+		void			_releaseChild(Slot * pSlot) override;
 
 		// Overloaded from Layer
 
-		const LayerSlot * 	_beginLayerSlots() const;
-		const LayerSlot * 	_endLayerSlots() const;
-		int				_sizeOfLayerSlot() const;
+		const LayerSlot * 	_beginLayerSlots() const override;
+		const LayerSlot * 	_endLayerSlots() const override;
+		int				_sizeOfLayerSlot() const override;
 
-		void			_onRequestRender(const RectI& rect, const LayerSlot * pSlot);	// rect is in our coordinate system.
+		void			_onRequestRender(const RectI& rect, const LayerSlot * pSlot) override;	// rect is in our coordinate system.
 
 		// Overloaded from container
 
@@ -167,10 +167,10 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window);
-		void			_cloneContent( const Widget * _pOrg );
-		void			_resize( const SizeI& size );
-		void			_receive( Msg * pMsg );
+		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		void			_resize( const SizeI& size ) override;
+		void			_receive( Msg * pMsg ) override;
 
 
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.

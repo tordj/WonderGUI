@@ -107,9 +107,9 @@ namespace wg
 		return diff;
 	}
 
-	//____ remove() ____________________________________________________________
+	//____ erase() ____________________________________________________________
 
-	int CTextDisplay::remove( int ofs, int len )
+	int CTextDisplay::erase( int ofs, int len )
 	{
 		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
 

@@ -44,8 +44,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool						isInstanceOf( const char * pClassName ) const;
-		const char *				className( void ) const;
+		bool						isInstanceOf( const char * pClassName ) const override;
+		const char *				className( void ) const override;
 		static const char			CLASSNAME[];
 		static MsgLogger_p		cast( Object * pObject );
 
@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		void receive(Msg * _pMsg);
+		void receive(Msg * _pMsg) override;
 
 		bool isMsgLogged( MsgType msg ) { return m_msgFilter[(int)msg]; }
 
@@ -82,8 +82,8 @@ namespace wg
 		MsgLogger( std::ostream& stream );
 		~MsgLogger();
 
-		void	_onRouteAdded();
-		void	_onRouteRemoved();
+		void	_onRouteAdded() override;
+		void	_onRouteRemoved() override;
 
 		std::string	_formatTimestamp( int64_t ms ) const;
 		std::string _formatSource( Msg * _pMsg ) const;

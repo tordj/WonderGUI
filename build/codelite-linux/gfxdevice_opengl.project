@@ -2,7 +2,7 @@
 <CodeLite_Project Name="gfxdevice_opengl" InternalType="Library" Version="10.0.0">
   <Plugins>
     <Plugin Name="qmake">
-      <![CDATA[00010001N0007Release000000000000]]>
+      <![CDATA[00020001N0005Debug0000000000000001N0007Release000000000000]]>
     </Plugin>
   </Plugins>
   <Description/>
@@ -27,7 +27,7 @@
       <ResourceCompiler Options=""/>
     </GlobalSettings>
     <Configuration Name="Debug" CompilerType="GCC" DebuggerType="GNU gdb debugger" Type="Static Library" BuildCmpWithGlobalSettings="append" BuildLnkWithGlobalSettings="append" BuildResWithGlobalSettings="append">
-      <Compiler Options="-g;-std=c++11" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
+      <Compiler Options="-g;-std=c++11;-Wsuggest-override" C_Options="-g" Assembler="" Required="yes" PreCompiledHeader="" PCHInCommandLine="no" PCHFlags="" PCHFlagsPolicy="0">
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>

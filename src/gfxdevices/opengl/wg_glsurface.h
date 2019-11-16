@@ -65,8 +65,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static GlSurface_p	cast( Object * pObject );
 
@@ -76,19 +76,19 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		void		setScaleMode(ScaleMode mode);
-		bool		isOpaque() const;
+		void		setScaleMode(ScaleMode mode) override;
+		bool		isOpaque() const override;
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) const;
-		uint8_t		alpha(CoordI coord) const;
+		uint32_t	pixel(CoordI coord) const override;
+		uint8_t		alpha(CoordI coord) const override;
 
 		//.____ Control _______________________________________________________
 
-		uint8_t *	lock(AccessMode mode);
-		uint8_t *	lockRegion(AccessMode mode, const RectI& region);
-		void		unlock();
+		uint8_t *	lock(AccessMode mode) override;
+		uint8_t *	lockRegion(AccessMode mode, const RectI& region) override;
+		void		unlock() override;
 
 		bool		unload();
 		bool		isLoaded();

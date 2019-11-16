@@ -91,7 +91,7 @@ namespace wg
 		Surface_wp		surface() const;
 
 	protected:
-		virtual Object * 	_object() const { return m_pComponent->_object(); }
+		virtual Object * 	_object() const override { return m_pComponent->_object(); }
 
 		CCanvas * m_pComponent;
 

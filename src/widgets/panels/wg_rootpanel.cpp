@@ -159,12 +159,12 @@ namespace wg
 	{
 		return this;
 	}
-
+/*
 	const Object * RootPanel::_object() const
 	{
 		return this;
 	}
-
+*/
 	//____ setVisible() ___________________________________________________________
 
 	bool RootPanel::setVisible( bool bVisible )

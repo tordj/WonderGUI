@@ -53,7 +53,7 @@ namespace wg
 		virtual int			append( const CharSeq& seq );
 		virtual int			insert( int ofs, const CharSeq& seq );
 		virtual int			replace( int ofs, int nDelete, const CharSeq& seq );
-		virtual int			remove( int ofs, int len );
+		virtual int			erase( int ofs, int len );
 
 
 		inline int			length() const { return m_charBuffer.length(); }

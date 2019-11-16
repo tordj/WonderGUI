@@ -69,12 +69,12 @@ namespace wg
 
 			//.____ Identification __________________________________________
 
-			virtual bool			isInstanceOf( const char * pClassName ) const;
-			virtual const char *	className( void ) const;
+			virtual bool			isInstanceOf( const char * pClassName ) const override;
+			virtual const char *	className( void ) const override;
 			static const char		CLASSNAME[];
 			static Container_p		cast( Object * pObject );
 
-			bool					isContainer() const;
+			bool					isContainer() const override;
 
 			//.____ Hierarchy _________________________________________________
 
@@ -110,19 +110,19 @@ namespace wg
 
 			bool                    _descendantPos( Widget * pDescendant, CoordI& pos );         // Descendants position in our local coordinate system, return false if isn't a descendant.
 
-			virtual CoordI			_childGlobalPos( Slot * pSlot ) const;
+			virtual CoordI			_childGlobalPos( Slot * pSlot ) const override;
 
-			virtual bool			_isChildVisible( Slot * pSlot ) const;
-			virtual RectI			_childWindowSection( Slot * pSlot ) const;		// Returns the window section within the childs canvas.
+			virtual bool			_isChildVisible( Slot * pSlot ) const override;
+			virtual RectI			_childWindowSection( Slot * pSlot ) const override;		// Returns the window section within the childs canvas.
 
-			virtual Container *  	_childParent();
-			virtual RootPanel *		_root();
+			virtual Container *  	_childParent() override;
+			virtual RootPanel *		_root() override;
 
-			virtual bool			_childRequestFocus( Slot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
-			virtual bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget );
+			virtual bool			_childRequestFocus( Slot * pSlot, Widget * pWidget ) override;					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget ) override;
 
-			virtual void			_childRequestInView( Slot * pSlot );
-			virtual void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
+			virtual void			_childRequestInView( Slot * pSlot ) override;
+			virtual void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
 
 			//
 
@@ -133,9 +133,9 @@ namespace wg
 
 
 			virtual Widget * 		_findWidget( const CoordI& ofs, SearchMode mode );
-			virtual void			_setState( State state );
+			virtual void			_setState( State state ) override;
 
-			virtual void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+			virtual void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 
 			struct SlotWithGeo
 			{
@@ -151,9 +151,9 @@ namespace wg
 			virtual ModalLayer *	_getModalLayer() const;
 			virtual PopupLayer*		_getPopupLayer() const;
 
-			virtual void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
-			virtual void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
-			virtual void			_cloneContent( const Widget * _pOrg );
+			virtual void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
+			virtual void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
+			virtual void			_cloneContent( const Widget * _pOrg ) override;
 
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 

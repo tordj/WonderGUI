@@ -53,8 +53,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static StreamSurface_p	cast( Object * pObject );
 
@@ -64,26 +64,26 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		void		setScaleMode(ScaleMode mode);
-		bool		isOpaque() const;
+		void		setScaleMode(ScaleMode mode) override;
+		bool		isOpaque() const override;
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) const;
-		uint8_t		alpha(CoordI coord) const;
+		uint32_t	pixel(CoordI coord) const override;
+		uint8_t		alpha(CoordI coord) const override;
 
 		//.____ Control _______________________________________________________
 
-		uint8_t *	lock(AccessMode mode);
-		uint8_t *	lockRegion(AccessMode mode, const RectI& region);
-		void		unlock();
+		uint8_t *	lock(AccessMode mode) override;
+		uint8_t *	lockRegion(AccessMode mode, const RectI& region) override;
+		void		unlock() override;
 
 		//.____  Rendering ____________________________________________________
 
-		bool		fill(Color col);
-		bool		fill(Color col, const RectI& region);
-		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst);
-		bool		copyFrom(Surface * pSrcSurf, CoordI dst);
+		bool		fill(Color col) override;
+		bool		fill(Color col, const RectI& region) override;
+		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
+		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
 
 
 		//.____ Misc __________________________________________________________

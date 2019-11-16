@@ -1174,40 +1174,6 @@ int main(int argc, char** argv)
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
 
-/*
-		rot += 0.1f;
-		scale += scaleInc;
-		if (scale > 0.01f)
-		{
-			scaleInc = -scaleInc;
-			scale = 0.01f;
-		}
-
-		if (scale < 0.f)
-		{
-			scaleInc = -scaleInc;
-			scale = 0.f;
-		}
-
-
-		auto pDevice = Base::activeContext()->gfxDevice();
-
-		pDevice->beginRender();
-		pDevice->fill(Color::Blue);
-		pDevice->setBlitSource(pFrogSurface);
-//		pDevice->rotScaleBlit({ 0,0,width,height }, RectF(pFrogSurface->size()).center(), 0.f, 1.f);
-
-		pDevice->rotScaleBlit({ 10,10,width - 20,height - 20 }, CoordF(1024/2,768/2), rot, scale );
-
-
-//		pDevice->blit({ 0,0 });
-
-		pDevice->endRender();
-
-		SDL_UpdateWindowSurface(pWin);
-*/
-
-
 		SDL_Delay(16);
 	}
 

@@ -104,7 +104,7 @@ namespace wg
 
 	private:
 
-		virtual Object * 	_object() const { return m_pHolder->_object(); }
+		virtual Object * 	_object() const override { return m_pHolder->_object(); }
 
 		ShadowHolder *			m_pHolder;
 		std::vector<Shadow>*	m_pShadows;

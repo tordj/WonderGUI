@@ -88,7 +88,7 @@ namespace wg
 
 
 	protected:
-		Object * 		_object() const;
+		Object * 		_object() const override;
 
 		CValue *		m_pComponent;
 	};

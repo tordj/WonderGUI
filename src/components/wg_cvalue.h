@@ -43,7 +43,7 @@ namespace wg
 		virtual void		clear();
 		virtual bool		set( int64_t value, int scale );
 
-		void				refresh();
+		void				refresh() override;
 		inline int64_t		value() const { return m_value; }
 		inline int			scale() const { return m_scale; }
 
