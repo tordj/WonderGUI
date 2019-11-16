@@ -1,7 +1,12 @@
 #!/usr/bin/ruby
 
-require 'nokogiri'
-
+begin 
+    require 'nokogiri'
+rescue LoadError
+    puts "ERROR: Ruby module nokogiri not found!!!"
+    puts "postdoxy.rb will fail and documentation will not be correctly formatted."
+    gets
+end
 
 $prioTable = {
   'Creation' => 10,

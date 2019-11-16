@@ -9,3 +9,7 @@ xcuserdata
 debug/
 deps/
 build/codelite-linux/
+
+doc/html/
+
+doc/temp/
