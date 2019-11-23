@@ -91,6 +91,7 @@ namespace wg
 		friend class Component;
 		friend class Slot;
 
+		template<class S> friend class ISlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:

@@ -38,9 +38,9 @@ namespace wg
 	template < class SlotType, class HolderType>
 	ChildIteratorSubclass<SlotType> IDynamicChildren<SlotType, HolderType>::add(Widget * pWidget)
 	{
-		SlotType * pSlot = m_pSlotArray->add();
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		this->_releaseGuardPointer(pWidget, &pSlot);
+		SlotType * pSlot = m_pSlotArray->add();
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot,m_pHolder);

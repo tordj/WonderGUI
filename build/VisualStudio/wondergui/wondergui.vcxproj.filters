@@ -506,6 +506,15 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_islot.h">
       <Filter>interfaces</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_islots.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_idynamicslots.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_islotarray.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -855,6 +864,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_qpix.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_islots.cpp">
+      <Filter>interfaces</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\interfaces\wg_islotarray.impl.h">
+      <Filter>interfaces</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

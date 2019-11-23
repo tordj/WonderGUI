@@ -50,11 +50,12 @@ namespace wg
 	{
 		//TODO: Assert
 
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
 		ModalSlot * pSlot = m_pSlotArray->add();
 		pSlot->geo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 
-		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot, m_pHolder);

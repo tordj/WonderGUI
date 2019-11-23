@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_ihideablechildren.h>
+#include <wg_islotarray.h>
 
 namespace wg
 {
@@ -78,12 +78,12 @@ namespace wg
 
 
 
-	//____ FlexPanelSlot ____________________________________________________________
+	//____ FlexSlot ____________________________________________________________
 
-	class FlexPanelSlot : public Slot		/** @private */
+	class FlexSlot : public Slot		/** @private */
 	{
 	public:
-		FlexPanelSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 		bool			bPinned;
 		bool			bVisible;
@@ -107,33 +107,33 @@ namespace wg
 	};
 
 
-	//____ FlexChildrenHolder ____________________________________________________
+	//____ FlexSlotHolder ____________________________________________________
 
-	class FlexChildrenHolder : public HideableChildrenHolder /** @private */
+	class FlexSlotHolder : public  SlotArrayHolder /** @private */
 	{
 	public:
-		virtual void	_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false) = 0;
+		virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
 		virtual SizeI	_size() const = 0;
 
 	};
 
 
-	class IFlexPanelChildren;
-	typedef	StrongInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_p;
-	typedef	WeakInterfacePtr<IFlexPanelChildren>	IFlexPanelChildren_wp;
+	class IFlexSlotArray;
+	typedef	StrongInterfacePtr<IFlexSlotArray>	IFlexSlotArray_p;
+	typedef	WeakInterfacePtr<IFlexSlotArray>	IFlexSlotArray_wp;
 
-	//____ IFlexPanelChildren ________________________________________________________
+	//____ IFlexSlotArray ________________________________________________________
 
-	class IFlexPanelChildren : public IHideableChildren<FlexPanelSlot,FlexChildrenHolder>
+	class IFlexSlotArray : public ISlotArray<FlexSlot>
 	{
 	public:
 		/** @private */
 
-		IFlexPanelChildren( SlotArray<FlexPanelSlot> * pSlotArray, FlexChildrenHolder * pHolder ) : IHideableChildren<FlexPanelSlot,FlexChildrenHolder>(pSlotArray,pHolder) {}
+		IFlexSlotArray( SlotArray<FlexSlot> * pSlotArray, FlexSlotHolder * pHolder ) : ISlotArray<FlexSlot>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IFlexPanelChildren_p	ptr() { return IFlexPanelChildren_p(this); }
+		inline IFlexSlotArray_p	ptr() { return IFlexSlotArray_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -214,40 +214,42 @@ namespace wg
 		FlexPos	bottomRightCorner( iterator it ) const;
 
 	protected:
-		void		_setPinned(FlexPanelSlot * p);
-		void		_setPinned(FlexPanelSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
+		void		_setPinned(FlexSlot * p);
+		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
 
-		void		_setMovable(FlexPanelSlot * p, const FlexPos& origo, const FlexPos& hotspot);
-		void		_setMovable(FlexPanelSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot);
+		void		_setMovable(FlexSlot * p, const FlexPos& origo, const FlexPos& hotspot);
+		void		_setMovable(FlexSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot);
 
-//		FlexPanelSlot * _moveAbove(FlexPanelSlot * p, FlexPanelSlot * sibling);
-//		FlexPanelSlot *	_moveBelow(FlexPanelSlot * p, FlexPanelSlot * sibling);
+//		FlexSlot * _moveAbove(FlexSlot * p, FlexSlot * sibling);
+//		FlexSlot *	_moveBelow(FlexSlot * p, FlexSlot * sibling);
 
 		// Methods for movable children
 
-		bool		_setOrigo(FlexPanelSlot * p, const FlexPos& origo);
-		FlexPos		_origo(FlexPanelSlot * p) const;
+		bool		_setOrigo(FlexSlot * p, const FlexPos& origo);
+		FlexPos		_origo(FlexSlot * p) const;
 
-		bool		_setHotspot(FlexPanelSlot * p, const FlexPos& hotspot);
-		FlexPos		_hotspot(FlexPanelSlot * p) const;
+		bool		_setHotspot(FlexSlot * p, const FlexPos& hotspot);
+		FlexPos		_hotspot(FlexSlot * p) const;
 
-		bool		_setGeo(FlexPanelSlot * p, const RectI& geometry);
-		RectI		_geo(FlexPanelSlot * p) const;
+		bool		_setGeo(FlexSlot * p, const RectI& geometry);
+		RectI		_geo(FlexSlot * p) const;
 
-		bool		_setOfs(FlexPanelSlot * p, const CoordI& ofs);
-		CoordI		_ofs(FlexPanelSlot * p) const;
+		bool		_setOfs(FlexSlot * p, const CoordI& ofs);
+		CoordI		_ofs(FlexSlot * p) const;
 
-		bool		_setSize(FlexPanelSlot * p, const SizeI& size);
-		RectI		_size(FlexPanelSlot * p) const;
+		bool		_setSize(FlexSlot * p, const SizeI& size);
+		RectI		_size(FlexSlot * p) const;
 
-		bool		_move(FlexPanelSlot * p, const CoordI& ofs);
+		bool		_move(FlexSlot * p, const CoordI& ofs);
 
 		// Methods for pinned children
 
-		FlexPos	_topLeftCorner(FlexPanelSlot * p) const;
-		FlexPos	_bottomRightCorner(FlexPanelSlot * p) const;
+		FlexPos	_topLeftCorner(FlexSlot * p) const;
+		FlexPos	_bottomRightCorner(FlexSlot * p) const;
 
+		//
 
+		inline FlexSlotHolder * _holder() { return static_cast<FlexSlotHolder*>(m_pHolder); }
 	};
 
 
@@ -262,7 +264,7 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel, protected FlexChildrenHolder
+	class FlexPanel : public Panel, protected FlexSlotHolder
 	{
 
 	public:
@@ -273,7 +275,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IFlexPanelChildren	children;
+		IFlexSlotArray	children;
 
 		//.____ Identification __________________________________________
 
@@ -306,8 +308,6 @@ namespace wg
 
 		// Methods for FlexPanelChildren
 
-		Slot *		_incSlot(Slot * pSlot) const override;
-		Slot *		_decSlot(Slot * pSlot) const override;
 		void		_didAddSlots( Slot * pSlot, int nb ) override;
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
@@ -315,7 +315,7 @@ namespace wg
 		void		_unhideSlots( Slot *, int nb ) override;
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
-		void		_refreshRealGeo(FlexPanelSlot * pSlot, bool bForceRefresh = false) override;
+		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
 		SizeI		_size() const override{ return m_size; }
 
 		// Overloaded from WidgetHolder
@@ -339,12 +339,12 @@ namespace wg
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeI& size ) override;
 
-		void		_onRequestRender( const RectI& rect, const FlexPanelSlot * pSlot );
+		void		_onRequestRender( const RectI& rect, const FlexSlot * pSlot );
 
-		SizeI		_sizeNeededForGeo( FlexPanelSlot * pSlot ) const;
+		SizeI		_sizeNeededForGeo( FlexSlot * pSlot ) const;
 
 
-		SlotArray<FlexPanelSlot>	m_children;
+		SlotArray<FlexSlot>	m_children;
 
 		bool			m_bConfineWidgets;
 		int				m_qpixPerPoint;

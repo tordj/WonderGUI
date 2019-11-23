@@ -79,7 +79,6 @@ namespace wg
 
 		inline StrongInterfacePtr<ISlot>	ptr() { return StrongInterfacePtr<ISlot>(this); }
 
-
 	protected:
 		Object * _object() const override {	return m_pHolder->_object(); }
 

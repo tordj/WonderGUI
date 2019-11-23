@@ -35,9 +35,9 @@ namespace wg
 	template < class SlotType>
 	void SlotArray<SlotType>::move(SlotType * pFrom, SlotType * pTo)
 	{
+		SlotType temp = std::move(*pFrom);
 		if (pFrom < pTo)
 		{
-			SlotType temp = std::move(*pFrom);
 			if (SlotType::safe_to_relocate)
 			{
 				memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo - pFrom));
@@ -48,11 +48,9 @@ namespace wg
 				for (int i = 0; i < pTo - pFrom; i++)
 					pFrom[i] = std::move(pFrom[i + 1]);
 			}
-			*pTo = std::move(temp);
 		}
 		else
 		{
-			SlotType temp = std::move(*pFrom);
 			if (SlotType::safe_to_relocate)
 			{
 				memmove((void*)&pTo[1], pTo, sizeof(SlotType) * (pFrom - pTo));
@@ -63,8 +61,8 @@ namespace wg
 				for (int i = int(pFrom - pTo); i > 0; i--)
 					pTo[i] = std::move(pTo[i - 1]);
 			}
-			*pTo = std::move(temp);
 		}
+		*pTo = std::move(temp);
 	}
 
 	template < class SlotType>
