@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_iselectablechildren.h>
+#include <wg_iselectableslotarray.h>
 
 namespace wg
 {
@@ -55,7 +55,7 @@ namespace wg
 	*
 	*/
 
-	class List : public Container, protected SelectableChildrenHolder
+	class List : public Container, protected SelectableSlotArrayHolder
 	{
 	public:
 

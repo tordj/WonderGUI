@@ -179,9 +179,6 @@ namespace wg
 
 		// Overloaded from PackListSlotsHolder
 
-		Slot *			_incSlot(Slot * pSlot) const override;
-		Slot *			_decSlot(Slot * pSlot) const override;
-
 		void			_didAddSlots(Slot * pSlot, int nb) override;
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void			_willRemoveSlots(Slot * pSlot, int nb) override;

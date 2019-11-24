@@ -111,6 +111,10 @@
     <File Name="../../src/widgets/wg_widget.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
+    <File Name="../../src/interfaces/wg_iselectableslotarray.impl.h"/>
+    <File Name="../../src/interfaces/wg_iselectableslotarray.h"/>
+    <File Name="../../src/interfaces/wg_ipaddedslotarray.impl.h"/>
+    <File Name="../../src/interfaces/wg_ipaddedslotarray.h"/>
     <File Name="../../src/interfaces/wg_islots.h"/>
     <File Name="../../src/interfaces/wg_islots.cpp"/>
     <File Name="../../src/interfaces/wg_islotarray.impl.h"/>
@@ -121,27 +125,16 @@
     <File Name="../../src/interfaces/wg_ishadows.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.h"/>
-    <File Name="../../src/interfaces/wg_ichild.h"/>
-    <File Name="../../src/interfaces/wg_ichildren.h"/>
-    <File Name="../../src/interfaces/wg_ichildren.impl.h"/>
     <File Name="../../src/interfaces/wg_icolumnheader.cpp"/>
     <File Name="../../src/interfaces/wg_icolumnheader.h"/>
-    <File Name="../../src/interfaces/wg_idynamicchildren.h"/>
-    <File Name="../../src/interfaces/wg_idynamicchildren.impl.h"/>
-    <File Name="../../src/interfaces/wg_ihideablechildren.h"/>
-    <File Name="../../src/interfaces/wg_ihideablechildren.impl.h"/>
     <File Name="../../src/interfaces/wg_iicondisplay.h"/>
     <File Name="../../src/interfaces/wg_imodspan.h"/>
     <File Name="../../src/interfaces/wg_interface.cpp"/>
     <File Name="../../src/interfaces/wg_interface.h"/>
-    <File Name="../../src/interfaces/wg_ipaddedchildren.h"/>
-    <File Name="../../src/interfaces/wg_ipaddedchildren.impl.h"/>
     <File Name="../../src/interfaces/wg_irotextdisplay.cpp"/>
     <File Name="../../src/interfaces/wg_irotextdisplay.h"/>
     <File Name="../../src/interfaces/wg_irovaluedisplay.cpp"/>
     <File Name="../../src/interfaces/wg_irovaluedisplay.h"/>
-    <File Name="../../src/interfaces/wg_iselectablechildren.h"/>
-    <File Name="../../src/interfaces/wg_iselectablechildren.impl.h"/>
     <File Name="../../src/interfaces/wg_islidespan.cpp"/>
     <File Name="../../src/interfaces/wg_islidespan.h"/>
     <File Name="../../src/interfaces/wg_ispan.cpp"/>
@@ -151,8 +144,6 @@
     <File Name="../../src/interfaces/wg_ivaluedisplay.cpp"/>
     <File Name="../../src/interfaces/wg_ivaluedisplay.h"/>
     <File Name="../../src/interfaces/wg_ivalueeditor.h"/>
-    <File Name="../../src/interfaces/wg_iweightedchildren.h"/>
-    <File Name="../../src/interfaces/wg_iweightedchildren.impl.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <File Name="../../src/skins/wg_blockskin.cpp"/>
