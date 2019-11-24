@@ -83,18 +83,32 @@ namespace wg
 
 		inline SlotIterator& operator--()
 		{
-			SlotIterator it = *this;
 			_dec();
-			return it;
+			return *this;
 		}
 
 
 		inline SlotIterator operator--(int)
 		{
+			SlotIterator it = *this;
 			_dec();
-			return *this;
+			return it;
 		}
-
+		
+		inline SlotIterator operator+(int amount) const
+		{
+			SlotIterator it = *this;
+			it._inc(amount);
+			return it; 
+		}
+		
+		inline SlotIterator operator-(int amount) const
+		{
+			SlotIterator it = *this;
+			it._dec(amount);
+			return it; 
+		}
+		
 		inline bool operator==(const SlotIterator& rhs) const
 		{
 			return pSlot == rhs.pSlot;

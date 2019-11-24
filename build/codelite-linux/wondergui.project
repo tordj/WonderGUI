@@ -111,6 +111,12 @@
     <File Name="../../src/widgets/wg_widget.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
+    <File Name="../../src/interfaces/wg_islots.h"/>
+    <File Name="../../src/interfaces/wg_islots.cpp"/>
+    <File Name="../../src/interfaces/wg_islotarray.impl.h"/>
+    <File Name="../../src/interfaces/wg_islotarray.h"/>
+    <File Name="../../src/interfaces/wg_islot.h"/>
+    <File Name="../../src/interfaces/wg_idynamicslots.h"/>
     <File Name="../../src/interfaces/wg_ishadows.h"/>
     <File Name="../../src/interfaces/wg_ishadows.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.cpp"/>

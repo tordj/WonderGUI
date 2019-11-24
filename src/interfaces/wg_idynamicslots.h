@@ -40,7 +40,7 @@ namespace wg
 
 	public:
 
-		using		iterator = iterator;
+		using		iterator = SlotIterator;
 
 		//.____ Operators __________________________________________
 
