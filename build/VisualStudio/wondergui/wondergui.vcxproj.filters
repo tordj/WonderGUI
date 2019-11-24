@@ -413,25 +413,7 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_icanvas.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ichildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ichildren.impl.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_icolumnheader.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_idynamicchildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_idynamicchildren.impl.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ihideablechildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ihideablechildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_iicondisplay.h">
@@ -443,22 +425,10 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_interface.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedchildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedchildren.impl.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_irotextdisplay.h">
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_irovaluedisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iselectablechildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iselectablechildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_islidespan.h">
@@ -477,12 +447,6 @@
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_ivalueeditor.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iweightedchildren.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iweightedchildren.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_componentholder.h">
@@ -513,6 +477,18 @@
       <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_islotarray.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedslotarray.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedslotarray.impl.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_iselectableslotarray.h">
+      <Filter>interfaces</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\interfaces\wg_iselectableslotarray.impl.h">
       <Filter>interfaces</Filter>
     </ClInclude>
   </ItemGroup>

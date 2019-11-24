@@ -107,9 +107,9 @@ namespace wg
 	};
 
 
-	//____ FlexSlotHolder ____________________________________________________
+	//____ FlexSlotsHolder ____________________________________________________
 
-	class FlexSlotHolder : public  SlotArrayHolder /** @private */
+	class FlexSlotsHolder : public  SlotArrayHolder /** @private */
 	{
 	public:
 		virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
@@ -117,23 +117,19 @@ namespace wg
 
 	};
 
+	//____ IFlexSlots ________________________________________________________
 
-	class IFlexSlotArray;
-	typedef	StrongInterfacePtr<IFlexSlotArray>	IFlexSlotArray_p;
-	typedef	WeakInterfacePtr<IFlexSlotArray>	IFlexSlotArray_wp;
+	class IFlexSlots;
+	typedef	StrongInterfacePtr<IFlexSlots>	IFlexSlots_p;
+	typedef	WeakInterfacePtr<IFlexSlots>	IFlexSlots_wp;
 
-	//____ IFlexSlotArray ________________________________________________________
-
-	class IFlexSlotArray : public ISlotArray<FlexSlot>
+	class IFlexSlots : public ISlotArray<FlexSlot>
 	{
 	public:
 		/** @private */
 
-		IFlexSlotArray( SlotArray<FlexSlot> * pSlotArray, FlexSlotHolder * pHolder ) : ISlotArray<FlexSlot>(pSlotArray,pHolder) {}
+		IFlexSlots( SlotArray<FlexSlot> * pSlotArray, FlexSlotsHolder * pHolder ) : ISlotArray<FlexSlot>(pSlotArray,pHolder) {}
 
-		//.____ Misc __________________________________________________________
-
-		inline IFlexSlotArray_p	ptr() { return IFlexSlotArray_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -213,6 +209,11 @@ namespace wg
 		FlexPos	bottomRightCorner( int index ) const;
 		FlexPos	bottomRightCorner( iterator it ) const;
 
+		//.____ Misc _______________________________________________________
+
+		inline IFlexSlots_p ptr() { return IFlexSlots_p(this); }
+
+
 	protected:
 		void		_setPinned(FlexSlot * p);
 		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
@@ -249,7 +250,7 @@ namespace wg
 
 		//
 
-		inline FlexSlotHolder * _holder() { return static_cast<FlexSlotHolder*>(m_pHolder); }
+		inline FlexSlotsHolder * _holder() { return static_cast<FlexSlotsHolder*>(m_pHolder); }
 	};
 
 
@@ -264,7 +265,7 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel, protected FlexSlotHolder
+	class FlexPanel : public Panel, protected FlexSlotsHolder
 	{
 
 	public:
@@ -275,7 +276,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IFlexSlotArray	children;
+		IFlexSlots	children;
 
 		//.____ Identification __________________________________________
 

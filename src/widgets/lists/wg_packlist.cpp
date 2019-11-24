@@ -28,14 +28,14 @@
 #include <wg_gfxdevice.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_iselectablechildren.impl.h>
+#include <wg_iselectableslotarray.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	INSTANTIATE_SELECTABLECHILDREN(PackListSlot, PackListChildrenHolder)
-
+	template class ISelectableSlotArray<PackListSlot>;
+	template class ISlotArray<PackListSlot>;
 	template class SlotArray<PackListSlot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
@@ -43,24 +43,25 @@ namespace wg
 
 	//____ insertSorted() ___________________________________________________
 
-	IPackListChildren::iterator IPackListChildren::insertSorted(Widget * pWidget)
+	IPackListSlots::iterator IPackListSlots::insertSorted(Widget * pWidget)
 	{
 		//TODO: Replace with assert
 //		if (!pWidget)
 //			return false;
 
-		if (m_pSlotArray->isEmpty() || !m_pHolder->_hasSortFunction())
+		if (m_pSlotArray->isEmpty() || !_holder()->_hasSortFunction())
 			return add(pWidget);
 
-		int index = m_pHolder->_getInsertionPoint(pWidget);
-		return insert(index, pWidget);
+		int index = _holder()->_getInsertionPoint(pWidget);
+		insert(index, pWidget);
+		return iterator(m_pSlotArray->slot(index));
 	}
 
 	//____ sort() __________________________________________________________
 
-	void IPackListChildren::sort()
+	void IPackListSlots::sort()
 	{
-		m_pHolder->_sortEntries();
+		_holder()->_sortEntries();
 	}
 
 

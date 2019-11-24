@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_idynamicchildren.h>
+#include <wg_islotarray.h>
 
 namespace wg
 {
@@ -43,6 +43,7 @@ namespace wg
 
 		const static bool safe_to_relocate = false;
 
+		bool		bVisible = true;
 		Origo		origo;
 		RectI		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
@@ -52,30 +53,30 @@ namespace wg
 
 
 
-	//____ ModalChildrenHolder _________________________________________________
+	//____ ModalSlotsHolder _________________________________________________
 
-	class ModalChildrenHolder : public DynamicChildrenHolder		/** @private */
+	class ModalSlotsHolder : public SlotArrayHolder		/** @private */
 	{
 	public:
 		virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
 	};
 
-	class IModalChildren;
-	typedef	StrongInterfacePtr<IModalChildren>	IModalChildren_p;
-	typedef	WeakInterfacePtr<IModalChildren>	IModalChildren_wp;
+	class IModalSlots;
+	typedef	StrongInterfacePtr<IModalSlots>	IModalSlots_p;
+	typedef	WeakInterfacePtr<IModalSlots>	IModalSlots_wp;
 
-	//____ IModalChildren ________________________________________________________
+	//____ IModalSlots ________________________________________________________
 
-	class IModalChildren : public IDynamicChildren<ModalSlot,ModalChildrenHolder>
+	class IModalSlots : public ISlotArray<ModalSlot>
 	{
 	public:
 		/** @private */
 
-		IModalChildren( SlotArray<ModalSlot> * pSlotArray, ModalChildrenHolder * pHolder ) : IDynamicChildren<ModalSlot,ModalChildrenHolder>(pSlotArray,pHolder) {}
+		IModalSlots( SlotArray<ModalSlot> * pSlotArray, ModalSlotsHolder * pHolder ) : ISlotArray<ModalSlot>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IModalChildren_p	ptr() { return IModalChildren_p(this); }
+		inline IModalSlots_p	ptr() { return IModalSlots_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -113,14 +114,19 @@ namespace wg
 		void 		_setOfs(ModalSlot * p, const Coord& ofs);
 		void 		_setSize(ModalSlot * p, const Size& size);
 		void 		_move( ModalSlot * p, const Coord& ofs );
+
+		const ModalSlotsHolder *	_holder() const { return static_cast<ModalSlotsHolder*>(m_pHolder); }
+		ModalSlotsHolder *	_holder() { return static_cast<ModalSlotsHolder*>(m_pHolder); }
+
+
 	};
 
 
 	//____ ModalLayer __________________________________________________________
 
-	class ModalLayer : public Layer, protected ModalChildrenHolder
+	class ModalLayer : public Layer, protected ModalSlotsHolder
 	{
-		friend class IModalChildren;
+		friend class IModalSlots;
 
 	public:
 
@@ -130,7 +136,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IModalChildren	modals;
+		IModalSlots	modals;
 
 		//.____ Identification __________________________________________
 
@@ -161,13 +167,13 @@ namespace wg
 		void			_childRequestResize( Slot * pSlot ) override;
 		void			_releaseChild(Slot * pSlot) override;
 
-		// Methods for ModalChildrenHolder
+		// Methods for ModalSlotsHolder
 
-		Slot *			_incSlot(Slot * pSlot) const override;
-		Slot *			_decSlot(Slot * pSlot) const override;
 		void			_didAddSlots(Slot * pSlot, int nb) override;
 		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void			_willRemoveSlots(Slot * pSlot, int nb) override;
+		void			_hideSlots(Slot *, int nb) override;
+		void			_unhideSlots(Slot *, int nb) override;
 		Object *		_object() override { return this;  }
 		WidgetHolder *	_widgetHolder() override { return this; }
 		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;

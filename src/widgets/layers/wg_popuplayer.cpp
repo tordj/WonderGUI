@@ -39,21 +39,21 @@ namespace wg
 
 	//____ operator[] __________________________________________________________
 
-	Widget& PopupChildren::operator[](int index) const
+	Widget& IPopupSlots::operator[](int index) const
 	{
 		return * m_pHolder->m_popups.slot(index)->pWidget;
 	}
 
 	//____ size() ______________________________________________________________
 
-	int PopupChildren::size() const
+	int IPopupSlots::size() const
 	{
 		return m_pHolder->m_popups.size();
 	}
 
 	//____ at() _______________________________________________________________
 
-	Widget_p PopupChildren::at( int index) const
+	Widget_p IPopupSlots::at( int index) const
 	{
 		if( index < 0 || index >= m_pHolder->m_popups.size() )
 			return nullptr;
@@ -63,7 +63,7 @@ namespace wg
 
 	//____ _object() ___________________________________________________________
 
-	Object * PopupChildren::_object() const
+	Object * IPopupSlots::_object() const
 	{
 		return m_pHolder;
 	}
@@ -71,7 +71,7 @@ namespace wg
 
 	//____ push() ________________________________________________
 
-	void PopupChildren::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void IPopupSlots::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		m_pHolder->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
@@ -79,7 +79,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupChildren::pop(int nb)
+	void IPopupSlots::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
@@ -91,7 +91,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void PopupChildren::pop(Widget * pPopup)
+	void IPopupSlots::pop(Widget * pPopup)
 	{
 		auto p = m_pHolder->m_popups.find(pPopup);
 
@@ -103,7 +103,7 @@ namespace wg
 
 	//____ clear() ________________________________________________
 
-	void PopupChildren::clear()
+	void IPopupSlots::clear()
 	{
 		if( m_pHolder->m_popups.isEmpty() )
 			return;

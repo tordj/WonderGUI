@@ -67,22 +67,22 @@ namespace wg
 	};
 
 
-	class PopupChildren;
-	typedef	StrongInterfacePtr<PopupChildren>	PopupChildren_p;
-	typedef	WeakInterfacePtr<PopupChildren>	PopupChildren_wp;
+	class IPopupSlots;
+	typedef	StrongInterfacePtr<IPopupSlots>	IPopupSlots_p;
+	typedef	WeakInterfacePtr<IPopupSlots>	IPopupSlots_wp;
 
-	//____ PopupChildren ________________________________________________________
+	//____ IPopupSlots ________________________________________________________
 
-	class PopupChildren : public Interface
+	class IPopupSlots : public Interface
 	{
 	public:
 		/** @private */
 
-		PopupChildren(PopupLayer * pHolder) : m_pHolder(pHolder) {}
+		IPopupSlots(PopupLayer * pHolder) : m_pHolder(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline PopupChildren_p	ptr() { return PopupChildren_p(this); }
+		inline IPopupSlots_p	ptr() { return IPopupSlots_p(this); }
 
 		//.____ Operators _____________________________________________________
 
@@ -109,7 +109,7 @@ namespace wg
 
 	class PopupLayer : public Layer
 	{
-		friend class PopupChildren;
+		friend class IPopupSlots;
 
 	public:
 
@@ -119,7 +119,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		PopupChildren	popups;
+		IPopupSlots	popups;
 
 		//.____ Identification __________________________________________
 

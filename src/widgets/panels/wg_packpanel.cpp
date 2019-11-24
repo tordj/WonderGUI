@@ -27,17 +27,97 @@
 
 
 #include <wg_slotarray.impl.h>
-#include <wg_iweightedchildren.impl.h>
+#include <wg_ipaddedslotarray.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	INSTANTIATE_WEIGHTEDCHILDREN(PackPanelSlot, WeightedChildrenHolder)
-
-	template class SlotArray<PackPanelSlot>;
+	template class ISlotArray<PackSlot>;
+	template class IPaddedSlotArray<PackSlot>;
+	template class SlotArray<PackSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
+
+
+
+	bool IPackSlots::setWeight(int index, float weight)
+	{
+		if (index < 0 || index >= m_pSlotArray->size() || weight < 0.f)
+			return false;
+
+		auto pSlot = m_pSlotArray->slot(index);
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, 1, weight);
+		return true;
+	}
+
+	bool IPackSlots::setWeight(const SlotIterator& it, float weight)
+	{
+		//TODO: Add assert
+
+		auto pSlot = static_cast<PackSlot*>(it._slot());
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, 1, weight);
+		return true;
+	}
+
+	bool IPackSlots::setWeight(int index, int amount, float weight)
+	{
+		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || weight < 0.f)
+			return false;
+
+		auto pSlot = m_pSlotArray->slot(index);
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, amount, weight);
+		return true;
+	}
+
+	bool IPackSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
+	{
+		//TODO: Add assert
+
+		auto pBeg = static_cast<PackSlot*>(beg._slot());
+		auto pEnd = static_cast<PackSlot*>(end._slot());
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
+		return true;
+	}
+
+	bool IPackSlots::setWeight(int index, int amount, const std::initializer_list<float> weights)
+	{
+		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || amount >(int) weights.size())
+			return false;
+
+		auto pSlot = m_pSlotArray->slot(index);
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, amount, weights.begin());
+		return true;
+	}
+
+	bool IPackSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
+	{
+		//TODO: Add assert
+
+		auto pBeg = static_cast<PackSlot*>(beg._slot());
+		auto pEnd = static_cast<PackSlot*>(end._slot());
+		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
+		return true;
+	}
+
+	float IPackSlots::weight(int index) const
+	{
+		if (index < 0 || index >= m_pSlotArray->size())
+			return 0.f;
+
+		return m_pSlotArray->slot(index)->weight;
+
+	}
+
+	float IPackSlots::weight(const SlotIterator& it) const
+	{
+		//TODO: Add assert
+
+		auto pSlot = static_cast<PackSlot*>(it._slot());
+		return pSlot->weight;
+	}
+
+
 
 
 	//____ Constructor ____________________________________________________________
@@ -312,7 +392,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			PackPanelSlot * pSlot = m_children.first();
+			PackSlot * pSlot = m_children.first();
 			package.pSlot = pSlot;
 			package.geo = pSlot->geo;
 		}
@@ -322,7 +402,7 @@ namespace wg
 
 	void PackPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		PackPanelSlot * pSlot = (PackPanelSlot*) package.pSlot;
+		PackSlot * pSlot = (PackSlot*) package.pSlot;
 
 		if( pSlot == m_children.last() )
 			package.pSlot = nullptr;
@@ -334,24 +414,11 @@ namespace wg
 		}
 	}
 
-	//____ _incSlot() ____________________________________________________________
-
-	Slot * PackPanel::_incSlot(Slot * pSlot) const
-	{
-		return (static_cast<PackPanelSlot*>(pSlot) + 1);
-	}
-
-	//____ _decSlot() ____________________________________________________________
-
-	Slot * PackPanel::_decSlot(Slot * pSlot) const
-	{
-		return (static_cast<PackPanelSlot*>(pSlot) - 1);
-	}
 	//____ _didAddSlots() _____________________________________________________
 
 	void PackPanel::_didAddSlots(Slot * pSlot, int nb)
 	{
-		_unhideChildren((PackPanelSlot*) pSlot, nb);
+		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _didMoveSlots() _____________________________________________________
@@ -369,21 +436,21 @@ namespace wg
 
 	void PackPanel::_willRemoveSlots(Slot * pSlot, int nb)
 	{
-		_hideChildren((PackPanelSlot*) pSlot, nb);
+		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _hideSlots() _______________________________________________________
 
 	void PackPanel::_hideSlots(Slot * pSlot, int nb)
 	{
-		_hideChildren((PackPanelSlot*) pSlot, nb);
+		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
 	void PackPanel::_unhideSlots(Slot * pSlot, int nb)
 	{
-		_unhideChildren((PackPanelSlot*) pSlot, nb);
+		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _repadSlots() ______________________________________________________
@@ -391,7 +458,7 @@ namespace wg
 	void PackPanel::_repadSlots(Slot * pSlot, int nb, BorderI padding)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackPanelSlot*)pSlot)[i].padding = padding;
+			((PackSlot*)pSlot)[i].padding = padding;
 
 		_refreshGeometries();
 	}
@@ -399,17 +466,17 @@ namespace wg
 	void PackPanel::_repadSlots(Slot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackPanelSlot*)pSlot)[i].padding = * pPaddings++;
+			((PackSlot*)pSlot)[i].padding = * pPaddings++;
 
 		_refreshGeometries();
 	}
 
 	//____ _reweightSlots() ______________________________________________________
 
-	void PackPanel::_reweightSlots(Slot * pSlot, int nb, float weight)
+	void PackPanel::_reweightSlots(PackSlot * pSlot, int nb, float weight)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackPanelSlot*)pSlot)[i].weight = weight;
+			pSlot[i].weight = weight;
 
 		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
 			_refreshGeometries();
@@ -417,10 +484,10 @@ namespace wg
 			_refreshChildGeo();
 	}
 
-	void PackPanel::_reweightSlots(Slot * pSlot, int nb, const float * pWeights)
+	void PackPanel::_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackPanelSlot*)pSlot)[i].weight = * pWeights++;
+			pSlot[i].weight = * pWeights++;
 
 		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
 			_refreshGeometries();
@@ -432,27 +499,27 @@ namespace wg
 
 	CoordI PackPanel::_childPos(Slot * pSlot) const
 	{
-		return ((PackPanelSlot*)pSlot)->geo;
+		return ((PackSlot*)pSlot)->geo;
 	}
 
 	//____ _childSize() _______________________________________________________
 
 	SizeI PackPanel::_childSize(Slot * pSlot) const
 	{
-		return ((PackPanelSlot*)pSlot)->geo;
+		return ((PackSlot*)pSlot)->geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
 	void PackPanel::_childRequestRender(Slot * pSlot)
 	{
-		_requestRender( ((PackPanelSlot*)pSlot)->geo );
+		_requestRender( ((PackSlot*)pSlot)->geo );
 
 	}
 
 	void PackPanel::_childRequestRender(Slot * pSlot, const RectI& rect)
 	{
-		_requestRender(rect + ((PackPanelSlot*)pSlot)->geo.pos());
+		_requestRender(rect + ((PackSlot*)pSlot)->geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -461,7 +528,7 @@ namespace wg
 	{
 		// Update cached preferred size of child
 
-		PackPanelSlot * pSlot = static_cast<PackPanelSlot*>(_pSlot);
+		PackSlot * pSlot = static_cast<PackSlot*>(_pSlot);
 		pSlot->preferredSize = pSlot->paddedPreferredSize();
 		pSlot->bResizeRequired = true;
 
@@ -472,7 +539,7 @@ namespace wg
 
 	Widget * PackPanel::_prevChild(const Slot * _pSlot) const
 	{
-		auto pSlot = static_cast<const PackPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
 			return pSlot[-1].pWidget;
@@ -484,7 +551,7 @@ namespace wg
 
 	Widget * PackPanel::_nextChild(const Slot * _pSlot) const
 	{
-		auto pSlot = static_cast<const PackPanelSlot*>(_pSlot);
+		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
 			return pSlot[1].pWidget;
@@ -497,12 +564,12 @@ namespace wg
 	void PackPanel::_releaseChild(Slot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
-		m_children.remove(static_cast<PackPanelSlot*>(pSlot));
+		m_children.remove(static_cast<PackSlot*>(pSlot));
 	}
 
 	//____ _unhideChildren() _______________________________________________________
 
-	void PackPanel::_unhideChildren(PackPanelSlot * pSlot, int nb)
+	void PackPanel::_unhideChildren(PackSlot * pSlot, int nb)
 	{
 		for (int i = 0; i < nb; i++)
 		{
@@ -518,7 +585,7 @@ namespace wg
 
 	//____ _hideChildren() _______________________________________________________
 
-	void PackPanel::_hideChildren(PackPanelSlot * pSlot, int nb)
+	void PackPanel::_hideChildren(PackSlot * pSlot, int nb)
 	{
 		for (int i = 0; i < nb; i++)
 			pSlot[i].bVisible = false;

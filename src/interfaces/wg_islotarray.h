@@ -82,6 +82,21 @@ namespace wg
 			return tmp;
 		}
 
+		inline SlotArrayIterator<SlotType> operator+(int amount) const
+		{
+			SlotArrayIterator<SlotType> it = *this;
+			it._inc(amount);
+			return it;
+		}
+
+		inline SlotArrayIterator<SlotType> operator-(int amount) const
+		{
+			SlotArrayIterator<SlotType> it = *this;
+			it._dec(amount);
+			return it;
+		}
+
+
 
 		//.____ Internal _______________________________________________________________
 
@@ -115,6 +130,8 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
+		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
+
 		Widget& operator[](int index) const override { return *m_pSlotArray->slot(index)->pWidget; }
 
 		//.____ Content _______________________________________________________
@@ -145,7 +162,7 @@ namespace wg
 		iterator		add(const Widget_p pWidgets[], int amount);
 
 		template<typename Iterator>
-		iterator		add(const Iterator& begin, const Iterator& end)
+		iterator		add(const Iterator& beg, const Iterator& end)
 		{
 			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
@@ -153,7 +170,7 @@ namespace wg
 
 			int oldSize = size();
 
-			Iterator it = begin;
+			Iterator it = beg;
 			while (it != end)
 			{
 				add(*it++);
@@ -239,4 +256,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_IARRAYSLOTS_DOT_H
+#endif //WG_ISLOTARRAY_DOT_H

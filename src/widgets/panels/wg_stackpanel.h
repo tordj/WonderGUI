@@ -26,7 +26,7 @@
 
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_ipaddedchildren.h>
+#include <wg_ipaddedslotarray.h>
 
 
 namespace wg
@@ -38,43 +38,37 @@ namespace wg
 
 
 
-	//____ StackPanelSlot ____________________________________________________________
+	//____ StackSlot ____________________________________________________________
 
-	class StackPanelSlot : public PaddedSlot		/** @private */
+	class StackSlot : public PaddedSlot		/** @private */
 	{
 	public:
-		StackPanelSlot() : origo(Origo::Center), SizePolicy(SizePolicy2D::Original) {}
+		StackSlot() : origo(Origo::Center), SizePolicy(SizePolicy2D::Original) {}
 
 		Origo			origo;
 		SizePolicy2D	SizePolicy;
 	};
 
+	//____ StackSlotArrayHolder __________________________________________________
 
-	class IStackPanelChildren;
-	typedef	StrongInterfacePtr<IStackPanelChildren>	IStackPanelChildren_p;
-	typedef	WeakInterfacePtr<IStackPanelChildren>	IStackPanelChildren_wp;
-
-
-	//____ StackPanelChildrenHolder __________________________________________________
-
-	class StackPanelChildrenHolder : public PaddedChildrenHolder			/** @private */
+	class StackSlotArrayHolder : public PaddedSlotArrayHolder			/** @private */
 	{
 	public:
 		virtual void		_childRequestRender(Slot * pSlot) = 0;
 	};
 
-	//____ IStackPanelChildren ________________________________________________________
+	//____ IStackSlots ________________________________________________________
 
-	class IStackPanelChildren : public IPaddedChildren<StackPanelSlot,StackPanelChildrenHolder>
+	class IStackSlots;
+	typedef	StrongInterfacePtr<IStackSlots>	IStackSlots_p;
+	typedef	WeakInterfacePtr<IStackSlots>	IStackSlots_wp;
+
+	class IStackSlots : public IPaddedSlotArray<StackSlot>
 	{
 	public:
 		/** @private */
 
-		IStackPanelChildren( SlotArray<StackPanelSlot> * pSlotArray, StackPanelChildrenHolder * pHolder ) : IPaddedChildren<StackPanelSlot,StackPanelChildrenHolder>(pSlotArray,pHolder) {}
-
-		//.____ Misc __________________________________________________________
-
-		inline IStackPanelChildren_p	ptr() { return IStackPanelChildren_p(this); }
+		IStackSlots( SlotArray<StackSlot> * pSlotArray, StackSlotArrayHolder * pHolder ) : IPaddedSlotArray<StackSlot>(pSlotArray,pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -90,10 +84,13 @@ namespace wg
 		Origo		origo( int index ) const;
 		Origo		origo( iterator it ) const;
 
+		//.____ Misc __________________________________________________________
+
+		inline IStackSlots_p	ptr() { return IStackSlots_p(this); }
 
 	protected:
-		void		_setSizePolicy( StackPanelSlot * pSlot, SizePolicy2D policy );
-		void		_setOrigo( StackPanelSlot * pSlot, Origo origo );
+		void		_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy );
+		void		_setOrigo( StackSlot * pSlot, Origo origo );
 	};
 
 
@@ -103,9 +100,9 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected StackPanelChildrenHolder
+	class StackPanel : public Panel, protected StackSlotArrayHolder
 	{
-		friend class IStackPanelChildren;
+		friend class IStackSlots;
 
 	public:
 
@@ -115,7 +112,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IStackPanelChildren	children;
+		IStackSlots	children;
 
 		//.____ Identification __________________________________________
 
@@ -149,8 +146,6 @@ namespace wg
 
 		// Overloaded from PaddedChildrenHolder
 
-		Slot *		_incSlot(Slot * pSlot) const override;
-		Slot *		_decSlot(Slot * pSlot) const override;
 		void		_didAddSlots( Slot * pSlot, int nb ) override;
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
@@ -181,15 +176,15 @@ namespace wg
 		SizeI 	_calcPreferredSize();
 		void	_adaptChildrenToSize();
 
-		void	_hideChildren( StackPanelSlot * pSlot, int nb );
-		void	_unhideChildren( StackPanelSlot * pSlot, int nb );
+		void	_hideChildren( StackSlot * pSlot, int nb );
+		void	_unhideChildren( StackSlot * pSlot, int nb );
 
 
-		RectI	_childGeo( const StackPanelSlot * pSlot ) const;
+		RectI	_childGeo( const StackSlot * pSlot ) const;
 
 		SizeI	m_preferredSize;
 
-		SlotArray<StackPanelSlot>	m_children;
+		SlotArray<StackSlot>	m_children;
 	};
 
 

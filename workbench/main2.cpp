@@ -86,7 +86,7 @@ int main(int argc, char** argv)
 
 	printf("Slot is safe to relocate: %d\n", Slot::safe_to_relocate);
 	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
-	printf("LambdaPanelSlot is safe to relocate: %d\n", LambdaPanelSlot::safe_to_relocate);
+	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
 
 
 	// Point test

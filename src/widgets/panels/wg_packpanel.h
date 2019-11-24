@@ -26,7 +26,7 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_iweightedchildren.h>
+#include <wg_ipaddedslotarray.h>
 
 namespace wg
 {
@@ -36,9 +36,9 @@ namespace wg
 	typedef	WeakPtr<PackPanel>			PackPanel_wp;
 
 
-	//____ PackPanelSlot ____________________________________________________________
+	//____ PackSlot ____________________________________________________________
 
-	class PackPanelSlot : public PaddedSlot		/** @private */
+	class PackSlot : public PaddedSlot		/** @private */
 	{
 	public:
 		bool			bResizeRequired = false;
@@ -48,20 +48,47 @@ namespace wg
 	};
 
 
+	//____ IPackSlots ________________________________________________________
 
-//	class IPackPanelChildren;
-//	typedef	StrongInterfacePtr<IPackPanelChildren>	IPackPanelChildren_p;
-//	typedef	WeakInterfacePtr<IPackPanelChildren>	IPackPanelChildren_wp;
+	class IPackSlots;
+	typedef	StrongInterfacePtr<IPackSlots>	IPackSlots_p;
+	typedef	WeakInterfacePtr<IPackSlots>	IPackSlots_wp;
 
+	class IPackSlots : public IPaddedSlotArray<PackSlot>
+	{
+	public:
 
+		/** @private */
+
+		IPackSlots(SlotArray<PackSlot> * pSlotArray, PaddedSlotArrayHolder * pHolder) : IPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
+
+		//.____ Geometry _______________________________________________________
+
+		bool		setWeight(int index, float weight);
+		bool		setWeight(const SlotIterator& it, float weight);
+		bool		setWeight(int index, int amount, float weight);
+		bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, float weight);
+		bool		setWeight(int index, int amount, const std::initializer_list<float> weights);
+		bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, const std::initializer_list<float> weights);
+
+		float		weight(int index) const;
+		float		weight(const SlotIterator&  it) const;
+
+		//.____ Misc __________________________________________________________
+
+		inline IPackSlots_p	ptr() { return IPackSlots_p(this); }
+	};
+
+	//____ PackPanel ________________________________________________________________
 	/**
 	 * @brief	A widget for arranging children horizontally or vertically.
 	 *
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel, protected WeightedChildrenHolder
+	class PackPanel : public Panel, protected PaddedSlotArrayHolder
 	{
+		friend class IPackSlots;
 
 	public:
 
@@ -71,7 +98,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IWeightedChildren<PackPanelSlot,WeightedChildrenHolder>	children;
+		IPackSlots		children;
 
 		//.____ Identification __________________________________________
 
@@ -115,10 +142,8 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Overloaded from PackChildrenHolder
+		// Overloaded from PaddedSlotArrayHolder
 
-		Slot *		_incSlot(Slot * pSlot) const override;
-		Slot *		_decSlot(Slot * pSlot) const override;
 		void		_didAddSlots( Slot * pSlot, int nb ) override;
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
@@ -126,11 +151,14 @@ namespace wg
 		void		_unhideSlots( Slot *, int nb ) override;
 		void		_repadSlots( Slot *, int nb, BorderI padding ) override;
 		void		_repadSlots(Slot *, int nb, const BorderI * pPaddings) override;
-		void		_reweightSlots(Slot * pSlot, int nb, float weight) override;
-		void		_reweightSlots(Slot * pSlot, int nb, const float * pWeights) override;
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
-		void		_refreshChildGeo() override { _refreshChildGeo(true); }
+
+		// Needed by IPackSlots
+
+		void		_reweightSlots(PackSlot * pSlot, int nb, float weight);
+		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights);
+		void		_refreshChildGeo() { _refreshChildGeo(true); }
 
 		// Overloaded from WidgetHolder
 
@@ -150,8 +178,8 @@ namespace wg
 
 		void		_refreshChildGeo(bool bRequestRender);
 
-		void		_hideChildren(PackPanelSlot * pSlot, int nb);
-		void		_unhideChildren(PackPanelSlot * pSlot, int nb);
+		void		_hideChildren(PackSlot * pSlot, int nb);
+		void		_unhideChildren(PackSlot * pSlot, int nb);
 
 		void		_refreshGeometries();
 		SizeI		_calcPreferredSize();
@@ -162,7 +190,7 @@ namespace wg
 		int			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
 
 
-		SlotArray<PackPanelSlot> m_children;
+		SlotArray<PackSlot> m_children;
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;

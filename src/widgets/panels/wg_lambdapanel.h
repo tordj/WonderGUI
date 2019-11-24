@@ -26,7 +26,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_ihideablechildren.h>
+#include <wg_islotarray.h>
 
 namespace wg
 {
@@ -35,12 +35,12 @@ namespace wg
 	typedef	StrongPtr<LambdaPanel>		LambdaPanel_p;
 	typedef	WeakPtr<LambdaPanel>		LambdaPanel_wp;
 
-	//____ LambdaPanelSlot ____________________________________________________________
+	//____ LambdaSlot ____________________________________________________________
 
-	class LambdaPanelSlot : public Slot		/** @private */
+	class LambdaSlot : public Slot		/** @private */
 	{
 	public:
-		LambdaPanelSlot() : pFunc(nullptr), bVisible(false) {}
+		LambdaSlot() : pFunc(nullptr), bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -49,27 +49,27 @@ namespace wg
 		RectI			geo;				// Widgets geo relative parent
 	};
 
-	//____ LambdaChildrenHolder _________________________________________________
+	//____ LambdaSlotHolder _________________________________________________
 
-	class LambdaChildrenHolder : public HideableChildrenHolder		/** @private */
+	class LambdaSlotHolder : public SlotArrayHolder		/** @private */
 	{
 	public:
 		virtual void		_updateSlotGeo(Slot * pSlot, int nb) = 0;
 	};
 
 
-	class ILambdaPanelChildren;
-	typedef	StrongInterfacePtr<ILambdaPanelChildren>	ILambdaPanelChildren_p;
-	typedef	WeakInterfacePtr<ILambdaPanelChildren>		ILambdaPanelChildren_wp;
+	class ILambdaSlots;
+	typedef	StrongInterfacePtr<ILambdaSlots>	ILambdaSlots_p;
+	typedef	WeakInterfacePtr<ILambdaSlots>		ILambdaSlots_wp;
 
-	//____ ILambdaPanelChildren ________________________________________________________
+	//____ ILambdaSlots ________________________________________________________
 
-	class ILambdaPanelChildren : public IHideableChildren<LambdaPanelSlot,LambdaChildrenHolder>
+	class ILambdaSlots : public ISlotArray<LambdaSlot>
 	{
 	public:
 		/** @private */
 
-		ILambdaPanelChildren( SlotArray<LambdaPanelSlot> * pSlotArray, LambdaChildrenHolder * pHolder ) : IHideableChildren<LambdaPanelSlot,LambdaChildrenHolder>(pSlotArray,pHolder) {}
+		ILambdaSlots( SlotArray<LambdaSlot> * pSlotArray, LambdaSlotHolder * pHolder ) : ISlotArray<LambdaSlot>(pSlotArray,pHolder) {}
 
 		//.____ Content _______________________________________________________
 
@@ -88,13 +88,18 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline ILambdaPanelChildren_p	ptr() { return ILambdaPanelChildren_p(this); }
+		inline ILambdaSlots_p	ptr() { return ILambdaSlots_p(this); }
+
+	protected:
+
+		const LambdaSlotHolder *	_holder() const { return static_cast<LambdaSlotHolder*>(m_pHolder); }
+		LambdaSlotHolder *	_holder() { return static_cast<LambdaSlotHolder*>(m_pHolder); }
 	};
 
 
 	//____ LambdaPanel _________________________________________________________
 
-	class LambdaPanel : public Panel, protected LambdaChildrenHolder
+	class LambdaPanel : public Panel, protected LambdaSlotHolder
 	{
 
 	public:
@@ -105,7 +110,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ILambdaPanelChildren	children;
+		ILambdaSlots	children;
 
 		//.____ Identification __________________________________________
 
@@ -138,8 +143,6 @@ namespace wg
 
 		// Methods for LambdaPanelChildren
 
-		Slot *		_incSlot(Slot * pSlot) const override;
-		Slot *		_decSlot(Slot * pSlot) const override;
 		void		_didAddSlots( Slot * pSlot, int nb ) override;
 		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
 		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
@@ -169,12 +172,12 @@ namespace wg
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeI& size ) override;
-		void		_updateGeo(LambdaPanelSlot * pSlot, bool bForceResize = false);
+		void		_updateGeo(LambdaSlot * pSlot, bool bForceResize = false);
 
-		void		_onRequestRender( const RectI& rect, const LambdaPanelSlot * pSlot );
+		void		_onRequestRender( const RectI& rect, const LambdaSlot * pSlot );
 
 
-		SlotArray<LambdaPanelSlot>	m_children;
+		SlotArray<LambdaSlot>	m_children;
 
 		SizeI		m_minSize;
 		SizeI		m_maxSize;

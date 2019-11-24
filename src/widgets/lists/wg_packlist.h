@@ -27,7 +27,7 @@
 
 #include <wg_list.h>
 #include <wg_icolumnheader.h>
-#include <wg_iselectablechildren.h>
+#include <wg_iselectableslotarray.h>
 
 
 
@@ -52,9 +52,9 @@ namespace wg
 		int				prefBreadth;		// Prefereed breadth of this widget.
 	};
 
-	//____ PackListChildrenHolder() ___________________________________________
+	//____ PackListSlotsHolder() ___________________________________________
 
-	class PackListChildrenHolder : public SelectableChildrenHolder /** @private */
+	class PackListSlotsHolder : public SelectableSlotArrayHolder /** @private */
 	{
 	public:
 		virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
@@ -62,24 +62,25 @@ namespace wg
 		virtual bool	_hasSortFunction() const = 0;
 	};
 
+	//____ IPackListSlots ______________________________________________________
 
-	class IPackListChildren;
-	typedef	StrongInterfacePtr<IPackListChildren>	IPackListChildren_p;
-	typedef	WeakInterfacePtr<IPackListChildren>		IPackListChildren_wp;
+	class IPackListSlots;
+	typedef	StrongInterfacePtr<IPackListSlots>	IPackListSlots_p;
+	typedef	WeakInterfacePtr<IPackListSlots>		IPackListSlots_wp;
 
-	//____ IPackListChildren ______________________________________________________
-
-	class IPackListChildren : public ISelectableChildren<PackListSlot, PackListChildrenHolder>
+	class IPackListSlots : public ISelectableSlotArray<PackListSlot>
 	{
 	public:
 
+		using		iterator = SlotArrayIterator<PackListSlot>;
+
 		/** @private */
 
-		IPackListChildren(SlotArray<PackListSlot> * pSlotArray, PackListChildrenHolder * pHolder) : ISelectableChildren<PackListSlot, PackListChildrenHolder>(pSlotArray, pHolder) {}
+		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, PackListSlotsHolder * pHolder) : ISelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IPackListChildren_p	ptr() { return IPackListChildren_p(this); }
+		inline IPackListSlots_p	ptr() { return IPackListSlots_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -88,6 +89,11 @@ namespace wg
 		//.____ Ordering ______________________________________________________
 
 		void		sort();
+	protected:
+
+		const PackListSlotsHolder *	_holder() const { return static_cast<PackListSlotsHolder*>(m_pHolder); }
+		PackListSlotsHolder *	_holder() { return static_cast<PackListSlotsHolder*>(m_pHolder); }
+
 
 	};
 
@@ -103,13 +109,14 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected PackListChildrenHolder
+	class PackList : public List, protected PackListSlotsHolder
 	{
-		friend class IPackListChildren;
-		friend class ISelectableChildren<PackListSlot, PackList>;
-		friend class IHideableChildren<PackListSlot,PackList>;
-		friend class IDynamicChildren<PackListSlot,PackList>;
-		friend class IChildrenSubclass<PackListSlot,PackList>;
+		friend class IPackListSlots;
+//		friend class ISelectableChildren<PackListSlot, PackList>;
+//		friend class IHideableChildren<PackListSlot,PackList>;
+//		friend class IDynamicChildren<PackListSlot,PackList>;
+//		friend class IChildrenSubclass<PackListSlot,PackList>;
+
 //		template<class T, class P> friend class Children;
 	public:
 
@@ -120,7 +127,7 @@ namespace wg
 		//.____ Interfaces _______________________________________
 
 		IColumnHeader		header;
-		IPackListChildren	children;
+		IPackListSlots	children;
 
 		//.____ Identification __________________________________________
 
@@ -170,7 +177,7 @@ namespace wg
 		SizeI			_windowPadding() const override;
 
 
-		// Overloaded from PackListChildrenHolder
+		// Overloaded from PackListSlotsHolder
 
 		Slot *			_incSlot(Slot * pSlot) const override;
 		Slot *			_decSlot(Slot * pSlot) const override;
