@@ -110,7 +110,7 @@ namespace wg
 		if( m_pSkin )
 			m_pSkin->_render( pDevice, _canvas, m_state );
 
-		if (!m_child.pWidget)
+		if (!_slot()->_widget())
 			return;
 
 
@@ -133,11 +133,11 @@ namespace wg
 		if (canvas != _canvas)
 		{
 			auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
-			m_child.pWidget->_render(pDevice, canvas, canvas );
+			_slot()->_widget()->_render(pDevice, canvas, canvas );
 			popClipList(pDevice, savedClipData);
 		}
 		else
-			m_child.pWidget->_render( pDevice, canvas, canvas );
+			_slot()->_widget()->_render( pDevice, canvas, canvas );
 
 		// Reset old blend mode and tint color
 

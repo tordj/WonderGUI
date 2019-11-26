@@ -82,9 +82,15 @@ namespace wg
 
 	class FlexSlot : public Slot		/** @private */
 	{
+		friend class FlexPanel;
+		friend class IFlexSlots;
+		template<class S> friend class ISlotArray;
+
+
 	public:
 		FlexSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
+	protected:
 		bool			bPinned;
 		bool			bVisible;
 		RectI			realGeo;			// Widgets geo relative parent, not pixel aligned.

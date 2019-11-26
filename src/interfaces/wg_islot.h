@@ -58,21 +58,21 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
-		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->pWidget; if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 
 		inline ISlot operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
-		inline operator Widget_p() const { return Widget_p(m_pSlot->pWidget); }
+		inline operator Widget_p() const { return m_pSlot->widget(); }
 
-		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }
-		inline bool operator!=(Widget * other) const { return other != m_pSlot->pWidget; }
+		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
+		inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
 
-		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
+		inline operator bool() const { return m_pSlot->_widget() != nullptr; }
 
-		inline Widget* operator->() const { return m_pSlot->pWidget; }
+		inline Widget* operator->() const { return m_pSlot->_widget(); }
 
 		//.____ Content _______________________________________________________
 
-		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		inline Widget_p get() const { return m_pSlot->widget(); }
 		inline void clear() { m_pHolder->_setWidget( m_pSlot, nullptr); }
 
 		//.____ Misc __________________________________________________________

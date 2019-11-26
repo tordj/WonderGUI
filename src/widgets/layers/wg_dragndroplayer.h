@@ -34,6 +34,13 @@ namespace wg
 	typedef	StrongPtr<DragNDropLayer>	DragNDropLayer_p;
 	typedef	WeakPtr<DragNDropLayer>		DragNDropLayer_wp;
 
+	
+	class DnDLayerSlot : public LayerSlot
+	{
+		friend class DragNDropLayer;
+	};
+
+
 	//____ DragNDropLayer ____________________________________________________________
 
 	class DragNDropLayer : public Layer
@@ -100,11 +107,16 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
+		class BaseSlotAccess : public BaseSlot { friend class DragNDropLayer; };
+		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
+		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
+
+
 		RouteId        m_tickRouteId;
 
 		DragState		m_dragState = DragState::Idle;
 
-		LayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+		DnDLayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
 		Payload_p		m_pPayload;

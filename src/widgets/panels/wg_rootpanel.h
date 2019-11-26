@@ -131,6 +131,11 @@ namespace wg
 		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
 
+		class RootSlot : public Slot
+		{
+			friend class RootPanel;
+		};
+
 		RectI			_geo() const;
 
 		// WidgetHolder methods
@@ -189,7 +194,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
-		Slot				m_child;
+		RootSlot			m_child;
 		RectI				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

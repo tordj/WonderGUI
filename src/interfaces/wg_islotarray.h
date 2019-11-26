@@ -132,7 +132,7 @@ namespace wg
 
 		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
 
-		Widget& operator[](int index) const override { return *m_pSlotArray->slot(index)->pWidget; }
+		Widget& operator[](int index) const override { return *m_pSlotArray->slot(index)->_widget(); }
 
 		//.____ Content _______________________________________________________
 
@@ -144,7 +144,7 @@ namespace wg
 			if (index < 0 || index >= m_pSlotArray->size())
 				return nullptr;
 
-			return Widget_p(m_pSlotArray->slot(index)->pWidget);
+			return Widget_p(m_pSlotArray->slot(index)->_widget());
 		}
 
 		inline int		index(Widget * pChild) const override

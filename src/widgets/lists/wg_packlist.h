@@ -44,7 +44,11 @@ namespace wg
 
 	class PackListSlot : public ListSlot	/** @private */
 	{
-	public:
+		friend class IPackListSlots;
+		friend class PackList;
+		template<class S> friend class SlotArray;
+
+	protected:
 		PackListSlot() {}
 
 		int				ofs;				// Offset in pixels for start of this list item.

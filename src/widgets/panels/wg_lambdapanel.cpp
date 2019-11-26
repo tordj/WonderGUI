@@ -257,7 +257,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.first()->pWidget;
+		return m_children.first()->_widget();
 	}
 
 	//____ _lastChild() ________________________________________________________
@@ -267,7 +267,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.last()->pWidget;
+		return m_children.last()->_widget();
 	}
 
 	//____ _firstSlotWithGeo() _________________________________________________
@@ -454,7 +454,7 @@ namespace wg
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
-			return pSlot[-1].pWidget;
+			return pSlot[-1]._widget();
 
 		return nullptr;
 
@@ -467,7 +467,7 @@ namespace wg
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
-			return pSlot[1].pWidget;
+			return pSlot[1]._widget();
 
 		return nullptr;
 	}
@@ -507,7 +507,7 @@ namespace wg
 		RectI geo;
 			
 		if (pSlot->pFunc)
-			geo = pixelAligned(qpixToRaw(pSlot->pFunc(pSlot->pWidget, rawToQpix(m_size))));
+			geo = pixelAligned(qpixToRaw(pSlot->pFunc(pSlot->_widget(), rawToQpix(m_size))));
 		else
 			geo = { 0,0,pSlot->preferredSize() };
 
@@ -527,7 +527,7 @@ namespace wg
 				while (pCover < m_children.end())
 				{
 					if (pCover->bVisible && (pCover->geo.intersectsWith(pSlot->geo) || pCover->geo.intersectsWith(geo)) )
-						pCover->pWidget->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+						pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 
 					pCover++;
 				}
@@ -563,7 +563,7 @@ namespace wg
 		for (LambdaSlot * pCover = m_children.begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->bVisible && pCover->geo.intersectsWith(rect))
-				pCover->pWidget->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+				pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 		}
 
 		// Make request render calls

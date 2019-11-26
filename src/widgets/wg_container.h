@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_widget.h>
+#include <wg_slot.h>
 
 
 namespace wg
@@ -154,6 +155,11 @@ namespace wg
 			virtual void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 			virtual void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
 			virtual void			_cloneContent( const Widget * _pOrg ) override;
+
+			class SlotAccess : public Slot { friend class Container; };
+			Container::SlotAccess * _access(Slot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
+			const Container::SlotAccess * _access(const Slot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
+
 
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 

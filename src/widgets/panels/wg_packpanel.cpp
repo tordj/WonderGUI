@@ -370,7 +370,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.first()->pWidget;
+		return m_children.first()->_widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
@@ -380,7 +380,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.last()->pWidget;
+		return m_children.last()->_widget();
 	}
 
 
@@ -542,7 +542,7 @@ namespace wg
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
-			return pSlot[-1].pWidget;
+			return pSlot[-1]._widget();
 
 		return nullptr;
 	}
@@ -554,7 +554,7 @@ namespace wg
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
-			return pSlot[1].pWidget;
+			return pSlot[1]._widget();
 
 		return nullptr;
 	}
@@ -761,7 +761,7 @@ namespace wg
 						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->pWidget->_resize( geo.size() );
+							p->_widget()->_resize( geo.size() );
 							p->bResizeRequired = false;
 						}
 
@@ -788,7 +788,7 @@ namespace wg
 
 				if( p->bResizeRequired )
 				{
-					p->pWidget->_resize(geo.size());
+					p->_widget()->_resize(geo.size());
 					p->bResizeRequired = false;
 				}
 			}
@@ -843,7 +843,7 @@ namespace wg
 						p->geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->pWidget->_resize( geo.size() );
+							p->_widget()->_resize( geo.size() );
 							p->bResizeRequired = false;
 						}
 					}
@@ -870,7 +870,7 @@ namespace wg
 
 				if (p->bResizeRequired)
 				{
-					p->pWidget->_resize(geo.size());
+					p->_widget()->_resize(geo.size());
 					p->bResizeRequired = false;
 				}
 			}

@@ -135,7 +135,7 @@ namespace wg
 
 	SizeI SizeCapsule::_preferredSize() const
 	{
-		if (!m_child.pWidget)
+		if (!_slot()->_widget())
 		{
 			SizeI size = { std::max(0, m_preferred.w), std::max(0, m_preferred.h) };
 			if (m_pSkin)
@@ -182,7 +182,7 @@ namespace wg
 			// Preferred size not set in size capsule.
 			// We take preferred from child and check against our min/max.
 
-			pref = m_child.preferredSize();
+			pref = _slot()->preferredSize();
 
 			if (pref.w > m_max.w && pref.h > m_max.h)
 			{
@@ -293,8 +293,8 @@ namespace wg
 
 	SizeI SizeCapsule::_minSize() const
 	{
-		if( m_child.pWidget )
-			return SizeI::max(m_min,m_child.minSize());
+		if( _slot()->_widget() )
+			return SizeI::max(m_min,_slot()->minSize());
 		else
 			return m_min;
 	}
@@ -303,8 +303,8 @@ namespace wg
 
 	SizeI SizeCapsule::_maxSize() const
 	{
-		if( m_child.pWidget )
-			return SizeI::min(m_max,m_child.maxSize());
+		if( _slot()->_widget() )
+			return SizeI::min(m_max,_slot()->maxSize());
 		else
 			return m_max;
 	}
@@ -317,17 +317,17 @@ namespace wg
 		{
 			int h = m_preferred.h;
 
-			if( m_child.pWidget )
+			if( _slot()->_widget() )
 			{
-				int max = m_child.maxSize().h;
-				int min = m_child.minSize().h;
+				int max = _slot()->maxSize().h;
+				int min = _slot()->minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
-		else if( m_child.pWidget )
+		else if( _slot()->_widget() )
 		{
-			int h = m_child.matchingHeight(width);
+			int h = _slot()->matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -343,17 +343,17 @@ namespace wg
 		{
 			int w = m_preferred.w;
 
-			if( m_child.pWidget )
+			if( _slot()->_widget() )
 			{
-				int max = m_child.maxSize().w;
-				int min = m_child.minSize().w;
+				int max = _slot()->maxSize().w;
+				int min = _slot()->minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
-		else if( m_child.pWidget )
+		else if( _slot()->_widget() )
 		{
-			int w = m_child.matchingWidth(height);
+			int w = _slot()->matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

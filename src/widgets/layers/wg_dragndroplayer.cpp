@@ -87,16 +87,16 @@ namespace wg
 		// Widget being dragged is totally transparent to the mouse, so we just
 		// forward to our child.
 
-		if( m_baseSlot.pWidget )
+		if( _baseSlot()->_widget() )
 		{
-			if (m_baseSlot.pWidget->isContainer())
+			if (_baseSlot()->_widget()->isContainer())
 			{
-				Widget * pRes = static_cast<Container*>(m_baseSlot.pWidget)->_findWidget(ofs, mode);
+				Widget * pRes = static_cast<Container*>(_baseSlot()->_widget())->_findWidget(ofs, mode);
 				if (pRes)
 					return pRes;
 			}
-			else if (mode == SearchMode::Geometry || m_baseSlot.markTest(ofs))
-				return m_baseSlot.pWidget;
+			else if (mode == SearchMode::Geometry || _baseSlot()->markTest(ofs))
+				return _baseSlot()->_widget();
 		}
 		else if( mode == SearchMode::Geometry )
 			return this;
@@ -112,7 +112,7 @@ namespace wg
 			_requestResize();
 		else
 		{
-			auto p = static_cast<LayerSlot*>(pSlot);
+			auto p = static_cast<DnDLayerSlot*>(pSlot);
 
 			Size pref = p->preferredSize();
 			Size max = Size::max(pref, p->geo.size());
@@ -143,7 +143,7 @@ namespace wg
 
 	const LayerSlot * DragNDropLayer::_endLayerSlots() const
 	{
-		if( m_dragSlot.pWidget )
+		if( m_dragSlot._widget() )
 			return (&m_dragSlot) + 1;
 		else
 			return &m_dragSlot;
@@ -269,7 +269,7 @@ namespace wg
 
 						if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
 						{
-							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot.pWidget, this, pMsg->modKeys(), pMsg->pointerPos()));
+							Base::msgRouter()->post(new DropMoveMsg(m_pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot._widget(), this, pMsg->modKeys(), pMsg->pointerPos()));
 						}
 
 						break;
@@ -396,7 +396,7 @@ namespace wg
 				{
 					Widget * pTargeted = static_cast<Widget*>(pMsg->sourceRawPtr());
 
-					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot.pWidget,  this, pMsg->modKeys(), pMsg->pointerPos()));
+					Base::msgRouter()->post(new DropEnterMsg(pTargeted, m_pickCategory, m_pPayload, m_pPicked, m_dragSlot._widget(),  this, pMsg->modKeys(), pMsg->pointerPos()));
 
 					m_pProbed = nullptr;
 					m_pTargeted = pTargeted;
@@ -412,7 +412,7 @@ namespace wg
 
 				// Check if we need to change drag widget
 
-				if( pMsg->dragWidget() != m_dragSlot.pWidget )
+				if( pMsg->dragWidget() != m_dragSlot._widget())
 					_replaceDragWidget(pMsg->dragWidget());
 
 				break;
@@ -424,7 +424,7 @@ namespace wg
 
 				// Check if we need to change drag widget
 
-				if( pMsg->dragWidget() != m_dragSlot.pWidget )
+				if( pMsg->dragWidget() != m_dragSlot._widget())
 					_replaceDragWidget(pMsg->dragWidget());
 
 				break;
@@ -459,7 +459,7 @@ namespace wg
 		if( m_tickRouteId )
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 
-		if( m_dragSlot.pWidget )
+		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.geo);
 			m_dragSlot.replaceWidget(this, nullptr);
@@ -486,7 +486,7 @@ namespace wg
 		if( m_tickRouteId )
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 
-		if( m_dragSlot.pWidget )
+		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.geo);
 			m_dragSlot.replaceWidget(this, nullptr);
@@ -522,7 +522,7 @@ namespace wg
 	{
 		// Generate drag widget as an image of picked widget if missing and needed./*/*
 
-		if( m_dragState == DragState::Dragging && !m_dragSlot.pWidget )
+		if( m_dragState == DragState::Dragging && !m_dragSlot._widget())
 		{
 			SizeI sz = qpixToRaw(m_pPicked->size());
 

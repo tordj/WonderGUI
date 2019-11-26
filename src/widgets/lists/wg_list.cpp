@@ -151,7 +151,7 @@ namespace wg
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
 				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
-				if( pEntry && pEntry->pWidget != m_pHoveredChild.rawPtr() )
+				if( pEntry && pEntry->_widget() != m_pHoveredChild.rawPtr() )
 				{
 					RectI geo;
 					if( m_pHoveredChild )
@@ -162,7 +162,7 @@ namespace wg
 
 					_getEntryGeo( geo, pEntry );
 					_requestRender(geo);
-					m_pHoveredChild = pEntry->pWidget;
+					m_pHoveredChild = pEntry->_widget();
 				}
 				break;
 			}
@@ -204,16 +204,16 @@ namespace wg
 							case SelectMode::Unselectable:
 								break;
 							case SelectMode::SingleEntry:
-								if( !pEntry->pWidget->state().isSelected() )
+								if( !pEntry->_widget()->state().isSelected() )
 								{
 									_unselectSlots( _beginSlots(), _endSlots(), true );
 									_selectSlot( pEntry, true );
-									m_pFocusedChild = pEntry->pWidget;
+									m_pFocusedChild = pEntry->_widget();
 								}
 								break;
 							case SelectMode::FlipOnSelect:
-								_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->pWidget->state().isSelected(), true );
-								m_pFocusedChild = pEntry->pWidget;
+								_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->_widget()->state().isSelected(), true );
+								m_pFocusedChild = pEntry->_widget();
 								break;
 							case SelectMode::MultiEntries:
 								if( pMsg->modKeys() & MODKEY_SHIFT && m_pFocusedChild )
@@ -242,7 +242,7 @@ namespace wg
 									if( pMsg->modKeys() & MODKEY_CTRL )
 									{
 										// CTRL-click: We just flip the entry.
-										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->pWidget->state().isSelected(), true );
+										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->_widget()->state().isSelected(), true );
 									}
 									else
 									{
@@ -250,7 +250,7 @@ namespace wg
 										_unselectSlots(_beginSlots(), _endSlots(), true);
 										_selectSlot( pEntry, true );
 									}
-									m_pFocusedChild = pEntry->pWidget;
+									m_pFocusedChild = pEntry->_widget();
 								}
 								break;
 						}
@@ -323,7 +323,7 @@ namespace wg
 		if (p == _endSlots())
 			return nullptr;
 
-		return p->pWidget;
+		return p->_widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
@@ -334,7 +334,7 @@ namespace wg
 		if (p == _beginSlots())
 			return nullptr;
 
-		return _prevSlot(p)->pWidget;
+		return _prevSlot(p)->_widget();
 	}
 
 	//____ _didAddSlots() _________________________________________________________
@@ -380,7 +380,7 @@ namespace wg
 		int nbChanges = 0;
 		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if (p->bVisible && bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false) )
+			if (p->bVisible && bSelected != p->_widget()->state().isSelected() && (p->_widget()->isSelectable() || bSelected == false) )
 				nbChanges++;
 		}
 
@@ -396,16 +396,16 @@ namespace wg
 		int nbItems = 0;
 		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
-			if( p->bVisible && bSelected != p->pWidget->state().isSelected() && (p->pWidget->isSelectable() || bSelected == false))
+			if( p->bVisible && bSelected != p->_widget()->state().isSelected() && (p->_widget()->isSelectable() || bSelected == false))
 			{
-				State	state = p->pWidget->state();
+				State	state = p->_widget()->state();
 				state.setSelected(bSelected);
-				p->pWidget->_setState( state );
+				p->_widget()->_setState( state );
 
 				if( bPostMsg )
 				{
-					pItemInfo[nbItems].pObject	= p->pWidget;
-					pItemInfo[nbItems].id		= p->pWidget->id();
+					pItemInfo[nbItems].pObject	= p->_widget();
+					pItemInfo[nbItems].id		= p->_widget()->id();
 					nbItems++;
 				}
 			}
@@ -457,9 +457,9 @@ namespace wg
 			{
 				if (pSlot->bVisible)
 				{
-					if( pSlot->pWidget->state().isSelected() )
+					if( pSlot->_widget()->state().isSelected() )
 						nToDeselect++;
-					else if( pSlot->pWidget->isSelectable() )
+					else if( pSlot->_widget()->isSelectable() )
 						nToSelect++;
 				}
 			}
@@ -474,12 +474,12 @@ namespace wg
 
 		for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 		{
-			State	state = pSlot->pWidget->state();
+			State	state = pSlot->_widget()->state();
 
-			if (pSlot->bVisible && (pSlot->pWidget->isSelectable() || state.isSelected()))
+			if (pSlot->bVisible && (pSlot->_widget()->isSelectable() || state.isSelected()))
 			{
 				state.setSelected(!state.isSelected());
-				pSlot->pWidget->_setState(state);
+				pSlot->_widget()->_setState(state);
 
 				if (bPostMsg)
 				{
@@ -489,8 +489,8 @@ namespace wg
 					else
 						p = &pSelectedItemsInfo[nSelected++];
 
-					p->pObject = pSlot->pWidget;
-					p->id = pSlot->pWidget->id();
+					p->pObject = pSlot->_widget();
+					p->id = pSlot->_widget()->id();
 				}
 			}
 		}

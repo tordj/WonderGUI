@@ -112,7 +112,6 @@
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
     <ClInclude Include="..\..\..\src\base\wg_qpix.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
-    <ClInclude Include="..\..\..\src\base\wg_childiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_componentholder.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />

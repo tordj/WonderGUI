@@ -118,7 +118,7 @@ namespace wg
 
 				while(child.pSlot)
 				{
-					child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+					_access(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 					_nextSlotWithGeo( child );
 				}
 				break;

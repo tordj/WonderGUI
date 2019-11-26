@@ -172,10 +172,10 @@ namespace wg
 
 		SizeI sz;
 
-		if (m_firstChild.pWidget)
+		if (m_firstChild._widget())
 			firstSz = m_firstChild.preferredSize();
 
-		if (m_secondChild.pWidget)
+		if (m_secondChild._widget())
 			secondSz = m_secondChild.preferredSize();
 
 		if (m_bHorizontal)
@@ -234,9 +234,9 @@ namespace wg
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			length = m_brokerFunc(m_firstChild.pWidget, m_secondChild.pWidget, QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = m_brokerFunc(m_firstChild._widget(), m_secondChild._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
 		else
-			length = _defaultBroker(m_firstChild.pWidget, m_secondChild.pWidget, QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = _defaultBroker(m_firstChild._widget(), m_secondChild._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
 
 		firstChildLength = length.rawAligned();
 
@@ -269,12 +269,12 @@ namespace wg
 			_requestRender(contentGeo);
 
 			m_firstChild.geo = firstChildGeo;
-			if( m_firstChild.pWidget )
-				m_firstChild.pWidget->_resize(firstChildGeo);
+			if( m_firstChild._widget() )
+				m_firstChild._widget()->_resize(firstChildGeo);
 
 			m_secondChild.geo = secondChildGeo;
-			if (m_secondChild.pWidget)
-				m_secondChild.pWidget->_resize(secondChildGeo);
+			if (m_secondChild._widget())
+				m_secondChild._widget()->_resize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
 
@@ -479,14 +479,14 @@ namespace wg
 			container.add(RectI(geo, clip));
 		else
 		{
-			if (m_firstChild.pWidget)
-				m_firstChild.pWidget->_collectPatches(container, m_firstChild.geo + geo.pos(), clip );
+			if (m_firstChild._widget())
+				m_firstChild._widget()->_collectPatches(container, m_firstChild.geo + geo.pos(), clip );
 
 			if( m_pHandleSkin )
 				container.add(RectI(m_handleGeo, clip));
 
-			if (m_secondChild.pWidget)
-				m_secondChild.pWidget->_collectPatches(container, m_secondChild.geo + geo.pos(), clip );
+			if (m_secondChild._widget())
+				m_secondChild._widget()->_collectPatches(container, m_secondChild.geo + geo.pos(), clip );
 		}
 	}
 
@@ -500,14 +500,14 @@ namespace wg
 				patches.sub(RectI(geo, clip));
 			else
 			{
-				if (m_firstChild.pWidget)
-					m_firstChild.pWidget->_maskPatches(patches, m_firstChild.geo + geo.pos(), clip, blendMode );
+				if (m_firstChild._widget())
+					m_firstChild._widget()->_maskPatches(patches, m_firstChild.geo + geo.pos(), clip, blendMode );
 
 				if (m_pHandleSkin && m_pHandleSkin->isOpaque() )
 					patches.sub(RectI(m_handleGeo, clip));
 
-				if (m_secondChild.pWidget)
-					m_secondChild.pWidget->_maskPatches(patches, m_secondChild.geo + geo.pos(), clip, blendMode );
+				if (m_secondChild._widget())
+					m_secondChild._widget()->_maskPatches(patches, m_secondChild.geo + geo.pos(), clip, blendMode );
 			}
 		}
 	}
@@ -554,20 +554,20 @@ namespace wg
 
 	Widget * SplitPanel::_firstChild() const
 	{
-		if (m_firstChild.pWidget)
-			return m_firstChild.pWidget;
+		if (m_firstChild._widget())
+			return m_firstChild._widget();
 		else
-			return m_secondChild.pWidget;
+			return m_secondChild._widget();
 	}
 
 	//_____ _lastChild() ______________________________________________________
 
 	Widget * SplitPanel::_lastChild() const
 	{
-		if (m_secondChild.pWidget)
-			return m_secondChild.pWidget;
+		if (m_secondChild._widget())
+			return m_secondChild._widget();
 		else
-			return m_firstChild.pWidget;
+			return m_firstChild._widget();
 	}
 
 	//_____ _firstSlotWithGeo() _______________________________________________
@@ -576,9 +576,9 @@ namespace wg
 	{
 		const SplitPanelSlot * p;
 
-		if (m_firstChild.pWidget)
+		if (m_firstChild._widget())
 			p = &m_firstChild;
-		else if (m_secondChild.pWidget)
+		else if (m_secondChild._widget())
 			p = &m_secondChild;
 		else
 		{
@@ -594,7 +594,7 @@ namespace wg
 
 	void SplitPanel::_nextSlotWithGeo(SlotWithGeo& package) const
 	{
-		if (package.pSlot == &m_firstChild && m_secondChild.pWidget)
+		if (package.pSlot == &m_firstChild && m_secondChild._widget())
 		{
 			package.geo = m_secondChild.geo;
 			package.pSlot = &m_secondChild;
@@ -659,7 +659,7 @@ namespace wg
 	Widget * SplitPanel::_prevChild(const Slot * pSlot) const
 	{
 		if (pSlot == &m_secondChild)
-			return m_secondChild.pWidget;
+			return m_secondChild._widget();
 		else
 			return nullptr;
 	}
@@ -669,7 +669,7 @@ namespace wg
 	Widget * SplitPanel::_nextChild(const Slot * pSlot) const
 	{
 		if (pSlot == &m_firstChild)
-			return m_secondChild.pWidget;
+			return m_secondChild._widget();
 		else
 			return nullptr;
 	}

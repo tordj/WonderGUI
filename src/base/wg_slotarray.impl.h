@@ -86,7 +86,7 @@ namespace wg
 	SlotType *	SlotArray<SlotType>::find(const Widget* pWidget) const
 	{
 		for (auto p = begin(); p < end(); p++)
-			if (p->pWidget == pWidget)
+			if (p->_widget() == pWidget)
 				return p;
 
 		return nullptr;

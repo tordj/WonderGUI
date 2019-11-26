@@ -40,7 +40,10 @@ namespace wg
 
 	class PackSlot : public PaddedSlot		/** @private */
 	{
-	public:
+		friend class PackPanel;
+		friend class IPackSlots;
+
+	protected:
 		bool			bResizeRequired = false;
 		float			weight = 1.f;				// Weight for space allocation.
 		RectI			geo;						// Real geo of child (no padding included).

@@ -41,7 +41,7 @@ namespace wg
 
 	Widget& IPopupSlots::operator[](int index) const
 	{
-		return * m_pHolder->m_popups.slot(index)->pWidget;
+		return * m_pHolder->m_popups.slot(index)->_widget();
 	}
 
 	//____ size() ______________________________________________________________
@@ -58,7 +58,7 @@ namespace wg
 		if( index < 0 || index >= m_pHolder->m_popups.size() )
 			return nullptr;
 
-		return Widget_p(m_pHolder->m_popups.slot(index)->pWidget);
+		return Widget_p(m_pHolder->m_popups.slot(index)->_widget());
 	}
 
 	//____ _object() ___________________________________________________________
@@ -342,10 +342,10 @@ namespace wg
 			{
 				if( pSlot->geo.contains( ofs ) )
 				{
-					if( pSlot->pWidget->isContainer() )
-						pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - pSlot->geo.pos(), mode );
+					if( pSlot->_widget()->isContainer() )
+						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
 					else if( pSlot->markTest( ofs - pSlot->geo.pos() ) )
-						pResult = pSlot->pWidget;
+						pResult = pSlot->_widget();
 				}
 				pSlot++;
 			}
@@ -410,7 +410,7 @@ namespace wg
 			while (pCover >= m_popups.begin())
 			{
 				if (pCover->geo.intersectsWith(rect) && pCover->state != PopupSlot::State::OpeningDelay && pCover->state != PopupSlot::State::Opening && pCover->state != PopupSlot::State::Closing)
-					pCover->pWidget->_maskPatches(patches, pCover->geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
+					pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 				pCover--;
 			}
@@ -478,7 +478,7 @@ namespace wg
 
 			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 			if( p->pSlot->state != PopupSlot::State::Opening && p->pSlot->state != PopupSlot::State::Closing )
-				p->pSlot->pWidget->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if (patches.isEmpty())
 				break;
@@ -486,10 +486,10 @@ namespace wg
 
 		// Any dirt left in patches is for base child, lets render that first
 
-		if (m_baseSlot.pWidget && !patches.isEmpty())
+		if (_baseSlot()->_widget() && !patches.isEmpty())
 		{
 			ClipPopData popData = patchesToClipList(pDevice, _window, patches);
-			m_baseSlot.pWidget->_render(pDevice, _canvas, _window);
+			_baseSlot()->_widget()->_render(pDevice, _canvas, _window);
 			popClipList(pDevice, popData);
 		}
 
@@ -508,12 +508,12 @@ namespace wg
 				tint.a = 255 - (255 * p->pSlot->stateCounter / m_closingFadeMs);
 
 			if (tint.a == 255)
-				p->pSlot->pWidget->_render(pDevice, p->geo, p->geo);
+				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
 			else
 			{
 				Color oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
-				p->pSlot->pWidget->_render(pDevice, p->geo, p->geo);
+				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);
 			}
 			popClipList(pDevice,p->clipPop);
@@ -680,7 +680,7 @@ namespace wg
 				// state ClosingDelay (unless already in state Closing).
 
 
-				Widget * pTop = m_popups.first()->pWidget;
+				Widget * pTop = m_popups.first()->_widget();
 				Widget * pMarked = _findWidget(pointerPos, SearchMode::ActionTarget);
 
 				if (pMarked != this && pMarked->isSelectable() && m_popups.first()->bAutoClose)
@@ -693,7 +693,7 @@ namespace wg
 					//
 
 					auto p = m_popups.first();
-					while (p->bAutoClose && p->pWidget != pMarked)
+					while (p->bAutoClose && p->_widget() != pMarked)
 					{
 						if (p->state != PopupSlot::State::Closing && p->state != PopupSlot::State::ClosingDelay)
 						{
@@ -808,7 +808,7 @@ namespace wg
 
 		// Steal keyboard focus to top menu
 
-		Widget * pWidget = m_popups.begin()->pWidget;
+		Widget * pWidget = m_popups.begin()->_widget();
 
 		_childRequestFocus( pWidget->_slot(), pWidget );
 	}
@@ -890,7 +890,7 @@ namespace wg
 		for(int i = 0 ; i < nb ; i++ )
 		{
 			if( pEH )
-				pEH->post( new PopupClosedMsg( pSlot[i].pWidget, pSlot[i].pOpener ) );
+				pEH->post( new PopupClosedMsg( pSlot[i]._widget(), pSlot[i].pOpener ) );
 			_requestRender(pSlot[i].geo);
 		}
 

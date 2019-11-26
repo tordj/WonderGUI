@@ -76,7 +76,12 @@ namespace wg
 		void		_cloneContent( const Widget * _pOrg ) override;
 		BlendMode _getRenderMode() const;
 
+
 	private:
+		class SlotAccess : public CapsuleSlot { friend class ShaderCapsule; };
+		SlotAccess * _slot() { return static_cast<SlotAccess*>(&m_child); }
+		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&m_child); }
+
 		Color			m_tintColor;
 		BlendMode		m_tintMode;
 		BlendMode		m_renderMode;

@@ -38,7 +38,12 @@ namespace wg
 
 	class ModalSlot : public LayerSlot		/** @private */
 	{
-	public:
+		friend class ModalLayer;
+		friend class IModalSlots;
+		template<class S> friend class ISlotArray;
+		template<class S> friend class SlotArray;
+
+	protected:
 		ModalSlot() : origo(Origo::NorthWest) {}
 
 		const static bool safe_to_relocate = false;
@@ -194,6 +199,12 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize( const SizeI& size ) override;
 		void			_receive( Msg * pMsg ) override;
+
+		//
+
+		class BaseSlotAccess : public BaseSlot { friend class ModalLayer; };
+		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
+		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
 
 
 		Widget_wp			m_pBaseKeyFocus;

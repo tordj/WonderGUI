@@ -40,11 +40,15 @@ namespace wg
 
 	class PopupSlot : public LayerSlot		/** @private */
 	{
+		friend class PopupLayer;
+		friend class IPopupSlots;
+
 	public:
 		PopupSlot() : attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
 
 		const static bool safe_to_relocate = false;
 
+	protected:
 		enum class State
 		{
 			OpeningDelay,			// Popup is in "delayed opening" mode. Some ms before it starts to open.
@@ -171,6 +175,12 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize( const SizeI& size ) override;
 		void			_receive( Msg * pMsg ) override;
+
+		//
+
+		class BaseSlotAccess : public BaseSlot { friend class PopupLayer; };
+		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
+		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
 
 
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.

@@ -45,9 +45,11 @@ namespace wg
 
 	class ScrollbarSlot : public PaddedSlot		/** @private */
 	{
+		friend class ScrollbarEntry;
+		friend class ScrollPanel;
 	public:
 		ScrollbarSlot() : bAutoHide(false), bAutoScroll(false) {}
-
+	protected:
 		RectI			geo;
 		bool			bAutoHide;
 		bool			bAutoScroll;
@@ -58,6 +60,7 @@ namespace wg
 
 	class ViewSlot : public PaddedSlot		/** @private */
 	{
+		friend class ScrollPanel;
 	public:
 		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
 
@@ -200,21 +203,21 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline Widget_p get() const { return Widget_p(m_pSlot->pWidget); }
+		inline Widget_p get() const { return m_pSlot->widget(); }
 		void clear();
 
 		//.____ Operators _____________________________________________________
 
 		ScrollbarEntry operator=(Scrollbar * pWidget);
-		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->pWidget); }
+		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->_widget()); }
 
-		inline bool operator==(Widget * other) const { return other == m_pSlot->pWidget; }
-		inline bool operator!=(Widget * other) const { return other != m_pSlot->pWidget; }
-
-		inline operator bool() const { return m_pSlot->pWidget != nullptr; }
+		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
+		inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
+		 
+		inline operator bool() const { return m_pSlot->_widget() != nullptr; }
 
 		//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
-		inline Widget* operator->() const { return m_pSlot->pWidget; }
+		inline Widget* operator->() const { return m_pSlot->_widget(); }
 
 
 	protected:

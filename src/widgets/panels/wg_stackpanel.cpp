@@ -239,7 +239,7 @@ namespace wg
 		if( m_children.isEmpty() )
 			return nullptr;
 
-		return m_children.first()->pWidget;
+		return m_children.first()->_widget();
 	}
 
 	//____ _lastChild() ________________________________________________________
@@ -249,7 +249,7 @@ namespace wg
 		if( m_children.isEmpty() )
 			return nullptr;
 
-		return m_children.last()->pWidget;
+		return m_children.last()->_widget();
 
 	}
 
@@ -359,7 +359,7 @@ namespace wg
 
 	SizeI StackPanel::_childSize( Slot * pSlot ) const
 	{
-		return pSlot->size();
+		return static_cast<StackSlot*>(pSlot)->size();
 	}
 
 	//____ _childRequestRender() ______________________________________________
@@ -390,7 +390,7 @@ namespace wg
 		{
 			RectI geo = _childGeo(pCover);
 			if( pCover->bVisible && geo.intersectsWith( rect ) )
-				pCover->pWidget->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -401,8 +401,10 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void StackPanel::_childRequestResize( Slot * pSlot )
+	void StackPanel::_childRequestResize( Slot * _pSlot )
 	{
+		auto pSlot = static_cast<StackSlot*>(_pSlot);
+
 		SizeI newPreferred = _calcPreferredSize();
 
 		if( newPreferred != m_preferredSize || m_preferredSize != m_size )
@@ -420,24 +422,24 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * StackPanel::_prevChild( const Slot * pSlot ) const
+	Widget * StackPanel::_prevChild( const Slot * _pSlot ) const
 	{
-		auto p = static_cast<const StackSlot *>(pSlot);
+		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
-		if( p > m_children.begin() )
-			return p[-1].pWidget;
+		if( pSlot > m_children.begin() )
+			return pSlot[-1]._widget();
 
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * StackPanel::_nextChild( const Slot * pSlot ) const
+	Widget * StackPanel::_nextChild( const Slot * _pSlot ) const
 	{
-		auto p = static_cast<const StackSlot *>(pSlot);
+		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
-		if( p < m_children.last() )
-			return p[1].pWidget;
+		if( pSlot < m_children.last() )
+			return pSlot[1]._widget();
 
 		return nullptr;
 	}
@@ -487,7 +489,7 @@ namespace wg
 			if( !pSlot[i].bVisible )
 			{
 				pSlot[i].bVisible = true;
-				pSlot[i].pWidget->_resize(_childGeo(pSlot).size() );
+				pSlot[i]._widget()->_resize(_childGeo(pSlot).size() );
 				_childRequestRender( pSlot + i );
 			}
 		}
@@ -590,7 +592,7 @@ namespace wg
 		while( pSlot != pEnd )
 		{
 			if( pSlot->bVisible )
-				pSlot->pWidget->_resize( _childGeo(pSlot) );
+				pSlot->_widget()->_resize( _childGeo(pSlot) );
 			pSlot++;
 		}
 	}

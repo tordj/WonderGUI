@@ -245,7 +245,7 @@ namespace wg
 
 	int ViewSlot::paddedWindowPixelLenX()
 	{
-		SizeI	windowPadding = pWidget ? pWidget->_windowPadding() : SizeI(0, 0);
+		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 		return	windowGeo.w - windowPadding.w;
 	}
 
@@ -253,7 +253,7 @@ namespace wg
 
 	int ViewSlot::paddedWindowPixelLenY()
 	{
-		SizeI	windowPadding = pWidget ? pWidget->_windowPadding() : SizeI(0, 0);
+		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 		return windowGeo.h - windowPadding.h;
 	}
 
@@ -261,7 +261,7 @@ namespace wg
 
 	float ViewSlot::paddedWindowLenX()
 	{
-		SizeI	windowPadding = pWidget ? pWidget->_windowPadding() : SizeI(0, 0);
+		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 
 		if (contentSize.w - windowPadding.w <= 0)
 			return 1.f;
@@ -278,7 +278,7 @@ namespace wg
 
 	float ViewSlot::paddedWindowLenY()
 	{
-		SizeI	windowPadding = pWidget ? pWidget->_windowPadding() : SizeI(0, 0);
+		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 
 		if (contentSize.h - windowPadding.h <= 0)
 			return 1.f;
@@ -732,10 +732,10 @@ namespace wg
 		for (int i = 0; i < 2; i++)
 		{
 			ScrollbarSlot * p = &m_scrollbarSlots[i];
-			if (p->bVisible && p->pWidget && p->geo.contains(pos))
+			if (p->bVisible && p->_widget() && p->geo.contains(pos))
 			{
 				if (mode != SearchMode::MarkPolicy || p->markTest(pos - p->geo.pos()))
-					return p->pWidget;
+					return p->_widget();
 			}
 		}
 
@@ -745,16 +745,16 @@ namespace wg
 
 		if( p->windowGeo.contains( pos ) )
 		{
-			if( p->bVisible && p->pWidget && p->windowGeo.contains( pos ) )
+			if( p->bVisible && p->_widget() && p->windowGeo.contains( pos ) )
 			{
-				if( p->pWidget->isContainer() )
+				if( p->_widget()->isContainer() )
 				{
-					Widget * pFound = static_cast<Container*>(p->pWidget)->_findWidget( pos - p->canvasGeo.pos(), mode );
+					Widget * pFound = static_cast<Container*>(p->_widget())->_findWidget( pos - p->canvasGeo.pos(), mode );
 					if( pFound )
 						return pFound;
 				}
 				else if( mode != SearchMode::MarkPolicy || p->markTest( pos - p->canvasGeo.pos() ) )
-					return p->pWidget;
+					return p->_widget();
 			}
 
 			// Check window skin
@@ -782,10 +782,10 @@ namespace wg
 	{
 		SizeI sz;
 
-		if( m_viewSlot.pWidget )
+		if( m_viewSlot._widget())
 			sz = m_viewSlot.paddedPreferredSize();
 
-		if( m_scrollbarSlots[0].pWidget && !m_scrollbarSlots[0].bAutoHide )
+		if( m_scrollbarSlots[0]._widget() && !m_scrollbarSlots[0].bAutoHide )
 		{
 			SizeI scrollbar = m_scrollbarSlots[0].paddedPreferredSize();
 			sz.h += scrollbar.h;
@@ -793,7 +793,7 @@ namespace wg
 				sz.w = scrollbar.w;
 		}
 
-		if( m_scrollbarSlots[1].pWidget && !m_scrollbarSlots[1].bAutoHide )
+		if( m_scrollbarSlots[1]._widget() && !m_scrollbarSlots[1].bAutoHide )
 		{
 			SizeI scrollbar = m_scrollbarSlots[1].paddedPreferredSize();
 			sz.w += scrollbar.w;
@@ -809,40 +809,40 @@ namespace wg
 
 	SizeI ScrollPanel::_calcContentSize( SizeI mySize )
 	{
-		Widget * pContent = m_viewSlot.pWidget;
+		Widget * pContent = m_viewSlot._widget();
 
 		if( !pContent )
 			return SizeI(0,0);
 
 		//
 
-		if( !m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
+		if( !m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0]._widget())
 			mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 
-		if (!m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget)
+		if (!m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1]._widget())
 			mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 
 		//
 
 		SizeI contentSize = m_viewSlot.sizeFromPolicy( mySize );
 
-		if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget )
+		if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1]._widget())
 		{
 			mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 			contentSize = m_viewSlot.sizeFromPolicy( mySize );
 
-			if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
+			if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0]._widget())
 			{
 				mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 				contentSize = m_viewSlot.sizeFromPolicy( mySize );
 			}
 		}
-		else if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0].pWidget )
+		else if( contentSize.w > mySize.w && m_scrollbarSlots[0].bAutoHide && m_scrollbarSlots[0]._widget())
 		{
 			mySize.h -= m_scrollbarSlots[0].preferredSize().h;
 			contentSize = m_viewSlot.sizeFromPolicy( mySize );
 
-			if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1].pWidget )
+			if( contentSize.h > mySize.h && m_scrollbarSlots[1].bAutoHide && m_scrollbarSlots[1]._widget())
 			{
 				mySize.w -= m_scrollbarSlots[1].preferredSize().w;
 				contentSize = m_viewSlot.sizeFromPolicy( mySize );
@@ -866,7 +866,7 @@ namespace wg
 
 		newWindow = mySize;
 
-		if( m_scrollbarSlots[0].pWidget )
+		if( m_scrollbarSlots[0]._widget())
 		{
 			newDragX.h = m_scrollbarSlots[0].paddedPreferredSize().h;
 			newDragX.w = newWindow.w;
@@ -878,7 +878,7 @@ namespace wg
 				newDragX.y = 0;
 		}
 
-		if(m_scrollbarSlots[1].pWidget )
+		if(m_scrollbarSlots[1]._widget())
 		{
 			newDragY.w = m_scrollbarSlots[1].paddedPreferredSize().w;
 			newDragY.h = newWindow.h;
@@ -892,18 +892,18 @@ namespace wg
 
 		// Determine which dragbars we need to show, using basic rules
 
-		if(m_scrollbarSlots[0].pWidget && (newContentSize.w > newWindow.w || !m_scrollbarSlots[0].bAutoHide) )
+		if(m_scrollbarSlots[0]._widget() && (newContentSize.w > newWindow.w || !m_scrollbarSlots[0].bAutoHide) )
 			bShowDragX = true;
 
-		if(m_scrollbarSlots[1].pWidget && (newContentSize.h > newWindow.h || !m_scrollbarSlots[1].bAutoHide) )
+		if(m_scrollbarSlots[1]._widget() && (newContentSize.h > newWindow.h || !m_scrollbarSlots[1].bAutoHide) )
 			bShowDragY = true;
 
 		// See if showing one forces us to show the other
 
-		if( bShowDragY && m_scrollbarSlots[0].pWidget && newContentSize.w > (newWindow.w - newDragY.w) )
+		if( bShowDragY && m_scrollbarSlots[0]._widget() && newContentSize.w > (newWindow.w - newDragY.w) )
 			bShowDragX = true;
 
-		if( bShowDragX && m_scrollbarSlots[1].pWidget && newContentSize.h > (newWindow.h - newDragX.h) )
+		if( bShowDragX && m_scrollbarSlots[1]._widget() && newContentSize.h > (newWindow.h - newDragX.h) )
 			bShowDragY = true;
 
 		// We need to adjust view layout to accomodate visible scrollbars.
@@ -1033,11 +1033,11 @@ namespace wg
 
 			// Notify content of its new size.
 
-			if (m_viewSlot.pWidget)
-				m_viewSlot.pWidget->_resize(newContentSize);
+			if (m_viewSlot._widget())
+				m_viewSlot._widget()->_resize(newContentSize);
 		}
-		else if( pForceUpdate == &m_viewSlot && m_viewSlot.pWidget )
-			m_viewSlot.pWidget->_resize(newContentSize);
+		else if( pForceUpdate == &m_viewSlot && m_viewSlot._widget())
+			m_viewSlot._widget()->_resize(newContentSize);
 
 
 
@@ -1059,17 +1059,17 @@ namespace wg
 			// Notify scrollbars of their new size if needed.
 
 			if( (bShowDragX && newDragX.size() != m_scrollbarSlots[0].size()) || pForceUpdate == &m_scrollbarSlots[0])
-				m_scrollbarSlots[0].pWidget->_resize(newDragX.size());
+				m_scrollbarSlots[0]._widget()->_resize(newDragX.size());
 			if( (bShowDragY && newDragY.size() != m_scrollbarSlots[1].size()) || pForceUpdate == &m_scrollbarSlots[1])
-				m_scrollbarSlots[1].pWidget->_resize(newDragY.size());
+				m_scrollbarSlots[1]._widget()->_resize(newDragY.size());
 		}
 		else
 		{
-			if (pForceUpdate == &m_scrollbarSlots[0] && m_scrollbarSlots[0].pWidget)
-				m_scrollbarSlots[0].pWidget->_resize(newDragX.size());
+			if (pForceUpdate == &m_scrollbarSlots[0] && m_scrollbarSlots[0]._widget())
+				m_scrollbarSlots[0]._widget()->_resize(newDragX.size());
 
-			if (pForceUpdate == &m_scrollbarSlots[1] && m_scrollbarSlots[1].pWidget)
-				m_scrollbarSlots[1].pWidget->_resize(newDragX.size());
+			if (pForceUpdate == &m_scrollbarSlots[1] && m_scrollbarSlots[1]._widget())
+				m_scrollbarSlots[1]._widget()->_resize(newDragX.size());
 		}
 
 
@@ -1159,7 +1159,7 @@ namespace wg
 
 		// Render view recursively
 
-		if( m_viewSlot.pWidget )
+		if( m_viewSlot._widget())
 		{
 			RectI canvas = m_viewSlot.canvasGeo + _canvas.pos();
 			RectI window( canvas, m_viewSlot.windowGeo + _canvas.pos() );	// Use intersection in case canvas is smaller than window.
@@ -1167,7 +1167,7 @@ namespace wg
 			if (window.intersectsWith(dirtBounds))
 			{
 				ClipPopData clipPop = limitClipList(pDevice,rawToPixels(window));
-				m_viewSlot.pWidget->_render(pDevice, canvas, window);
+				m_viewSlot._widget()->_render(pDevice, canvas, window);
 				popClipList(pDevice, clipPop);
 			}
 		}
@@ -1182,7 +1182,7 @@ namespace wg
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					ClipPopData clipPop = limitClipList(pDevice,rawToPixels(canvas));
-					m_scrollbarSlots[i].pWidget->_render(pDevice, canvas, canvas);
+					m_scrollbarSlots[i]._widget()->_render(pDevice, canvas, canvas);
 					popClipList(pDevice, clipPop);
 				}
 			}
@@ -1219,19 +1219,19 @@ namespace wg
 
 					if (m_pSkin && m_pSkin->isOpaque())
 						patches.sub(RectI(p->windowGeo + geo.pos(), clip));
-					else if (p->pWidget)
-						p->pWidget->_maskPatches(patches, p->canvasGeo + geo.pos(), RectI(p->windowGeo + geo.pos(), clip), blendMode);
+					else if (p->_widget())
+						p->_widget()->_maskPatches(patches, p->canvasGeo + geo.pos(), RectI(p->windowGeo + geo.pos(), clip), blendMode);
 				}
 
 				// Mask against dragbars
 
 				ScrollbarSlot * p = &m_scrollbarSlots[0];
 				if( p->bVisible )
-					p->pWidget->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
 
 				p++;
 				if( p->bVisible )
-					p->pWidget->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
+					p->_widget()->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
 
 				// Maska against corner piece
 
@@ -1449,10 +1449,10 @@ namespace wg
 	Widget * ScrollPanel::_prevChild( const Slot * pSlot ) const
 	{
 		if( pSlot == &m_scrollbarSlots[1] )
-			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_viewSlot.pWidget;
+			return m_scrollbarSlots[0]._widget() ? m_scrollbarSlots[0]._widget() : m_viewSlot._widget();
 
 		if( pSlot == &m_scrollbarSlots[0] )
-			return m_viewSlot.pWidget;
+			return m_viewSlot._widget();
 
 		return nullptr;
 	}
@@ -1462,10 +1462,10 @@ namespace wg
 	Widget * ScrollPanel::_nextChild( const Slot * pSlot ) const
 	{
 		if (pSlot == &m_viewSlot)
-			return m_scrollbarSlots[0].pWidget ? m_scrollbarSlots[0].pWidget : m_scrollbarSlots[1].pWidget;
+			return m_scrollbarSlots[0]._widget() ? m_scrollbarSlots[0]._widget() : m_scrollbarSlots[1]._widget();
 
 		if (pSlot == &m_scrollbarSlots[0])
-			return m_scrollbarSlots[1].pWidget;
+			return m_scrollbarSlots[1]._widget();
 
 		return nullptr;
 	}
@@ -1504,7 +1504,7 @@ namespace wg
 	{
 		if (_pSlot == &m_viewSlot)
 		{
-			_pSlot->replaceWidget(this, pWidget);
+			m_viewSlot.replaceWidget(this, pWidget);
 			m_viewSlot.bVisible = true;
 			_updateElementGeo(m_size);
 			_requestRender(m_viewSlot.windowGeo);		// If geometry is same as the old one, we need to request render ourselves.
@@ -1514,8 +1514,8 @@ namespace wg
 			ScrollbarSlot * pSlot = (ScrollbarSlot*)_pSlot;
 			Scrollbar * pScrollbar = (Scrollbar*)pWidget;
 
-			if (pSlot->pWidget)
-				((Scrollbar*)pSlot->pWidget)->setScrollbarTarget(nullptr);
+			if (pSlot->_widget())
+				((Scrollbar*)pSlot->_widget())->setScrollbarTarget(nullptr);
 
 			//
 
@@ -1546,24 +1546,24 @@ namespace wg
 
 	Widget * ScrollPanel::_firstChild() const
 	{
-		if (m_scrollbarSlots[1].pWidget)
-			return m_scrollbarSlots[1].pWidget;
-		else if (m_scrollbarSlots[0].pWidget)
-			return m_scrollbarSlots[0].pWidget;
+		if (m_scrollbarSlots[1]._widget())
+			return m_scrollbarSlots[1]._widget();
+		else if (m_scrollbarSlots[0]._widget())
+			return m_scrollbarSlots[0]._widget();
 		else
-			return m_viewSlot.pWidget;
+			return m_viewSlot._widget();
 	}
 
 	//____ _lastChild() _______________________________________________________
 
 	Widget * ScrollPanel::_lastChild() const
 	{
-		if (m_viewSlot.pWidget)
-			return m_viewSlot.pWidget;
-		else if (m_scrollbarSlots[0].pWidget)
-			return m_scrollbarSlots[0].pWidget;
+		if (m_viewSlot._widget())
+			return m_viewSlot._widget();
+		else if (m_scrollbarSlots[0]._widget())
+			return m_scrollbarSlots[0]._widget();
 		else
-			return m_scrollbarSlots[1].pWidget;
+			return m_scrollbarSlots[1]._widget();
 	}
 
 
@@ -1572,14 +1572,14 @@ namespace wg
 	void ScrollPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
 		for (int i = 1; i >= 0; --i)
-			if (m_scrollbarSlots[i].pWidget)
+			if (m_scrollbarSlots[i]._widget())
 			{
 				package.pSlot = &m_scrollbarSlots[i];
 				package.geo = m_scrollbarSlots[i].geo;
 				return;
 			}
 
-		if (m_viewSlot.pWidget)
+		if (m_viewSlot._widget())
 		{
 			package.pSlot = &m_viewSlot;
 			package.geo = m_viewSlot.canvasGeo;
@@ -1596,12 +1596,12 @@ namespace wg
 		if (package.pSlot == &m_viewSlot)
 			package.pSlot = nullptr;
 
-		if (package.pSlot == &m_scrollbarSlots[1] && m_scrollbarSlots[0].pWidget )
+		if (package.pSlot == &m_scrollbarSlots[1] && m_scrollbarSlots[0]._widget())
 		{
 			package.pSlot = &m_scrollbarSlots[0];
 			package.geo = m_scrollbarSlots[0].geo;
 		}
-		else if (m_viewSlot.pWidget)
+		else if (m_viewSlot._widget())
 		{
 			package.pSlot = &m_viewSlot;
 			package.geo = m_viewSlot.canvasGeo;

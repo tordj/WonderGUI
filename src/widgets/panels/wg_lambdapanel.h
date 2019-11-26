@@ -39,6 +39,8 @@ namespace wg
 
 	class LambdaSlot : public Slot		/** @private */
 	{
+		friend class LambdaPanel;
+		friend class ILambdaSlots;
 	public:
 		LambdaSlot() : pFunc(nullptr), bVisible(false) {}
 

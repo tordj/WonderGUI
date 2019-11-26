@@ -68,7 +68,7 @@ namespace wg
 
 	int Layer::_matchingHeight( int width ) const
 	{
-		if( m_baseSlot.pWidget )
+		if( m_baseSlot._widget() )
 			return m_baseSlot.matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
@@ -78,7 +78,7 @@ namespace wg
 
 	int Layer::_matchingWidth( int height ) const
 	{
-		if( m_baseSlot.pWidget )
+		if( m_baseSlot._widget() )
 			return m_baseSlot.matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
@@ -88,7 +88,7 @@ namespace wg
 
 	SizeI Layer::_preferredSize() const
 	{
-		if( m_baseSlot.pWidget )
+		if( m_baseSlot._widget() )
 			return m_baseSlot.preferredSize();
 		else
 			return SizeI(1,1);
@@ -115,7 +115,7 @@ namespace wg
 		while( pCover <  pEnd )
 		{
 			if( pCover->geo.intersectsWith( rect ) )
-				pCover->pWidget->_maskPatches( patches, pCover->geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
 
 			pCover = _incLayerSlot(pCover,incNext);
 		}
@@ -133,24 +133,24 @@ namespace wg
 	{
 		const LayerSlot * p = _beginLayerSlots();
 		if (p != _endLayerSlots())
-			return p->pWidget;
+			return p->_widget();
 
-		return m_baseSlot.pWidget;
+		return m_baseSlot._widget();
 	}
 
 	//____ _lastChild() ____________________________________________________________
 
 	Widget* Layer::_lastChild() const
 	{
-		if (m_baseSlot.pWidget)
-			return m_baseSlot.pWidget;
+		if (m_baseSlot._widget())
+			return m_baseSlot._widget();
 		else
 		{
 			const LayerSlot * pSlot = _endLayerSlots();
 			if (pSlot > _beginLayerSlots())
 			{
 				pSlot = _decLayerSlot(pSlot, _sizeOfLayerSlot());
-				return pSlot->pWidget;
+				return pSlot->_widget();
 			}
 
 			return nullptr;
@@ -167,7 +167,7 @@ namespace wg
 			package.geo = p->geo;
 			package.pSlot = p;
 		}
-		else if (m_baseSlot.pWidget)
+		else if (m_baseSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
 			package.pSlot = &m_baseSlot;
@@ -182,7 +182,7 @@ namespace wg
 	{
 		const LayerSlot * p = (LayerSlot*) package.pSlot;
 
-		if (p == &m_baseSlot)
+		if (p == (Slot*) &m_baseSlot)
 		{
 			package.pSlot = nullptr;
 			return;
@@ -194,7 +194,7 @@ namespace wg
 			package.geo = ((LayerSlot*)p)->geo;
 			package.pSlot = p;
 		}
-		else if (m_baseSlot.pWidget)
+		else if (m_baseSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
 			package.pSlot = &m_baseSlot;
@@ -214,20 +214,25 @@ namespace wg
 
 	void Layer::_releaseChild(Slot * pSlot)
 	{
-		pSlot->replaceWidget(this, nullptr);
-		_onRequestRender( RectI(0,0,m_size), 0 );
-		_requestResize();
+		if (pSlot == &m_baseSlot)
+		{
+			m_baseSlot.replaceWidget(this, nullptr);
+			_onRequestRender(RectI(0, 0, m_size), 0);
+			_requestResize();
+		}
 	}
 
 	//____ _setWidget() _______________________________________________________
 
 	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
 	{
-		pSlot->replaceWidget(this, pNewWidget);
-		pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
-
-		_onRequestRender( RectI(0,0,m_size), 0 );
-		_requestResize();
+		if (pSlot == &m_baseSlot)
+		{
+			m_baseSlot.replaceWidget(this, pNewWidget);
+			pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+			_onRequestRender(RectI(0, 0, m_size), 0);
+			_requestResize();
+		}
 	}
 
 	//____ _resize() _______________________________________________________
@@ -236,8 +241,8 @@ namespace wg
 	{
 		Container::_resize(size);
 
-		if (m_baseSlot.pWidget)
-			m_baseSlot.pWidget->_resize(size);
+		if (m_baseSlot._widget())
+			m_baseSlot._widget()->_resize(size);
 	}
 
 
@@ -303,7 +308,7 @@ namespace wg
 			return nullptr;
 
 		LayerSlot * p = _decLayerSlot((LayerSlot*)pSlot,_sizeOfLayerSlot());
-		return p->pWidget;
+		return p->_widget();
 	}
 
 	//____ _nextChild() ________________________________________________________
@@ -315,9 +320,9 @@ namespace wg
 
 		LayerSlot * p = _incLayerSlot((LayerSlot*)pSlot, _sizeOfLayerSlot());
 		if (p < _endLayerSlots())
-			return p->pWidget;
+			return p->_widget();
 
-		return m_baseSlot.pWidget;
+		return m_baseSlot._widget();
 	}
 
 

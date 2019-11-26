@@ -200,14 +200,16 @@ namespace wg
 		{
 			if( child.geo.contains( ofs ) )
 			{
-				if (child.pSlot->pWidget->isContainer())
+				Widget * pWidget = _access(child.pSlot)->_widget();
+
+				if (pWidget->isContainer())
 				{
-					Widget * pRes = static_cast<Container*>(child.pSlot->pWidget)->_findWidget(ofs - child.geo.pos(), mode);
+					Widget * pRes = static_cast<Container*>(pWidget)->_findWidget(ofs - child.geo.pos(), mode);
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || child.pSlot->markTest( ofs - child.geo.pos() ) )
-					return child.pSlot->pWidget;
+				else if( mode == SearchMode::Geometry || _access(child.pSlot)->markTest( ofs - child.geo.pos() ) )
+					return pWidget;
 			}
 			_nextSlotWithGeo( child );
 		}
@@ -313,7 +315,7 @@ namespace wg
 				RectI geo = child.geo + _canvas.pos();
 
 				if( geo.intersectsWith( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(child.pSlot->pWidget, geo ) );
+					renderList.push_back( WidgetRenderContext(_access(child.pSlot)->_widget(), geo ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -362,7 +364,7 @@ namespace wg
 					ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
 
 					if( pDevice->clipListSize() > 0 )
-						child.pSlot->pWidget->_render(pDevice, canvas, canvas);
+						_access(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
 
 					popClipList( pDevice, popData );
 				}
@@ -395,7 +397,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				child.pSlot->pWidget->_collectPatches( container, child.geo + geo.pos(), clip );
+				_access(child.pSlot)->_widget()->_collectPatches( container, child.geo + geo.pos(), clip );
 				_nextSlotWithGeo( child );
 			}
 		}
@@ -415,7 +417,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				child.pSlot->pWidget->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				_access(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}

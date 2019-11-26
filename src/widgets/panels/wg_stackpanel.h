@@ -42,6 +42,8 @@ namespace wg
 
 	class StackSlot : public PaddedSlot		/** @private */
 	{
+		friend class StackPanel;
+		friend class IStackSlots;
 	public:
 		StackSlot() : origo(Origo::Center), SizePolicy(SizePolicy2D::Original) {}
 

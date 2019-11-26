@@ -342,8 +342,8 @@ namespace wg
 
 	int ModalLayer::_matchingHeight( int width ) const
 	{
-		if( m_baseSlot.pWidget )
-			return m_baseSlot.matchingHeight( width );
+		if( _baseSlot()->_widget() )
+			return _baseSlot()->matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -352,8 +352,8 @@ namespace wg
 
 	int ModalLayer::_matchingWidth( int height ) const
 	{
-		if( m_baseSlot.pWidget )
-			return m_baseSlot.matchingWidth( height );
+		if( _baseSlot()->_widget() )
+			return _baseSlot()->matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -362,8 +362,8 @@ namespace wg
 
 	SizeI ModalLayer::_preferredSize() const
 	{
-		if( m_baseSlot.pWidget )
-			return m_baseSlot.preferredSize();
+		if( _baseSlot()->_widget() )
+			return _baseSlot()->preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -381,30 +381,30 @@ namespace wg
 			{
 				ModalSlot * pSlot = m_modals.last();
 
-				if( pSlot->pWidget->isContainer() )
+				if( pSlot->_widget()->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(pSlot->pWidget)->_findWidget( ofs - pSlot->geo.pos(), mode );
+					Widget * pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
 					if( pResult )
 						return pResult;
 				}
 				else
 				{
 					if( pSlot->markTest(ofs - pSlot->geo.pos()) )
-						return pSlot->pWidget;
+						return pSlot->_widget();
 					else
 						return this;
 				}
 			}
-			else if( m_baseSlot.pWidget )
+			else if( _baseSlot()->_widget() )
 			{
-				if( m_baseSlot.pWidget->isContainer() )
+				if( _baseSlot()->_widget()->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(m_baseSlot.pWidget)->_findWidget( ofs, mode );
+					Widget * pResult = static_cast<Container*>(_baseSlot()->_widget())->_findWidget( ofs, mode );
 					if( pResult )
 						return pResult;
 				}
 				else
-					return m_baseSlot.pWidget;
+					return _baseSlot()->_widget();
 			}
 
 			return nullptr;
@@ -439,7 +439,7 @@ namespace wg
 		// Save old focus so we can return it properly in the future.
 		if( p )
 		{
-			if( p == m_baseSlot.pWidget )
+			if( p == _baseSlot()->_widget() )
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
@@ -464,7 +464,7 @@ namespace wg
 			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
 			pBranch = pSlot;
 		}
-		else if( m_baseSlot.pWidget )
+		else if( _baseSlot()->_widget() )
 		{
 			pSavedFocus = m_pBaseKeyFocus.rawPtr();
 			m_pBaseKeyFocus = nullptr;								// Needs to be cleared for the future.

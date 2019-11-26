@@ -31,10 +31,14 @@
 namespace wg
 {
 
+	class CapsuleSlot : public Slot
+	{
+		friend class Capsule;
+	};
+
 	class Capsule;
 	typedef	StrongPtr<Capsule>	Capsule_p;
 	typedef	WeakPtr<Capsule>	Capsule_wp;
-
 
 	//____ Capsule ______________________________________________________________
 
@@ -113,7 +117,7 @@ namespace wg
 
 
 
-		Slot		m_child;
+		CapsuleSlot		m_child;
 
 	};
 

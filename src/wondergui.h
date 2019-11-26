@@ -61,7 +61,6 @@
 #include <wg_gfxinstream.h>
 #include <wg_gfxstreamreader.h>
 #include <wg_componentholder.h>
-#include <wg_childiterator.h>
 #include <wg_resloader.h>
 #include <wg_memstack.h>
 #include <wg_util.h>

@@ -124,7 +124,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return m_pSlotArray->slot(index)->pWidget->state().isSelected();
+		return m_pSlotArray->slot(index)->_widget()->state().isSelected();
 	}
 
 	template <class SlotType>
@@ -132,7 +132,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return it._slot()->pWidget->state().isSelected();
+		return it._slot()->_widget()->state().isSelected();
 	}
 
 } // namespace wg

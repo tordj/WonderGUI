@@ -36,11 +36,18 @@ namespace wg
 
 
 
+	class BaseSlot : public Slot
+	{
+		friend class Layer;
+	};
+
 	//____ LayerSlot ___________________________________________________________
 
 	class LayerSlot : public Slot		/** @private */
 	{
-	public:
+		friend class Layer;
+
+	protected:
 		inline void setSize( SizeI size ) { geo.setSize(size); Slot::setSize(size); }
 		inline void setGeo(RectI _geo) { geo = _geo; Slot::setSize(geo.size()); }
 
@@ -147,7 +154,7 @@ namespace wg
 		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
 
 
-		Slot				m_baseSlot;
+		BaseSlot			m_baseSlot;
 	};
 
 

@@ -40,7 +40,11 @@ namespace wg
 
 	class ListSlot : public Slot		/** @private */
 	{
-	public:
+		friend class List;
+		template<class S> friend class ISlotArray;
+		template<class S> friend class SlotArray;
+
+	protected:
 		ListSlot() : bVisible(false) {}
 
 		bool		bVisible;

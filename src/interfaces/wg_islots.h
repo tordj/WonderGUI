@@ -59,12 +59,12 @@ namespace wg
 
 		inline reference operator*() const
 		{
-			return *pSlot->pWidget;
+			return *pSlot->_widget();
 		}
 
 		inline pointer operator->() const
 		{
-			return pSlot->pWidget;
+			return pSlot->_widget();
 		}
 
 

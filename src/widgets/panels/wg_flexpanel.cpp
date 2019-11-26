@@ -882,7 +882,7 @@ namespace wg
 		for(FlexSlot * pCover = m_children.begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
-				pCover->pWidget->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				pCover->_widget()->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -958,7 +958,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.first()->pWidget;
+		return m_children.first()->_widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
@@ -968,7 +968,7 @@ namespace wg
 		if (m_children.isEmpty())
 			return nullptr;
 
-		return m_children.last()->pWidget;
+		return m_children.last()->_widget();
 	}
 
 
@@ -979,7 +979,7 @@ namespace wg
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
 		if (pSlot > m_children.begin())
-			return pSlot[-1].pWidget;
+			return pSlot[-1]._widget();
 
 		return nullptr;
 	}
@@ -991,7 +991,7 @@ namespace wg
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
 		if (pSlot < m_children.last())
-			return pSlot[1].pWidget;
+			return pSlot[1]._widget();
 
 		return nullptr;
 	}

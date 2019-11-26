@@ -40,7 +40,9 @@ namespace wg
 
 	class SplitPanelSlot : public Slot 	/** @private */
 	{
-	public:
+		friend class SplitPanel;
+
+	protected:
 		RectI	geo;
 	};
 

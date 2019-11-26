@@ -32,18 +32,29 @@ namespace wg
 
 	class Slot		/** @private */
 	{
+	friend class ISlot;
+	friend class SlotIterator;
+	template<class S> friend class ISlotArray;
+	template<class S> friend class SlotArray;
+	template<class S> friend class ISelectableSlotArray;
+
 	public:
-		Slot() : pWidget(nullptr) {}
+
+		Widget_p widget() const { return Widget_p(m_pWidget); }
+
+
+		Slot() {}
 
 		const static bool safe_to_relocate = true;
 
 		Slot(Slot&& o)
 		{
-			pWidget = o.pWidget;
-			if (pWidget)
+			m_pWidget = o.m_pWidget;
+			m_pHolder = o.m_pHolder;
+			if (m_pWidget)
 			{
-				pWidget->_setHolder(pWidget->_holder(), this);
-				o.pWidget = nullptr;
+				m_pWidget->_setHolder(m_pWidget->_holder(), this);
+				o.m_pWidget = nullptr;
 			}
 		}
 
@@ -52,68 +63,76 @@ namespace wg
 
 		~Slot()
 		{
-			if( pWidget != nullptr )
+			if( m_pWidget != nullptr )
 			{
-				pWidget->_setHolder( nullptr, nullptr );
-				pWidget->_decRefCount();
+				m_pWidget->_setHolder( nullptr, nullptr );
+				m_pWidget->_decRefCount();
 			}
 		}
 
+
 		Slot& operator=(Slot&& o)
 		{
-			if (pWidget)
+			if (m_pWidget)
 			{
-				pWidget->_setHolder(nullptr, nullptr);
-				pWidget->_decRefCount();
+				m_pWidget->_setHolder(nullptr, nullptr);
+				m_pWidget->_decRefCount();
 			}
 
-			pWidget =o.pWidget;
+			m_pWidget =o.m_pWidget;
+			m_pHolder = o.m_pHolder;
 
-			if (pWidget)
+			if (m_pWidget)
 			{
-				pWidget->_setHolder(pWidget->_holder(), this);
-				o.pWidget = nullptr;
+				m_pWidget->_setHolder(m_pWidget->_holder(), this);
+				o.m_pWidget = nullptr;
 			}
 
 			return *this;
 		}
 
-		inline void relink() { pWidget->_setHolder( pWidget->_holder(), this ); }
+	protected:
 
-		inline void replaceWidget( WidgetHolder * pHolder, Widget * pNewWidget )
+		inline void relink() { m_pWidget->_setHolder( m_pHolder, this ); }
+
+		inline void replaceWidget( WidgetHolder * pHolder, Widget * pWidget )
 		{
-			if( pWidget )
+			if( m_pWidget )
 			{
-				if (pWidget == pNewWidget)
+				if (m_pWidget == pWidget)
 					return;
 
-				pWidget->_setHolder( nullptr, nullptr );
-				pWidget->_decRefCount();
+				m_pWidget->_setHolder( nullptr, nullptr );
+				m_pWidget->_decRefCount();
 			}
 
-			pWidget = pNewWidget;
+			m_pWidget = pWidget;
+			m_pHolder = pHolder;
 
-			if( pNewWidget )
+			if( pWidget )
 			{
-				pNewWidget->_incRefCount();
-				pNewWidget->_setHolder( pHolder, this );
+				pWidget->_incRefCount();
+				pWidget->_setHolder( pHolder, this );
 			}
 		}
 
-		inline SizeI	size() const { return pWidget->m_size; }
-		inline void		setSize( SizeI size ) const { pWidget->_resize(size); }
+		inline Widget * _widget() const { return m_pWidget; }
 
-		inline int		matchingHeight(int width) const { return pWidget->_matchingHeight(width); }
-		inline int		matchingWidth(int height) const { return pWidget->_matchingWidth(height); }
+		inline SizeI	size() const { return m_pWidget->m_size; }
+		inline void		setSize( SizeI size ) const { m_pWidget->_resize(size); }
 
-		inline SizeI	preferredSize() const { return pWidget->_preferredSize(); }
-		inline SizeI	minSize() const { return pWidget->_minSize(); }
-		inline SizeI	maxSize() const { return pWidget->_maxSize(); }
+		inline int		matchingHeight(int width) const { return m_pWidget->_matchingHeight(width); }
+		inline int		matchingWidth(int height) const { return m_pWidget->_matchingWidth(height); }
 
-		inline bool		markTest(const CoordI& ofs) const { return pWidget->_markTest(ofs); };
+		inline SizeI	preferredSize() const { return m_pWidget->_preferredSize(); }
+		inline SizeI	minSize() const { return m_pWidget->_minSize(); }
+		inline SizeI	maxSize() const { return m_pWidget->_maxSize(); }
+
+		inline bool		markTest(const CoordI& ofs) const { return m_pWidget->_markTest(ofs); };
 
 
-		Widget *	pWidget;
+		Widget *		m_pWidget = nullptr;
+		WidgetHolder *	m_pHolder = nullptr;
 	};
 
 }
