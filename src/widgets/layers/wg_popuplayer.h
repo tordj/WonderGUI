@@ -152,8 +152,8 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		void			_childRequestResize(Slot * pSlot) override;
-		void			_releaseChild(Slot * pSlot) override;
+		void			_childRequestResize(BasicSlot * pSlot) override;
+		void			_releaseChild(BasicSlot * pSlot) override;
 
 		// Overloaded from Layer
 

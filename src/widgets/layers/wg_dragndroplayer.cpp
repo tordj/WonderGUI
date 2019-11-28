@@ -95,7 +95,7 @@ namespace wg
 				if (pRes)
 					return pRes;
 			}
-			else if (mode == SearchMode::Geometry || _baseSlot()->markTest(ofs))
+			else if (mode == SearchMode::Geometry || _baseSlot()->_markTest(ofs))
 				return _baseSlot()->_widget();
 		}
 		else if( mode == SearchMode::Geometry )
@@ -106,7 +106,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DragNDropLayer::_childRequestResize(Slot * pSlot)
+	void DragNDropLayer::_childRequestResize(BasicSlot * pSlot)
 	{
 		if( pSlot == &m_baseSlot )
 			_requestResize();
@@ -114,7 +114,7 @@ namespace wg
 		{
 			auto p = static_cast<DnDLayerSlot*>(pSlot);
 
-			Size pref = p->preferredSize();
+			Size pref = p->_preferredSize();
 			Size max = Size::max(pref, p->geo.size());
 
 			_requestRender(Rect({ 0,0,m_size }, { p->geo.pos(), max }));
@@ -124,7 +124,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void DragNDropLayer::_releaseChild(Slot * pSlot)
+	void DragNDropLayer::_releaseChild(BasicSlot * pSlot)
 	{
 		if (pSlot == &m_baseSlot)
 			Layer::_releaseChild(pSlot);
@@ -367,7 +367,7 @@ namespace wg
 						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = pMsg->dragWidgetPointerOfsRaw();
 						m_dragSlot.replaceWidget(this, pDragWidget);
-						dragWidgetSize = m_dragSlot.preferredSize();
+						dragWidgetSize = m_dragSlot._preferredSize();
 					}
 					else
 					{
@@ -507,7 +507,7 @@ namespace wg
 			pNewWidget->releaseFromParent();
 		m_dragSlot.replaceWidget(this, pNewWidget );
 
-		SizeI newSize = pNewWidget ? m_dragSlot.preferredSize() : SizeI(0, 0);
+		SizeI newSize = pNewWidget ? m_dragSlot._preferredSize() : SizeI(0, 0);
 		SizeI maxSize = SizeI::max(m_dragSlot.geo.size(), newSize);
 
 		m_dragSlot.geo.setSize(newSize);

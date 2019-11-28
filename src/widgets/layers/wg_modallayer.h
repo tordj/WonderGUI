@@ -169,16 +169,16 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		void			_childRequestResize( Slot * pSlot ) override;
-		void			_releaseChild(Slot * pSlot) override;
+		void			_childRequestResize( BasicSlot * pSlot ) override;
+		void			_releaseChild(BasicSlot * pSlot) override;
 
 		// Methods for ModalSlotsHolder
 
-		void			_didAddSlots(Slot * pSlot, int nb) override;
-		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
-		void			_willRemoveSlots(Slot * pSlot, int nb) override;
-		void			_hideSlots(Slot *, int nb) override;
-		void			_unhideSlots(Slot *, int nb) override;
+		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
+		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
+		void			_willRemoveSlots(BasicSlot * pSlot, int nb) override;
+		void			_hideSlots(BasicSlot *, int nb) override;
+		void			_unhideSlots(BasicSlot *, int nb) override;
 		Object *		_object() override { return this;  }
 		WidgetHolder *	_widgetHolder() override { return this; }
 		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;

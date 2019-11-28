@@ -33,8 +33,8 @@ namespace wg
 	class PaddedSlotArrayHolder : public SlotArrayHolder  /** @private */
 	{
 	public:
-		virtual void	_repadSlots(Slot * pSlot, int nb, BorderI padding) = 0;
-		virtual void	_repadSlots(Slot * pSlot, int nb, const BorderI * pPadding) = 0;
+		virtual void	_repadSlots(BasicSlot * pSlot, int nb, BorderI padding) = 0;
+		virtual void	_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPadding) = 0;
 	};
 
 	//____ IPaddedSlotArray ________________________________________________________

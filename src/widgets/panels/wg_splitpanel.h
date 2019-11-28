@@ -38,7 +38,7 @@ namespace wg
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
 
-	class SplitPanelSlot : public Slot 	/** @private */
+	class SplitPanelSlot : public BasicSlot 	/** @private */
 	{
 		friend class SplitPanel;
 
@@ -138,22 +138,22 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		void	_setWidget(Slot * pSlot, Widget * pNewWidget) override;
+		void	_setWidget(BasicSlot * pSlot, Widget * pNewWidget) override;
 		Object * _object() override { return this; }
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos(Slot * pSlot) const override;
-		SizeI		_childSize(Slot * pSlot) const override;
+		CoordI		_childPos(BasicSlot * pSlot) const override;
+		SizeI		_childSize(BasicSlot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot) override;
-		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(Slot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(BasicSlot * pSlot) override;
 
-		Widget *	_prevChild(const Slot * pSlot) const override;
-		Widget *	_nextChild(const Slot * pSlot) const override;
+		Widget *	_prevChild(const BasicSlot * pSlot) const override;
+		Widget *	_nextChild(const BasicSlot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot) override;
+		void		_releaseChild(BasicSlot * pSlot) override;
 
 
 		bool			m_bHorizontal;

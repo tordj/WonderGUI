@@ -232,7 +232,7 @@ namespace wg
 			width -= m_entryPadding.w;
 
 			for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
-				height += pSlot->matchingHeight(width);
+				height += pSlot->_matchingHeight(width);
 
 			height += m_entryPadding.h*m_children.size();
 			return height;
@@ -255,7 +255,7 @@ namespace wg
 			height -= m_entryPadding.h;
 
 			for (auto pSlot = m_children.begin(); pSlot < m_children.end(); pSlot++)
-				width += pSlot->matchingWidth(width);
+				width += pSlot->_matchingWidth(width);
 
 			width += m_entryPadding.w*m_children.size();
 			return width;
@@ -682,7 +682,7 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________
 
-	void PackList::_didAddSlots(Slot * pSlot, int nb)
+	void PackList::_didAddSlots(BasicSlot * pSlot, int nb)
 	{
 		_unhideSlots(pSlot, nb);
 		List::_didAddSlots(pSlot, nb);
@@ -690,10 +690,10 @@ namespace wg
 
 	//____ _didMoveSlots() _______________________________________________________
 
-	void PackList::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb)
+	void PackList::_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb)
 	{
-		Slot * pBeg = min(pFrom, pTo);
-		Slot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
+		BasicSlot * pBeg = min(pFrom, pTo);
+		BasicSlot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
 
 		_requestRenderChildren((PackListSlot*)pBeg, (PackListSlot*)pEnd);	// Request render on dirty area
 	}
@@ -701,7 +701,7 @@ namespace wg
 
 	//____ _willRemoveSlots() _____________________________________________________
 
-	void PackList::_willRemoveSlots(Slot * pSlot, int nb)
+	void PackList::_willRemoveSlots(BasicSlot * pSlot, int nb)
 	{
 		_hideSlots(pSlot, nb);
 		List::_willRemoveSlots(pSlot, nb);
@@ -709,7 +709,7 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________
 
-	void PackList::_hideSlots(Slot * _pSlot, int nb)
+	void PackList::_hideSlots(BasicSlot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -738,7 +738,7 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackList::_unhideSlots(Slot * _pSlot, int nb)
+	void PackList::_unhideSlots(BasicSlot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -794,14 +794,14 @@ namespace wg
 
 	//____ _selectSlots() ________________________________________________________
 
-	void PackList::_selectSlots(Slot * pSlot, int nb)
+	void PackList::_selectSlots(BasicSlot * pSlot, int nb)
 	{
 		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, true, false);
 	}
 
 	//____ _unselectSlots() ______________________________________________________
 
-	void PackList::_unselectSlots(Slot * pSlot, int nb)
+	void PackList::_unselectSlots(BasicSlot * pSlot, int nb)
 	{
 		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, false, false);
 	}
@@ -926,7 +926,7 @@ namespace wg
 					{
 						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
-					else if( mode == SearchMode::Geometry || pSlot->markTest( ofs - childGeo.pos() ) )
+					else if( mode == SearchMode::Geometry || pSlot->_markTest( ofs - childGeo.pos() ) )
 					{
 							pResult = pSlot->_widget();
 					}
@@ -1119,33 +1119,33 @@ namespace wg
 
 	//____ _paddedLimitedMatchingHeight() _________________________________________
 
-	int PackList::_paddedLimitedMatchingHeight( Slot * _pSlot, int paddedWidth )
+	int PackList::_paddedLimitedMatchingHeight( BasicSlot * _pSlot, int paddedWidth )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
-		int height = pSlot->matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
+		int height = pSlot->_matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
 		limit( height, m_minEntrySize.h, m_maxEntrySize.h );
 		return height;
 	}
 
 	//____ _paddedLimitedMatchingWidth() _________________________________________
 
-	int PackList::_paddedLimitedMatchingWidth( Slot * _pSlot, int paddedHeight )
+	int PackList::_paddedLimitedMatchingWidth( BasicSlot * _pSlot, int paddedHeight )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
-		int width = pSlot->matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
+		int width = pSlot->_matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
 		limit( width, m_minEntrySize.w, m_maxEntrySize.w );
 		return width;
 	}
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	SizeI PackList::_paddedLimitedPreferredSize( Slot * _pSlot )
+	SizeI PackList::_paddedLimitedPreferredSize( BasicSlot * _pSlot )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
-		SizeI sz = pSlot->preferredSize();
+		SizeI sz = pSlot->_preferredSize();
 		sz += m_entryPadding;
 
 		// Apply limits
@@ -1157,12 +1157,12 @@ namespace wg
 
 		if( sz.w > m_maxEntrySize.w )
 		{
-			int h = pSlot->matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
+			int h = pSlot->_matchingHeight(m_maxEntrySize.w-m_entryPadding.w) + m_entryPadding.h;
 			limit(h, m_minEntrySize.h, m_maxEntrySize.h );
 		}
 		else if( sz.h > m_maxEntrySize.h )
 		{
-			int w = pSlot->matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
+			int w = pSlot->_matchingWidth(m_maxEntrySize.h-m_entryPadding.h) + m_entryPadding.w;
 			limit(w, m_minEntrySize.w, m_maxEntrySize.w );
 		}
 
@@ -1171,7 +1171,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI PackList::_childPos( Slot * _pSlot ) const
+	CoordI PackList::_childPos( BasicSlot * _pSlot ) const
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1183,7 +1183,7 @@ namespace wg
 
 	//____ _childSize() __________________________________________________________
 
-	SizeI PackList::_childSize( Slot * _pSlot ) const
+	SizeI PackList::_childSize( BasicSlot * _pSlot ) const
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1195,7 +1195,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void PackList::_childRequestRender( Slot * _pSlot )
+	void PackList::_childRequestRender( BasicSlot * _pSlot )
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1204,7 +1204,7 @@ namespace wg
 		_requestRender(geo);
 	}
 
-	void PackList::_childRequestRender( Slot * _pSlot, const RectI& rect )
+	void PackList::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1219,7 +1219,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void PackList::_childRequestResize( Slot * _pSlot )
+	void PackList::_childRequestResize( BasicSlot * _pSlot )
 	{
 		bool	bReqResize = false;
 
@@ -1278,12 +1278,12 @@ namespace wg
 
 		RectI geo;
 		_getChildGeo(geo, pSlot);
-		pSlot->setSize(geo.size());
+		pSlot->_setSize(geo.size());
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * PackList::_prevChild( const Slot * _pSlot ) const
+	Widget * PackList::_prevChild( const BasicSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
@@ -1295,7 +1295,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * PackList::_nextChild( const Slot * _pSlot ) const
+	Widget * PackList::_nextChild( const BasicSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
@@ -1307,7 +1307,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void PackList::_releaseChild(Slot * pSlot)
+	void PackList::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<PackListSlot*>(pSlot));

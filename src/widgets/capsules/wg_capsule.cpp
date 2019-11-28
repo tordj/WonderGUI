@@ -89,7 +89,7 @@ namespace wg
 		{
 			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
 
-			return m_child.matchingHeight( width-padding.w ) + padding.h;
+			return m_child._matchingHeight( width-padding.w ) + padding.h;
 		}
 		else
 			return Widget::_matchingHeight(width);
@@ -103,7 +103,7 @@ namespace wg
 		{
 			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
 
-			return m_child.matchingWidth(height - padding.h) + padding.w;
+			return m_child._matchingWidth(height - padding.h) + padding.w;
 		}
 		else
 			return Widget::_matchingWidth(height);
@@ -116,9 +116,9 @@ namespace wg
 		if (m_child._widget())
 		{
 			if (m_pSkin)
-				return m_child.preferredSize() + m_pSkin->_contentPadding();
+				return m_child._preferredSize() + m_pSkin->_contentPadding();
 
-			return m_child.preferredSize();
+			return m_child._preferredSize();
 		}
 		else
 			return Widget::_preferredSize();
@@ -126,7 +126,7 @@ namespace wg
 
 	//____ _childPos() ___________________________________________________________
 
-	CoordI Capsule::_childPos( Slot * pSlot ) const
+	CoordI Capsule::_childPos( BasicSlot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentOfs( m_state );
@@ -136,7 +136,7 @@ namespace wg
 
 	//____ _childSize() __________________________________________________________
 
-	SizeI Capsule::_childSize( Slot * pSlot ) const
+	SizeI Capsule::_childSize( BasicSlot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->_contentPadding();
@@ -146,7 +146,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( Slot * pSlot )
+	void Capsule::_childRequestRender( BasicSlot * pSlot )
 	{
 		if( m_pSkin )
 			_requestRender( m_pSkin->_contentRect( m_size, m_state ));
@@ -156,7 +156,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( Slot * pSlot, const RectI& rect )
+	void Capsule::_childRequestRender( BasicSlot * pSlot, const RectI& rect )
 	{
 		if( m_pSkin )
 			_requestRender( rect + m_pSkin->_contentOfs( m_state ));
@@ -166,21 +166,21 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void Capsule::_childRequestResize( Slot * pSlot )
+	void Capsule::_childRequestResize( BasicSlot * pSlot )
 	{
 		_requestResize();
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * Capsule::_prevChild( const Slot * pSlot ) const
+	Widget * Capsule::_prevChild( const BasicSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * Capsule::_nextChild( const Slot * pSlot ) const
+	Widget * Capsule::_nextChild( const BasicSlot * pSlot ) const
 	{
 		return nullptr;
 	}
@@ -262,7 +262,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void Capsule::_releaseChild(Slot * _pSlot)
+	void Capsule::_releaseChild(BasicSlot * _pSlot)
 	{
 		m_child.replaceWidget(this, nullptr);
 		_requestRender();
@@ -271,7 +271,7 @@ namespace wg
 
 	//____ _setWidget() ____________________________________________________________
 
-	void Capsule::_setWidget( Slot * pSlot, Widget * pWidget )
+	void Capsule::_setWidget( BasicSlot * pSlot, Widget * pWidget )
 	{
 		m_child.replaceWidget( this, pWidget );
 

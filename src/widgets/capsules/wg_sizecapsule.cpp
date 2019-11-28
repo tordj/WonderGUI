@@ -182,7 +182,7 @@ namespace wg
 			// Preferred size not set in size capsule.
 			// We take preferred from child and check against our min/max.
 
-			pref = _slot()->preferredSize();
+			pref = _slot()->_preferredSize();
 
 			if (pref.w > m_max.w && pref.h > m_max.h)
 			{
@@ -294,7 +294,7 @@ namespace wg
 	SizeI SizeCapsule::_minSize() const
 	{
 		if( _slot()->_widget() )
-			return SizeI::max(m_min,_slot()->minSize());
+			return SizeI::max(m_min,_slot()->_minSize());
 		else
 			return m_min;
 	}
@@ -304,7 +304,7 @@ namespace wg
 	SizeI SizeCapsule::_maxSize() const
 	{
 		if( _slot()->_widget() )
-			return SizeI::min(m_max,_slot()->maxSize());
+			return SizeI::min(m_max,_slot()->_maxSize());
 		else
 			return m_max;
 	}
@@ -319,15 +319,15 @@ namespace wg
 
 			if( _slot()->_widget() )
 			{
-				int max = _slot()->maxSize().h;
-				int min = _slot()->minSize().h;
+				int max = _slot()->_maxSize().h;
+				int min = _slot()->_minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
 		else if( _slot()->_widget() )
 		{
-			int h = _slot()->matchingHeight(width);
+			int h = _slot()->_matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -345,15 +345,15 @@ namespace wg
 
 			if( _slot()->_widget() )
 			{
-				int max = _slot()->maxSize().w;
-				int min = _slot()->minSize().w;
+				int max = _slot()->_maxSize().w;
+				int min = _slot()->_minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
 		else if( _slot()->_widget() )
 		{
-			int w = _slot()->matchingWidth(height);
+			int w = _slot()->_matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

@@ -161,7 +161,7 @@ namespace wg
 
 		//
 
-		RectI geo(0,0,SizeI::min(pSlot->preferredSize(),SizeI::min(pSlot->maxSize,m_size)));
+		RectI geo(0,0,SizeI::min(pSlot->_preferredSize(),SizeI::min(pSlot->maxSize,m_size)));
 
 		switch( pSlot->attachPoint )
 		{
@@ -319,7 +319,7 @@ namespace wg
 			_onRequestRender(pSlot->geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->size() != geo.size())
+		if (bForceResize || pSlot->_size() != geo.size())
 			pSlot->setSize(geo);
 	}
 
@@ -344,7 +344,7 @@ namespace wg
 				{
 					if( pSlot->_widget()->isContainer() )
 						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
-					else if( pSlot->markTest( ofs - pSlot->geo.pos() ) )
+					else if( pSlot->_markTest( ofs - pSlot->geo.pos() ) )
 						pResult = pSlot->_widget();
 				}
 				pSlot++;
@@ -832,7 +832,7 @@ namespace wg
 
 	//____ _childRequestResize() _______________________________________________
 
-	void PopupLayer::_childRequestResize(Slot * pSlot)
+	void PopupLayer::_childRequestResize(BasicSlot * pSlot)
 	{
 		if( pSlot == &m_baseSlot )
 			_requestResize();
@@ -842,7 +842,7 @@ namespace wg
 
 	//____ _releaseChild() _____________________________________________________
 
-	void PopupLayer::_releaseChild( Slot * pSlot )
+	void PopupLayer::_releaseChild( BasicSlot * pSlot )
 	{
 		if (pSlot == &m_baseSlot)
 			Layer::_releaseChild(pSlot);

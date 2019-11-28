@@ -183,15 +183,15 @@ namespace wg
 
 		// Overloaded from PackListSlotsHolder
 
-		void			_didAddSlots(Slot * pSlot, int nb) override;
-		void			_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
-		void			_willRemoveSlots(Slot * pSlot, int nb) override;
+		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
+		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
+		void			_willRemoveSlots(BasicSlot * pSlot, int nb) override;
 
-		void			_hideSlots(Slot * pSlot, int nb) override;
-		void			_unhideSlots(Slot * pSlot, int nb) override;
+		void			_hideSlots(BasicSlot * pSlot, int nb) override;
+		void			_unhideSlots(BasicSlot * pSlot, int nb) override;
 
-		void			_selectSlots(Slot * pSlot, int nb) override;
-		void			_unselectSlots(Slot * pSlot, int nb) override;
+		void			_selectSlots(BasicSlot * pSlot, int nb) override;
+		void			_unselectSlots(BasicSlot * pSlot, int nb) override;
 		Object *		_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
@@ -227,17 +227,17 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos(Slot * pSlot) const override;
-		SizeI		_childSize(Slot * pSlot) const override;
+		CoordI		_childPos(BasicSlot * pSlot) const override;
+		SizeI		_childSize(BasicSlot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot) override;
-		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(Slot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(BasicSlot * pSlot) override;
 
-		Widget *	_prevChild(const Slot * pSlot) const override;
-		Widget *	_nextChild(const Slot * pSlot) const override;
+		Widget *	_prevChild(const BasicSlot * pSlot) const override;
+		Widget *	_nextChild(const BasicSlot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot) override;
+		void		_releaseChild(BasicSlot * pSlot) override;
 
 		// Overloaded from ComponentHolder
 
@@ -262,9 +262,9 @@ namespace wg
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeI			_paddedLimitedPreferredSize( Slot * pSlot );
-		int				_paddedLimitedMatchingHeight( Slot * pSlot, int paddedWidth );
-		int				_paddedLimitedMatchingWidth( Slot * pSlot, int paddedHeight );
+		SizeI			_paddedLimitedPreferredSize( BasicSlot * pSlot );
+		int				_paddedLimitedMatchingHeight( BasicSlot * pSlot, int paddedWidth );
+		int				_paddedLimitedMatchingWidth( BasicSlot * pSlot, int paddedHeight );
 
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);

@@ -39,12 +39,12 @@ namespace wg
 
 		virtual Object * _object() = 0;
 
-		virtual void	_didAddSlots(Slot * pSlot, int nb) = 0;
-		virtual void	_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) = 0;
-		virtual void	_willRemoveSlots(Slot * pSlot, int nb) = 0;
+		virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
+		virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
+		virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
 
-		virtual void	_hideSlots(Slot * pSlot, int nb) = 0;
-		virtual void	_unhideSlots(Slot * pSlot, int nb) = 0;
+		virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
+		virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
 	};
 
 

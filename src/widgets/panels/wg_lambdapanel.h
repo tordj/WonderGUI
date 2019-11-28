@@ -37,7 +37,7 @@ namespace wg
 
 	//____ LambdaSlot ____________________________________________________________
 
-	class LambdaSlot : public Slot		/** @private */
+	class LambdaSlot : public BasicSlot		/** @private */
 	{
 		friend class LambdaPanel;
 		friend class ILambdaSlots;
@@ -56,7 +56,7 @@ namespace wg
 	class LambdaSlotHolder : public SlotArrayHolder		/** @private */
 	{
 	public:
-		virtual void		_updateSlotGeo(Slot * pSlot, int nb) = 0;
+		virtual void		_updateSlotGeo(BasicSlot * pSlot, int nb) = 0;
 	};
 
 
@@ -145,28 +145,28 @@ namespace wg
 
 		// Methods for LambdaPanelChildren
 
-		void		_didAddSlots( Slot * pSlot, int nb ) override;
-		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
-		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
-		void		_hideSlots( Slot * pSlot, int nb ) override;
-		void		_unhideSlots( Slot * pSlot, int nb ) override;
-		void		_updateSlotGeo(Slot * pSlot, int nb) override;
+		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
+		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
+		void		_willRemoveSlots( BasicSlot * pSlot, int nb ) override;
+		void		_hideSlots( BasicSlot * pSlot, int nb ) override;
+		void		_unhideSlots( BasicSlot * pSlot, int nb ) override;
+		void		_updateSlotGeo(BasicSlot * pSlot, int nb) override;
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos( Slot * pSlot ) const override;
-		SizeI		_childSize( Slot * pSlot ) const override;
+		CoordI		_childPos( BasicSlot * pSlot ) const override;
+		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot ) override;
-		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( Slot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( BasicSlot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const override;
-		Widget *	_nextChild( const Slot * pSlot ) const override;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
-		void		_releaseChild(Slot * pSlot) override;
+		void		_releaseChild(BasicSlot * pSlot) override;
 
 	private:
 

@@ -339,14 +339,14 @@ namespace wg
 
 	//____ _didAddSlots() _________________________________________________________
 
-	void List::_didAddSlots(Slot * pSlot, int nb)
+	void List::_didAddSlots(BasicSlot * pSlot, int nb)
 	{
 		// Do nothing
 	}
 
 	//____ _willRemoveSlots() _________________________________________________________
 
-	void List::_willRemoveSlots(Slot * _pSlot, int nb)
+	void List::_willRemoveSlots(BasicSlot * _pSlot, int nb)
 	{
 		// Unselect slots that will be removed.
 

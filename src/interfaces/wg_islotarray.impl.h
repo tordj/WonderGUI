@@ -397,7 +397,7 @@ namespace wg
 
 		if (pParent)
 		{
-			Slot * pReleaseFromSlot = pToRelease->_slot();
+			BasicSlot * pReleaseFromSlot = pToRelease->_slot();
 
 			if (m_pSlotArray->contains(pReleaseFromSlot))
 			{

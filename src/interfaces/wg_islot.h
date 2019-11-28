@@ -40,7 +40,7 @@ namespace wg
 	class SlotHolder		/** @private */
 	{
 	public:
-		virtual void		_setWidget( Slot * pSlot, Widget * pNewWidget ) = 0;
+		virtual void		_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) = 0;
 		virtual Object *	_object() = 0;
 	};
 
@@ -54,7 +54,7 @@ namespace wg
 
 		/** @private */
 
-		ISlot( Slot * pSlot, SlotHolder * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+		ISlot( BasicSlot * pSlot, SlotHolder * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
 
 		//.____ Operators __________________________________________
 
@@ -82,7 +82,7 @@ namespace wg
 	protected:
 		Object * _object() const override {	return m_pHolder->_object(); }
 
-		Slot *			m_pSlot;
+		BasicSlot *			m_pSlot;
 		SlotHolder *	m_pHolder;
 	};
 

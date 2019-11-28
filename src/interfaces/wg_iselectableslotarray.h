@@ -36,8 +36,8 @@ namespace wg
 	class SelectableSlotArrayHolder : public SlotArrayHolder		/** @private */
 	{
 	public:
-		virtual void	_selectSlots(Slot * pSlot, int nb) = 0;
-		virtual void	_unselectSlots(Slot * pSlot, int nb) = 0;
+		virtual void	_selectSlots(BasicSlot * pSlot, int nb) = 0;
+		virtual void	_unselectSlots(BasicSlot * pSlot, int nb) = 0;
 	};
 
 	//____ ISelectableSlotArray ________________________________________________________

@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
 
-	printf("Slot is safe to relocate: %d\n", Slot::safe_to_relocate);
+	printf("Slot is safe to relocate: %d\n", BasicSlot::safe_to_relocate);
 	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
 

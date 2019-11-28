@@ -39,7 +39,7 @@ namespace wg
 	public:
 
 		// Iterator traits, previously from std::iterator.
-		using value_type = Slot;
+		using value_type = BasicSlot;
 		using difference_type = std::ptrdiff_t;
 		using pointer = Widget * ;
 		using reference = Widget & ;
@@ -48,7 +48,7 @@ namespace wg
 		//.____ Creation ___________________________________________________
 
 		SlotIterator() = default;
-		explicit SlotIterator(Slot* pSlot, void * pHolder, void * pExtra)
+		explicit SlotIterator(BasicSlot* pSlot, void * pHolder, void * pExtra)
 		{
 			this->pSlot = pSlot;
 			this->pHolder = pHolder;
@@ -126,7 +126,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________________
 
-		inline Slot * _slot() const { return pSlot; }
+		inline BasicSlot * _slot() const { return pSlot; }
 
 	protected:
 
@@ -136,7 +136,7 @@ namespace wg
 		virtual void	_inc(int amount) {};
 		virtual void	_dec(int amount) {};
 
-		Slot *			pSlot = nullptr;
+		BasicSlot *			pSlot = nullptr;
 		void *			pHolder = nullptr;
 		void *			pExtra = nullptr;
 	};

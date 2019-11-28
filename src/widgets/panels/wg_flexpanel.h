@@ -80,7 +80,7 @@ namespace wg
 
 	//____ FlexSlot ____________________________________________________________
 
-	class FlexSlot : public Slot		/** @private */
+	class FlexSlot : public BasicSlot		/** @private */
 	{
 		friend class FlexPanel;
 		friend class IFlexSlots;
@@ -315,11 +315,11 @@ namespace wg
 
 		// Methods for FlexPanelChildren
 
-		void		_didAddSlots( Slot * pSlot, int nb ) override;
-		void		_didMoveSlots(Slot * pFrom, Slot * pTo, int nb) override;
-		void		_willRemoveSlots( Slot * pSlot, int nb ) override;
-		void		_hideSlots( Slot *, int nb ) override;
-		void		_unhideSlots( Slot *, int nb ) override;
+		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
+		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
+		void		_willRemoveSlots( BasicSlot * pSlot, int nb ) override;
+		void		_hideSlots( BasicSlot *, int nb ) override;
+		void		_unhideSlots( BasicSlot *, int nb ) override;
 		Object *	_object() override { return this; }
 		WidgetHolder *	_widgetHolder() override { return this; }
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
@@ -327,17 +327,17 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos( Slot * pSlot ) const override;
-		SizeI		_childSize( Slot * pSlot ) const override;
+		CoordI		_childPos( BasicSlot * pSlot ) const override;
+		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot ) override;
-		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( Slot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( BasicSlot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const override;
-		Widget *	_nextChild( const Slot * pSlot ) const override;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
-		void		_releaseChild(Slot * pSlot) override;
+		void		_releaseChild(BasicSlot * pSlot) override;
 
 	private:
 

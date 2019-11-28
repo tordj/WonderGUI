@@ -114,21 +114,21 @@ namespace wg
 
 	//____ _childGlobalPos() _______________________________________________________
 
-	CoordI Container::_childGlobalPos( Slot * pSlot ) const
+	CoordI Container::_childGlobalPos( BasicSlot * pSlot ) const
 	{
 		return _childPos(pSlot) + _globalPos();
 	}
 
 	//____ _isChildVisible() ________________________________________________________
 
-	bool Container::_isChildVisible( Slot * pSlot ) const
+	bool Container::_isChildVisible( BasicSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() ____________________________________________________
 
-	RectI Container::_childWindowSection( Slot * pSlot ) const
+	RectI Container::_childWindowSection( BasicSlot * pSlot ) const
 	{
 		return RectI( 0,0, _childSize( pSlot ) );
 	}
@@ -149,21 +149,21 @@ namespace wg
 
 	//____ _childRequestFocus() ______________________________________________________
 
-	bool Container::_childRequestFocus( Slot * pSlot, Widget * pWidget )
+	bool Container::_childRequestFocus( BasicSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _ChildReleaseFocus() ______________________________________________________
 
-	bool Container::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
+	bool Container::_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _childRequestInView() _____________________________________________________
 
-	void Container::_childRequestInView( Slot * pSlot )
+	void Container::_childRequestInView( BasicSlot * pSlot )
 	{
 		if( m_pHolder )
 		{
@@ -172,7 +172,7 @@ namespace wg
 		}
 	}
 
-	void Container::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void Container::_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		if( m_pHolder )
 		{
@@ -208,7 +208,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || _access(child.pSlot)->markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || _access(child.pSlot)->_markTest( ofs - child.geo.pos() ) )
 					return pWidget;
 			}
 			_nextSlotWithGeo( child );

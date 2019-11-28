@@ -69,7 +69,7 @@ namespace wg
 	int Layer::_matchingHeight( int width ) const
 	{
 		if( m_baseSlot._widget() )
-			return m_baseSlot.matchingHeight( width );
+			return m_baseSlot._matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -79,7 +79,7 @@ namespace wg
 	int Layer::_matchingWidth( int height ) const
 	{
 		if( m_baseSlot._widget() )
-			return m_baseSlot.matchingWidth( height );
+			return m_baseSlot._matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -89,7 +89,7 @@ namespace wg
 	SizeI Layer::_preferredSize() const
 	{
 		if( m_baseSlot._widget() )
-			return m_baseSlot.preferredSize();
+			return m_baseSlot._preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -182,7 +182,7 @@ namespace wg
 	{
 		const LayerSlot * p = (LayerSlot*) package.pSlot;
 
-		if (p == (Slot*) &m_baseSlot)
+		if (p == (BasicSlot*) &m_baseSlot)
 		{
 			package.pSlot = nullptr;
 			return;
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void Layer::_releaseChild(Slot * pSlot)
+	void Layer::_releaseChild(BasicSlot * pSlot)
 	{
 		if (pSlot == &m_baseSlot)
 		{
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ _setWidget() _______________________________________________________
 
-	void Layer::_setWidget( Slot * pSlot, Widget * pNewWidget )
+	void Layer::_setWidget( BasicSlot * pSlot, Widget * pNewWidget )
 	{
 		if (pSlot == &m_baseSlot)
 		{
@@ -248,7 +248,7 @@ namespace wg
 
 	//____ _childPos() _________________________________________________________
 
-	CoordI Layer::_childPos( Slot * pSlot ) const
+	CoordI Layer::_childPos( BasicSlot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
 			return {0,0};
@@ -258,7 +258,7 @@ namespace wg
 
 	//____ _childSize() ________________________________________________________
 
-	SizeI Layer::_childSize( Slot * pSlot ) const
+	SizeI Layer::_childSize( BasicSlot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
 			return m_size;
@@ -268,7 +268,7 @@ namespace wg
 
 	//____ _childRequestRender() _______________________________________________
 
-	void Layer::_childRequestRender( Slot * _pSlot )
+	void Layer::_childRequestRender( BasicSlot * _pSlot )
 	{
 		if( _pSlot == &m_baseSlot )
 			_onRequestRender( RectI( 0,0, m_size ), 0 );		//TODO: Take padding into account
@@ -279,7 +279,7 @@ namespace wg
 		}
 	}
 
-	void Layer::_childRequestRender( Slot * _pSlot, const RectI& rect )
+	void Layer::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
 	{
 		if( _pSlot == &m_baseSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account
@@ -299,7 +299,7 @@ namespace wg
 */
 	//____ _prevChild() ________________________________________________________
 
-	Widget * Layer::_prevChild( const Slot * pSlot ) const
+	Widget * Layer::_prevChild( const BasicSlot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
 			pSlot = _endLayerSlots();
@@ -313,7 +313,7 @@ namespace wg
 
 	//____ _nextChild() ________________________________________________________
 
-	Widget * Layer::_nextChild( const Slot * pSlot ) const
+	Widget * Layer::_nextChild( const BasicSlot * pSlot ) const
 	{
 		if (pSlot == &m_baseSlot)
 			return nullptr;

@@ -303,21 +303,21 @@ namespace wg
 
 	//____ _didAddSlots() ________________________________________________________
 
-	void LambdaPanel::_didAddSlots( Slot * pSlot, int nb )
+	void LambdaPanel::_didAddSlots( BasicSlot * pSlot, int nb )
 	{
 		_unhideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
 
 	//____ _willRemoveSlots() _________________________________________________
 
-	void LambdaPanel::_willRemoveSlots( Slot * pSlot, int nb )
+	void LambdaPanel::_willRemoveSlots( BasicSlot * pSlot, int nb )
 	{
 		_hideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
 
 	//____ _hideSlots() __________________________________________________________
 
-	void LambdaPanel::_hideSlots( Slot * _pSlot, int nb )
+	void LambdaPanel::_hideSlots( BasicSlot * _pSlot, int nb )
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -333,7 +333,7 @@ namespace wg
 
 	//____ _unhideSlots() ________________________________________________________
 
-	void LambdaPanel::_unhideSlots( Slot * _pSlot, int nb )
+	void LambdaPanel::_unhideSlots( BasicSlot * _pSlot, int nb )
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -351,7 +351,7 @@ namespace wg
 
 	//____ _updateSlotGeo() ________________________________________________________
 
-	void LambdaPanel::_updateSlotGeo(Slot * _pSlot, int nb)
+	void LambdaPanel::_updateSlotGeo(BasicSlot * _pSlot, int nb)
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -367,7 +367,7 @@ namespace wg
 
 	//____ _didMoveSlots() ________________________________________________________
 
-	void LambdaPanel::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
+	void LambdaPanel::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -414,27 +414,27 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	CoordI LambdaPanel::_childPos( Slot * pSlot ) const
+	CoordI LambdaPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return ((LambdaSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	SizeI LambdaPanel::_childSize( Slot * pSlot ) const
+	SizeI LambdaPanel::_childSize( BasicSlot * pSlot ) const
 	{
 		return ((LambdaSlot*)pSlot)->geo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void LambdaPanel::_childRequestRender( Slot * _pSlot )
+	void LambdaPanel::_childRequestRender( BasicSlot * _pSlot )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
 		_onRequestRender( pSlot->geo, pSlot );
 	}
 
-	void LambdaPanel::_childRequestRender( Slot * _pSlot, const RectI& rect )
+	void LambdaPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->geo.pos(), pSlot );
@@ -442,14 +442,14 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void LambdaPanel::_childRequestResize( Slot * pSlot )
+	void LambdaPanel::_childRequestResize( BasicSlot * pSlot )
 	{
 		_updateGeo(static_cast<LambdaSlot*>(pSlot), true);
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * LambdaPanel::_prevChild( const Slot * _pSlot ) const
+	Widget * LambdaPanel::_prevChild( const BasicSlot * _pSlot ) const
 	{
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
@@ -462,7 +462,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * LambdaPanel::_nextChild( const Slot * _pSlot ) const
+	Widget * LambdaPanel::_nextChild( const BasicSlot * _pSlot ) const
 	{
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
@@ -474,7 +474,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void LambdaPanel::_releaseChild(Slot * pSlot)
+	void LambdaPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<LambdaSlot*>(pSlot));
@@ -509,7 +509,7 @@ namespace wg
 		if (pSlot->pFunc)
 			geo = pixelAligned(qpixToRaw(pSlot->pFunc(pSlot->_widget(), rawToQpix(m_size))));
 		else
-			geo = { 0,0,pSlot->preferredSize() };
+			geo = { 0,0,pSlot->_preferredSize() };
 
 		if (geo != pSlot->geo)
 		{
@@ -542,8 +542,8 @@ namespace wg
 
 		pSlot->geo = geo;
 
-		if (bForceResize || pSlot->size() != geo.size())
-			pSlot->setSize(geo);
+		if (bForceResize || pSlot->_size() != geo.size())
+			pSlot->_setSize(geo);
 	}
 
 	//____ _onRequestRender() ____________________________________________________

@@ -71,8 +71,8 @@ namespace wg
 	{
 		FILE * fp;
 
-//		errno_t err = fopen_s(&fp, pPath, "rb");
-        fp = fopen(pPath, "rb");
+		errno_t err = fopen_s(&fp, pPath, "rb");
+//        fp = fopen(pPath, "rb");
 		if (!fp)
 			return 0;
 

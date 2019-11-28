@@ -249,11 +249,11 @@ namespace wg
 		SizeI sz = pSlot->placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
-			sz = pSlot->preferredSize();
+			sz = pSlot->_preferredSize();
 		else if( sz.w == 0 )
-			sz.w = pSlot->matchingWidth(sz.h);
+			sz.w = pSlot->_matchingWidth(sz.h);
 		else if( sz.h == 0 )
-			sz.h = pSlot->matchingHeight(sz.w);
+			sz.h = pSlot->_matchingHeight(sz.w);
 
 		if( sz.w <= 0 )
 			sz.w = 1;
@@ -272,13 +272,13 @@ namespace wg
 			_onRequestRender(pSlot->geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->size() != geo.size())
+		if (bForceResize || pSlot->_size() != geo.size())
 			pSlot->setSize(geo);
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void ModalLayer::_childRequestResize( Slot * pSlot )
+	void ModalLayer::_childRequestResize( BasicSlot * pSlot )
 	{
 		if( pSlot == &m_baseSlot )
 			_requestResize();
@@ -291,7 +291,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void ModalLayer::_releaseChild(Slot * pSlot)
+	void ModalLayer::_releaseChild(BasicSlot * pSlot)
 	{
 		if (pSlot == &m_baseSlot)
 			Layer::_releaseChild(pSlot);
@@ -343,7 +343,7 @@ namespace wg
 	int ModalLayer::_matchingHeight( int width ) const
 	{
 		if( _baseSlot()->_widget() )
-			return _baseSlot()->matchingHeight( width );
+			return _baseSlot()->_matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -353,7 +353,7 @@ namespace wg
 	int ModalLayer::_matchingWidth( int height ) const
 	{
 		if( _baseSlot()->_widget() )
-			return _baseSlot()->matchingWidth( height );
+			return _baseSlot()->_matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -363,7 +363,7 @@ namespace wg
 	SizeI ModalLayer::_preferredSize() const
 	{
 		if( _baseSlot()->_widget() )
-			return _baseSlot()->preferredSize();
+			return _baseSlot()->_preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -389,7 +389,7 @@ namespace wg
 				}
 				else
 				{
-					if( pSlot->markTest(ofs - pSlot->geo.pos()) )
+					if( pSlot->_markTest(ofs - pSlot->geo.pos()) )
 						return pSlot->_widget();
 					else
 						return this;
@@ -453,7 +453,7 @@ namespace wg
 		ModalSlot * pSlot = m_modals.last();
 
 		Widget * 	pSavedFocus = nullptr;
-		Slot *		pBranch	= nullptr;
+		BasicSlot *		pBranch	= nullptr;
 
 		while( pSlot >= m_modals.first() && pSlot->geo.isEmpty() )
 			pSlot--;
@@ -479,7 +479,7 @@ namespace wg
 
 		if( pW )
 		{
-			Slot * pSlot = (Slot*) pW->_slot();
+			BasicSlot * pSlot = (BasicSlot*) pW->_slot();
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
@@ -491,7 +491,7 @@ namespace wg
 
 	//____ _didAddSlots() __________________________________________________
 
-	void ModalLayer::_didAddSlots(Slot * _pSlot, int nb)
+	void ModalLayer::_didAddSlots(BasicSlot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -502,7 +502,7 @@ namespace wg
 
 	//____ _didMoveSlots() ___________________________________________________________
 
-	void ModalLayer::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
+	void ModalLayer::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -549,7 +549,7 @@ namespace wg
 
 	//____ _willRemoveSlots() __________________________________________________
 
-	void ModalLayer::_willRemoveSlots(Slot * _pSlot, int nb)
+	void ModalLayer::_willRemoveSlots(BasicSlot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -563,14 +563,14 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void ModalLayer::_hideSlots(Slot * _pSlot, int nb)
+	void ModalLayer::_hideSlots(BasicSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void ModalLayer::_unhideSlots(Slot * _pSlot, int nb)
+	void ModalLayer::_unhideSlots(BasicSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}

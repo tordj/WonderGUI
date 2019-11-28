@@ -38,7 +38,7 @@ namespace wg
 
 	//____ ListSlot ____________________________________________________________
 
-	class ListSlot : public Slot		/** @private */
+	class ListSlot : public BasicSlot		/** @private */
 	{
 		friend class List;
 		template<class S> friend class ISlotArray;
@@ -103,8 +103,8 @@ namespace wg
 		Widget*			_lastChild() const override;
 
 
-		virtual void	_didAddSlots(Slot * pSlot, int nb) override;
-		virtual void	_willRemoveSlots(Slot * pSlot, int nb) override;
+		virtual void	_didAddSlots(BasicSlot * pSlot, int nb) override;
+		virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) override;
 		virtual void	_hideSlots(ListSlot * pSlot, int nb);
 		virtual void	_unhideSlots(ListSlot * pSlot, int nb);
 

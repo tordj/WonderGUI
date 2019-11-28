@@ -31,7 +31,7 @@
 namespace wg
 {
 
-	class CapsuleSlot : public Slot
+	class CapsuleSlot : public BasicSlot
 	{
 		friend class Capsule;
 	};
@@ -75,24 +75,24 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		CoordI		_childPos( Slot * pSlot ) const override;
-		SizeI		_childSize( Slot * pSlot ) const override;
+		CoordI		_childPos( BasicSlot * pSlot ) const override;
+		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot ) override;
-		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( Slot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( BasicSlot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const override;
-		Widget *	_nextChild( const Slot * pSlot ) const override;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
-		void		_releaseChild( Slot * pSlot ) override;
+		void		_releaseChild( BasicSlot * pSlot ) override;
 
 		// Overloaded from ChildHolder
 
 		Object *	_object() override;
 		const Object * _object() const override;
 
-		void		_setWidget( Slot * pSlot, Widget * pWidget ) override;
+		void		_setWidget( BasicSlot * pSlot, Widget * pWidget ) override;
 
 		// Overloaded from Container
 

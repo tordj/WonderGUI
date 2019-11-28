@@ -770,7 +770,7 @@ namespace wg
 
 	//____ _didMoveSlots() ___________________________________________________________
 
-	void FlexPanel::_didMoveSlots(Slot * _pFrom, Slot * _pTo, int nb)
+	void FlexPanel::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -817,7 +817,7 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________________
 
-	void FlexPanel::_didAddSlots( Slot * _pSlot, int nb )
+	void FlexPanel::_didAddSlots( BasicSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_unhideSlots(pSlot,nb);
@@ -825,7 +825,7 @@ namespace wg
 
 	//____ _willRemoveSlots() _____________________________________________________________
 
-	void FlexPanel::_willRemoveSlots( Slot * _pSlot, int nb )
+	void FlexPanel::_willRemoveSlots( BasicSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_hideSlots(pSlot,nb);
@@ -833,7 +833,7 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void FlexPanel::_hideSlots( Slot * _pSlot, int nb )
+	void FlexPanel::_hideSlots( BasicSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 
@@ -849,7 +849,7 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void FlexPanel::_unhideSlots( Slot * _pSlot, int nb )
+	void FlexPanel::_unhideSlots( BasicSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 
@@ -916,27 +916,27 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI FlexPanel::_childPos( Slot * pSlot ) const
+	CoordI FlexPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return ((FlexSlot*)pSlot)->realGeo.pos();
 	}
 
 	//____ _childSize() __________________________________________________________
 
-	SizeI FlexPanel::_childSize( Slot * pSlot ) const
+	SizeI FlexPanel::_childSize( BasicSlot * pSlot ) const
 	{
 		return ((FlexSlot*)pSlot)->realGeo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void FlexPanel::_childRequestRender( Slot * _pSlot )
+	void FlexPanel::_childRequestRender( BasicSlot * _pSlot )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_onRequestRender( pSlot->realGeo, pSlot );
 	}
 
-	void FlexPanel::_childRequestRender( Slot * _pSlot, const RectI& rect )
+	void FlexPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
@@ -944,7 +944,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void FlexPanel::_childRequestResize( Slot * _pSlot )
+	void FlexPanel::_childRequestResize( BasicSlot * _pSlot )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_refreshRealGeo(pSlot, true);
@@ -974,7 +974,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * FlexPanel::_prevChild( const Slot * _pSlot ) const
+	Widget * FlexPanel::_prevChild( const BasicSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
@@ -986,7 +986,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * FlexPanel::_nextChild( const Slot * _pSlot ) const
+	Widget * FlexPanel::_nextChild( const BasicSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
@@ -998,7 +998,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void FlexPanel::_releaseChild(Slot * pSlot)
+	void FlexPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<FlexSlot*>(pSlot));
@@ -1051,7 +1051,7 @@ namespace wg
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 
 			SizeI sz = geo.size();
-			sz.limit( pSlot->minSize(), pSlot->maxSize() );
+			sz.limit( pSlot->_minSize(), pSlot->_maxSize() );
 			if( sz != geo.size() )
 			{
 				geo.x += geo.w - sz.w / 2;
@@ -1064,8 +1064,8 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->preferredSize() : pSlot->placementGeo.size();
-			sz.limit( pSlot->minSize(), pSlot->maxSize() );		// Respect widgets limits.
+			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->_preferredSize() : pSlot->placementGeo.size();
+			sz.limit( pSlot->_minSize(), pSlot->_maxSize() );		// Respect widgets limits.
 
 			// Calculate position
 
@@ -1100,8 +1100,8 @@ namespace wg
 			_onRequestRender(pSlot->realGeo, pSlot);
 		}
 
-		if (bForceResize || pSlot->size() != geo.size())
-			pSlot->setSize(geo);
+		if (bForceResize || pSlot->_size() != geo.size())
+			pSlot->_setSize(geo);
 	}
 
 	//____ _sizeNeededForGeo() ________________________________________
@@ -1112,7 +1112,7 @@ namespace wg
 
 		if( pSlot->bPinned )
 		{
-			sz = pSlot->preferredSize();
+			sz = pSlot->_preferredSize();
 
 			sz += SizeI( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
 			sz -= SizeI( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );

@@ -36,20 +36,20 @@ namespace wg
 
 
 
-	class BaseSlot : public Slot
+	class BaseSlot : public BasicSlot
 	{
 		friend class Layer;
 	};
 
 	//____ LayerSlot ___________________________________________________________
 
-	class LayerSlot : public Slot		/** @private */
+	class LayerSlot : public BasicSlot		/** @private */
 	{
 		friend class Layer;
 
 	protected:
-		inline void setSize( SizeI size ) { geo.setSize(size); Slot::setSize(size); }
-		inline void setGeo(RectI _geo) { geo = _geo; Slot::setSize(geo.size()); }
+		inline void setSize( SizeI size ) { geo.setSize(size); BasicSlot::_setSize(size); }
+		inline void setGeo(RectI _geo) { geo = _geo; BasicSlot::_setSize(geo.size()); }
 
 		RectI	geo;
 	};
@@ -99,17 +99,17 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos( Slot * pSlot ) const override;
-		SizeI		_childSize( Slot * pSlot ) const override;
+		CoordI		_childPos( BasicSlot * pSlot ) const override;
+		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( Slot * pSlot ) override;
-		void		_childRequestRender( Slot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( BasicSlot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
 //		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const Slot * pSlot ) const override;
-		Widget *	_nextChild( const Slot * pSlot ) const override;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
-		void		_releaseChild( Slot * pSlot ) override;
+		void		_releaseChild( BasicSlot * pSlot ) override;
 
 		// Overloaded from Container
 
@@ -122,7 +122,7 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		void		_setWidget( Slot * pSlot, Widget * pNewWidget ) override;
+		void		_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) override;
 		Object *	_object() override { return this; }
 
 		// Overloaded from Widget

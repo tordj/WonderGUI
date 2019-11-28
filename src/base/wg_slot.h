@@ -30,7 +30,7 @@
 namespace wg
 {
 
-	class Slot		/** @private */
+	class BasicSlot		/** @private */
 	{
 	friend class ISlot;
 	friend class SlotIterator;
@@ -43,11 +43,11 @@ namespace wg
 		Widget_p widget() const { return Widget_p(m_pWidget); }
 
 
-		Slot() {}
+		BasicSlot() {}
 
 		const static bool safe_to_relocate = true;
 
-		Slot(Slot&& o)
+		BasicSlot(BasicSlot&& o)
 		{
 			m_pWidget = o.m_pWidget;
 			m_pHolder = o.m_pHolder;
@@ -61,7 +61,7 @@ namespace wg
 		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
 		// if content has been moved to another slot!
 
-		~Slot()
+		~BasicSlot()
 		{
 			if( m_pWidget != nullptr )
 			{
@@ -71,7 +71,7 @@ namespace wg
 		}
 
 
-		Slot& operator=(Slot&& o)
+		BasicSlot& operator=(BasicSlot&& o)
 		{
 			if (m_pWidget)
 			{
@@ -118,17 +118,17 @@ namespace wg
 
 		inline Widget * _widget() const { return m_pWidget; }
 
-		inline SizeI	size() const { return m_pWidget->m_size; }
-		inline void		setSize( SizeI size ) const { m_pWidget->_resize(size); }
+		inline SizeI	_size() const { return m_pWidget->m_size; }
+		inline void		_setSize( SizeI size ) const { m_pWidget->_resize(size); }
 
-		inline int		matchingHeight(int width) const { return m_pWidget->_matchingHeight(width); }
-		inline int		matchingWidth(int height) const { return m_pWidget->_matchingWidth(height); }
+		inline int		_matchingHeight(int width) const { return m_pWidget->_matchingHeight(width); }
+		inline int		_matchingWidth(int height) const { return m_pWidget->_matchingWidth(height); }
 
-		inline SizeI	preferredSize() const { return m_pWidget->_preferredSize(); }
-		inline SizeI	minSize() const { return m_pWidget->_minSize(); }
-		inline SizeI	maxSize() const { return m_pWidget->_maxSize(); }
+		inline SizeI	_preferredSize() const { return m_pWidget->_preferredSize(); }
+		inline SizeI	_minSize() const { return m_pWidget->_minSize(); }
+		inline SizeI	_maxSize() const { return m_pWidget->_maxSize(); }
 
-		inline bool		markTest(const CoordI& ofs) const { return m_pWidget->_markTest(ofs); };
+		inline bool		_markTest(const CoordI& ofs) const { return m_pWidget->_markTest(ofs); };
 
 
 		Widget *		m_pWidget = nullptr;

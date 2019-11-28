@@ -89,7 +89,7 @@ namespace wg
 		friend class ShadowLayer;
 
 		friend class Component;
-		friend class Slot;
+		friend class BasicSlot;
 
 		template<class S> friend class ISlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
@@ -194,9 +194,9 @@ namespace wg
 		Widget();
 		virtual ~Widget();
 
-		inline void			_setHolder( WidgetHolder * pHolder, Slot * pSlot ) { m_pHolder = pHolder; m_pSlot = pSlot; }
+		inline void			_setHolder( WidgetHolder * pHolder, BasicSlot * pSlot ) { m_pHolder = pHolder; m_pSlot = pSlot; }
 		WidgetHolder *		_holder() const { return m_pHolder; }
-		Slot *				_slot() const { return m_pSlot; }
+		BasicSlot *				_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 
@@ -285,7 +285,7 @@ namespace wg
 		int				m_id;
 
 		WidgetHolder *	m_pHolder;
-		Slot *			m_pSlot;
+		BasicSlot *			m_pSlot;
 
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

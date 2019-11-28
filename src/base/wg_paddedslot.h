@@ -32,16 +32,18 @@ namespace wg
 
 	//____ PaddedSlot ____________________________________________________________
 
-	class PaddedSlot : public Slot 	/** @private */
+	class PaddedSlot : public BasicSlot 	/** @private */
 	{
+		template<class S> friend class ISlotArray;
+		template<class S> friend class IPaddedSlotArray;
 	public:
 		PaddedSlot() : bVisible(false) {}
-
-		SizeI		paddedPreferredSize() const { return preferredSize() + padding; }
-		SizeI		paddedMinSize() const { return minSize() + padding; }
-		SizeI		paddedMaxSize() const { return maxSize() + padding; }
-		int			paddedMatchingWidth(int paddedHeight) const { return matchingWidth(paddedHeight - padding.height()) + padding.width(); }
-		int			paddedMatchingHeight(int paddedWidth) const { return matchingHeight(paddedWidth - padding.width()) + padding.height(); }
+	protected:
+		SizeI		_paddedPreferredSize() const { return _preferredSize() + padding; }
+		SizeI		_paddedMinSize() const { return _minSize() + padding; }
+		SizeI		_paddedMaxSize() const { return _maxSize() + padding; }
+		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - padding.height()) + padding.width(); }
+		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - padding.width()) + padding.height(); }
 
 		BorderI		padding;
 		bool		bVisible;

@@ -226,7 +226,7 @@ namespace wg
 				{
 					if( pS->bVisible )
 					{
-						int itemHeight = pS->paddedMatchingHeight( pI->output );
+						int itemHeight = pS->_paddedMatchingHeight( pI->output );
 						if( itemHeight > height )
 							height = itemHeight;
 						pI++;
@@ -270,7 +270,7 @@ namespace wg
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible )
-						height += pS->paddedMatchingHeight( width );
+						height += pS->_paddedMatchingHeight( width );
 				}
 			}
 		}
@@ -308,7 +308,7 @@ namespace wg
 				{
 					if( pS->bVisible )
 					{
-						int itemWidth = pS->paddedMatchingWidth( pI->output.raw );
+						int itemWidth = pS->_paddedMatchingWidth( pI->output.raw );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -352,7 +352,7 @@ namespace wg
 				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
 				{
 					if( pS->bVisible )
-						width += pS->paddedMatchingWidth( height );
+						width += pS->_paddedMatchingWidth( height );
 				}
 			}
 		}
@@ -416,14 +416,14 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________
 
-	void PackPanel::_didAddSlots(Slot * pSlot, int nb)
+	void PackPanel::_didAddSlots(BasicSlot * pSlot, int nb)
 	{
 		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _didMoveSlots() _____________________________________________________
 
-	void PackPanel::_didMoveSlots(Slot * pFrom, Slot * pTo, int nb)
+	void PackPanel::_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb)
 	{
 		//TODO: Optimize! Only update and re-render what is needed, but take
 		// into account that SizeBroker might have weird rules and might affect
@@ -434,28 +434,28 @@ namespace wg
 
 	//____ _willRemoveSlots() _________________________________________________
 
-	void PackPanel::_willRemoveSlots(Slot * pSlot, int nb)
+	void PackPanel::_willRemoveSlots(BasicSlot * pSlot, int nb)
 	{
 		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _hideSlots() _______________________________________________________
 
-	void PackPanel::_hideSlots(Slot * pSlot, int nb)
+	void PackPanel::_hideSlots(BasicSlot * pSlot, int nb)
 	{
 		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackPanel::_unhideSlots(Slot * pSlot, int nb)
+	void PackPanel::_unhideSlots(BasicSlot * pSlot, int nb)
 	{
 		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(Slot * pSlot, int nb, BorderI padding)
+	void PackPanel::_repadSlots(BasicSlot * pSlot, int nb, BorderI padding)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackSlot*)pSlot)[i].padding = padding;
@@ -463,7 +463,7 @@ namespace wg
 		_refreshGeometries();
 	}
 
-	void PackPanel::_repadSlots(Slot * pSlot, int nb, const BorderI * pPaddings)
+	void PackPanel::_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackSlot*)pSlot)[i].padding = * pPaddings++;
@@ -497,39 +497,39 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	CoordI PackPanel::_childPos(Slot * pSlot) const
+	CoordI PackPanel::_childPos(BasicSlot * pSlot) const
 	{
 		return ((PackSlot*)pSlot)->geo;
 	}
 
 	//____ _childSize() _______________________________________________________
 
-	SizeI PackPanel::_childSize(Slot * pSlot) const
+	SizeI PackPanel::_childSize(BasicSlot * pSlot) const
 	{
 		return ((PackSlot*)pSlot)->geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void PackPanel::_childRequestRender(Slot * pSlot)
+	void PackPanel::_childRequestRender(BasicSlot * pSlot)
 	{
 		_requestRender( ((PackSlot*)pSlot)->geo );
 
 	}
 
-	void PackPanel::_childRequestRender(Slot * pSlot, const RectI& rect)
+	void PackPanel::_childRequestRender(BasicSlot * pSlot, const RectI& rect)
 	{
 		_requestRender(rect + ((PackSlot*)pSlot)->geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void PackPanel::_childRequestResize(Slot * _pSlot)
+	void PackPanel::_childRequestResize(BasicSlot * _pSlot)
 	{
 		// Update cached preferred size of child
 
 		PackSlot * pSlot = static_cast<PackSlot*>(_pSlot);
-		pSlot->preferredSize = pSlot->paddedPreferredSize();
+		pSlot->preferredSize = pSlot->_paddedPreferredSize();
 		pSlot->bResizeRequired = true;
 
 		_refreshGeometries();
@@ -537,7 +537,7 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * PackPanel::_prevChild(const Slot * _pSlot) const
+	Widget * PackPanel::_prevChild(const BasicSlot * _pSlot) const
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
@@ -549,7 +549,7 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * PackPanel::_nextChild(const Slot * _pSlot) const
+	Widget * PackPanel::_nextChild(const BasicSlot * _pSlot) const
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
@@ -561,7 +561,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void PackPanel::_releaseChild(Slot * pSlot)
+	void PackPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<PackSlot*>(pSlot));
@@ -576,7 +576,7 @@ namespace wg
 			if (pSlot[i].bVisible == false)
 			{
 				pSlot[i].bVisible = true;
-				pSlot[i].preferredSize = pSlot[i].paddedPreferredSize();
+				pSlot[i].preferredSize = pSlot[i]._paddedPreferredSize();
 			}
 		}
 
@@ -655,7 +655,7 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					int b = m_bHorizontal?pS->paddedMatchingHeight(pI->output.raw):pS->paddedMatchingWidth(pI->output.raw);
+					int b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output.raw):pS->_paddedMatchingWidth(pI->output.raw);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -894,8 +894,8 @@ namespace wg
 				if( pS->bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->preferredSize.w);
-					pI->min = QPix::fromRaw(pS->paddedMinSize().w);
-					pI->max = QPix::fromRaw(pS->paddedMaxSize().w);
+					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
+					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -908,8 +908,8 @@ namespace wg
 				if( pS->bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->preferredSize.h);
-					pI->min = QPix::fromRaw(pS->paddedMinSize().h);
-					pI->max = QPix::fromRaw(pS->paddedMaxSize().h);
+					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
+					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -929,9 +929,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->paddedMatchingWidth(forcedBreadth));
-					pI->min = QPix::fromRaw(pS->paddedMinSize().w);
-					pI->max = QPix::fromRaw(pS->paddedMaxSize().w);
+					pI->preferred = QPix::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
+					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
+					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
 					pI->weight = pS->weight;
 					pI++;
 				}
@@ -943,9 +943,9 @@ namespace wg
 			{
 				if( pS->bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->paddedMatchingHeight(forcedBreadth));
-					pI->min = QPix::fromRaw(pS->paddedMinSize().h);
-					pI->max = QPix::fromRaw(pS->paddedMaxSize().h);
+					pI->preferred = QPix::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
+					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
+					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
 					pI->weight = pS->weight;
 					pI++;
 				}

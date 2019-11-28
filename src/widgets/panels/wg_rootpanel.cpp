@@ -139,7 +139,7 @@ namespace wg
 
 	//____ _setWidget() ____________________________________________________________
 
-	void RootPanel::_setWidget( Slot * pSlot, Widget * pNewWidget )
+	void RootPanel::_setWidget( BasicSlot * pSlot, Widget * pNewWidget )
 	{
 		if( m_child._widget() )
 			m_child._widget()->_collectPatches( m_dirtyPatches, _geo(), _geo() );
@@ -396,35 +396,35 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI RootPanel::_childPos( Slot * pSlot ) const
+	CoordI RootPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _childGlobalPos() __________________________________________________
 
-	CoordI RootPanel::_childGlobalPos( Slot * pSlot ) const
+	CoordI RootPanel::_childGlobalPos( BasicSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _childSize() __________________________________________________
 
-	SizeI RootPanel::_childSize( Slot * pSlot ) const
+	SizeI RootPanel::_childSize( BasicSlot * pSlot ) const
 	{
 		return _geo().size();
 	}
 
 	//____ _isChildVisible() __________________________________________________
 
-	bool RootPanel::_isChildVisible( Slot * pSlot ) const
+	bool RootPanel::_isChildVisible( BasicSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() __________________________________________________
 
-	RectI RootPanel::_childWindowSection( Slot * pSlot ) const
+	RectI RootPanel::_childWindowSection( BasicSlot * pSlot ) const
 	{
 		return _geo();
 	}
@@ -445,13 +445,13 @@ namespace wg
 
 	//____ _childRequestRender() __________________________________________________
 
-	void RootPanel::_childRequestRender( Slot * pSlot )
+	void RootPanel::_childRequestRender( BasicSlot * pSlot )
 	{
 		if( m_bVisible )
 			m_dirtyPatches.add( _geo() );
 	}
 
-	void RootPanel::_childRequestRender( Slot * pSlot, const RectI& rect )
+	void RootPanel::_childRequestRender( BasicSlot * pSlot, const RectI& rect )
 	{
 		if( m_bVisible )
 			m_dirtyPatches.add( RectI( _geo().pos() + rect.pos(), rect.size() ) );
@@ -459,14 +459,14 @@ namespace wg
 
 	//____ _childRequestResize() __________________________________________________
 
-	void RootPanel::_childRequestResize( Slot * pSlot )
+	void RootPanel::_childRequestResize( BasicSlot * pSlot )
 	{
-		m_child.setSize(m_geo.size());
+		m_child._setSize(m_geo.size());
 	}
 
 	//____ _childRequestFocus() __________________________________________________
 
-	bool RootPanel::_childRequestFocus( Slot * pSlot, Widget * pWidget )
+	bool RootPanel::_childRequestFocus( BasicSlot * pSlot, Widget * pWidget )
 	{
 		if( pWidget == m_pFocusedChild.rawPtr() )
 			return true;
@@ -478,7 +478,7 @@ namespace wg
 
 	//____ _childReleaseFocus() __________________________________________________
 
-	bool RootPanel::_childReleaseFocus( Slot * pSlot, Widget * pWidget )
+	bool RootPanel::_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget )
 	{
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
@@ -493,32 +493,32 @@ namespace wg
 
 	//____ _childRequestInView() __________________________________________________
 
-	void RootPanel::_childRequestInView( Slot * pSlot )
+	void RootPanel::_childRequestInView( BasicSlot * pSlot )
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void RootPanel::_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		// Do nothing, root ignores inView requests.
 	}
 
 	//____ _prevChild() __________________________________________________
 
-	Widget * RootPanel::_prevChild( const Slot * pSlot ) const
+	Widget * RootPanel::_prevChild( const BasicSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________
 
-	Widget * RootPanel::_nextChild( const Slot * pSlot ) const
+	Widget * RootPanel::_nextChild( const BasicSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _releaseChild() ____________________________________________________
 
-	void RootPanel::_releaseChild(Slot * pSlot)
+	void RootPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_setWidget(pSlot, nullptr);
 	}

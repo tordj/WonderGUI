@@ -72,9 +72,9 @@ namespace wg
 		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 		virtual void	_cloneContent( const Widget * _pOrg ) override;
 
-		class SlotAccess : public Slot { friend class Panel; };
-		Panel::SlotAccess * _access(Slot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
-		const Panel::SlotAccess * _access(const Slot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
+		class SlotAccess : public BasicSlot { friend class Panel; };
+		Panel::SlotAccess * _access(BasicSlot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
+		const Panel::SlotAccess * _access(const BasicSlot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
 
 
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.

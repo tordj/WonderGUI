@@ -131,7 +131,7 @@ namespace wg
 		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
 
-		class RootSlot : public Slot
+		class RootSlot : public BasicSlot
 		{
 			friend class RootPanel;
 		};
@@ -140,38 +140,38 @@ namespace wg
 
 		// WidgetHolder methods
 
-		CoordI			_childPos( Slot * pSlot ) const override;
-		CoordI			_childGlobalPos( Slot * pSlot ) const override;
+		CoordI			_childPos( BasicSlot * pSlot ) const override;
+		CoordI			_childGlobalPos( BasicSlot * pSlot ) const override;
 
-		SizeI			_childSize( Slot * pSlot ) const override;
+		SizeI			_childSize( BasicSlot * pSlot ) const override;
 
-		bool			_isChildVisible( Slot * pSlot ) const override;
-		RectI			_childWindowSection( Slot * pSlot ) const override;
+		bool			_isChildVisible( BasicSlot * pSlot ) const override;
+		RectI			_childWindowSection( BasicSlot * pSlot ) const override;
 
 		Container *  	_childParent() override;
 		RootPanel *		_root() override;
 
-		void			_childRequestRender( Slot * pSlot ) override;
-		void			_childRequestRender( Slot * pSlot, const RectI& rect ) override;
-		void			_childRequestResize( Slot * pSlot ) override;
+		void			_childRequestRender( BasicSlot * pSlot ) override;
+		void			_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void			_childRequestResize( BasicSlot * pSlot ) override;
 
-		bool			_childRequestFocus( Slot * pSlot, Widget * pWidget ) override;
-		bool			_childReleaseFocus( Slot * pSlot, Widget * pWidget ) override;
+		bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget ) override;
+		bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget ) override;
 
-		void			_childRequestInView( Slot * pSlot ) override;
-		void			_childRequestInView( Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
+		void			_childRequestInView( BasicSlot * pSlot ) override;
+		void			_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
 
-		Widget *		_prevChild( const Slot * pSlot ) const override;
-		Widget *		_nextChild( const Slot * pSlot ) const override;
+		Widget *		_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *		_nextChild( const BasicSlot * pSlot ) const override;
 
-		void			_releaseChild( Slot * pSlot ) override;
+		void			_releaseChild( BasicSlot * pSlot ) override;
 
 		// ChildHolder methods
 
 		Object *		_object() override;
 //		const Object *	_object() const override;
 
-		void			_setWidget( Slot * pSlot, Widget * pNewWidget ) override;
+		void			_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) override;
 
 		//
 

@@ -316,27 +316,27 @@ namespace wg
 
 		// Overloaded from WidgetHolder
 
-		CoordI		_childPos(Slot * pSlot) const override;
-		SizeI		_childSize(Slot * pSlot) const override;
+		CoordI		_childPos(BasicSlot * pSlot) const override;
+		SizeI		_childSize(BasicSlot * pSlot) const override;
 
-		void		_childRequestRender(Slot * pSlot) override;
-		void		_childRequestRender(Slot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(Slot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot) override;
+		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(BasicSlot * pSlot) override;
 
-		void		_childRequestInView(Slot * pSlot) override;
-		void		_childRequestInView(Slot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
+		void		_childRequestInView(BasicSlot * pSlot) override;
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
 
 
-		Widget *	_prevChild(const Slot * pSlot) const override;
-		Widget *	_nextChild(const Slot * pSlot) const override;
+		Widget *	_prevChild(const BasicSlot * pSlot) const override;
+		Widget *	_nextChild(const BasicSlot * pSlot) const override;
 
-		RectI		_childWindowSection(Slot * pSlot) const override;
+		RectI		_childWindowSection(BasicSlot * pSlot) const override;
 
-		void		_releaseChild(Slot * pSlot) override;
+		void		_releaseChild(BasicSlot * pSlot) override;
 
 		// Overloaded from ChildHolder
 
-		void			_setWidget(Slot * pSlot, Widget * pWidget) override;
+		void			_setWidget(BasicSlot * pSlot, Widget * pWidget) override;
 		Object *		_object() override { return this;  }
 		inline void		_requestRender(const RectI& rect) override { Panel::_requestRender(rect); }
 		inline void		_requestRender() { Panel::_requestRender(); }
@@ -377,7 +377,7 @@ namespace wg
 
 
 		SizeI		_calcContentSize(SizeI mySize);
-		void		_updateElementGeo(SizeI mySize, Slot * pForceUpdate = nullptr );
+		void		_updateElementGeo(SizeI mySize, BasicSlot * pForceUpdate = nullptr );
 		bool		_setWindowPos(CoordI pos) override;
 		bool		_setWindowOffset(CoordF ofs) override;
 
