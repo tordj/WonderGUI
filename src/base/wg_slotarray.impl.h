@@ -250,7 +250,7 @@ namespace wg
 	void SlotArray<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
-			new (pBeg++) SlotType();
+			new (pBeg++) SlotType(m_pSlotHolder);
 	}
 
 

@@ -48,11 +48,11 @@ namespace wg
 		friend class ScrollbarEntry;
 		friend class ScrollPanel;
 	public:
-		ScrollbarSlot() : bAutoHide(false), bAutoScroll(false) {}
+		ScrollbarSlot() : PaddedSlot(nullptr) {}
 	protected:
 		RectI			geo;
-		bool			bAutoHide;
-		bool			bAutoScroll;
+		bool			bAutoHide = false;
+		bool			bAutoScroll = false;
 		Direction		placement;
 	};
 
@@ -62,7 +62,7 @@ namespace wg
 	{
 		friend class ScrollPanel;
 	public:
-		ViewSlot() : widthPolicy(SizePolicy::Default), heightPolicy(SizePolicy::Default), contentOrigo(Origo::NorthWest) {}
+		ViewSlot(WidgetHolder *pHolder) : PaddedSlot(pHolder) {}
 
 		int			paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -85,9 +85,9 @@ namespace wg
 		RectI			windowGeo;		// Geometry of Widgets window inside parent.
 		RectI			canvasGeo;		// Geometry of Widgets canvas.
 
-		SizePolicy		widthPolicy;
-		SizePolicy		heightPolicy;
-		Origo			contentOrigo;		// Origo when content is smaller than window
+		SizePolicy		widthPolicy = SizePolicy::Default;
+		SizePolicy		heightPolicy = SizePolicy::Default;
+		Origo			contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
 		SizeI			contentSize;
 		CoordI			viewPixOfs;
 
@@ -317,7 +317,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
-		SizeI		_childSize(BasicSlot * pSlot) const override;
 
 		void		_childRequestRender(BasicSlot * pSlot) override;
 		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;

@@ -127,7 +127,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	StackPanel::StackPanel() : children(&m_children,this)
+	StackPanel::StackPanel() : m_children(this), children(&m_children,this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -353,13 +353,6 @@ namespace wg
 	CoordI StackPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return _childGeo((StackSlot *)pSlot).pos();
-	}
-
-	//____ _childSize() _______________________________________________________
-
-	SizeI StackPanel::_childSize( BasicSlot * pSlot ) const
-	{
-		return static_cast<StackSlot*>(pSlot)->_size();
 	}
 
 	//____ _childRequestRender() ______________________________________________

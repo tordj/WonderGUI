@@ -115,7 +115,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PopupLayer::PopupLayer() : popups(this)
+	PopupLayer::PopupLayer() : m_popups(this), popups(this)
 	{
 	}
 
@@ -867,7 +867,7 @@ namespace wg
 		pSlot->stateCounter = 0;
 		pSlot->maxSize = _maxSize;
 
-		pSlot->replaceWidget(this, _pPopup);
+		pSlot->_setWidget(_pPopup);
 
 		_updateGeo(pSlot);
 		_stealKeyboardFocus();

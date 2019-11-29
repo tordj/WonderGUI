@@ -38,6 +38,8 @@ namespace wg
 	class DnDLayerSlot : public LayerSlot
 	{
 		friend class DragNDropLayer;
+	protected:
+		DnDLayerSlot(WidgetHolder *pHolder) : LayerSlot(pHolder) {}
 	};
 
 

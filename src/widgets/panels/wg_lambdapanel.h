@@ -42,7 +42,7 @@ namespace wg
 		friend class LambdaPanel;
 		friend class ILambdaSlots;
 	public:
-		LambdaSlot() : pFunc(nullptr), bVisible(false) {}
+		LambdaSlot(WidgetHolder * pHolder ) : BasicSlot(pHolder), pFunc(nullptr), bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -152,12 +152,10 @@ namespace wg
 		void		_unhideSlots( BasicSlot * pSlot, int nb ) override;
 		void		_updateSlotGeo(BasicSlot * pSlot, int nb) override;
 		Object *	_object() override { return this; }
-		WidgetHolder *	_widgetHolder() override { return this; }
 
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;

@@ -32,7 +32,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	SplitPanel::SplitPanel() : first(&m_firstChild, this), second(&m_secondChild,this)
+	SplitPanel::SplitPanel() : m_firstChild(this), m_secondChild(this), first(&m_firstChild, this), second(&m_secondChild,this)
 	{
 		m_bHorizontal = false;
 		m_handleThickness = 0;
@@ -609,7 +609,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<SplitPanelSlot*>(_pSlot);
 
-		pSlot->replaceWidget(this, pNewWidget);
+		pSlot->_setWidget(pNewWidget);
 		pNewWidget->_resize(pSlot->geo);
 		_updatePreferredSize();
 		bool bGeoChanged =_updateGeo();
@@ -623,13 +623,6 @@ namespace wg
 	CoordI SplitPanel::_childPos(BasicSlot * pSlot) const
 	{
 		return static_cast<SplitPanelSlot*>(pSlot)->geo.pos();
-	}
-
-	//_____ _childSize() ______________________________________________________
-
-	SizeI SplitPanel::_childSize(BasicSlot * pSlot) const
-	{
-		return static_cast<SplitPanelSlot*>(pSlot)->geo.size();
 	}
 
 	//____ _childRequestRender() ______________________________________________

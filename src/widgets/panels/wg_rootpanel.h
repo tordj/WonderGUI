@@ -134,6 +134,8 @@ namespace wg
 		class RootSlot : public BasicSlot
 		{
 			friend class RootPanel;
+
+			RootSlot(WidgetHolder *pHolder) : BasicSlot(pHolder) {}
 		};
 
 		RectI			_geo() const;
@@ -142,8 +144,6 @@ namespace wg
 
 		CoordI			_childPos( BasicSlot * pSlot ) const override;
 		CoordI			_childGlobalPos( BasicSlot * pSlot ) const override;
-
-		SizeI			_childSize( BasicSlot * pSlot ) const override;
 
 		bool			_isChildVisible( BasicSlot * pSlot ) const override;
 		RectI			_childWindowSection( BasicSlot * pSlot ) const override;

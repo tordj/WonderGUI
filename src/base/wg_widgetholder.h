@@ -43,8 +43,6 @@ namespace wg
 		virtual CoordI		_childPos( BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
 		virtual CoordI		_childGlobalPos( BasicSlot * pSlot ) const = 0;
 
-		virtual SizeI		_childSize( BasicSlot * pSlot ) const = 0;
-
 		virtual bool		_isChildVisible( BasicSlot * pSlot ) const = 0;
 		virtual RectI		_childWindowSection( BasicSlot * pSlot ) const = 0;		// Returns the window section within the childs canvas.
 

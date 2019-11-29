@@ -54,7 +54,7 @@ namespace wg
 		pSlot->geo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -301,7 +301,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	ModalLayer::ModalLayer() : modals(&m_modals, this)
+	ModalLayer::ModalLayer() : m_modals(this), modals(&m_modals, this)
 	{
 	}
 

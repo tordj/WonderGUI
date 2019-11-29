@@ -45,9 +45,9 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		ListSlot() : bVisible(false) {}
+		ListSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
 
-		bool		bVisible;
+		bool		bVisible = false;
 	};
 
 	//____ List _________________________________________________________________

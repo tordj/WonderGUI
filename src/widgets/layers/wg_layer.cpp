@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Layer::Layer() : base( &m_baseSlot, this )
+	Layer::Layer() : m_baseSlot(this), base( &m_baseSlot, this )
 	{
 	}
 
@@ -216,7 +216,7 @@ namespace wg
 	{
 		if (pSlot == &m_baseSlot)
 		{
-			m_baseSlot.replaceWidget(this, nullptr);
+			m_baseSlot._setWidget(nullptr);
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -228,7 +228,7 @@ namespace wg
 	{
 		if (pSlot == &m_baseSlot)
 		{
-			m_baseSlot.replaceWidget(this, pNewWidget);
+			m_baseSlot._setWidget(pNewWidget);
 			pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
@@ -252,16 +252,6 @@ namespace wg
 	{
 		if( pSlot == &m_baseSlot )
 			return {0,0};
-
-		return ((LayerSlot*)pSlot)->geo;
-	}
-
-	//____ _childSize() ________________________________________________________
-
-	SizeI Layer::_childSize( BasicSlot * pSlot ) const
-	{
-		if( pSlot == &m_baseSlot )
-			return m_size;
 
 		return ((LayerSlot*)pSlot)->geo;
 	}

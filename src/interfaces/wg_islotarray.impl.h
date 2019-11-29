@@ -41,7 +41,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -55,10 +55,9 @@ namespace wg
 			pWidgets[i]->releaseFromParent();
 
 		SlotType * pSlot = m_pSlotArray->add(amount);
-		auto pWidgetHolder = m_pHolder->_widgetHolder();
 
 		for (int i = 0; i < amount; i++)
-			pSlot[i].replaceWidget(pWidgetHolder, pWidgets[i]);
+			pSlot[i]._setWidget(pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
@@ -73,7 +72,7 @@ namespace wg
 		SlotType * pSlot = m_pSlotArray->insert(index);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 	}
 
@@ -86,7 +85,7 @@ namespace wg
 		pSlot = m_pSlotArray->insert(pSlot);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -97,12 +96,11 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = m_pSlotArray->insert(index, amount);
-		auto pWidgetHolder = m_pHolder->_widgetHolder();
 
 		for (int i = 0; i < amount; i++)
 		{
 			this->_releaseGuardPointer(pWidgets[i], &pSlot);
-			pSlot[i].replaceWidget(pWidgetHolder, pWidgets[i]);
+			pSlot[i]._setWidget(pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);
 	}
@@ -114,12 +112,11 @@ namespace wg
 
 		SlotType * pSlot = static_cast<SlotType*>(pos._slot());
 		pSlot = m_pSlotArray->insert(pSlot, amount);
-		auto pWidgetHolder = m_pHolder->_widgetHolder();
 
 		for (int i = 0; i < amount; i++)
 		{
 			this->_releaseGuardPointer(pWidgets[i], &pSlot);
-			pSlot[i].replaceWidget(pWidgetHolder, pWidgets[i]);
+			pSlot[i]._setWidget(pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
@@ -424,7 +421,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		SlotType * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -438,10 +435,9 @@ namespace wg
 			pWidgets[i]->releaseFromParent();
 
 		SlotType * pSlot = m_pSlotArray->add(amount);
-		auto pWidgetHolder = m_pHolder->_widgetHolder();
 
 		for (int i = 0; i < amount; i++)
-			pSlot[i].replaceWidget(pWidgetHolder, pWidgets[i]);
+			pSlot[i]._setWidget(pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
@@ -455,7 +451,7 @@ namespace wg
 		pSlot = m_pSlotArray->insert(pSlot);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -467,12 +463,11 @@ namespace wg
 
 		SlotType * pSlot = static_cast<SlotType*>(it._slot());
 		pSlot = m_pSlotArray->insert(pSlot, amount);
-		auto pWidgetHolder = m_pHolder->_widgetHolder();
 
 		for (int i = 0; i < amount; i++)
 		{
 			this->_releaseGuardPointer(pWidgets[i], &pSlot);
-			pSlot[i].replaceWidget(pWidgetHolder, pWidgets[i]);
+			pSlot[i]._setWidget(pWidgets[i]);
 		}
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);

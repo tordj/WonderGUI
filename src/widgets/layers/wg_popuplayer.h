@@ -44,7 +44,7 @@ namespace wg
 		friend class IPopupSlots;
 
 	public:
-		PopupSlot() : attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
+		PopupSlot(WidgetHolder * pHolder) : LayerSlot(pHolder), attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
 
 		const static bool safe_to_relocate = false;
 

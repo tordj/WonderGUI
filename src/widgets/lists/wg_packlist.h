@@ -49,7 +49,7 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		PackListSlot() {}
+		PackListSlot(WidgetHolder *pHolder) : ListSlot(pHolder) {}
 
 		int				ofs;				// Offset in pixels for start of this list item.
 		int				length;				// Length in pixels of this list item. Includes widget padding.
@@ -195,7 +195,6 @@ namespace wg
 		Object *		_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		WidgetHolder *	_widgetHolder() override { return this; }
 		int				_getInsertionPoint(const Widget * pWidget) const override;
 		bool			_hasSortFunction() const override { return m_sortFunc != nullptr; }
 		bool			_sortEntries() override;
@@ -228,7 +227,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
-		SizeI		_childSize(BasicSlot * pSlot) const override;
 
 		void		_childRequestRender(BasicSlot * pSlot) override;
 		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;

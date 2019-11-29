@@ -43,6 +43,8 @@ namespace wg
 		friend class SplitPanel;
 
 	protected:
+		SplitPanelSlot(WidgetHolder *pHolder) : BasicSlot(pHolder) {}
+
 		RectI	geo;
 	};
 
@@ -144,7 +146,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
-		SizeI		_childSize(BasicSlot * pSlot) const override;
 
 		void		_childRequestRender(BasicSlot * pSlot) override;
 		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;

@@ -97,7 +97,6 @@ namespace wg
 			/* Left to implement in individual classes:
 
 				CoordI		_childPos( Slot * pSlot ) const;
-				SizeI		_childSize( Slot * pSlot ) const;
 
 				void		_childRequestRender( Slot * pSlot );
 				void		_childRequestRender( Slot * pSlot, const RectI& rect );

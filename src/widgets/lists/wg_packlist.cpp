@@ -67,7 +67,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PackList::PackList() : m_header(this), header(&m_header), children(&m_children, this)
+	PackList::PackList() : m_header(this), m_children(this), header(&m_header), children(&m_children, this)
 	{
 		m_sizeOfSlot = sizeof(PackListSlot);
 		m_bSiblingsOverlap = false;
@@ -1179,18 +1179,6 @@ namespace wg
 		_getChildGeo(geo, pSlot);
 
 		return geo.pos();
-	}
-
-	//____ _childSize() __________________________________________________________
-
-	SizeI PackList::_childSize( BasicSlot * _pSlot ) const
-	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
-
-		RectI geo;
-		_getChildGeo(geo, pSlot);
-
-		return geo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________

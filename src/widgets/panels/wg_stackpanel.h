@@ -45,10 +45,10 @@ namespace wg
 		friend class StackPanel;
 		friend class IStackSlots;
 	public:
-		StackSlot() : origo(Origo::Center), SizePolicy(SizePolicy2D::Original) {}
+		StackSlot(WidgetHolder * pHolder) : PaddedSlot(pHolder) {}
 
-		Origo			origo;
-		SizePolicy2D	SizePolicy;
+		Origo			origo = Origo::Center;
+		SizePolicy2D	SizePolicy = SizePolicy2D::Original;
 	};
 
 	//____ StackSlotArrayHolder __________________________________________________
@@ -156,13 +156,11 @@ namespace wg
 		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
 		Object *	_object() override { return this; }
-		WidgetHolder *	_widgetHolder() override { return this; }
 
 
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;

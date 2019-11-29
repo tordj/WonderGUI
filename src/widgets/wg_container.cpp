@@ -130,7 +130,7 @@ namespace wg
 
 	RectI Container::_childWindowSection( BasicSlot * pSlot ) const
 	{
-		return RectI( 0,0, _childSize( pSlot ) );
+		return RectI( 0,0, _access(pSlot)->_size() );
 	}
 
 	//____ _childParent() ____________________________________________________________
@@ -167,7 +167,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			RectI area( _childPos( pSlot ), _childSize( pSlot ) );
+			RectI area( _childPos( pSlot ), _access(pSlot)->_size() );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}

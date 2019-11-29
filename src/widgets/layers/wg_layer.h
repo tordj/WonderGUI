@@ -39,6 +39,7 @@ namespace wg
 	class BaseSlot : public BasicSlot
 	{
 		friend class Layer;
+		BaseSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
 	};
 
 	//____ LayerSlot ___________________________________________________________
@@ -46,8 +47,9 @@ namespace wg
 	class LayerSlot : public BasicSlot		/** @private */
 	{
 		friend class Layer;
-
 	protected:
+		LayerSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
+
 		inline void setSize( SizeI size ) { geo.setSize(size); BasicSlot::_setSize(size); }
 		inline void setGeo(RectI _geo) { geo = _geo; BasicSlot::_setSize(geo.size()); }
 
@@ -100,7 +102,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;

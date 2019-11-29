@@ -42,7 +42,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	RootPanel::RootPanel() : child( &m_child, this )
+	RootPanel::RootPanel() : m_child(this), child( &m_child, this )
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -144,7 +144,7 @@ namespace wg
 		if( m_child._widget() )
 			m_child._widget()->_collectPatches( m_dirtyPatches, _geo(), _geo() );
 
-		m_child.replaceWidget( this, pNewWidget );
+		m_child._setWidget( pNewWidget );
 
 		if( pNewWidget )
 		{
@@ -406,13 +406,6 @@ namespace wg
 	CoordI RootPanel::_childGlobalPos( BasicSlot * pSlot ) const
 	{
 		return _geo().pos();
-	}
-
-	//____ _childSize() __________________________________________________
-
-	SizeI RootPanel::_childSize( BasicSlot * pSlot ) const
-	{
-		return _geo().size();
 	}
 
 	//____ _isChildVisible() __________________________________________________

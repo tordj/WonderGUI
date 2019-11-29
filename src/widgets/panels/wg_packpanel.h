@@ -42,8 +42,11 @@ namespace wg
 	{
 		friend class PackPanel;
 		friend class IPackSlots;
+		template<class S> friend class SlotArray;
 
 	protected:
+		PackSlot(WidgetHolder *pHolder) : PaddedSlot(pHolder) {}
+
 		bool			bResizeRequired = false;
 		float			weight = 1.f;				// Weight for space allocation.
 		RectI			geo;						// Real geo of child (no padding included).
@@ -155,7 +158,6 @@ namespace wg
 		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
 		Object *	_object() override { return this; }
-		WidgetHolder *	_widgetHolder() override { return this; }
 
 		// Needed by IPackSlots
 
@@ -166,7 +168,6 @@ namespace wg
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;

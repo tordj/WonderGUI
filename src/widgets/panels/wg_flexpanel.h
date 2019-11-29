@@ -88,7 +88,7 @@ namespace wg
 
 
 	public:
-		FlexSlot() : bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot(WidgetHolder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 	protected:
 		bool			bPinned;
@@ -321,14 +321,12 @@ namespace wg
 		void		_hideSlots( BasicSlot *, int nb ) override;
 		void		_unhideSlots( BasicSlot *, int nb ) override;
 		Object *	_object() override { return this; }
-		WidgetHolder *	_widgetHolder() override { return this; }
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
 		SizeI		_size() const override{ return m_size; }
 
 		// Overloaded from WidgetHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
@@ -353,7 +351,7 @@ namespace wg
 
 		SlotArray<FlexSlot>	m_children;
 
-		bool			m_bConfineWidgets;
+		bool			m_bConfineWidgets = false;
 		int				m_qpixPerPoint;
 	};
 

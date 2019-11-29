@@ -35,8 +35,6 @@ namespace wg
 	class SlotArrayHolder	/** @private */
 	{
 	public:
-		virtual WidgetHolder* _widgetHolder() = 0;
-
 		virtual Object * _object() = 0;
 
 		virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;

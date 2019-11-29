@@ -33,12 +33,13 @@ namespace wg
 {
 	class Object;
 	class Widget;
+	class WidgetHolder;
 
 	template<class SlotType> class SlotArray		/** @private */
 	{
 	public:
-		SlotArray() : m_pArray(0), m_size(0), m_capacity(0) {}
-		SlotArray(int capacity) : m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
+		SlotArray( WidgetHolder * pHolder ) : m_pSlotHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
+		SlotArray( WidgetHolder * pHolder, int capacity) : m_pSlotHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
 		~SlotArray() { _killBlock( begin(), end() ); free(m_pArray); }
 
 		int			size() const { return m_size; }
@@ -106,7 +107,7 @@ namespace wg
 
 		inline void	_initBlock(SlotType * pBlock)
 		{
-			new (pBlock) SlotType();
+			new (pBlock) SlotType(m_pSlotHolder);
 		}
 
 		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
@@ -114,6 +115,7 @@ namespace wg
 		int			m_capacity;
 		int			m_size;
 		SlotType *	m_pArray;
+		WidgetHolder * m_pSlotHolder;
 	};
 
 

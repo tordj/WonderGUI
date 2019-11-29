@@ -41,7 +41,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	DragNDropLayer::DragNDropLayer()
+	DragNDropLayer::DragNDropLayer() : m_dragSlot(this)
 	{
 	}
 
@@ -366,7 +366,7 @@ namespace wg
 					{
 						pDragWidget->releaseFromParent();
 						m_dragWidgetOfs = pMsg->dragWidgetPointerOfsRaw();
-						m_dragSlot.replaceWidget(this, pDragWidget);
+						m_dragSlot._setWidget(pDragWidget);
 						dragWidgetSize = m_dragSlot._preferredSize();
 					}
 					else
@@ -462,7 +462,7 @@ namespace wg
 		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.geo);
-			m_dragSlot.replaceWidget(this, nullptr);
+			m_dragSlot._setWidget(nullptr);
 		}
 
 		if( m_pTargeted )
@@ -489,7 +489,7 @@ namespace wg
 		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.geo);
-			m_dragSlot.replaceWidget(this, nullptr);
+			m_dragSlot._setWidget(nullptr);
 		}
 
 		Base::msgRouter()->post(new DropCompleteMsg(m_pPicked, pDeliveredTo, m_pickCategory, m_pPayload, modKeys, pointerPos));
@@ -505,7 +505,7 @@ namespace wg
 
 		if (pNewWidget)
 			pNewWidget->releaseFromParent();
-		m_dragSlot.replaceWidget(this, pNewWidget );
+		m_dragSlot._setWidget(pNewWidget );
 
 		SizeI newSize = pNewWidget ? m_dragSlot._preferredSize() : SizeI(0, 0);
 		SizeI maxSize = SizeI::max(m_dragSlot.geo.size(), newSize);
@@ -553,7 +553,7 @@ namespace wg
 //            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
 
 
-			m_dragSlot.replaceWidget(this, pImage);
+			m_dragSlot._setWidget(pImage);
 			m_dragSlot.setSize(sz);
 		}
 

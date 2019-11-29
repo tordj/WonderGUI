@@ -47,7 +47,7 @@ namespace wg
 
 		pWidget->releaseFromParent();
 		LambdaSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -61,7 +61,7 @@ namespace wg
 
 		LambdaSlot * pSlot = m_pSlotArray->insert(index);
 		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -73,7 +73,7 @@ namespace wg
 
 		LambdaSlot * pSlot = m_pSlotArray->insert(pos._slot());
 		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(), pWidget);
+		pSlot->_setWidget(pWidget);
 		pSlot->pFunc = func;
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -123,7 +123,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : children(&m_children,this), m_minSize(0,0), m_preferredSize(512*4,512*4), m_maxSize(INT_MAX,INT_MAX)
+	LambdaPanel::LambdaPanel() : m_children(this), children(&m_children,this), m_minSize(0,0), m_preferredSize(512*4,512*4), m_maxSize(INT_MAX,INT_MAX)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -417,13 +417,6 @@ namespace wg
 	CoordI LambdaPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return ((LambdaSlot*)pSlot)->geo.pos();
-	}
-
-	//____ _childSize() __________________________________________________________
-
-	SizeI LambdaPanel::_childSize( BasicSlot * pSlot ) const
-	{
-		return ((LambdaSlot*)pSlot)->geo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________

@@ -58,7 +58,7 @@ namespace wg
 
 		pWidget->releaseFromParent();
 		FlexSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
+		pSlot->_setWidget(pWidget);
 
 		pSlot->bPinned = true;
 		pSlot->topLeftPin = topLeft;
@@ -76,7 +76,7 @@ namespace wg
 
 		pWidget->releaseFromParent();
 		FlexSlot * pSlot = m_pSlotArray->add();
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
+		pSlot->_setWidget(pWidget);
 
 		pSlot->placementGeo = qpixToRaw(geometry);
 		pSlot->origo = origo;
@@ -94,7 +94,7 @@ namespace wg
 
 		FlexSlot * pSlot = m_pSlotArray->insert(index);
 		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
+		pSlot->_setWidget(pWidget);
 
 		pSlot->bPinned = true;
 		pSlot->topLeftPin = topLeft;
@@ -112,7 +112,7 @@ namespace wg
 
 		FlexSlot * pSlot = m_pSlotArray->insert(index);
 		_releaseGuardPointer(pWidget, &pSlot);
-		pSlot->replaceWidget(m_pHolder->_widgetHolder(),pWidget);
+		pSlot->_setWidget(pWidget);
 
 		pSlot->placementGeo = qpixToRaw(geometry);
 		pSlot->origo = origo;
@@ -696,7 +696,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	FlexPanel::FlexPanel() : m_bConfineWidgets(false), children(&m_children,this)
+	FlexPanel::FlexPanel() : m_children(this), children(&m_children,this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -919,13 +919,6 @@ namespace wg
 	CoordI FlexPanel::_childPos( BasicSlot * pSlot ) const
 	{
 		return ((FlexSlot*)pSlot)->realGeo.pos();
-	}
-
-	//____ _childSize() __________________________________________________________
-
-	SizeI FlexPanel::_childSize( BasicSlot * pSlot ) const
-	{
-		return ((FlexSlot*)pSlot)->realGeo.size();
 	}
 
 	//____ _childRequestRender() _________________________________________________

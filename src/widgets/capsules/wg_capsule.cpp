@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Capsule::Capsule() : child( &m_child, this )
+	Capsule::Capsule() : m_child(this), child( &m_child, this )
 	{
 	}
 
@@ -132,16 +132,6 @@ namespace wg
 			return m_pSkin->_contentOfs( m_state );
 
 		return CoordI();
-	}
-
-	//____ _childSize() __________________________________________________________
-
-	SizeI Capsule::_childSize( BasicSlot * pSlot ) const
-	{
-		if( m_pSkin )
-			return m_size - m_pSkin->_contentPadding();
-
-		return m_size;
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -264,7 +254,7 @@ namespace wg
 
 	void Capsule::_releaseChild(BasicSlot * _pSlot)
 	{
-		m_child.replaceWidget(this, nullptr);
+		m_child._setWidget(nullptr);
 		_requestRender();
 		_requestResize();
 	}
@@ -273,7 +263,7 @@ namespace wg
 
 	void Capsule::_setWidget( BasicSlot * pSlot, Widget * pWidget )
 	{
-		m_child.replaceWidget( this, pWidget );
+		m_child._setWidget(pWidget );
 
 		if (pWidget)
 		{

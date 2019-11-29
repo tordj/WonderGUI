@@ -194,9 +194,9 @@ namespace wg
 		Widget();
 		virtual ~Widget();
 
-		inline void			_setHolder( WidgetHolder * pHolder, BasicSlot * pSlot ) { m_pHolder = pHolder; m_pSlot = pSlot; }
+		void				_setSlot(BasicSlot * pSlot);
 		WidgetHolder *		_holder() const { return m_pHolder; }
-		BasicSlot *				_slot() const { return m_pSlot; }
+		BasicSlot *			_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 

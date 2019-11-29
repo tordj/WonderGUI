@@ -450,8 +450,12 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	ScrollPanel::ScrollPanel() : view(&m_viewSlot, this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
+	ScrollPanel::ScrollPanel() : m_viewSlot(this), view(&m_viewSlot, this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
 	{
+		m_scrollbarSlots[0].m_pHolder = this;
+		m_scrollbarSlots[1].m_pHolder = this;
+
+
 		m_scrollbarSlots[0].placement = Direction::Down;
 		m_scrollbarSlots[1].placement = Direction::Right;
 
@@ -1351,16 +1355,6 @@ namespace wg
 			return ((ScrollbarSlot*)pSlot)->geo.pos();
 	}
 
-	//____ _childSize() __________________________________________________________
-
-	SizeI ScrollPanel::_childSize( BasicSlot * pSlot ) const
-	{
-		if (pSlot == &m_viewSlot)
-			return ((ViewSlot*)pSlot)->canvasGeo.size();
-		else
-			return ((ScrollbarSlot*)pSlot)->geo.size();
-	}
-
 	//____ _childRequestRender() _________________________________________________
 
 	void ScrollPanel::_childRequestRender( BasicSlot * _pSlot )
@@ -1515,7 +1509,7 @@ namespace wg
 	{
 		if (_pSlot == &m_viewSlot)
 		{
-			m_viewSlot.replaceWidget(this, pWidget);
+			m_viewSlot._setWidget(pWidget);
 			m_viewSlot.bVisible = true;
 			_updateElementGeo(m_size);
 			_requestRender(m_viewSlot.windowGeo);		// If geometry is same as the old one, we need to request render ourselves.
@@ -1546,7 +1540,7 @@ namespace wg
 				}
 			}
 
-			pSlot->replaceWidget(this, pWidget);
+			pSlot->_setWidget(pWidget);
 
 			_updateElementGeo(m_size);
 			_requestRender(pSlot->geo);					// If geometry is same as the old one, we need to request render ourselves.

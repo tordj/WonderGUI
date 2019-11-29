@@ -341,6 +341,14 @@ namespace wg
 		m_pickCategory = category;
 	}
 
+	//____ _setSlot() ______________________________________________________________
+
+	void Widget::_setSlot(BasicSlot * pSlot) 
+	{ 
+		m_pHolder = pSlot ? pSlot->_holder() : nullptr; 
+		m_pSlot = pSlot;
+	}
+
 	//____ _getBlendMode() _________________________________________________________
 
 	BlendMode Widget::_getBlendMode() const

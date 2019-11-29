@@ -33,6 +33,7 @@ namespace wg
 
 	class CapsuleSlot : public BasicSlot
 	{
+		CapsuleSlot(WidgetHolder* pHolder) : BasicSlot(pHolder) {}
 		friend class Capsule;
 	};
 
@@ -76,7 +77,6 @@ namespace wg
 		// Overloaded from ChildHolder
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
-		SizeI		_childSize( BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot ) override;
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;

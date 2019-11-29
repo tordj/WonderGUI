@@ -122,7 +122,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PackPanel::PackPanel() : children( &m_children, this )
+	PackPanel::PackPanel() : m_children(this), children( &m_children, this )
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = true;
@@ -498,13 +498,6 @@ namespace wg
 	//____ _childPos() _______________________________________________________
 
 	CoordI PackPanel::_childPos(BasicSlot * pSlot) const
-	{
-		return ((PackSlot*)pSlot)->geo;
-	}
-
-	//____ _childSize() _______________________________________________________
-
-	SizeI PackPanel::_childSize(BasicSlot * pSlot) const
 	{
 		return ((PackSlot*)pSlot)->geo;
 	}

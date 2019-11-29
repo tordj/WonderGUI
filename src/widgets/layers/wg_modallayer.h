@@ -44,12 +44,12 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		ModalSlot() : origo(Origo::NorthWest) {}
+		ModalSlot(WidgetHolder * pHolder) : LayerSlot(pHolder) {}
 
 		const static bool safe_to_relocate = false;
 
 		bool		bVisible = true;
-		Origo		origo;
+		Origo		origo = Origo::NorthWest;
 		RectI		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 		Widget_wp	pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
@@ -180,7 +180,6 @@ namespace wg
 		void			_hideSlots(BasicSlot *, int nb) override;
 		void			_unhideSlots(BasicSlot *, int nb) override;
 		Object *		_object() override { return this;  }
-		WidgetHolder *	_widgetHolder() override { return this; }
 		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;
 
 		// Overloaded from Layer

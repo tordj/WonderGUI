@@ -30,22 +30,21 @@
 namespace wg
 {
 
+	//____ BasicSlot __________________________________________________________
+
 	class BasicSlot		/** @private */
 	{
-	friend class ISlot;
-	friend class SlotIterator;
-	template<class S> friend class ISlotArray;
-	template<class S> friend class SlotArray;
-	template<class S> friend class ISelectableSlotArray;
+		friend class Widget;
+		friend class ISlot;
+		friend class SlotIterator;
+		template<class S> friend class ISlotArray;
+		template<class S> friend class SlotArray;
+		template<class S> friend class ISelectableSlotArray;
 
 	public:
-
-		Widget_p widget() const { return Widget_p(m_pWidget); }
-
-
-		BasicSlot() {}
-
 		const static bool safe_to_relocate = true;
+
+		BasicSlot(WidgetHolder * pHolder) : m_pHolder(pHolder) {}
 
 		BasicSlot(BasicSlot&& o)
 		{
@@ -53,7 +52,7 @@ namespace wg
 			m_pHolder = o.m_pHolder;
 			if (m_pWidget)
 			{
-				m_pWidget->_setHolder(m_pWidget->_holder(), this);
+				m_pWidget->_setSlot(this);
 				o.m_pWidget = nullptr;
 			}
 		}
@@ -65,58 +64,80 @@ namespace wg
 		{
 			if( m_pWidget != nullptr )
 			{
-				m_pWidget->_setHolder( nullptr, nullptr );
+				m_pWidget->_setSlot( nullptr );
 				m_pWidget->_decRefCount();
 			}
 		}
 
 
+
+		//.____ Operators __________________________________________
+
 		BasicSlot& operator=(BasicSlot&& o)
 		{
 			if (m_pWidget)
 			{
-				m_pWidget->_setHolder(nullptr, nullptr);
+				m_pWidget->_setSlot(nullptr);
 				m_pWidget->_decRefCount();
 			}
 
-			m_pWidget =o.m_pWidget;
+			m_pWidget = o.m_pWidget;
 			m_pHolder = o.m_pHolder;
 
 			if (m_pWidget)
 			{
-				m_pWidget->_setHolder(m_pWidget->_holder(), this);
+				m_pWidget->_setSlot(this);
 				o.m_pWidget = nullptr;
 			}
 
 			return *this;
 		}
 
+//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+
+//		inline ISlot operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+		inline operator Widget_p() const { return widget(); }
+
+		inline bool operator==(Widget * other) const { return other == _widget(); }
+		inline bool operator!=(Widget * other) const { return other != _widget(); }
+
+		inline operator bool() const { return _widget() != nullptr; }
+
+		inline Widget* operator->() const { return _widget(); }
+
+
+		//.____ Content _______________________________________________________
+
+		Widget_p widget() const { return Widget_p(m_pWidget); }
+
+
 	protected:
 
-		inline void relink() { m_pWidget->_setHolder( m_pHolder, this ); }
+		inline void relink() { m_pWidget->_setSlot( this ); }
 
-		inline void replaceWidget( WidgetHolder * pHolder, Widget * pWidget )
+		inline void _setWidget( Widget * pWidget )
 		{
 			if( m_pWidget )
 			{
 				if (m_pWidget == pWidget)
 					return;
 
-				m_pWidget->_setHolder( nullptr, nullptr );
+				m_pWidget->_setSlot( nullptr );
 				m_pWidget->_decRefCount();
 			}
 
 			m_pWidget = pWidget;
-			m_pHolder = pHolder;
 
 			if( pWidget )
 			{
 				pWidget->_incRefCount();
-				pWidget->_setHolder( pHolder, this );
+				pWidget->releaseFromParent();
+				pWidget->_setSlot( this );
 			}
 		}
 
 		inline Widget * _widget() const { return m_pWidget; }
+		inline WidgetHolder * _holder() const { return m_pHolder; }
 
 		inline SizeI	_size() const { return m_pWidget->m_size; }
 		inline void		_setSize( SizeI size ) const { m_pWidget->_resize(size); }
@@ -132,7 +153,7 @@ namespace wg
 
 
 		Widget *		m_pWidget = nullptr;
-		WidgetHolder *	m_pHolder = nullptr;
+		WidgetHolder *	m_pHolder;
 	};
 
 }
