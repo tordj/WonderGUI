@@ -39,6 +39,12 @@ namespace wg
 	typedef	WeakPtr<PackList>		PackList_wp;
 
 
+	//____ PackListSlotHolder ____________________________________________________________
+
+	class PackListSlotHolder : public ListSlotHolder
+	{
+
+	};
 
 	//____ PackListSlot ____________________________________________________________
 
@@ -49,16 +55,16 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		PackListSlot(WidgetHolder *pHolder) : ListSlot(pHolder) {}
+		PackListSlot(SlotHolder *pHolder) : ListSlot(pHolder) {}
 
 		int				ofs;				// Offset in pixels for start of this list item.
 		int				length;				// Length in pixels of this list item. Includes widget padding.
 		int				prefBreadth;		// Prefereed breadth of this widget.
 	};
 
-	//____ PackListSlotsHolder() ___________________________________________
+	//____ PackListSlotArrayHolder() ___________________________________________
 
-	class PackListSlotsHolder : public SelectableSlotArrayHolder /** @private */
+	class PackListSlotArrayHolder : public SelectableSlotArrayHolder /** @private */
 	{
 	public:
 		virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
@@ -80,7 +86,7 @@ namespace wg
 
 		/** @private */
 
-		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, PackListSlotsHolder * pHolder) : ISelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
+		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, PackListSlotArrayHolder * pHolder) : ISelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -95,8 +101,8 @@ namespace wg
 		void		sort();
 	protected:
 
-		const PackListSlotsHolder *	_holder() const { return static_cast<PackListSlotsHolder*>(m_pHolder); }
-		PackListSlotsHolder *	_holder() { return static_cast<PackListSlotsHolder*>(m_pHolder); }
+		const PackListSlotArrayHolder *	_holder() const { return static_cast<PackListSlotArrayHolder*>(m_pHolder); }
+		PackListSlotArrayHolder *	_holder() { return static_cast<PackListSlotArrayHolder*>(m_pHolder); }
 
 
 	};
@@ -113,7 +119,7 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected PackListSlotsHolder
+	class PackList : public List, protected PackListSlotArrayHolder, protected PackListSlotHolder
 	{
 		friend class IPackListSlots;
 //		friend class ISelectableChildren<PackListSlot, PackList>;
@@ -181,7 +187,7 @@ namespace wg
 		SizeI			_windowPadding() const override;
 
 
-		// Overloaded from PackListSlotsHolder
+		// Overloaded from PackListSlotArrayHolder
 
 		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
 		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
@@ -224,7 +230,20 @@ namespace wg
 		Widget * 		_findWidget(const CoordI& ofs, SearchMode mode) override;
 
 
-		// Overloaded from WidgetHolder
+		// Overloaded from PackListSlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
+
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
 
@@ -236,6 +255,7 @@ namespace wg
 		Widget *	_nextChild(const BasicSlot * pSlot) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
 
 		// Overloaded from ComponentHolder
 

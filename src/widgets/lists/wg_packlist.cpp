@@ -685,7 +685,6 @@ namespace wg
 	void PackList::_didAddSlots(BasicSlot * pSlot, int nb)
 	{
 		_unhideSlots(pSlot, nb);
-		List::_didAddSlots(pSlot, nb);
 	}
 
 	//____ _didMoveSlots() _______________________________________________________
@@ -701,10 +700,15 @@ namespace wg
 
 	//____ _willRemoveSlots() _____________________________________________________
 
-	void PackList::_willRemoveSlots(BasicSlot * pSlot, int nb)
+	void PackList::_willRemoveSlots(BasicSlot * _pSlot, int nb)
 	{
-		_hideSlots(pSlot, nb);
-		List::_willRemoveSlots(pSlot, nb);
+		_hideSlots(_pSlot, nb);
+
+		// Unselect slots that will be removed.
+
+		ListSlot * pSlot = (ListSlot*)_pSlot;
+		ListSlot * pEnd = (ListSlot*)(((char *)_pSlot) + m_sizeOfSlot * nb);
+		_setSlotSelection(pSlot, pEnd, false, true);
 	}
 
 	//____ _hideSlots() _____________________________________________________
@@ -1299,6 +1303,15 @@ namespace wg
 	{
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<PackListSlot*>(pSlot));
+	}
+
+	//____ _replaceChild() _____________________________________________________
+
+	void PackList::_replaceChild(BasicSlot * pSlot, Widget * pNewChild)
+	{
+		//TODO: Implement!!!
+
+		assert(false);
 	}
 
 

@@ -137,22 +137,6 @@ namespace wg
 			return RectI(0,0,0,0);
 	}
 
-	//____ _setWidget() ____________________________________________________________
-
-	void RootPanel::_setWidget( BasicSlot * pSlot, Widget * pNewWidget )
-	{
-		if( m_child._widget() )
-			m_child._widget()->_collectPatches( m_dirtyPatches, _geo(), _geo() );
-
-		m_child._setWidget( pNewWidget );
-
-		if( pNewWidget )
-		{
-			pNewWidget->_resize(m_geo.size());
-			pNewWidget->_collectPatches( m_dirtyPatches, _geo(), _geo() );
-		}
-	}
-
 	//____ _object() ____________________________________________________________
 
 	Object * RootPanel::_object()
@@ -422,9 +406,9 @@ namespace wg
 		return _geo();
 	}
 
-	//____ _childParent() __________________________________________________
+	//____ _container() __________________________________________________
 
-	Container * RootPanel::_childParent()
+	Container * RootPanel::_container()
 	{
 		return nullptr;
 	}
@@ -513,8 +497,25 @@ namespace wg
 
 	void RootPanel::_releaseChild(BasicSlot * pSlot)
 	{
-		_setWidget(pSlot, nullptr);
+		_replaceChild(pSlot, nullptr);
 	}
+
+	//____ _replaceChild() ____________________________________________________________
+
+	void RootPanel::_replaceChild(BasicSlot * pSlot, Widget * pNewWidget)
+	{
+		if (m_child._widget())
+			m_child._widget()->_collectPatches(m_dirtyPatches, _geo(), _geo());
+
+		m_child._setWidget(pNewWidget);
+
+		if (pNewWidget)
+		{
+			pNewWidget->_resize(m_geo.size());
+			pNewWidget->_collectPatches(m_dirtyPatches, _geo(), _geo());
+		}
+	}
+
 
 
 } // namespace wg

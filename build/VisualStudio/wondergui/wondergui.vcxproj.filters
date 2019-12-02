@@ -296,9 +296,6 @@
     <ClInclude Include="..\..\..\src\base\wg_dummyfont.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_widgetholder.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slotarray.h">
       <Filter>slots</Filter>
     </ClInclude>
@@ -487,6 +484,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slot.h">
       <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotholder.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

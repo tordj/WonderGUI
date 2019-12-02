@@ -106,7 +106,7 @@ namespace wg
 
 			auto pHolder = p->_holder();
 			pos += pHolder->_childPos( p->_slot() );
-			p = pHolder->_childParent();
+			p = pHolder->_container();
 		}
 
 		return true;
@@ -133,9 +133,9 @@ namespace wg
 		return RectI( 0,0, _access(pSlot)->_size() );
 	}
 
-	//____ _childParent() ____________________________________________________________
+	//____ _container() _____________________________________________________________
 
-	Container * Container::_childParent()
+	Container * Container::_container()
 	{
 		return this;
 	}
@@ -145,6 +145,13 @@ namespace wg
 	RootPanel * Container::_root()
 	{
 		return m_pHolder ? m_pHolder->_root() : nullptr;
+	}
+
+	//____ _object() __________________________________________________________________
+
+	Object * Container::_object()
+	{
+		return this;
 	}
 
 	//____ _childRequestFocus() ______________________________________________________

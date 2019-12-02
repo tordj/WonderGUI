@@ -78,7 +78,7 @@ namespace wg
 
 
 		bool		m_bTooltipGroup;	// All descendants belongs to the same tooltip group.
-		MaskOp	m_maskOp;			// Specifies how container masks background.
+		MaskOp		m_maskOp;			// Specifies how container masks background.
 	};
 
 

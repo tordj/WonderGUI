@@ -35,11 +35,16 @@ namespace wg
 	typedef	WeakPtr<Layer>		Layer_wp;
 
 
-
 	class BaseSlot : public BasicSlot
 	{
 		friend class Layer;
-		BaseSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
+		BaseSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
+	};
+
+
+	class LayerSlotHolder : public SlotHolder
+	{
+
 	};
 
 	//____ LayerSlot ___________________________________________________________
@@ -48,7 +53,7 @@ namespace wg
 	{
 		friend class Layer;
 	protected:
-		LayerSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
+		LayerSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
 
 		inline void setSize( SizeI size ) { geo.setSize(size); BasicSlot::_setSize(size); }
 		inline void setGeo(RectI _geo) { geo = _geo; BasicSlot::_setSize(geo.size()); }
@@ -79,7 +84,7 @@ namespace wg
 	 *
 	 **/
 
-	class Layer : public Container, protected SlotHolder
+	class Layer : public Container
 	{
 
 	public:
@@ -97,20 +102,23 @@ namespace wg
 		static Layer_p	cast( Object * pObject );
 
 	protected:
-		Layer();
+		Layer(SlotHolder * pSlotHolder);
 
-		// Overloaded from WidgetHolder
+		// Overloaded from SlotHolder
+
+
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( BasicSlot * pSlot ) override;
-		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( BasicSlot * pSlot );
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect );
 //		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
-		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const;
 
-		void		_releaseChild( BasicSlot * pSlot ) override;
+		void		_releaseChild( BasicSlot * pSlot );
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewWidget);
 
 		// Overloaded from Container
 
@@ -123,7 +131,6 @@ namespace wg
 
 		// Overloaded from ChildHolder
 
-		void		_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) override;
 		Object *	_object() override { return this; }
 
 		// Overloaded from Widget

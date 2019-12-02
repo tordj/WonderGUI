@@ -115,7 +115,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PopupLayer::PopupLayer() : m_popups(this), popups(this)
+	PopupLayer::PopupLayer() : Layer(this), m_popups(this), popups(this)
 	{
 	}
 

@@ -45,10 +45,11 @@ namespace wg
 	 * Base class for all widgets that can hold child widgets.
 	 */
 
-	class Container : public Widget, protected WidgetHolder
+	class Container : public Widget
 	{
 		friend class MsgRouter;
 
+		friend class SlotHolder;
 
 		friend class Menu;
 		friend class Menubar;
@@ -92,39 +93,31 @@ namespace wg
 			Container();
 			virtual ~Container() {};
 
-			// WidgetHolder methods, default implementations for widgets
-
-			/* Left to implement in individual classes:
-
-				CoordI		_childPos( Slot * pSlot ) const;
-
-				void		_childRequestRender( Slot * pSlot );
-				void		_childRequestRender( Slot * pSlot, const RectI& rect );
-				void		_childRequestResize( Slot * pSlot );
-
-				Widget *	_prevChild( const Slot * pSlot ) const;
-				Widget *	_nextChild( const Slot * pSlot ) const;
-
-				void		_releaseChild( Slot * pSlot );
-			*/
 
 			bool                    _descendantPos( Widget * pDescendant, CoordI& pos );         // Descendants position in our local coordinate system, return false if isn't a descendant.
 
-			virtual CoordI			_childGlobalPos( BasicSlot * pSlot ) const override;
+			// Default implementations for some methods of SlotHolder
 
-			virtual bool			_isChildVisible( BasicSlot * pSlot ) const override;
-			virtual RectI			_childWindowSection( BasicSlot * pSlot ) const override;		// Returns the window section within the childs canvas.
+			virtual Container *		_container();
+			virtual RootPanel *		_root();
+			virtual Object *		_object();
 
-			virtual Container *  	_childParent() override;
-			virtual RootPanel *		_root() override;
+			virtual CoordI			_childPos(BasicSlot * pSlot) const = 0;				///< Get the local position of a child.
+			virtual CoordI			_childGlobalPos( BasicSlot * pSlot ) const;
 
-			virtual bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget ) override;					// Request focus on behalf of me, child or grandchild.
-			virtual bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget ) override;
+			virtual bool			_isChildVisible( BasicSlot * pSlot ) const;
+			virtual RectI			_childWindowSection( BasicSlot * pSlot ) const;		// Returns the window section within the childs canvas.
 
-			virtual void			_childRequestInView( BasicSlot * pSlot ) override;
-			virtual void			_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
+			virtual bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget );
+
+			virtual void			_childRequestInView( BasicSlot * pSlot );
+			virtual void			_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
+
 
 			//
+
+
 
 			virtual bool			_isPanel() const;
 
@@ -140,8 +133,6 @@ namespace wg
 			struct SlotWithGeo
 			{
 				RectI			geo;
-//				Widget *		pWidget;
-//				bool			bVisible;
 				const BasicSlot *	pSlot;
 			};
 

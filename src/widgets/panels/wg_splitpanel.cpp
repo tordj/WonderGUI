@@ -603,21 +603,6 @@ namespace wg
 			package.pSlot = nullptr;
 	}
 
-	//____ _setWidget() _______________________________________________________
-
-	void SplitPanel::_setWidget(BasicSlot * _pSlot, Widget * pNewWidget)
-	{
-		auto pSlot = static_cast<SplitPanelSlot*>(_pSlot);
-
-		pSlot->_setWidget(pNewWidget);
-		pNewWidget->_resize(pSlot->geo);
-		_updatePreferredSize();
-		bool bGeoChanged =_updateGeo();
-		if (!bGeoChanged)
-			_requestRender(pSlot->geo);
-
-	}
-
 	//_____ _childPos() _______________________________________________________
 
 	CoordI SplitPanel::_childPos(BasicSlot * pSlot) const
@@ -671,6 +656,20 @@ namespace wg
 
 	void SplitPanel::_releaseChild(BasicSlot * pSlot)
 	{
-		_setWidget(pSlot, nullptr);
+		_replaceChild(pSlot, nullptr);
+	}
+
+	//____ _replaceChild() _______________________________________________________
+
+	void SplitPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewWidget)
+	{
+		auto pSlot = static_cast<SplitPanelSlot*>(_pSlot);
+
+		pSlot->_setWidget(pNewWidget);
+		pNewWidget->_resize(pSlot->geo);
+		_updatePreferredSize();
+		bool bGeoChanged = _updateGeo();
+		if (!bGeoChanged)
+			_requestRender(pSlot->geo);
 	}
 }

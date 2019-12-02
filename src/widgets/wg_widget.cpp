@@ -106,7 +106,7 @@ namespace wg
 	Container_p Widget::parent() const
 	{
 		if( m_pHolder )
-			return m_pHolder->_childParent();
+			return m_pHolder->_container();
 		return 0;
 	}
 

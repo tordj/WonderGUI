@@ -37,6 +37,12 @@ namespace wg
 	typedef	WeakPtr<StackPanel>		StackPanel_wp;
 
 
+	//____ StackSlot ____________________________________________________________
+
+	class StackSlotHolder : public PaddedSlotHolder
+	{
+
+	};
 
 	//____ StackSlot ____________________________________________________________
 
@@ -45,7 +51,7 @@ namespace wg
 		friend class StackPanel;
 		friend class IStackSlots;
 	public:
-		StackSlot(WidgetHolder * pHolder) : PaddedSlot(pHolder) {}
+		StackSlot(SlotHolder * pHolder) : PaddedSlot(pHolder) {}
 
 		Origo			origo = Origo::Center;
 		SizePolicy2D	SizePolicy = SizePolicy2D::Original;
@@ -102,7 +108,7 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected StackSlotArrayHolder
+	class StackPanel : public Panel, protected StackSlotArrayHolder, protected StackSlotHolder
 	{
 		friend class IStackSlots;
 
@@ -146,7 +152,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		// Overloaded from PaddedChildrenHolder
+		// Overloaded from StackSlotArrayHolder
 
 		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
@@ -155,10 +161,22 @@ namespace wg
 		void		_unhideSlots( BasicSlot *, int nb ) override;
 		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
+
+		// Overloaded from StackSlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
 		Object *	_object() override { return this; }
 
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
 
-		// Overloaded from WidgetHolder
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
@@ -170,6 +188,7 @@ namespace wg
 		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
 
 		// Internal to StackPanel
 

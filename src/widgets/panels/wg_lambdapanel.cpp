@@ -473,6 +473,21 @@ namespace wg
 		m_children.remove(static_cast<LambdaSlot*>(pSlot));
 	}
 
+	//____ _replaceChild() ______________________________________________________
+
+	void LambdaPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewChild)
+	{
+		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
+
+		children._releaseGuardPointer(pNewChild, &pSlot);
+		pSlot->_setWidget(pNewChild);
+
+   		if (pSlot->bVisible)
+		{
+			_updateGeo(pSlot);
+			_onRequestRender(pSlot->geo, pSlot);
+		}
+	}
 
 	//____ _cloneContent() _______________________________________________________
 

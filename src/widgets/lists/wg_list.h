@@ -36,6 +36,14 @@ namespace wg
 	typedef	StrongPtr<List>		List_p;
 	typedef	WeakPtr<List>		List_wp;
 
+
+	//____ ListSlotHolder ____________________________________________________________
+
+	class ListSlotHolder : public SlotHolder		/** @private */
+	{
+
+	};
+
 	//____ ListSlot ____________________________________________________________
 
 	class ListSlot : public BasicSlot		/** @private */
@@ -45,7 +53,7 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		ListSlot(WidgetHolder * pHolder) : BasicSlot(pHolder) {}
+		ListSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
 
 		bool		bVisible = false;
 	};
@@ -59,7 +67,7 @@ namespace wg
 	*
 	*/
 
-	class List : public Container, protected SelectableSlotArrayHolder
+	class List : public Container
 	{
 	public:
 
@@ -101,12 +109,6 @@ namespace wg
 
 		Widget*			_firstChild() const override;
 		Widget*			_lastChild() const override;
-
-
-		virtual void	_didAddSlots(BasicSlot * pSlot, int nb) override;
-		virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) override;
-		virtual void	_hideSlots(ListSlot * pSlot, int nb);
-		virtual void	_unhideSlots(ListSlot * pSlot, int nb);
 
 
 		virtual int		_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelect, bool bPostMsg);

@@ -40,10 +40,10 @@
 #include <wg_gfxoutstream.h>
 #include <wg_payload.h>
 #include <wg_slot.h>
+#include <wg_slotholder.h>
 #include <wg_surface.h>
 #include <wg_gfxstreamwriter.h>
 #include <wg_textstylemanager.h>
-#include <wg_widgetholder.h>
 #include <wg_msglogger.h>
 #include <wg_scrollbartarget.h>
 #include <wg_pointers.h>

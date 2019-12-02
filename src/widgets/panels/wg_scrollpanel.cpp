@@ -295,7 +295,7 @@ namespace wg
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
-		_holder()->_setWidget(m_pSlot, pWidget);
+		_holder()->_replaceChild(m_pSlot, pWidget);
 		return *this;
 	}
 
@@ -432,13 +432,13 @@ namespace wg
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
-		m_pHolder->_setWidget(m_pSlot, pWidget);
+		m_pHolder->_replaceChild(m_pSlot, pWidget);
 		return *this;
 	}
 
 	void ScrollbarEntry::clear()
 	{
-		m_pHolder->_setWidget(m_pSlot, nullptr);
+		m_pHolder->_replaceChild(m_pSlot, nullptr);
 	}
 
 	Object * ScrollbarEntry::_object() const
@@ -452,8 +452,8 @@ namespace wg
 
 	ScrollPanel::ScrollPanel() : m_viewSlot(this), view(&m_viewSlot, this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
 	{
-		m_scrollbarSlots[0].m_pHolder = this;
-		m_scrollbarSlots[1].m_pHolder = this;
+		m_scrollbarSlots[0].m_pHolder = (ViewSlotHolder*) this;
+		m_scrollbarSlots[1].m_pHolder = (ViewSlotHolder*) this;
 
 
 		m_scrollbarSlots[0].placement = Direction::Down;
@@ -1479,7 +1479,7 @@ namespace wg
 
 	void ScrollPanel::_releaseChild(BasicSlot * pSlot)
 	{
-		_setWidget(pSlot, nullptr);
+		_replaceChild(pSlot, nullptr);
 	}
 
 
@@ -1505,7 +1505,7 @@ namespace wg
 
 	//____ _setWidget() __________________________________________________________
 
-	void ScrollPanel::_setWidget(BasicSlot * _pSlot, Widget * pWidget)
+	void ScrollPanel::_replaceChild(BasicSlot * _pSlot, Widget * pWidget)
 	{
 		if (_pSlot == &m_viewSlot)
 		{

@@ -35,6 +35,14 @@ namespace wg
 	typedef	StrongPtr<LambdaPanel>		LambdaPanel_p;
 	typedef	WeakPtr<LambdaPanel>		LambdaPanel_wp;
 
+	//____ LambdaSlotHolder ____________________________________________________________
+
+	class LambdaSlotHolder : public SlotHolder
+	{
+
+	};
+
+
 	//____ LambdaSlot ____________________________________________________________
 
 	class LambdaSlot : public BasicSlot		/** @private */
@@ -42,7 +50,7 @@ namespace wg
 		friend class LambdaPanel;
 		friend class ILambdaSlots;
 	public:
-		LambdaSlot(WidgetHolder * pHolder ) : BasicSlot(pHolder), pFunc(nullptr), bVisible(false) {}
+		LambdaSlot(SlotHolder * pHolder ) : BasicSlot(pHolder), pFunc(nullptr), bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -51,9 +59,9 @@ namespace wg
 		RectI			geo;				// Widgets geo relative parent
 	};
 
-	//____ LambdaSlotHolder _________________________________________________
+	//____ LambdaSlotArrayHolder _________________________________________________
 
-	class LambdaSlotHolder : public SlotArrayHolder		/** @private */
+	class LambdaSlotArrayHolder : public SlotArrayHolder		/** @private */
 	{
 	public:
 		virtual void		_updateSlotGeo(BasicSlot * pSlot, int nb) = 0;
@@ -68,10 +76,8 @@ namespace wg
 
 	class ILambdaSlots : public ISlotArray<LambdaSlot>
 	{
+		friend class LambdaPanel;
 	public:
-		/** @private */
-
-		ILambdaSlots( SlotArray<LambdaSlot> * pSlotArray, LambdaSlotHolder * pHolder ) : ISlotArray<LambdaSlot>(pSlotArray,pHolder) {}
 
 		//.____ Content _______________________________________________________
 
@@ -93,15 +99,16 @@ namespace wg
 		inline ILambdaSlots_p	ptr() { return ILambdaSlots_p(this); }
 
 	protected:
+		ILambdaSlots(SlotArray<LambdaSlot> * pSlotArray, LambdaSlotArrayHolder * pHolder) : ISlotArray<LambdaSlot>(pSlotArray, pHolder) {}
 
-		const LambdaSlotHolder *	_holder() const { return static_cast<LambdaSlotHolder*>(m_pHolder); }
-		LambdaSlotHolder *	_holder() { return static_cast<LambdaSlotHolder*>(m_pHolder); }
+		const LambdaSlotArrayHolder *	_holder() const { return static_cast<LambdaSlotArrayHolder*>(m_pHolder); }
+		LambdaSlotArrayHolder *	_holder() { return static_cast<LambdaSlotArrayHolder*>(m_pHolder); }
 	};
 
 
 	//____ LambdaPanel _________________________________________________________
 
-	class LambdaPanel : public Panel, protected LambdaSlotHolder
+	class LambdaPanel : public Panel, protected LambdaSlotArrayHolder, protected LambdaSlotHolder
 	{
 
 	public:
@@ -143,7 +150,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Methods for LambdaPanelChildren
+		// Methods for LambdaSlotArrayHolder
 
 		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
@@ -151,9 +158,22 @@ namespace wg
 		void		_hideSlots( BasicSlot * pSlot, int nb ) override;
 		void		_unhideSlots( BasicSlot * pSlot, int nb ) override;
 		void		_updateSlotGeo(BasicSlot * pSlot, int nb) override;
+
+		// Overloaded from LambdaSlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
 		Object *	_object() override { return this; }
 
-		// Overloaded from WidgetHolder
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
@@ -165,6 +185,7 @@ namespace wg
 		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override;
 
 	private:
 
@@ -175,7 +196,6 @@ namespace wg
 		void		_updateGeo(LambdaSlot * pSlot, bool bForceResize = false);
 
 		void		_onRequestRender( const RectI& rect, const LambdaSlot * pSlot );
-
 
 		SlotArray<LambdaSlot>	m_children;
 

@@ -26,7 +26,6 @@
 #pragma once
 
 #include <wg_geo.h>
-#include <wg_geo.h>
 
 
 namespace wg
@@ -35,21 +34,23 @@ namespace wg
 	class RootPanel;
 	class Widget;
 	class BasicSlot;
+	class Object;
 
 
-	class WidgetHolder		/** @private */
+	//____ SlotHolder ______________________________________________________________
+
+	class SlotHolder		/** @private */
 	{
 	public:
+		virtual Container * _container() = 0;
+		virtual RootPanel *	_root() = 0;
+		virtual Object *	_object() = 0;
+
 		virtual CoordI		_childPos( BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
 		virtual CoordI		_childGlobalPos( BasicSlot * pSlot ) const = 0;
 
 		virtual bool		_isChildVisible( BasicSlot * pSlot ) const = 0;
-		virtual RectI		_childWindowSection( BasicSlot * pSlot ) const = 0;		// Returns the window section within the childs canvas.
-
-
-		virtual Container * _childParent() = 0;
-		virtual RootPanel *	_root() = 0;
-
+		virtual RectI		_childWindowSection( BasicSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 
 		virtual void		_childRequestRender( BasicSlot * pSlot ) = 0;
 		virtual void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) = 0;
@@ -65,6 +66,7 @@ namespace wg
 		virtual Widget *	_nextChild( const BasicSlot * pSlot ) const = 0;
 
 		virtual void		_releaseChild(BasicSlot * pSlot) = 0;
+		virtual void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild) = 0;
 	};
 
 } // namespace wg

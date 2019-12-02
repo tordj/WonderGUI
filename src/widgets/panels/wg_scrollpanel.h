@@ -56,13 +56,21 @@ namespace wg
 		Direction		placement;
 	};
 
+	//____ ViewSlotHolder ______________________________________________________
+
+	class ViewSlotHolder : public PaddedSlotHolder
+	{
+
+	};
+
+
 	//____ ViewSlot ______________________________________________________
 
 	class ViewSlot : public PaddedSlot		/** @private */
 	{
 		friend class ScrollPanel;
 	public:
-		ViewSlot(WidgetHolder *pHolder) : PaddedSlot(pHolder) {}
+		ViewSlot(ViewSlotHolder *pHolder) : PaddedSlot(pHolder) {}
 
 		int			paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -231,7 +239,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected IViewSlotHolder
+	class ScrollPanel : public Panel, protected IViewSlotHolder, protected ViewSlotHolder
 	{
 		friend class IViewSlot;
 		friend class ScrollbarEntry;
@@ -314,7 +322,17 @@ namespace wg
 		bool		_alphaTest(const CoordI& ofs) override;
 		void		_cloneContent(const Widget * _pOrg) override;
 
-		// Overloaded from WidgetHolder
+		// Overloaded from SlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
+		Object *	_object() override { return this; }
+
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
 
@@ -332,11 +350,10 @@ namespace wg
 		RectI		_childWindowSection(BasicSlot * pSlot) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pWidget) override;
 
 		// Overloaded from ChildHolder
 
-		void			_setWidget(BasicSlot * pSlot, Widget * pWidget) override;
-		Object *		_object() override { return this;  }
 		inline void		_requestRender(const RectI& rect) override { Panel::_requestRender(rect); }
 		inline void		_requestRender() { Panel::_requestRender(); }
 		virtual void	_updateViewGeo() override { _updateElementGeo(m_size); }

@@ -20,6 +20,7 @@
 
 =========================================================================*/
 
+#include <assert.h>
 #include <wg_stackpanel.h>
 #include <wg_util.h>
 #include <wg_patches.h>
@@ -444,6 +445,16 @@ namespace wg
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<StackSlot*>(pSlot));
 	}
+
+	//____ _replaceChild() ____________________________________________________
+
+	void StackPanel::_replaceChild(BasicSlot * pSlot, Widget * pNewChild)
+	{
+		//TODO: Implement!!!
+
+		assert(false);
+	}
+
 
 	//____ _unhideChildren() _____________________________________________________
 

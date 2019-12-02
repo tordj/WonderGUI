@@ -37,6 +37,7 @@ namespace wg
 		friend class Widget;
 		friend class ISlot;
 		friend class SlotIterator;
+		friend class SlotHolder;
 		template<class S> friend class ISlotArray;
 		template<class S> friend class SlotArray;
 		template<class S> friend class ISelectableSlotArray;
@@ -44,7 +45,7 @@ namespace wg
 	public:
 		const static bool safe_to_relocate = true;
 
-		BasicSlot(WidgetHolder * pHolder) : m_pHolder(pHolder) {}
+		BasicSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 
 		BasicSlot(BasicSlot&& o)
 		{
@@ -137,7 +138,7 @@ namespace wg
 		}
 
 		inline Widget * _widget() const { return m_pWidget; }
-		inline WidgetHolder * _holder() const { return m_pHolder; }
+		inline SlotHolder * _holder() const { return m_pHolder; }
 
 		inline SizeI	_size() const { return m_pWidget->m_size; }
 		inline void		_setSize( SizeI size ) const { m_pWidget->_resize(size); }
@@ -153,7 +154,7 @@ namespace wg
 
 
 		Widget *		m_pWidget = nullptr;
-		WidgetHolder *	m_pHolder;
+		SlotHolder *	m_pHolder;
 	};
 
 }

@@ -29,7 +29,7 @@
 #include <wg_skin.h>
 #include <wg_receiver.h>
 #include <wg_componentholder.h>
-#include <wg_widgetholder.h>
+#include <wg_slotholder.h>
 
 namespace wg
 {
@@ -41,7 +41,7 @@ namespace wg
 	class Layer;
 	class MsgRouter;
 	class Patches;
-	class WidgetHolder;
+	class SlotHolder;
 
 	class Widget;
 	typedef	StrongPtr<Widget>	Widget_p;
@@ -195,7 +195,7 @@ namespace wg
 		virtual ~Widget();
 
 		void				_setSlot(BasicSlot * pSlot);
-		WidgetHolder *		_holder() const { return m_pHolder; }
+		SlotHolder *		_holder() const { return m_pHolder; }
 		BasicSlot *			_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
@@ -234,7 +234,7 @@ namespace wg
 
 		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
 		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
-		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_childParent(); else return nullptr; }
+		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
 		inline RectI	_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectI(); }
 
@@ -284,8 +284,8 @@ namespace wg
 
 		int				m_id;
 
-		WidgetHolder *	m_pHolder;
-		BasicSlot *			m_pSlot;
+		SlotHolder *	m_pHolder;
+		BasicSlot *		m_pSlot;
 
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

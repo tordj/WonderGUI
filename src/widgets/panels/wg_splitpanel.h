@@ -43,7 +43,7 @@ namespace wg
 		friend class SplitPanel;
 
 	protected:
-		SplitPanelSlot(WidgetHolder *pHolder) : BasicSlot(pHolder) {}
+		SplitPanelSlot(SlotHolder *pHolder) : BasicSlot(pHolder) {}
 
 		RectI	geo;
 	};
@@ -137,13 +137,21 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
+		// Overloaded from SlotHolder
 
-		// Overloaded from ChildHolder
+		Container *	_container() override	{ return this; }
+		RootPanel *	_root() override		{ return Container::_root(); }
+		Object *	_object() override		{ return this; }
 
-		void	_setWidget(BasicSlot * pSlot, Widget * pNewWidget) override;
-		Object * _object() override { return this; }
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override		{ return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override		{ return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override	{ return Container::_childWindowSection(pSlot); }
 
-		// Overloaded from WidgetHolder
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override			{ return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos(BasicSlot * pSlot) const override;
 
@@ -155,7 +163,9 @@ namespace wg
 		Widget *	_nextChild(const BasicSlot * pSlot) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override;
 
+		//
 
 		bool			m_bHorizontal;
 		SizeI			m_preferredSize;

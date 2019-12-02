@@ -76,6 +76,12 @@ namespace wg
 	};
 
 
+	//____ FlexSlotHolder ____________________________________________________________
+
+	class FlexSlotHolder : public SlotHolder
+	{
+
+	};
 
 
 	//____ FlexSlot ____________________________________________________________
@@ -88,7 +94,7 @@ namespace wg
 
 
 	public:
-		FlexSlot(WidgetHolder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot(SlotHolder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 	protected:
 		bool			bPinned;
@@ -113,9 +119,9 @@ namespace wg
 	};
 
 
-	//____ FlexSlotsHolder ____________________________________________________
+	//____ FlexSlotArrayHolder ____________________________________________________
 
-	class FlexSlotsHolder : public  SlotArrayHolder /** @private */
+	class FlexSlotArrayHolder : public  SlotArrayHolder /** @private */
 	{
 	public:
 		virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
@@ -131,11 +137,8 @@ namespace wg
 
 	class IFlexSlots : public ISlotArray<FlexSlot>
 	{
+		friend class FlexPanel;
 	public:
-		/** @private */
-
-		IFlexSlots( SlotArray<FlexSlot> * pSlotArray, FlexSlotsHolder * pHolder ) : ISlotArray<FlexSlot>(pSlotArray,pHolder) {}
-
 
 		//.____ Content _______________________________________________________
 
@@ -221,6 +224,8 @@ namespace wg
 
 
 	protected:
+		IFlexSlots(SlotArray<FlexSlot> * pSlotArray, FlexSlotArrayHolder * pHolder) : ISlotArray<FlexSlot>(pSlotArray, pHolder) {}
+
 		void		_setPinned(FlexSlot * p);
 		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
 
@@ -256,7 +261,7 @@ namespace wg
 
 		//
 
-		inline FlexSlotsHolder * _holder() { return static_cast<FlexSlotsHolder*>(m_pHolder); }
+		inline FlexSlotArrayHolder * _holder() { return static_cast<FlexSlotArrayHolder*>(m_pHolder); }
 	};
 
 
@@ -271,7 +276,7 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel, protected FlexSlotsHolder
+	class FlexPanel : public Panel, protected FlexSlotArrayHolder, protected FlexSlotHolder
 	{
 
 	public:
@@ -320,11 +325,24 @@ namespace wg
 		void		_willRemoveSlots( BasicSlot * pSlot, int nb ) override;
 		void		_hideSlots( BasicSlot *, int nb ) override;
 		void		_unhideSlots( BasicSlot *, int nb ) override;
-		Object *	_object() override { return this; }
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
 		SizeI		_size() const override{ return m_size; }
 
 		// Overloaded from WidgetHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
+		Object *	_object() override { return this; }
+
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
@@ -336,6 +354,7 @@ namespace wg
 		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
 
 	private:
 

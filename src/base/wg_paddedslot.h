@@ -29,6 +29,13 @@
 namespace wg
 {
 
+	//____ PaddedSlotHolder ______________________________________________________
+
+	class PaddedSlotHolder : public SlotHolder
+	{
+
+	};
+
 
 	//____ PaddedSlot ____________________________________________________________
 
@@ -37,7 +44,7 @@ namespace wg
 		template<class S> friend class ISlotArray;
 		template<class S> friend class IPaddedSlotArray;
 	public:
-		PaddedSlot(WidgetHolder* pHolder) : BasicSlot(pHolder), bVisible(false) {}
+		PaddedSlot(SlotHolder* pHolder) : BasicSlot(pHolder), bVisible(false) {}
 	protected:
 		SizeI		_paddedPreferredSize() const { return _preferredSize() + padding; }
 		SizeI		_paddedMinSize() const { return _minSize() + padding; }

@@ -70,11 +70,6 @@ namespace wg
 
 	//____ _object() _________________________________________________________
 
-	Object * Capsule::_object()
-	{
-		return this;
-	}
-
 	const Object * Capsule::_object() const
 	{
 		return this;
@@ -259,9 +254,9 @@ namespace wg
 		_requestResize();
 	}
 
-	//____ _setWidget() ____________________________________________________________
+	//____ _replaceChild() ____________________________________________________________
 
-	void Capsule::_setWidget( BasicSlot * pSlot, Widget * pWidget )
+	void Capsule::_replaceChild( BasicSlot * pSlot, Widget * pWidget )
 	{
 		m_child._setWidget(pWidget );
 

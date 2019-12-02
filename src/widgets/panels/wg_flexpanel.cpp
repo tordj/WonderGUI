@@ -841,7 +841,7 @@ namespace wg
 		{
 			if( pSlot[i].bVisible == true )
 			{
-				_onRequestRender(pSlot[i].realGeo, pSlot);
+				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
 				pSlot[i].bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
@@ -859,7 +859,7 @@ namespace wg
 			{
 				pSlot[i].bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].realGeo, pSlot);
+				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
 			}
 		}
 	}
@@ -996,6 +996,23 @@ namespace wg
 		_willRemoveSlots(pSlot, 1);
 		m_children.remove(static_cast<FlexSlot*>(pSlot));
 	}
+
+	//____ _replaceChild() _____________________________________________________
+
+	void FlexPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewWidget)
+	{
+		auto pSlot = static_cast<FlexSlot*>(_pSlot);
+		children._releaseGuardPointer(pNewWidget, &pSlot);
+
+		pSlot->_setWidget(pNewWidget);
+
+		if (pSlot->bVisible )
+		{
+			_refreshRealGeo(pSlot, true);
+			_onRequestRender(pSlot->realGeo, pSlot);
+		}
+	}
+
 
 	//____ _firstSlotWithGeo() _____________________________________________________
 

@@ -43,6 +43,11 @@ namespace wg
 
 		virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
 		virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
+
+//		virtual void	_willReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
+//		virtual void	_didReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
+
+
 	};
 
 
@@ -147,7 +152,7 @@ namespace wg
 
 		inline int		index(Widget * pChild) const override
 		{
-			if (pChild->_holder() && pChild->_holder()->_childParent() == m_pHolder->_object())
+			if (pChild->_holder() && pChild->_holder()->_container() == m_pHolder->_object())
 				return m_pSlotArray->index(static_cast<SlotType*>(pChild->_slot()));
 
 			return -1;

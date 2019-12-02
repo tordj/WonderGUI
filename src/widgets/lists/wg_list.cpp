@@ -337,40 +337,6 @@ namespace wg
 		return _prevSlot(p)->_widget();
 	}
 
-	//____ _didAddSlots() _________________________________________________________
-
-	void List::_didAddSlots(BasicSlot * pSlot, int nb)
-	{
-		// Do nothing
-	}
-
-	//____ _willRemoveSlots() _________________________________________________________
-
-	void List::_willRemoveSlots(BasicSlot * _pSlot, int nb)
-	{
-		// Unselect slots that will be removed.
-
-		ListSlot * pSlot = (ListSlot*) _pSlot;
-		ListSlot * pEnd = (ListSlot*) (((char *)_pSlot) + m_sizeOfSlot*nb);
-		_setSlotSelection(pSlot, pEnd, false, true);
-	}
-
-	//____ _hideSlots() _________________________________________________________
-
-	void List::_hideSlots(ListSlot * pSlot, int nb)
-	{
-		for (int i = 0; i < nb; i++)
-			pSlot[i].bVisible = false;
-	}
-
-	//____ _unhideSlots() _________________________________________________________
-
-	void List::_unhideSlots(ListSlot * pSlot, int nb)
-	{
-		for (int i = 0; i < nb; i++)
-			pSlot[i].bVisible = true;
-	}
-
 	//____ _setSlotSelection() _________________________________________________________
 
 	int List::_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelected, bool bPostMsg)

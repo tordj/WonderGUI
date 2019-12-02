@@ -560,6 +560,24 @@ namespace wg
 		m_children.remove(static_cast<PackSlot*>(pSlot));
 	}
 
+	//____ _replaceChild() _____________________________________________________
+
+	void PackPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewChild)
+	{
+		auto pSlot = static_cast<PackSlot* > (_pSlot);
+		children._releaseGuardPointer(pNewChild, &pSlot);
+
+		pSlot->_setWidget(pNewChild);
+
+		if (pSlot->bVisible)
+		{
+			pSlot->bVisible = true;
+			pSlot->preferredSize = pSlot->_paddedPreferredSize();
+		}
+
+	}
+
+
 	//____ _unhideChildren() _______________________________________________________
 
 	void PackPanel::_unhideChildren(PackSlot * pSlot, int nb)

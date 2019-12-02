@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Layer::Layer() : m_baseSlot(this), base( &m_baseSlot, this )
+	Layer::Layer( SlotHolder * pHolder ) : m_baseSlot(pHolder), base( &m_baseSlot, pHolder )
 	{
 	}
 
@@ -222,14 +222,15 @@ namespace wg
 		}
 	}
 
-	//____ _setWidget() _______________________________________________________
+	//____ _replaceChild() _______________________________________________________
 
-	void Layer::_setWidget( BasicSlot * pSlot, Widget * pNewWidget )
+	void Layer::_replaceChild( BasicSlot * pSlot, Widget * pNewWidget )
 	{
 		if (pSlot == &m_baseSlot)
 		{
 			m_baseSlot._setWidget(pNewWidget);
-			pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+			if( pNewWidget )
+				pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
 		}

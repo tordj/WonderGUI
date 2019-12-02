@@ -33,7 +33,7 @@ namespace wg
 
 	class CapsuleSlot : public BasicSlot
 	{
-		CapsuleSlot(WidgetHolder* pHolder) : BasicSlot(pHolder) {}
+		CapsuleSlot(SlotHolder* pHolder) : BasicSlot(pHolder) {}
 		friend class Capsule;
 	};
 
@@ -74,7 +74,22 @@ namespace wg
 		Capsule();
 		virtual ~Capsule();
 
-		// Overloaded from ChildHolder
+		// Overloaded from SlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
+		Object *	_object() override { return this; }
+		const Object * _object() const override;
+
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
@@ -86,13 +101,10 @@ namespace wg
 		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
 		void		_releaseChild( BasicSlot * pSlot ) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pWidget) override;
 
-		// Overloaded from ChildHolder
 
-		Object *	_object() override;
-		const Object * _object() const override;
 
-		void		_setWidget( BasicSlot * pSlot, Widget * pWidget ) override;
 
 		// Overloaded from Container
 

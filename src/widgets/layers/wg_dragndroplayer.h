@@ -39,13 +39,13 @@ namespace wg
 	{
 		friend class DragNDropLayer;
 	protected:
-		DnDLayerSlot(WidgetHolder *pHolder) : LayerSlot(pHolder) {}
+		DnDLayerSlot(SlotHolder *pHolder) : LayerSlot(pHolder) {}
 	};
 
 
 	//____ DragNDropLayer ____________________________________________________________
 
-	class DragNDropLayer : public Layer
+	class DragNDropLayer : public Layer, protected LayerSlotHolder
 	{
 	public:
 
@@ -73,6 +73,29 @@ namespace wg
 		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
 
 		// Overloaded from WidgetHolder
+
+		Container *		_container() override { return this; }
+		RootPanel *		_root() override { return Container::_root(); }
+		Object *		_object() override { return this; }
+
+		CoordI			_childPos(BasicSlot * pSlot) const { return Layer::_childPos(pSlot); }
+		CoordI			_childGlobalPos(BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
+		bool			_isChildVisible(BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
+		RectI			_childWindowSection(BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
+
+		void			_childRequestRender(BasicSlot * pSlot) { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) { return Layer::_childRequestRender(pSlot); }
+
+		bool			_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
+		bool			_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
+
+		void			_childRequestInView(BasicSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
+		void			_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+
+		Widget *		_prevChild(const BasicSlot * pSlot) const { return Layer::_prevChild(pSlot); }
+		Widget *		_nextChild(const BasicSlot * pSlot) const { return Layer::_nextChild(pSlot); }
+
+		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 
 		void            _childRequestResize(BasicSlot * pSlot) override;
 		void			_releaseChild(BasicSlot * pSlot) override;

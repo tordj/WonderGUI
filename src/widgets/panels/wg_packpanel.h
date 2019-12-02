@@ -36,6 +36,14 @@ namespace wg
 	typedef	WeakPtr<PackPanel>			PackPanel_wp;
 
 
+	//____ PackSlotHolder ______________________________________________________
+
+	class PackSlotHolder : public PaddedSlotHolder
+	{
+
+	};
+
+
 	//____ PackSlot ____________________________________________________________
 
 	class PackSlot : public PaddedSlot		/** @private */
@@ -45,7 +53,7 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	protected:
-		PackSlot(WidgetHolder *pHolder) : PaddedSlot(pHolder) {}
+		PackSlot(SlotHolder *pHolder) : PaddedSlot(pHolder) {}
 
 		bool			bResizeRequired = false;
 		float			weight = 1.f;				// Weight for space allocation.
@@ -62,11 +70,8 @@ namespace wg
 
 	class IPackSlots : public IPaddedSlotArray<PackSlot>
 	{
+		friend class PackPanel;
 	public:
-
-		/** @private */
-
-		IPackSlots(SlotArray<PackSlot> * pSlotArray, PaddedSlotArrayHolder * pHolder) : IPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
 
 		//.____ Geometry _______________________________________________________
 
@@ -83,6 +88,10 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline IPackSlots_p	ptr() { return IPackSlots_p(this); }
+
+	protected:
+		IPackSlots(SlotArray<PackSlot> * pSlotArray, PaddedSlotArrayHolder * pHolder) : IPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
+
 	};
 
 	//____ PackPanel ________________________________________________________________
@@ -92,7 +101,7 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel, protected PaddedSlotArrayHolder
+	class PackPanel : public Panel, protected PaddedSlotArrayHolder, protected PackSlotHolder
 	{
 		friend class IPackSlots;
 
@@ -157,7 +166,6 @@ namespace wg
 		void		_unhideSlots( BasicSlot *, int nb ) override;
 		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
-		Object *	_object() override { return this; }
 
 		// Needed by IPackSlots
 
@@ -165,7 +173,22 @@ namespace wg
 		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights);
 		void		_refreshChildGeo() { _refreshChildGeo(true); }
 
-		// Overloaded from WidgetHolder
+		// Overloaded from PackSlotHolder
+
+		Container *	_container() override { return this; }
+		RootPanel *	_root() override { return Container::_root(); }
+		Object *	_object() override { return this; }
+
+		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+
+		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+
+		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+
 
 		CoordI		_childPos( BasicSlot * pSlot ) const override;
 
@@ -177,6 +200,7 @@ namespace wg
 		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewWidget ) override;
 
 		//
 

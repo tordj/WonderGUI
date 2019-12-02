@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_widgetholder.h>
+#include <wg_slotholder.h>
 #include <wg_geo.h>
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected WidgetHolder, protected SlotHolder
+	class RootPanel : public Object, protected SlotHolder
 	{
         friend class Widget;
 		friend class Container;
@@ -135,7 +135,7 @@ namespace wg
 		{
 			friend class RootPanel;
 
-			RootSlot(WidgetHolder *pHolder) : BasicSlot(pHolder) {}
+			RootSlot(SlotHolder *pHolder) : BasicSlot(pHolder) {}
 		};
 
 		RectI			_geo() const;
@@ -148,7 +148,7 @@ namespace wg
 		bool			_isChildVisible( BasicSlot * pSlot ) const override;
 		RectI			_childWindowSection( BasicSlot * pSlot ) const override;
 
-		Container *  	_childParent() override;
+		Container *  	_container() override;
 		RootPanel *		_root() override;
 
 		void			_childRequestRender( BasicSlot * pSlot ) override;
@@ -165,13 +165,13 @@ namespace wg
 		Widget *		_nextChild( const BasicSlot * pSlot ) const override;
 
 		void			_releaseChild( BasicSlot * pSlot ) override;
+		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override;
 
 		// ChildHolder methods
 
 		Object *		_object() override;
 //		const Object *	_object() const override;
 
-		void			_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) override;
 
 		//
 

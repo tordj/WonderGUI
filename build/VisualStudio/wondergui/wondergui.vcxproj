@@ -144,7 +144,7 @@
     <ClInclude Include="..\..\..\src\base\wg_util.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
-    <ClInclude Include="..\..\..\src\base\wg_widgetholder.h" />
+    <ClInclude Include="..\..\..\src\base\wg_slotholder.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccolumnheader.h" />
     <ClInclude Include="..\..\..\src\components\wg_cicondisplay.h" />
