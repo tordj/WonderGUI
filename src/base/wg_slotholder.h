@@ -46,11 +46,11 @@ namespace wg
 		virtual RootPanel *	_root() = 0;
 		virtual Object *	_object() = 0;
 
-		virtual CoordI		_childPos( BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
-		virtual CoordI		_childGlobalPos( BasicSlot * pSlot ) const = 0;
+		virtual CoordI		_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
+		virtual CoordI		_childGlobalPos( const BasicSlot * pSlot ) const = 0;
 
-		virtual bool		_isChildVisible( BasicSlot * pSlot ) const = 0;
-		virtual RectI		_childWindowSection( BasicSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
+		virtual bool		_isChildVisible( const BasicSlot * pSlot ) const = 0;
+		virtual RectI		_childWindowSection( const BasicSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 
 		virtual void		_childRequestRender( BasicSlot * pSlot ) = 0;
 		virtual void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) = 0;

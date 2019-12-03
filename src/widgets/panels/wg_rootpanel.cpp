@@ -380,28 +380,28 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI RootPanel::_childPos( BasicSlot * pSlot ) const
+	CoordI RootPanel::_childPos( const BasicSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _childGlobalPos() __________________________________________________
 
-	CoordI RootPanel::_childGlobalPos( BasicSlot * pSlot ) const
+	CoordI RootPanel::_childGlobalPos( const BasicSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _isChildVisible() __________________________________________________
 
-	bool RootPanel::_isChildVisible( BasicSlot * pSlot ) const
+	bool RootPanel::_isChildVisible( const BasicSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() __________________________________________________
 
-	RectI RootPanel::_childWindowSection( BasicSlot * pSlot ) const
+	RectI RootPanel::_childWindowSection( const BasicSlot * pSlot ) const
 	{
 		return _geo();
 	}

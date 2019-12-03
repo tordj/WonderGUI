@@ -249,7 +249,7 @@ namespace wg
 
 	//____ _childPos() _________________________________________________________
 
-	CoordI Layer::_childPos( BasicSlot * pSlot ) const
+	CoordI Layer::_childPos( const BasicSlot * pSlot ) const
 	{
 		if( pSlot == &m_baseSlot )
 			return {0,0};

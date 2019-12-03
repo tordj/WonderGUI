@@ -78,10 +78,10 @@ namespace wg
 		RootPanel *		_root() override { return Container::_root(); }
 		Object *		_object() override { return this; }
 
-		CoordI			_childPos(BasicSlot * pSlot) const { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
+		CoordI			_childPos(const BasicSlot * pSlot) const { return Layer::_childPos(pSlot); }
+		CoordI			_childGlobalPos(const BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
+		bool			_isChildVisible(const BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
+		RectI			_childWindowSection(const BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
 
 		void			_childRequestRender(BasicSlot * pSlot) { return Layer::_childRequestRender(pSlot); }
 		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) { return Layer::_childRequestRender(pSlot); }

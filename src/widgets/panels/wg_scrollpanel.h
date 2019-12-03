@@ -328,13 +328,13 @@ namespace wg
 		RootPanel *	_root() override { return Container::_root(); }
 		Object *	_object() override { return this; }
 
-		CoordI		_childGlobalPos(BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		CoordI		_childPos(const BasicSlot * pSlot) const override;
+		CoordI		_childGlobalPos(const BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(const BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(const BasicSlot * pSlot) const override;
 
 		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
 		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
-
-		CoordI		_childPos(BasicSlot * pSlot) const override;
 
 		void		_childRequestRender(BasicSlot * pSlot) override;
 		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
@@ -343,11 +343,8 @@ namespace wg
 		void		_childRequestInView(BasicSlot * pSlot) override;
 		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
 
-
 		Widget *	_prevChild(const BasicSlot * pSlot) const override;
 		Widget *	_nextChild(const BasicSlot * pSlot) const override;
-
-		RectI		_childWindowSection(BasicSlot * pSlot) const override;
 
 		void		_releaseChild(BasicSlot * pSlot) override;
 		void		_replaceChild(BasicSlot * pSlot, Widget * pWidget) override;

@@ -414,7 +414,7 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	CoordI LambdaPanel::_childPos( BasicSlot * pSlot ) const
+	CoordI LambdaPanel::_childPos( const BasicSlot * pSlot ) const
 	{
 		return ((LambdaSlot*)pSlot)->geo.pos();
 	}

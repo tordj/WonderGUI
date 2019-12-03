@@ -1175,9 +1175,9 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI PackList::_childPos( BasicSlot * _pSlot ) const
+	CoordI PackList::_childPos( const BasicSlot * _pSlot ) const
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		const PackListSlot * pSlot = reinterpret_cast<const PackListSlot*>(_pSlot);
 
 		RectI geo;
 		_getChildGeo(geo, pSlot);

@@ -102,11 +102,11 @@ namespace wg
 			virtual RootPanel *		_root();
 			virtual Object *		_object();
 
-			virtual CoordI			_childPos(BasicSlot * pSlot) const = 0;				///< Get the local position of a child.
-			virtual CoordI			_childGlobalPos( BasicSlot * pSlot ) const;
+			virtual CoordI			_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of a child.
+			virtual CoordI			_childGlobalPos( const BasicSlot * pSlot ) const;
 
-			virtual bool			_isChildVisible( BasicSlot * pSlot ) const;
-			virtual RectI			_childWindowSection( BasicSlot * pSlot ) const;		// Returns the window section within the childs canvas.
+			virtual bool			_isChildVisible( const BasicSlot * pSlot ) const;
+			virtual RectI			_childWindowSection( const BasicSlot * pSlot ) const;		// Returns the window section within the childs canvas.
 
 			virtual bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
 			virtual bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget );

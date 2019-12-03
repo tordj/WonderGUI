@@ -114,21 +114,21 @@ namespace wg
 
 	//____ _childGlobalPos() _______________________________________________________
 
-	CoordI Container::_childGlobalPos( BasicSlot * pSlot ) const
+	CoordI Container::_childGlobalPos( const BasicSlot * pSlot ) const
 	{
 		return _childPos(pSlot) + _globalPos();
 	}
 
 	//____ _isChildVisible() ________________________________________________________
 
-	bool Container::_isChildVisible( BasicSlot * pSlot ) const
+	bool Container::_isChildVisible( const BasicSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() ____________________________________________________
 
-	RectI Container::_childWindowSection( BasicSlot * pSlot ) const
+	RectI Container::_childWindowSection( const BasicSlot * pSlot ) const
 	{
 		return RectI( 0,0, _access(pSlot)->_size() );
 	}

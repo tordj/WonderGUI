@@ -1347,12 +1347,12 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI ScrollPanel::_childPos( BasicSlot * pSlot ) const
+	CoordI ScrollPanel::_childPos( const BasicSlot * pSlot ) const
 	{
 		if (pSlot == &m_viewSlot)
-			return ((ViewSlot*)pSlot)->canvasGeo.pos();
+			return ((const ViewSlot*)pSlot)->canvasGeo.pos();
 		else
-			return ((ScrollbarSlot*)pSlot)->geo.pos();
+			return ((const ScrollbarSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -1486,18 +1486,18 @@ namespace wg
 
 	//____ _childWindowSection() _________________________________________________
 
-	RectI ScrollPanel::_childWindowSection( BasicSlot * _pSlot ) const
+	RectI ScrollPanel::_childWindowSection( const BasicSlot * _pSlot ) const
 	{
 		if( _pSlot == &m_viewSlot )
 		{
-			ViewSlot * pSlot = (ViewSlot*) _pSlot;
+			const ViewSlot * pSlot = (const ViewSlot*) _pSlot;
 
 			RectI window(pSlot->windowGeo, pSlot->canvasGeo);			// Use intersection in case canvas is smaller than window.
 			return window - pSlot->canvasGeo.pos();
 		}
 		else
 		{
-			ScrollbarSlot * pSlot = (ScrollbarSlot*)_pSlot;
+			const ScrollbarSlot * pSlot = (const ScrollbarSlot*)_pSlot;
 			return { 0,0, pSlot->geo.size() };
 		}
 

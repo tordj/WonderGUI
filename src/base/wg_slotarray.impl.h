@@ -122,7 +122,7 @@ namespace wg
 	{
 		while (pBeg < pEnd)
 		{
-			pBeg->relink();
+			pBeg->_relink();
 			pBeg++;
 		}
 	}

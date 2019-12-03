@@ -351,9 +351,9 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI StackPanel::_childPos( BasicSlot * pSlot ) const
+	CoordI StackPanel::_childPos( const BasicSlot * pSlot ) const
 	{
-		return _childGeo((StackSlot *)pSlot).pos();
+		return _childGeo((const StackSlot *)pSlot).pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________

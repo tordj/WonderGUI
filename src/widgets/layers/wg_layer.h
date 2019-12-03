@@ -108,7 +108,7 @@ namespace wg
 
 
 
-		CoordI		_childPos( BasicSlot * pSlot ) const override;
+		CoordI		_childPos( const BasicSlot * pSlot ) const override;
 
 		void		_childRequestRender( BasicSlot * pSlot );
 		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect );

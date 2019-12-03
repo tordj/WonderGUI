@@ -142,11 +142,11 @@ namespace wg
 
 		// WidgetHolder methods
 
-		CoordI			_childPos( BasicSlot * pSlot ) const override;
-		CoordI			_childGlobalPos( BasicSlot * pSlot ) const override;
+		CoordI			_childPos( const BasicSlot * pSlot ) const override;
+		CoordI			_childGlobalPos( const BasicSlot * pSlot ) const override;
 
-		bool			_isChildVisible( BasicSlot * pSlot ) const override;
-		RectI			_childWindowSection( BasicSlot * pSlot ) const override;
+		bool			_isChildVisible( const BasicSlot * pSlot ) const override;
+		RectI			_childWindowSection( const BasicSlot * pSlot ) const override;
 
 		Container *  	_container() override;
 		RootPanel *		_root() override;

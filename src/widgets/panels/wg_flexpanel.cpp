@@ -916,7 +916,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI FlexPanel::_childPos( BasicSlot * pSlot ) const
+	CoordI FlexPanel::_childPos( const BasicSlot * pSlot ) const
 	{
 		return ((FlexSlot*)pSlot)->realGeo.pos();
 	}

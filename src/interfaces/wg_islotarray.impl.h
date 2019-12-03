@@ -376,6 +376,14 @@ namespace wg
 		return iterator(m_pSlotArray->end()); 
 	}
 
+	//____ _at() _____________________________________________________________
+
+	template < class SlotType>
+	BasicSlot& ISlotArray<SlotType>::_at(int index) const
+	{
+		return *m_pSlotArray->slot(index);
+	}
+
 	//____ _object() __________________________________________________________
 
 	template < class SlotType>

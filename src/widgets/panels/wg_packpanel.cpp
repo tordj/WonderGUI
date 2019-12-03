@@ -497,7 +497,7 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	CoordI PackPanel::_childPos(BasicSlot * pSlot) const
+	CoordI PackPanel::_childPos(const BasicSlot * pSlot) const
 	{
 		return ((PackSlot*)pSlot)->geo;
 	}

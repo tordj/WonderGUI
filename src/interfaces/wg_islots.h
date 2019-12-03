@@ -42,7 +42,7 @@ namespace wg
 		using value_type = BasicSlot;
 		using difference_type = std::ptrdiff_t;
 		using pointer = Widget * ;
-		using reference = Widget & ;
+		using reference = BasicSlot & ;
 		using iterator_category = std::bidirectional_iterator_tag;
 
 		//.____ Creation ___________________________________________________
@@ -59,7 +59,7 @@ namespace wg
 
 		inline reference operator*() const
 		{
-			return *pSlot->_widget();
+			return *pSlot;
 		}
 
 		inline pointer operator->() const
@@ -154,16 +154,12 @@ namespace wg
 	public:
 		using		iterator = SlotIterator;
 
-		//.____ Operators __________________________________________
-
-		virtual Widget& operator[](int index) const = 0;
-
 		//.____ Content _______________________________________________________
 
 		virtual int		size() const = 0;
 		virtual int		isEmpty() const = 0;
 
-		virtual Widget_p at(int index) const = 0;
+		inline BasicSlot& at(int index) const { return _at(index); }
 		virtual int index(Widget * pChild) const = 0;
 
 		//.____ Misc _______________________________________________________
@@ -179,6 +175,7 @@ namespace wg
 
 		virtual iterator	_begin() const = 0;
 		virtual iterator	_end() const = 0;
+		virtual BasicSlot&	_at(int index) const = 0;
 	};
 
 } // namespace wg

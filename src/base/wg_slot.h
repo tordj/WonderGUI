@@ -42,35 +42,8 @@ namespace wg
 		template<class S> friend class SlotArray;
 		template<class S> friend class ISelectableSlotArray;
 
+
 	public:
-		const static bool safe_to_relocate = true;
-
-		BasicSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
-
-		BasicSlot(BasicSlot&& o)
-		{
-			m_pWidget = o.m_pWidget;
-			m_pHolder = o.m_pHolder;
-			if (m_pWidget)
-			{
-				m_pWidget->_setSlot(this);
-				o.m_pWidget = nullptr;
-			}
-		}
-
-		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
-		// if content has been moved to another slot!
-
-		~BasicSlot()
-		{
-			if( m_pWidget != nullptr )
-			{
-				m_pWidget->_setSlot( nullptr );
-				m_pWidget->_decRefCount();
-			}
-		}
-
-
 
 		//.____ Operators __________________________________________
 
@@ -102,19 +75,49 @@ namespace wg
 		inline bool operator==(Widget * other) const { return other == _widget(); }
 		inline bool operator!=(Widget * other) const { return other != _widget(); }
 
-		inline operator bool() const { return _widget() != nullptr; }
-
 		inline Widget* operator->() const { return _widget(); }
 
 
 		//.____ Content _______________________________________________________
 
-		Widget_p widget() const { return Widget_p(m_pWidget); }
+		inline bool		isEmpty() const { return m_pWidget == nullptr; }
+		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 
+		inline Coord	pos() const { return Util::rawToQpix(m_pHolder->_childPos(this)); }
+		inline Size		size() const { return Util::rawToQpix(_size()); }
+		inline Rect		geo() const { return Util::rawToQpix( RectI(m_pHolder->_childPos(this),_size())); }
 
 	protected:
+		const static bool safe_to_relocate = true;
 
-		inline void relink() { m_pWidget->_setSlot( this ); }
+		BasicSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
+
+		BasicSlot(BasicSlot&& o)
+		{
+			m_pWidget = o.m_pWidget;
+			m_pHolder = o.m_pHolder;
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(this);
+				o.m_pWidget = nullptr;
+			}
+		}
+
+		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
+		// if content has been moved to another slot!
+
+		~BasicSlot()
+		{
+			if (m_pWidget != nullptr)
+			{
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+			}
+		}
+
+
+
+		inline void _relink() { m_pWidget->_setSlot( this ); }
 
 		inline void _setWidget( Widget * pWidget )
 		{
@@ -151,7 +154,6 @@ namespace wg
 		inline SizeI	_maxSize() const { return m_pWidget->_maxSize(); }
 
 		inline bool		_markTest(const CoordI& ofs) const { return m_pWidget->_markTest(ofs); };
-
 
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;

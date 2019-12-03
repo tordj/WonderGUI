@@ -605,9 +605,9 @@ namespace wg
 
 	//_____ _childPos() _______________________________________________________
 
-	CoordI SplitPanel::_childPos(BasicSlot * pSlot) const
+	CoordI SplitPanel::_childPos(const BasicSlot * pSlot) const
 	{
-		return static_cast<SplitPanelSlot*>(pSlot)->geo.pos();
+		return static_cast<const SplitPanelSlot*>(pSlot)->geo.pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________

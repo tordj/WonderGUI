@@ -121,7 +121,7 @@ namespace wg
 
 	//____ _childPos() ___________________________________________________________
 
-	CoordI Capsule::_childPos( BasicSlot * pSlot ) const
+	CoordI Capsule::_childPos( const BasicSlot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentOfs( m_state );

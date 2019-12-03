@@ -135,19 +135,19 @@ namespace wg
 
 		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
 
-		Widget& operator[](int index) const override { return *m_pSlotArray->slot(index)->_widget(); }
+		SlotType& operator[](int index) const { return *m_pSlotArray->slot(index); }
 
 		//.____ Content _______________________________________________________
 
 		inline int		size() const override { return m_pSlotArray->size(); }
 		inline int		isEmpty() const override { return m_pSlotArray->isEmpty(); }
 
-		inline Widget_p	at(int index) const override
+		inline SlotType& at(int index) const
 		{
-			if (index < 0 || index >= m_pSlotArray->size())
-				return nullptr;
+//			if (index < 0 || index >= m_pSlotArray->size())
+//				return nullptr;
 
-			return Widget_p(m_pSlotArray->slot(index)->_widget());
+			return *m_pSlotArray->slot(index);
 		}
 
 		inline int		index(Widget * pChild) const override
@@ -237,6 +237,7 @@ namespace wg
 
 		SlotIterator	_begin() const override;
 		SlotIterator	_end() const override;
+		BasicSlot&		_at(int index) const;
 
 		Object *		_object() const override;
 
