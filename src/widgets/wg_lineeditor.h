@@ -42,7 +42,7 @@ namespace wg
 
 		static LineEditor_p	create() { return LineEditor_p(new LineEditor()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		ITextEditor		text;
 
@@ -69,14 +69,14 @@ namespace wg
 		void			_setState( State state ) override;
 		void			_setSkin( Skin * pSkin ) override;
 
-		CoordI			_componentPos( const Component * pComponent ) const override;
-		SizeI			_componentSize( const Component * pComponent ) const override;
-		RectI			_componentGeo( const Component * pComponent ) const override;
+		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
+		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
+		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
 
-		void			_componentRequestRender(const Component * pComponent) override;
-		void			_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
-		void			_componentRequestResize( const Component * pComponent ) override;
-		void			_componentRequestInView(const Component * pComponent, const RectI& mustHave, const RectI& niceToHave) override;
+		void			_componentRequestRender(const GeoComponent * pComponent) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		void			_componentRequestResize( const GeoComponent * pComponent ) override;
+		void			_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave) override;
 
 	private:
 

@@ -26,7 +26,7 @@
 
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_ipaddedslotarray.h>
+#include <wg_cpaddedslotarray.h>
 
 
 namespace wg
@@ -57,26 +57,25 @@ namespace wg
 		SizePolicy2D	SizePolicy = SizePolicy2D::Original;
 	};
 
-	//____ StackSlotArrayHolder __________________________________________________
-
-	class StackSlotArrayHolder : public PaddedSlotArrayHolder			/** @private */
-	{
-	public:
-		virtual void		_childRequestRender(BasicSlot * pSlot) = 0;
-	};
 
 	//____ IStackSlots ________________________________________________________
 
 	class IStackSlots;
-	typedef	StrongInterfacePtr<IStackSlots>	IStackSlots_p;
-	typedef	WeakInterfacePtr<IStackSlots>	IStackSlots_wp;
+	typedef	StrongComponentPtr<IStackSlots>	IStackSlots_p;
+	typedef	WeakComponentPtr<IStackSlots>	IStackSlots_wp;
 
-	class IStackSlots : public IPaddedSlotArray<StackSlot>
+	class IStackSlots : public CPaddedSlotArray<StackSlot>
 	{
 	public:
-		/** @private */
 
-		IStackSlots( SlotArray<StackSlot> * pSlotArray, StackSlotArrayHolder * pHolder ) : IPaddedSlotArray<StackSlot>(pSlotArray,pHolder) {}
+		class Holder : public CPaddedSlotArray::Holder			/** @private */
+		{
+		public:
+			virtual void		_childRequestRender(BasicSlot * pSlot) = 0;
+		};
+
+		/** @private */
+		IStackSlots(SlotArray<StackSlot> * pSlotArray, IStackSlots::Holder * pHolder) : CPaddedSlotArray<StackSlot>(pSlotArray, pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -108,7 +107,7 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected StackSlotArrayHolder, protected StackSlotHolder
+	class StackPanel : public Panel, protected IStackSlots::Holder, protected StackSlotHolder
 	{
 		friend class IStackSlots;
 
@@ -118,7 +117,7 @@ namespace wg
 
 		static StackPanel_p	create() { return StackPanel_p(new StackPanel()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IStackSlots	children;
 
@@ -152,7 +151,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		// Overloaded from StackSlotArrayHolder
+		// Overloaded from StackCSlotArray::Holder
 
 		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;

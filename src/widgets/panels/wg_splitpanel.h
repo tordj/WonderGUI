@@ -27,7 +27,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_islot.h>
+#include <wg_cslot.h>
 
 
 namespace wg
@@ -44,12 +44,12 @@ namespace wg
 
 	public:
 
-		class Slot : public ISlot<BasicSlot> 	/** @private */
+		class Slot : public CSlotImpl<BasicSlot> 	/** @private */
 		{
 			friend class SplitPanel;
 
 		protected:
-			Slot(SlotHolder *pHolder) : ISlot(pHolder) {}
+			Slot(SlotHolder *pHolder) : CSlotImpl(pHolder) {}
 
 			RectI	geo;
 		};
@@ -59,7 +59,7 @@ namespace wg
 
 		static SplitPanel_p	create() { return SplitPanel_p(new SplitPanel()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		Slot			slotOne;
 		Slot			slotTwo;

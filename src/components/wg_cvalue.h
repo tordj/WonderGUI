@@ -34,7 +34,7 @@ namespace wg
 	class CValue : public CText		/** @private */
 	{
 	public:
-		CValue(ComponentHolder * pHolder);
+		CValue(GeoComponent::Holder * pHolder);
 
 		void				setFormatter( ValueFormatter * pFormatter );
 		void				clearFormatter();

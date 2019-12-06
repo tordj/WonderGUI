@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CTextDisplay::CTextDisplay( ComponentHolder * pHolder ) : CText( pHolder )
+	CTextDisplay::CTextDisplay(GeoComponent::Holder * pHolder ) : CText( pHolder )
 	{
 	}
 

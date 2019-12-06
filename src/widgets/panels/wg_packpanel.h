@@ -26,7 +26,7 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_ipaddedslotarray.h>
+#include <wg_cpaddedslotarray.h>
 
 namespace wg
 {
@@ -65,10 +65,10 @@ namespace wg
 	//____ IPackSlots ________________________________________________________
 
 	class IPackSlots;
-	typedef	StrongInterfacePtr<IPackSlots>	IPackSlots_p;
-	typedef	WeakInterfacePtr<IPackSlots>	IPackSlots_wp;
+	typedef	StrongComponentPtr<IPackSlots>	IPackSlots_p;
+	typedef	WeakComponentPtr<IPackSlots>	IPackSlots_wp;
 
-	class IPackSlots : public IPaddedSlotArray<PackSlot>
+	class IPackSlots : public CPaddedSlotArray<PackSlot>
 	{
 		friend class PackPanel;
 	public:
@@ -90,7 +90,7 @@ namespace wg
 		inline IPackSlots_p	ptr() { return IPackSlots_p(this); }
 
 	protected:
-		IPackSlots(SlotArray<PackSlot> * pSlotArray, PaddedSlotArrayHolder * pHolder) : IPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
+		IPackSlots(SlotArray<PackSlot> * pSlotArray, CPaddedSlotArray::Holder * pHolder) : CPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
 
 	};
 
@@ -101,7 +101,7 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel, protected PaddedSlotArrayHolder, protected PackSlotHolder
+	class PackPanel : public Panel, protected CPaddedSlotArray<PackSlot>::Holder, protected PackSlotHolder
 	{
 		friend class IPackSlots;
 
@@ -111,7 +111,7 @@ namespace wg
 
 		static PackPanel_p	create() { return PackPanel_p(new PackPanel()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IPackSlots		children;
 
@@ -157,7 +157,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Overloaded from PaddedSlotArrayHolder
+		// Overloaded from CPaddedSlotArray::Holder
 
 		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;

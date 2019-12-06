@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_islotarray.h>
+#include <wg_cslotarray.h>
 
 namespace wg
 {
@@ -40,7 +40,7 @@ namespace wg
 	{
 		friend class ModalLayer;
 		friend class IModalSlots;
-		template<class S> friend class ISlotArray;
+		template<class S> friend class CSlotArray;
 		template<class S> friend class SlotArray;
 
 	protected:
@@ -57,27 +57,28 @@ namespace wg
 	};
 
 
-
-	//____ ModalSlotsHolder _________________________________________________
-
-	class ModalSlotsHolder : public SlotArrayHolder		/** @private */
-	{
-	public:
-		virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
-	};
-
 	class IModalSlots;
-	typedef	StrongInterfacePtr<IModalSlots>	IModalSlots_p;
-	typedef	WeakInterfacePtr<IModalSlots>	IModalSlots_wp;
+	typedef	StrongComponentPtr<IModalSlots>	IModalSlots_p;
+	typedef	WeakComponentPtr<IModalSlots>	IModalSlots_wp;
 
 	//____ IModalSlots ________________________________________________________
 
-	class IModalSlots : public ISlotArray<ModalSlot>
+	class IModalSlots : public CSlotArray<ModalSlot>
 	{
 	public:
+
+		//____ Holder _________________________________________________
+
+		class Holder : public CSlotArray<ModalSlot>::Holder		/** @private */
+		{
+		public:
+			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
+		};
+
+
 		/** @private */
 
-		IModalSlots( SlotArray<ModalSlot> * pSlotArray, ModalSlotsHolder * pHolder ) : ISlotArray<ModalSlot>(pSlotArray,pHolder) {}
+		IModalSlots( SlotArray<ModalSlot> * pSlotArray, Holder * pHolder ) : CSlotArray<ModalSlot>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -120,8 +121,8 @@ namespace wg
 		void 		_setSize(ModalSlot * p, const Size& size);
 		void 		_move( ModalSlot * p, const Coord& ofs );
 
-		const ModalSlotsHolder *	_holder() const { return static_cast<ModalSlotsHolder*>(m_pHolder); }
-		ModalSlotsHolder *	_holder() { return static_cast<ModalSlotsHolder*>(m_pHolder); }
+		const Holder *	_holder() const { return static_cast<Holder*>(m_pHolder); }
+		Holder *	_holder() { return static_cast<Holder*>(m_pHolder); }
 
 
 	};
@@ -129,7 +130,7 @@ namespace wg
 
 	//____ ModalLayer __________________________________________________________
 
-	class ModalLayer : public Layer, protected ModalSlotsHolder, protected LayerSlotHolder
+	class ModalLayer : public Layer, protected IModalSlots::Holder, protected LayerSlotHolder
 	{
 		friend class IModalSlots;
 
@@ -139,7 +140,7 @@ namespace wg
 
 		static ModalLayer_p	create() { return ModalLayer_p(new ModalLayer()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IModalSlots	modals;
 

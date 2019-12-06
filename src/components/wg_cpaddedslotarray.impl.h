@@ -24,8 +24,8 @@
 #define	WG_IPADDEDSLOTARRAY_IMPL_DOT_H
 #pragma once
 
-#include <wg_ipaddedslotarray.h>
-#include <wg_islotarray.impl.h>
+#include <wg_cpaddedslotarray.h>
+#include <wg_cslotarray.impl.h>
 #include <wg_util.h>
 
 
@@ -34,7 +34,7 @@ namespace wg
 	//____ setPadding() _______________________________________________________
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(int index, Border padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(int index, Border padding)
 	{
 		//TODO: Assert
 
@@ -43,7 +43,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(const SlotIterator& it, Border padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& it, Border padding)
 	{
 		//TODO: Assert
 
@@ -52,7 +52,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(int index, int amount, Border padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(int index, int amount, Border padding)
 	{
 		//TODO: Assert
 
@@ -61,7 +61,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding)
 	{
 		//TODO: Assert
 
@@ -72,7 +72,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
@@ -81,7 +81,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool IPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding)
+	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 

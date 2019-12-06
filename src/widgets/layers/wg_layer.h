@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_islot.h>
+#include <wg_cslot.h>
 
 
 namespace wg
@@ -82,17 +82,17 @@ namespace wg
 
 	public:
 
-		class MainSlot : public ISlot<BasicSlot>
+		class MainSlot : public CSlotImpl<BasicSlot>
 		{
 			friend class Layer;
 		public:
-			using ISlot<BasicSlot>::operator=;
+			using CSlotImpl<BasicSlot>::operator=;
 		protected:
-			MainSlot(SlotHolder * pHolder) : ISlot(pHolder) {}
+			MainSlot(SlotHolder * pHolder) : CSlotImpl(pHolder) {}
 		};
 
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		MainSlot		mainSlot;
 

@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_types.h>
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_skin.h>
 #include <wg_ccolumnheader.h>
@@ -36,17 +36,17 @@ namespace wg
 {
 
 	class IColumnHeader;
-	typedef	StrongInterfacePtr<IColumnHeader>		IColumnHeader_p;
-	typedef	WeakInterfacePtr<IColumnHeader>	IColumnHeader_wp;
+	typedef	StrongComponentPtr<IColumnHeader>		IColumnHeader_p;
+	typedef	WeakComponentPtr<IColumnHeader>	IColumnHeader_wp;
 
-	class IColumnHeader : public Interface
+	class IColumnHeader : public Component
 	{
 	public:
 		/** @private */
 
 		IColumnHeader(CColumnHeader* pComponent);
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IIconDisplay			icon;
 		IIconDisplay			arrow;
@@ -63,7 +63,8 @@ namespace wg
 
 
 	protected:
-		Object * 			_object() const override;
+		Object * 			_object() override;
+		const Object * 		_object() const override;
 
 		CColumnHeader *	m_pComponent;
 	};

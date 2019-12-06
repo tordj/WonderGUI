@@ -53,11 +53,11 @@ namespace wg
 		void			_setState( State state ) override;
 		bool			_alphaTest( const CoordI& ofs ) override;
 
-		CoordI			_componentPos( const Component * pComponent ) const override;
-		SizeI			_componentSize( const Component * pComponent ) const override;
-		RectI			_componentGeo( const Component * pComponent ) const override;
+		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
+		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
+		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
 
-		void			_componentRequestResize( const Component * pComponent ) override;
+		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 
 
 		class Label : public Link

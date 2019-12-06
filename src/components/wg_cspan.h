@@ -23,17 +23,17 @@
 #define WG_CSPAN_DOT_H
 #pragma once
 
-#include <wg_component.h>
+#include <wg_geocomponent.h>
 
 namespace wg
 {
 
 	//____ CSpan _____________________________________________________________
 
-	class CSpan : public Component		/** @private */
+	class CSpan : public GeoComponent		/** @private */
 	{
 	public:
-		CSpan( ComponentHolder * pHolder );
+		CSpan(GeoComponent::Holder * pHolder );
 		virtual ~CSpan() {};
 
 		bool	setMin( int min );

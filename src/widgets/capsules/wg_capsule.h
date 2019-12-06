@@ -25,19 +25,19 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_islot.h>
+#include <wg_cslot.h>
 
 
 namespace wg
 {
 
-	class CapsuleSlot : public ISlot<BasicSlot>
+	class CapsuleSlot : public CSlotImpl<BasicSlot>
 	{
 		friend class Capsule;
 	public:
-		using ISlot<BasicSlot>::operator=;
+		using CSlotImpl<BasicSlot>::operator=;
 	protected:
-		CapsuleSlot(BasicSlot::Holder* pHolder) : ISlot(pHolder) {}
+		CapsuleSlot(BasicSlot::Holder* pHolder) : CSlotImpl(pHolder) {}
 	};
 
 	class Capsule;
@@ -62,7 +62,7 @@ namespace wg
 	{
 	public:
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		CapsuleSlot		slot;
 

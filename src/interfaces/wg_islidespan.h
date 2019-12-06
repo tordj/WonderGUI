@@ -30,8 +30,8 @@ namespace wg
 
 
 	class ISlideSpan;
-	typedef	StrongInterfacePtr<ISlideSpan>	ISlideSpan_p;
-	typedef	WeakInterfacePtr<ISlideSpan>	ISlideSpan_wp;
+	typedef	StrongComponentPtr<ISlideSpan>	ISlideSpan_p;
+	typedef	WeakComponentPtr<ISlideSpan>	ISlideSpan_wp;
 
 
 	class ISlideSpan : public ISpan

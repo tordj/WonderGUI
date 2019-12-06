@@ -35,8 +35,8 @@ namespace wg
 	class CharBuffer;
 
 	class IValueDisplay;
-	typedef	StrongInterfacePtr<IValueDisplay>	IValueDisplay_p;
-	typedef	WeakInterfacePtr<IValueDisplay>		IValueDisplay_wp;
+	typedef	StrongComponentPtr<IValueDisplay>	IValueDisplay_p;
+	typedef	WeakComponentPtr<IValueDisplay>		IValueDisplay_wp;
 
 	/**
 	 * @brief Interface for modifying a ValueDisplay component

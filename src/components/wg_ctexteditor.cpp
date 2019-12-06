@@ -45,7 +45,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CTextEditor::CTextEditor( ComponentHolder * pHolder ) : CTextDisplay(pHolder)
+	CTextEditor::CTextEditor(GeoComponent::Holder * pHolder ) : CTextDisplay(pHolder)
 	{
 		m_editMode = TextEditMode::Editable;
 		m_maxLines = 0;

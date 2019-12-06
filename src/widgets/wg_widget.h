@@ -28,7 +28,7 @@
 #include <wg_string.h>
 #include <wg_skin.h>
 #include <wg_receiver.h>
-#include <wg_componentholder.h>
+#include <wg_geocomponent.h>
 #include <wg_slotholder.h>
 
 namespace wg
@@ -62,7 +62,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected ComponentHolder
+	class Widget : public Receiver, protected GeoComponent::Holder
 	{
 		friend class MsgRouter;
 		friend class InputHandler;
@@ -88,10 +88,10 @@ namespace wg
 		friend class DragNDropLayer;
 		friend class ShadowLayer;
 
-		friend class Component;
+		friend class GeoComponent;
 		friend class BasicSlot;
 
-		template<class S> friend class ISlotArray;
+		template<class S> friend class CSlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:
@@ -264,21 +264,21 @@ namespace wg
 		virtual Object * _object() override;
 		virtual const Object * _object() const override;
 
-		virtual CoordI	_componentPos( const Component * pComponent ) const override;
-		virtual SizeI	_componentSize( const Component * pComponent ) const override;
-		virtual RectI	_componentGeo( const Component * pComponent ) const override;
-		virtual CoordI	_globalComponentPos( const Component * pComponent ) const override;
-		virtual RectI	_globalComponentGeo( const Component * pComponent ) const override;
+		virtual CoordI	_componentPos( const GeoComponent * pComponent ) const override;
+		virtual SizeI	_componentSize( const GeoComponent * pComponent ) const override;
+		virtual RectI	_componentGeo( const GeoComponent * pComponent ) const override;
+		virtual CoordI	_globalComponentPos( const GeoComponent * pComponent ) const override;
+		virtual RectI	_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		virtual void	_componentRequestRender( const Component * pComponent ) override;
-		virtual void	_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
-		virtual void	_componentRequestResize( const Component * pComponent ) override;
+		virtual void	_componentRequestRender( const GeoComponent * pComponent ) override;
+		virtual void	_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		virtual void	_componentRequestResize( const GeoComponent * pComponent ) override;
 
- 		virtual void	_componentRequestFocus( const Component * pComponent ) override;
-		virtual void	_componentRequestInView( const Component * pComponent ) override;
-		virtual void	_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
+ 		virtual void	_componentRequestFocus( const GeoComponent * pComponent ) override;
+		virtual void	_componentRequestInView( const GeoComponent * pComponent ) override;
+		virtual void	_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
-		virtual void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		virtual void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 		//
 

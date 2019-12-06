@@ -38,10 +38,10 @@ namespace wg
 		friend class SlotIterator;
 		friend class SlotHolder;
 		friend class CSlot;
-		template<class S> friend class ISlot;
-		template<class S> friend class ISlotArray;
+		template<class S> friend class CSlotImpl;
+		template<class S> friend class CSlotArray;
 		template<class S> friend class SlotArray;
-		template<class S> friend class ISelectableSlotArray;
+		template<class S> friend class CSelectableSlotArray;
 
 
 	public:

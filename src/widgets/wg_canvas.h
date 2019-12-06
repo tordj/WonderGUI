@@ -72,7 +72,7 @@ namespace wg
 
 		static Canvas_p	create() { return Canvas_p(new Canvas()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		ICanvas		canvas;
 

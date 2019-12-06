@@ -24,7 +24,7 @@
 #define	WG_GFXOUTSTREAM_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_gfxstream.h>
 #include <wg_types.h>
@@ -36,8 +36,8 @@ namespace wg
 {
 
 	class GfxOutStream;
-	typedef	StrongInterfacePtr<GfxOutStream>	GfxOutStream_p;
-	typedef	WeakInterfacePtr<GfxOutStream>		GfxOutStream_wp;
+	typedef	StrongComponentPtr<GfxOutStream>	GfxOutStream_p;
+	typedef	WeakComponentPtr<GfxOutStream>		GfxOutStream_wp;
 
 
 	//____ GfxOutStreamHolder ___________________________________________________
@@ -62,7 +62,7 @@ namespace wg
 
 	//____ GfxOutStream __________________________________________________________
 
-	class GfxOutStream : public Interface, public GfxStream
+	class GfxOutStream : public Component, public GfxStream
 	{
 	public:
 		GfxOutStream(GfxOutStreamHolder * pHolder);
@@ -114,7 +114,8 @@ namespace wg
 		void			freeObjectId(short id);
 
 	protected:
-		Object *				_object() const  override { return m_pHolder->_object(); }
+		Object *				_object() override { return m_pHolder->_object(); }
+		const Object *			_object() const  override { return m_pHolder->_object(); }
 
 		short					m_idCounter;
 

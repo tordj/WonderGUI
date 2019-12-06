@@ -303,7 +303,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordI PopupOpener::_componentPos(const Component * pComponent) const
+	CoordI PopupOpener::_componentPos(const GeoComponent * pComponent) const
 	{
 		RectI	contentRect = m_size;
 
@@ -323,7 +323,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeI PopupOpener::_componentSize(const Component * pComponent) const
+	SizeI PopupOpener::_componentSize(const GeoComponent * pComponent) const
 	{
 		SizeI	sz = m_size;
 
@@ -342,7 +342,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectI PopupOpener::_componentGeo(const Component * pComponent) const
+	RectI PopupOpener::_componentGeo(const GeoComponent * pComponent) const
 	{
 		RectI	contentRect = m_size;
 

@@ -38,8 +38,8 @@ namespace wg
 	class CharBuffer;
 
 	class ITextDisplay;
-	typedef	StrongInterfacePtr<ITextDisplay>	ITextDisplay_p;
-	typedef	WeakInterfacePtr<ITextDisplay>		ITextDisplay_wp;
+	typedef	StrongComponentPtr<ITextDisplay>	ITextDisplay_p;
+	typedef	WeakComponentPtr<ITextDisplay>		ITextDisplay_wp;
 
 	/**
 	 * @brief Interface for a text component

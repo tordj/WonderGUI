@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_types.h>
-#include <wg_component.h>
+#include <wg_geocomponent.h>
 #include <wg_geo.h>
 #include <wg_skin.h>
 
@@ -35,10 +35,10 @@ namespace wg
 
 	//____ CIconDisplay _____________________________________________________________
 
-	class CIconDisplay : public Component	/** @private */
+	class CIconDisplay : public GeoComponent	/** @private */
 	{
 	public:
-		CIconDisplay( ComponentHolder * pHolder );
+		CIconDisplay( GeoComponent::Holder * pHolder );
 		virtual ~CIconDisplay() {};
 
 

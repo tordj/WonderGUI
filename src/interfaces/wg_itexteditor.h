@@ -32,8 +32,8 @@ namespace wg
 {
 
 	class ITextEditor;
-	typedef	StrongInterfacePtr<ITextEditor>	EditText_p;
-	typedef	WeakInterfacePtr<ITextEditor>	EditText_wp;
+	typedef	StrongComponentPtr<ITextEditor>	EditText_p;
+	typedef	WeakComponentPtr<ITextEditor>	EditText_wp;
 
 	/**
 	 * @brief Interface for text which can be modified through the UI

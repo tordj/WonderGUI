@@ -190,8 +190,8 @@ namespace wg
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
-		int	iPeakL = alignRaw(leftPeak * length);
-		int	iPeakR = alignRaw(rightPeak * length);
+		int	iPeakL = alignRaw(int(leftPeak * length));
+		int	iPeakR = alignRaw(int(rightPeak * length));
 		int iHoldL = _calcIHold(leftHold, canvas);
 		int iHoldR = _calcIHold(rightHold, canvas);
 

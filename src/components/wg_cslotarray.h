@@ -20,36 +20,15 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISLOTARRAY_DOT_H
-#define	WG_ISLOTARRAY_DOT_H
+#ifndef	WG_CSLOTARRAY_DOT_H
+#define	WG_CSLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_idynamicslots.h>
+#include <wg_cdynamicslotcollection.h>
 #include <wg_slotarray.h>
 
 namespace wg
 {
-
-	//____ SlotArrayHolder _________________________________________________________
-
-	class SlotArrayHolder	/** @private */
-	{
-	public:
-		virtual Object * _object() = 0;
-
-		virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
-		virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
-		virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
-
-		virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
-		virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
-
-//		virtual void	_willReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
-//		virtual void	_didReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
-
-
-	};
-
 
 	//____ SlotArrayIterator _______________________________________________________
 
@@ -123,11 +102,31 @@ namespace wg
 
 
 
-	//____ ISlotArray _________________________________________________________
+	//____ CSlotArray _________________________________________________________
 
-	template<class SlotType> class ISlotArray : public IDynamicSlots
+	template<class SlotType> class CSlotArray : public CDynamicSlotCollection
 	{
 	public:
+
+		class Holder	/** @private */
+		{
+		public:
+			virtual Object * _object() = 0;
+
+			virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
+			virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
+
+			virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
+
+			//		virtual void	_willReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
+			//		virtual void	_didReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
+
+
+		};
+
+
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
@@ -233,13 +232,14 @@ namespace wg
 
 
 	protected:
-		ISlotArray(SlotArray<SlotType> * pSlotArray, SlotArrayHolder * pHolder) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
+		CSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
 
 		SlotIterator	_begin() const override;
 		SlotIterator	_end() const override;
 		BasicSlot&		_at(int index) const;
 
-		Object *		_object() const override;
+		Object *		_object() override;
+		const Object *	_object() const override;
 
 		SlotIterator	_add(Widget * pWidget) override;
 		SlotIterator	_add(const Widget_p pWidgets[], int amount) override;
@@ -256,8 +256,8 @@ namespace wg
 		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 
 		SlotArray<SlotType> *	m_pSlotArray;
-		SlotArrayHolder *		m_pHolder;
+		Holder *				m_pHolder;
 	};
 
 } // namespace wg
-#endif //WG_ISLOTARRAY_DOT_H
+#endif //WG_CSLOTARRAY_DOT_H

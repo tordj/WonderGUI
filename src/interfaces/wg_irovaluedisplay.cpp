@@ -28,7 +28,12 @@ namespace wg
 
 	//____ _object() _______________________________________________________________
 
-	Object * IROValueDisplay::_object() const
+	Object * IROValueDisplay::_object()
+	{
+		return m_pComponent->_object();
+	}
+
+	const Object * IROValueDisplay::_object() const
 	{
 		return m_pComponent->_object();
 	}

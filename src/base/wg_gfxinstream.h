@@ -24,7 +24,7 @@
 #define	WG_GFXINSTREAM_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_types.h>
 #include <wg_geo.h>
 #include <wg_color.h>
@@ -37,8 +37,8 @@ namespace wg
 {
 
 	class GfxInStream;
-	typedef	StrongInterfacePtr<GfxInStream>		GfxInStream_p;
-	typedef	WeakInterfacePtr<GfxInStream>		GfxInStream_wp;
+	typedef	StrongComponentPtr<GfxInStream>		GfxInStream_p;
+	typedef	WeakComponentPtr<GfxInStream>		GfxInStream_wp;
 
 
 	//____ GfxInStreamHolder ___________________________________________________
@@ -65,7 +65,7 @@ namespace wg
 
 	//____ GfxInStream ________________________________________________________
 
-	class GfxInStream : public Interface, GfxStream
+	class GfxInStream : public Component, GfxStream
 	{
 	public:
 		GfxInStream(GfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
@@ -111,7 +111,8 @@ namespace wg
 		inline GfxInStream_p	ptr() { return GfxInStream_p(this); }
 
 	protected:
-		Object *				_object() const override { return m_pHolder->_object(); }
+		Object *				_object() override { return m_pHolder->_object(); }
+		const Object *			_object() const override { return m_pHolder->_object(); }
 
 		GfxInStreamHolder * 	m_pHolder;
 	};

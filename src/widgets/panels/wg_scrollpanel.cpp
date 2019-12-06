@@ -441,11 +441,15 @@ namespace wg
 		m_pHolder->_replaceChild(m_pSlot, nullptr);
 	}
 
-	Object * ScrollbarEntry::_object() const
+	Object * ScrollbarEntry::_object()
 	{
 		return m_pHolder;
 	}
 
+	const Object * ScrollbarEntry::_object() const
+	{
+		return m_pHolder;
+	}
 
 
 	//____ Constructor ____________________________________________________________

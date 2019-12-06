@@ -72,12 +72,12 @@ namespace wg
 
 
 	class IPopupSlots;
-	typedef	StrongInterfacePtr<IPopupSlots>	IPopupSlots_p;
-	typedef	WeakInterfacePtr<IPopupSlots>	IPopupSlots_wp;
+	typedef	StrongComponentPtr<IPopupSlots>	IPopupSlots_p;
+	typedef	WeakComponentPtr<IPopupSlots>	IPopupSlots_wp;
 
 	//____ IPopupSlots ________________________________________________________
 
-	class IPopupSlots : public Interface
+	class IPopupSlots : public Component
 	{
 	public:
 		/** @private */
@@ -103,7 +103,8 @@ namespace wg
 		Widget_p at(int index) const;
 
 	protected:
-		Object *		_object() const override;
+		Object *		_object() override;
+		const Object *	_object() const override;
 		PopupLayer *	m_pHolder;
 
 	};
@@ -121,7 +122,7 @@ namespace wg
 
 		static PopupLayer_p	create() { return PopupLayer_p(new PopupLayer()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IPopupSlots	popups;
 

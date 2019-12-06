@@ -20,22 +20,22 @@
 
 =========================================================================*/
 
-#ifndef	WG_IDYNAMICSLOTS_DOT_H
-#define	WG_IDYNAMICSLOTS_DOT_H
+#ifndef	WG_CDYNAMICSLOTCOLLECTION_DOT_H
+#define	WG_CDYNAMICSLOTCOLLECTION_DOT_H
 #pragma once
 
-#include <wg_islots.h>
+#include <wg_cslotcollection.h>
 
 namespace wg
 {
 
-	//____ IDynamicSlots __________________________________________________________
+	//____ CDynamicSlotCollection __________________________________________________________
 
-	class IDynamicSlots;
-	typedef	StrongInterfacePtr<IDynamicSlots>	IDynamicSlots_p;
-	typedef	WeakInterfacePtr<IDynamicSlots>		IDynamicSlots_wp;
+	class CDynamicSlotCollection;
+	typedef	StrongComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_p;
+	typedef	WeakComponentPtr<CDynamicSlotCollection>		CDynamicSlotCollection_wp;
 
-	class IDynamicSlots : public ISlots
+	class CDynamicSlotCollection : public CSlotCollection
 	{
 
 	public:
@@ -115,7 +115,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline IDynamicSlots_p ptr() { return IDynamicSlots_p(this); }
+		inline CDynamicSlotCollection_p ptr() { return CDynamicSlotCollection_p(this); }
 
 	protected:
 
@@ -134,4 +134,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_IDYNAMICSLOTS_DOT_H
+#endif //WG_CDYNAMICSLOTCOLLECTION_DOT_H

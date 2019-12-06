@@ -27,7 +27,7 @@
 
 #include <wg_list.h>
 #include <wg_icolumnheader.h>
-#include <wg_iselectableslotarray.h>
+#include <wg_cselectableslotarray.h>
 
 
 
@@ -62,31 +62,33 @@ namespace wg
 		int				prefBreadth;		// Prefereed breadth of this widget.
 	};
 
-	//____ PackListSlotArrayHolder() ___________________________________________
-
-	class PackListSlotArrayHolder : public SelectableSlotArrayHolder /** @private */
-	{
-	public:
-		virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
-		virtual bool	_sortEntries() = 0;
-		virtual bool	_hasSortFunction() const = 0;
-	};
 
 	//____ IPackListSlots ______________________________________________________
 
 	class IPackListSlots;
-	typedef	StrongInterfacePtr<IPackListSlots>	IPackListSlots_p;
-	typedef	WeakInterfacePtr<IPackListSlots>		IPackListSlots_wp;
+	typedef	StrongComponentPtr<IPackListSlots>	IPackListSlots_p;
+	typedef	WeakComponentPtr<IPackListSlots>		IPackListSlots_wp;
 
-	class IPackListSlots : public ISelectableSlotArray<PackListSlot>
+	class IPackListSlots : public CSelectableSlotArray<PackListSlot>
 	{
 	public:
+
+		//____ Holder _________________________________________________________
+
+		class Holder : public CSelectableSlotArray<PackListSlot>::Holder /** @private */
+		{
+		public:
+			virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
+			virtual bool	_sortEntries() = 0;
+			virtual bool	_hasSortFunction() const = 0;
+		};
+
 
 		using		iterator = SlotArrayIterator<PackListSlot>;
 
 		/** @private */
 
-		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, PackListSlotArrayHolder * pHolder) : ISelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
+		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -101,8 +103,8 @@ namespace wg
 		void		sort();
 	protected:
 
-		const PackListSlotArrayHolder *	_holder() const { return static_cast<PackListSlotArrayHolder*>(m_pHolder); }
-		PackListSlotArrayHolder *	_holder() { return static_cast<PackListSlotArrayHolder*>(m_pHolder); }
+		const Holder *	_holder() const { return static_cast<Holder*>(m_pHolder); }
+		Holder *		_holder() { return static_cast<Holder*>(m_pHolder); }
 
 
 	};
@@ -119,7 +121,7 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected PackListSlotArrayHolder, protected PackListSlotHolder
+	class PackList : public List, protected IPackListSlots::Holder, protected PackListSlotHolder
 	{
 		friend class IPackListSlots;
 //		friend class ISelectableChildren<PackListSlot, PackList>;
@@ -134,7 +136,7 @@ namespace wg
 
 		static PackList_p	create() { return PackList_p(new PackList()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IColumnHeader		header;
 		IPackListSlots	children;
@@ -187,7 +189,7 @@ namespace wg
 		SizeI			_windowPadding() const override;
 
 
-		// Overloaded from PackListSlotArrayHolder
+		// Overloaded from PackListCSlotArray::Holder
 
 		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
 		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
@@ -257,13 +259,13 @@ namespace wg
 		void		_releaseChild(BasicSlot * pSlot) override;
 		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
 
-		// Overloaded from ComponentHolder
+		// Overloaded from GeoComponent::Holder
 
-		CoordI	_componentPos(const Component * pComponent) const override;
-		SizeI	_componentSize(const Component * pComponent) const override;
-		RectI	_componentGeo(const Component * pComponent) const override;
+		CoordI	_componentPos(const GeoComponent * pComponent) const override;
+		SizeI	_componentSize(const GeoComponent * pComponent) const override;
+		RectI	_componentGeo(const GeoComponent * pComponent) const override;
 
-		void	_receiveComponentNotif(Component * pComponent, ComponentNotif notification, int value, void * pData) override;
+		void	_receiveComponentNotif(GeoComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
 
 
 		// Internal

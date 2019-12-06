@@ -24,7 +24,7 @@
 #define WG_CTEXT_DOT_H
 #pragma once
 
-#include <wg_component.h>
+#include <wg_geocomponent.h>
 #include <wg_textstyle.h>
 #include <wg_textmapper.h>
 #include <wg_base.h>
@@ -35,11 +35,11 @@ namespace wg
 
 	//____ CText __________________________________________________________________
 
-	class CText : public Component		/** @private */
+	class CText : public GeoComponent		/** @private */
 	{
 		friend class TextMapper;
 	public:
-		CText( ComponentHolder * pHolder );
+		CText(GeoComponent::Holder * pHolder );
 		virtual ~CText();
 
 		virtual void		setStyle( TextStyle * pStyle );

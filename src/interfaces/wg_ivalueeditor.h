@@ -32,8 +32,8 @@ namespace wg
 {
 
 	class IValueEditor;
-	typedef	StrongInterfacePtr<IValueEditor>	IValueEditor_p;
-	typedef	WeakInterfacePtr<IValueEditor>	IValueEditor_wp;
+	typedef	StrongComponentPtr<IValueEditor>	IValueEditor_p;
+	typedef	WeakComponentPtr<IValueEditor>	IValueEditor_wp;
 
 	/**
 	 * @brief Interface for a ValueEditor component.

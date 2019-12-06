@@ -20,13 +20,13 @@
 
 =========================================================================*/
 
-#include <wg_ishadows.h>
+#include <wg_cshadows.h>
 
 namespace wg
 {
 	//____ clear() ____________________________________________________________
 
-	void IShadows::clear()
+	void CShadows::clear()
 	{
 		if (!m_pShadows->empty())
 		{
@@ -37,7 +37,7 @@ namespace wg
 
 	//____ add() _______________________________________________________________
 
-	bool IShadows::add(Widget * pWidget, Skin * pShadow)
+	bool CShadows::add(Widget * pWidget, Skin * pShadow)
 	{
 		if (pWidget == nullptr || pShadow == nullptr)
 			return false;
@@ -47,7 +47,7 @@ namespace wg
 		return true;
 	}
 
-	int IShadows::add(std::initializer_list <std::tuple<Widget*, Skin*>> shadows)
+	int CShadows::add(std::initializer_list <std::tuple<Widget*, Skin*>> shadows)
 	{
 		int nAdded = 0;
 
@@ -71,25 +71,25 @@ namespace wg
 
 	//____ remove() ____________________________________________________________
 
-	void IShadows::remove(int index)
+	void CShadows::remove(int index)
 	{
 		m_pHolder->_willRemoveShadows(index, 1);
 		m_pShadows->erase(m_pShadows->begin() + index);
 	}
 
-	IShadows::iterator IShadows::remove(const_iterator pos)
+	CShadows::iterator CShadows::remove(const_iterator pos)
 	{
 		m_pHolder->_willRemoveShadows(pos - m_pShadows->begin(), 1);
 		return m_pShadows->erase(pos);
 	}
 
-	void IShadows::remove(int index, int amount)
+	void CShadows::remove(int index, int amount)
 	{
 		m_pHolder->_willRemoveShadows(index, amount);
 		m_pShadows->erase(m_pShadows->begin() + index, m_pShadows->begin() + index + amount);
 	}
 
-	IShadows::iterator IShadows::remove(const_iterator beg, const_iterator end)
+	CShadows::iterator CShadows::remove(const_iterator beg, const_iterator end)
 	{
 		m_pHolder->_willRemoveShadows(beg - m_pShadows->begin(), end-beg);
 		return m_pShadows->erase(beg,end);

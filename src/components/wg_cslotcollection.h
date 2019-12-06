@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISLOTS_DOT_H
-#define	WG_ISLOTS_DOT_H
+#ifndef	WG_CSLOTCOLLECTION_DOT_H
+#define	WG_CSLOTCOLLECTION_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_container.h>
 #include <wg_slot.h>
@@ -143,13 +143,13 @@ namespace wg
 
 
 
-	//____ ISlots _________________________________________________________________
+	//____ CSlotCollection _________________________________________________________________
 
-	class ISlots;
-	typedef	StrongInterfacePtr<ISlots>	ISlots_p;
-	typedef	WeakInterfacePtr<ISlots>	ISlots_wp;
+	class CSlotCollection;
+	typedef	StrongComponentPtr<CSlotCollection>	CSlotCollection_p;
+	typedef	WeakComponentPtr<CSlotCollection>	CSlotCollection_wp;
 
-	class ISlots : public Interface
+	class CSlotCollection : public Component
 	{
 	public:
 		using		iterator = SlotIterator;
@@ -164,7 +164,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline ISlots_p ptr() { return ISlots_p(this); }
+		inline CSlotCollection_p ptr() { return CSlotCollection_p(this); }
 
 		inline iterator	begin() const { return _begin(); }
 		inline iterator	end() const { return _end(); }
@@ -179,4 +179,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_ISLOTS_DOT_H
+#endif //WG_CSLOTCOLLECTION_DOT_H

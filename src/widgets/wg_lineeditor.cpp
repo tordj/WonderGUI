@@ -187,7 +187,7 @@ namespace wg
 
 	//____ _componentPos() __________________________________________________________
 
-	CoordI LineEditor::_componentPos( const Component * pComponent ) const
+	CoordI LineEditor::_componentPos( const GeoComponent * pComponent ) const
 	{
 		CoordI c(-m_textScrollOfs, 0);
 
@@ -199,7 +199,7 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeI LineEditor::_componentSize( const Component * pComponent ) const
+	SizeI LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 			return SizeI( m_text.preferredSize().w, m_size.h - m_pSkin->_contentPadding().h );
@@ -209,7 +209,7 @@ namespace wg
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectI LineEditor::_componentGeo( const Component * pComponent ) const
+	RectI LineEditor::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 		{
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ _componentRequestRender() ______________________________________________
 
-	void LineEditor::_componentRequestRender(const Component * pComponent)
+	void LineEditor::_componentRequestRender(const GeoComponent * pComponent)
 	{
 		RectI visible(0, 0, m_size);
 
@@ -234,7 +234,7 @@ namespace wg
 		_requestRender(visible);
 	}
 
-	void LineEditor::_componentRequestRender( const Component * pComponent, const RectI& rect )
+	void LineEditor::_componentRequestRender( const GeoComponent * pComponent, const RectI& rect )
 	{
 		RectI dirt = rect;
 		dirt.x -= m_textScrollOfs;
@@ -254,7 +254,7 @@ namespace wg
 
 	//____ _componentRequestResize() ______________________________________________
 
-	void LineEditor::_componentRequestResize( const Component * pComponent )
+	void LineEditor::_componentRequestResize( const GeoComponent * pComponent )
 	{
 		SizeI preferred = m_text.preferredSize();
 
@@ -270,7 +270,7 @@ namespace wg
 
 	//____ _componentRequestInView() ____________________________________________
 
-	void LineEditor::_componentRequestInView(const Component * pComponent, const RectI& mustHave, const RectI& niceToHave)
+	void LineEditor::_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave)
 	{
 		int scrollOfs = m_textScrollOfs;
 		SizeI canvas = pComponent->_size();

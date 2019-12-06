@@ -19,50 +19,60 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
-#ifndef	WG_COMPONENT_DOT_H
-#define	WG_COMPONENT_DOT_H
+#ifndef WG_COMPONENT_DOT_H
+#define WG_COMPONENT_DOT_H
 #pragma once
-
-#include <wg_componentholder.h>
-
-
-#include <wg_geo.h>
 
 
 namespace wg
 {
+	class Component;
+	template<class T> class StrongComponentPtr;
+	typedef StrongComponentPtr<Component>	Component_p;
 
-	//____ Component _________________________________________________________________
+	template<class T> class WeakComponentPtr;
+	typedef WeakComponentPtr<Component>		Component_wp;
 
-	class Component		/** @private */
+	class Object;
+	template<class T> class StrongPtr;
+	typedef StrongPtr<Object>				Object_p;
+
+
+	/**
+	 * @brief Provides access to a component of a widget or object.
+	 *
+	 * Interfaces are provided by Widgets and other reference counted Objects
+	 * to provide API access to their embedded components such as labels and
+	 * icons.
+	 *
+	 * The interface concept of WonderGUI serves two purposes:
+	 *
+	 * First it
+	 * provides a nice API-level abstraction to keep methods for accessing
+	 * different components of a widget logically separated while providing
+	 * an identical way to access same type of component in all widgets that
+	 * contains them.
+	 *
+	 * Secondly it provides a safe way to pass around pointers to the embedded
+	 * components since interface pointers do reference counting on the object.
+	 *
+	 **/
+
+	class Component
 	{
+		template<class T> friend class StrongComponentPtr;
+		template<class T> friend class WeakComponentPtr;
 	public:
-		Component( ComponentHolder * pHolder ) : m_pHolder(pHolder) {}
 
-		inline CoordI	_pos() const { return m_pHolder->_componentPos(this); }
-		inline SizeI	_size() const { return m_pHolder->_componentSize(this); }
-		inline RectI	_geo() const { return m_pHolder->_componentGeo(this); }
-		inline CoordI	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
-		inline RectI	_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
+		//.____ Misc __________________________________________________
 
-
-		inline void		_requestRender() const { m_pHolder->_componentRequestRender(this); }
-		inline void		_requestRender(const RectI& rect) const { m_pHolder->_componentRequestRender(this, rect); }
-		inline void		_requestResize() const { m_pHolder->_componentRequestResize(this); }
-		inline void		_requestVisibility() const { m_pHolder->_componentRequestInView(this); }
-		inline void		_requestVisibility(const RectI& mustHave, const RectI& niceToHave) const { m_pHolder->_componentRequestInView(this, mustHave, niceToHave); }
-		inline void		_requestFocus() const { m_pHolder->_componentRequestFocus(this); }
-
-		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pHolder->_receiveComponentNotif(this, notification, value, pData); }
-
-		inline Object *			_object() { return m_pHolder->_object(); }
-		inline const Object *	_object() const { return m_pHolder->_object(); }
+		Component_p				ptr();
+		Object_p				object();
 
 	protected:
-		ComponentHolder * m_pHolder;
+		virtual Object * 			_object() = 0;
+		virtual const Object * 		_object() const = 0;
 	};
-
 
 
 

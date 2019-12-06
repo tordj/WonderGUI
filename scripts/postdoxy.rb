@@ -10,7 +10,7 @@ end
 
 $prioTable = {
   'Creation' => 10,
-  'Interfaces' => 20,
+  'Components' => 20,
   'Properties' => 30,
   'Identification' => 35,
   'Appearance' => 40,

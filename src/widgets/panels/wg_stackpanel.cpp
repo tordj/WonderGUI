@@ -26,12 +26,12 @@
 #include <wg_patches.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_ipaddedslotarray.impl.h>
+#include <wg_cpaddedslotarray.impl.h>
 
 namespace wg
 {
-	template class ISlotArray<StackSlot>;
-	template class IPaddedSlotArray<StackSlot>;
+	template class CSlotArray<StackSlot>;
+	template class CPaddedSlotArray<StackSlot>;
 	template class SlotArray<StackSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};

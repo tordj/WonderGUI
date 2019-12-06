@@ -29,7 +29,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CValue::CValue(ComponentHolder * pHolder) : CText(pHolder)
+	CValue::CValue(GeoComponent::Holder * pHolder) : CText(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;

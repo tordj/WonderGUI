@@ -46,7 +46,7 @@ namespace wg
 
 		static GfxStreamReader_p	create( std::function<int(int nBytes, void * pDest)> dataFetcher );
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		GfxInStream		stream;
 

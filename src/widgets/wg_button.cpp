@@ -301,7 +301,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordI Button::_componentPos( const Component * pComponent ) const
+	CoordI Button::_componentPos( const GeoComponent * pComponent ) const
 	{
 		RectI	contentRect = m_size;
 
@@ -321,7 +321,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeI Button::_componentSize( const Component * pComponent ) const
+	SizeI Button::_componentSize( const GeoComponent * pComponent ) const
 	{
 		SizeI	sz = m_size;
 
@@ -340,7 +340,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectI Button::_componentGeo( const Component * pComponent ) const
+	RectI Button::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		RectI	contentRect = m_size;
 

@@ -34,7 +34,7 @@ namespace wg
 	class CValueEditor : public CValueDisplay	/** @private */
 	{
 	public:
-		CValueEditor( ComponentHolder * pHolder );
+		CValueEditor(GeoComponent::Holder * pHolder );
 		~CValueEditor();
 
 		void				setEditMode(TextEditMode mode);

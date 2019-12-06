@@ -44,7 +44,7 @@ namespace wg
 
 		static GfxStreamPlug_p	create( int capacity = min(GfxStream::c_maxBlockSize*4, 16384) );
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		GfxOutStream		input;
 		GfxInStream			output[c_maxOutputs];

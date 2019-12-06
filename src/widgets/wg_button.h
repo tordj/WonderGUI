@@ -50,7 +50,7 @@ namespace wg
 
 		static Button_p	create() { return Button_p(new Button()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		ITextDisplay		label;
 		IIconDisplay		icon;
@@ -82,9 +82,9 @@ namespace wg
 		void			_setState( State state ) override;
 
 
-		CoordI			_componentPos( const Component * pComponent ) const override;
-		SizeI			_componentSize( const Component * pComponent ) const override;
-		RectI			_componentGeo( const Component * pComponent ) const override;
+		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
+		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
+		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
 
 
 

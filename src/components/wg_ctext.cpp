@@ -28,7 +28,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CText::CText( ComponentHolder * pHolder ) : Component( pHolder )
+	CText::CText(GeoComponent::Holder * pHolder ) : GeoComponent( pHolder )
 	{
 		_textMapper()->addComponent(this);
 	}

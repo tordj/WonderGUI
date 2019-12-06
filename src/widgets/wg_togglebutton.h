@@ -74,7 +74,7 @@ namespace wg
 
 		static ToggleButton_p	create() { return ToggleButton_p(new ToggleButton()); }
 
-		//.____ Interfaces ____________________________________
+		//.____ Components ____________________________________
 
 		ITextDisplay		label;
 		IIconDisplay		icon;
@@ -121,9 +121,9 @@ namespace wg
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
 
-		CoordI	_componentPos( const Component * pComponent ) const override;
-		SizeI	_componentSize( const Component * pComponent ) const override;
-		RectI	_componentGeo( const Component * pComponent ) const override;
+		CoordI	_componentPos( const GeoComponent * pComponent ) const override;
+		SizeI	_componentSize( const GeoComponent * pComponent ) const override;
+		RectI	_componentGeo( const GeoComponent * pComponent ) const override;
 
 
 

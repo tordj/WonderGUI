@@ -242,7 +242,7 @@ namespace wg
 
 	//____ _componentPos() __________________________________________________________
 
-	CoordI RulerLabels::_componentPos( const Component * pComponent ) const
+	CoordI RulerLabels::_componentPos( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
 		return CoordI();
@@ -250,7 +250,7 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeI RulerLabels::_componentSize( const Component * pComponent ) const
+	SizeI RulerLabels::_componentSize( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
 		return SizeI();
@@ -258,7 +258,7 @@ namespace wg
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectI RulerLabels::_componentGeo( const Component * pComponent ) const
+	RectI RulerLabels::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
 		return RectI();
@@ -266,7 +266,7 @@ namespace wg
 
 	//____ _componentRequestResize() __________________________________________________
 
-	void RulerLabels::_componentRequestResize( const Component * pComponent )
+	void RulerLabels::_componentRequestResize( const GeoComponent * pComponent )
 	{
 		//TODO: Implement!!!
 		_requestResize();

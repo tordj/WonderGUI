@@ -20,38 +20,37 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISELECTABLESLOTARRAY_DOT_H
-#define	WG_ISELECTABLESLOTARRAY_DOT_H
+#ifndef	WG_CSELECTABLESLOTARRAY_DOT_H
+#define	WG_CSELECTABLESLOTARRAY_DOT_H
 #pragma once
 
 #include <wg_slot.h>
-#include <wg_islotarray.h>
+#include <wg_cslotarray.h>
 
 namespace wg
 {
 
+	//____ CSelectableSlotArray ________________________________________________________
 
-	//____ SelectableSlotArrayHolder ____________________________________________________________
-
-	class SelectableSlotArrayHolder : public SlotArrayHolder		/** @private */
+	template<class SlotType> class CSelectableSlotArray : public CSlotArray<SlotType>
 	{
 	public:
-		virtual void	_selectSlots(BasicSlot * pSlot, int nb) = 0;
-		virtual void	_unselectSlots(BasicSlot * pSlot, int nb) = 0;
-	};
 
-	//____ ISelectableSlotArray ________________________________________________________
+		class Holder : public CSlotArray<SlotType>::Holder		/** @private */
+		{
+		public:
+			virtual void	_selectSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_unselectSlots(BasicSlot * pSlot, int nb) = 0;
+		};
 
-	template<class SlotType> class ISelectableSlotArray : public ISlotArray<SlotType>
-	{
-	public:
+
 //		using		iterator = SlotArrayIterator<SlotType>;
-		using		ISlotArray<SlotType>::m_pSlotArray;
-		using		ISlotArray<SlotType>::m_pHolder;
+		using		CSlotArray<SlotType>::m_pSlotArray;
+		using		CSlotArray<SlotType>::m_pHolder;
 
 		/** @private */
 
-		ISelectableSlotArray(SlotArray<SlotType> * pSlotArray, SelectableSlotArrayHolder * pHolder) : ISlotArray<SlotType>(pSlotArray,pHolder) {}
+		CSelectableSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : CSlotArray<SlotType>(pSlotArray,pHolder) {}
 
 		//.____ Control _______________________________________________________
 
@@ -72,11 +71,11 @@ namespace wg
 		bool	isSelected(const SlotIterator& it);
 
 	protected:
-		SelectableSlotArrayHolder * _holder() const { return static_cast<SelectableSlotArrayHolder*>(m_pHolder); }
+		Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
 
 	};
 
 };
 
-#endif	//WG_ISELECTABLESLOTARRAY_DOT_H
+#endif	//WG_CSELECTABLESLOTARRAY_DOT_H

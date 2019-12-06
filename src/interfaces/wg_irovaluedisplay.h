@@ -24,7 +24,7 @@
 #define WG_IROVALUEDISPLAY_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_textstyle.h>
 #include <wg_textmapper.h>
 
@@ -40,8 +40,8 @@ namespace wg
 
 
 	class IROValueDisplay;
-	typedef	StrongInterfacePtr<IROValueDisplay>	IROValueDisplay_p;
-	typedef	WeakInterfacePtr<IROValueDisplay>	IROValueDisplay_wp;
+	typedef	StrongComponentPtr<IROValueDisplay>	IROValueDisplay_p;
+	typedef	WeakComponentPtr<IROValueDisplay>	IROValueDisplay_wp;
 
 	/**
 	 * @brief Interface for a read-only value with modifiable appearance
@@ -51,7 +51,7 @@ namespace wg
 	 *
 	 */
 
-	class IROValueDisplay : public Interface
+	class IROValueDisplay : public Component
 	{
 	public:
 		/** @private */
@@ -88,7 +88,8 @@ namespace wg
 
 
 	protected:
-		Object * 		_object() const override;
+		Object * 		_object() override;
+		const Object * 		_object() const override;
 
 		CValue *		m_pComponent;
 	};

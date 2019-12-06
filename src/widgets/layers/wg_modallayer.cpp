@@ -28,14 +28,14 @@
 #include <wg_slotarray.impl.h>
 #include <wg_inputhandler.h>
 
-#include <wg_islotarray.impl.h>
+#include <wg_cslotarray.impl.h>
 
 
 namespace wg
 {
 	using namespace Util;
 
-	template class ISlotArray<ModalSlot>;
+	template class CSlotArray<ModalSlot>;
 	template class SlotArray<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};

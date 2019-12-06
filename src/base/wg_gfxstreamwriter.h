@@ -43,7 +43,7 @@ namespace wg
 
 		static GfxStreamWriter_p	create( std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize = GfxStream::c_maxBlockSize*2 );
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		GfxOutStream		stream;
 

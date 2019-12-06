@@ -63,7 +63,12 @@ namespace wg
 
 	//____ _object() ___________________________________________________________
 
-	Object * IPopupSlots::_object() const
+	Object * IPopupSlots::_object()
+	{
+		return m_pHolder;
+	}
+
+	const Object * IPopupSlots::_object() const
 	{
 		return m_pHolder;
 	}

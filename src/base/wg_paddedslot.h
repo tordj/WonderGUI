@@ -41,8 +41,8 @@ namespace wg
 
 	class PaddedSlot : public BasicSlot 	/** @private */
 	{
-		template<class S> friend class ISlotArray;
-		template<class S> friend class IPaddedSlotArray;
+		template<class S> friend class CSlotArray;
+		template<class S> friend class CPaddedSlotArray;
 	public:
 		PaddedSlot(SlotHolder* pHolder) : BasicSlot(pHolder), bVisible(false) {}
 	protected:

@@ -27,14 +27,14 @@
 
 
 #include <wg_slotarray.impl.h>
-#include <wg_ipaddedslotarray.impl.h>
+#include <wg_cpaddedslotarray.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class ISlotArray<PackSlot>;
-	template class IPaddedSlotArray<PackSlot>;
+	template class CSlotArray<PackSlot>;
+	template class CPaddedSlotArray<PackSlot>;
 	template class SlotArray<PackSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};

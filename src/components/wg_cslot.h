@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISLOT_DOT_H
-#define	WG_ISLOT_DOT_H
+#ifndef	WG_CSLOT_DOT_H
+#define	WG_CSLOT_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_slot.h>
 
@@ -34,7 +34,7 @@ namespace wg
 
 	//____ CSlot __________________________________________________________
 
-	class CSlot : public Interface
+	class CSlot : public Component
 	{
 	public:
 
@@ -68,29 +68,29 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline StrongInterfacePtr<CSlot>	ptr() { return StrongInterfacePtr<CSlot>(this); }
+		inline StrongComponentPtr<CSlot>	ptr() { return StrongComponentPtr<CSlot>(this); }
 
 	private:
 		virtual BasicSlot *			_slot() = 0;
 		virtual const BasicSlot *	_slot() const = 0;
 	};
 
-	typedef	StrongInterfacePtr<CSlot>	CSlot_p;
-	typedef	WeakInterfacePtr<CSlot>		CSlot_wp;
+	typedef	StrongComponentPtr<CSlot>	CSlot_p;
+	typedef	WeakComponentPtr<CSlot>		CSlot_wp;
 
 
 
-	//____ ISlot __________________________________________________________
+	//____ CSlotImpl<> __________________________________________________________
 
 
-	template<class SlotType> class ISlot : public CSlot, public SlotType
+	template<class SlotType> class CSlotImpl : public CSlot, public SlotType
 	{
 
 	public:
 
 		/** @private */
 
-		ISlot( typename SlotType::Holder * pHolder ) : SlotType(pHolder) {}
+		CSlotImpl( typename SlotType::Holder * pHolder ) : SlotType(pHolder) {}
 
 
 		//.____ Operators __________________________________________
@@ -117,7 +117,8 @@ namespace wg
 		inline Rect		geo() const { return SlotType::geo(); }
 
 	protected:
-		Object * _object() const override { return SlotType::_holder()->_object(); }
+		Object * _object() override { return SlotType::_holder()->_object(); }
+		const Object * _object() const override { return SlotType::_holder()->_object(); }
 
 		const BasicSlot * _slot() const override { return this; }
 		BasicSlot * _slot() override { return this; }
@@ -129,4 +130,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_ISLOT_DOT_H
+#endif //WG_CSLOT_DOT_H

@@ -42,7 +42,7 @@ namespace wg
 	class CTextDisplay : public CText		/** @private */
 	{
 	public:
-		CTextDisplay( ComponentHolder * pHolder );
+		CTextDisplay(GeoComponent::Holder * pHolder );
 
 		virtual void		clear();
 

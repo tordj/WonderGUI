@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
-#include <wg_iselectableslotarray.h>
+#include <wg_cselectableslotarray.h>
 
 namespace wg
 {
@@ -49,7 +49,7 @@ namespace wg
 	class ListSlot : public BasicSlot		/** @private */
 	{
 		friend class List;
-		template<class S> friend class ISlotArray;
+		template<class S> friend class CSlotArray;
 		template<class S> friend class SlotArray;
 
 	protected:

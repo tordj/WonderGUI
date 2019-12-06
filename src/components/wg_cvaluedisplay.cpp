@@ -30,7 +30,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CValueDisplay::CValueDisplay(ComponentHolder * pHolder) : CValue(pHolder), m_minValue(std::numeric_limits<int64_t>::min()), m_maxValue(std::numeric_limits<int64_t>::max())
+	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CValue(pHolder), m_minValue(std::numeric_limits<int64_t>::min()), m_maxValue(std::numeric_limits<int64_t>::max())
 	{
 	}
 

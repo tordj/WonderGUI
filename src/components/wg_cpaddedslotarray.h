@@ -20,36 +20,35 @@
 
 =========================================================================*/
 
-#ifndef	WG_IPADDEDSLOTARRAY_DOT_H
-#define	WG_IPADDEDSLOTARRAY_DOT_H
+#ifndef	WG_CPADDEDSLOTARRAY_DOT_H
+#define	WG_CPADDEDSLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_islotarray.h>
+#include <wg_cslotarray.h>
 
 namespace wg
 {
-	//____ PaddedSlotArrayHolder ____________________________________________________________
+	//____ CPaddedSlotArray ________________________________________________________
 
-	class PaddedSlotArrayHolder : public SlotArrayHolder  /** @private */
+	template<class SlotType> class CPaddedSlotArray : public CSlotArray<SlotType>
 	{
 	public:
-		virtual void	_repadSlots(BasicSlot * pSlot, int nb, BorderI padding) = 0;
-		virtual void	_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPadding) = 0;
-	};
 
-	//____ IPaddedSlotArray ________________________________________________________
+		class Holder : public CSlotArray<SlotType>::Holder  /** @private */
+		{
+		public:
+			virtual void	_repadSlots(BasicSlot * pSlot, int nb, BorderI padding) = 0;
+			virtual void	_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPadding) = 0;
+		};
 
-	template<class SlotType> class IPaddedSlotArray : public ISlotArray<SlotType>
-	{
-	public:
 
 //		using		iterator = SlotArrayIterator<SlotType>;
-		using		ISlotArray<SlotType>::m_pSlotArray;
-		using		ISlotArray<SlotType>::m_pHolder;
+		using		CSlotArray<SlotType>::m_pSlotArray;
+		using		CSlotArray<SlotType>::m_pHolder;
 
 		/** @private */
 
-		IPaddedSlotArray(SlotArray<SlotType> * pSlotArray, PaddedSlotArrayHolder * pHolder) : ISlotArray<SlotType>(pSlotArray, pHolder) {}
+		CPaddedSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : CSlotArray<SlotType>(pSlotArray, pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -64,7 +63,7 @@ namespace wg
 		inline Border	padding(const SlotIterator& it) const { return Util::rawToQpix(static_cast<SlotType*>(it._slot())->padding); }
 
 	protected:
-		PaddedSlotArrayHolder * _holder() const { return static_cast<PaddedSlotArrayHolder*>(m_pHolder); }
+		Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 	};
 
 
@@ -72,4 +71,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_IPADDEDSLOTARRAY_DOT_H
+#endif //WG_CPADDEDSLOTARRAY_DOT_H

@@ -30,10 +30,10 @@ namespace wg
 {
 	//____ CColumnHeader ___________________________________________________
 
-	class CColumnHeader : public Component, protected ComponentHolder   /** @private */
+	class CColumnHeader : public GeoComponent, protected GeoComponent::Holder   /** @private */
 	{
 	public:
-		CColumnHeader(ComponentHolder * pHolder);
+		CColumnHeader(GeoComponent::Holder * pHolder);
 
 		//____ Subcomponents __________________________________
 
@@ -69,21 +69,21 @@ namespace wg
 		Object *		_object() override;
 		const Object *	_object() const override;
 
-		CoordI	_componentPos( const Component * pComponent ) const override;
-		SizeI	_componentSize( const Component * pComponent ) const override;
-		RectI	_componentGeo( const Component * pComponent ) const override;
-		CoordI	_globalComponentPos( const Component * pComponent ) const override;
-		RectI	_globalComponentGeo( const Component * pComponent ) const override;
+		CoordI	_componentPos( const GeoComponent * pComponent ) const override;
+		SizeI	_componentSize( const GeoComponent * pComponent ) const override;
+		RectI	_componentGeo( const GeoComponent * pComponent ) const override;
+		CoordI	_globalComponentPos( const GeoComponent * pComponent ) const override;
+		RectI	_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		void	_componentRequestRender( const Component * pComponent ) override;
-		void	_componentRequestRender( const Component * pComponent, const RectI& rect ) override;
-		void	_componentRequestResize( const Component * pComponent ) override;
+		void	_componentRequestRender( const GeoComponent * pComponent ) override;
+		void	_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		void	_componentRequestResize( const GeoComponent * pComponent ) override;
 
-		void	_componentRequestFocus( const Component * pComponent ) override;
-		void	_componentRequestInView( const Component * pComponent ) override;
-		void	_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
+		void	_componentRequestFocus( const GeoComponent * pComponent ) override;
+		void	_componentRequestInView( const GeoComponent * pComponent ) override;
+		void	_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
-		void	_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 
 		Skin_p			m_pSkin;

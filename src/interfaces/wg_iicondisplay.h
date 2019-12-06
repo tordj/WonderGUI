@@ -26,7 +26,7 @@
 
 #include <wg_types.h>
 #include <wg_geo.h>
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_skin.h>
 #include <wg_cicondisplay.h>
@@ -35,10 +35,10 @@ namespace wg
 {
 
 	class IIconDisplay;
-	typedef	StrongInterfacePtr<IIconDisplay>	IIconDisplay_p;
-	typedef	WeakInterfacePtr<IIconDisplay>		IIconDisplay_wp;
+	typedef	StrongComponentPtr<IIconDisplay>	IIconDisplay_p;
+	typedef	WeakComponentPtr<IIconDisplay>		IIconDisplay_wp;
 
-	class IIconDisplay : public Interface
+	class IIconDisplay : public Component
 	{
 	public:
 		/** @private */
@@ -71,7 +71,8 @@ namespace wg
 
 
 	protected:
-		Object * 			_object() const override { return m_pComponent->_object(); };
+		Object * 			_object() override { return m_pComponent->_object(); };
+		const Object * 		_object() const override { return m_pComponent->_object(); };
 
 		CIconDisplay *			m_pComponent;
 	};

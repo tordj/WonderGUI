@@ -53,14 +53,14 @@ namespace wg
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongInterfacePtr<IROTextDisplay>	IROTextDisplay_p;
-	typedef	WeakInterfacePtr<IROTextDisplay> 	IROTextDisplay_wp;
+	typedef	StrongComponentPtr<IROTextDisplay>	IROTextDisplay_p;
+	typedef	WeakComponentPtr<IROTextDisplay> 	IROTextDisplay_wp;
 
-	typedef	StrongInterfacePtr<ITextDisplay>		ITextDisplay_p;
-	typedef	WeakInterfacePtr<ITextDisplay>		ITextDisplay_wp;
+	typedef	StrongComponentPtr<ITextDisplay>		ITextDisplay_p;
+	typedef	WeakComponentPtr<ITextDisplay>		ITextDisplay_wp;
 
-	typedef	StrongInterfacePtr<ITextEditor>	ITextEditor_p;
-	typedef	WeakInterfacePtr<ITextEditor>	ITextEditor_wp;
+	typedef	StrongComponentPtr<ITextEditor>	ITextEditor_p;
+	typedef	WeakComponentPtr<ITextEditor>	ITextEditor_wp;
 
 	typedef    StrongPtr<Payload>  Payload_p;
 	typedef    WeakPtr<Payload>    Payload_wp;

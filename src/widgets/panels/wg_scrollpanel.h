@@ -30,7 +30,7 @@
 #include <wg_panel.h>
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
-#include <wg_islot.h>
+#include <wg_cslot.h>
 #include <wg_paddedslot.h>
 
 
@@ -72,6 +72,7 @@ namespace wg
 		};
 
 		ViewSlot(ViewSlot::Holder *pHolder) : PaddedSlot(pHolder) {}
+	protected:
 
 		int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			_paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -124,12 +125,12 @@ namespace wg
 
 	//____ IViewSlot ______________________________________________________
 
-	class IViewSlot : public ISlot<ViewSlot>
+	class IViewSlot : public CSlotImpl<ViewSlot>
 	{
 	public:
 		/** @private */
 
-		IViewSlot(IViewSlotHolder * pHolder) : ISlot(pHolder) {}
+		IViewSlot(IViewSlotHolder * pHolder) : CSlotImpl(pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
@@ -185,7 +186,7 @@ namespace wg
 
 	//____ ScrollbarEntry ______________________________________________________
 
-	class ScrollbarEntry : public Interface
+	class ScrollbarEntry : public Component
 	{
 	public:
 		/** @private */
@@ -230,7 +231,8 @@ namespace wg
 
 
 	protected:
-		Object * _object() const override;
+		Object * _object() override;
+		const Object * _object() const override;
 
 		ScrollbarSlot *	m_pSlot;
 		ScrollPanel * m_pHolder;
@@ -250,7 +252,7 @@ namespace wg
 
 		static ScrollPanel_p	create() { return ScrollPanel_p(new ScrollPanel()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		IViewSlot		viewSlot;
 		ScrollbarEntry	hscrollbar, vscrollbar;

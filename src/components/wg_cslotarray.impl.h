@@ -20,13 +20,13 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISLOTARRAY_IMPL_DOT_H
-#define	WG_ISLOTARRAY_IMPL_DOT_H
+#ifndef	WG_CSLOTARRAY_IMPL_DOT_H
+#define	WG_CSLOTARRAY_IMPL_DOT_H
 #pragma once
 
-#include <wg_islotarray.h>
+#include <wg_cslotarray.h>
 
-//#define INSTANTIATE_CHILDREN(SlotType)		template class ISlotArray< SlotType >;
+//#define INSTANTIATE_CHILDREN(SlotType)		template class CSlotArray< SlotType >;
 
 namespace wg
 {
@@ -36,7 +36,7 @@ namespace wg
 	//____ add() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::add(Widget * pWidget)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::add(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -47,7 +47,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::add(const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::add(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -65,7 +65,7 @@ namespace wg
 	//____ insert() ______________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::insert(int index, Widget * pWidget)
+	void CSlotArray<SlotType>::insert(int index, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -77,7 +77,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::insert(const SlotIterator& pos, Widget * pWidget)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::insert(const SlotIterator& pos, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -91,7 +91,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::insert(int index, const Widget_p pWidgets[], int amount)
+	void CSlotArray<SlotType>::insert(int index, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -106,7 +106,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::insert(const SlotIterator& pos, const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::insert(const SlotIterator& pos, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -125,7 +125,7 @@ namespace wg
 	//____ remove() ______________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::remove(int index)
+	void CSlotArray<SlotType>::remove(int index)
 	{
 		//TODO: Add assert
 
@@ -134,7 +134,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::remove(const SlotIterator& pos)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::remove(const SlotIterator& pos)
 	{
 		//TODO: Add assert
 
@@ -144,7 +144,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::remove(int index, int amount)
+	void CSlotArray<SlotType>::remove(int index, int amount)
 	{
 		//TODO: Add assert
 
@@ -153,7 +153,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::remove(const SlotIterator& beg, const SlotIterator& end)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::remove(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
@@ -167,7 +167,7 @@ namespace wg
 	//____ clear() _______________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::clear()
+	void CSlotArray<SlotType>::clear()
 	{
 		if (m_pSlotArray->isEmpty())
 			return;
@@ -178,7 +178,7 @@ namespace wg
 	//____ moveToBack() __________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::moveToBack(int index)
+	void CSlotArray<SlotType>::moveToBack(int index)
 	{
 		//TODO: Assert
 
@@ -190,7 +190,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::moveToBack(const SlotIterator& it)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::moveToBack(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -205,7 +205,7 @@ namespace wg
 	//____ moveToFront() _________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::moveToFront(int index)
+	void CSlotArray<SlotType>::moveToFront(int index)
 	{
 		//TODO: Assert
 
@@ -217,7 +217,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::moveToFront(const SlotIterator& it)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::moveToFront(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -232,7 +232,7 @@ namespace wg
 	//____ moveBefore() __________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::moveBefore(int index, int sibling)
+	void CSlotArray<SlotType>::moveBefore(int index, int sibling)
 	{
 		//TODO: Assert
 
@@ -250,7 +250,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> ISlotArray<SlotType>::moveBefore(const SlotIterator& it, const SlotIterator& sibling)
+	SlotArrayIterator<SlotType> CSlotArray<SlotType>::moveBefore(const SlotIterator& it, const SlotIterator& sibling)
 	{
 		//TODO: Assert
 
@@ -272,7 +272,7 @@ namespace wg
 	//____ hide() ________________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::hide(int index)
+	void CSlotArray<SlotType>::hide(int index)
 	{
 		//TODO: Assert
 
@@ -280,7 +280,7 @@ namespace wg
 	};
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::hide(const SlotIterator& it)
+	void CSlotArray<SlotType>::hide(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -290,7 +290,7 @@ namespace wg
 
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::hide(int index, int amount)
+	void CSlotArray<SlotType>::hide(int index, int amount)
 	{
 		//TODO: Assert
 
@@ -298,7 +298,7 @@ namespace wg
 	};
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::hide(const SlotIterator& beg, const SlotIterator& end)
+	void CSlotArray<SlotType>::hide(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Assert
 
@@ -310,7 +310,7 @@ namespace wg
 	//____ hideAll() _____________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::hideAll()
+	void CSlotArray<SlotType>::hideAll()
 	{
 		m_pHolder->_hideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
@@ -318,7 +318,7 @@ namespace wg
 	//____ unhide() ______________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::unhide(int index)
+	void CSlotArray<SlotType>::unhide(int index)
 	{
 		//TODO: Assert
 
@@ -326,7 +326,7 @@ namespace wg
 	};
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::unhide(const SlotIterator& it)
+	void CSlotArray<SlotType>::unhide(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -335,7 +335,7 @@ namespace wg
 	};
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::unhide(int index, int amount)
+	void CSlotArray<SlotType>::unhide(int index, int amount)
 	{
 		//TODO: Assert
 
@@ -343,7 +343,7 @@ namespace wg
 	};
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::unhide(const SlotIterator& beg, const SlotIterator& end)
+	void CSlotArray<SlotType>::unhide(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Assert
 
@@ -355,7 +355,7 @@ namespace wg
 	//____ unhideAll() ________________________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::unhideAll()
+	void CSlotArray<SlotType>::unhideAll()
 	{
 		m_pHolder->_unhideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
@@ -363,7 +363,7 @@ namespace wg
 	//____ _begin() ___________________________________________________________
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_begin() const 
+	SlotIterator CSlotArray<SlotType>::_begin() const 
 	{ 
 		return iterator(m_pSlotArray->begin()); 
 	}
@@ -371,7 +371,7 @@ namespace wg
 	//____ _end() _____________________________________________________________
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_end() const 
+	SlotIterator CSlotArray<SlotType>::_end() const 
 	{ 
 		return iterator(m_pSlotArray->end()); 
 	}
@@ -379,7 +379,7 @@ namespace wg
 	//____ _at() _____________________________________________________________
 
 	template < class SlotType>
-	BasicSlot& ISlotArray<SlotType>::_at(int index) const
+	BasicSlot& CSlotArray<SlotType>::_at(int index) const
 	{
 		return *m_pSlotArray->slot(index);
 	}
@@ -387,7 +387,13 @@ namespace wg
 	//____ _object() __________________________________________________________
 
 	template < class SlotType>
-	Object * ISlotArray<SlotType>::_object() const
+	Object * CSlotArray<SlotType>::_object()
+	{
+		return m_pHolder->_object();
+	}
+
+	template < class SlotType>
+	const Object * CSlotArray<SlotType>::_object() const
 	{
 		return m_pHolder->_object();
 	}
@@ -396,7 +402,7 @@ namespace wg
 	//____ _releaseGuardPointer() _____________________________________________
 
 	template < class SlotType>
-	void ISlotArray<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	void CSlotArray<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
 	{
 		Container * pParent = pToRelease->_parent();
 
@@ -424,7 +430,7 @@ namespace wg
 
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_add(Widget * pWidget)
+	SlotIterator CSlotArray<SlotType>::_add(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -435,7 +441,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_add(const Widget_p pWidgets[], int amount)
+	SlotIterator CSlotArray<SlotType>::_add(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -451,7 +457,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_insert(const SlotIterator& it, Widget * pWidget)
+	SlotIterator CSlotArray<SlotType>::_insert(const SlotIterator& it, Widget * pWidget)
 	{
 		//TODO: Add assert
 
@@ -465,7 +471,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount)
+	SlotIterator CSlotArray<SlotType>::_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
@@ -482,7 +488,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_remove(const SlotIterator& it)
+	SlotIterator CSlotArray<SlotType>::_remove(const SlotIterator& it)
 	{
 		//TODO: Add assert
 
@@ -492,7 +498,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_remove(const SlotIterator& beg, const SlotIterator& end)
+	SlotIterator CSlotArray<SlotType>::_remove(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
@@ -503,7 +509,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_moveToFront(const SlotIterator& it)
+	SlotIterator CSlotArray<SlotType>::_moveToFront(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -516,7 +522,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_moveToBack(const SlotIterator& it)
+	SlotIterator CSlotArray<SlotType>::_moveToBack(const SlotIterator& it)
 	{
 		//TODO: Assert
 
@@ -529,7 +535,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator ISlotArray<SlotType>::_moveBefore(const SlotIterator& it, const SlotIterator& sibling)
+	SlotIterator CSlotArray<SlotType>::_moveBefore(const SlotIterator& it, const SlotIterator& sibling)
 	{
 		//TODO: Assert
 
@@ -552,5 +558,5 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_ISLOTARRAY_IMPL_DOT_H
+#endif //WG_CSLOTARRAY_IMPL_DOT_H
 

@@ -43,7 +43,7 @@ namespace wg
 
 		static TextDisplay_p	create() { return TextDisplay_p(new TextDisplay()); }
 
-		//.____ Interfaces ____________________________________
+		//.____ Components ____________________________________
 
 		ITextDisplay			text;
 

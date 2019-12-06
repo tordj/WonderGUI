@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISHADOWS_DOT_H
-#define	WG_ISHADOWS_DOT_H
+#ifndef	WG_CSHADOWS_DOT_H
+#define	WG_CSHADOWS_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_widget.h>
 #include <wg_skin.h>
@@ -34,9 +34,9 @@
 
 namespace wg
 {
-	class IShadows;
-	typedef	StrongInterfacePtr<IShadows>	IShadows_p;
-	typedef	WeakInterfacePtr<IShadows>		IShadows_wp;
+	class CShadows;
+	typedef	StrongComponentPtr<CShadows>	CShadows_p;
+	typedef	WeakComponentPtr<CShadows>		CShadows_wp;
 
 	//____ ShadowHolder ___________________________________________________
 
@@ -55,9 +55,9 @@ namespace wg
 		inline RectI	_shadowGeo( Shadow * pShadow ) { return pShadow->m_geo; }
 	};
 
-	//____ IShadows ______________________________________________________________
+	//____ CShadows ______________________________________________________________
 
-	class IShadows : public Interface
+	class CShadows : public Component
 	{
 	public:
 
@@ -65,13 +65,13 @@ namespace wg
 		using		const_iterator = std::vector<Shadow>::const_iterator;
 
 		/** @private */
-		IShadows(ShadowHolder * pHolder, std::vector<Shadow> * pVector) : m_pHolder(pHolder), m_pShadows(pVector) {}
+		CShadows(ShadowHolder * pHolder, std::vector<Shadow> * pVector) : m_pHolder(pHolder), m_pShadows(pVector) {}
 
 		//.____ Operators __________________________________________
 
 		const Shadow& operator[](int index) const { return m_pShadows->operator[](index); }
-		inline IShadows& operator<<(std::tuple<Widget*, Skin*> shadow) { add(std::get<0>(shadow), std::get<1>(shadow)); return *this; }
-		inline IShadows& operator<<(std::initializer_list <std::tuple<Widget*, Skin*>> shadows) { add(shadows); return *this; }
+		inline CShadows& operator<<(std::tuple<Widget*, Skin*> shadow) { add(std::get<0>(shadow), std::get<1>(shadow)); return *this; }
+		inline CShadows& operator<<(std::initializer_list <std::tuple<Widget*, Skin*>> shadows) { add(shadows); return *this; }
 
 		//.____ Appearance ________________________________________________________
 
@@ -94,7 +94,7 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline IShadows_p ptr() { return IShadows_p(this); }
+		inline CShadows_p ptr() { return CShadows_p(this); }
 
 		inline iterator	begin() { return m_pShadows->begin(); }
 		inline iterator	end() { return m_pShadows->end(); }
@@ -113,4 +113,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_IDYNAMICCHILDREN_DOT_H
+#endif //WG_CSHADOWS_DOT_H

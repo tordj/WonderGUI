@@ -27,9 +27,9 @@ namespace wg
 {
 	using namespace Util;
 
-	CCanvas::CCanvas(ComponentHolder * pHolder, ICanvas * pInterface) : Component(pHolder)
+	CCanvas::CCanvas(GeoComponent::Holder * pHolder, ICanvas * pInterface) : GeoComponent(pHolder)
 	{
-		m_pInterface = pInterface;
+		m_pComponent = pInterface;
 	}
 
 
@@ -76,7 +76,7 @@ namespace wg
 			m_pDevice->setCanvas(m_pSurface);
 
 		if (m_surfaceLostCallback != nullptr)
-			m_surfaceLostCallback(m_pInterface);
+			m_surfaceLostCallback(m_pComponent);
 	}
 
 	//____ calcPresentationArea() _______________________________________________

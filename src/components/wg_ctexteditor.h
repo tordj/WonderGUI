@@ -35,7 +35,7 @@ namespace wg
 	class CTextEditor : public CTextDisplay	/** @private */
 	{
 	public:
-		CTextEditor( ComponentHolder * pHolder );
+		CTextEditor(GeoComponent::Holder * pHolder );
 
 		void			receive( Msg * pMsg ) override;
 

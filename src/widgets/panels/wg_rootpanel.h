@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_islot.h>
+#include <wg_cslot.h>
 
 namespace wg
 {
@@ -61,13 +61,13 @@ namespace wg
 
 	public:
 
-		class Slot : public ISlot<BasicSlot>
+		class Slot : public CSlotImpl<BasicSlot>
 		{
 			friend class RootPanel;
 		public:
-			using ISlot<BasicSlot>::operator=;
+			using CSlotImpl<BasicSlot>::operator=;
 		protected:
-			Slot(SlotHolder *pHolder) : ISlot(pHolder) {}
+			Slot(SlotHolder *pHolder) : CSlotImpl(pHolder) {}
 		};
 
 
@@ -76,7 +76,7 @@ namespace wg
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
 		static RootPanel_p	create( GfxDevice * pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
 
-		//.____ Interfaces ____________________________________
+		//.____ Components ____________________________________
 
 		Slot				slot;
 

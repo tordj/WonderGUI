@@ -30,8 +30,8 @@ namespace wg
 
 
 	class IModSpan;
-	typedef	StrongInterfacePtr<IModSpan>		IModSpan_p;
-	typedef	WeakInterfacePtr<IModSpan>			IModSpan_wp;
+	typedef	StrongComponentPtr<IModSpan>		IModSpan_p;
+	typedef	WeakComponentPtr<IModSpan>			IModSpan_wp;
 
 
 	class IModSpan : public ISlideSpan

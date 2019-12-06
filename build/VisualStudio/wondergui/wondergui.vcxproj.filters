@@ -305,12 +305,6 @@
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_weakinterfaceptr.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_stronginterfaceptr.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\panels\wg_lambdapanel.h">
       <Filter>widgets\panels</Filter>
     </ClInclude>
@@ -377,9 +371,6 @@
     <ClInclude Include="..\..\..\src\components\wg_cicondisplay.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_component.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cspan.h">
       <Filter>components</Filter>
     </ClInclude>
@@ -413,9 +404,6 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_imodspan.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_interface.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\interfaces\wg_irotextdisplay.h">
       <Filter>interfaces</Filter>
     </ClInclude>
@@ -440,9 +428,6 @@
     <ClInclude Include="..\..\..\src\interfaces\wg_ivalueeditor.h">
       <Filter>interfaces</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_componentholder.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_payload.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -452,41 +437,56 @@
     <ClInclude Include="..\..\..\src\base\wg_context.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ishadows.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_qpix.h">
       <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_islot.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_islots.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_idynamicslots.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_islotarray.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedslotarray.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ipaddedslotarray.impl.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iselectableslotarray.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iselectableslotarray.impl.h">
-      <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slot.h">
       <Filter>slots</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slotholder.h">
       <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_geocomponent.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_weakcomponentptr.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_component.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cslot.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cshadows.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cslotcollection.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotcollection.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cslotarray.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotarray.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.impl.h">
+      <Filter>components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -805,9 +805,6 @@
     <ClCompile Include="..\..\..\src\interfaces\wg_icolumnheader.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_interface.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\interfaces\wg_irotextdisplay.cpp">
       <Filter>interfaces</Filter>
     </ClCompile>
@@ -832,17 +829,14 @@
     <ClCompile Include="..\..\..\src\base\wg_payload.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_ishadows.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_qpix.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_islots.cpp">
-      <Filter>interfaces</Filter>
+    <ClCompile Include="..\..\..\src\components\wg_component.cpp">
+      <Filter>components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_islotarray.impl.h">
-      <Filter>interfaces</Filter>
+    <ClCompile Include="..\..\..\src\components\wg_cshadows.cpp">
+      <Filter>components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

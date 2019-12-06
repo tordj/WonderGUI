@@ -28,7 +28,7 @@ namespace wg
 {
 	//____ Constructor ___________________________________________________________
 
-	CColumnHeader::CColumnHeader(ComponentHolder * pHolder) : Component(pHolder), icon(this), arrow(this), label(this)
+	CColumnHeader::CColumnHeader(GeoComponent::Holder * pHolder) : GeoComponent(pHolder), icon(this), arrow(this), label(this)
 	{
 		m_bPressed = false;
 		m_sortOrder = SortOrder::None;
@@ -258,15 +258,15 @@ namespace wg
 
 	Object * CColumnHeader::_object()
 	{
-		return Component::_object();
+		return GeoComponent::_object();
 	}
 
 	const Object * CColumnHeader::_object() const
 	{
-		return Component::_object();
+		return GeoComponent::_object();
 	}
 
-	CoordI CColumnHeader::_componentPos( const Component * pComponent ) const
+	CoordI CColumnHeader::_componentPos( const GeoComponent * pComponent ) const
 	{
 		CoordI	p = _pos();
 		if( m_pSkin )
@@ -274,7 +274,7 @@ namespace wg
 		return p;
 	}
 
-	SizeI CColumnHeader::_componentSize( const Component * pComponent ) const
+	SizeI CColumnHeader::_componentSize( const GeoComponent * pComponent ) const
 	{
 		SizeI	s  = m_size;
 		if( m_pSkin )
@@ -282,7 +282,7 @@ namespace wg
 		return s;
 	}
 
-	RectI CColumnHeader::_componentGeo( const Component * pComponent ) const
+	RectI CColumnHeader::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentRect( m_size, m_state );
@@ -290,7 +290,7 @@ namespace wg
 			return RectI( 0,0,m_size );
 	}
 
-	CoordI CColumnHeader::_globalComponentPos( const Component * pComponent ) const
+	CoordI CColumnHeader::_globalComponentPos( const GeoComponent * pComponent ) const
 	{
 		CoordI	p = _globalPos();
 		if( m_pSkin )
@@ -298,7 +298,7 @@ namespace wg
 		return p;
 	}
 
-	RectI CColumnHeader::_globalComponentGeo( const Component * pComponent ) const
+	RectI CColumnHeader::_globalComponentGeo( const GeoComponent * pComponent ) const
 	{
 		RectI	geo = _globalGeo();
 		if( m_pSkin )
@@ -306,36 +306,36 @@ namespace wg
 		return geo;
 	}
 
-	void CColumnHeader::_componentRequestRender( const Component * pComponent )
+	void CColumnHeader::_componentRequestRender( const GeoComponent * pComponent )
 	{
 		return _requestRender();		//TODO: Only request render on what is needed
 	}
 
-	void CColumnHeader::_componentRequestRender( const Component * pComponent, const RectI& rect )
+	void CColumnHeader::_componentRequestRender( const GeoComponent * pComponent, const RectI& rect )
 	{
 		return _requestRender(rect);	//TODO: Only request render on what is needed
 	}
 
-	void CColumnHeader::_componentRequestResize( const Component * pComponent )
+	void CColumnHeader::_componentRequestResize( const GeoComponent * pComponent )
 	{
 		return _requestResize();
 	}
 
-	void CColumnHeader::_componentRequestFocus( const Component * pComponent )
+	void CColumnHeader::_componentRequestFocus( const GeoComponent * pComponent )
 	{
 		// Do nothing, our sub components are not expected to request or get focus.
 	}
 
-	void CColumnHeader::_componentRequestInView( const Component * pComponent )
+	void CColumnHeader::_componentRequestInView( const GeoComponent * pComponent )
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}
-	void CColumnHeader::_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave )
+	void CColumnHeader::_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave )
 	{
 		// Do nothing, our sub components are not expected to request or get visibility.
 	}
 
-	void CColumnHeader::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
+	void CColumnHeader::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		// Do nothing, our sub components are not expected to send notifications.
 	}

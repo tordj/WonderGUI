@@ -26,7 +26,7 @@
 #include <functional>
 
 #include <wg_types.h>
-#include <wg_component.h>
+#include <wg_geocomponent.h>
 #include <wg_geo.h>
 #include <wg_skin.h>
 #include <wg_color.h>
@@ -41,12 +41,12 @@ namespace wg
 
 	//____ CCanvas _____________________________________________________________
 
-	class CCanvas : public Component	/** @private */
+	class CCanvas : public GeoComponent	/** @private */
 	{
 		friend class ICanvas;
 
 	public:
-		CCanvas(ComponentHolder * pHolder, ICanvas * pInterface);
+		CCanvas(GeoComponent::Holder * pHolder, ICanvas * pInterface);
 		virtual ~CCanvas() {};
 
 		void			render(GfxDevice * pDevice, const RectI& _canvas);
@@ -81,7 +81,7 @@ namespace wg
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
 		Color			m_backColor				= Color::White;
-		ICanvas *	m_pInterface;
+		ICanvas *	m_pComponent;
 
 		std::function<void(ICanvas*)>	m_surfaceLostCallback;
 

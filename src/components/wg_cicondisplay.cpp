@@ -29,7 +29,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	CIconDisplay::CIconDisplay( ComponentHolder * pHolder ) : Component(pHolder)
+	CIconDisplay::CIconDisplay( GeoComponent::Holder * pHolder ) : GeoComponent(pHolder)
 	{
 		m_origo			= Origo::NorthWest;
 		m_scale			= 0.f;

@@ -24,7 +24,7 @@
 #define WG_ISPAN_DOT_H
 #pragma once
 
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_cspan.h>
 #include <wg_pointers.h>
 
@@ -32,11 +32,11 @@ namespace wg
 {
 
 	class ISpan;
-	typedef	StrongInterfacePtr<ISpan>	ISpan_p;
-	typedef	WeakInterfacePtr<ISpan>		ISpan_wp;
+	typedef	StrongComponentPtr<ISpan>	ISpan_p;
+	typedef	WeakComponentPtr<ISpan>		ISpan_wp;
 
 
-	class ISpan : public Interface
+	class ISpan : public Component
 	{
 	public:
 		/** @private */

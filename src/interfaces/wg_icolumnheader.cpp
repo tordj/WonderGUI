@@ -34,9 +34,14 @@ namespace wg
 
 	//____ _object() _______________________________________________________________
 
-	Object * IColumnHeader::_object() const
+	Object * IColumnHeader::_object()
 	{
-		return m_pComponent->Component::_object();
+		return m_pComponent->GeoComponent::_object();
+	}
+
+	const Object * IColumnHeader::_object() const
+	{
+		return m_pComponent->GeoComponent::_object();
 	}
 
 } // namespace wg

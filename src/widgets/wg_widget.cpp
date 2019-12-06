@@ -553,19 +553,19 @@ namespace wg
 
 	//____ _componentRequestRender() _________________________________________________________
 
-	void Widget::_componentRequestRender( const Component * pComponent )
+	void Widget::_componentRequestRender( const GeoComponent * pComponent )
 	{
 		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_componentRequestRender( const Component * pComponent, const RectI& rect )
+	void Widget::_componentRequestRender( const GeoComponent * pComponent, const RectI& rect )
 	{
 		_requestRender( rect + _componentPos( pComponent ) );
 	}
 
 	//____ _componentRequestResize() ________________________________________________________
 
-	void Widget::_componentRequestResize( const Component * pComponent )
+	void Widget::_componentRequestResize( const GeoComponent * pComponent )
 	{
 		_requestResize();
 		_requestRender();
@@ -573,20 +573,20 @@ namespace wg
 
 	//____ _componentRequestFocus() ___________________________________________________
 
-	void Widget::_componentRequestFocus( const Component * pComponent )
+	void Widget::_componentRequestFocus( const GeoComponent * pComponent )
 	{
 		grabFocus();
 	}
 
 	//____ _componentRequestInView() ______________________________________________
 
-	void Widget::_componentRequestInView( const Component * pComponent )
+	void Widget::_componentRequestInView( const GeoComponent * pComponent )
 	{
 		RectI r = _componentGeo( pComponent );
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const Component * pComponent, const RectI& mustHave, const RectI& niceToHave )
+	void Widget::_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave )
 	{
 		CoordI ofs = _componentPos( pComponent );
 		_requestInView(mustHave + ofs, niceToHave + ofs );
@@ -595,7 +595,7 @@ namespace wg
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordI Widget::_componentPos( const Component * pComponent ) const
+	CoordI Widget::_componentPos( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentOfs( m_state );
@@ -605,7 +605,7 @@ namespace wg
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeI Widget::_componentSize( const Component * pComponent ) const
+	SizeI Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_size - m_pSkin->_contentPadding();
@@ -615,7 +615,7 @@ namespace wg
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectI Widget::_componentGeo( const Component * pComponent ) const
+	RectI Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentRect( m_size, m_state );
@@ -625,14 +625,14 @@ namespace wg
 
 	//____ _globalComponentPos() ________________________________________________________
 
-	CoordI Widget::_globalComponentPos( const Component * pComponent ) const
+	CoordI Widget::_globalComponentPos( const GeoComponent * pComponent ) const
 	{
 		return _componentPos( pComponent ) + _globalPos();
 	}
 
 	//____ _globalComponentGeo() ______________________________________________________________
 
-	RectI Widget::_globalComponentGeo( const Component * pComponent ) const
+	RectI Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
 	{
 		return _componentGeo( pComponent ) + _globalPos();
 	}
@@ -652,7 +652,7 @@ namespace wg
 
 	//____ _receiveComponentNotif() __________________________________________________
 
-	void Widget::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
+	void Widget::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		// By default we do nothing
 	}

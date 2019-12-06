@@ -28,14 +28,14 @@
 #include <wg_gfxdevice.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_iselectableslotarray.impl.h>
+#include <wg_cselectableslotarray.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class ISelectableSlotArray<PackListSlot>;
-	template class ISlotArray<PackListSlot>;
+	template class CSelectableSlotArray<PackListSlot>;
+	template class CSlotArray<PackListSlot>;
 	template class SlotArray<PackListSlot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
@@ -1497,7 +1497,7 @@ namespace wg
 
 	//____ _componentPos() ____________________________________________________________
 
-	CoordI PackList::_componentPos( const Component * pComponent ) const
+	CoordI PackList::_componentPos( const GeoComponent * pComponent ) const
 	{
 		CoordI c = m_bHorizontal ? CoordI(_windowSection().x, 0 ) : CoordI(0, _windowSection().y );
 		return c;
@@ -1505,21 +1505,21 @@ namespace wg
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeI PackList::_componentSize( const Component * pComponent ) const
+	SizeI PackList::_componentSize( const GeoComponent * pComponent ) const
 	{
 		return m_header.size();		// We store size internally in the header.
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectI PackList::_componentGeo( const Component * pComponent ) const
+	RectI PackList::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		return RectI( _componentPos(pComponent), m_header.size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________
 
-	void PackList::_receiveComponentNotif( Component * pComponent, ComponentNotif notification, int value, void * pData )
+	void PackList::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{

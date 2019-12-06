@@ -46,7 +46,7 @@ namespace wg
 		static FpsDisplay_p	create() { return FpsDisplay_p(new FpsDisplay()); }
 
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		ITextDisplay		labels;
 		IROTextDisplay		values;

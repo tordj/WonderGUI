@@ -59,7 +59,7 @@ namespace wg
 
 		static RefreshButton_p	create() { return RefreshButton_p(new RefreshButton()); }
 
-		//.____ Interfaces _______________________________________
+		//.____ Components _______________________________________
 
 		ITextDisplay	refreshText;
 

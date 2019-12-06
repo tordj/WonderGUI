@@ -25,7 +25,7 @@
 #include <wg_util.h>
 
 #include <wg_slotarray.impl.h>
-#include <wg_islotarray.impl.h>
+#include <wg_cslotarray.impl.h>
 #include <assert.h>
 
 
@@ -33,7 +33,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class ISlotArray<LambdaSlot>;
+	template class CSlotArray<LambdaSlot>;
 	template class SlotArray<LambdaSlot>;
 
 

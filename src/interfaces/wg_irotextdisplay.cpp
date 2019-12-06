@@ -27,7 +27,12 @@ namespace wg
 
 	//____ _object() _______________________________________________________________
 
-	Object * IROTextDisplay::_object() const
+	Object * IROTextDisplay::_object()
+	{
+		return m_pComponent->_object();
+	}
+
+	const Object * IROTextDisplay::_object() const
 	{
 		return m_pComponent->_object();
 	}

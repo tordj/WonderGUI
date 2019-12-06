@@ -20,19 +20,19 @@
 
 =========================================================================*/
 
-#ifndef	WG_ISELECTABLESLOTARRAY_IMPL_DOT_H
-#define	WG_ISELECTABLESLOTARRAY_IMPL_DOT_H
+#ifndef	WG_CSELECTABLESLOTARRAY_IMPL_DOT_H
+#define	WG_CSELECTABLESLOTARRAY_IMPL_DOT_H
 #pragma once
 
-#include <wg_iselectableslotarray.h>
-#include <wg_islotarray.impl.h>
+#include <wg_cselectableslotarray.h>
+#include <wg_cslotarray.impl.h>
 
 namespace wg
 {
 	//____ select() ___________________________________________________________
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::select(int index)
+	void CSelectableSlotArray<SlotType>::select(int index)
 	{
 		//TODO: Assert
 
@@ -40,7 +40,7 @@ namespace wg
 	}
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::select(const SlotIterator&  it)
+	void CSelectableSlotArray<SlotType>::select(const SlotIterator&  it)
 	{
 		//TODO: Assert
 
@@ -48,7 +48,7 @@ namespace wg
 	}
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::select(int index, int amount)
+	void CSelectableSlotArray<SlotType>::select(int index, int amount)
 	{
 		//TODO: Assert
 
@@ -56,7 +56,7 @@ namespace wg
 	};
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::select(const SlotIterator&  beg, const SlotIterator&  end)
+	void CSelectableSlotArray<SlotType>::select(const SlotIterator&  beg, const SlotIterator&  end)
 	{
 		//TODO: Assert
 
@@ -68,7 +68,7 @@ namespace wg
 	//____ selectAll() ________________________________________________________
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::selectAll()
+	void CSelectableSlotArray<SlotType>::selectAll()
 	{
 		_holder()->_selectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
@@ -76,7 +76,7 @@ namespace wg
 	//____ unselect() _________________________________________________________
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::unselect(int index)
+	void CSelectableSlotArray<SlotType>::unselect(int index)
 	{
 		//TODO: Assert
 
@@ -84,7 +84,7 @@ namespace wg
 	}
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::unselect(const SlotIterator&  it)
+	void CSelectableSlotArray<SlotType>::unselect(const SlotIterator&  it)
 	{
 		//TODO: Assert
 
@@ -92,7 +92,7 @@ namespace wg
 	}
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::unselect(int index, int amount)
+	void CSelectableSlotArray<SlotType>::unselect(int index, int amount)
 	{
 		//TODO: Assert
 
@@ -100,7 +100,7 @@ namespace wg
 	};
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::unselect(const SlotIterator&  beg, const SlotIterator&  end)
+	void CSelectableSlotArray<SlotType>::unselect(const SlotIterator&  beg, const SlotIterator&  end)
 	{
 		//TODO: Assert
 
@@ -112,7 +112,7 @@ namespace wg
 	//____ unselectAll() ______________________________________________________
 
 	template <class SlotType>
-	void ISelectableSlotArray<SlotType>::unselectAll()
+	void CSelectableSlotArray<SlotType>::unselectAll()
 	{
 		_holder()->_unselectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
 	};
@@ -120,7 +120,7 @@ namespace wg
 	//____ isSelected() ________________________________________________________
 
 	template <class SlotType>
-	bool ISelectableSlotArray<SlotType>::isSelected(int index)
+	bool CSelectableSlotArray<SlotType>::isSelected(int index)
 	{
 		//TODO: Assert
 
@@ -128,7 +128,7 @@ namespace wg
 	}
 
 	template <class SlotType>
-	bool ISelectableSlotArray<SlotType>::isSelected(const SlotIterator&  it)
+	bool CSelectableSlotArray<SlotType>::isSelected(const SlotIterator&  it)
 	{
 		//TODO: Assert
 
@@ -138,4 +138,4 @@ namespace wg
 } // namespace wg
 
 
-#endif //WG_ISELECTABLESLOTARRAY_IMPL_DOT_H
+#endif //WG_CSELECTABLESLOTARRAY_IMPL_DOT_H

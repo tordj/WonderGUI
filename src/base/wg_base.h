@@ -74,7 +74,9 @@ namespace wg
 	class Base
 	{
 //		friend class Object_wp;
-		friend class Interface_wp;
+
+		template<class T> friend class WeakComponentPtr;
+
 		friend class WeakPtrHub;
 
 	public:

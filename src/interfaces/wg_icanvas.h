@@ -29,8 +29,8 @@
 namespace wg
 {
 	class ICanvas;
-	typedef	StrongInterfacePtr<ICanvas>	ICanvas_p;
-	typedef	WeakInterfacePtr<ICanvas>	ICanvas_wp;
+	typedef	StrongComponentPtr<ICanvas>	ICanvas_p;
+	typedef	WeakComponentPtr<ICanvas>	ICanvas_wp;
 
 	//____ ICanvas __________________________________________________________
 	/**
@@ -53,7 +53,7 @@ namespace wg
 	**/
 
 
-	class ICanvas : public Interface
+	class ICanvas : public Component
 	{
 	public:
 		/** @private */
@@ -91,7 +91,8 @@ namespace wg
 		Surface_wp		surface() const;
 
 	protected:
-		virtual Object * 	_object() const override { return m_pComponent->_object(); }
+		Object * 	_object() override { return m_pComponent->_object(); }
+		const Object * 	_object() const override { return m_pComponent->_object(); }
 
 		CCanvas * m_pComponent;
 

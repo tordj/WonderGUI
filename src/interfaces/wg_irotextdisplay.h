@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_ctextdisplay.h>
-#include <wg_interface.h>
+#include <wg_component.h>
 #include <wg_pointers.h>
 #include <wg_textstyle.h>
 
@@ -38,8 +38,8 @@ namespace wg
 	class CharBuffer;
 
 	class IROTextDisplay;
-	typedef	StrongInterfacePtr<IROTextDisplay>	IROTextDisplay_p;
-	typedef	WeakInterfacePtr<IROTextDisplay>		IROTextDisplay_wp;
+	typedef	StrongComponentPtr<IROTextDisplay>	IROTextDisplay_p;
+	typedef	WeakComponentPtr<IROTextDisplay>		IROTextDisplay_wp;
 
 	/**
 	 * @brief Interface for read-only text with modifiable appearance
@@ -49,7 +49,7 @@ namespace wg
 	 *
 	 */
 
-	class IROTextDisplay : public Interface
+	class IROTextDisplay : public Component
 	{
 	public:
 		/** @private */
@@ -81,7 +81,8 @@ namespace wg
 		inline IROTextDisplay_p			ptr() { return IROTextDisplay_p(this); }
 
 	protected:
-		Object *				_object() const override;
+		Object *				_object() override;
+		const Object *			_object() const override;
 
 		CTextDisplay * 			m_pComponent;
 	};

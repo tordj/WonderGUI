@@ -34,7 +34,7 @@ namespace wg
 	class CValueDisplay : public CValue		/** @private */
 	{
 	public:
-		CValueDisplay(ComponentHolder * pHolder);
+		CValueDisplay(GeoComponent::Holder * pHolder);
 		~CValueDisplay() {}
 
 		// ModValue methods
