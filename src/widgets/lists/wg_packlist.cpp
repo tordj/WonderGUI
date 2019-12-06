@@ -43,7 +43,7 @@ namespace wg
 
 	//____ insertSorted() ___________________________________________________
 
-	IPackListSlots::iterator IPackListSlots::insertSorted(Widget * pWidget)
+	CPackListSlotArray::iterator CPackListSlotArray::insertSorted(Widget * pWidget)
 	{
 		//TODO: Replace with assert
 //		if (!pWidget)
@@ -59,7 +59,7 @@ namespace wg
 
 	//____ sort() __________________________________________________________
 
-	void IPackListSlots::sort()
+	void CPackListSlotArray::sort()
 	{
 		_holder()->_sortEntries();
 	}

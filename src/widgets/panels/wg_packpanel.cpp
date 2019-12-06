@@ -41,7 +41,7 @@ namespace wg
 
 
 
-	bool IPackSlots::setWeight(int index, float weight)
+	bool CPackSlotArray::setWeight(int index, float weight)
 	{
 		if (index < 0 || index >= m_pSlotArray->size() || weight < 0.f)
 			return false;
@@ -51,7 +51,7 @@ namespace wg
 		return true;
 	}
 
-	bool IPackSlots::setWeight(const SlotIterator& it, float weight)
+	bool CPackSlotArray::setWeight(const SlotIterator& it, float weight)
 	{
 		//TODO: Add assert
 
@@ -60,7 +60,7 @@ namespace wg
 		return true;
 	}
 
-	bool IPackSlots::setWeight(int index, int amount, float weight)
+	bool CPackSlotArray::setWeight(int index, int amount, float weight)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || weight < 0.f)
 			return false;
@@ -70,7 +70,7 @@ namespace wg
 		return true;
 	}
 
-	bool IPackSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
+	bool CPackSlotArray::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
 	{
 		//TODO: Add assert
 
@@ -80,7 +80,7 @@ namespace wg
 		return true;
 	}
 
-	bool IPackSlots::setWeight(int index, int amount, const std::initializer_list<float> weights)
+	bool CPackSlotArray::setWeight(int index, int amount, const std::initializer_list<float> weights)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || amount >(int) weights.size())
 			return false;
@@ -90,7 +90,7 @@ namespace wg
 		return true;
 	}
 
-	bool IPackSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
+	bool CPackSlotArray::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
 	{
 		//TODO: Add assert
 
@@ -100,7 +100,7 @@ namespace wg
 		return true;
 	}
 
-	float IPackSlots::weight(int index) const
+	float CPackSlotArray::weight(int index) const
 	{
 		if (index < 0 || index >= m_pSlotArray->size())
 			return 0.f;
@@ -109,7 +109,7 @@ namespace wg
 
 	}
 
-	float IPackSlots::weight(const SlotIterator& it) const
+	float CPackSlotArray::weight(const SlotIterator& it) const
 	{
 		//TODO: Add assert
 

@@ -39,32 +39,32 @@ namespace wg
 
 	//____ StackSlot ____________________________________________________________
 
-	class StackSlotHolder : public PaddedSlotHolder
-	{
-
-	};
-
-	//____ StackSlot ____________________________________________________________
-
 	class StackSlot : public PaddedSlot		/** @private */
 	{
 		friend class StackPanel;
-		friend class IStackSlots;
+		friend class CStackSlotArray;
+	
 	public:
-		StackSlot(SlotHolder * pHolder) : PaddedSlot(pHolder) {}
+		class Holder : public PaddedSlot::Holder
+		{
+		};
+
+		StackSlot(Holder * pHolder) : PaddedSlot(pHolder) {}
+
+	protected:
 
 		Origo			origo = Origo::Center;
 		SizePolicy2D	SizePolicy = SizePolicy2D::Original;
 	};
 
 
-	//____ IStackSlots ________________________________________________________
+	//____ CStackSlotArray ________________________________________________________
 
-	class IStackSlots;
-	typedef	StrongComponentPtr<IStackSlots>	IStackSlots_p;
-	typedef	WeakComponentPtr<IStackSlots>	IStackSlots_wp;
+	class CStackSlotArray;
+	typedef	StrongComponentPtr<CStackSlotArray>	CStackSlotArray_p;
+	typedef	WeakComponentPtr<CStackSlotArray>	CStackSlotArray_wp;
 
-	class IStackSlots : public CPaddedSlotArray<StackSlot>
+	class CStackSlotArray : public CPaddedSlotArray<StackSlot>
 	{
 	public:
 
@@ -75,7 +75,7 @@ namespace wg
 		};
 
 		/** @private */
-		IStackSlots(SlotArray<StackSlot> * pSlotArray, IStackSlots::Holder * pHolder) : CPaddedSlotArray<StackSlot>(pSlotArray, pHolder) {}
+		CStackSlotArray(SlotArray<StackSlot> * pSlotArray, CStackSlotArray::Holder * pHolder) : CPaddedSlotArray<StackSlot>(pSlotArray, pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -93,7 +93,7 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline IStackSlots_p	ptr() { return IStackSlots_p(this); }
+		inline CStackSlotArray_p	ptr() { return CStackSlotArray_p(this); }
 
 	protected:
 		void		_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy );
@@ -107,9 +107,9 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected IStackSlots::Holder, protected StackSlotHolder
+	class StackPanel : public Panel, protected CStackSlotArray::Holder
 	{
-		friend class IStackSlots;
+		friend class CStackSlotArray;
 
 	public:
 
@@ -119,7 +119,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IStackSlots	children;
+		CStackSlotArray	children;
 
 		//.____ Identification __________________________________________
 

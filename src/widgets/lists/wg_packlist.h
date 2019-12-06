@@ -39,23 +39,21 @@ namespace wg
 	typedef	WeakPtr<PackList>		PackList_wp;
 
 
-	//____ PackListSlotHolder ____________________________________________________________
-
-	class PackListSlotHolder : public ListSlotHolder
-	{
-
-	};
-
 	//____ PackListSlot ____________________________________________________________
 
 	class PackListSlot : public ListSlot	/** @private */
 	{
-		friend class IPackListSlots;
+		friend class CPackListSlotArray;
 		friend class PackList;
 		template<class S> friend class SlotArray;
 
+	public:
+		class Holder : public ListSlot::Holder
+		{
+		};
+
 	protected:
-		PackListSlot(SlotHolder *pHolder) : ListSlot(pHolder) {}
+		PackListSlot(Holder *pHolder) : ListSlot(pHolder) {}
 
 		int				ofs;				// Offset in pixels for start of this list item.
 		int				length;				// Length in pixels of this list item. Includes widget padding.
@@ -63,13 +61,13 @@ namespace wg
 	};
 
 
-	//____ IPackListSlots ______________________________________________________
+	//____ CPackListSlotArray ______________________________________________________
 
-	class IPackListSlots;
-	typedef	StrongComponentPtr<IPackListSlots>	IPackListSlots_p;
-	typedef	WeakComponentPtr<IPackListSlots>		IPackListSlots_wp;
+	class CPackListSlotArray;
+	typedef	StrongComponentPtr<CPackListSlotArray>	CPackListSlotArray_p;
+	typedef	WeakComponentPtr<CPackListSlotArray>	CPackListSlotArray_wp;
 
-	class IPackListSlots : public CSelectableSlotArray<PackListSlot>
+	class CPackListSlotArray : public CSelectableSlotArray<PackListSlot>
 	{
 	public:
 
@@ -88,11 +86,11 @@ namespace wg
 
 		/** @private */
 
-		IPackListSlots(SlotArray<PackListSlot> * pSlotArray, Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
+		CPackListSlotArray(SlotArray<PackListSlot> * pSlotArray, Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IPackListSlots_p	ptr() { return IPackListSlots_p(this); }
+		inline CPackListSlotArray_p	ptr() { return CPackListSlotArray_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -105,8 +103,6 @@ namespace wg
 
 		const Holder *	_holder() const { return static_cast<Holder*>(m_pHolder); }
 		Holder *		_holder() { return static_cast<Holder*>(m_pHolder); }
-
-
 	};
 
 
@@ -121,15 +117,10 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected IPackListSlots::Holder, protected PackListSlotHolder
+	class PackList : public List, protected CPackListSlotArray::Holder
 	{
-		friend class IPackListSlots;
-//		friend class ISelectableChildren<PackListSlot, PackList>;
-//		friend class IHideableChildren<PackListSlot,PackList>;
-//		friend class IDynamicChildren<PackListSlot,PackList>;
-//		friend class IChildrenSubclass<PackListSlot,PackList>;
+		friend class CPackListSlotArray;
 
-//		template<class T, class P> friend class Children;
 	public:
 
 		//.____ Creation __________________________________________
@@ -139,7 +130,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		IColumnHeader		header;
-		IPackListSlots	children;
+		CPackListSlotArray	children;
 
 		//.____ Identification __________________________________________
 

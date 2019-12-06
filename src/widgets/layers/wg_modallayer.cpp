@@ -44,7 +44,7 @@ namespace wg
 
 	//____ add() _________________________________________________________________
 
-	IModalSlots::iterator IModalSlots::add(Widget * pWidget, const Rect& geometry, Origo origo)
+	CModalSlotArray::iterator CModalSlotArray::add(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
@@ -61,14 +61,14 @@ namespace wg
 
 	//____ setOrigo() ______________________________________________________________
 
-	void IModalSlots::setOrigo(int index, const Origo origo)
+	void CModalSlotArray::setOrigo(int index, const Origo origo)
 	{
 		//TODO: Assert
 
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
-	void IModalSlots::setOrigo(iterator it, const Origo origo)
+	void CModalSlotArray::setOrigo(iterator it, const Origo origo)
 	{
 		//TODO: Assert
 
@@ -77,14 +77,14 @@ namespace wg
 
 	//____ origo() ______________________________________________________________
 
-	Origo IModalSlots::origo(int index) const
+	Origo CModalSlotArray::origo(int index) const
 	{
 		//TODO: Assert
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
-	Origo IModalSlots::origo(iterator it) const
+	Origo CModalSlotArray::origo(iterator it) const
 	{
 		//TODO: Assert
 
@@ -93,14 +93,14 @@ namespace wg
 
 	//____ setGeo() ______________________________________________________________
 
-	void IModalSlots::setGeo(int index, const Rect& geometry)
+	void CModalSlotArray::setGeo(int index, const Rect& geometry)
 	{
 		//TODO: Assert
 
 		_setGeo(m_pSlotArray->slot(index), geometry);
 	}
 
-	void IModalSlots::setGeo(iterator it, const Rect& geometry)
+	void CModalSlotArray::setGeo(iterator it, const Rect& geometry)
 	{
 		//TODO: Assert
 
@@ -109,14 +109,14 @@ namespace wg
 
 	//____ geo() _________________________________________________________________
 
-	Rect IModalSlots::geo(int index) const
+	Rect CModalSlotArray::geo(int index) const
 	{
 		//TODO: Assert
 
 		return rawToQpix( m_pSlotArray->slot(index)->geo );
 	}
 
-	Rect IModalSlots::geo(iterator it) const
+	Rect CModalSlotArray::geo(iterator it) const
 	{
 		//TODO: Assert
 
@@ -125,14 +125,14 @@ namespace wg
 
 	//____ setOfs() ______________________________________________________________
 
-	void IModalSlots::setOfs(int index, const Coord& ofs)
+	void CModalSlotArray::setOfs(int index, const Coord& ofs)
 	{
 		//TODO: Assert
 
 		_setOfs(m_pSlotArray->slot(index), ofs);
 	}
 
-	void IModalSlots::setOfs(iterator it, const Coord& ofs)
+	void CModalSlotArray::setOfs(iterator it, const Coord& ofs)
 	{
 		//TODO: Assert
 
@@ -141,14 +141,14 @@ namespace wg
 
 	//____ ofs() _________________________________________________________________
 
-	Coord IModalSlots::ofs(int index) const
+	Coord CModalSlotArray::ofs(int index) const
 	{
 		//TODO: Assert
 
 		return rawToQpix(m_pSlotArray->slot(index)->geo.pos());
 	}
 
-	Coord IModalSlots::ofs(iterator it) const
+	Coord CModalSlotArray::ofs(iterator it) const
 	{
 		//TODO: Assert
 
@@ -157,14 +157,14 @@ namespace wg
 
 	//____ setSize() __________________________________________________________
 
-	void IModalSlots::setSize(int index, const Size& size)
+	void CModalSlotArray::setSize(int index, const Size& size)
 	{
 		//TODO: Assert
 
 		_setSize(m_pSlotArray->slot(index), size);
 	}
 
-	void IModalSlots::setSize(iterator it, const Size& size)
+	void CModalSlotArray::setSize(iterator it, const Size& size)
 	{
 		//TODO: Assert
 
@@ -173,14 +173,14 @@ namespace wg
 
 	//____ size() ______________________________________________________________
 
-	Size IModalSlots::size( int index ) const
+	Size CModalSlotArray::size( int index ) const
 	{
 		//TODO: Assert
 
 		return rawToQpix(m_pSlotArray->slot(index)->geo.size());
 	}
 
-	Size IModalSlots::size( iterator it ) const
+	Size CModalSlotArray::size( iterator it ) const
 	{
 		//TODO: Assert
 
@@ -189,14 +189,14 @@ namespace wg
 
 	//____ move() ______________________________________________________________
 
-	void IModalSlots::move( int index, const Coord& ofs )
+	void CModalSlotArray::move( int index, const Coord& ofs )
 	{
 		//TODO: Assert
 
 		_move(m_pSlotArray->slot(index), ofs);
 	}
 
-	void IModalSlots::move( iterator it, const Coord& ofs )
+	void CModalSlotArray::move( iterator it, const Coord& ofs )
 	{
 		//TODO: Assert
 
@@ -205,7 +205,7 @@ namespace wg
 
 	//____ _setOrigo() ______________________________________________________________
 
-	void IModalSlots::_setOrigo(ModalSlot * p, const Origo origo)
+	void CModalSlotArray::_setOrigo(ModalSlot * p, const Origo origo)
 	{
 		p->origo = origo;
 		_holder()->_refreshRealGeo(p);
@@ -213,7 +213,7 @@ namespace wg
 
 	//____ _setGeo() ______________________________________________________________
 
-	void IModalSlots::_setGeo(ModalSlot * p, const Rect& geometry)
+	void CModalSlotArray::_setGeo(ModalSlot * p, const Rect& geometry)
 	{
 		p->placementGeo = qpixToRaw(geometry);
 		_holder()->_refreshRealGeo(p);
@@ -221,14 +221,14 @@ namespace wg
 
 	//____ _setOfs() ______________________________________________________________
 
-	void IModalSlots::_setOfs(ModalSlot * p, const Coord& ofs)
+	void CModalSlotArray::_setOfs(ModalSlot * p, const Coord& ofs)
 	{
 		p->placementGeo.setPos(qpixToRaw(ofs));
 		_holder()->_refreshRealGeo(p);
 	}
 	//____ _setSize() __________________________________________________________
 
-	void IModalSlots::_setSize(ModalSlot * p, const Size& size)
+	void CModalSlotArray::_setSize(ModalSlot * p, const Size& size)
 	{
 		p->placementGeo.setSize(qpixToRaw(size));
 		_holder()->_refreshRealGeo(p);
@@ -236,7 +236,7 @@ namespace wg
 
 	//____ _move() ______________________________________________________________
 
-	void IModalSlots::_move( ModalSlot * p, const Coord& ofs )
+	void CModalSlotArray::_move( ModalSlot * p, const Coord& ofs )
 	{
 		p->placementGeo += qpixToRaw(ofs);
 		_holder()->_refreshRealGeo(p);

@@ -67,7 +67,7 @@ namespace wg
 
 		//____ Holder ____________________________________________________
 
-		class Holder : public PaddedSlotHolder
+		class Holder : public PaddedSlot::Holder
 		{
 		};
 

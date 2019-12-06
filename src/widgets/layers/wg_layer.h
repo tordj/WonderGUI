@@ -35,18 +35,18 @@ namespace wg
 	typedef	WeakPtr<Layer>		Layer_wp;
 
 
-	class LayerSlotHolder : public SlotHolder
-	{
-
-	};
-
 	//____ LayerSlot ___________________________________________________________
 
 	class LayerSlot : public BasicSlot		/** @private */
 	{
 		friend class Layer;
+	public:
+		class Holder : public BasicSlot::Holder
+		{
+		};
+
 	protected:
-		LayerSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
+		LayerSlot(Holder * pHolder) : BasicSlot(pHolder) {}
 
 		inline void setSize( SizeI size ) { geo.setSize(size); BasicSlot::_setSize(size); }
 		inline void setGeo(RectI _geo) { geo = _geo; BasicSlot::_setSize(geo.size()); }
@@ -82,19 +82,19 @@ namespace wg
 
 	public:
 
-		class MainSlot : public CSlotImpl<BasicSlot>
+		class CMainSlot : public CSlotImpl<BasicSlot>
 		{
 			friend class Layer;
 		public:
 			using CSlotImpl<BasicSlot>::operator=;
 		protected:
-			MainSlot(SlotHolder * pHolder) : CSlotImpl(pHolder) {}
+			CMainSlot(SlotHolder * pHolder) : CSlotImpl(pHolder) {}
 		};
 
 
 		//.____ Components _______________________________________
 
-		MainSlot		mainSlot;
+		CMainSlot		mainSlot;
 
 
 		//.____ Identification __________________________________________

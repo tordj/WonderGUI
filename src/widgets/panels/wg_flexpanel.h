@@ -76,25 +76,22 @@ namespace wg
 	};
 
 
-	//____ FlexSlotHolder ____________________________________________________________
-
-	class FlexSlotHolder : public SlotHolder
-	{
-
-	};
-
-
 	//____ FlexSlot ____________________________________________________________
 
 	class FlexSlot : public BasicSlot		/** @private */
 	{
 		friend class FlexPanel;
-		friend class IFlexSlots;
+		friend class CFlexSlotArray;
 		template<class S> friend class CSlotArray;
 
 
 	public:
-		FlexSlot(SlotHolder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+
+		class Holder : public BasicSlot::Holder
+		{
+		};
+
+		FlexSlot(Holder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 	protected:
 		bool			bPinned;
@@ -119,13 +116,13 @@ namespace wg
 	};
 
 
-	//____ IFlexSlots ________________________________________________________
+	//____ CFlexSlotArray ________________________________________________________
 
-	class IFlexSlots;
-	typedef	StrongComponentPtr<IFlexSlots>	IFlexSlots_p;
-	typedef	WeakComponentPtr<IFlexSlots>	IFlexSlots_wp;
+	class CFlexSlotArray;
+	typedef	StrongComponentPtr<CFlexSlotArray>	CFlexSlotArray_p;
+	typedef	WeakComponentPtr<CFlexSlotArray>	CFlexSlotArray_wp;
 
-	class IFlexSlots : public CSlotArray<FlexSlot>
+	class CFlexSlotArray : public CSlotArray<FlexSlot>
 	{
 		friend class FlexPanel;
 	public:
@@ -219,11 +216,11 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline IFlexSlots_p ptr() { return IFlexSlots_p(this); }
+		inline CFlexSlotArray_p ptr() { return CFlexSlotArray_p(this); }
 
 
 	protected:
-		IFlexSlots(SlotArray<FlexSlot> * pSlotArray, IFlexSlots::Holder * pHolder) : CSlotArray<FlexSlot>(pSlotArray, pHolder) {}
+		CFlexSlotArray(SlotArray<FlexSlot> * pSlotArray, Holder * pHolder) : CSlotArray<FlexSlot>(pSlotArray, pHolder) {}
 
 		void		_setPinned(FlexSlot * p);
 		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
@@ -260,7 +257,7 @@ namespace wg
 
 		//
 
-		inline IFlexSlots::Holder * _holder() { return static_cast<IFlexSlots::Holder*>(m_pHolder); }
+		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(m_pHolder); }
 	};
 
 
@@ -275,7 +272,7 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel, protected IFlexSlots::Holder, protected FlexSlotHolder
+	class FlexPanel : public Panel, protected CFlexSlotArray::Holder
 	{
 
 	public:
@@ -286,7 +283,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IFlexSlots	children;
+		CFlexSlotArray	children;
 
 		//.____ Identification __________________________________________
 

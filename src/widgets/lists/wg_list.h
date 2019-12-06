@@ -37,12 +37,6 @@ namespace wg
 	typedef	WeakPtr<List>		List_wp;
 
 
-	//____ ListSlotHolder ____________________________________________________________
-
-	class ListSlotHolder : public SlotHolder		/** @private */
-	{
-
-	};
 
 	//____ ListSlot ____________________________________________________________
 
@@ -52,8 +46,14 @@ namespace wg
 		template<class S> friend class CSlotArray;
 		template<class S> friend class SlotArray;
 
+	public:
+
+		class Holder : public BasicSlot::Holder		/** @private */
+		{
+		};
+
 	protected:
-		ListSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
+		ListSlot(Holder * pHolder) : BasicSlot(pHolder) {}
 
 		bool		bVisible = false;
 	};

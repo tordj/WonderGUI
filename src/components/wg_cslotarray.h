@@ -108,7 +108,7 @@ namespace wg
 	{
 	public:
 
-		class Holder	/** @private */
+		class Holder : public SlotType::Holder	/** @private */
 		{
 		public:
 			virtual Object * _object() = 0;

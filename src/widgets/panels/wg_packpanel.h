@@ -36,24 +36,27 @@ namespace wg
 	typedef	WeakPtr<PackPanel>			PackPanel_wp;
 
 
-	//____ PackSlotHolder ______________________________________________________
-
-	class PackSlotHolder : public PaddedSlotHolder
-	{
-
-	};
-
-
 	//____ PackSlot ____________________________________________________________
 
 	class PackSlot : public PaddedSlot		/** @private */
 	{
 		friend class PackPanel;
-		friend class IPackSlots;
+		friend class CPackSlotArray;
 		template<class S> friend class SlotArray;
+		friend class CPaddedSlotArray<PackSlot>::Holder;
+
+	public:
+
+		//____ Holder ___________________________________________________________
+
+		class Holder : public PaddedSlot::Holder
+		{
+		};
 
 	protected:
-		PackSlot(SlotHolder *pHolder) : PaddedSlot(pHolder) {}
+
+
+		PackSlot(Holder *pHolder) : PaddedSlot(pHolder) {}
 
 		bool			bResizeRequired = false;
 		float			weight = 1.f;				// Weight for space allocation.
@@ -62,16 +65,22 @@ namespace wg
 	};
 
 
-	//____ IPackSlots ________________________________________________________
+	//____ CPackSlotArray ________________________________________________________
 
-	class IPackSlots;
-	typedef	StrongComponentPtr<IPackSlots>	IPackSlots_p;
-	typedef	WeakComponentPtr<IPackSlots>	IPackSlots_wp;
+	class CPackSlotArray;
+	typedef	StrongComponentPtr<CPackSlotArray>	CPackSlotArray_p;
+	typedef	WeakComponentPtr<CPackSlotArray>	CPackSlotArray_wp;
 
-	class IPackSlots : public CPaddedSlotArray<PackSlot>
+	class CPackSlotArray : public CPaddedSlotArray<PackSlot>
 	{
 		friend class PackPanel;
 	public:
+
+		//____ Holder _________________________________________________________
+
+		class Holder : public CPaddedSlotArray<PackSlot>::Holder
+		{
+		};
 
 		//.____ Geometry _______________________________________________________
 
@@ -87,10 +96,10 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline IPackSlots_p	ptr() { return IPackSlots_p(this); }
+		inline CPackSlotArray_p	ptr() { return CPackSlotArray_p(this); }
 
 	protected:
-		IPackSlots(SlotArray<PackSlot> * pSlotArray, CPaddedSlotArray::Holder * pHolder) : CPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
+		CPackSlotArray(SlotArray<PackSlot> * pSlotArray, Holder * pHolder) : CPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
 
 	};
 
@@ -101,9 +110,9 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel, protected CPaddedSlotArray<PackSlot>::Holder, protected PackSlotHolder
+	class PackPanel : public Panel, protected CPackSlotArray::Holder
 	{
-		friend class IPackSlots;
+		friend class CPackSlotArray;
 
 	public:
 
@@ -113,7 +122,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IPackSlots		children;
+		CPackSlotArray		children;
 
 		//.____ Identification __________________________________________
 
@@ -167,7 +176,7 @@ namespace wg
 		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
 
-		// Needed by IPackSlots
+		// Needed by CPackSlotArray
 
 		void		_reweightSlots(PackSlot * pSlot, int nb, float weight);
 		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights);

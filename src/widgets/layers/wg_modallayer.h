@@ -39,12 +39,17 @@ namespace wg
 	class ModalSlot : public LayerSlot		/** @private */
 	{
 		friend class ModalLayer;
-		friend class IModalSlots;
+		friend class CModalSlotArray;
 		template<class S> friend class CSlotArray;
 		template<class S> friend class SlotArray;
 
 	protected:
-		ModalSlot(SlotHolder * pHolder) : LayerSlot(pHolder) {}
+		
+		class Holder : public LayerSlot::Holder
+		{
+		};
+
+		ModalSlot(Holder * pHolder) : LayerSlot(pHolder) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -57,13 +62,13 @@ namespace wg
 	};
 
 
-	class IModalSlots;
-	typedef	StrongComponentPtr<IModalSlots>	IModalSlots_p;
-	typedef	WeakComponentPtr<IModalSlots>	IModalSlots_wp;
+	class CModalSlotArray;
+	typedef	StrongComponentPtr<CModalSlotArray>	CModalSlotArray_p;
+	typedef	WeakComponentPtr<CModalSlotArray>	CModalSlotArray_wp;
 
-	//____ IModalSlots ________________________________________________________
+	//____ CModalSlotArray ________________________________________________________
 
-	class IModalSlots : public CSlotArray<ModalSlot>
+	class CModalSlotArray : public CSlotArray<ModalSlot>
 	{
 	public:
 
@@ -78,11 +83,11 @@ namespace wg
 
 		/** @private */
 
-		IModalSlots( SlotArray<ModalSlot> * pSlotArray, Holder * pHolder ) : CSlotArray<ModalSlot>(pSlotArray,pHolder) {}
+		CModalSlotArray( SlotArray<ModalSlot> * pSlotArray, Holder * pHolder ) : CSlotArray<ModalSlot>(pSlotArray,pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IModalSlots_p	ptr() { return IModalSlots_p(this); }
+		inline CModalSlotArray_p	ptr() { return CModalSlotArray_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -130,9 +135,9 @@ namespace wg
 
 	//____ ModalLayer __________________________________________________________
 
-	class ModalLayer : public Layer, protected IModalSlots::Holder, protected LayerSlotHolder
+	class ModalLayer : public Layer, protected CModalSlotArray::Holder
 	{
-		friend class IModalSlots;
+		friend class CModalSlotArray;
 
 	public:
 
@@ -142,7 +147,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IModalSlots	modals;
+		CModalSlotArray	modals;
 
 		//.____ Identification __________________________________________
 
@@ -225,7 +230,7 @@ namespace wg
 
 		//
 
-		class MainSlotAccess : public MainSlot { friend class ModalLayer; };
+		class MainSlotAccess : public CMainSlot { friend class ModalLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

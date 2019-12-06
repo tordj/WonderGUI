@@ -31,14 +31,19 @@
 namespace wg
 {
 
-	class CapsuleSlot : public CSlotImpl<BasicSlot>
+	class CCapsuleSlot : public CSlotImpl<BasicSlot>
 	{
 		friend class Capsule;
 	public:
 		using CSlotImpl<BasicSlot>::operator=;
+
 	protected:
-		CapsuleSlot(BasicSlot::Holder* pHolder) : CSlotImpl(pHolder) {}
+		CCapsuleSlot(BasicSlot::Holder* pHolder) : CSlotImpl(pHolder) {}
 	};
+
+	typedef	StrongComponentPtr<CCapsuleSlot>	CCapsuleSlot_p;
+	typedef	WeakComponentPtr<CCapsuleSlot>		CCapsuleSlot_wp;
+
 
 	class Capsule;
 	typedef	StrongPtr<Capsule>	Capsule_p;
@@ -64,7 +69,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CapsuleSlot		slot;
+		CCapsuleSlot		slot;
 
 		//.____ Identification __________________________________________
 

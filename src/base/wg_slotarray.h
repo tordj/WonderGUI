@@ -38,8 +38,8 @@ namespace wg
 	template<class SlotType> class SlotArray		/** @private */
 	{
 	public:
-		SlotArray( SlotHolder * pHolder ) : m_pSlotHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
-		SlotArray( SlotHolder * pHolder, int capacity) : m_pSlotHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
+		SlotArray( typename SlotType::Holder * pHolder ) : m_pSlotHolder(pHolder), m_pArray(0), m_size(0), m_capacity(0) {}
+		SlotArray( typename SlotType::Holder * pHolder, int capacity) : m_pSlotHolder(pHolder), m_size(0), m_capacity(capacity) { m_pArray = (SlotType*) malloc( sizeof(SlotType)*capacity ); }
 		~SlotArray() { _killBlock( begin(), end() ); free(m_pArray); }
 
 		int			size() const { return m_size; }
@@ -115,7 +115,7 @@ namespace wg
 		int			m_capacity;
 		int			m_size;
 		SlotType *	m_pArray;
-		SlotHolder * m_pSlotHolder;
+		typename SlotType::Holder * m_pSlotHolder;
 	};
 
 

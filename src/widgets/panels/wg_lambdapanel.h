@@ -35,22 +35,21 @@ namespace wg
 	typedef	StrongPtr<LambdaPanel>		LambdaPanel_p;
 	typedef	WeakPtr<LambdaPanel>		LambdaPanel_wp;
 
-	//____ LambdaSlotHolder ____________________________________________________________
-
-	class LambdaSlotHolder : public SlotHolder
-	{
-
-	};
-
 
 	//____ LambdaSlot ____________________________________________________________
 
 	class LambdaSlot : public BasicSlot		/** @private */
 	{
 		friend class LambdaPanel;
-		friend class ILambdaSlots;
+		friend class CLambdaSlotArray;
 	public:
-		LambdaSlot(SlotHolder * pHolder ) : BasicSlot(pHolder), pFunc(nullptr), bVisible(false) {}
+
+		class Holder : public BasicSlot::Holder
+		{
+		};
+
+
+		LambdaSlot(Holder * pHolder ) : BasicSlot(pHolder), pFunc(nullptr), bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -59,16 +58,14 @@ namespace wg
 		RectI			geo;				// Widgets geo relative parent
 	};
 
-	//____ ILambdaSlots::Holder _________________________________________________
 
+	class CLambdaSlotArray;
+	typedef	StrongComponentPtr<CLambdaSlotArray>	CLambdaSlotArray_p;
+	typedef	WeakComponentPtr<CLambdaSlotArray>		CLambdaSlotArray_wp;
 
-	class ILambdaSlots;
-	typedef	StrongComponentPtr<ILambdaSlots>	ILambdaSlots_p;
-	typedef	WeakComponentPtr<ILambdaSlots>		ILambdaSlots_wp;
+	//____ CLambdaSlotArray ________________________________________________________
 
-	//____ ILambdaSlots ________________________________________________________
-
-	class ILambdaSlots : public CSlotArray<LambdaSlot>
+	class CLambdaSlotArray : public CSlotArray<LambdaSlot>
 	{
 		friend class LambdaPanel;
 	public:
@@ -99,19 +96,19 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline ILambdaSlots_p	ptr() { return ILambdaSlots_p(this); }
+		inline CLambdaSlotArray_p	ptr() { return CLambdaSlotArray_p(this); }
 
 	protected:
-		ILambdaSlots(SlotArray<LambdaSlot> * pSlotArray, ILambdaSlots::Holder * pHolder) : CSlotArray<LambdaSlot>(pSlotArray, pHolder) {}
+		CLambdaSlotArray(SlotArray<LambdaSlot> * pSlotArray, CLambdaSlotArray::Holder * pHolder) : CSlotArray<LambdaSlot>(pSlotArray, pHolder) {}
 
-		const ILambdaSlots::Holder *	_holder() const { return static_cast<ILambdaSlots::Holder*>(m_pHolder); }
-		ILambdaSlots::Holder *	_holder() { return static_cast<ILambdaSlots::Holder*>(m_pHolder); }
+		const CLambdaSlotArray::Holder *	_holder() const { return static_cast<CLambdaSlotArray::Holder*>(m_pHolder); }
+		CLambdaSlotArray::Holder *	_holder() { return static_cast<CLambdaSlotArray::Holder*>(m_pHolder); }
 	};
 
 
 	//____ LambdaPanel _________________________________________________________
 
-	class LambdaPanel : public Panel, protected ILambdaSlots::Holder, protected LambdaSlotHolder
+	class LambdaPanel : public Panel, protected CLambdaSlotArray::Holder
 	{
 
 	public:
@@ -122,7 +119,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ILambdaSlots	children;
+		CLambdaSlotArray	children;
 
 		//.____ Identification __________________________________________
 
@@ -153,7 +150,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Methods for ILambdaSlots::Holder
+		// Methods for CLambdaSlotArray::Holder
 
 		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;

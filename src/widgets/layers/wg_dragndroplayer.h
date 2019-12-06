@@ -38,14 +38,20 @@ namespace wg
 	class DnDLayerSlot : public LayerSlot
 	{
 		friend class DragNDropLayer;
+
+	public:
+		class Holder : public LayerSlot::Holder
+		{
+		};
+
 	protected:
-		DnDLayerSlot(SlotHolder *pHolder) : LayerSlot(pHolder) {}
+		DnDLayerSlot(Holder *pHolder) : LayerSlot(pHolder) {}
 	};
 
 
 	//____ DragNDropLayer ____________________________________________________________
 
-	class DragNDropLayer : public Layer, protected LayerSlotHolder
+	class DragNDropLayer : public Layer, protected DnDLayerSlot::Holder
 	{
 	public:
 
@@ -132,7 +138,7 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		class MainSlotAccess : public MainSlot { friend class DragNDropLayer; };
+		class MainSlotAccess : public CMainSlot { friend class DragNDropLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

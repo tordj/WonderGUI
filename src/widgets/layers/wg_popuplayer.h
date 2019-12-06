@@ -41,10 +41,15 @@ namespace wg
 	class PopupSlot : public LayerSlot		/** @private */
 	{
 		friend class PopupLayer;
-		friend class IPopupSlots;
+		friend class CPopupSlotArray;
 
 	public:
-		PopupSlot(SlotHolder * pHolder) : LayerSlot(pHolder), attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
+
+		class Holder : public LayerSlot::Holder
+		{
+		};
+
+		PopupSlot(Holder * pHolder) : LayerSlot(pHolder), attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
 
 		const static bool safe_to_relocate = false;
 
@@ -71,22 +76,22 @@ namespace wg
 	};
 
 
-	class IPopupSlots;
-	typedef	StrongComponentPtr<IPopupSlots>	IPopupSlots_p;
-	typedef	WeakComponentPtr<IPopupSlots>	IPopupSlots_wp;
+	class CPopupSlotArray;
+	typedef	StrongComponentPtr<CPopupSlotArray>	CPopupSlotArray_p;
+	typedef	WeakComponentPtr<CPopupSlotArray>	CPopupSlotArray_wp;
 
-	//____ IPopupSlots ________________________________________________________
+	//____ CPopupSlotArray ________________________________________________________
 
-	class IPopupSlots : public Component
+	class CPopupSlotArray : public Component
 	{
 	public:
 		/** @private */
 
-		IPopupSlots(PopupLayer * pHolder) : m_pHolder(pHolder) {}
+		CPopupSlotArray(PopupLayer * pHolder) : m_pHolder(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline IPopupSlots_p	ptr() { return IPopupSlots_p(this); }
+		inline CPopupSlotArray_p	ptr() { return CPopupSlotArray_p(this); }
 
 		//.____ Operators _____________________________________________________
 
@@ -112,9 +117,9 @@ namespace wg
 
 	//____ PopupLayer ____________________________________________________________
 
-	class PopupLayer : public Layer, protected LayerSlotHolder
+	class PopupLayer : public Layer, protected PopupSlot::Holder
 	{
-		friend class IPopupSlots;
+		friend class CPopupSlotArray;
 
 	public:
 
@@ -124,7 +129,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IPopupSlots	popups;
+		CPopupSlotArray	popups;
 
 		//.____ Identification __________________________________________
 
@@ -203,7 +208,7 @@ namespace wg
 
 		//
 
-		class MainSlotAccess : public MainSlot { friend class PopupLayer; };
+		class MainSlotAccess : public CMainSlot { friend class PopupLayer; };
 		MainSlotAccess * _mainSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _mainSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

@@ -39,9 +39,9 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	//____ ILambdaSlots::add() ________________________________________________
+	//____ CLambdaSlotArray::add() ________________________________________________
 
-	ILambdaSlots::iterator ILambdaSlots::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -53,9 +53,9 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ ILambdaSlots::insert() ________________________________________________
+	//____ CLambdaSlotArray::insert() ________________________________________________
 
-	ILambdaSlots::iterator ILambdaSlots::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -67,7 +67,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	ILambdaSlots::iterator ILambdaSlots::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -79,9 +79,9 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ ILambdaSlots::setFunction() ________________________________________________
+	//____ CLambdaSlotArray::setFunction() ________________________________________________
 
-	void ILambdaSlots::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void CLambdaSlotArray::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -91,7 +91,7 @@ namespace wg
 		_holder()->_updateSlotGeo(pSlot, 1);
 	}
 
-	void ILambdaSlots::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	void CLambdaSlotArray::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -101,9 +101,9 @@ namespace wg
 		_holder()->_updateSlotGeo(pSlot, 1);
 	}
 
-	//____ ILambdaSlots::function() ________________________________________________
+	//____ CLambdaSlotArray::function() ________________________________________________
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaSlots::function(int index) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> CLambdaSlotArray::function(int index) const
 	{
 		//TODO: Assert
 
@@ -111,7 +111,7 @@ namespace wg
 		return pSlot->pFunc;
 	}
 
-	std::function<Rect(Widget * pWidget, Size parentSize)> ILambdaSlots::function(iterator pos) const
+	std::function<Rect(Widget * pWidget, Size parentSize)> CLambdaSlotArray::function(iterator pos) const
 	{
 		//TODO: Assert
 

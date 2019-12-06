@@ -37,14 +37,14 @@ namespace wg
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 
 
-	void IStackSlots::setSizePolicy( int index, SizePolicy2D policy )
+	void CStackSlotArray::setSizePolicy( int index, SizePolicy2D policy )
 	{
 		//TODO: Assert!
 
 		_setSizePolicy( m_pSlotArray->slot(index), policy );
 	}
 
-	void IStackSlots::setSizePolicy( iterator it, SizePolicy2D policy )
+	void CStackSlotArray::setSizePolicy( iterator it, SizePolicy2D policy )
 	{
 		//TODO: Assert!
 
@@ -52,14 +52,14 @@ namespace wg
 	}
 
 
-	SizePolicy2D IStackSlots::SizePolicy( int index ) const
+	SizePolicy2D CStackSlotArray::SizePolicy( int index ) const
 	{
 		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->SizePolicy;
 	}
 
-	SizePolicy2D IStackSlots::SizePolicy( iterator it ) const
+	SizePolicy2D CStackSlotArray::SizePolicy( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -67,14 +67,14 @@ namespace wg
 	}
 
 
-	void IStackSlots::setOrigo( int index, Origo origo )
+	void CStackSlotArray::setOrigo( int index, Origo origo )
 	{
 		//TODO: Assert!
 
 		_setOrigo( m_pSlotArray->slot(index), origo );
 	}
 
-	void IStackSlots::setOrigo( iterator it, Origo origo )
+	void CStackSlotArray::setOrigo( iterator it, Origo origo )
 	{
 		//TODO: Assert!
 
@@ -82,14 +82,14 @@ namespace wg
 	}
 
 
-	Origo IStackSlots::origo( int index ) const
+	Origo CStackSlotArray::origo( int index ) const
 	{
 		//TODO: Assert!
 
 		return m_pSlotArray->slot(index)->origo;
 	}
 
-	Origo IStackSlots::origo( iterator it ) const
+	Origo CStackSlotArray::origo( iterator it ) const
 	{
 		//TODO: Assert!
 
@@ -97,7 +97,7 @@ namespace wg
 	}
 
 
-	void IStackSlots::_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy )
+	void CStackSlotArray::_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy )
 	{
 		if( policy != pSlot->SizePolicy )
 		{
@@ -114,7 +114,7 @@ namespace wg
 		};
 	}
 
-	void IStackSlots::_setOrigo( StackSlot * pSlot, Origo origo )
+	void CStackSlotArray::_setOrigo( StackSlot * pSlot, Origo origo )
 	{
 		if( origo != pSlot->origo )
 		{

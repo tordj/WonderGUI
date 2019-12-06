@@ -39,21 +39,21 @@ namespace wg
 
 	//____ operator[] __________________________________________________________
 
-	Widget& IPopupSlots::operator[](int index) const
+	Widget& CPopupSlotArray::operator[](int index) const
 	{
 		return * m_pHolder->m_popups.slot(index)->_widget();
 	}
 
 	//____ size() ______________________________________________________________
 
-	int IPopupSlots::size() const
+	int CPopupSlotArray::size() const
 	{
 		return m_pHolder->m_popups.size();
 	}
 
 	//____ at() _______________________________________________________________
 
-	Widget_p IPopupSlots::at( int index) const
+	Widget_p CPopupSlotArray::at( int index) const
 	{
 		if( index < 0 || index >= m_pHolder->m_popups.size() )
 			return nullptr;
@@ -63,12 +63,12 @@ namespace wg
 
 	//____ _object() ___________________________________________________________
 
-	Object * IPopupSlots::_object()
+	Object * CPopupSlotArray::_object()
 	{
 		return m_pHolder;
 	}
 
-	const Object * IPopupSlots::_object() const
+	const Object * CPopupSlotArray::_object() const
 	{
 		return m_pHolder;
 	}
@@ -76,7 +76,7 @@ namespace wg
 
 	//____ push() ________________________________________________
 
-	void IPopupSlots::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void CPopupSlotArray::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		m_pHolder->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
@@ -84,7 +84,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void IPopupSlots::pop(int nb)
+	void CPopupSlotArray::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
@@ -96,7 +96,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void IPopupSlots::pop(Widget * pPopup)
+	void CPopupSlotArray::pop(Widget * pPopup)
 	{
 		auto p = m_pHolder->m_popups.find(pPopup);
 
@@ -108,7 +108,7 @@ namespace wg
 
 	//____ clear() ________________________________________________
 
-	void IPopupSlots::clear()
+	void CPopupSlotArray::clear()
 	{
 		if( m_pHolder->m_popups.isEmpty() )
 			return;
