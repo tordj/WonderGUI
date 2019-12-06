@@ -38,29 +38,31 @@ namespace wg
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
 
-	class SplitPanelSlot : public BasicSlot 	/** @private */
-	{
-		friend class SplitPanel;
-
-	protected:
-		SplitPanelSlot(SlotHolder *pHolder) : BasicSlot(pHolder) {}
-
-		RectI	geo;
-	};
-
 
 	class SplitPanel : public Panel, protected SlotHolder
 	{
 
 	public:
+
+		class Slot : public ISlot<BasicSlot> 	/** @private */
+		{
+			friend class SplitPanel;
+
+		protected:
+			Slot(SlotHolder *pHolder) : ISlot(pHolder) {}
+
+			RectI	geo;
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static SplitPanel_p	create() { return SplitPanel_p(new SplitPanel()); }
 
 		//.____ Interfaces _______________________________________
 
-		ISlot			first;
-		ISlot			second;
+		Slot			slotOne;
+		Slot			slotTwo;
 
 		//.____ Identification __________________________________________
 
@@ -176,9 +178,6 @@ namespace wg
 		RectI			m_handleGeo;
 		State			m_handleState;
 		int				m_handlePressOfs;
-
-		SplitPanelSlot	m_firstChild;
-		SplitPanelSlot	m_secondChild;
 
 		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)>	m_brokerFunc;
 	};

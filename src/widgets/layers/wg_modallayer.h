@@ -224,9 +224,9 @@ namespace wg
 
 		//
 
-		class BaseSlotAccess : public BaseSlot { friend class ModalLayer; };
-		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
-		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
+		class MainSlotAccess : public MainSlot { friend class ModalLayer; };
+		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
+		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
 
 		Widget_wp			m_pBaseKeyFocus;

@@ -31,10 +31,13 @@
 namespace wg
 {
 
-	class CapsuleSlot : public BasicSlot
+	class CapsuleSlot : public ISlot<BasicSlot>
 	{
-		CapsuleSlot(SlotHolder* pHolder) : BasicSlot(pHolder) {}
 		friend class Capsule;
+	public:
+		using ISlot<BasicSlot>::operator=;
+	protected:
+		CapsuleSlot(BasicSlot::Holder* pHolder) : ISlot(pHolder) {}
 	};
 
 	class Capsule;
@@ -61,7 +64,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		ISlot		child;
+		CapsuleSlot		slot;
 
 		//.____ Identification __________________________________________
 
@@ -126,10 +129,6 @@ namespace wg
 		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeI& size ) override;
-
-
-
-		CapsuleSlot		m_child;
 
 	};
 

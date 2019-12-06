@@ -116,7 +116,7 @@ int main ( int argc, char** argv )
 		// provides simple and powerful ways to layout multiple children.
 
 		FlexPanel_p pFlexPanel = FlexPanel::create();
-		pRoot->child = pFlexPanel;
+		pRoot->slot = pFlexPanel;
 
 		// Now we create the background using the simplest widget
 		// type, the Filler and add it to the FlexPanel, making

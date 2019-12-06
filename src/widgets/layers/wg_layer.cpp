@@ -31,7 +31,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Layer::Layer( SlotHolder * pHolder ) : m_baseSlot(pHolder), base( &m_baseSlot, pHolder )
+	Layer::Layer( SlotHolder * pHolder ) : mainSlot(pHolder)
 	{
 	}
 
@@ -68,8 +68,8 @@ namespace wg
 
 	int Layer::_matchingHeight( int width ) const
 	{
-		if( m_baseSlot._widget() )
-			return m_baseSlot._matchingHeight( width );
+		if( mainSlot._widget() )
+			return mainSlot._matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -78,8 +78,8 @@ namespace wg
 
 	int Layer::_matchingWidth( int height ) const
 	{
-		if( m_baseSlot._widget() )
-			return m_baseSlot._matchingWidth( height );
+		if( mainSlot._widget() )
+			return mainSlot._matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -88,8 +88,8 @@ namespace wg
 
 	SizeI Layer::_preferredSize() const
 	{
-		if( m_baseSlot._widget() )
-			return m_baseSlot._preferredSize();
+		if( mainSlot._widget() )
+			return mainSlot._preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -135,15 +135,15 @@ namespace wg
 		if (p != _endLayerSlots())
 			return p->_widget();
 
-		return m_baseSlot._widget();
+		return mainSlot._widget();
 	}
 
 	//____ _lastChild() ____________________________________________________________
 
 	Widget* Layer::_lastChild() const
 	{
-		if (m_baseSlot._widget())
-			return m_baseSlot._widget();
+		if (mainSlot._widget())
+			return mainSlot._widget();
 		else
 		{
 			const LayerSlot * pSlot = _endLayerSlots();
@@ -167,10 +167,10 @@ namespace wg
 			package.geo = p->geo;
 			package.pSlot = p;
 		}
-		else if (m_baseSlot._widget())
+		else if (mainSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
-			package.pSlot = &m_baseSlot;
+			package.pSlot = &mainSlot;
 		}
 		else
 			package.pSlot = nullptr;
@@ -182,7 +182,7 @@ namespace wg
 	{
 		const LayerSlot * p = (LayerSlot*) package.pSlot;
 
-		if (p == (BasicSlot*) &m_baseSlot)
+		if (p == (BasicSlot*) &mainSlot)
 		{
 			package.pSlot = nullptr;
 			return;
@@ -194,10 +194,10 @@ namespace wg
 			package.geo = ((LayerSlot*)p)->geo;
 			package.pSlot = p;
 		}
-		else if (m_baseSlot._widget())
+		else if (mainSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
-			package.pSlot = &m_baseSlot;
+			package.pSlot = &mainSlot;
 		}
 		else
 			package.pSlot = nullptr;
@@ -214,9 +214,9 @@ namespace wg
 
 	void Layer::_releaseChild(BasicSlot * pSlot)
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 		{
-			m_baseSlot._setWidget(nullptr);
+			mainSlot._setWidget(nullptr);
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -226,9 +226,9 @@ namespace wg
 
 	void Layer::_replaceChild( BasicSlot * pSlot, Widget * pNewWidget )
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 		{
-			m_baseSlot._setWidget(pNewWidget);
+			mainSlot._setWidget(pNewWidget);
 			if( pNewWidget )
 				pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectI(0, 0, m_size), 0);
@@ -242,8 +242,8 @@ namespace wg
 	{
 		Container::_resize(size);
 
-		if (m_baseSlot._widget())
-			m_baseSlot._widget()->_resize(size);
+		if (mainSlot._widget())
+			mainSlot._widget()->_resize(size);
 	}
 
 
@@ -251,7 +251,7 @@ namespace wg
 
 	CoordI Layer::_childPos( const BasicSlot * pSlot ) const
 	{
-		if( pSlot == &m_baseSlot )
+		if( pSlot == &mainSlot )
 			return {0,0};
 
 		return ((LayerSlot*)pSlot)->geo;
@@ -261,7 +261,7 @@ namespace wg
 
 	void Layer::_childRequestRender( BasicSlot * _pSlot )
 	{
-		if( _pSlot == &m_baseSlot )
+		if( _pSlot == &mainSlot )
 			_onRequestRender( RectI( 0,0, m_size ), 0 );		//TODO: Take padding into account
 		else
 		{
@@ -272,7 +272,7 @@ namespace wg
 
 	void Layer::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
 	{
-		if( _pSlot == &m_baseSlot )
+		if( _pSlot == &mainSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account
 		else
 		{
@@ -292,7 +292,7 @@ namespace wg
 
 	Widget * Layer::_prevChild( const BasicSlot * pSlot ) const
 	{
-		if( pSlot == &m_baseSlot )
+		if( pSlot == &mainSlot )
 			pSlot = _endLayerSlots();
 
 		if (pSlot == _beginLayerSlots())
@@ -306,14 +306,14 @@ namespace wg
 
 	Widget * Layer::_nextChild( const BasicSlot * pSlot ) const
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 			return nullptr;
 
 		LayerSlot * p = _incLayerSlot((LayerSlot*)pSlot, _sizeOfLayerSlot());
 		if (p < _endLayerSlots())
 			return p->_widget();
 
-		return m_baseSlot._widget();
+		return mainSlot._widget();
 	}
 
 

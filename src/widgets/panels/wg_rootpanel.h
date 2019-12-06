@@ -61,6 +61,16 @@ namespace wg
 
 	public:
 
+		class Slot : public ISlot<BasicSlot>
+		{
+			friend class RootPanel;
+		public:
+			using ISlot<BasicSlot>::operator=;
+		protected:
+			Slot(SlotHolder *pHolder) : ISlot(pHolder) {}
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
@@ -68,7 +78,7 @@ namespace wg
 
 		//.____ Interfaces ____________________________________
 
-		ISlot				child;
+		Slot				slot;
 
 		//.____ Identification __________________________________________
 
@@ -131,13 +141,6 @@ namespace wg
 		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
 
-		class RootSlot : public BasicSlot
-		{
-			friend class RootPanel;
-
-			RootSlot(SlotHolder *pHolder) : BasicSlot(pHolder) {}
-		};
-
 		RectI			_geo() const;
 
 		// WidgetHolder methods
@@ -194,7 +197,6 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
-		RootSlot			m_child;
 		RectI				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

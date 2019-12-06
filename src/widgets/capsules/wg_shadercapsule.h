@@ -79,8 +79,8 @@ namespace wg
 
 	private:
 		class SlotAccess : public CapsuleSlot { friend class ShaderCapsule; };
-		SlotAccess * _slot() { return static_cast<SlotAccess*>(&m_child); }
-		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&m_child); }
+		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
+		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 
 		Color			m_tintColor;
 		BlendMode		m_tintMode;

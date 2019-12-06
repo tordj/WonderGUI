@@ -280,7 +280,7 @@ namespace wg
 
 	void ModalLayer::_childRequestResize( BasicSlot * pSlot )
 	{
-		if( pSlot == &m_baseSlot )
+		if( pSlot == &mainSlot )
 			_requestResize();
 		else
 		{
@@ -293,7 +293,7 @@ namespace wg
 
 	void ModalLayer::_releaseChild(BasicSlot * pSlot)
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
 		else
 			_willRemoveSlots(pSlot, 1);
@@ -468,7 +468,7 @@ namespace wg
 		{
 			pSavedFocus = m_pBaseKeyFocus.rawPtr();
 			m_pBaseKeyFocus = nullptr;								// Needs to be cleared for the future.
-			pBranch = &m_baseSlot;
+			pBranch = &mainSlot;
 		}
 
 		// Verify that saved focus still is within branch and is not hidden

@@ -56,12 +56,6 @@ namespace wg
 		Direction		placement;
 	};
 
-	//____ ViewSlotHolder ______________________________________________________
-
-	class ViewSlotHolder : public PaddedSlotHolder
-	{
-
-	};
 
 
 	//____ ViewSlot ______________________________________________________
@@ -70,38 +64,45 @@ namespace wg
 	{
 		friend class ScrollPanel;
 	public:
-		ViewSlot(ViewSlotHolder *pHolder) : PaddedSlot(pHolder) {}
 
-		int			paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
-		int			paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
-		float		paddedWindowLenX();
-		float		paddedWindowLenY();
+		//____ Holder ____________________________________________________
 
-		float		windowFractionX() const;
-		float		windowFractionY() const;
-		float		windowOffsetX() const;
-		float		windowOffsetY() const;
+		class Holder : public PaddedSlotHolder
+		{
+		};
 
-		bool		updateCanvasGeo();
-		SizeI		sizeFromPolicy(SizeI specifiedSize) const;
+		ViewSlot(ViewSlot::Holder *pHolder) : PaddedSlot(pHolder) {}
 
-		bool		setWindowPos(CoordI pos);
-		bool		setWindowOffset(CoordF ofs);
-		bool		setWindowOffsetX(float ofs);
-		bool		setWindowOffsetY(float ofs);
+		int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
+		int			_paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
+		float		_paddedWindowLenX();
+		float		_paddedWindowLenY();
 
-		RectI			windowGeo;		// Geometry of Widgets window inside parent.
-		RectI			canvasGeo;		// Geometry of Widgets canvas.
+		float		_windowFractionX() const;
+		float		_windowFractionY() const;
+		float		_windowOffsetX() const;
+		float		_windowOffsetY() const;
 
-		SizePolicy		widthPolicy = SizePolicy::Default;
-		SizePolicy		heightPolicy = SizePolicy::Default;
-		Origo			contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
-		SizeI			contentSize;
-		CoordI			viewPixOfs;
+		bool		_updateCanvasGeo();
+		SizeI		_sizeFromPolicy(SizeI specifiedSize) const;
 
-		BorderI			scrollBorder;
-		BorderI			rubberBorder;
-		MouseButton		dragButton = MouseButton::None;
+		bool		_setWindowPos(CoordI pos);
+		bool		_setWindowOffset(CoordF ofs);
+		bool		_setWindowOffsetX(float ofs);
+		bool		_setWindowOffsetY(float ofs);
+
+		RectI			m_windowGeo;		// Geometry of Widgets window inside parent.
+		RectI			m_canvasGeo;		// Geometry of Widgets canvas.
+
+		SizePolicy		m_widthPolicy = SizePolicy::Default;
+		SizePolicy		m_heightPolicy = SizePolicy::Default;
+		Origo			m_contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
+		SizeI			m_contentSize;
+		CoordI			m_viewPixOfs;
+
+		BorderI			m_scrollBorder;
+		BorderI			m_rubberBorder;
+		MouseButton		m_dragButton = MouseButton::None;
 
 
 
@@ -109,7 +110,7 @@ namespace wg
 
 	//____ IViewSlotHolder _______________________________________________
 
-	class IViewSlotHolder : public SlotHolder /** @private */
+	class IViewSlotHolder : public ViewSlot::Holder /** @private */
 	{
 	public:
 		virtual bool		_setWindowPos(CoordI pos) = 0;
@@ -123,32 +124,32 @@ namespace wg
 
 	//____ IViewSlot ______________________________________________________
 
-	class IViewSlot : public ISlot
+	class IViewSlot : public ISlot<ViewSlot>
 	{
 	public:
 		/** @private */
 
-		IViewSlot(ViewSlot * pSlot, IViewSlotHolder * pHolder) : ISlot(pSlot, pHolder) {}
+		IViewSlot(IViewSlotHolder * pHolder) : ISlot(pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
-		IViewSlot operator=(Widget * pWidget);
+		IViewSlot& operator=(Widget * pWidget);
 
 		//.____ Geometry ______________________________________________________
 
-		Size		canvasSize() const { return _slot()->contentSize; };
+		Size		canvasSize() const { return m_contentSize; };
 
 		void		setOrigo(Origo origo);
-		Origo		origo() const { return _slot()->contentOrigo; }
+		Origo		origo() const { return m_contentOrigo; }
 
 		void		setWidthPolicy(SizePolicy policy);
-		SizePolicy	widthPolicy() const { return _slot()->widthPolicy; }
+		SizePolicy	widthPolicy() const { return m_widthPolicy; }
 
 		void		setHeightPolicy(SizePolicy policy);
-		SizePolicy	heightPolicy() const { return _slot()->heightPolicy; }
+		SizePolicy	heightPolicy() const { return m_heightPolicy; }
 
 		Rect		windowRect() const;
-		Coord		windowPos() const { return _slot()->viewPixOfs; };
+		Coord		windowPos() const { return m_viewPixOfs; };
 		Size		windowSize() const;
 
 		RectF		windowSection() const;
@@ -176,8 +177,8 @@ namespace wg
 		inline IViewSlotHolder * _holder() { return static_cast<IViewSlotHolder*>(m_pHolder); }
 		inline const IViewSlotHolder * _holder() const { return static_cast<IViewSlotHolder*>(m_pHolder); }
 
-		inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
-		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
+//	inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
+//		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
 
 	};
 
@@ -239,7 +240,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected IViewSlotHolder, protected ViewSlotHolder
+	class ScrollPanel : public Panel, protected IViewSlotHolder
 	{
 		friend class IViewSlot;
 		friend class ScrollbarEntry;
@@ -251,7 +252,7 @@ namespace wg
 
 		//.____ Interfaces _______________________________________
 
-		IViewSlot		view;
+		IViewSlot		viewSlot;
 		ScrollbarEntry	hscrollbar, vscrollbar;
 
 		//.____ Identification __________________________________________
@@ -408,7 +409,6 @@ namespace wg
 		std::function<int(Direction dir, int steps)> m_pWheelRollFunction;
 
 
-		ViewSlot	m_viewSlot;
 		ScrollbarSlot	m_scrollbarSlots[2];			// xScroll and yScroll widgets in that order.
 
 		Skin_p		m_pCornerSkin;

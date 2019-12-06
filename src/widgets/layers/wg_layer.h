@@ -35,13 +35,6 @@ namespace wg
 	typedef	WeakPtr<Layer>		Layer_wp;
 
 
-	class BaseSlot : public BasicSlot
-	{
-		friend class Layer;
-		BaseSlot(SlotHolder * pHolder) : BasicSlot(pHolder) {}
-	};
-
-
 	class LayerSlotHolder : public SlotHolder
 	{
 
@@ -89,9 +82,19 @@ namespace wg
 
 	public:
 
+		class MainSlot : public ISlot<BasicSlot>
+		{
+			friend class Layer;
+		public:
+			using ISlot<BasicSlot>::operator=;
+		protected:
+			MainSlot(SlotHolder * pHolder) : ISlot(pHolder) {}
+		};
+
+
 		//.____ Interfaces _______________________________________
 
-		ISlot		base;
+		MainSlot		mainSlot;
 
 
 		//.____ Identification __________________________________________
@@ -160,9 +163,6 @@ namespace wg
 
 		inline LayerSlot * _decLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)-sizeOf); }
 		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
-
-
-		BaseSlot			m_baseSlot;
 	};
 
 

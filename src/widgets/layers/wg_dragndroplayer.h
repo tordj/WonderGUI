@@ -132,9 +132,9 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		class BaseSlotAccess : public BaseSlot { friend class DragNDropLayer; };
-		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
-		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
+		class MainSlotAccess : public MainSlot { friend class DragNDropLayer; };
+		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
+		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
 
 		RouteId        m_tickRouteId;

@@ -314,14 +314,14 @@ void update_displaymode()
 
 		auto pZoomer = SizeCapsule::create();
 		pZoomer->setSizes(size, size, size);
-		pZoomer->child = viewChild;
+		pZoomer->slot = viewChild;
 		viewChild = pZoomer;
 
 	}
 
 	//
 
-	g_pViewPanel->view = viewChild;
+	g_pViewPanel->viewSlot = viewChild;
 
 }
  
@@ -755,7 +755,7 @@ bool setup_chrome()
 
 	auto pLayerStack = StackPanel::create();
 	pLayerStack->setSkin(StaticColorSkin::create(Color::AntiqueWhite));
-	g_pRoot->child = pLayerStack;
+	g_pRoot->slot = pLayerStack;
 
 	// Divid screen into sidebar and canvaspanel with top section
 
@@ -1027,8 +1027,8 @@ bool setup_chrome()
 	}
 
 	auto pTestScrollPanel = ScrollPanel::create();
-	pTestScrollPanel->view.setWidthPolicy(SizePolicy::Confined);
-	pTestScrollPanel->view = pTestList;
+	pTestScrollPanel->viewSlot.setWidthPolicy(SizePolicy::Confined);
+	pTestScrollPanel->viewSlot = pTestList;
 
 
 	auto pTestScrollbar = Scrollbar::create();

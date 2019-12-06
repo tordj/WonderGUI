@@ -486,10 +486,10 @@ namespace wg
 
 		// Any dirt left in patches is for base child, lets render that first
 
-		if (_baseSlot()->_widget() && !patches.isEmpty())
+		if (_mainSlot()->_widget() && !patches.isEmpty())
 		{
 			ClipPopData popData = patchesToClipList(pDevice, _window, patches);
-			_baseSlot()->_widget()->_render(pDevice, _canvas, _window);
+			_mainSlot()->_widget()->_render(pDevice, _canvas, _window);
 			popClipList(pDevice, popData);
 		}
 
@@ -834,7 +834,7 @@ namespace wg
 
 	void PopupLayer::_childRequestResize(BasicSlot * pSlot)
 	{
-		if( pSlot == &m_baseSlot )
+		if( pSlot == &mainSlot )
 			_requestResize();
 		else
 			_updateGeo( (PopupSlot *) pSlot, true );
@@ -844,7 +844,7 @@ namespace wg
 
 	void PopupLayer::_releaseChild( BasicSlot * pSlot )
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
 		else
 		{

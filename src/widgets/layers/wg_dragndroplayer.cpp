@@ -108,7 +108,7 @@ namespace wg
 
 	void DragNDropLayer::_childRequestResize(BasicSlot * pSlot)
 	{
-		if( pSlot == &m_baseSlot )
+		if( pSlot == &mainSlot )
 			_requestResize();
 		else
 		{
@@ -126,7 +126,7 @@ namespace wg
 
 	void DragNDropLayer::_releaseChild(BasicSlot * pSlot)
 	{
-		if (pSlot == &m_baseSlot)
+		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
 		else
 			_replaceDragWidget(nullptr);

@@ -31,60 +31,100 @@
 
 namespace wg
 {
-	class ISlot;
-	typedef	StrongInterfacePtr<ISlot>	ISlot_p;
-	typedef	WeakInterfacePtr<ISlot>	ISlot_wp;
 
-	//____ SlotHolder ____________________________________________________
-/*
-	class SlotHolder	
+	//____ CSlot __________________________________________________________
+
+	class CSlot : public Interface
 	{
 	public:
-		virtual void		_setWidget( BasicSlot * pSlot, Widget * pNewWidget ) = 0;
-		virtual Object *	_object() = 0;
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+
+		inline operator Widget_p() const { return widget(); }
+
+		inline bool operator==(Widget * other) const { return other == _slot()->_widget(); }
+		inline bool operator!=(Widget * other) const { return other != _slot()->_widget(); }
+
+		inline Widget* operator->() const { return _slot()->_widget(); }
+
+		inline operator BasicSlot&() { return *_slot(); }
+
+		//.____ Content _______________________________________________________
+
+		inline void		setWidget(Widget * pWidget) { _slot()->setWidget(pWidget); }
+
+		inline bool		isEmpty() const { return _slot()->isEmpty(); }
+		inline Widget_p widget() const { return Widget_p(_slot()->_widget()); }
+		inline Widget*	rawWidgetPtr() const { return _slot()->rawWidgetPtr(); }
+
+		inline Coord	pos() const { return _slot()->pos(); }
+		inline Size		size() const { return _slot()->size(); }
+		inline Rect		geo() const { return _slot()->geo(); }
+
+
+		//.____ Misc __________________________________________________________
+
+		inline StrongInterfacePtr<CSlot>	ptr() { return StrongInterfacePtr<CSlot>(this); }
+
+	private:
+		virtual BasicSlot *			_slot() = 0;
+		virtual const BasicSlot *	_slot() const = 0;
 	};
-*/
+
+	typedef	StrongInterfacePtr<CSlot>	CSlot_p;
+	typedef	WeakInterfacePtr<CSlot>		CSlot_wp;
+
+
 
 	//____ ISlot __________________________________________________________
 
-	class ISlot : public Interface
+
+	template<class SlotType> class ISlot : public CSlot, public SlotType
 	{
 
 	public:
 
 		/** @private */
 
-		ISlot( BasicSlot * pSlot, SlotHolder * pHolder ) : m_pSlot(pSlot), m_pHolder(pHolder) {}
+		ISlot( typename SlotType::Holder * pHolder ) : SlotType(pHolder) {}
+
 
 		//.____ Operators __________________________________________
 
-		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_replaceChild(m_pSlot, pWidget); return *this; }
+		using SlotType::operator=;
 
-		inline ISlot operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_replaceChild(m_pSlot, pWidget); return *this; }
-		inline operator Widget_p() const { return m_pSlot->widget(); }
+		inline operator Widget_p() const { return SlotType::widget(); }
 
-		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
-		inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
+		inline bool operator==(Widget * other) const { return other == SlotType::_widget(); }
+		inline bool operator!=(Widget * other) const { return other != SlotType::_widget(); }
 
-		inline operator bool() const { return m_pSlot->_widget() != nullptr; }
-
-		inline Widget* operator->() const { return m_pSlot->_widget(); }
+		inline Widget* operator->() const { return SlotType::_widget(); }
 
 		//.____ Content _______________________________________________________
 
-		inline Widget_p get() const { return m_pSlot->widget(); }
-		inline void clear() { m_pHolder->_releaseChild(m_pSlot); }
+		inline void		setWidget(Widget * pWidget) { SlotType::setWidget(pWidget); }
 
-		//.____ Misc __________________________________________________________
+		inline bool		isEmpty() const { return SlotType::isEmpty(); }
+		inline Widget_p widget() const { return Widget_p(SlotType::_widget()); }
+		inline Widget*	rawWidgetPtr() const { return SlotType::rawWidgetPtr(); }
 
-		inline StrongInterfacePtr<ISlot>	ptr() { return StrongInterfacePtr<ISlot>(this); }
+		inline Coord	pos() const { return SlotType::pos(); }
+		inline Size		size() const { return SlotType::size(); }
+		inline Rect		geo() const { return SlotType::geo(); }
 
 	protected:
-		Object * _object() const override {	return m_pHolder->_object(); } 
+		Object * _object() const override { return SlotType::_holder()->_object(); }
 
-		BasicSlot *			m_pSlot;
-		SlotHolder *	m_pHolder;
+		const BasicSlot * _slot() const override { return this; }
+		BasicSlot * _slot() override { return this; }
+
+
 	};
+
 
 
 

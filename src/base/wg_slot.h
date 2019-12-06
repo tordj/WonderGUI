@@ -35,15 +35,19 @@ namespace wg
 	class BasicSlot		/** @private */
 	{
 		friend class Widget;
-		friend class ISlot;
 		friend class SlotIterator;
 		friend class SlotHolder;
+		friend class CSlot;
+		template<class S> friend class ISlot;
 		template<class S> friend class ISlotArray;
 		template<class S> friend class SlotArray;
 		template<class S> friend class ISelectableSlotArray;
 
 
 	public:
+
+		using		Holder = SlotHolder;
+
 
 		//.____ Operators __________________________________________
 
@@ -56,7 +60,7 @@ namespace wg
 			}
 
 			m_pWidget = o.m_pWidget;
-			m_pHolder = o.m_pHolder;
+//			m_pHolder = o.m_pHolder;
 
 			if (m_pWidget)
 			{
@@ -67,9 +71,11 @@ namespace wg
 			return *this;
 		}
 
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+
 //		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 
-//		inline ISlot operator=(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 		inline operator Widget_p() const { return widget(); }
 
 		inline bool operator==(Widget * other) const { return other == _widget(); }
@@ -82,6 +88,10 @@ namespace wg
 
 		inline bool		isEmpty() const { return m_pWidget == nullptr; }
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
+		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
+
+		inline void		setWidget(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+		inline void		clear() { m_pHolder->_replaceChild(this, nullptr); }
 
 		inline Coord	pos() const { return Util::rawToQpix(m_pHolder->_childPos(this)); }
 		inline Size		size() const { return Util::rawToQpix(_size()); }

@@ -202,9 +202,9 @@ namespace wg
 
 		//
 
-		class BaseSlotAccess : public BaseSlot { friend class PopupLayer; };
-		BaseSlotAccess * _baseSlot() { return static_cast<BaseSlotAccess*>(&m_baseSlot); }
-		const BaseSlotAccess * _baseSlot() const { return static_cast<const BaseSlotAccess*>(&m_baseSlot); }
+		class MainSlotAccess : public MainSlot { friend class PopupLayer; };
+		MainSlotAccess * _mainSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
+		const MainSlotAccess * _mainSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
 
 		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.

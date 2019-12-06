@@ -64,14 +64,14 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 }
 
 
-bool shadowLayerTest(ISlot_p pSlot);
-bool stretchBlitTest(ISlot_p pSlot);
-bool scrollIntoViewTest(ISlot_p pSlot);
-bool textClipTest(ISlot_p pSlot);
-bool lineEditorTest(ISlot_p pSlot);
-bool popupOpenerTest(ISlot_p pSlot);
-bool scrollbarTest(ISlot_p pSlot);
-bool modalLayerTest(ISlot_p pSlot);
+bool shadowLayerTest(CSlot_p pSlot);
+bool stretchBlitTest(CSlot_p pSlot);
+bool scrollIntoViewTest(CSlot_p pSlot);
+bool textClipTest(CSlot_p pSlot);
+bool lineEditorTest(CSlot_p pSlot);
+bool popupOpenerTest(CSlot_p pSlot);
+bool scrollbarTest(CSlot_p pSlot);
+bool modalLayerTest(CSlot_p pSlot);
 
 
 
@@ -87,18 +87,6 @@ int main(int argc, char** argv)
 //	printf("Slot is safe to relocate: %d\n", BasicSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
-
-
-	auto pPackPanel = PackPanel::create();
-	auto it = pPackPanel->children.begin();
-
-	auto pContainer = pPackPanel->children.ptr();
-
-	for (auto& x : * pContainer )
-	{
-		if (x.geo().contains({ 10,10 }))
-			break;
-	}
 
 
 
@@ -442,14 +430,14 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
-	pRoot->child = pDnDLayer;
+	pRoot->slot = pDnDLayer;
 
 	PopupLayer_p pPopupLayer = PopupLayer::create();
-	pDnDLayer->base = pPopupLayer;
+	pDnDLayer->mainSlot = pPopupLayer;
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
 	pBasePanel->setSkin(StaticColorSkin::create(Color::Burlywood));
-	pPopupLayer->base = pBasePanel;
+	pPopupLayer->mainSlot = pBasePanel;
 
 	/*	Filler_p pBackground = Filler::create();
 		pBackground->setSkin( ColorSkin::create(Color::aqua) );
@@ -492,7 +480,7 @@ int main(int argc, char** argv)
 //	lineEditorTest(pRoot->child.ptr());
 //	popupOpenerTest(pRoot->child.ptr());
 //	scrollbarTest(pRoot->child.ptr());
-	modalLayerTest(&pRoot->child);
+	modalLayerTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1535,7 +1523,7 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 
 //____ shadowLayerTest() ______________________________________________________
 
-bool shadowLayerTest(ISlot_p pEntry )
+bool shadowLayerTest(CSlot_p pEntry )
 {
 /*
 	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
@@ -1602,7 +1590,7 @@ bool shadowLayerTest(ISlot_p pEntry )
 
 //____ stretchBlitTest() ______________________________________________________
 
-bool stretchBlitTest(ISlot_p pEntry)
+bool stretchBlitTest(CSlot_p pEntry)
 {
 	Surface_p pImgSurface = loadSurface("../resources/white_frame_256x256.png", PixelFormat::BGR_8 );
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
@@ -1629,7 +1617,7 @@ bool stretchBlitTest(ISlot_p pEntry)
 
 //____ scrollIntoViewTest() ______________________________________________________
 
-bool scrollIntoViewTest(ISlot_p pEntry)
+bool scrollIntoViewTest(CSlot_p pEntry)
 {
 	auto pEditor = TextEditor::create();
 
@@ -1637,7 +1625,7 @@ bool scrollIntoViewTest(ISlot_p pEntry)
 	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
 
 	auto pScrollPanel = ScrollPanel::create();
-	pScrollPanel->view = pEditor;
+	pScrollPanel->viewSlot = pEditor;
 	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
 
 
@@ -1651,7 +1639,7 @@ bool scrollIntoViewTest(ISlot_p pEntry)
 
 //____ textClipTest() ______________________________________________________
 
-bool textClipTest(ISlot_p pEntry)
+bool textClipTest(CSlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1671,7 +1659,7 @@ bool textClipTest(ISlot_p pEntry)
 
 //____ lineEditorTest() ______________________________________________________
 
-bool lineEditorTest(ISlot_p pEntry)
+bool lineEditorTest(CSlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1691,7 +1679,7 @@ bool lineEditorTest(ISlot_p pEntry)
 
 //____ popupOpenerTest() ______________________________________________________
 
-bool popupOpenerTest(ISlot_p pEntry)
+bool popupOpenerTest(CSlot_p pEntry)
 {
 
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
@@ -1703,7 +1691,7 @@ bool popupOpenerTest(ISlot_p pEntry)
 	pPopupLayer->setSkin(ColorSkin::create(Color::PaleGoldenrod));
 
 	auto pFlex = FlexPanel::create();
-	pPopupLayer->base = pFlex;
+	pPopupLayer->mainSlot = pFlex;
 
 	auto  pOpener = PopupOpener::create();
 	pOpener->setSkin(pButtonSkin);
@@ -1720,7 +1708,7 @@ bool popupOpenerTest(ISlot_p pEntry)
 
 //____ scrollbarTest() ______________________________________________________
 
-bool scrollbarTest(ISlot_p pEntry)
+bool scrollbarTest(CSlot_p pEntry)
 {
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
 	pButtonSkin->setContentPadding(5);
@@ -1732,7 +1720,7 @@ bool scrollbarTest(ISlot_p pEntry)
 	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
 
 	auto pScrollPanel = ScrollPanel::create();
-	pScrollPanel->view = pEditor;
+	pScrollPanel->viewSlot = pEditor;
 	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
 
 	auto pVScrollbar = Scrollbar::create();
@@ -1763,7 +1751,7 @@ bool scrollbarTest(ISlot_p pEntry)
 
 //____ modalLayerTest() ______________________________________________________
 
-bool modalLayerTest(ISlot_p pEntry)
+bool modalLayerTest(CSlot_p pEntry)
 {
 	lineEditorTest(pEntry);
 	Widget_p p = *pEntry;
@@ -1772,8 +1760,11 @@ bool modalLayerTest(ISlot_p pEntry)
 
 	auto pLayer = ModalLayer::create();
 
-	pLayer->base = *pEntry;
-//	Widget_p pTemp = pRoot->child;
+	pLayer->mainSlot = pEntry->widget();
+//	pLayer->mainSlot = *pEntry;
+
+	
+	//	Widget_p pTemp = pRoot->child;
 //	pLayer->base = pTemp;
 
 	*pEntry = pLayer;
