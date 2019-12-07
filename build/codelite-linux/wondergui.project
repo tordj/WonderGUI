@@ -111,26 +111,12 @@
     <File Name="../../src/widgets/wg_widget.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="interfaces">
-    <File Name="../../src/interfaces/wg_iselectableslotarray.impl.h"/>
-    <File Name="../../src/interfaces/wg_iselectableslotarray.h"/>
-    <File Name="../../src/interfaces/wg_ipaddedslotarray.impl.h"/>
-    <File Name="../../src/interfaces/wg_ipaddedslotarray.h"/>
-    <File Name="../../src/interfaces/wg_islots.h"/>
-    <File Name="../../src/interfaces/wg_islots.cpp"/>
-    <File Name="../../src/interfaces/wg_islotarray.impl.h"/>
-    <File Name="../../src/interfaces/wg_islotarray.h"/>
-    <File Name="../../src/interfaces/wg_islot.h"/>
-    <File Name="../../src/interfaces/wg_idynamicslots.h"/>
-    <File Name="../../src/interfaces/wg_ishadows.h"/>
-    <File Name="../../src/interfaces/wg_ishadows.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.cpp"/>
     <File Name="../../src/interfaces/wg_icanvas.h"/>
     <File Name="../../src/interfaces/wg_icolumnheader.cpp"/>
     <File Name="../../src/interfaces/wg_icolumnheader.h"/>
     <File Name="../../src/interfaces/wg_iicondisplay.h"/>
     <File Name="../../src/interfaces/wg_imodspan.h"/>
-    <File Name="../../src/interfaces/wg_interface.cpp"/>
-    <File Name="../../src/interfaces/wg_interface.h"/>
     <File Name="../../src/interfaces/wg_irotextdisplay.cpp"/>
     <File Name="../../src/interfaces/wg_irotextdisplay.h"/>
     <File Name="../../src/interfaces/wg_irovaluedisplay.cpp"/>
@@ -170,6 +156,9 @@
     <File Name="../../src/sizebrokers/wg_uniform_sizebroker.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="base">
+    <File Name="../../src/base/wg_weakcomponentptr.h"/>
+    <File Name="../../src/base/wg_strongcomponentptr.h"/>
+    <File Name="../../src/base/wg_slotholder.h"/>
     <File Name="../../src/base/wg_shadow.h"/>
     <File Name="../../src/base/wg_qpix.h"/>
     <File Name="../../src/base/wg_qpix.cpp"/>
@@ -193,12 +182,10 @@
     <File Name="../../src/base/wg_charbuffer.h"/>
     <File Name="../../src/base/wg_charseq.cpp"/>
     <File Name="../../src/base/wg_charseq.h"/>
-    <File Name="../../src/base/wg_childiterator.h"/>
     <File Name="../../src/base/wg_codepages.cpp"/>
     <File Name="../../src/base/wg_codepages.h"/>
     <File Name="../../src/base/wg_color.cpp"/>
     <File Name="../../src/base/wg_color.h"/>
-    <File Name="../../src/base/wg_componentholder.h"/>
     <File Name="../../src/base/wg_dummyfont.cpp"/>
     <File Name="../../src/base/wg_dummyfont.h"/>
     <File Name="../../src/base/wg_enumextras.cpp"/>
@@ -260,7 +247,6 @@
     <File Name="../../src/base/wg_slotarray.impl.h"/>
     <File Name="../../src/base/wg_string.cpp"/>
     <File Name="../../src/base/wg_string.h"/>
-    <File Name="../../src/base/wg_stronginterfaceptr.h"/>
     <File Name="../../src/base/wg_strongptr.h"/>
     <File Name="../../src/base/wg_surface.cpp"/>
     <File Name="../../src/base/wg_surface.h"/>
@@ -279,9 +265,7 @@
     <File Name="../../src/base/wg_types.h"/>
     <File Name="../../src/base/wg_util.cpp"/>
     <File Name="../../src/base/wg_util.h"/>
-    <File Name="../../src/base/wg_weakinterfaceptr.h"/>
     <File Name="../../src/base/wg_weakptr.h"/>
-    <File Name="../../src/base/wg_widgetholder.h"/>
   </VirtualDirectory>
   <VirtualDirectory Name="root">
     <File Name="../../src/wg_userdefines.h"/>
@@ -304,6 +288,20 @@
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="components">
+    <File Name="../../src/components/wg_geocomponent.h"/>
+    <File Name="../../src/components/wg_cslotcollection.h"/>
+    <File Name="../../src/components/wg_cslotarray.impl.h"/>
+    <File Name="../../src/components/wg_cslotarray.h"/>
+    <File Name="../../src/components/wg_cslot.h"/>
+    <File Name="../../src/components/wg_cshadows.h"/>
+    <File Name="../../src/components/wg_cshadows.cpp"/>
+    <File Name="../../src/components/wg_cselectableslotarray.impl.h"/>
+    <File Name="../../src/components/wg_cselectableslotarray.h"/>
+    <File Name="../../src/components/wg_cpaddedslotarray.impl.h"/>
+    <File Name="../../src/components/wg_cpaddedslotarray.h"/>
+    <File Name="../../src/components/wg_component.cpp"/>
+    <File Name="../../src/components/wg_cdynamicslotcollection.h"/>
+    <File Name="../../src/components/wg_cbasicslot.h"/>
     <File Name="../../src/components/wg_ccanvas.cpp"/>
     <File Name="../../src/components/wg_ccanvas.h"/>
     <File Name="../../src/components/wg_ccolumnheader.cpp"/>

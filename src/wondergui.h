@@ -28,7 +28,7 @@
 #include <wg_geo.h>
 #include <wg_base.h>
 #include <wg_msg.h>
-#include <wg_StrongComponentPtr.h>
+#include <wg_strongcomponentptr.h>
 #include <wg_types.h>
 #include <wg_slotarray.h>
 #include <wg_codepages.h>
@@ -66,7 +66,7 @@
 #include <wg_blob.h>
 #include <wg_textstyle.h>
 #include <wg_gfxstreamplug.h>
-#include <wg_WeakComponentPtr.h>
+#include <wg_weakcomponentptr.h>
 #include <wg_inputhandler.h>
 #include <wg_qpix.h>
 #include <wg_anim.h>
@@ -110,7 +110,7 @@
 #include <wg_icanvas.h>
 #include <wg_cslotcollection.h>
 #include <wg_iicondisplay.h>
-#include <wg_CDynamicSlotCollection.h>
+#include <wg_cdynamicslotcollection.h>
 #include <wg_itexteditor.h>
 #include <wg_ispan.h>
 #include <wg_ivalueeditor.h>

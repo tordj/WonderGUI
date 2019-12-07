@@ -130,15 +130,15 @@ namespace wg
 
 		CoordI		_childPos( const BasicSlot * pSlot ) const override;
 
-		void		_childRequestRender( BasicSlot * pSlot );
-		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect );
+		void		_childRequestRender( BasicSlot * pSlot ) override;
+		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
 //		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const BasicSlot * pSlot ) const;
-		Widget *	_nextChild( const BasicSlot * pSlot ) const;
+		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
+		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
 
-		void		_releaseChild( BasicSlot * pSlot );
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewWidget);
+		void		_releaseChild( BasicSlot * pSlot ) override;
+		void		_replaceChild(BasicSlot * pSlot, Widget * pNewWidget) override;
 
 		// Overloaded from Container
 

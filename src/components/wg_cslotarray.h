@@ -111,8 +111,6 @@ namespace wg
 		class Holder : public SlotType::Holder	/** @private */
 		{
 		public:
-			virtual Object * _object() = 0;
-
 			virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
 			virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
 			virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
@@ -236,7 +234,7 @@ namespace wg
 
 		SlotIterator	_begin() const override;
 		SlotIterator	_end() const override;
-		BasicSlot&		_at(int index) const;
+		BasicSlot&		_at(int index) const override;
 
 		Object *		_object() override;
 		const Object *	_object() const override;

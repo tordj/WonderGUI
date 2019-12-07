@@ -98,9 +98,8 @@ namespace wg
 
 			// Default implementations for some methods of SlotHolder
 
-			virtual Container *		_container();
-			virtual RootPanel *		_root();
-			virtual Object *		_object();
+			Container *				_container();
+			RootPanel *				_root();
 
 			virtual CoordI			_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of a child.
 			virtual CoordI			_childGlobalPos( const BasicSlot * pSlot ) const;

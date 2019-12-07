@@ -25,7 +25,7 @@
 namespace wg
 {
 
-	CSpan::CSpan( ComponentHolder * pHolder ) : Component( pHolder )
+	CSpan::CSpan( GeoComponent::Holder * pHolder ) : GeoComponent( pHolder )
 	{
 		min = MIN;
 		max = MAX;

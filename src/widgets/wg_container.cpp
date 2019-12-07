@@ -147,13 +147,6 @@ namespace wg
 		return m_pHolder ? m_pHolder->_root() : nullptr;
 	}
 
-	//____ _object() __________________________________________________________________
-
-	Object * Container::_object()
-	{
-		return this;
-	}
-
 	//____ _childRequestFocus() ______________________________________________________
 
 	bool Container::_childRequestFocus( BasicSlot * pSlot, Widget * pWidget )

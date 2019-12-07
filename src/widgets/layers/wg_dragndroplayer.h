@@ -84,13 +84,13 @@ namespace wg
 		RootPanel *		_root() override { return Container::_root(); }
 		Object *		_object() override { return this; }
 
-		CoordI			_childPos(const BasicSlot * pSlot) const { return Layer::_childPos(pSlot); }
+		CoordI			_childPos(const BasicSlot * pSlot) const override { return Layer::_childPos(pSlot); }
 		CoordI			_childGlobalPos(const BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
 		bool			_isChildVisible(const BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
 		RectI			_childWindowSection(const BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
 
-		void			_childRequestRender(BasicSlot * pSlot) { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(BasicSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
 
 		bool			_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
 		bool			_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
@@ -98,8 +98,8 @@ namespace wg
 		void			_childRequestInView(BasicSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
 		void			_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		Widget *		_prevChild(const BasicSlot * pSlot) const { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const BasicSlot * pSlot) const { return Layer::_nextChild(pSlot); }
+		Widget *		_prevChild(const BasicSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
+		Widget *		_nextChild(const BasicSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
 
 		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 

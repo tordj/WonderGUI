@@ -26,7 +26,7 @@
         <IncludePath Value="/usr/include/freetype2/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
-        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/components/"/>
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
@@ -79,7 +79,7 @@
         <IncludePath Value="/usr/include/freetype2/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
-        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/components/"/>
         <IncludePath Value="../../src/items/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>

@@ -70,8 +70,6 @@ namespace wg
 
 		class Holder : public CPaddedSlotArray::Holder			/** @private */
 		{
-		public:
-			virtual void		_childRequestRender(BasicSlot * pSlot) = 0;
 		};
 
 		/** @private */

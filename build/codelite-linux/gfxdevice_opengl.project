@@ -31,7 +31,7 @@
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
-        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/components/"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
@@ -73,7 +73,7 @@
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/"/>
         <IncludePath Value="../../src/base/"/>
-        <IncludePath Value="../../src/interfaces/"/>
+        <IncludePath Value="../../src/components/"/>
       </Compiler>
       <Linker Options="" Required="yes"/>
       <ResourceCompiler Options="" Required="no"/>
