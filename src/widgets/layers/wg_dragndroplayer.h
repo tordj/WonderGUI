@@ -138,7 +138,7 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		class MainSlotAccess : public CMainSlot { friend class DragNDropLayer; };
+		class MainSlotAccess : public CBasicSlot { friend class DragNDropLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

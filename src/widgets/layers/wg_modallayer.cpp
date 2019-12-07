@@ -301,7 +301,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	ModalLayer::ModalLayer() : Layer(this), m_modals(this), modals(&m_modals, this)
+	ModalLayer::ModalLayer() : m_modals(this), modals(&m_modals, this)
 	{
 	}
 

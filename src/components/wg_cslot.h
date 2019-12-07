@@ -88,9 +88,13 @@ namespace wg
 
 	public:
 
+		class Holder : public SlotType::Holder	/** @private */
+		{
+		};
+
 		/** @private */
 
-		CSlotImpl( typename SlotType::Holder * pHolder ) : SlotType(pHolder) {}
+		CSlotImpl( Holder * pHolder ) : SlotType(pHolder) {}
 
 
 		//.____ Operators __________________________________________

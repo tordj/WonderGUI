@@ -41,7 +41,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	DragNDropLayer::DragNDropLayer() : Layer(this), m_dragSlot(this)
+	DragNDropLayer::DragNDropLayer() : m_dragSlot(this)
 	{
 	}
 

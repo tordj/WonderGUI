@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_cslot.h>
+#include <wg_cbasicslot.h>
 
 namespace wg
 {
@@ -53,23 +53,13 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder
+	class RootPanel : public Object, protected CBasicSlot::Holder
 	{
         friend class Widget;
 		friend class Container;
 		friend class InputHandler;
 
 	public:
-
-		class Slot : public CSlotImpl<BasicSlot>
-		{
-			friend class RootPanel;
-		public:
-			using CSlotImpl<BasicSlot>::operator=;
-		protected:
-			Slot(SlotHolder *pHolder) : CSlotImpl(pHolder) {}
-		};
-
 
 		//.____ Creation __________________________________________
 
@@ -78,7 +68,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		Slot				slot;
+		CBasicSlot			slot;
 
 		//.____ Identification __________________________________________
 
@@ -185,6 +175,9 @@ namespace wg
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
 
+		class SlotAccess : public CBasicSlot { friend class RootPanel; };
+		SlotAccess *		_slot() { return static_cast<SlotAccess*>(&slot); }
+		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 
 		Patches				m_dirtyPatches;		// Dirty patches that needs to be rendered.
 		Patches				m_updatedPatches;	// Patches that were updated in last rendering session.

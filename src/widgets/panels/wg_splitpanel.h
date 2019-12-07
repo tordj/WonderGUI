@@ -28,6 +28,7 @@
 
 #include <wg_panel.h>
 #include <wg_cslot.h>
+#include <wg_cbasicslot.h>
 
 
 namespace wg
@@ -38,22 +39,25 @@ namespace wg
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
 
+	class SplitSlot : public BasicSlot
+	{
+		friend class SplitPanel;
+	public:
 
-	class SplitPanel : public Panel, protected SlotHolder
+		class Holder : public BasicSlot::Holder
+		{
+		};
+
+	protected:
+		RectI	m_geo;
+	};
+
+
+
+	class SplitPanel : public Panel, protected CBasicSlot::Holder
 	{
 
 	public:
-
-		class Slot : public CSlotImpl<BasicSlot> 	/** @private */
-		{
-			friend class SplitPanel;
-
-		protected:
-			Slot(SlotHolder *pHolder) : CSlotImpl(pHolder) {}
-
-			RectI	geo;
-		};
-
 
 		//.____ Creation __________________________________________
 
@@ -61,8 +65,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		Slot			slotOne;
-		Slot			slotTwo;
+		CBasicSlot		slotOne;
+		CBasicSlot		slotTwo;
 
 		//.____ Identification __________________________________________
 
@@ -180,6 +184,14 @@ namespace wg
 		int				m_handlePressOfs;
 
 		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)>	m_brokerFunc;
+
+		RectI			m_slotGeo[2];
+
+		class SlotAccess : public CBasicSlot { friend class SplitPanel; };
+		SlotAccess * _slotOne() { return static_cast<SlotAccess*>(&slotOne); }
+		SlotAccess * _slotTwo() { return static_cast<SlotAccess*>(&slotTwo); }
+		const SlotAccess * _slotOne() const { return static_cast<const SlotAccess*>(&slotOne); }
+		const SlotAccess * _slotTwo() const { return static_cast<const SlotAccess*>(&slotTwo); }
 	};
 
 }

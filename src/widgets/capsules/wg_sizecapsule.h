@@ -85,7 +85,7 @@ namespace wg
 		int		_matchingWidth(int height) const override;
 
 	private:
-		class SlotAccess : public CCapsuleSlot { friend class SizeCapsule; };
+		class SlotAccess : public CBasicSlot { friend class SizeCapsule; };
 		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
 		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 

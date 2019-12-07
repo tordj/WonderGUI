@@ -109,18 +109,6 @@ namespace wg
 
 	};
 
-	//____ IViewSlotHolder _______________________________________________
-
-	class IViewSlotHolder : public ViewSlot::Holder /** @private */
-	{
-	public:
-		virtual bool		_setWindowPos(CoordI pos) = 0;
-		virtual bool		_setWindowOffset(CoordF ofs) = 0;
-		virtual bool		_step(Direction dir, int nSteps = 1) = 0;
-		virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
-		virtual void		_requestRender(const RectI& rect) = 0;
-		virtual void		_updateViewGeo() = 0;
-	};
 
 
 	//____ IViewSlot ______________________________________________________
@@ -130,7 +118,21 @@ namespace wg
 	public:
 		/** @private */
 
-		IViewSlot(IViewSlotHolder * pHolder) : CSlotImpl(pHolder) {}
+		//____ Holder _______________________________________________
+
+		class Holder : public CSlotImpl<ViewSlot>::Holder /** @private */
+		{
+		public:
+			virtual bool		_setWindowPos(CoordI pos) = 0;
+			virtual bool		_setWindowOffset(CoordF ofs) = 0;
+			virtual bool		_step(Direction dir, int nSteps = 1) = 0;
+			virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
+			virtual void		_requestRender(const RectI& rect) = 0;
+			virtual void		_updateViewGeo() = 0;
+		};
+
+
+		IViewSlot(Holder * pHolder) : CSlotImpl(pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
@@ -175,8 +177,8 @@ namespace wg
 
 	private:
 
-		inline IViewSlotHolder * _holder() { return static_cast<IViewSlotHolder*>(m_pHolder); }
-		inline const IViewSlotHolder * _holder() const { return static_cast<IViewSlotHolder*>(m_pHolder); }
+		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
+		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
 //	inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
 //		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
@@ -242,7 +244,7 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected IViewSlotHolder
+	class ScrollPanel : public Panel, protected IViewSlot::Holder
 	{
 		friend class IViewSlot;
 		friend class ScrollbarEntry;

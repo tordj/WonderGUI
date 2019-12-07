@@ -230,7 +230,7 @@ namespace wg
 
 		//
 
-		class MainSlotAccess : public CMainSlot { friend class ModalLayer; };
+		class MainSlotAccess : public CBasicSlot { friend class ModalLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

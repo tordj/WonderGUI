@@ -25,25 +25,11 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_cslot.h>
+#include <wg_cbasicslot.h>
 
 
 namespace wg
 {
-
-	class CCapsuleSlot : public CSlotImpl<BasicSlot>
-	{
-		friend class Capsule;
-	public:
-		using CSlotImpl<BasicSlot>::operator=;
-
-	protected:
-		CCapsuleSlot(BasicSlot::Holder* pHolder) : CSlotImpl(pHolder) {}
-	};
-
-	typedef	StrongComponentPtr<CCapsuleSlot>	CCapsuleSlot_p;
-	typedef	WeakComponentPtr<CCapsuleSlot>		CCapsuleSlot_wp;
-
 
 	class Capsule;
 	typedef	StrongPtr<Capsule>	Capsule_p;
@@ -63,13 +49,13 @@ namespace wg
 	* such as size, tint and transparency.
 	*/
 
-	class Capsule : public Container, protected SlotHolder
+	class Capsule : public Container, protected CBasicSlot::Holder
 	{
 	public:
 
 		//.____ Components _______________________________________
 
-		CCapsuleSlot		slot;
+		CBasicSlot		slot;
 
 		//.____ Identification __________________________________________
 
@@ -135,6 +121,10 @@ namespace wg
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_resize( const SizeI& size ) override;
 
+
+		class SlotAccess : public CBasicSlot { friend class Capsule; };
+		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
+		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 	};
 
 

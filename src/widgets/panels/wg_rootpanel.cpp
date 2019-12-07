@@ -104,8 +104,8 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 
-		if( m_pGfxDevice && !m_bHasGeo && slot._widget() )
-			slot._widget()->_resize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
+		if( m_pGfxDevice && !m_bHasGeo && _slot()->_widget() )
+			_slot()->_widget()->_resize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
 
 		m_dirtyPatches.add( _geo() );
 		return true;
@@ -225,7 +225,7 @@ namespace wg
 
 	bool RootPanel::beginRender()
 	{
-		if( !m_pGfxDevice || !slot._widget() )
+		if( !m_pGfxDevice || !_slot()->_widget() )
 			return false;						// No GFX-device or no widgets to render.
 
         // Handle preRender calls.
@@ -276,7 +276,7 @@ namespace wg
 
 	bool RootPanel::renderSection( const Rect& _clip )
 	{
-		if( !m_pGfxDevice || !slot._widget() )
+		if( !m_pGfxDevice || !_slot()->_widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -300,7 +300,7 @@ namespace wg
 		if( dirtyPatches.size() > 0 )
 		{
 			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
-			slot._widget()->_render( m_pGfxDevice.rawPtr(), canvas, canvas );
+			_slot()->_widget()->_render( m_pGfxDevice.rawPtr(), canvas, canvas );
 			popClipList(m_pGfxDevice, clipPop);
 		}
 
@@ -339,7 +339,7 @@ namespace wg
 
 	bool RootPanel::endRender( void )
 	{
-		if( !m_pGfxDevice || !slot._widget() )
+		if( !m_pGfxDevice || !_slot()->_widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Turn dirty patches into update patches
@@ -357,13 +357,13 @@ namespace wg
 
 	Widget * RootPanel::_findWidget( const CoordI& ofs, SearchMode mode )
 	{
-		if( !_geo().contains(ofs) || !slot._widget() )
+		if( !_geo().contains(ofs) || !_slot()->_widget() )
 			return 0;
 
-		if(slot._widget() &&slot._widget()->isContainer() )
-			return static_cast<Container*>(slot._widget())->_findWidget( ofs, mode );
+		if(_slot()->_widget() &&_slot()->_widget()->isContainer() )
+			return static_cast<Container*>(_slot()->_widget())->_findWidget( ofs, mode );
 
-		return slot._widget();
+		return _slot()->_widget();
 	}
 
 
@@ -372,7 +372,7 @@ namespace wg
 	Widget * RootPanel::_focusedChild() const
 	{
 		if( !m_pFocusedChild )
-			return slot._widget();
+			return _slot()->_widget();
 
 		return m_pFocusedChild.rawPtr();
 	}
@@ -438,7 +438,7 @@ namespace wg
 
 	void RootPanel::_childRequestResize( BasicSlot * pSlot )
 	{
-		slot._setSize(m_geo.size());
+		_slot()->_setSize(m_geo.size());
 	}
 
 	//____ _childRequestFocus() __________________________________________________
@@ -460,12 +460,12 @@ namespace wg
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
 
-		if( pWidget == slot._widget() )
+		if( pWidget == _slot()->_widget() )
 			return false;
 
 		Widget * pOldFocus = m_pFocusedChild.rawPtr();
-		m_pFocusedChild =slot._widget();
-		return Base::inputHandler()->_focusChanged( this, pOldFocus, slot._widget());
+		m_pFocusedChild =_slot()->_widget();
+		return Base::inputHandler()->_focusChanged( this, pOldFocus, _slot()->_widget());
 	}
 
 	//____ _childRequestInView() __________________________________________________
@@ -504,10 +504,10 @@ namespace wg
 
 	void RootPanel::_replaceChild(BasicSlot * pSlot, Widget * pNewWidget)
 	{
-		if (slot._widget())
-			slot._widget()->_collectPatches(m_dirtyPatches, _geo(), _geo());
+		if (_slot()->_widget())
+			_slot()->_widget()->_collectPatches(m_dirtyPatches, _geo(), _geo());
 
-		slot._setWidget(pNewWidget);
+		_slot()->_setWidget(pNewWidget);
 
 		if (pNewWidget)
 		{

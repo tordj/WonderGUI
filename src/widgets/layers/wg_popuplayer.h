@@ -208,7 +208,7 @@ namespace wg
 
 		//
 
-		class MainSlotAccess : public CMainSlot { friend class PopupLayer; };
+		class MainSlotAccess : public CBasicSlot { friend class PopupLayer; };
 		MainSlotAccess * _mainSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _mainSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
