@@ -69,7 +69,7 @@ namespace wg
 				add(*it++);
 			}
 
-			return _begin() + oldSize;
+			return _begin_iterator() + oldSize;
 		}
 
 		virtual void		insert(int index, Widget * pWidget) = 0;

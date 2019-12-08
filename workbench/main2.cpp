@@ -460,14 +460,14 @@ int main(int argc, char** argv)
 	pImage0->setSkin(pTestSkin);
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-	pBasePanel->children.add(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
+	pBasePanel->slots.add(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
 
 	//	Image_p pImage = Image::create();
 	//	pImage->setSkin( pSimpleButtonSkin );
-	//	pFlexPanel->children.addMovable( pImage, RectI(0,0,80*2,33*2), Origo::Center, Origo::Center );
+	//	pFlexPanel->slots.addMovable( pImage, RectI(0,0,80*2,33*2), Origo::Center, Origo::Center );
 
 
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -494,12 +494,12 @@ int main(int argc, char** argv)
 		{
 			auto p = Filler::create();
 			p->setId(i);
-			children.push_back(p);
+			slots.push_back(p);
 		}
 
-		pContainer->children.add(children.begin(), children.end());
+		pContainer->slots.add(slots.begin(), slots.end());
 
-		IChildren_p pChildren = pContainer->children.ptr();
+		IChildren_p pChildren = pContainer->slots.ptr();
 
 
 		for (auto& child : *pChildren)
@@ -525,19 +525,19 @@ int main(int argc, char** argv)
 		pPickable1->setSkin(pTestSkin);
 //		pPickable1->text.set( "Drag Me 1" );
 		pPickable1->setPickable(true, 1);
-		pBasePanel->children.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
+		pBasePanel->slots.add(pPickable1, [](Widget * pWidget, Size size) {return Rect( 0,0,100,50 ); });
 
 		auto pPickable2 = Filler::create();
 		pPickable2->setSkin(pTestSkin);
 //		pPickable2->text.set("Drag Me 2");
 		pPickable2->setPickable(true, 2);
-		pBasePanel->children.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
+		pBasePanel->slots.add(pPickable2, [](Widget * pWidget, Size size) {return Rect(size.w-100, 0, 100, 50); });
 
 		auto pTrash = Filler::create();
 		pTrash->setSkin(pTestSkin);
 //		pTrash->text.set("Trash Can");
 		pTrash->setDropTarget(true);
-		pBasePanel->children.add(pTrash, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
+		pBasePanel->slots.add(pTrash, [](Widget * pWidget, Size size) {return Rect(50, 200, 100, 50); });
 
 		pBasePanel->setDropTarget(true);
 
@@ -561,7 +561,7 @@ int main(int argc, char** argv)
 
 			CoordI pos = pBasePanel->toLocal(pMsg->pointerPos()) - s_pickOfs;
 
-			pBasePanel->children.add(s_pPicked, [pos](Widget * pWidget, Size size) {return Rect(pos, 100, 50); });
+			pBasePanel->slots.add(s_pPicked, [pos](Widget * pWidget, Size size) {return Rect(pos, 100, 50); });
 			pMsg->accept();
 			
 		});
@@ -585,31 +585,31 @@ int main(int argc, char** argv)
 		pPickable1->setSkin(pTestSkin);
 		pPickable1->text.set( "Drag Me 1" );
 		pPickable1->setPickable(true, 1);
-		pBasePanel->children.add(pPickable1, [](Widget * pWidget, SizeI size) {return RectI( 0,0,100,50 ); });
+		pBasePanel->slots.add(pPickable1, [](Widget * pWidget, SizeI size) {return RectI( 0,0,100,50 ); });
 
 		TextDisplay_p pPickable2 = TextDisplay::create();
 		pPickable2->setSkin(pTestSkin);
 		pPickable2->text.set("Drag Me 2");
 		pPickable2->setPickable(true, 2);
-		pBasePanel->children.add(pPickable2, [](Widget * pWidget, SizeI size) {return RectI(size.w-100, 0, 100, 50); });
+		pBasePanel->slots.add(pPickable2, [](Widget * pWidget, SizeI size) {return RectI(size.w-100, 0, 100, 50); });
 
 		TextDisplay_p pDropTarget1 = TextDisplay::create();
 		pDropTarget1->setSkin(pTestSkin);
 		pDropTarget1->text.set("Drop 1 here");
 		pDropTarget1->setDropTarget(true);
-		pBasePanel->children.add(pDropTarget1, [](Widget * pWidget, SizeI size) {return RectI(50, 200, 100, 50); });
+		pBasePanel->slots.add(pDropTarget1, [](Widget * pWidget, SizeI size) {return RectI(50, 200, 100, 50); });
 
 		TextDisplay_p pDropTargetAny = TextDisplay::create();
 		pDropTargetAny->setSkin(pDropTargetSkin);
 		pDropTargetAny->text.set("Drop any here");
 		pDropTargetAny->setDropTarget(true);
-		pBasePanel->children.add(pDropTargetAny, [](Widget * pWidget, SizeI size) {return RectI(size.w/2 - 25, 200, 100, 50); });
+		pBasePanel->slots.add(pDropTargetAny, [](Widget * pWidget, SizeI size) {return RectI(size.w/2 - 25, 200, 100, 50); });
 
 		TextDisplay_p pDropTarget2 = TextDisplay::create();
 		pDropTarget2->setSkin(pDropTargetSkin);
 		pDropTarget2->text.set("Drop 2 here");
 		pDropTarget2->setDropTarget(true);
-		pBasePanel->children.add(pDropTarget2, [](Widget * pWidget, SizeI size) {return RectI(size.w-150, 200, 100, 50); });
+		pBasePanel->slots.add(pDropTarget2, [](Widget * pWidget, SizeI size) {return RectI(size.w-150, 200, 100, 50); });
 
 
 
@@ -680,21 +680,21 @@ int main(int argc, char** argv)
 		LineEditor_p pEditLine = LineEditor::create();
 		pEditLine->setSkin(ColorSkin::create(Color::Black));
 		pEditLine->text.setMaxChars(8);
-		pHorr2->children.add( pEditLine );
+		pHorr2->slots.add( pEditLine );
 
 		Filler_p pFillerEast2 = Filler::create();
 		pFillerEast2->setSkin( pPressablePlateSkin );
-		pHorr2->children.add( pFillerEast2 );
+		pHorr2->slots.add( pFillerEast2 );
 
 		Filler_p pFillerMid = Filler::create();
 		pFillerMid->setSkin(pPressablePlateSkin);
 
 
 
-		pVert->children.add(pHorr2);
-		pVert->children.add(pFillerMid);
-		pVert->children.add( pHorr );
-		pVert->children.add( pFillerSouth );
+		pVert->slots.add(pHorr2);
+		pVert->slots.add(pFillerMid);
+		pVert->slots.add( pHorr );
+		pVert->slots.add( pFillerSouth );
 
 		TextEditor_p pText = TextEditor::create();
 		pText->setSkin( ColorSkin::create( Color::Black ) );
@@ -721,14 +721,14 @@ int main(int argc, char** argv)
 		pText->text.setCharStyle( pLink, 29, 4 );
 
 
-		pHorr->children.add( pText );
-		pHorr->children.add( pFillerEast );
+		pHorr->slots.add( pText );
+		pHorr->slots.add( pFillerEast );
 
 
-		pFlexPanel->children.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
+		pFlexPanel->slots.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
 
 		pEditLine->grabFocus();
-		for (auto it = pVert->children.begin(); it != pVert->children.end(); it++ )
+		for (auto it = pVert->slots.begin(); it != pVert->slots.end(); it++ )
 			printf("%s\n", it->className());
 
 
@@ -748,7 +748,7 @@ int main(int argc, char** argv)
 		pOpener->label.set("OPEN");
 		pOpener->setPointerStyle(PointerStyle::Crosshair);
 
-		pBasePanel->children.add(pOpener, [](Widget*pWidget, SizeI parentSize) {return RectI(30, 30, 100, 100); });
+		pBasePanel->slots.add(pOpener, [](Widget*pWidget, SizeI parentSize) {return RectI(30, 30, 100, 100); });
 
 
 		auto pMenu = PackPanel::create();
@@ -859,14 +859,14 @@ int main(int argc, char** argv)
 		pOuterSplit->first = pSplit;
 
 
-		pBasePanel->children.add(pOuterSplit, [](Widget*pWidget, SizeI parentSize) {return RectI(0, 0, 100, parentSize.h); });
+		pBasePanel->slots.add(pOuterSplit, [](Widget*pWidget, SizeI parentSize) {return RectI(0, 0, 100, parentSize.h); });
 	}
 */
 
 /*
 	{
 		auto pPanel = LambdaPanel::create();
-		pBasePanel->children.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); });
+		pBasePanel->slots.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); });
 
 		Color cols[5] = { {255, 0, 0}, {0, 255, 0}, {0, 0, 255}, {128,128,128}, {255,255,255} };
 
@@ -874,10 +874,10 @@ int main(int argc, char** argv)
 		{
 			auto pChild = Filler::create();
 			pChild->setSkin(ColorSkin::create(cols[i]));
-			pPanel->children.add(pChild, [&](Widget*p, SizeI sz) { return RectI(i * 10, i * 10, 100, 50);  });
+			pPanel->slots.add(pChild, [&](Widget*p, SizeI sz) { return RectI(i * 10, i * 10, 100, 50);  });
 		}
 
-		pPanel->children.moveToFront(4);
+		pPanel->slots.moveToFront(4);
 	}
 */
 
@@ -885,7 +885,7 @@ int main(int argc, char** argv)
 /*
 	{
 		PackPanel_p pPanel = PackPanel::create();
-		pBasePanel->children.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); } );
+		pBasePanel->slots.add(pPanel, [](Widget*p, SizeI sz) { return RectI(0, 0, sz.w, sz.h); } );
 
 		Widget_p widgets[5];
 
@@ -902,19 +902,19 @@ int main(int argc, char** argv)
 		}
 
 
-//		auto it = pPanel->children.begin();
+//		auto it = pPanel->slots.begin();
 //		for (int i = 0; i < 5; i++)
 
 		auto it = pPanel->children << widgets[0];
 
-		pPanel->children.insert( 0, &widgets[1], 4 );
+		pPanel->slots.insert( 0, &widgets[1], 4 );
 
-//			it = pPanel->children.insert(it, widgets[i]);
+//			it = pPanel->slots.insert(it, widgets[i]);
 
-		it = pPanel->children.begin();
+		it = pPanel->slots.begin();
 		auto it2 = it;
 		it2++;
-		pPanel->children.hide( it, ++it2 );
+		pPanel->slots.hide( it, ++it2 );
 
 	}
 */
@@ -928,7 +928,7 @@ int main(int argc, char** argv)
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->vscrollbar = pScrollbar;
 
-		pBasePanel->children.add(pScrollPanel, [](Widget *p, SizeI sz) { return RectI(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
+		pBasePanel->slots.add(pScrollPanel, [](Widget *p, SizeI sz) { return RectI(0, 0.75*sz.h, sz.w, sz.h * 0.25); } );
 	}
 
 
@@ -972,14 +972,14 @@ int main(int argc, char** argv)
 
 			p1->text.set( label );
 
-			p->children.add(p1);
+			p->slots.add(p1);
 
 			auto p2 = TextEditor::create();
 			p2->setSkin( pEditBoxSkin );
 			p2->text.set( "Edit me!");
-			p->children.add(p2);
+			p->slots.add(p2);
 
-			pList->children.add(p);
+			pList->slots.add(p);
 		}
 
 
@@ -992,21 +992,21 @@ int main(int argc, char** argv)
 //		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
 
 
-		auto pChildren = pList->children.ptr();
+		auto pChildren = pList->slots.ptr();
 
 		for (int i = 0; i < pChildren->size(); i++)
 		{
 			bool bSelected = pChildren->isSelected(i);
 		}
 
-		for (auto it = pList->children.begin(); it != pList->children.end(); it++)
+		for (auto it = pList->slots.begin(); it != pList->slots.end(); it++)
 		{
-			bool bSelected = pList->children.isSelected(it);
+			bool bSelected = pList->slots.isSelected(it);
 		}
 
 		for (Widget& child : pList->children)
 		{
-			bool bSelected = pList->children.isSelected(pList->children.index(&child));
+			bool bSelected = pList->slots.isSelected(pList->slots.index(&child));
 			if (bSelected)
 				printf("Selected!\n");
 			else
@@ -1014,7 +1014,7 @@ int main(int argc, char** argv)
 		}
 
 
-//		auto selected = pList->children.subset([](it) { return pList->children.isSelected(it); });
+//		auto selected = pList->slots.subset([](it) { return pList->slots.isSelected(it); });
 
 	}
 */
@@ -1057,9 +1057,9 @@ int main(int argc, char** argv)
 		pText->text.setCharStyle( pAnuv, 19, 20 );
 		pText->setSkin(ColorSkin::create(Color(0, 0, 0, 128)));
 
-		pExtraFlex->children.addMovable( pText, RectI( 10,10,100,100) );
+		pExtraFlex->slots.addMovable( pText, RectI( 10,10,100,100) );
 
-		pBasePanel->children.add(pExtraFlex, [](Widget*pWidget, SizeI parentSize) { return RectI(parentSize); });
+		pBasePanel->slots.add(pExtraFlex, [](Widget*pWidget, SizeI parentSize) { return RectI(parentSize); });
 
 //		addResizablePanel( pFlexPanel, pExtraFlex, Base::msgRouter() );
 
@@ -1470,7 +1470,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	pParent->children.add( pChild );
+	pParent->slots.add( pChild );
 //	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
 }
 
@@ -1549,17 +1549,17 @@ bool shadowLayerTest(CSlot_p pEntry )
 	auto pFiller3 = Filler::create();
 
 	pFiller1->setSkin(ColorSkin::create(Color::DarkKhaki));
-	pFrontLayer->children.addMovable(pFiller1, { 0,0,50,50 });
+	pFrontLayer->slots.addMovable(pFiller1, { 0,0,50,50 });
 
 	pFiller2->setSkin(ColorSkin::create(Color::DarkSlateBlue));
-	pFrontLayer->children.addMovable(pFiller2, { 50,50,50,50 });
+	pFrontLayer->slots.addMovable(pFiller2, { 50,50,50,50 });
 
 	pFiller3->setSkin(ColorSkin::create(Color::DarkSeaGreen));
-	pFrontLayer->children.addMovable(pFiller3, { 100,100,50,50 });
+	pFrontLayer->slots.addMovable(pFiller3, { 100,100,50,50 });
 
 	auto pBackground = Filler::create();
 	pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
-	pBaseLayer->children.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+	pBaseLayer->slots.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 	pShadowLayer->shadows.add(pFiller1, pShadowSkin);
 	pShadowLayer->shadows.add(pFiller2, pShadowSkin);
@@ -1570,19 +1570,19 @@ bool shadowLayerTest(CSlot_p pEntry )
 	Base::msgRouter()->addRoute(pFiller1, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-		pFrontLayer->children.move(0, pMsg->draggedNow());
+		pFrontLayer->slots.move(0, pMsg->draggedNow());
 	});
 
 	Base::msgRouter()->addRoute(pFiller2, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-		pFrontLayer->children.move(1, pMsg->draggedNow());
+		pFrontLayer->slots.move(1, pMsg->draggedNow());
 	});
 
 	Base::msgRouter()->addRoute(pFiller3, MsgType::MouseDrag, [pFrontLayer](Msg* _pMsg)
 	{
 		MouseDragMsg* pMsg = static_cast<MouseDragMsg*>(_pMsg);
-		pFrontLayer->children.move(2, pMsg->draggedNow());
+		pFrontLayer->slots.move(2, pMsg->draggedNow());
 	});
 */
 	return true;
@@ -1602,13 +1602,13 @@ bool stretchBlitTest(CSlot_p pEntry)
 	auto pImage = Image::create();
 	pImage->setImage(pImgSurface, { 0,0,256,256 });
 //	pImage->setImage(pImgSurface, { 1,1,254,254 });
-	pBack->children.addMovable(pImage, { 10,10,256,256 } );
+	pBack->slots.addMovable(pImage, { 10,10,256,256 } );
 
 	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
 	
 		Coord distance = static_cast<MouseDragMsg*>(pMsg)->draggedNow();
 
-		pBack->children.setSize(0, pImage->size()+Size(distance.x, distance.y) );
+		pBack->slots.setSize(0, pImage->size()+Size(distance.x, distance.y) );
 	
 	});
 
@@ -1630,7 +1630,7 @@ bool scrollIntoViewTest(CSlot_p pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
+	pFlex->slots.addMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 
@@ -1650,7 +1650,7 @@ bool textClipTest(CSlot_p pEntry)
 	pEditor->setSkin( pSkin );
 
 	auto pFlex = FlexPanel::create();
-	pFlex->children.addMovable(pEditor, { 10,10,50,30 });
+	pFlex->slots.addMovable(pEditor, { 10,10,50,30 });
 
 	* pEntry = pFlex;
 
@@ -1670,7 +1670,7 @@ bool lineEditorTest(CSlot_p pEntry)
 	pEditor->setSkin(pSkin);
 
 	auto pFlex = FlexPanel::create();
-	pFlex->children.addMovable(pEditor, { 10,100,50,30 });
+	pFlex->slots.addMovable(pEditor, { 10,100,50,30 });
 
 	* pEntry = pFlex;
 
@@ -1696,7 +1696,7 @@ bool popupOpenerTest(CSlot_p pEntry)
 	auto  pOpener = PopupOpener::create();
 	pOpener->setSkin(pButtonSkin);
 	pOpener->label.set("OPEN POPUP");
-	pFlex->children.addMovable(pOpener, { 50,50,50,30 });
+	pFlex->slots.addMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();
 	pOpened->setSkin(pButtonSkin);
@@ -1742,7 +1742,7 @@ bool scrollbarTest(CSlot_p pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->children.addMovable(pScrollPanel, { 10,10,200,50 });
+	pFlex->slots.addMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 
@@ -1770,7 +1770,7 @@ bool modalLayerTest(CSlot_p pEntry)
 	*pEntry = pLayer;
 
 
-	pLayer->modals << p;
+	pLayer->modalSlots << p;
 
 	return true;
 }

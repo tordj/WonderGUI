@@ -40,7 +40,7 @@ namespace wg
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = m_pSlotArray->add();
+		SlotType * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -54,7 +54,7 @@ namespace wg
 		for (int i = 0; i < amount; i++)
 			pWidgets[i]->releaseFromParent();
 
-		SlotType * pSlot = m_pSlotArray->add(amount);
+		SlotType * pSlot = _addEmpty(amount);
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i]._setWidget(pWidgets[i]);
@@ -69,7 +69,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pSlot = m_pSlotArray->insert(index);
+		SlotType * pSlot = _insertEmpty(index);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
@@ -82,7 +82,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(pos._slot());
-		pSlot = m_pSlotArray->insert(pSlot);
+		pSlot = _insertEmpty(pSlot);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
@@ -95,7 +95,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pSlot = m_pSlotArray->insert(index, amount);
+		SlotType * pSlot = _insertEmpty(index, amount);
 
 		for (int i = 0; i < amount; i++)
 		{
@@ -111,7 +111,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(pos._slot());
-		pSlot = m_pSlotArray->insert(pSlot, amount);
+		pSlot = _insertEmpty(pSlot, amount);
 
 		for (int i = 0; i < amount; i++)
 		{
@@ -129,7 +129,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pSlot = m_pSlotArray->slot(index);
+		SlotType * pSlot = _slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, 1);
 	}
 
@@ -140,7 +140,7 @@ namespace wg
 
 		SlotType * pSlot = static_cast<SlotType*>(pos._slot());
 		m_pHolder->_willRemoveSlots(pSlot, 1);
-		return iterator(m_pSlotArray->remove(pSlot));
+		return iterator(_remove(pSlot));
 	}
 
 	template < class SlotType>
@@ -148,7 +148,7 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		SlotType * pSlot = m_pSlotArray->slot(index);
+		SlotType * pSlot = _slot(index);
 		m_pHolder->_willRemoveSlots(pSlot, amount);
 	}
 
@@ -161,7 +161,7 @@ namespace wg
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
 
 		m_pHolder->_willRemoveSlots(pBeg, pEnd-pBeg);
-		return iterator(m_pSlotArray->remove(pBeg, pEnd));
+		return iterator(_remove(pBeg, pEnd));
 	}
 
 	//____ clear() _______________________________________________________________
@@ -169,10 +169,10 @@ namespace wg
 	template < class SlotType>
 	void CSlotArray<SlotType>::clear()
 	{
-		if (m_pSlotArray->isEmpty())
+		if (isEmpty())
 			return;
-		m_pHolder->_willRemoveSlots(m_pSlotArray->begin(), m_pSlotArray->size());
-		m_pSlotArray->clear();
+		m_pHolder->_willRemoveSlots(_begin(), size());
+		_clear();
 	}
 
 	//____ moveToBack() __________________________________________________________
@@ -182,10 +182,10 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pFrom = m_pSlotArray->slot(index);
-		SlotType * pTo = m_pSlotArray->end();
+		SlotType * pFrom = _slot(index);
+		SlotType * pTo = _end();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 	}
 
@@ -195,11 +195,11 @@ namespace wg
 		//TODO: Assert
 
 		SlotType * pFrom = static_cast<SlotType*>(it._slot());
-		SlotType * pTo = m_pSlotArray->end();
+		SlotType * pTo = _end();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->last());
+		return iterator(_last());
 	}
 
 	//____ moveToFront() _________________________________________________________
@@ -209,10 +209,10 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pFrom = m_pSlotArray->slot(index);
-		SlotType * pTo = m_pSlotArray->begin();
+		SlotType * pFrom = _slot(index);
+		SlotType * pTo = _begin();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 	}
 
@@ -222,11 +222,11 @@ namespace wg
 		//TODO: Assert
 
 		SlotType * pFrom = static_cast<SlotType*>(it._slot());
-		SlotType * pTo = m_pSlotArray->begin();
+		SlotType * pTo = _begin();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->begin());
+		return iterator(_begin());
 	}
 
 	//____ moveBefore() __________________________________________________________
@@ -236,15 +236,15 @@ namespace wg
 	{
 		//TODO: Assert
 
-		SlotType * pFrom = m_pSlotArray->slot(index);
-		SlotType * pTo = m_pSlotArray->slot(sibling);
+		SlotType * pFrom = _slot(index);
+		SlotType * pTo = _slot(sibling);
 
 		if (pFrom < pTo)
 			pTo--;
 
 		if (pFrom != pTo)
 		{
-			m_pSlotArray->move(pFrom, pTo);
+			_move(pFrom, pTo);
 			m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 		}
 	}
@@ -262,7 +262,7 @@ namespace wg
 
 		if (pFrom != pTo)
 		{
-			m_pSlotArray->move(pFrom, pTo);
+			_move(pFrom, pTo);
 			m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 		}
 
@@ -276,7 +276,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_hideSlots(m_pSlotArray->slot(index), 1);
+		m_pHolder->_hideSlots(_slot(index), 1);
 	};
 
 	template < class SlotType>
@@ -294,7 +294,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_hideSlots(m_pSlotArray->slot(index), amount);
+		m_pHolder->_hideSlots(_slot(index), amount);
 	};
 
 	template < class SlotType>
@@ -312,7 +312,7 @@ namespace wg
 	template < class SlotType>
 	void CSlotArray<SlotType>::hideAll()
 	{
-		m_pHolder->_hideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+		m_pHolder->_hideSlots(_begin(), size());
 	};
 
 	//____ unhide() ______________________________________________________________
@@ -322,7 +322,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_unhideSlots(m_pSlotArray->slot(index), 1);
+		m_pHolder->_unhideSlots(_slot(index), 1);
 	};
 
 	template < class SlotType>
@@ -339,7 +339,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		m_pHolder->_unhideSlots(m_pSlotArray->slot(index), amount);
+		m_pHolder->_unhideSlots(_slot(index), amount);
 	};
 
 	template < class SlotType>
@@ -357,23 +357,23 @@ namespace wg
 	template < class SlotType>
 	void CSlotArray<SlotType>::unhideAll()
 	{
-		m_pHolder->_unhideSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+		m_pHolder->_unhideSlots(_begin(), size());
 	};
 
-	//____ _begin() ___________________________________________________________
+	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CSlotArray<SlotType>::_begin() const 
+	SlotIterator CSlotArray<SlotType>::_begin_iterator() const 
 	{ 
-		return iterator(m_pSlotArray->begin()); 
+		return iterator(_begin()); 
 	}
 
-	//____ _end() _____________________________________________________________
+	//____ _end_iterator() _____________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CSlotArray<SlotType>::_end() const 
+	SlotIterator CSlotArray<SlotType>::_end_iterator() const 
 	{ 
-		return iterator(m_pSlotArray->end()); 
+		return iterator(_end()); 
 	}
 
 	//____ _at() _____________________________________________________________
@@ -381,7 +381,7 @@ namespace wg
 	template < class SlotType>
 	BasicSlot& CSlotArray<SlotType>::_at(int index) const
 	{
-		return *m_pSlotArray->slot(index);
+		return *_slot(index);
 	}
 
 	//____ _object() __________________________________________________________
@@ -410,16 +410,16 @@ namespace wg
 		{
 			BasicSlot * pReleaseFromSlot = pToRelease->_slot();
 
-			if (m_pSlotArray->contains(pReleaseFromSlot))
+			if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
 			{
 				// We are releasing a widget from our own slot array, so we need to make sure pointer still is correct afterwards.
 
-				int ofs = (int)((*pPointerToGuard) - m_pSlotArray->first());
+				int ofs = (int)((*pPointerToGuard) - _first());
 				if (*pPointerToGuard > pReleaseFromSlot)
 					ofs--;
 
 				pToRelease->releaseFromParent();
-				*pPointerToGuard = m_pSlotArray->first() + ofs;
+				*pPointerToGuard = _first() + ofs;
 			}
 			else
 				pToRelease->releaseFromParent();
@@ -434,7 +434,7 @@ namespace wg
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = m_pSlotArray->add();
+		SlotType * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -448,7 +448,7 @@ namespace wg
 		for (int i = 0; i < amount; i++)
 			pWidgets[i]->releaseFromParent();
 
-		SlotType * pSlot = m_pSlotArray->add(amount);
+		SlotType * pSlot = _addEmpty(amount);
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i]._setWidget(pWidgets[i]);
@@ -462,7 +462,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(it._slot());
-		pSlot = m_pSlotArray->insert(pSlot);
+		pSlot = _insertEmpty(pSlot);
 
 		this->_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
@@ -476,7 +476,7 @@ namespace wg
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(it._slot());
-		pSlot = m_pSlotArray->insert(pSlot, amount);
+		pSlot = _insertEmpty(pSlot, amount);
 
 		for (int i = 0; i < amount; i++)
 		{
@@ -494,7 +494,7 @@ namespace wg
 
 		SlotType * pSlot = static_cast<SlotType*>(it._slot());
 		m_pHolder->_willRemoveSlots(pSlot, 1);
-		return iterator(m_pSlotArray->remove(pSlot));
+		return iterator(_remove(pSlot));
 	}
 
 	template < class SlotType>
@@ -505,7 +505,7 @@ namespace wg
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
 		m_pHolder->_willRemoveSlots(pBeg, pEnd-pBeg);
-		return iterator(m_pSlotArray->remove(pBeg, pEnd));
+		return iterator(_remove(pBeg, pEnd));
 	}
 
 	template < class SlotType>
@@ -514,11 +514,11 @@ namespace wg
 		//TODO: Assert
 
 		SlotType * pFrom = static_cast<SlotType*>(it._slot());
-		SlotType * pTo = m_pSlotArray->begin();
+		SlotType * pTo = _begin();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->begin());
+		return iterator(_begin());
 	}
 
 	template < class SlotType>
@@ -527,11 +527,11 @@ namespace wg
 		//TODO: Assert
 
 		SlotType * pFrom = static_cast<SlotType*>(it._slot());
-		SlotType * pTo = m_pSlotArray->end();
+		SlotType * pTo = _end();
 
-		m_pSlotArray->move(pFrom, pTo);
+		_move(pFrom, pTo);
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
-		return iterator(m_pSlotArray->last());
+		return iterator(_last());
 	}
 
 	template < class SlotType>
@@ -547,12 +547,236 @@ namespace wg
 
 		if (pFrom != pTo)
 		{
-			m_pSlotArray->move(pFrom, pTo);
+			_move(pFrom, pTo);
 			m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 		}
 
 		return iterator(pTo);
 	}
+
+
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
+	{
+		SlotType temp = std::move(*pFrom);
+		if (pFrom < pTo)
+		{
+			if (SlotType::safe_to_relocate)
+			{
+				memmove((void*)pFrom, &pFrom[1], sizeof(SlotType) * (pTo - pFrom));
+				_reallocBlock(pFrom, pTo);
+			}
+			else
+			{
+				for (int i = 0; i < pTo - pFrom; i++)
+					pFrom[i] = std::move(pFrom[i + 1]);
+			}
+		}
+		else
+		{
+			if (SlotType::safe_to_relocate)
+			{
+				memmove((void*)&pTo[1], pTo, sizeof(SlotType) * (pFrom - pTo));
+				_reallocBlock(pTo, pFrom);
+			}
+			else
+			{
+				for (int i = int(pFrom - pTo); i > 0; i--)
+					pTo[i] = std::move(pTo[i - 1]);
+			}
+		}
+		*pTo = std::move(temp);
+	}
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_reorder(int order[])
+	{
+		if (m_size == 0)
+			return;
+
+		int size = sizeof(SlotType)*m_capacity;
+		SlotType* pOld = m_pArray;
+		m_pArray = (SlotType*)malloc(size);
+		for (int i = 0; i < m_size; i++)
+		{
+			int ofs = order[i];
+			new (&m_pArray[i]) SlotType(std::move(pOld[ofs]));
+		}
+		free(pOld);
+	}
+
+	template < class SlotType>
+	SlotType * CSlotArray<SlotType>::_find(const Widget* pWidget) const
+	{
+		for (auto p = _begin(); p < _end(); p++)
+			if (p->_widget() == pWidget)
+				return p;
+
+		return nullptr;
+	}
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_reallocArray(int capacity)
+	{
+		int size = sizeof(SlotType)*capacity;
+		SlotType* pNew = (SlotType*)malloc(size);
+		SlotType* pOld = m_pArray;
+		m_pArray = pNew;
+		m_capacity = capacity;
+
+		if (pOld)
+		{
+			if (SlotType::safe_to_relocate)
+			{
+				memcpy((void*)pNew, pOld, sizeof(SlotType)*m_size);
+				_reallocBlock(_begin(), _end());
+			}
+			else
+			{
+				for (int i = 0; i < m_size; i++)
+					new (&pNew[i]) SlotType(std::move(pOld[i]));
+			}
+			free(pOld);
+		}
+	}
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
+	{
+		while (pBeg < pEnd)
+		{
+			pBeg->_relink();
+			pBeg++;
+		}
+	}
+
+	template < class SlotType>
+	SlotType* CSlotArray<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
+	{
+		int blocksToMove = int(_end() - pEnd);
+		if (SlotType::safe_to_relocate)
+		{
+			_killBlock(pBeg, pEnd);
+
+			if (blocksToMove > 0)
+			{
+				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
+				_reallocBlock(pBeg, pBeg + blocksToMove);
+			}
+		}
+		else
+		{
+			for (int i = 0; i < blocksToMove; i++)
+				pBeg[i] = std::move(pEnd[i]);
+
+			_killBlock(pBeg + blocksToMove, pEnd);
+		}
+		m_size -= pEnd - pBeg;
+		return pBeg;
+	}
+
+
+	template < class SlotType>
+	SlotType* CSlotArray<SlotType>::_insertBlock(SlotType * pPos, int entries)
+	{
+		if (entries <= m_capacity - m_size)
+		{
+			int nToMove = (int)(_end() - pPos);
+			if (nToMove > 0)
+			{
+				if (SlotType::safe_to_relocate)
+				{
+					memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToMove);
+					_reallocBlock(&pPos[entries], &pPos[entries + nToMove]);
+				}
+				else
+				{
+
+					int nMoveToNew = min(entries, nToMove);
+					int nMoveToExisting = nToMove - nMoveToNew;
+
+					SlotType * pFrom = _end();
+					SlotType * pTo = pFrom + entries;
+
+					// Move first batch of entries to uninitialized objects
+
+					for (int i = 0; i < nMoveToNew; i++)
+					{
+						new (--pTo) SlotType(std::move(*(--pFrom)));
+						/*							new (--pTo) SlotType();
+						*pTo = * (--pFrom);
+						pTo->relink();
+						*/
+					}
+
+					// Move the rest to existing objects
+
+					for (int i = 0; i < nMoveToExisting; i++)
+						*(--pTo) = std::move(*(--pFrom));
+
+				}
+			}
+		}
+		else
+		{
+			int grow = entries - (m_capacity - m_size);
+			if (grow == 1)
+				m_capacity = (m_capacity + 1) * 2;
+			else
+				m_capacity += grow;
+
+			SlotType* pNew = (SlotType*)malloc(sizeof(SlotType) * m_capacity);
+			SlotType* pOld = m_pArray;
+			SlotType* pNewPos = pNew + (pPos - pOld);
+
+			if (SlotType::safe_to_relocate)
+			{
+				memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos - pOld));
+				memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (_end() - pPos));
+				_reallocBlock(pNew, pNewPos);
+				_reallocBlock(&pNewPos[entries], pNew + m_size + entries);
+			}
+			else
+			{
+				for (int i = 0; i < pPos - pOld; i++)
+				{
+					new (&pNew[i]) SlotType(std::move(pOld[i]));
+				}
+
+				SlotType * pDest = &pNewPos[entries];
+				for (int i = 0; i < _end() - pPos; i++)
+				{
+					new (&pDest[i]) SlotType(std::move(pPos[i]));
+				}
+			}
+
+			if (pOld)
+				free(pOld);
+
+			m_pArray = pNew;
+			pPos = pNewPos;
+		}
+
+		m_size += entries;
+		_initBlock(pPos, &pPos[entries]);
+		return pPos;
+	}
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
+	{
+		while (pBeg < pEnd)
+			(pBeg++)->~SlotType();
+	}
+
+	template < class SlotType>
+	void CSlotArray<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
+	{
+		while (pBeg < pEnd)
+			new (pBeg++) SlotType(m_pHolder);
+	}
+
 
 
 

@@ -25,7 +25,6 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
-#include <wg_slotarray.impl.h>
 #include <wg_inputhandler.h>
 
 #include <wg_cslotarray.impl.h>
@@ -36,7 +35,6 @@ namespace wg
 	using namespace Util;
 
 	template class CSlotArray<ModalSlot>;
-	template class SlotArray<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 
@@ -50,12 +48,12 @@ namespace wg
 
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		ModalSlot * pSlot = m_pSlotArray->add();
+		ModalSlot * pSlot = _addEmpty();
 		pSlot->geo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 
 		pSlot->_setWidget(pWidget);
-		m_pHolder->_didAddSlots(pSlot, 1);
+		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
@@ -65,7 +63,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setOrigo( m_pSlotArray->slot(index), origo );
+		_setOrigo( _slot(index), origo );
 	}
 
 	void CModalSlotArray::setOrigo(iterator it, const Origo origo)
@@ -81,7 +79,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return m_pSlotArray->slot(index)->origo;
+		return _slot(index)->origo;
 	}
 
 	Origo CModalSlotArray::origo(iterator it) const
@@ -97,7 +95,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setGeo(m_pSlotArray->slot(index), geometry);
+		_setGeo(_slot(index), geometry);
 	}
 
 	void CModalSlotArray::setGeo(iterator it, const Rect& geometry)
@@ -113,7 +111,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix( m_pSlotArray->slot(index)->geo );
+		return rawToQpix( _slot(index)->geo );
 	}
 
 	Rect CModalSlotArray::geo(iterator it) const
@@ -129,7 +127,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setOfs(m_pSlotArray->slot(index), ofs);
+		_setOfs(_slot(index), ofs);
 	}
 
 	void CModalSlotArray::setOfs(iterator it, const Coord& ofs)
@@ -145,7 +143,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix(m_pSlotArray->slot(index)->geo.pos());
+		return rawToQpix(_slot(index)->geo.pos());
 	}
 
 	Coord CModalSlotArray::ofs(iterator it) const
@@ -161,7 +159,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setSize(m_pSlotArray->slot(index), size);
+		_setSize(_slot(index), size);
 	}
 
 	void CModalSlotArray::setSize(iterator it, const Size& size)
@@ -177,7 +175,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix(m_pSlotArray->slot(index)->geo.size());
+		return rawToQpix(_slot(index)->geo.size());
 	}
 
 	Size CModalSlotArray::size( iterator it ) const
@@ -193,7 +191,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_move(m_pSlotArray->slot(index), ofs);
+		_move(_slot(index), ofs);
 	}
 
 	void CModalSlotArray::move( iterator it, const Coord& ofs )
@@ -301,7 +299,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	ModalLayer::ModalLayer() : m_modals(this), modals(&m_modals, this)
+	ModalLayer::ModalLayer() : modalSlots(this)
 	{
 	}
 
@@ -377,9 +375,9 @@ namespace wg
 
 		if( mode == SearchMode::ActionTarget )
 		{
-			if( !m_modals.isEmpty() )
+			if( !modalSlots.isEmpty() )
 			{
-				ModalSlot * pSlot = m_modals.last();
+				ModalSlot * pSlot = modalSlots._last();
 
 				if( pSlot->_widget()->isContainer() )
 				{
@@ -450,15 +448,15 @@ namespace wg
 
 		// Find which child-branch to focus and switch to our previously saved focus
 
-		ModalSlot * pSlot = m_modals.last();
+		ModalSlot * pSlot = modalSlots._last();
 
 		Widget * 	pSavedFocus = nullptr;
 		BasicSlot *		pBranch	= nullptr;
 
-		while( pSlot >= m_modals.first() && pSlot->geo.isEmpty() )
+		while( pSlot >= modalSlots._first() && pSlot->geo.isEmpty() )
 			pSlot--;
 
-		if( pSlot >= m_modals.first() )
+		if( pSlot >= modalSlots._first() )
 		{
 			pSavedFocus = pSlot->pKeyFocus.rawPtr();
 			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
@@ -580,14 +578,14 @@ namespace wg
 
 	const LayerSlot * ModalLayer::_beginLayerSlots() const
 	{
-		return m_modals.begin();
+		return modalSlots._begin();
 	}
 
 	//____ _endLayerSlots() ____________________________________________________
 
 	const LayerSlot *  ModalLayer::_endLayerSlots() const
 	{
-		return m_modals.end();
+		return modalSlots._end();
 	}
 
 	//____ _sizeOfLayerSlot() __________________________________________________
@@ -606,7 +604,7 @@ namespace wg
 
 		// Refresh modal widgets geometry, their positions might have changed.
 
-		for( auto pSlot = m_modals.begin() ; pSlot != m_modals.end() ; pSlot++ )
+		for( auto pSlot = modalSlots._begin() ; pSlot != modalSlots._end() ; pSlot++ )
 			_refreshRealGeo( pSlot );
 	}
 
@@ -627,7 +625,7 @@ namespace wg
 		{
 			InputMsg_p pMsg = InputMsg::cast(_pMsg);
 
-			if( !m_modals.isEmpty() && _findWidget( pMsg->pointerPosRaw(), SearchMode::ActionTarget ) == this )
+			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerPosRaw(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{

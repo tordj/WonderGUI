@@ -66,14 +66,12 @@ namespace wg
 
 	class CStackSlotArray : public CPaddedSlotArray<StackSlot>
 	{
+		friend class StackPanel;
 	public:
 
-		class Holder : public CPaddedSlotArray::Holder			/** @private */
+		class Holder : public CPaddedSlotArray<StackSlot>::Holder			/** @private */
 		{
 		};
-
-		/** @private */
-		CStackSlotArray(SlotArray<StackSlot> * pSlotArray, CStackSlotArray::Holder * pHolder) : CPaddedSlotArray<StackSlot>(pSlotArray, pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -94,6 +92,8 @@ namespace wg
 		inline CStackSlotArray_p	ptr() { return CStackSlotArray_p(this); }
 
 	protected:
+		CStackSlotArray(Holder * pHolder) : CPaddedSlotArray<StackSlot>(pHolder) {}
+
 		void		_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy );
 		void		_setOrigo( StackSlot * pSlot, Origo origo );
 	};
@@ -117,7 +117,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStackSlotArray	children;
+		CStackSlotArray	slots;
 
 		//.____ Identification __________________________________________
 
@@ -198,8 +198,6 @@ namespace wg
 		RectI	_childGeo( const StackSlot * pSlot ) const;
 
 		SizeI	m_preferredSize;
-
-		SlotArray<StackSlot>	m_children;
 	};
 
 

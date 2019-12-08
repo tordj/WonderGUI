@@ -24,7 +24,6 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_slotarray.impl.h>
 #include <wg_cslotarray.impl.h>
 
 #include <assert.h>
@@ -34,8 +33,6 @@ namespace wg
 	using namespace Util;
 
 	template class CSlotArray<FlexSlot>;
-
-	template class SlotArray<FlexSlot>;
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
 
@@ -57,14 +54,14 @@ namespace wg
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		FlexSlot * pSlot = m_pSlotArray->add();
+		FlexSlot * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 
 		pSlot->bPinned = true;
 		pSlot->topLeftPin = topLeft;
 		pSlot->bottomRightPin = bottomRight;
 
-		m_pHolder->_didAddSlots(pSlot, 1);
+		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
@@ -75,14 +72,14 @@ namespace wg
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		FlexSlot * pSlot = m_pSlotArray->add();
+		FlexSlot * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 
 		pSlot->placementGeo = qpixToRaw(geometry);
 		pSlot->origo = origo;
 		pSlot->hotspot = hotspot;
 
-		m_pHolder->_didAddSlots(pSlot, 1);
+		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
@@ -92,7 +89,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		FlexSlot * pSlot = m_pSlotArray->insert(index);
+		FlexSlot * pSlot = _insertEmpty(index);
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
@@ -100,7 +97,7 @@ namespace wg
 		pSlot->topLeftPin = topLeft;
 		pSlot->bottomRightPin = bottomRight;
 
-		m_pHolder->_didAddSlots(pSlot, 1);
+		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
@@ -110,7 +107,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		FlexSlot * pSlot = m_pSlotArray->insert(index);
+		FlexSlot * pSlot = _insertEmpty(index);
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
@@ -118,7 +115,7 @@ namespace wg
 		pSlot->origo = origo;
 		pSlot->hotspot = hotspot;
 
-		m_pHolder->_didAddSlots(pSlot, 1);
+		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
@@ -128,7 +125,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setPinned(m_pSlotArray->slot(index));
+		_setPinned(_slot(index));
 	}
 
 	void CFlexSlotArray::setPinned(iterator it)
@@ -142,7 +139,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setPinned(m_pSlotArray->slot(index), topLeft, bottomRight);
+		_setPinned(_slot(index), topLeft, bottomRight);
 	}
 
 	void CFlexSlotArray::setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight )
@@ -158,7 +155,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setMovable(m_pSlotArray->slot(index), origo, hotspot);
+		_setMovable(_slot(index), origo, hotspot);
 	}
 
 	void CFlexSlotArray::setMovable(iterator it, const FlexPos& origo, const FlexPos& hotspot)
@@ -172,7 +169,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_setMovable(m_pSlotArray->slot(index), qpixToRaw(geometry), origo, hotspot);
+		_setMovable(_slot(index), qpixToRaw(geometry), origo, hotspot);
 	}
 
 	void CFlexSlotArray::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
@@ -188,7 +185,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_moveBelow( m_pSlotArray->slot(index),m_pSlotArray->first() );
+		_moveBelow( _slot(index),m_pSlotArray->first() );
 	}
 
 	CFlexSlotArray::iterator CFlexSlotArray::moveToBack(iterator it)
@@ -204,7 +201,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_moveAbove( m_pSlotArray->slot(index), m_pSlotArray->last() );
+		_moveAbove( _slot(index), m_pSlotArray->last() );
 	}
 
 	CFlexSlotArray::iterator CFlexSlotArray::moveToFront(iterator it)
@@ -220,7 +217,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_moveAbove(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
+		_moveAbove(_slot(index), _slot(sibling));
 	}
 
 	CFlexSlotArray::iterator CFlexSlotArray::moveAbove(iterator it, iterator sibling)
@@ -237,7 +234,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		_moveBelow(m_pSlotArray->slot(index), m_pSlotArray->slot(sibling));
+		_moveBelow(_slot(index), _slot(sibling));
 	}
 
 	CFlexSlotArray::iterator CFlexSlotArray::moveBelow(iterator it, iterator sibling)
@@ -255,7 +252,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return !m_pSlotArray->slot(index)->bPinned;
+		return !_slot(index)->bPinned;
 	}
 
 	bool CFlexSlotArray::isMovable(iterator it) const
@@ -272,7 +269,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return m_pSlotArray->slot(index)->bPinned;
+		return _slot(index)->bPinned;
 	}
 
 	bool CFlexSlotArray::isPinned( iterator it ) const
@@ -288,7 +285,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return _setOrigo(m_pSlotArray->slot(index), origo);
+		return _setOrigo(_slot(index), origo);
 	}
 
 	bool CFlexSlotArray::setOrigo( iterator it, const FlexPos& origo)
@@ -305,7 +302,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return _origo(m_pSlotArray->slot(index));
+		return _origo(_slot(index));
 	}
 
 	FlexPos CFlexSlotArray::origo( iterator it ) const
@@ -322,7 +319,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return _setHotspot(m_pSlotArray->slot(index), hotspot);
+		return _setHotspot(_slot(index), hotspot);
 	}
 
 	bool CFlexSlotArray::setHotspot(iterator it, const FlexPos& hotspot)
@@ -338,7 +335,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return _hotspot( m_pSlotArray->slot(index) );
+		return _hotspot( _slot(index) );
 	}
 
 	FlexPos CFlexSlotArray::hotspot(iterator it) const
@@ -355,7 +352,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return _setGeo(m_pSlotArray->slot(index), qpixToRaw(geometry));
+		return _setGeo(_slot(index), qpixToRaw(geometry));
 	}
 
 	bool CFlexSlotArray::setGeo(iterator it, const Rect& geometry)
@@ -371,7 +368,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix(_geo(m_pSlotArray->slot(index)));
+		return rawToQpix(_geo(_slot(index)));
 	}
 
 	Rect CFlexSlotArray::geo( iterator it ) const
@@ -388,7 +385,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return _setOfs(m_pSlotArray->slot(index), qpixToRaw(ofs));
+		return _setOfs(_slot(index), qpixToRaw(ofs));
 	}
 
 	bool CFlexSlotArray::setOfs( iterator it, const Coord& ofs )
@@ -404,7 +401,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix(_ofs(m_pSlotArray->slot(index)));
+		return rawToQpix(_ofs(_slot(index)));
 	}
 
 	Coord CFlexSlotArray::ofs( iterator it ) const
@@ -420,7 +417,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return _setSize(m_pSlotArray->slot(index), qpixToRaw(size) );
+		return _setSize(_slot(index), qpixToRaw(size) );
 	}
 
 	bool CFlexSlotArray::setSize( iterator it, const Size& size )
@@ -436,7 +433,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return rawToQpix(_size(m_pSlotArray->slot(index)));
+		return rawToQpix(_size(_slot(index)));
 	}
 
 	Rect CFlexSlotArray::size( iterator it ) const
@@ -452,7 +449,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return _move(m_pSlotArray->slot(index), qpixToRaw(ofs));
+		return _move(_slot(index), qpixToRaw(ofs));
 	}
 
 	bool CFlexSlotArray::move( iterator it, const Coord& ofs )
@@ -468,7 +465,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return _topLeftCorner(m_pSlotArray->slot(index));
+		return _topLeftCorner(_slot(index));
 	}
 
 	FlexPos CFlexSlotArray::topLeftCorner( iterator it ) const
@@ -484,7 +481,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return _bottomRightCorner(m_pSlotArray->slot(index));
+		return _bottomRightCorner(_slot(index));
 	}
 
 	FlexPos CFlexSlotArray::bottomRightCorner( iterator it ) const
@@ -696,7 +693,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	FlexPanel::FlexPanel() : m_children(this), children(&m_children,this)
+	FlexPanel::FlexPanel() : slots(this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -742,9 +739,9 @@ namespace wg
 		{
 			m_bConfineWidgets = bConfineWidgets;
 
-			FlexSlot * p = m_children.begin();
+			FlexSlot * p = slots._begin();
 
-			while( p < m_children.end() )
+			while( p < slots._end() )
 			{
 				_refreshRealGeo( p );
 				p++;
@@ -758,8 +755,8 @@ namespace wg
 	{
 		SizeI minSize;
 
-		FlexSlot * p = m_children.begin();
-		while( p < m_children.end() )
+		FlexSlot * p = slots._begin();
+		while( p < slots._end() )
 		{
 			minSize = SizeI::max(minSize,_sizeNeededForGeo(p));
 			p++;
@@ -879,7 +876,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for(FlexSlot * pCover = m_children.begin() ; pCover < pSlot ; pCover++ )
+		for(FlexSlot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
@@ -906,8 +903,8 @@ namespace wg
 	{
 		Panel::_resize(size);
 
-		FlexSlot * p = m_children.begin();
-		while( p < m_children.end() )
+		FlexSlot * p = slots._begin();
+		while( p < slots._end() )
 		{
 			_refreshRealGeo(p);
 			p++;
@@ -948,20 +945,20 @@ namespace wg
 
 	Widget * FlexPanel::_firstChild() const
 	{
-		if (m_children.isEmpty())
+		if (slots.isEmpty())
 			return nullptr;
 
-		return m_children.first()->_widget();
+		return slots._first()->_widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
 
 	Widget * FlexPanel::_lastChild() const
 	{
-		if (m_children.isEmpty())
+		if (slots.isEmpty())
 			return nullptr;
 
-		return m_children.last()->_widget();
+		return slots._last()->_widget();
 	}
 
 
@@ -971,7 +968,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
-		if (pSlot > m_children.begin())
+		if (pSlot > slots._begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -983,7 +980,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
-		if (pSlot < m_children.last())
+		if (pSlot < slots._last())
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -994,7 +991,7 @@ namespace wg
 	void FlexPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
-		m_children.remove(static_cast<FlexSlot*>(pSlot));
+		slots._remove(static_cast<FlexSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -1002,7 +999,7 @@ namespace wg
 	void FlexPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewWidget)
 	{
 		auto pSlot = static_cast<FlexSlot*>(_pSlot);
-		children._releaseGuardPointer(pNewWidget, &pSlot);
+		slots._releaseGuardPointer(pNewWidget, &pSlot);
 
 		pSlot->_setWidget(pNewWidget);
 
@@ -1018,11 +1015,11 @@ namespace wg
 
 	void FlexPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			package.pSlot = nullptr;
 		else
 		{
-			FlexSlot * pSlot = m_children.first();
+			FlexSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
 			package.geo = pSlot->realGeo;
 		}
@@ -1034,7 +1031,7 @@ namespace wg
 	{
 		FlexSlot * pSlot = (FlexSlot*) package.pSlot;
 
-		if( pSlot == m_children.last() )
+		if( pSlot == slots._last() )
 			package.pSlot = nullptr;
 		else
 		{

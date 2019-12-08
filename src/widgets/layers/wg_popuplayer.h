@@ -25,7 +25,6 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_slotarray.h>
 
 namespace wg
 {
@@ -212,8 +211,6 @@ namespace wg
 		MainSlotAccess * _mainSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _mainSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
-
-		SlotArray<PopupSlot>m_popups;		// First popup lies at the bottom.
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
 		RouteId			m_tickRouteId = 0;

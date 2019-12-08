@@ -220,7 +220,7 @@ namespace wg
 
 
 	protected:
-		CFlexSlotArray(SlotArray<FlexSlot> * pSlotArray, Holder * pHolder) : CSlotArray<FlexSlot>(pSlotArray, pHolder) {}
+		CFlexSlotArray(Holder * pHolder) : CSlotArray<FlexSlot>(pHolder) {}
 
 		void		_setPinned(FlexSlot * p);
 		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
@@ -257,7 +257,8 @@ namespace wg
 
 		//
 
-		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(m_pHolder); }
+		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(CSlotArray<FlexSlot>::_holder()); }
+		inline const CFlexSlotArray::Holder * _holder() const { return static_cast<const CFlexSlotArray::Holder*>(CSlotArray<FlexSlot>::_holder()); }
 	};
 
 
@@ -283,7 +284,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CFlexSlotArray	children;
+		CFlexSlotArray		slots;
 
 		//.____ Identification __________________________________________
 
@@ -361,9 +362,6 @@ namespace wg
 		void		_onRequestRender( const RectI& rect, const FlexSlot * pSlot );
 
 		SizeI		_sizeNeededForGeo( FlexSlot * pSlot ) const;
-
-
-		SlotArray<FlexSlot>	m_children;
 
 		bool			m_bConfineWidgets = false;
 		int				m_qpixPerPoint;

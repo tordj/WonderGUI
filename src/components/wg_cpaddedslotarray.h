@@ -41,14 +41,9 @@ namespace wg
 			virtual void	_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPadding) = 0;
 		};
 
-
-//		using		iterator = SlotArrayIterator<SlotType>;
-		using		CSlotArray<SlotType>::m_pSlotArray;
-		using		CSlotArray<SlotType>::m_pHolder;
-
 		/** @private */
 
-		CPaddedSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : CSlotArray<SlotType>(pSlotArray, pHolder) {}
+		CPaddedSlotArray(Holder * pHolder) : CSlotArray<SlotType>(pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -59,11 +54,12 @@ namespace wg
 		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
 
-		inline Border	padding(int index) const { return Util::rawToQpix(m_pSlotArray->slot(index)->padding); }
+		inline Border	padding(int index) const { return Util::rawToQpix(CSlotArray<SlotType>::_slot(index)->padding); }
 		inline Border	padding(const SlotIterator& it) const { return Util::rawToQpix(static_cast<SlotType*>(it._slot())->padding); }
 
 	protected:
-		Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+		Holder * _holder() { return static_cast<Holder*>(CSlotArray<SlotType>::_holder()); }
+		const Holder * _holder() const { return static_cast<const Holder*>(CSlotArray<SlotType>::_holder()); }
 	};
 
 

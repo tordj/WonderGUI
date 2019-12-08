@@ -111,7 +111,6 @@
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
     <ClInclude Include="..\..\..\src\base\wg_qpix.h" />
-    <ClInclude Include="..\..\..\src\base\wg_slotarray.impl.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
     <ClInclude Include="..\..\..\src\base\wg_mempool.h" />
@@ -128,7 +127,6 @@
     <ClInclude Include="..\..\..\src\base\wg_resloader.h" />
     <ClInclude Include="..\..\..\src\base\wg_scrollbartarget.h" />
     <ClInclude Include="..\..\..\src\base\wg_slot.h" />
-    <ClInclude Include="..\..\..\src\base\wg_slotarray.h" />
     <ClInclude Include="..\..\..\src\base\wg_string.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_surface.h" />

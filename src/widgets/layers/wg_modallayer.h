@@ -70,6 +70,7 @@ namespace wg
 
 	class CModalSlotArray : public CSlotArray<ModalSlot>
 	{
+		friend class ModalLayer;
 	public:
 
 		//____ Holder _________________________________________________
@@ -83,7 +84,7 @@ namespace wg
 
 		/** @private */
 
-		CModalSlotArray( SlotArray<ModalSlot> * pSlotArray, Holder * pHolder ) : CSlotArray<ModalSlot>(pSlotArray,pHolder) {}
+		CModalSlotArray( Holder * pHolder ) : CSlotArray<ModalSlot>(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -126,8 +127,8 @@ namespace wg
 		void 		_setSize(ModalSlot * p, const Size& size);
 		void 		_move( ModalSlot * p, const Coord& ofs );
 
-		const Holder *	_holder() const { return static_cast<Holder*>(m_pHolder); }
-		Holder *	_holder() { return static_cast<Holder*>(m_pHolder); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CSlotArray<ModalSlot>::_holder()); }
+		Holder *	_holder() { return static_cast<Holder*>(CSlotArray<ModalSlot>::_holder()); }
 
 
 	};
@@ -147,7 +148,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CModalSlotArray	modals;
+		CModalSlotArray		modalSlots;
 
 		//.____ Identification __________________________________________
 
@@ -236,8 +237,6 @@ namespace wg
 
 
 		Widget_wp			m_pBaseKeyFocus;
-
-		SlotArray<ModalSlot>	m_modals;
 
 	};
 

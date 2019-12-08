@@ -99,10 +99,10 @@ namespace wg
 		inline CLambdaSlotArray_p	ptr() { return CLambdaSlotArray_p(this); }
 
 	protected:
-		CLambdaSlotArray(SlotArray<LambdaSlot> * pSlotArray, CLambdaSlotArray::Holder * pHolder) : CSlotArray<LambdaSlot>(pSlotArray, pHolder) {}
+		CLambdaSlotArray(CLambdaSlotArray::Holder * pHolder) : CSlotArray<LambdaSlot>(pHolder) {}
 
-		const CLambdaSlotArray::Holder *	_holder() const { return static_cast<CLambdaSlotArray::Holder*>(m_pHolder); }
-		CLambdaSlotArray::Holder *	_holder() { return static_cast<CLambdaSlotArray::Holder*>(m_pHolder); }
+		Holder *		_holder() { return static_cast<Holder*>(CSlotArray<LambdaSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CSlotArray<LambdaSlot>::_holder()); }
 	};
 
 
@@ -119,7 +119,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CLambdaSlotArray	children;
+		CLambdaSlotArray	slots;
 
 		//.____ Identification __________________________________________
 
@@ -195,8 +195,6 @@ namespace wg
 		void		_updateGeo(LambdaSlot * pSlot, bool bForceResize = false);
 
 		void		_onRequestRender( const RectI& rect, const LambdaSlot * pSlot );
-
-		SlotArray<LambdaSlot>	m_children;
 
 		SizeI		m_minSize;
 		SizeI		m_maxSize;

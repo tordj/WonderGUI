@@ -52,9 +52,9 @@ namespace wg
 		{
 		};
 
-	protected:
 		PackListSlot(Holder *pHolder) : ListSlot(pHolder) {}
 
+	protected:
 		int				ofs;				// Offset in pixels for start of this list item.
 		int				length;				// Length in pixels of this list item. Includes widget padding.
 		int				prefBreadth;		// Prefereed breadth of this widget.
@@ -69,6 +69,7 @@ namespace wg
 
 	class CPackListSlotArray : public CSelectableSlotArray<PackListSlot>
 	{
+		friend class PackList;
 	public:
 
 		//____ Holder _________________________________________________________
@@ -86,7 +87,7 @@ namespace wg
 
 		/** @private */
 
-		CPackListSlotArray(SlotArray<PackListSlot> * pSlotArray, Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pSlotArray, pHolder) {}
+		CPackListSlotArray(Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -101,8 +102,8 @@ namespace wg
 		void		sort();
 	protected:
 
-		const Holder *	_holder() const { return static_cast<Holder*>(m_pHolder); }
-		Holder *		_holder() { return static_cast<Holder*>(m_pHolder); }
+		inline const Holder *	_holder() const { return static_cast<const Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }
+		inline Holder *			_holder() { return static_cast<Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }
 	};
 
 
@@ -130,7 +131,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		IColumnHeader		header;
-		CPackListSlotArray	children;
+		CPackListSlotArray	slots;
 
 		//.____ Identification __________________________________________
 
@@ -281,7 +282,6 @@ namespace wg
 		void			_subFromContentPreferredSize(int length, int breadth);
 
 		CColumnHeader		m_header;
-		SlotArray<PackListSlot>	m_children;
 
 		bool				m_bHorizontal;
 

@@ -25,14 +25,12 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 
-#include <wg_slotarray.impl.h>
 #include <wg_cpaddedslotarray.impl.h>
 
 namespace wg
 {
 	template class CSlotArray<StackSlot>;
 	template class CPaddedSlotArray<StackSlot>;
-	template class SlotArray<StackSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 
@@ -41,7 +39,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		_setSizePolicy( m_pSlotArray->slot(index), policy );
+		_setSizePolicy( _slot(index), policy );
 	}
 
 	void CStackSlotArray::setSizePolicy( iterator it, SizePolicy2D policy )
@@ -56,7 +54,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return m_pSlotArray->slot(index)->SizePolicy;
+		return _slot(index)->SizePolicy;
 	}
 
 	SizePolicy2D CStackSlotArray::SizePolicy( iterator it ) const
@@ -71,7 +69,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		_setOrigo( m_pSlotArray->slot(index), origo );
+		_setOrigo( _slot(index), origo );
 	}
 
 	void CStackSlotArray::setOrigo( iterator it, Origo origo )
@@ -86,7 +84,7 @@ namespace wg
 	{
 		//TODO: Assert!
 
-		return m_pSlotArray->slot(index)->origo;
+		return _slot(index)->origo;
 	}
 
 	Origo CStackSlotArray::origo( iterator it ) const
@@ -101,14 +99,14 @@ namespace wg
 	{
 		if( policy != pSlot->SizePolicy )
 		{
-			RectI oldGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
+			RectI oldGeo = ((StackPanel*)_holder())->_childGeo(pSlot);
 			pSlot->SizePolicy = policy;
-			RectI newGeo = ((StackPanel*)m_pHolder)->_childGeo(pSlot);
+			RectI newGeo = ((StackPanel*)_holder())->_childGeo(pSlot);
 
 			if (newGeo.size() != oldGeo.size())
 			{
-				((StackPanel*)m_pHolder)->_requestRender(oldGeo);
-				((StackPanel*)m_pHolder)->_requestRender(newGeo);
+				((StackPanel*)_holder())->_requestRender(oldGeo);
+				((StackPanel*)_holder())->_requestRender(newGeo);
 				pSlot->_setSize(newGeo.size());
 			}
 		};
@@ -118,9 +116,9 @@ namespace wg
 	{
 		if( origo != pSlot->origo )
 		{
-			((StackPanel*)m_pHolder)->_childRequestRender( pSlot );
+			((StackPanel*)_holder())->_childRequestRender( pSlot );
 			pSlot->origo = origo;
-			((StackPanel*)m_pHolder)->_childRequestRender( pSlot );
+			((StackPanel*)_holder())->_childRequestRender( pSlot );
 		};
 	}
 
@@ -128,7 +126,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	StackPanel::StackPanel() : m_children(this), children(&m_children,this)
+	StackPanel::StackPanel() : slots(this)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -172,8 +170,8 @@ namespace wg
 	{
 		int height = 0;
 
-		StackSlot * pSlot = m_children.begin();
-		StackSlot * pEnd = m_children.end();
+		StackSlot * pSlot = slots._begin();
+		StackSlot * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{
@@ -192,8 +190,8 @@ namespace wg
 	{
 		int width = 0;
 
-		StackSlot * pSlot = m_children.begin();
-		StackSlot * pEnd = m_children.end();
+		StackSlot * pSlot = slots._begin();
+		StackSlot * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{
@@ -237,20 +235,20 @@ namespace wg
 
 	Widget * StackPanel::_firstChild() const
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			return nullptr;
 
-		return m_children.first()->_widget();
+		return slots._first()->_widget();
 	}
 
 	//____ _lastChild() ________________________________________________________
 
 	Widget * StackPanel::_lastChild() const
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			return nullptr;
 
-		return m_children.last()->_widget();
+		return slots._last()->_widget();
 
 	}
 
@@ -259,11 +257,11 @@ namespace wg
 
 	void StackPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			package.pSlot = nullptr;
 		else
 		{
-			StackSlot * pSlot = m_children.first();
+			StackSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
 			package.geo = _childGeo(pSlot);
 		}
@@ -275,7 +273,7 @@ namespace wg
 	{
 		StackSlot * pSlot = (StackSlot*) package.pSlot;
 
-		if( pSlot == m_children.last() )
+		if( pSlot == slots._last() )
 			package.pSlot = nullptr;
 		else
 		{
@@ -380,7 +378,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for( auto pCover = m_children.begin() ; pCover < pSlot ; pCover++ )
+		for( auto pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			RectI geo = _childGeo(pCover);
 			if( pCover->bVisible && geo.intersectsWith( rect ) )
@@ -420,7 +418,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
-		if( pSlot > m_children.begin() )
+		if( pSlot > slots._begin() )
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -432,7 +430,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
-		if( pSlot < m_children.last() )
+		if( pSlot < slots._last() )
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -443,7 +441,7 @@ namespace wg
 	void StackPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
-		m_children.remove(static_cast<StackSlot*>(pSlot));
+		slots._remove(static_cast<StackSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() ____________________________________________________
@@ -518,9 +516,9 @@ namespace wg
 		// Update m_preferredSize
 
 		SizeI	preferredSize;
-		StackSlot * p = m_children.begin();
+		StackSlot * p = slots._begin();
 
-		while( p != m_children.end() )
+		while( p != slots._end() )
 		{
 			if( p->bVisible )
 			{
@@ -567,8 +565,8 @@ namespace wg
 	{
 		SizeI	preferredSize;
 
-		auto * pSlot = m_children.begin();
-		auto * pEnd = m_children.end();
+		auto * pSlot = slots._begin();
+		auto * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{
@@ -590,8 +588,8 @@ namespace wg
 
 	void StackPanel::_adaptChildrenToSize()
 	{
-		auto * pSlot = m_children.begin();
-		auto * pEnd = m_children.end();
+		auto * pSlot = slots._begin();
+		auto * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{

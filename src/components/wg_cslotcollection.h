@@ -157,7 +157,7 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		virtual int		size() const = 0;
-		virtual int		isEmpty() const = 0;
+		virtual bool	isEmpty() const = 0;
 
 		inline BasicSlot& at(int index) const { return _at(index); }
 		virtual int index(Widget * pChild) const = 0;
@@ -166,15 +166,15 @@ namespace wg
 
 		inline CSlotCollection_p ptr() { return CSlotCollection_p(this); }
 
-		inline iterator	begin() const { return _begin(); }
-		inline iterator	end() const { return _end(); }
+		inline iterator	begin() const { return _begin_iterator(); }
+		inline iterator	end() const { return _end_iterator(); }
 
 	protected:
 
 		// These are needed since we can't make begin/end virtual (shadowing related issues)
 
-		virtual iterator	_begin() const = 0;
-		virtual iterator	_end() const = 0;
+		virtual iterator	_begin_iterator() const = 0;
+		virtual iterator	_end_iterator() const = 0;
 		virtual BasicSlot&	_at(int index) const = 0;
 	};
 

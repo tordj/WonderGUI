@@ -53,10 +53,9 @@ namespace wg
 		{
 		};
 
-	protected:
-
-
 		PackSlot(Holder *pHolder) : PaddedSlot(pHolder) {}
+
+	protected:
 
 		bool			bResizeRequired = false;
 		float			weight = 1.f;				// Weight for space allocation.
@@ -78,8 +77,12 @@ namespace wg
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public CPaddedSlotArray<PackSlot>::Holder
+		class Holder : public CPaddedSlotArray<PackSlot>::Holder 	/** @private */
 		{
+		public:
+			virtual void	_reweightSlots(PackSlot * pSlot, int nb, float weight) = 0;
+			virtual void	_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights) = 0;
+			virtual void	_refreshChildGeo() = 0;
 		};
 
 		//.____ Geometry _______________________________________________________
@@ -99,8 +102,10 @@ namespace wg
 		inline CPackSlotArray_p	ptr() { return CPackSlotArray_p(this); }
 
 	protected:
-		CPackSlotArray(SlotArray<PackSlot> * pSlotArray, Holder * pHolder) : CPaddedSlotArray<PackSlot>(pSlotArray, pHolder) {}
+		CPackSlotArray(Holder * pHolder) : CPaddedSlotArray<PackSlot>(pHolder) {}
 
+		Holder *		_holder() { return static_cast<Holder*>(CPaddedSlotArray<PackSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CPaddedSlotArray<PackSlot>::_holder()); }
 	};
 
 	//____ PackPanel ________________________________________________________________
@@ -122,7 +127,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CPackSlotArray		children;
+		CPackSlotArray		slots;
 
 		//.____ Identification __________________________________________
 
@@ -223,9 +228,6 @@ namespace wg
 
 		int			_setItemLengths(SizeBrokerItem * pItems, int nItems, int totalLength) const;
 		int			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
-
-
-		SlotArray<PackSlot> m_children;
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;

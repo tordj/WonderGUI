@@ -285,8 +285,8 @@ void update_displaymode()
 
 			auto pPack = PackPanel::create();
 			pPack->setOrientation(Orientation::Horizontal);
-			pPack->children << g_pTesteeCanvas;
-			pPack->children << g_pReferenceCanvas;
+			pPack->slots << g_pTesteeCanvas;
+			pPack->slots << g_pReferenceCanvas;
 			viewChild = pPack;
 
 			break;
@@ -329,7 +329,7 @@ void update_displaymode()
 
 void refresh_performance_display()
 {
-	g_pPerformanceList->children.clear();
+	g_pPerformanceList->slots.clear();
 
 	for (TestEntry t : g_tests)
 	{
@@ -362,11 +362,11 @@ void refresh_performance_display()
 			pValueRef->text.set(value);
 			pValueRef->text.setTextMapper(g_pPerformanceValueMapper);
 
-			pValuePacker->children << pValueTestee;
-			pValuePacker->children << pValueRef;
+			pValuePacker->slots << pValueTestee;
+			pValuePacker->slots << pValueRef;
 
-			pEntry->children << pLabel;
-			pEntry->children << pValuePacker;
+			pEntry->slots << pLabel;
+			pEntry->slots << pValuePacker;
 
 //			std::map<int,Widget_p> v;
 //			v[1] = Button::create();
@@ -377,13 +377,13 @@ void refresh_performance_display()
 			Widget_p * pBegin = nullptr;
 			Widget_p * pEnd = nullptr;
 
-//			pEntry->children.add(1, 2);
-			pEntry->children.add(v.begin(), v.end());
+//			pEntry->slots.add(1, 2);
+			pEntry->slots.add(v.begin(), v.end());
 
-			pEntry->children.setWeight(0, 2, { 0.f,1.f });
-//			pEntry->children.setPadding(1, { 0,0,0,10 });
+			pEntry->slots.setWeight(0, 2, { 0.f,1.f });
+//			pEntry->slots.setPadding(1, { 0,0,0,10 });
 
-			g_pPerformanceList->children << pEntry;
+			g_pPerformanceList->slots << pEntry;
 		}
 	}
 }
@@ -762,8 +762,8 @@ bool setup_chrome()
 	auto pMidSection = PackPanel::create();
 	pMidSection->setOrientation(Orientation::Horizontal);
 	pMidSection->setSizeBroker(UniformSizeBroker::create());
-	auto it = pLayerStack->children << pMidSection;
-	pLayerStack->children.setSizePolicy(it, SizePolicy2D::Stretch);
+	auto it = pLayerStack->slots << pMidSection;
+	pLayerStack->slots.setSizePolicy(it, SizePolicy2D::Stretch);
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setOrientation(Orientation::Vertical);
@@ -783,18 +783,18 @@ bool setup_chrome()
 	pViewPanel->setSkin( StaticColorSkin::create(Color::SlateGrey) );
 	g_pViewPanel = pViewPanel;
 
-	pMidSection->children << pCanvasPanel;
-	pMidSection->children << pSidebar;
+	pMidSection->slots << pCanvasPanel;
+	pMidSection->slots << pSidebar;
 
-	pMidSection->children.setWeight(0, 1.f);
-	pMidSection->children.setWeight(1, 0.f);
+	pMidSection->slots.setWeight(0, 1.f);
+	pMidSection->slots.setWeight(1, 0.f);
 
 
-	pCanvasPanel->children << pViewNav;
-	pCanvasPanel->children << pViewPanel;
+	pCanvasPanel->slots << pViewNav;
+	pCanvasPanel->slots << pViewPanel;
 
-	pCanvasPanel->children.setWeight(0, 0.f);
-	pCanvasPanel->children.setWeight(1, 1.f);
+	pCanvasPanel->slots.setWeight(0, 0.f);
+	pCanvasPanel->slots.setWeight(1, 1.f);
 
 
 	// Setup view navigator
@@ -805,17 +805,17 @@ bool setup_chrome()
 	auto pRightFiller = Filler::create();
 	auto pDispZoomSection = PackPanel::create();
 
-	pViewNav->children << pClipSection;
-	pViewNav->children << pLeftFiller;
-	pViewNav->children << pDispModeSection;
-	pViewNav->children << pRightFiller;
-	pViewNav->children << pDispZoomSection;
+	pViewNav->slots << pClipSection;
+	pViewNav->slots << pLeftFiller;
+	pViewNav->slots << pDispModeSection;
+	pViewNav->slots << pRightFiller;
+	pViewNav->slots << pDispZoomSection;
 
-	pViewNav->children.setWeight(0, 0.f);
-	pViewNav->children.setWeight(1, 1.f);
-	pViewNav->children.setWeight(2, 0.f);
-	pViewNav->children.setWeight(3, 1.f);
-	pViewNav->children.setWeight(4, 0.f);
+	pViewNav->slots.setWeight(0, 0.f);
+	pViewNav->slots.setWeight(1, 1.f);
+	pViewNav->slots.setWeight(2, 0.f);
+	pViewNav->slots.setWeight(3, 1.f);
+	pViewNav->slots.setWeight(4, 0.f);
 
 	// Setup clip mode section
 
@@ -845,10 +845,10 @@ bool setup_chrome()
 	pManyButton->label.setStyle(g_pButtonLabelStyle);
 	pManyButton->label.setTextMapper(g_pButtonLabelMapper);
 
-	pClipSection->children << pClipLabel;
-	pClipSection->children << pNoClipButton;
-	pClipSection->children << pFewButton;
-	pClipSection->children << pManyButton;
+	pClipSection->slots << pClipLabel;
+	pClipSection->slots << pNoClipButton;
+	pClipSection->slots << pFewButton;
+	pClipSection->slots << pManyButton;
 	
 	Base::msgRouter()->addRoute(pNoClipButton, MsgType::Select, [](Msg* pMsg) { setup_cliplist(ClipList::One); });
 	Base::msgRouter()->addRoute(pFewButton, MsgType::Select, [](Msg* pMsg) { setup_cliplist(ClipList::Few); });
@@ -890,11 +890,11 @@ bool setup_chrome()
 	pTimeButton->label.setStyle(g_pButtonLabelStyle);
 	pTimeButton->label.setTextMapper(g_pButtonLabelMapper);
 
-	pDispModeSection->children	<< pTesteeButton;
-	pDispModeSection->children	<< pRefButton;
-	pDispModeSection->children	<< pBothButton;
-	pDispModeSection->children	<< pDiffButton;
-	pDispModeSection->children  << pTimeButton;
+	pDispModeSection->slots	<< pTesteeButton;
+	pDispModeSection->slots	<< pRefButton;
+	pDispModeSection->slots	<< pBothButton;
+	pDispModeSection->slots	<< pDiffButton;
+	pDispModeSection->slots  << pTimeButton;
 
 	Base::msgRouter()->addRoute(pTesteeButton, MsgType::Select, [](Msg* pMsg) {
 		g_displayMode = DisplayMode::Testee;
@@ -950,10 +950,10 @@ bool setup_chrome()
 	pX8Button->label.setStyle(g_pButtonLabelStyle);
 	pX8Button->label.setTextMapper(g_pButtonLabelMapper);
 
-	pDispZoomSection->children << pX1Button;
-	pDispZoomSection->children << pX2Button;
-	pDispZoomSection->children << pX4Button;
-	pDispZoomSection->children << pX8Button;
+	pDispZoomSection->slots << pX1Button;
+	pDispZoomSection->slots << pX2Button;
+	pDispZoomSection->slots << pX4Button;
+	pDispZoomSection->slots << pX8Button;
 
 	Base::msgRouter()->addRoute(pX1Button, MsgType::Select, [](Msg* pMsg) {
 		g_zoomFactor = 1.f;
@@ -1023,7 +1023,7 @@ bool setup_chrome()
 		auto pEntry = TextDisplay::create();
 		pEntry->setId(id++);
 		pEntry->text.set(test.name);
-		pTestList->children.add(pEntry);
+		pTestList->slots.add(pEntry);
 	}
 
 	auto pTestScrollPanel = ScrollPanel::create();
@@ -1039,7 +1039,7 @@ bool setup_chrome()
 
 	pTestScrollPanel->vscrollbar = pTestScrollbar;
 
-	pSidebar->children << pTestScrollPanel;
+	pSidebar->slots << pTestScrollPanel;
 
 
 	// Setup performance display
@@ -1088,13 +1088,13 @@ bool setup_chrome()
 
 		auto pFiller = Filler::create();
 
-		auto it = pBottom->children << pFiller;
-		pBottom->children << pRefresh;
+		auto it = pBottom->slots << pFiller;
+		pBottom->slots << pRefresh;
 
 		//
 
-		pBase->children << pList;
-		pBase->children << pBottom;
+		pBase->slots << pList;
+		pBase->slots << pBottom;
 
 		g_pPerformanceDisplay = pBase;
 		g_pPerformanceList = pList;

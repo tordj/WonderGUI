@@ -36,7 +36,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_selectSlots(m_pSlotArray->slot(index), 1);
+		_holder()->_selectSlots(_slot(index), 1);
 	}
 
 	template <class SlotType>
@@ -52,7 +52,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_selectSlots(m_pSlotArray->slot(index), amount);
+		_holder()->_selectSlots(_slot(index), amount);
 	};
 
 	template <class SlotType>
@@ -70,7 +70,7 @@ namespace wg
 	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::selectAll()
 	{
-		_holder()->_selectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+		_holder()->_selectSlots(_slot(0), size());
 	};
 
 	//____ unselect() _________________________________________________________
@@ -80,7 +80,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_unselectSlots(m_pSlotArray->slot(index), 1);
+		_holder()->_unselectSlots(_slot(index), 1);
 	}
 
 	template <class SlotType>
@@ -96,7 +96,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_unselectSlots(m_pSlotArray->slot(index), amount);
+		_holder()->_unselectSlots(_slot(index), amount);
 	};
 
 	template <class SlotType>
@@ -114,7 +114,7 @@ namespace wg
 	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::unselectAll()
 	{
-		_holder()->_unselectSlots(m_pSlotArray->slot(0), m_pSlotArray->size());
+		_holder()->_unselectSlots(_begin(), size());
 	};
 
 	//____ isSelected() ________________________________________________________
@@ -124,7 +124,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return m_pSlotArray->slot(index)->_widget()->state().isSelected();
+		return _slot(index)->_widget()->state().isSelected();
 	}
 
 	template <class SlotType>

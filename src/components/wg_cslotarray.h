@@ -25,7 +25,6 @@
 #pragma once
 
 #include <wg_cdynamicslotcollection.h>
-#include <wg_slotarray.h>
 
 namespace wg
 {
@@ -132,31 +131,32 @@ namespace wg
 
 		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
 
-		SlotType& operator[](int index) const { return *m_pSlotArray->slot(index); }
+		inline SlotType& operator[](int index) { return m_pArray[index]; }
+		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const override { return m_pSlotArray->size(); }
-		inline int		isEmpty() const override { return m_pSlotArray->isEmpty(); }
+		inline int		size() const override { return m_size; }
+		inline bool		isEmpty() const override { return (m_size == 0); }
 
 		inline SlotType& at(int index) const
 		{
 //			if (index < 0 || index >= m_pSlotArray->size())
 //				return nullptr;
 
-			return *m_pSlotArray->slot(index);
+			return m_pArray[index];
 		}
 
 		inline int		index(Widget * pChild) const override
 		{
 			if (pChild->_holder() && pChild->_holder()->_container() == m_pHolder->_object())
-				return m_pSlotArray->index(static_cast<SlotType*>(pChild->_slot()));
+				return _index(static_cast<SlotType*>(pChild->_slot()));
 
 			return -1;
 		}
 
-		inline int		capacity() const override { return m_pSlotArray->capacity(); }
-		inline void		setCapacity(int capacity) override { m_pSlotArray->setCapacity(capacity); }
+		inline int		capacity() const override { return m_capacity; }
+		inline void		setCapacity(int capacity) override { if (capacity != m_capacity) _reallocArray(capacity); }
 
 		iterator		add(Widget * pWidget);
 		iterator		add(const Widget_p pWidgets[], int amount);
@@ -218,22 +218,23 @@ namespace wg
 
 		void			unhideAll() override;
 		
-		inline bool		isVisible(int index) override { return m_pSlotArray->slot(index)->bVisible; }
+		inline bool		isVisible(int index) override { return _slot(index)->bVisible; }
 
 		inline bool		isVisible(const SlotIterator& it) override { return static_cast<const iterator&>(it)._slot()->bVisible; }
 
 
 		//.____ Misc _______________________________________________________
 
-		inline iterator	begin() const { return iterator(m_pSlotArray->begin()); }
-		inline iterator	end() const { return iterator(m_pSlotArray->end()); }
+		inline iterator	begin() const { return iterator(_begin()); }
+		inline iterator	end() const { return iterator(_end()); }
 
 
 	protected:
-		CSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : m_pSlotArray(pSlotArray), m_pHolder(pHolder) {}
+		CSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		~CSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
 
-		SlotIterator	_begin() const override;
-		SlotIterator	_end() const override;
+		SlotIterator	_begin_iterator() const override;
+		SlotIterator	_end_iterator() const override;
 		BasicSlot&		_at(int index) const override;
 
 		Object *		_object() override;
@@ -253,8 +254,79 @@ namespace wg
 
 		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 
-		SlotArray<SlotType> *	m_pSlotArray;
-		Holder *				m_pHolder;
+
+	//////
+		inline Holder *		_holder() { return m_pHolder; }
+		inline const Holder *	_holder() const { return m_pHolder; }
+
+		SlotType*		_addEmpty() { if (m_size == m_capacity) _reallocArray(((m_capacity + 1) * 2)); _initBlock(_end()); return &m_pArray[m_size++]; }
+		SlotType*		_addEmpty(int entries) { if (m_size + entries > m_capacity) _reallocArray(m_capacity + entries); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
+
+		SlotType*		_insertEmpty(int index) { return _insertBlock(&m_pArray[index], 1); }
+		SlotType*		_insertEmpty(int index, int entries) { return _insertBlock(&m_pArray[index], entries); }
+		SlotType*		_insertEmpty(SlotType * pPos) { return _insertBlock(pPos, 1); }
+		SlotType*		_insertEmpty(SlotType * pPos, int entries) { return _insertBlock(pPos, entries); }
+
+		SlotType*		_remove(int index) { return _deleteBlock(&m_pArray[index], &m_pArray[index + 1]); }
+		SlotType*		_remove(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
+		SlotType*		_remove(SlotType * pPos) { return _deleteBlock(pPos, pPos + 1); }
+		SlotType*		_remove(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
+
+		void			_move(int index, int newIndex) { _move(&m_pArray[index], &m_pArray[newIndex]); }
+		void			_move(SlotType * pFrom, SlotType * pTo);
+
+		bool			_contains(const SlotType * pSlot) const { return (pSlot >= m_pArray && pSlot <= _last()); }
+
+		void			_clear() { _killBlock(_begin(), _end()); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
+
+
+		SlotType*	_slot(int index) const { return &m_pArray[index]; }
+
+
+		SlotType*	_prev(const SlotType* pSlot) const { if (pSlot > m_pArray) return const_cast<SlotType*>(pSlot) - 1; return 0; }
+		SlotType*	_next(const SlotType* pSlot) const { if (pSlot < &m_pArray[m_size - 1]) return const_cast<SlotType*>(pSlot) + 1; return 0; }
+
+		int			_index(const SlotType* pSlot) const { return int(pSlot - m_pArray); }
+
+		SlotType *	_find(const Widget* pWidget) const;
+
+		SlotType*	_first() const { return m_pArray; }
+		SlotType*	_last() const { return m_pArray + (m_size - 1); }
+
+		SlotType*	_begin() const { return m_pArray; }
+		SlotType*	_end() const { return m_pArray + m_size; }
+
+		void		_reorder(int order[]);
+
+	private:
+
+		void	_reallocArray(int capacity);
+
+		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd);
+
+		SlotType* _deleteBlock(SlotType * pBeg, SlotType * pEnd);
+
+		SlotType*	_insertBlock(SlotType * pPos, int entries);
+
+		inline void	_killBlock(SlotType * pBlock)
+		{
+			pBlock->~SlotType();
+		}
+
+		void	_killBlock(SlotType * pBeg, SlotType * pEnd);
+
+		inline void	_initBlock(SlotType * pBlock)
+		{
+			new (pBlock) SlotType(m_pHolder);
+		}
+
+		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
+
+		int			m_capacity;
+		int			m_size;
+		SlotType *	m_pArray;
+
+		Holder *	m_pHolder;
 	};
 
 } // namespace wg

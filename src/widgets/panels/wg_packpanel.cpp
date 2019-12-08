@@ -25,8 +25,6 @@
 #include <wg_packpanel.h>
 #include <wg_base.h>
 
-
-#include <wg_slotarray.impl.h>
 #include <wg_cpaddedslotarray.impl.h>
 
 namespace wg
@@ -35,7 +33,6 @@ namespace wg
 
 	template class CSlotArray<PackSlot>;
 	template class CPaddedSlotArray<PackSlot>;
-	template class SlotArray<PackSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 
@@ -43,11 +40,11 @@ namespace wg
 
 	bool CPackSlotArray::setWeight(int index, float weight)
 	{
-		if (index < 0 || index >= m_pSlotArray->size() || weight < 0.f)
+		if (index < 0 || index >= size() || weight < 0.f)
 			return false;
 
-		auto pSlot = m_pSlotArray->slot(index);
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, 1, weight);
+		auto pSlot = _slot(index);
+		_holder()->_reweightSlots(pSlot, 1, weight);
 		return true;
 	}
 
@@ -56,17 +53,17 @@ namespace wg
 		//TODO: Add assert
 
 		auto pSlot = static_cast<PackSlot*>(it._slot());
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, 1, weight);
+		_holder()->_reweightSlots(pSlot, 1, weight);
 		return true;
 	}
 
 	bool CPackSlotArray::setWeight(int index, int amount, float weight)
 	{
-		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || weight < 0.f)
+		if (index < 0 || amount <= 0 || index + amount >= size() || weight < 0.f)
 			return false;
 
-		auto pSlot = m_pSlotArray->slot(index);
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, amount, weight);
+		auto pSlot = _slot(index);
+		_holder()->_reweightSlots(pSlot, amount, weight);
 		return true;
 	}
 
@@ -76,17 +73,17 @@ namespace wg
 
 		auto pBeg = static_cast<PackSlot*>(beg._slot());
 		auto pEnd = static_cast<PackSlot*>(end._slot());
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
+		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weight);
 		return true;
 	}
 
 	bool CPackSlotArray::setWeight(int index, int amount, const std::initializer_list<float> weights)
 	{
-		if (index < 0 || amount <= 0 || index + amount >= m_pSlotArray->size() || amount >(int) weights.size())
+		if (index < 0 || amount <= 0 || index + amount >= size() || amount >(int) weights.size())
 			return false;
 
-		auto pSlot = m_pSlotArray->slot(index);
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pSlot, amount, weights.begin());
+		auto pSlot = _slot(index);
+		_holder()->_reweightSlots(pSlot, amount, weights.begin());
 		return true;
 	}
 
@@ -96,16 +93,16 @@ namespace wg
 
 		auto pBeg = static_cast<PackSlot*>(beg._slot());
 		auto pEnd = static_cast<PackSlot*>(end._slot());
-		static_cast<PackPanel*>(m_pHolder)->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
+		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
 		return true;
 	}
 
 	float CPackSlotArray::weight(int index) const
 	{
-		if (index < 0 || index >= m_pSlotArray->size())
+		if (index < 0 || index >= size())
 			return 0.f;
 
-		return m_pSlotArray->slot(index)->weight;
+		return _slot(index)->weight;
 
 	}
 
@@ -122,7 +119,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PackPanel::PackPanel() : m_children(this), children( &m_children, this )
+	PackPanel::PackPanel() : slots(this)
 	{
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = true;
@@ -211,7 +208,7 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 
-				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 				int nItems = _populateSizeBrokerArray(pItemArea);
@@ -222,7 +219,7 @@ namespace wg
 
 				SizeBrokerItem * pI = pItemArea;
 
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible )
 					{
@@ -239,7 +236,7 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible && pS->preferredSize.h > height )
 							height = pS->preferredSize.h;
@@ -252,7 +249,7 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 
-				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 				int nItems = _populateSizeBrokerArray(pItemArea, width);
@@ -267,7 +264,7 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible )
 						height += pS->_paddedMatchingHeight( width );
@@ -293,7 +290,7 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 
-				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 				int nItems = _populateSizeBrokerArray(pItemArea);
@@ -304,7 +301,7 @@ namespace wg
 
 				SizeBrokerItem * pI = pItemArea;
 
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible )
 					{
@@ -321,7 +318,7 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible && pS->preferredSize.w > width )
 							width = pS->preferredSize.w;
@@ -334,7 +331,7 @@ namespace wg
 			{
 				// Allocate and populate SizeBroker array
 
-				int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+				int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 				SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 				int nItems = _populateSizeBrokerArray(pItemArea, height);
@@ -349,7 +346,7 @@ namespace wg
 			}
 			else
 			{
-				for( auto pS = m_children.begin() ; pS != m_children.end() ; pS++ )
+				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
 					if( pS->bVisible )
 						width += pS->_paddedMatchingWidth( height );
@@ -367,20 +364,20 @@ namespace wg
 
 	Widget * PackPanel::_firstChild() const
 	{
-		if (m_children.isEmpty())
+		if (slots.isEmpty())
 			return nullptr;
 
-		return m_children.first()->_widget();
+		return slots._first()->_widget();
 	}
 
 	//____ _lastChild() __________________________________________________________
 
 	Widget * PackPanel::_lastChild() const
 	{
-		if (m_children.isEmpty())
+		if (slots.isEmpty())
 			return nullptr;
 
-		return m_children.last()->_widget();
+		return slots._last()->_widget();
 	}
 
 
@@ -388,11 +385,11 @@ namespace wg
 
 	void PackPanel::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			package.pSlot = nullptr;
 		else
 		{
-			PackSlot * pSlot = m_children.first();
+			PackSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
 			package.geo = pSlot->geo;
 		}
@@ -404,7 +401,7 @@ namespace wg
 	{
 		PackSlot * pSlot = (PackSlot*) package.pSlot;
 
-		if( pSlot == m_children.last() )
+		if( pSlot == slots._last() )
 			package.pSlot = nullptr;
 		else
 		{
@@ -534,7 +531,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
-		if (pSlot > m_children.begin())
+		if (pSlot > slots._begin())
 			return pSlot[-1]._widget();
 
 		return nullptr;
@@ -546,7 +543,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
-		if (pSlot < m_children.last())
+		if (pSlot < slots._last())
 			return pSlot[1]._widget();
 
 		return nullptr;
@@ -557,7 +554,7 @@ namespace wg
 	void PackPanel::_releaseChild(BasicSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
-		m_children.remove(static_cast<PackSlot*>(pSlot));
+		slots._remove(static_cast<PackSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -565,7 +562,7 @@ namespace wg
 	void PackPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewChild)
 	{
 		auto pSlot = static_cast<PackSlot* > (_pSlot);
-		children._releaseGuardPointer(pNewChild, &pSlot);
+		slots._releaseGuardPointer(pNewChild, &pSlot);
 
 		pSlot->_setWidget(pNewChild);
 
@@ -652,7 +649,7 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 
-			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+			int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 			int nItems = _populateSizeBrokerArray(pItemArea);
@@ -662,7 +659,7 @@ namespace wg
 			length = _setPreferredLengths( pItemArea, nItems );
 
 			SizeBrokerItem * pI = pItemArea;
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
 				if( pS->bVisible )
 				{
@@ -682,7 +679,7 @@ namespace wg
 		{
 			if( m_bHorizontal )
 			{
-				for (auto p = m_children.begin(); p != m_children.end(); p++)
+				for (auto p = slots._begin(); p != slots._end(); p++)
 				{
 					if( p->bVisible )
 					{
@@ -694,7 +691,7 @@ namespace wg
 			}
 			else
 			{
-				for (auto p = m_children.begin(); p != m_children.end(); p++)
+				for (auto p = slots._begin(); p != slots._end(); p++)
 				{
 					if( p->bVisible )
 					{
@@ -715,7 +712,7 @@ namespace wg
 
 	void PackPanel::_refreshChildGeo( bool bRequestRender )
 	{
-		if( m_children.isEmpty() )
+		if( slots.isEmpty() )
 			return;
 
 		SizeI sz = m_size;
@@ -738,7 +735,7 @@ namespace wg
 		{
 			CoordI pos;
 			RectI geo;
-			for (auto p = m_children.begin(); p != m_children.end(); p++)
+			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->bVisible )
 				{
@@ -808,7 +805,7 @@ namespace wg
 		{
 			// Allocate and populate SizeBroker array
 
-			int arrayBytes = sizeof(SizeBrokerItem)*m_children.size();
+			int arrayBytes = sizeof(SizeBrokerItem)*slots.size();
 			SizeBrokerItem * pItemArea = reinterpret_cast<SizeBrokerItem*>(Base::memStackAlloc(arrayBytes));
 
 			int nItems = _populateSizeBrokerArray(pItemArea, givenBreadth);
@@ -821,7 +818,7 @@ namespace wg
 
 			CoordI pos;
 			RectI geo;
-			for (auto p = m_children.begin(); p != m_children.end(); p++)
+			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->bVisible )
 				{
@@ -900,7 +897,7 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
 				if( pS->bVisible )
 				{
@@ -914,7 +911,7 @@ namespace wg
 		}
 		else
 		{
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
 				if( pS->bVisible )
 				{
@@ -936,7 +933,7 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
 				if( pS->bVisible )
 				{
@@ -950,7 +947,7 @@ namespace wg
 		}
 		else
 		{
-			for (auto pS = m_children.begin(); pS != m_children.end(); pS++)
+			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
 				if( pS->bVisible )
 				{

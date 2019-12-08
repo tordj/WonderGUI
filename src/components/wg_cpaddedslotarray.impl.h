@@ -38,7 +38,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(m_pSlotArray->slot(index), 1, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(_slot(index), 1, Util::qpixToRaw(padding));
 		return true;
 	}
 
@@ -56,7 +56,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(m_pSlotArray->slot(index), amount, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(_slot(index), amount, Util::qpixToRaw(padding));
 		return true;
 	}
 
@@ -76,7 +76,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(m_pSlotArray->slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
+		_holder()->_repadSlots(_slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
 		return true;
 	}
 

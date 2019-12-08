@@ -45,12 +45,10 @@ namespace wg
 
 
 //		using		iterator = SlotArrayIterator<SlotType>;
-		using		CSlotArray<SlotType>::m_pSlotArray;
-		using		CSlotArray<SlotType>::m_pHolder;
 
 		/** @private */
 
-		CSelectableSlotArray(SlotArray<SlotType> * pSlotArray, Holder * pHolder) : CSlotArray<SlotType>(pSlotArray,pHolder) {}
+		CSelectableSlotArray(Holder * pHolder) : CSlotArray<SlotType>(pHolder) {}
 
 		//.____ Control _______________________________________________________
 
@@ -71,7 +69,8 @@ namespace wg
 		bool	isSelected(const SlotIterator& it);
 
 	protected:
-		Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+		Holder * _holder() { return static_cast<Holder*>(CSlotArray<SlotType>::_holder()); }
+		const Holder * _holder() const { return static_cast<const Holder*>(CSlotArray<SlotType>::_holder()); }
 
 
 	};

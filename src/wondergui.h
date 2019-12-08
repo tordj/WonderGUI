@@ -30,7 +30,6 @@
 #include <wg_msg.h>
 #include <wg_strongcomponentptr.h>
 #include <wg_types.h>
-#include <wg_slotarray.h>
 #include <wg_codepages.h>
 #include <wg_font.h>
 #include <wg_strongptr.h>
