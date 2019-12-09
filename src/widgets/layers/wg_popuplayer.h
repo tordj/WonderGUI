@@ -25,6 +25,9 @@
 #pragma once
 
 #include <wg_layer.h>
+#include <wg_cslotcollection.h>
+
+#include <vector>
 
 namespace wg
 {
@@ -40,7 +43,7 @@ namespace wg
 	class PopupSlot : public LayerSlot		/** @private */
 	{
 		friend class PopupLayer;
-		friend class CPopupSlotArray;
+		friend class CPopupSlots;
 
 	public:
 
@@ -75,50 +78,68 @@ namespace wg
 	};
 
 
-	class CPopupSlotArray;
-	typedef	StrongComponentPtr<CPopupSlotArray>	CPopupSlotArray_p;
-	typedef	WeakComponentPtr<CPopupSlotArray>	CPopupSlotArray_wp;
+	class CPopupSlots;
+	typedef	StrongComponentPtr<CPopupSlots>	CPopupSlots_p;
+	typedef	WeakComponentPtr<CPopupSlots>	CPopupSlots_wp;
 
-	//____ CPopupSlotArray ________________________________________________________
+	//____ CPopupSlots ________________________________________________________
 
-	class CPopupSlotArray : public Component
+class CPopupSlots : public CSlotCollection
 	{
+		friend class PopupLayer;
+		
 	public:
+		
+		class Holder : public PopupSlot::Holder
+		{
+		public:
+			void		_removeSlots(int ofs, int nb);
+			void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
+		};
+		
 		/** @private */
-
-		CPopupSlotArray(PopupLayer * pHolder) : m_pHolder(pHolder) {}
+		CPopupSlots(Holder * pHolder) : m_pHolder(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline CPopupSlotArray_p	ptr() { return CPopupSlotArray_p(this); }
+		inline CPopupSlots_p	ptr() { return CPopupSlots_p(this); }
 
 		//.____ Operators _____________________________________________________
 
-		Widget& operator[](int index) const;
+		PopupSlot& operator[](int index) { return m_slots[index]; }
+		const PopupSlot& operator[](int index) const { return m_slots[index]; }
 
 		//.____ Content _______________________________________________________
 
-		int		size() const;
+		int		size() const override { return (int) m_slots.size();}
+		bool	isEmpty() const override { return m_slots.empty();}
+
+		int 	index(Widget * pChild) const override;
+		
 		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();
 
-		Widget_p at(int index) const;
-
 	protected:
+
+		iterator	_begin_iterator() override;
+		iterator	_end_iterator() override;
+		BasicSlot&	_at(int index) override { return m_slots.at(index); };
+
 		Object *		_object() override;
 		const Object *	_object() const override;
-		PopupLayer *	m_pHolder;
 
+		std::vector<PopupSlot>	m_slots;
+		Holder *	m_pHolder;
 	};
 
 
 	//____ PopupLayer ____________________________________________________________
 
-	class PopupLayer : public Layer, protected PopupSlot::Holder
+	class PopupLayer : public Layer, protected CPopupSlots::Holder
 	{
-		friend class CPopupSlotArray;
+		friend class CPopupSlots;
 
 	public:
 
@@ -128,7 +149,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CPopupSlotArray	popups;
+		CPopupSlots	popupSlots;
 
 		//.____ Identification __________________________________________
 

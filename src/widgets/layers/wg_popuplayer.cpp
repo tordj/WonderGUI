@@ -29,6 +29,7 @@
 #include <wg_inputhandler.h>
 #include <wg_cslotarray.impl.h>
 
+#include <algorithm>
 
 namespace wg
 {
@@ -37,46 +38,43 @@ namespace wg
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 
-	//____ operator[] __________________________________________________________
 
-	Widget& CPopupSlotArray::operator[](int index) const
+	//____ index() ____________________________________________________________
+
+	int CPopupSlots::index(Widget * pChild) const
 	{
-		return * m_pHolder->m_popups.slot(index)->_widget();
+		
 	}
 
-	//____ size() ______________________________________________________________
+	//____ _begin_iterator() ___________________________________________________
 
-	int CPopupSlotArray::size() const
+	CPopupSlots::iterator CPopupSlots::_begin_iterator()
 	{
-		return m_pHolder->m_popups.size();
 	}
 
-	//____ at() _______________________________________________________________
+	//____ _end_iterator() _____________________________________________________
 
-	Widget_p CPopupSlotArray::at( int index) const
+	CPopupSlots::iterator CPopupSlots::_end_iterator()
 	{
-		if( index < 0 || index >= m_pHolder->m_popups.size() )
-			return nullptr;
-
-		return Widget_p(m_pHolder->m_popups.slot(index)->_widget());
 	}
+
 
 	//____ _object() ___________________________________________________________
 
-	Object * CPopupSlotArray::_object()
+	Object * CPopupSlots::_object()
 	{
-		return m_pHolder;
+		return m_pHolder->_object();
 	}
 
-	const Object * CPopupSlotArray::_object() const
+	const Object * CPopupSlots::_object() const
 	{
-		return m_pHolder;
+		return m_pHolder->_object();
 	}
 
 
 	//____ push() ________________________________________________
 
-	void CPopupSlotArray::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void CPopupSlots::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		m_pHolder->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
@@ -84,43 +82,40 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void CPopupSlotArray::pop(int nb)
+	void CPopupSlots::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
 
-		nb = min(nb, m_pHolder->m_popups.size());
+		nb = std::min(nb, (int) m_slots.size());
 
 		m_pHolder->_removeSlots(0,nb);
 	}
 
 	//____ pop() ________________________________________________
 
-	void CPopupSlotArray::pop(Widget * pPopup)
+	void CPopupSlots::pop(Widget * pPopup)
 	{
-		auto p = m_pHolder->m_popups.find(pPopup);
-
-		if (p)
-			m_pHolder->_removeSlots(0,m_pHolder->m_popups.index(p)+1);
+		int i = index(pPopup);
+		if (i > -1)
+			m_pHolder->_removeSlots(0,i+1);
 	}
-
-
 
 	//____ clear() ________________________________________________
 
-	void CPopupSlotArray::clear()
+	void CPopupSlots::clear()
 	{
-		if( m_pHolder->m_popups.isEmpty() )
+		if( m_slots.empty() )
 			return;
 
-		m_pHolder->_removeSlots(0,m_pHolder->m_popups.size());
+		m_pHolder->_removeSlots(0,(int)m_slots.size());
 	}
 
 
 
 	//____ Constructor ____________________________________________________________
 
-	PopupLayer::PopupLayer() : m_popups(this), popups(this)
+	PopupLayer::PopupLayer() : popupSlots(this)
 	{
 	}
 
@@ -336,33 +331,33 @@ namespace wg
 		// MenuPanel has its own _findWidget() method since we need special treatment of
 		// searchmode ACTION_TARGET when a menu is open.
 
-		if( mode == SearchMode::ActionTarget && !m_popups.isEmpty() )
+		if( mode == SearchMode::ActionTarget && !popupSlots.isEmpty() )
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
-			PopupSlot * pSlot = m_popups.first();
+			auto it = popupSlots.m_slots.begin();
 			Widget * pResult = 0;
 
-			while( pSlot < m_popups.end() && !pResult )
+			while( it != popupSlots.m_slots.end() && !pResult )
 			{
-				if( pSlot->geo.contains( ofs ) )
+				if( it->geo.contains( ofs ) )
 				{
-					if( pSlot->_widget()->isContainer() )
-						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
-					else if( pSlot->_markTest( ofs - pSlot->geo.pos() ) )
-						pResult = pSlot->_widget();
+					if( it->_widget()->isContainer() )
+						pResult = static_cast<Container*>(it->_widget())->_findWidget( ofs - it->geo.pos(), mode );
+					else if( it->_markTest( ofs - it->geo.pos() ) )
+						pResult = it->_widget();
 				}
-				pSlot++;
+				it++;
 			}
 
 			if( pResult == 0 )
 			{
 				// Check the root opener
 
-				PopupSlot * pSlot = m_popups.last();
-				if( pSlot->pOpener )
+				PopupSlot& slot = popupSlots.m_slots.back();
+				if( slot.pOpener )
 				{
-					Widget * pOpener = pSlot->pOpener.rawPtr();
+					Widget * pOpener = slot.pOpener.rawPtr();
 
 					CoordI 	absPos 		= ofs + _globalPos();
 					RectI	openerGeo 	= Util::qpixToRaw(pOpener->globalGeo());
@@ -403,7 +398,7 @@ namespace wg
 		// Remove portions of dirty rect that are covered by opaque upper siblings,
 		// possibly filling list with many small dirty rects instead.
 
-		if( !m_popups.isEmpty() )
+		if( !popupSlots.isEmpty() )
 		{
 			PopupSlot * pCover;
 
@@ -454,16 +449,12 @@ namespace wg
 
 		std::vector<WidgetRenderContext> renderList;
 
-		auto pSlot = m_popups.begin();
-
-		while (pSlot != m_popups.end() )
+		for( auto& slot : popupSlots.m_slots )
 		{
-			RectI geo = pSlot->geo + _canvas.pos();
+			RectI geo = slot.geo + _canvas.pos();
 
-			if (geo.intersectsWith(dirtBounds) && pSlot->state != PopupSlot::State::OpeningDelay)
-				renderList.push_back(WidgetRenderContext(pSlot, geo));
-
-			pSlot++;
+			if (geo.intersectsWith(dirtBounds) && slot.state != PopupSlot::State::OpeningDelay)
+				renderList.push_back(WidgetRenderContext(&slot, geo));
 		}
 
 		// Collect dirty patches from gfxDevice
@@ -571,7 +562,7 @@ namespace wg
 
 				// Update state for all open popups
 
-				for (auto& popup : m_popups)
+				for (auto& popup : popupSlots.m_slots)
 				{
 					switch (popup.state)
 					{
@@ -622,7 +613,7 @@ namespace wg
 
 				// Close any popup that is due for closing.
 
-				while (!m_popups.isEmpty() && m_popups.first()->state == PopupSlot::State::Closing && m_popups.first()->stateCounter >= m_closingFadeMs)
+				while (!popupSlots.isEmpty() && popupSlots.m_slots.front().state == PopupSlot::State::Closing && popupSlots.m_slots.front().stateCounter >= m_closingFadeMs)
 					_removeSlots(0, 1);
 
 			break;
@@ -630,14 +621,14 @@ namespace wg
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{
-				if (m_popups.isEmpty())
+				if (popupSlots.isEmpty())
 					break;
 
 				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPosRaw() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
-				PopupSlot * pSlot = m_popups.first();
+				PopupSlot * pSlot = &popupSlots.front();
 				if (pSlot && pSlot->state == PopupSlot::State::PeekOpen)
 				{
 					// Promote popup to state WeakOpen if pointer has entered its geo,
@@ -657,7 +648,7 @@ namespace wg
 				// to state WeakOpen if pointer has entered its geo.
 				// Promoting to WeakOpen Should also promote any ancestor also in state ClosingDelay.
 
-				for (auto& popup : m_popups)
+				for (auto& popup : popupSlots.m_slots)
 				{
 					if (popup.state == PopupSlot::State::ClosingDelay)
 					{
