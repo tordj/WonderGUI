@@ -115,10 +115,11 @@
 			};
 			buildConfigurationList = 0C623A411D8186E600DE671D /* Build configuration list for PBXProject "gfxdevice_software" */;
 			compatibilityVersion = "Xcode 10.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 0C623A3D1D8186E600DE671D;
 			productRefGroup = 0C623A471D8186E600DE671D /* Products */;

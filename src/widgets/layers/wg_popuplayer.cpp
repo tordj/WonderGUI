@@ -33,7 +33,7 @@
 namespace wg
 {
 	using namespace Util;
-	template class SlotArray<PopupSlot>;
+	template class CSlotArray<PopupSlot>;
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 

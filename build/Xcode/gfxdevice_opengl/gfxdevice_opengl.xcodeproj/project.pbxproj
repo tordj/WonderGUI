@@ -110,7 +110,7 @@
 		0CEBB5331D82F68A009F8C08 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastUpgradeCheck = 0940;
+				LastUpgradeCheck = 1120;
 				ORGANIZATIONNAME = Lushcode;
 				TargetAttributes = {
 					0CEBB53A1D82F68A009F8C08 = {
@@ -120,10 +120,11 @@
 			};
 			buildConfigurationList = 0CEBB5361D82F68A009F8C08 /* Build configuration list for PBXProject "gfxdevice_opengl" */;
 			compatibilityVersion = "Xcode 10.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 0CEBB5321D82F68A009F8C08;
 			productRefGroup = 0CEBB53C1D82F68A009F8C08 /* Products */;

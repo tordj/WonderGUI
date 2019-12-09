@@ -132,10 +132,11 @@
 			};
 			buildConfigurationList = 0C623A671D818F5B00DE671D /* Build configuration list for PBXProject "workbench" */;
 			compatibilityVersion = "Xcode 10.0";
-			developmentRegion = English;
+			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
 				en,
+				Base,
 			);
 			mainGroup = 0C623A631D818F5B00DE671D;
 			productRefGroup = 0C623A6D1D818F5B00DE671D /* Products */;

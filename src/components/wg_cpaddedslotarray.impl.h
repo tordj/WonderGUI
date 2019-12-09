@@ -31,6 +31,8 @@
 
 namespace wg
 {
+	template class CSlotArray< SlotType >;
+
 	//____ setPadding() _______________________________________________________
 
 	template<class SlotType>

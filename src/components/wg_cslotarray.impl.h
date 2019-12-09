@@ -160,7 +160,7 @@ namespace wg
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
 
-		m_pHolder->_willRemoveSlots(pBeg, pEnd-pBeg);
+		m_pHolder->_willRemoveSlots(pBeg, int(pEnd-pBeg) );
 		return iterator(_remove(pBeg, pEnd));
 	}
 
@@ -304,7 +304,7 @@ namespace wg
 
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_hideSlots(pBeg, pEnd-pBeg);
+		m_pHolder->_hideSlots(pBeg, int(pEnd-pBeg) );
 	};
 
 	//____ hideAll() _____________________________________________________________
@@ -349,7 +349,7 @@ namespace wg
 
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_unhideSlots(pBeg, pEnd-pBeg);
+		m_pHolder->_unhideSlots(pBeg, int(pEnd-pBeg) );
 	};
 
 	//____ unhideAll() ________________________________________________________
@@ -504,7 +504,7 @@ namespace wg
 
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_willRemoveSlots(pBeg, pEnd-pBeg);
+		m_pHolder->_willRemoveSlots(pBeg, int(pEnd-pBeg) );
 		return iterator(_remove(pBeg, pEnd));
 	}
 
