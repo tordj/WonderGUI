@@ -20,11 +20,11 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSLOTARRAY_DOT_H
-#define	WG_CSLOTARRAY_DOT_H
+#ifndef	WG_CSTATICSLOTARRAY_DOT_H
+#define	WG_CSTATICSLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_cdynamicslotcollection.h>
+#include <wg_cslotcollection.h>
 
 namespace wg
 {
@@ -101,35 +101,21 @@ namespace wg
 
 
 
-	//____ CSlotArray _________________________________________________________
+	//____ CStaticSlotArray _________________________________________________________
 
-	template<class SlotType> class CSlotArray : public CDynamicSlotCollection
+	template<class SlotType> class CStaticSlotArray : public CSlotCollection
 	{
 	public:
 
 		class Holder : public SlotType::Holder	/** @private */
 		{
 		public:
-			virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
-			virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
-			virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
-
-			virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
-			virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
-
-			//		virtual void	_willReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
-			//		virtual void	_didReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
-
-
+	
 		};
-
-
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
-
-		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
 
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
@@ -154,74 +140,6 @@ namespace wg
 
 			return -1;
 		}
-
-		inline int		capacity() const override { return m_capacity; }
-		inline void		setCapacity(int capacity) override { if (capacity != m_capacity) _reallocArray(capacity); }
-
-		iterator		add(Widget * pWidget);
-		iterator		add(const Widget_p pWidgets[], int amount);
-
-		template<typename Iterator>
-		iterator		add(const Iterator& beg, const Iterator& end)
-		{
-			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
-				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
-				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
-
-			int oldSize = size();
-
-			Iterator it = beg;
-			while (it != end)
-			{
-				add(*it++);
-			}
-
-			return begin() + oldSize;
-		}
-
-		void			insert(int index, Widget * pWidget) override;
-		iterator		insert(const SlotIterator& it, Widget * pWidget);
-		void			insert(int index, const Widget_p pWidgets[], int amount) override;
-		iterator		insert(const SlotIterator& it, const Widget_p pWidgets[], int amount);
-
-		void			remove(int index) override;
-		iterator		remove(const SlotIterator& pos);
-		void			remove(int index, int amount) override;
-		iterator		remove(const SlotIterator& beg, const SlotIterator& end);
-
-		void			clear() override;
-
-		//.____ Ordering ______________________________________________________
-
-		void			moveToFront(int index) override;
-		iterator		moveToFront(const SlotIterator& it);
-
-		void			moveToBack(int index) override;
-		iterator		moveToBack(const SlotIterator& it);
-
-		void			moveBefore(int index, int sibling) override;
-		iterator		moveBefore(const SlotIterator& it, const SlotIterator& sibling);
-
-		//.____ Appearance ____________________________________________________
-
-		void			hide(int index) override;
-		void			hide(const SlotIterator& it) override;
-		void			hide(int index, int amount) override;
-		void			hide(const SlotIterator& beg, const SlotIterator& end) override;
-
-		void			unhide(int index) override;
-		void			unhide(const SlotIterator& it) override;
-		void			unhide(int index, int amount) override;
-		void			unhide(const SlotIterator& beg, const SlotIterator& end) override;
-			
-		void			hideAll() override;
-
-		void			unhideAll() override;
-		
-		inline bool		isVisible(int index) override { return _slot(index)->bVisible; }
-
-		inline bool		isVisible(const SlotIterator& it) override { return static_cast<const iterator&>(it)._slot()->bVisible; }
-
 
 		//.____ Misc _______________________________________________________
 
@@ -330,4 +248,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CSLOTARRAY_DOT_H
+#endif //WG_CSTATICSLOTARRAY_DOT_H

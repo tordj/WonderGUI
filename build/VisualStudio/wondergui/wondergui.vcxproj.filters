@@ -485,6 +485,12 @@
     <ClInclude Include="..\..\..\src\components\wg_cbasicslot.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

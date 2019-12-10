@@ -157,6 +157,8 @@
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotcollection.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\components\wg_cspan.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctext.h" />

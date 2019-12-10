@@ -93,8 +93,8 @@ class CPopupSlots : public CSlotCollection
 		class Holder : public PopupSlot::Holder
 		{
 		public:
-			void		_removeSlots(int ofs, int nb);
-			void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
+			virtual void		_removeSlots(int ofs, int nb) = 0;
+			virtual void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) = 0;
 		};
 		
 		/** @private */
