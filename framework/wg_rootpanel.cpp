@@ -297,6 +297,10 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 	
 	if( m_pUpdatedRectOverlay )
 	{
+        // Reset cliplist, we don't need it anyway.
+        
+        m_pGfxDevice->clearClipList();
+
 		// Render our new overlays
 		
 		for( const WgRect * pRect = m_afterglowRects[0].Begin() ; pRect != m_afterglowRects[0].End() ; pRect++ )
@@ -313,10 +317,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 				m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Normal, *pRect, WG_SCALE_BASE );	// Overlays are not scaled
 			}		
 		}
-
 	}
-	
-
 
 	return true;
 }

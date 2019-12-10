@@ -68,6 +68,8 @@ void scrollPanelTest( WgRootPanel * pRoot );
 void baselineTest( WgRootPanel * pRoot );
 void packPanelStressTest( WgRootPanel * pRoot );
 void cursorInViewTest( WgRootPanel * pRoot );
+void flexHookGrowthTest( WgRootPanel * pRoot );
+void packPanelPaddingTest( WgRootPanel * pRoot );
 
 //#define USE_OPEN_GL
 
@@ -141,6 +143,7 @@ static int TestThread(void *ptr)
 
 int main ( int argc, char** argv )
 {
+    
 	//------------------------------------------------------
 	// Init SDL
 	//------------------------------------------------------
@@ -289,8 +292,10 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
-    cursorInViewTest( pRoot );
-    
+    packPanelPaddingTest( pRoot );
+//    flexHookGrowthTest( pRoot );
+
+//    cursorInViewTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
 //    scrollPanelTest(pRoot);
@@ -694,6 +699,68 @@ void packPanelStressTest( WgRootPanel * pRoot )
 //    pText2->SetText("TEXA");
     pText2->SetText("TEXT");
 
+    
+}
+
+//____ packPanelPaddingTest() _________________________________________________________
+
+void packPanelPaddingTest( WgRootPanel * pRoot )
+{
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    pBaseFlex->SetSkin( WgColorSkin::Create(WgColor::Yellow));
+
+    auto pPanelSkin = WgBoxSkin::Create(WgColor::Red);
+    pPanelSkin->SetContentPadding( {10,10,10,10} );
+
+    
+    auto pPackPanel = new WgPackPanel();
+    pPackPanel->SetSkin(pPanelSkin);
+    pBaseFlex->AddChild( pPackPanel, {10,10} );
+    
+    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
+    pTextSkin->SetContentPadding( 5 );
+
+    auto pText = new WgTextDisplay();
+    pText->SetText("TEXT  1.");
+    pText->SetSkin( pTextSkin );
+//    pText->SetTextWrap(true);
+    pText->SetEditMode(WgTextEditMode::Editable);
+    
+    auto pText2 = new WgTextDisplay();
+    pText2->SetText("TEXT 2.");
+    pText2->SetSkin( pTextSkin );
+//    pText2->SetTextWrap(true);
+    pText2->SetEditMode(WgTextEditMode::Editable);
+
+    pPackPanel->AddChild(pText);
+    pPackPanel->AddChild(pText2);
+}
+
+
+//____ flexHookGrowthTest() _________________________________________________________
+
+void flexHookGrowthTest( WgRootPanel * pRoot )
+{
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    pBaseFlex->SetSkin( WgColorSkin::Create(WgColor::Yellow));
+    
+    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
+    pTextSkin->SetContentPadding( {10,10,10,30} );
+    
+    auto pText = new WgTextDisplay();
+    pText->SetText("TEXT 1 WITH\nAUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
+    pText->SetSkin( pTextSkin );
+    pText->SetTextWrap(true);
+    pText->SetEditMode(WgTextEditMode::Editable);
+
+    
+    auto pkSizeCapsule = new WgSizeCapsule();
+    pkSizeCapsule->SetPreferredSize({ 200, 0 });
+    pkSizeCapsule->SetChild(pText);
+    
+    pBaseFlex->AddChild(pkSizeCapsule, {-20,-20}, WgOrigo::SouthWest );
     
 }
 

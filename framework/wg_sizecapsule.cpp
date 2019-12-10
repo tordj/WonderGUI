@@ -124,16 +124,16 @@ WgSize WgSizeCapsule::PreferredPixelSize() const
 	{
 		WgSize pref = m_hook.Widget()->PreferredPixelSize();
 
-		if( m_pixelsPreferred.w != 0 )
+		if( m_pixelsPreferred.w >= 0 )
 		{
 			pref.w = m_pixelsPreferred.w;
-            if( m_pixelsPreferred.h == 0 )
+            if( m_pixelsPreferred.h < 0 )
                 pref.h = m_hook.Widget()->MatchingPixelHeight(pref.w);
 		}
-		if( m_pixelsPreferred.h != 0 )
+		if( m_pixelsPreferred.h >= 0 )
 		{
 			pref.h = m_pixelsPreferred.h;
-            if( m_pixelsPreferred.w == 0 )
+            if( m_pixelsPreferred.w < 0 )
                 pref.w = m_hook.Widget()->MatchingPixelWidth(pref.h);
 		}
 
@@ -219,11 +219,11 @@ WgSize WgSizeCapsule::MaxPixelSize() const
 
 int WgSizeCapsule::MatchingPixelHeight( int width ) const
 {
-	if( m_pixelsPreferred.h > 0 )
+	if( m_pixelsPreferred.h >= 0 )
 	{
 		int h;
 
-		if (m_bKeepAspect && m_pixelsPreferred.w > 0 )
+		if (m_bKeepAspect && m_pixelsPreferred.w >= 0 )
 			h = width * m_pixelsPreferred.h / m_pixelsPreferred.w;
 		else
 			h = m_pixelsPreferred.h;
@@ -250,11 +250,11 @@ int WgSizeCapsule::MatchingPixelHeight( int width ) const
 
 int WgSizeCapsule::MatchingPixelWidth( int height ) const
 {
-	if( m_pixelsPreferred.w > 0 )
+	if( m_pixelsPreferred.w >= 0 )
 	{
 		int w;
 
-		if (m_bKeepAspect && m_pixelsPreferred.h > 0)
+		if (m_bKeepAspect && m_pixelsPreferred.h >= 0)
 			w = height * m_pixelsPreferred.w / m_pixelsPreferred.h;
 		else
 			w = m_pixelsPreferred.w;

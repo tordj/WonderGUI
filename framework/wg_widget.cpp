@@ -21,10 +21,13 @@
 =========================================================================*/
 
 #include <wg_widget.h>
+#include <wg_base.h>
+#include <wg_context.h>
 #include <wg_types.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_payload.h>
+#include <wg_surfacefactory.h>
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
@@ -216,6 +219,55 @@ WgCoord WgWidget::Local2absPoint( const WgCoord& cord ) const
 WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 {
     return (Abs2localPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
+}
+
+//____ Screenshot() ___________________________________________________________
+
+WgSurface * WgWidget::Screenshot( int surfaceFlags )
+{
+    auto pDevice = WgBase::Context()->pDevice.rawPtr();
+    auto pFactory =  WgBase::Context()->pFactory;
+    
+    if( !pDevice || !pFactory )
+        return nullptr;
+    
+    WgSize sz = PixelSize();
+    
+    auto pCanvas = pFactory->CreateSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
+    pCanvas->SetScaleFactor(m_scale);
+    
+    WgPatches patches;
+    patches.Add( sz );
+    
+  
+    auto pOldCanvas = pDevice->canvas();
+    WgColor oldTint = pDevice->tintColor();
+    WgBlendMode oldBlendMode = pDevice->blendMode();
+    pDevice->setCanvas(pCanvas->RealSurface());
+    pDevice->setTintColor( WgColor::White);
+
+    if( pDevice->isRendering() )
+    {
+        pDevice->setBlendMode(wg::BlendMode::Replace);
+        pDevice->fill( WgColor::Transparent );
+        pDevice->setBlendMode(wg::BlendMode::Blend);
+        _renderPatches(pDevice, sz, sz, &patches);
+    }
+    else
+    {
+        pDevice->beginRender();
+        pDevice->setBlendMode(wg::BlendMode::Replace);
+        pDevice->fill( WgColor::Transparent );
+        pDevice->setBlendMode(wg::BlendMode::Blend);
+        _renderPatches(pDevice, sz, sz, &patches);
+        pDevice->endRender();
+    }
+    
+    pDevice->setCanvas(pOldCanvas);
+    pDevice->setTintColor(oldTint);
+    pDevice->setBlendMode(oldBlendMode);
+    
+    return pCanvas;
 }
 
 //____ setDropTarget() ____________________________________________________

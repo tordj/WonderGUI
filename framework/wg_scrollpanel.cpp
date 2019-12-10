@@ -885,6 +885,15 @@ void WgScrollPanel::EnableRubberBorder( bool bEnabled )
     m_bRubberBorder = bEnabled;
 }
 
+//____ RubberBorderSnapToPos() ________________________________________________________
+
+void WgScrollPanel::RubberBorderSnapToPos()
+{
+    WgCoord pos = _calcRubberBandTarget();
+    SetViewPixelOfs( pos.x, pos.y );
+}
+
+
 //____ SetHoverScrollBorder() ________________________________________________________
 
 bool WgScrollPanel::SetHoverScrollBorder( const WgBorders& border )
@@ -1243,6 +1252,50 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 	_updateElementGeo( size );
 }
 
+//____ _calcRubberBandTarget() __________________________________________________
+
+WgCoord WgScrollPanel::_calcRubberBandTarget()
+{
+    // Get current window and content (canvas minus rubber borders) geometries.
+    
+    WgRect  window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
+    WgRect  content = WgRect(m_contentSize) - m_rubberBorder.scale(m_scale);
+    
+    // Calculate desiredWindowPos
+    
+    WgCoord desiredWindowPos = window.pos();
+    
+    if( content.w < window.w )
+    {
+        WgRect r = WgUtil::OrigoToRect( m_contentOrigo, WgSize(window.w,1), WgSize(content.w,1) );
+        desiredWindowPos.x = content.x - r.x;
+    }
+    else
+    {
+        if( window.x < content.x )
+            desiredWindowPos.x = content.x;
+            
+        if( window.x + window.w > content.x + content.w  )
+            desiredWindowPos.x = content.x + content.w - window.w;
+    }
+    
+    if( content.h < window.h )
+    {
+        WgRect r = WgUtil::OrigoToRect( m_contentOrigo, WgSize(1,window.h), WgSize(1,content.h) );
+        desiredWindowPos.y = content.y - r.y;
+    }
+    else
+    {
+        if( window.y < content.y )
+            desiredWindowPos.y = content.y;
+            
+        if( window.y + window.h > content.y + content.h  )
+            desiredWindowPos.y = content.y + content.h - window.h;
+    }
+
+    return desiredWindowPos;
+}
+
 //____ _onEvent() ______________________________________________________________
 
 void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
@@ -1273,46 +1326,11 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
                     break;
                 }
                 
-                // Get current window and content (canvas minus rubber borders) geometries.
-                
-                WgRect  window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
-                WgRect  content = WgRect(m_contentSize) - m_rubberBorder.scale(m_scale);
-                
-                // Calculated desiredWindowPos
-                
-                WgCoord desiredWindowPos = window.pos();
-                
-                if( content.w < window.w )
-                {
-                    WgRect r = WgUtil::OrigoToRect( m_contentOrigo, WgSize(window.w,1), WgSize(content.w,1) );
-                    desiredWindowPos.x = content.x - r.x;
-                }
-                else
-                {
-                    if( window.x < content.x )
-                        desiredWindowPos.x = content.x;
-                    
-                    if( window.x + window.w > content.x + content.w  )
-                        desiredWindowPos.x = content.x + content.w - window.w;
-                }
-                
-                if( content.h < window.h )
-                {
-                    WgRect r = WgUtil::OrigoToRect( m_contentOrigo, WgSize(1,window.h), WgSize(1,content.h) );
-                    desiredWindowPos.y = content.y - r.y;
-                }
-                else
-                {
-                    if( window.y < content.y )
-                        desiredWindowPos.y = content.y;
-                    
-                    if( window.y + window.h > content.y + content.h  )
-                        desiredWindowPos.y = content.y + content.h - window.h;
-                }
-                
+                WgRect desiredWindowPos = _calcRubberBandTarget();
+               
                 // Move us closer to desiredWindowPos
                 
-                WgCoord distanceLeft = desiredWindowPos - window.pos();
+                WgCoord distanceLeft = desiredWindowPos - m_viewPixOfs;
                 
                 if( distanceLeft.x < 0 )
                     distanceLeft.x = distanceLeft.x / 4 -1;
@@ -1327,7 +1345,7 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
                     distanceLeft.y = distanceLeft.y / 4 + 1;
 
                 if( distanceLeft.x != 0 || distanceLeft.y != 0 )
-                    SetViewPixelOfs( window.x + distanceLeft.x, window.y + distanceLeft.y );
+                    SetViewPixelOfs( m_viewPixOfs.x + distanceLeft.x, m_viewPixOfs.y + distanceLeft.y );
             }
             
             break;

@@ -232,6 +232,7 @@ public:
 
     void                SetRubberBorder( const WgBorders& border );
     void                EnableRubberBorder( bool bEnabled );
+    void                RubberBorderSnapToPos();
   
     bool                SetHoverScrollBorder( const WgBorders& border );
     bool                SetHoverScrollSpeed( int maxPointsPerSecond );
@@ -293,6 +294,8 @@ protected:
 	virtual void _onNewSize( const WgSize& size );
 
 	//
+
+    WgCoord     _calcRubberBandTarget();
 
 	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
     void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );

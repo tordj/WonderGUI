@@ -33,6 +33,7 @@
 #include <wg_shadercapsule.h>
 #include <wg_util.h>
 #include <wg_context.h>
+#include <wg_dragndroplayer.h>
 
 
 static const char	c_widgetType[] = {"ZoomOutCapsule"};
@@ -332,12 +333,10 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 
                 // Generate a screenshot
 
-                if( !m_pScreenshot && WgBase::Context()->pDevice )
-                {
-                    WgBase::Context()->pDevice->beginRender();
+                if( !m_pScreenshot )
                     _regenScreenshot();
-                    WgBase::Context()->pDevice->endRender();
-                }
+                
+                // We need a separate surface that will belong to our image.
                 
                 auto pSurface = WgBase::Context()->pFactory->CreateSurface(m_pScreenshot->PixelSize(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
                 pSurface->CopyFrom( m_pScreenshot, {0,0} );
@@ -345,8 +344,20 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 auto pImage = new WgImage();
                 pImage->SetImage(pSurface, true);
 
+                // We need to know the scale factor of our drag-n-drop layer since that likely is different.
+
+                WgContainer * p = Parent();
+                while( p && p->Type() != WgDragNDropLayer::GetClass() )
+                    p = p->Parent();
+
+                int destScaleFactor = p ? p->Scale() : WG_SCALE_BASE;
+
+                //
+                
                 auto pDragWidget = new WgSizeCapsule();
-                pDragWidget->SetPreferredSize(screenshotArea.size()*WG_SCALE_BASE/m_scale);
+                pDragWidget->SetPreferredSize(screenshotArea.size()*WG_SCALE_BASE/destScaleFactor);
+                
+                //
                 
                 auto pShader = new WgShaderCapsule();
                 pShader->SetColor( {255,255,255,64} );
@@ -356,7 +367,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 pEv->setDragWidget( pDragWidget, screenshotArea.pos() - pickOfs  );
             }
             else
-                return;             // Avoid WgWidget from setting default payload.
+                return;             // Prevent WgWidget from setting default payload.
         }
         break;
             
@@ -401,40 +412,10 @@ void WgZoomOutCapsule::_updateButtonState( WgSize gizmoCanvas, WgCoord pointerPo
 
 void WgZoomOutCapsule::_regenScreenshot()
 {
-    WgSurfaceFactory * pFactory = WgBase::Context()->pFactory;
-    wg::GfxDevice * pDevice = WgBase::Context()->pDevice.rawPtr();
-
     if( m_pScreenshot )
         delete m_pScreenshot;
 
-    if( !pDevice || !pFactory )
-    {
-        m_pScreenshot = nullptr;
-        return;
-    }
-    
-    WgSize sz = PixelSize();
-    
-    m_pScreenshot = pFactory->CreateSurface(sz, WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped);
-    m_pScreenshot->setScaleMode( WgScaleMode::Interpolate );
-    m_pScreenshot->Fill(WgColor::Transparent);
-    
-    WgPatches patches;
-    patches.Add(sz);
-    
-    auto pOldCanvas = pDevice->canvas();
-    WgColor oldTint = pDevice->tintColor();
-    WgBlendMode oldBlendMode = pDevice->blendMode();
-    pDevice->setCanvas(m_pScreenshot->RealSurface());
-    pDevice->setBlendMode(WgBlendMode::Blend);
-    
-    //            pDevice->SetTintColor( {oldTint.r, oldTint.g, oldTint.b, oldTint.a });
-    m_hook.Widget()->_renderPatches(pDevice, sz, sz, &patches);
-    
-    pDevice->setCanvas(pOldCanvas);
-    pDevice->setTintColor(oldTint);
-    pDevice->setBlendMode(oldBlendMode);
-
+    m_pScreenshot = m_hook.Widget()->Screenshot(wg::SurfaceFlag::Mipmapped);
 }
 
 //____ _onCollectPatches() ______________________________________________________
