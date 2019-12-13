@@ -40,7 +40,7 @@ namespace wg
 		friend class CSlot;
 		template<class S> friend class CSlotImpl;
 		template<class S> friend class CSlotArray;
-		template<class S> friend class SlotArray;
+		template<class S> friend class CStaticSlotArray;
 		template<class S> friend class CSelectableSlotArray;
 
 

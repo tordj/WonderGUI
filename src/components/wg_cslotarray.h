@@ -25,80 +25,10 @@
 #pragma once
 
 #include <wg_cdynamicslotcollection.h>
+#include <wg_cstaticslotarray.h>
 
 namespace wg
 {
-
-	//____ SlotArrayIterator _______________________________________________________
-
-	template<class SlotType> class SlotArrayIterator : public SlotIterator
-	{
-	public:
-
-		//.____ Operators ____________________________________________________________
-
-		inline SlotArrayIterator<SlotType>& operator++()
-		{
-			pSlot = _slot() + 1;
-			return *this;
-		};
-
-		inline SlotArrayIterator<SlotType> operator++(int)
-		{
-			SlotArrayIterator<SlotType> tmp = *this;
-			pSlot = _slot() + 1;
-			return tmp;
-		}
-
-		inline SlotArrayIterator<SlotType>& operator--()
-		{
-			pSlot = _slot() - 1;
-			return *this;
-		}
-
-		inline SlotArrayIterator<SlotType> operator--(int)
-		{
-			SlotArrayIterator<SlotType> tmp = *this;
-			pSlot = _slot()-1;
-			return tmp;
-		}
-
-		inline SlotArrayIterator<SlotType> operator+(int amount) const
-		{
-			SlotArrayIterator<SlotType> it = *this;
-			it._inc(amount);
-			return it;
-		}
-
-		inline SlotArrayIterator<SlotType> operator-(int amount) const
-		{
-			SlotArrayIterator<SlotType> it = *this;
-			it._dec(amount);
-			return it;
-		}
-
-
-
-		//.____ Internal _______________________________________________________________
-
-		SlotArrayIterator(SlotType * pSlot)
-		{
-			this->pSlot = pSlot;
-			this->pHolder = nullptr;
-			this->pExtra = nullptr;
-		}
-
-		inline SlotType* _slot() const { return static_cast<SlotType*>(pSlot); }
-
-	protected:
-
-		void	_inc() override { pSlot = (static_cast<SlotType*>(pSlot) + 1); }
-		void	_dec() override { pSlot = (static_cast<SlotType*>(pSlot) - 1); }
-
-		void	_inc( int amount ) override { pSlot = (static_cast<SlotType*>(pSlot) + amount); }
-		void	_dec( int amount ) override { pSlot = (static_cast<SlotType*>(pSlot) - amount); }
-	};
-
 
 
 	//____ CSlotArray _________________________________________________________

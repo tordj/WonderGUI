@@ -92,6 +92,7 @@ namespace wg
 		friend class BasicSlot;
 
 		template<class S> friend class CSlotArray;
+		template<class S> friend class CStaticSlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:

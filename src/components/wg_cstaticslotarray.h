@@ -146,10 +146,9 @@ namespace wg
 		inline iterator	begin() const { return iterator(_begin()); }
 		inline iterator	end() const { return iterator(_end()); }
 
-
 	protected:
-		CSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
-		~CSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
+		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		~CStaticSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
@@ -157,18 +156,6 @@ namespace wg
 
 		Object *		_object() override;
 		const Object *	_object() const override;
-
-		SlotIterator	_add(Widget * pWidget) override;
-		SlotIterator	_add(const Widget_p pWidgets[], int amount) override;
-
-		SlotIterator	_insert(const SlotIterator& it, Widget * pWidget) override;
-		SlotIterator	_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount) override;
-		SlotIterator	_remove(const SlotIterator& it) override;
-		SlotIterator	_remove(const SlotIterator& beg, const SlotIterator& end) override;
-
-		SlotIterator	_moveToFront(const SlotIterator& it) override;
-		SlotIterator	_moveToBack(const SlotIterator& it) override;
-		SlotIterator	_moveBefore(const SlotIterator& it, const SlotIterator& sibling) override;
 
 		void			_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard);
 

@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_cslotcollection.h>
+#include <wg_cstaticslotarray.h>
 
 #include <vector>
 
@@ -84,13 +84,13 @@ namespace wg
 
 	//____ CPopupSlots ________________________________________________________
 
-class CPopupSlots : public CSlotCollection
+class CPopupSlots : public CStaticSlotArray<PopupSlot>
 	{
 		friend class PopupLayer;
 		
 	public:
 		
-		class Holder : public PopupSlot::Holder
+		class Holder : public CStaticSlotArray<PopupSlot>::Holder
 		{
 		public:
 			virtual void		_removeSlots(int ofs, int nb) = 0;
@@ -98,23 +98,13 @@ class CPopupSlots : public CSlotCollection
 		};
 		
 		/** @private */
-		CPopupSlots(Holder * pHolder) : m_pHolder(pHolder) {}
+		CPopupSlots(Holder * pHolder) : CStaticSlotArray<PopupSlot>(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
 		inline CPopupSlots_p	ptr() { return CPopupSlots_p(this); }
 
-		//.____ Operators _____________________________________________________
-
-		PopupSlot& operator[](int index) { return m_slots[index]; }
-		const PopupSlot& operator[](int index) const { return m_slots[index]; }
-
 		//.____ Content _______________________________________________________
-
-		int		size() const override { return (int) m_slots.size();}
-		bool	isEmpty() const override { return m_slots.empty();}
-
-		int 	index(Widget * pChild) const override;
 		
 		void	push(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
 		void	pop(int nb = 1);
@@ -123,15 +113,8 @@ class CPopupSlots : public CSlotCollection
 
 	protected:
 
-		iterator	_begin_iterator() override;
-		iterator	_end_iterator() override;
-		BasicSlot&	_at(int index) override { return m_slots.at(index); };
-
-		Object *		_object() override;
-		const Object *	_object() const override;
-
-		std::vector<PopupSlot>	m_slots;
-		Holder *	m_pHolder;
+		const Holder *	_holder() const { return static_cast<const Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
+		Holder *	_holder() { return static_cast<Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
 	};
 
 
