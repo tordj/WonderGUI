@@ -62,7 +62,7 @@ namespace wg
 
 		//TODO: Set state for icon and arrow when they allow for it.
 
-		label.setState(state);
+		_text().setState(state);
 
 		_requestRender();			//TODO: Only request render if state change requires it.
 	}
@@ -82,9 +82,9 @@ namespace wg
 
 	SizeI CColumnHeader::preferredSize() const
 	{
-		SizeI iconSize = icon.preferredSize();
-		SizeI arrowSize = arrow.preferredSize();
-		SizeI textSize = label.preferredSize();
+		SizeI iconSize = _icon().preferredSize();
+		SizeI arrowSize = _arrow().preferredSize();
+		SizeI textSize = _text().preferredSize();
 
 		SizeI size;
 
@@ -235,10 +235,10 @@ namespace wg
 			canvas = m_pSkin->_contentRect( canvas, m_state );
 		}
 
-		RectI sortRect = arrow.getIconRect( canvas );
-		RectI labelRect = arrow.getTextRect( canvas, sortRect );
-		RectI iconRect = icon.getIconRect( labelRect );
-		labelRect = icon.getTextRect( labelRect, iconRect );
+		RectI sortRect = _arrow().getIconRect( canvas );
+		RectI labelRect = _arrow().getTextRect( canvas, sortRect );
+		RectI iconRect = _icon().getIconRect( labelRect );
+		labelRect = _icon().getTextRect( labelRect, iconRect );
 
 		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
 		{
@@ -251,20 +251,9 @@ namespace wg
 			icon.skin()->_render( pDevice, iconRect, m_state );
 
 		if( !label.isEmpty() )
-			label.render( pDevice, labelRect );
+			_text().render( pDevice, labelRect );
 	}
 
-
-
-	Object * CColumnHeader::_object()
-	{
-		return GeoComponent::_object();
-	}
-
-	const Object * CColumnHeader::_object() const
-	{
-		return GeoComponent::_object();
-	}
 
 	CoordI CColumnHeader::_componentPos( const GeoComponent * pComponent ) const
 	{

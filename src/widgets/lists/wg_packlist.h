@@ -26,7 +26,7 @@
 #include <functional>
 
 #include <wg_list.h>
-#include <wg_icolumnheader.h>
+#include <wg_ccolumnheader.h>
 #include <wg_cselectableslotarray.h>
 
 
@@ -130,7 +130,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IColumnHeader		header;
+		CColumnHeader		header;
 		CPackListSlotArray	slots;
 
 		//.____ Identification __________________________________________
@@ -281,7 +281,10 @@ namespace wg
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);
 
-		CColumnHeader		m_header;
+		class ColumnHeaderAccess : public CColumnHeader { friend class PackList; };
+		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
+		ColumnHeaderAccess& _header() { return static_cast<ColumnHeaderAccess&>(header); }
+
 
 		bool				m_bHorizontal;
 

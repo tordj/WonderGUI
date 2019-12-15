@@ -396,7 +396,7 @@ Canvas_p create_canvas()
 	auto pCanvas = Canvas::create();
 	pCanvas->canvas.setSize(g_canvasSize);
 	//pCanvas->canvas.setDevice(GlGfxDevice::create({ 0,0,10,10 }));
-	pCanvas->canvas.setSurfaceFactory( GlSurfaceFactory::create() );
+	pCanvas->canvas.setFactory( GlSurfaceFactory::create() );
 	pCanvas->canvas.setBackColor(Color::Black);
 	return pCanvas;
 }

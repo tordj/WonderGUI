@@ -34,7 +34,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PopupOpener::PopupOpener() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon), m_attachPoint(Origo::SouthWest), m_bOpenOnHover(false), m_bOpen(false)
+	PopupOpener::PopupOpener() : label(this), icon(this)
 	{
 		m_bSelectable = false;
 	}
@@ -113,18 +113,18 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect(contentRect);
-		RectI textRect = m_icon.getTextRect(contentRect, iconRect);
+		RectI iconRect = _icon().getIconRect(contentRect);
+		RectI textRect = _icon().getTextRect(contentRect, iconRect);
 
 		// Render icon
 
-		if (m_icon.skin())
-			m_icon.skin()->_render(pDevice, iconRect, m_state);
+		if (_icon().skin())
+			_icon().skin()->_render(pDevice, iconRect, m_state);
 
 		// Print text
 
-		if (!m_text.isEmpty())
-			m_text.render(pDevice, textRect);
+		if (!_label().isEmpty())
+			_label().render(pDevice, textRect);
 	}
 
 
@@ -139,9 +139,9 @@ namespace wg
 		if (m_pSkin)
 			contentRect -= m_pSkin->_contentPadding();
 
-		RectI textRect = m_icon.getTextRect(contentRect, m_icon.getIconRect(contentRect));
+		RectI textRect = _icon().getTextRect(contentRect, _icon().getIconRect(contentRect));
 
-		m_text.setSize(textRect);
+		_label().setSize(textRect);
 	}
 
 	//____ _refresh() _________________________________________________________
@@ -149,7 +149,7 @@ namespace wg
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
-		m_text.refresh();
+		_label().refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -221,14 +221,14 @@ namespace wg
 		if (m_pSkin)
 			height = m_pSkin->_preferredSize().h;
 
-		if (!m_text.isEmpty())
+		if (!_label().isEmpty())
 		{
 			SizeI padding;
 
 			if (m_pSkin)
 				padding = m_pSkin->_contentPadding();
 
-			int heightForText = m_text.matchingHeight(width - padding.w) + padding.h;
+			int heightForText = _label().matchingHeight(width - padding.w) + padding.h;
 			if (heightForText > height)
 				height = heightForText;
 		}
@@ -245,8 +245,8 @@ namespace wg
 	{
 		SizeI preferred;
 
-		if (!m_text.isEmpty())
-			preferred = m_text.preferredSize();
+		if (!_label().isEmpty())
+			preferred = _label().preferredSize();
 
 		if (m_pSkin)
 			preferred = m_pSkin->_sizeForContent(preferred);
@@ -266,8 +266,8 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		m_text.setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
+		_label().setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let _label().setState() return if rendering is needed)
 	}
 
 	//____ _setSkin() _________________________________________________________
@@ -312,12 +312,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect(contentRect);
+		RectI iconRect = _icon().getIconRect(contentRect);
 
-		if (pComponent == &m_icon)
+		if (pComponent == &icon)
 			return iconRect.pos();
 
-		RectI textRect = m_icon.getTextRect(contentRect, iconRect);
+		RectI textRect = _icon().getTextRect(contentRect, iconRect);
 		return textRect.pos();
 	}
 
@@ -330,12 +330,12 @@ namespace wg
 		if (m_pSkin)
 			sz -= m_pSkin->_contentPadding();
 
-		RectI iconRect = m_icon.getIconRect(sz);
+		RectI iconRect = _icon().getIconRect(sz);
 
-		if (pComponent == &m_icon)
+		if (pComponent == &icon)
 			return iconRect.size();
 
-		RectI textRect = m_icon.getTextRect(sz, iconRect);
+		RectI textRect = _icon().getTextRect(sz, iconRect);
 		return textRect.size();
 
 	}
@@ -351,12 +351,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect(contentRect);
+		RectI iconRect = _icon().getIconRect(contentRect);
 
-		if (pComponent == &m_icon)
+		if (pComponent == &icon)
 			return iconRect;
 
-		RectI textRect = m_icon.getTextRect(contentRect, iconRect);
+		RectI textRect = _icon().getTextRect(contentRect, iconRect);
 		return textRect;
 	}
 

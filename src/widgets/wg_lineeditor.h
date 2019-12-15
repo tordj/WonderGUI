@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_itexteditor.h>
+#include <wg_ctexteditor.h>
 
 namespace wg
 {
@@ -44,7 +44,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ITextEditor		text;
+		CTextEditor		text;
 
 		//.____ Identification __________________________________________
 
@@ -78,9 +78,13 @@ namespace wg
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 		void			_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave) override;
 
+		class TextAccess : public CTextEditor { friend class LineEditor; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
+		TextAccess& _text() { return static_cast<TextAccess&>(text); }
+
+
 	private:
 
-		CTextEditor	m_text;
 		int				m_textScrollOfs;
 	};
 

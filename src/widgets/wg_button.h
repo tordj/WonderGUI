@@ -25,8 +25,7 @@
 
 #include <wg_widget.h>
 #include <wg_ctextdisplay.h>
-#include <wg_itextdisplay.h>
-#include <wg_iicondisplay.h>
+#include <wg_cicondisplay.h>
 
 namespace wg
 {
@@ -52,8 +51,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ITextDisplay		label;
-		IIconDisplay		icon;
+		CTextDisplay		label;
+		CIconDisplay		icon;
 
 		//.____ Identification __________________________________________
 
@@ -86,10 +85,14 @@ namespace wg
 		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
 		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
 
+		class TextAccess : public CTextDisplay { friend class Button; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
+		TextAccess& _text() { return static_cast<TextAccess&>(label); }
 
+		class IconAccess : public CIconDisplay { friend class Button; };
+		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
 
-		CTextDisplay	m_text;
-		CIconDisplay	m_icon;
 
 		bool			m_bPressed;				// Set when left mousebutton was pressed inside.
 		bool			m_bReturnPressed;

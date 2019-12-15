@@ -716,7 +716,7 @@ namespace wg
 	{
 		CoordI oldPos = viewSlot.m_viewPixOfs;
 
-		bool retVal = viewSlot.setWindowOffset(ofs);
+		bool retVal = viewSlot._setWindowOffset(ofs);
 		if (viewSlot.m_viewPixOfs != oldPos)
 		{
 			if (viewSlot.m_viewPixOfs.x != oldPos.x)

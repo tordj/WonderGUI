@@ -45,12 +45,41 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CTextEditor::CTextEditor(GeoComponent::Holder * pHolder ) : CTextDisplay(pHolder)
+	CTextEditor::CTextEditor(Holder * pHolder ) : CTextDisplay(pHolder)
 	{
 		m_editMode = TextEditMode::Editable;
 		m_maxLines = 0;
 		m_maxChars = 0;
 	}
+
+	//____ setMaxLines() _________________________________________________________
+
+	bool CTextEditor::setMaxLines(int maxLines)
+	{
+		if (maxLines < 0)
+			return false;
+
+		m_maxLines = maxLines;
+
+		//TODO: Cut text and refresh if larger than limit.
+
+		return true;
+	}
+
+	//____ setMaxChars() _________________________________________________________
+
+	bool CTextEditor::setMaxChars(int maxChars)
+	{
+		if (maxChars < 0)
+			return false;
+
+		m_maxChars = maxChars;
+
+		//TODO: Cut text and refresh if larger than limit.
+
+		return true;
+	}
+
 
 	//____ receive() ___________________________________________________________
 
@@ -231,75 +260,47 @@ namespace wg
 
 
 
-	//____ clear() _________________________________________________________________
+	//____ _clear() _________________________________________________________________
 
-	void CTextEditor::clear()
+	void CTextEditor::_clear()
 	{
 		m_editState.caretOfs = 0;
 		m_editState.selectOfs = 0;
 		m_editState.wantedOfs = -1;
 
-		CTextDisplay::clear();
+		CTextDisplay::_clear();
 		_updateDisplayArea();
 	}
 
-	//____ setMaxLines() _________________________________________________________
+	//____ _set() ___________________________________________________________________
 
-	bool CTextEditor::setMaxLines( int maxLines )
-	{
-		if( maxLines < 0 )
-			return false;
-
-		m_maxLines = maxLines;
-
-		//TODO: Cut text and refresh if larger than limit.
-
-		return true;
-	}
-
-	//____ setMaxChars() _________________________________________________________
-
-	bool CTextEditor::setMaxChars( int maxChars )
-	{
-		if( maxChars < 0 )
-			return false;
-
-		m_maxChars = maxChars;
-
-		//TODO: Cut text and refresh if larger than limit.
-
-		return true;
-	}
-
-	//____ set() ___________________________________________________________________
-
-	void CTextEditor::set( const CharSeq& seq )
+	void CTextEditor::_set( const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::set( seq );
+		CTextDisplay::_set( seq );
 		_caretToEnd();
 	}
 
-	void CTextEditor::set( const CharBuffer * pBuffer )
+	void CTextEditor::_set( const CharBuffer * pBuffer )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::set( pBuffer );
+		CTextDisplay::_set( pBuffer );
 		_caretToEnd();
 	}
 
-	void CTextEditor::set( const String& str )
+	void CTextEditor::_set( const String& str )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
-		CTextDisplay::set( str );
+		CTextDisplay::_set( str );
 		_caretToEnd();
 	}
 
-	//____ append() ________________________________________________________________
+	//____ _append() ________________________________________________________________
 
-	int CTextEditor::append( const CharSeq& seq )
+	int CTextEditor::_append( const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
@@ -308,7 +309,7 @@ namespace wg
 
 		if( m_editState.caretOfs == m_editState.selectOfs && m_editState.caretOfs == m_charBuffer.length() )
 		{
-			int newOfs = m_editState.caretOfs + CTextDisplay::append( seq );
+			int newOfs = m_editState.caretOfs + CTextDisplay::_append( seq );
 			_textMapper()->caretMove( this, newOfs );
 
 			m_editState.caretOfs = newOfs;
@@ -317,18 +318,18 @@ namespace wg
 			_updateDisplayArea();
 		}
 
-		return CTextDisplay::append( seq );
+		return CTextDisplay::_append( seq );
 	}
 
-	//____ insert() ________________________________________________________________
+	//____ _insert() ________________________________________________________________
 
-	int CTextEditor::insert( int ofs, const CharSeq& seq )
+	int CTextEditor::_insert( int ofs, const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 
 		limit( ofs, 0, m_charBuffer.length() );
 
-		int added = CTextDisplay::insert(ofs,seq);
+		int added = CTextDisplay::_insert(ofs,seq);
 
 		/* Inserting text should affect the selection as little as possible. Therefore:
 		 *
@@ -375,9 +376,9 @@ namespace wg
 		return added;
 	}
 
-	//____ replace() _______________________________________________________________
+	//____ _replace() _______________________________________________________________
 
-	int CTextEditor::replace( int ofs, int nDelete, const CharSeq& seq )
+	int CTextEditor::_replace( int ofs, int nDelete, const CharSeq& seq )
 	{
 		//TODO: Cut sequence if too many lines or chars.
 		//TODO: Implement correctly!!!
@@ -386,7 +387,7 @@ namespace wg
 		limit( ofs, 0, m_charBuffer.length() );
 		limit( nDelete, 0, m_charBuffer.length() - ofs );
 
-		int sizeModif = CTextDisplay::replace(ofs,nDelete,seq);
+		int sizeModif = CTextDisplay::_replace(ofs,nDelete,seq);
 
 		// Replacing text should not affect caret or selection except where necessary.
 
@@ -404,9 +405,9 @@ namespace wg
 		return sizeModif;
 	}
 
-	//____ erase() ________________________________________________________________
+	//____ _erase() ________________________________________________________________
 
-	int CTextEditor::erase( int ofs, int len )
+	int CTextEditor::_erase( int ofs, int len )
 	{
 		limit( ofs, 0, m_charBuffer.length() );
 		limit( len, 0, m_charBuffer.length() - ofs );
@@ -450,7 +451,7 @@ namespace wg
 			_updateDisplayArea();
 		}
 
-		int ret = CTextDisplay::erase( ofs, len );
+		int ret = CTextDisplay::_erase( ofs, len );
 		_updateDisplayArea();
 		return ret;
 	}

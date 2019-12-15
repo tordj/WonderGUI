@@ -32,7 +32,7 @@ namespace wg
 
 	//____ ValueDisplay() _________________________________________________________________
 
-	ValueDisplay::ValueDisplay() : m_value(this), value(&m_value)
+	ValueDisplay::ValueDisplay() : value(this)
 	{
 	}
 
@@ -74,7 +74,7 @@ namespace wg
 
 	SizeI ValueDisplay::_preferredSize() const
 	{
-		SizeI size = m_value.preferredSize();
+		SizeI size = _value().preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->_sizeForContent(size);
@@ -87,7 +87,7 @@ namespace wg
 
 	void ValueDisplay::_refresh( void )
 	{
-		m_value.refresh();
+		_value().refresh();
 		Widget::_refresh();
 	}
 
@@ -96,7 +96,7 @@ namespace wg
 	void ValueDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-		m_value.render(pDevice, _canvas);
+		_value().render(pDevice, _canvas);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -111,7 +111,7 @@ namespace wg
 	void ValueDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		m_value.setState(state);
+		_value().setState(state);
 	}
 
 	//____ _setSkin() _______________________________________________________

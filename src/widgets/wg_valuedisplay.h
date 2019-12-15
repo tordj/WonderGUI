@@ -25,7 +25,7 @@
 #pragma once
 
 #	include <wg_widget.h>
-#	include <wg_ivaluedisplay.h>
+#	include <wg_cvaluedisplay.h>
 
 namespace wg
 {
@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IValueDisplay		value;
+		CValueDisplay		value;
 
 		//.____ Identification __________________________________________
 
@@ -71,7 +71,10 @@ namespace wg
 
 	private:
 
-		CValueDisplay		m_value;
+		class ValueAccess : public CValueDisplay { friend class ValueDisplay; };
+		const ValueAccess& _value() const { return static_cast<const ValueAccess&>(value); }
+		ValueAccess& _value() { return static_cast<ValueAccess&>(value); }
+
 	};
 
 } // namespace wg

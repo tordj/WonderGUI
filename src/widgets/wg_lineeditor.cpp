@@ -36,9 +36,9 @@ namespace wg
 
 	//____ LineEditor() _________________________________________________________________
 
-	LineEditor::LineEditor() : m_text(this), text(&m_text), m_textScrollOfs(0)
+	LineEditor::LineEditor() : text(this), m_textScrollOfs(0)
 	{
-		m_text.setMaxLines(1);
+		_text().setMaxLines(1);
 	}
 
 
@@ -84,7 +84,7 @@ namespace wg
 
 		SizeI	contentSize;
 
-		TextStyle * pStyle = m_text._style();
+		TextStyle * pStyle = _text()._style();
 
 		Font_p pFont = pStyle->font();
 
@@ -116,12 +116,12 @@ namespace wg
 
 		//
 
-		RectI textCanvas(canvas.x - m_textScrollOfs, canvas.y, m_text.preferredSize());
+		RectI textCanvas(canvas.x - m_textScrollOfs, canvas.y, _text().preferredSize());
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
 		auto pop = limitClipList(pDevice, rawToPixels(canvas) );
-		m_text.render(pDevice, textCanvas );
+		_text().render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}
 
@@ -129,7 +129,7 @@ namespace wg
 
 	void LineEditor::_refresh( void )
 	{
-		m_text.refresh();
+		_text().refresh();
 		Widget::_refresh();
 	}
 
@@ -139,7 +139,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		m_text.setState(state);
+		_text().setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -149,7 +149,7 @@ namespace wg
 	void LineEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		m_text.receive( pMsg );
+		_text().receive( pMsg );
 	}
 
 
@@ -161,7 +161,6 @@ namespace wg
 
 		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
 
-		m_text = pOrg->m_text;
 	}
 
 	//____ _setSkin() _______________________________________________________
@@ -180,9 +179,9 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			m_text.setSize( SizeI(m_text.preferredSize().w, size.h - m_pSkin->_contentPadding().h ) );
+			_text().setSize( SizeI(_text().preferredSize().w, size.h - m_pSkin->_contentPadding().h ) );
 		else
-			m_text.setSize( SizeI( m_text.preferredSize().w, size.h ) );
+			_text().setSize( SizeI( _text().preferredSize().w, size.h ) );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -202,9 +201,9 @@ namespace wg
 	SizeI LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return SizeI( m_text.preferredSize().w, m_size.h - m_pSkin->_contentPadding().h );
+			return SizeI( _text().preferredSize().w, m_size.h - m_pSkin->_contentPadding().h );
 		else
-			return SizeI( m_text.preferredSize().w, m_size.h );
+			return SizeI( _text().preferredSize().w, m_size.h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -215,11 +214,11 @@ namespace wg
 		{
 			RectI r = m_pSkin->_contentRect( m_size, m_state );
 			r.x -= m_textScrollOfs;
-			r.w = m_text.preferredSize().w;
+			r.w = _text().preferredSize().w;
 			return r;
 		}
 		else
-			return RectI( -m_textScrollOfs, 0, m_text.preferredSize().w, m_size.h );
+			return RectI( -m_textScrollOfs, 0, _text().preferredSize().w, m_size.h );
 	}
 
 	//____ _componentRequestRender() ______________________________________________
@@ -256,7 +255,7 @@ namespace wg
 
 	void LineEditor::_componentRequestResize( const GeoComponent * pComponent )
 	{
-		SizeI preferred = m_text.preferredSize();
+		SizeI preferred = _text().preferredSize();
 
 		int height = m_size.h;
 		if( m_pSkin )
@@ -265,7 +264,7 @@ namespace wg
 		if( preferred.h != height )
 			_requestResize();
 
-		m_text.setSize( SizeI(preferred.w, height ));	// Component gets the preferred width right away.
+		_text().setSize( SizeI(preferred.w, height ));	// Component gets the preferred width right away.
 	}
 
 	//____ _componentRequestInView() ____________________________________________

@@ -38,7 +38,7 @@ namespace wg
 
 	//____ FpsDisplay() _________________________________________________________________
 
-	FpsDisplay::FpsDisplay( void ) : m_labelsText(this), m_valuesText(this), labels(&m_labelsText), values(&m_valuesText)
+	FpsDisplay::FpsDisplay( void ) : labels(this), values(this)
 	{
 		m_pTickBuffer		= new int[c_tickBuffer];
 		for( int i = 0 ; i < c_tickBuffer ; i++ )
@@ -46,17 +46,17 @@ namespace wg
 
 		m_tickBufferOfs		= 0;
 
-		m_labelsText.set( "Now:\nMin:\nAvg:\nMax:" );
+		labels.set( "Now:\nMin:\nAvg:\nMax:" );
 
 
 		// We set our own default text textMappers since we rely on alignment
 		// to present the information in a readable way.
 
-		m_labelsText.setTextMapper( StdTextMapper::create() );
+		labels.setTextMapper( StdTextMapper::create() );
 
 		StdTextMapper_p pValueTextMapper = StdTextMapper::create();
 		pValueTextMapper->setAlignment( Origo::NorthEast );
-		m_valuesText.setTextMapper(pValueTextMapper);
+		values.setTextMapper(pValueTextMapper);
 
 
 		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
@@ -108,17 +108,17 @@ namespace wg
 
 	SizeI FpsDisplay::_preferredSize() const
 	{
-		SizeI contentSize = m_labelsText.preferredSize();
+		SizeI contentSize = _labels().preferredSize();
 
 		TextAttr attr;
-		m_valuesText._style()->exportAttr( State(StateEnum::Normal), &attr );
+		_values()._style()->exportAttr( State(StateEnum::Normal), &attr );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = m_valuesText.preferredSize().h;
+		int valueHeight = _values().preferredSize().h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
@@ -141,8 +141,8 @@ namespace wg
 		else
 			content = _canvas;
 
-		m_labelsText.render( pDevice, content );
-		m_valuesText.render( pDevice, content );
+		_labels().render( pDevice, content );
+		_values().render( pDevice, content );
 	}
 
 
@@ -208,7 +208,7 @@ namespace wg
 
 				char	temp[100];
 				snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-				m_valuesText.set(temp);
+				_values()._set(temp);
 
 				_requestRender();
 			}
@@ -222,8 +222,8 @@ namespace wg
 	void FpsDisplay::_setState( State state )
 	{
 
-		m_labelsText.setState(state);
-		m_valuesText.setState(state);
+		_labels().setState(state);
+		_values().setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 		if( state.isEnabled() && !m_state.isEnabled() )
@@ -246,8 +246,8 @@ namespace wg
 
 		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 
-//		m_labelsText.clone( &pOrg->m_labelsText );
-//		m_valuesText.clone( &pOrg->m_valuesText );
+//		_labels().clone( &pOrg->m_labelsText );
+//		_values().clone( &pOrg->m_valuesText );
 
 		m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 

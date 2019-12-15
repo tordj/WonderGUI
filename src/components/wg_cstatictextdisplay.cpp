@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_ctextdisplay.h>
+#include <wg_cstatictextdisplay.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
 #include <wg_util.h>
@@ -31,134 +31,22 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CTextDisplay::CTextDisplay(GeoComponent::Holder * pHolder ) : CText( pHolder )
+	CStaticTextDisplay::CStaticTextDisplay(Holder * pHolder ) : CText( pHolder )
 	{
-	}
-
-	//____ clear() _________________________________________________________________
-
-	void CTextDisplay::clear()
-	{
-		int removed = m_charBuffer.length();
-		m_charBuffer.clear();
-		_textMapper()->onTextModified(this, 0, removed, 0 );
-	}
-
-	//___ set() ____________________________________________________________________
-
-	void CTextDisplay::set( const CharSeq& seq )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int removed = m_charBuffer.length();
-		m_charBuffer = seq;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
-	}
-
-	void CTextDisplay::set( const CharBuffer * buffer )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int removed = m_charBuffer.length();
-		m_charBuffer = * buffer;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
-	}
-
-	void CTextDisplay::set( const String& str )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int removed = m_charBuffer.length();
-		m_charBuffer = str;
-		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length() );
-	}
-
-	//____ append() ________________________________________________________________
-
-	int CTextDisplay::append( const CharSeq& seq )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int ofs = m_charBuffer.length();
-		int len = m_charBuffer.pushBack(seq);
-		_textMapper()->onTextModified(this, ofs, 0, len );
-		return len;
-	}
-
-	//____ insert() ________________________________________________________________
-
-	int CTextDisplay::insert( int ofs, const CharSeq& seq )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int len = m_charBuffer.insert(ofs,seq);
-		_textMapper()->onTextModified(this, ofs, 0, seq.length() );
-		return len;
-	}
-
-	//____ replace() ___________________________________________________________
-
-	int CTextDisplay::replace( int ofs, int nDelete, const CharSeq& seq )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int diff = m_charBuffer.replace(ofs,nDelete,seq);
-		_textMapper()->onTextModified(this, ofs, nDelete, seq.length() );
-		return diff;
-	}
-
-	//____ erase() ____________________________________________________________
-
-	int CTextDisplay::erase( int ofs, int len )
-	{
-		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
-
-		int removed = m_charBuffer.remove(ofs,len);
-		_textMapper()->onTextModified(this, ofs, len, 0 );
-		return removed;
 	}
 
 	//____ markedLink() _____________________________________________________
 
-	TextLink_p CTextDisplay::markedLink() const
+	TextLink_p CStaticTextDisplay::markedLink() const
 	{
 		//TODO: Implement!
 
 		return TextLink_p();
 	}
 
-	//____ setCharStyle() ______________________________________________________
-
-	void CTextDisplay::setCharStyle( TextStyle * pStyle )
-	{
-		m_charBuffer.setStyle(pStyle);
-		_textMapper()->onCharStyleChanged(this );
-	}
-
-	void CTextDisplay::setCharStyle( TextStyle * pStyle, int ofs, int len)
-	{
-		m_charBuffer.setStyle(pStyle, ofs, len);
-		_textMapper()->onCharStyleChanged(this, ofs,len);
-	}
-
-	//____ clearCharStyle() ____________________________________________________
-
-	void CTextDisplay::clearCharStyle()
-	{
-		m_charBuffer.clearStyle();
-		_textMapper()->onCharStyleChanged(this);
-	}
-
-	void CTextDisplay::clearCharStyle( int ofs, int len )
-	{
-		m_charBuffer.clearStyle(ofs,len);
-		_textMapper()->onCharStyleChanged(this, ofs,len);
-	}
-
-
 	//____ receive() ___________________________________________________________
 
-	void CTextDisplay::receive( Msg * _pMsg )
+	void CStaticTextDisplay::receive( Msg * _pMsg )
 	{
 		if( !_pMsg->isMouseMsg() )
 			return;

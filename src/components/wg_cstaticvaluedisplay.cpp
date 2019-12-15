@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_widget.h>
-#include <wg_cvalue.h>
+#include <wg_cstaticvaluedisplay.h>
 
 namespace wg
 {
@@ -29,7 +29,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CValue::CValue(GeoComponent::Holder * pHolder) : CText(pHolder)
+	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : CText(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
@@ -37,7 +37,7 @@ namespace wg
 
 	//____ setFormatter() __________________________________________________________
 
-	void CValue::setFormatter( ValueFormatter * pFormatter )
+	void CStaticValueDisplay::setFormatter( ValueFormatter * pFormatter )
 	{
 		if( m_pFormatter.rawPtr() != pFormatter )
 		{
@@ -48,7 +48,7 @@ namespace wg
 
 	//____ clearFormatter() ________________________________________________________
 
-	void CValue::clearFormatter()
+	void CStaticValueDisplay::clearFormatter()
 	{
 		if( m_pFormatter )
 		{
@@ -59,7 +59,7 @@ namespace wg
 
 	//____ clear() _________________________________________________________________
 
-	void CValue::clear()
+	void CStaticValueDisplay::clear()
 	{
 		if( m_value != 0 )
 		{
@@ -71,7 +71,7 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CValue::set( int64_t value, int scale )
+	bool CStaticValueDisplay::set( int64_t value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
@@ -85,7 +85,7 @@ namespace wg
 		return true;
 	}
 	/*
-	void CValue::set( float value )
+	void CStaticValueDisplay::set( float value )
 	{
 		value *= m_scale;
 		int64_t intVal = (int64_t) value;
@@ -96,7 +96,7 @@ namespace wg
 		}
 	}
 
-	void CValue::set( double value )
+	void CStaticValueDisplay::set( double value )
 	{
 		value *= m_scale;
 		int64_t intVal = (int64_t) value;
@@ -110,7 +110,7 @@ namespace wg
 
 	//____ refresh() _____________________________________________________________
 
-	void CValue::refresh()
+	void CStaticValueDisplay::refresh()
 	{
 		_regenText();
 		CText::refresh();
@@ -118,7 +118,7 @@ namespace wg
 
 	//____ _regenText() ____________________________________________________________
 
-	void CValue::_regenText()
+	void CStaticValueDisplay::_regenText()
 	{
 		ValueFormatter * pFormatter = m_pFormatter ? m_pFormatter.rawPtr() : Base::defaultValueFormatter().rawPtr();
 

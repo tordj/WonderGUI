@@ -63,9 +63,9 @@ namespace wg
 		_requestResize();
 	}
 
-	//____ setScale() _________________________________________________________
+	//____ _setScale() _________________________________________________________
 
-	bool CIconDisplay::setScale( float scaleFactor )
+	bool CIconDisplay::_setScale( float scaleFactor )
 	{
 		if( scaleFactor > 1.f || scaleFactor < 0.f )
 			return false;
@@ -79,9 +79,9 @@ namespace wg
 		return true;
 	}
 
-	//____ setOrigo() ___________________________________________________
+	//____ _setOrigo() ___________________________________________________
 
-	void CIconDisplay::setOrigo( Origo origo )
+	void CIconDisplay::_setOrigo( Origo origo )
 	{
 		if( origo != m_origo )
 		{
@@ -90,9 +90,9 @@ namespace wg
 		}
 	}
 
-	//____ setPadding() _______________________________________________________
+	//____ _setPadding() _______________________________________________________
 
-	void CIconDisplay::setPadding( BorderI borders )
+	void CIconDisplay::_setPadding( BorderI borders )
 	{
 		if( borders != m_padding )
 		{
@@ -101,9 +101,9 @@ namespace wg
 		}
 	}
 
-	//____ setOverlap() _________________________________________________________
+	//____ _setOverlap() _________________________________________________________
 
-	void CIconDisplay::setOverlap( bool bOverlap )
+	void CIconDisplay::_setOverlap( bool bOverlap )
 	{
 		if( bOverlap != m_bOverlap )
 		{
@@ -112,9 +112,9 @@ namespace wg
 		}
 	}
 
-	//____ setSkin() ______________________________________________________________
+	//____ _setSkin() ______________________________________________________________
 
-	void CIconDisplay::setSkin( Skin * pSkin )
+	void CIconDisplay::_setSkin( Skin * pSkin )
 	{
 		if( pSkin != m_pSkin )
 		{

@@ -24,8 +24,8 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_itextdisplay.h>
-#include <wg_iicondisplay.h>
+#include <wg_ctextdisplay.h>
+#include <wg_cicondisplay.h>
 
 namespace wg
 {
@@ -45,8 +45,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ITextDisplay			label;
-		IIconDisplay			icon;
+		CTextDisplay			label;
+		CIconDisplay			icon;
 
 		//.____ Identification __________________________________________
 
@@ -93,14 +93,21 @@ namespace wg
 		RectI			_componentGeo(const GeoComponent * pComponent) const override;
 
 
+		class TextAccess : public CTextDisplay { friend class PopupOpener; };
+		const TextAccess& _label() const { return static_cast<const TextAccess&>(label); }
+		TextAccess& _label() { return static_cast<TextAccess&>(label); }
+
+		class IconAccess : public CIconDisplay { friend class PopupOpener; };
+		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
+
+
 
 		Widget_p		m_pPopup;
-		CTextDisplay	m_text;
-		CIconDisplay	m_icon;
 
-		Origo			m_attachPoint;
-		bool			m_bOpenOnHover;
-		bool			m_bOpen;
+		Origo			m_attachPoint = Origo::SouthWest;
+		bool			m_bOpenOnHover = false;
+		bool			m_bOpen = false;
 		State			m_closeState;
 	};
 

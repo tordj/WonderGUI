@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_widget.h>
-#include	<wg_itextdisplay.h>
+#include	<wg_ctextdisplay.h>
 
 namespace wg
 {
@@ -48,8 +48,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ITextDisplay		labels;
-		IROTextDisplay		values;
+		CTextDisplay			labels;
+		CStaticTextDisplay		values;
 
 
 		//.____ Identification __________________________________________
@@ -72,13 +72,20 @@ namespace wg
 		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
+		class TextAccess : public CTextDisplay { friend class FpsDisplay; };
+		const TextAccess& _labels() const { return static_cast<const TextAccess&>(labels); }
+		TextAccess& _labels() { return static_cast<TextAccess&>(labels); }
+
+		class StaticTextAccess : public CStaticTextDisplay { friend class FpsDisplay; };
+		const StaticTextAccess& _values() const { return static_cast<const StaticTextAccess&>(values); }
+		StaticTextAccess& _values() { return static_cast<StaticTextAccess&>(values); }
+
+
 	private:
 
 	const static int c_tickBuffer = 64;
 
 
-		CTextDisplay	m_labelsText;
-		CTextDisplay	m_valuesText;
 		int *			m_pTickBuffer;
 		int				m_tickBufferOfs;
 		RouteId			m_tickRouteId;

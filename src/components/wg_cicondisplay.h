@@ -28,10 +28,14 @@
 #include <wg_geocomponent.h>
 #include <wg_geo.h>
 #include <wg_skin.h>
+#include <wg_util.h>
 
 namespace wg
 {
 
+	class CIconDisplay;
+	typedef	StrongComponentPtr<CIconDisplay>	CIconDisplay_p;
+	typedef	WeakComponentPtr<CIconDisplay>		CIconDisplay_wp;
 
 	//____ CIconDisplay _____________________________________________________________
 
@@ -41,24 +45,47 @@ namespace wg
 		CIconDisplay( GeoComponent::Holder * pHolder );
 		virtual ~CIconDisplay() {};
 
+		//.____ Content _____________________________________________
 
-		bool			set( Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),
-									float _scale = 0.f, bool _bOverlap = false );
+		bool			set(Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),
+							float _scale = 0.f, bool _bOverlap = false);
 		void			clear();
 
 		inline bool		isEmpty() const { return !m_pSkin; }
 
-		bool			setScale( float scaleFactor );
-		void			setOrigo( Origo origo );
-		void			setPadding( BorderI borders );
-		void			setOverlap( bool bOverlap );
-		void			setSkin( Skin * pSkin );
+		//.____ Appearance _____________________________________________
 
-		float			scale() const { return m_scale; }
-		Origo			origo() const { return m_origo; }
-		BorderI			padding() const { return m_padding; }
-		bool			overlap() const { return m_bOverlap; }
-		Skin_p			skin() const { return  m_pSkin; }
+		inline bool			setScale(float scaleFactor) { return _setScale(scaleFactor); }
+		inline void			setOrigo(Origo origo) { _setOrigo(origo); }
+		inline void			setPadding(Border padding) { _setPadding(Util::qpixToRaw(padding)); }
+		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
+		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
+
+		inline float		scale() const { return _scale(); }
+		inline Origo		origo() const { return _origo(); }
+		inline Border		padding() const { return Util::rawToQpix(_padding()); }
+		inline bool			overlap() const { return _overlap(); }
+		inline Skin_p		skin() const { return _skin(); }
+
+		//.____ Misc __________________________________________________
+
+		inline CIconDisplay_p		ptr() { return CIconDisplay_p(this); }
+
+
+	protected:
+
+
+		bool			_setScale( float scaleFactor );
+		void			_setOrigo( Origo origo );
+		void			_setPadding( BorderI borders );
+		void			_setOverlap( bool bOverlap );
+		void			_setSkin( Skin * pSkin );
+
+		float			_scale() const { return m_scale; }
+		Origo			_origo() const { return m_origo; }
+		BorderI			_padding() const { return m_padding; }
+		bool			_overlap() const { return m_bOverlap; }
+		Skin_p			_skin() const { return  m_pSkin; }
 
 
 		RectI			getIconRect( const RectI& contentRect ) const;
@@ -67,7 +94,6 @@ namespace wg
 		void			onCloneContent( const CIconDisplay * _pOrg );
 		SizeI			preferredSize() const;
 
-	protected:
 
 		Origo			m_origo;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.

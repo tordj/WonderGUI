@@ -33,28 +33,64 @@ namespace wg
 {
 	class EditState;
 
+
+	class CText;
+	typedef	StrongComponentPtr<CText>	CText_p;
+	typedef	WeakComponentPtr<CText>		CText_wp;
+
+
 	//____ CText __________________________________________________________________
 
 	class CText : public GeoComponent		/** @private */
 	{
 		friend class TextMapper;
+		friend class StdTextMapper;
 	public:
-		CText(GeoComponent::Holder * pHolder );
+
+		CText(Holder * pHolder );
 		virtual ~CText();
 
-		virtual void		setStyle( TextStyle * pStyle );
+		//.____ Appearance _____________________________________________
+
+		virtual void		setStyle(TextStyle * pStyle);
 		virtual void		clearStyle();
 		TextStyle *			style() const { return m_pStyle.rawPtr(); }
 
-		virtual void		setTextMapper( TextMapper * pTextMapper );
+		virtual void		setTextMapper(TextMapper * pTextMapper);
 		virtual void		clearTextMapper();
 		TextMapper *		textMapper() const { return m_pTextMapper.rawPtr(); }
 
-		virtual void		setState( State state );
+		//.____ Misc __________________________________________________
+
+		inline CText_p		ptr() { return CText_p(this); }
+
+	protected:
+
+		virtual void		_clear();
+
+		virtual void		_set(const CharSeq& seq);
+		virtual void		_set(const CharBuffer * buffer);
+		virtual void		_set(const String& str);
+
+		virtual int			_append(const CharSeq& seq);
+		virtual int			_insert(int ofs, const CharSeq& seq);
+		virtual int			_replace(int ofs, int nDelete, const CharSeq& seq);
+		virtual int			_erase(int ofs, int len);
+
+		virtual void		_setCharStyle(TextStyle * pStyle);
+		virtual void		_setCharStyle(TextStyle * pStyle, int ofs, int len);
+
+		virtual void		_clearCharStyle();
+		virtual void		_clearCharStyle(int ofs, int len);
+
+
+		virtual String		getString() const;
+
 		inline State		state() const { return m_state; }
+		virtual void		setState( State state );
 
 		virtual void		setSize( SizeI size );
-		inline SizeI			size() const { return m_size; }
+		inline SizeI		size() const { return m_size; }
 
 		virtual SizeI		preferredSize() const;
 		virtual int			matchingWidth( int height ) const;
@@ -72,7 +108,6 @@ namespace wg
 
 		virtual RectI		rectForRange( int ofs, int length ) const;
 
-		virtual String		getString() const;
 
 		virtual int			selectionBegin() const;
 		virtual int			selectionEnd() const;

@@ -23,19 +23,25 @@
 #define WG_CVALUEEDITOR_DOT_H
 #pragma once
 
-#include <wg_valuedisplay.h>
+#include <wg_cvaluedisplay.h>
 #include <wg_caret.h>
 
 namespace wg
 {
+
+	class CValueEditor;
+	typedef	StrongComponentPtr<CValueEditor>	CValueEditor_p;
+	typedef	WeakComponentPtr<CValueEditor>		CValueEditor_wp;
 
 	//____ CValueEditor ____________________________________________________________
 
 	class CValueEditor : public CValueDisplay	/** @private */
 	{
 	public:
-		CValueEditor(GeoComponent::Holder * pHolder );
+		CValueEditor(Holder * pHolder );
 		~CValueEditor();
+
+		//.____ State __________________________________________________
 
 		void				setEditMode(TextEditMode mode);
 		inline TextEditMode editMode() const { return m_editMode; }
@@ -43,9 +49,14 @@ namespace wg
 		inline bool			isEditable() const { return m_editMode == TextEditMode::Editable; }
 		inline bool			isSelectable() const { return m_editMode != TextEditMode::Static; }
 
+		//.____ Appearance _____________________________________________
+
 		void				setCaret( Caret * pCaret );
-		inline Caret_p		caret()
-		const { return m_pCaret; }
+		inline Caret_p		caret() const { return m_pCaret; }
+
+		//.____ Content _____________________________________________
+
+		// Calling these methods gets component into edit mode, displaying caret.
 
 		int					insertAtCaret( const CharSeq& str );
 		bool				insertAtCaret( uint16_t c );
@@ -56,17 +67,23 @@ namespace wg
 		int					erase( int ofs, int len );
 		void				eraseSelected();
 
+		//.____ Control _____________________________________________
+
 		void				select( int ofs, int len );
 		void				selectAll();
-		void				clearSelection();
 		inline int			selectionBegin() const override { return m_selBeg; }
 		inline int			selectionEnd() const override { return m_selEnd; }
-		inline int			selectionSize() const override { return m_selEnd - m_selBeg; }
+		inline int			selectionLength() const { return m_selEnd - m_selBeg; }
+		void				clearSelection();
 
 		void				goBol();
 		void				goEol();
 		void				goBof();
 		void				goEof();
+
+		//.____ Misc __________________________________________________
+
+		inline CValueEditor_p		ptr() { return CValueEditor_p(this); }
 
 	protected:
 		void				_onValueEdited() { _notify( ComponentNotif::ValueEdited, 0, nullptr ); }

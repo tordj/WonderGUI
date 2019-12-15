@@ -36,7 +36,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	RefreshButton::RefreshButton() : m_refreshText(this), refreshText(&m_refreshText)
+	RefreshButton::RefreshButton() : refreshText(this)
 	{
 		m_pRefreshAnim		= 0;
 		m_animTarget		= BUTTON_CENTERED;
@@ -184,7 +184,7 @@ namespace wg
 	void RefreshButton::_resize( const SizeI& size )
 	{
 		SizeI contentSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
-		m_refreshText.setSize(contentSize);
+		_refreshText().setSize(contentSize);
 
 		Button::_resize( size );
 	}
@@ -304,13 +304,13 @@ namespace wg
 		// Get icon and text rect from content rect
 
 		SizeI iconSize;
-		if( !m_icon.isEmpty() )
-			iconSize = m_icon.skin()->_preferredSize();
+		if( !_icon().isEmpty() )
+			iconSize = _icon().skin()->_preferredSize();
 		else if( m_animTarget == ICON && m_pRefreshAnim )
 			iconSize = m_pRefreshAnim->size();
 
-		RectI iconRect = m_icon.getIconRect( contentRect, iconSize );
-		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI iconRect = _icon().getIconRect( contentRect, iconSize );
+		RectI textRect = _icon().getTextRect( contentRect, iconRect );
 
 
 		// Render icon or animation
@@ -323,22 +323,26 @@ namespace wg
 			pDevice->setBlitSource(pAnimFrame->pSurf);
 			pDevice->stretchBlit( iconRect, pAnimFrame->rect );
 		}
-		else if( !m_icon.isEmpty() )
-			m_icon.skin()->_render( pDevice, iconRect, m_state );
+		else if( !_icon().isEmpty() )
+			_icon().skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 
-		CTextDisplay * pText;
-
-		if( m_bRefreshing )
-			pText = &m_refreshText;
-		else
-			pText = &m_text;
-
-	 	if( !pText->isEmpty() )
+		if (m_bRefreshing )
 		{
-			pText->setState(m_state);		//TODO: Should be done when state actually is set.
-			pText->render(pDevice, textRect );
+			if( !_refreshText().isEmpty() )
+			{
+				_refreshText().setState(m_state);		//TODO: Should be done when state actually is set.
+				_refreshText().render(pDevice, textRect);
+			}
+		}
+		else
+		{
+			if (!_text().isEmpty())
+			{
+				_text().setState(m_state);		//TODO: Should be done when state actually is set.
+				_text().render(pDevice, textRect);
+			}
 		}
 	}
 

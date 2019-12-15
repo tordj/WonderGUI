@@ -46,21 +46,15 @@ namespace wg
 	class ModalLayer;
 	class DragNDropLayer;
 
-	class IROTextDisplay;
-	class ITextDisplay;
-	class ITextEditor;
+	class CStaticTextDisplay;
+	class CTextDisplay;
+	class CTextEditor;
 	class Payload;
 
 	typedef WeakPtr<Object>		Object_wp;
 
-	typedef	StrongComponentPtr<IROTextDisplay>	IROTextDisplay_p;
-	typedef	WeakComponentPtr<IROTextDisplay> 	IROTextDisplay_wp;
-
-	typedef	StrongComponentPtr<ITextDisplay>		ITextDisplay_p;
-	typedef	WeakComponentPtr<ITextDisplay>		ITextDisplay_wp;
-
-	typedef	StrongComponentPtr<ITextEditor>	ITextEditor_p;
-	typedef	WeakComponentPtr<ITextEditor>	ITextEditor_wp;
+	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
+	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
 
 	typedef    StrongPtr<Payload>  Payload_p;
 	typedef    WeakPtr<Payload>    Payload_wp;
@@ -1070,7 +1064,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		inline static TextEditMsg_p create( ITextEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
+		inline static TextEditMsg_p create( CTextEditor * pText, bool bFinal ) { return new TextEditMsg( pText, bFinal ); }
 
 		//.____ Identification __________________________________________
 
@@ -1081,13 +1075,13 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		ITextEditor_p		text() const;
+		CTextEditor_p		text() const;
 		bool				isFinal() const;
 
 	protected:
-		TextEditMsg( ITextEditor * pText, bool bFinal );
+		TextEditMsg( CTextEditor * pText, bool bFinal );
 
-		ITextEditor_p		m_pText;
+		CTextEditor_p		m_pText;
 		bool				m_bFinal;
 	};
 

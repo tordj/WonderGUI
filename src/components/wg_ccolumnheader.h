@@ -28,6 +28,10 @@
 
 namespace wg
 {
+	class CColumnHeader;
+	typedef	StrongComponentPtr<CColumnHeader>	CColumnHeader_p;
+	typedef	WeakComponentPtr<CColumnHeader>		CColumnHeader_wp;
+
 	//____ CColumnHeader ___________________________________________________
 
 	class CColumnHeader : public GeoComponent, protected GeoComponent::Holder   /** @private */
@@ -35,39 +39,44 @@ namespace wg
 	public:
 		CColumnHeader(GeoComponent::Holder * pHolder);
 
-		//____ Subcomponents __________________________________
+		//.____ Components ___________________________________________
 
 		CIconDisplay		icon;
 		CIconDisplay		arrow;
 		CTextDisplay		label;
 
-		//____ Methods _____________________________________
+		//.____ Appearance ____________________________________________
 
-		void			setSortOrder( SortOrder order );
-		inline SortOrder sortOrder() const { return m_sortOrder; }
-
-		void			setSkin( Skin * pSkin );
+		void			setSkin(Skin * pSkin);
 		inline Skin_p	skin() const { return m_pSkin; }
 
-		void			setState( State state );
-		inline State	state() const { return m_state; }
+		//.____ Misc __________________________________________________
 
-		void			setSize( SizeI size );
-		inline SizeI		size() const { return m_size; }
-
-		SizeI			preferredSize() const;
-		int				matchingWidth( int height ) const;
-		int				matchingHeight( int width ) const;
-
-		bool			receive( Msg * pMsg );
-
-		void			render( GfxDevice * pDevice, const RectI& _canvas );
+		inline CColumnHeader_p	ptr() { return CColumnHeader_p(this); }
 
 
 	protected:
+		void			setSortOrder(SortOrder order);
+		inline SortOrder sortOrder() const { return m_sortOrder; }
 
-		Object *		_object() override;
-		const Object *	_object() const override;
+
+		void			setState(State state);
+		inline State	state() const { return m_state; }
+
+		void			setSize(SizeI size);
+		inline SizeI	size() const { return m_size; }
+
+		SizeI			preferredSize() const;
+		int				matchingWidth(int height) const;
+		int				matchingHeight(int width) const;
+
+		bool			receive(Msg * pMsg);
+
+		void			render(GfxDevice * pDevice, const RectI& _canvas);
+
+		inline Object *			_object() override { return GeoComponent::_object(); }
+		inline const Object *	_object() const override { return GeoComponent::_object(); }
+
 
 		CoordI	_componentPos( const GeoComponent * pComponent ) const override;
 		SizeI	_componentSize( const GeoComponent * pComponent ) const override;
@@ -84,6 +93,16 @@ namespace wg
 		void	_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
 		void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+
+		class TextAccess : public CTextDisplay { friend class CColumnHeader; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
+		TextAccess& _text() { return static_cast<TextAccess&>(label); }
+
+		class IconAccess : public CIconDisplay { friend class CColumnHeader; };
+		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
+		const IconAccess& _arrow() const { return static_cast<const IconAccess&>(arrow); }
+		IconAccess& _arrow() { return static_cast<IconAccess&>(arrow); }
 
 
 		Skin_p			m_pSkin;

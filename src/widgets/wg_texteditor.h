@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_itexteditor.h>
+#include <wg_ctexteditor.h>
 
 namespace wg
 {
@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		ITextEditor		text;
+		CTextEditor		text;
 
 		//.____ Identification __________________________________________
 
@@ -73,9 +73,10 @@ namespace wg
 		void			_setState( State state ) override;
 		void			_setSkin( Skin * pSkin ) override;
 
-	private:
+		class TextAccess : public CTextEditor { friend class TextEditor; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
+		TextAccess& _text() { return static_cast<TextAccess&>(text); }
 
-		CTextEditor	m_text;
 	};
 
 

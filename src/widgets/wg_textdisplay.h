@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_itextdisplay.h>
+#include <wg_ctextdisplay.h>
 
 namespace wg
 {
@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		ITextDisplay			text;
+		CTextDisplay			text;
 
 		//.____ Identification __________________________________________
 
@@ -77,9 +77,10 @@ namespace wg
 		void			_setState( State state ) override;
 		void			_setSkin( Skin * pSkin ) override;
 
-	private:
+		class TextAccess : public CTextDisplay { friend class TextDisplay; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
+		TextAccess& _text() { return static_cast<TextAccess&>(text); }
 
-		CTextDisplay		m_text;
 	};
 
 

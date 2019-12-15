@@ -30,60 +30,89 @@
 namespace wg
 {
 
+	class CTextEditor;
+	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
+	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
+
+
 	//____ CTextEditor __________________________________________________________________
 
 	class CTextEditor : public CTextDisplay	/** @private */
 	{
 	public:
-		CTextEditor(GeoComponent::Holder * pHolder );
 
-		void			receive( Msg * pMsg ) override;
+		CTextEditor(Holder * pHolder );
 
-		// Overloaded so we can update caret and selection
+		//.____ State __________________________________________________
 
-		void			clear() override;
+		void			setEditMode(TextEditMode mode);
+		TextEditMode	editMode() const { return m_editMode; };
+		inline bool		isSelectable() const { return !(editMode() == TextEditMode::Static); }
+		inline bool		isEditable() const { return editMode() == TextEditMode::Editable; }
 
-		void			set( const CharSeq& seq ) override;
-		void			set( const CharBuffer * buffer ) override;
-		void			set( const String& str ) override;
+		//.____ Content _____________________________________________
 
-		int				append( const CharSeq& seq ) override;
-		int				insert( int ofs, const CharSeq& seq ) override;
-		int				replace( int ofs, int nDelete, const CharSeq& seq ) override;
-		int				erase( int ofs, int len ) override;
+		int				caretPut(const CharSeq& seq);	// Will insert or overwrite depending on caret mode
+		bool			caretPut(uint16_t c);			// " -
 
-		void			setState( State state ) override;
-		void			render( GfxDevice * pDevice, const RectI& _canvas ) override;
+		inline int		eraseSelected();
 
-		bool			setMaxLines( int maxLines );
-		bool			setMaxChars( int maxChars );
+		bool			setMaxLines(int maxLines);
+		bool			setMaxChars(int maxChars);
 		int				maxLines() const { return m_maxLines; }
 		int				maxChars() const { return m_maxChars; }
 
-		void			setEditMode( TextEditMode mode );
-		TextEditMode	editMode() const { return m_editMode; };
-
+		//.____ Control _____________________________________________
 
 		// These methods will fail if editMode is Static
 
-		bool			select( int begin, int end );		// Cursor (if enabled) gets end position. End can be smaller than begin.
+		bool			select(int begin, int end);		// Cursor (if enabled) gets end position. End can be smaller than begin.
 		bool			selectAll();
 		bool			unselect();
-		int				eraseSelected();
+
+		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
 		int				selectionBegin() const override;			// Begin position of selection, might be after end position.
 		int				selectionEnd() const override;
 		int				selectionSize() const override;				// Number of characters that are selected.
 
-		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
 		// These methods will fail unless caret is present
 
-		bool			setCaretOfs( int ofs );			// Move cursor to offset. Any selection will be unselected.
+		bool			setCaretOfs(int ofs);			// Move cursor to offset. Any selection will be unselected.
 		int				caretOfs() const;
 
-		int				caretPut( const CharSeq& seq );	// Will insert or overwrite depending on caret mode
-		bool			caretPut( uint16_t c );			// " -
+		bool			caretLineBegin();
+		bool			caretLineEnd();
+		bool			caretTextBegin();
+		bool			caretTextEnd();
+
+		//.____ Misc __________________________________________________
+
+		inline CTextEditor_p		ptr() { return CTextEditor_p(this); }
+
+
+	protected:
+		void			receive( Msg * pMsg ) override;
+
+		// Overloaded so we can update caret and selection
+
+		void			_clear() override;
+
+		void			_set(const CharSeq& seq) override;
+		void			_set(const CharBuffer * buffer) override;
+		void			_set(const String& str) override;
+
+		int				_append(const CharSeq& seq) override;
+		int				_insert(int ofs, const CharSeq& seq) override;
+		int				_replace(int ofs, int nDelete, const CharSeq& seq) override;
+		int				_erase(int ofs, int len) override;
+
+
+		void			setState( State state ) override;
+		void			render( GfxDevice * pDevice, const RectI& _canvas ) override;
+
+		//
 
 		bool			caretUp();
 		bool			caretDown();
@@ -98,14 +127,12 @@ namespace wg
 		bool			caretEraseNextWord();
 		bool			caretErasePrevWord();
 
-		bool			caretLineBegin();
-		bool			caretLineEnd();
-		bool			caretTextBegin();
-		bool			caretTextEnd();
-
 		inline bool		caretToPos(Coord pos) { return _caretToPos(Util::qpixToRaw(pos)); }			// Move caret as close as possible to the given position.
 		bool			caretSelectWord();
 		bool			caretSelectLine();				// Full line with hard line ending.
+
+		//
+
 
 
 

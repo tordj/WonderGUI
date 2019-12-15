@@ -10,9 +10,6 @@
     <Filter Include="sizebrokers">
       <UniqueIdentifier>{b67b3553-ed78-498c-8c93-efea34c509c3}</UniqueIdentifier>
     </Filter>
-    <Filter Include="interfaces">
-      <UniqueIdentifier>{149ec1fc-7700-4386-b0ad-117e61a15898}</UniqueIdentifier>
-    </Filter>
     <Filter Include="widgets">
       <UniqueIdentifier>{7ee97fe5-8265-4bd7-8693-425979e1d07b}</UniqueIdentifier>
     </Filter>
@@ -365,19 +362,10 @@
     <ClInclude Include="..\..\..\src\components\wg_cicondisplay.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cspan.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_ctext.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_ctexteditor.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cvalue.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cvaluedisplay.h">
@@ -385,42 +373,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cvalueeditor.h">
       <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_icanvas.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_icolumnheader.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_iicondisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_imodspan.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_irotextdisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_irovaluedisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_islidespan.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ispan.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_itextdisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_itexteditor.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ivaluedisplay.h">
-      <Filter>interfaces</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\interfaces\wg_ivalueeditor.h">
-      <Filter>interfaces</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_payload.h">
       <Filter>base</Filter>
@@ -489,6 +441,15 @@
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticvaluedisplay.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstatictextdisplay.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h">
       <Filter>components</Filter>
     </ClInclude>
   </ItemGroup>
@@ -787,13 +748,7 @@
     <ClCompile Include="..\..\..\src\components\wg_ctext.cpp">
       <Filter>components</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\components\wg_ctextdisplay.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_ctexteditor.cpp">
-      <Filter>components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\components\wg_cvalue.cpp">
       <Filter>components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cvaluedisplay.cpp">
@@ -801,27 +756,6 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cvalueeditor.cpp">
       <Filter>components</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_icanvas.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_icolumnheader.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_irotextdisplay.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_irovaluedisplay.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_islidespan.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_ispan.cpp">
-      <Filter>interfaces</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\interfaces\wg_ivaluedisplay.cpp">
-      <Filter>interfaces</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\layers\wg_dragndroplayer.cpp">
       <Filter>widgets\layers</Filter>
@@ -839,6 +773,12 @@
       <Filter>components</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cshadows.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cstaticvaluedisplay.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cstatictextdisplay.cpp">
       <Filter>components</Filter>
     </ClCompile>
   </ItemGroup>

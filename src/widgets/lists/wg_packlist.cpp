@@ -65,13 +65,13 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	PackList::PackList() : m_header(this), slots(this), header(&m_header)
+	PackList::PackList() : header(this), slots(this)
 	{
 		m_sizeOfSlot = sizeof(PackListSlot);
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
 		m_sortOrder = SortOrder::Ascending;
-		m_header.setSortOrder( SortOrder::Ascending );
+		_header().setSortOrder( SortOrder::Ascending );
 
 		m_maxEntrySize = SizeI(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 
@@ -135,7 +135,7 @@ namespace wg
 		if( order != m_sortOrder )
 		{
 			m_sortOrder = order;
-			m_header.setSortOrder( order );
+			_header().setSortOrder( order );
 			_sortEntries();
 			_requestRender();		// So we also render the header, which has an arrow with new state.
 		}
@@ -188,19 +188,19 @@ namespace wg
 	SizeI PackList::_preferredSize() const
 	{
 		SizeI sz = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
-		SizeI header = m_header.preferredSize();
+		SizeI headerSize = _header().preferredSize();
 
 		if (m_bHorizontal)
 		{
-			sz += SizeI(m_contentPreferredLength + header.w, m_contentPreferredBreadth);
-			if (header.h > sz.h)
-				sz.h = header.h;
+			sz += SizeI(m_contentPreferredLength + headerSize.w, m_contentPreferredBreadth);
+			if (headerSize.h > sz.h)
+				sz.h = headerSize.h;
 		}
 		else
 		{
-			sz += SizeI(m_contentPreferredBreadth, m_contentPreferredLength + header.h);
-			if (header.w > sz.w)
-				sz.w = header.w;
+			sz += SizeI(m_contentPreferredBreadth, m_contentPreferredLength + headerSize.h);
+			if (headerSize.w > sz.w)
+				sz.w = headerSize.w;
 		}
 
 		return sz;
@@ -216,11 +216,11 @@ namespace wg
 			if (m_pSkin)
 				height += m_pSkin->_contentPadding().h;
 
-			return std::max(height, m_header.preferredSize().h);
+			return std::max(height, _header().preferredSize().h);
 		}
 		else
 		{
-			int height = m_header.matchingHeight(width);
+			int height = _header().matchingHeight(width);
 			if (m_pSkin)
 			{
 				SizeI pad = m_pSkin->_contentPadding();
@@ -243,7 +243,7 @@ namespace wg
 	{
 		if (m_bHorizontal)
 		{
-			int width = m_header.matchingWidth(height);
+			int width = _header().matchingWidth(height);
 			if (m_pSkin)
 			{
 				SizeI pad = m_pSkin->_contentPadding();
@@ -264,7 +264,7 @@ namespace wg
 			if (m_pSkin)
 				width += m_pSkin->_contentPadding().w;
 
-			return std::max(width, m_header.preferredSize().w);
+			return std::max(width, _header().preferredSize().w);
 		}
 	}
 
@@ -408,12 +408,12 @@ namespace wg
 
 		// Render header
 
-		if( m_header.size().h != 0 )
+		if( _header().size().h != 0 )
 		{
 			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			RectI canvas = _headerGeo() + _canvas.pos();
 
-			m_header.render( pDevice, canvas );
+			_header().render( pDevice, canvas );
 		}
 
 		// Render Lasso
@@ -433,8 +433,8 @@ namespace wg
 	{
 		List::_resize(_size);
 
-		SizeI headerSize = m_bHorizontal ? SizeI(m_header.matchingWidth(_size.h), _size.h) : SizeI( _size.w, m_header.matchingHeight( _size.w ));
-		m_header.setSize( headerSize );
+		SizeI headerSize = m_bHorizontal ? SizeI(_header().matchingWidth(_size.h), _size.h) : SizeI( _size.w, _header().matchingHeight( _size.w ));
+		_header().setSize( headerSize );
 
 		SizeI size = _size;
 		if( m_pSkin )
@@ -548,7 +548,7 @@ namespace wg
 
 	void PackList::_receive( Msg * _pMsg )
 	{
-		bool bSwallowed = m_header.receive(_pMsg);
+		bool bSwallowed = _header().receive(_pMsg);
 
 		if( !bSwallowed )
 		{
@@ -1363,13 +1363,13 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			r.x += m_header.size().w;
-			r.w -= m_header.size().w;
+			r.x += _header().size().w;
+			r.w -= _header().size().w;
 		}
 		else
 		{
-			r.y += m_header.size().h;
-			r.h -= m_header.size().h;
+			r.y += _header().size().h;
+			r.h -= _header().size().h;
 		}
 		return r;
 	}
@@ -1378,12 +1378,12 @@ namespace wg
 
 	RectI PackList::_listCanvas() const
 	{
-		SizeI header = m_header.size();
+		SizeI headerSize = _header().size();
 
 		if( m_bHorizontal )
-			return RectI(header.w, 0, m_size.w - header.w, m_size.h );
+			return RectI(headerSize.w, 0, m_size.w - headerSize.w, m_size.h );
 		else
-			return RectI(0, header.h, m_size.w, m_size.h - header.h);	// List canvas in widgets own coordinate system.
+			return RectI(0, headerSize.h, m_size.w, m_size.h - headerSize.h);	// List canvas in widgets own coordinate system.
 	}
 
 	//____ _headerGeo() ___________________________________________________________
@@ -1391,9 +1391,9 @@ namespace wg
 	RectI PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return RectI( _windowSection().x, 0, m_header.size().w, m_size.h );
+			return RectI( _windowSection().x, 0, _header().size().w, m_size.h );
 		else
-			return RectI( 0, _windowSection().y, m_size.w, m_header.size().h );
+			return RectI( 0, _windowSection().y, m_size.w, _header().size().h );
 	}
 
 	//____ _windowPadding() _______________________________________________________
@@ -1401,17 +1401,17 @@ namespace wg
 	SizeI PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return SizeI( m_header.size().w, 0 );
+			return SizeI( _header().size().w, 0 );
 		else
-			return SizeI( 0, m_header.size().h );
+			return SizeI( 0, _header().size().h );
 	}
 
 	//____ _refreshHeader() _______________________________________________________
 
 	void PackList::_refreshHeader()
 	{
-		SizeI wantedSize = m_header.preferredSize();
-		SizeI currentSize = m_header.size();
+		SizeI wantedSize = _header().preferredSize();
+		SizeI currentSize = _header().size();
 
 		bool	bRequestResize = false;
 
@@ -1505,14 +1505,14 @@ namespace wg
 
 	SizeI PackList::_componentSize( const GeoComponent * pComponent ) const
 	{
-		return m_header.size();		// We store size internally in the header.
+		return _header().size();		// We store size internally in the _header().
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
 	RectI PackList::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		return RectI( _componentPos(pComponent), m_header.size() );
+		return RectI( _componentPos(pComponent), _header().size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________
@@ -1521,7 +1521,7 @@ namespace wg
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{
-			m_sortOrder = m_header.sortOrder();
+			m_sortOrder = _header().sortOrder();
 			_sortEntries();
 		}
 	}

@@ -28,7 +28,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	CText::CText(GeoComponent::Holder * pHolder ) : GeoComponent( pHolder )
+	CText::CText(Holder * pHolder ) : GeoComponent( pHolder )
 	{
 		_textMapper()->addComponent(this);
 	}
@@ -204,6 +204,118 @@ namespace wg
 	{
 		return 0;
 	}
+
+	//____ _clear() _________________________________________________________________
+
+	void CText::_clear()
+	{
+		int removed = m_charBuffer.length();
+		m_charBuffer.clear();
+		_textMapper()->onTextModified(this, 0, removed, 0);
+	}
+
+	//___ _set() ____________________________________________________________________
+
+	void CText::_set(const CharSeq& seq)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int removed = m_charBuffer.length();
+		m_charBuffer = seq;
+		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+	}
+
+	void CText::_set(const CharBuffer * buffer)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int removed = m_charBuffer.length();
+		m_charBuffer = *buffer;
+		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+	}
+
+	void CText::_set(const String& str)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int removed = m_charBuffer.length();
+		m_charBuffer = str;
+		_textMapper()->onTextModified(this, 0, removed, m_charBuffer.length());
+	}
+
+	//____ _append() ________________________________________________________________
+
+	int CText::_append(const CharSeq& seq)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int ofs = m_charBuffer.length();
+		int len = m_charBuffer.pushBack(seq);
+		_textMapper()->onTextModified(this, ofs, 0, len);
+		return len;
+	}
+
+	//____ _insert() ________________________________________________________________
+
+	int CText::_insert(int ofs, const CharSeq& seq)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int len = m_charBuffer.insert(ofs, seq);
+		_textMapper()->onTextModified(this, ofs, 0, seq.length());
+		return len;
+	}
+
+	//____ _replace() ___________________________________________________________
+
+	int CText::_replace(int ofs, int nDelete, const CharSeq& seq)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int diff = m_charBuffer.replace(ofs, nDelete, seq);
+		_textMapper()->onTextModified(this, ofs, nDelete, seq.length());
+		return diff;
+	}
+
+	//____ _erase() ____________________________________________________________
+
+	int CText::_erase(int ofs, int len)
+	{
+		//TODO: Check and respect boundaries. Guarantee correct parameters to onTextModified()
+
+		int removed = m_charBuffer.remove(ofs, len);
+		_textMapper()->onTextModified(this, ofs, len, 0);
+		return removed;
+	}
+
+	//____ _setCharStyle() ______________________________________________________
+
+	void CText::_setCharStyle(TextStyle * pStyle)
+	{
+		m_charBuffer.setStyle(pStyle);
+		_textMapper()->onCharStyleChanged(this);
+	}
+
+	void CText::_setCharStyle(TextStyle * pStyle, int ofs, int len)
+	{
+		m_charBuffer.setStyle(pStyle, ofs, len);
+		_textMapper()->onCharStyleChanged(this, ofs, len);
+	}
+
+	//____ _clearCharStyle() ____________________________________________________
+
+	void CText::_clearCharStyle()
+	{
+		m_charBuffer.clearStyle();
+		_textMapper()->onCharStyleChanged(this);
+	}
+
+	void CText::_clearCharStyle(int ofs, int len)
+	{
+		m_charBuffer.clearStyle(ofs, len);
+		_textMapper()->onCharStyleChanged(this, ofs, len);
+	}
+
 
 	//____ _editState() ________________________________________________________
 

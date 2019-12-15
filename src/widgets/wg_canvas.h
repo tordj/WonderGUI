@@ -26,7 +26,7 @@
 
 #include <wg_widget.h>
 #include <wg_gfxdevice.h>
-#include <wg_icanvas.h>
+#include <wg_ccanvas.h>
 
 
 namespace wg
@@ -74,7 +74,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ICanvas		canvas;
+		CCanvas		canvas;
 
 
 		//.____ Identification __________________________________________
@@ -101,8 +101,11 @@ namespace wg
 		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
 		virtual	bool	_alphaTest(const CoordI& ofs) override;
 
+		class CanvasAccess : public CCanvas { friend class Canvas; };
+		const CanvasAccess& _canvas() const { return static_cast<const CanvasAccess&>(canvas); }
+		CanvasAccess& _canvas() { return static_cast<CanvasAccess&>(canvas); }
 
-		CCanvas	m_canvas;
+
 	};
 
 

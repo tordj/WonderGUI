@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef	WG_CVALUE_DOT_H
-#define WG_CVALUE_DOT_H
+#ifndef	WG_CSTATICVALUEDISPLAY_DOT_H
+#define WG_CSTATICVALUEDISPLAY_DOT_H
 #pragma once
 
 #include <wg_ctext.h>
@@ -29,25 +29,44 @@
 namespace wg
 {
 
-	//____ CValue ____________________________________________________________
+	class CStaticValueDisplay;
+	typedef	StrongComponentPtr<CStaticValueDisplay>	CStaticValueDisplay_p;
+	typedef	WeakComponentPtr<CStaticValueDisplay>	CStaticValueDisplay_wp;
 
-	class CValue : public CText		/** @private */
+	//____ CStaticValueDisplay ____________________________________________________________
+
+	class CStaticValueDisplay : public CText		/** @private */
 	{
 	public:
-		CValue(GeoComponent::Holder * pHolder);
+		CStaticValueDisplay(Holder * pHolder);
+
+		//.____ Appearance _____________________________________________
 
 		void				setFormatter( ValueFormatter * pFormatter );
 		void				clearFormatter();
 		inline ValueFormatter_p	formatter() const { return m_pFormatter; }
 
+		//.____ Content _______________________________________________
+
+		inline int64_t		value() const { return m_value; }
+		inline int			scale() const { return m_scale; }
+
+		//.____ State _______________________________________________
+
+		inline State			state() const { return m_state; }
+
+		//.____ Misc __________________________________________________
+
+		inline CStaticValueDisplay_p	ptr() { return CStaticValueDisplay_p(this); }
+
+
+	protected:
+
 		virtual void		clear();
 		virtual bool		set( int64_t value, int scale );
 
 		void				refresh() override;
-		inline int64_t		value() const { return m_value; }
-		inline int			scale() const { return m_scale; }
 
-	protected:
 		void				_regenText();
 
 		int64_t				m_value;
@@ -59,4 +78,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CVALUE_DOT_H
+#endif //WG_CSTATICVALUEDISPLAY_DOT_H

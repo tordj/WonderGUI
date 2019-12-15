@@ -54,8 +54,8 @@ namespace wg
 	void RulerLabels::addLabel( const CharSeq& text, TextStyle * pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
-		pLabel->text.set(text);
-		pLabel->text.setStyle(pStyle);
+		pLabel->_text().set(text);
+		pLabel->_text().setStyle(pStyle);
 		pLabel->offset = offset;
 
 		m_labels.pushBack(pLabel);
@@ -74,12 +74,12 @@ namespace wg
 
 	//____ getLabel() ________________________________________________________________
 
-	ITextDisplay_p	RulerLabels::getLabel(int index)
+	CTextDisplay_p	RulerLabels::getLabel(int index)
 	{
 		if( index >= m_labels.size() )
-			return ITextDisplay_p();
+			return CTextDisplay_p();
 
-		return ITextDisplay_p(&m_labels.get(index)->interface);
+		return CTextDisplay_p(&m_labels.get(index)->text);
 	}
 
 
@@ -97,7 +97,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->text.preferredSize();
+				SizeI sz = pLabel->_text().preferredSize();
 				if( sz.w > preferred.w )
 					preferred.w = sz.w;
 
@@ -110,7 +110,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->text.preferredSize();
+				SizeI sz = pLabel->_text().preferredSize();
 				preferred.w += sz.w;
 
 				if( sz.h > preferred.h )
@@ -144,14 +144,14 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int height = pLabel->text.size().h;
+				int height = pLabel->_text().size().h;
 				int ofs = (int) (canvas.h * pLabel->offset);
 				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
 	/*
 	TODO: Reinstate!!!
 
-				switch( pLabel->text.alignment() )
+				switch( pLabel->_text().alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::North:
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->text.render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
+				pLabel->_text().render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -178,14 +178,14 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int width = pLabel->text.size().w;
+				int width = pLabel->_text().size().w;
 				int ofs = (int) (canvas.w * pLabel->offset);
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
 	/*
 	TODO: Reinstate!
 
-				switch( pLabel->text.alignment() )
+				switch( pLabel->_text().alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::SouthWest:
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->text.render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
+				pLabel->_text().render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -234,7 +234,7 @@ namespace wg
 		Label * p = m_labels.first();
 		while( p )
 		{
-			p->text.setState(state);
+			p->_text().setState(state);
 			p = p->next();
 		}
 	}

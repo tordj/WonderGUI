@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_types.h>
-#include <wg_ctext.h>
+#include <wg_cstatictextdisplay.h>
 
 
 #include <wg_base.h>
@@ -37,40 +37,44 @@ namespace wg
 	class CharSeq;
 	class CharBuffer;
 
+	class CTextDisplay;
+	typedef	StrongComponentPtr<CTextDisplay>	CTextDisplay_p;
+	typedef	WeakComponentPtr<CTextDisplay>		CTextDisplay_wp;
+
+
 	//____ CTextDisplay __________________________________________________________________
 
-	class CTextDisplay : public CText		/** @private */
+	class CTextDisplay : public CStaticTextDisplay		/** @private */
 	{
 	public:
-		CTextDisplay(GeoComponent::Holder * pHolder );
 
-		virtual void		clear();
+		CTextDisplay(Holder * pHolder) : CStaticTextDisplay(pHolder) {}
 
-		virtual void		set( const CharSeq& seq );
-		virtual void		set( const CharBuffer * buffer );
-		virtual void		set( const String& str );
+		//.____ Content _____________________________________________
 
-		virtual int			append( const CharSeq& seq );
-		virtual int			insert( int ofs, const CharSeq& seq );
-		virtual int			replace( int ofs, int nDelete, const CharSeq& seq );
-		virtual int			erase( int ofs, int len );
+		inline void			clear() { _clear(); }
 
+		inline void			set(const CharSeq& seq) { _set(seq); }
+		inline void			set(const CharBuffer * buffer) { _set(buffer); }
+		inline void			set(const String& str) { _set(str); }
 
-		inline int			length() const { return m_charBuffer.length(); }
-		inline bool			isEmpty() const { return length()==0?true:false; }
-		TextLink_p			markedLink() const;
+		inline int			append(const CharSeq& seq) { return _append(seq); }
+		inline int			insert(int ofs, const CharSeq& seq) { return _insert(ofs, seq); }
+		inline int			replace(int ofs, int nDelete, const CharSeq& seq) { return _replace(ofs, nDelete, seq); }
+		inline int			erase(int ofs, int len) { return _erase(ofs, len); }
 
+		//.____ Appearance _____________________________________________
 
-		virtual void		setCharStyle( TextStyle * pStyle );
-		virtual void		setCharStyle( TextStyle * pStyle, int ofs, int len);
+		inline void			setCharStyle(TextStyle * pStyle) { _setCharStyle(pStyle); }
+		inline void			setCharStyle(TextStyle * pStyle, int ofs, int len) { _setCharStyle(pStyle, ofs, len); }
 
-		virtual void		clearCharStyle();
-		virtual void		clearCharStyle( int ofs, int len );
+		inline void			clearCharStyle() { _clearCharStyle(); }
+		inline void			clearCharStyle(int ofs, int len) { _clearCharStyle(ofs, len); }
 
-		virtual void		receive( Msg * pMsg );
+		//.____ Misc __________________________________________________
 
-	protected:
-		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link
+		inline CTextDisplay_p		ptr() { return CTextDisplay_p(this); }
+
 	};
 
 

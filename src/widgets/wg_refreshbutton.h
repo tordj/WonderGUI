@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_button.h>
-#include <wg_itextdisplay.h>
+#include <wg_ctextdisplay.h>
 #include <wg_gfxanim.h>
 
 namespace wg
@@ -61,7 +61,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		ITextDisplay	refreshText;
+		CTextDisplay	refreshText;
 
 		//.____ Identification __________________________________________
 
@@ -108,12 +108,23 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		virtual void 	_resize( const SizeI& size ) override;
 
+		class TextAccess : public CTextDisplay { friend class RefreshButton; };
+
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
+		TextAccess&	_text() { return static_cast<TextAccess&>(label); }
+
+		const TextAccess& _refreshText() const { return static_cast<const TextAccess&>(refreshText); }
+		TextAccess& _refreshText() { return static_cast<TextAccess&>(refreshText); }
+
+		class IconAccess : public CIconDisplay { friend class RefreshButton; };
+		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
+
 
 		RouteId			m_tickRouteId;
 		GfxAnim_p		m_pRefreshAnim;
 		AnimTarget		m_animTarget;
 		RefreshMode		m_refreshMode;			// Determines if animation is a progressbar or spinner.
-		CTextDisplay		m_refreshText;
 		bool			m_bRestartable;
 
 		bool			m_bRefreshing;

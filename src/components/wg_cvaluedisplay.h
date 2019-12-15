@@ -23,7 +23,7 @@
 #define WG_CVALUEDISPLAY_DOT_H
 #pragma once
 
-#include <wg_cvalue.h>
+#include <wg_cstaticvaluedisplay.h>
 
 namespace wg
 {
@@ -31,10 +31,10 @@ namespace wg
 
 	//____ CValueDisplay ____________________________________________________________
 
-	class CValueDisplay : public CValue		/** @private */
+	class CValueDisplay : public CStaticValueDisplay		/** @private */
 	{
 	public:
-		CValueDisplay(GeoComponent::Holder * pHolder);
+		CValueDisplay(Holder * pHolder);
 		~CValueDisplay() {}
 
 		// ModValue methods
@@ -46,9 +46,16 @@ namespace wg
 		inline int64_t		min() const { return m_minValue; }
 		inline int64_t		max() const { return m_maxValue; }
 
-		inline void			onValueModified() { _notify( ComponentNotif::ValueModified, 0, nullptr ); }
 
 	protected:
+		inline void			onValueModified() { _notify(ComponentNotif::ValueModified, 0, nullptr); }
+
+		void				_clear();
+		bool				_set(int64_t value, int scale);
+
+		bool				_setRange(int64_t min, int64_t max);
+
+
 		int64_t				m_minValue;
 		int64_t				m_maxValue;
 	};

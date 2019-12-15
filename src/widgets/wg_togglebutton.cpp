@@ -38,7 +38,7 @@ namespace wg
 
 	//____ ToggleButton() _________________________________________________________________
 
-	ToggleButton::ToggleButton() : m_label(this), m_icon(this), label(&m_label), icon(&m_icon)
+	ToggleButton::ToggleButton() : label(this), icon(this)
 	{
 		m_bPressed			= false;
 		m_bReturnPressed	= false;
@@ -110,12 +110,12 @@ namespace wg
 		SizeI iconPreferredSize;
 		SizeI textPreferredSize;
 
-		if( !m_label.isEmpty() )
-			textPreferredSize = m_label.preferredSize();
+		if( !_text().isEmpty() )
+			textPreferredSize = _text().preferredSize();
 
-		if( !m_icon.isEmpty() )
+		if( !_icon().isEmpty() )
 		{
-			iconPreferredSize = m_icon.skin()->_preferredSize() + m_icon.padding().size();
+			iconPreferredSize = _icon().skin()->_preferredSize() + _icon().padding().size();
 
 			//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
 		}
@@ -245,9 +245,9 @@ namespace wg
 		State oldState = state;
 		Widget::_setState(state);
 
-		m_label.setState( state );
+		_text().setState( state );
 
-		if( !m_icon.isEmpty() && !m_icon.skin()->isStateIdentical(state, m_state) )
+		if( !_icon().isEmpty() && !_icon().skin()->isStateIdentical(state, m_state) )
 			_requestRender();		//TODO: Just request render on icon?
 
 		if( state.isSelected() != oldState.isSelected() )
@@ -279,19 +279,19 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(_canvas, m_state );
 
-		RectI iconRect		= m_icon.getIconRect( contentRect );
+		RectI iconRect		= _icon().getIconRect( contentRect );
 
 		// Blit icon
 
-		if( m_icon.isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
-			m_icon.skin()->_render( pDevice, iconRect, m_state );
+		if( _icon().isEmpty() && iconRect.w > 0 && iconRect.h > 0 )
+			_icon().skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 
-	 	if( !m_label.isEmpty() )
+	 	if( !_text().isEmpty() )
 		{
-			RectI	textRect = m_icon.getTextRect( contentRect, iconRect );
-			m_label.render( pDevice, textRect );
+			RectI	textRect = _icon().getTextRect( contentRect, iconRect );
+			_text().render( pDevice, textRect );
 		}
 	}
 
@@ -314,7 +314,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
-		m_label.setSize( m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect )) );
+		_text().setSize( _icon().getTextRect( contentRect, _icon().getIconRect( contentRect )) );
 	}
 
 
@@ -329,7 +329,7 @@ namespace wg
 		m_bFlipOnRelease	= pOrg->m_bFlipOnRelease;
 		m_clickArea			= pOrg->m_clickArea;
 
-		m_icon.onCloneContent( &pOrg->m_icon );
+//		_icon().onCloneContent( &pOrg->m_icon );
 	}
 
 	//____ _markTestTextArea() ______________________________________________________
@@ -340,9 +340,9 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
-		contentRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
+		contentRect = _icon().getTextRect( contentRect, _icon().getIconRect( contentRect ) );
 
-		if( m_label.charAtPos( CoordI(_x,_y) - contentRect.pos() ) != -1 )
+		if( _text().charAtPos( CoordI(_x,_y) - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;
@@ -358,7 +358,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect( contentRect, m_state );
 
-		RectI	iconRect	= m_icon.getIconRect( contentRect );
+		RectI	iconRect	= _icon().getIconRect( contentRect );
 
 		switch( m_clickArea )
 		{
@@ -366,7 +366,7 @@ namespace wg
 			{
 				// Extend iconRect so it connects with textArea before we compare
 
-				RectI	textRect = m_icon.getTextRect( contentRect, iconRect);
+				RectI	textRect = _icon().getTextRect( contentRect, iconRect);
 
 				if( iconRect.x + iconRect.w < textRect.x )
 					iconRect.w = textRect.x - iconRect.x;
@@ -396,7 +396,7 @@ namespace wg
 			case ALPHA:			// Alpha test on background and icon.
 			{
 				if( Widget::_alphaTest( ofs ) ||
-					( !m_icon.isEmpty() && m_icon.skin()->_markTest( ofs, iconRect, m_state, m_markOpacity )) )
+					( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_state, m_markOpacity )) )
 					return true;
 
 				return false;
@@ -405,7 +405,7 @@ namespace wg
 				return true;
 			case ICON:			// Only the icon (alpha test) is clickable.
 			{
-				if( !m_icon.isEmpty() && m_icon.skin()->_markTest( ofs, iconRect, m_state, m_markOpacity ) )
+				if( !_icon().isEmpty() && _icon().skin()->_markTest( ofs, iconRect, m_state, m_markOpacity ) )
 					return true;
 
 				return false;

@@ -4,7 +4,7 @@
 
 #include <wg_widget.h>
 #include <wg_chain.h>
-#include <wg_itextdisplay.h>
+#include <wg_ctextdisplay.h>
 
 namespace wg
 {
@@ -38,7 +38,7 @@ namespace wg
 		//.____ Control ____________________________________________
 
 		void		addLabel( const CharSeq& text, TextStyle * pStyle, float offset );
-		ITextDisplay_p	getLabel(int index);
+		CTextDisplay_p	getLabel(int index);
 
 
 	protected:
@@ -59,15 +59,17 @@ namespace wg
 
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 
-
 		class Label : public Link
 		{
 		public:
-			Label(Widget * pWidget) : text(pWidget), interface(&text) {}
+			Label(Widget * pWidget) : text(pWidget) {}
 			LINK_METHODS(Label);
 			CTextDisplay	text;
-			ITextDisplay	interface;
 			float			offset;
+
+			class TextAccess : public CTextDisplay { friend class RulerLabels; };
+			const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
+			TextAccess& _text() { return static_cast<TextAccess&>(text); }
 		};
 
 		Chain<Label>	m_labels;

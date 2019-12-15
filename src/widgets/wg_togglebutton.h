@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_widget.h>
-#include <wg_itextdisplay.h>
-#include <wg_iicondisplay.h>
+#include <wg_ctextdisplay.h>
+#include <wg_cicondisplay.h>
 
 namespace wg
 {
@@ -76,8 +76,8 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		ITextDisplay		label;
-		IIconDisplay		icon;
+		CTextDisplay		label;
+		CIconDisplay		icon;
 
 		//.____ Identification __________________________________________
 
@@ -128,6 +128,14 @@ namespace wg
 
 
 	private:
+		class TextAccess : public CTextDisplay { friend class ToggleButton; };
+		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
+		TextAccess& _text() { return static_cast<TextAccess&>(label); }
+
+		class IconAccess : public CIconDisplay { friend class ToggleButton; };
+		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
+		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }
+
 
 		void	_refreshTextArea();
 		bool	_markTestTextArea( int _x, int _y );
@@ -136,8 +144,6 @@ namespace wg
 		bool			m_bReturnPressed;
 		bool			m_bFlipOnRelease;				// Set if we want to flip StateButton on press (default), not click.
 
-		CTextDisplay		m_label;
-		CIconDisplay		m_icon;
 		ToggleGroup_p	m_pToggleGroup;
 
 		ClickArea		m_clickArea;

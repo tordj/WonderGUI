@@ -36,7 +36,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Button::Button() : m_text(this), m_icon(this), label(&m_text), icon(&m_icon)
+	Button::Button() : icon(this), label(this)
 	{
 		m_bPressed 		 = false;
 		m_bReturnPressed = false;
@@ -85,14 +85,14 @@ namespace wg
 		if( m_pSkin )
 			height = m_pSkin->_preferredSize().h;
 
-		if( !m_text.isEmpty() )
+		if( !_text().isEmpty() )
 		{
 			SizeI padding;
 
 			if( m_pSkin )
 				padding = m_pSkin->_contentPadding();
 
-			int heightForText = m_text.matchingHeight(width-padding.w) + padding.h;
+			int heightForText = _text().matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
 				height = heightForText;
 		}
@@ -109,8 +109,8 @@ namespace wg
 	{
 		SizeI preferred;
 
-		if( !m_text.isEmpty() )
-			preferred = m_text.preferredSize();
+		if( !_text().isEmpty() )
+			preferred = _text().preferredSize();
 
 		if( m_pSkin )
 			preferred = m_pSkin->_sizeForContent(preferred);
@@ -124,10 +124,10 @@ namespace wg
 
 	void Button::_setState( State state )
 	{
-		if(m_icon.skin() && !m_icon.skin()->isStateIdentical(state,m_state))
+		if(_icon().skin() && !_icon().skin()->isStateIdentical(state,m_state))
 				_requestRender();
 
-		m_text.setState(state);
+		_text().setState(state);
 		Widget::_setState(state);
 	}
 
@@ -142,9 +142,9 @@ namespace wg
 		if( m_pSkin )
 			contentRect -= m_pSkin->_contentPadding();
 
-		RectI textRect = m_icon.getTextRect( contentRect, m_icon.getIconRect( contentRect ) );
+		RectI textRect = _icon().getTextRect( contentRect, _icon().getIconRect( contentRect ) );
 
-		m_text.setSize( textRect );
+		_text().setSize( textRect );
 	}
 
 
@@ -161,18 +161,18 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect( contentRect );
-		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI iconRect = _icon().getIconRect( contentRect );
+		RectI textRect = _icon().getTextRect( contentRect, iconRect );
 
 		// Render icon
 
-		if( m_icon.skin() )
-			m_icon.skin()->_render( pDevice, iconRect, m_state );
+		if( _icon().skin() )
+			_icon().skin()->_render( pDevice, iconRect, m_state );
 
 		// Print text
 
-	 	if( !m_text.isEmpty() )
-			m_text.render( pDevice, textRect );
+	 	if( !_text().isEmpty() )
+			_text().render( pDevice, textRect );
 	}
 
 	//____ _receive() ______________________________________________________________
@@ -266,7 +266,7 @@ namespace wg
 	void Button::_refresh( void )
 	{
 		Widget::_refresh();
-		m_text.refresh();
+		_text().refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -280,10 +280,10 @@ namespace wg
 
 		Button * pOrg = (Button *) _pOrg;
 
-		m_icon.onCloneContent( &pOrg->m_icon );
+//		_icon().onCloneContent( &pOrg->m_icon );
 
 		//TODO: Support cloning for text components.
-	//	m_text.clone(&pOrg->m_text);
+	//	_text().clone(&pOrg->m_text);
 
 	}
 
@@ -291,7 +291,7 @@ namespace wg
 
 	bool Button::_alphaTest( const CoordI& ofs )
 	{
-		if( m_icon.skin() )
+		if( _icon().skin() )
 		{
 			//TODO: Test against icon.
 		}
@@ -310,12 +310,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect( contentRect );
+		RectI iconRect = _icon().getIconRect( contentRect );
 
-		if( pComponent == &m_icon )
+		if( pComponent == &icon )
 			return iconRect.pos();
 
-		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI textRect = _icon().getTextRect( contentRect, iconRect );
 		return textRect.pos();
 	}
 
@@ -328,12 +328,12 @@ namespace wg
 		if( m_pSkin )
 			sz -= m_pSkin->_contentPadding();
 
-		RectI iconRect = m_icon.getIconRect( sz );
+		RectI iconRect = _icon().getIconRect( sz );
 
-		if( pComponent == &m_icon )
+		if( pComponent == &icon )
 			return iconRect.size();
 
-		RectI textRect = m_icon.getTextRect( sz, iconRect );
+		RectI textRect = _icon().getTextRect( sz, iconRect );
 		return textRect.size();
 
 	}
@@ -349,12 +349,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = m_icon.getIconRect( contentRect );
+		RectI iconRect = _icon().getIconRect( contentRect );
 
-		if( pComponent == &m_icon )
+		if( pComponent == &icon )
 			return iconRect;
 
-		RectI textRect = m_icon.getTextRect( contentRect, iconRect );
+		RectI textRect = _icon().getTextRect( contentRect, iconRect );
 		return textRect;
 	}
 

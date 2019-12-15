@@ -23,7 +23,7 @@
 #include <wg_msg.h>
 #include <wg_key.h>
 #include <wg_widget.h>
-#include <wg_itexteditor.h>
+#include <wg_ctexteditor.h>
 #include <wg_payload.h>
 
 namespace wg
@@ -1383,12 +1383,12 @@ namespace wg
 
 	const char TextEditMsg::CLASSNAME[] = {"TextEditMsg"};
 
-	EditText_p TextEditMsg::text() const
+	CTextEditor_p TextEditMsg::text() const
 	{
 		return m_pText;
 	}
 
-	TextEditMsg::TextEditMsg( ITextEditor * pText, bool bFinal )
+	TextEditMsg::TextEditMsg( CTextEditor * pText, bool bFinal )
 	{
 		m_type 		= MsgType::TextEdit;
 		m_pSource 	= pText->object();

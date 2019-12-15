@@ -27,9 +27,8 @@ namespace wg
 {
 	using namespace Util;
 
-	CCanvas::CCanvas(GeoComponent::Holder * pHolder, ICanvas * pInterface) : GeoComponent(pHolder)
+	CCanvas::CCanvas(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
 	{
-		m_pComponent = pInterface;
 	}
 
 
@@ -76,7 +75,7 @@ namespace wg
 			m_pDevice->setCanvas(m_pSurface);
 
 		if (m_surfaceLostCallback != nullptr)
-			m_surfaceLostCallback(m_pComponent);
+			m_surfaceLostCallback(this);
 	}
 
 	//____ calcPresentationArea() _______________________________________________
@@ -106,7 +105,24 @@ namespace wg
 	}
 
 
-	//____ setDevice() _________________________________________________
+	//____ setDevice() ________________________________________________________
+	/**
+	*	@brief Sets the GfxDevice to be used for drawing operations
+	*
+	*	@param	pDevice		Pointer to the GfxDevice to be used to draw on the Surface.
+	*
+	*	The specified GfxDevice will be initialized to use the Surface of this component
+	*	as its canvas and can be used to draw onto it. To draw onto the Surface you start
+	*	with a call to the device's beginRender(), followed by the calls for your drawing operations and endRender().
+	*	Finally you need to call the present() method of this CCanvas to make sure that what has been
+	*	drawn is copied to the screen.
+	*
+	*	The device should be reserved for this CCanvas until replaced and not used for anything else. Calling this
+	*	method is likely to discard your current Surface. You will need to specify a GfxDevice or SurfaceFactory for
+	*	a Surface to be generated and displayed.
+	*
+	*	@return	True if successful, False if device could not be set.
+	**/
 
 	bool CCanvas::setDevice(GfxDevice * pDevice)
 	{
@@ -118,9 +134,23 @@ namespace wg
 		return true;
 	}
 
-	//____ setSurfaceFactory() ________________________________________________
+	//____ setFactory() ________________________________________________
+	/**
+	*	@brief	Sets the SurfaceFactory used to create the Surface
+	*
+	*	@param	pFactory	Pointer to the SurfaceFactory to be used to create the Surface. If nullptr
+	*						the default SurfaceFactory of the GfxDevice will be set.
+	*
+	*	Specifies the SurfaceFactory used to generate and regenerate the Surface. If different from the
+	*   one already set, the current surface will be discarded and a new one created.
+	*
+	*	The SurfaceFactory only needs to be specified if you want a Surface of a different type than
+	*   what is default for your specified GfxDevice or if you don't specify any GfxDevice.
+	*
+	*	@return	True if successfull. False if pFactory can't be used as a canvas by the current GfxDevice.
+	**/
 
-	bool CCanvas::setSurfaceFactory(SurfaceFactory * pFactory)
+	bool CCanvas::setFactory(SurfaceFactory * pFactory)
 	{
 		if (pFactory != m_pFactory)
 		{
@@ -132,13 +162,38 @@ namespace wg
 
 
 	//____ setLostCallback() ___________________________________________
+	/**
+	*	@brief	Sets a callback for when the Surface has been discarded.
+	*
+	*	@param func		Function to be called. Nullptr is allowed and will simply remove
+	*					previously set callback.
+	*
+	*	Sets a function that will be called when the Surface for this component has been discarded.
+	*	The purpose is to redraw any graphics that has been lost.
+	*
+	*	The new Surface has been created, filled with the background color and is ready to be
+	*	drawn upon when the function is called.
+	*
+	**/
 
-	void CCanvas::setLostCallback(std::function<void(ICanvas*)> func)
+	void CCanvas::setLostCallback(std::function<void(CCanvas*)> func)
 	{
 		m_surfaceLostCallback = func;
 	}
 
-	//____ setPixelFormat() _________________________________________________
+	//____ setPixelFormat() _____________________________________________________
+	/**
+	*	@brief Sets the pixel format for the surface.
+	*
+	*	@param	type	The pixel format to be used by the surface. This needs to
+	*					be one of BGR_8, BGRA_8, BGR_16 or BGRA_16.
+	*
+	*	Sets the pixel format for the surface.
+	*	Changing the pixel format will discard and recreate the surface, destroying all its content.
+	*	Default pixel format for CCanvas is BGR_8, which means that no alpha channel is included.
+	*
+	*	@return True if pixel format was accepted, otherwise false.
+	**/
 
 	bool CCanvas::setPixelFormat(PixelFormat format)
 	{
@@ -153,9 +208,24 @@ namespace wg
 		return true;
 	}
 
-	//____ setSurfaceSize() ___________________________________________________
+	//____ setSize() ___________________________________________________
+	/**
+	*	@brief Sets a fixed size for the surface.
+	*
+	*	@param SizeI		The size for the surface in pixels, no smaller than {1,1} and no larger than
+	*					allowed by the SurfaceFactory in use, or {0,0} to return the surface to dynamic
+	*					resizing.
+	*
+	*	Sets a fixed size for the surface. When the surface has a fixed size it will not be discarded when
+	*	resizing CCanvas. Instead it will be positioned and scaled within the CCanvas area according to the
+	*	origo and presentation scaling settings.
+	*
+	*	Setting a fixed size different from the surfaces current size will discard the current surface.
+	*
+	*	@return		False if specified size was out of allowed range.
+	**/
 
-	bool CCanvas::setSurfaceSize(SizeI sz)
+	bool CCanvas::setSize(SizeI sz)
 	{
 		SizeI max = m_pDevice ? m_pDevice->surfaceFactory()->maxSize() : SizeI(65536,65536);
 
@@ -171,15 +241,19 @@ namespace wg
 		return true;
 	}
 
-	//____ setComponentSize() ___________________________________________________
-
-	void CCanvas::setComponentSize(SizeI sz)
-	{
-		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
-			regenSurface();
-	}
 
 	//____ setBackColor() ______________________________________________
+	/**
+	*	@brief Sets the back color of the surface.
+	*
+	*	@param Color	Background color for the surface.
+	*
+	*	Sets the back color of the the surface, which the surface is filled with when generated. The alpha
+	*	value of the color will be respected IF THE SURFACE HAS AN ALPHA CHANNEL, allowing
+	*	for transparent and semi-transparent background.
+	*
+	*	Default back color is White (0xFFFFFFFF). Changing the back color will discard the current surface.
+	**/
 
 	void CCanvas::setBackColor(Color color)
 	{
@@ -200,7 +274,17 @@ namespace wg
 			m_pSurface->fill(m_backColor);
 	}
 
-	//____ setPresentationScaling() ____________________________________
+	//____ setPresentationScaling() ___________________________________________
+	/**
+	*	@brief Sets how a fixed size surface is scaled.
+	*
+	*	@param	policy	Either Original, Stretch or Scale.
+	*
+	*	Specifies how a fixed size surface is stretched or scaled when the surface is
+	*	of a different size than the CCanvas component.
+	*
+	*	Default value is SizePolicy2D::Original.
+	**/
 
 	void CCanvas::setPresentationScaling(SizePolicy2D policy)
 	{
@@ -218,7 +302,14 @@ namespace wg
 		}
 	}
 
-	//____ setOrigo() __________________________________________________
+	//____ setOrigo() _________________________________________________________
+	/**
+	*	@brief Sets origo for a fixed size surface
+	*
+	*	Sets origo to be used to align the surface when it is of a different size than
+	*	the CCanvas, which can only happen if it has been set to a fixed size.
+	*
+	**/
 
 	void CCanvas::setOrigo(Origo origo)
 	{
@@ -237,11 +328,31 @@ namespace wg
 	}
 
 	//____ present() ___________________________________________________
+	/**
+	*	@brief	Redraw the component with the content of the surface.
+	*
+	*	Marks the area of the component as dirty, forcing a redraw with the content
+	*	of the surface during its next render update.
+	*
+	*	If only parts of the surface has been changed, you can use one or several calls to
+	*	present(RectI) instead to increase performance.
+	*
+	**/
 
 	void CCanvas::present()
 	{
 		_requestRender(calcPresentationArea());
 	}
+
+	/**
+	*	@brief	Redraw part of the component with the content of the surface.
+	*
+	*	@param	area	The area of the surface in pixels that has been modified and needs to be presented.
+	*
+	*	Marks the area of the component displaying the specified part of the surface as dirty,
+	*	forcing a redraw with the content of the surface during its next render update.
+	*
+	**/
 
 	void CCanvas::present(RectI area)
 	{
@@ -256,6 +367,14 @@ namespace wg
 		RectI a2 = RectI::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
 
 		_requestRender(pixelsToRaw(a2));
+	}
+
+	//____ setComponentSize() ___________________________________________________
+
+	void CCanvas::setComponentSize(SizeI sz)
+	{
+		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
+			regenSurface();
 	}
 
 	//____ preferredSize() ____________________________________________________
