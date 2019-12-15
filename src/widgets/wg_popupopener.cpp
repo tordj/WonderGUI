@@ -113,8 +113,8 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = _icon().getIconRect(contentRect);
-		RectI textRect = _icon().getTextRect(contentRect, iconRect);
+		RectI iconRect = _icon()._getIconRect(contentRect);
+		RectI textRect = _icon()._getTextRect(contentRect, iconRect);
 
 		// Render icon
 
@@ -124,7 +124,7 @@ namespace wg
 		// Print text
 
 		if (!_label().isEmpty())
-			_label().render(pDevice, textRect);
+			_label()._render(pDevice, textRect);
 	}
 
 
@@ -139,9 +139,9 @@ namespace wg
 		if (m_pSkin)
 			contentRect -= m_pSkin->_contentPadding();
 
-		RectI textRect = _icon().getTextRect(contentRect, _icon().getIconRect(contentRect));
+		RectI textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect));
 
-		_label().setSize(textRect);
+		_label()._setSize(textRect);
 	}
 
 	//____ _refresh() _________________________________________________________
@@ -149,7 +149,7 @@ namespace wg
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
-		_label().refresh();
+		_label()._refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -228,7 +228,7 @@ namespace wg
 			if (m_pSkin)
 				padding = m_pSkin->_contentPadding();
 
-			int heightForText = _label().matchingHeight(width - padding.w) + padding.h;
+			int heightForText = _label()._matchingHeight(width - padding.w) + padding.h;
 			if (heightForText > height)
 				height = heightForText;
 		}
@@ -246,7 +246,7 @@ namespace wg
 		SizeI preferred;
 
 		if (!_label().isEmpty())
-			preferred = _label().preferredSize();
+			preferred = _label()._preferredSize();
 
 		if (m_pSkin)
 			preferred = m_pSkin->_sizeForContent(preferred);
@@ -266,7 +266,7 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		_label().setState(state);
+		_label()._setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let _label().setState() return if rendering is needed)
 	}
 
@@ -281,7 +281,7 @@ namespace wg
 
 	void PopupOpener::_open()
 	{
-		auto pLayer = _parent()->_getPopupLayer();
+		auto pLayer = _parent()->_getPopupLayer(); 
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.push(m_pPopup, this, rawToQpix(_globalGeo()), m_attachPoint, m_bOpenOnHover );
@@ -312,12 +312,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = _icon().getIconRect(contentRect);
+		RectI iconRect = _icon()._getIconRect(contentRect);
 
 		if (pComponent == &icon)
 			return iconRect.pos();
 
-		RectI textRect = _icon().getTextRect(contentRect, iconRect);
+		RectI textRect = _icon()._getTextRect(contentRect, iconRect);
 		return textRect.pos();
 	}
 
@@ -330,12 +330,12 @@ namespace wg
 		if (m_pSkin)
 			sz -= m_pSkin->_contentPadding();
 
-		RectI iconRect = _icon().getIconRect(sz);
+		RectI iconRect = _icon()._getIconRect(sz);
 
 		if (pComponent == &icon)
 			return iconRect.size();
 
-		RectI textRect = _icon().getTextRect(sz, iconRect);
+		RectI textRect = _icon()._getTextRect(sz, iconRect);
 		return textRect.size();
 
 	}
@@ -351,12 +351,12 @@ namespace wg
 
 		// Get icon and text rect from content rect
 
-		RectI iconRect = _icon().getIconRect(contentRect);
+		RectI iconRect = _icon()._getIconRect(contentRect);
 
 		if (pComponent == &icon)
 			return iconRect;
 
-		RectI textRect = _icon().getTextRect(contentRect, iconRect);
+		RectI textRect = _icon()._getTextRect(contentRect, iconRect);
 		return textRect;
 	}
 

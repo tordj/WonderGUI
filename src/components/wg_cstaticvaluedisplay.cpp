@@ -57,9 +57,9 @@ namespace wg
 		}
 	}
 
-	//____ clear() _________________________________________________________________
+	//____ _clear() _________________________________________________________________
 
-	void CStaticValueDisplay::clear()
+	void CStaticValueDisplay::_clear()
 	{
 		if( m_value != 0 )
 		{
@@ -69,9 +69,9 @@ namespace wg
 		}
 	}
 
-	//____ set() ___________________________________________________________________
+	//____ _set() ___________________________________________________________________
 
-	bool CStaticValueDisplay::set( int64_t value, int scale )
+	bool CStaticValueDisplay::_set( int64_t value, int scale )
 	{
 		if( m_value != value || m_scale != scale )
 		{
@@ -108,12 +108,12 @@ namespace wg
 	}
 	*/
 
-	//____ refresh() _____________________________________________________________
+	//____ _refresh() _____________________________________________________________
 
-	void CStaticValueDisplay::refresh()
+	void CStaticValueDisplay::_refresh()
 	{
 		_regenText();
-		CText::refresh();
+		CText::_refresh();
 	}
 
 	//____ _regenText() ____________________________________________________________

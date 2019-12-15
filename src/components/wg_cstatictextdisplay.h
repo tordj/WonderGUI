@@ -52,11 +52,11 @@ namespace wg
 
 		//.____ State _______________________________________________
 
-		inline State			state() const { return CText::state(); }
+		inline State			state() const { return CText::_state(); }
 
 		//.____ Content _____________________________________________
 
-		inline 	String			get() const { return CText::getString(); }
+		inline 	String			get() const { return CText::_getString(); }
 
 		inline int				length() const { return m_charBuffer.length(); }
 		inline bool				isEmpty() const { return length() == 0 ? true : false; }
@@ -69,7 +69,7 @@ namespace wg
 
 	protected:
 
-		virtual void		receive( Msg * pMsg );
+		virtual void		_receive( Msg * pMsg );
 
 	protected:
 		TextLink_p			m_pMarkedLink;	// Character offset for beginning of marked or focused link

@@ -79,7 +79,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		SizeI sz = _canvas().preferredSize();
+		SizeI sz = _canvas()._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -96,7 +96,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		SizeI sz = _canvas().preferredSize();
+		SizeI sz = _canvas()._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -108,7 +108,7 @@ namespace wg
 
 	SizeI Canvas::_preferredSize() const
 	{
-		SizeI sz = _canvas().preferredSize();
+		SizeI sz = _canvas()._preferredSize();
 		if (sz.w == sz.h == 0)
 			sz = { 16*4,16*4 };
 
@@ -130,7 +130,7 @@ namespace wg
 	void Canvas::_resize(const SizeI& size)
 	{
 		Widget::_resize(size);
-		_canvas().setComponentSize(size);
+		_canvas()._setComponentSize(size);
 	}
 
 	//____ _setSkin() ____________________________________________________________
@@ -143,7 +143,7 @@ namespace wg
 
 		SizeI newPadding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
 		if (newPadding != oldPadding)
-			_canvas().setComponentSize(m_size - newPadding);
+			_canvas()._setComponentSize(m_size - newPadding);
 	}
 
 	//____ _render() __________________________________________________________
@@ -156,7 +156,7 @@ namespace wg
 
 		RectI componentCanvas = m_pSkin ? m_pSkin->_contentRect(canvas, m_state) : canvas;
 
-		_canvas().render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
+		_canvas()._render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________
@@ -170,7 +170,7 @@ namespace wg
 		if( m_pSkin )
 			ofs -= m_pSkin->_contentOfs(m_state);
 
-		return _canvas().alphaTest(ofs, m_markOpacity);
+		return _canvas()._alphaTest(ofs, m_markOpacity);
 	}
 
 

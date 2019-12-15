@@ -34,13 +34,6 @@ namespace wg
 		m_sortOrder = SortOrder::None;
 	}
 
-	//____ setSortOrder() ________________________________________________________
-
-	void CColumnHeader::setSortOrder( SortOrder order )
-	{
-		m_sortOrder = order;
-		_requestRender();		//TODO: Only re-render arrow rectangle.
-	}
 
 	//____ setSkin() _____________________________________________________________
 
@@ -54,22 +47,30 @@ namespace wg
 		}
 	}
 
-	//____ setState() ____________________________________________________________
+	//____ _setSortOrder() ________________________________________________________
 
-	void CColumnHeader::setState( State state )
+	void CColumnHeader::_setSortOrder(SortOrder order)
+	{
+		m_sortOrder = order;
+		_requestRender();		//TODO: Only re-render arrow rectangle.
+	}
+
+	//____ _setState() ____________________________________________________________
+
+	void CColumnHeader::_setState( State state )
 	{
 		m_state = state;
 
 		//TODO: Set state for icon and arrow when they allow for it.
 
-		_text().setState(state);
+		_text()._setState(state);
 
 		_requestRender();			//TODO: Only request render if state change requires it.
 	}
 
-	//____ setSize() ____________________________________________________________
+	//____ _setSize() ____________________________________________________________
 
-	void CColumnHeader::setSize( SizeI size )
+	void CColumnHeader::_setSize( SizeI size )
 	{
 		if( m_size != size )
 		{
@@ -78,13 +79,13 @@ namespace wg
 		}
 	}
 
-	//____ preferredSize() _______________________________________________________
+	//____ _preferredSize() _______________________________________________________
 
-	SizeI CColumnHeader::preferredSize() const
+	SizeI CColumnHeader::_preferredSize() const
 	{
-		SizeI iconSize = _icon().preferredSize();
-		SizeI arrowSize = _arrow().preferredSize();
-		SizeI textSize = _text().preferredSize();
+		SizeI iconSize = _icon()._preferredSize();
+		SizeI arrowSize = _arrow()._preferredSize();
+		SizeI textSize = _text()._preferredSize();
 
 		SizeI size;
 
@@ -112,23 +113,23 @@ namespace wg
 	}
 
 
-	//____ matchingWidth() ____________________________________________________
+	//____ _matchingWidth() ____________________________________________________
 
-	int CColumnHeader::matchingWidth( int height ) const
+	int CColumnHeader::_matchingWidth( int height ) const
 	{
-		return preferredSize().w;
+		return _preferredSize().w;
 	}
 
-	//____ matchingHeight() ___________________________________________________
+	//____ _matchingHeight() ___________________________________________________
 
-	int CColumnHeader::matchingHeight( int width ) const
+	int CColumnHeader::_matchingHeight( int width ) const
 	{
-		return preferredSize().h; //TODO: Assumes text not wrapping.
+		return _preferredSize().h; //TODO: Assumes text not wrapping.
 	}
 
-	//____ receive() _____________________________________________________________
+	//____ _receive() _____________________________________________________________
 
-	bool  CColumnHeader::receive( Msg * _pMsg )
+	bool  CColumnHeader::_receive( Msg * _pMsg )
 	{
 		switch( _pMsg->type() )
 		{
@@ -223,9 +224,9 @@ namespace wg
 		return false;
 	}
 
-	//____ render() ____________________________________________________________
+	//____ _render() ____________________________________________________________
 
-	void CColumnHeader::render( GfxDevice * pDevice, const RectI& _canvas )
+	void CColumnHeader::_render( GfxDevice * pDevice, const RectI& _canvas )
 	{
 		RectI canvas( _canvas );
 
@@ -235,10 +236,10 @@ namespace wg
 			canvas = m_pSkin->_contentRect( canvas, m_state );
 		}
 
-		RectI sortRect = _arrow().getIconRect( canvas );
-		RectI labelRect = _arrow().getTextRect( canvas, sortRect );
-		RectI iconRect = _icon().getIconRect( labelRect );
-		labelRect = _icon().getTextRect( labelRect, iconRect );
+		RectI sortRect = _arrow()._getIconRect( canvas );
+		RectI labelRect = _arrow()._getTextRect( canvas, sortRect );
+		RectI iconRect = _icon()._getIconRect( labelRect );
+		labelRect = _icon()._getTextRect( labelRect, iconRect );
 
 		if( m_sortOrder != SortOrder::None && !arrow.isEmpty() )
 		{
@@ -251,7 +252,7 @@ namespace wg
 			icon.skin()->_render( pDevice, iconRect, m_state );
 
 		if( !label.isEmpty() )
-			_text().render( pDevice, labelRect );
+			_text()._render( pDevice, labelRect );
 	}
 
 

@@ -91,7 +91,7 @@ namespace wg
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
 		else
-			return _text().tooltip();
+			return _text()._tooltip();
 	}
 
 	//____ _matchingWidth() _______________________________________________________
@@ -100,7 +100,7 @@ namespace wg
 	{
 		//TODO: Need to remove padding before calculations as well.
 
-		int textWidth = _text().matchingWidth(height);
+		int textWidth = _text()._matchingWidth(height);
 
 		if (m_pSkin)
 			textWidth += m_pSkin->_contentPadding().w;
@@ -114,7 +114,7 @@ namespace wg
 	{
 		//TODO: Need to remove padding before calculations as well.
 
-		int textHeight = _text().matchingHeight(width);
+		int textHeight = _text()._matchingHeight(width);
 
 		if (m_pSkin)
 			textHeight += m_pSkin->_contentPadding().h;
@@ -126,7 +126,7 @@ namespace wg
 
 	SizeI TextDisplay::_preferredSize() const
 	{
-		SizeI contentSize = _text().preferredSize();
+		SizeI contentSize = _text()._preferredSize();
 
 		if (m_pSkin)
 			return m_pSkin->_sizeForContent(contentSize);
@@ -146,7 +146,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		_text().render(pDevice, canvas);
+		_text()._render(pDevice, canvas);
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -163,7 +163,7 @@ namespace wg
 	void TextDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		_text().setState(state);
+		_text()._setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let _text().setState() return if rendering is needed)
 	}
 
@@ -204,7 +204,7 @@ namespace wg
 		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
-			_text().setSize(newTextCanvas);
+			_text()._setSize(newTextCanvas);
 	}
 
 	//____ _resize() ________________________________________________
@@ -217,7 +217,7 @@ namespace wg
 		if( m_pSkin )
 			textSize -= m_pSkin->_contentPadding();
 
-		_text().setSize( textSize );
+		_text()._setSize( textSize );
 	}
 
 

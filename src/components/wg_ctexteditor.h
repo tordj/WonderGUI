@@ -66,15 +66,15 @@ namespace wg
 
 		// These methods will fail if editMode is Static
 
-		bool			select(int begin, int end);		// Cursor (if enabled) gets end position. End can be smaller than begin.
+		bool			select(int begin, int end);			// Cursor (if enabled) gets end position. End can be smaller than begin.
 		bool			selectAll();
 		bool			unselect();
 
 		inline bool		hasSelection() const { return m_editState.caretOfs != m_editState.selectOfs; }
 
-		int				selectionBegin() const override;			// Begin position of selection, might be after end position.
-		int				selectionEnd() const override;
-		int				selectionSize() const override;				// Number of characters that are selected.
+		int				selectionBegin() const;				// Begin position of selection, might be after end position.
+		int				selectionEnd() const;
+		int				selectionSize() const;				// Number of characters that are selected.
 
 
 		// These methods will fail unless caret is present
@@ -93,7 +93,7 @@ namespace wg
 
 
 	protected:
-		void			receive( Msg * pMsg ) override;
+		void			_receive( Msg * pMsg ) override;
 
 		// Overloaded so we can update caret and selection
 
@@ -109,8 +109,8 @@ namespace wg
 		int				_erase(int ofs, int len) override;
 
 
-		void			setState( State state ) override;
-		void			render( GfxDevice * pDevice, const RectI& _canvas ) override;
+		void			_setState( State state ) override;
+		void			_render( GfxDevice * pDevice, const RectI& _canvas ) override;
 
 		//
 

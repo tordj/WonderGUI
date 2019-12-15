@@ -108,7 +108,7 @@ namespace wg
 
 	SizeI FpsDisplay::_preferredSize() const
 	{
-		SizeI contentSize = _labels().preferredSize();
+		SizeI contentSize = _labels()._preferredSize();
 
 		TextAttr attr;
 		_values()._style()->exportAttr( State(StateEnum::Normal), &attr );
@@ -118,7 +118,7 @@ namespace wg
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = _values().preferredSize().h;
+		int valueHeight = _values()._preferredSize().h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
@@ -141,8 +141,8 @@ namespace wg
 		else
 			content = _canvas;
 
-		_labels().render( pDevice, content );
-		_values().render( pDevice, content );
+		_labels()._render( pDevice, content );
+		_values()._render( pDevice, content );
 	}
 
 
@@ -222,8 +222,8 @@ namespace wg
 	void FpsDisplay::_setState( State state )
 	{
 
-		_labels().setState(state);
-		_values().setState(state);
+		_labels()._setState(state);
+		_values()._setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 		if( state.isEnabled() && !m_state.isEnabled() )

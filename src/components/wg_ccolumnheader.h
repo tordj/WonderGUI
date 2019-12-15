@@ -56,23 +56,23 @@ namespace wg
 
 
 	protected:
-		void			setSortOrder(SortOrder order);
-		inline SortOrder sortOrder() const { return m_sortOrder; }
+		void			_setSortOrder(SortOrder order);
+		inline SortOrder _sortOrder() const { return m_sortOrder; }
 
 
-		void			setState(State state);
-		inline State	state() const { return m_state; }
+		void			_setState(State state);
+		inline State	_state() const { return m_state; }
 
-		void			setSize(SizeI size);
-		inline SizeI	size() const { return m_size; }
+		void			_setSize(SizeI size);
+		inline SizeI	_size() const { return m_size; }
 
-		SizeI			preferredSize() const;
-		int				matchingWidth(int height) const;
-		int				matchingHeight(int width) const;
+		SizeI			_preferredSize() const;
+		int				_matchingWidth(int height) const;
+		int				_matchingHeight(int width) const;
 
-		bool			receive(Msg * pMsg);
+		bool			_receive(Msg * pMsg);
 
-		void			render(GfxDevice * pDevice, const RectI& _canvas);
+		void			_render(GfxDevice * pDevice, const RectI& _canvas);
 
 		inline Object *			_object() override { return GeoComponent::_object(); }
 		inline const Object *	_object() const override { return GeoComponent::_object(); }
@@ -104,7 +104,7 @@ namespace wg
 		const IconAccess& _arrow() const { return static_cast<const IconAccess&>(arrow); }
 		IconAccess& _arrow() { return static_cast<IconAccess&>(arrow); }
 
-
+	private:
 		Skin_p			m_pSkin;
 
 		State			m_state;

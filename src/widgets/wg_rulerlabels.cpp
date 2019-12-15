@@ -97,7 +97,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->_text().preferredSize();
+				SizeI sz = pLabel->_text()._preferredSize();
 				if( sz.w > preferred.w )
 					preferred.w = sz.w;
 
@@ -110,7 +110,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->_text().preferredSize();
+				SizeI sz = pLabel->_text()._preferredSize();
 				preferred.w += sz.w;
 
 				if( sz.h > preferred.h )
@@ -144,7 +144,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int height = pLabel->_text().size().h;
+				int height = pLabel->_text()._size().h;
 				int ofs = (int) (canvas.h * pLabel->offset);
 				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
@@ -169,7 +169,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->_text().render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
+				pLabel->_text()._render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -178,7 +178,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int width = pLabel->_text().size().w;
+				int width = pLabel->_text()._size().w;
 				int ofs = (int) (canvas.w * pLabel->offset);
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
@@ -203,7 +203,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->_text().render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
+				pLabel->_text()._render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -234,7 +234,7 @@ namespace wg
 		Label * p = m_labels.first();
 		while( p )
 		{
-			p->_text().setState(state);
+			p->_text()._setState(state);
 			p = p->next();
 		}
 	}

@@ -42,7 +42,7 @@ namespace wg
 		_clear();
 
 		if (bModified)
-			onValueModified();
+			_onValueModified();
 	}
 
 	//____ set() ___________________________________________________________________
@@ -51,7 +51,7 @@ namespace wg
 	{
 		if (_set(value, scale))
 		{
-			onValueModified();
+			_onValueModified();
 			return true;
 		}
 		else
@@ -66,7 +66,7 @@ namespace wg
 
 		bool retVal = _setRange(min, max);
 		if (val != value())
-			onValueModified();
+			_onValueModified();
 
 		return retVal;
 	}
@@ -75,7 +75,7 @@ namespace wg
 
 	void CValueDisplay::_clear()
 	{
-		CStaticValueDisplay::clear();
+		CStaticValueDisplay::_clear();
 		m_minValue = std::numeric_limits<int64_t>::min();
 		m_maxValue = std::numeric_limits<int64_t>::max();
 	}
@@ -88,7 +88,7 @@ namespace wg
 			value = m_maxValue;
 		else if( value < m_minValue )
 			value = m_minValue;
-		return CStaticValueDisplay::set(value,scale);
+		return CStaticValueDisplay::_set(value,scale);
 	}
 
 	//____ _setRange() ______________________________________________________________
@@ -105,7 +105,7 @@ namespace wg
 		limit( val, min, max );
 		m_value = val;
 		if( val != m_value )
-			CStaticValueDisplay::set(val, m_scale);
+			CStaticValueDisplay::_set(val, m_scale);
 		return true;
 	}
 

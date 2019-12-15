@@ -39,8 +39,8 @@ namespace wg
 
 		// ModValue methods
 
-		void				clear() override;
-		bool				set( int64_t value, int scale ) override;
+		void				clear();
+		bool				set( int64_t value, int scale );
 
 		bool				setRange( int64_t min, int64_t max );
 		inline int64_t		min() const { return m_minValue; }
@@ -48,13 +48,14 @@ namespace wg
 
 
 	protected:
-		inline void			onValueModified() { _notify(ComponentNotif::ValueModified, 0, nullptr); }
 
 		void				_clear();
 		bool				_set(int64_t value, int scale);
 
 		bool				_setRange(int64_t min, int64_t max);
 
+
+		inline void			_onValueModified() { _notify(ComponentNotif::ValueModified, 0, nullptr); }
 
 		int64_t				m_minValue;
 		int64_t				m_maxValue;

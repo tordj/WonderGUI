@@ -84,34 +84,29 @@ namespace wg
 		virtual void		_clearCharStyle(int ofs, int len);
 
 
-		virtual String		getString() const;
+		virtual String		_getString() const;
 
-		inline State		state() const { return m_state; }
-		virtual void		setState( State state );
+		inline State		_state() const { return m_state; }
+		virtual void		_setState( State state );
 
-		virtual void		setSize( SizeI size );
-		inline SizeI		size() const { return m_size; }
+		virtual void		_setSize( SizeI size );
+		inline SizeI		_size() const { return m_size; }
 
-		virtual SizeI		preferredSize() const;
-		virtual int			matchingWidth( int height ) const;
-		virtual int			matchingHeight( int width ) const;
+		virtual SizeI		_preferredSize() const;
+		virtual int			_matchingWidth( int height ) const;
+		virtual int			_matchingHeight( int width ) const;
 
-		virtual int			charAtPos( CoordI pos ) const;
-		virtual RectI		charRect( int charOfs ) const;
-		virtual int			charLine( int charOfs ) const;
+		virtual int			_charAtPos( CoordI pos ) const;
+		virtual RectI		_charRect( int charOfs ) const;
+		virtual int			_charLine( int charOfs ) const;
 
-		virtual void		refresh();
+		virtual void		_refresh();
 
-		virtual String		tooltip() const;
+		virtual String		_tooltip() const;
 
-		virtual void		render( GfxDevice * pDevice, const RectI& _canvas );
+		virtual void		_render( GfxDevice * pDevice, const RectI& _canvas );
 
-		virtual RectI		rectForRange( int ofs, int length ) const;
-
-
-		virtual int			selectionBegin() const;
-		virtual int			selectionEnd() const;
-		virtual int			selectionSize() const;
+		virtual RectI		_rectForRange( int ofs, int length ) const;
 
 		// Alternative calls, guaranteed to return valid values.
 

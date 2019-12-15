@@ -82,9 +82,9 @@ namespace wg
 		_textMapper()->addComponent(this);
 	}
 
-	//____ setState() ______________________________________________________________
+	//____ _setState() ______________________________________________________________
 
-	void CText::setState( State state )
+	void CText::_setState( State state )
 	{
 		if( state == m_state )
 			return;
@@ -94,59 +94,59 @@ namespace wg
 		_textMapper()->onStateChanged( this, state, old );
 	}
 
-	//____ preferredSize() _________________________________________________________
+	//____ _preferredSize() _________________________________________________________
 
-	SizeI CText::preferredSize() const
+	SizeI CText::_preferredSize() const
 	{
 		return pixelsToRaw(_textMapper()->preferredSize(this));
 	}
 
-	//____ matchingWidth() _________________________________________________________
+	//____ _matchingWidth() _________________________________________________________
 
-	int CText::matchingWidth( int height ) const
+	int CText::_matchingWidth( int height ) const
 	{
 		return pixelsToRaw(_textMapper()->matchingWidth(this, rawToPixels(height)));
 	}
 
-	//____ matchingHeight() ________________________________________________________
+	//____ _matchingHeight() ________________________________________________________
 
-	int CText::matchingHeight( int width ) const
+	int CText::_matchingHeight( int width ) const
 	{
 		return pixelsToRaw(_textMapper()->matchingHeight(this, rawToPixels(width)));
 	}
 
-	//____ charAtPos() ___________________________________________________________
+	//____ _charAtPos() ___________________________________________________________
 
-	int CText::charAtPos( CoordI pos ) const
+	int CText::_charAtPos( CoordI pos ) const
 	{
 		return _textMapper()->charAtPos(this,rawToPixels(pos));
 	}
 
-	//____ charRect() ____________________________________________________________
+	//____ _charRect() ____________________________________________________________
 
-	RectI CText::charRect( int charOfs ) const
+	RectI CText::_charRect( int charOfs ) const
 	{
 		return pixelsToRaw(_textMapper()->charRect(this, charOfs));
 	}
 
-	//____ charLine() ____________________________________________________________
+	//____ _charLine() ____________________________________________________________
 
-	int CText::charLine( int charOfs ) const
+	int CText::_charLine( int charOfs ) const
 	{
 		return _textMapper()->charLine(this, charOfs);
 	}
 
 
-	//____ refresh() _____________________________________________________________
+	//____ _refresh() _____________________________________________________________
 
-	void CText::refresh()
+	void CText::_refresh()
 	{
 		_textMapper()->onRefresh(this);
 	}
 
-	//____ setSize() _____________________________________________________________
+	//____ _setSize() _____________________________________________________________
 
-	void CText::setSize( SizeI size )
+	void CText::_setSize( SizeI size )
 	{
 		if( size == m_size )
 			return;
@@ -156,53 +156,32 @@ namespace wg
 		_textMapper()->onResized(this,rawToPixels(size), rawToPixels(oldSize));
 	}
 
-	//_____ render() _____________________________________________________________
+	//_____ _render() _____________________________________________________________
 
-	void  CText::render( GfxDevice * pDevice, const RectI& _canvas )
+	void  CText::_render( GfxDevice * pDevice, const RectI& _canvas )
 	{
 		_textMapper()->render(this, pDevice, rawToPixels(_canvas));
 	}
 
-	//____ rectForRange() __________________________________________________________
+	//____ _rectForRange() __________________________________________________________
 
-	RectI  CText::rectForRange( int ofs, int length ) const
+	RectI  CText::_rectForRange( int ofs, int length ) const
 	{
 		return rawToPixels(_textMapper()->rectForRange(this, ofs, length));
 	}
 
-	//____ tooltip() _______________________________________________________________
+	//____ _tooltip() _______________________________________________________________
 
-	String CText::tooltip() const
+	String CText::_tooltip() const
 	{
 		return _textMapper()->tooltip(this);
 	}
 
-	//____ getString() ___________________________________________________________________
+	//____ _getString() ___________________________________________________________________
 
-	String CText::getString() const
+	String CText::_getString() const
 	{
 		return String(&m_charBuffer);
-	}
-
-	//____ selectionBegin() ________________________________________________________
-
-	int CText::selectionBegin() const
-	{
-		return 0;
-	}
-
-	//____ selectionEnd() __________________________________________________________
-
-	int CText::selectionEnd() const
-	{
-		return 0;
-	}
-
-	//____ selectionSize() __________________________________________________________
-
-	int CText::selectionSize() const
-	{
-		return 0;
 	}
 
 	//____ _clear() _________________________________________________________________

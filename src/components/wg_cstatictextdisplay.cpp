@@ -44,9 +44,9 @@ namespace wg
 		return TextLink_p();
 	}
 
-	//____ receive() ___________________________________________________________
+	//____ _receive() ___________________________________________________________
 
-	void CStaticTextDisplay::receive( Msg * _pMsg )
+	void CStaticTextDisplay::_receive( Msg * _pMsg )
 	{
 		if( !_pMsg->isMouseMsg() )
 			return;

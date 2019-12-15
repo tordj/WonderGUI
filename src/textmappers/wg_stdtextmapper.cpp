@@ -181,7 +181,7 @@ namespace wg
 		int line = charLine(pText, charOfs);
 
 		int ofsX = _charPosX(pText, charOfs);
-		int ofsY = _linePosY(_dataBlock(pText), line, pText->size().h );
+		int ofsY = _linePosY(_dataBlock(pText), line, pText->_size().h );
 
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 		ofsY += pLine->base;
@@ -199,7 +199,7 @@ namespace wg
 
 		// Find correct line and determine yOfs
 
-		int yOfs = _textPosY( pHeader, pText->size().h );
+		int yOfs = _textPosY( pHeader, pText->_size().h );
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -209,7 +209,7 @@ namespace wg
 
 		// Determine xOfs by parsing line until character
 
-		int xOfs = _linePosX( pLineInfo, pText->size().w );
+		int xOfs = _linePosX( pLineInfo, pText->_size().w );
 
 		TextAttr		baseAttr;
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
@@ -820,7 +820,7 @@ namespace wg
 		int begChar = ofs;
 		int endChar = ofs + length;
 
-		SizeI canvas = pText->size();
+		SizeI canvas = pText->_size();
 
 
 		CoordI begPos = charPos(pText, begChar);
@@ -1045,7 +1045,7 @@ namespace wg
 	int StdTextMapper::_countLines( CText * pText, const CharBuffer * pBuffer ) const
 	{
 		if (m_bLineWrap)
-			return _countWrapLines(pBuffer, _baseStyle(pText), _state(pText), pText->size().w);
+			return _countWrapLines(pBuffer, _baseStyle(pText), _state(pText), pText->_size().w);
 		else
 			return _countFixedLines(pBuffer);
 	}
@@ -1429,7 +1429,7 @@ namespace wg
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
 			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText));
-			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText), pText->size().w);
+			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText), pText->_size().w);
 		}
 		else
 		{
@@ -1889,7 +1889,7 @@ namespace wg
 		TextAttr attr;
 		_baseStyle(pText)->exportAttr( _state(pText), &attr );
 
-		return _linePosX( pLine, pText->size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pText) );
+		return _linePosX( pLine, pText->_size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pText) );
 	}
 
 	//____ _lineAtPosY() _______________________________________________________
@@ -1898,7 +1898,7 @@ namespace wg
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
-		int linePosY = _textPosY( pHead, pText->size().h );
+		int linePosY = _textPosY( pHead, pText->_size().h );
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) );
 
 		if( posY < linePosY )
@@ -1980,7 +1980,7 @@ namespace wg
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 
 
-		int distance = _linePosX( pLine, pText->size().w );
+		int distance = _linePosX( pLine, pText->_size().w );
 
 		// Handle special case when we are left of line.
 

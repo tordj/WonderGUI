@@ -88,18 +88,18 @@ namespace wg
 		Skin_p			_skin() const { return  m_pSkin; }
 
 
-		RectI			getIconRect( const RectI& contentRect ) const;
-		RectI			getIconRect( const RectI& contentRect, const SizeI& iconSize ) const;
-		RectI			getTextRect( const RectI& contentRect, const RectI& iconRect ) const;
-		void			onCloneContent( const CIconDisplay * _pOrg );
-		SizeI			preferredSize() const;
+		RectI			_getIconRect( const RectI& contentRect ) const;
+		RectI			_getIconRect( const RectI& contentRect, const SizeI& iconSize ) const;
+		RectI			_getTextRect( const RectI& contentRect, const RectI& iconRect ) const;
+		void			_onCloneContent( const CIconDisplay * _pOrg );
+		SizeI			_preferredSize() const;
 
-
+	private:
 		Origo			m_origo;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
-		BorderI		m_padding;
-		Skin_p		m_pSkin;
+		BorderI			m_padding;
+		Skin_p			m_pSkin;
 
 	};
 

@@ -111,7 +111,7 @@ namespace wg
 		SizeI textPreferredSize;
 
 		if( !_text().isEmpty() )
-			textPreferredSize = _text().preferredSize();
+			textPreferredSize = _text()._preferredSize();
 
 		if( !_icon().isEmpty() )
 		{
@@ -245,7 +245,7 @@ namespace wg
 		State oldState = state;
 		Widget::_setState(state);
 
-		_text().setState( state );
+		_text()._setState( state );
 
 		if( !_icon().isEmpty() && !_icon().skin()->isStateIdentical(state, m_state) )
 			_requestRender();		//TODO: Just request render on icon?
@@ -279,7 +279,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(_canvas, m_state );
 
-		RectI iconRect		= _icon().getIconRect( contentRect );
+		RectI iconRect		= _icon()._getIconRect( contentRect );
 
 		// Blit icon
 
@@ -290,8 +290,8 @@ namespace wg
 
 	 	if( !_text().isEmpty() )
 		{
-			RectI	textRect = _icon().getTextRect( contentRect, iconRect );
-			_text().render( pDevice, textRect );
+			RectI	textRect = _icon()._getTextRect( contentRect, iconRect );
+			_text()._render( pDevice, textRect );
 		}
 	}
 
@@ -314,7 +314,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
-		_text().setSize( _icon().getTextRect( contentRect, _icon().getIconRect( contentRect )) );
+		_text()._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
 	}
 
 
@@ -340,9 +340,9 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect(contentRect, m_state );
 
-		contentRect = _icon().getTextRect( contentRect, _icon().getIconRect( contentRect ) );
+		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
-		if( _text().charAtPos( CoordI(_x,_y) - contentRect.pos() ) != -1 )
+		if( _text()._charAtPos( CoordI(_x,_y) - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;
@@ -358,7 +358,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->_contentRect( contentRect, m_state );
 
-		RectI	iconRect	= _icon().getIconRect( contentRect );
+		RectI	iconRect	= _icon()._getIconRect( contentRect );
 
 		switch( m_clickArea )
 		{
@@ -366,7 +366,7 @@ namespace wg
 			{
 				// Extend iconRect so it connects with textArea before we compare
 
-				RectI	textRect = _icon().getTextRect( contentRect, iconRect);
+				RectI	textRect = _icon()._getTextRect( contentRect, iconRect);
 
 				if( iconRect.x + iconRect.w < textRect.x )
 					iconRect.w = textRect.x - iconRect.x;

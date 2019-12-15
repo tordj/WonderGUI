@@ -32,32 +32,32 @@ namespace wg
 	}
 
 
-	//____ render() __________________________________________________________
+	//____ _render() __________________________________________________________
 
-	void CCanvas::render(GfxDevice * pDevice, const RectI& _canvas)
+	void CCanvas::_render(GfxDevice * pDevice, const RectI& _canvas)
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 
-		RectI canvas = rawToPixels( calcPresentationArea() + _canvas.pos() );
+		RectI canvas = rawToPixels( _calcPresentationArea() + _canvas.pos() );
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->stretchBlit(canvas);
 	}
 
-	//____ alphaTest() _______________________________________________________
+	//____ _alphaTest() _______________________________________________________
 
-	bool CCanvas::alphaTest(const CoordI& ofs, int markOpacity)
+	bool CCanvas::_alphaTest(const CoordI& ofs, int markOpacity)
 	{
-		RectI canvas = calcPresentationArea();
+		RectI canvas = _calcPresentationArea();
 		SizeI bmpSize = m_pSurface->size();
 
 		return Util::markTestStretchRect(ofs, m_pSurface, bmpSize, canvas, markOpacity);
 	}
 
 
-	//____ regenSurface() ______________________________________________
+	//____ _regenSurface() ______________________________________________
 
-	void CCanvas::regenSurface()
+	void CCanvas::_regenSurface()
 	{
 		if (!m_pDevice && !m_pFactory)
 			return;
@@ -78,9 +78,9 @@ namespace wg
 			m_surfaceLostCallback(this);
 	}
 
-	//____ calcPresentationArea() _______________________________________________
+	//____ _calcPresentationArea() _______________________________________________
 
-	RectI CCanvas::calcPresentationArea() const
+	RectI CCanvas::_calcPresentationArea() const
 	{
 		SizeI window = rawToPixels(_size());
 		SizeI bitmapSize = m_pSurface->size();
@@ -129,7 +129,7 @@ namespace wg
 		if (pDevice != m_pDevice)
 		{
 			m_pDevice = pDevice;
-			regenSurface();
+			_regenSurface();
 		}
 		return true;
 	}
@@ -155,7 +155,7 @@ namespace wg
 		if (pFactory != m_pFactory)
 		{
 			m_pFactory = pFactory;
-			regenSurface();
+			_regenSurface();
 		}
 		return true;
 	}
@@ -203,7 +203,7 @@ namespace wg
 		if (format != m_pixelFormat)
 		{
 			m_pixelFormat = format;
-			regenSurface();
+			_regenSurface();
 		}
 		return true;
 	}
@@ -235,7 +235,7 @@ namespace wg
 		if (sz != m_fixedSize)
 		{
 			m_fixedSize = sz;
-			regenSurface();
+			_regenSurface();
 		}
 
 		return true;
@@ -260,7 +260,7 @@ namespace wg
 		if (color != m_backColor)
 		{
 			m_backColor = color;
-			regenSurface();
+			_regenSurface();
 		}
 	}
 
@@ -290,9 +290,9 @@ namespace wg
 	{
 		if (m_presentationScaling != policy)
 		{
-			RectI oldArea = calcPresentationArea();
+			RectI oldArea = _calcPresentationArea();
 			m_presentationScaling = policy;
-			RectI newArea = calcPresentationArea();
+			RectI newArea = _calcPresentationArea();
 
 			if (oldArea != newArea)
 			{
@@ -315,9 +315,9 @@ namespace wg
 	{
 		if (m_origo != origo)
 		{
-			RectI oldArea = calcPresentationArea();
+			RectI oldArea = _calcPresentationArea();
 			m_origo = origo;
-			RectI newArea = calcPresentationArea();
+			RectI newArea = _calcPresentationArea();
 
 			if (oldArea != newArea)
 			{
@@ -341,7 +341,7 @@ namespace wg
 
 	void CCanvas::present()
 	{
-		_requestRender(calcPresentationArea());
+		_requestRender(_calcPresentationArea());
 	}
 
 	/**
@@ -356,7 +356,7 @@ namespace wg
 
 	void CCanvas::present(RectI area)
 	{
-		RectI dest = rawToPixels(calcPresentationArea());
+		RectI dest = rawToPixels(_calcPresentationArea());
 		SizeI bitmapSize = m_pSurface->size();
 
 		int x1 = area.x * dest.w / bitmapSize.w;
@@ -369,17 +369,17 @@ namespace wg
 		_requestRender(pixelsToRaw(a2));
 	}
 
-	//____ setComponentSize() ___________________________________________________
+	//____ _setComponentSize() ___________________________________________________
 
-	void CCanvas::setComponentSize(SizeI sz)
+	void CCanvas::_setComponentSize(SizeI sz)
 	{
 		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
-			regenSurface();
+			_regenSurface();
 	}
 
-	//____ preferredSize() ____________________________________________________
+	//____ _preferredSize() ____________________________________________________
 
-	SizeI CCanvas::preferredSize() const
+	SizeI CCanvas::_preferredSize() const
 	{
 		// We use pointsToRaw here instead of pixelsToRaw since a pixel in our surface
 		// should be scaled to a point in UI.

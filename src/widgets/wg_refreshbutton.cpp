@@ -184,7 +184,7 @@ namespace wg
 	void RefreshButton::_resize( const SizeI& size )
 	{
 		SizeI contentSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
-		_refreshText().setSize(contentSize);
+		_refreshText()._setSize(contentSize);
 
 		Button::_resize( size );
 	}
@@ -309,8 +309,8 @@ namespace wg
 		else if( m_animTarget == ICON && m_pRefreshAnim )
 			iconSize = m_pRefreshAnim->size();
 
-		RectI iconRect = _icon().getIconRect( contentRect, iconSize );
-		RectI textRect = _icon().getTextRect( contentRect, iconRect );
+		RectI iconRect = _icon()._getIconRect( contentRect, iconSize );
+		RectI textRect = _icon()._getTextRect( contentRect, iconRect );
 
 
 		// Render icon or animation
@@ -332,16 +332,16 @@ namespace wg
 		{
 			if( !_refreshText().isEmpty() )
 			{
-				_refreshText().setState(m_state);		//TODO: Should be done when state actually is set.
-				_refreshText().render(pDevice, textRect);
+				_refreshText()._setState(m_state);		//TODO: Should be done when state actually is set.
+				_refreshText()._render(pDevice, textRect);
 			}
 		}
 		else
 		{
 			if (!_text().isEmpty())
 			{
-				_text().setState(m_state);		//TODO: Should be done when state actually is set.
-				_text().render(pDevice, textRect);
+				_text()._setState(m_state);		//TODO: Should be done when state actually is set.
+				_text()._render(pDevice, textRect);
 			}
 		}
 	}

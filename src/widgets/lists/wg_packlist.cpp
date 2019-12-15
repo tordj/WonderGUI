@@ -71,7 +71,7 @@ namespace wg
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
 		m_sortOrder = SortOrder::Ascending;
-		_header().setSortOrder( SortOrder::Ascending );
+		_header()._setSortOrder( SortOrder::Ascending );
 
 		m_maxEntrySize = SizeI(INT_MAX,INT_MAX);		//TODO: Test so m_maxEntrySize matters!
 
@@ -135,7 +135,7 @@ namespace wg
 		if( order != m_sortOrder )
 		{
 			m_sortOrder = order;
-			_header().setSortOrder( order );
+			_header()._setSortOrder( order );
 			_sortEntries();
 			_requestRender();		// So we also render the header, which has an arrow with new state.
 		}
@@ -188,7 +188,7 @@ namespace wg
 	SizeI PackList::_preferredSize() const
 	{
 		SizeI sz = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
-		SizeI headerSize = _header().preferredSize();
+		SizeI headerSize = _header()._preferredSize();
 
 		if (m_bHorizontal)
 		{
@@ -216,11 +216,11 @@ namespace wg
 			if (m_pSkin)
 				height += m_pSkin->_contentPadding().h;
 
-			return std::max(height, _header().preferredSize().h);
+			return std::max(height, _header()._preferredSize().h);
 		}
 		else
 		{
-			int height = _header().matchingHeight(width);
+			int height = _header()._matchingHeight(width);
 			if (m_pSkin)
 			{
 				SizeI pad = m_pSkin->_contentPadding();
@@ -243,7 +243,7 @@ namespace wg
 	{
 		if (m_bHorizontal)
 		{
-			int width = _header().matchingWidth(height);
+			int width = _header()._matchingWidth(height);
 			if (m_pSkin)
 			{
 				SizeI pad = m_pSkin->_contentPadding();
@@ -264,7 +264,7 @@ namespace wg
 			if (m_pSkin)
 				width += m_pSkin->_contentPadding().w;
 
-			return std::max(width, _header().preferredSize().w);
+			return std::max(width, _header()._preferredSize().w);
 		}
 	}
 
@@ -408,12 +408,12 @@ namespace wg
 
 		// Render header
 
-		if( _header().size().h != 0 )
+		if( _header()._size().h != 0 )
 		{
 			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			RectI canvas = _headerGeo() + _canvas.pos();
 
-			_header().render( pDevice, canvas );
+			_header()._render( pDevice, canvas );
 		}
 
 		// Render Lasso
@@ -433,8 +433,8 @@ namespace wg
 	{
 		List::_resize(_size);
 
-		SizeI headerSize = m_bHorizontal ? SizeI(_header().matchingWidth(_size.h), _size.h) : SizeI( _size.w, _header().matchingHeight( _size.w ));
-		_header().setSize( headerSize );
+		SizeI headerSize = m_bHorizontal ? SizeI(_header()._matchingWidth(_size.h), _size.h) : SizeI( _size.w, _header()._matchingHeight( _size.w ));
+		_header()._setSize( headerSize );
 
 		SizeI size = _size;
 		if( m_pSkin )
@@ -548,7 +548,7 @@ namespace wg
 
 	void PackList::_receive( Msg * _pMsg )
 	{
-		bool bSwallowed = _header().receive(_pMsg);
+		bool bSwallowed = _header()._receive(_pMsg);
 
 		if( !bSwallowed )
 		{
@@ -1363,13 +1363,13 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			r.x += _header().size().w;
-			r.w -= _header().size().w;
+			r.x += _header()._size().w;
+			r.w -= _header()._size().w;
 		}
 		else
 		{
-			r.y += _header().size().h;
-			r.h -= _header().size().h;
+			r.y += _header()._size().h;
+			r.h -= _header()._size().h;
 		}
 		return r;
 	}
@@ -1378,7 +1378,7 @@ namespace wg
 
 	RectI PackList::_listCanvas() const
 	{
-		SizeI headerSize = _header().size();
+		SizeI headerSize = _header()._size();
 
 		if( m_bHorizontal )
 			return RectI(headerSize.w, 0, m_size.w - headerSize.w, m_size.h );
@@ -1391,9 +1391,9 @@ namespace wg
 	RectI PackList::_headerGeo() const
 	{
 		if( m_bHorizontal )
-			return RectI( _windowSection().x, 0, _header().size().w, m_size.h );
+			return RectI( _windowSection().x, 0, _header()._size().w, m_size.h );
 		else
-			return RectI( 0, _windowSection().y, m_size.w, _header().size().h );
+			return RectI( 0, _windowSection().y, m_size.w, _header()._size().h );
 	}
 
 	//____ _windowPadding() _______________________________________________________
@@ -1401,17 +1401,17 @@ namespace wg
 	SizeI PackList::_windowPadding() const
 	{
 		if( m_bHorizontal )
-			return SizeI( _header().size().w, 0 );
+			return SizeI( _header()._size().w, 0 );
 		else
-			return SizeI( 0, _header().size().h );
+			return SizeI( 0, _header()._size().h );
 	}
 
 	//____ _refreshHeader() _______________________________________________________
 
 	void PackList::_refreshHeader()
 	{
-		SizeI wantedSize = _header().preferredSize();
-		SizeI currentSize = _header().size();
+		SizeI wantedSize = _header()._preferredSize();
+		SizeI currentSize = _header()._size();
 
 		bool	bRequestResize = false;
 
@@ -1505,14 +1505,14 @@ namespace wg
 
 	SizeI PackList::_componentSize( const GeoComponent * pComponent ) const
 	{
-		return _header().size();		// We store size internally in the _header().
+		return _header()._size();		// We store size internally in the _header().
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
 	RectI PackList::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		return RectI( _componentPos(pComponent), _header().size() );
+		return RectI( _componentPos(pComponent), _header()._size() );
 	}
 
 	//____ _receiveComponentNotif() _____________________________________________________
@@ -1521,7 +1521,7 @@ namespace wg
 	{
 		if( notification == ComponentNotif::SortOrderChanged )
 		{
-			m_sortOrder = _header().sortOrder();
+			m_sortOrder = _header()._sortOrder();
 			_sortEntries();
 		}
 	}

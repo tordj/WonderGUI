@@ -123,22 +123,22 @@ namespace wg
 		}
 	}
 
-	//____ getIconRect() _________________________________________________________
+	//____ _getIconRect() _________________________________________________________
 
 	/*
 		Gets an icon-rect for the icon excluding borders, relative to upper left corner of content area.
 
 	*/
 
-	RectI CIconDisplay::getIconRect( const RectI& contentRect ) const
+	RectI CIconDisplay::_getIconRect( const RectI& contentRect ) const
 	{
 		if( m_pSkin )
-			return getIconRect(contentRect, m_pSkin->_preferredSize());
+			return _getIconRect(contentRect, m_pSkin->_preferredSize());
 		else
 			return RectI();
 	}
 
-	RectI CIconDisplay::getIconRect( const RectI& contentRect, const SizeI& iconSize ) const
+	RectI CIconDisplay::_getIconRect( const RectI& contentRect, const SizeI& iconSize ) const
 	{
 		RectI rect;
 
@@ -179,9 +179,9 @@ namespace wg
 
 
 
-	//____ getTextRect() _____________________________________________________
+	//____ _getTextRect() _____________________________________________________
 
-	RectI CIconDisplay::getTextRect( const RectI& contentRect, const RectI& iconRect ) const
+	RectI CIconDisplay::_getTextRect( const RectI& contentRect, const RectI& iconRect ) const
 	{
 		RectI textRect = contentRect;
 
@@ -233,9 +233,9 @@ namespace wg
 		return textRect;
 	}
 
-	//____ onCloneContent() ________________________________________________________
+	//____ _onCloneContent() ________________________________________________________
 
-	void CIconDisplay::onCloneContent( const CIconDisplay * _pOrg )
+	void CIconDisplay::_onCloneContent( const CIconDisplay * _pOrg )
 	{
 		m_origo			= _pOrg->m_origo;
 		m_scale			= _pOrg->m_scale;
@@ -244,9 +244,9 @@ namespace wg
 		m_pSkin			= _pOrg->m_pSkin;
 	}
 
-	//____ preferredSize() ________________________________________________________
+	//____ _preferredSize() ________________________________________________________
 
-	SizeI CIconDisplay::preferredSize() const
+	SizeI CIconDisplay::_preferredSize() const
 	{
 		if( m_pSkin )
 			return m_pSkin->_preferredSize() + m_padding;

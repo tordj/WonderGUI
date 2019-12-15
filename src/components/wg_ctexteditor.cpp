@@ -81,11 +81,11 @@ namespace wg
 	}
 
 
-	//____ receive() ___________________________________________________________
+	//____ _receive() ___________________________________________________________
 
-	void CTextEditor::receive( Msg * pMsg )
+	void CTextEditor::_receive( Msg * pMsg )
 	{
-		CTextDisplay::receive( pMsg );
+		CTextDisplay::_receive( pMsg );
 
 		MsgType type = pMsg->type();
 
@@ -456,9 +456,9 @@ namespace wg
 		return ret;
 	}
 
-	//____ setState() ______________________________________________________________
+	//____ _setState() ______________________________________________________________
 
-	void CTextEditor::setState( State state )
+	void CTextEditor::_setState( State state )
 	{
 		if( state.isFocused() != m_state.isFocused() && m_editMode == TextEditMode::Editable )
 		{
@@ -501,13 +501,13 @@ namespace wg
 
 		// Set this last, so that bCaret is set when we call
 
-		CTextDisplay::setState(state);
+		CTextDisplay::_setState(state);
 	}
 
 
 	//____ render() ______________________________________________________________
 
-	void CTextEditor::render( GfxDevice * pDevice, const RectI& _canvas )
+	void CTextEditor::_render( GfxDevice * pDevice, const RectI& _canvas )
 	{
 		_textMapper()->render(this, pDevice, rawToPixels(_canvas) );
 	}

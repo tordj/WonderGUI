@@ -80,7 +80,7 @@ namespace wg
 	{
 		//TODO: Remove skin contentPadding before calculations.
 
-		int textHeight = _text().matchingHeight( width );
+		int textHeight = _text()._matchingHeight( width );
 
 		if( m_pSkin )
 			textHeight += m_pSkin->_contentPadding().h;
@@ -92,7 +92,7 @@ namespace wg
 
 	SizeI TextEditor::_preferredSize() const
 	{
-		SizeI contentSize = _text().preferredSize();
+		SizeI contentSize = _text()._preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->_sizeForContent(contentSize);
@@ -112,7 +112,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		_text().render( pDevice, canvas );
+		_text()._render( pDevice, canvas );
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -130,7 +130,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		_text().setState(state);
+		_text()._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -140,7 +140,7 @@ namespace wg
 	void TextEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		_text().receive( pMsg );
+		_text()._receive( pMsg );
 	}
 
 
@@ -169,9 +169,9 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text().setSize(size - m_pSkin->_contentPadding());
+			_text()._setSize(size - m_pSkin->_contentPadding());
 		else
-			_text().setSize(size);
+			_text()._setSize(size);
 	}
 
 } // namespace wg

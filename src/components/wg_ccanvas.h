@@ -70,6 +70,8 @@ namespace wg
 		CCanvas(GeoComponent::Holder * pHolder);
 		virtual ~CCanvas() {};
 
+		//.____ Control _______________________________________________
+
 		bool				setDevice(GfxDevice * pDevice);
 		inline GfxDevice_p	device() const;
 
@@ -78,6 +80,13 @@ namespace wg
 
 		void				setLostCallback(std::function<void(CCanvas*)> func);
 		inline std::function<void(CCanvas*)>	lostCallback() const;
+
+		void				clear();
+
+		void				present();
+		void				present(RectI pixelArea);
+
+		//.____ Content _______________________________________________
 
 		bool				setPixelFormat(PixelFormat format);
 		inline PixelFormat	pixelFormat() const;
@@ -89,16 +98,16 @@ namespace wg
 		void				setBackColor(Color color);
 		inline Color		backColor() const;
 
+		inline Surface_wp	surface() const;
+
+		//.____ Appearance _____________________________________________
+
 		void				setPresentationScaling(SizePolicy2D policy);
 		inline SizePolicy2D	presentationScaling() const;
 
 		void				setOrigo(Origo origo);
 		inline Origo		origo() const;
 
-		void				present();
-		void				present(RectI pixelArea);
-
-		inline Surface_wp	surface() const;
 
 		//.____ Misc __________________________________________________
 
@@ -107,15 +116,14 @@ namespace wg
 
 	protected:
 
-		void			render(GfxDevice * pDevice, const RectI& _canvas);
-		bool			alphaTest(const CoordI& ofs, int markOpacity);
+		void			_render(GfxDevice * pDevice, const RectI& _canvas);
+		bool			_alphaTest(const CoordI& ofs, int markOpacity);
 
-		void			regenSurface();
-		RectI			calcPresentationArea() const;
+		void			_regenSurface();
+		RectI			_calcPresentationArea() const;
 
-		void			setComponentSize(SizeI sz);
-		void			clear();
-		SizeI			preferredSize() const;
+		void			_setComponentSize(SizeI sz);
+		SizeI			_preferredSize() const;
 
 
 		GfxDevice_p		m_pDevice;
