@@ -163,7 +163,7 @@ namespace wg
 		// ChildHolder methods
 
 		Object *		_object() override;
-//		const Object *	_object() const override;
+		const Object *	_object() const override;
 
 
 		//

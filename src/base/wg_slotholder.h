@@ -45,6 +45,7 @@ namespace wg
 		virtual Container * _container() = 0;
 		virtual RootPanel *	_root() = 0;
 		virtual Object *	_object() = 0;
+		virtual const Object *	_object() const = 0;
 
 		virtual CoordI		_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
 		virtual CoordI		_childGlobalPos( const BasicSlot * pSlot ) const = 0;

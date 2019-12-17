@@ -41,7 +41,6 @@ namespace wg
 		template<class S> friend class CSlotImpl;
 		template<class S> friend class CSlotArray;
 		template<class S> friend class CStaticSlotArray;
-		template<class S> friend class CSelectableSlotArray;
 
 
 	public:
@@ -151,7 +150,9 @@ namespace wg
 		}
 
 		inline Widget * _widget() const { return m_pWidget; }
-		inline SlotHolder * _holder() const { return m_pHolder; }
+
+		inline SlotHolder * _holder() { return m_pHolder; }
+		inline const SlotHolder * _holder() const { return m_pHolder; }
 
 		inline SizeI	_size() const { return m_pWidget->m_size; }
 		inline void		_setSize( SizeI size ) const { m_pWidget->_resize(size); }

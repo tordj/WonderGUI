@@ -65,6 +65,7 @@ namespace wg
 		~GfxStreamReader();
 
 		Object *    _object() override { return this; }
+		const Object * _object() const override { return this; }
 
 		bool		_hasChunk() override;
 		GfxStream::Header	_peekChunk() override;

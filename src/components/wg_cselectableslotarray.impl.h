@@ -132,7 +132,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return it._slot()->_widget()->state().isSelected();
+		return static_cast<SlotType*>(it._slot())->_widget()->state().isSelected();
 	}
 
 } // namespace wg

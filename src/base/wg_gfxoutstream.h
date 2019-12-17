@@ -46,6 +46,7 @@ namespace wg
 	{
 	public:
 		virtual Object * _object() = 0;
+		virtual const Object * _object() const = 0;
 
 		virtual void	_flushStream() = 0;
 		virtual void	_reserveStream(int bytes) = 0;

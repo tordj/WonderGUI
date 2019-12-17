@@ -89,6 +89,11 @@ namespace wg
 		return this;
 	}
 
+	const Object * GfxStreamWriter::_object() const
+	{
+		return this;
+	}
+
 	//____ _flushStream() ____________________________________________________________
 
 	void GfxStreamWriter::_flushStream()

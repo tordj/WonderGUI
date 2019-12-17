@@ -58,8 +58,8 @@ namespace wg
 		inline Border	padding(const SlotIterator& it) const { return Util::rawToQpix(static_cast<SlotType*>(it._slot())->padding); }
 
 	protected:
-		Holder * _holder() { return static_cast<Holder*>(CSlotArray<SlotType>::_holder()); }
-		const Holder * _holder() const { return static_cast<const Holder*>(CSlotArray<SlotType>::_holder()); }
+		Holder *		_holder() { return static_cast<Holder*>(CSlotArray<SlotType>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CSlotArray<SlotType>::_holder()); }
 	};
 
 

@@ -179,6 +179,7 @@ namespace wg
 		Container *		_container() override { return this; }
 		RootPanel *		_root() override { return Container::_root(); }
 		Object *		_object() override { return this; }
+		const Object *	_object() const override { return this; }
 
 		CoordI			_childPos(const BasicSlot * pSlot) const override { return Layer::_childPos(pSlot); }
 		CoordI			_childGlobalPos(const BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }

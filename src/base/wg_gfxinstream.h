@@ -46,7 +46,10 @@ namespace wg
 	class GfxInStreamHolder /** @private */
 	{
 	public:
+		
+		//TODO: Add const version?
 		virtual Object * _object() = 0;
+		virtual const Object * _object() const = 0;
 
 		virtual bool	_hasChunk() = 0;
 		virtual GfxStream::Header	_peekChunk() = 0;	// Is only called if _hasChunk() has returned true.

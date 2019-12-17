@@ -196,7 +196,8 @@ namespace wg
 		virtual ~Widget();
 
 		void				_setSlot(BasicSlot * pSlot);
-		SlotHolder *		_holder() const { return m_pHolder; }
+		SlotHolder *		_holder() { return m_pHolder; }
+		const SlotHolder *	_holder() const { return m_pHolder; }
 		BasicSlot *			_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;

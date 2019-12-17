@@ -186,6 +186,11 @@ namespace wg
 		return this;
 	}
 
+	const Object * GfxStreamPlug::_object() const
+	{
+		return this;
+	}
+
 	//____ _reserveStream() _________________________________________________________
 
 	void GfxStreamPlug::_reserveStream(int bytes)
@@ -297,6 +302,11 @@ namespace wg
 	//____ OutStreamProxy::_object() ______________________________________________________
 
 	Object * GfxStreamPlug::OutStreamProxy::_object()
+	{
+		return pObj;
+	}
+
+	const Object * GfxStreamPlug::OutStreamProxy::_object() const
 	{
 		return pObj;
 	}

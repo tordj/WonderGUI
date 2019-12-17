@@ -66,6 +66,7 @@ namespace wg
 
 
 		Object *	_object() override;
+		const Object *	_object() const override;
 
 		void		_flushStream() override;
 		void		_reserveStream(int bytes) override;

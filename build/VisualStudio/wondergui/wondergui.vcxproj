@@ -111,6 +111,7 @@
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
     <ClInclude Include="..\..\..\src\base\wg_qpix.h" />
+    <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
     <ClInclude Include="..\..\..\src\base\wg_mempool.h" />

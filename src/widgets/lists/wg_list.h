@@ -27,6 +27,7 @@
 #include <wg_widget.h>
 #include <wg_container.h>
 #include <wg_skin.h>
+#include <wg_selectableslot.h>
 #include <wg_cselectableslotarray.h>
 
 namespace wg
@@ -40,22 +41,18 @@ namespace wg
 
 	//____ ListSlot ____________________________________________________________
 
-	class ListSlot : public BasicSlot		/** @private */
+	class ListSlot : public SelectableSlot		/** @private */
 	{
 		friend class List;
-		template<class S> friend class CSlotArray;
-		template<class S> friend class SlotArray;
 
 	public:
 
-		class Holder : public BasicSlot::Holder		/** @private */
+		class Holder : public SelectableSlot::Holder		/** @private */
 		{
 		};
 
 	protected:
-		ListSlot(Holder * pHolder) : BasicSlot(pHolder) {}
-
-		bool		bVisible = false;
+		ListSlot(Holder * pHolder) : SelectableSlot(pHolder) {}
 	};
 
 	//____ List _________________________________________________________________

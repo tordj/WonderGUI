@@ -74,6 +74,7 @@ namespace wg
 		{
 		public:
 			Object *	_object() override;
+			const Object *	_object() const override;
 
 			void		_closeStream() override;
 			bool		_reopenStream() override;
@@ -97,6 +98,7 @@ namespace wg
 
 
 		Object *		_object() override;
+		const Object *	_object() const override;
 
 		void			_reserveStream(int bytes) override;
 		void			_flushStream() override;
