@@ -56,13 +56,28 @@ namespace wg
 
 
 	/**
-		@brief Simple class holding the X and Y values of a 2D coordinate.
+		@brief Class template for coordinate classes containing X and Y values.
 
-		Specifies a 2D coordinate through class members x and y, where x is the
-		horizontal distance from origo moving from left to right and y is
-		the vertical distance moving downwards.
+		Class template for coordinate classes containing X and Y values.
 
-		CoordI specifies the position in discrete pixels (integer precision).
+		Specializations include:
+
+		- __Coord__		- coordinate with QPix values
+		- __CoordI__	- coordinate with integer values
+		- __CoordF__	- coordinate with float values
+
+		A Coord always holds a coordinate in WonderGUI's internal QPix format, allowing it to be converted to points
+		or pixels without losing precision, while CoordI and CoordF just holds a coordinate value which could be either points or pixels.
+
+		Casting between Coord and any of the other two is done implicitly and as points. So if a CoordI is assigned the value
+		of a Coord it receives the coordinate in points (possibly truncated). Likewise will an asignment 
+		from a CoordI to a Coord be treated as an assignment of points.
+
+		Casting between CoordI and CoordF can be done explicitly.
+
+		For a better explanation of the WonderGUI coordinate system and how QPix, points and pixels relate to each other, you should
+		read the coordinate system primer of the tutorial.
+
 	**/
 	template<class Type> class CoordT
 	{

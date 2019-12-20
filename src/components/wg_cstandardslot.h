@@ -27,6 +27,10 @@
 
 namespace wg
 {
+    class CStandardSlot;
+	typedef	StrongComponentPtr<CStandardSlot>	CStandardSlot_p;
+	typedef	WeakComponentPtr<CStandardSlot>		CStandardSlot_wp;
+
 	class CStandardSlot : public CDynamicSlotImpl<DynamicSlot>
 	{
 	public:
@@ -40,12 +44,10 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline StrongComponentPtr<CStandardSlot>	ptr() { return StrongComponentPtr<CStandardSlot>(this); }
+		inline CStandardSlot_p  ptr() { return CStandardSlot_p(this); }
 
 	};
 
-	typedef	StrongComponentPtr<CStandardSlot>	CStandardSlot_p;
-	typedef	WeakComponentPtr<CStandardSlot>		CStandardSlot_wp;
 
 
 }

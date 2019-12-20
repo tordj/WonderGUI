@@ -139,7 +139,7 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		inline State		state() const;
+		inline const State&		state() const;
 
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const;
@@ -320,7 +320,7 @@ namespace wg
 	* @brief	Set a user specified ID for this widget.
 	*
 	* Sets a user specified ID, which can be read with id() and used to identify this
-	* widget. It has no other purpose, is not used internally and does not need to be unique.
+	* widget. It has no other purpose. It is not used internally and does not need to be unique.
 	*
 	* Default ID is 0.
 	*/
@@ -350,7 +350,7 @@ namespace wg
 	 *
 	 * Get the local position of the widget, which is the position relative to parent.
 	 *
-	 * @return Local position in pixels.
+	 * @return Widgets position relative to its parent.
 	 */
 	Coord Widget::pos() const
 	{
@@ -361,11 +361,11 @@ namespace wg
 
 
 	/**
-	 * @brief	Get the width and height of widget.
+	 * @brief	Get the size of of widget.
 	 *
 	 * Get the size (width and height) of widget.
 	 *
-	 * @return Width and height in pixels.
+	 * @return Size of widget.
 	 */
 	Size Widget::size() const
 	{
@@ -375,11 +375,10 @@ namespace wg
 	/**
 	 * @brief	Get the local geometry of widget.
 	 *
-	 * Get the local geometry of the widget, eg a rectangle with the size of the widget and
-	 * positon relative to the parent. If the widget doesn't have a parent, it's position
+	 * Get widgets geometry, e.g. position and size of widget relative to its parent. If widget doesn't have a parent, it's position
 	 * defaults to (0,0).
 	 *
-	 * @return Local geometry in pixels.
+	 * @return Position and size of widget relative to its parent.
 	 */
 	Rect Widget::geo() const
 	{
@@ -391,9 +390,9 @@ namespace wg
 	/**
 	 * @brief	Get the global position of widget.
 	 *
-	 * Get the global position of widget, which is the position relative to RootPanel.
+	 * Get position of widgets top-left corner in the global coordinate space.
 	 *
-	 * @return Global position in pixels.
+	 * @return Position of widget in global coordinate space.
 	 */
 	Coord Widget::globalPos() const
 	{
@@ -403,11 +402,10 @@ namespace wg
 	/**
 	 * @brief	Get the global geometry of widget.
 	 *
-	 * Get the global geometry of the widget, eg a rectangle with the size of the widget and
-	 * positon relative to RootPanel. If the widget doesn't have a parent, it's position
-	 * defaults to (0,0).
+	 * Get position and size of widget in the global coordinate space.
+	 * If the widget doesn't have a parent, it's position defaults to (0,0).
 	 *
-	 * @return Global geometry in pixels.
+	 * @return Geometry of widget in the global coordinate space.
 	 */
 	Rect Widget::globalGeo() const
 	{
@@ -416,18 +414,18 @@ namespace wg
 
 	//____ toGlobal() __________________________
 	/**
-	 * @brief Convert coordinate from local to global coordinate system
+	 * @brief Convert coordinate from local to global space
 	 *
-	 * Convert coordinate from local to global coordinate system
+	 * Convert coordinate from widgets local coordinate space to the global coordinate space.
 	 *
 	 * @param coord		Coordinate in widgets local coordinate system.
 	 *
-	 * Please note that the widgets local coordinate system originates from the top-left
-	 * corner of its box geometry and is NOT the same as the (parents) local coordinate
-	 * system in which it lives.
+	 * Please note that the widgets local coordinate space originates from the top-left
+	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
+	 * space in which it lives.
 	 * The coordinate (0,0) is always the top-left corner of the widget.
 	 *
-	 * @return Coordinate in gobal coordinate system
+	 * @return Coordinate in gobal coordinate space.
 	 */
 
 	Coord Widget::toGlobal(const Coord& coord) const
@@ -437,18 +435,18 @@ namespace wg
 
 	//____ toLocal() ____________________________________________________________
 	/**
-	 * @brief Convert coordinate from local to global coordinate system
+	 * @brief Convert coordinate from global to local space
 	 *
-	 * Convert coordinate from local to global coordinate system
+	 * Convert coordinate from the global coordinate space to widgets local coordinate space.
 	 *
 	 * @param coord		Coordinate in widgets local coordinate system.
 	 *
-	 * Please note that the widgets local coordinate system originates from the top-left
-	 * corner of its box geometry and is NOT the same as the (parents) local coordinate
-	 * system in which it lives.
+	 * Please note that the widgets local coordinate space originates from the top-left
+	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
+	 * space in which it lives.
 	 * The coordinate (0,0) is always the top-left corner of the widget.
 	 *
-	 * @return Coordinate in gobal coordinate system
+	 * @return Coordinate in local coordinate space.
 	 */
 
 	Coord Widget::toLocal(const Coord& coord) const
@@ -468,7 +466,7 @@ namespace wg
 	 * This method is used by containers to get the preferred height of a widget for which
 	 * it has already decided the width.
 	 *
-	 * @return The preferred height for the given width in pixels.
+	 * @return The preferred height for the given width.
 	 */
 
 	QPix Widget::matchingHeight(QPix width) const
@@ -487,7 +485,7 @@ namespace wg
 	 * This method is used by containers to get the preferred width of a widget for which
 	 * it has already decided the height.
 	 *
-	 * @return The preferred width for the given height in pixels.
+	 * @return The preferred width for the given height.
 	 */
 
 	QPix Widget::matchingWidth(QPix height) const
@@ -504,13 +502,13 @@ namespace wg
 	 * Each widget has its own preferred size, which is depending on things such as
 	 * skinning, content and (in the case of containers) size and layout of children.
 	 *
-	 * A container holding a widget will strive to give the widget its preferred size, given
+	 * A container holding a widget will strive to provide the widget its preferred size, given
 	 * the constraints and limitations the container needs to work with. If a container can't
-	 * give a widget its preferred size, it is likely to decide the closest width or height
+	 * provide a widget its preferred size, it is likely to decide the closest width or height
 	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
 	 * after which it will decide the size of the child and notify it.
 	 *
-	 * @return The preferred size of the widget in pixels.
+	 * @return The preferred size of the widget.
 	 */
 
 	Size Widget::preferredSize() const
@@ -532,7 +530,7 @@ namespace wg
 	 * make a child smaller than its minimum size, but is allowed to set the child to
 	 * any size it decides, including 0.0.
 	 *
-	 * @return The minimum size of the widget in pixels.
+	 * @return The minimum size of the widget.
 	 */
 
 	Size Widget::minSize() const
@@ -553,7 +551,7 @@ namespace wg
 	 * make a child larger than its maximum size, but is allowed to set the child to
 	 * any reasonable size it decides.
 	 *
-	 * @return The maximum size of the widget in pixels.
+	 * @return The maximum size of the widget.
 	 */
 
 	Size Widget::maxSize() const
@@ -593,16 +591,16 @@ namespace wg
 	/**
 	 * @brief	Return the state of widget.
 	 *
-	 * Returns a copy of the widgets internal state object, containing basic state information
-	 * such as if it is disabled, has mouse pointer inside, is pressed or selected.
+	 * Returns a reference to the widgets state object, containing basic state information
+	 * such as if it is disabled, has mouse pointer inside its geometry, is pressed or selected.
 	 *
 	 * This is just for information. WonderGUI doesn't allow the state to be manipulated except
 	 * as allowed by specific API:s like setEnabled().
 	 *
-	 * @return State object representing the current state of the widget.
+	 * @return Reference to state object representing the current state of the widget.
 	 */
 
-	State Widget::state() const
+	const State& Widget::state() const
 	{
 		return m_state;
 	}
@@ -685,8 +683,7 @@ namespace wg
 	/** @brief Get next sibling.
 	 *
 	 * Get the widgets next sibling. Order of siblings is determined by parent
-	 * and generally left to right or top to bottom for containers where children can't overlap.
-	 * For containers where children can overlap the order is generally background to foreground.
+	 * but is generally either left to right, top to bottom or background to foreground.
 	 *
 	 * @return Pointer to next sibling or null if none.
 	 */
@@ -701,8 +698,7 @@ namespace wg
 	/** @brief Get previous sibling.
 	 *
 	 * Get the widgets previous sibling. Order of siblings is determined by parent
-	 * and generally left to right or top to bottom for containers where children can't overlap.
-	 * For containers where children can overlap the order is generally background to foreground.
+	 * but is generally either left to right, top to bottom or background to foreground.
 	 *
 	 * @return Pointer to previous sibling or null if none.
 	 */
