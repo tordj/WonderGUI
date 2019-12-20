@@ -24,26 +24,26 @@
 #define	WG_CPADDEDSLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_cslotarray.h>
+#include <wg_cdynamicslotarray.h>
 
 namespace wg
 {
 	//____ CPaddedSlotArray ________________________________________________________
 
-	template<class SlotType> class CPaddedSlotArray : public CSlotArray<SlotType>
+	template<class SlotType> class CPaddedSlotArray : public CDynamicSlotArray<SlotType>
 	{
 	public:
 
-		class Holder : public CSlotArray<SlotType>::Holder  /** @private */
+		class Holder : public CDynamicSlotArray<SlotType>::Holder  /** @private */
 		{
 		public:
-			virtual void	_repadSlots(BasicSlot * pSlot, int nb, BorderI padding) = 0;
-			virtual void	_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPadding) = 0;
+			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
+			virtual void	_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) = 0;
 		};
 
 		/** @private */
 
-		CPaddedSlotArray(Holder * pHolder) : CSlotArray<SlotType>(pHolder) {}
+		CPaddedSlotArray(Holder * pHolder) : CDynamicSlotArray<SlotType>(pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -54,12 +54,12 @@ namespace wg
 		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
 
-		inline Border	padding(int index) const { return Util::rawToQpix(CSlotArray<SlotType>::_slot(index)->padding); }
+		inline Border	padding(int index) const { return Util::rawToQpix(CDynamicSlotArray<SlotType>::_slot(index)->padding); }
 		inline Border	padding(const SlotIterator& it) const { return Util::rawToQpix(static_cast<SlotType*>(it._slot())->padding); }
 
 	protected:
-		Holder *		_holder() { return static_cast<Holder*>(CSlotArray<SlotType>::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(CSlotArray<SlotType>::_holder()); }
+		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
 	};
 
 

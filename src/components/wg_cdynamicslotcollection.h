@@ -24,7 +24,7 @@
 #define	WG_CDYNAMICSLOTCOLLECTION_DOT_H
 #pragma once
 
-#include <wg_cslotcollection.h>
+#include <wg_cstaticslotcollection.h>
 
 namespace wg
 {
@@ -35,7 +35,7 @@ namespace wg
 	typedef	StrongComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_p;
 	typedef	WeakComponentPtr<CDynamicSlotCollection>		CDynamicSlotCollection_wp;
 
-	class CDynamicSlotCollection : public CSlotCollection
+	class CDynamicSlotCollection : public CStaticSlotCollection
 	{
 
 	public:

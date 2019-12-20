@@ -33,7 +33,7 @@ namespace wg
 	class Container;
 	class RootPanel;
 	class Widget;
-	class BasicSlot;
+	class StaticSlot;
 	class Object;
 
 
@@ -47,27 +47,27 @@ namespace wg
 		virtual Object *	_object() = 0;
 		virtual const Object *	_object() const = 0;
 
-		virtual CoordI		_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of the widget.
-		virtual CoordI		_childGlobalPos( const BasicSlot * pSlot ) const = 0;
+		virtual CoordI		_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of the widget.
+		virtual CoordI		_childGlobalPos( const StaticSlot * pSlot ) const = 0;
 
-		virtual bool		_isChildVisible( const BasicSlot * pSlot ) const = 0;
-		virtual RectI		_childWindowSection( const BasicSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
+		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
+		virtual RectI		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 
-		virtual void		_childRequestRender( BasicSlot * pSlot ) = 0;
-		virtual void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) = 0;
-		virtual void		_childRequestResize( BasicSlot * pSlot ) = 0;
+		virtual void		_childRequestRender( StaticSlot * pSlot ) = 0;
+		virtual void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) = 0;
+		virtual void		_childRequestResize( StaticSlot * pSlot ) = 0;
 
-		virtual bool		_childRequestFocus( BasicSlot * pSlot, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
-		virtual bool		_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget ) = 0;
+		virtual bool		_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
+		virtual bool		_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;
 
-		virtual void		_childRequestInView( BasicSlot * pSlot ) = 0;
-		virtual void		_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) = 0;
+		virtual void		_childRequestInView( StaticSlot * pSlot ) = 0;
+		virtual void		_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) = 0;
 
-		virtual Widget *	_prevChild( const BasicSlot * pSlot ) const = 0;
-		virtual Widget *	_nextChild( const BasicSlot * pSlot ) const = 0;
+		virtual Widget *	_prevChild( const StaticSlot * pSlot ) const = 0;
+		virtual Widget *	_nextChild( const StaticSlot * pSlot ) const = 0;
 
-		virtual void		_releaseChild(BasicSlot * pSlot) = 0;
-		virtual void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild) = 0;
+		virtual void		_releaseChild(StaticSlot * pSlot) = 0;
+		virtual void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild) = 0;
 	};
 
 } // namespace wg

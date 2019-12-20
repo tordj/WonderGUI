@@ -31,9 +31,9 @@ namespace wg
 
 	//____ SelectableSlot ____________________________________________________________
 
-	class SelectableSlot : public BasicSlot 	/** @private */
+	class SelectableSlot : public DynamicSlot 	/** @private */
 	{
-		template<class S> friend class CSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class CSelectableSlotArray;
 	public:
 
@@ -42,11 +42,11 @@ namespace wg
 		class Holder : public SlotHolder		/** @private */
 		{
 		public:
-			virtual void	_selectSlots(BasicSlot * pSlot, int nb) = 0;
-			virtual void	_unselectSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_selectSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_unselectSlots(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		SelectableSlot(Holder* pHolder) : BasicSlot(pHolder), bVisible(false) {}
+		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder), bVisible(false) {}
 
 		inline void	select() { _holder()->_selectSlots(this, 1); }
 		inline void	unselect() { _holder()->_unselectSlots(this, 1); }

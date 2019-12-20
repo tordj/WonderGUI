@@ -799,7 +799,7 @@ namespace wg
 
 	//____ _childRequestResize() _______________________________________________
 
-	void PopupLayer::_childRequestResize(BasicSlot * pSlot)
+	void PopupLayer::_childRequestResize(StaticSlot * pSlot)
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -809,7 +809,7 @@ namespace wg
 
 	//____ _releaseChild() _____________________________________________________
 
-	void PopupLayer::_releaseChild( BasicSlot * pSlot )
+	void PopupLayer::_releaseChild( StaticSlot * pSlot )
 	{
 		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);

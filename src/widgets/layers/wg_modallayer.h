@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_cslotarray.h>
+#include <wg_cdynamicslotarray.h>
 
 namespace wg
 {
@@ -40,7 +40,7 @@ namespace wg
 	{
 		friend class ModalLayer;
 		friend class CModalSlotArray;
-		template<class S> friend class CSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class SlotArray;
 
 	protected:
@@ -68,14 +68,14 @@ namespace wg
 
 	//____ CModalSlotArray ________________________________________________________
 
-	class CModalSlotArray : public CSlotArray<ModalSlot>
+	class CModalSlotArray : public CDynamicSlotArray<ModalSlot>
 	{
 		friend class ModalLayer;
 	public:
 
 		//____ Holder _________________________________________________
 
-		class Holder : public CSlotArray<ModalSlot>::Holder		/** @private */
+		class Holder : public CDynamicSlotArray<ModalSlot>::Holder		/** @private */
 		{
 		public:
 			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
@@ -84,7 +84,7 @@ namespace wg
 
 		/** @private */
 
-		CModalSlotArray( Holder * pHolder ) : CSlotArray<ModalSlot>(pHolder) {}
+		CModalSlotArray( Holder * pHolder ) : CDynamicSlotArray<ModalSlot>(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -127,8 +127,8 @@ namespace wg
 		void 		_setSize(ModalSlot * p, const Size& size);
 		void 		_move( ModalSlot * p, const Coord& ofs );
 
-		const Holder *	_holder() const { return static_cast<const Holder*>(CSlotArray<ModalSlot>::_holder()); }
-		Holder *	_holder() { return static_cast<Holder*>(CSlotArray<ModalSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
+		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
 
 
 	};
@@ -181,36 +181,36 @@ namespace wg
 		Object *		_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI			_childPos(const BasicSlot * pSlot) const override { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(const BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(const BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(const BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
+		CoordI			_childPos(const StaticSlot * pSlot) const override { return Layer::_childPos(pSlot); }
+		CoordI			_childGlobalPos(const StaticSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
+		bool			_isChildVisible(const StaticSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
+		RectI			_childWindowSection(const StaticSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
 
-		void			_childRequestRender(BasicSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(StaticSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
 
-		bool			_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
-		bool			_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
+		bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
+		bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
 
-		void			_childRequestInView(BasicSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
-		void			_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void			_childRequestInView(StaticSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
+		void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		Widget *		_prevChild(const BasicSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const BasicSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
+		Widget *		_prevChild(const StaticSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
+		Widget *		_nextChild(const StaticSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
 
 		//TODO: We should allow replacement of modal slots.
-		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 
-		void			_childRequestResize( BasicSlot * pSlot ) override;
-		void			_releaseChild(BasicSlot * pSlot) override;
+		void			_childRequestResize( StaticSlot * pSlot ) override;
+		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Methods for ModalSlotsHolder
 
-		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
-		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
-		void			_willRemoveSlots(BasicSlot * pSlot, int nb) override;
-		void			_hideSlots(BasicSlot *, int nb) override;
-		void			_unhideSlots(BasicSlot *, int nb) override;
+		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
+		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void			_willRemoveSlots(StaticSlot * pSlot, int nb) override;
+		void			_hideSlots(StaticSlot *, int nb) override;
+		void			_unhideSlots(StaticSlot *, int nb) override;
 		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;
 
 		// Overloaded from Layer
@@ -232,7 +232,7 @@ namespace wg
 
 		//
 
-		class MainSlotAccess : public CBasicSlot { friend class ModalLayer; };
+		class MainSlotAccess : public CStandardSlot { friend class ModalLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

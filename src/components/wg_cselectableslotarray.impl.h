@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_cselectableslotarray.h>
-#include <wg_cslotarray.impl.h>
+#include <wg_cdynamicslotarray.impl.h>
 
 namespace wg
 {
@@ -36,7 +36,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_selectSlots(CSlotArray<SlotType>::_slot(index), 1);
+		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(index), 1);
 	}
 
 	template <class SlotType>
@@ -52,7 +52,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_selectSlots(CSlotArray<SlotType>::_slot(index), amount);
+		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(index), amount);
 	};
 
 	template <class SlotType>
@@ -70,7 +70,7 @@ namespace wg
 	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::selectAll()
 	{
-		_holder()->_selectSlots(CSlotArray<SlotType>::_slot(0), size());
+		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(0), size());
 	};
 
 	//____ unselect() _________________________________________________________
@@ -80,7 +80,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_unselectSlots(CSlotArray<SlotType>::_slot(index), 1);
+		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_slot(index), 1);
 	}
 
 	template <class SlotType>
@@ -96,7 +96,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_unselectSlots(CSlotArray<SlotType>::_slot(index), amount);
+		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_slot(index), amount);
 	};
 
 	template <class SlotType>
@@ -114,7 +114,7 @@ namespace wg
 	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::unselectAll()
 	{
-		_holder()->_unselectSlots(CSlotArray<SlotType>::_begin(), CSlotArray<SlotType>::size());
+		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_begin(), CDynamicSlotArray<SlotType>::size());
 	};
 
 	//____ isSelected() ________________________________________________________
@@ -124,7 +124,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		return CSlotArray<SlotType>::_slot(index)->_widget()->state().isSelected();
+		return CDynamicSlotArray<SlotType>::_slot(index)->_widget()->state().isSelected();
 	}
 
 	template <class SlotType>

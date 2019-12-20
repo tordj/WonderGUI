@@ -34,7 +34,7 @@ namespace wg
 	using namespace Util;
 
 	template class CSelectableSlotArray<PackListSlot>;
-	template class CSlotArray<PackListSlot>;
+	template class CDynamicSlotArray<PackListSlot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
 
@@ -680,17 +680,17 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________
 
-	void PackList::_didAddSlots(BasicSlot * pSlot, int nb)
+	void PackList::_didAddSlots(StaticSlot * pSlot, int nb)
 	{
 		_unhideSlots(pSlot, nb);
 	}
 
 	//____ _didMoveSlots() _______________________________________________________
 
-	void PackList::_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb)
+	void PackList::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb)
 	{
-		BasicSlot * pBeg = min(pFrom, pTo);
-		BasicSlot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
+		StaticSlot * pBeg = min(pFrom, pTo);
+		StaticSlot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
 
 		_requestRenderChildren((PackListSlot*)pBeg, (PackListSlot*)pEnd);	// Request render on dirty area
 	}
@@ -698,7 +698,7 @@ namespace wg
 
 	//____ _willRemoveSlots() _____________________________________________________
 
-	void PackList::_willRemoveSlots(BasicSlot * _pSlot, int nb)
+	void PackList::_willRemoveSlots(StaticSlot * _pSlot, int nb)
 	{
 		_hideSlots(_pSlot, nb);
 
@@ -711,7 +711,7 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________
 
-	void PackList::_hideSlots(BasicSlot * _pSlot, int nb)
+	void PackList::_hideSlots(StaticSlot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -740,7 +740,7 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackList::_unhideSlots(BasicSlot * _pSlot, int nb)
+	void PackList::_unhideSlots(StaticSlot * _pSlot, int nb)
 	{
 		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -796,14 +796,14 @@ namespace wg
 
 	//____ _selectSlots() ________________________________________________________
 
-	void PackList::_selectSlots(BasicSlot * pSlot, int nb)
+	void PackList::_selectSlots(StaticSlot * pSlot, int nb)
 	{
 		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, true, false);
 	}
 
 	//____ _unselectSlots() ______________________________________________________
 
-	void PackList::_unselectSlots(BasicSlot * pSlot, int nb)
+	void PackList::_unselectSlots(StaticSlot * pSlot, int nb)
 	{
 		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, false, false);
 	}
@@ -1121,7 +1121,7 @@ namespace wg
 
 	//____ _paddedLimitedMatchingHeight() _________________________________________
 
-	int PackList::_paddedLimitedMatchingHeight( BasicSlot * _pSlot, int paddedWidth )
+	int PackList::_paddedLimitedMatchingHeight( StaticSlot * _pSlot, int paddedWidth )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -1132,7 +1132,7 @@ namespace wg
 
 	//____ _paddedLimitedMatchingWidth() _________________________________________
 
-	int PackList::_paddedLimitedMatchingWidth( BasicSlot * _pSlot, int paddedHeight )
+	int PackList::_paddedLimitedMatchingWidth( StaticSlot * _pSlot, int paddedHeight )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -1143,7 +1143,7 @@ namespace wg
 
 	//____ _paddedLimitedPreferredSize() __________________________________________
 
-	SizeI PackList::_paddedLimitedPreferredSize( BasicSlot * _pSlot )
+	SizeI PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<PackListSlot*>(_pSlot);
 
@@ -1173,7 +1173,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI PackList::_childPos( const BasicSlot * _pSlot ) const
+	CoordI PackList::_childPos( const StaticSlot * _pSlot ) const
 	{
 		const PackListSlot * pSlot = reinterpret_cast<const PackListSlot*>(_pSlot);
 
@@ -1185,7 +1185,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void PackList::_childRequestRender( BasicSlot * _pSlot )
+	void PackList::_childRequestRender( StaticSlot * _pSlot )
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1194,7 +1194,7 @@ namespace wg
 		_requestRender(geo);
 	}
 
-	void PackList::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
+	void PackList::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
@@ -1209,7 +1209,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void PackList::_childRequestResize( BasicSlot * _pSlot )
+	void PackList::_childRequestResize( StaticSlot * _pSlot )
 	{
 		bool	bReqResize = false;
 
@@ -1273,7 +1273,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * PackList::_prevChild( const BasicSlot * _pSlot ) const
+	Widget * PackList::_prevChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
@@ -1285,7 +1285,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * PackList::_nextChild( const BasicSlot * _pSlot ) const
+	Widget * PackList::_nextChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
 
@@ -1297,7 +1297,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void PackList::_releaseChild(BasicSlot * pSlot)
+	void PackList::_releaseChild(StaticSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		slots._remove(static_cast<PackListSlot*>(pSlot));
@@ -1305,7 +1305,7 @@ namespace wg
 
 	//____ _replaceChild() _____________________________________________________
 
-	void PackList::_replaceChild(BasicSlot * pSlot, Widget * pNewChild)
+	void PackList::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 	{
 		//TODO: Implement!!!
 

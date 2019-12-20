@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSLOTCOLLECTION_DOT_H
-#define	WG_CSLOTCOLLECTION_DOT_H
+#ifndef	WG_CSTATICSLOTCOLLECTION_DOT_H
+#define	WG_CSTATICSLOTCOLLECTION_DOT_H
 #pragma once
 
 #include <wg_component.h>
@@ -39,16 +39,16 @@ namespace wg
 	public:
 
 		// Iterator traits, previously from std::iterator.
-		using value_type = BasicSlot;
+		using value_type = StaticSlot;
 		using difference_type = std::ptrdiff_t;
 		using pointer = Widget * ;
-		using reference = BasicSlot & ;
+		using reference = StaticSlot & ;
 		using iterator_category = std::bidirectional_iterator_tag;
 
 		//.____ Creation ___________________________________________________
 
 		SlotIterator() = default;
-		explicit SlotIterator(BasicSlot* pSlot, void * pHolder, void * pExtra)
+		explicit SlotIterator(StaticSlot* pSlot, void * pHolder, void * pExtra)
 		{
 			this->pSlot = pSlot;
 			this->pHolder = pHolder;
@@ -126,7 +126,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________________
 
-		inline BasicSlot * _slot() const { return pSlot; }
+		inline StaticSlot * _slot() const { return pSlot; }
 
 	protected:
 
@@ -136,20 +136,20 @@ namespace wg
 		virtual void	_inc(int amount) {};
 		virtual void	_dec(int amount) {};
 
-		BasicSlot *		pSlot = nullptr;
+		StaticSlot *		pSlot = nullptr;
 		void *			pHolder = nullptr;
 		void *			pExtra = nullptr;
 	};
 
 
 
-	//____ CSlotCollection _________________________________________________________________
+	class CStaticSlotCollection;
+	typedef	StrongComponentPtr<CStaticSlotCollection>	CStaticSlotCollection_p;
+	typedef	WeakComponentPtr<CStaticSlotCollection>		CStaticSlotCollection_wp;
 
-	class CSlotCollection;
-	typedef	StrongComponentPtr<CSlotCollection>	CSlotCollection_p;
-	typedef	WeakComponentPtr<CSlotCollection>	CSlotCollection_wp;
+	//____ CStaticSlotCollection _________________________________________________________________
 
-	class CSlotCollection : public Component
+	class CStaticSlotCollection : public Component
 	{
 	public:
 		using		iterator = SlotIterator;
@@ -159,12 +159,12 @@ namespace wg
 		virtual int		size() const = 0;
 		virtual bool	isEmpty() const = 0;
 
-		inline BasicSlot& at(int index) { return _at(index); }
+		inline StaticSlot& at(int index) { return _at(index); }
 		virtual int index(Widget * pChild) const = 0;
 
 		//.____ Misc _______________________________________________________
 
-		inline CSlotCollection_p ptr() { return CSlotCollection_p(this); }
+		inline CStaticSlotCollection_p ptr() { return CStaticSlotCollection_p(this); }
 
 		inline iterator	begin() { return _begin_iterator(); }
 		inline iterator	end() { return _end_iterator(); }
@@ -175,8 +175,8 @@ namespace wg
 
 		virtual iterator	_begin_iterator() = 0;
 		virtual iterator	_end_iterator() = 0;
-		virtual BasicSlot&	_at(int index) = 0;
+		virtual StaticSlot&	_at(int index) = 0;
 	};
 
 } // namespace wg
-#endif //WG_CSLOTCOLLECTION_DOT_H
+#endif //WG_CSTATICSLOTCOLLECTION_DOT_H

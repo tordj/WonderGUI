@@ -410,16 +410,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cshadows.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cslotcollection.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cdynamicslotcollection.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cslotarray.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cslotarray.impl.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cpaddedslotarray.h">
@@ -432,9 +423,6 @@
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.impl.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cbasicslot.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.h">
@@ -454,6 +442,18 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h">
       <Filter>slots</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotcollection.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h">
+      <Filter>components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

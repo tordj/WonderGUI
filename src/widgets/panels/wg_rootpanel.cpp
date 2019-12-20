@@ -380,28 +380,28 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI RootPanel::_childPos( const BasicSlot * pSlot ) const
+	CoordI RootPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _childGlobalPos() __________________________________________________
 
-	CoordI RootPanel::_childGlobalPos( const BasicSlot * pSlot ) const
+	CoordI RootPanel::_childGlobalPos( const StaticSlot * pSlot ) const
 	{
 		return _geo().pos();
 	}
 
 	//____ _isChildVisible() __________________________________________________
 
-	bool RootPanel::_isChildVisible( const BasicSlot * pSlot ) const
+	bool RootPanel::_isChildVisible( const StaticSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() __________________________________________________
 
-	RectI RootPanel::_childWindowSection( const BasicSlot * pSlot ) const
+	RectI RootPanel::_childWindowSection( const StaticSlot * pSlot ) const
 	{
 		return _geo();
 	}
@@ -422,13 +422,13 @@ namespace wg
 
 	//____ _childRequestRender() __________________________________________________
 
-	void RootPanel::_childRequestRender( BasicSlot * pSlot )
+	void RootPanel::_childRequestRender( StaticSlot * pSlot )
 	{
 		if( m_bVisible )
 			m_dirtyPatches.add( _geo() );
 	}
 
-	void RootPanel::_childRequestRender( BasicSlot * pSlot, const RectI& rect )
+	void RootPanel::_childRequestRender( StaticSlot * pSlot, const RectI& rect )
 	{
 		if( m_bVisible )
 			m_dirtyPatches.add( RectI( _geo().pos() + rect.pos(), rect.size() ) );
@@ -436,14 +436,14 @@ namespace wg
 
 	//____ _childRequestResize() __________________________________________________
 
-	void RootPanel::_childRequestResize( BasicSlot * pSlot )
+	void RootPanel::_childRequestResize( StaticSlot * pSlot )
 	{
 		_slot()->_setSize(m_geo.size());
 	}
 
 	//____ _childRequestFocus() __________________________________________________
 
-	bool RootPanel::_childRequestFocus( BasicSlot * pSlot, Widget * pWidget )
+	bool RootPanel::_childRequestFocus( StaticSlot * pSlot, Widget * pWidget )
 	{
 		if( pWidget == m_pFocusedChild.rawPtr() )
 			return true;
@@ -455,7 +455,7 @@ namespace wg
 
 	//____ _childReleaseFocus() __________________________________________________
 
-	bool RootPanel::_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget )
+	bool RootPanel::_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget )
 	{
 		if( pWidget != m_pFocusedChild.rawPtr() )
 			return true;					// Never had focus, although widget seems to believe it.
@@ -470,39 +470,39 @@ namespace wg
 
 	//____ _childRequestInView() __________________________________________________
 
-	void RootPanel::_childRequestInView( BasicSlot * pSlot )
+	void RootPanel::_childRequestInView( StaticSlot * pSlot )
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void RootPanel::_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		// Do nothing, root ignores inView requests.
 	}
 
 	//____ _prevChild() __________________________________________________
 
-	Widget * RootPanel::_prevChild( const BasicSlot * pSlot ) const
+	Widget * RootPanel::_prevChild( const StaticSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________
 
-	Widget * RootPanel::_nextChild( const BasicSlot * pSlot ) const
+	Widget * RootPanel::_nextChild( const StaticSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _releaseChild() ____________________________________________________
 
-	void RootPanel::_releaseChild(BasicSlot * pSlot)
+	void RootPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_replaceChild(pSlot, nullptr);
 	}
 
 	//____ _replaceChild() ____________________________________________________________
 
-	void RootPanel::_replaceChild(BasicSlot * pSlot, Widget * pNewWidget)
+	void RootPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewWidget)
 	{
 		if (_slot()->_widget())
 			_slot()->_widget()->_collectPatches(m_dirtyPatches, _geo(), _geo());

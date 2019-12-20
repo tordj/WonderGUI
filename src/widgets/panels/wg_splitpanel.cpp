@@ -605,26 +605,26 @@ namespace wg
 
 	//_____ _childPos() _______________________________________________________
 
-	CoordI SplitPanel::_childPos(const BasicSlot * pSlot) const
+	CoordI SplitPanel::_childPos(const StaticSlot * pSlot) const
 	{
 		return static_cast<const SplitSlot*>(pSlot)->m_geo.pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void SplitPanel::_childRequestRender(BasicSlot * pSlot)
+	void SplitPanel::_childRequestRender(StaticSlot * pSlot)
 	{
 		_requestRender(static_cast<SplitSlot*>(pSlot)->m_geo);
 	}
 
-	void SplitPanel::_childRequestRender(BasicSlot * pSlot, const RectI& rect)
+	void SplitPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
 	{
 		_requestRender(rect + static_cast<SplitSlot*>(pSlot)->m_geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void SplitPanel::_childRequestResize(BasicSlot * pSlot)
+	void SplitPanel::_childRequestResize(StaticSlot * pSlot)
 	{
 		//TODO: Implement better solution, should be able to adapt width !!!
 
@@ -634,7 +634,7 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * SplitPanel::_prevChild(const BasicSlot * pSlot) const
+	Widget * SplitPanel::_prevChild(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &slotTwo)
 			return _slotTwo()->_widget();
@@ -644,7 +644,7 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * SplitPanel::_nextChild(const BasicSlot * pSlot) const
+	Widget * SplitPanel::_nextChild(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &slotOne)
 			return _slotTwo()->_widget();
@@ -654,14 +654,14 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void SplitPanel::_releaseChild(BasicSlot * pSlot)
+	void SplitPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_replaceChild(pSlot, nullptr);
 	}
 
 	//____ _replaceChild() _______________________________________________________
 
-	void SplitPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewWidget)
+	void SplitPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
 	{
 		auto pSlot = static_cast<SplitSlot*>(_pSlot);
 

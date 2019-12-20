@@ -120,7 +120,7 @@ namespace wg
 
 	//____ _childPos() ___________________________________________________________
 
-	CoordI Capsule::_childPos( const BasicSlot * pSlot ) const
+	CoordI Capsule::_childPos( const StaticSlot * pSlot ) const
 	{
 		if( m_pSkin )
 			return m_pSkin->_contentOfs( m_state );
@@ -130,7 +130,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( BasicSlot * pSlot )
+	void Capsule::_childRequestRender( StaticSlot * pSlot )
 	{
 		if( m_pSkin )
 			_requestRender( m_pSkin->_contentRect( m_size, m_state ));
@@ -140,7 +140,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void Capsule::_childRequestRender( BasicSlot * pSlot, const RectI& rect )
+	void Capsule::_childRequestRender( StaticSlot * pSlot, const RectI& rect )
 	{
 		if( m_pSkin )
 			_requestRender( rect + m_pSkin->_contentOfs( m_state ));
@@ -150,21 +150,21 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void Capsule::_childRequestResize( BasicSlot * pSlot )
+	void Capsule::_childRequestResize( StaticSlot * pSlot )
 	{
 		_requestResize();
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * Capsule::_prevChild( const BasicSlot * pSlot ) const
+	Widget * Capsule::_prevChild( const StaticSlot * pSlot ) const
 	{
 		return nullptr;
 	}
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * Capsule::_nextChild( const BasicSlot * pSlot ) const
+	Widget * Capsule::_nextChild( const StaticSlot * pSlot ) const
 	{
 		return nullptr;
 	}
@@ -246,7 +246,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void Capsule::_releaseChild(BasicSlot * _pSlot)
+	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
 		_slot()->_setWidget(nullptr);
 		_requestRender();
@@ -255,7 +255,7 @@ namespace wg
 
 	//____ _replaceChild() ____________________________________________________________
 
-	void Capsule::_replaceChild( BasicSlot * pSlot, Widget * pWidget )
+	void Capsule::_replaceChild( StaticSlot * pSlot, Widget * pWidget )
 	{
 		_slot()->_setWidget(pWidget );
 

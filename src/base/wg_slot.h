@@ -30,17 +30,18 @@
 namespace wg
 {
 
-	//____ BasicSlot __________________________________________________________
+	//____ StaticSlot __________________________________________________________
 
-	class BasicSlot		/** @private */
+	class StaticSlot		/** @private */
 	{
 		friend class Widget;
 		friend class SlotIterator;
 		friend class SlotHolder;
-		friend class CSlot;
-		template<class S> friend class CSlotImpl;
-		template<class S> friend class CSlotArray;
+		friend class CStaticSlot;
+		friend class DynamicSlot;
+		template<class S> friend class CStaticSlotImpl;
 		template<class S> friend class CStaticSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 
 
 	public:
@@ -49,31 +50,6 @@ namespace wg
 
 
 		//.____ Operators __________________________________________
-
-		BasicSlot& operator=(BasicSlot&& o)
-		{
-			if (m_pWidget)
-			{
-				m_pWidget->_setSlot(nullptr);
-				m_pWidget->_decRefCount();
-			}
-
-			m_pWidget = o.m_pWidget;
-//			m_pHolder = o.m_pHolder;
-
-			if (m_pWidget)
-			{
-				m_pWidget->_setSlot(this);
-				o.m_pWidget = nullptr;
-			}
-
-			return *this;
-		}
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-
-//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 
 		inline operator Widget_p() const { return widget(); }
 
@@ -89,9 +65,6 @@ namespace wg
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
 
-		inline void		setWidget(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
-		inline void		clear() { m_pHolder->_replaceChild(this, nullptr); }
-
 		inline Coord	pos() const { return Util::rawToQpix(m_pHolder->_childPos(this)); }
 		inline Size		size() const { return Util::rawToQpix(_size()); }
 		inline Rect		geo() const { return Util::rawToQpix( RectI(m_pHolder->_childPos(this),_size())); }
@@ -99,9 +72,9 @@ namespace wg
 	protected:
 		const static bool safe_to_relocate = true;
 
-		BasicSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
+		StaticSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 
-		BasicSlot(BasicSlot&& o)
+		StaticSlot(StaticSlot&& o)
 		{
 			m_pWidget = o.m_pWidget;
 			m_pHolder = o.m_pHolder;
@@ -115,7 +88,7 @@ namespace wg
 		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
 		// if content has been moved to another slot!
 
-		~BasicSlot()
+		~StaticSlot()
 		{
 			if (m_pWidget != nullptr)
 			{
@@ -124,6 +97,25 @@ namespace wg
 			}
 		}
 
+		StaticSlot& operator=(StaticSlot&& o)
+		{
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+			}
+
+			m_pWidget = o.m_pWidget;
+			//			m_pHolder = o.m_pHolder;
+
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(this);
+				o.m_pWidget = nullptr;
+			}
+
+			return *this;
+		}
 
 
 		inline void _relink() { m_pWidget->_setSlot( this ); }
@@ -169,6 +161,88 @@ namespace wg
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;
 	};
+
+
+	//____ DynamicSlot __________________________________________________________
+
+	class DynamicSlot : public StaticSlot		/** @private */
+	{
+		friend class Widget;
+		friend class SlotIterator;
+		friend class SlotHolder;
+		friend class CSlot;
+		template<class S> friend class CStaticSlotImpl;
+		template<class S> friend class CDynamicSlotImpl;
+		template<class S> friend class CStaticSlotArray;
+		template<class S> friend class CDynamicSlotArray;
+
+
+	public:
+
+		using		Holder = SlotHolder;
+
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+
+
+		//.____ Content _______________________________________________________
+
+		inline void		setWidget(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+		inline void		clear() { m_pHolder->_replaceChild(this, nullptr); }
+
+	protected:
+		const static bool safe_to_relocate = true;
+
+		DynamicSlot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
+
+		DynamicSlot(DynamicSlot&& o) : StaticSlot(o.m_pHolder)
+		{
+			m_pWidget = o.m_pWidget;
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(this);
+				o.m_pWidget = nullptr;
+			}
+		}
+
+		DynamicSlot& operator=(DynamicSlot&& o)
+		{
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+			}
+
+			m_pWidget = o.m_pWidget;
+			//			m_pHolder = o.m_pHolder;
+
+			if (m_pWidget)
+			{
+				m_pWidget->_setSlot(this);
+				o.m_pWidget = nullptr;
+			}
+
+			return *this;
+		}
+
+
+		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
+		// if content has been moved to another slot!
+
+		~DynamicSlot()
+		{
+			if (m_pWidget != nullptr)
+			{
+				m_pWidget->_setSlot(nullptr);
+				m_pWidget->_decRefCount();
+			}
+		}
+	};
+
 
 }
 

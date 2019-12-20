@@ -27,14 +27,14 @@
 #include <wg_base.h>
 #include <wg_inputhandler.h>
 
-#include <wg_cslotarray.impl.h>
+#include <wg_cdynamicslotarray.impl.h>
 
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CSlotArray<ModalSlot>;
+	template class CDynamicSlotArray<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 
@@ -276,7 +276,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void ModalLayer::_childRequestResize( BasicSlot * pSlot )
+	void ModalLayer::_childRequestResize( StaticSlot * pSlot )
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -289,7 +289,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void ModalLayer::_releaseChild(BasicSlot * pSlot)
+	void ModalLayer::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
@@ -451,7 +451,7 @@ namespace wg
 		ModalSlot * pSlot = modalSlots._last();
 
 		Widget * 	pSavedFocus = nullptr;
-		BasicSlot *		pBranch	= nullptr;
+		StaticSlot *		pBranch	= nullptr;
 
 		while( pSlot >= modalSlots._first() && pSlot->geo.isEmpty() )
 			pSlot--;
@@ -477,7 +477,7 @@ namespace wg
 
 		if( pW )
 		{
-			BasicSlot * pSlot = (BasicSlot*) pW->_slot();
+			StaticSlot * pSlot = (StaticSlot*) pW->_slot();
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}
@@ -489,7 +489,7 @@ namespace wg
 
 	//____ _didAddSlots() __________________________________________________
 
-	void ModalLayer::_didAddSlots(BasicSlot * _pSlot, int nb)
+	void ModalLayer::_didAddSlots(StaticSlot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -500,7 +500,7 @@ namespace wg
 
 	//____ _didMoveSlots() ___________________________________________________________
 
-	void ModalLayer::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
+	void ModalLayer::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -547,7 +547,7 @@ namespace wg
 
 	//____ _willRemoveSlots() __________________________________________________
 
-	void ModalLayer::_willRemoveSlots(BasicSlot * _pSlot, int nb)
+	void ModalLayer::_willRemoveSlots(StaticSlot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
@@ -561,14 +561,14 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void ModalLayer::_hideSlots(BasicSlot * _pSlot, int nb)
+	void ModalLayer::_hideSlots(StaticSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void ModalLayer::_unhideSlots(BasicSlot * _pSlot, int nb)
+	void ModalLayer::_unhideSlots(StaticSlot * _pSlot, int nb)
 	{
 		// TODO: Implement!!!
 	}

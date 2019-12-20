@@ -143,7 +143,7 @@
     <ClInclude Include="..\..\..\src\base\wg_weakcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotholder.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cbasicslot.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccolumnheader.h" />
     <ClInclude Include="..\..\..\src\components\wg_cdynamicslotcollection.h" />
@@ -155,9 +155,9 @@
     <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_cshadows.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslot.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cslotarray.impl.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cslotcollection.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.impl.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotcollection.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h" />

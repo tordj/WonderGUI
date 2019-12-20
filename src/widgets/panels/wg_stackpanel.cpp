@@ -29,7 +29,7 @@
 
 namespace wg
 {
-	template class CSlotArray<StackSlot>;
+	template class CDynamicSlotArray<StackSlot>;
 	template class CPaddedSlotArray<StackSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
@@ -285,35 +285,35 @@ namespace wg
 
 	//____ _didAddSlots() ________________________________________________________
 
-	void StackPanel::_didAddSlots( BasicSlot * pSlot, int nb )
+	void StackPanel::_didAddSlots( StaticSlot * pSlot, int nb )
 	{
 		_unhideChildren( (StackSlot*) pSlot, nb );
 	}
 
 	//____ _willRemoveSlots() ____________________________________________________
 
-	void StackPanel::_willRemoveSlots( BasicSlot * pSlot, int nb )
+	void StackPanel::_willRemoveSlots( StaticSlot * pSlot, int nb )
 	{
 		_hideChildren( (StackSlot*) pSlot, nb );
 	}
 
 	//____ _hideSlots() _______________________________________________________
 
-	void StackPanel::_hideSlots( BasicSlot * pSlot, int nb )
+	void StackPanel::_hideSlots( StaticSlot * pSlot, int nb )
 	{
 		_hideChildren( (StackSlot*) pSlot, nb );
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void StackPanel::_unhideSlots( BasicSlot * pSlot, int nb )
+	void StackPanel::_unhideSlots( StaticSlot * pSlot, int nb )
 	{
 		_unhideChildren( (StackSlot*) pSlot, nb );
 	}
 
 	//____ _repadSlots() _________________________________________________________
 
-	void StackPanel::_repadSlots( BasicSlot * pSlot, int nb, BorderI padding )
+	void StackPanel::_repadSlots( StaticSlot * pSlot, int nb, BorderI padding )
 	{
 		for( int i = 0 ; i < nb ; i++ )
 			((StackSlot*)pSlot)[i].padding = padding;
@@ -326,7 +326,7 @@ namespace wg
 			_requestResize();
 	}
 
-	void StackPanel::_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPaddings)
+	void StackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((StackSlot*)pSlot)[i].padding = * pPaddings++;
@@ -342,26 +342,26 @@ namespace wg
 
 	//____ _didMoveSlots() ________________________________________________________
 
-	void StackPanel::_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb )
+	void StackPanel::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb )
 	{
 		_requestRender();	//TODO: Optimize! Only re-render what might have changed.
 	}
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI StackPanel::_childPos( const BasicSlot * pSlot ) const
+	CoordI StackPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return _childGeo((const StackSlot *)pSlot).pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void StackPanel::_childRequestRender( BasicSlot * pSlot )
+	void StackPanel::_childRequestRender( StaticSlot * pSlot )
 	{
 		_childRequestRender( pSlot, _childGeo((StackSlot*) pSlot) );
 	}
 
-	void StackPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& _rect )
+	void StackPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& _rect )
 	{
 		StackSlot * pSlot = (StackSlot *) _pSlot;
 
@@ -393,7 +393,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void StackPanel::_childRequestResize( BasicSlot * _pSlot )
+	void StackPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
 		auto pSlot = static_cast<StackSlot*>(_pSlot);
 
@@ -414,7 +414,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * StackPanel::_prevChild( const BasicSlot * _pSlot ) const
+	Widget * StackPanel::_prevChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
@@ -426,7 +426,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * StackPanel::_nextChild( const BasicSlot * _pSlot ) const
+	Widget * StackPanel::_nextChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const StackSlot *>(_pSlot);
 
@@ -438,7 +438,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void StackPanel::_releaseChild(BasicSlot * pSlot)
+	void StackPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		slots._remove(static_cast<StackSlot*>(pSlot));
@@ -446,7 +446,7 @@ namespace wg
 
 	//____ _replaceChild() ____________________________________________________
 
-	void StackPanel::_replaceChild(BasicSlot * pSlot, Widget * pNewChild)
+	void StackPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 	{
 		//TODO: Implement!!!
 

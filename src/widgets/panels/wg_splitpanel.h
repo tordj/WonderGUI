@@ -28,7 +28,7 @@
 
 #include <wg_panel.h>
 #include <wg_cslot.h>
-#include <wg_cbasicslot.h>
+#include <wg_cstandardslot.h>
 
 
 namespace wg
@@ -39,12 +39,12 @@ namespace wg
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
 
-	class SplitSlot : public BasicSlot
+	class SplitSlot : public StaticSlot
 	{
 		friend class SplitPanel;
 	public:
 
-		class Holder : public BasicSlot::Holder
+		class Holder : public StaticSlot::Holder
 		{
 		};
 
@@ -54,7 +54,7 @@ namespace wg
 
 
 
-	class SplitPanel : public Panel, protected CBasicSlot::Holder
+	class SplitPanel : public Panel, protected CStandardSlot::Holder
 	{
 
 	public:
@@ -65,8 +65,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CBasicSlot		slotOne;
-		CBasicSlot		slotTwo;
+		CStandardSlot		slotOne;
+		CStandardSlot		slotTwo;
 
 		//.____ Identification __________________________________________
 
@@ -150,26 +150,26 @@ namespace wg
 		Object *	_object() override		{ return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI		_childPos( const BasicSlot * pSlot) const override;
-		CoordI		_childGlobalPos( const BasicSlot * pSlot) const override		{ return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible( const BasicSlot * pSlot) const override		{ return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection( const BasicSlot * pSlot) const override	{ return Container::_childWindowSection(pSlot); }
+		CoordI		_childPos( const StaticSlot * pSlot) const override;
+		CoordI		_childGlobalPos( const StaticSlot * pSlot) const override		{ return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible( const StaticSlot * pSlot) const override		{ return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection( const StaticSlot * pSlot) const override	{ return Container::_childWindowSection(pSlot); }
 
-		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
-		void		_childRequestInView(BasicSlot * pSlot) override			{ return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void		_childRequestInView(StaticSlot * pSlot) override			{ return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		void		_childRequestRender(BasicSlot * pSlot) override;
-		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(BasicSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(StaticSlot * pSlot) override;
 
-		Widget *	_prevChild(const BasicSlot * pSlot) const override;
-		Widget *	_nextChild(const BasicSlot * pSlot) const override;
+		Widget *	_prevChild(const StaticSlot * pSlot) const override;
+		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
-		void		_releaseChild(BasicSlot * pSlot) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override;
+		void		_releaseChild(StaticSlot * pSlot) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override;
 
 		//
 
@@ -188,7 +188,7 @@ namespace wg
 
 		RectI			m_slotGeo[2];
 
-		class SlotAccess : public CBasicSlot { friend class SplitPanel; };
+		class SlotAccess : public CStandardSlot { friend class SplitPanel; };
 		SlotAccess * _slotOne() { return static_cast<SlotAccess*>(&slotOne); }
 		SlotAccess * _slotTwo() { return static_cast<SlotAccess*>(&slotTwo); }
 		const SlotAccess * _slotOne() const { return static_cast<const SlotAccess*>(&slotOne); }

@@ -183,15 +183,15 @@ namespace wg
 
 		// Overloaded from PackListCSlotArray::Holder
 
-		void			_didAddSlots(BasicSlot * pSlot, int nb) override;
-		void			_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
-		void			_willRemoveSlots(BasicSlot * pSlot, int nb) override;
+		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
+		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void			_willRemoveSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_hideSlots(BasicSlot * pSlot, int nb) override;
-		void			_unhideSlots(BasicSlot * pSlot, int nb) override;
+		void			_hideSlots(StaticSlot * pSlot, int nb) override;
+		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_selectSlots(BasicSlot * pSlot, int nb) override;
-		void			_unselectSlots(BasicSlot * pSlot, int nb) override;
+		void			_selectSlots(StaticSlot * pSlot, int nb) override;
+		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 		Object *		_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
@@ -229,27 +229,27 @@ namespace wg
 		Container *	_container() override { return this; }
 		RootPanel *	_root() override { return Container::_root(); }
 
-		CoordI		_childPos(const BasicSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
 
-		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
-		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 
-		void		_childRequestRender(BasicSlot * pSlot) override;
-		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(BasicSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(StaticSlot * pSlot) override;
 
-		Widget *	_prevChild(const BasicSlot * pSlot) const override;
-		Widget *	_nextChild(const BasicSlot * pSlot) const override;
+		Widget *	_prevChild(const StaticSlot * pSlot) const override;
+		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
-		void		_releaseChild(BasicSlot * pSlot) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
+		void		_releaseChild(StaticSlot * pSlot) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
 		// Overloaded from GeoComponent::Holder
 
@@ -274,9 +274,9 @@ namespace wg
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeI			_paddedLimitedPreferredSize( BasicSlot * pSlot );
-		int				_paddedLimitedMatchingHeight( BasicSlot * pSlot, int paddedWidth );
-		int				_paddedLimitedMatchingWidth( BasicSlot * pSlot, int paddedHeight );
+		SizeI			_paddedLimitedPreferredSize( StaticSlot * pSlot );
+		int				_paddedLimitedMatchingHeight( StaticSlot * pSlot, int paddedWidth );
+		int				_paddedLimitedMatchingWidth( StaticSlot * pSlot, int paddedHeight );
 
 		void			_addToContentPreferredSize(int length, int breadth);
 		void			_subFromContentPreferredSize(int length, int breadth);

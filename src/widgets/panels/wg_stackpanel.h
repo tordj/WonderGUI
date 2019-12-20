@@ -151,13 +151,13 @@ namespace wg
 
 		// Overloaded from StackCSlotArray::Holder
 
-		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
-		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
-		void		_willRemoveSlots( BasicSlot * pSlot, int nb ) override;
-		void		_hideSlots( BasicSlot *, int nb ) override;
-		void		_unhideSlots( BasicSlot *, int nb ) override;
-		void		_repadSlots( BasicSlot *, int nb, BorderI padding ) override;
-		void		_repadSlots(BasicSlot *, int nb, const BorderI * pPaddings) override;
+		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
+		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void		_willRemoveSlots( StaticSlot * pSlot, int nb ) override;
+		void		_hideSlots( StaticSlot *, int nb ) override;
+		void		_unhideSlots( StaticSlot *, int nb ) override;
+		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;
+		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
 
 		// Overloaded from StackSlotHolder
 
@@ -166,26 +166,26 @@ namespace wg
 		Object *	_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI		_childPos(const BasicSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
 
-		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
-		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		void		_childRequestRender( BasicSlot * pSlot ) override;
-		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( BasicSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( StaticSlot * pSlot ) override;
 
-		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
-		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
+		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
+		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
 
-		void		_releaseChild(BasicSlot * pSlot) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
+		void		_releaseChild(StaticSlot * pSlot) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
 		// Internal to StackPanel
 

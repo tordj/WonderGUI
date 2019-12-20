@@ -182,7 +182,7 @@ namespace wg
 	{
 		const LayerSlot * p = (LayerSlot*) package.pSlot;
 
-		if (p == (BasicSlot*) &mainSlot)
+		if (p == (StaticSlot*) &mainSlot)
 		{
 			package.pSlot = nullptr;
 			return;
@@ -212,7 +212,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void Layer::_releaseChild(BasicSlot * pSlot)
+	void Layer::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot)
 		{
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ _replaceChild() _______________________________________________________
 
-	void Layer::_replaceChild( BasicSlot * pSlot, Widget * pNewWidget )
+	void Layer::_replaceChild( StaticSlot * pSlot, Widget * pNewWidget )
 	{
 		if (pSlot == &mainSlot)
 		{
@@ -249,7 +249,7 @@ namespace wg
 
 	//____ _childPos() _________________________________________________________
 
-	CoordI Layer::_childPos( const BasicSlot * pSlot ) const
+	CoordI Layer::_childPos( const StaticSlot * pSlot ) const
 	{
 		if( pSlot == &mainSlot )
 			return {0,0};
@@ -259,7 +259,7 @@ namespace wg
 
 	//____ _childRequestRender() _______________________________________________
 
-	void Layer::_childRequestRender( BasicSlot * _pSlot )
+	void Layer::_childRequestRender( StaticSlot * _pSlot )
 	{
 		if( _pSlot == &mainSlot )
 			_onRequestRender( RectI( 0,0, m_size ), 0 );		//TODO: Take padding into account
@@ -270,7 +270,7 @@ namespace wg
 		}
 	}
 
-	void Layer::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
+	void Layer::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		if( _pSlot == &mainSlot )
 			_onRequestRender( rect, 0 );		//TODO: Take padding into account
@@ -290,7 +290,7 @@ namespace wg
 */
 	//____ _prevChild() ________________________________________________________
 
-	Widget * Layer::_prevChild( const BasicSlot * pSlot ) const
+	Widget * Layer::_prevChild( const StaticSlot * pSlot ) const
 	{
 		if( pSlot == &mainSlot )
 			pSlot = _endLayerSlots();
@@ -304,7 +304,7 @@ namespace wg
 
 	//____ _nextChild() ________________________________________________________
 
-	Widget * Layer::_nextChild( const BasicSlot * pSlot ) const
+	Widget * Layer::_nextChild( const StaticSlot * pSlot ) const
 	{
 		if (pSlot == &mainSlot)
 			return nullptr;

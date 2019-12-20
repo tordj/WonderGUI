@@ -31,9 +31,9 @@ namespace wg
 
 	//____ PaddedSlot ____________________________________________________________
 
-	class PaddedSlot : public BasicSlot 	/** @private */
+	class PaddedSlot : public DynamicSlot 	/** @private */
 	{
-		template<class S> friend class CSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class CPaddedSlotArray;
 	public:
 
@@ -43,7 +43,7 @@ namespace wg
 		{
 		};
 
-		PaddedSlot(Holder* pHolder) : BasicSlot(pHolder), bVisible(false) {}
+		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), bVisible(false) {}
 	protected:
 		SizeI		_paddedPreferredSize() const { return _preferredSize() + padding; }
 		SizeI		_paddedMinSize() const { return _minSize() + padding; }

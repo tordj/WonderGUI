@@ -19,35 +19,35 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CBASICSLOT_DOT_H
-#define WG_CBASICSLOT_DOT_H
+#ifndef WG_CSTANDARDSLOT_DOT_H
+#define WG_CSTANDARDSLOT_DOT_H
 #pragma once
 
 #include <wg_cslot.h>
 
 namespace wg
 {
-	class CBasicSlot : public CSlotImpl<BasicSlot>
+	class CStandardSlot : public CDynamicSlotImpl<DynamicSlot>
 	{
 	public:
-		using CSlotImpl<BasicSlot>::operator=;
+		using CDynamicSlotImpl<DynamicSlot>::operator=;
 
-		class Holder : public CSlotImpl<BasicSlot>::Holder
+		class Holder : public CDynamicSlotImpl<DynamicSlot>::Holder
 		{
 		};
 
-		CBasicSlot(Holder * pHolder) : CSlotImpl(pHolder) {}
+		CStandardSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
-		inline StrongComponentPtr<CBasicSlot>	ptr() { return StrongComponentPtr<CBasicSlot>(this); }
+		inline StrongComponentPtr<CStandardSlot>	ptr() { return StrongComponentPtr<CStandardSlot>(this); }
 
 	};
 
-	typedef	StrongComponentPtr<CBasicSlot>	CBasicSlot_p;
-	typedef	WeakComponentPtr<CBasicSlot>	CBasicSlot_wp;
+	typedef	StrongComponentPtr<CStandardSlot>	CStandardSlot_p;
+	typedef	WeakComponentPtr<CStandardSlot>		CStandardSlot_wp;
 
 
 }
 
-#endif //WG_CBASICSLOT_DOT_H
+#endif //WG_CDYNAMICSLOT_DOT_H

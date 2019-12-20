@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_cslotarray.h>
+#include <wg_cdynamicslotarray.h>
 
 namespace wg
 {
@@ -78,20 +78,20 @@ namespace wg
 
 	//____ FlexSlot ____________________________________________________________
 
-	class FlexSlot : public BasicSlot		/** @private */
+	class FlexSlot : public StaticSlot		/** @private */
 	{
 		friend class FlexPanel;
 		friend class CFlexSlotArray;
-		template<class S> friend class CSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 
 
 	public:
 
-		class Holder : public BasicSlot::Holder
+		class Holder : public StaticSlot::Holder
 		{
 		};
 
-		FlexSlot(Holder * pHolder) : BasicSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot(Holder * pHolder) : StaticSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 	protected:
 		bool			bPinned;
@@ -122,12 +122,12 @@ namespace wg
 	typedef	StrongComponentPtr<CFlexSlotArray>	CFlexSlotArray_p;
 	typedef	WeakComponentPtr<CFlexSlotArray>	CFlexSlotArray_wp;
 
-	class CFlexSlotArray : public CSlotArray<FlexSlot>
+	class CFlexSlotArray : public CDynamicSlotArray<FlexSlot>
 	{
 		friend class FlexPanel;
 	public:
 
-		class Holder : public  CSlotArray<FlexSlot>::Holder			/** @private */
+		class Holder : public  CDynamicSlotArray<FlexSlot>::Holder			/** @private */
 		{
 		public:
 			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
@@ -220,7 +220,7 @@ namespace wg
 
 
 	protected:
-		CFlexSlotArray(Holder * pHolder) : CSlotArray<FlexSlot>(pHolder) {}
+		CFlexSlotArray(Holder * pHolder) : CDynamicSlotArray<FlexSlot>(pHolder) {}
 
 		void		_setPinned(FlexSlot * p);
 		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
@@ -257,8 +257,8 @@ namespace wg
 
 		//
 
-		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(CSlotArray<FlexSlot>::_holder()); }
-		inline const CFlexSlotArray::Holder * _holder() const { return static_cast<const CFlexSlotArray::Holder*>(CSlotArray<FlexSlot>::_holder()); }
+		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
+		inline const CFlexSlotArray::Holder * _holder() const { return static_cast<const CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
 	};
 
 
@@ -317,11 +317,11 @@ namespace wg
 
 		// Methods for FlexPanelChildren
 
-		void		_didAddSlots( BasicSlot * pSlot, int nb ) override;
-		void		_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) override;
-		void		_willRemoveSlots( BasicSlot * pSlot, int nb ) override;
-		void		_hideSlots( BasicSlot *, int nb ) override;
-		void		_unhideSlots( BasicSlot *, int nb ) override;
+		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
+		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void		_willRemoveSlots( StaticSlot * pSlot, int nb ) override;
+		void		_hideSlots( StaticSlot *, int nb ) override;
+		void		_unhideSlots( StaticSlot *, int nb ) override;
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
 		SizeI		_size() const override{ return m_size; }
 
@@ -332,26 +332,26 @@ namespace wg
 		Object *	_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI		_childPos(const BasicSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const BasicSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
+		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
 
-		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
-		void		_childRequestInView(BasicSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
+		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		void		_childRequestRender( BasicSlot * pSlot ) override;
-		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( BasicSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( StaticSlot * pSlot ) override;
 
-		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
-		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
+		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
+		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
 
-		void		_releaseChild(BasicSlot * pSlot) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewChild ) override;
+		void		_releaseChild(StaticSlot * pSlot) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
 	private:
 

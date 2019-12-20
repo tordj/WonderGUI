@@ -51,7 +51,7 @@ namespace wg
 	//____ _at() _____________________________________________________________
 
 	template < class SlotType>
-	BasicSlot& CStaticSlotArray<SlotType>::_at(int index)
+	StaticSlot& CStaticSlotArray<SlotType>::_at(int index)
 	{
 		return *_slot(index);
 	}
@@ -80,7 +80,7 @@ namespace wg
 
 		if (pParent)
 		{
-			BasicSlot * pReleaseFromSlot = pToRelease->_slot();
+			StaticSlot * pReleaseFromSlot = pToRelease->_slot();
 
 			if (_contains(static_cast<SlotType*>(pReleaseFromSlot)))
 			{

@@ -85,27 +85,27 @@ namespace wg
 		Object *		_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI			_childPos(const BasicSlot * pSlot) const override { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(const BasicSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(const BasicSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(const BasicSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
+		CoordI			_childPos(const StaticSlot * pSlot) const override { return Layer::_childPos(pSlot); }
+		CoordI			_childGlobalPos(const StaticSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
+		bool			_isChildVisible(const StaticSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
+		RectI			_childWindowSection(const StaticSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
 
-		void			_childRequestRender(BasicSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(BasicSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(StaticSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
+		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
 
-		bool			_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
-		bool			_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
+		bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
+		bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
 
-		void			_childRequestInView(BasicSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
-		void			_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
+		void			_childRequestInView(StaticSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
+		void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
-		Widget *		_prevChild(const BasicSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const BasicSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
+		Widget *		_prevChild(const StaticSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
+		Widget *		_nextChild(const StaticSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
 
-		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 
-		void            _childRequestResize(BasicSlot * pSlot) override;
-		void			_releaseChild(BasicSlot * pSlot) override;
+		void            _childRequestResize(StaticSlot * pSlot) override;
+		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Overloaded from Layer
 
@@ -139,7 +139,7 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		class MainSlotAccess : public CBasicSlot { friend class DragNDropLayer; };
+		class MainSlotAccess : public CStandardSlot { friend class DragNDropLayer; };
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 

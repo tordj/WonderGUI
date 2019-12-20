@@ -114,21 +114,21 @@ namespace wg
 
 	//____ _childGlobalPos() _______________________________________________________
 
-	CoordI Container::_childGlobalPos( const BasicSlot * pSlot ) const
+	CoordI Container::_childGlobalPos( const StaticSlot * pSlot ) const
 	{
 		return _childPos(pSlot) + _globalPos();
 	}
 
 	//____ _isChildVisible() ________________________________________________________
 
-	bool Container::_isChildVisible( const BasicSlot * pSlot ) const
+	bool Container::_isChildVisible( const StaticSlot * pSlot ) const
 	{
 		return true;
 	}
 
 	//____ _childWindowSection() ____________________________________________________
 
-	RectI Container::_childWindowSection( const BasicSlot * pSlot ) const
+	RectI Container::_childWindowSection( const StaticSlot * pSlot ) const
 	{
 		return RectI( 0,0, _access(pSlot)->_size() );
 	}
@@ -149,21 +149,21 @@ namespace wg
 
 	//____ _childRequestFocus() ______________________________________________________
 
-	bool Container::_childRequestFocus( BasicSlot * pSlot, Widget * pWidget )
+	bool Container::_childRequestFocus( StaticSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _ChildReleaseFocus() ______________________________________________________
 
-	bool Container::_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget )
+	bool Container::_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _childRequestInView() _____________________________________________________
 
-	void Container::_childRequestInView( BasicSlot * pSlot )
+	void Container::_childRequestInView( StaticSlot * pSlot )
 	{
 		if( m_pHolder )
 		{
@@ -172,7 +172,7 @@ namespace wg
 		}
 	}
 
-	void Container::_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void Container::_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		if( m_pHolder )
 		{

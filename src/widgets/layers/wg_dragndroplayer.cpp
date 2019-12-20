@@ -106,7 +106,7 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void DragNDropLayer::_childRequestResize(BasicSlot * pSlot)
+	void DragNDropLayer::_childRequestResize(StaticSlot * pSlot)
 	{
 		if( pSlot == &mainSlot )
 			_requestResize();
@@ -124,7 +124,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void DragNDropLayer::_releaseChild(BasicSlot * pSlot)
+	void DragNDropLayer::_releaseChild(StaticSlot * pSlot)
 	{
 		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);

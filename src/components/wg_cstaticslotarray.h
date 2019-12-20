@@ -24,7 +24,7 @@
 #define	WG_CSTATICSLOTARRAY_DOT_H
 #pragma once
 
-#include <wg_cslotcollection.h>
+#include <wg_cstaticslotcollection.h>
 
 namespace wg
 {
@@ -103,7 +103,7 @@ namespace wg
 
 	//____ CStaticSlotArray _________________________________________________________
 
-	template<class SlotType> class CStaticSlotArray : public CSlotCollection
+	template<class SlotType> class CStaticSlotArray : public CStaticSlotCollection
 	{
 	public:
 
@@ -152,7 +152,7 @@ namespace wg
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
-		BasicSlot&		_at(int index) override;
+		StaticSlot&		_at(int index) override;
 
 		Object *		_object() override;
 		const Object *	_object() const override;

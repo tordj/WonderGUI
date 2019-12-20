@@ -89,10 +89,11 @@ namespace wg
 		friend class ShadowLayer;
 
 		friend class GeoComponent;
-		friend class BasicSlot;
+		friend class StaticSlot;
+		friend class DynamicSlot;
 
-		template<class S> friend class CSlotArray;
 		template<class S> friend class CStaticSlotArray;
+		template<class S> friend class CDynamicSlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:
@@ -195,10 +196,10 @@ namespace wg
 		Widget();
 		virtual ~Widget();
 
-		void				_setSlot(BasicSlot * pSlot);
+		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }
 		const SlotHolder *	_holder() const { return m_pHolder; }
-		BasicSlot *			_slot() const { return m_pSlot; }
+		StaticSlot *			_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 
@@ -287,7 +288,7 @@ namespace wg
 		int				m_id;
 
 		SlotHolder *	m_pHolder;
-		BasicSlot *		m_pSlot;
+		StaticSlot *		m_pSlot;
 
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

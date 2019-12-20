@@ -31,7 +31,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CSlotArray<PackSlot>;
+	template class CDynamicSlotArray<PackSlot>;
 	template class CPaddedSlotArray<PackSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
@@ -413,14 +413,14 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________
 
-	void PackPanel::_didAddSlots(BasicSlot * pSlot, int nb)
+	void PackPanel::_didAddSlots(StaticSlot * pSlot, int nb)
 	{
 		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _didMoveSlots() _____________________________________________________
 
-	void PackPanel::_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb)
+	void PackPanel::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb)
 	{
 		//TODO: Optimize! Only update and re-render what is needed, but take
 		// into account that SizeBroker might have weird rules and might affect
@@ -431,28 +431,28 @@ namespace wg
 
 	//____ _willRemoveSlots() _________________________________________________
 
-	void PackPanel::_willRemoveSlots(BasicSlot * pSlot, int nb)
+	void PackPanel::_willRemoveSlots(StaticSlot * pSlot, int nb)
 	{
 		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _hideSlots() _______________________________________________________
 
-	void PackPanel::_hideSlots(BasicSlot * pSlot, int nb)
+	void PackPanel::_hideSlots(StaticSlot * pSlot, int nb)
 	{
 		_hideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _unhideSlots() _____________________________________________________
 
-	void PackPanel::_unhideSlots(BasicSlot * pSlot, int nb)
+	void PackPanel::_unhideSlots(StaticSlot * pSlot, int nb)
 	{
 		_unhideChildren((PackSlot*) pSlot, nb);
 	}
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(BasicSlot * pSlot, int nb, BorderI padding)
+	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, BorderI padding)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackSlot*)pSlot)[i].padding = padding;
@@ -460,7 +460,7 @@ namespace wg
 		_refreshGeometries();
 	}
 
-	void PackPanel::_repadSlots(BasicSlot * pSlot, int nb, const BorderI * pPaddings)
+	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((PackSlot*)pSlot)[i].padding = * pPaddings++;
@@ -494,27 +494,27 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	CoordI PackPanel::_childPos(const BasicSlot * pSlot) const
+	CoordI PackPanel::_childPos(const StaticSlot * pSlot) const
 	{
 		return ((PackSlot*)pSlot)->geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
-	void PackPanel::_childRequestRender(BasicSlot * pSlot)
+	void PackPanel::_childRequestRender(StaticSlot * pSlot)
 	{
 		_requestRender( ((PackSlot*)pSlot)->geo );
 
 	}
 
-	void PackPanel::_childRequestRender(BasicSlot * pSlot, const RectI& rect)
+	void PackPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
 	{
 		_requestRender(rect + ((PackSlot*)pSlot)->geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
 
-	void PackPanel::_childRequestResize(BasicSlot * _pSlot)
+	void PackPanel::_childRequestResize(StaticSlot * _pSlot)
 	{
 		// Update cached preferred size of child
 
@@ -527,7 +527,7 @@ namespace wg
 
 	//____ _prevChild() _______________________________________________________
 
-	Widget * PackPanel::_prevChild(const BasicSlot * _pSlot) const
+	Widget * PackPanel::_prevChild(const StaticSlot * _pSlot) const
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
@@ -539,7 +539,7 @@ namespace wg
 
 	//____ _nextChild() _______________________________________________________
 
-	Widget * PackPanel::_nextChild(const BasicSlot * _pSlot) const
+	Widget * PackPanel::_nextChild(const StaticSlot * _pSlot) const
 	{
 		auto pSlot = static_cast<const PackSlot*>(_pSlot);
 
@@ -551,7 +551,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void PackPanel::_releaseChild(BasicSlot * pSlot)
+	void PackPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		slots._remove(static_cast<PackSlot*>(pSlot));
@@ -559,7 +559,7 @@ namespace wg
 
 	//____ _replaceChild() _____________________________________________________
 
-	void PackPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewChild)
+	void PackPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
 		auto pSlot = static_cast<PackSlot* > (_pSlot);
 		slots._releaseGuardPointer(pNewChild, &pSlot);

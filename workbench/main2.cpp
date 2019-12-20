@@ -64,14 +64,14 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 }
 
 
-bool shadowLayerTest(CSlot_p pSlot);
-bool stretchBlitTest(CSlot_p pSlot);
-bool scrollIntoViewTest(CSlot_p pSlot);
-bool textClipTest(CSlot_p pSlot);
-bool lineEditorTest(CSlot_p pSlot);
-bool popupOpenerTest(CSlot_p pSlot);
-bool scrollbarTest(CSlot_p pSlot);
-bool modalLayerTest(CSlot_p pSlot);
+bool shadowLayerTest(CStandardSlot_p pSlot);
+bool stretchBlitTest(CStandardSlot_p pSlot);
+bool scrollIntoViewTest(CStandardSlot_p pSlot);
+bool textClipTest(CStandardSlot_p pSlot);
+bool lineEditorTest(CStandardSlot_p pSlot);
+bool popupOpenerTest(CStandardSlot_p pSlot);
+bool scrollbarTest(CStandardSlot_p pSlot);
+bool modalLayerTest(CStandardSlot_p pSlot);
 
 
 
@@ -84,7 +84,7 @@ int main(int argc, char** argv)
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
 
-//	printf("Slot is safe to relocate: %d\n", BasicSlot::safe_to_relocate);
+//	printf("Slot is safe to relocate: %d\n", StaticSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
 
@@ -1523,7 +1523,7 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 
 //____ shadowLayerTest() ______________________________________________________
 
-bool shadowLayerTest(CSlot_p pEntry )
+bool shadowLayerTest(CStandardSlot_p pEntry )
 {
 /*
 	Surface_p pImgSurface = loadSurface("../resources/shadow.png", PixelFormat::A8);
@@ -1590,7 +1590,7 @@ bool shadowLayerTest(CSlot_p pEntry )
 
 //____ stretchBlitTest() ______________________________________________________
 
-bool stretchBlitTest(CSlot_p pEntry)
+bool stretchBlitTest(CStandardSlot_p pEntry)
 {
 	Surface_p pImgSurface = loadSurface("../resources/white_frame_256x256.png", PixelFormat::BGR_8 );
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
@@ -1617,7 +1617,7 @@ bool stretchBlitTest(CSlot_p pEntry)
 
 //____ scrollIntoViewTest() ______________________________________________________
 
-bool scrollIntoViewTest(CSlot_p pEntry)
+bool scrollIntoViewTest(CStandardSlot_p pEntry)
 {
 	auto pEditor = TextEditor::create();
 
@@ -1639,7 +1639,7 @@ bool scrollIntoViewTest(CSlot_p pEntry)
 
 //____ textClipTest() ______________________________________________________
 
-bool textClipTest(CSlot_p pEntry)
+bool textClipTest(CStandardSlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1659,7 +1659,7 @@ bool textClipTest(CSlot_p pEntry)
 
 //____ lineEditorTest() ______________________________________________________
 
-bool lineEditorTest(CSlot_p pEntry)
+bool lineEditorTest(CStandardSlot_p pEntry)
 {
 	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
@@ -1679,7 +1679,7 @@ bool lineEditorTest(CSlot_p pEntry)
 
 //____ popupOpenerTest() ______________________________________________________
 
-bool popupOpenerTest(CSlot_p pEntry)
+bool popupOpenerTest(CStandardSlot_p pEntry)
 {
 
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
@@ -1708,7 +1708,7 @@ bool popupOpenerTest(CSlot_p pEntry)
 
 //____ scrollbarTest() ______________________________________________________
 
-bool scrollbarTest(CSlot_p pEntry)
+bool scrollbarTest(CStandardSlot_p pEntry)
 {
 	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
 	pButtonSkin->setContentPadding(5);
@@ -1751,7 +1751,7 @@ bool scrollbarTest(CSlot_p pEntry)
 
 //____ modalLayerTest() ______________________________________________________
 
-bool modalLayerTest(CSlot_p pEntry)
+bool modalLayerTest(CStandardSlot_p pEntry)
 {
 	lineEditorTest(pEntry);
 	Widget_p p = *pEntry;

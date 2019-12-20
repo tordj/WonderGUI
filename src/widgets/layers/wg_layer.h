@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
-#include <wg_cbasicslot.h>
+#include <wg_cstandardslot.h>
 
 
 namespace wg
@@ -37,19 +37,19 @@ namespace wg
 
 	//____ LayerSlot ___________________________________________________________
 
-	class LayerSlot : public BasicSlot		/** @private */
+	class LayerSlot : public StaticSlot		/** @private */
 	{
 		friend class Layer;
 	public:
-		class Holder : public BasicSlot::Holder
+		class Holder : public StaticSlot::Holder
 		{
 		};
 
 	protected:
-		LayerSlot(Holder * pHolder) : BasicSlot(pHolder) {}
+		LayerSlot(Holder * pHolder) : StaticSlot(pHolder) {}
 
-		inline void setSize( SizeI size ) { geo.setSize(size); BasicSlot::_setSize(size); }
-		inline void setGeo(RectI _geo) { geo = _geo; BasicSlot::_setSize(geo.size()); }
+		inline void setSize( SizeI size ) { geo.setSize(size); StaticSlot::_setSize(size); }
+		inline void setGeo(RectI _geo) { geo = _geo; StaticSlot::_setSize(geo.size()); }
 
 		RectI	geo;
 	};
@@ -77,14 +77,14 @@ namespace wg
 	 *
 	 **/
 
-	class Layer : public Container, private CBasicSlot::Holder
+	class Layer : public Container, private CStandardSlot::Holder
 	{
 
 	public:
 
 		//.____ Components _______________________________________
 
-		CBasicSlot		mainSlot;
+		CStandardSlot		mainSlot;
 
 
 		//.____ Identification __________________________________________
@@ -105,16 +105,16 @@ namespace wg
 		inline Object *		_object() = 0;
 
 
-		inline bool			_isChildVisible(const BasicSlot * pSlot) const = 0;
-		inline RectI		_childWindowSection(const BasicSlot * pSlot) const = 0;			// Returns the window section within the childs canvas.
+		inline bool			_isChildVisible(const StaticSlot * pSlot) const = 0;
+		inline RectI		_childWindowSection(const StaticSlot * pSlot) const = 0;			// Returns the window section within the childs canvas.
 
-		inline void			_childRequestResize(BasicSlot * pSlot) = 0;
+		inline void			_childRequestResize(StaticSlot * pSlot) = 0;
 
-		inline bool			_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) = 0;					// Request focus on behalf of me, child or grandchild.
-		inline bool			_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) = 0;
+		inline bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) = 0;					// Request focus on behalf of me, child or grandchild.
+		inline bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) = 0;
 
-		inline void			_childRequestInView(BasicSlot * pSlot) = 0;
-		inline void			_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) = 0;
+		inline void			_childRequestInView(StaticSlot * pSlot) = 0;
+		inline void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) = 0;
 */
 		using		Container::_container;
 		using		Container::_childGlobalPos;
@@ -128,17 +128,17 @@ namespace wg
 
 
 
-		CoordI		_childPos( const BasicSlot * pSlot ) const override;
+		CoordI		_childPos( const StaticSlot * pSlot ) const override;
 
-		void		_childRequestRender( BasicSlot * pSlot ) override;
-		void		_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
 //		void		_childRequestResize( Slot * pSlot ) override;
 
-		Widget *	_prevChild( const BasicSlot * pSlot ) const override;
-		Widget *	_nextChild( const BasicSlot * pSlot ) const override;
+		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
+		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
 
-		void		_releaseChild( BasicSlot * pSlot ) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pNewWidget) override;
+		void		_releaseChild( StaticSlot * pSlot ) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pNewWidget) override;
 
 		// Overloaded from Container
 
@@ -181,7 +181,7 @@ namespace wg
 		inline LayerSlot * _decLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)-sizeOf); }
 		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
 
-		class SlotAccess : public CBasicSlot { friend class Layer; };
+		class SlotAccess : public CStandardSlot { friend class Layer; };
 		SlotAccess * _mainSlot() { return static_cast<SlotAccess*>(&mainSlot); }
 		const SlotAccess * _mainSlot() const { return static_cast<const SlotAccess*>(&mainSlot); }
 

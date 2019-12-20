@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSLOTARRAY_DOT_H
-#define	WG_CSLOTARRAY_DOT_H
+#ifndef	WG_CDYNAMICSLOTARRAY_DOT_H
+#define	WG_CDYNAMICSLOTARRAY_DOT_H
 #pragma once
 
 #include <wg_cdynamicslotcollection.h>
@@ -31,24 +31,24 @@ namespace wg
 {
 
 
-	//____ CSlotArray _________________________________________________________
+	//____ CDynamicSlotArray _________________________________________________________
 
-	template<class SlotType> class CSlotArray : public CDynamicSlotCollection
+	template<class SlotType> class CDynamicSlotArray : public CDynamicSlotCollection
 	{
 	public:
 
 		class Holder : public SlotType::Holder	/** @private */
 		{
 		public:
-			virtual void	_didAddSlots(BasicSlot * pSlot, int nb) = 0;
-			virtual void	_didMoveSlots(BasicSlot * pFrom, BasicSlot * pTo, int nb) = 0;
-			virtual void	_willRemoveSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_didAddSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;
+			virtual void	_willRemoveSlots(StaticSlot * pSlot, int nb) = 0;
 
-			virtual void	_hideSlots(BasicSlot * pSlot, int nb) = 0;
-			virtual void	_unhideSlots(BasicSlot * pSlot, int nb) = 0;
+			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 
-			//		virtual void	_willReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
-			//		virtual void	_didReplaceWidgets(BasicSlot * pSlot, int nb) = 0;
+			//		virtual void	_willReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
+			//		virtual void	_didReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
 
 
 		};
@@ -160,12 +160,12 @@ namespace wg
 
 
 	protected:
-		CSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
-		~CSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
+		CDynamicSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		~CDynamicSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
-		BasicSlot&		_at(int index) override;
+		StaticSlot&		_at(int index) override;
 
 		Object *		_object() override;
 		const Object *	_object() const override;
@@ -260,4 +260,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CSLOTARRAY_DOT_H
+#endif //WG_CDYNAMICSLOTARRAY_DOT_H

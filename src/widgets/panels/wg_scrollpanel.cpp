@@ -291,7 +291,7 @@ namespace wg
 		return len;
 	}
 
-	IViewSlot& IViewSlot::operator=(Widget * pWidget)
+	CViewSlot& CViewSlot::operator=(Widget * pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
@@ -299,7 +299,7 @@ namespace wg
 		return *this;
 	}
 
-	void IViewSlot::setOrigo(Origo origo)
+	void CViewSlot::setOrigo(Origo origo)
 	{
 		if (origo == m_contentOrigo)
 			return;
@@ -311,7 +311,7 @@ namespace wg
 			_holder()->_requestRender(m_windowGeo);
 	}
 
-	void IViewSlot::setWidthPolicy(SizePolicy policy)
+	void CViewSlot::setWidthPolicy(SizePolicy policy)
 	{
 		if (policy != m_widthPolicy)
 		{
@@ -320,7 +320,7 @@ namespace wg
 		}
 	}
 
-	void IViewSlot::setHeightPolicy(SizePolicy policy)
+	void CViewSlot::setHeightPolicy(SizePolicy policy)
 	{
 		if (policy != m_heightPolicy)
 		{
@@ -329,69 +329,69 @@ namespace wg
 		}
 	}
 
-	Rect IViewSlot::windowRect() const
+	Rect CViewSlot::windowRect() const
 	{
 		return Rect( rawToQpix(m_viewPixOfs), rawToQpix(m_windowGeo.size()));
 	}
 
-	Size IViewSlot::windowSize() const
+	Size CViewSlot::windowSize() const
 	{
 		return rawToQpix(m_windowGeo.size());
 	}
 
-	RectF IViewSlot::windowSection() const
+	RectF CViewSlot::windowSection() const
 	{
 		return RectF(_windowOffsetX(), _windowOffsetY(), _windowFractionX(), _windowFractionY());
 	}
 
-	CoordF IViewSlot::windowOffset() const
+	CoordF CViewSlot::windowOffset() const
 	{
 		return CoordF(_windowOffsetX(), _windowOffsetY() );
 	}
 
-	SizeF IViewSlot::windowFraction() const
+	SizeF CViewSlot::windowFraction() const
 	{
 		return SizeF(_windowFractionX(), _windowFractionY());
 	}
 
-	bool IViewSlot::setWindowPos(Coord pos)
+	bool CViewSlot::setWindowPos(Coord pos)
 	{
 		return _holder()->_setWindowPos(qpixToRaw(pos));
 	}
 
-	bool IViewSlot::setWindowOffset(CoordF ofs)
+	bool CViewSlot::setWindowOffset(CoordF ofs)
 	{
 		return _holder()->_setWindowOffset(ofs);
 	}
 
-	bool IViewSlot::step(Direction dir)
+	bool CViewSlot::step(Direction dir)
 	{
 		return _holder()->_step(dir);
 	}
 
-	bool IViewSlot::jump(Direction dir)
+	bool CViewSlot::jump(Direction dir)
 	{
 		return _holder()->_jump(dir);
 	}
 
-	bool IViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
+	bool CViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
 	{
 		//TODO: Implement!
 
 		return false;
 	}
 
-	void IViewSlot::setScrollBorder(Border border)
+	void CViewSlot::setScrollBorder(Border border)
 	{
 		m_scrollBorder = border;
 	}
 
-	void IViewSlot::setRubberBorder(Border border)
+	void CViewSlot::setRubberBorder(Border border)
 	{
 		m_rubberBorder = border;
 	}
 
-	void IViewSlot::setDragButton(MouseButton button)
+	void CViewSlot::setDragButton(MouseButton button)
 	{
 		m_dragButton = button;
 	}
@@ -862,7 +862,7 @@ namespace wg
 
 	//____ _updateElementGeo() _____________________________________________________
 
-	void ScrollPanel::_updateElementGeo( SizeI mySize, BasicSlot* pForceUpdate )
+	void ScrollPanel::_updateElementGeo( SizeI mySize, StaticSlot* pForceUpdate )
 	{
 
 		SizeI newContentSize = _calcContentSize( mySize );
@@ -1351,7 +1351,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI ScrollPanel::_childPos( const BasicSlot * pSlot ) const
+	CoordI ScrollPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		if (pSlot == &viewSlot)
 			return ((const ViewSlot*)pSlot)->m_canvasGeo.pos();
@@ -1361,7 +1361,7 @@ namespace wg
 
 	//____ _childRequestRender() _________________________________________________
 
-	void ScrollPanel::_childRequestRender( BasicSlot * _pSlot )
+	void ScrollPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		if (_pSlot == &viewSlot)
 		{
@@ -1379,7 +1379,7 @@ namespace wg
 		}
 	}
 
-	void ScrollPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
+	void ScrollPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		if (_pSlot == &viewSlot)
 		{
@@ -1403,21 +1403,21 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void ScrollPanel::_childRequestResize( BasicSlot * pSlot )
+	void ScrollPanel::_childRequestResize( StaticSlot * pSlot )
 	{
 		_updateElementGeo( m_size, pSlot );
 	}
 
 	//____ _childRequestInView() _________________________________________________
 
-	void ScrollPanel::_childRequestInView(BasicSlot * pSlot)
+	void ScrollPanel::_childRequestInView(StaticSlot * pSlot)
 	{
 		// Do nothing special, view itself will always be in view.
 
 		Panel::_childRequestInView(pSlot);
 	}
 
-	void ScrollPanel::_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea)
+	void ScrollPanel::_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea)
 	{
 		RectI window = { viewSlot.m_viewPixOfs, viewSlot.m_windowGeo.size() };
 
@@ -1455,7 +1455,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * ScrollPanel::_prevChild( const BasicSlot * pSlot ) const
+	Widget * ScrollPanel::_prevChild( const StaticSlot * pSlot ) const
 	{
 		if( pSlot == &m_scrollbarSlots[1] )
 			return m_scrollbarSlots[0]._widget() ? m_scrollbarSlots[0]._widget() : viewSlot._widget();
@@ -1468,7 +1468,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * ScrollPanel::_nextChild( const BasicSlot * pSlot ) const
+	Widget * ScrollPanel::_nextChild( const StaticSlot * pSlot ) const
 	{
 		if (pSlot == &viewSlot)
 			return m_scrollbarSlots[0]._widget() ? m_scrollbarSlots[0]._widget() : m_scrollbarSlots[1]._widget();
@@ -1481,7 +1481,7 @@ namespace wg
 
 	//____ _releaseChild() ___________________________________________________
 
-	void ScrollPanel::_releaseChild(BasicSlot * pSlot)
+	void ScrollPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_replaceChild(pSlot, nullptr);
 	}
@@ -1490,7 +1490,7 @@ namespace wg
 
 	//____ _childWindowSection() _________________________________________________
 
-	RectI ScrollPanel::_childWindowSection( const BasicSlot * _pSlot ) const
+	RectI ScrollPanel::_childWindowSection( const StaticSlot * _pSlot ) const
 	{
 		if( _pSlot == &viewSlot )
 		{
@@ -1509,7 +1509,7 @@ namespace wg
 
 	//____ _setWidget() __________________________________________________________
 
-	void ScrollPanel::_replaceChild(BasicSlot * _pSlot, Widget * pWidget)
+	void ScrollPanel::_replaceChild(StaticSlot * _pSlot, Widget * pWidget)
 	{
 		if (_pSlot == &viewSlot)
 		{

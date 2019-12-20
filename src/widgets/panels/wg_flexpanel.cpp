@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_cslotarray.impl.h>
+#include <wg_cdynamicslotarray.impl.h>
 
 #include <assert.h>
 
@@ -32,7 +32,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CSlotArray<FlexSlot>;
+	template class CDynamicSlotArray<FlexSlot>;
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
 
@@ -767,7 +767,7 @@ namespace wg
 
 	//____ _didMoveSlots() ___________________________________________________________
 
-	void FlexPanel::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
+	void FlexPanel::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -814,7 +814,7 @@ namespace wg
 
 	//____ _didAddSlots() _____________________________________________________________
 
-	void FlexPanel::_didAddSlots( BasicSlot * _pSlot, int nb )
+	void FlexPanel::_didAddSlots( StaticSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_unhideSlots(pSlot,nb);
@@ -822,7 +822,7 @@ namespace wg
 
 	//____ _willRemoveSlots() _____________________________________________________________
 
-	void FlexPanel::_willRemoveSlots( BasicSlot * _pSlot, int nb )
+	void FlexPanel::_willRemoveSlots( StaticSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_hideSlots(pSlot,nb);
@@ -830,7 +830,7 @@ namespace wg
 
 	//____ _hideSlots() _____________________________________________________________
 
-	void FlexPanel::_hideSlots( BasicSlot * _pSlot, int nb )
+	void FlexPanel::_hideSlots( StaticSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 
@@ -846,7 +846,7 @@ namespace wg
 
 	//____ _unhideSlots() _____________________________________________________________
 
-	void FlexPanel::_unhideSlots( BasicSlot * _pSlot, int nb )
+	void FlexPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 
@@ -913,20 +913,20 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI FlexPanel::_childPos( const BasicSlot * pSlot ) const
+	CoordI FlexPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return ((FlexSlot*)pSlot)->realGeo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void FlexPanel::_childRequestRender( BasicSlot * _pSlot )
+	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_onRequestRender( pSlot->realGeo, pSlot );
 	}
 
-	void FlexPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
+	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
@@ -934,7 +934,7 @@ namespace wg
 
 	//____ _childRequestResize() _________________________________________________
 
-	void FlexPanel::_childRequestResize( BasicSlot * _pSlot )
+	void FlexPanel::_childRequestResize( StaticSlot * _pSlot )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_refreshRealGeo(pSlot, true);
@@ -964,7 +964,7 @@ namespace wg
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * FlexPanel::_prevChild( const BasicSlot * _pSlot ) const
+	Widget * FlexPanel::_prevChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
@@ -976,7 +976,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * FlexPanel::_nextChild( const BasicSlot * _pSlot ) const
+	Widget * FlexPanel::_nextChild( const StaticSlot * _pSlot ) const
 	{
 		auto pSlot = static_cast<const FlexSlot*>(_pSlot);
 
@@ -988,7 +988,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void FlexPanel::_releaseChild(BasicSlot * pSlot)
+	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		slots._remove(static_cast<FlexSlot*>(pSlot));
@@ -996,7 +996,7 @@ namespace wg
 
 	//____ _replaceChild() _____________________________________________________
 
-	void FlexPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewWidget)
+	void FlexPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
 	{
 		auto pSlot = static_cast<FlexSlot*>(_pSlot);
 		slots._releaseGuardPointer(pNewWidget, &pSlot);

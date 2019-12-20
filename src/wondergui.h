@@ -98,10 +98,10 @@
 #include <wg_cshadows.h>
 #include <wg_cslot.h>
 #include <wg_cpaddedslotarray.h>
-#include <wg_cslotarray.h>
+#include <wg_cdynamicslotarray.h>
 #include <wg_cselectableslotarray.h>
 #include <wg_component.h>
-#include <wg_cslotcollection.h>
+#include <wg_cstaticslotcollection.h>
 #include <wg_cdynamicslotcollection.h>
 #include <wg_scalepreferred_sizebroker.h>
 #include <wg_uniform_sizebroker.h>

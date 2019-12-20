@@ -101,17 +101,17 @@ namespace wg
 			Container *				_container();
 			RootPanel *				_root();
 
-			virtual CoordI			_childPos( const BasicSlot * pSlot ) const = 0;				///< Get the local position of a child.
-			virtual CoordI			_childGlobalPos( const BasicSlot * pSlot ) const;
+			virtual CoordI			_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of a child.
+			virtual CoordI			_childGlobalPos( const StaticSlot * pSlot ) const;
 
-			virtual bool			_isChildVisible( const BasicSlot * pSlot ) const;
-			virtual RectI			_childWindowSection( const BasicSlot * pSlot ) const;		// Returns the window section within the childs canvas.
+			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const;
+			virtual RectI			_childWindowSection( const StaticSlot * pSlot ) const;		// Returns the window section within the childs canvas.
 
-			virtual bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
-			virtual bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget );
+			virtual bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget );
 
-			virtual void			_childRequestInView( BasicSlot * pSlot );
-			virtual void			_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
+			virtual void			_childRequestInView( StaticSlot * pSlot );
+			virtual void			_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
 
 
 			//
@@ -132,7 +132,7 @@ namespace wg
 			struct SlotWithGeo
 			{
 				RectI			geo;
-				const BasicSlot *	pSlot;
+				const StaticSlot *	pSlot;
 			};
 
 			virtual void			_firstSlotWithGeo( SlotWithGeo& package ) const = 0;
@@ -145,9 +145,9 @@ namespace wg
 			virtual void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
 			virtual void			_cloneContent( const Widget * _pOrg ) override;
 
-			class SlotAccess : public BasicSlot { friend class Container; };
-			Container::SlotAccess * _access(BasicSlot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
-			const Container::SlotAccess * _access(const BasicSlot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
+			class SlotAccess : public StaticSlot { friend class Container; };
+			Container::SlotAccess * _access(StaticSlot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
+			const Container::SlotAccess * _access(const StaticSlot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
 
 
 			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).

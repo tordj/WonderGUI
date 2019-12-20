@@ -343,7 +343,7 @@ namespace wg
 
 	//____ _setSlot() ______________________________________________________________
 
-	void Widget::_setSlot(BasicSlot * pSlot) 
+	void Widget::_setSlot(StaticSlot * pSlot) 
 	{ 
 		m_pHolder = pSlot ? pSlot->_holder() : nullptr; 
 		m_pSlot = pSlot;

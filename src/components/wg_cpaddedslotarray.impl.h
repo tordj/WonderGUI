@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_cpaddedslotarray.h>
-#include <wg_cslotarray.impl.h>
+#include <wg_cdynamicslotarray.impl.h>
 #include <wg_util.h>
 
 
@@ -40,7 +40,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CSlotArray<SlotType>::_slot(index), 1, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), 1, Util::qpixToRaw(padding));
 		return true;
 	}
 
@@ -58,7 +58,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CSlotArray<SlotType>::_slot(index), amount, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), amount, Util::qpixToRaw(padding));
 		return true;
 	}
 
@@ -78,7 +78,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CSlotArray<SlotType>::_slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
+		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
 		return true;
 	}
 

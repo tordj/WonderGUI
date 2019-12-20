@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_cslotarray.impl.h>
+#include <wg_cdynamicslotarray.impl.h>
 #include <assert.h>
 
 
@@ -32,7 +32,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CSlotArray<LambdaSlot>;
+	template class CDynamicSlotArray<LambdaSlot>;
 
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
@@ -301,21 +301,21 @@ namespace wg
 
 	//____ _didAddSlots() ________________________________________________________
 
-	void LambdaPanel::_didAddSlots( BasicSlot * pSlot, int nb )
+	void LambdaPanel::_didAddSlots( StaticSlot * pSlot, int nb )
 	{
 		_unhideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
 
 	//____ _willRemoveSlots() _________________________________________________
 
-	void LambdaPanel::_willRemoveSlots( BasicSlot * pSlot, int nb )
+	void LambdaPanel::_willRemoveSlots( StaticSlot * pSlot, int nb )
 	{
 		_hideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
 
 	//____ _hideSlots() __________________________________________________________
 
-	void LambdaPanel::_hideSlots( BasicSlot * _pSlot, int nb )
+	void LambdaPanel::_hideSlots( StaticSlot * _pSlot, int nb )
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -331,7 +331,7 @@ namespace wg
 
 	//____ _unhideSlots() ________________________________________________________
 
-	void LambdaPanel::_unhideSlots( BasicSlot * _pSlot, int nb )
+	void LambdaPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -349,7 +349,7 @@ namespace wg
 
 	//____ _updateSlotGeo() ________________________________________________________
 
-	void LambdaPanel::_updateSlotGeo(BasicSlot * _pSlot, int nb)
+	void LambdaPanel::_updateSlotGeo(StaticSlot * _pSlot, int nb)
 	{
 		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
 
@@ -365,7 +365,7 @@ namespace wg
 
 	//____ _didMoveSlots() ________________________________________________________
 
-	void LambdaPanel::_didMoveSlots(BasicSlot * _pFrom, BasicSlot * _pTo, int nb)
+	void LambdaPanel::_didMoveSlots(StaticSlot * _pFrom, StaticSlot * _pTo, int nb)
 	{
 		if (nb > 1)
 		{
@@ -412,20 +412,20 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	CoordI LambdaPanel::_childPos( const BasicSlot * pSlot ) const
+	CoordI LambdaPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return ((LambdaSlot*)pSlot)->geo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
-	void LambdaPanel::_childRequestRender( BasicSlot * _pSlot )
+	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
 		_onRequestRender( pSlot->geo, pSlot );
 	}
 
-	void LambdaPanel::_childRequestRender( BasicSlot * _pSlot, const RectI& rect )
+	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
 		_onRequestRender( rect + pSlot->geo.pos(), pSlot );
@@ -433,14 +433,14 @@ namespace wg
 
 	//____ _childRequestResize() ______________________________________________
 
-	void LambdaPanel::_childRequestResize( BasicSlot * pSlot )
+	void LambdaPanel::_childRequestResize( StaticSlot * pSlot )
 	{
 		_updateGeo(static_cast<LambdaSlot*>(pSlot), true);
 	}
 
 	//____ _prevChild() __________________________________________________________
 
-	Widget * LambdaPanel::_prevChild( const BasicSlot * _pSlot ) const
+	Widget * LambdaPanel::_prevChild( const StaticSlot * _pSlot ) const
 	{
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
@@ -453,7 +453,7 @@ namespace wg
 
 	//____ _nextChild() __________________________________________________________
 
-	Widget * LambdaPanel::_nextChild( const BasicSlot * _pSlot ) const
+	Widget * LambdaPanel::_nextChild( const StaticSlot * _pSlot ) const
 	{
 		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
 
@@ -465,7 +465,7 @@ namespace wg
 
 	//____ _releaseChild() ____________________________________________________
 
-	void LambdaPanel::_releaseChild(BasicSlot * pSlot)
+	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willRemoveSlots(pSlot, 1);
 		slots._remove(static_cast<LambdaSlot*>(pSlot));
@@ -473,7 +473,7 @@ namespace wg
 
 	//____ _replaceChild() ______________________________________________________
 
-	void LambdaPanel::_replaceChild(BasicSlot * _pSlot, Widget * pNewChild)
+	void LambdaPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
 

@@ -29,7 +29,7 @@
 #include <wg_patches.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
-#include <wg_cbasicslot.h>
+#include <wg_cstandardslot.h>
 
 namespace wg
 {
@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected CBasicSlot::Holder
+	class RootPanel : public Object, protected CStandardSlot::Holder
 	{
         friend class Widget;
 		friend class Container;
@@ -68,7 +68,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CBasicSlot			slot;
+		CStandardSlot		slot;
 
 		//.____ Identification __________________________________________
 
@@ -135,30 +135,30 @@ namespace wg
 
 		// WidgetHolder methods
 
-		CoordI			_childPos( const BasicSlot * pSlot ) const override;
-		CoordI			_childGlobalPos( const BasicSlot * pSlot ) const override;
+		CoordI			_childPos( const StaticSlot * pSlot ) const override;
+		CoordI			_childGlobalPos( const StaticSlot * pSlot ) const override;
 
-		bool			_isChildVisible( const BasicSlot * pSlot ) const override;
-		RectI			_childWindowSection( const BasicSlot * pSlot ) const override;
+		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
+		RectI			_childWindowSection( const StaticSlot * pSlot ) const override;
 
 		Container *  	_container() override;
 		RootPanel *		_root() override;
 
-		void			_childRequestRender( BasicSlot * pSlot ) override;
-		void			_childRequestRender( BasicSlot * pSlot, const RectI& rect ) override;
-		void			_childRequestResize( BasicSlot * pSlot ) override;
+		void			_childRequestRender( StaticSlot * pSlot ) override;
+		void			_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void			_childRequestResize( StaticSlot * pSlot ) override;
 
-		bool			_childRequestFocus( BasicSlot * pSlot, Widget * pWidget ) override;
-		bool			_childReleaseFocus( BasicSlot * pSlot, Widget * pWidget ) override;
+		bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) override;
+		bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 
-		void			_childRequestInView( BasicSlot * pSlot ) override;
-		void			_childRequestInView( BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
+		void			_childRequestInView( StaticSlot * pSlot ) override;
+		void			_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
 
-		Widget *		_prevChild( const BasicSlot * pSlot ) const override;
-		Widget *		_nextChild( const BasicSlot * pSlot ) const override;
+		Widget *		_prevChild( const StaticSlot * pSlot ) const override;
+		Widget *		_nextChild( const StaticSlot * pSlot ) const override;
 
-		void			_releaseChild( BasicSlot * pSlot ) override;
-		void			_replaceChild(BasicSlot * pSlot, Widget * pNewChild) override;
+		void			_releaseChild( StaticSlot * pSlot ) override;
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override;
 
 		// ChildHolder methods
 
@@ -175,7 +175,7 @@ namespace wg
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
 
-		class SlotAccess : public CBasicSlot { friend class RootPanel; };
+		class SlotAccess : public CStandardSlot { friend class RootPanel; };
 		SlotAccess *		_slot() { return static_cast<SlotAccess*>(&slot); }
 		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 

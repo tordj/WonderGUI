@@ -111,16 +111,21 @@ namespace wg
 
 
 
-	//____ IViewSlot ______________________________________________________
+	class CViewSlot;
+	typedef	StrongComponentPtr<CViewSlot>	CViewSlot_p;
+	typedef	WeakComponentPtr<CViewSlot>		CViewSlot_wp;
 
-	class IViewSlot : public CSlotImpl<ViewSlot>
+
+	//____ CViewSlot ______________________________________________________
+
+	class CViewSlot : public CDynamicSlotImpl<ViewSlot>
 	{
 	public:
 		/** @private */
 
 		//____ Holder _______________________________________________
 
-		class Holder : public CSlotImpl<ViewSlot>::Holder /** @private */
+		class Holder : public CDynamicSlotImpl<ViewSlot>::Holder /** @private */
 		{
 		public:
 			virtual bool		_setWindowPos(CoordI pos) = 0;
@@ -132,11 +137,11 @@ namespace wg
 		};
 
 
-		IViewSlot(Holder * pHolder) : CSlotImpl(pHolder) {}
+		CViewSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
-		IViewSlot& operator=(Widget * pWidget);
+		CViewSlot& operator=(Widget * pWidget);
 
 		//.____ Geometry ______________________________________________________
 
@@ -174,6 +179,10 @@ namespace wg
 		void		setRubberBorder(Border border);
 
 		void		setDragButton(MouseButton button);
+
+		//.____ Misc __________________________________________________________
+
+		inline CViewSlot_p	ptr() { return CViewSlot_p(this); }
 
 	private:
 
@@ -244,9 +253,9 @@ namespace wg
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected IViewSlot::Holder
+	class ScrollPanel : public Panel, protected CViewSlot::Holder
 	{
-		friend class IViewSlot;
+		friend class CViewSlot;
 		friend class ScrollbarEntry;
 	public:
 
@@ -256,7 +265,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		IViewSlot		viewSlot;
+		CViewSlot		viewSlot;
 		ScrollbarEntry	hscrollbar, vscrollbar;
 
 		//.____ Identification __________________________________________
@@ -334,26 +343,26 @@ namespace wg
 		Object *	_object() override { return this; }
 		const Object *	_object() const override { return this; }
 
-		CoordI		_childPos(const BasicSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const BasicSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const BasicSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const BasicSlot * pSlot) const override;
+		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
+		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
+		RectI		_childWindowSection(const StaticSlot * pSlot) const override;
 
-		bool		_childRequestFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(BasicSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
+		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
+		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
-		void		_childRequestRender(BasicSlot * pSlot) override;
-		void		_childRequestRender(BasicSlot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(BasicSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot) override;
+		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void		_childRequestResize(StaticSlot * pSlot) override;
 
-		void		_childRequestInView(BasicSlot * pSlot) override;
-		void		_childRequestInView(BasicSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
+		void		_childRequestInView(StaticSlot * pSlot) override;
+		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override;
 
-		Widget *	_prevChild(const BasicSlot * pSlot) const override;
-		Widget *	_nextChild(const BasicSlot * pSlot) const override;
+		Widget *	_prevChild(const StaticSlot * pSlot) const override;
+		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
-		void		_releaseChild(BasicSlot * pSlot) override;
-		void		_replaceChild(BasicSlot * pSlot, Widget * pWidget) override;
+		void		_releaseChild(StaticSlot * pSlot) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
 
 		// Overloaded from ChildHolder
 
@@ -396,7 +405,7 @@ namespace wg
 
 
 		SizeI		_calcContentSize(SizeI mySize);
-		void		_updateElementGeo(SizeI mySize, BasicSlot * pForceUpdate = nullptr );
+		void		_updateElementGeo(SizeI mySize, StaticSlot * pForceUpdate = nullptr );
 		bool		_setWindowPos(CoordI pos) override;
 		bool		_setWindowOffset(CoordF ofs) override;
 
