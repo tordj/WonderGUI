@@ -294,7 +294,7 @@ namespace wg
 		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
 		else
-			_willRemoveSlots(pSlot, 1);
+			_willEraseSlots(pSlot, 1);
 	}
 
 	//____ Constructor ____________________________________________________________
@@ -545,9 +545,9 @@ namespace wg
 	}
 
 
-	//____ _willRemoveSlots() __________________________________________________
+	//____ _willEraseSlots() __________________________________________________
 
-	void ModalLayer::_willRemoveSlots(StaticSlot * _pSlot, int nb)
+	void ModalLayer::_willEraseSlots(StaticSlot * _pSlot, int nb)
 	{
 		ModalSlot * pSlot = (ModalSlot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )

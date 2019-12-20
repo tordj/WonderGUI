@@ -153,7 +153,7 @@ namespace wg
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void		_willRemoveSlots( StaticSlot * pSlot, int nb ) override;
+		void		_willEraseSlots( StaticSlot * pSlot, int nb ) override;
 		void		_hideSlots( StaticSlot *, int nb ) override;
 		void		_unhideSlots( StaticSlot *, int nb ) override;
 		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;

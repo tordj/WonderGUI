@@ -90,6 +90,7 @@ namespace wg
 		//.____ Content _______________________________________________________
 
 		inline void		setWidget(Widget * pWidget) { static_cast<DynamicSlot*>(_slot())->setWidget(pWidget); }
+		inline void		clear() { static_cast<DynamicSlot*>(_slot())->setWidget(nullptr); }
 
 
 		//.____ Misc __________________________________________________________

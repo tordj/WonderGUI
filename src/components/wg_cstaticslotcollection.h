@@ -136,7 +136,7 @@ namespace wg
 		virtual void	_inc(int amount) {};
 		virtual void	_dec(int amount) {};
 
-		StaticSlot *		pSlot = nullptr;
+		StaticSlot *	pSlot = nullptr;
 		void *			pHolder = nullptr;
 		void *			pExtra = nullptr;
 	};

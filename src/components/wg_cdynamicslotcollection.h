@@ -48,9 +48,6 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		virtual int			capacity() const = 0;
-		virtual void		setCapacity(int capacity) = 0;
-
 		inline  iterator	add(Widget * pWidget)												{ return _add(pWidget); }
 		inline  iterator	add(const Widget_p pWidgets[], int amount)							{ return _add(pWidgets,amount); }
 
@@ -77,10 +74,10 @@ namespace wg
 		inline  iterator	insert(const iterator& it, Widget * pWidget)						{ return _insert(it, pWidget); }
 		inline  iterator	insert(const iterator& it, const Widget_p pWidgets[], int amount)	{ return _insert(it, pWidgets, amount); }
 
-		virtual void		remove(int index) = 0;
-		virtual void		remove(int index, int amount) = 0;
-		inline  iterator	remove(const iterator& it)											{ return _remove(it); }
-		inline  iterator	remove(const iterator& beg, const iterator& end)					{ return _remove(beg, end); }
+		virtual void		erase(int index) = 0;
+		virtual void		erase(int index, int amount) = 0;
+		inline  iterator	erase(const iterator& it)											{ return _erase(it); }
+		inline  iterator	erase(const iterator& beg, const iterator& end)					{ return _erase(beg, end); }
 
 		virtual void		clear() = 0;
 
@@ -124,8 +121,8 @@ namespace wg
 
 		virtual iterator	_insert(const iterator& it, Widget * pWidget) = 0;
 		virtual iterator	_insert(const iterator& it, const Widget_p pWidgets[], int amount) = 0;
-		virtual iterator	_remove(const iterator& it) = 0;
-		virtual iterator	_remove(const iterator& it, const iterator& end) = 0;
+		virtual iterator	_erase(const iterator& it) = 0;
+		virtual iterator	_erase(const iterator& it, const iterator& end) = 0;
 
 		virtual iterator	_moveToFront(const iterator& it) = 0;
 		virtual iterator	_moveToBack(const iterator& it) = 0;

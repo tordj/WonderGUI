@@ -778,7 +778,7 @@ namespace wg
 		FlexSlot * pFrom = static_cast<FlexSlot*>(_pFrom);
 		FlexSlot * pTo = static_cast<FlexSlot*>(_pTo);
 
-		if (pTo->bVisible)		// This is correct, we have already switched places...
+		if (pTo->m_bVisible)		// This is correct, we have already switched places...
 		{
 			if (pTo < pFrom)			// We were moved forward
 			{
@@ -789,7 +789,7 @@ namespace wg
 				{
 					RectI cover(pTo->realGeo, p->realGeo);
 
-					if (p->bVisible && !cover.isEmpty())
+					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
 					p++;
 				}
@@ -803,7 +803,7 @@ namespace wg
 				{
 					RectI cover(pTo->realGeo, p->realGeo);
 
-					if (p->bVisible && !cover.isEmpty())
+					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
 					p++;
 				}
@@ -820,9 +820,9 @@ namespace wg
 		_unhideSlots(pSlot,nb);
 	}
 
-	//____ _willRemoveSlots() _____________________________________________________________
+	//____ _willEraseSlots() _____________________________________________________________
 
-	void FlexPanel::_willRemoveSlots( StaticSlot * _pSlot, int nb )
+	void FlexPanel::_willEraseSlots( StaticSlot * _pSlot, int nb )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
 		_hideSlots(pSlot,nb);
@@ -836,10 +836,10 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pSlot[i].bVisible == true )
+			if( pSlot[i].m_bVisible == true )
 			{
 				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
-				pSlot[i].bVisible = false;					// Needs to be done AFTER _onRequestRender()!
+				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
 	}
@@ -852,9 +852,9 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pSlot[i].bVisible == false )
+			if( pSlot[i].m_bVisible == false )
 			{
-				pSlot[i].bVisible = true;
+				pSlot[i].m_bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
 				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
 			}
@@ -866,7 +866,7 @@ namespace wg
 
 	void FlexPanel::_onRequestRender( const RectI& rect, const FlexSlot * pSlot )
 	{
-		if( !pSlot->bVisible )
+		if( !pSlot->m_bVisible )
 			return;
 
 		// Clip our geometry and put it in a dirtyrect-list
@@ -878,7 +878,7 @@ namespace wg
 
 		for(FlexSlot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->bVisible && pCover->realGeo.intersectsWith( rect ) )
+			if( pCover->m_bVisible && pCover->realGeo.intersectsWith( rect ) )
 				pCover->_widget()->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
@@ -990,8 +990,8 @@ namespace wg
 
 	void FlexPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willRemoveSlots(pSlot, 1);
-		slots._remove(static_cast<FlexSlot*>(pSlot));
+		_willEraseSlots(pSlot, 1);
+		slots._erase(static_cast<FlexSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -1003,7 +1003,7 @@ namespace wg
 
 		pSlot->_setWidget(pNewWidget);
 
-		if (pSlot->bVisible )
+		if (pSlot->m_bVisible )
 		{
 			_refreshRealGeo(pSlot, true);
 			_onRequestRender(pSlot->realGeo, pSlot);

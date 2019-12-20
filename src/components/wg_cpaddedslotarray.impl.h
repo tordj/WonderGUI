@@ -36,24 +36,6 @@ namespace wg
 	//____ setPadding() _______________________________________________________
 
 	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(int index, Border padding)
-	{
-		//TODO: Assert
-
-		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), 1, Util::qpixToRaw(padding));
-		return true;
-	}
-
-	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& it, Border padding)
-	{
-		//TODO: Assert
-
-		_holder()->_repadSlots(it._slot(), 1, Util::qpixToRaw(padding));
-		return true;
-	}
-
-	template<class SlotType>
 	bool CPaddedSlotArray<SlotType>::setPadding(int index, int amount, Border padding)
 	{
 		//TODO: Assert

@@ -696,9 +696,9 @@ namespace wg
 	}
 
 
-	//____ _willRemoveSlots() _____________________________________________________
+	//____ _willEraseSlots() _____________________________________________________
 
-	void PackList::_willRemoveSlots(StaticSlot * _pSlot, int nb)
+	void PackList::_willEraseSlots(StaticSlot * _pSlot, int nb)
 	{
 		_hideSlots(_pSlot, nb);
 
@@ -719,9 +719,9 @@ namespace wg
 
 		for (int i = 0; i < nb; i++)
 		{
-			if (pSlot[i].bVisible)
+			if (pSlot[i].m_bVisible)
 			{
-				pSlot[i].bVisible = false;
+				pSlot[i].m_bVisible = false;
 
 				SizeI pref = _paddedLimitedPreferredSize(pSlot);
 				if (m_bHorizontal)
@@ -746,9 +746,9 @@ namespace wg
 
 		for (int i = 0; i < nb; i++)
 		{
-			if (!pSlot[i].bVisible)
+			if (!pSlot[i].m_bVisible)
 			{
-				pSlot[i].bVisible = true;
+				pSlot[i].m_bVisible = true;
 
 				Widget * pChild = pSlot[i]._widget();
 				SizeI pref = _paddedLimitedPreferredSize(pSlot);
@@ -1111,7 +1111,7 @@ namespace wg
 
 		// Apply any padding from the entry skin, if entry visible
 
-		if( pSlot->bVisible )
+		if( pSlot->m_bVisible )
 		{
 			int index = slots._index( pSlot );
 			if( m_pEntrySkin[index&0x1] )
@@ -1215,7 +1215,7 @@ namespace wg
 
 		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
 
-		if (pSlot->bVisible && m_minEntrySize != m_maxEntrySize)
+		if (pSlot->m_bVisible && m_minEntrySize != m_maxEntrySize)
 		{
 			SizeI prefEntrySize = _paddedLimitedPreferredSize(pSlot);
 
@@ -1299,8 +1299,8 @@ namespace wg
 
 	void PackList::_releaseChild(StaticSlot * pSlot)
 	{
-		_willRemoveSlots(pSlot, 1);
-		slots._remove(static_cast<PackListSlot*>(pSlot));
+		_willEraseSlots(pSlot, 1);
+		slots._erase(static_cast<PackListSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________

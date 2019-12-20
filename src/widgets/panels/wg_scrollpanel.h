@@ -31,7 +31,7 @@
 #include <wg_scrollbar.h>
 #include <wg_scrollbartarget.h>
 #include <wg_cslot.h>
-#include <wg_paddedslot.h>
+#include <wg_slot.h>
 
 
 namespace wg
@@ -43,35 +43,46 @@ namespace wg
 
 	//____ ScrollbarSlot ______________________________________________________
 
-	class ScrollbarSlot : public PaddedSlot		/** @private */
+	class ScrollbarSlot : public DynamicSlot		/** @private */
 	{
 		friend class ScrollbarEntry;
 		friend class ScrollPanel;
 	public:
-		ScrollbarSlot() : PaddedSlot(nullptr) {}
+		ScrollbarSlot() : DynamicSlot(nullptr) {}
 	protected:
 		RectI			geo;
 		bool			bAutoHide = false;
 		bool			bAutoScroll = false;
 		Direction		placement;
+
+		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
+		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
+		SizeI		_paddedMaxSize() const { return _maxSize() + m_padding; }
+		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
+		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
+
+		BorderI		m_padding;
+		bool		m_bVisible;
+
+
 	};
 
 
 
 	//____ ViewSlot ______________________________________________________
 
-	class ViewSlot : public PaddedSlot		/** @private */
+	class ViewSlot : public DynamicSlot		/** @private */
 	{
 		friend class ScrollPanel;
 	public:
 
 		//____ Holder ____________________________________________________
 
-		class Holder : public PaddedSlot::Holder
+		class Holder : public DynamicSlot::Holder
 		{
 		};
 
-		ViewSlot(ViewSlot::Holder *pHolder) : PaddedSlot(pHolder) {}
+		ViewSlot(ViewSlot::Holder *pHolder) : DynamicSlot(pHolder) {}
 	protected:
 
 		int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
@@ -206,7 +217,7 @@ namespace wg
 
 		//.____ State _________________________________________________________
 
-		bool		isVisible() const { return m_pSlot->bVisible; }
+		bool		isVisible() const { return m_pSlot->m_bVisible; }
 
 		//.____ Behavior ______________________________________________________
 

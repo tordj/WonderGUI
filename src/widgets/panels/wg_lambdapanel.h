@@ -49,13 +49,13 @@ namespace wg
 		};
 
 
-		LambdaSlot(Holder * pHolder ) : StaticSlot(pHolder), pFunc(nullptr), bVisible(false) {}
+		LambdaSlot(Holder * pHolder ) : StaticSlot(pHolder), pFunc(nullptr), m_bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
 		std::function<Rect(Widget * pWidget, Size parentSize)>	pFunc;
-		bool			bVisible;
-		RectI			geo;				// Widgets geo relative parent
+		bool			m_bVisible;
+		RectI			m_geo;				// Widgets geo relative parent
 	};
 
 
@@ -154,7 +154,7 @@ namespace wg
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void		_willRemoveSlots( StaticSlot * pSlot, int nb ) override;
+		void		_willEraseSlots( StaticSlot * pSlot, int nb ) override;
 		void		_hideSlots( StaticSlot * pSlot, int nb ) override;
 		void		_unhideSlots( StaticSlot * pSlot, int nb ) override;
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb) override;

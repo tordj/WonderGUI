@@ -41,18 +41,39 @@ namespace wg
 
 		class Holder : public SlotHolder
 		{
+		public:
+			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
+
+			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), bVisible(false) {}
-	protected:
-		SizeI		_paddedPreferredSize() const { return _preferredSize() + padding; }
-		SizeI		_paddedMinSize() const { return _minSize() + padding; }
-		SizeI		_paddedMaxSize() const { return _maxSize() + padding; }
-		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - padding.height()) + padding.width(); }
-		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - padding.width()) + padding.height(); }
+//		void		setPadding(const BorderI& padding);
+//		inline const BorderI& padding() const { return m_padding; }
 
-		BorderI		padding;
-		bool		bVisible;
+
+		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {}
+
+		inline void		hide() { _holder()->_hideSlots(this, 1); }
+		inline void		unhide() { _holder()->_unhideSlots(this, 1); }
+		inline void		setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); }
+		inline bool		isVisible() const { return m_bVisible; }
+		
+		void			setPadding( const Border& padding) { static_cast<Holder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
+		inline Border	padding() const { return Util::rawToQpix(m_padding); }
+
+	protected:
+		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
+		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+
+		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
+		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
+		SizeI		_paddedMaxSize() const { return _maxSize() + m_padding; }
+		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
+		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
+
+		BorderI		m_padding;
+		bool		m_bVisible;
 	};
 }
 #endif //WG_PADDEDSLOT_DOT_H

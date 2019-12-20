@@ -290,9 +290,9 @@ namespace wg
 		_unhideChildren( (StackSlot*) pSlot, nb );
 	}
 
-	//____ _willRemoveSlots() ____________________________________________________
+	//____ _willEraseSlots() ____________________________________________________
 
-	void StackPanel::_willRemoveSlots( StaticSlot * pSlot, int nb )
+	void StackPanel::_willEraseSlots( StaticSlot * pSlot, int nb )
 	{
 		_hideChildren( (StackSlot*) pSlot, nb );
 	}
@@ -316,7 +316,7 @@ namespace wg
 	void StackPanel::_repadSlots( StaticSlot * pSlot, int nb, BorderI padding )
 	{
 		for( int i = 0 ; i < nb ; i++ )
-			((StackSlot*)pSlot)[i].padding = padding;
+			((StackSlot*)pSlot)[i].m_padding = padding;
 
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
@@ -329,7 +329,7 @@ namespace wg
 	void StackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
-			((StackSlot*)pSlot)[i].padding = * pPaddings++;
+			((StackSlot*)pSlot)[i].m_padding = * pPaddings++;
 
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
@@ -365,7 +365,7 @@ namespace wg
 	{
 		StackSlot * pSlot = (StackSlot *) _pSlot;
 
-		if( !pSlot->bVisible )
+		if( !pSlot->m_bVisible )
 			return;
 
 		// Put our rectangle into patches
@@ -381,7 +381,7 @@ namespace wg
 		for( auto pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			RectI geo = _childGeo(pCover);
-			if( pCover->bVisible && geo.intersectsWith( rect ) )
+			if( pCover->m_bVisible && geo.intersectsWith( rect ) )
 				pCover->_widget()->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
@@ -440,8 +440,8 @@ namespace wg
 
 	void StackPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willRemoveSlots(pSlot, 1);
-		slots._remove(static_cast<StackSlot*>(pSlot));
+		_willEraseSlots(pSlot, 1);
+		slots._erase(static_cast<StackSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() ____________________________________________________
@@ -464,7 +464,7 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( !pSlot[i].bVisible )
+			if( !pSlot[i].m_bVisible )
 			{
 				SizeI preferred = pSlot[i]._paddedPreferredSize();
 
@@ -488,9 +488,9 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( !pSlot[i].bVisible )
+			if( !pSlot[i].m_bVisible )
 			{
-				pSlot[i].bVisible = true;
+				pSlot[i].m_bVisible = true;
 				pSlot[i]._widget()->_resize(_childGeo(pSlot).size() );
 				_childRequestRender( pSlot + i );
 			}
@@ -507,10 +507,10 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pRemove[i].bVisible )
+			if( pRemove[i].m_bVisible )
 			{
 				_childRequestRender( pRemove + i );
-				pRemove[i].bVisible = false;
+				pRemove[i].m_bVisible = false;
 			}
 		}
 		// Update m_preferredSize
@@ -520,7 +520,7 @@ namespace wg
 
 		while( p != slots._end() )
 		{
-			if( p->bVisible )
+			if( p->m_bVisible )
 			{
 				SizeI sz = p->_paddedPreferredSize();
 				if( sz.w > preferredSize.w )
@@ -570,7 +570,7 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			if( pSlot->bVisible )
+			if( pSlot->m_bVisible )
 			{
 				SizeI sz = pSlot->_paddedPreferredSize();
 				if( sz.w > preferredSize.w )
@@ -593,7 +593,7 @@ namespace wg
 
 		while( pSlot != pEnd )
 		{
-			if( pSlot->bVisible )
+			if( pSlot->m_bVisible )
 				pSlot->_widget()->_resize( _childGeo(pSlot) );
 			pSlot++;
 		}
@@ -603,7 +603,7 @@ namespace wg
 
 	RectI StackPanel::_childGeo( const StackSlot * pSlot ) const
 	{
-		RectI base = RectI( m_size ) - pSlot->padding;
+		RectI base = RectI( m_size ) - pSlot->m_padding;
 
 		if( base.w <= 0 || base.h <= 0 )
 			return RectI(0,0,0,0);

@@ -278,7 +278,7 @@ namespace wg
 		{
 			LambdaSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;
+			package.geo = pSlot->m_geo;
 		}
 
 	}
@@ -295,7 +295,7 @@ namespace wg
 		{
 			pSlot++;
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;
+			package.geo = pSlot->m_geo;
 		}
 	}
 
@@ -306,9 +306,9 @@ namespace wg
 		_unhideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
 
-	//____ _willRemoveSlots() _________________________________________________
+	//____ _willEraseSlots() _________________________________________________
 
-	void LambdaPanel::_willRemoveSlots( StaticSlot * pSlot, int nb )
+	void LambdaPanel::_willEraseSlots( StaticSlot * pSlot, int nb )
 	{
 		_hideSlots(static_cast<LambdaSlot*>(pSlot), nb);
 	}
@@ -321,10 +321,10 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pSlot[i].bVisible == true )
+			if( pSlot[i].m_bVisible == true )
 			{
-				_onRequestRender(pSlot[i].geo, pSlot);
-				pSlot[i].bVisible = false;					// Needs to be done AFTER _onRequestRender()!
+				_onRequestRender(pSlot[i].m_geo, pSlot);
+				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
 	}
@@ -337,11 +337,11 @@ namespace wg
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
-			if( pSlot[i].bVisible == false )
+			if( pSlot[i].m_bVisible == false )
 			{
-				pSlot[i].bVisible = true;
+				pSlot[i].m_bVisible = true;
 				_updateGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].geo, pSlot);
+				_onRequestRender(pSlot[i].m_geo, pSlot);
 			}
 		}
 	}
@@ -356,8 +356,8 @@ namespace wg
 		for (int i = 0; i < nb; i++)
 		{
 			_updateGeo(&pSlot[i]);
-			if (pSlot[i].bVisible == false)
-				_onRequestRender(pSlot[i].geo, pSlot);		//TODO: This looks weird...
+			if (pSlot[i].m_bVisible == false)
+				_onRequestRender(pSlot[i].m_geo, pSlot);		//TODO: This looks weird...
 		}
 	}
 
@@ -376,7 +376,7 @@ namespace wg
 		auto pFrom = static_cast<LambdaSlot*>(_pFrom);
 		auto pTo = static_cast<LambdaSlot*>(_pTo);
 
-		if (pTo->bVisible)		// This is correct, we have already switched places...
+		if (pTo->m_bVisible)		// This is correct, we have already switched places...
 		{
 			if (pTo < pFrom)			// We were moved forward
 			{
@@ -385,9 +385,9 @@ namespace wg
 				LambdaSlot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectI cover(pTo->geo, p->geo);
+					RectI cover(pTo->m_geo, p->m_geo);
 
-					if (p->bVisible && !cover.isEmpty())
+					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
 					p++;
 				}
@@ -399,9 +399,9 @@ namespace wg
 				LambdaSlot * p = pFrom;
 				while (p < pTo)
 				{
-					RectI cover(pTo->geo, p->geo);
+					RectI cover(pTo->m_geo, p->m_geo);
 
-					if (p->bVisible && !cover.isEmpty())
+					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
 					p++;
 				}
@@ -414,7 +414,7 @@ namespace wg
 
 	CoordI LambdaPanel::_childPos( const StaticSlot * pSlot ) const
 	{
-		return ((LambdaSlot*)pSlot)->geo.pos();
+		return ((LambdaSlot*)pSlot)->m_geo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -422,13 +422,13 @@ namespace wg
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
-		_onRequestRender( pSlot->geo, pSlot );
+		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
-		_onRequestRender( rect + pSlot->geo.pos(), pSlot );
+		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -467,8 +467,8 @@ namespace wg
 
 	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willRemoveSlots(pSlot, 1);
-		slots._remove(static_cast<LambdaSlot*>(pSlot));
+		_willEraseSlots(pSlot, 1);
+		slots._erase(static_cast<LambdaSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() ______________________________________________________
@@ -480,10 +480,10 @@ namespace wg
 		slots._releaseGuardPointer(pNewChild, &pSlot);
 		pSlot->_setWidget(pNewChild);
 
-   		if (pSlot->bVisible)
+   		if (pSlot->m_bVisible)
 		{
 			_updateGeo(pSlot);
-			_onRequestRender(pSlot->geo, pSlot);
+			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 	}
 
@@ -517,14 +517,14 @@ namespace wg
 		else
 			geo = { 0,0,pSlot->_preferredSize() };
 
-		if (geo != pSlot->geo)
+		if (geo != pSlot->m_geo)
 		{
-			if (pSlot->bVisible)
+			if (pSlot->m_bVisible)
 			{
 				// Clip our geometry and put it in a dirtyrect-list
 
 				Patches patches;
-				patches.add(RectI(pSlot->geo, RectI(0, 0, m_size)));
+				patches.add(RectI(pSlot->m_geo, RectI(0, 0, m_size)));
 				patches.add(RectI(geo, RectI(0, 0, m_size)));
 
 				// Remove portions of patches that are covered by opaque upper siblings
@@ -532,8 +532,8 @@ namespace wg
 				const LambdaSlot * pCover = pSlot + 1;
 				while (pCover < slots._end())
 				{
-					if (pCover->bVisible && (pCover->geo.intersectsWith(pSlot->geo) || pCover->geo.intersectsWith(geo)) )
-						pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
+						pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 
 					pCover++;
 				}
@@ -546,7 +546,7 @@ namespace wg
 			}
 		}
 
-		pSlot->geo = geo;
+		pSlot->m_geo = geo;
 
 		if (bForceResize || pSlot->_size() != geo.size())
 			pSlot->_setSize(geo);
@@ -556,7 +556,7 @@ namespace wg
 
 	void LambdaPanel::_onRequestRender( const RectI& rect, const LambdaSlot * pSlot )
 	{
-		if (!pSlot->bVisible)
+		if (!pSlot->m_bVisible)
 			return;
 
 		// Clip our geometry and put it in a dirtyrect-list
@@ -568,8 +568,8 @@ namespace wg
 
 		for (LambdaSlot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
-			if (pCover->bVisible && pCover->geo.intersectsWith(rect))
-				pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
+				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, 65536, 65536), _getBlendMode());
 		}
 
 		// Make request render calls

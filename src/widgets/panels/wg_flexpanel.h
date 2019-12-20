@@ -91,11 +91,11 @@ namespace wg
 		{
 		};
 
-		FlexSlot(Holder * pHolder) : StaticSlot(pHolder), bPinned(false), bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot(Holder * pHolder) : StaticSlot(pHolder), bPinned(false), m_bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
 
 	protected:
 		bool			bPinned;
-		bool			bVisible;
+		bool			m_bVisible;
 		RectI			realGeo;			// Widgets geo relative parent, not pixel aligned.
 
 //		union
@@ -319,7 +319,7 @@ namespace wg
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void		_willRemoveSlots( StaticSlot * pSlot, int nb ) override;
+		void		_willEraseSlots( StaticSlot * pSlot, int nb ) override;
 		void		_hideSlots( StaticSlot *, int nb ) override;
 		void		_unhideSlots( StaticSlot *, int nb ) override;
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;

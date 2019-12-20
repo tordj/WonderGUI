@@ -122,46 +122,46 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ remove() ______________________________________________________________
+	//____ erase() ______________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::remove(int index)
+	void CDynamicSlotArray<SlotType>::erase(int index)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = _slot(index);
-		m_pHolder->_willRemoveSlots(pSlot, 1);
+		m_pHolder->_willEraseSlots(pSlot, 1);
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::remove(const SlotIterator& pos)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::erase(const SlotIterator& pos)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(pos._slot());
-		m_pHolder->_willRemoveSlots(pSlot, 1);
-		return iterator(_remove(pSlot));
+		m_pHolder->_willEraseSlots(pSlot, 1);
+		return iterator(_erase(pSlot));
 	}
 
 	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::remove(int index, int amount)
+	void CDynamicSlotArray<SlotType>::erase(int index, int amount)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = _slot(index);
-		m_pHolder->_willRemoveSlots(pSlot, amount);
+		m_pHolder->_willEraseSlots(pSlot, amount);
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::remove(const SlotIterator& beg, const SlotIterator& end)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::erase(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
 
-		m_pHolder->_willRemoveSlots(pBeg, int(pEnd-pBeg) );
-		return iterator(_remove(pBeg, pEnd));
+		m_pHolder->_willEraseSlots(pBeg, int(pEnd-pBeg) );
+		return iterator(_erase(pBeg, pEnd));
 	}
 
 	//____ clear() _______________________________________________________________
@@ -171,7 +171,7 @@ namespace wg
 	{
 		if (isEmpty())
 			return;
-		m_pHolder->_willRemoveSlots(_begin(), size());
+		m_pHolder->_willEraseSlots(_begin(), size());
 		_clear();
 	}
 
@@ -488,24 +488,24 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotArray<SlotType>::_remove(const SlotIterator& it)
+	SlotIterator CDynamicSlotArray<SlotType>::_erase(const SlotIterator& it)
 	{
 		//TODO: Add assert
 
 		SlotType * pSlot = static_cast<SlotType*>(it._slot());
-		m_pHolder->_willRemoveSlots(pSlot, 1);
-		return iterator(_remove(pSlot));
+		m_pHolder->_willEraseSlots(pSlot, 1);
+		return iterator(_erase(pSlot));
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotArray<SlotType>::_remove(const SlotIterator& beg, const SlotIterator& end)
+	SlotIterator CDynamicSlotArray<SlotType>::_erase(const SlotIterator& beg, const SlotIterator& end)
 	{
 		//TODO: Add assert
 
 		SlotType * pBeg = static_cast<SlotType*>(beg._slot());
 		SlotType * pEnd = static_cast<SlotType*>(end._slot());
-		m_pHolder->_willRemoveSlots(pBeg, int(pEnd-pBeg) );
-		return iterator(_remove(pBeg, pEnd));
+		m_pHolder->_willEraseSlots(pBeg, int(pEnd-pBeg) );
+		return iterator(_erase(pBeg, pEnd));
 	}
 
 	template < class SlotType>

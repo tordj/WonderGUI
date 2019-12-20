@@ -44,19 +44,31 @@ namespace wg
 		public:
 			virtual void	_selectSlots(StaticSlot * pSlot, int nb) = 0;
 			virtual void	_unselectSlots(StaticSlot * pSlot, int nb) = 0;
+
+			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder), bVisible(false) {}
+		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {}
 
 		inline void	select() { _holder()->_selectSlots(this, 1); }
-		inline void	unselect() { _holder()->_unselectSlots(this, 1); }
+		inline void	unselect() { _holder()->_selectSlots(this, 1); }
+		inline void	setSelected(bool bSelected) { if (bSelected) _holder()->_selectSlots(this, 1); else _holder()->_unselectSlots(this, 1); }
+		inline bool isSelected() const { return m_bSelected; }
+
+		inline void hide() { _holder()->_hideSlots(this, 1); }
+		inline void unhide() {  _holder()->_unhideSlots(this, 1); }
+		inline void setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); }
+		inline bool isVisible() const { return m_bVisible; }
 
 
 	protected:
+
 		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
 		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
-		bool		bVisible;
+		bool		m_bVisible;
+		bool		m_bSelected;
 	};
 }
 #endif //WG_PADDEDSLOT_DOT_H

@@ -221,7 +221,7 @@ namespace wg
 
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible )
+					if( pS->m_bVisible )
 					{
 						int itemHeight = pS->_paddedMatchingHeight( pI->output );
 						if( itemHeight > height )
@@ -238,7 +238,7 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible && pS->preferredSize.h > height )
+					if( pS->m_bVisible && pS->preferredSize.h > height )
 							height = pS->preferredSize.h;
 				}
 			}
@@ -266,7 +266,7 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible )
+					if( pS->m_bVisible )
 						height += pS->_paddedMatchingHeight( width );
 				}
 			}
@@ -303,7 +303,7 @@ namespace wg
 
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible )
+					if( pS->m_bVisible )
 					{
 						int itemWidth = pS->_paddedMatchingWidth( pI->output.raw );
 						if( itemWidth > width )
@@ -320,7 +320,7 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible && pS->preferredSize.w > width )
+					if( pS->m_bVisible && pS->preferredSize.w > width )
 							width = pS->preferredSize.w;
 				}
 			}
@@ -348,7 +348,7 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->bVisible )
+					if( pS->m_bVisible )
 						width += pS->_paddedMatchingWidth( height );
 				}
 			}
@@ -429,9 +429,9 @@ namespace wg
 		_refreshGeometries();
 	}
 
-	//____ _willRemoveSlots() _________________________________________________
+	//____ _willEraseSlots() _________________________________________________
 
-	void PackPanel::_willRemoveSlots(StaticSlot * pSlot, int nb)
+	void PackPanel::_willEraseSlots(StaticSlot * pSlot, int nb)
 	{
 		_hideChildren((PackSlot*) pSlot, nb);
 	}
@@ -455,7 +455,7 @@ namespace wg
 	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, BorderI padding)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackSlot*)pSlot)[i].padding = padding;
+			((PackSlot*)pSlot)[i].m_padding = padding;
 
 		_refreshGeometries();
 	}
@@ -463,7 +463,7 @@ namespace wg
 	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
-			((PackSlot*)pSlot)[i].padding = * pPaddings++;
+			((PackSlot*)pSlot)[i].m_padding = * pPaddings++;
 
 		_refreshGeometries();
 	}
@@ -553,8 +553,8 @@ namespace wg
 
 	void PackPanel::_releaseChild(StaticSlot * pSlot)
 	{
-		_willRemoveSlots(pSlot, 1);
-		slots._remove(static_cast<PackSlot*>(pSlot));
+		_willEraseSlots(pSlot, 1);
+		slots._erase(static_cast<PackSlot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
@@ -566,9 +566,9 @@ namespace wg
 
 		pSlot->_setWidget(pNewChild);
 
-		if (pSlot->bVisible)
+		if (pSlot->m_bVisible)
 		{
-			pSlot->bVisible = true;
+			pSlot->m_bVisible = true;
 			pSlot->preferredSize = pSlot->_paddedPreferredSize();
 		}
 
@@ -581,9 +581,9 @@ namespace wg
 	{
 		for (int i = 0; i < nb; i++)
 		{
-			if (pSlot[i].bVisible == false)
+			if (pSlot[i].m_bVisible == false)
 			{
-				pSlot[i].bVisible = true;
+				pSlot[i].m_bVisible = true;
 				pSlot[i].preferredSize = pSlot[i]._paddedPreferredSize();
 			}
 		}
@@ -596,7 +596,7 @@ namespace wg
 	void PackPanel::_hideChildren(PackSlot * pSlot, int nb)
 	{
 		for (int i = 0; i < nb; i++)
-			pSlot[i].bVisible = false;
+			pSlot[i].m_bVisible = false;
 
 		_refreshGeometries();
 	}
@@ -661,7 +661,7 @@ namespace wg
 			SizeBrokerItem * pI = pItemArea;
 			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
-				if( pS->bVisible )
+				if( pS->m_bVisible )
 				{
 					int b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output.raw):pS->_paddedMatchingWidth(pI->output.raw);
 					if( b > breadth )
@@ -681,7 +681,7 @@ namespace wg
 			{
 				for (auto p = slots._begin(); p != slots._end(); p++)
 				{
-					if( p->bVisible )
+					if( p->m_bVisible )
 					{
 						length += p->preferredSize.w;
 						if( p->preferredSize.h > breadth )
@@ -693,7 +693,7 @@ namespace wg
 			{
 				for (auto p = slots._begin(); p != slots._end(); p++)
 				{
-					if( p->bVisible )
+					if( p->m_bVisible )
 					{
 						length += p->preferredSize.h;
 						if( p->preferredSize.w > breadth )
@@ -737,7 +737,7 @@ namespace wg
 			RectI geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
-				if( p->bVisible )
+				if( p->m_bVisible )
 				{
 					geo.x = pos.x;
 					geo.y = pos.y;
@@ -753,7 +753,7 @@ namespace wg
 						geo.h = p->preferredSize.h;
 						pos.y += p->preferredSize.h;
 					}
-					geo -= p->padding;
+					geo -= p->m_padding;
 					geo += contentOfs;
 
 					if( geo != p->geo )
@@ -820,7 +820,7 @@ namespace wg
 			RectI geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
-				if( p->bVisible )
+				if( p->m_bVisible )
 				{
 					geo.x = pos.x;
 					geo.y = pos.y;
@@ -836,7 +836,7 @@ namespace wg
 						geo.h = pI->output.raw;
 						pos.y += pI->output.raw;
 					}
-					geo -= p->padding;
+					geo -= p->m_padding;
 					geo += contentOfs;
 
 					if( geo != p->geo )
@@ -899,7 +899,7 @@ namespace wg
 		{
 			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
-				if( pS->bVisible )
+				if( pS->m_bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->preferredSize.w);
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
@@ -913,7 +913,7 @@ namespace wg
 		{
 			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
-				if( pS->bVisible )
+				if( pS->m_bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->preferredSize.h);
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
@@ -935,7 +935,7 @@ namespace wg
 		{
 			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
-				if( pS->bVisible )
+				if( pS->m_bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
@@ -949,7 +949,7 @@ namespace wg
 		{
 			for (auto pS = slots._begin(); pS != slots._end(); pS++)
 			{
-				if( pS->bVisible )
+				if( pS->m_bVisible )
 				{
 					pI->preferred = QPix::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);

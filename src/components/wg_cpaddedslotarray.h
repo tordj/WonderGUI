@@ -47,15 +47,10 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		bool		setPadding(int index, Border padding);
-		bool		setPadding(const SlotIterator& it, Border padding);
 		bool		setPadding(int index, int amount, Border padding);
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding);
 		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
-
-		inline Border	padding(int index) const { return Util::rawToQpix(CDynamicSlotArray<SlotType>::_slot(index)->padding); }
-		inline Border	padding(const SlotIterator& it) const { return Util::rawToQpix(static_cast<SlotType*>(it._slot())->padding); }
 
 	protected:
 		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotArray<SlotType>::_holder()); }

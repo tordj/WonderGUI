@@ -52,21 +52,14 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void	select(int index);
-		void	select(const SlotIterator& it);
 		void	select(int index, int amount);
 		void	select(const SlotIterator& beg, const SlotIterator& end);
 
-		void	unselect(int index);
-		void	unselect(const SlotIterator& it);
 		void	unselect(int index, int amount);
 		void	unselect(const SlotIterator& beg, const SlotIterator& end);
 
 		void	selectAll();
 		void	unselectAll();
-
-		bool	isSelected(int index);
-		bool	isSelected(const SlotIterator& it);
 
 	protected:
 		Holder * _holder() { return static_cast<Holder*>(CDynamicSlotArray<SlotType>::_holder()); }

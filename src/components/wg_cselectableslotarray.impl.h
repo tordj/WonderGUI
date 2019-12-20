@@ -32,22 +32,6 @@ namespace wg
 	//____ select() ___________________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::select(int index)
-	{
-		//TODO: Assert
-
-		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(index), 1);
-	}
-
-	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::select(const SlotIterator&  it)
-	{
-		//TODO: Assert
-
-		_holder()->_selectSlots(it._slot(), 1);
-	}
-
-	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::select(int index, int amount)
 	{
 		//TODO: Assert
@@ -76,22 +60,6 @@ namespace wg
 	//____ unselect() _________________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::unselect(int index)
-	{
-		//TODO: Assert
-
-		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_slot(index), 1);
-	}
-
-	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::unselect(const SlotIterator&  it)
-	{
-		//TODO: Assert
-
-		_holder()->_unselectSlots(it._slot(), 1);
-	}
-
-	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::unselect(int index, int amount)
 	{
 		//TODO: Assert
@@ -117,23 +85,6 @@ namespace wg
 		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_begin(), CDynamicSlotArray<SlotType>::size());
 	};
 
-	//____ isSelected() ________________________________________________________
-
-	template <class SlotType>
-	bool CSelectableSlotArray<SlotType>::isSelected(int index)
-	{
-		//TODO: Assert
-
-		return CDynamicSlotArray<SlotType>::_slot(index)->_widget()->state().isSelected();
-	}
-
-	template <class SlotType>
-	bool CSelectableSlotArray<SlotType>::isSelected(const SlotIterator&  it)
-	{
-		//TODO: Assert
-
-		return static_cast<SlotType*>(it._slot())->_widget()->state().isSelected();
-	}
 
 } // namespace wg
 

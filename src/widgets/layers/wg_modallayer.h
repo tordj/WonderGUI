@@ -53,7 +53,7 @@ namespace wg
 
 		const static bool safe_to_relocate = false;
 
-		bool		bVisible = true;
+		bool		m_bVisible = true;
 		Origo		origo = Origo::NorthWest;
 		RectI		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
@@ -208,7 +208,7 @@ namespace wg
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void			_willRemoveSlots(StaticSlot * pSlot, int nb) override;
+		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
 		void			_hideSlots(StaticSlot *, int nb) override;
 		void			_unhideSlots(StaticSlot *, int nb) override;
 		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;

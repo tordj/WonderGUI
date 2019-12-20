@@ -104,8 +104,6 @@ namespace wg
 			out.y = m_windowGeo.y + r.y;
 		}
 
-		out.shrink(padding);
-
 		if (out != m_canvasGeo)
 		{
 			m_canvasGeo = out;
@@ -118,7 +116,7 @@ namespace wg
 
 	SizeI ViewSlot::_sizeFromPolicy(SizeI specifiedSize) const
 	{
-		SizeI	defaultSize = _paddedPreferredSize();
+		SizeI	defaultSize = _preferredSize();
 
 		SizeI	sz;
 
@@ -127,22 +125,22 @@ namespace wg
 		case SizePolicy::Default:
 		{
 			sz.h = Util::sizeFromPolicy(defaultSize.h, specifiedSize.h, m_heightPolicy);
-			sz.w = _paddedMatchingWidth(sz.h);
+			sz.w = _matchingWidth(sz.h);
 			break;
 		case SizePolicy::Bound:
 			sz.w = specifiedSize.w;
-			sz.h = Util::sizeFromPolicy(_paddedMatchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
+			sz.h = Util::sizeFromPolicy(_matchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
 			break;
 		case SizePolicy::Confined:
 			if (defaultSize.w > specifiedSize.w)
 			{
 				sz.w = specifiedSize.w;
-				sz.h = Util::sizeFromPolicy(_paddedMatchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
+				sz.h = Util::sizeFromPolicy(_matchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
 			}
 			else
 			{
 				sz.h = Util::sizeFromPolicy(defaultSize.h, specifiedSize.h, m_heightPolicy);
-				sz.w = _paddedMatchingWidth(sz.h);
+				sz.w = _matchingWidth(sz.h);
 				if (sz.w > specifiedSize.w)
 					sz.w = specifiedSize.w;
 			}
@@ -151,12 +149,12 @@ namespace wg
 			if (defaultSize.w < specifiedSize.w)
 			{
 				sz.w = specifiedSize.w;
-				sz.h = Util::sizeFromPolicy(_paddedMatchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
+				sz.h = Util::sizeFromPolicy(_matchingHeight(sz.w), specifiedSize.h, m_heightPolicy);
 			}
 			else
 			{
 				sz.h = Util::sizeFromPolicy(defaultSize.h, specifiedSize.h, m_heightPolicy);
-				sz.w = _paddedMatchingWidth(sz.h);
+				sz.w = _matchingWidth(sz.h);
 				if (sz.w < specifiedSize.w)
 					sz.w = specifiedSize.w;
 			}
@@ -740,7 +738,7 @@ namespace wg
 		for (int i = 0; i < 2; i++)
 		{
 			ScrollbarSlot * p = &m_scrollbarSlots[i];
-			if (p->bVisible && p->_widget() && p->geo.contains(pos))
+			if (p->m_bVisible && p->_widget() && p->geo.contains(pos))
 			{
 				if (mode != SearchMode::MarkPolicy || p->_markTest(pos - p->geo.pos()))
 					return p->_widget();
@@ -753,7 +751,7 @@ namespace wg
 
 		if( p->m_windowGeo.contains( pos ) )
 		{
-			if( p->bVisible && p->_widget() && p->m_windowGeo.contains( pos ) )
+			if( p->_widget() && p->m_windowGeo.contains( pos ) )
 			{
 				if( p->_widget()->isContainer() )
 				{
@@ -791,7 +789,7 @@ namespace wg
 		SizeI sz;
 
 		if( viewSlot._widget())
-			sz = viewSlot._paddedPreferredSize();
+			sz = viewSlot._preferredSize();
 
 		if( m_scrollbarSlots[0]._widget() && !m_scrollbarSlots[0].bAutoHide )
 		{
@@ -955,8 +953,8 @@ namespace wg
 
 		// Remove padding from dragbars now all geometry calculations have been done
 
-		newDragX.shrink(m_scrollbarSlots[0].padding );
-		newDragY.shrink(m_scrollbarSlots[1].padding );
+		newDragX.shrink(m_scrollbarSlots[0].m_padding );
+		newDragY.shrink(m_scrollbarSlots[1].m_padding );
 
 		// Expand view area again if scrollbars are in overlay mode
 		// The previous calculations were still needed for correct
@@ -1052,15 +1050,15 @@ namespace wg
 		// If something visible has changed we need to update element geometry and request render.
 		// This is more optimized than it looks like...
 
-		if( newWindow != viewSlot.m_windowGeo || bShowDragX != m_scrollbarSlots[0].bVisible || bShowDragY != m_scrollbarSlots[1].bVisible || bNewContentWidth || bNewContentHeight )
+		if( newWindow != viewSlot.m_windowGeo || bShowDragX != m_scrollbarSlots[0].m_bVisible || bShowDragY != m_scrollbarSlots[1].m_bVisible || bNewContentWidth || bNewContentHeight )
 		{
 			viewSlot.m_windowGeo = newWindow;
 			viewSlot._updateCanvasGeo();
 
 			m_scrollbarSlots[0].geo = newDragX;
 			m_scrollbarSlots[1].geo = newDragY;
-			m_scrollbarSlots[0].bVisible = bShowDragX;
-			m_scrollbarSlots[1].bVisible = bShowDragY;
+			m_scrollbarSlots[0].m_bVisible = bShowDragX;
+			m_scrollbarSlots[1].m_bVisible = bShowDragY;
 
 			_requestRender();
 
@@ -1184,7 +1182,7 @@ namespace wg
 
 		for (int i = 0; i < 2; i++)
 		{
-			if (m_scrollbarSlots[i].bVisible)
+			if (m_scrollbarSlots[i].m_bVisible)
 			{
 				RectI canvas = m_scrollbarSlots[i].geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
@@ -1234,11 +1232,11 @@ namespace wg
 				// Mask against dragbars
 
 				ScrollbarSlot * p = &m_scrollbarSlots[0];
-				if( p->bVisible )
+				if( p->m_bVisible )
 					p->_widget()->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
 
 				p++;
-				if( p->bVisible )
+				if( p->m_bVisible )
 					p->_widget()->_maskPatches( patches, p->geo + geo.pos(), clip, blendMode );
 
 				// Maska against corner piece
@@ -1366,16 +1364,12 @@ namespace wg
 		if (_pSlot == &viewSlot)
 		{
 			auto * pSlot = (ViewSlot*)_pSlot;
-
-			if (pSlot->bVisible)
-				_requestRender(pSlot->m_windowGeo);
+			_requestRender(pSlot->m_windowGeo);
 		}
 		else
 		{
 			auto * pSlot = (ScrollbarSlot*)_pSlot;
-
-			if (pSlot->bVisible)
-				_requestRender(pSlot->geo);
+			_requestRender(pSlot->geo);
 		}
 	}
 
@@ -1385,19 +1379,15 @@ namespace wg
 		{
 			auto * pSlot = (ViewSlot*)_pSlot;
 
-			if (pSlot->bVisible)
-			{
-				RectI r(pSlot->m_windowGeo, rect + pSlot->m_canvasGeo.pos());
-				if (!r.isEmpty())
-					_requestRender(r);
-			}
+			RectI r(pSlot->m_windowGeo, rect + pSlot->m_canvasGeo.pos());
+			if (!r.isEmpty())
+				_requestRender(r);
 		}
 		else
 		{
 			auto * pSlot = (ScrollbarSlot*)_pSlot;
 
-			if (pSlot->bVisible)
-				_requestRender(rect + pSlot->geo.pos());
+			_requestRender(rect + pSlot->geo.pos());
 		}
 	}
 
@@ -1514,7 +1504,6 @@ namespace wg
 		if (_pSlot == &viewSlot)
 		{
 			viewSlot._setWidget(pWidget);
-			viewSlot.bVisible = true;
 			_updateElementGeo(m_size);
 			_requestRender(viewSlot.m_windowGeo);		// If geometry is same as the old one, we need to request render ourselves.
 		}

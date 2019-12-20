@@ -42,7 +42,7 @@ namespace wg
 		public:
 			virtual void	_didAddSlots(StaticSlot * pSlot, int nb) = 0;
 			virtual void	_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;
-			virtual void	_willRemoveSlots(StaticSlot * pSlot, int nb) = 0;
+			virtual void	_willEraseSlots(StaticSlot * pSlot, int nb) = 0;
 
 			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
 			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
@@ -85,8 +85,9 @@ namespace wg
 			return -1;
 		}
 
-		inline int		capacity() const override { return m_capacity; }
-		inline void		setCapacity(int capacity) override { if (capacity != m_capacity) _reallocArray(capacity); }
+		inline int		capacity() const { return m_capacity; }
+		inline void		setCapacity(int capacity) { if (capacity != m_capacity) _reallocArray(capacity); }
+		inline void		reserve(int n) { if (m_size + n > m_capacity) _reallocArray(m_size + n); }
 
 		iterator		add(Widget * pWidget);
 		iterator		add(const Widget_p pWidgets[], int amount);
@@ -114,10 +115,10 @@ namespace wg
 		void			insert(int index, const Widget_p pWidgets[], int amount) override;
 		iterator		insert(const SlotIterator& it, const Widget_p pWidgets[], int amount);
 
-		void			remove(int index) override;
-		iterator		remove(const SlotIterator& pos);
-		void			remove(int index, int amount) override;
-		iterator		remove(const SlotIterator& beg, const SlotIterator& end);
+		void			erase(int index) override;
+		iterator		erase(const SlotIterator& pos);
+		void			erase(int index, int amount) override;
+		iterator		erase(const SlotIterator& beg, const SlotIterator& end);
 
 		void			clear() override;
 
@@ -148,9 +149,9 @@ namespace wg
 
 		void			unhideAll() override;
 		
-		inline bool		isVisible(int index) override { return _slot(index)->bVisible; }
+		inline bool		isVisible(int index) override { return _slot(index)->m_bVisible; }
 
-		inline bool		isVisible(const SlotIterator& it) override { return static_cast<const iterator&>(it)._slot()->bVisible; }
+		inline bool		isVisible(const SlotIterator& it) override { return static_cast<const iterator&>(it)._slot()->m_bVisible; }
 
 
 		//.____ Misc _______________________________________________________
@@ -175,8 +176,8 @@ namespace wg
 
 		SlotIterator	_insert(const SlotIterator& it, Widget * pWidget) override;
 		SlotIterator	_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount) override;
-		SlotIterator	_remove(const SlotIterator& it) override;
-		SlotIterator	_remove(const SlotIterator& beg, const SlotIterator& end) override;
+		SlotIterator	_erase(const SlotIterator& it) override;
+		SlotIterator	_erase(const SlotIterator& beg, const SlotIterator& end) override;
 
 		SlotIterator	_moveToFront(const SlotIterator& it) override;
 		SlotIterator	_moveToBack(const SlotIterator& it) override;
@@ -197,10 +198,10 @@ namespace wg
 		SlotType*		_insertEmpty(SlotType * pPos) { return _insertBlock(pPos, 1); }
 		SlotType*		_insertEmpty(SlotType * pPos, int entries) { return _insertBlock(pPos, entries); }
 
-		SlotType*		_remove(int index) { return _deleteBlock(&m_pArray[index], &m_pArray[index + 1]); }
-		SlotType*		_remove(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
-		SlotType*		_remove(SlotType * pPos) { return _deleteBlock(pPos, pPos + 1); }
-		SlotType*		_remove(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
+		SlotType*		_erase(int index) { return _deleteBlock(&m_pArray[index], &m_pArray[index + 1]); }
+		SlotType*		_erase(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
+		SlotType*		_erase(SlotType * pPos) { return _deleteBlock(pPos, pPos + 1); }
+		SlotType*		_erase(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
 
 		void			_move(int index, int newIndex) { _move(&m_pArray[index], &m_pArray[newIndex]); }
 		void			_move(SlotType * pFrom, SlotType * pTo);
