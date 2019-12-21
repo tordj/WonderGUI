@@ -49,18 +49,24 @@ namespace wg
 
 		//____ Holder ___________________________________________________________
 
-		class Holder : public PaddedSlot::Holder
+		class Holder : public PaddedSlot::Holder		/** @private */
 		{
+		public:
+			virtual void	_reweightSlots(PackSlot * pSlot, int nb, float weight) = 0;
 		};
 
 		PackSlot(Holder *pHolder) : PaddedSlot(pHolder) {}
 
+		
+		inline float	weight() const { return m_weight; }
+		inline void		setWeight(float weight) { if (weight != m_weight) static_cast<Holder*>(_holder())->_reweightSlots(this, 1, weight); }
+
 	protected:
 
-		bool			bResizeRequired = false;
-		float			weight = 1.f;				// Weight for space allocation.
-		RectI			geo;						// Real geo of child (no padding included).
-		SizeI			preferredSize;				// Cached padded preferred size from the child.
+		bool			m_bResizeRequired = false;
+		float			m_weight = 1.f;				// Weight for space allocation.
+		RectI			m_geo;						// Real geo of child (no padding included).
+		SizeI			m_preferredSize;				// Cached padded preferred size from the child.
 	};
 
 
@@ -87,15 +93,10 @@ namespace wg
 
 		//.____ Geometry _______________________________________________________
 
-		bool		setWeight(int index, float weight);
-		bool		setWeight(const SlotIterator& it, float weight);
 		bool		setWeight(int index, int amount, float weight);
 		bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, float weight);
 		bool		setWeight(int index, int amount, const std::initializer_list<float> weights);
 		bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, const std::initializer_list<float> weights);
-
-		float		weight(int index) const;
-		float		weight(const SlotIterator&  it) const;
 
 		//.____ Misc __________________________________________________________
 

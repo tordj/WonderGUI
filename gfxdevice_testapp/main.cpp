@@ -786,15 +786,15 @@ bool setup_chrome()
 	pMidSection->slots << pCanvasPanel;
 	pMidSection->slots << pSidebar;
 
-	pMidSection->slots.setWeight(0, 1.f);
-	pMidSection->slots.setWeight(1, 0.f);
+	pMidSection->slots[0].setWeight(1.f);
+	pMidSection->slots[1].setWeight(0.f);
 
 
 	pCanvasPanel->slots << pViewNav;
 	pCanvasPanel->slots << pViewPanel;
 
-	pCanvasPanel->slots.setWeight(0, 0.f);
-	pCanvasPanel->slots.setWeight(1, 1.f);
+	pCanvasPanel->slots[0].setWeight(0.f);
+	pCanvasPanel->slots[1].setWeight(1.f);
 
 
 	// Setup view navigator
@@ -811,11 +811,11 @@ bool setup_chrome()
 	pViewNav->slots << pRightFiller;
 	pViewNav->slots << pDispZoomSection;
 
-	pViewNav->slots.setWeight(0, 0.f);
-	pViewNav->slots.setWeight(1, 1.f);
-	pViewNav->slots.setWeight(2, 0.f);
-	pViewNav->slots.setWeight(3, 1.f);
-	pViewNav->slots.setWeight(4, 0.f);
+	pViewNav->slots[0].setWeight(0.f);
+	pViewNav->slots[1].setWeight(1.f);
+	pViewNav->slots[2].setWeight(0.f);
+	pViewNav->slots[3].setWeight(1.f);
+	pViewNav->slots[4].setWeight(0.f);
 
 	// Setup clip mode section
 

@@ -53,7 +53,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline bool		isEmpty() const { return _slot()->isEmpty(); }
+		inline bool		isEmpty() const { return _slot()->rawWidgetPtr() == nullptr; }
 		inline Widget_p widget() const { return Widget_p(_slot()->_widget()); }
 		inline Widget*	rawWidgetPtr() const { return _slot()->rawWidgetPtr(); }
 
@@ -133,7 +133,6 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline bool		isEmpty() const { return SlotType::isEmpty(); }
 		inline Widget_p widget() const { return Widget_p(SlotType::_widget()); }
 		inline Widget*	rawWidgetPtr() const { return SlotType::rawWidgetPtr(); }
 

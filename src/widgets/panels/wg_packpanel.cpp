@@ -37,26 +37,6 @@ namespace wg
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 
 
-
-	bool CPackSlotArray::setWeight(int index, float weight)
-	{
-		if (index < 0 || index >= size() || weight < 0.f)
-			return false;
-
-		auto pSlot = _slot(index);
-		_holder()->_reweightSlots(pSlot, 1, weight);
-		return true;
-	}
-
-	bool CPackSlotArray::setWeight(const SlotIterator& it, float weight)
-	{
-		//TODO: Add assert
-
-		auto pSlot = static_cast<PackSlot*>(it._slot());
-		_holder()->_reweightSlots(pSlot, 1, weight);
-		return true;
-	}
-
 	bool CPackSlotArray::setWeight(int index, int amount, float weight)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= size() || weight < 0.f)
@@ -96,26 +76,6 @@ namespace wg
 		_holder()->_reweightSlots(pBeg, int(pEnd - pBeg), weights.begin());
 		return true;
 	}
-
-	float CPackSlotArray::weight(int index) const
-	{
-		if (index < 0 || index >= size())
-			return 0.f;
-
-		return _slot(index)->weight;
-
-	}
-
-	float CPackSlotArray::weight(const SlotIterator& it) const
-	{
-		//TODO: Add assert
-
-		auto pSlot = static_cast<PackSlot*>(it._slot());
-		return pSlot->weight;
-	}
-
-
-
 
 	//____ Constructor ____________________________________________________________
 
@@ -238,8 +198,8 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->m_bVisible && pS->preferredSize.h > height )
-							height = pS->preferredSize.h;
+					if( pS->m_bVisible && pS->m_preferredSize.h > height )
+							height = pS->m_preferredSize.h;
 				}
 			}
 		}
@@ -320,8 +280,8 @@ namespace wg
 			{
 				for( auto pS = slots._begin() ; pS != slots._end() ; pS++ )
 				{
-					if( pS->m_bVisible && pS->preferredSize.w > width )
-							width = pS->preferredSize.w;
+					if( pS->m_bVisible && pS->m_preferredSize.w > width )
+							width = pS->m_preferredSize.w;
 				}
 			}
 		}
@@ -391,7 +351,7 @@ namespace wg
 		{
 			PackSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;
+			package.geo = pSlot->m_geo;
 		}
 	}
 
@@ -407,7 +367,7 @@ namespace wg
 		{
 			pSlot++;
 			package.pSlot = pSlot;
-			package.geo = pSlot->geo;
+			package.geo = pSlot->m_geo;
 		}
 	}
 
@@ -472,44 +432,66 @@ namespace wg
 
 	void PackPanel::_reweightSlots(PackSlot * pSlot, int nb, float weight)
 	{
-		for (int i = 0; i < nb; i++)
-			pSlot[i].weight = weight;
+		bool bModified = false;
 
-		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
-			_refreshGeometries();
-		else
-			_refreshChildGeo();
+		for (int i = 0; i < nb; i++)
+		{
+			if (pSlot[i].m_weight != weight)
+			{
+				bModified = true;
+				pSlot[i].m_weight = weight;
+			}
+		}
+
+		if (bModified)
+		{
+			if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+				_refreshGeometries();
+			else
+				_refreshChildGeo();
+		}
 	}
 
 	void PackPanel::_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights)
 	{
-		for (int i = 0; i < nb; i++)
-			pSlot[i].weight = * pWeights++;
+		bool bModified = false;
 
-		if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
-			_refreshGeometries();
-		else
-			_refreshChildGeo();
+		for (int i = 0; i < nb; i++)
+		{
+			if (pSlot[i].m_weight != *pWeights)
+			{
+				bModified = true;
+				pSlot[i].m_weight = * pWeights++;
+			}
+		}
+
+		if (bModified)
+		{
+			if (m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths())
+				_refreshGeometries();
+			else
+				_refreshChildGeo();
+		}
 	}
 
 	//____ _childPos() _______________________________________________________
 
 	CoordI PackPanel::_childPos(const StaticSlot * pSlot) const
 	{
-		return ((PackSlot*)pSlot)->geo;
+		return ((PackSlot*)pSlot)->m_geo;
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
 	void PackPanel::_childRequestRender(StaticSlot * pSlot)
 	{
-		_requestRender( ((PackSlot*)pSlot)->geo );
+		_requestRender( ((PackSlot*)pSlot)->m_geo );
 
 	}
 
 	void PackPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
 	{
-		_requestRender(rect + ((PackSlot*)pSlot)->geo.pos());
+		_requestRender(rect + ((PackSlot*)pSlot)->m_geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -519,8 +501,8 @@ namespace wg
 		// Update cached preferred size of child
 
 		PackSlot * pSlot = static_cast<PackSlot*>(_pSlot);
-		pSlot->preferredSize = pSlot->_paddedPreferredSize();
-		pSlot->bResizeRequired = true;
+		pSlot->m_preferredSize = pSlot->_paddedPreferredSize();
+		pSlot->m_bResizeRequired = true;
 
 		_refreshGeometries();
 	}
@@ -569,7 +551,7 @@ namespace wg
 		if (pSlot->m_bVisible)
 		{
 			pSlot->m_bVisible = true;
-			pSlot->preferredSize = pSlot->_paddedPreferredSize();
+			pSlot->m_preferredSize = pSlot->_paddedPreferredSize();
 		}
 
 	}
@@ -584,7 +566,7 @@ namespace wg
 			if (pSlot[i].m_bVisible == false)
 			{
 				pSlot[i].m_bVisible = true;
-				pSlot[i].preferredSize = pSlot[i]._paddedPreferredSize();
+				pSlot[i].m_preferredSize = pSlot[i]._paddedPreferredSize();
 			}
 		}
 
@@ -683,9 +665,9 @@ namespace wg
 				{
 					if( p->m_bVisible )
 					{
-						length += p->preferredSize.w;
-						if( p->preferredSize.h > breadth )
-							breadth = p->preferredSize.h;
+						length += p->m_preferredSize.w;
+						if( p->m_preferredSize.h > breadth )
+							breadth = p->m_preferredSize.h;
 					}
 				}
 			}
@@ -695,9 +677,9 @@ namespace wg
 				{
 					if( p->m_bVisible )
 					{
-						length += p->preferredSize.h;
-						if( p->preferredSize.w > breadth )
-							breadth = p->preferredSize.w;
+						length += p->m_preferredSize.h;
+						if( p->m_preferredSize.w > breadth )
+							breadth = p->m_preferredSize.w;
 					}
 				}
 			}
@@ -743,45 +725,45 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = p->preferredSize.w;
+						geo.w = p->m_preferredSize.w;
 						geo.h = sz.h;
-						pos.x += p->preferredSize.w;
+						pos.x += p->m_preferredSize.w;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = p->preferredSize.h;
-						pos.y += p->preferredSize.h;
+						geo.h = p->m_preferredSize.h;
+						pos.y += p->m_preferredSize.h;
 					}
 					geo -= p->m_padding;
 					geo += contentOfs;
 
-					if( geo != p->geo )
+					if( geo != p->m_geo )
 					{
 						if (bRequestRender)
 						{
 							_requestRender(geo);
-							_requestRender(p->geo);
+							_requestRender(p->m_geo);
 						}
 
-						int oldW = p->geo.w;
-						int oldH = p->geo.h;
-						p->geo = geo;
+						int oldW = p->m_geo.w;
+						int oldH = p->m_geo.h;
+						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
 							p->_widget()->_resize( geo.size() );
-							p->bResizeRequired = false;
+							p->m_bResizeRequired = false;
 						}
 
 					}
 				}
 				else
 				{
-					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
-						_requestRender(p->geo);
+					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
+						_requestRender(p->m_geo);
 
-					p->geo.x = pos.x + contentOfs.x;
-					p->geo.y = pos.y + contentOfs.y;
+					p->m_geo.x = pos.x + contentOfs.x;
+					p->m_geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -794,10 +776,10 @@ namespace wg
 					}
 				}
 
-				if( p->bResizeRequired )
+				if( p->m_bResizeRequired )
 				{
 					p->_widget()->_resize(geo.size());
-					p->bResizeRequired = false;
+					p->m_bResizeRequired = false;
 				}
 			}
 		}
@@ -839,31 +821,31 @@ namespace wg
 					geo -= p->m_padding;
 					geo += contentOfs;
 
-					if( geo != p->geo )
+					if( geo != p->m_geo )
 					{
 						if( bRequestRender )
 						{
 							_requestRender(geo);
-							_requestRender(p->geo);
+							_requestRender(p->m_geo);
 						}
-						int oldW = p->geo.w;
-						int oldH = p->geo.h;
-						p->geo = geo;
+						int oldW = p->m_geo.w;
+						int oldH = p->m_geo.h;
+						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
 							p->_widget()->_resize( geo.size() );
-							p->bResizeRequired = false;
+							p->m_bResizeRequired = false;
 						}
 					}
 					pI++;
-				}
+				} 
 				else
 				{
-					if( bRequestRender && p->geo.w != 0 && p->geo.h != 0 )
-						_requestRender(p->geo);
+					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )
+						_requestRender(p->m_geo);
 
-					p->geo.x = pos.x + contentOfs.x;
-					p->geo.y = pos.y + contentOfs.y;
+					p->m_geo.x = pos.x + contentOfs.x;
+					p->m_geo.y = pos.y + contentOfs.y;
 					if( m_bHorizontal )
 					{
 						geo.w = 0;
@@ -876,10 +858,10 @@ namespace wg
 					}
 				}
 
-				if (p->bResizeRequired)
+				if (p->m_bResizeRequired)
 				{
 					p->_widget()->_resize(geo.size());
-					p->bResizeRequired = false;
+					p->m_bResizeRequired = false;
 				}
 			}
 
@@ -901,10 +883,10 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->preferredSize.w);
+					pI->preferred = QPix::fromRaw(pS->m_preferredSize.w);
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
 					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
-					pI->weight = pS->weight;
+					pI->weight = pS->m_weight;
 					pI++;
 				}
 			}
@@ -915,10 +897,10 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->preferredSize.h);
+					pI->preferred = QPix::fromRaw(pS->m_preferredSize.h);
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
 					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
-					pI->weight = pS->weight;
+					pI->weight = pS->m_weight;
 					pI++;
 				}
 			}
@@ -940,7 +922,7 @@ namespace wg
 					pI->preferred = QPix::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
 					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
-					pI->weight = pS->weight;
+					pI->weight = pS->m_weight;
 					pI++;
 				}
 			}
@@ -954,7 +936,7 @@ namespace wg
 					pI->preferred = QPix::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
 					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
 					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
-					pI->weight = pS->weight;
+					pI->weight = pS->m_weight;
 					pI++;
 				}
 			}

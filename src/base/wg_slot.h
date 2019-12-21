@@ -61,7 +61,6 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline bool		isEmpty() const { return m_pWidget == nullptr; }
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
 

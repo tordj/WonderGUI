@@ -89,6 +89,15 @@ int main(int argc, char** argv)
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
 
 
+	auto pPackPanel = PackPanel::create();
+
+//	pPackPanel->slots[0].
+
+	auto it = pPackPanel->slots.begin();
+
+	(*it).setWeight(1.0f);
+
+
 
 	// Point test
 /*

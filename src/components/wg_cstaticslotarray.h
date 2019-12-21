@@ -35,7 +35,14 @@ namespace wg
 	{
 	public:
 
+		using reference = SlotType & ;
+
 		//.____ Operators ____________________________________________________________
+
+		inline reference operator*() const
+		{
+			return * static_cast<SlotType*>(pSlot);
+		}
 
 		inline SlotArrayIterator<SlotType>& operator++()
 		{
