@@ -115,9 +115,9 @@ namespace wg
 			auto p = static_cast<DnDLayerSlot*>(pSlot);
 
 			Size pref = p->_preferredSize();
-			Size max = Size::max(pref, p->geo.size());
+			Size max = Size::max(pref, p->m_geo.size());
 
-			_requestRender(Rect({ 0,0,m_size }, { p->geo.pos(), max }));
+			_requestRender(Rect({ 0,0,m_size }, { p->m_geo.pos(), max }));
 			p->setSize(pref);
 		}
 	}
@@ -212,9 +212,9 @@ namespace wg
 
 						// Move the drag-widget onscreen.
 
-						_requestRender(m_dragSlot.geo);
-						m_dragSlot.geo.setPos( pointerPos + m_dragWidgetOfs );
-						_requestRender(m_dragSlot.geo);
+						_requestRender(m_dragSlot.m_geo);
+						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
+						_requestRender(m_dragSlot.m_geo);
 
 // MOVE TO TICK!						// Check if we entered/left a (possible) target.
 
@@ -240,9 +240,9 @@ namespace wg
 
 						// Move the drag-widget onscreen.
 
-						_requestRender(m_dragSlot.geo);
-						m_dragSlot.geo.setPos( pointerPos + m_dragWidgetOfs );
-						_requestRender(m_dragSlot.geo);
+						_requestRender(m_dragSlot.m_geo);
+						m_dragSlot.m_geo.setPos( pointerPos + m_dragWidgetOfs );
+						_requestRender(m_dragSlot.m_geo);
 
 
 // MOVE TO TICK!                        // Check if our target has changed
@@ -376,8 +376,8 @@ namespace wg
 					}
 
 					CoordI mousePos = _toLocal(pMsg->pointerPosRaw());
-					m_dragSlot.geo = { pixelAligned( CoordI(mousePos + m_dragWidgetOfs)), dragWidgetSize };
-					_requestRender(m_dragSlot.geo);
+					m_dragSlot.m_geo = { pixelAligned( CoordI(mousePos + m_dragWidgetOfs)), dragWidgetSize };
+					_requestRender(m_dragSlot.m_geo);
 					m_dragState = DragState::Dragging;
 				}
 				else
@@ -461,7 +461,7 @@ namespace wg
 
 		if( m_dragSlot._widget())
 		{
-			_requestRender(m_dragSlot.geo);
+			_requestRender(m_dragSlot.m_geo);
 			m_dragSlot._setWidget(nullptr);
 		}
 
@@ -488,7 +488,7 @@ namespace wg
 
 		if( m_dragSlot._widget())
 		{
-			_requestRender(m_dragSlot.geo);
+			_requestRender(m_dragSlot.m_geo);
 			m_dragSlot._setWidget(nullptr);
 		}
 
@@ -508,11 +508,11 @@ namespace wg
 		m_dragSlot._setWidget(pNewWidget );
 
 		SizeI newSize = pNewWidget ? m_dragSlot._preferredSize() : SizeI(0, 0);
-		SizeI maxSize = SizeI::max(m_dragSlot.geo.size(), newSize);
+		SizeI maxSize = SizeI::max(m_dragSlot.m_geo.size(), newSize);
 
-		m_dragSlot.geo.setSize(newSize);
+		m_dragSlot.m_geo.setSize(newSize);
 
-		_requestRender({ m_dragSlot.geo.pos(), maxSize });
+		_requestRender({ m_dragSlot.m_geo.pos(), maxSize });
 	}
 
 

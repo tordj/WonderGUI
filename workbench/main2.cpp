@@ -93,9 +93,9 @@ int main(int argc, char** argv)
 
 //	pPackPanel->slots[0].
 
-	auto it = pPackPanel->slots.begin();
+//	auto it = pPackPanel->slots.begin();
 
-	(*it).setWeight(1.0f);
+//	(*it).setWeight(1.0f);
 
 
 
@@ -1617,7 +1617,7 @@ bool stretchBlitTest(CStandardSlot_p pEntry)
 	
 		Coord distance = static_cast<MouseDragMsg*>(pMsg)->draggedNow();
 
-		pBack->slots.setSize(0, pImage->size()+Size(distance.x, distance.y) );
+		pBack->slots[0].setSize(pImage->size()+Size(distance.x, distance.y) );
 	
 	});
 

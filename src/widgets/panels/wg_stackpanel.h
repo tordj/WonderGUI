@@ -47,14 +47,25 @@ namespace wg
 	public:
 		class Holder : public PaddedSlot::Holder
 		{
+		public:
+			virtual void		_setSizePolicy(StackSlot * pSlot, SizePolicy2D policy) = 0;
+			virtual void		_setOrigo(StackSlot * pSlot, Origo origo) = 0;
 		};
 
 		StackSlot(Holder * pHolder) : PaddedSlot(pHolder) {}
 
-	protected:
+		void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
+		inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
 
-		Origo			origo = Origo::Center;
-		SizePolicy2D	SizePolicy = SizePolicy2D::Original;
+		void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
+		inline Origo		origo() const { return m_origo; }
+
+	protected:
+		Holder *		_holder() { return static_cast<Holder*>(PaddedSlot::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(PaddedSlot::_holder()); }
+
+		Origo			m_origo = Origo::Center;
+		SizePolicy2D	m_sizePolicy = SizePolicy2D::Original;
 	};
 
 
@@ -73,29 +84,12 @@ namespace wg
 		{
 		};
 
-		//.____ Geometry ______________________________________________________
-
-		void		setSizePolicy( int index, SizePolicy2D policy );
-		void		setSizePolicy( iterator it, SizePolicy2D policy );
-
-		SizePolicy2D SizePolicy( int index ) const;
-		SizePolicy2D SizePolicy( iterator it ) const;
-
-		void		setOrigo( int index, Origo origo );
-		void		setOrigo( iterator it, Origo origo );
-
-		Origo		origo( int index ) const;
-		Origo		origo( iterator it ) const;
-
 		//.____ Misc __________________________________________________________
 
 		inline CStackSlotArray_p	ptr() { return CStackSlotArray_p(this); }
 
 	protected:
 		CStackSlotArray(Holder * pHolder) : CPaddedSlotArray<StackSlot>(pHolder) {}
-
-		void		_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy );
-		void		_setOrigo( StackSlot * pSlot, Origo origo );
 	};
 
 
@@ -158,6 +152,9 @@ namespace wg
 		void		_unhideSlots( StaticSlot *, int nb ) override;
 		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
+		void		_setSizePolicy(StackSlot * pSlot, SizePolicy2D policy) override;
+		void		_setOrigo(StackSlot * pSlot, Origo origo) override;
+
 
 		// Overloaded from StackSlotHolder
 

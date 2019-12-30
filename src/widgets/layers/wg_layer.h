@@ -48,10 +48,10 @@ namespace wg
 	protected:
 		LayerSlot(Holder * pHolder) : StaticSlot(pHolder) {}
 
-		inline void setSize( SizeI size ) { geo.setSize(size); StaticSlot::_setSize(size); }
-		inline void setGeo(RectI _geo) { geo = _geo; StaticSlot::_setSize(geo.size()); }
+		inline void setSize( SizeI size ) { m_geo.setSize(size); StaticSlot::_setSize(size); }
+		inline void setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
 
-		RectI	geo;
+		RectI	m_geo;
 	};
 
 

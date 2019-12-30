@@ -47,6 +47,135 @@ namespace wg
 												0.5f, 0.5f };
 
 
+
+
+	//____ FlexSlot::setPinned() _______________________________________________
+
+	void FlexSlot::setPinned()
+	{
+		if (!m_bPinned)
+		{
+			m_bPinned = true;
+
+			SizeI sz = _holder()->_size();
+
+			m_topLeftPin = FlexPos(m_realGeo.x / (float)sz.w, m_realGeo.y / (float)sz.h);
+			m_bottomRightPin = FlexPos(m_realGeo.right() / (float)sz.w, m_realGeo.bottom() / (float)sz.h);
+
+			_holder()->_refreshRealGeo(this);
+		}
+	}
+
+	void FlexSlot::setPinned(const FlexPos& topLeft, const FlexPos& bottomRight)
+	{
+		m_bPinned = true;
+		m_topLeftPin = topLeft;
+		m_bottomRightPin = bottomRight;
+
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ FlexSlot::setMovable() _______________________________________________
+
+	void FlexSlot::setMovable(const FlexPos& origo, const FlexPos& hotspot)
+	{
+		if (m_bPinned)
+		{
+			m_bPinned = false;
+			m_origo = origo;
+			m_hotspot = hotspot;
+			m_placementGeo = m_realGeo - origo.rawPos(_holder()->_size()) + hotspot.rawPos(m_realGeo);
+
+			_holder()->_refreshRealGeo(this);
+		}
+	}
+
+	void FlexSlot::setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	{
+		m_bPinned = false;
+		m_origo = origo;
+		m_hotspot = hotspot;
+		m_placementGeo = geometry;
+
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ FlexSlot::setOrigo() __________________________________________________
+
+	bool FlexSlot::setOrigo(const FlexPos& origo)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_origo = origo;
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+	//____ FlexSlot::setHotspot() _________________________________________________
+
+	bool FlexSlot::setHotspot(const FlexPos& hotspot)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_hotspot = hotspot;
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+	//____ FlexSlot::setGeo() ____________________________________________________
+
+	bool FlexSlot::setGeo(const Rect& geometry)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_placementGeo = qpixToRaw(geometry);
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+	//____ FlexSlot::setOffset() __________________________________________________
+
+	bool FlexSlot::setOffset(const Coord& ofs)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_placementGeo.setPos(qpixToRaw(ofs));
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+	//____ FlexSlot::setSize() _____________________________________________________
+
+	bool FlexSlot::setSize(const Size& size)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_placementGeo.setSize(qpixToRaw(size));
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+	//____ FlexSlot::move() _______________________________________________________
+
+	bool FlexSlot::move(const Coord& ofs)
+	{
+		if (m_bPinned)
+			return false;
+
+		m_placementGeo += qpixToRaw(ofs);
+		_holder()->_refreshRealGeo(this);
+		return true;
+	}
+
+
+
+
+
 	//____ addPinned() _________________________________________________________
 
 	CFlexSlotArray::iterator CFlexSlotArray::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
@@ -57,9 +186,9 @@ namespace wg
 		FlexSlot * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->bPinned = true;
-		pSlot->topLeftPin = topLeft;
-		pSlot->bottomRightPin = bottomRight;
+		pSlot->m_bPinned = true;
+		pSlot->m_topLeftPin = topLeft;
+		pSlot->m_bottomRightPin = bottomRight;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -75,9 +204,9 @@ namespace wg
 		FlexSlot * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->placementGeo = qpixToRaw(geometry);
-		pSlot->origo = origo;
-		pSlot->hotspot = hotspot;
+		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_origo = origo;
+		pSlot->m_hotspot = hotspot;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -93,9 +222,9 @@ namespace wg
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
-		pSlot->bPinned = true;
-		pSlot->topLeftPin = topLeft;
-		pSlot->bottomRightPin = bottomRight;
+		pSlot->m_bPinned = true;
+		pSlot->m_topLeftPin = topLeft;
+		pSlot->m_bottomRightPin = bottomRight;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
@@ -111,585 +240,13 @@ namespace wg
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
-		pSlot->placementGeo = qpixToRaw(geometry);
-		pSlot->origo = origo;
-		pSlot->hotspot = hotspot;
+		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_origo = origo;
+		pSlot->m_hotspot = hotspot;
 
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
-
-	//____ setPinned() ________________________________________________________
-
-	void CFlexSlotArray::setPinned( int index )
-	{
-		//TODO: Assert
-
-		_setPinned(_slot(index));
-	}
-
-	void CFlexSlotArray::setPinned(iterator it)
-	{
-		//TODO: Assert
-
-		_setPinned(it._slot());
-	}
-
-	void CFlexSlotArray::setPinned(int index, const FlexPos& topLeft, const FlexPos& bottomRight)
-	{
-		//TODO: Assert
-
-		_setPinned(_slot(index), topLeft, bottomRight);
-	}
-
-	void CFlexSlotArray::setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight )
-	{
-		//TODO: Assert
-
-		_setPinned(it._slot(), topLeft, bottomRight);
-	}
-
-	//____ setMovable() ________________________________________________________
-
-	void CFlexSlotArray::setMovable( int index, const FlexPos& origo, const FlexPos& hotspot )
-	{
-		//TODO: Assert
-
-		_setMovable(_slot(index), origo, hotspot);
-	}
-
-	void CFlexSlotArray::setMovable(iterator it, const FlexPos& origo, const FlexPos& hotspot)
-	{
-		//TODO: Assert
-
-		_setMovable(it._slot(), origo, hotspot);
-	}
-
-	void CFlexSlotArray::setMovable(int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
-	{
-		//TODO: Assert
-
-		_setMovable(_slot(index), qpixToRaw(geometry), origo, hotspot);
-	}
-
-	void CFlexSlotArray::setMovable( iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
-	{
-		//TODO: Assert
-
-		_setMovable(it._slot(), qpixToRaw(geometry), origo, hotspot);
-	}
-/*
-	//____ moveToBack() ________________________________________________________
-
-	void CFlexSlotArray::moveToBack( int index )
-	{
-		//TODO: Assert
-
-		_moveBelow( _slot(index),m_pSlotArray->first() );
-	}
-
-	CFlexSlotArray::iterator CFlexSlotArray::moveToBack(iterator it)
-	{
-		//TODO: Assert
-
-		return iterator( _moveBelow(it._slot(), m_pSlotArray->first()) );
-	}
-
-	//____ moveToFront() ________________________________________________________
-
-	void CFlexSlotArray::moveToFront( int index )
-	{
-		//TODO: Assert
-
-		_moveAbove( _slot(index), m_pSlotArray->last() );
-	}
-
-	CFlexSlotArray::iterator CFlexSlotArray::moveToFront(iterator it)
-	{
-		//TODO: Assert
-
-		return iterator( _moveAbove(it._slot(), m_pSlotArray->last()) );
-	}
-
-	//____ moveAbove() ________________________________________________________
-
-	void CFlexSlotArray::moveAbove( int index, int sibling )
-	{
-		//TODO: Assert
-
-		_moveAbove(_slot(index), _slot(sibling));
-	}
-
-	CFlexSlotArray::iterator CFlexSlotArray::moveAbove(iterator it, iterator sibling)
-	{
-		//TODO: Assert
-
-		return iterator( _moveAbove(it._slot(), sibling._slot()) );
-	}
-
-
-	//____ moveBelow() ________________________________________________________
-
-	void CFlexSlotArray::moveBelow(int index, int sibling)
-	{
-		//TODO: Assert!
-
-		_moveBelow(_slot(index), _slot(sibling));
-	}
-
-	CFlexSlotArray::iterator CFlexSlotArray::moveBelow(iterator it, iterator sibling)
-	{
-		//TODO: Assert
-
-		return iterator(_moveBelow(it._slot(), sibling._slot()));
-	}
-*/
-
-
-	//____ isMovable() ________________________________________________________
-
-	bool CFlexSlotArray::isMovable( int index ) const
-	{
-		//TODO: Assert!
-
-		return !_slot(index)->bPinned;
-	}
-
-	bool CFlexSlotArray::isMovable(iterator it) const
-	{
-		//TODO: Assert!
-
-		return !it._slot()->bPinned;
-	}
-
-
-	//____ isPinned() ________________________________________________________
-
-	bool CFlexSlotArray::isPinned(int index) const
-	{
-		//TODO: Assert!
-
-		return _slot(index)->bPinned;
-	}
-
-	bool CFlexSlotArray::isPinned( iterator it ) const
-	{
-		//TODO: Assert!
-
-		return it._slot()->bPinned;
-	}
-
-	//____ setOrigo() ________________________________________________________
-
-	bool CFlexSlotArray::setOrigo( int index, const FlexPos& origo )
-	{
-		//TODO: Assert!
-
-		return _setOrigo(_slot(index), origo);
-	}
-
-	bool CFlexSlotArray::setOrigo( iterator it, const FlexPos& origo)
-	{
-		//TODO: Assert!
-
-		return _setOrigo(it._slot(), origo);
-	}
-
-
-	//____ origo() ________________________________________________________
-
-	FlexPos CFlexSlotArray::origo( int index ) const
-	{
-		//TODO: Assert!
-
-		return _origo(_slot(index));
-	}
-
-	FlexPos CFlexSlotArray::origo( iterator it ) const
-	{
-		//TODO: Assert!
-
-		return _origo(it._slot());
-	}
-
-
-	//____ setHotspot() ________________________________________________________
-
-	bool CFlexSlotArray::setHotspot( int index, const FlexPos& hotspot )
-	{
-		//TODO: Assert!
-
-		return _setHotspot(_slot(index), hotspot);
-	}
-
-	bool CFlexSlotArray::setHotspot(iterator it, const FlexPos& hotspot)
-	{
-		//TODO: Assert!
-
-		return _setHotspot(it._slot(), hotspot);
-	}
-
-	//____ hotspot() ________________________________________________________
-
-	FlexPos CFlexSlotArray::hotspot( int index ) const
-	{
-		//TODO: Assert!
-
-		return _hotspot( _slot(index) );
-	}
-
-	FlexPos CFlexSlotArray::hotspot(iterator it) const
-	{
-		//TODO: Assert!
-
-		return _hotspot(it._slot());
-	}
-
-
-	//____ setGeo() ________________________________________________________
-
-	bool CFlexSlotArray::setGeo( int index, const Rect& geometry )
-	{
-		//TODO: Assert!
-
-		return _setGeo(_slot(index), qpixToRaw(geometry));
-	}
-
-	bool CFlexSlotArray::setGeo(iterator it, const Rect& geometry)
-	{
-		//TODO: Assert!
-
-		return _setGeo(it._slot(), qpixToRaw(geometry));
-	}
-
-	//____ geo() ________________________________________________________
-
-	Rect CFlexSlotArray::geo( int index ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_geo(_slot(index)));
-	}
-
-	Rect CFlexSlotArray::geo( iterator it ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_geo(it._slot()));
-	}
-
-
-	//____ setOfs() ________________________________________________________
-
-	bool CFlexSlotArray::setOfs( int index, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		return _setOfs(_slot(index), qpixToRaw(ofs));
-	}
-
-	bool CFlexSlotArray::setOfs( iterator it, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		return _setOfs(it._slot(), qpixToRaw(ofs));
-	}
-
-	//____ ofs() ________________________________________________________
-
-	Coord CFlexSlotArray::ofs( int index ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_ofs(_slot(index)));
-	}
-
-	Coord CFlexSlotArray::ofs( iterator it ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_ofs(it._slot()));
-	}
-
-	//____ setSize() ________________________________________________________
-
-	bool CFlexSlotArray::setSize( int index, const Size& size )
-	{
-		//TODO: Assert
-
-		return _setSize(_slot(index), qpixToRaw(size) );
-	}
-
-	bool CFlexSlotArray::setSize( iterator it, const Size& size )
-	{
-		//TODO: Assert
-
-		return _setSize(it._slot(), qpixToRaw(size) );
-	}
-
-	//____ size() ________________________________________________________
-
-	Rect CFlexSlotArray::size( int index ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_size(_slot(index)));
-	}
-
-	Rect CFlexSlotArray::size( iterator it ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_size(it._slot()));
-	}
-
-	//____ move() ________________________________________________________
-
-	bool CFlexSlotArray::move( int index, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		return _move(_slot(index), qpixToRaw(ofs));
-	}
-
-	bool CFlexSlotArray::move( iterator it, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		return _move(it._slot(), qpixToRaw(ofs));
-	}
-
-	//____ topLeftCorner() ________________________________________________________
-
-	FlexPos CFlexSlotArray::topLeftCorner( int index ) const
-	{
-		//TODO: Assert
-
-		return _topLeftCorner(_slot(index));
-	}
-
-	FlexPos CFlexSlotArray::topLeftCorner( iterator it ) const
-	{
-		//TODO: Assert
-
-		return _topLeftCorner(it._slot());
-	}
-
-	//____ bottomRightCorner() ________________________________________________________
-
-	FlexPos CFlexSlotArray::bottomRightCorner( int index ) const
-	{
-		//TODO: Assert
-
-		return _bottomRightCorner(_slot(index));
-	}
-
-	FlexPos CFlexSlotArray::bottomRightCorner( iterator it ) const
-	{
-		//TODO: Assert
-
-		return _bottomRightCorner(it._slot());
-	}
-
-	//____ _setPinned() ________________________________________________________
-
-	void CFlexSlotArray::_setPinned(FlexSlot * p)
-	{
-		if (!p->bPinned)
-		{
-			p->bPinned = true;
-
-			SizeI sz = _holder()->_size();
-
-			p->topLeftPin = FlexPos(p->realGeo.x / (float)sz.w, p->realGeo.y / (float)sz.h);
-			p->bottomRightPin = FlexPos(p->realGeo.right() / (float)sz.w, p->realGeo.bottom() / (float)sz.h);
-
-			_holder()->_refreshRealGeo(p);
-		}
-	}
-
-	void CFlexSlotArray::_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight)
-	{
-		p->bPinned = true;
-		p->topLeftPin = topLeft;
-		p->bottomRightPin = bottomRight;
-
-		_holder()->_refreshRealGeo(p);
-	}
-
-	//____ _setMovable() ________________________________________________________
-
-	void CFlexSlotArray::_setMovable(FlexSlot * p, const FlexPos& origo, const FlexPos& hotspot)
-	{
-		if (p->bPinned)
-		{
-			p->bPinned = false;
-			p->origo = origo;
-			p->hotspot = hotspot;
-			p->placementGeo = p->realGeo - origo.rawPos(_holder()->_size()) + hotspot.rawPos(p->realGeo);
-
-			_holder()->_refreshRealGeo(p);
-		}
-	}
-
-	void CFlexSlotArray::_setMovable(FlexSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot)
-	{
-		p->bPinned = false;
-		p->origo = origo;
-		p->hotspot = hotspot;
-		p->placementGeo = geometry;
-
-		_holder()->_refreshRealGeo(p);
-	}
-
-	//____ _setOrigo() ________________________________________________________
-
-	bool CFlexSlotArray::_setOrigo(FlexSlot * p, const FlexPos& origo)
-	{
-		if (p->bPinned)
-			return false;
-
-		p->origo = origo;
-		_holder()->_refreshRealGeo(p);
-
-		return true;
-	}
-
-	//____ _origo() ________________________________________________________
-
-	FlexPos CFlexSlotArray::_origo(FlexSlot * p) const
-	{
-		if (p->bPinned)
-			return FlexPos();
-
-		return p->origo;
-	}
-
-	//____ _setHotspot() ________________________________________________________
-
-	bool CFlexSlotArray::_setHotspot(FlexSlot * p, const FlexPos& hotspot)
-	{
-		if (p->bPinned)
-			return false;
-
-		p->hotspot = hotspot;
-		_holder()->_refreshRealGeo(p);
-
-		return true;
-	}
-
-	//____ _hotspot() ________________________________________________________
-
-	FlexPos CFlexSlotArray::_hotspot(FlexSlot * p) const
-	{
-		if (p->bPinned)
-			return FlexPos();
-
-		return p->hotspot;
-	}
-
-	//____ _setGeo() ________________________________________________________
-
-	bool CFlexSlotArray::_setGeo(FlexSlot * p, const RectI& geometry)
-	{
-		if (p->bPinned)
-			return false;
-
-		p->placementGeo = geometry;
-		_holder()->_refreshRealGeo(p);
-
-		return true;
-	}
-
-	//____ _geo() ________________________________________________________
-
-	RectI CFlexSlotArray::_geo(FlexSlot * p) const
-	{
-		if (p->bPinned)
-			return RectI();
-
-		return p->placementGeo;
-	}
-
-	//____ _setOfs() ________________________________________________________
-
-	bool CFlexSlotArray::_setOfs( FlexSlot * p, const CoordI& ofs )
-	{
-		if( p->bPinned )
-			return false;
-
-		p->placementGeo.setPos(ofs);
-		_holder()->_refreshRealGeo( p );
-
-		return true;
-	}
-
-	//____ _ofs() ________________________________________________________
-
-	CoordI CFlexSlotArray::_ofs( FlexSlot * p ) const
-	{
-		if( p->bPinned )
-			return CoordI();
-
-		return p->placementGeo.pos();
-	}
-
-	//____ _setSize() ________________________________________________________
-
-	bool CFlexSlotArray::_setSize( FlexSlot * p, const SizeI& size )
-	{
-		if( p->bPinned )
-			return false;
-
-		p->placementGeo.setSize(size);
-		_holder()->_refreshRealGeo( p );
-
-		return true;
-	}
-
-	//____ _size() ________________________________________________________
-
-	RectI CFlexSlotArray::_size( FlexSlot * p ) const
-	{
-		if( p->bPinned )
-			return SizeI();
-
-		return p->placementGeo.size();
-	}
-
-	//____ _move() ________________________________________________________
-
-	bool CFlexSlotArray::_move( FlexSlot * p, const CoordI& ofs )
-	{
-		if( p->bPinned )
-			return false;
-
-		p->placementGeo += ofs;
-		_holder()->_refreshRealGeo( p );
-
-		return true;
-	}
-
-	//____ _topLeftCorner() ________________________________________________________
-
-	FlexPos CFlexSlotArray::_topLeftCorner( FlexSlot * p ) const
-	{
-		if( !p->bPinned )
-			return FlexPos();
-
-		return p->topLeftPin;
-	}
-
-	//____ _bottomRightCorner() ________________________________________________________
-
-	FlexPos CFlexSlotArray::_bottomRightCorner( FlexSlot * p ) const
-	{
-		if( !p->bPinned )
-			return FlexPos();
-
-		return p->bottomRightPin;
-	}
-
 
 	//____ Constructor ____________________________________________________________
 
@@ -787,7 +344,7 @@ namespace wg
 				FlexSlot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectI cover(pTo->realGeo, p->realGeo);
+					RectI cover(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -801,7 +358,7 @@ namespace wg
 				FlexSlot * p = pFrom;
 				while (p < pTo)
 				{
-					RectI cover(pTo->realGeo, p->realGeo);
+					RectI cover(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -838,7 +395,7 @@ namespace wg
 		{
 			if( pSlot[i].m_bVisible == true )
 			{
-				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
+				_onRequestRender(pSlot[i].m_realGeo, &pSlot[i]);
 				pSlot[i].m_bVisible = false;					// Needs to be done AFTER _onRequestRender()!
 			}
 		}
@@ -856,7 +413,7 @@ namespace wg
 			{
 				pSlot[i].m_bVisible = true;
 				_refreshRealGeo(&pSlot[i]);
-				_onRequestRender(pSlot[i].realGeo, &pSlot[i]);
+				_onRequestRender(pSlot[i].m_realGeo, &pSlot[i]);
 			}
 		}
 	}
@@ -878,8 +435,8 @@ namespace wg
 
 		for(FlexSlot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
-			if( pCover->m_bVisible && pCover->realGeo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
+			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
+				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -915,7 +472,7 @@ namespace wg
 
 	CoordI FlexPanel::_childPos( const StaticSlot * pSlot ) const
 	{
-		return ((FlexSlot*)pSlot)->realGeo.pos();
+		return ((FlexSlot*)pSlot)->m_realGeo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
@@ -923,13 +480,13 @@ namespace wg
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
-		_onRequestRender( pSlot->realGeo, pSlot );
+		_onRequestRender( pSlot->m_realGeo, pSlot );
 	}
 
 	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
 		FlexSlot * pSlot = static_cast<FlexSlot*>(_pSlot);
-		_onRequestRender( rect + pSlot->realGeo.pos(), pSlot );
+		_onRequestRender( rect + pSlot->m_realGeo.pos(), pSlot );
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -1006,7 +563,7 @@ namespace wg
 		if (pSlot->m_bVisible )
 		{
 			_refreshRealGeo(pSlot, true);
-			_onRequestRender(pSlot->realGeo, pSlot);
+			_onRequestRender(pSlot->m_realGeo, pSlot);
 		}
 	}
 
@@ -1021,7 +578,7 @@ namespace wg
 		{
 			FlexSlot * pSlot = slots._first();
 			package.pSlot = pSlot;
-			package.geo = pSlot->realGeo;
+			package.geo = pSlot->m_realGeo;
 		}
 	}
 
@@ -1037,7 +594,7 @@ namespace wg
 		{
 			pSlot++;
 			package.pSlot = pSlot;
-			package.geo = pSlot->realGeo;
+			package.geo = pSlot->m_realGeo;
 		}
 	}
 
@@ -1048,10 +605,10 @@ namespace wg
 	{
 		RectI	geo;
 
-		if( pSlot->bPinned )
+		if( pSlot->m_bPinned )
 		{
-			CoordI topLeft = pSlot->topLeftPin.rawPos( m_size );
-			CoordI bottomRight = pSlot->bottomRightPin.rawPos( m_size );
+			CoordI topLeft = pSlot->m_topLeftPin.rawPos( m_size );
+			CoordI bottomRight = pSlot->m_bottomRightPin.rawPos( m_size );
 
 			geo = RectI(topLeft,bottomRight);
 
@@ -1071,14 +628,14 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeI sz = pSlot->placementGeo.isEmpty() ? pSlot->_preferredSize() : pSlot->placementGeo.size();
+			SizeI sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_preferredSize() : pSlot->m_placementGeo.size();
 			sz.limit( pSlot->_minSize(), pSlot->_maxSize() );		// Respect widgets limits.
 
 			// Calculate position
 
-			CoordI pos = pSlot->origo.rawPos( m_size );			// Origo,
-			pos -= pSlot->hotspot.rawPos(sz);					// hotspot
-			pos += pSlot->placementGeo.pos();				// and Offset.
+			CoordI pos = pSlot->m_origo.rawPos( m_size );			// Origo,
+			pos -= pSlot->m_hotspot.rawPos(sz);					// hotspot
+			pos += pSlot->m_placementGeo.pos();				// and Offset.
 
 			// Limit size/pos according to parent
 
@@ -1100,11 +657,11 @@ namespace wg
 
 		// Request render and update positions.
 
-		if (geo != pSlot->realGeo)
+		if (geo != pSlot->m_realGeo)
 		{
-			_onRequestRender(pSlot->realGeo, pSlot);
-			pSlot->realGeo = geo;
-			_onRequestRender(pSlot->realGeo, pSlot);
+			_onRequestRender(pSlot->m_realGeo, pSlot);
+			pSlot->m_realGeo = geo;
+			_onRequestRender(pSlot->m_realGeo, pSlot);
 		}
 
 		if (bForceResize || pSlot->_size() != geo.size())
@@ -1117,22 +674,22 @@ namespace wg
 	{
 		SizeI sz;
 
-		if( pSlot->bPinned )
+		if( pSlot->m_bPinned )
 		{
 			sz = pSlot->_preferredSize();
 
-			sz += SizeI( pSlot->topLeftPin.offset.x, pSlot->topLeftPin.offset.y );
-			sz -= SizeI( pSlot->bottomRightPin.offset.x, pSlot->bottomRightPin.offset.y );
+			sz += SizeI( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
+			sz -= SizeI( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );
 
-			sz.w = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.x - pSlot->topLeftPin.origo.x));
-			sz.h = (int) (sz.w / (float) (pSlot->bottomRightPin.origo.y - pSlot->topLeftPin.origo.y));
+			sz.w = (int) (sz.w / (float) (pSlot->m_bottomRightPin.origo.x - pSlot->m_topLeftPin.origo.x));
+			sz.h = (int) (sz.w / (float) (pSlot->m_bottomRightPin.origo.y - pSlot->m_topLeftPin.origo.y));
 		}
 		else
 		{
-			RectI geo = pSlot->placementGeo;
+			RectI geo = pSlot->m_placementGeo;
 
-			CoordI hotspot = pSlot->hotspot.rawPos(geo.size());
-			CoordI offset = geo.pos() + pSlot->origo.offset - hotspot;
+			CoordI hotspot = pSlot->m_hotspot.rawPos(geo.size());
+			CoordI offset = geo.pos() + pSlot->m_origo.offset - hotspot;
 
 			int leftOfOrigo = 0 - offset.x;
 			int rightOfOrigo = offset.x + geo.w;
@@ -1140,21 +697,21 @@ namespace wg
 			int belowOrigo = offset.y + geo.h;
 
 			if( leftOfOrigo > 0 )
-				sz.w = (int) (leftOfOrigo / pSlot->origo.origo.x);
+				sz.w = (int) (leftOfOrigo / pSlot->m_origo.origo.x);
 
 			if( rightOfOrigo > 0 )
 			{
-				int w = (int) (rightOfOrigo / (1.f - pSlot->origo.origo.x) );
+				int w = (int) (rightOfOrigo / (1.f - pSlot->m_origo.origo.x) );
 				if( sz.w < w )
 					sz.w = w;
 			}
 
 			if( aboveOrigo > 0 )
-				sz.h = (int) (aboveOrigo / pSlot->origo.origo.y);
+				sz.h = (int) (aboveOrigo / pSlot->m_origo.origo.y);
 
 			if( belowOrigo > 0 )
 			{
-				int h = (int) (belowOrigo / (1.f - pSlot->origo.origo.y) );
+				int h = (int) (belowOrigo / (1.f - pSlot->m_origo.origo.y) );
 				if( sz.h < h )
 					sz.h = h;
 			}

@@ -351,19 +351,19 @@ namespace wg
 			RectI entryGeo( contentRect );
 			if( m_bHorizontal )
 			{
-				if( pSlot->ofs >= contentRect.w )
+				if( pSlot->m_ofs >= contentRect.w )
 					break;
 
-				entryGeo.x += pSlot->ofs;
-				entryGeo.w = pSlot->length;
+				entryGeo.x += pSlot->m_ofs;
+				entryGeo.w = pSlot->m_length;
 			}
 			else
 			{
-				if( pSlot->ofs >= contentRect.h )
+				if( pSlot->m_ofs >= contentRect.h )
 					break;
 
-				entryGeo.y += pSlot->ofs;
-				entryGeo.h = pSlot->length;
+				entryGeo.y += pSlot->m_ofs;
+				entryGeo.h = pSlot->m_length;
 			}
 
 			Skin * pEntrySkin    = m_pEntrySkin[i&0x1].rawPtr();
@@ -459,8 +459,8 @@ namespace wg
 				if( m_bHorizontal )
 				{
 					int newEntryLength = _paddedLimitedMatchingWidth(pSlot, newContentBreadth );
-					pSlot->ofs = ofs;
-					pSlot->length = newEntryLength;
+					pSlot->m_ofs = ofs;
+					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
 					pWidget->_resize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
@@ -468,8 +468,8 @@ namespace wg
 				else
 				{
 					int newEntryLength = _paddedLimitedMatchingHeight(pSlot, newContentBreadth );
-					pSlot->ofs = ofs;
-					pSlot->length = newEntryLength;
+					pSlot->m_ofs = ofs;
+					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
 					pWidget->_resize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
@@ -509,31 +509,31 @@ namespace wg
 			if( m_bHorizontal )
 			{
 				_addToContentPreferredSize( pref.w, pref.h );
-				pSlot->ofs = ofs;
+				pSlot->m_ofs = ofs;
 
 				// Get entry length and breadth
 
 				if( pref.h == m_contentBreadth )
-					pSlot->length = pref.w;
+					pSlot->m_length = pref.w;
 				else
-					pSlot->length	= _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
-				pSlot->prefBreadth = pref.h;
-				ofs += pSlot->length;
+					pSlot->m_length	= _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
+				pSlot->m_prefBreadth = pref.h;
+				ofs += pSlot->m_length;
 
 			}
 			else
 			{
 				_addToContentPreferredSize( pref.h, pref.w );
-				pSlot->ofs = ofs;
+				pSlot->m_ofs = ofs;
 
 				// Get entry length and breadth
 
 				if( pref.w == m_contentBreadth )
-					pSlot->length = pref.h;
+					pSlot->m_length = pref.h;
 				else
-					pSlot->length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
-				pSlot->prefBreadth = pref.w;
-				ofs += pSlot->length;
+					pSlot->m_length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
+				pSlot->m_prefBreadth = pref.w;
+				ofs += pSlot->m_length;
 			}
 		}
 		m_contentLength = ofs;
@@ -729,8 +729,8 @@ namespace wg
 				else
 					_subFromContentPreferredSize(pref.h, pref.w);
 
-				m_contentLength -= pSlot[i].length;
-				pSlot[i].length = 0;
+				m_contentLength -= pSlot[i].m_length;
+				pSlot[i].m_length = 0;
 			}
 		}
 
@@ -760,10 +760,10 @@ namespace wg
 					// Get entry length and breadth
 
 					if (pref.h == m_contentBreadth)
-						pSlot[i].length = pref.w;
+						pSlot[i].m_length = pref.w;
 					else
-						pSlot[i].length = _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
-					pSlot[i].prefBreadth = pref.h;
+						pSlot[i].m_length = _paddedLimitedMatchingWidth(pSlot, m_contentBreadth);
+					pSlot[i].m_prefBreadth = pref.h;
 				}
 				else
 				{
@@ -772,14 +772,14 @@ namespace wg
 					// Get entry length and breadth
 
 					if (pref.w == m_contentBreadth)
-						pSlot[i].length = pref.h;
+						pSlot[i].m_length = pref.h;
 					else
-						pSlot[i].length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
-					pSlot[i].prefBreadth = pref.w;
+						pSlot[i].m_length = _paddedLimitedMatchingHeight(pSlot, m_contentBreadth);
+					pSlot[i].m_prefBreadth = pref.w;
 
 				}
 
-				m_contentLength += pSlot[i].length;
+				m_contentLength += pSlot[i].m_length;
 
 				RectI childGeo;
 				_getChildGeo(childGeo, pSlot + i);
@@ -838,9 +838,9 @@ namespace wg
 		{
 			PackListSlot * pSlot = slots._slot(middle);
 
-			if( pSlot->ofs + pSlot->length < pixelofs )
+			if( pSlot->m_ofs + pSlot->m_length < pixelofs )
 				first = middle + 1;
-			else if( pSlot->ofs <= pixelofs )
+			else if( pSlot->m_ofs <= pixelofs )
 				return middle;
 			else
 				last = middle - 1;
@@ -977,14 +977,14 @@ namespace wg
 				int highest = 0;
 				for( PackListSlot * p = slots._begin() ; p < slots._end() ; p++ )
 				{
-					if (p->prefBreadth == breadth)
+					if (p->m_prefBreadth == breadth)
 						continue;
 
-					if( p->prefBreadth == highest )
+					if( p->m_prefBreadth == highest )
 						m_nbPreferredBreadthEntries++;
-					else if( p->prefBreadth > highest )
+					else if( p->m_prefBreadth > highest )
 					{
-						highest = p->prefBreadth;
+						highest = p->m_prefBreadth;
 						m_nbPreferredBreadthEntries = 1;
 					}
 				}
@@ -1000,8 +1000,8 @@ namespace wg
 	{
 		RectI box = _listArea();
 
-		int beg = pBegin->ofs;
-		int end = pEnd < slots._end() ? pEnd->ofs + pEnd->length : m_contentLength;
+		int beg = pBegin->m_ofs;
+		int end = pEnd < slots._end() ? pEnd->m_ofs + pEnd->m_length : m_contentLength;
 
 
 		if (m_bHorizontal)
@@ -1025,12 +1025,12 @@ namespace wg
 	{
 		int ofs = 0;
 		if( pSlot > slots._begin() )
-			ofs = pSlot[-1].ofs + pSlot[-1].length;
+			ofs = pSlot[-1].m_ofs + pSlot[-1].m_length;
 
 		while( pSlot < slots._end() )
 		{
-			pSlot->ofs = ofs;
-			ofs += pSlot->length;
+			pSlot->m_ofs = ofs;
+			ofs += pSlot->m_length;
 			pSlot++;
 		}
 	}
@@ -1081,13 +1081,13 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			geo.x += pSlot->ofs;
-			geo.w = pSlot->length;
+			geo.x += pSlot->m_ofs;
+			geo.w = pSlot->m_length;
 		}
 		else
 		{
-			geo.y += pSlot->ofs;
-			geo.h = pSlot->length;
+			geo.y += pSlot->m_ofs;
+			geo.h = pSlot->m_length;
 		}
 	}
 
@@ -1100,13 +1100,13 @@ namespace wg
 
 		if( m_bHorizontal )
 		{
-			geo.x += pSlot->ofs;
-			geo.w = pSlot->length;
+			geo.x += pSlot->m_ofs;
+			geo.w = pSlot->m_length;
 		}
 		else
 		{
-			geo.y += pSlot->ofs;
-			geo.h = pSlot->length;
+			geo.y += pSlot->m_ofs;
+			geo.h = pSlot->m_length;
 		}
 
 		// Apply any padding from the entry skin, if entry visible
@@ -1224,14 +1224,14 @@ namespace wg
 
 			// Update preferred sizes
 
-			if( prefBreadth != pSlot->prefBreadth || prefLength != pSlot->length )
+			if( prefBreadth != pSlot->m_prefBreadth || prefLength != pSlot->m_length )
 			{
 				// NOTE: Order here is important!
 
 				_addToContentPreferredSize( prefLength, prefBreadth );
-				int oldPrefBreadth = pSlot->prefBreadth;
-				pSlot->prefBreadth = prefBreadth;
-				_subFromContentPreferredSize( pSlot->length, oldPrefBreadth );
+				int oldPrefBreadth = pSlot->m_prefBreadth;
+				pSlot->m_prefBreadth = prefBreadth;
+				_subFromContentPreferredSize( pSlot->m_length, oldPrefBreadth );
 
 				bReqResize = true;
 			}
@@ -1246,10 +1246,10 @@ namespace wg
 
 			// Update if length has changed
 
-			if( length != pSlot->length )
+			if( length != pSlot->m_length )
 			{
-				m_contentLength += length - pSlot->length;
-				pSlot->length = length;
+				m_contentLength += length - pSlot->m_length;
+				pSlot->m_length = length;
 				bReqResize = true;
 
 				_updateChildOfsFrom( pSlot );

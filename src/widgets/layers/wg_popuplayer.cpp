@@ -279,11 +279,11 @@ namespace wg
 
 		// Update geometry if it has changed.
 
-		if (geo != pSlot->geo)
+		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->geo, pSlot);
-			pSlot->geo = geo;
-			_onRequestRender(pSlot->geo, pSlot);
+			_onRequestRender(pSlot->m_geo, pSlot);
+			pSlot->m_geo = geo;
+			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
 		if (bForceResize || pSlot->_size() != geo.size())
@@ -307,11 +307,11 @@ namespace wg
 
 			while( pSlot != popupSlots._end() && !pResult )
 			{
-				if( pSlot->geo.contains( ofs ) )
+				if( pSlot->m_geo.contains( ofs ) )
 				{
 					if( pSlot->_widget()->isContainer() )
-						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
-					else if( pSlot->_markTest( ofs - pSlot->geo.pos() ) )
+						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
+					else if( pSlot->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
 				}
 				pSlot++;
@@ -376,8 +376,8 @@ namespace wg
 
 			while (pCover >= popupSlots._begin())
 			{
-				if (pCover->geo.intersectsWith(rect) && pCover->state != PopupSlot::State::OpeningDelay && pCover->state != PopupSlot::State::Opening && pCover->state != PopupSlot::State::Closing)
-					pCover->_widget()->_maskPatches(patches, pCover->geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
+				if (pCover->m_geo.intersectsWith(rect) && pCover->state != PopupSlot::State::OpeningDelay && pCover->state != PopupSlot::State::Opening && pCover->state != PopupSlot::State::Closing)
+					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 				pCover--;
 			}
@@ -418,7 +418,7 @@ namespace wg
 
 		for( auto pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++ )
 		{
-			RectI geo = pSlot->geo + _canvas.pos();
+			RectI geo = pSlot->m_geo + _canvas.pos();
 
 			if (geo.intersectsWith(dirtBounds) && pSlot->state != PopupSlot::State::OpeningDelay)
 				renderList.push_back(WidgetRenderContext(pSlot, geo));
@@ -549,7 +549,7 @@ namespace wg
 						}
 					case PopupSlot::State::Opening:
 						popup.stateCounter += ms;
-						_requestRender(popup.geo);
+						_requestRender(popup.m_geo);
 						if (popup.stateCounter >= m_openingFadeMs)
 						{
 							popup.stateCounter = 0;
@@ -571,7 +571,7 @@ namespace wg
 						}
 					case PopupSlot::State::Closing:
 						popup.stateCounter += ms;
-						_requestRender(popup.geo);
+						_requestRender(popup.m_geo);
 						// Removing any closed popups is done in next loop
 						break;
 					default:
@@ -603,7 +603,7 @@ namespace wg
 					// Promote popup to state WeakOpen if pointer has entered its geo,
 					// otherwise begin delayed closing if pointer has left launcherGeo.
 
-					if (pSlot->geo.contains(pointerPos))
+					if (pSlot->m_geo.contains(pointerPos))
 						pSlot->state = PopupSlot::State::WeakOpen;
 					else if (!pSlot->launcherGeo.contains(pointerPos))
 					{
@@ -628,7 +628,7 @@ namespace wg
 							popup.state = PopupSlot::State::PeekOpen;
 							popup.stateCounter = 0;
 						}
-						else if (popup.geo.contains(pointerPos))
+						else if (popup.m_geo.contains(pointerPos))
 						{
 							PopupSlot * p = &popup;
 							while (p != popupSlots._end() && p->state == PopupSlot::State::ClosingDelay)
@@ -858,7 +858,7 @@ namespace wg
 		{
 			if( pEH )
 				pEH->post( new PopupClosedMsg( pSlot[i]._widget(), pSlot[i].pOpener ) );
-			_requestRender(pSlot[i].geo);
+			_requestRender(pSlot[i].m_geo);
 		}
 
 		popupSlots._remove(ofs, nb);

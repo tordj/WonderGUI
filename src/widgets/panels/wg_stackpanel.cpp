@@ -35,95 +35,6 @@ namespace wg
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 
 
-	void CStackSlotArray::setSizePolicy( int index, SizePolicy2D policy )
-	{
-		//TODO: Assert!
-
-		_setSizePolicy( _slot(index), policy );
-	}
-
-	void CStackSlotArray::setSizePolicy( iterator it, SizePolicy2D policy )
-	{
-		//TODO: Assert!
-
-		_setSizePolicy( it._slot(), policy );
-	}
-
-
-	SizePolicy2D CStackSlotArray::SizePolicy( int index ) const
-	{
-		//TODO: Assert!
-
-		return _slot(index)->SizePolicy;
-	}
-
-	SizePolicy2D CStackSlotArray::SizePolicy( iterator it ) const
-	{
-		//TODO: Assert!
-
-		return it._slot()->SizePolicy;
-	}
-
-
-	void CStackSlotArray::setOrigo( int index, Origo origo )
-	{
-		//TODO: Assert!
-
-		_setOrigo( _slot(index), origo );
-	}
-
-	void CStackSlotArray::setOrigo( iterator it, Origo origo )
-	{
-		//TODO: Assert!
-
-		_setOrigo( it._slot(), origo );
-	}
-
-
-	Origo CStackSlotArray::origo( int index ) const
-	{
-		//TODO: Assert!
-
-		return _slot(index)->origo;
-	}
-
-	Origo CStackSlotArray::origo( iterator it ) const
-	{
-		//TODO: Assert!
-
-		return it._slot()->origo;
-	}
-
-
-	void CStackSlotArray::_setSizePolicy( StackSlot * pSlot, SizePolicy2D policy )
-	{
-		if( policy != pSlot->SizePolicy )
-		{
-			RectI oldGeo = ((StackPanel*)_holder())->_childGeo(pSlot);
-			pSlot->SizePolicy = policy;
-			RectI newGeo = ((StackPanel*)_holder())->_childGeo(pSlot);
-
-			if (newGeo.size() != oldGeo.size())
-			{
-				((StackPanel*)_holder())->_requestRender(oldGeo);
-				((StackPanel*)_holder())->_requestRender(newGeo);
-				pSlot->_setSize(newGeo.size());
-			}
-		};
-	}
-
-	void CStackSlotArray::_setOrigo( StackSlot * pSlot, Origo origo )
-	{
-		if( origo != pSlot->origo )
-		{
-			((StackPanel*)_holder())->_childRequestRender( pSlot );
-			pSlot->origo = origo;
-			((StackPanel*)_holder())->_childRequestRender( pSlot );
-		};
-	}
-
-
-
 	//____ Constructor ____________________________________________________________
 
 	StackPanel::StackPanel() : slots(this)
@@ -339,6 +250,36 @@ namespace wg
 			_requestResize();
 	}
 
+	//____ _setSizePolicy() ___________________________________________________
+
+	void StackPanel::_setSizePolicy(StackSlot * pSlot, SizePolicy2D policy)
+	{
+		if (policy != pSlot->m_sizePolicy)
+		{
+			RectI oldGeo = _childGeo(pSlot);
+			pSlot->m_sizePolicy = policy;
+			RectI newGeo = _childGeo(pSlot);
+
+			if (newGeo.size() != oldGeo.size())
+			{
+				_requestRender(oldGeo);
+				_requestRender(newGeo);
+				pSlot->_setSize(newGeo.size());
+			}
+		};
+	}
+
+	//____ _setOrigo() ________________________________________________________
+
+	void StackPanel::_setOrigo(StackSlot * pSlot, Origo origo)
+	{
+		if (origo != pSlot->m_origo)
+		{
+			_childRequestRender(pSlot);
+			pSlot->m_origo = origo;
+			_childRequestRender(pSlot);
+		};
+	}
 
 	//____ _didMoveSlots() ________________________________________________________
 
@@ -608,13 +549,13 @@ namespace wg
 		if( base.w <= 0 || base.h <= 0 )
 			return RectI(0,0,0,0);
 
-		switch( pSlot->SizePolicy )
+		switch( pSlot->m_sizePolicy )
 		{
 			default:
 		case SizePolicy2D::Original:
 			{
 				SizeI	size = pSlot->_preferredSize();
-				RectI geo = Util::origoToRect( pSlot->origo, base, size );
+				RectI geo = Util::origoToRect( pSlot->m_origo, base, size );
 
 				if( geo.w > base.w )
 				{
@@ -652,7 +593,7 @@ namespace wg
 					size.w = (int) (orgSize.w / fracY);
 				}
 
-				return Util::origoToRect( pSlot->origo, base, size );
+				return Util::origoToRect( pSlot->m_origo, base, size );
 			}
 		}
 	}

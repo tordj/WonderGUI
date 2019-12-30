@@ -46,7 +46,7 @@ namespace wg
 		pWidget->releaseFromParent();
 		LambdaSlot * pSlot = _addEmpty();
 		pSlot->_setWidget(pWidget);
-		pSlot->pFunc = func;
+		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -60,7 +60,7 @@ namespace wg
 		LambdaSlot * pSlot = _insertEmpty(index);
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
-		pSlot->pFunc = func;
+		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
@@ -72,52 +72,10 @@ namespace wg
 		LambdaSlot * pSlot = _insertEmpty(pos._slot());
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
-		pSlot->pFunc = func;
+		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
-
-	//____ CLambdaSlotArray::setFunction() ________________________________________________
-
-	void CLambdaSlotArray::setFunction(int index, std::function<Rect(Widget * pWidget, Size parentSize)> func)
-	{
-		//TODO: Assert
-
-		LambdaSlot * pSlot = _slot(index);
-		pSlot->pFunc = func;
-
-		_holder()->_updateSlotGeo(pSlot, 1);
-	}
-
-	void CLambdaSlotArray::setFunction(iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func)
-	{
-		//TODO: Assert
-
-		LambdaSlot * pSlot = pos._slot();
-		pSlot->pFunc = func;
-
-		_holder()->_updateSlotGeo(pSlot, 1);
-	}
-
-	//____ CLambdaSlotArray::function() ________________________________________________
-
-	std::function<Rect(Widget * pWidget, Size parentSize)> CLambdaSlotArray::function(int index) const
-	{
-		//TODO: Assert
-
-		LambdaSlot * pSlot = _slot(index);
-		return pSlot->pFunc;
-	}
-
-	std::function<Rect(Widget * pWidget, Size parentSize)> CLambdaSlotArray::function(iterator pos) const
-	{
-		//TODO: Assert
-
-		LambdaSlot * pSlot = pos._slot();
-		return pSlot->pFunc;
-	}
-
-
 
 	//____ Constructor ____________________________________________________________
 
@@ -512,8 +470,8 @@ namespace wg
 
 		RectI geo;
 			
-		if (pSlot->pFunc)
-			geo = pixelAligned(qpixToRaw(pSlot->pFunc(pSlot->_widget(), rawToQpix(m_size))));
+		if (pSlot->m_func)
+			geo = pixelAligned(qpixToRaw(pSlot->m_func(pSlot->_widget(), rawToQpix(m_size))));
 		else
 			geo = { 0,0,pSlot->_preferredSize() };
 

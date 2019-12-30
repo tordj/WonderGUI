@@ -39,12 +39,11 @@ namespace wg
 	{
 		friend class DragNDropLayer;
 
-	public:
+	protected:
 		class Holder : public LayerSlot::Holder
 		{
 		};
 
-	protected:
 		DnDLayerSlot(Holder *pHolder) : LayerSlot(pHolder) {}
 	};
 

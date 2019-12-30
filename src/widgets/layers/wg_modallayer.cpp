@@ -40,6 +40,48 @@ namespace wg
 
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
+
+	//____ ModalSlot::setOrigo() ____________________________________________________
+
+	void ModalSlot::setOrigo(const Origo origo)
+	{
+		m_origo = origo;
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ ModalSlot::setGeo() ____________________________________________________
+
+	void ModalSlot::setGeo(const Rect& geometry)
+	{
+		m_placementGeo = qpixToRaw(geometry);
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ ModalSlot::setOffset() ____________________________________________________
+
+	void ModalSlot::setOffset(const Coord& ofs)
+	{
+		m_placementGeo.setPos(qpixToRaw(ofs));
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ ModalSlot::setSize() ____________________________________________________
+
+	void ModalSlot::setSize(const Size& size)
+	{
+		m_placementGeo.setSize(qpixToRaw(size));
+		_holder()->_refreshRealGeo(this);
+	}
+
+	//____ ModalSlot::move() ____________________________________________________
+
+	void ModalSlot::move(const Coord& ofs)
+	{
+		m_placementGeo += qpixToRaw(ofs);
+		_holder()->_refreshRealGeo(this);
+	}
+
+
 	//____ add() _________________________________________________________________
 
 	CModalSlotArray::iterator CModalSlotArray::add(Widget * pWidget, const Rect& geometry, Origo origo)
@@ -49,202 +91,19 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		ModalSlot * pSlot = _addEmpty();
-		pSlot->geo = qpixToRaw(geometry);
-		pSlot->origo = origo;
+		pSlot->m_geo = qpixToRaw(geometry);
+		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
-	//____ setOrigo() ______________________________________________________________
-
-	void CModalSlotArray::setOrigo(int index, const Origo origo)
-	{
-		//TODO: Assert
-
-		_setOrigo( _slot(index), origo );
-	}
-
-	void CModalSlotArray::setOrigo(iterator it, const Origo origo)
-	{
-		//TODO: Assert
-
-		_setOrigo( it._slot(), origo );
-	}
-
-	//____ origo() ______________________________________________________________
-
-	Origo CModalSlotArray::origo(int index) const
-	{
-		//TODO: Assert
-
-		return _slot(index)->origo;
-	}
-
-	Origo CModalSlotArray::origo(iterator it) const
-	{
-		//TODO: Assert
-
-		return it._slot()->origo;
-	}
-
-	//____ setGeo() ______________________________________________________________
-
-	void CModalSlotArray::setGeo(int index, const Rect& geometry)
-	{
-		//TODO: Assert
-
-		_setGeo(_slot(index), geometry);
-	}
-
-	void CModalSlotArray::setGeo(iterator it, const Rect& geometry)
-	{
-		//TODO: Assert
-
-		_setGeo(it._slot(), geometry);
-	}
-
-	//____ geo() _________________________________________________________________
-
-	Rect CModalSlotArray::geo(int index) const
-	{
-		//TODO: Assert
-
-		return rawToQpix( _slot(index)->geo );
-	}
-
-	Rect CModalSlotArray::geo(iterator it) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(it._slot()->geo);
-	}
-
-	//____ setOfs() ______________________________________________________________
-
-	void CModalSlotArray::setOfs(int index, const Coord& ofs)
-	{
-		//TODO: Assert
-
-		_setOfs(_slot(index), ofs);
-	}
-
-	void CModalSlotArray::setOfs(iterator it, const Coord& ofs)
-	{
-		//TODO: Assert
-
-		_setOfs(it._slot(), ofs);
-	}
-
-	//____ ofs() _________________________________________________________________
-
-	Coord CModalSlotArray::ofs(int index) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_slot(index)->geo.pos());
-	}
-
-	Coord CModalSlotArray::ofs(iterator it) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(it._slot()->geo.pos());
-	}
-
-	//____ setSize() __________________________________________________________
-
-	void CModalSlotArray::setSize(int index, const Size& size)
-	{
-		//TODO: Assert
-
-		_setSize(_slot(index), size);
-	}
-
-	void CModalSlotArray::setSize(iterator it, const Size& size)
-	{
-		//TODO: Assert
-
-		_setSize(it._slot(), size);
-	}
-
-	//____ size() ______________________________________________________________
-
-	Size CModalSlotArray::size( int index ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(_slot(index)->geo.size());
-	}
-
-	Size CModalSlotArray::size( iterator it ) const
-	{
-		//TODO: Assert
-
-		return rawToQpix(it._slot()->geo.size());
-	}
-
-	//____ move() ______________________________________________________________
-
-	void CModalSlotArray::move( int index, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		_move(_slot(index), ofs);
-	}
-
-	void CModalSlotArray::move( iterator it, const Coord& ofs )
-	{
-		//TODO: Assert
-
-		_move(it._slot(), ofs);
-	}
-
-	//____ _setOrigo() ______________________________________________________________
-
-	void CModalSlotArray::_setOrigo(ModalSlot * p, const Origo origo)
-	{
-		p->origo = origo;
-		_holder()->_refreshRealGeo(p);
-	}
-
-	//____ _setGeo() ______________________________________________________________
-
-	void CModalSlotArray::_setGeo(ModalSlot * p, const Rect& geometry)
-	{
-		p->placementGeo = qpixToRaw(geometry);
-		_holder()->_refreshRealGeo(p);
-	}
-
-	//____ _setOfs() ______________________________________________________________
-
-	void CModalSlotArray::_setOfs(ModalSlot * p, const Coord& ofs)
-	{
-		p->placementGeo.setPos(qpixToRaw(ofs));
-		_holder()->_refreshRealGeo(p);
-	}
-	//____ _setSize() __________________________________________________________
-
-	void CModalSlotArray::_setSize(ModalSlot * p, const Size& size)
-	{
-		p->placementGeo.setSize(qpixToRaw(size));
-		_holder()->_refreshRealGeo(p);
-	}
-
-	//____ _move() ______________________________________________________________
-
-	void CModalSlotArray::_move( ModalSlot * p, const Coord& ofs )
-	{
-		p->placementGeo += qpixToRaw(ofs);
-		_holder()->_refreshRealGeo(p);
-	}
-
 	//____ _refreshRealGeo() __________________________________________________
 
 	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
-		SizeI sz = pSlot->placementGeo.size();
+		SizeI sz = pSlot->m_placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
 			sz = pSlot->_preferredSize();
@@ -258,16 +117,16 @@ namespace wg
 		if( sz.h <= 0 )
 			sz.h = 1;
 
-		CoordI ofs = Util::origoToOfs( pSlot->origo, m_size ) - Util::origoToOfs( pSlot->origo, sz );
-		ofs += pSlot->placementGeo.pos();
+		CoordI ofs = Util::origoToOfs( pSlot->m_origo, m_size ) - Util::origoToOfs( pSlot->m_origo, sz );
+		ofs += pSlot->m_placementGeo.pos();
 
 		RectI geo( ofs, sz );
 
-		if (geo != pSlot->geo)
+		if (geo != pSlot->m_geo)
 		{
-			_onRequestRender(pSlot->geo, pSlot);
-			pSlot->geo = geo;
-			_onRequestRender(pSlot->geo, pSlot);
+			_onRequestRender(pSlot->m_geo, pSlot);
+			pSlot->m_geo = geo;
+			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
 		if (bForceResize || pSlot->_size() != geo.size())
@@ -381,13 +240,13 @@ namespace wg
 
 				if( pSlot->_widget()->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->geo.pos(), mode );
+					Widget * pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					if( pResult )
 						return pResult;
 				}
 				else
 				{
-					if( pSlot->_markTest(ofs - pSlot->geo.pos()) )
+					if( pSlot->_markTest(ofs - pSlot->m_geo.pos()) )
 						return pSlot->_widget();
 					else
 						return this;
@@ -442,7 +301,7 @@ namespace wg
 			else
 			{
 				ModalSlot * pSlot = static_cast<ModalSlot*>(p->_slot());
-				pSlot->pKeyFocus = pFocused;
+				pSlot->m_pKeyFocus = pFocused;
 			}
 		}
 
@@ -453,13 +312,13 @@ namespace wg
 		Widget * 	pSavedFocus = nullptr;
 		StaticSlot *		pBranch	= nullptr;
 
-		while( pSlot >= modalSlots._first() && pSlot->geo.isEmpty() )
+		while( pSlot >= modalSlots._first() && pSlot->m_geo.isEmpty() )
 			pSlot--;
 
 		if( pSlot >= modalSlots._first() )
 		{
-			pSavedFocus = pSlot->pKeyFocus.rawPtr();
-			pSlot->pKeyFocus = nullptr;								// Needs to be cleared for the future.
+			pSavedFocus = pSlot->m_pKeyFocus.rawPtr();
+			pSlot->m_pKeyFocus = nullptr;								// Needs to be cleared for the future.
 			pBranch = pSlot;
 		}
 		else if( _baseSlot()->_widget() )
@@ -521,7 +380,7 @@ namespace wg
 			ModalSlot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				RectI cover(pTo->geo, p->geo);
+				RectI cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -535,7 +394,7 @@ namespace wg
 			ModalSlot * p = pFrom;
 			while (p < pTo)
 			{
-				RectI cover(pTo->geo, p->geo);
+				RectI cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
@@ -553,7 +412,7 @@ namespace wg
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			_childRequestRender(pSlot+i);
-			pSlot[i].geo = { 0,0,0,0 };
+			pSlot[i].m_geo = { 0,0,0,0 };
 		}
 
 		_updateKeyboardFocus();

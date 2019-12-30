@@ -43,21 +43,40 @@ namespace wg
 		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class SlotArray;
 
+	public:
+
+		void			setOrigo(const Origo origo);
+		inline Origo	origo() const { return m_origo; }
+
+		void			setGeo(const Rect& geometry);
+
+		void			setOffset(const Coord& ofs);
+		inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
+
+		void			setSize(const Size& size);
+
+		void			move(const Coord& ofs);
+
 	protected:
 		
 		class Holder : public LayerSlot::Holder
 		{
+		public:
+			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
 		};
 
 		ModalSlot(Holder * pHolder) : LayerSlot(pHolder) {}
 
+		inline Holder * _holder() { return static_cast<Holder*>(LayerSlot::_holder()); }
+		inline const Holder * _holder() const { return static_cast<const Holder*>(LayerSlot::_holder()); }
+
 		const static bool safe_to_relocate = false;
 
 		bool		m_bVisible = true;
-		Origo		origo = Origo::NorthWest;
-		RectI		placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+		Origo		m_origo = Origo::NorthWest;
+		RectI		m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
-		Widget_wp	pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
+		Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 
 	};
 
@@ -95,37 +114,7 @@ namespace wg
 		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
 		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
 
-		//.____ Geometry ______________________________________________________
-
-		void		setOrigo( int index, const Origo origo );
-		void		setOrigo( iterator it, const Origo origo );
-		Origo		origo( int index ) const;
-		Origo		origo( iterator it ) const;
-
-		void		setGeo( int index, const Rect& geometry );
-		void		setGeo( iterator it, const Rect& geometry );
-		Rect		geo( int index ) const;
-		Rect		geo( iterator it ) const;
-
-		void		setOfs( int index, const Coord& ofs );
-		void		setOfs( iterator it, const Coord& ofs );
-		Coord		ofs( int index ) const;
-		Coord		ofs( iterator it ) const;
-
-		void		setSize( int index, const Size& size );
-		void		setSize( iterator it, const Size& size );
-		Size		size( int index ) const;
-		Size		size( iterator it ) const;
-
-		void		move( int index, const Coord& ofs );
-		void		move( iterator it, const Coord& ofs );
-
 	protected:
-		void 		_setOrigo(ModalSlot * p, const Origo origo);
-		void 		_setGeo(ModalSlot * p, const Rect& geometry);
-		void 		_setOfs(ModalSlot * p, const Coord& ofs);
-		void 		_setSize(ModalSlot * p, const Size& size);
-		void 		_move( ModalSlot * p, const Coord& ofs );
 
 		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
 		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }

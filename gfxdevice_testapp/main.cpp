@@ -763,7 +763,7 @@ bool setup_chrome()
 	pMidSection->setOrientation(Orientation::Horizontal);
 	pMidSection->setSizeBroker(UniformSizeBroker::create());
 	auto it = pLayerStack->slots << pMidSection;
-	pLayerStack->slots.setSizePolicy(it, SizePolicy2D::Stretch);
+	(*it).setSizePolicy(SizePolicy2D::Stretch);
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setOrientation(Orientation::Vertical);

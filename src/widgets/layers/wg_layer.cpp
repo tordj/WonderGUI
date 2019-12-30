@@ -114,8 +114,8 @@ namespace wg
 
 		while( pCover <  pEnd )
 		{
-			if( pCover->geo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
+			if( pCover->m_geo.intersectsWith( rect ) )
+				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
 
 			pCover = _incLayerSlot(pCover,incNext);
 		}
@@ -164,7 +164,7 @@ namespace wg
 		const LayerSlot * p = _beginLayerSlots();
 		if( p < _endLayerSlots() )
 		{
-			package.geo = p->geo;
+			package.geo = p->m_geo;
 			package.pSlot = p;
 		}
 		else if (_mainSlot()->_widget())
@@ -191,7 +191,7 @@ namespace wg
 		p = _incLayerSlot(p,_sizeOfLayerSlot());
 		if( p < _endLayerSlots() )
 		{
-			package.geo = ((LayerSlot*)p)->geo;
+			package.geo = ((LayerSlot*)p)->m_geo;
 			package.pSlot = p;
 		}
 		else if (_mainSlot()->_widget())
@@ -254,7 +254,7 @@ namespace wg
 		if( pSlot == &mainSlot )
 			return {0,0};
 
-		return ((LayerSlot*)pSlot)->geo;
+		return ((LayerSlot*)pSlot)->m_geo;
 	}
 
 	//____ _childRequestRender() _______________________________________________
@@ -266,7 +266,7 @@ namespace wg
 		else
 		{
 			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(_pSlot);
-			_onRequestRender( pSlot->geo, pSlot );
+			_onRequestRender( pSlot->m_geo, pSlot );
 		}
 	}
 
@@ -277,7 +277,7 @@ namespace wg
 		else
 		{
 			LayerSlot * pSlot = reinterpret_cast<LayerSlot*>(_pSlot);
-			_onRequestRender( rect + pSlot->geo.pos(), pSlot );
+			_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
 		}
 	}
 /*

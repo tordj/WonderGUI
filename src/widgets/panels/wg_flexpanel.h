@@ -31,8 +31,8 @@ namespace wg
 {
 
 	class FlexPanel;
-	typedef	StrongPtr<FlexPanel>		FlexPanel_p;
-	typedef	WeakPtr<FlexPanel>	FlexPanel_wp;
+	typedef	StrongPtr<FlexPanel>	FlexPanel_p;
+	typedef	WeakPtr<FlexPanel>		FlexPanel_wp;
 
 
 	//____ FlexPos ____________________________________________________________
@@ -78,7 +78,7 @@ namespace wg
 
 	//____ FlexSlot ____________________________________________________________
 
-	class FlexSlot : public StaticSlot		/** @private */
+	class FlexSlot : public DynamicSlot		/** @private */
 	{
 		friend class FlexPanel;
 		friend class CFlexSlotArray;
@@ -87,31 +87,70 @@ namespace wg
 
 	public:
 
-		class Holder : public StaticSlot::Holder
+		class Holder : public DynamicSlot::Holder
 		{
+		public:
+			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
+			virtual SizeI	_size() const = 0;
 		};
 
-		FlexSlot(Holder * pHolder) : StaticSlot(pHolder), bPinned(false), m_bVisible(false), origo(Origo::NorthWest), hotspot(Origo::NorthWest) {}
+		FlexSlot(Holder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest) {}
+
+		//.____ State _________________________________________________________
+
+		void			setPinned();	
+		void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
+		inline bool		isPinned() const { return m_bPinned; }
+
+		void			setMovable(const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
+		void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
+		inline bool		isMovable() const { return !m_bPinned; }
+
+
+		//.____ Geometry ______________________________________________________
+
+		// Methods for movable children
+
+		bool			setOrigo(const FlexPos& origo);
+		inline FlexPos	origo() const { return m_origo; }
+
+		bool			setHotspot(const FlexPos& hotspot);
+		inline FlexPos	hotspot() const { return m_hotspot; }
+
+		bool			setGeo(const Rect& geometry);
+
+		bool			setOffset(const Coord& ofs);
+		inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
+
+		bool			setSize(const Size& size);
+
+		bool			move(const Coord& ofs);
+
+		// Methods for pinned children
+
+		inline FlexPos	topLeftPin() const { return m_topLeftPin; }
+		inline FlexPos	bottomRightPin() const { return m_bottomRightPin; }
+
 
 	protected:
-		bool			bPinned;
-		bool			m_bVisible;
-		RectI			realGeo;			// Widgets geo relative parent, not pixel aligned.
 
-//		union
-//		{
-//			struct // Positioned children
-//			{
-				FlexPos			origo;
-				FlexPos			hotspot;
-				RectI			placementGeo;	// Widgets geo relative anchor and hotspot. Pixel aligned.
-//			};
-//			struct	// Stretched children
-//			{
-				FlexPos			topLeftPin;
-				FlexPos			bottomRightPin;
-//			};
-//		};
+		inline Holder * _holder() { return static_cast<Holder*>(DynamicSlot::_holder()); }
+		inline const Holder * _holder() const { return static_cast<const Holder*>(DynamicSlot::_holder()); }
+
+		bool			m_bPinned;
+		bool			m_bVisible;
+		RectI			m_realGeo;			// Widgets geo relative parent, not pixel aligned.
+
+		// Positioned children
+
+		FlexPos			m_origo;
+		FlexPos			m_hotspot;
+		RectI			m_placementGeo;	// Widgets geo relative anchor and hotspot. Pixel aligned.
+
+		//	Stretched children
+
+		FlexPos			m_topLeftPin;
+		FlexPos			m_bottomRightPin;
 
 	};
 
@@ -148,72 +187,6 @@ namespace wg
 		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry,
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
-		//.____ State _________________________________________________________
-
-		void		setPinned( int index );
-		void		setPinned( iterator it );
-
-		void		setPinned( int index, const FlexPos& topLeft, const FlexPos& bottomRight );
-		void		setPinned( iterator it, const FlexPos& topLeft, const FlexPos& bottomRight);
-
-		void		setMovable( int index, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
-		void		setMovable(iterator it, const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
-
-		void		setMovable( int index, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot );
-		void		setMovable(iterator it, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
-
-		bool		isMovable(int index) const;
-		bool		isMovable(iterator it) const;
-
-		bool		isPinned(int index) const;
-		bool		isPinned(iterator it) const;
-
-		//.____ Geometry ______________________________________________________
-
-		// Methods for movable children
-
-		bool		setOrigo( int index, const FlexPos& origo );
-		bool		setOrigo( iterator it, const FlexPos& origo);
-
-		FlexPos		origo( int index ) const;
-		FlexPos		origo( iterator it ) const;
-
-		bool		setHotspot( int index, const FlexPos& hotspot );
-		bool		setHotspot( iterator it, const FlexPos& hotspot);
-
-		FlexPos		hotspot( int index ) const;
-		FlexPos		hotspot( iterator it ) const;
-
-		bool		setGeo( int index, const Rect& geometry );
-		bool		setGeo( iterator it, const Rect& geometry);
-
-		Rect		geo( int index ) const;
-		Rect		geo( iterator it ) const;
-
-		bool		setOfs( int index, const Coord& ofs );
-		bool		setOfs( iterator it, const Coord& ofs);
-
-		Coord		ofs( int index ) const;
-		Coord		ofs( iterator it ) const;
-
-		bool		setSize( int index, const Size& size );
-		bool		setSize( iterator it, const Size& size);
-
-		Rect		size( int index ) const;
-		Rect		size( iterator it ) const;
-
-		bool		move( int index, const Coord& ofs );
-		bool		move( iterator it, const Coord& ofs);
-
-
-		// Methods for pinned children
-
-		FlexPos	topLeftCorner( int index ) const;
-		FlexPos	topLeftCorner( iterator it ) const;
-
-		FlexPos	bottomRightCorner( int index ) const;
-		FlexPos	bottomRightCorner( iterator it ) const;
-
 		//.____ Misc _______________________________________________________
 
 		inline CFlexSlotArray_p ptr() { return CFlexSlotArray_p(this); }
@@ -222,40 +195,6 @@ namespace wg
 	protected:
 		CFlexSlotArray(Holder * pHolder) : CDynamicSlotArray<FlexSlot>(pHolder) {}
 
-		void		_setPinned(FlexSlot * p);
-		void		_setPinned(FlexSlot * p, const FlexPos& topLeft, const FlexPos& bottomRight);
-
-		void		_setMovable(FlexSlot * p, const FlexPos& origo, const FlexPos& hotspot);
-		void		_setMovable(FlexSlot * p, const RectI& geometry, const FlexPos& origo, const FlexPos& hotspot);
-
-//		FlexSlot * _moveAbove(FlexSlot * p, FlexSlot * sibling);
-//		FlexSlot *	_moveBelow(FlexSlot * p, FlexSlot * sibling);
-
-		// Methods for movable children
-
-		bool		_setOrigo(FlexSlot * p, const FlexPos& origo);
-		FlexPos		_origo(FlexSlot * p) const;
-
-		bool		_setHotspot(FlexSlot * p, const FlexPos& hotspot);
-		FlexPos		_hotspot(FlexSlot * p) const;
-
-		bool		_setGeo(FlexSlot * p, const RectI& geometry);
-		RectI		_geo(FlexSlot * p) const;
-
-		bool		_setOfs(FlexSlot * p, const CoordI& ofs);
-		CoordI		_ofs(FlexSlot * p) const;
-
-		bool		_setSize(FlexSlot * p, const SizeI& size);
-		RectI		_size(FlexSlot * p) const;
-
-		bool		_move(FlexSlot * p, const CoordI& ofs);
-
-		// Methods for pinned children
-
-		FlexPos	_topLeftCorner(FlexSlot * p) const;
-		FlexPos	_bottomRightCorner(FlexSlot * p) const;
-
-		//
 
 		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
 		inline const CFlexSlotArray::Holder * _holder() const { return static_cast<const CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
@@ -275,7 +214,6 @@ namespace wg
 
 	class FlexPanel : public Panel, protected CFlexSlotArray::Holder
 	{
-
 	public:
 
 		//.____ Creation __________________________________________
@@ -323,7 +261,7 @@ namespace wg
 		void		_hideSlots( StaticSlot *, int nb ) override;
 		void		_unhideSlots( StaticSlot *, int nb ) override;
 		void		_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) override;
-		SizeI		_size() const override{ return m_size; }
+		SizeI		_size() const override { return m_size; }
 
 		// Overloaded from WidgetHolder
 
@@ -364,8 +302,8 @@ namespace wg
 
 		SizeI		_sizeNeededForGeo( FlexSlot * pSlot ) const;
 
-		bool			m_bConfineWidgets = false;
-		int				m_qpixPerPoint;
+		bool		m_bConfineWidgets = false;
+//		int			m_qpixPerPoint;
 	};
 
 

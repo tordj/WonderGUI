@@ -38,22 +38,30 @@ namespace wg
 
 	//____ LambdaSlot ____________________________________________________________
 
-	class LambdaSlot : public StaticSlot		/** @private */
+	class LambdaSlot : public DynamicSlot		/** @private */
 	{
 		friend class LambdaPanel;
 		friend class CLambdaSlotArray;
+		friend class CDynamicSlotArray<LambdaSlot>;
+
 	public:
 
 		class Holder : public StaticSlot::Holder
 		{
+		public:
+			virtual void		_updateSlotGeo(StaticSlot * pSlot, int nb) = 0;
 		};
 
+		LambdaSlot(Holder * pHolder ) : DynamicSlot(pHolder), m_func(nullptr), m_bVisible(false) {}
 
-		LambdaSlot(Holder * pHolder ) : StaticSlot(pHolder), pFunc(nullptr), m_bVisible(false) {}
+		inline void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func) { m_func = func; static_cast<Holder*>(_holder())->_updateSlotGeo(this, 1); }
+		inline const std::function<Rect(Widget * pWidget, Size parentSize)>& function() const { return m_func; }
+
 
 		const static bool safe_to_relocate = false;
 
-		std::function<Rect(Widget * pWidget, Size parentSize)>	pFunc;
+	protected:
+		std::function<Rect(Widget * pWidget, Size parentSize)>	m_func;
 		bool			m_bVisible;
 		RectI			m_geo;				// Widgets geo relative parent
 	};
@@ -74,8 +82,6 @@ namespace wg
 
 		class Holder : public CDynamicSlotArray<LambdaSlot>::Holder		/** @private */
 		{
-		public:
-			virtual void		_updateSlotGeo(StaticSlot * pSlot, int nb) = 0;
 		};
 
 
@@ -85,14 +91,6 @@ namespace wg
 
 		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
-
-		//.____ Geometry ______________________________________________________
-
-		void		setFunction( int index, std::function<Rect(Widget * pWidget, Size parentSize)> func);
-		void		setFunction( iterator pos, std::function<Rect(Widget * pWidget, Size parentSize)> func);
-
-		std::function<Rect(Widget * pWidget, Size parentSize)> function(int index) const;
-		std::function<Rect(Widget * pWidget, Size parentSize)> function(iterator pos) const;
 
 		//.____ Misc __________________________________________________________
 

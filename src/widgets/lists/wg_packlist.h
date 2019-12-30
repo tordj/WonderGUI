@@ -55,9 +55,9 @@ namespace wg
 		PackListSlot(Holder *pHolder) : ListSlot(pHolder) {}
 
 	protected:
-		int				ofs;				// Offset in pixels for start of this list item.
-		int				length;				// Length in pixels of this list item. Includes widget padding.
-		int				prefBreadth;		// Prefereed breadth of this widget.
+		int				m_ofs;				// Offset in pixels for start of this list item.
+		int				m_length;				// Length in pixels of this list item. Includes widget padding.
+		int				m_prefBreadth;		// Prefereed breadth of this widget.
 	};
 
 
