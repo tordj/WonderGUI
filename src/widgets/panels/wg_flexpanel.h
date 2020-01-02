@@ -78,25 +78,15 @@ namespace wg
 
 	//____ FlexSlot ____________________________________________________________
 
-	class FlexSlot : public DynamicSlot		/** @private */
+	class FlexSlot : public DynamicSlot
 	{
 		friend class FlexPanel;
 		friend class CFlexSlotArray;
 		template<class S> friend class CDynamicSlotArray;
 
-
 	public:
 
-		class Holder : public DynamicSlot::Holder
-		{
-		public:
-			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
-			virtual SizeI	_size() const = 0;
-		};
-
-		FlexSlot(Holder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest) {}
-
-		//.____ State _________________________________________________________
+		//.____ Properties _________________________________________________________
 
 		void			setPinned();	
 		void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
@@ -131,21 +121,36 @@ namespace wg
 		inline FlexPos	topLeftPin() const { return m_topLeftPin; }
 		inline FlexPos	bottomRightPin() const { return m_bottomRightPin; }
 
+		//
+
+		inline Coord	pos() const { return Util::rawToQpix(m_realGeo.pos()); }
+		inline Size		size() const { return Util::rawToQpix(m_realGeo.size()); }
+		inline Rect		geo() const { return Util::rawToQpix(m_realGeo); }
 
 	protected:
+
+		class Holder : public DynamicSlot::Holder
+		{
+		public:
+			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
+			virtual SizeI	_size() const = 0;
+		};
+
+		FlexSlot(Holder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest) {}
+
 
 		inline Holder * _holder() { return static_cast<Holder*>(DynamicSlot::_holder()); }
 		inline const Holder * _holder() const { return static_cast<const Holder*>(DynamicSlot::_holder()); }
 
 		bool			m_bPinned;
 		bool			m_bVisible;
-		RectI			m_realGeo;			// Widgets geo relative parent, not pixel aligned.
+		RectI			m_realGeo;			// Widgets geo relative parent, pixel aligned.
 
 		// Positioned children
 
 		FlexPos			m_origo;
 		FlexPos			m_hotspot;
-		RectI			m_placementGeo;	// Widgets geo relative anchor and hotspot. Pixel aligned.
+		RectI			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
 
 		//	Stretched children
 
@@ -165,15 +170,6 @@ namespace wg
 	{
 		friend class FlexPanel;
 	public:
-
-		class Holder : public  CDynamicSlotArray<FlexSlot>::Holder			/** @private */
-		{
-		public:
-			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
-			virtual SizeI	_size() const = 0;
-
-		};
-
 
 		//.____ Content _______________________________________________________
 
@@ -198,6 +194,14 @@ namespace wg
 
 
 	protected:
+		class Holder : public  CDynamicSlotArray<FlexSlot>::Holder
+		{
+		public:
+			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
+			virtual SizeI	_size() const = 0;
+
+		};
+
 		CFlexSlotArray(Holder * pHolder) : CDynamicSlotArray<FlexSlot>(pHolder) {}
 
 

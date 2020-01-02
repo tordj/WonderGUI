@@ -39,12 +39,23 @@ namespace wg
 
 	//____ StackSlot ____________________________________________________________
 
-	class StackSlot : public PaddedSlot		/** @private */
+	class StackSlot : public PaddedSlot
 	{
 		friend class StackPanel;
 		friend class CStackSlotArray;
+		friend class CDynamicSlotArray<StackSlot>;
 	
 	public:
+
+		//.____ Properties _________________________________________________
+
+		void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
+		inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
+
+		void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
+		inline Origo		origo() const { return m_origo; }
+
+	protected:
 		class Holder : public PaddedSlot::Holder
 		{
 		public:
@@ -54,13 +65,7 @@ namespace wg
 
 		StackSlot(Holder * pHolder) : PaddedSlot(pHolder) {}
 
-		void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
-		inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
 
-		void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
-		inline Origo		origo() const { return m_origo; }
-
-	protected:
 		Holder *		_holder() { return static_cast<Holder*>(PaddedSlot::_holder()); }
 		const Holder *	_holder() const { return static_cast<const Holder*>(PaddedSlot::_holder()); }
 
@@ -80,15 +85,16 @@ namespace wg
 		friend class StackPanel;
 	public:
 
-		class Holder : public CPaddedSlotArray<StackSlot>::Holder			/** @private */
-		{
-		};
-
 		//.____ Misc __________________________________________________________
 
 		inline CStackSlotArray_p	ptr() { return CStackSlotArray_p(this); }
 
 	protected:
+
+		class Holder : public CPaddedSlotArray<StackSlot>::Holder			/** @private */
+		{
+		};
+
 		CStackSlotArray(Holder * pHolder) : CPaddedSlotArray<StackSlot>(pHolder) {}
 	};
 

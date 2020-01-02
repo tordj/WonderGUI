@@ -38,30 +38,40 @@ namespace wg
 
 	//____ PackSlot ____________________________________________________________
 
-	class PackSlot : public PaddedSlot		/** @private */
+	class PackSlot : public PaddedSlot
 	{
 		friend class PackPanel;
 		friend class CPackSlotArray;
 		template<class S> friend class SlotArray;
 		friend class CPaddedSlotArray<PackSlot>::Holder;
+		friend class CDynamicSlotArray<PackSlot>::Holder;
+		friend class CDynamicSlotArray<PackSlot>;
 
 	public:
 
+
+		//.____ Properties _________________________________________________
+
+		inline float	weight() const { return m_weight; }
+		inline void		setWeight(float weight) { if (weight != m_weight) static_cast<Holder*>(_holder())->_reweightSlots(this, 1, weight); }
+
+		//.____ Geometry _________________________________________________
+
+		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+	protected:
+
 		//____ Holder ___________________________________________________________
 
-		class Holder : public PaddedSlot::Holder		/** @private */
+		class Holder : public PaddedSlot::Holder
 		{
 		public:
 			virtual void	_reweightSlots(PackSlot * pSlot, int nb, float weight) = 0;
 		};
 
 		PackSlot(Holder *pHolder) : PaddedSlot(pHolder) {}
-
-		
-		inline float	weight() const { return m_weight; }
-		inline void		setWeight(float weight) { if (weight != m_weight) static_cast<Holder*>(_holder())->_reweightSlots(this, 1, weight); }
-
-	protected:
 
 		bool			m_bResizeRequired = false;
 		float			m_weight = 1.f;				// Weight for space allocation.

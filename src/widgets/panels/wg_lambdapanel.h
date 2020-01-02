@@ -38,7 +38,7 @@ namespace wg
 
 	//____ LambdaSlot ____________________________________________________________
 
-	class LambdaSlot : public DynamicSlot		/** @private */
+	class LambdaSlot : public DynamicSlot
 	{
 		friend class LambdaPanel;
 		friend class CLambdaSlotArray;
@@ -46,21 +46,29 @@ namespace wg
 
 	public:
 
+		//.____ Properties _________________________________________________
+
+		inline void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func) { m_func = func; static_cast<Holder*>(_holder())->_updateSlotGeo(this, 1); }
+		inline const std::function<Rect(Widget * pWidget, Size parentSize)>& function() const { return m_func; }
+
+		//.____ Geometry _________________________________________________
+
+		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+	protected:
 		class Holder : public StaticSlot::Holder
 		{
 		public:
 			virtual void		_updateSlotGeo(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		LambdaSlot(Holder * pHolder ) : DynamicSlot(pHolder), m_func(nullptr), m_bVisible(false) {}
-
-		inline void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func) { m_func = func; static_cast<Holder*>(_holder())->_updateSlotGeo(this, 1); }
-		inline const std::function<Rect(Widget * pWidget, Size parentSize)>& function() const { return m_func; }
-
+		LambdaSlot(Holder * pHolder) : DynamicSlot(pHolder), m_func(nullptr), m_bVisible(false) {}
 
 		const static bool safe_to_relocate = false;
 
-	protected:
+
 		std::function<Rect(Widget * pWidget, Size parentSize)>	m_func;
 		bool			m_bVisible;
 		RectI			m_geo;				// Widgets geo relative parent
@@ -78,12 +86,6 @@ namespace wg
 		friend class LambdaPanel;
 	public:
 
-		//____ Holder _________________________________________________________
-
-		class Holder : public CDynamicSlotArray<LambdaSlot>::Holder		/** @private */
-		{
-		};
-
 
 		//.____ Content _______________________________________________________
 
@@ -98,6 +100,13 @@ namespace wg
 		inline CLambdaSlotArray_p	ptr() { return CLambdaSlotArray_p(this); }
 
 	protected:
+
+		//____ Holder _________________________________________________________
+
+		class Holder : public CDynamicSlotArray<LambdaSlot>::Holder
+		{
+		};
+
 		CLambdaSlotArray(CLambdaSlotArray::Holder * pHolder) : CDynamicSlotArray<LambdaSlot>(pHolder) {}
 
 		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotArray<LambdaSlot>::_holder()); }

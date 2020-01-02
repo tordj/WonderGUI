@@ -37,19 +37,26 @@ namespace wg
 
 	//____ LayerSlot ___________________________________________________________
 
-	class LayerSlot : public StaticSlot		/** @private */
+	class LayerSlot : public StaticSlot
 	{
 		friend class Layer;
 	public:
-		class Holder : public StaticSlot::Holder
+		class Holder : public StaticSlot::Holder		/** @private */
 		{
 		};
+
+		//.____ Geometry _________________________________________________
+
+		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
 
 	protected:
 		LayerSlot(Holder * pHolder) : StaticSlot(pHolder) {}
 
-		inline void setSize( SizeI size ) { m_geo.setSize(size); StaticSlot::_setSize(size); }
-		inline void setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
+		inline void _setSize( SizeI size ) { m_geo.setSize(size); StaticSlot::_setSize(size); }
+		inline void _setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
 
 		RectI	m_geo;
 	};

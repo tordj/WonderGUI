@@ -30,11 +30,8 @@
 
 namespace wg
 {
-	class   DragNDropLayer;
-	typedef	StrongPtr<DragNDropLayer>	DragNDropLayer_p;
-	typedef	WeakPtr<DragNDropLayer>		DragNDropLayer_wp;
+	//____ DnDLayerSlot ___________________________________________________________
 
-	
 	class DnDLayerSlot : public LayerSlot
 	{
 		friend class DragNDropLayer;
@@ -47,6 +44,10 @@ namespace wg
 		DnDLayerSlot(Holder *pHolder) : LayerSlot(pHolder) {}
 	};
 
+
+	class   DragNDropLayer;
+	typedef	StrongPtr<DragNDropLayer>	DragNDropLayer_p;
+	typedef	WeakPtr<DragNDropLayer>		DragNDropLayer_wp;
 
 	//____ DragNDropLayer ____________________________________________________________
 

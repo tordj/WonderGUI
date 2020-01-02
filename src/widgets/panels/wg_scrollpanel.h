@@ -43,17 +43,13 @@ namespace wg
 
 	//____ ScrollbarSlot ______________________________________________________
 
-	class ScrollbarSlot : public DynamicSlot		/** @private */
+	class ScrollbarSlot : public DynamicSlot
 	{
 		friend class ScrollbarEntry;
 		friend class ScrollPanel;
 	public:
-		ScrollbarSlot() : DynamicSlot(nullptr) {}
 	protected:
-		RectI			geo;
-		bool			bAutoHide = false;
-		bool			bAutoScroll = false;
-		Direction		placement;
+		ScrollbarSlot() : DynamicSlot(nullptr) {}
 
 		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
 		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
@@ -61,20 +57,25 @@ namespace wg
 		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
 		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
 
+		RectI			geo;
+		bool			bAutoHide = false;
+		bool			bAutoScroll = false;
+		Direction		placement;
+
 		BorderI		m_padding;
 		bool		m_bVisible;
-
-
 	};
 
 
 
 	//____ ViewSlot ______________________________________________________
 
-	class ViewSlot : public DynamicSlot		/** @private */
+	class ViewSlot : public DynamicSlot
 	{
 		friend class ScrollPanel;
 	public:
+
+	protected:
 
 		//____ Holder ____________________________________________________
 
@@ -83,7 +84,7 @@ namespace wg
 		};
 
 		ViewSlot(ViewSlot::Holder *pHolder) : DynamicSlot(pHolder) {}
-	protected:
+
 
 		int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
 		int			_paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
@@ -131,24 +132,9 @@ namespace wg
 
 	class CViewSlot : public CDynamicSlotImpl<ViewSlot>
 	{
+		friend class ScrollPanel;
+
 	public:
-		/** @private */
-
-		//____ Holder _______________________________________________
-
-		class Holder : public CDynamicSlotImpl<ViewSlot>::Holder /** @private */
-		{
-		public:
-			virtual bool		_setWindowPos(CoordI pos) = 0;
-			virtual bool		_setWindowOffset(CoordF ofs) = 0;
-			virtual bool		_step(Direction dir, int nSteps = 1) = 0;
-			virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
-			virtual void		_requestRender(const RectI& rect) = 0;
-			virtual void		_updateViewGeo() = 0;
-		};
-
-
-		CViewSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		//.____ Operators _____________________________________________________
 
@@ -196,6 +182,22 @@ namespace wg
 		inline CViewSlot_p	ptr() { return CViewSlot_p(this); }
 
 	private:
+
+		//____ Holder _______________________________________________
+
+		class Holder : public CDynamicSlotImpl<ViewSlot>::Holder
+		{
+		public:
+			virtual bool		_setWindowPos(CoordI pos) = 0;
+			virtual bool		_setWindowOffset(CoordF ofs) = 0;
+			virtual bool		_step(Direction dir, int nSteps = 1) = 0;
+			virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
+			virtual void		_requestRender(const RectI& rect) = 0;
+			virtual void		_updateViewGeo() = 0;
+		};
+
+
+		CViewSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
 		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }

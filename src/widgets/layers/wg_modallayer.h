@@ -30,13 +30,9 @@
 namespace wg
 {
 
-	class ModalLayer;
-	typedef	StrongPtr<ModalLayer>	ModalLayer_p;
-	typedef	WeakPtr<ModalLayer>		ModalLayer_wp;
-
 	//____ ModalSlot ___________________________________________________________
 
-	class ModalSlot : public LayerSlot		/** @private */
+	class ModalSlot : public LayerSlot
 	{
 		friend class ModalLayer;
 		friend class CModalSlotArray;
@@ -44,6 +40,8 @@ namespace wg
 		template<class S> friend class SlotArray;
 
 	public:
+
+		//.____ Geometry _________________________________________________
 
 		void			setOrigo(const Origo origo);
 		inline Origo	origo() const { return m_origo; }
@@ -74,8 +72,8 @@ namespace wg
 
 		bool		m_bVisible = true;
 		Origo		m_origo = Origo::NorthWest;
-		RectI		m_placementGeo;		// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
-										// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
+		RectI		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+											// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 		Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 
 	};
@@ -92,19 +90,6 @@ namespace wg
 		friend class ModalLayer;
 	public:
 
-		//____ Holder _________________________________________________
-
-		class Holder : public CDynamicSlotArray<ModalSlot>::Holder		/** @private */
-		{
-		public:
-			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
-		};
-
-
-		/** @private */
-
-		CModalSlotArray( Holder * pHolder ) : CDynamicSlotArray<ModalSlot>(pHolder) {}
-
 		//.____ Misc __________________________________________________________
 
 		inline CModalSlotArray_p	ptr() { return CModalSlotArray_p(this); }
@@ -120,12 +105,26 @@ namespace wg
 
 	protected:
 
+		//____ Holder _________________________________________________
+
+		class Holder : public CDynamicSlotArray<ModalSlot>::Holder
+		{
+		public:
+			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
+		};
+
+		CModalSlotArray(Holder * pHolder) : CDynamicSlotArray<ModalSlot>(pHolder) {}
+
 		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
 		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
 
 
 	};
 
+
+	class ModalLayer;
+	typedef	StrongPtr<ModalLayer>	ModalLayer_p;
+	typedef	WeakPtr<ModalLayer>		ModalLayer_wp;
 
 	//____ ModalLayer __________________________________________________________
 

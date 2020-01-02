@@ -43,12 +43,18 @@ namespace wg
 	{
 		friend class SplitPanel;
 	public:
+		
+		//.____ Geometry _________________________________________________
 
+		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+	protected:
 		class Holder : public StaticSlot::Holder
 		{
 		};
 
-	protected:
 		RectI	m_geo;
 	};
 

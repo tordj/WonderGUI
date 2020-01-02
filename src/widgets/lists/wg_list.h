@@ -41,7 +41,7 @@ namespace wg
 
 	//____ ListSlot ____________________________________________________________
 
-	class ListSlot : public SelectableSlot		/** @private */
+	class ListSlot : public SelectableSlot
 	{
 		friend class List;
 

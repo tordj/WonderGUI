@@ -41,22 +41,26 @@ namespace wg
 
 	//____ PackListSlot ____________________________________________________________
 
-	class PackListSlot : public ListSlot	/** @private */
+	class PackListSlot : public ListSlot
 	{
 		friend class CPackListSlotArray;
 		friend class PackList;
 		template<class S> friend class SlotArray;
+		friend class CDynamicSlotArray<PackListSlot>::Holder;
+		friend class CDynamicSlotArray<PackListSlot>;
 
 	public:
+
+	protected:
 		class Holder : public ListSlot::Holder
 		{
 		};
 
 		PackListSlot(Holder *pHolder) : ListSlot(pHolder) {}
 
-	protected:
+
 		int				m_ofs;				// Offset in pixels for start of this list item.
-		int				m_length;				// Length in pixels of this list item. Includes widget padding.
+		int				m_length;			// Length in pixels of this list item. Includes widget padding.
 		int				m_prefBreadth;		// Prefereed breadth of this widget.
 	};
 
@@ -72,22 +76,7 @@ namespace wg
 		friend class PackList;
 	public:
 
-		//____ Holder _________________________________________________________
-
-		class Holder : public CSelectableSlotArray<PackListSlot>::Holder /** @private */
-		{
-		public:
-			virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
-			virtual bool	_sortEntries() = 0;
-			virtual bool	_hasSortFunction() const = 0;
-		};
-
-
 		using		iterator = SlotArrayIterator<PackListSlot>;
-
-		/** @private */
-
-		CPackListSlotArray(Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pHolder) {}
 
 		//.____ Misc __________________________________________________________
 
@@ -100,7 +89,21 @@ namespace wg
 		//.____ Ordering ______________________________________________________
 
 		void		sort();
+
 	protected:
+
+		//____ Holder _________________________________________________________
+
+		class Holder : public CSelectableSlotArray<PackListSlot>::Holder
+		{
+		public:
+			virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
+			virtual bool	_sortEntries() = 0;
+			virtual bool	_hasSortFunction() const = 0;
+		};
+
+		CPackListSlotArray(Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pHolder) {}
+
 
 		inline const Holder *	_holder() const { return static_cast<const Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }
 		inline Holder *			_holder() { return static_cast<Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }

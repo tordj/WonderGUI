@@ -64,6 +64,8 @@ namespace wg
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
 
+		//.____ Geometry _________________________________________________
+
 		inline Coord	pos() const { return Util::rawToQpix(m_pHolder->_childPos(this)); }
 		inline Size		size() const { return Util::rawToQpix(_size()); }
 		inline Rect		geo() const { return Util::rawToQpix( RectI(m_pHolder->_childPos(this),_size())); }

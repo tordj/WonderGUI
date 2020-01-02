@@ -32,30 +32,25 @@
 namespace wg
 {
 
-	class PopupLayer;
-	typedef	StrongPtr<PopupLayer>	PopupLayer_p;
-	typedef	WeakPtr<PopupLayer>	PopupLayer_wp;
-
-
-
 	//____ PopupSlot ___________________________________________________________
 
-	class PopupSlot : public LayerSlot		/** @private */
+	class PopupSlot : public LayerSlot
 	{
 		friend class PopupLayer;
 		friend class CPopupSlots;
+		friend class CStaticSlotArray<PopupSlot>;
+		friend class CStaticSlotArray<PopupSlot>::Holder;
 
 	public:
+		const static bool safe_to_relocate = false;
 
+	protected:
 		class Holder : public LayerSlot::Holder
 		{
 		};
 
-		PopupSlot(Holder * pHolder) : LayerSlot(pHolder), attachPoint(Origo::NorthWest), maxSize(INT_MAX,INT_MAX) {}
+		PopupSlot(Holder * pHolder) : LayerSlot(pHolder) {}
 
-		const static bool safe_to_relocate = false;
-
-	protected:
 		enum class State
 		{
 			OpeningDelay,			// Popup is in "delayed opening" mode. Some ms before it starts to open.
@@ -67,14 +62,14 @@ namespace wg
 			Closing,				// Popup is closing (fading out).
 		};
 
-		RectI		launcherGeo;		// Launcher geo relative sibling or parent.
-		Origo		attachPoint;
-		bool		bAutoClose;			// Has been opened in auto-close mode.
-		State		state;
-		int			stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
-		SizeI		maxSize;
-		Widget_wp	pOpener;			// Widget that opened this popup.
-		Widget_wp	pKeyFocus;			// Pointer at widget that held focus when this popup was ontop.
+		RectI		m_launcherGeo;		// Launcher geo relative sibling or parent.
+		Origo		m_attachPoint = Origo::NorthWest;
+		bool		m_bAutoClose;		// Has been opened in auto-close mode.
+		State		m_state;
+		int			m_stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
+		SizeI		m_maxSize = { INT_MAX, INT_MAX };
+		Widget_wp	m_pOpener;			// Widget that opened this popup.
+		Widget_wp	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
 	};
 
 
@@ -90,16 +85,6 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 		
 	public:
 		
-		class Holder : public CStaticSlotArray<PopupSlot>::Holder
-		{
-		public:
-			virtual void		_removeSlots(int ofs, int nb) = 0;
-			virtual void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) = 0;
-		};
-		
-		/** @private */
-		CPopupSlots(Holder * pHolder) : CStaticSlotArray<PopupSlot>(pHolder) {}
-
 		//.____ Misc __________________________________________________________
 
 		inline CPopupSlots_p	ptr() { return CPopupSlots_p(this); }
@@ -112,11 +97,23 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 		void	clear();
 
 	protected:
+		class Holder : public CStaticSlotArray<PopupSlot>::Holder
+		{
+		public:
+			virtual void		_removeSlots(int ofs, int nb) = 0;
+			virtual void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) = 0;
+		};
+
+		CPopupSlots(Holder * pHolder) : CStaticSlotArray<PopupSlot>(pHolder) {}
 
 		const Holder *	_holder() const { return static_cast<const Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
 		Holder *	_holder() { return static_cast<Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
 	};
 
+
+	class PopupLayer;
+	typedef	StrongPtr<PopupLayer>	PopupLayer_p;
+	typedef	WeakPtr<PopupLayer>	PopupLayer_wp;
 
 	//____ PopupLayer ____________________________________________________________
 

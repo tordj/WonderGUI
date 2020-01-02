@@ -118,7 +118,7 @@ namespace wg
 			Size max = Size::max(pref, p->m_geo.size());
 
 			_requestRender(Rect({ 0,0,m_size }, { p->m_geo.pos(), max }));
-			p->setSize(pref);
+			p->_setSize(pref);
 		}
 	}
 
@@ -554,7 +554,7 @@ namespace wg
 
 
 			m_dragSlot._setWidget(pImage);
-			m_dragSlot.setSize(sz);
+			m_dragSlot._setSize(sz);
 		}
 
 		Layer::_render(pDevice,_canvas,_window);
