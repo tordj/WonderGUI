@@ -111,8 +111,12 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	add( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		iterator	add( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return add( pWidget, Rect(pos,0,0), origo); }
+		iterator	pushFront( Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
+		iterator	pushFront( Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return pushFront( pWidget, Rect(pos,0,0), origo); }
+
+		iterator	pushBack(Widget * pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
+		iterator	pushBack(Widget * pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
+
 
 	protected:
 

@@ -125,7 +125,7 @@ int main ( int argc, char** argv )
 
 		Filler_p pBackground = Filler::create();
 		pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
-		pFlexPanel->slots.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+		pFlexPanel->slots.pushBackPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 		// Now we create the button, using a clickable skin built from the BMP
 		// with the button graphics. First we specify the Surface and a rectangle

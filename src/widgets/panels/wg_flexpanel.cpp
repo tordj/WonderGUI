@@ -176,14 +176,14 @@ namespace wg
 
 
 
-	//____ addPinned() _________________________________________________________
+	//____ pushFrontPinned() _________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::addPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	CFlexSlotArray::iterator CFlexSlotArray::pushFrontPinned( Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		FlexSlot * pSlot = _addEmpty();
+		FlexSlot * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 
 		pSlot->m_bPinned = true;
@@ -194,14 +194,14 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ addMovable() ________________________________________________________
+	//____ pushFrontMovable() ________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::addMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	CFlexSlotArray::iterator CFlexSlotArray::pushFrontMovable( Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		FlexSlot * pSlot = _addEmpty();
+		FlexSlot * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 
 		pSlot->m_placementGeo = qpixToRaw(geometry);
@@ -211,6 +211,43 @@ namespace wg
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
+
+	//____ pushBackPinned() _________________________________________________________
+
+	CFlexSlotArray::iterator CFlexSlotArray::pushBackPinned(Widget * pWidget, const FlexPos& topLeft, const FlexPos& bottomRight)
+	{
+		//TODO: Assert
+
+		pWidget->releaseFromParent();
+		FlexSlot * pSlot = _pushBackEmpty();
+		pSlot->_setWidget(pWidget);
+
+		pSlot->m_bPinned = true;
+		pSlot->m_topLeftPin = topLeft;
+		pSlot->m_bottomRightPin = bottomRight;
+
+		_holder()->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
+	//____ pushBackMovable() ________________________________________________________
+
+	CFlexSlotArray::iterator CFlexSlotArray::pushBackMovable(Widget * pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	{
+		//TODO: Assert
+
+		pWidget->releaseFromParent();
+		FlexSlot * pSlot = _pushBackEmpty();
+		pSlot->_setWidget(pWidget);
+
+		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_origo = origo;
+		pSlot->m_hotspot = hotspot;
+
+		_holder()->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
 
 	//____ insertPinned() ________________________________________________________
 

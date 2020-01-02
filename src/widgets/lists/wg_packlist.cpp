@@ -48,7 +48,7 @@ namespace wg
 //			return false;
 
 		if (isEmpty() || !_holder()->_hasSortFunction())
-			return add(pWidget);
+			return pushBack(pWidget);
 
 		int index = _holder()->_getInsertionPoint(pWidget);
 		insert(index, pWidget);

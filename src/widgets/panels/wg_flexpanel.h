@@ -177,9 +177,14 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	addPinned( Widget * pWidget, const FlexPos& topLeft,
+		iterator	pushFrontPinned( Widget * pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	addMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
+		iterator	pushFrontMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
+									const FlexPos& hotspot = Origo::NorthWest );
+
+		iterator	pushBackPinned( Widget * pWidget, const FlexPos& topLeft,
+									const FlexPos& bottomRight );
+		iterator	pushBackMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
 									const FlexPos& hotspot = Origo::NorthWest );
 
 		iterator	insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,

@@ -87,7 +87,8 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func );
+		iterator	pushFront( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func );
+		iterator	pushBack(Widget * pWidget, std::function<Rect(Widget * pWidget, Size parenSize)> func);
 
 		iterator	insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );
 		iterator	insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func );

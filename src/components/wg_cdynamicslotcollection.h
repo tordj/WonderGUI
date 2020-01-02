@@ -44,15 +44,40 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
+		inline iterator operator<<(Widget * pWidget) { return _pushBack(pWidget); }
 
 		//.____ Content _______________________________________________________
 
-		inline  iterator	add(Widget * pWidget)												{ return _add(pWidget); }
-		inline  iterator	add(const Widget_p pWidgets[], int amount)							{ return _add(pWidgets,amount); }
+		inline  iterator	pushFront(Widget * pWidget) { return _pushFront(pWidget); }
+		inline  iterator	pushFront(const Widget_p pWidgets[], int amount) { return _pushFront(pWidgets, amount); }
 
 		template<typename Iterator>
-		iterator			add(const Iterator& begin, const Iterator& end)
+		iterator			pushFront(const Iterator& begin, const Iterator& end)
+		{
+			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+			if (begin != end)
+			{
+				Iterator it = end;
+				--it;
+				while (it != begin)
+				{
+					pushFront(*it);
+					--it;
+				}
+			}
+
+			return _begin_iterator();
+		}
+
+
+		inline  iterator	pushBack(Widget * pWidget)												{ return _pushBack(pWidget); }
+		inline  iterator	pushBack(const Widget_p pWidgets[], int amount)							{ return _pushBack(pWidgets,amount); }
+
+		template<typename Iterator>
+		iterator			pushBack(const Iterator& begin, const Iterator& end)
 		{
 			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
@@ -115,9 +140,11 @@ namespace wg
 		inline CDynamicSlotCollection_p ptr() { return CDynamicSlotCollection_p(this); }
 
 	protected:
+		virtual iterator	_pushFront(Widget * pWidget) = 0;
+		virtual iterator	_pushFront(const Widget_p pWidgets[], int amount) = 0;
 
-		virtual iterator	_add(Widget * pWidget) = 0;
-		virtual iterator	_add(const Widget_p pWidgets[], int amount) = 0;
+		virtual iterator	_pushBack(Widget * pWidget) = 0;
+		virtual iterator	_pushBack(const Widget_p pWidgets[], int amount) = 0;
 
 		virtual iterator	_insert(const iterator& it, Widget * pWidget) = 0;
 		virtual iterator	_insert(const iterator& it, const Widget_p pWidgets[], int amount) = 0;

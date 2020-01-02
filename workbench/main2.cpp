@@ -469,7 +469,7 @@ int main(int argc, char** argv)
 	pImage0->setSkin(pTestSkin);
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
-	pBasePanel->slots.add(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
+	pBasePanel->slots.pushBack(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
 
 	Base::msgRouter()->addRoute(pImage0, MsgType::Select, [&](const Msg_p& pMsg) { bQuit = true; });
 
@@ -1479,7 +1479,7 @@ void cbMoveResize( const Msg_p& _pMsg, const Object_p& _pWidget )
 
 void addResizablePanel( const FlexPanel_p& pParent, const Widget_p& pChild, const MsgRouter_p& pMsgRouter )
 {
-	pParent->slots.add( pChild );
+	pParent->slots.pushBack( pChild );
 //	pMsgRouter->addRoute( pChild, MsgFunc::create(cbMoveResize, pChild) );
 }
 
@@ -1611,7 +1611,7 @@ bool stretchBlitTest(CStandardSlot_p pEntry)
 	auto pImage = Image::create();
 	pImage->setImage(pImgSurface, { 0,0,256,256 });
 //	pImage->setImage(pImgSurface, { 1,1,254,254 });
-	pBack->slots.addMovable(pImage, { 10,10,256,256 } );
+	pBack->slots.pushBackMovable(pImage, { 10,10,256,256 } );
 
 	Base::msgRouter()->addRoute(pImage, MsgType::MouseDrag, [pBack,pImage](Msg* pMsg) { 
 	
@@ -1639,7 +1639,7 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.addMovable(pScrollPanel, { 10,10,200,50 });
+	pFlex->slots.pushBackMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 
@@ -1659,7 +1659,7 @@ bool textClipTest(CStandardSlot_p pEntry)
 	pEditor->setSkin( pSkin );
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.addMovable(pEditor, { 10,10,50,30 });
+	pFlex->slots.pushBackMovable(pEditor, { 10,10,50,30 });
 
 	* pEntry = pFlex;
 
@@ -1679,7 +1679,7 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 	pEditor->setSkin(pSkin);
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.addMovable(pEditor, { 10,100,50,30 });
+	pFlex->slots.pushBackMovable(pEditor, { 10,100,50,30 });
 
 	* pEntry = pFlex;
 
@@ -1705,7 +1705,7 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 	auto  pOpener = PopupOpener::create();
 	pOpener->setSkin(pButtonSkin);
 	pOpener->label.set("OPEN POPUP");
-	pFlex->slots.addMovable(pOpener, { 50,50,50,30 });
+	pFlex->slots.pushBackMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();
 	pOpened->setSkin(pButtonSkin);
@@ -1751,7 +1751,7 @@ bool scrollbarTest(CStandardSlot_p pEntry)
 
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.addMovable(pScrollPanel, { 10,10,200,50 });
+	pFlex->slots.pushBackMovable(pScrollPanel, { 10,10,200,50 });
 
 	* pEntry = pFlex;
 

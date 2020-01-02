@@ -37,14 +37,28 @@ namespace wg
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	//____ CLambdaSlotArray::add() ________________________________________________
+	//____ CLambdaSlotArray::pushFront() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::add( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::pushFront( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		LambdaSlot * pSlot = _addEmpty();
+		LambdaSlot * pSlot = _pushFrontEmpty();
+		pSlot->_setWidget(pWidget);
+		pSlot->m_func = func;
+		_holder()->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
+	//____ CLambdaSlotArray::pushBack() ________________________________________________
+
+	CLambdaSlotArray::iterator CLambdaSlotArray::pushBack(Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	{
+		//TODO: Assert
+
+		pWidget->releaseFromParent();
+		LambdaSlot * pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);

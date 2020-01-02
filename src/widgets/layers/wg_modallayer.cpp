@@ -82,15 +82,32 @@ namespace wg
 	}
 
 
-	//____ add() _________________________________________________________________
+	//____ pushFront() _________________________________________________________________
 
-	CModalSlotArray::iterator CModalSlotArray::add(Widget * pWidget, const Rect& geometry, Origo origo)
+	CModalSlotArray::iterator CModalSlotArray::pushFront(Widget * pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		ModalSlot * pSlot = _addEmpty();
+		ModalSlot * pSlot = _pushFrontEmpty();
+		pSlot->m_geo = qpixToRaw(geometry);
+		pSlot->m_origo = origo;
+
+		pSlot->_setWidget(pWidget);
+		_holder()->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
+	//____ pushBack() _________________________________________________________________
+
+	CModalSlotArray::iterator CModalSlotArray::pushBack(Widget * pWidget, const Rect& geometry, Origo origo)
+	{
+		//TODO: Assert
+
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
+		ModalSlot * pSlot = _pushBackEmpty();
 		pSlot->m_geo = qpixToRaw(geometry);
 		pSlot->m_origo = origo;
 

@@ -378,7 +378,7 @@ void refresh_performance_display()
 			Widget_p * pEnd = nullptr;
 
 //			pEntry->slots.add(1, 2);
-			pEntry->slots.add(v.begin(), v.end());
+			pEntry->slots.pushBack(v.begin(), v.end());
 
 			pEntry->slots.setWeight(0, 2, { 0.f,1.f });
 //			pEntry->slots.setPadding(1, { 0,0,0,10 });
@@ -1023,7 +1023,7 @@ bool setup_chrome()
 		auto pEntry = TextDisplay::create();
 		pEntry->setId(id++);
 		pEntry->text.set(test.name);
-		pTestList->slots.add(pEntry);
+		pTestList->slots.pushBack(pEntry);
 	}
 
 	auto pTestScrollPanel = ScrollPanel::create();

@@ -32,29 +32,59 @@ namespace wg
 {
 	class Widget;
 
-
-	//____ add() _________________________________________________________________
+	//____ pushFront() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::add(Widget * pWidget)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushFront(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = _addEmpty();
+		SlotType * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::add(const Widget_p pWidgets[], int amount)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushFront(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
 		for (int i = 0; i < amount; i++)
 			pWidgets[i]->releaseFromParent();
 
-		SlotType * pSlot = _addEmpty(amount);
+		SlotType * pSlot = _pushFrontEmpty(amount);
+
+		for (int i = 0; i < amount; i++)
+			pSlot[i]._setWidget(pWidgets[i]);
+		m_pHolder->_didAddSlots(pSlot, amount);
+		return iterator(pSlot);
+	}
+
+
+
+	//____ pushBack() _________________________________________________________________
+
+	template < class SlotType>
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushBack(Widget * pWidget)
+	{
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
+		SlotType * pSlot = _pushBackEmpty();
+		pSlot->_setWidget(pWidget);
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
+	template < class SlotType>
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushBack(const Widget_p pWidgets[], int amount)
+	{
+		//TODO: Add assert
+
+		for (int i = 0; i < amount; i++)
+			pWidgets[i]->releaseFromParent();
+
+		SlotType * pSlot = _pushBackEmpty(amount);
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i]._setWidget(pWidgets[i]);
@@ -131,6 +161,7 @@ namespace wg
 
 		SlotType * pSlot = _slot(index);
 		m_pHolder->_willEraseSlots(pSlot, 1);
+		_erase(pSlot);
 	}
 
 	template < class SlotType>
@@ -150,6 +181,7 @@ namespace wg
 
 		SlotType * pSlot = _slot(index);
 		m_pHolder->_willEraseSlots(pSlot, amount);
+		_erase(pSlot, pSlot+amount);
 	}
 
 	template < class SlotType>
@@ -426,35 +458,65 @@ namespace wg
 		}
 	}
 
-
-
+	//____ _pushFront() _______________________________________________________
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotArray<SlotType>::_add(Widget * pWidget)
+	SlotIterator CDynamicSlotArray<SlotType>::_pushFront(Widget * pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		SlotType * pSlot = _addEmpty();
+		SlotType * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 		m_pHolder->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
 	template < class SlotType>
-	SlotIterator CDynamicSlotArray<SlotType>::_add(const Widget_p pWidgets[], int amount)
+	SlotIterator CDynamicSlotArray<SlotType>::_pushFront(const Widget_p pWidgets[], int amount)
 	{
 		//TODO: Add assert
 
 		for (int i = 0; i < amount; i++)
 			pWidgets[i]->releaseFromParent();
 
-		SlotType * pSlot = _addEmpty(amount);
+		SlotType * pSlot = _pushFrontEmpty(amount);
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i]._setWidget(pWidgets[i]);
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
+
+	//____ _pushBack() ________________________________________________________
+
+	template < class SlotType>
+	SlotIterator CDynamicSlotArray<SlotType>::_pushBack(Widget * pWidget)
+	{
+		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
+
+		SlotType * pSlot = _pushBackEmpty();
+		pSlot->_setWidget(pWidget);
+		m_pHolder->_didAddSlots(pSlot, 1);
+		return iterator(pSlot);
+	}
+
+	template < class SlotType>
+	SlotIterator CDynamicSlotArray<SlotType>::_pushBack(const Widget_p pWidgets[], int amount)
+	{
+		//TODO: Add assert
+
+		for (int i = 0; i < amount; i++)
+			pWidgets[i]->releaseFromParent();
+
+		SlotType * pSlot = _pushBackEmpty(amount);
+
+		for (int i = 0; i < amount; i++)
+			pSlot[i]._setWidget(pWidgets[i]);
+		m_pHolder->_didAddSlots(pSlot, amount);
+		return iterator(pSlot);
+	}
+
+	//____ _insert() ________________________________________________________
 
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_insert(const SlotIterator& it, Widget * pWidget)
@@ -487,6 +549,8 @@ namespace wg
 		return iterator(pSlot);
 	}
 
+	//____ _erase() ________________________________________________________
+
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_erase(const SlotIterator& it)
 	{
@@ -508,6 +572,8 @@ namespace wg
 		return iterator(_erase(pBeg, pEnd));
 	}
 
+	//____ _moveToFront() ________________________________________________________
+
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_moveToFront(const SlotIterator& it)
 	{
@@ -521,6 +587,8 @@ namespace wg
 		return iterator(_begin());
 	}
 
+	//____ _moveToBack() ________________________________________________________
+
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_moveToBack(const SlotIterator& it)
 	{
@@ -533,6 +601,8 @@ namespace wg
 		m_pHolder->_didMoveSlots(pFrom, pTo, 1);
 		return iterator(_last());
 	}
+
+	//____ _moveBefore() ________________________________________________________
 
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_moveBefore(const SlotIterator& it, const SlotIterator& sibling)
@@ -554,7 +624,7 @@ namespace wg
 		return iterator(pTo);
 	}
 
-
+	//____ _move() ____________________________________________________________
 
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
@@ -589,6 +659,8 @@ namespace wg
 		*pTo = std::move(temp);
 	}
 
+	//____ _reorder() _________________________________________________________
+
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::_reorder(int order[])
 	{
@@ -596,15 +668,19 @@ namespace wg
 			return;
 
 		int size = sizeof(SlotType)*m_capacity;
-		SlotType* pOld = m_pArray;
-		m_pArray = (SlotType*)malloc(size);
+		SlotType* pOldArray = m_pArray;
+		SlotType* pOldBuffer = m_pBuffer;
+		m_pBuffer = (SlotType*)malloc(size);
+		m_pArray = m_pBuffer + (pOldArray - pOldBuffer);
 		for (int i = 0; i < m_size; i++)
 		{
 			int ofs = order[i];
-			new (&m_pArray[i]) SlotType(std::move(pOld[ofs]));
+			new (&m_pArray[i]) SlotType(std::move(pOldArray[ofs]));
 		}
-		free(pOld);
+		free(pOldBuffer);
 	}
+
+	//____ _find() ____________________________________________________________
 
 	template < class SlotType>
 	SlotType * CDynamicSlotArray<SlotType>::_find(const Widget* pWidget) const
@@ -616,30 +692,36 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ _reallocArray() ____________________________________________________
+
 	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::_reallocArray(int capacity)
+	void CDynamicSlotArray<SlotType>::_reallocArray(int capacity, int offset)
 	{
 		int size = sizeof(SlotType)*capacity;
-		SlotType* pNew = (SlotType*)malloc(size);
-		SlotType* pOld = m_pArray;
-		m_pArray = pNew;
+		SlotType* pOldBuffer = m_pBuffer;
+		SlotType* pOldArray = m_pArray;
+
+		m_pBuffer = (SlotType*)malloc(size);
+		m_pArray = m_pBuffer + offset;
 		m_capacity = capacity;
 
-		if (pOld)
+		if (pOldBuffer)
 		{
 			if (SlotType::safe_to_relocate)
 			{
-				memcpy((void*)pNew, pOld, sizeof(SlotType)*m_size);
+				memcpy((void*)m_pArray, pOldArray, sizeof(SlotType)*m_size);
 				_reallocBlock(_begin(), _end());
 			}
 			else
 			{
 				for (int i = 0; i < m_size; i++)
-					new (&pNew[i]) SlotType(std::move(pOld[i]));
+					new (&m_pArray[i]) SlotType(std::move(pOldArray[i]));
 			}
-			free(pOld);
+			free(pOldBuffer);
 		}
 	}
+
+	//____ _reallocBlock() ____________________________________________________
 
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
@@ -651,71 +733,131 @@ namespace wg
 		}
 	}
 
+	//____ _deleteBlock() _____________________________________________________
+
 	template < class SlotType>
 	SlotType* CDynamicSlotArray<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
-		int blocksToMove = int(_end() - pEnd);
-		if (SlotType::safe_to_relocate)
+		if (m_pBuffer == m_pArray)
 		{
-			_killBlock(pBeg, pEnd);
-
-			if (blocksToMove > 0)
+			int blocksToMove = int(_end() - pEnd);
+			if (SlotType::safe_to_relocate)
 			{
-				memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
-				_reallocBlock(pBeg, pBeg + blocksToMove);
+				_killBlock(pBeg, pEnd);
+
+				if (blocksToMove > 0)
+				{
+					memmove(pBeg, pEnd, sizeof(SlotType) * blocksToMove);
+					_reallocBlock(pBeg, pBeg + blocksToMove);
+				}
+			}
+			else
+			{
+				for (int i = 0; i < blocksToMove; i++)
+					pBeg[i] = std::move(pEnd[i]);
+
+				_killBlock(pBeg + blocksToMove, pEnd);
 			}
 		}
 		else
 		{
-			for (int i = 0; i < blocksToMove; i++)
-				pBeg[i] = std::move(pEnd[i]);
+			int blocksToMove = int(pBeg - _begin());
+			if (blocksToMove > 0)
+			{
+				if (SlotType::safe_to_relocate)
+				{
+					_killBlock(pBeg, pEnd);
 
-			_killBlock(pBeg + blocksToMove, pEnd);
+					memmove(pEnd - blocksToMove, pBeg - blocksToMove, sizeof(SlotType) * blocksToMove);
+					_reallocBlock(pEnd - blocksToMove, pEnd);
+				}
+				else
+				{
+					for (int i = 0; i < blocksToMove; i++)
+						pEnd[-1 - i] = std::move(pBeg[-1 - i]);
+
+					_killBlock(pBeg + blocksToMove, pEnd);
+				}
+			}
+			m_pArray += pEnd - pBeg;
 		}
+
 		m_size -= pEnd - pBeg;
 		return pBeg;
 	}
 
+	//____ _insertBlock() _____________________________________________________
 
 	template < class SlotType>
 	SlotType* CDynamicSlotArray<SlotType>::_insertBlock(SlotType * pPos, int entries)
 	{
 		if (entries <= m_capacity - m_size)
 		{
-			int nToMove = (int)(_end() - pPos);
-			if (nToMove > 0)
+			if (m_pBuffer == m_pArray)
 			{
-				if (SlotType::safe_to_relocate)
+				// We grow at the end, so make space for insertion by moving entries after insertion point backward.
+
+				int nToMove = (int)(_end() - pPos);
+				if (nToMove > 0)
 				{
-					memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToMove);
-					_reallocBlock(&pPos[entries], &pPos[entries + nToMove]);
-				}
-				else
-				{
-
-					int nMoveToNew = min(entries, nToMove);
-					int nMoveToExisting = nToMove - nMoveToNew;
-
-					SlotType * pFrom = _end();
-					SlotType * pTo = pFrom + entries;
-
-					// Move first batch of entries to uninitialized objects
-
-					for (int i = 0; i < nMoveToNew; i++)
+					if (SlotType::safe_to_relocate)
 					{
-						new (--pTo) SlotType(std::move(*(--pFrom)));
-						/*							new (--pTo) SlotType();
-						*pTo = * (--pFrom);
-						pTo->relink();
-						*/
+						memmove((void*)&pPos[entries], pPos, sizeof(SlotType) * nToMove);
+						_reallocBlock(&pPos[entries], &pPos[entries + nToMove]);
 					}
+					else
+					{
+						int nMoveToNew = min(entries, nToMove);
+						int nMoveToExisting = nToMove - nMoveToNew;
 
-					// Move the rest to existing objects
+						SlotType * pFrom = _end();
+						SlotType * pTo = pFrom + entries;
 
-					for (int i = 0; i < nMoveToExisting; i++)
-						*(--pTo) = std::move(*(--pFrom));
+						// Move first batch of entries to uninitialized objects
 
+						for (int i = 0; i < nMoveToNew; i++)
+							new (--pTo) SlotType(std::move(*(--pFrom)));
+
+						// Move the rest to existing objects
+
+						for (int i = 0; i < nMoveToExisting; i++)
+							*(--pTo) = std::move(*(--pFrom));
+					}
 				}
+			}
+			else
+			{
+				// We grow at the front, so make space for insertion by moving entries before insertion point forward.
+
+				int nToMove = int(pPos - _begin());
+				if (nToMove > 0)
+				{
+					if (SlotType::safe_to_relocate)
+					{
+						memmove(m_pArray - entries, m_pArray, sizeof(SlotType) * nToMove);
+						_reallocBlock(m_pArray - entries, m_pArray - entries + nToMove);
+					}
+					else
+					{
+						int nMoveToNew = min(entries, nToMove);
+						int nMoveToExisting = nToMove - nMoveToNew;
+
+						SlotType * pFrom = m_pArray;
+						SlotType * pTo = m_pArray - entries;
+
+						// Move first batch of entries to uninitialized objects
+
+						for (int i = 0; i < nMoveToNew; i++)
+							new (pTo++) SlotType(std::move(*(pFrom++)));
+
+						// Move the rest to existing objects
+
+						for (int i = 0; i < nMoveToExisting; i++)
+							*(pTo++) = std::move(*(pFrom++));
+					}
+				}
+				m_pArray -= entries;
+				pPos -= entries;
 			}
 		}
 		else
@@ -726,36 +868,39 @@ namespace wg
 			else
 				m_capacity += grow;
 
-			SlotType* pNew = (SlotType*)malloc(sizeof(SlotType) * m_capacity);
-			SlotType* pOld = m_pArray;
-			SlotType* pNewPos = pNew + (pPos - pOld);
+			SlotType* pOldBuffer = m_pBuffer;
+			SlotType* pOldArray = m_pArray;
 
-			if (SlotType::safe_to_relocate)
+			m_pBuffer = (SlotType*)malloc(sizeof(SlotType) * m_capacity);
+			m_pArray = pOldArray == pOldBuffer ? m_pBuffer : m_pBuffer + m_capacity - m_size - entries;
+
+
+			if (pOldBuffer)
 			{
-				memcpy((void*)pNew, pOld, sizeof(SlotType) * (pPos - pOld));
-				memcpy((void*)&pNewPos[entries], pPos, sizeof(SlotType) * (_end() - pPos));
-				_reallocBlock(pNew, pNewPos);
-				_reallocBlock(&pNewPos[entries], pNew + m_size + entries);
-			}
-			else
-			{
-				for (int i = 0; i < pPos - pOld; i++)
+				int nPreceeding = pPos - pOldArray;
+				int nSucceeding = m_size - nPreceeding;
+
+				if (SlotType::safe_to_relocate)
 				{
-					new (&pNew[i]) SlotType(std::move(pOld[i]));
+					memcpy((void*)m_pArray, pOldArray, sizeof(SlotType) * nPreceeding);
+					memcpy((void*)(m_pArray + nPreceeding + entries), (void*)(pOldArray + nPreceeding), sizeof(SlotType) * nSucceeding);
+					_reallocBlock(m_pArray, m_pArray + nPreceeding);
+					_reallocBlock(m_pArray + nPreceeding + entries, m_pArray + nPreceeding + entries + nSucceeding);
+				}
+				else
+				{
+					for (int i = 0; i < nPreceeding; i++)
+						new (&m_pArray[i]) SlotType(std::move(pOldArray[i]));
+
+					SlotType * pDest = m_pArray + nPreceeding + entries;
+					for (int i = 0; i < nSucceeding; i++)
+						new (&pDest[i]) SlotType(std::move(pPos[i]));
 				}
 
-				SlotType * pDest = &pNewPos[entries];
-				for (int i = 0; i < _end() - pPos; i++)
-				{
-					new (&pDest[i]) SlotType(std::move(pPos[i]));
-				}
+				free(pOldBuffer);
 			}
 
-			if (pOld)
-				free(pOld);
-
-			m_pArray = pNew;
-			pPos = pNewPos;
+			pPos = m_pArray + (pPos - pOldArray);
 		}
 
 		m_size += entries;
@@ -763,12 +908,16 @@ namespace wg
 		return pPos;
 	}
 
+	//____ _killBlock() __________________________________________________________
+
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 			(pBeg++)->~SlotType();
 	}
+
+	//____ _initBlock() __________________________________________________________
 
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)

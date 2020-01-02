@@ -39,9 +39,9 @@ namespace wg
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 
 
-	//____ push() ________________________________________________
+	//____ pushFront() ________________________________________________
 
-	void CPopupSlots::push(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void CPopupSlots::pushFront(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		_holder()->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
@@ -825,7 +825,7 @@ namespace wg
 
 	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectI& _launcherGeo, Origo _attachPoint, bool _bAutoClose, SizeI _maxSize)
 	{
-		PopupSlot * pSlot = popupSlots._insertEmpty(0);
+		PopupSlot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->pOpener = _pOpener;
 		pSlot->launcherGeo = _launcherGeo;
 		pSlot->attachPoint = _attachPoint;
@@ -861,7 +861,7 @@ namespace wg
 			_requestRender(pSlot[i].m_geo);
 		}
 
-		popupSlots._remove(ofs, nb);
+		popupSlots._erase(ofs, nb);
 		_restoreKeyboardFocus();
 
 		if (popupSlots.isEmpty())

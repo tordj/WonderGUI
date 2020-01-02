@@ -50,16 +50,13 @@ namespace wg
 			//		virtual void	_willReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
 			//		virtual void	_didReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
 
-
 		};
-
-
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(Widget * pWidget) { return add(pWidget); }
+		inline iterator operator<<(Widget * pWidget) { return pushBack(pWidget); }
 
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
@@ -86,14 +83,41 @@ namespace wg
 		}
 
 		inline int		capacity() const { return m_capacity; }
-		inline void		setCapacity(int capacity) { if (capacity != m_capacity) _reallocArray(capacity); }
-		inline void		reserve(int n) { if (m_size + n > m_capacity) _reallocArray(m_size + n); }
 
-		iterator		add(Widget * pWidget);
-		iterator		add(const Widget_p pWidgets[], int amount);
+//		inline void		setCapacity(int capacity) { if (capacity != m_capacity) _reallocArray(capacity); }
+		inline void		reserveFront(int n) { if (m_pBuffer + n > m_pArray) _reallocArray(m_size + n, n); }
+		inline void		reserveBack(int n) { if (m_pArray + m_size + n > m_pBuffer + m_capacity) _reallocArray(m_size + n, 0); }
+
+		iterator		pushFront(Widget * pWidget);
+		iterator		pushFront(const Widget_p pWidgets[], int amount);
 
 		template<typename Iterator>
-		iterator		add(const Iterator& beg, const Iterator& end)
+		iterator		pushFront(const Iterator& beg, const Iterator& end)
+		{
+			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
+				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
+				"Begin and end parameters must be iterators or raw pointers to some kind of Widget pointers.");
+
+			if (beg != end)
+			{
+				Iterator it = end;
+				--it;
+				while (it != beg)
+				{
+					pushFront(*it);
+					--it;
+				}
+			}
+
+			return begin();
+		}
+
+
+		iterator		pushBack(Widget * pWidget);
+		iterator		pushBack(const Widget_p pWidgets[], int amount);
+
+		template<typename Iterator>
+		iterator		pushBack(const Iterator& beg, const Iterator& end)
 		{
 			static_assert(std::is_convertible<typename std::iterator_traits<Iterator>::iterator_category, std::input_iterator_tag>::value &&
 				std::is_convertible<typename std::iterator_traits<Iterator>::value_type, Widget*>::value,
@@ -104,7 +128,7 @@ namespace wg
 			Iterator it = beg;
 			while (it != end)
 			{
-				add(*it++);
+				pushBack(*it++);
 			}
 
 			return begin() + oldSize;
@@ -171,8 +195,11 @@ namespace wg
 		Object *		_object() override;
 		const Object *	_object() const override;
 
-		SlotIterator	_add(Widget * pWidget) override;
-		SlotIterator	_add(const Widget_p pWidgets[], int amount) override;
+		SlotIterator	_pushFront(Widget * pWidget) override;
+		SlotIterator	_pushFront(const Widget_p pWidgets[], int amount) override;
+
+		SlotIterator	_pushBack(Widget * pWidget) override;
+		SlotIterator	_pushBack(const Widget_p pWidgets[], int amount) override;
 
 		SlotIterator	_insert(const SlotIterator& it, Widget * pWidget) override;
 		SlotIterator	_insert(const SlotIterator& it, const Widget_p pWidgets[], int amount) override;
@@ -190,8 +217,34 @@ namespace wg
 		inline Holder *		_holder() { return m_pHolder; }
 		inline const Holder *	_holder() const { return m_pHolder; }
 
-		SlotType*		_addEmpty() { if (m_size == m_capacity) _reallocArray(((m_capacity + 1) * 2)); _initBlock(_end()); return &m_pArray[m_size++]; }
-		SlotType*		_addEmpty(int entries) { if (m_size + entries > m_capacity) _reallocArray(m_capacity + entries); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
+		SlotType*		_pushFrontEmpty()
+		{
+			if (m_pArray == m_pBuffer)
+			{
+				int capacity = (m_capacity + 1) * 2;
+				_reallocArray(capacity, capacity - m_size);
+			}
+			m_size++;
+			m_pArray--;
+			_initBlock(m_pArray);
+			return m_pArray;
+		}
+
+		SlotType*		_pushFrontEmpty(int entries)
+		{
+			if (m_pBuffer + entries > m_pArray)
+			{
+				_reallocArray(m_size + entries, entries);
+			}
+
+			m_size += entries;
+			m_pArray -= entries;
+			_initBlock(m_pArray, m_pArray + entries);
+			return m_pArray;
+		}
+
+		SlotType*		_pushBackEmpty() { if (m_pArray + m_size == m_pBuffer + m_capacity) _reallocArray(((m_capacity + 1) * 2), 0); _initBlock(_end()); return &m_pArray[m_size++]; }
+		SlotType*		_pushBackEmpty(int entries) { if (m_pArray + m_size + entries > m_pBuffer + m_capacity) _reallocArray(m_size + entries, 0); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
 
 		SlotType*		_insertEmpty(int index) { return _insertBlock(&m_pArray[index], 1); }
 		SlotType*		_insertEmpty(int index, int entries) { return _insertBlock(&m_pArray[index], entries); }
@@ -208,7 +261,7 @@ namespace wg
 
 		bool			_contains(const SlotType * pSlot) const { return (pSlot >= m_pArray && pSlot <= _last()); }
 
-		void			_clear() { _killBlock(_begin(), _end()); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
+		void			_clear() { _killBlock(_begin(), _end()); free(m_pBuffer); m_pBuffer = nullptr;  m_pArray = nullptr; m_capacity = 0; m_size = 0; }
 
 
 		SlotType*	_slot(int index) const { return &m_pArray[index]; }
@@ -231,7 +284,7 @@ namespace wg
 
 	private:
 
-		void	_reallocArray(int capacity);
+		void	_reallocArray(int capacity, int offset);
 
 		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd);
 
@@ -253,9 +306,11 @@ namespace wg
 
 		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
 
+		SlotType *	m_pBuffer;
 		int			m_capacity;
-		int			m_size;
+
 		SlotType *	m_pArray;
+		int			m_size;
 
 		Holder *	m_pHolder;
 	};

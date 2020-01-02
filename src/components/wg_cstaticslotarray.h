@@ -154,8 +154,8 @@ namespace wg
 		inline iterator	end() const { return iterator(_end()); }
 
 	protected:
-		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
-		~CStaticSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
+		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pBuffer(nullptr), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		~CStaticSlotArray() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
@@ -171,25 +171,51 @@ namespace wg
 		inline Holder *		_holder() { return m_pHolder; }
 		inline const Holder *	_holder() const { return m_pHolder; }
 
-		SlotType*		_addEmpty() { if (m_size == m_capacity) _reallocArray(((m_capacity + 1) * 2)); _initBlock(_end()); return &m_pArray[m_size++]; }
-		SlotType*		_addEmpty(int entries) { if (m_size + entries > m_capacity) _reallocArray(m_capacity + entries); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
+		SlotType*		_pushFrontEmpty() 
+						{ 
+							if (m_pArray == m_pBuffer ) 
+							{
+								int capacity = (m_capacity + 1) * 2;
+								_reallocArray(capacity, capacity - m_size); 
+							}
+							m_size++;
+							m_pArray--;
+							_initBlock(m_pArray);
+							return m_pArray; 
+						}
+
+		SlotType*		_pushFrontEmpty(int entries) 
+						{ 
+							if (m_pBuffer + entries > m_pArray)
+							{
+								_reallocArray(m_size + entries, entries); 
+							}
+
+							m_size += entries; 
+							m_pArray -= entries;
+							_initBlock(m_pArray, m_pArray + entries);
+							return m_pArray;
+						}
+
+		SlotType*		_pushBackEmpty() { if (m_pArray + m_size == m_pBuffer + m_capacity) _reallocArray(((m_capacity + 1) * 2), 0); _initBlock(_end()); return &m_pArray[m_size++]; }
+		SlotType*		_pushBackEmpty(int entries) { if (m_pArray + m_size + entries > m_pBuffer + m_capacity) _reallocArray(m_size + entries, 0); _initBlock(_end(), _end() + entries); int ofs = m_size; m_size += entries; return &m_pArray[ofs]; }
 
 		SlotType*		_insertEmpty(int index) { return _insertBlock(&m_pArray[index], 1); }
 		SlotType*		_insertEmpty(int index, int entries) { return _insertBlock(&m_pArray[index], entries); }
 		SlotType*		_insertEmpty(SlotType * pPos) { return _insertBlock(pPos, 1); }
 		SlotType*		_insertEmpty(SlotType * pPos, int entries) { return _insertBlock(pPos, entries); }
 
-		SlotType*		_remove(int index) { return _deleteBlock(&m_pArray[index], &m_pArray[index + 1]); }
-		SlotType*		_remove(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
-		SlotType*		_remove(SlotType * pPos) { return _deleteBlock(pPos, pPos + 1); }
-		SlotType*		_remove(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
+		SlotType*		_erase(int index) { return _deleteBlock(&m_pArray[index], &m_pArray[index + 1]); }
+		SlotType*		_erase(int index, int entries) { return _deleteBlock(&m_pArray[index], &m_pArray[index + entries]); }
+		SlotType*		_erase(SlotType * pPos) { return _deleteBlock(pPos, pPos + 1); }
+		SlotType*		_erase(SlotType * pPos, SlotType * pEnd) { return _deleteBlock(pPos, pEnd); }
 
 		void			_move(int index, int newIndex) { _move(&m_pArray[index], &m_pArray[newIndex]); }
 		void			_move(SlotType * pFrom, SlotType * pTo);
 
 		bool			_contains(const SlotType * pSlot) const { return (pSlot >= m_pArray && pSlot <= _last()); }
 
-		void			_clear() { _killBlock(_begin(), _end()); free(m_pArray); m_pArray = 0; m_capacity = 0; m_size = 0; }
+		void			_clear() { _killBlock(_begin(), _end()); free(m_pBuffer); m_pBuffer = nullptr;  m_pArray = nullptr; m_capacity = 0; m_size = 0; }
 
 
 		SlotType*	_slot(int index) const { return &m_pArray[index]; }
@@ -212,7 +238,7 @@ namespace wg
 
 	private:
 
-		void	_reallocArray(int capacity);
+		void	_reallocArray(int capacity, int offset);
 
 		void	_reallocBlock(SlotType * pBeg, SlotType * pEnd);
 
@@ -234,9 +260,11 @@ namespace wg
 
 		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
 
+		SlotType *	m_pBuffer;
 		int			m_capacity;
-		int			m_size;
+
 		SlotType *	m_pArray;
+		int			m_size;
 
 		Holder *	m_pHolder;
 	};
