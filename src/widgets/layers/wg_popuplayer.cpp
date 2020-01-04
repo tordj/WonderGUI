@@ -41,7 +41,7 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void CPopupSlots::pushFront(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void CPopupSlots::pushFront(const Widget_p& _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		_holder()->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));

@@ -173,19 +173,19 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		iterator	pushFrontPinned( Widget * pWidget, const FlexPos& topLeft,
+		iterator	pushFrontPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	pushFrontMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
+		iterator	pushFrontMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
 									const FlexPos& hotspot = Origo::NorthWest );
 
-		iterator	pushBackPinned( Widget * pWidget, const FlexPos& topLeft,
+		iterator	pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	pushBackMovable( Widget * pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
+		iterator	pushBackMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
 									const FlexPos& hotspot = Origo::NorthWest );
 
-		iterator	insertPinned( int index, Widget * pWidget, const FlexPos& topLeft,
+		iterator	insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft,
 									const FlexPos& bottomRight );
-		iterator	insertMovable( int index, Widget * pWidget, const Rect& geometry,
+		iterator	insertMovable( int index, const Widget_p& pWidget, const Rect& geometry,
 									const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest );
 
 		//.____ Misc _______________________________________________________

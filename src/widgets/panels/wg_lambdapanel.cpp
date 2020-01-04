@@ -39,7 +39,7 @@ namespace wg
 
 	//____ CLambdaSlotArray::pushFront() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::pushFront( Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -53,7 +53,7 @@ namespace wg
 
 	//____ CLambdaSlotArray::pushBack() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::pushBack(Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	CLambdaSlotArray::iterator CLambdaSlotArray::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -67,7 +67,7 @@ namespace wg
 
 	//____ CLambdaSlotArray::insert() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::insert( int index, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -79,7 +79,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::insert( iterator pos, Widget * pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotArray::iterator CLambdaSlotArray::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 

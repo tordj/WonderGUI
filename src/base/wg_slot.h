@@ -192,7 +192,7 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline void		setWidget(Widget * pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
 
 	protected:
 		const static bool safe_to_relocate = true;

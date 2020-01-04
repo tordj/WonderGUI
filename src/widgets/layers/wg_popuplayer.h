@@ -91,7 +91,7 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 
 		//.____ Content _______________________________________________________
 		
-		void	pushFront(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
+		void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
 		void	clear();

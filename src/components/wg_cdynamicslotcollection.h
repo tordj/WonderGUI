@@ -44,11 +44,11 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(Widget * pWidget) { return _pushBack(pWidget); }
+		inline iterator operator<<(const Widget_p& pWidget) { return _pushBack(pWidget); }
 
 		//.____ Content _______________________________________________________
 
-		inline  iterator	pushFront(Widget * pWidget) { return _pushFront(pWidget); }
+		inline  iterator	pushFront(const Widget_p& pWidget) { return _pushFront(pWidget); }
 		inline  iterator	pushFront(const Widget_p pWidgets[], int amount) { return _pushFront(pWidgets, amount); }
 
 		template<typename Iterator>
@@ -73,7 +73,7 @@ namespace wg
 		}
 
 
-		inline  iterator	pushBack(Widget * pWidget)												{ return _pushBack(pWidget); }
+		inline  iterator	pushBack(const Widget_p& pWidget)												{ return _pushBack(pWidget); }
 		inline  iterator	pushBack(const Widget_p pWidgets[], int amount)							{ return _pushBack(pWidgets,amount); }
 
 		template<typename Iterator>
@@ -94,9 +94,9 @@ namespace wg
 			return _begin_iterator() + oldSize;
 		}
 
-		virtual void		insert(int index, Widget * pWidget) = 0;
+		virtual void		insert(int index, const Widget_p& pWidget) = 0;
 		virtual void		insert(int index, const Widget_p pWidgets[], int amount) = 0;
-		inline  iterator	insert(const iterator& it, Widget * pWidget)						{ return _insert(it, pWidget); }
+		inline  iterator	insert(const iterator& it, const Widget_p& pWidget)						{ return _insert(it, pWidget); }
 		inline  iterator	insert(const iterator& it, const Widget_p pWidgets[], int amount)	{ return _insert(it, pWidgets, amount); }
 
 		virtual void		erase(int index) = 0;

@@ -138,7 +138,7 @@ namespace wg
 
 		//.____ Operators _____________________________________________________
 
-		CViewSlot& operator=(Widget * pWidget);
+		CViewSlot& operator=(const Widget_p& pWidget);
 
 		//.____ Geometry ______________________________________________________
 
@@ -242,7 +242,7 @@ namespace wg
 
 		//.____ Operators _____________________________________________________
 
-		ScrollbarEntry operator=(Scrollbar * pWidget);
+		ScrollbarEntry operator=(const Scrollbar_p& pWidget);
 		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->_widget()); }
 
 		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }

@@ -56,7 +56,7 @@ namespace wg
 
 		//.____ Operators __________________________________________
 
-		inline iterator operator<<(Widget * pWidget) { return pushBack(pWidget); }
+		inline iterator operator<<(const Widget_p& pWidget) { return pushBack(pWidget); }
 
 		inline SlotType& operator[](int index) { return m_pArray[index]; }
 		inline const SlotType& operator[](int index) const { return m_pArray[index]; }
@@ -88,7 +88,7 @@ namespace wg
 		inline void		reserveFront(int n) { if (m_pBuffer + n > m_pArray) _reallocArray(m_size + n, n); }
 		inline void		reserveBack(int n) { if (m_pArray + m_size + n > m_pBuffer + m_capacity) _reallocArray(m_size + n, 0); }
 
-		iterator		pushFront(Widget * pWidget);
+		iterator		pushFront(const Widget_p& pWidget);
 		iterator		pushFront(const Widget_p pWidgets[], int amount);
 
 		template<typename Iterator>
@@ -113,7 +113,7 @@ namespace wg
 		}
 
 
-		iterator		pushBack(Widget * pWidget);
+		iterator		pushBack(const Widget_p& pWidget);
 		iterator		pushBack(const Widget_p pWidgets[], int amount);
 
 		template<typename Iterator>
@@ -134,8 +134,8 @@ namespace wg
 			return begin() + oldSize;
 		}
 
-		void			insert(int index, Widget * pWidget) override;
-		iterator		insert(const SlotIterator& it, Widget * pWidget);
+		void			insert(int index, const Widget_p& pWidget) override;
+		iterator		insert(const SlotIterator& it, const Widget_p& pWidget);
 		void			insert(int index, const Widget_p pWidgets[], int amount) override;
 		iterator		insert(const SlotIterator& it, const Widget_p pWidgets[], int amount);
 

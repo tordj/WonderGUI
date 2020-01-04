@@ -35,7 +35,7 @@ namespace wg
 	//____ pushFront() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushFront(Widget * pWidget)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushFront(const Widget_p& pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -57,6 +57,7 @@ namespace wg
 
 		for (int i = 0; i < amount; i++)
 			pSlot[i]._setWidget(pWidgets[i]);
+
 		m_pHolder->_didAddSlots(pSlot, amount);
 		return iterator(pSlot);
 	}
@@ -66,7 +67,7 @@ namespace wg
 	//____ pushBack() _________________________________________________________________
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushBack(Widget * pWidget)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::pushBack(const Widget_p& pWidget)
 	{
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
@@ -95,7 +96,7 @@ namespace wg
 	//____ insert() ______________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::insert(int index, Widget * pWidget)
+	void CDynamicSlotArray<SlotType>::insert(int index, const Widget_p& pWidget)
 	{
 		//TODO: Add assert
 
@@ -107,7 +108,7 @@ namespace wg
 	}
 
 	template < class SlotType>
-	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::insert(const SlotIterator& pos, Widget * pWidget)
+	SlotArrayIterator<SlotType> CDynamicSlotArray<SlotType>::insert(const SlotIterator& pos, const Widget_p& pWidget)
 	{
 		//TODO: Add assert
 

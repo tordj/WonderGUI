@@ -359,7 +359,7 @@ namespace wg
 
 					// Set/generate drag widget (widget actually dragged across the screen)
 
-					auto pDragWidget = pMsg->dragWidget();
+					Widget_p pDragWidget = pMsg->dragWidget();
 					SizeI    dragWidgetSize;
 
 					if (pDragWidget)

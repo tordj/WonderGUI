@@ -84,7 +84,7 @@ namespace wg
 
 	//____ pushFront() _________________________________________________________________
 
-	CModalSlotArray::iterator CModalSlotArray::pushFront(Widget * pWidget, const Rect& geometry, Origo origo)
+	CModalSlotArray::iterator CModalSlotArray::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
@@ -101,7 +101,7 @@ namespace wg
 
 	//____ pushBack() _________________________________________________________________
 
-	CModalSlotArray::iterator CModalSlotArray::pushBack(Widget * pWidget, const Rect& geometry, Origo origo)
+	CModalSlotArray::iterator CModalSlotArray::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
@@ -170,7 +170,10 @@ namespace wg
 		if (pSlot == &mainSlot)
 			Layer::_releaseChild(pSlot);
 		else
+		{
 			_willEraseSlots(pSlot, 1);
+			modalSlots._erase((ModalSlot*)pSlot);
+		}
 	}
 
 	//____ Constructor ____________________________________________________________

@@ -289,7 +289,7 @@ namespace wg
 		return len;
 	}
 
-	CViewSlot& CViewSlot::operator=(Widget * pWidget)
+	CViewSlot& CViewSlot::operator=(const Widget_p& pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
@@ -426,7 +426,7 @@ namespace wg
 		return true;
 	}
 
-	ScrollbarEntry ScrollbarEntry::operator=(Scrollbar * pWidget)
+	ScrollbarEntry ScrollbarEntry::operator=(const Scrollbar_p& pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();

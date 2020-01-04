@@ -389,9 +389,8 @@ namespace wg
 
 	void StackPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 	{
-		//TODO: Implement!!!
-
-		assert(false);
+		static_cast<StackSlot*>(pSlot)->_setWidget(pNewChild);
+		_childRequestResize(pSlot);
 	}
 
 
