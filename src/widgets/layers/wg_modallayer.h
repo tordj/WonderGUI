@@ -109,8 +109,6 @@ namespace wg
 
 		class Holder : public CDynamicSlotArray<ModalSlot>::Holder
 		{
-		public:
-			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
 		};
 
 		CModalSlotArray(Holder * pHolder) : CDynamicSlotArray<ModalSlot>(pHolder) {}

@@ -154,7 +154,7 @@ namespace wg
 		inline iterator	end() const { return iterator(_end()); }
 
 	protected:
-		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pBuffer(nullptr), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder) {}
 		~CStaticSlotArray() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
@@ -260,11 +260,11 @@ namespace wg
 
 		void	_initBlock(SlotType * pBeg, SlotType * pEnd);
 
-		SlotType *	m_pBuffer;
-		int			m_capacity;
+		SlotType *	m_pBuffer = nullptr;
+		int			m_capacity = 0;
 
-		SlotType *	m_pArray;
-		int			m_size;
+		SlotType *	m_pArray = nullptr;
+		int			m_size = 0;
 
 		Holder *	m_pHolder;
 	};

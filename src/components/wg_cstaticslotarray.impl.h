@@ -25,6 +25,7 @@
 #pragma once
 
 #include <wg_cstaticslotarray.h>
+#include <cstring>
 
 //#define INSTANTIATE_CHILDREN(SlotType)		template class CStaticSlotArray< SlotType >;
 

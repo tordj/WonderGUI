@@ -196,10 +196,6 @@ namespace wg
 	protected:
 		class Holder : public  CDynamicSlotArray<FlexSlot>::Holder
 		{
-		public:
-			virtual void	_refreshRealGeo(FlexSlot * pSlot, bool bForceRefresh = false) = 0;
-			virtual SizeI	_size() const = 0;
-
 		};
 
 		CFlexSlotArray(Holder * pHolder) : CDynamicSlotArray<FlexSlot>(pHolder) {}

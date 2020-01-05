@@ -49,8 +49,8 @@ namespace wg
 
 	protected:
 
-		void				_clear();
-		bool				_set(int64_t value, int scale);
+		void				_clear() override;
+		bool				_set(int64_t value, int scale) override;
 
 		bool				_setRange(int64_t min, int64_t max);
 

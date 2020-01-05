@@ -66,7 +66,7 @@ namespace wg
 
 		inline StrongComponentPtr<CStaticSlot>	ptr() { return StrongComponentPtr<CStaticSlot>(this); }
 
-	private:
+	protected:
 		virtual StaticSlot *			_slot() = 0;
 		virtual const StaticSlot *	_slot() const = 0;
 	};
@@ -97,9 +97,6 @@ namespace wg
 
 		inline StrongComponentPtr<CDynamicSlot>	ptr() { return StrongComponentPtr<CDynamicSlot>(this); }
 
-	private:
-		virtual StaticSlot *			_slot() = 0;
-		virtual const StaticSlot *	_slot() const = 0;
 	};
 
 	typedef	StrongComponentPtr<CDynamicSlot>	CDynamicSlot_p;

@@ -21,6 +21,7 @@
 # lib 		Just builds the wondergui library.
 # softgfx   Just builds the software gfxdevice library.
 # glgfx     Just builds the openGL gfxdevice library.
+# streamgfx Just builds the stream gfxdevice library.
 # freetype  Just builds the freetype fontsystem library.
 # examples  Builds all the examples, which through dependencies probably builds everything.
 # clean		Removes all temporary files and output files.
@@ -63,12 +64,12 @@ DEPDIR = deps
 
 
 
-CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ -I../../src/interfaces/   \
+CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ \
   -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/textmappers/ -I../../src/valueformatters/ \
   -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
   -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/gfxdevices/stream/ -I../../src/fonts/freetype/
 
-VPATH = ../../src/base:../../src/interfaces:../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base::../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
 
 BASE = wg_anim.o \
   wg_base.o \
@@ -121,23 +122,14 @@ BASE = wg_anim.o \
 COMPONENTS = wg_ccanvas.o \
   wg_ccolumnheader.o \
   wg_cicondisplay.o \
-  wg_cspan.o \
+  wg_component.o \
+  wg_cshadows.o \
+  wg_cstatictextdisplay.o \
+  wg_cstaticvaluedisplay.o \
   wg_ctext.o \
-  wg_ctextdisplay.o \
   wg_ctexteditor.o \
-  wg_cvalue.o \
   wg_cvaluedisplay.o \
   wg_cvalueeditor.o
-
-INTERFACES = wg_icanvas.o \
-  wg_icolumnheader.o \
-  wg_interface.o \
-  wg_irotextdisplay.o \
-  wg_irovaluedisplay.o \
-  wg_ishadows.o \
-  wg_islidespan.o \
-  wg_ispan.o \
-  wg_ivaluedisplay.o
 
 
 SIZEBROKERS = wg_scalepreferred_sizebroker.o \
@@ -201,7 +193,7 @@ PANELS = wg_flexpanel.o \
   wg_splitpanel.o \
   wg_stackpanel.o
 
-lib_files = $(BASE) $(INTERFACES) $(COMPONENTS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
+lib_files = $(BASE) $(COMPONENTS) $(SIZEBROKERS) $(SKINS) $(TEXTMAPPERS) $(VALUEFORMATTERS) $(WIDGETS) $(CAPSULES) $(LAYERS) $(LISTS) $(PANELS)
 
 softgfx_files = wg_softgfxdevice.o wg_softsurface.o wg_softsurfacefactory.o
 
