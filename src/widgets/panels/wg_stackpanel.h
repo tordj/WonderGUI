@@ -44,7 +44,7 @@ namespace wg
 		friend class StackPanel;
 		friend class CStackSlotArray;
 		friend class CDynamicSlotArray<StackSlot>;
-	
+
 	public:
 
 		//.____ Properties _________________________________________________

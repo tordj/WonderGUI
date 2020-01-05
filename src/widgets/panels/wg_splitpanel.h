@@ -43,7 +43,7 @@ namespace wg
 	{
 		friend class SplitPanel;
 	public:
-		
+
 		//.____ Geometry _________________________________________________
 
 		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }

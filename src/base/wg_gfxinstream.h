@@ -46,7 +46,7 @@ namespace wg
 	class GfxInStreamHolder /** @private */
 	{
 	public:
-		
+
 		//TODO: Add const version?
 		virtual Object * _object() = 0;
 		virtual const Object * _object() const = 0;

@@ -58,7 +58,7 @@ namespace wg
 		inline void		unhide() { _holder()->_unhideSlots(this, 1); }
 		inline void		setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); }
 		inline bool		isVisible() const { return m_bVisible; }
-		
+
 		void			setPadding( const Border& padding) { static_cast<Holder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
 		inline Border	padding() const { return Util::rawToQpix(m_padding); }
 

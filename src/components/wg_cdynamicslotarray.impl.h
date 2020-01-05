@@ -398,16 +398,16 @@ namespace wg
 
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_begin_iterator()
-	{ 
-		return iterator(_begin()); 
+	{
+		return iterator(_begin());
 	}
 
 	//____ _end_iterator() _____________________________________________________________
 
 	template < class SlotType>
 	SlotIterator CDynamicSlotArray<SlotType>::_end_iterator()
-	{ 
-		return iterator(_end()); 
+	{
+		return iterator(_end());
 	}
 
 	//____ _at() _____________________________________________________________

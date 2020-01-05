@@ -636,20 +636,20 @@ namespace wg
 		return true;
 	}
 
-    //____ isIdle() _____________________________________________________________________
-    
-    bool GlGfxDevice::isIdle()
-    {
-        if( m_bRendering )
-            return false;
-        
-        if( m_idleSync == 0 )
-            return true;
-        
-        GLint isSignaled = 0;
-        glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
-        return (isSignaled != GL_UNSIGNALED);
-    }
+	//____ isIdle() _____________________________________________________________________
+
+	bool GlGfxDevice::isIdle()
+	{
+		if( m_bRendering )
+			return false;
+
+		if( m_idleSync == 0 )
+			return true;
+
+		GLint isSignaled = 0;
+		glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
+		return (isSignaled != GL_UNSIGNALED);
+	}
 
 	//____ flush() _______________________________________________________________
 

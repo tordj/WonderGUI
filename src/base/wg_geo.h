@@ -70,7 +70,7 @@ namespace wg
 		or pixels without losing precision, while CoordI and CoordF just holds a coordinate value which could be either points or pixels.
 
 		Casting between Coord and any of the other two is done implicitly and as points. So if a CoordI is assigned the value
-		of a Coord it receives the coordinate in points (possibly truncated). Likewise will an asignment 
+		of a Coord it receives the coordinate in points (possibly truncated). Likewise will an asignment
 		from a CoordI to a Coord be treated as an assignment of points.
 
 		Casting between CoordI and CoordF can be done explicitly.

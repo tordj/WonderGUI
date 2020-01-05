@@ -168,11 +168,11 @@ namespace wg
 		void			unhide(const SlotIterator& it) override;
 		void			unhide(int index, int amount) override;
 		void			unhide(const SlotIterator& beg, const SlotIterator& end) override;
-			
+
 		void			hideAll() override;
 
 		void			unhideAll() override;
-		
+
 		inline bool		isVisible(int index) override { return _slot(index)->m_bVisible; }
 
 		inline bool		isVisible(const SlotIterator& it) override { return static_cast<const iterator&>(it)._slot()->m_bVisible; }
