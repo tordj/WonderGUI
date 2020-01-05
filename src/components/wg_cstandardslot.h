@@ -36,10 +36,11 @@ namespace wg
 	public:
 		using CDynamicSlotImpl<DynamicSlot>::operator=;
 
-		class Holder : public CDynamicSlotImpl<DynamicSlot>::Holder
+		class Holder : public CDynamicSlotImpl<DynamicSlot>::Holder		/** @private */
 		{
 		};
 
+		/** @private */
 		CStandardSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		//.____ Misc __________________________________________________________

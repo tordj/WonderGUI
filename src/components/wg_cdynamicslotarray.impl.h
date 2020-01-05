@@ -306,24 +306,6 @@ namespace wg
 	//____ hide() ________________________________________________________________
 
 	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::hide(int index)
-	{
-		//TODO: Assert
-
-		m_pHolder->_hideSlots(_slot(index), 1);
-	};
-
-	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::hide(const SlotIterator& it)
-	{
-		//TODO: Assert
-
-		SlotType * pSlot = static_cast<SlotType*>(it._slot());
-		m_pHolder->_hideSlots(pSlot, 1);
-	};
-
-
-	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::hide(int index, int amount)
 	{
 		//TODO: Assert
@@ -350,23 +332,6 @@ namespace wg
 	};
 
 	//____ unhide() ______________________________________________________________
-
-	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::unhide(int index)
-	{
-		//TODO: Assert
-
-		m_pHolder->_unhideSlots(_slot(index), 1);
-	};
-
-	template < class SlotType>
-	void CDynamicSlotArray<SlotType>::unhide(const SlotIterator& it)
-	{
-		//TODO: Assert
-
-		SlotType * pSlot = static_cast<SlotType*>(it._slot());
-		m_pHolder->_unhideSlots(pSlot, 1);
-	};
 
 	template < class SlotType>
 	void CDynamicSlotArray<SlotType>::unhide(int index, int amount)
@@ -927,9 +892,6 @@ namespace wg
 		while (pBeg < pEnd)
 			new (pBeg++) SlotType(m_pHolder);
 	}
-
-
-
 
 } // namespace wg
 

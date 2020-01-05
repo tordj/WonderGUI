@@ -31,7 +31,7 @@ namespace wg
 
 	//____ SelectableSlot ____________________________________________________________
 
-	class SelectableSlot : public DynamicSlot 	/** @private */
+	class SelectableSlot : public DynamicSlot
 	{
 		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class CSelectableSlotArray;
@@ -49,12 +49,17 @@ namespace wg
 			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder) {}
+		/** @private */
+		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder) {} 
+
+		//.____ State __________________________________________________________
 
 		inline void	select() { _holder()->_selectSlots(this, 1); }
 		inline void	unselect() { _holder()->_selectSlots(this, 1); }
 		inline void	setSelected(bool bSelected) { if (bSelected) _holder()->_selectSlots(this, 1); else _holder()->_unselectSlots(this, 1); }
 		inline bool isSelected() const { return m_bSelected; }
+
+		//.____ Appearance ____________________________________________________
 
 		inline void hide() { _holder()->_hideSlots(this, 1); }
 		inline void unhide() {  _holder()->_unhideSlots(this, 1); }

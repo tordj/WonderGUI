@@ -119,21 +119,14 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		virtual void		hide(int index) = 0;
 		virtual void		hide(int index, int amount) = 0;
-		virtual void		hide(const iterator& it) = 0;
 		virtual void		hide(const iterator& beg, const iterator& end) = 0;
 
-		virtual void		unhide(int index) = 0;
 		virtual void		unhide(int index, int amount) = 0;
-		virtual void		unhide(const iterator& it) = 0;
 		virtual void		unhide(const iterator& beg, const iterator& end) = 0;
 
 		virtual void		hideAll() = 0;
 		virtual void		unhideAll() = 0;
-
-		virtual bool		isVisible(int index) = 0;
-		virtual bool		isVisible(const iterator& it) = 0;
 
 		//.____ Misc _______________________________________________________
 

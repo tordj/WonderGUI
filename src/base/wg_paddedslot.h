@@ -31,7 +31,7 @@ namespace wg
 
 	//____ PaddedSlot ____________________________________________________________
 
-	class PaddedSlot : public DynamicSlot 	/** @private */
+	class PaddedSlot : public DynamicSlot
 	{
 		template<class S> friend class CDynamicSlotArray;
 		template<class S> friend class CPaddedSlotArray;
@@ -39,7 +39,7 @@ namespace wg
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public SlotHolder
+		class Holder : public SlotHolder		/** @private */
 		{
 		public:
 			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
@@ -51,13 +51,17 @@ namespace wg
 //		void		setPadding(const BorderI& padding);
 //		inline const BorderI& padding() const { return m_padding; }
 
+		/** @private */
+		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {} 
 
-		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {}
+		//.____ Appearance ____________________________________________________
 
 		inline void		hide() { _holder()->_hideSlots(this, 1); }
 		inline void		unhide() { _holder()->_unhideSlots(this, 1); }
 		inline void		setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); }
 		inline bool		isVisible() const { return m_bVisible; }
+
+		//.____ Geometry ______________________________________________________
 
 		void			setPadding( const Border& padding) { static_cast<Holder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
 		inline Border	padding() const { return Util::rawToQpix(m_padding); }

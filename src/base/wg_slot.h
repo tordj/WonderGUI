@@ -32,7 +32,7 @@ namespace wg
 
 	//____ StaticSlot __________________________________________________________
 
-	class StaticSlot		/** @private */
+	class StaticSlot
 	{
 		friend class Widget;
 		friend class SlotIterator;
@@ -45,7 +45,7 @@ namespace wg
 
 
 	public:
-
+		/** @private */
 		using		Holder = SlotHolder;
 
 
@@ -166,7 +166,7 @@ namespace wg
 
 	//____ DynamicSlot __________________________________________________________
 
-	class DynamicSlot : public StaticSlot		/** @private */
+	class DynamicSlot : public StaticSlot
 	{
 		friend class Widget;
 		friend class SlotIterator;
@@ -179,9 +179,6 @@ namespace wg
 
 
 	public:
-
-		using		Holder = SlotHolder;
-
 
 		//.____ Operators __________________________________________
 
