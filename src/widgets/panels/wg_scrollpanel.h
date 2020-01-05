@@ -247,7 +247,7 @@ namespace wg
 
 		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
 		inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
-		 
+
 		inline operator bool() const { return m_pSlot->_widget() != nullptr; }
 
 		//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };

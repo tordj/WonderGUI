@@ -88,7 +88,7 @@ namespace wg
 
 		//.____ Properties _________________________________________________________
 
-		void			setPinned();	
+		void			setPinned();
 		void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
 		inline bool		isPinned() const { return m_bPinned; }
 

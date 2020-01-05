@@ -55,7 +55,7 @@ namespace wg
 
 	class RootPanel : public Object, protected CStandardSlot::Holder
 	{
-        friend class Widget;
+		friend class Widget;
 		friend class Container;
 		friend class InputHandler;
 
@@ -168,8 +168,8 @@ namespace wg
 
 		//
 
-        inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
-        
+		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
+
 		Widget *			_findWidget( const CoordI& ofs, SearchMode mode );
 
 //		void				_setFocusedChild( Widget * pWidget );
@@ -182,7 +182,7 @@ namespace wg
 		Patches				m_dirtyPatches;		// Dirty patches that needs to be rendered.
 		Patches				m_updatedPatches;	// Patches that were updated in last rendering session.
 
-        std::vector<Widget_p>   m_preRenderCalls;
+		std::vector<Widget_p>   m_preRenderCalls;
 
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;

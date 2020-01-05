@@ -281,7 +281,7 @@ namespace wg
 
 	void PopupOpener::_open()
 	{
-		auto pLayer = _parent()->_getPopupLayer(); 
+		auto pLayer = _parent()->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pushFront(m_pPopup, this, rawToQpix(_globalGeo()), m_attachPoint, m_bOpenOnHover );

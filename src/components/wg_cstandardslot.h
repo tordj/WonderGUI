@@ -27,7 +27,7 @@
 
 namespace wg
 {
-    class CStandardSlot;
+	class CStandardSlot;
 	typedef	StrongComponentPtr<CStandardSlot>	CStandardSlot_p;
 	typedef	WeakComponentPtr<CStandardSlot>		CStandardSlot_wp;
 

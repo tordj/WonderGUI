@@ -117,7 +117,7 @@ namespace wg
 		class Holder : public SlotType::Holder	/** @private */
 		{
 		public:
-	
+
 		};
 
 		using		iterator = SlotArrayIterator<SlotType>;
@@ -171,27 +171,27 @@ namespace wg
 		inline Holder *		_holder() { return m_pHolder; }
 		inline const Holder *	_holder() const { return m_pHolder; }
 
-		SlotType*		_pushFrontEmpty() 
-						{ 
-							if (m_pArray == m_pBuffer ) 
+		SlotType*		_pushFrontEmpty()
+						{
+							if (m_pArray == m_pBuffer )
 							{
 								int capacity = (m_capacity + 1) * 2;
-								_reallocArray(capacity, capacity - m_size); 
+								_reallocArray(capacity, capacity - m_size);
 							}
 							m_size++;
 							m_pArray--;
 							_initBlock(m_pArray);
-							return m_pArray; 
+							return m_pArray;
 						}
 
-		SlotType*		_pushFrontEmpty(int entries) 
-						{ 
+		SlotType*		_pushFrontEmpty(int entries)
+						{
 							if (m_pBuffer + entries > m_pArray)
 							{
-								_reallocArray(m_size + entries, entries); 
+								_reallocArray(m_size + entries, entries);
 							}
 
-							m_size += entries; 
+							m_size += entries;
 							m_pArray -= entries;
 							_initBlock(m_pArray, m_pArray + entries);
 							return m_pArray;

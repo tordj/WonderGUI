@@ -207,7 +207,7 @@ namespace wg
 
 		virtual bool	_markTest(const CoordI& ofs);
 
-        bool            _requestPreRenderCall();
+		bool            _requestPreRenderCall();
 
 		// Methods for geometry in quarterpixels
 
@@ -249,8 +249,8 @@ namespace wg
 		Widget *		_clone() const;
 		virtual void	_cloneContent( const Widget * _pOrg );
 
-        virtual void    _preRender();
-        virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		virtual void    _preRender();
+		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
 		virtual void	_refresh();
 		virtual void	_resize( const SizeI& size );

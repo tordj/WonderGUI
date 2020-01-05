@@ -483,7 +483,7 @@ namespace wg
 		//TODO: Don't requestRender if slot is hidden.
 
 		RectI geo;
-			
+
 		if (pSlot->m_func)
 			geo = pixelAligned(qpixToRaw(pSlot->m_func(pSlot->_widget(), rawToQpix(m_size))));
 		else

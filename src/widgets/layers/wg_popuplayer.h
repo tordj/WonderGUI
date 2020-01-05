@@ -82,15 +82,15 @@ namespace wg
 class CPopupSlots : public CStaticSlotArray<PopupSlot>
 	{
 		friend class PopupLayer;
-		
+
 	public:
-		
+
 		//.____ Misc __________________________________________________________
 
 		inline CPopupSlots_p	ptr() { return CPopupSlots_p(this); }
 
 		//.____ Content _______________________________________________________
-		
+
 		void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX>>8, INT_MAX>>8));
 		void	pop(int nb = 1);
 		void	pop(Widget * pPopup);
@@ -186,7 +186,7 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 
 		void			_removeSlots(int ofs, int nb) override;
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) override;
-		
+
 		// Overloaded from Layer
 
 		const LayerSlot * 	_beginLayerSlots() const override;

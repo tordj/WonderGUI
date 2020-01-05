@@ -838,7 +838,7 @@ namespace wg
 						}
 					}
 					pI++;
-				} 
+				}
 				else
 				{
 					if( bRequestRender && p->m_geo.w != 0 && p->m_geo.h != 0 )

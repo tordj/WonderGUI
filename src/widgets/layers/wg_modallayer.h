@@ -56,7 +56,7 @@ namespace wg
 		void			move(const Coord& ofs);
 
 	protected:
-		
+
 		class Holder : public LayerSlot::Holder
 		{
 		public:

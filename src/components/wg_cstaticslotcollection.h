@@ -94,21 +94,21 @@ namespace wg
 			_dec();
 			return it;
 		}
-		
+
 		inline SlotIterator operator+(int amount) const
 		{
 			SlotIterator it = *this;
 			it._inc(amount);
-			return it; 
+			return it;
 		}
-		
+
 		inline SlotIterator operator-(int amount) const
 		{
 			SlotIterator it = *this;
 			it._dec(amount);
-			return it; 
+			return it;
 		}
-		
+
 		inline bool operator==(const SlotIterator& rhs) const
 		{
 			return pSlot == rhs.pSlot;
@@ -168,7 +168,7 @@ namespace wg
 
 		inline iterator	begin() { return _begin_iterator(); }
 		inline iterator	end() { return _end_iterator(); }
-		
+
 	protected:
 
 		// These are needed since we can't make begin/end virtual (shadowing related issues)
