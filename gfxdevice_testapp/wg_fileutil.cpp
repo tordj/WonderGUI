@@ -71,8 +71,11 @@ namespace wg
 	{
 		FILE * fp;
 
-//		errno_t err = fopen_s(&fp, pPath, "rb");
+#ifdef WIN32
+		errno_t err = fopen_s(&fp, pPath, "rb");
+#else
         fp = fopen(pPath, "rb");
+#endif
 		if (!fp)
 			return 0;
 

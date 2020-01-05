@@ -351,14 +351,21 @@ void refresh_performance_display()
 			char value[128];
 
 			auto pValueTestee = TextDisplay::create();
-            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
-//			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+
+#ifdef WIN32			
+			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+#else
+			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+#endif
 			pValueTestee->text.set(value);
 			pValueTestee->text.setTextMapper(g_pPerformanceValueMapper);
 
 			auto pValueRef = TextDisplay::create();
-            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
-//ß			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+#ifdef WIN32			
+			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+#else
+			sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+#endif
 			pValueRef->text.set(value);
 			pValueRef->text.setTextMapper(g_pPerformanceValueMapper);
 
