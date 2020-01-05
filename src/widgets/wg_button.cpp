@@ -278,7 +278,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		Button * pOrg = (Button *) _pOrg;
+//		Button * pOrg = (Button *) _pOrg;
 
 //		_icon().onCloneContent( &pOrg->m_icon );
 

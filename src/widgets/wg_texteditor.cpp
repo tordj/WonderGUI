@@ -150,7 +150,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
+//		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
 	}
 
 	//____ _setSkin() _______________________________________________________

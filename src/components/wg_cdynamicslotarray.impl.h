@@ -878,7 +878,7 @@ namespace wg
 
 			if (pOldBuffer)
 			{
-				int nPreceeding = pPos - pOldArray;
+				int nPreceeding = int(pPos - pOldArray);
 				int nSucceeding = m_size - nPreceeding;
 
 				if (SlotType::safe_to_relocate)

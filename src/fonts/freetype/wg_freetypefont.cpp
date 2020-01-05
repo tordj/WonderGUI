@@ -65,9 +65,6 @@ namespace wg
 			m_whitespaceAdvance[i] = 0;
 		}
 
-		int sz = pFontFile->size();
-		void * p = pFontFile->data();
-
 
 		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
 											(const FT_Byte *)pFontFile->data(),
@@ -261,7 +258,7 @@ namespace wg
 		FT_Vector	delta;
 		FT_Get_Kerning( m_ftFace, pLeftGlyph->kerningIndex(), pRightGlyph->kerningIndex(), FT_KERNING_DEFAULT, &delta );
 
-		return delta.x >> 6;
+		return int(delta.x >> 6);
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
@@ -279,7 +276,7 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_whitespaceAdvance[m_ftCharSize] = m_ftFace->glyph->advance.x >> 6;
+			m_whitespaceAdvance[m_ftCharSize] = int(m_ftFace->glyph->advance.x >> 6);
 		}
 
 		return m_whitespaceAdvance[m_ftCharSize];
@@ -289,7 +286,7 @@ namespace wg
 
 	int FreeTypeFont::lineGap()
 	{
-		return (m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6;
+		return int(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6;
 	}
 
 
@@ -297,14 +294,14 @@ namespace wg
 
 	int FreeTypeFont::maxAscend()
 	{
-		return (m_ftFace->size->metrics.ascender) >> 6;
+		return int(m_ftFace->size->metrics.ascender) >> 6;
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
 	int FreeTypeFont::maxDescend()
 	{
-		return -(m_ftFace->size->metrics.descender) >> 6;
+		return -int(m_ftFace->size->metrics.descender) >> 6;
 	}
 
 
@@ -312,7 +309,7 @@ namespace wg
 
 	int FreeTypeFont::nbGlyphs()
 	{
-		return m_ftFace->num_glyphs;
+		return int(m_ftFace->num_glyphs);
 	}
 
 	//____ hasGlyphs() ____________________________________________________________
@@ -333,7 +330,7 @@ namespace wg
 
 	int FreeTypeFont::maxAdvance()
 	{
-		return m_ftFace->size->metrics.max_advance >> 6;
+		return (int) m_ftFace->size->metrics.max_advance >> 6;
 	}
 
 
@@ -371,7 +368,7 @@ namespace wg
 
 			// Get some details about the glyph
 
-			int advance = m_ftFace->glyph->advance.x >> 6;
+			int advance = (int) m_ftFace->glyph->advance.x >> 6;
 
 			// Get a MyGlyph object and fill in details
 

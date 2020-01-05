@@ -149,14 +149,12 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 		void			_stealKeyboardFocus();
 		void			_restoreKeyboardFocus();
 		void			_updateGeo(PopupSlot * pSlot, bool bForceResize = false);
-		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
 
 		// Overloaded from Container
 
 		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 
-		// Overloaded from WidgetHolder
+		// Overloaded from CPopupSlots::Holder
 
 		Container *		_container() override { return this; }
 		RootPanel *		_root() override { return Container::_root(); }
@@ -186,6 +184,9 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 		void			_childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
+		void			_removeSlots(int ofs, int nb) override;
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) override;
+		
 		// Overloaded from Layer
 
 		const LayerSlot * 	_beginLayerSlots() const override;

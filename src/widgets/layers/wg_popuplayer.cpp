@@ -647,7 +647,7 @@ namespace wg
 				// state ClosingDelay (unless already in state Closing).
 
 
-				Widget * pTop = popupSlots._first()->_widget();
+//				Widget * pTop = popupSlots._first()->_widget();
 				Widget * pMarked = _findWidget(pointerPos, SearchMode::ActionTarget);
 
 				if (pMarked != this && pMarked->isSelectable() && popupSlots._first()->m_bAutoClose)

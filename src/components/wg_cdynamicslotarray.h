@@ -185,8 +185,8 @@ namespace wg
 
 
 	protected:
-		CDynamicSlotArray(Holder * pHolder) : m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
-		~CDynamicSlotArray() { _killBlock(_begin(), _end()); free(m_pArray); }
+		CDynamicSlotArray(Holder * pHolder) : m_pBuffer(nullptr), m_pHolder(pHolder), m_pArray(nullptr), m_size(0), m_capacity(0) {}
+		~CDynamicSlotArray() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;

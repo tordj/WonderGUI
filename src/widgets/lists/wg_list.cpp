@@ -212,7 +212,7 @@ namespace wg
 								}
 								break;
 							case SelectMode::FlipOnSelect:
-								_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->_widget()->state().isSelected(), true );
+								_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->m_bSelected, true );
 								m_pFocusedChild = pEntry->_widget();
 								break;
 							case SelectMode::MultiEntries:
@@ -242,7 +242,7 @@ namespace wg
 									if( pMsg->modKeys() & MODKEY_CTRL )
 									{
 										// CTRL-click: We just flip the entry.
-										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->_widget()->state().isSelected(), true );
+										_setSlotSelection( pEntry, _nextSlot(pEntry), !pEntry->m_bSelected, true );
 									}
 									else
 									{
@@ -364,10 +364,11 @@ namespace wg
 		{
 			if( p->m_bVisible && bSelected != p->m_bSelected && (p->_widget()->isSelectable() || bSelected == false))
 			{
+				p->m_bSelected = bSelected;
+
 				State	state = p->_widget()->state();
 				state.setSelected(bSelected);
 				p->_widget()->_setState( state );
-				p->m_bSelected = bSelected;
 
 				if( bPostMsg )
 				{
@@ -424,7 +425,7 @@ namespace wg
 			{
 				if (pSlot->m_bVisible)
 				{
-					if( pSlot->_widget()->state().isSelected() )
+					if( pSlot->m_bSelected )
 						nToDeselect++;
 					else if( pSlot->_widget()->isSelectable() )
 						nToSelect++;
@@ -441,20 +442,21 @@ namespace wg
 
 		for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 		{
-			State	state = pSlot->_widget()->state();
 
-			if (pSlot->m_bVisible && (pSlot->_widget()->isSelectable() || state.isSelected()))
+			if (pSlot->m_bVisible && (pSlot->_widget()->isSelectable() || pSlot->m_bSelected))
 			{
-				state.setSelected(!state.isSelected());
+				pSlot->m_bSelected = !pSlot->m_bSelected;
+				State	state = pSlot->_widget()->state();
+				state.setSelected(pSlot->m_bSelected);
 				pSlot->_widget()->_setState(state);
 
 				if (bPostMsg)
 				{
 					ItemInfo * p;
-					if (!state.isSelected())
-						p = &pDeselectedItemsInfo[nDeselected++];
-					else
+					if (pSlot->m_bSelected)
 						p = &pSelectedItemsInfo[nSelected++];
+					else
+						p = &pDeselectedItemsInfo[nDeselected++];
 
 					p->pObject = pSlot->_widget();
 					p->id = pSlot->_widget()->id();

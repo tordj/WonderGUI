@@ -423,9 +423,6 @@ namespace wg
 			Msg_p pMsg = m_msgQueue.front();
 			m_insertPos = m_msgQueue.begin()+1;	// Insert position set to right after current event.
 
-			if( pMsg->type() == MsgType::MouseDrag )
-				int dummy = 0;
-
 			do
 			{
 				if( pMsg->hasCopyTo()  )

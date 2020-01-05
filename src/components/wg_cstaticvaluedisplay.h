@@ -62,7 +62,7 @@ namespace wg
 
 	protected:
 
-		virtual void		_clear();
+		void				_clear() override;
 		virtual bool		_set( int64_t value, int scale );
 
 		void				_refresh() override;

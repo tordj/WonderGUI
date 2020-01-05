@@ -410,7 +410,7 @@ namespace wg
 
 		if( _header()._size().h != 0 )
 		{
-			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
+//			bool bInvertedSort = (m_sortOrder == SortOrder::Descending);
 			RectI canvas = _headerGeo() + _canvas.pos();
 
 			_header()._render( pDevice, canvas );

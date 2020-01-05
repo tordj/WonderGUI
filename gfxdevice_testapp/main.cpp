@@ -351,14 +351,14 @@ void refresh_performance_display()
 			char value[128];
 
 			auto pValueTestee = TextDisplay::create();
-//            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
+//			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[TESTEE].render_time * 1000, t.devices[TESTEE].stalling_time * 1000);
 			pValueTestee->text.set(value);
 			pValueTestee->text.setTextMapper(g_pPerformanceValueMapper);
 
 			auto pValueRef = TextDisplay::create();
-//            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
-			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+            sprintf(value, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
+//ß			sprintf_s(value, 128, " %.1f ms (+ %1.f stalling)", t.devices[REFERENCE].render_time * 1000, t.devices[REFERENCE].stalling_time * 1000);
 			pValueRef->text.set(value);
 			pValueRef->text.setTextMapper(g_pPerformanceValueMapper);
 
@@ -373,9 +373,6 @@ void refresh_performance_display()
 
 			std::vector<Widget_p> v;
 			v.push_back(Button::create());
-
-			Widget_p * pBegin = nullptr;
-			Widget_p * pEnd = nullptr;
 
 //			pEntry->slots.add(1, 2);
 			pEntry->slots.pushBack(v.begin(), v.end());
@@ -488,7 +485,7 @@ void run_tests(Device * pDevice, DeviceEnum device)
 //	pDevice->setClip(g_canvasSize);
 
 	pGfxDevice->fill(g_canvasSize, Color::Black);
-	pGfxDevice->setClipList(g_clipList.size(), &g_clipList[0] );
+	pGfxDevice->setClipList((int)g_clipList.size(), &g_clipList[0] );
 
 	for (auto& test : g_tests)
 	{
@@ -535,7 +532,7 @@ void clock_test(DeviceTest * pDeviceTest, int rounds, Device * pDevice )
 	Uint64 stallEnd;
 
 	pDevice->beginRender();
-	pDevice->gfxDevice()->setClipList(g_clipList.size(), &g_clipList[0]);
+	pDevice->gfxDevice()->setClipList((int)g_clipList.size(), &g_clipList[0]);
 
 	if(pDeviceTest->pTest->init != nullptr)
 		pDeviceTest->pTest->init(pDevice->gfxDevice(), g_canvasSize);
@@ -659,7 +656,7 @@ bool add_testsuite(TestSuite * pTesteeSuite, TestSuite * pReferenceSuite)
 
 	se.bWorking = bWorking;
 	se.bActive = bWorking;
-	se.nbTests = pTesteeSuite->tests.size();
+	se.nbTests = (int) pTesteeSuite->tests.size();
 
 	g_testsuites.push_back(se);
 

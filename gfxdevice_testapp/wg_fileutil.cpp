@@ -71,18 +71,18 @@ namespace wg
 	{
 		FILE * fp;
 
-		errno_t err = fopen_s(&fp, pPath, "rb");
-//        fp = fopen(pPath, "rb");
+//		errno_t err = fopen_s(&fp, pPath, "rb");
+        fp = fopen(pPath, "rb");
 		if (!fp)
 			return 0;
 
 		fseek(fp, 0, SEEK_END);
-		int size = ftell(fp);
+		int size = (int) ftell(fp);
 		fseek(fp, 0, SEEK_SET);
 
 		Blob_p pBlob = Blob::create(size);
 
-		int nRead = fread(pBlob->data(), 1, size, fp);
+		int nRead = (int) fread(pBlob->data(), 1, size, fp);
 		fclose(fp);
 
 		if (nRead < size)

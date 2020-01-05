@@ -54,7 +54,7 @@ namespace wg
 	template <class SlotType>
 	void CSelectableSlotArray<SlotType>::selectAll()
 	{
-		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(0), size());
+		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(0), CDynamicSlotArray<SlotType>::size());
 	};
 
 	//____ unselect() _________________________________________________________

@@ -49,7 +49,7 @@ namespace wg
 			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {}
+		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder) {}
 
 		inline void	select() { _holder()->_selectSlots(this, 1); }
 		inline void	unselect() { _holder()->_selectSlots(this, 1); }
@@ -67,8 +67,8 @@ namespace wg
 		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
 		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
-		bool		m_bVisible;
-		bool		m_bSelected;
+		bool		m_bVisible = false;
+		bool		m_bSelected = false;
 	};
 }
 #endif //WG_PADDEDSLOT_DOT_H

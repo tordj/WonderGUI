@@ -159,7 +159,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
+//		const LineEditor * pOrg = static_cast<const LineEditor*>(_pOrg);
 
 	}
 

@@ -192,11 +192,11 @@ namespace wg
 		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
 
-		// Needed by CPackSlotArray
+		// Overloaded from CPackSlotArray::Holder
 
-		void		_reweightSlots(PackSlot * pSlot, int nb, float weight);
-		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights);
-		void		_refreshChildGeo() { _refreshChildGeo(true); }
+		void		_reweightSlots(PackSlot * pSlot, int nb, float weight) override;
+		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights) override;
+		void		_refreshChildGeo() override { _refreshChildGeo(true); }
 
 		// Overloaded from PackSlotHolder
 

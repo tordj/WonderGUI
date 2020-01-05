@@ -79,7 +79,7 @@ namespace wg
 
 	CShadows::iterator CShadows::remove(const_iterator pos)
 	{
-		m_pHolder->_willRemoveShadows(pos - m_pShadows->begin(), 1);
+		m_pHolder->_willRemoveShadows(int(pos - m_pShadows->begin()), 1);
 		return m_pShadows->erase(pos);
 	}
 
@@ -91,7 +91,7 @@ namespace wg
 
 	CShadows::iterator CShadows::remove(const_iterator beg, const_iterator end)
 	{
-		m_pHolder->_willRemoveShadows(beg - m_pShadows->begin(), end-beg);
+		m_pHolder->_willRemoveShadows(int(beg - m_pShadows->begin()), int(end-beg));
 		return m_pShadows->erase(beg,end);
 	}
 }

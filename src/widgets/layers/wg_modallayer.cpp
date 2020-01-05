@@ -147,7 +147,7 @@ namespace wg
 		}
 
 		if (bForceResize || pSlot->_size() != geo.size())
-			pSlot->setSize(geo);
+			pSlot->_setSize(geo);
 	}
 
 	//____ _childRequestResize() ______________________________________________
