@@ -57,6 +57,10 @@ namespace wg
 		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
 		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
 
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
 	protected:
 		class Holder : public StaticSlot::Holder
 		{
@@ -64,13 +68,15 @@ namespace wg
 			virtual void		_updateSlotGeo(StaticSlot * pSlot, int nb) = 0;
 		};
 
-		LambdaSlot(Holder * pHolder) : DynamicSlot(pHolder), m_func(nullptr), m_bVisible(false) {}
+		LambdaSlot(Holder * pHolder) : DynamicSlot(pHolder) {}
+		LambdaSlot(LambdaSlot&& o) = default;
+		LambdaSlot& operator=(LambdaSlot&& o) = default;
 
 		const static bool safe_to_relocate = false;
 
 
-		std::function<Rect(Widget * pWidget, Size parentSize)>	m_func;
-		bool			m_bVisible;
+		std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
+		bool			m_bVisible = false;
 		RectI			m_geo;				// Widgets geo relative parent
 	};
 

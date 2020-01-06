@@ -49,7 +49,6 @@ namespace wg
 
 	public:
 
-
 		//.____ Properties _________________________________________________
 
 		inline float	weight() const { return m_weight; }
@@ -60,6 +59,10 @@ namespace wg
 		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
 		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
 		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
 	protected:
 
@@ -72,6 +75,8 @@ namespace wg
 		};
 
 		PackSlot(Holder *pHolder) : PaddedSlot(pHolder) {}
+		PackSlot(PackSlot&& o) = default;
+		PackSlot& operator=(PackSlot&& o) = default;
 
 		bool			m_bResizeRequired = false;
 		float			m_weight = 1.f;				// Weight for space allocation.
@@ -156,7 +161,6 @@ namespace wg
 
 		void			setSizeBroker( SizeBroker * pBroker );
 		SizeBroker_p	sizeBroker() const { return m_pSizeBroker; }
-
 
 	protected:
 		PackPanel();

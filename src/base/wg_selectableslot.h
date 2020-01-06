@@ -66,8 +66,14 @@ namespace wg
 		inline void setVisible(bool bVisible) { if (bVisible) _holder()->_unhideSlots(this, 1); else _holder()->_unhideSlots(this, 1); }
 		inline bool isVisible() const { return m_bVisible; }
 
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
 	protected:
+		SelectableSlot(SelectableSlot&& o) = default;
+		SelectableSlot& operator=(SelectableSlot&& o) = default;
+
 
 		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
 		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }

@@ -55,6 +55,10 @@ namespace wg
 		void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
 		inline Origo		origo() const { return m_origo; }
 
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
 	protected:
 		class Holder : public PaddedSlot::Holder
 		{
@@ -64,13 +68,15 @@ namespace wg
 		};
 
 		StackSlot(Holder * pHolder) : PaddedSlot(pHolder) {}
+		StackSlot(StackSlot&& o) = default;
+		StackSlot& operator=(StackSlot&& o) = default;
 
 
 		Holder *		_holder() { return static_cast<Holder*>(PaddedSlot::_holder()); }
 		const Holder *	_holder() const { return static_cast<const Holder*>(PaddedSlot::_holder()); }
 
-		Origo			m_origo = Origo::Center;
-		SizePolicy2D	m_sizePolicy = SizePolicy2D::Original;
+		Origo			m_origo			= Origo::Center;
+		SizePolicy2D	m_sizePolicy	= SizePolicy2D::Original;
 	};
 
 

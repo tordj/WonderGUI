@@ -86,6 +86,7 @@ namespace wg
 
 	public:
 
+
 		//.____ Properties _________________________________________________________
 
 		void			setPinned();
@@ -127,6 +128,11 @@ namespace wg
 		inline Size		size() const { return Util::rawToQpix(m_realGeo.size()); }
 		inline Rect		geo() const { return Util::rawToQpix(m_realGeo); }
 
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+
 	protected:
 
 		class Holder : public DynamicSlot::Holder
@@ -137,6 +143,9 @@ namespace wg
 		};
 
 		FlexSlot(Holder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest) {}
+
+		FlexSlot(FlexSlot&& o) = default;
+		FlexSlot& operator=(FlexSlot&& o) = default;
 
 
 		inline Holder * _holder() { return static_cast<Holder*>(DynamicSlot::_holder()); }

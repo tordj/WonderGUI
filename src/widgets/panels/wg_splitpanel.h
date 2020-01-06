@@ -34,15 +34,18 @@
 namespace wg
 {
 
-	class SplitPanel;
-	typedef	StrongPtr<SplitPanel>	SplitPanel_p;
-	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
+	//____ CSplitSlot _________________________________________________________
 
-	class SplitSlot : public StaticSlot
+	class CSplitSlot;
+	typedef	StrongComponentPtr<CSplitSlot>	CSplitSlot_p;
+	typedef	WeakComponentPtr<CSplitSlot>	CSplitSlot_wp;
+
+	class CSplitSlot : public CDynamicSlotImpl<DynamicSlot>
 	{
 		friend class SplitPanel;
 	public:
+		using CDynamicSlotImpl<DynamicSlot>::operator=;
 
 		//.____ Geometry _________________________________________________
 
@@ -50,17 +53,28 @@ namespace wg
 		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
 		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
 
+		//.____ Misc __________________________________________________________
+
+		inline CSplitSlot_p  ptr() { return CSplitSlot_p(this); }
+
 	protected:
-		class Holder : public StaticSlot::Holder
+		class Holder : public CDynamicSlotImpl<DynamicSlot>::Holder
 		{
 		};
+
+		CSplitSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 		RectI	m_geo;
 	};
 
 
+	//____ SplitPanel ___________________________________________________________
 
-	class SplitPanel : public Panel, protected CStandardSlot::Holder
+	class SplitPanel;
+	typedef	StrongPtr<SplitPanel>	SplitPanel_p;
+	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
+
+	class SplitPanel : public Panel, protected CSplitSlot::Holder
 	{
 
 	public:
@@ -71,8 +85,8 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStandardSlot		slotOne;
-		CStandardSlot		slotTwo;
+		CSplitSlot		slotOne;
+		CSplitSlot		slotTwo;
 
 		//.____ Identification __________________________________________
 
@@ -191,14 +205,6 @@ namespace wg
 		int				m_handlePressOfs;
 
 		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)>	m_brokerFunc;
-
-		RectI			m_slotGeo[2];
-
-		class SlotAccess : public CStandardSlot { friend class SplitPanel; };
-		SlotAccess * _slotOne() { return static_cast<SlotAccess*>(&slotOne); }
-		SlotAccess * _slotTwo() { return static_cast<SlotAccess*>(&slotTwo); }
-		const SlotAccess * _slotOne() const { return static_cast<const SlotAccess*>(&slotOne); }
-		const SlotAccess * _slotTwo() const { return static_cast<const SlotAccess*>(&slotTwo); }
 	};
 
 }

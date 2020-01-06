@@ -66,7 +66,14 @@ namespace wg
 		void			setPadding( const Border& padding) { static_cast<Holder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
 		inline Border	padding() const { return Util::rawToQpix(m_padding); }
 
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
 	protected:
+		PaddedSlot(PaddedSlot&& o) = default;
+		PaddedSlot& operator=(PaddedSlot&& o) = default;
+
 		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
 		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
