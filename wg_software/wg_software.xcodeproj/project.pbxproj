@@ -269,7 +269,7 @@
 					../framework/,
 					../framework/gfxdevices/software/,
 					../framework/base/,
-					../framework/interfaces/,
+					../framework/components/,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -285,7 +285,7 @@
 					../framework/,
 					../framework/gfxdevices/software/,
 					../framework/base/,
-					../framework/interfaces/,
+					../framework/components/,
 				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

@@ -19,16 +19,19 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG3_INTERFACE_DOT_H
-#define WG3_INTERFACE_DOT_H
+#ifndef WG3_COMPONENT_DOT_H
+#define WG3_COMPONENT_DOT_H
 #pragma once
 
 
 namespace wg
 {
-	class Interface;
-	template<class T> class StrongInterfacePtr;
-	typedef StrongInterfacePtr<Interface>	Interface_p;
+	class Component;
+	template<class T> class StrongComponentPtr;
+	typedef StrongComponentPtr<Component>	Component_p;
+
+	template<class T> class WeakComponentPtr;
+	typedef WeakComponentPtr<Component>		Component_wp;
 
 	class Object;
 	template<class T> class StrongPtr;
@@ -55,22 +58,23 @@ namespace wg
 	 *
 	 **/
 
-	class Interface
+	class Component
 	{
-		template<class T> friend class StrongInterfacePtr;
-		friend class Interface_wp;
+		template<class T> friend class StrongComponentPtr;
+		template<class T> friend class WeakComponentPtr;
 	public:
 
 		//.____ Misc __________________________________________________
 
-		Interface_p				ptr();
+		Component_p				ptr();
 		Object_p				object();
 
 	protected:
-		virtual Object * 		_object() const = 0;
+		virtual Object * 			_object() = 0;
+		virtual const Object * 		_object() const = 0;
 	};
 
 
 
 } // namespace wg
-#endif //WG3_INTERFACE_DOT_H
+#endif //WG3_COMPONENT_DOT_H

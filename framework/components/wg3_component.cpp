@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#include <wg3_interface.h>
-#include <wg3_stronginterfaceptr.h>
+#include <wg3_component.h>
+#include <wg3_strongcomponentptr.h>
 
 namespace wg
 {
@@ -33,9 +33,9 @@ namespace wg
 	 *
 	 */
 
-	Interface_p	Interface::ptr()
+	Component_p	Component::ptr()
 	{
-		return Interface_p(this);
+		return Component_p(this);
 	}
 
 	//____ object() _______________________________________________________________
@@ -45,7 +45,7 @@ namespace wg
 	 *
 	 */
 
-	Object_p Interface::object()
+	Object_p Component::object()
 	{
 		return Object_p( _object() );
 	};

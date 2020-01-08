@@ -36,6 +36,9 @@ namespace wg
 
 	SizeI	GlSurface::s_maxSize;
 
+#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); }
+
+
 
 	//____ maxSize() _______________________________________________________________
 
@@ -111,9 +114,9 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 		_setPixelDetails(format);
-        m_scaleMode = ScaleMode::Interpolate;
+		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
 		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0));
@@ -128,7 +131,7 @@ namespace wg
 
 		_setupGlTexture(nullptr, flags);
 
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 	}
 
 
@@ -137,7 +140,7 @@ namespace wg
 		// Set general information
 
 		_setPixelDetails(format);
-        m_scaleMode = ScaleMode::Interpolate;
+		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
 		m_pitch = pitch;
 		m_pBlob = pBlob;
@@ -149,7 +152,7 @@ namespace wg
 	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 	   _setPixelDetails(format);
-        m_scaleMode = ScaleMode::Interpolate;
+		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
 		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0));
@@ -173,7 +176,7 @@ namespace wg
 	GlSurface::GlSurface( Surface * pOther, int flags )
 	{
 		_setPixelDetails(pOther->pixelFormat());
-        m_scaleMode = ScaleMode::Interpolate;
+		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= pOther->size();
 		m_pitch = m_size.w * m_pixelSize;
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
@@ -198,7 +201,7 @@ namespace wg
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 
-        
+
 		glGenTextures(1, &m_texture);
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
@@ -208,9 +211,9 @@ namespace wg
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 
 		if (m_pClut)
@@ -231,19 +234,19 @@ namespace wg
 			glBindBuffer(GL_TEXTURE_BUFFER, m_clutBufferId);
 			glBufferData(GL_TEXTURE_BUFFER, 256*sizeof(GLuint), clut, GL_STATIC_DRAW);
 
-			assert(glGetError() == 0);
+			LOG_GLERROR(glGetError());
 
 			glGenTextures(1, &m_clutTexture);
 //			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
 			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, m_clutBufferId);
 
-			assert(glGetError() == 0);
+			LOG_GLERROR(glGetError());
 		}
 		else if (flags & SurfaceFlag::Mipmapped)
 		{
 			m_bMipmapped = true;
-            m_bMipmapStale = true;
+			m_bMipmapStale = true;
 		}
 
 
@@ -251,7 +254,7 @@ namespace wg
 
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 	}
 
 
@@ -364,18 +367,18 @@ namespace wg
 
 	void GlSurface::setScaleMode( ScaleMode mode )
 	{
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 
 		if (m_pClut == nullptr)
 		{
 			GLint oldBinding;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
 			glBindTexture(GL_TEXTURE_2D, m_texture);
-            
+
 			switch (mode)
 			{
 			case ScaleMode::Interpolate:
-                    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 				break;
 
@@ -390,7 +393,7 @@ namespace wg
 		}
 
 		Surface::setScaleMode(mode);
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ isOpaque() ______________________________________________________________
@@ -458,7 +461,7 @@ namespace wg
 
 	void GlSurface::unlock()
 	{
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 		if(m_accessMode == AccessMode::None )
 			return;
 
@@ -466,20 +469,20 @@ namespace wg
 		{
 			GLint oldBinding;
 			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
-            
+
 			glBindTexture( GL_TEXTURE_2D, m_texture );
 			glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
 			glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, m_accessFormat, m_pixelDataType, m_pPixels );
 			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
 			glBindTexture( GL_TEXTURE_2D, oldBinding );
 
-            m_bMipmapStale = m_bMipmapped;
+			m_bMipmapStale = m_bMipmapped;
 		}
 		m_accessMode = AccessMode::None;
 		m_pPixels = 0;
 		m_lockRegion.w = 0;
 		m_lockRegion.h = 0;
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ pixel() ______________________________________________________________
@@ -541,7 +544,7 @@ namespace wg
 		glDeleteTextures( 1, &m_texture );
 		m_texture = 0;
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 		return true;
 	}
 
@@ -556,7 +559,7 @@ namespace wg
 
 	void GlSurface::reload()
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
@@ -586,9 +589,9 @@ namespace wg
 
 		glBindTexture( GL_TEXTURE_2D, oldBinding );
 
-        m_bMipmapStale = m_bMipmapped;
+		m_bMipmapStale = m_bMipmapped;
 
-		assert( glGetError() == 0);
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ _refreshBackingBuffer() ____________________________________________
@@ -602,7 +605,7 @@ namespace wg
 
 		//
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		GLenum	type;
 
@@ -641,8 +644,7 @@ namespace wg
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 
-		GLenum err;
-		assert(0 == (err = glGetError()));
+		LOG_GLERROR(glGetError());
 
 		m_bBackingBufferStale = false;
 	}

@@ -25,8 +25,8 @@
 
 #include <wg3_strongptr.h>
 #include <wg3_weakptr.h>
-#include <wg3_stronginterfaceptr.h>
-#include <wg3_weakinterfaceptr.h>
+#include <wg3_strongcomponentptr.h>
+#include <wg3_weakcomponentptr.h>
 
 
 #endif //WG3_POINTERS_DOT_H

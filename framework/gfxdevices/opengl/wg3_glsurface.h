@@ -65,8 +65,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const;
-		const char *		className( void ) const;
+		bool				isInstanceOf( const char * pClassName ) const override;
+		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
 		static GlSurface_p	cast( Object * pObject );
 
@@ -76,19 +76,19 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
-		void		setScaleMode(ScaleMode mode);
-		bool		isOpaque() const;
+		void		setScaleMode(ScaleMode mode) override;
+		bool		isOpaque() const override;
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) const;
-		uint8_t		alpha(CoordI coord) const;
+		uint32_t	pixel(CoordI coord) const override;
+		uint8_t		alpha(CoordI coord) const override;
 
 		//.____ Control _______________________________________________________
 
-		uint8_t *	lock(AccessMode mode);
-		uint8_t *	lockRegion(AccessMode mode, const RectI& region);
-		void		unlock();
+		uint8_t *	lock(AccessMode mode) override;
+		uint8_t *	lockRegion(AccessMode mode, const RectI& region) override;
+		void		unlock() override;
 
 		bool		unload();
 		bool		isLoaded();
@@ -113,9 +113,9 @@ namespace wg
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.
-        bool        m_bMipmapStale = false;
-        
-        void		_refreshBackingBuffer();
+		bool        m_bMipmapStale = false;
+
+		void		_refreshBackingBuffer();
 
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.

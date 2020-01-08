@@ -4,7 +4,7 @@ rm -rf imports
 mkdir imports
 cd imports
 mkdir base
-mkdir interfaces
+mkdir components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
@@ -23,19 +23,19 @@ cp wg_object.h \
    wg_patches.* \
    wg_pointers.* \
    wg_qpix.* \
-   wg_stronginterfaceptr.* \
+   wg_strongcomponentptr.* \
    wg_strongptr.* \
    wg_surface.* \
    wg_surfacefactory.* \
    wg_types.* \
    wg_util.* \
-   wg_weakinterfaceptr.* \
+   wg_weakcomponentptr.* \
    wg_weakptr.* \
    ../../../wg2/_kato_wg3/imports/base/
 
-cd ../interfaces
-cp wg_interface.* \
-   ../../../wg2/_kato_wg3/imports/interfaces
+cd ../components
+cp wg_component.* \
+   ../../../wg2/_kato_wg3/imports/components
 
 cd ../gfxdevices/opengl
 cp wg_glgfxdevice.* \

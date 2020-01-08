@@ -12,23 +12,9 @@
 		170F7CB122007F6D00B70B56 /* sdl_wglib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */; };
 		170F7CB42200829800B70B56 /* libwg_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB32200829800B70B56 /* libwg_software.a */; };
 		170F7CB62200829800B70B56 /* libwondergui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB52200829800B70B56 /* libwondergui.a */; };
-		170F7CB92200851500B70B56 /* SDL2.framework in Copy Bundle Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB82200851500B70B56 /* SDL2.framework */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		173B370E22CCB1AA006848B3 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 173B370D22CCB1A9006848B3 /* SDL2_image.framework */; };
+		17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316D23A0E33A006F2ED3 /* SDL2.framework */; };
+		17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316F23A0E379006F2ED3 /* SDL2_image.framework */; };
 /* End PBXBuildFile section */
-
-/* Begin PBXCopyFilesBuildPhase section */
-		170F7CB7220084AD00B70B56 /* Copy Bundle Frameworks */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = "";
-			dstSubfolderSpec = 10;
-			files = (
-				170F7CB92200851500B70B56 /* SDL2.framework in Copy Bundle Frameworks */,
-			);
-			name = "Copy Bundle Frameworks";
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		170F7A54220073C300B70B56 /* bench.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bench.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -39,8 +25,8 @@
 		170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdl_wglib.cpp; path = ../extras/sdl_wglib.cpp; sourceTree = "<group>"; };
 		170F7CB32200829800B70B56 /* libwg_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwg_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		170F7CB52200829800B70B56 /* libwondergui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwondergui.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		170F7CB82200851500B70B56 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../SDL2/SDL2.framework; sourceTree = "<group>"; };
-		173B370D22CCB1A9006848B3 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../Library/SDL2_image/SDL2_image.framework; sourceTree = "<group>"; };
+		17BB316D23A0E33A006F2ED3 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
+		17BB316F23A0E379006F2ED3 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -48,7 +34,8 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				173B370E22CCB1AA006848B3 /* SDL2_image.framework in Frameworks */,
+				17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */,
+				17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */,
 				170F7CB42200829800B70B56 /* libwg_software.a in Frameworks */,
 				170F7CB62200829800B70B56 /* libwondergui.a in Frameworks */,
 			);
@@ -60,7 +47,6 @@
 		170F7A4B220073C300B70B56 = {
 			isa = PBXGroup;
 			children = (
-				170F7CB82200851500B70B56 /* SDL2.framework */,
 				170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */,
 				170F7CAF22007F6D00B70B56 /* sdl_wglib.h */,
 				170F7CA922007BA300B70B56 /* main.cpp */,
@@ -90,7 +76,8 @@
 		170F7CB22200829800B70B56 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
-				173B370D22CCB1A9006848B3 /* SDL2_image.framework */,
+				17BB316F23A0E379006F2ED3 /* SDL2_image.framework */,
+				17BB316D23A0E33A006F2ED3 /* SDL2.framework */,
 				170F7CB32200829800B70B56 /* libwg_software.a */,
 				170F7CB52200829800B70B56 /* libwondergui.a */,
 			);
@@ -107,7 +94,6 @@
 				170F7A50220073C300B70B56 /* Sources */,
 				170F7A51220073C300B70B56 /* Frameworks */,
 				170F7A52220073C300B70B56 /* Resources */,
-				170F7CB7220084AD00B70B56 /* Copy Bundle Frameworks */,
 			);
 			buildRules = (
 			);
@@ -295,6 +281,7 @@
 					"$(SRCROOT)/../../SDL2/",
 					"$(SRCROOT)/../../SDL2_image/",
 					"$(USER_LIBRARY_DIR)/SDL2_image",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					/Users/tord/Workspace/wg2/Framework,
@@ -302,7 +289,7 @@
 					/Users/tord/Workspace/wg2,
 					/Users/tord/Workspace/wg2/Framework/opengl,
 					/Users/tord/Workspace/wg2/Framework/base,
-					/Users/tord/Workspace/wg2/Framework/interfaces,
+					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
 				);
@@ -334,6 +321,7 @@
 					"$(SRCROOT)/../../SDL2/",
 					"$(SRCROOT)/../../SDL2_image/",
 					"$(USER_LIBRARY_DIR)/SDL2_image",
+					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
 					/Users/tord/Workspace/wg2/Framework,
@@ -341,7 +329,7 @@
 					/Users/tord/Workspace/wg2,
 					/Users/tord/Workspace/wg2/Framework/opengl,
 					/Users/tord/Workspace/wg2/Framework/base,
-					/Users/tord/Workspace/wg2/Framework/interfaces,
+					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
 				);

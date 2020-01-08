@@ -52,8 +52,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const;
-		const char *			className( void ) const;
+		bool					isInstanceOf( const char * pClassName ) const override;
+		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
 		static SurfaceFactory_p	cast( Object * pObject );
 

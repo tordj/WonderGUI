@@ -92,7 +92,7 @@ namespace wg
 
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale) override;
-		
+
 		void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
 
