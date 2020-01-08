@@ -222,6 +222,7 @@ protected:
 	WgEventHandler* _eventHandler() const;
 	void			_queueEvent( WgEvent::Event * pEvent );
 
+    bool            _requestPreRenderCall();
 
 	// Convenient calls to hook
 
@@ -234,6 +235,8 @@ protected:
 
     
 	// To be overloaded by Widget
+
+    virtual void    _preRender();
 
     virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );

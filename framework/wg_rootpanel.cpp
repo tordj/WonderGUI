@@ -199,7 +199,16 @@ bool WgRootPanel::Render()
 
 bool WgRootPanel::Render( const WgRect& clip )
 {
-	if( !BeginRender() )
+    // This early out hopefully solves the problem with Console1 taking GPU - time on some machines when not visible.
+    // It should prevent us from doing anything with the GPU
+    if (!m_bVisible)
+    {
+        m_updatedPatches.Clear(); // Probably not necessary, but wanna make sure they don't fill up...
+        m_dirtyPatches.Clear();   // Probably not necessary, but wanna make sure they don't fill up...
+        return true;              // Not an error, just hidden.
+    }
+
+    if( !BeginRender() )
 		return false;
 
 	if( !RenderSection(clip) )
@@ -221,6 +230,14 @@ bool WgRootPanel::BeginRender()
 	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
+    //
+    
+    for( auto& pWidget : m_preRenderCalls )
+        pWidget->_preRender();
+    
+    m_preRenderCalls.clear();
+    
+    //
 
 	if( m_pUpdatedRectOverlay )
 	{
@@ -230,19 +247,19 @@ bool WgRootPanel::BeginRender()
 			it->Sub(&m_dirtyPatches);
 
 		// Add our new dirty patches to the top of the afterglow queue.
-		
-		
+
+
 		m_afterglowRects.push_front(WgPatches());
 		m_afterglowRects.front().Add(&m_dirtyPatches);
-		
+
 		// Possibly remove overlays from the back, put them into dirty rects for re-render
-		
+
 		while( (int) m_afterglowRects.size() > m_afterglowFrames+1 )
 		{
 			m_dirtyPatches.Add( &m_afterglowRects.back() );
 			m_afterglowRects.pop_back();
 		}
-		
+
 		// Re-render graphics behind overlays that go from state FOCUSED to NORMAL
 
 		if( m_afterglowRects.size() > 1 )
@@ -250,7 +267,7 @@ bool WgRootPanel::BeginRender()
 			m_dirtyPatches.Add( &m_afterglowRects[1] );
 		}
 	}
-	
+
 	// Initialize GfxDevice
 
 	return m_pGfxDevice->beginRender();
@@ -294,19 +311,19 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
         m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
 
 	// Handle updated rect overlays
-	
+
 	if( m_pUpdatedRectOverlay )
 	{
         // Reset cliplist, we don't need it anyway.
-        
+
         m_pGfxDevice->clearClipList();
 
 		// Render our new overlays
-		
+
 		for( const WgRect * pRect = m_afterglowRects[0].Begin() ; pRect != m_afterglowRects[0].End() ; pRect++ )
 		{
 			m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Focused, *pRect, WG_SCALE_BASE );		// Overlays are not scaled
-		}		
+		}
 
 		// Render overlays that have turned into afterglow
 
@@ -315,7 +332,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 			for( const WgRect * pRect = m_afterglowRects[1].Begin() ; pRect != m_afterglowRects[1].End() ; pRect++ )
 			{
 				m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Normal, *pRect, WG_SCALE_BASE );	// Overlays are not scaled
-			}		
+			}
 		}
 	}
 

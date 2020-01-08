@@ -139,7 +139,8 @@ protected:
     void            _onCloneContent(const WgWidget * _pOrg) override;
     void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
     void            _onNewSize(const WgSize& size) override;
-    
+
+    void            _preRender() override;
     void            _renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
     
     //

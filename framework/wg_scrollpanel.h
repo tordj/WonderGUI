@@ -230,10 +230,13 @@ public:
     WgRect              ContentInViewPixels() const;          // Section of content displayed in the view.
     bool                PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo = WgOrigo::Center, WgCoord viewPosOffset = {0,0} );
 
+    void                ScrollIntoView( WgWidget * pWidget, const WgBorders& margin = 0, const WgRect& viewSection = WgRect() );
+
+    
     void                SetRubberBorder( const WgBorders& border );
     void                EnableRubberBorder( bool bEnabled );
     void                RubberBorderSnapToPos();
-  
+
     bool                SetHoverScrollBorder( const WgBorders& border );
     bool                SetHoverScrollSpeed( int maxPointsPerSecond );
     
@@ -295,7 +298,7 @@ protected:
 
 	//
 
-    WgCoord     _calcRubberBandTarget();
+    WgCoord     _calcDesiredWindowPos( const WgRect& keepInView );
 
 	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
     void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
@@ -364,10 +367,15 @@ private:
 
 	WgBlocksetPtr	m_pFillerBlocks;
 	WgRect			m_geoFiller;
+
+    WgWidgetWeakPtr m_pScrollIntoViewChild;                 // Child that should be scrolled into viewSection of view.
+    WgRect          m_scrollIntoViewSection;                // Section of view child should be scrolled into (default is whole view).
+    WgBorders       m_scrollIntoViewMargin;                 // Margin around child that should be visible.
     
     WgBorders       m_rubberBorder;
     bool            m_bRubberBorder = false;
-    int             m_rubberBorderPause = 0;
+    bool            m_bRubberBorderHold = false;            // When set, rubber border is temporary disabled.
+    int             m_rubberBorderPause = 0;                // Millisec left for the rubber border to pause
     
     WgBorders       m_hoverScrollBorder;
     int             m_hoverScrollSpeed = 500;               // Max hover scroll speed in points/sec.

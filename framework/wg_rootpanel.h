@@ -44,6 +44,8 @@ class WgWidget;
 
 class WgRootPanel : public WgWidgetHolder
 {
+    friend class WgWidget;
+    
 public:
 	WgRootPanel();
     WgRootPanel( wg::GfxDevice * pGfxDevice );
@@ -135,7 +137,7 @@ protected:
 		WgRootPanel *		m_pRoot;
 	};
 
-
+    inline void         _addPreRenderCall(WgWidget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
 	WgHook*				_firstHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
 	WgHook*				_lastHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
@@ -150,6 +152,8 @@ protected:
 	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
+    std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
+    
 	WgSkinPtr			m_pUpdatedRectOverlay;
 	int					m_afterglowFrames;
 

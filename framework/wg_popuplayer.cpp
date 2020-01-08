@@ -154,8 +154,8 @@ int WgPopupLayer::NbPopups() const
 
 void WgPopupLayer::Push(WgWidget * pPopup, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgCoord attachOfs, bool bAutoClose, bool bDelay, WgSize maxSize)
 {
-	if (bAutoClose && !m_popupHooks.IsEmpty())
-		_closeAutoOpenedUntil(pOpener, true);
+	if (!m_popupHooks.IsEmpty())
+		_closeAllOpenUntil(pOpener, true);
 
 	_addSlot(pPopup, pOpener, launcherGeo, attachPoint, attachOfs, bAutoClose, bDelay, maxSize);
 }
@@ -888,8 +888,28 @@ void WgPopupLayer::_closeAutoOpenedUntil(WgWidget * pStayOpen, bool bCloseImmedi
         _beginClosing(p, bCloseImmediately);
 		p = p->_next();
 	}
-
 }
+
+//____ _closeAllOpenUntil() _________________________________________________
+
+void WgPopupLayer::_closeAllOpenUntil(WgWidget * pStayOpen, bool bCloseImmediately)
+{
+    // Follow pStayOpen up the hierarchy to one of our popups or null.
+    
+    while (pStayOpen != nullptr && pStayOpen->Parent() != this)
+        pStayOpen = pStayOpen->Parent();
+    
+    // Remove all children ontop of pStayOpen, which is now either a child of ours or null, in which case
+    // all will be removed.
+    
+    auto p = m_popupHooks.First();
+    while (p && p->m_pWidget != pStayOpen)
+    {
+        _beginClosing(p, bCloseImmediately);
+        p = p->_next();
+    }
+}
+
 
 //____ _beginClosing() _____________________________________________________
 

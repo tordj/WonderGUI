@@ -73,7 +73,13 @@ int WgUniformSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, 
     int paddingLength = totalLength - staticLength - unifiedLength*nUnifiedItems;
     float paddingPerWeightUnit = extraWeight > 0 ? paddingLength / extraWeight : 0.f;
 
-    // Loop through items and set their length
+    if(unifiedLength < 0)
+        unifiedLength = 0;
+
+    if(paddingPerWeightUnit < 0.0f)
+        paddingPerWeightUnit = 0.0f;
+
+     // Loop through items and set their length
         
     float paddingAcc = 0.0001f;
     int total = 0;
@@ -111,6 +117,77 @@ int WgUniformSizeBroker::_findLongestUnified( WgSizeBrokerItem * pItems, int nIt
     return longest;
 }
 
+int WgOSDTrackMetersSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
+{
+    if( nItems == 0 )
+        return 0;
+    
+    // Gather some data we need
+    
+    int nNullWeight = 0;               // Number of items with 0.f weight
+    float totalWeight = 0;             // Total weight of all items
+    
+    for( int i = 0 ; i < nItems ; i++ )
+    {
+        totalWeight += pItems[i].weight;
+        if( pItems[i].weight == 0.f )
+            nNullWeight++;
+    }
+
+    //
+    
+    int totalUsed = 0;
+    
+    for( int i = 0 ; i < nItems ; i++ )
+    {
+        if( pItems[i].weight != 0 )
+        {
+            int length = pItems[i].weight / totalWeight * totalLength;
+            if( length == 0 )
+            {
+                pItems[i].output = 1;
+                totalWeight -= pItems[i].weight;
+                totalUsed += 1;
+            }
+        }
+    }
+    
+    // Loop through items and set their length
+    
+    int lengthLeft = totalLength - totalUsed;
+    
+    for( int i = 0 ; i < nItems ; i++ )
+    {
+        if( pItems[i].weight != 0 )
+        {
+            int length = pItems[i].weight / totalWeight * lengthLeft;
+            if( length != 0 )
+            {
+                pItems[i].output = length;
+                totalUsed += length;
+            }
+        }
+    }
+    
+    //
+        
+    if (nNullWeight > 0) {
+        int leftOver = totalLength - totalUsed;
+        
+        int lengthPerNullItem = leftOver/nNullWeight;
+        
+        for( int i = 0 ; i < nItems ; i++ )
+        {
+            if( pItems[i].weight == 0 )
+            {
+                pItems[i].output = lengthPerNullItem;
+                totalUsed += lengthPerNullItem;
+            }
+        }
+    }
+
+    return totalUsed;
+}
 
 int WgScalePreferredSizeBroker::SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const
 {

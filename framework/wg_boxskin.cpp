@@ -217,10 +217,10 @@ bool WgBoxSkin::MarkTest( const WgCoord& ofs, const WgSize& canvasSize, WgState 
 {
     if( ofs.x < 0 || ofs.y < 0 || ofs.x > canvasSize.w || ofs.y > canvasSize.h )
         return false;
-        
+
 	if( m_bOpaque )
 		return true;
-    
+
 	int i = WgUtil::_stateToIndex(state);
 
     WgRect center = WgRect(canvasSize) - m_frame.scale(scale);

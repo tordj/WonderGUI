@@ -860,6 +860,16 @@ bool WgScrollPanel::PositionContentInViewPixels( WgCoord posInContent, WgOrigo v
     return SetViewPixelOfs(pos.x,pos.y);
 }
 
+//____ ScrollIntoView() ________________________________________________________
+
+void WgScrollPanel::ScrollIntoView( WgWidget * pWidget, const WgBorders& margin, const WgRect& viewSection )
+{
+    m_pScrollIntoViewChild = pWidget;
+    m_scrollIntoViewMargin = margin;
+    m_scrollIntoViewSection = viewSection;
+}
+
+
 //____ SetRubberBorder() ________________________________________________________
 
 void WgScrollPanel::SetRubberBorder( const WgBorders& border )
@@ -889,7 +899,7 @@ void WgScrollPanel::EnableRubberBorder( bool bEnabled )
 
 void WgScrollPanel::RubberBorderSnapToPos()
 {
-    WgCoord pos = _calcRubberBandTarget();
+    WgCoord pos = _calcDesiredWindowPos( WgRect(m_contentSize) - m_rubberBorder.scale(m_scale) );
     SetViewPixelOfs( pos.x, pos.y );
 }
 
@@ -1252,14 +1262,13 @@ void WgScrollPanel::_onNewSize( const WgSize& size )
 	_updateElementGeo( size );
 }
 
-//____ _calcRubberBandTarget() __________________________________________________
+//____ _calcDesiredWindowPos() __________________________________________________
 
-WgCoord WgScrollPanel::_calcRubberBandTarget()
+WgCoord WgScrollPanel::_calcDesiredWindowPos( const WgRect& content)
 {
     // Get current window and content (canvas minus rubber borders) geometries.
     
     WgRect  window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
-    WgRect  content = WgRect(m_contentSize) - m_rubberBorder.scale(m_scale);
     
     // Calculate desiredWindowPos
     
@@ -1300,6 +1309,8 @@ WgCoord WgScrollPanel::_calcRubberBandTarget()
 
 void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
+    bool    bCallSuper = false;
+    
 	switch( _pEvent->Type() )
 	{
         case WG_EVENT_TICK:
@@ -1316,40 +1327,111 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
                 SetViewPixelOfs( m_viewPixOfs.x + x/1000, m_viewPixOfs.y + y/1000 );
             }
-            else if( m_bRubberBorder )
+            else
             {
-                //Possibly scroll view since we have a rubber border.
+                // Calculate distance to scroll for rubber border.
+                
+                WgCoord rubberBorderScroll;
 
-                if( m_rubberBorderPause > 0 )
+                if( m_bRubberBorder && !m_bRubberBorderHold )
                 {
-                    m_rubberBorderPause = std::max(0,m_rubberBorderPause-ms);
-                    break;
+                    if( m_rubberBorderPause > 0 )
+                        m_rubberBorderPause = std::max(0,m_rubberBorderPause-ms);
+                    else
+                        rubberBorderScroll = _calcDesiredWindowPos( WgRect(m_contentSize) - m_rubberBorder.scale(m_scale) ) - m_viewPixOfs;
                 }
-                
-                WgRect desiredWindowPos = _calcRubberBandTarget();
-               
-                // Move us closer to desiredWindowPos
-                
-                WgCoord distanceLeft = desiredWindowPos - m_viewPixOfs;
-                
-                if( distanceLeft.x < 0 )
-                    distanceLeft.x = distanceLeft.x / 4 -1;
-                
-                if( distanceLeft.x > 0 )
-                    distanceLeft.x = distanceLeft.x / 4 + 1;
 
-                if( distanceLeft.y < 0 )
-                    distanceLeft.y = distanceLeft.y / 4 -1;
+                // Calculate distance to scroll for scroll into view.
                 
-                if( distanceLeft.y > 0 )
-                    distanceLeft.y = distanceLeft.y / 4 + 1;
+                WgCoord intoViewScroll;
 
-                if( distanceLeft.x != 0 || distanceLeft.y != 0 )
-                    SetViewPixelOfs( m_viewPixOfs.x + distanceLeft.x, m_viewPixOfs.y + distanceLeft.y );
+                if( m_pScrollIntoViewChild )
+                {
+                    WgWidget * p = m_pScrollIntoViewChild.GetRealPtr();
+
+                    WgRect inside = p->PixelGeo() + (m_scrollIntoViewMargin*m_scale/WG_SCALE_BASE);
+
+                    p = p->Parent();
+                    while( p && p != this )
+                    {
+                        if( p->Parent() != this )
+                            inside += p->PixelPos();
+                        p = p->Parent();
+                    }
+                    
+                    if( p == this )
+                    {
+                        WgRect window = { m_viewPixOfs, m_elements[WINDOW].m_windowGeo.size() };
+                        
+                        if( !m_scrollIntoViewSection.isEmpty() )
+                            window = m_scrollIntoViewSection*m_scale/WG_SCALE_BASE + m_viewPixOfs;
+                            
+                        WgCoord currPos = window.pos();
+                        
+                        int diffLeft = inside.x - window.x;
+                        int diffRight = inside.right() - window.right();
+                        int diffTop = inside.y - window.y;
+                        int diffBottom = inside.bottom() - window.bottom();
+                        
+                        if( diffLeft > 0 && diffRight > 0  )
+                            window.x += std::min(diffLeft, diffRight);
+                        else if( diffLeft < 0 && diffRight < 0 )
+                            window.x += std::max(diffLeft, diffRight);
+                        
+                        if( diffTop > 0 && diffBottom > 0 )
+                            window.y += std::min(diffTop, diffBottom);
+                        else if( diffTop < 0 && diffBottom < 0 )
+                            window.y += std::max(diffTop, diffBottom);
+
+                        intoViewScroll = window.pos() - currPos;
+                    }
+
+                    if( intoViewScroll == WgCoord(0,0) )
+                        m_pScrollIntoViewChild = nullptr;
+                }
+
+                // Combine distances (scroll the longest distance)
+                
+                WgCoord distance = {    abs(rubberBorderScroll.x) > abs(intoViewScroll.x ) ? rubberBorderScroll.x : intoViewScroll.x,
+                                        abs(rubberBorderScroll.y) > abs(intoViewScroll.y ) ? rubberBorderScroll.y : intoViewScroll.y };
+ 
+                // Scale the distance and apply to current pos.
+            
+                if( distance.x < 0 )
+                    distance.x = distance.x / 4 -1;
+                
+                if( distance.x > 0 )
+                    distance.x = distance.x / 4 + 1;
+
+                if( distance.y < 0 )
+                    distance.y = distance.y / 4 -1;
+                
+                if( distance.y > 0 )
+                    distance.y = distance.y / 4 + 1;
+
+                if( distance.x != 0 || distance.y != 0 )
+                    SetViewPixelOfs( m_viewPixOfs.x + distance.x, m_viewPixOfs.y + distance.y );
             }
             
             break;
         }
+            
+        case WG_EVENT_MOUSEBUTTON_PRESS:
+        {
+            m_bRubberBorderHold = true;
+            WgWidget::_onEvent(_pEvent,pHandler);
+
+            break;
+        }
+
+        case WG_EVENT_MOUSEBUTTON_RELEASE:
+        {
+            m_bRubberBorderHold = false;
+            WgWidget::_onEvent(_pEvent,pHandler);
+
+            break;
+        }
+
             
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{
@@ -1364,7 +1446,11 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 					_wheelRollY( pEvent->Distance() );
 				else if( wheel == m_wheelForScrollX )
 					_wheelRollX( pEvent->Distance() );
+                else
+                    bCallSuper = true;
 			}
+            else
+                bCallSuper = true;
             break;
 		}
 
@@ -1431,9 +1517,13 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
         }
             
 		default:
-            WgWidget::_onEvent(_pEvent,pHandler);
+            bCallSuper = true;
 		break;
 	}
+    
+    if( bCallSuper )
+        WgWidget::_onEvent(_pEvent,pHandler);
+
 }
 
 //____ _renderPatches() ________________________________________________________

@@ -56,6 +56,9 @@ public:
     
     WgSize          PreferredPixelSize() const;
 
+    WgSize          UnzoomedPreferredPixelSize() const;
+
+    
     void            SetInnerTransition(float scale);                                            // Zoom out level of the contained widget.
     float           InnerTransition() const { return m_innerTransitionFactor; }
     
@@ -67,14 +70,20 @@ public:
     
     void            SetTint( WgColor tint );
     WgColor         Tint() const { return m_tint; }
+
     
     WgRect          ContentAreaPixels() const;
     WgRect          ContentAreaPoints() const;
 
     WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
+    void            SetStaticScreenshot( WgSurface *  pSurface );
     
 protected:
+   
+    WgCoord _childPos();
+    WgSize  _childSize();
+    WgRect  _childGeo();
     
     void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
     void    _onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
@@ -94,7 +103,8 @@ protected:
     void    _updateButtonState( WgSize gizmoCanvas, WgCoord pointerPos );
     
 private:
-    
+    bool        m_bTakingScreenshot = false;
+    bool        m_bStaticScreenshot = false;
 	WgSurface * m_pScreenshot = nullptr;
     WgSkinPtr   m_pButtonSkin;
     WgSkinPtr   m_pOutlineSkin;

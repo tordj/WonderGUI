@@ -213,11 +213,13 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow)
 {
     if( !pWidget || !pShadow )
         return false;
+   
+    int scale = pWidget->Scale();
     
     WgCoord pos;
     _descendantPos(pWidget, pos);
     
-    WgRect geo = { pos - pShadow->ContentOfs(WgStateEnum::Normal, m_scale), pShadow->SizeForContent(pWidget->PixelSize(), m_scale) };
+    WgRect geo = { pos - pShadow->ContentOfs(WgStateEnum::Normal, scale), pShadow->SizeForContent(pWidget->PixelSize(), scale) };
     
     m_shadows.push_back( WgShadow(pWidget,pShadow.GetRealPtr(),geo));
     
@@ -469,73 +471,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		case WgEventType::WG_EVENT_TICK:
 		{
-			// Check for removed children and changes to geo that will affect shadows.
-
-			WgPatches patches;
-
-			for (auto it = m_shadows.begin(); it < m_shadows.end();)
-			{
-				WgWidget * pWidget = it->widget();
-				WgShadow * pShadow = &(*it);
-
-				// Remove shadow for deleted widget.
-
-				if (pWidget == nullptr)
-				{
-					patches.Add(pShadow->m_geo);
-					it = m_shadows.erase(it);
-                    continue;
-				}
-
-				//
-
-				WgCoord pos;
-                WgRect oldGeo = pShadow->m_geo;
-                WgSize widgetSize = pWidget->PixelSize();
-
-                if( widgetSize.w > 0 && widgetSize.h > 0 && _descendantPos(pWidget, pos))
-				{
-					// Widget is still our descendant and visible, check
-					// so its geo has not changed.
-
-                    WgSkin * pSkin = pShadow->shadow();
-                    WgRect geo = { pos - pSkin->ContentOfs(WgStateEnum::Normal,m_scale), pSkin->SizeForContent(widgetSize, m_scale) };
-
-                    if (geo != oldGeo)
-                    {
-                        patches.Add(oldGeo);
-                        patches.Add(geo);
-                        pShadow->m_geo = geo;
-                    }
-				}
-				else
-				{
-					// Widget is currently hidden or not a descendant of us,
-					// hide the shadow.
-
-					if (!oldGeo.isEmpty())
-					{
-						patches.Add(oldGeo);
-                        pShadow->m_geo = {0,0,0,0};
-					}
-				}
-
-                it++;       // Only increase iterator if widget wasn't deleted.
-			}
-
-			// Early out if there is nothing to update in shadow layer.
-
-			if (patches.IsEmpty())
-				break;
-
-			// Mask foreground from shadow updates and request render on the remains.
-
-			if (m_frontHook.Widget())
-				m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, WgBlendMode::Blend);
-
-			for (const WgRect * pRect = patches.Begin(); pRect < patches.End(); pRect++)
-				_requestRender(*pRect);
-
+            _requestPreRenderCall();
 			break;
 		}
 
@@ -543,6 +479,80 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 			WgLayer::_onEvent(pEvent, pHandler);
 			break;
 	}
+}
+
+//____ _preRender() ____________________________________________________________
+
+void WgShadowLayer::_preRender()
+{
+    // Check for removed children and changes to geo that will affect shadows.
+    
+    WgPatches patches;
+    
+    for (auto it = m_shadows.begin(); it < m_shadows.end();)
+    {
+        WgWidget * pWidget = it->widget();
+        WgShadow * pShadow = &(*it);
+        
+        // Remove shadow for deleted widget.
+        
+        if (pWidget == nullptr)
+        {
+            patches.Add(pShadow->m_geo);
+            it = m_shadows.erase(it);
+            continue;
+        }
+        
+        //
+        
+        WgCoord pos;
+        WgRect oldGeo = pShadow->m_geo;
+        WgSize widgetSize = pWidget->PixelSize();
+        
+        if( widgetSize.w > 0 && widgetSize.h > 0 && _descendantPos(pWidget, pos))
+        {
+            // Widget is still our descendant and visible, check
+            // so its geo has not changed.
+            
+            int scale = pWidget->Scale();
+            
+            WgSkin * pSkin = pShadow->shadow();
+            WgRect geo = { pos - pSkin->ContentOfs(WgStateEnum::Normal,scale), pSkin->SizeForContent(widgetSize, scale) };
+            
+            if (geo != oldGeo)
+            {
+                patches.Add(oldGeo);
+                patches.Add(geo);
+                pShadow->m_geo = geo;
+            }
+        }
+        else
+        {
+            // Widget is currently hidden or not a descendant of us,
+            // hide the shadow.
+            
+            if (!oldGeo.isEmpty())
+            {
+                patches.Add(oldGeo);
+                pShadow->m_geo = {0,0,0,0};
+            }
+        }
+        
+        it++;       // Only increase iterator if widget wasn't deleted.
+    }
+    
+    // Early out if there is nothing to update in shadow layer.
+    
+    if (patches.IsEmpty())
+        return;
+    
+    // Mask foreground from shadow updates and request render on the remains.
+    
+    if (m_frontHook.Widget())
+        m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, WgBlendMode::Blend);
+    
+    for (const WgRect * pRect = patches.Begin(); pRect < patches.End(); pRect++)
+        _requestRender(*pRect);
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -636,7 +646,8 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			pDevice->setBlendMode(WgBlendMode::Max);
 
 			for (auto& shadow : m_shadows)
-				shadow.shadow()->Render(pDevice, WgStateEnum::Normal, shadow.m_geo, m_scale);
+                if( !shadow.m_geo.isEmpty() )
+                    shadow.shadow()->Render(pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
 
 
 			pDevice->setCanvas(oldCanvas);

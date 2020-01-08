@@ -58,11 +58,11 @@ private:
 
     WgSize          m_pixelsMin;              // Measured in pixels
     WgSize          m_pixelsMax;              // Measured in pixels
-    WgSize          m_pixelsPreferred;        // Measured in pixels
+    WgSize          m_pixelsPreferred = {-1, -1};        // Measured in pixels
     
 	WgSize			m_pointsMin;
 	WgSize			m_pointsMax;
-	WgSize			m_pointsPreferred;
+	WgSize			m_pointsPreferred = {-1, -1};
 
 	bool			m_bKeepAspect = false;
 };

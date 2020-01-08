@@ -100,6 +100,19 @@ bool WgAnimPlayer::SetSource( const WgBlocksetPtr& pBlocks )
 	return true;
 }
 
+//____ SetSkin() ________________________________________________________
+
+void WgAnimPlayer::SetSkin( const WgSkinPtr& pSkin )
+{
+    m_pSkin = pSkin;
+    
+    if( !m_pAnim || !m_bEnabled )
+    {
+        _requestResize();
+        _requestRender();
+    }
+}
+
 //____ PlayPos() ______________________________________________________________
 
 int WgAnimPlayer::PlayPos()
@@ -263,6 +276,8 @@ WgSize WgAnimPlayer::PreferredPixelSize() const
 {
 	if( m_pAnim )
 		return m_pAnim->Size(m_scale);
+    else if( m_pSkin )
+        return m_pSkin->PreferredSize(m_scale);
 	else if( m_pStaticBlock )
 		return m_pStaticBlock->Size(m_scale);
 	else
@@ -369,7 +384,11 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
     
 	if( m_pAnim && m_bEnabled )
         WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
-	else if( m_pStaticBlock )
+    else if( m_pSkin )
+    {
+        m_pSkin->Render( pDevice, WgStateEnum::Normal, _canvas, m_scale );
+    }
+    else if( m_pStaticBlock )
 	{
 		WgMode mode = WG_MODE_NORMAL;
 		if( !m_bEnabled )

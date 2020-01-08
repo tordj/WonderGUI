@@ -114,7 +114,18 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
-		LOG_GLERROR(glGetError());
+        // @TODO: TMP workaround for annoying error (MAIN-16725).
+        auto glError = glGetError();
+
+        if(glError == 1281)
+        {
+            glGetError();
+        }
+        else
+        {
+			LOG_GLERROR(glError);
+        }
+
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;

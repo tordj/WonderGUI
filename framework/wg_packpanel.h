@@ -102,6 +102,9 @@ public:
 	int				MatchingPixelWidth( int height ) const;
 
 	WgSize			PreferredPixelSize() const;
+    
+    void            FreezeGeo();
+    void            UnfreezeGeo();
 	
 protected:
 
@@ -147,8 +150,10 @@ protected:
 	WgSizeBroker * 	m_pSizeBroker;
 	WgSize			m_preferredSize;                                    // Internal, excluding PackPanel's own skin padding.
 
-	bool			m_bBlockRequestResize = false;
-	bool			m_bResizeRequestedWhileBlocked = false;
+    bool            m_bFreezeGeoExt = false;
+    
+	bool			m_bFreezeGeo = false;
+	bool			m_bWantsGeoUpdate = false;
 
     bool            m_bChildGeoNeedsRefresh = false;
 

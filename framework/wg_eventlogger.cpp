@@ -628,6 +628,10 @@ string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEven
 			return "WgPointerStyle::Hourglass";
 		case WgPointerStyle::Hand:
 			return "WgPointerStyle::Hand";
+		case WgPointerStyle::OpenHand:
+			return "WgPointerStyle::OpenHand";
+		case WgPointerStyle::ClosedHand:
+			return "WgPointerStyle::ClosedHand";
 		case WgPointerStyle::Crosshair:
 			return "WgPointerStyle::Crosshair";
 		case WgPointerStyle::Help:
@@ -648,6 +652,10 @@ string WgEventLogger::_formatPointerStyle( const WgEvent::PointerChange * _pEven
 			return "WgPointerStyle::ResizeNS";
 		case WgPointerStyle::ResizeWE:
 			return "WgPointerStyle::ResizeWE";
+		case WgPointerStyle::ResizeBeamNS:
+			return "WgPointerStyle::ResizeBeamNS";
+		case WgPointerStyle::ResizeBeamWE:
+			return "WgPointerStyle::ResizeBeamWE";
 		default:
 		{
 			char	temp[64];

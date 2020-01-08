@@ -166,7 +166,7 @@ bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
     m_pPicked = pWidget;
     m_pickCategory = pWidget->pickCategory();
     
-    _eventHandler()->QueueEvent(new WgEvent::DropPick(m_pPicked.GetRealPtr(), pickOfs, this));
+    _eventHandler()->QueueEvent(new WgEvent::DropPick(pWidget, pickOfs, this));
     m_dragState = DragState::Picked;
     
     return true;
@@ -526,7 +526,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 						pDragWidget->_setScale(4096);
 					}
 
-                    dragWidgetSize = pDragWidget->PreferredPixelSize();
+					dragWidgetSize = pDragWidget->PreferredPixelSize();
                     m_dragWidgetOfs = pEvent->dragWidgetPointerOfs();
                     m_bDeleteDraggedWhenDone = pEvent->deleteDragWidgetWhenDone();
                 }
@@ -687,34 +687,10 @@ void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _ca
     {
         WgSize sz = m_pPicked->PixelSize();
 
-
-        auto pFactory = m_pSurfaceFactory;
-        auto pCanvas = pFactory->CreateSurface(sz,wg::PixelFormat::BGRA_8);
-        pCanvas->SetScaleFactor(m_scale);
-        pCanvas->Fill( WgColor::Transparent );
-
-        WgPatches patches;
-        patches.Add( sz );
-
-        auto pOldCanvas = pDevice->canvas();
-        WgColor oldTint = pDevice->tintColor();
-        WgBlendMode oldBlendMode = pDevice->blendMode();
-        pDevice->setCanvas(pCanvas->RealSurface());
-        pDevice->setBlendMode(wg::BlendMode::Blend);
-
-        pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
-        m_pPicked->_renderPatches(pDevice, sz, sz, &patches);
-        
-        pDevice->setCanvas(pOldCanvas);
-        pDevice->setTintColor(oldTint);
-        pDevice->setBlendMode(oldBlendMode);
+        auto pCanvas = m_pPicked->Screenshot();
         auto pImage = new WgImage();
         pImage->SetImage( pCanvas, true );
         pImage->_onNewSize(sz);
-
-//            auto pImage = Filler::create();
-//            pImage->setPreferredSize({16,16});
-//            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
 
         _replaceWidgetInHook(pImage);
     }

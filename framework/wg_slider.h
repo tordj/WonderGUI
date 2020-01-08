@@ -141,8 +141,8 @@ class	WgWidgetSlider : public WgWidget
         WgSkinPtr       m_pBarSkin;
         WgSkinPtr       m_pBtnFwdSkin;
         WgSkinPtr       m_pBtnBwdSkin;
-    
-    
+
+
 		float			m_sliderPos;
 		float			m_sliderSize;
 
@@ -184,7 +184,7 @@ class	WgWidgetSlider : public WgWidget
 
 //____ Class: WgHSlider _______________________________________________________
 
-class WgHSlider:public WgWidgetSlider
+class WgHSlider: public WgWidgetSlider
 {
 	public:
 		WgHSlider();
@@ -197,7 +197,7 @@ class WgHSlider:public WgWidgetSlider
 
 //____ Class: WgVSlider _______________________________________________________
 
-class WgVSlider:public WgWidgetSlider
+class WgVSlider: public WgWidgetSlider
 {
 	public:
 		WgVSlider();

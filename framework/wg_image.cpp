@@ -115,7 +115,8 @@ WgSize WgImage::PreferredPixelSize() const
 {
     if( m_pImage )
     {
-        WgSize sz = m_pImage->PixelSize();
+        WgSize sz = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
+
         if( m_pSkin )
             sz += m_pSkin->ContentPadding(m_scale);
         
@@ -138,7 +139,7 @@ int  WgImage::MatchingPixelHeight(int pixelWidth) const
 
     if( m_pImage )
     {
-        imageSize = m_pImage->PixelSize();
+        imageSize = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
         if( m_pSkin )
             paddingSize = m_pSkin->ContentPadding(m_scale);
     }
@@ -164,7 +165,7 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
     
     if( m_pImage )
     {
-        imageSize = m_pImage->PixelSize();
+        imageSize = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
         if( m_pSkin )
             paddingSize = m_pSkin->ContentPadding(m_scale);
     }

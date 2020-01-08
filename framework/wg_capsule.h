@@ -33,7 +33,7 @@ class WgCapsule : public WgContainer
 public:
 	~WgCapsule() {}
 
-	WgHook *		SetChild( WgWidget * pWidget );
+	virtual WgHook * SetChild( WgWidget * pWidget );
 	WgWidget *		Child() { return m_hook.Widget(); }
 	bool			DeleteChild();
 	WgWidget *		ReleaseChild();
@@ -62,6 +62,7 @@ protected:
 	class CapsuleHook : public WgHook
 	{
 		friend class WgCapsule;
+        friend class WgZoomOutCapsule;
 
 	public:
 
@@ -101,6 +102,11 @@ protected:
 
 	//
 
+    virtual WgCoord _childPos();
+    virtual WgSize  _childSize();
+    virtual WgRect  _childGeo();
+    
+    
 	void			_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void			_onCloneContent( const WgWidget * _pOrg );

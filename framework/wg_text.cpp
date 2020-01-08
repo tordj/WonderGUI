@@ -451,7 +451,7 @@ WgSize WgText::unwrappedSize() const
 	}
 
     sz.w += _cursorMaxWidth();
-    
+
 	sz.h += m_pHardLines[m_nHardLines-1].height - m_pHardLines[m_nHardLines-1].lineSpacing;
 	return sz;
 }

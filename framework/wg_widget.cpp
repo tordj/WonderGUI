@@ -456,6 +456,30 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 	delete pEvent;		// Can't queue event, silently delete it.
 }
 
+//____ _requestPreRenderCall() ___________________________________________________
+
+bool WgWidget::_requestPreRenderCall()
+{
+    if( m_pHook )
+    {
+        WgRootPanel * pRoot = m_pHook->Root();
+        if( pRoot )
+        {
+            pRoot->_addPreRenderCall(this);
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+
+//____ _preRender() ____________________________________________________________
+
+void WgWidget::_preRender()
+{
+    // By default we do nothing.
+}
 
 //____ _renderPatches() ________________________________________________________
 
@@ -541,7 +565,7 @@ void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandl
         _requestRender();
     }
     
-    if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent()) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
+    if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent() || _pEvent->Type() == WG_EVENT_MOUSEWHEEL_ROLL) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
         pHandler->ForwardEvent( _pEvent );
 }
 

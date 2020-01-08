@@ -49,7 +49,9 @@ public:
 
 	bool			SetSource( const WgBlocksetPtr& pStaticBlock );
 	WgBlocksetPtr	Source() const { return m_pStaticBlock; }
-		
+
+    void            SetSkin(const WgSkinPtr& pSkin);
+    
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
 	bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
@@ -92,7 +94,7 @@ private:
 
 	WgGfxAnim *		m_pAnim;
 	WgBlock			m_animFrame;			// Frame currently used by animation.
-	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or widget disabled).
+	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or widget disabled) and no skin set.
 
 	bool			m_bPlaying;
 	double			m_playPos;

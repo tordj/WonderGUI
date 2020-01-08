@@ -2241,7 +2241,7 @@ static const char segmentsVertexShader13[] =
 "flat out vec4 col12; "
 "flat out vec4 col13; "
 "flat out vec4 col14; "
-
+"\n"
 "void main()											"
 "{                                                      "
 "   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
@@ -2254,7 +2254,7 @@ static const char segmentsVertexShader13[] =
 "   stripesOfs = int(extras.y);							"
 "	int colorsOfs = extrasOfs+1;						"
 "   texUV = uv;											"
-
+"\n"
 "	col1 = texelFetch(colorsId, colorsOfs ); "
 "	col2 = texelFetch(colorsId, colorsOfs+1 ); "
 "	col3 = texelFetch(colorsId, colorsOfs+2 ); "
@@ -2269,7 +2269,7 @@ static const char segmentsVertexShader13[] =
 "	col12 = texelFetch(colorsId, colorsOfs+11 ); "
 "	col13 = texelFetch(colorsId, colorsOfs+12 ); "
 "	col14 = texelFetch(colorsId, colorsOfs+13 ); "
-
+"\n"
 "}                                                      ";
 
 
@@ -2295,7 +2295,7 @@ static const char segmentsFragmentShader13[] =
 "flat in vec4 col12; "
 "flat in vec4 col13; "
 "flat in vec4 col14; "
-
+"\n"
 "out vec4 color;								"
 "void main()									"
 "{												"
@@ -2312,9 +2312,9 @@ static const char segmentsFragmentShader13[] =
 "	vec4 edge11 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+10 ); "
 "	vec4 edge12 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+11 ); "
 "	vec4 edge13 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+12 ); "
-
+"\n"
 "	float factor1 = 1.f; "
-
+"\n"
 "	float x1 = (texUV.y - edge1.r) * edge1.g;"
 "	float adder1 = edge1.g / 2.f;"
 "	if (x1 < 0.f)"
@@ -2322,7 +2322,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x1 + edge1.g > 1.f)"
 "		adder1 = edge1.a;"
 "	float factor2 = clamp(x1 + adder1, 0.f, 1.f);"
-
+"\n"
 "	float x2 = (texUV.y - edge2.r) * edge2.g;"
 "	float adder2 = edge2.g / 2.f;"
 "	if (x2 < 0.f)"
@@ -2330,7 +2330,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x2 + edge2.g > 1.f)"
 "		adder2 = edge2.a;"
 "	float factor3 = clamp(x2 + adder2, 0.f, 1.f);"
-
+"\n"
 "	float x3 = (texUV.y - edge3.r) * edge3.g;"
 "	float adder3 = edge3.g / 2.f;"
 "	if (x3 < 0.f)"
@@ -2338,7 +2338,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x3 + edge3.g > 1.f)"
 "		adder3 = edge3.a;"
 "	float factor4 = clamp(x3 + adder3, 0.f, 1.f);"
-
+"\n"
 "	float x4 = (texUV.y - edge4.r) * edge4.g;"
 "	float adder4 = edge4.g / 2.f;"
 "	if (x4 < 0.f)"
@@ -2346,7 +2346,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x4 + edge4.g > 1.f)"
 "		adder4 = edge4.a;"
 "	float factor5 = clamp(x4 + adder4, 0.f, 1.f);"
-
+"\n"
 "	float x5 = (texUV.y - edge5.r) * edge5.g;"
 "	float adder5 = edge5.g / 2.f;"
 "	if (x5 < 0.f)"
@@ -2354,7 +2354,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x5 + edge5.g > 1.f)"
 "		adder5 = edge5.a;"
 "	float factor6 = clamp(x5 + adder5, 0.f, 1.f);"
-
+"\n"
 "	float x6 = (texUV.y - edge6.r) * edge6.g;"
 "	float adder6 = edge6.g / 2.f;"
 "	if (x6 < 0.f)"
@@ -2362,7 +2362,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x6 + edge6.g > 1.f)"
 "		adder6 = edge6.a;"
 "	float factor7 = clamp(x6 + adder6, 0.f, 1.f);"
-
+"\n"
 "	float x7 = (texUV.y - edge7.r) * edge7.g;"
 "	float adder7 = edge7.g / 2.f;"
 "	if (x7 < 0.f)"
@@ -2370,7 +2370,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x7 + edge7.g > 1.f)"
 "		adder7 = edge7.a;"
 "	float factor8 = clamp(x7 + adder7, 0.f, 1.f);"
-
+"\n"
 "	float x8 = (texUV.y - edge8.r) * edge8.g;"
 "	float adder8 = edge8.g / 2.f;"
 "	if (x8 < 0.f)"
@@ -2378,7 +2378,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x8 + edge8.g > 1.f)"
 "		adder8 = edge8.a;"
 "	float factor9 = clamp(x8 + adder8, 0.f, 1.f);"
-
+"\n"
 "	float x9 = (texUV.y - edge9.r) * edge9.g;"
 "	float adder9 = edge9.g / 2.f;"
 "	if (x9 < 0.f)"
@@ -2386,7 +2386,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x9 + edge9.g > 1.f)"
 "		adder9 = edge9.a;"
 "	float factor10 = clamp(x9 + adder9, 0.f, 1.f);"
-
+"\n"
 "	float x10 = (texUV.y - edge10.r) * edge10.g;"
 "	float adder10 = edge10.g / 2.f;"
 "	if (x10 < 0.f)"
@@ -2394,7 +2394,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x10 + edge10.g > 1.f)"
 "		adder10 = edge10.a;"
 "	float factor11 = clamp(x10 + adder10, 0.f, 1.f);"
-
+"\n"
 "	float x11 = (texUV.y - edge11.r) * edge11.g;"
 "	float adder11 = edge11.g / 2.f;"
 "	if (x11 < 0.f)"
@@ -2402,7 +2402,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x11 + edge11.g > 1.f)"
 "		adder11 = edge11.a;"
 "	float factor12 = clamp(x11 + adder11, 0.f, 1.f);"
-
+"\n"
 "	float x12 = (texUV.y - edge12.r) * edge12.g;"
 "	float adder12 = edge12.g / 2.f;"
 "	if (x12 < 0.f)"
@@ -2410,7 +2410,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x12 + edge12.g > 1.f)"
 "		adder12 = edge12.a;"
 "	float factor13 = clamp(x12 + adder12, 0.f, 1.f);"
-
+"\n"
 "	float x13 = (texUV.y - edge13.r) * edge13.g;"
 "	float adder13 = edge13.g / 2.f;"
 "	if (x13 < 0.f)"
@@ -2418,8 +2418,7 @@ static const char segmentsFragmentShader13[] =
 "	else if (x13 + edge13.g > 1.f)"
 "		adder13 = edge13.a;"
 "	float factor14 = clamp(x13 + adder13, 0.f, 1.f);"
-
-
+"\n"
 "   factor1 = (factor1 -factor2)*col1.a;"
 "   factor2 = (factor2 -factor3)*col2.a;"
 "   factor3 = (factor3 - factor4)*col3.a;"
@@ -2434,16 +2433,16 @@ static const char segmentsFragmentShader13[] =
 "   factor12 = (factor12 - factor13)*col12.a;"
 "   factor13 = (factor13 - factor14)*col13.a;"
 "   factor14 = (factor14)*col14.a;"
-
+"\n"
 "   float totalAlpha = factor1 + factor2 + factor3 + factor4 + factor5 + factor6 + factor7 + factor8 +"
 "					   factor9 + factor10 + factor11 + factor12 + factor13 + factor14;"
-
+"\n"
 "   color.a = totalAlpha; "
 "   color.rgb = (	col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + "
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "					col13.rgb * factor13 + col14.rgb * factor14)/totalAlpha;"
-
+"\n"
 "   color *= fragColor;"
 "}";
 
@@ -2482,7 +2481,7 @@ static const char segmentsVertexShader14[] =
 "flat out vec4 col13; "
 "flat out vec4 col14; "
 "flat out vec4 col15; "
-
+"\n"
 "void main()											"
 "{                                                      "
 "   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
@@ -2495,7 +2494,7 @@ static const char segmentsVertexShader14[] =
 "   stripesOfs = int(extras.y);							"
 "	int colorsOfs = extrasOfs+1;						"
 "   texUV = uv;											"
-
+"\n"
 "	col1 = texelFetch(colorsId, colorsOfs ); "
 "	col2 = texelFetch(colorsId, colorsOfs+1 ); "
 "	col3 = texelFetch(colorsId, colorsOfs+2 ); "
@@ -2511,7 +2510,7 @@ static const char segmentsVertexShader14[] =
 "	col13 = texelFetch(colorsId, colorsOfs+12 ); "
 "	col14 = texelFetch(colorsId, colorsOfs+13 ); "
 "	col15 = texelFetch(colorsId, colorsOfs+14 ); "
-
+"\n"
 "}                                                      ";
 
 
@@ -2538,7 +2537,7 @@ static const char segmentsFragmentShader14[] =
 "flat in vec4 col13; "
 "flat in vec4 col14; "
 "flat in vec4 col15; "
-
+"\n"
 "out vec4 color;								"
 "void main()									"
 "{												"
@@ -2556,9 +2555,9 @@ static const char segmentsFragmentShader14[] =
 "	vec4 edge12 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+11 ); "
 "	vec4 edge13 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+12 ); "
 "	vec4 edge14 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+13 ); "
-
+"\n"
 "	float factor1 = 1.f; "
-
+"\n"
 "	float x1 = (texUV.y - edge1.r) * edge1.g;"
 "	float adder1 = edge1.g / 2.f;"
 "	if (x1 < 0.f)"
@@ -2566,7 +2565,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x1 + edge1.g > 1.f)"
 "		adder1 = edge1.a;"
 "	float factor2 = clamp(x1 + adder1, 0.f, 1.f);"
-
+"\n"
 "	float x2 = (texUV.y - edge2.r) * edge2.g;"
 "	float adder2 = edge2.g / 2.f;"
 "	if (x2 < 0.f)"
@@ -2574,7 +2573,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x2 + edge2.g > 1.f)"
 "		adder2 = edge2.a;"
 "	float factor3 = clamp(x2 + adder2, 0.f, 1.f);"
-
+"\n"
 "	float x3 = (texUV.y - edge3.r) * edge3.g;"
 "	float adder3 = edge3.g / 2.f;"
 "	if (x3 < 0.f)"
@@ -2582,7 +2581,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x3 + edge3.g > 1.f)"
 "		adder3 = edge3.a;"
 "	float factor4 = clamp(x3 + adder3, 0.f, 1.f);"
-
+"\n"
 "	float x4 = (texUV.y - edge4.r) * edge4.g;"
 "	float adder4 = edge4.g / 2.f;"
 "	if (x4 < 0.f)"
@@ -2590,7 +2589,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x4 + edge4.g > 1.f)"
 "		adder4 = edge4.a;"
 "	float factor5 = clamp(x4 + adder4, 0.f, 1.f);"
-
+"\n"
 "	float x5 = (texUV.y - edge5.r) * edge5.g;"
 "	float adder5 = edge5.g / 2.f;"
 "	if (x5 < 0.f)"
@@ -2598,7 +2597,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x5 + edge5.g > 1.f)"
 "		adder5 = edge5.a;"
 "	float factor6 = clamp(x5 + adder5, 0.f, 1.f);"
-
+"\n"
 "	float x6 = (texUV.y - edge6.r) * edge6.g;"
 "	float adder6 = edge6.g / 2.f;"
 "	if (x6 < 0.f)"
@@ -2606,7 +2605,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x6 + edge6.g > 1.f)"
 "		adder6 = edge6.a;"
 "	float factor7 = clamp(x6 + adder6, 0.f, 1.f);"
-
+"\n"
 "	float x7 = (texUV.y - edge7.r) * edge7.g;"
 "	float adder7 = edge7.g / 2.f;"
 "	if (x7 < 0.f)"
@@ -2614,7 +2613,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x7 + edge7.g > 1.f)"
 "		adder7 = edge7.a;"
 "	float factor8 = clamp(x7 + adder7, 0.f, 1.f);"
-
+"\n"
 "	float x8 = (texUV.y - edge8.r) * edge8.g;"
 "	float adder8 = edge8.g / 2.f;"
 "	if (x8 < 0.f)"
@@ -2622,7 +2621,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x8 + edge8.g > 1.f)"
 "		adder8 = edge8.a;"
 "	float factor9 = clamp(x8 + adder8, 0.f, 1.f);"
-
+"\n"
 "	float x9 = (texUV.y - edge9.r) * edge9.g;"
 "	float adder9 = edge9.g / 2.f;"
 "	if (x9 < 0.f)"
@@ -2630,7 +2629,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x9 + edge9.g > 1.f)"
 "		adder9 = edge9.a;"
 "	float factor10 = clamp(x9 + adder9, 0.f, 1.f);"
-
+"\n"
 "	float x10 = (texUV.y - edge10.r) * edge10.g;"
 "	float adder10 = edge10.g / 2.f;"
 "	if (x10 < 0.f)"
@@ -2638,7 +2637,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x10 + edge10.g > 1.f)"
 "		adder10 = edge10.a;"
 "	float factor11 = clamp(x10 + adder10, 0.f, 1.f);"
-
+"\n"
 "	float x11 = (texUV.y - edge11.r) * edge11.g;"
 "	float adder11 = edge11.g / 2.f;"
 "	if (x11 < 0.f)"
@@ -2646,7 +2645,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x11 + edge11.g > 1.f)"
 "		adder11 = edge11.a;"
 "	float factor12 = clamp(x11 + adder11, 0.f, 1.f);"
-
+"\n"
 "	float x12 = (texUV.y - edge12.r) * edge12.g;"
 "	float adder12 = edge12.g / 2.f;"
 "	if (x12 < 0.f)"
@@ -2654,7 +2653,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x12 + edge12.g > 1.f)"
 "		adder12 = edge12.a;"
 "	float factor13 = clamp(x12 + adder12, 0.f, 1.f);"
-
+"\n"
 "	float x13 = (texUV.y - edge13.r) * edge13.g;"
 "	float adder13 = edge13.g / 2.f;"
 "	if (x13 < 0.f)"
@@ -2662,7 +2661,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x13 + edge13.g > 1.f)"
 "		adder13 = edge13.a;"
 "	float factor14 = clamp(x13 + adder13, 0.f, 1.f);"
-
+"\n"
 "	float x14 = (texUV.y - edge14.r) * edge14.g;"
 "	float adder14 = edge14.g / 2.f;"
 "	if (x14 < 0.f)"
@@ -2670,7 +2669,7 @@ static const char segmentsFragmentShader14[] =
 "	else if (x14 + edge14.g > 1.f)"
 "		adder14 = edge14.a;"
 "	float factor15 = clamp(x14 + adder14, 0.f, 1.f);"
-
+"\n"
 "   factor1 = (factor1 -factor2)*col1.a;"
 "   factor2 = (factor2 -factor3)*col2.a;"
 "   factor3 = (factor3 - factor4)*col3.a;"
@@ -2686,16 +2685,16 @@ static const char segmentsFragmentShader14[] =
 "   factor13 = (factor13 - factor14)*col13.a;"
 "   factor14 = (factor14 - factor15)*col14.a;"
 "   factor15 = (factor15)*col15.a;"
-
+"\n"
 "   float totalAlpha = factor1 + factor2 + factor3 + factor4 + factor5 + factor6 + factor7 + factor8 +"
 "					   factor9 + factor10 + factor11 + factor12 + factor13 + factor14 + factor15;"
-
+"\n"
 "   color.a = totalAlpha; "
 "   color.rgb = (	col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + "
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "					col13.rgb * factor13 + col14.rgb * factor14 + col15.rgb * factor15)/totalAlpha;"
-
+"\n"
 "   color *= fragColor;"
 "}";
 
@@ -2736,7 +2735,7 @@ static const char segmentsVertexShader15[] =
 "flat out vec4 col14; "
 "flat out vec4 col15; "
 "flat out vec4 col16; "
-
+"\n"
 "void main()											"
 "{                                                      "
 "   gl_Position.x = pos.x*2/dimensions.x - 1.0;         "
@@ -2749,7 +2748,7 @@ static const char segmentsVertexShader15[] =
 "   stripesOfs = int(extras.y);							"
 "	int colorsOfs = extrasOfs+1;						"
 "   texUV = uv;											"
-
+"\n"
 "	col1 = texelFetch(colorsId, colorsOfs ); "
 "	col2 = texelFetch(colorsId, colorsOfs+1 ); "
 "	col3 = texelFetch(colorsId, colorsOfs+2 ); "
@@ -2766,72 +2765,72 @@ static const char segmentsVertexShader15[] =
 "	col14 = texelFetch(colorsId, colorsOfs+13 ); "
 "	col15 = texelFetch(colorsId, colorsOfs+14 ); "
 "	col16 = texelFetch(colorsId, colorsOfs+15 ); "
-
+"\n"
 "}                                                      ";
 
 
 static const char segmentsFragmentShader15[] =
 
 "#version 330 core\n"
-"uniform samplerBuffer stripesId;				"
-"in vec2 texUV;									"
-"in vec4 fragColor;								"
-"flat in int segments;							"
-"flat in int stripesOfs;						"
-"flat in vec4 col1; "
-"flat in vec4 col2; "
-"flat in vec4 col3; "
-"flat in vec4 col4; "
-"flat in vec4 col5; "
-"flat in vec4 col6; "
-"flat in vec4 col7; "
-"flat in vec4 col8; "
-"flat in vec4 col9; "
-"flat in vec4 col10; "
-"flat in vec4 col11; "
-"flat in vec4 col12; "
-"flat in vec4 col13; "
-"flat in vec4 col14; "
-"flat in vec4 col15; "
-"flat in vec4 col16; "
-
-"out vec4 color;								"
-"void main()									"
-"{												"
-"	vec4 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) ); "
-"	vec4 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 ); "
-"	vec4 edge3 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+2 ); "
-"	vec4 edge4 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+3 ); "
-"	vec4 edge5 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+4 ); "
-"	vec4 edge6 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+5 ); "
-"	vec4 edge7 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+6 ); "
-"	vec4 edge8 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+7 ); "
-"	vec4 edge9 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+8 ); "
-"	vec4 edge10 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+9 ); "
-"	vec4 edge11 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+10 ); "
-"	vec4 edge12 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+11 ); "
-"	vec4 edge13 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+12 ); "
-"	vec4 edge14 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+13 ); "
-"	vec4 edge15 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+14 ); "
-
-"	float factor1 = 1.f; "
-
-"	float x1 = (texUV.y - edge1.r) * edge1.g;"
-"	float adder1 = edge1.g / 2.f;"
-"	if (x1 < 0.f)"
-"		adder1 = edge1.b;"
-"	else if (x1 + edge1.g > 1.f)"
-"		adder1 = edge1.a;"
-"	float factor2 = clamp(x1 + adder1, 0.f, 1.f);"
-
-"	float x2 = (texUV.y - edge2.r) * edge2.g;"
-"	float adder2 = edge2.g / 2.f;"
-"	if (x2 < 0.f)"
-"		adder2 = edge2.b;"
-"	else if (x2 + edge2.g > 1.f)"
-"		adder2 = edge2.a;"
-"	float factor3 = clamp(x2 + adder2, 0.f, 1.f);"
-
+"uniform samplerBuffer stripesId;\n"
+"in vec2 texUV;\n"
+"in vec4 fragColor;\n"
+"flat in int segments;\n"
+"flat in int stripesOfs;\n"
+"flat in vec4 col1;\n"
+"flat in vec4 col2;\n"
+"flat in vec4 col3;\n"
+"flat in vec4 col4;\n"
+"flat in vec4 col5;\n"
+"flat in vec4 col6;\n"
+"flat in vec4 col7;\n"
+"flat in vec4 col8;\n"
+"flat in vec4 col9;\n"
+"flat in vec4 col10;\n"
+"flat in vec4 col11;\n"
+"flat in vec4 col12;\n"
+"flat in vec4 col13;\n"
+"flat in vec4 col14;\n"
+"flat in vec4 col15;\n"
+"flat in vec4 col16;\n"
+"\n"
+"out vec4 color;\n"
+"void main()\n"
+"{\n"
+"	vec4 edge1 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1) );\n"
+"	vec4 edge2 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+1 );\n"
+"	vec4 edge3 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+2 );\n"
+"	vec4 edge4 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+3 );\n"
+"	vec4 edge5 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+4 );\n"
+"	vec4 edge6 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+5 );\n"
+"	vec4 edge7 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+6 );\n"
+"	vec4 edge8 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+7 );\n"
+"	vec4 edge9 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+8 );\n"
+"	vec4 edge10 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+9 );\n"
+"	vec4 edge11 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+10 );\n"
+"	vec4 edge12 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+11 );\n"
+"	vec4 edge13 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+12 );\n"
+"	vec4 edge14 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+13 );\n"
+"	vec4 edge15 = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+14 );\n"
+"\n"
+"	float factor1 = 1.f;\n"
+"\n"
+"	float x1 = (texUV.y - edge1.r) * edge1.g;\n"
+"	float adder1 = edge1.g / 2.f;\n"
+"	if (x1 < 0.f)\n"
+"		adder1 = edge1.b;\n"
+"	else if (x1 + edge1.g > 1.f)\n"
+"		adder1 = edge1.a;\n"
+"	float factor2 = clamp(x1 + adder1, 0.f, 1.f);\n"
+"\n"
+"	float x2 = (texUV.y - edge2.r) * edge2.g;\n"
+"	float adder2 = edge2.g / 2.f;\n"
+"	if (x2 < 0.f)\n"
+"		adder2 = edge2.b;\n"
+"	else if (x2 + edge2.g > 1.f)\n"
+"		adder2 = edge2.a;\n"
+"	float factor3 = clamp(x2 + adder2, 0.f, 1.f);\n"
+"\n"
 "	float x3 = (texUV.y - edge3.r) * edge3.g;"
 "	float adder3 = edge3.g / 2.f;"
 "	if (x3 < 0.f)"
@@ -2839,7 +2838,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x3 + edge3.g > 1.f)"
 "		adder3 = edge3.a;"
 "	float factor4 = clamp(x3 + adder3, 0.f, 1.f);"
-
+"\n"
 "	float x4 = (texUV.y - edge4.r) * edge4.g;"
 "	float adder4 = edge4.g / 2.f;"
 "	if (x4 < 0.f)"
@@ -2847,7 +2846,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x4 + edge4.g > 1.f)"
 "		adder4 = edge4.a;"
 "	float factor5 = clamp(x4 + adder4, 0.f, 1.f);"
-
+"\n"
 "	float x5 = (texUV.y - edge5.r) * edge5.g;"
 "	float adder5 = edge5.g / 2.f;"
 "	if (x5 < 0.f)"
@@ -2855,7 +2854,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x5 + edge5.g > 1.f)"
 "		adder5 = edge5.a;"
 "	float factor6 = clamp(x5 + adder5, 0.f, 1.f);"
-
+"\n"
 "	float x6 = (texUV.y - edge6.r) * edge6.g;"
 "	float adder6 = edge6.g / 2.f;"
 "	if (x6 < 0.f)"
@@ -2863,7 +2862,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x6 + edge6.g > 1.f)"
 "		adder6 = edge6.a;"
 "	float factor7 = clamp(x6 + adder6, 0.f, 1.f);"
-
+"\n"
 "	float x7 = (texUV.y - edge7.r) * edge7.g;"
 "	float adder7 = edge7.g / 2.f;"
 "	if (x7 < 0.f)"
@@ -2871,7 +2870,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x7 + edge7.g > 1.f)"
 "		adder7 = edge7.a;"
 "	float factor8 = clamp(x7 + adder7, 0.f, 1.f);"
-
+"\n"
 "	float x8 = (texUV.y - edge8.r) * edge8.g;"
 "	float adder8 = edge8.g / 2.f;"
 "	if (x8 < 0.f)"
@@ -2879,7 +2878,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x8 + edge8.g > 1.f)"
 "		adder8 = edge8.a;"
 "	float factor9 = clamp(x8 + adder8, 0.f, 1.f);"
-
+"\n"
 "	float x9 = (texUV.y - edge9.r) * edge9.g;"
 "	float adder9 = edge9.g / 2.f;"
 "	if (x9 < 0.f)"
@@ -2887,7 +2886,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x9 + edge9.g > 1.f)"
 "		adder9 = edge9.a;"
 "	float factor10 = clamp(x9 + adder9, 0.f, 1.f);"
-
+"\n"
 "	float x10 = (texUV.y - edge10.r) * edge10.g;"
 "	float adder10 = edge10.g / 2.f;"
 "	if (x10 < 0.f)"
@@ -2895,7 +2894,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x10 + edge10.g > 1.f)"
 "		adder10 = edge10.a;"
 "	float factor11 = clamp(x10 + adder10, 0.f, 1.f);"
-
+"\n"
 "	float x11 = (texUV.y - edge11.r) * edge11.g;"
 "	float adder11 = edge11.g / 2.f;"
 "	if (x11 < 0.f)"
@@ -2903,7 +2902,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x11 + edge11.g > 1.f)"
 "		adder11 = edge11.a;"
 "	float factor12 = clamp(x11 + adder11, 0.f, 1.f);"
-
+"\n"
 "	float x12 = (texUV.y - edge12.r) * edge12.g;"
 "	float adder12 = edge12.g / 2.f;"
 "	if (x12 < 0.f)"
@@ -2911,7 +2910,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x12 + edge12.g > 1.f)"
 "		adder12 = edge12.a;"
 "	float factor13 = clamp(x12 + adder12, 0.f, 1.f);"
-
+"\n"
 "	float x13 = (texUV.y - edge13.r) * edge13.g;"
 "	float adder13 = edge13.g / 2.f;"
 "	if (x13 < 0.f)"
@@ -2919,7 +2918,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x13 + edge13.g > 1.f)"
 "		adder13 = edge13.a;"
 "	float factor14 = clamp(x13 + adder13, 0.f, 1.f);"
-
+"\n"
 "	float x14 = (texUV.y - edge14.r) * edge14.g;"
 "	float adder14 = edge14.g / 2.f;"
 "	if (x14 < 0.f)"
@@ -2927,7 +2926,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x14 + edge14.g > 1.f)"
 "		adder14 = edge14.a;"
 "	float factor15 = clamp(x14 + adder14, 0.f, 1.f);"
-
+"\n"
 "	float x15 = (texUV.y - edge15.r) * edge15.g;"
 "	float adder15 = edge15.g / 2.f;"
 "	if (x15 < 0.f)"
@@ -2935,7 +2934,7 @@ static const char segmentsFragmentShader15[] =
 "	else if (x15 + edge15.g > 1.f)"
 "		adder15 = edge15.a;"
 "	float factor16 = clamp(x15 + adder15, 0.f, 1.f);"
-
+"\n"
 "   factor1 = (factor1 -factor2)*col1.a;"
 "   factor2 = (factor2 -factor3)*col2.a;"
 "   factor3 = (factor3 - factor4)*col3.a;"
@@ -2952,16 +2951,16 @@ static const char segmentsFragmentShader15[] =
 "   factor14 = (factor14 - factor15)*col14.a;"
 "   factor15 = (factor15 - factor16)*col15.a;"
 "   factor16 = (factor16)*col16.a;"
-
+"\n"
 "   float totalAlpha = factor1 + factor2 + factor3 + factor4 + factor5 + factor6 + factor7 + factor8 +"
 "					   factor9 + factor10 + factor11 + factor12 + factor13 + factor14 + factor15 + factor16;"
-
+"\n"
 "   color.a = totalAlpha; "
 "   color.rgb = (	col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + "
 "	col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "	col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "	col13.rgb * factor13 + col14.rgb * factor14 + col15.rgb * factor15 + col16.rgb * factor16) / totalAlpha; "
-
+"\n"
 "   color *= fragColor;"
 "}";
 

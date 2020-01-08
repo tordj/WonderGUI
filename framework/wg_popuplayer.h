@@ -144,6 +144,7 @@ protected:
 	void			_addSlot(WgWidget * pPopup, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgCoord attachOfs, bool bAutoClose, bool bDelay, WgSize maxSize);
 
 	void			_closeAutoOpenedUntil(WgWidget * pStayOpen, bool bCloseImmediately );
+    void            _closeAllOpenUntil(WgWidget * pStayOpen, bool bCloseImmediately);
     void            _beginClosing( WgPopupHook * p, bool bCloseImmediately );
 
 	// Overloaded from Panel

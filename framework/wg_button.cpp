@@ -246,18 +246,18 @@ void WgButton::_setScale( int scale )
 
 void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    WgState    state;
-    state.setFocused(m_bFocused);
-    state.setSelected(m_bSelected);
-    state.setHovered(m_bPointerInside);
-    state.setPressed(m_bPressed);
-    state.setEnabled(m_bEnabled);
-
     WgBlock    block;
     WgRect contentRect = _canvas;
 
     if (m_pSkin)
     {
+        WgState    state;
+        state.setFocused(m_bFocused);
+        state.setSelected(m_bSelected);
+        state.setHovered(m_bPointerInside);
+        state.setPressed(m_bPressed);
+        state.setEnabled(m_bEnabled);
+
         m_pSkin->Render(pDevice, state, _canvas, m_scale);
         contentRect = m_pSkin->ContentRect(_canvas, state, m_scale);
     }

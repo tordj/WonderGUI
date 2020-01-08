@@ -310,9 +310,10 @@ void WgStackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
 	bool	bRequestResize = false;
 
-	// Get dirty rectangles for all visible sections of pToBeRemoved.
+    // Get dirty rectangles for all visible sections of pToBeRemoved.
+    _requestRender(static_cast<WgStackHook*>(pToBeRemoved)->_getGeo(WgRect(0, 0, m_size)));
 
-	_onRenderRequested( pToBeRemoved );
+//	_onRenderRequested( pToBeRemoved );
 
 	// Update m_preferredSize, skiping pToBeRemoved
 

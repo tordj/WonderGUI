@@ -166,7 +166,7 @@ bool WgWidgetSlider::SetSkins( WgSkinPtr pBgSkin, WgSkinPtr pBarSkin,
     m_pBarSkin        = pBarSkin;
     m_pBtnFwdSkin    = pBtnFwdSkin;
     m_pBtnBwdSkin    = pBtnBwdSkin;
-    
+
     _headerFooterChanged();
     _updateMinSize();
     _requestRender();
@@ -411,7 +411,7 @@ WgSize WgWidgetSlider::PreferredPixelSize() const
 
 	// Add 50 pixels in the sliders direction for best size.
 
-	int addPix = (50*m_scale) >> WG_SCALE_BINALS; 
+	int addPix = (50*m_scale) >> WG_SCALE_BINALS;
 
 	if( m_bHorizontal )
 		sz.w += addPix;
@@ -435,7 +435,7 @@ void WgWidgetSlider::_updateMinSize()
     {
         WgSize min = m_pBgSkin->MinSize(m_scale);
         WgSize def = m_pBgSkin->PreferredSize(m_scale);
-        
+
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
 
@@ -444,7 +444,7 @@ void WgWidgetSlider::_updateMinSize()
 	{
         WgSize min = m_pBgGfx->MinSize(m_scale);
         WgSize def = m_pBgGfx->Size(m_scale);
-        
+
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
 	}
@@ -455,7 +455,7 @@ void WgWidgetSlider::_updateMinSize()
     {
         WgSize min = m_pBarSkin->MinSize(m_scale);
         WgSize def = m_pBarSkin->PreferredSize(m_scale);
-        
+
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
     }
@@ -463,7 +463,7 @@ void WgWidgetSlider::_updateMinSize()
 	{
         WgSize min = m_pBarGfx->MinSize(m_scale);
         WgSize def = m_pBarGfx->Size(m_scale);
-        
+
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
 	}
@@ -482,7 +482,7 @@ void WgWidgetSlider::_updateMinSize()
     if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
     {
         WgSize pref = m_pBtnFwdSkin->PreferredSize(m_scale);
-        
+
         minW = Max( minW, pref.w );
         minH = Max( minH, pref.h );
     }
@@ -497,7 +497,7 @@ void WgWidgetSlider::_updateMinSize()
     if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
     {
         WgSize pref = m_pBtnBwdSkin->PreferredSize(m_scale);
-        
+
         minW = Max( minW, pref.w );
         minH = Max( minH, pref.h );
     }
@@ -538,14 +538,14 @@ void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, cons
 void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, WgSkinPtr pSkin, WgState state )
 {
     WgSize pref = pSkin->PreferredSize(m_scale);
-    
+
     if (m_bHorizontal)
         _dest.w = pref.w;
     else
         _dest.h = pref.h;
-    
+
     pSkin->Render(pDevice, state, _dest, m_scale);
-    
+
     if( m_bHorizontal )
         _dest.x += _dest.w;
     else
@@ -654,19 +654,19 @@ bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock&
 bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, WgSkinPtr pSkin, WgState state )
 {
     WgSize pref = pSkin->PreferredSize(m_scale);
-    
+
     if( m_bHorizontal )
         _dest.w = pref.w;
     else
         _dest.h = pref.h;
-    
+
     bool retVal = pSkin->MarkTest(ofs - _dest.pos(), _dest.size(), state, m_markOpacity, m_scale );
-    
+
     if( m_bHorizontal )
         _dest.x += _dest.w;
     else
         _dest.y += _dest.h;
-    
+
     return retVal;
 }
 
@@ -986,7 +986,7 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 			}
 			break;
 		}
-		
+
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 		{
 			const WgEvent::MouseWheelRoll * p = static_cast<const WgEvent::MouseWheelRoll*>(pEvent);
@@ -996,11 +996,11 @@ void WgWidgetSlider::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * p
 				int distance = p->Distance();
 				if( m_pSliderTargetWidget.GetRealPtr() != 0 )
 					SetSliderPos( m_pSliderTargetInterface->_wheelRolled(distance) );
-				
+
 				pHandler->QueueEvent( new WgEvent::SliderWheelRolled(this,distance,m_sliderPos,m_sliderSize) );
 			}
 		}
-		
+
         default:
             break;
 
@@ -1057,11 +1057,13 @@ bool WgWidgetSlider::_setSlider( float _pos, float _size )
 	wg::limit( _size, 0.0001f, 1.f );
 	wg::limit( _pos, 0.f, 1.f );
 
+
 	if( m_sliderPos == _pos && m_sliderSize == _size )
 		return true;
 
 	m_sliderPos		= _pos;
-	m_sliderSize 	= _size;
+	if(m_sliderSize == 1.f && m_sliderSize != _size)
+		m_sliderSize = _size;
 
 	_requestRender();
 	return	true;

@@ -60,6 +60,15 @@ protected:
     
 };
 
+class WgOSDTrackMetersSizeBroker : public WgSizeBroker
+{
+public:
+    WgOSDTrackMetersSizeBroker() {};
+    ~WgOSDTrackMetersSizeBroker() {};
+    
+    int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const;
+};
+
 
 class WgScalePreferredSizeBroker : public WgSizeBroker
 {

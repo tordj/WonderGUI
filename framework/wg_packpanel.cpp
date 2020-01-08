@@ -135,10 +135,15 @@ void WgPackPanel::SetOrientation( WgOrientation orientation )
 	{
 		m_bHorizontal = bHorizontal;
         
-        m_bChildGeoNeedsRefresh = true;
-        _updatePreferredPixelSize();
-        if( m_bChildGeoNeedsRefresh )
-            _refreshChildGeo();
+        if( m_bFreezeGeo )
+            m_bWantsGeoUpdate = true;
+        else
+        {
+            m_bChildGeoNeedsRefresh = true;
+            _updatePreferredPixelSize();
+            if( m_bChildGeoNeedsRefresh )
+                _refreshChildGeo();
+        }
 	}
 }
 
@@ -150,10 +155,16 @@ void WgPackPanel::SetSizeBroker( WgSizeBroker * pBroker )
 	if( m_pSizeBroker != pBroker )
 	{
 		m_pSizeBroker = pBroker;
-        m_bChildGeoNeedsRefresh = true;
-		_updatePreferredPixelSize();
-        if( m_bChildGeoNeedsRefresh )
-            _refreshChildGeo();
+
+        if( m_bFreezeGeo )
+            m_bWantsGeoUpdate = true;
+        else
+        {
+            m_bChildGeoNeedsRefresh = true;
+            _updatePreferredPixelSize();
+            if( m_bChildGeoNeedsRefresh )
+                _refreshChildGeo();
+        }
 	}
 }
 
@@ -316,7 +327,7 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
     if( m_pSkin )
         height -= m_pSkin->ContentPadding(m_scale).h;
 
-    int width = 0;
+	int width = 0;
 
 	if( !m_bHorizontal )
 	{
@@ -457,17 +468,41 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 	return width;
 }
 
+//____ FreezeGeo() ____________________________________________________________
+
+void WgPackPanel::FreezeGeo()
+{
+    m_bFreezeGeoExt = true;
+    m_bFreezeGeo = true;
+}
+
+//____ UnfreezeGeo() __________________________________________________________
+
+void WgPackPanel::UnfreezeGeo()
+{
+    m_bFreezeGeoExt = false;
+    m_bFreezeGeo = false;
+    if( m_bWantsGeoUpdate )
+    {
+        _refreshAllWidgets();
+        m_bWantsGeoUpdate = false;
+    }
+}
+
+
 //____ _setScale() ____________________________________________________________
 
 void WgPackPanel::_setScale(int scale)
 {
-	m_bBlockRequestResize = true;
-	m_bResizeRequestedWhileBlocked = false;
+	m_bFreezeGeo = true;
 	WgVectorPanel::_setScale(scale);
-	m_bBlockRequestResize = false;
+	m_bFreezeGeo = m_bFreezeGeoExt;
 
-	if (m_bResizeRequestedWhileBlocked)
-		_refreshAllWidgets();
+	if (!m_bFreezeGeo && m_bWantsGeoUpdate)
+    {
+        _refreshAllWidgets();
+        m_bWantsGeoUpdate = false;
+    }
 }
 
 
@@ -591,8 +626,8 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 
 	//
 	
-	if (m_bBlockRequestResize)
-		m_bResizeRequestedWhileBlocked = true;
+	if (m_bFreezeGeo)
+		m_bWantsGeoUpdate = true;
 	else
     {
         m_bChildGeoNeedsRefresh = true;
@@ -634,7 +669,10 @@ void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 
 	// Update cached preferred size of us
 
-    _refreshAllWidgets();
+    if( m_bFreezeGeo )
+        m_bWantsGeoUpdate = true;
+    else
+        _refreshAllWidgets();
 
 /*
 	if( m_bBaselineMode )
@@ -666,14 +704,20 @@ void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 
 void WgPackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
-	_refreshAllWidgets();
+    if( m_bFreezeGeo )
+        m_bWantsGeoUpdate = true;
+    else
+        _refreshAllWidgets();
 }
 
 //____ _onWidgetsReordered() ____________________________________________________
 
 void WgPackPanel::_onWidgetsReordered()
 {
-	_refreshChildGeo();
+    if( m_bFreezeGeo )
+        m_bWantsGeoUpdate = true;
+    else
+        _refreshAllWidgets();
 }
 
 //____ _refreshAllWidgets() _____________________________________________________
@@ -745,7 +789,7 @@ void WgPackPanel::_updatePreferredPixelSize()
                 {
                     length += pH->m_preferredSize.h;
 
-                    int b = pH->m_preferredSize.h;
+                    int b = pH->m_preferredSize.w;
                     int ascend = b * pH->m_baseline;
                     int descend = b - ascend;
                     
@@ -856,7 +900,8 @@ void WgPackPanel::_refreshChildGeo()
                 
                 if( p->IsVisible() )
                 {
-                    int length = p->_paddedMatchingPixelWidth(givenBreadth,m_scale);
+                    int breadth = m_bBaselineMode ? std::min(p->m_preferredSize.h,givenBreadth) : givenBreadth;
+                    int length = p->_paddedMatchingPixelWidth(breadth,m_scale);
 
                     if( pos.x + length > endPos )
                         length = endPos - pos.x;
@@ -881,7 +926,8 @@ void WgPackPanel::_refreshChildGeo()
                 
                 if( p->IsVisible() )
                 {
-                    int length = p->_paddedMatchingPixelHeight(givenBreadth,m_scale);
+                    int breadth = m_bBaselineMode ? std::min(p->m_preferredSize.w,givenBreadth) : givenBreadth;
+                    int length = p->_paddedMatchingPixelHeight(breadth,m_scale);
 
                     if( pos.y + length > endPos )
                         length = endPos - pos.y;

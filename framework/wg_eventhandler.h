@@ -165,7 +165,7 @@ private:
 	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
-	void 	_updateMarkedWidget(bool bPostMouseMoveEvents);
+	void 	_updateMarkedWidget(bool bMouseMoved);
 	WgWidget * _updateEnteredWidgets( WgWidget * pMarkedWidget );
 	
 	void	_addTickReceiver( WgWidget * pWidget );
@@ -192,6 +192,8 @@ private:
 	WgWidgetWeakPtr				m_pMarkedWidget;		// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
 	std::vector<WgWidgetWeakPtr>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
+    
+    int                         m_markedLockCountdown = 0;      // Millisec left for which the mouse is locked to the marked widget.
 
 	// Current button states
 

@@ -244,7 +244,7 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 	Wave * p = _getWave(waveId);
 	if (!p)
 		return false;
-	  
+
     // HACK!
     // This avoids the problem of top/bottom lines switching color when passing each other in all currently used cases.
     

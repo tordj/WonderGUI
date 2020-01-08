@@ -730,8 +730,12 @@ void WgEventHandler::_processEventQueue()
 			WgWidget * pWidget = pEvent->Widget();
 			if( pWidget )
             {
-				pWidget->_onEvent( pEvent, this );
-                bEavesdropped = _handleEavesdropping( pWidget, pEvent );
+                pWidget->_onEvent( pEvent, this );
+
+                // Need to retrieve widget from weakptr again, in case callback deleted it.
+                pWidget = pEvent->Widget();
+                if(pWidget)
+                    bEavesdropped = _handleEavesdropping( pWidget, pEvent );
             }
 		}
 		else
@@ -989,6 +993,18 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 
 void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 {
+    // Handle marked lock
+    
+    if( m_markedLockCountdown > 0 )
+    {
+        m_markedLockCountdown -= pEvent->Millisec();
+        if( m_markedLockCountdown <= 0 )
+        {
+            m_markedLockCountdown = 0;
+            _updateMarkedWidget(false);
+        }
+    }
+    
 	// Check if we need to post BUTTON_REPEAT
 
 	for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
@@ -1157,11 +1173,13 @@ void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
 
 //____ _updateMarkedWidget() _______________________________________________
 
-void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
+void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 {
-
-	WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
-
+    if( m_markedLockCountdown > 0 )
+        return;
+    
+    WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
+    
 	// Figure out which button of currently pressed has been pressed the longest.
 	// Mouse is only allowed to mark Widgets that were marked on press of that button.
 
@@ -1207,7 +1225,7 @@ void WgEventHandler::_updateMarkedWidget(bool bPostMouseMoveEvents)
 
 	WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked );
 	
-	if( bPostMouseMoveEvents && pFirstAlreadyMarked )
+	if( bMouseMoved && pFirstAlreadyMarked )
 		QueueEvent( new WgEvent::MouseMove( pFirstAlreadyMarked ) );
 		
 /*
@@ -1452,6 +1470,8 @@ void WgEventHandler::_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent )
 
 	if( pWidget )
 		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
+    
+    m_markedLockCountdown = 120;
 }
 
 //____ _processMouseButtonPress() ___________________________________________________

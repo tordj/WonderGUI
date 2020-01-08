@@ -208,7 +208,12 @@ namespace wg
 
 		// Create and init Segment shaders
 
-		for (int i = 1; i < c_maxSegments; i++)
+		//HACK! Some graphics cards can't handle more than 16 varying (of which 2 are used for other data). Maybe use unifieds in shader instead?
+		// To be on the really safe side and since we don't use more than 5 anyway (single color wave + top/bottom borders and transparency above/below), we stop at 6.
+
+        // IMPORTANT! Change in destructor as well when you change it back!!!!!
+        
+		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)		
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
 			m_segmentsProg[i] = prog;
@@ -316,7 +321,7 @@ namespace wg
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
 
-		for( int i = 1 ; i < c_maxSegments ; i++ )
+		for( int i = 1 ; i < 6 /* c_maxSegments */ ; i++ )
 			glDeleteProgram(m_segmentsProg[i]);
 
 		glDeleteFramebuffers(1, &m_framebufferId);
@@ -595,6 +600,9 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 
+		glFinish();
+
+
 		//
 
 		LOG_GLERROR(glGetError());
@@ -613,6 +621,10 @@ namespace wg
 
 		_endCommand();
 		_executeBuffer();
+
+		//
+
+ 		glFinish();
 
 		// Restore render states from before beginRender()
 
@@ -635,17 +647,14 @@ namespace wg
 
 		glBindVertexArray(0);
 
+		//if( m_idleSync != 0 )
+		//	glDeleteSync(m_idleSync);
 
-		//
+		//m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
 
-		if( m_idleSync != 0 )
-			glDeleteSync(m_idleSync);
+		//glFlush();
 
-		m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
-
-		//
-
-		glFlush();
+//
 
 		LOG_GLERROR(glGetError());
 		m_bRendering = false;
@@ -663,15 +672,25 @@ namespace wg
 		if( m_bRendering )
 			return false;
 
-		if( m_idleSync == 0 )
-			return true;
+		// if (m_idleSync == 0)
+		//		return true;
 
-		GLint isSignaled = 0;
-		glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
-		return (isSignaled != GL_UNSIGNALED);
-	}
+		
+        // GLint isSignaled = 0;
+        // glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
 
-	//____ flush() _______________________________________________________________
+        // if(isSignaled == GL_UNSIGNALED)
+        //     return false;
+
+        // if (isSignaled == GL_SIGNALED)
+        //     glDeleteSync(m_idleSync);
+
+        // m_idleSync = 0;
+        
+		return true;
+    }
+
+    //____ flush() _______________________________________________________________
 
 	void GlGfxDevice::flush()
 	{
@@ -858,8 +877,6 @@ namespace wg
 
 	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
 	{
-		LOG_GLERROR(glGetError());
-
 		if (nPixels == 0)
 			return;
 
@@ -895,8 +912,6 @@ namespace wg
 				}
 			}
 		}
-
-		assert(glGetError() == 0);
 	}
 
 	//____ drawLine() ____ [from/to] __________________________________________________
@@ -1983,15 +1998,19 @@ namespace wg
 		{
 			GLchar	vertexShaderLog[4096];
 			GLchar	fragmentShaderLog[4096];
+			GLchar	programInfoLog[4096];
+
 			GLsizei vertexShaderLogLength;
 			GLsizei fragmentShaderLogLength;
+			GLsizei programInfoLogLength;
 
 			glGetShaderInfoLog(vertexShaderID, 4096, &vertexShaderLogLength, vertexShaderLog );
 			glGetShaderInfoLog(fragmentShaderID, 4096, &fragmentShaderLogLength, fragmentShaderLog);
+			glGetProgramInfoLog(programID, 4096, &programInfoLogLength, programInfoLog);
 
-			char	buffer[4096*2+256];
+			char	buffer[4096*3+256];
 
-			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s", vertexShaderLog, fragmentShaderLog);
+			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
 			Base::logError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
 		}
 
