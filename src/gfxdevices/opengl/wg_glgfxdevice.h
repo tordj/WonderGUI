@@ -184,6 +184,8 @@ namespace wg
 
 		GLsync          m_idleSync = 0;
 
+		bool			m_bFullyInitialized = false;
+
 		// Device programs
 
 		GLuint  m_fillProg;
@@ -305,6 +307,8 @@ namespace wg
 		static const char clutBlitInterpolateFragmentShader[];
 
 		//
+
+		static void onGlError(GLenum errorCode, const Object * pObject, const char * pClassName, const char * func, const char * file, int line);
 
 	};
 

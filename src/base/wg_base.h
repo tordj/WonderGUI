@@ -34,7 +34,8 @@
 #include <wg_key.h>
 #include <wg_strongptr.h>
 
-
+#include <string>
+#include <functional>
 
 namespace wg
 {
@@ -49,6 +50,7 @@ namespace wg
 	class Caret;
 	class TextStyle;
 	class Context;
+	class Object;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
@@ -58,6 +60,18 @@ namespace wg
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	StrongPtr<Context>			Context_p;
 
+
+	class Error
+	{
+	public:
+		ErrorCode		code;
+		std::string		message;
+		const Object *	pObject;
+		const char *	classname;
+		const char *	function;
+		const char *	file;
+		int				line;
+	};
 
 
 	/**
@@ -106,16 +120,23 @@ namespace wg
 		static void			setActiveContext(Context * pContext);
 		static Context_p	activeContext();
 
+		static void			setErrorHandler(std::function<void(Error&)> handler);
+		std::function<void(Error&)>	errorHandler();
+
 		//.____ Misc ________________________________________________
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 
 
+		static void			logError( ErrorCode code, const char * pMsg, const Object * pObject, const char * pClass, const char * pFunction, const char * pFile, int line );
+
+
 	private:
 
 		static WeakPtrHub *	_allocWeakPtrHub();
 		static void			_freeWeakPtrHub(WeakPtrHub * pHub);
+
 
 
 		struct Data
@@ -139,7 +160,8 @@ namespace wg
 
 		};
 
-		static Data *	s_pData;
+		static Data *						s_pData;
+		static std::function<void(Error&)>	s_pErrorHandler;
 	};
 
 

@@ -22,13 +22,13 @@
 
 #include <cmath>
 #include <cstdlib>
+#include <cstdio>
 
 #include <wg_glgfxdevice.h>
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
 #include <wg_base.h>
 #include <wg_util.h>
-#include <assert.h>
 
 using namespace std;
 
@@ -39,14 +39,29 @@ namespace wg
 	GlGfxDevice *	GlGfxDevice::s_pActiveDevice = nullptr;
 
 
+#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); }
+
+#define LOG_INIT_GLERROR(check) { GLenum err = check; if(err != 0) { onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); m_bFullyInitialized = false; } }
+
+
+	//____ onGlError() _______________________________________________________________
+
+	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const char * pClassName, const char * func, const char * file, int line)
+	{
+		char	buffer[1024];
+	
+		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, gluErrorString(errorCode) );
+		Base::logError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
+	}
+
+
 	//____ create() _______________________________________________________________
 
 	GlGfxDevice_p GlGfxDevice::create( const RectI& viewport, int uboBindingPoint)
 	{
 		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
 
-		GLenum err = glGetError();
-		if( err != 0 )
+		if( !p->m_bFullyInitialized != 0 )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -56,8 +71,7 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice(pSurface, uboBindingPoint ));
 
-		GLenum err = glGetError();
-		if (err != 0)
+		if ( !p->m_bFullyInitialized != 0)
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -76,6 +90,8 @@ namespace wg
 
 	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{
+		m_bFullyInitialized = true;
+
 		m_canvasYstart = viewportSize.h;
 		m_canvasYmul = -1;
 
@@ -90,7 +106,7 @@ namespace wg
 		unsigned int canvasIndex = glGetUniformBlockIndex(m_fillProg, "Canvas");
 		glUniformBlockBinding(m_fillProg, canvasIndex, uboBindingPoint);
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init AA-Fill shader
 
@@ -102,7 +118,7 @@ namespace wg
 		glUseProgram(m_aaFillProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init Blit shader
 
@@ -117,7 +133,7 @@ namespace wg
 		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
 
@@ -132,7 +148,7 @@ namespace wg
 		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 
 		// Create and init Clut Blit shaders
@@ -151,7 +167,7 @@ namespace wg
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		m_clutBlitInterpolateProg = _createGLProgram(clutBlitInterpolateVertexShader, clutBlitInterpolateFragmentShader);
 		canvasIndex = glGetUniformBlockIndex(m_clutBlitInterpolateProg, "Canvas");
@@ -167,7 +183,7 @@ namespace wg
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 
 		// Create and init Plot shader
@@ -176,7 +192,7 @@ namespace wg
 		canvasIndex			= glGetUniformBlockIndex(m_plotProg, "Canvas");
 		glUniformBlockBinding(m_plotProg, canvasIndex, uboBindingPoint);
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init Line shader
 
@@ -188,7 +204,7 @@ namespace wg
 		glUseProgram(m_lineFromToProg);
 		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init Segment shaders
 
@@ -209,7 +225,7 @@ namespace wg
 			glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
 		}
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create our Uniform Buffer
 
@@ -249,7 +265,7 @@ namespace wg
 			(void*)sizeof(CoordI)	// array buffer offset
 		);
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		glVertexAttribIPointer(
 			2,                  // attribute number, must match the layout in the shader.
@@ -269,7 +285,7 @@ namespace wg
 		);
 
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create a TextureBufferObject for providing extra data to our shaders
 
@@ -277,7 +293,7 @@ namespace wg
 		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
 		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 
 		glGenTextures(1, &m_extrasBufferTex);
 		glActiveTexture(GL_TEXTURE1);
@@ -285,13 +301,15 @@ namespace wg
 		glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA32F, m_extrasBufferId);
 		glActiveTexture(GL_TEXTURE0);
 
-		assert(glGetError() == 0);
+		LOG_INIT_GLERROR(glGetError());
 	}
 
 	//____ Destructor ______________________________________________________________
 
 	GlGfxDevice::~GlGfxDevice()
 	{
+		LOG_GLERROR(glGetError());
+
 		glDeleteProgram(m_fillProg);
 		glDeleteProgram(m_aaFillProg);
 		glDeleteProgram(m_blitProg);
@@ -311,6 +329,8 @@ namespace wg
 
 		if( m_idleSync != 0 )
 			glDeleteSync(m_idleSync);
+
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ isInstanceOf() _________________________________________________________
@@ -511,7 +531,7 @@ namespace wg
 
 	bool GlGfxDevice::beginRender()
 	{
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 
 		if( m_bRendering == true )
 			return false;
@@ -577,7 +597,7 @@ namespace wg
 
 		//
 
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 		return true;
 	}
 
@@ -585,7 +605,7 @@ namespace wg
 
 	bool GlGfxDevice::endRender()
 	{
-		assert( glGetError() == 0 );
+		LOG_GLERROR(glGetError());
 		if( m_bRendering == false )
 			return false;
 
@@ -627,7 +647,7 @@ namespace wg
 
 		glFlush();
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 		m_bRendering = false;
 
 		// Restore previously active device and exit
@@ -655,6 +675,8 @@ namespace wg
 
 	void GlGfxDevice::flush()
 	{
+		LOG_GLERROR(glGetError());
+
 		// Finalize any ongoing operation
 
 		_endCommand();
@@ -663,6 +685,8 @@ namespace wg
 		//
 
 		glFlush();
+
+		LOG_GLERROR(glGetError());
 	}
 
 
@@ -671,8 +695,6 @@ namespace wg
 
 	void GlGfxDevice::fill(const RectI& rect, const Color& col)
 	{
-		assert(glGetError() == 0);
-
 		// Skip calls that won't affect destination
 
 		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -738,15 +760,12 @@ namespace wg
 				m_vertexOfs++;
 			}
 		}
-		assert(glGetError() == 0);
 	}
 
 	//____ fill() ____ [subpixel] __________________________________________________
 
 	void GlGfxDevice::fill(const RectF& rect, const Color& col)
 	{
-		assert(glGetError() == 0);
-
 		// Skip calls that won't affect destination
 
 		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -833,15 +852,13 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = center.y;
 		m_extrasBufferData[m_extrasOfs++] = radius.w;
 		m_extrasBufferData[m_extrasOfs++] = radius.h;
-
-		assert(glGetError() == 0);
 	}
 
 	//____ plotPixels() ______________________________________________________
 
 	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		if (nPixels == 0)
 			return;
@@ -886,8 +903,6 @@ namespace wg
 
 	void GlGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
-		assert(glGetError() == 0);
-
 		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 4 || m_clipCurrOfs == -1 )
 		{
 			_endCommand();
@@ -1009,16 +1024,12 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = w;
 		m_extrasBufferData[m_extrasOfs++] = slope;
 		m_extrasBufferData[m_extrasOfs++] = bSteep;
-
-		assert(glGetError() == 0);
 	}
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
 	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
 	{
-		assert(glGetError() == 0);
-
 		// Skip calls that won't affect destination
 
 		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
@@ -1145,16 +1156,12 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = center.y;
 		m_extrasBufferData[m_extrasOfs++] = radius.w;
 		m_extrasBufferData[m_extrasOfs++] = radius.h;
-
-
 	}
 
 	//____ _transformBlit() ____ [simple] __________________________________________________
 
 	void GlGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
-		assert(glGetError() == 0);
-
 		if (m_pBlitSource == nullptr)
 			return;
 
@@ -1247,16 +1254,12 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[0][1];
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][1];
-
-		assert(glGetError() == 0);
 	}
 
 	//____ _transformBlit() ____ [complex] __________________________________________________
 
 	void GlGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
-		assert(glGetError() == 0);
-
 		if (m_pBlitSource == nullptr)
 			return;
 
@@ -1348,16 +1351,12 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
-
-		assert(glGetError() == 0);
 	}
 
 	//____ _transformDrawSegments() ______________________________________________________
 
 	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
 	{
-		assert(glGetError() == 0);
-
 		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
@@ -1580,10 +1579,6 @@ namespace wg
 		}
 
 		m_extrasOfs += extrasSpaceNeeded;
-
-		assert(glGetError() == 0);
-
-
 	}
 
 	//____ _dummyFinalizer() __________________________________________________________
@@ -1603,7 +1598,7 @@ namespace wg
 
 	void GlGfxDevice::_executeBuffer()
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
 		glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);		// Orphan current buffer if still in use.
@@ -1615,6 +1610,8 @@ namespace wg
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
+
+		LOG_GLERROR(glGetError());
 
 		int * pCmd = m_commandBuffer;
 		int * pCmdEnd = &m_commandBuffer[m_commandOfs];
@@ -1772,7 +1769,7 @@ namespace wg
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 	}
 
 
@@ -1780,7 +1777,7 @@ namespace wg
 
 	void GlGfxDevice::_setCanvas( GlSurface * pCanvas, int width, int height )
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		if (pCanvas)
 		{
@@ -1820,7 +1817,7 @@ namespace wg
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
 		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(canvasUBO), &m_canvasUBOBuffer);
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		m_pActiveCanvas = pCanvas;
 		m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
@@ -1830,7 +1827,7 @@ namespace wg
 
 	void GlGfxDevice::_setBlendMode( BlendMode mode )
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		switch (mode)
 		{
@@ -1892,14 +1889,14 @@ namespace wg
 			assert(false);
 			break;
 		}
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ _setBlitSource() _______________________________________________________
 
 	void GlGfxDevice::_setBlitSource( GlSurface * pSurf )
 	{
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 
 		glActiveTexture(GL_TEXTURE0);
 
@@ -1958,7 +1955,7 @@ namespace wg
 		else
 			glBindTexture(GL_TEXTURE_2D, 0 );
 
-		assert(glGetError() == 0);
+		LOG_GLERROR(glGetError());
 	}
 
 	//____ _createGlProgram() ___________________________________________________
@@ -1984,15 +1981,18 @@ namespace wg
 		glGetProgramiv(programID, GL_LINK_STATUS, &mess);
 		if (mess != GL_TRUE)
 		{
-			GLchar	vertexShaderLog[1024];
-			GLchar	fragmentShaderLog[1024];
+			GLchar	vertexShaderLog[4096];
+			GLchar	fragmentShaderLog[4096];
 			GLsizei vertexShaderLogLength;
 			GLsizei fragmentShaderLogLength;
 
-			glGetShaderInfoLog(vertexShaderID, 1024, &vertexShaderLogLength, vertexShaderLog );
-			glGetShaderInfoLog(fragmentShaderID, 1024, &fragmentShaderLogLength, fragmentShaderLog);
+			glGetShaderInfoLog(vertexShaderID, 4096, &vertexShaderLogLength, vertexShaderLog );
+			glGetShaderInfoLog(fragmentShaderID, 4096, &fragmentShaderLogLength, fragmentShaderLog);
 
-			assert(false);
+			char	buffer[4096*2+256];
+
+			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s", vertexShaderLog, fragmentShaderLog);
+			Base::logError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);
@@ -2000,6 +2000,8 @@ namespace wg
 
 		glDeleteShader(vertexShaderID);
 		glDeleteShader(fragmentShaderID);
+
+		LOG_GLERROR(glGetError());
 
 		return programID;
 	}

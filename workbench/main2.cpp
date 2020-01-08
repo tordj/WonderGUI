@@ -31,7 +31,7 @@
 #include <wg_freetypefont.h>
 #include "testwidget.h"
 
-//#define USE_OPEN_GL
+#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -214,6 +214,8 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	Base::init();
+
+	Base::setErrorHandler([](Error&) { int x = 0; });
 
 	Context_p pContext = Context::create();
 	pContext->setScale(1.0);

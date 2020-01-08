@@ -77,6 +77,14 @@ namespace wg
 
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
+	//____ ErrorCode ____________________________________________________
+
+	enum class ErrorCode
+	{
+		OpenGL,
+		Other
+	};
+
 	//____ StateEnum ____________________________________________________
 
 	enum class StateEnum : uint8_t

@@ -38,6 +38,8 @@ namespace wg
 
 	Base::Data *			Base::s_pData = 0;
 
+	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
+
 	//____ init() __________________________________________________________________
 
 	void Base::init()
@@ -100,6 +102,26 @@ namespace wg
 
 		TextStyleManager::exit();
 		return 0;
+	}
+
+	//____ logError() _________________________________________________________
+
+	void Base::logError(ErrorCode code, const char * msg, const Object * pObject, const char * classname, const char * function, const char * file, int line)
+	{
+		if (s_pErrorHandler)
+		{
+			Error	error;
+
+			error.code = code;
+			error.message = msg;
+			error.pObject = pObject;
+			error.classname = classname;
+			error.function = function;
+			error.file = file;
+			error.line = line;
+
+			s_pErrorHandler(error);
+		}
 	}
 
 	//____ msgRouter() _________________________________________________________
@@ -222,6 +244,20 @@ namespace wg
 	{
 		assert(s_pData != 0);
 		s_pData->pDefaultValueFormatter = pFormatter;
+	}
+
+	//____ setErrorHandler() _________________________________________________________
+
+	void Base::setErrorHandler(std::function<void(Error&)> handler)
+	{
+		s_pErrorHandler = handler;
+	}
+
+	//____ errorHandler() ____________________________________________________________
+
+	std::function<void(Error&)>	Base::errorHandler()
+	{
+		return s_pErrorHandler;
 	}
 
 	//____ memStackAlloc() ________________________________________________________
