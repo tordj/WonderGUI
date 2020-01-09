@@ -63,6 +63,23 @@ class WgSurfaceFactory;
 
 struct WgContext;
 
+namespace wg
+{
+    class Object;
+};
+
+
+class WgError
+{
+public:
+    wg::ErrorCode   code;
+    std::string     message;
+    const wg::Object *  pObject;
+    const char *    classname;
+    const char *    function;
+    const char *    file;
+    int             line;
+};
 
 class WgBase
 {
@@ -115,7 +132,12 @@ public:
 	static char *	MemStackAlloc( int bytes );
 	static void		MemStackRelease( int bytes );
 
+    static void     setErrorHandler(std::function<void(WgError&)> handler);
+    std::function<void(WgError&)>    errorHandler();
+    
+    static void     handleError( wg::ErrorCode code, const char * pMsg, const wg::Object * pObject, const char * pClass, const char * pFunction, const char * pFile, int line );
 
+    
 	//____
 
 	static WgWeakPtrHub *	AllocWeakPtrHub();
@@ -157,8 +179,9 @@ private:
 
 	};
 
-    static int      s_iSoftubeNumberOfInstances;
-	static Data *	s_pData;
+    static int                              s_iSoftubeNumberOfInstances;
+	static Data *	                        s_pData;
+    static std::function<void(WgError&)>    s_pErrorHandler;
 };
 
 

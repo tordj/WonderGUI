@@ -37,6 +37,7 @@
 
 WgBase::Data *			WgBase::s_pData = 0;
 int WgBase::s_iSoftubeNumberOfInstances = 0;
+std::function<void(WgError&)>    WgBase::s_pErrorHandler = nullptr;
 
 //____ Init() __________________________________________________________________
 
@@ -96,6 +97,40 @@ void WgBase::Exit()
 	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
+}
+
+//____ handleError() _________________________________________________________
+
+void WgBase::handleError(wg::ErrorCode code, const char * msg, const wg::Object * pObject, const char * classname, const char * function, const char * file, int line)
+{
+    if (s_pErrorHandler)
+    {
+        WgError    error;
+        
+        error.code = code;
+        error.message = msg;
+        error.pObject = pObject;
+        error.classname = classname;
+        error.function = function;
+        error.file = file;
+        error.line = line;
+        
+        s_pErrorHandler(error);
+    }
+}
+
+//____ setErrorHandler() _________________________________________________________
+
+void WgBase::setErrorHandler(std::function<void(WgError&)> handler)
+{
+    s_pErrorHandler = handler;
+}
+
+//____ errorHandler() ____________________________________________________________
+
+std::function<void(WgError&)>    WgBase::errorHandler()
+{
+    return s_pErrorHandler;
 }
 
 //____ SetContext() __________________________________________________________

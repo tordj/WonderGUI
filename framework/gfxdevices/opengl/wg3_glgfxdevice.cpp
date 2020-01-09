@@ -50,8 +50,50 @@ namespace wg
 	{
 		char	buffer[1024];
 	
-		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, gluErrorString(errorCode) );
-		Base::logError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
+        const char * pErrorName;
+        
+        switch( errorCode )
+        {
+            case GL_NO_ERROR:
+                pErrorName = "GL_NO_ERROR";
+                break;
+                
+            case GL_INVALID_ENUM:
+                pErrorName = "GL_INVALID_ENUM";
+                break;
+
+            case GL_INVALID_VALUE:
+                pErrorName = "GL_INVALID_VALUE";
+                break;
+                
+            case GL_INVALID_OPERATION:
+                pErrorName = "GL_INVALID_OPERATION";
+                break;
+
+            case GL_INVALID_FRAMEBUFFER_OPERATION:
+                pErrorName = "GL_INVALID_FRAMEBUFFER_OPERATION";
+                break;
+
+            case GL_OUT_OF_MEMORY:
+                pErrorName = "GL_OUT_OF_MEMORY";
+                break;
+/*
+            case GL_STACK_UNDERFLOW:
+                pErrorName = "GL_STACK_UNDERFLOW";
+                break;
+
+            case GL_STACK_OVERFLOW:
+                pErrorName = "GL_STACK_OVERFLOW";
+                break;
+*/
+            default:
+                pErrorName = "UNKNOWN GL ERROR! (should not happen)";
+                break;
+        }
+        
+        
+		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
+		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
 	}
 
 
@@ -2011,7 +2053,7 @@ namespace wg
 			char	buffer[4096*3+256];
 
 			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-			Base::logError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);
