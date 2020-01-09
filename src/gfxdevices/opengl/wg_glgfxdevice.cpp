@@ -50,8 +50,50 @@ namespace wg
 	{
 		char	buffer[1024];
 	
-		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, gluErrorString(errorCode) );
-		Base::logError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
+        const char * pErrorName;
+        
+        switch( errorCode )
+        {
+            case GL_NO_ERROR:
+                pErrorName = "GL_NO_ERROR";
+                break;
+                
+            case GL_INVALID_ENUM:
+                pErrorName = "GL_INVALID_ENUM";
+                break;
+
+            case GL_INVALID_VALUE:
+                pErrorName = "GL_INVALID_VALUE";
+                break;
+                
+            case GL_INVALID_OPERATION:
+                pErrorName = "GL_INVALID_OPERATION";
+                break;
+
+            case GL_INVALID_FRAMEBUFFER_OPERATION:
+                pErrorName = "GL_INVALID_FRAMEBUFFER_OPERATION";
+                break;
+
+            case GL_OUT_OF_MEMORY:
+                pErrorName = "GL_OUT_OF_MEMORY";
+                break;
+/*
+            case GL_STACK_UNDERFLOW:
+                pErrorName = "GL_STACK_UNDERFLOW";
+                break;
+
+            case GL_STACK_OVERFLOW:
+                pErrorName = "GL_STACK_OVERFLOW";
+                break;
+*/
+            default:
+                pErrorName = "UNKNOWN GL ERROR! (should not happen)";
+                break;
+        }
+        
+        
+		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
+		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
 	}
 
 
@@ -208,7 +250,12 @@ namespace wg
 
 		// Create and init Segment shaders
 
-		for (int i = 1; i < c_maxSegments; i++)
+		//HACK! Some graphics cards can't handle more than 16 varying (of which 2 are used for other data). Maybe use unifieds in shader instead?
+		// To be on the really safe side and since we don't use more than 5 anyway (single color wave + top/bottom borders and transparency above/below), we stop at 6.
+
+        // IMPORTANT! Change in destructor as well when you change it back!!!!!
+        
+		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)		
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
 			m_segmentsProg[i] = prog;
@@ -316,7 +363,7 @@ namespace wg
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
 
-		for( int i = 1 ; i < c_maxSegments ; i++ )
+		for( int i = 1 ; i < 6 /* c_maxSegments */ ; i++ )
 			glDeleteProgram(m_segmentsProg[i]);
 
 		glDeleteFramebuffers(1, &m_framebufferId);
@@ -595,6 +642,9 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 
+		glFinish();  //TODO: Remove.
+
+
 		//
 
 		LOG_GLERROR(glGetError());
@@ -613,6 +663,10 @@ namespace wg
 
 		_endCommand();
 		_executeBuffer();
+
+		//
+
+ 		glFinish(); //TODO: Remove.
 
 		// Restore render states from before beginRender()
 
@@ -635,17 +689,16 @@ namespace wg
 
 		glBindVertexArray(0);
 
+		//TODO: Reenable
 
-		//
+		//if( m_idleSync != 0 )
+		//	glDeleteSync(m_idleSync);
 
-		if( m_idleSync != 0 )
-			glDeleteSync(m_idleSync);
+		//m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
 
-		m_idleSync = glFenceSync( GL_SYNC_GPU_COMMANDS_COMPLETE, 0 );
+		//glFlush();
 
-		//
-
-		glFlush();
+//
 
 		LOG_GLERROR(glGetError());
 		m_bRendering = false;
@@ -663,12 +716,21 @@ namespace wg
 		if( m_bRendering )
 			return false;
 
-		if( m_idleSync == 0 )
+		//TODO: Reenable
+/*
+		if (m_idleSync == 0)
 			return true;
 
 		GLint isSignaled = 0;
 		glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
-		return (isSignaled != GL_UNSIGNALED);
+
+		if(isSignaled == GL_UNSIGNALED)
+			return false;
+
+		glDeleteSync(m_idleSync);
+		m_idleSync = 0;
+/*
+		return true;
 	}
 
 	//____ flush() _______________________________________________________________
@@ -858,8 +920,6 @@ namespace wg
 
 	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
 	{
-		LOG_GLERROR(glGetError());
-
 		if (nPixels == 0)
 			return;
 
@@ -895,8 +955,6 @@ namespace wg
 				}
 			}
 		}
-
-		assert(glGetError() == 0);
 	}
 
 	//____ drawLine() ____ [from/to] __________________________________________________
@@ -1983,16 +2041,20 @@ namespace wg
 		{
 			GLchar	vertexShaderLog[4096];
 			GLchar	fragmentShaderLog[4096];
+			GLchar	programInfoLog[4096];
+
 			GLsizei vertexShaderLogLength;
 			GLsizei fragmentShaderLogLength;
+			GLsizei programInfoLogLength;
 
 			glGetShaderInfoLog(vertexShaderID, 4096, &vertexShaderLogLength, vertexShaderLog );
 			glGetShaderInfoLog(fragmentShaderID, 4096, &fragmentShaderLogLength, fragmentShaderLog);
+			glGetProgramInfoLog(programID, 4096, &programInfoLogLength, programInfoLog);
 
-			char	buffer[4096*2+256];
+			char	buffer[4096*3+256];
 
-			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s", vertexShaderLog, fragmentShaderLog);
-			Base::logError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
+			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
+			Base::handleError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);

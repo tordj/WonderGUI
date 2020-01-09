@@ -240,6 +240,22 @@ namespace wg
 		inline BorderT<Type> operator-(const BorderT<Type>& k) const    { return {top-k.top, right-k.right, bottom-k.bottom, left-k.left}; }
 
 
+        inline BorderT<Type>& operator*=(int v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
+        inline BorderT<Type>& operator/=(int v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
+        inline BorderT<Type> operator*(int v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
+        inline BorderT<Type> operator/(int v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+        
+        inline BorderT<Type>& operator*=(float v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
+        inline BorderT<Type>& operator/=(float v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
+        inline BorderT<Type> operator*(float v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
+        inline BorderT<Type> operator/(float v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+        
+        inline BorderT<Type>& operator*=(double v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
+        inline BorderT<Type>& operator/=(double v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
+        inline BorderT<Type> operator*(double v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
+        inline BorderT<Type> operator/(double v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+
+        
 		bool			operator==(const BorderT<Type>& borders) const { return left == borders.left &&
 																			right == borders.right &&
 																			top == borders.top &&
