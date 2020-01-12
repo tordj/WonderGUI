@@ -27,7 +27,7 @@
 
 #include <wg_list.h>
 #include <wg_ccolumnheader.h>
-#include <wg_cselectableslotarray.h>
+#include <wg_cselectableslotvector.h>
 
 
 
@@ -43,11 +43,11 @@ namespace wg
 
 	class PackListSlot : public ListSlot
 	{
-		friend class CPackListSlotArray;
+		friend class CPackListSlotVector;
 		friend class PackList;
-		template<class S> friend class SlotArray;
-		friend class CDynamicSlotArray<PackListSlot>::Holder;
-		friend class CDynamicSlotArray<PackListSlot>;
+		template<class S> friend class SlotVector;
+		friend class CDynamicSlotVector<PackListSlot>::Holder;
+		friend class CDynamicSlotVector<PackListSlot>;
 
 	public:
 
@@ -71,22 +71,22 @@ namespace wg
 	};
 
 
-	//____ CPackListSlotArray ______________________________________________________
+	//____ CPackListSlotVector ______________________________________________________
 
-	class CPackListSlotArray;
-	typedef	StrongComponentPtr<CPackListSlotArray>	CPackListSlotArray_p;
-	typedef	WeakComponentPtr<CPackListSlotArray>	CPackListSlotArray_wp;
+	class CPackListSlotVector;
+	typedef	StrongComponentPtr<CPackListSlotVector>	CPackListSlotVector_p;
+	typedef	WeakComponentPtr<CPackListSlotVector>	CPackListSlotVector_wp;
 
-	class CPackListSlotArray : public CSelectableSlotArray<PackListSlot>
+	class CPackListSlotVector : public CSelectableSlotVector<PackListSlot>
 	{
 		friend class PackList;
 	public:
 
-		using		iterator = SlotArrayIterator<PackListSlot>;
+		using		iterator = SlotVectorIterator<PackListSlot>;
 
 		//.____ Misc __________________________________________________________
 
-		inline CPackListSlotArray_p	ptr() { return CPackListSlotArray_p(this); }
+		inline CPackListSlotVector_p	ptr() { return CPackListSlotVector_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -100,7 +100,7 @@ namespace wg
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public CSelectableSlotArray<PackListSlot>::Holder
+		class Holder : public CSelectableSlotVector<PackListSlot>::Holder
 		{
 		public:
 			virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
@@ -108,11 +108,11 @@ namespace wg
 			virtual bool	_hasSortFunction() const = 0;
 		};
 
-		CPackListSlotArray(Holder * pHolder) : CSelectableSlotArray<PackListSlot>(pHolder) {}
+		CPackListSlotVector(Holder * pHolder) : CSelectableSlotVector<PackListSlot>(pHolder) {}
 
 
-		inline const Holder *	_holder() const { return static_cast<const Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }
-		inline Holder *			_holder() { return static_cast<Holder*>(CSelectableSlotArray<PackListSlot>::_holder()); }
+		inline const Holder *	_holder() const { return static_cast<const Holder*>(CSelectableSlotVector<PackListSlot>::_holder()); }
+		inline Holder *			_holder() { return static_cast<Holder*>(CSelectableSlotVector<PackListSlot>::_holder()); }
 	};
 
 
@@ -127,9 +127,9 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected CPackListSlotArray::Holder
+	class PackList : public List, protected CPackListSlotVector::Holder
 	{
-		friend class CPackListSlotArray;
+		friend class CPackListSlotVector;
 
 	public:
 
@@ -140,7 +140,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CColumnHeader		header;
-		CPackListSlotArray	slots;
+		CPackListSlotVector	slots;
 
 		//.____ Identification __________________________________________
 
@@ -190,7 +190,7 @@ namespace wg
 		SizeI			_windowPadding() const override;
 
 
-		// Overloaded from PackListCSlotArray::Holder
+		// Overloaded from PackListCSlotVector::Holder
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;

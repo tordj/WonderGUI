@@ -33,8 +33,8 @@ namespace wg
 
 	class SelectableSlot : public DynamicSlot
 	{
-		template<class S> friend class CDynamicSlotArray;
-		template<class S> friend class CSelectableSlotArray;
+		template<class S> friend class CDynamicSlotVector;
+		template<class S> friend class CSelectableSlotVector;
 	public:
 
 		//____ Holder _________________________________________________________

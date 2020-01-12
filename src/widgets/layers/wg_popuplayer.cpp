@@ -27,14 +27,14 @@
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
-#include <wg_cstaticslotarray.impl.h>
+#include <wg_cstaticslotvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
 	using namespace Util;
-	template class CStaticSlotArray<PopupSlot>;
+	template class CStaticSlotVector<PopupSlot>;
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 

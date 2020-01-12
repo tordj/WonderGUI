@@ -20,23 +20,23 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSELECTABLESLOTARRAY_DOT_H
-#define	WG_CSELECTABLESLOTARRAY_DOT_H
+#ifndef	WG_CSELECTABLESLOTVECTOR_DOT_H
+#define	WG_CSELECTABLESLOTVECTOR_DOT_H
 #pragma once
 
 #include <wg_slot.h>
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
 
-	//____ CSelectableSlotArray ________________________________________________________
+	//____ CSelectableSlotVector ________________________________________________________
 
-	template<class SlotType> class CSelectableSlotArray : public CDynamicSlotArray<SlotType>
+	template<class SlotType> class CSelectableSlotVector : public CDynamicSlotVector<SlotType>
 	{
 	public:
 
-		class Holder : public CDynamicSlotArray<SlotType>::Holder		/** @private */
+		class Holder : public CDynamicSlotVector<SlotType>::Holder		/** @private */
 		{
 		public:
 			virtual void	_selectSlots(StaticSlot * pSlot, int nb) = 0;
@@ -44,11 +44,11 @@ namespace wg
 		};
 
 
-//		using		iterator = SlotArrayIterator<SlotType>;
+//		using		iterator = SlotVectorIterator<SlotType>;
 
 		/** @private */
 
-		CSelectableSlotArray(Holder * pHolder) : CDynamicSlotArray<SlotType>(pHolder) {}
+		CSelectableSlotVector(Holder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
 		//.____ Control _______________________________________________________
 
@@ -62,12 +62,12 @@ namespace wg
 		void	unselectAll();
 
 	protected:
-		Holder * _holder() { return static_cast<Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
-		const Holder * _holder() const { return static_cast<const Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
+		Holder * _holder() { return static_cast<Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		const Holder * _holder() const { return static_cast<const Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
 
 
 	};
 
 };
 
-#endif	//WG_CSELECTABLESLOTARRAY_DOT_H
+#endif	//WG_CSELECTABLESLOTVECTOR_DOT_H

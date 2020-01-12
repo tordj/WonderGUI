@@ -92,8 +92,8 @@ namespace wg
 		friend class StaticSlot;
 		friend class DynamicSlot;
 
-		template<class S> friend class CStaticSlotArray;
-		template<class S> friend class CDynamicSlotArray;
+		template<class S> friend class CStaticSlotVector;
+		template<class S> friend class CDynamicSlotVector;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:

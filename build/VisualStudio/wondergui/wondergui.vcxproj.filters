@@ -413,24 +413,6 @@
     <ClInclude Include="..\..\..\src\components\wg_cdynamicslotcollection.h">
       <Filter>components</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotarray.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotarray.impl.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cselectableslotarray.impl.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cstaticslotarray.impl.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cstaticvaluedisplay.h">
       <Filter>components</Filter>
     </ClInclude>
@@ -443,16 +425,34 @@
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h">
       <Filter>slots</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.h">
-      <Filter>components</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotarray.impl.h">
-      <Filter>components</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotcollection.h">
       <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotvector.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicslotvector.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotvector.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cpaddedslotvector.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cselectableslotvector.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cselectableslotvector.impl.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.impl.h">
       <Filter>components</Filter>
     </ClInclude>
   </ItemGroup>

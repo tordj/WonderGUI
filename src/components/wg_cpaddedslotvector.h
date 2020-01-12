@@ -20,21 +20,21 @@
 
 =========================================================================*/
 
-#ifndef	WG_CPADDEDSLOTARRAY_DOT_H
-#define	WG_CPADDEDSLOTARRAY_DOT_H
+#ifndef	WG_CPADDEDSLOTVECTOR_DOT_H
+#define	WG_CPADDEDSLOTVECTOR_DOT_H
 #pragma once
 
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
-	//____ CPaddedSlotArray ________________________________________________________
+	//____ CPaddedSlotVector ________________________________________________________
 
-	template<class SlotType> class CPaddedSlotArray : public CDynamicSlotArray<SlotType>
+	template<class SlotType> class CPaddedSlotVector : public CDynamicSlotVector<SlotType>
 	{
 	public:
 
-		class Holder : public CDynamicSlotArray<SlotType>::Holder  /** @private */
+		class Holder : public CDynamicSlotVector<SlotType>::Holder  /** @private */
 		{
 		public:
 			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
@@ -43,7 +43,7 @@ namespace wg
 
 		/** @private */
 
-		CPaddedSlotArray(Holder * pHolder) : CDynamicSlotArray<SlotType>(pHolder) {}
+		CPaddedSlotVector(Holder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -53,8 +53,8 @@ namespace wg
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
 
 	protected:
-		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<SlotType>::_holder()); }
+		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
 	};
 
 
@@ -62,4 +62,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_CPADDEDSLOTARRAY_DOT_H
+#endif //WG_CPADDEDSLOTVECTOR_DOT_H

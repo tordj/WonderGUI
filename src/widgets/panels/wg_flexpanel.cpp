@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_cdynamicslotarray.impl.h>
+#include <wg_cdynamicslotvector.impl.h>
 
 #include <assert.h>
 
@@ -32,7 +32,7 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotArray<FlexSlot>;
+	template class CDynamicSlotVector<FlexSlot>;
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
 
@@ -178,7 +178,7 @@ namespace wg
 
 	//____ pushFrontPinned() _________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::pushFrontPinned( const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	CFlexSlotVector::iterator CFlexSlotVector::pushFrontPinned( const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
@@ -196,7 +196,7 @@ namespace wg
 
 	//____ pushFrontMovable() ________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::pushFrontMovable( const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	CFlexSlotVector::iterator CFlexSlotVector::pushFrontMovable( const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 
@@ -214,7 +214,7 @@ namespace wg
 
 	//____ pushBackPinned() _________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight)
+	CFlexSlotVector::iterator CFlexSlotVector::pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight)
 	{
 		//TODO: Assert
 
@@ -232,7 +232,7 @@ namespace wg
 
 	//____ pushBackMovable() ________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::pushBackMovable(const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
+	CFlexSlotVector::iterator CFlexSlotVector::pushBackMovable(const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot)
 	{
 		//TODO: Assert
 
@@ -251,7 +251,7 @@ namespace wg
 
 	//____ insertPinned() ________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
+	CFlexSlotVector::iterator CFlexSlotVector::insertPinned( int index, const Widget_p& pWidget, const FlexPos& topLeft, const FlexPos& bottomRight )
 	{
 		//TODO: Assert
 
@@ -269,7 +269,7 @@ namespace wg
 
 	//____ insertMovable() ________________________________________________________
 
-	CFlexSlotArray::iterator CFlexSlotArray::insertMovable( int index, const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
+	CFlexSlotVector::iterator CFlexSlotVector::insertMovable( int index, const Widget_p& pWidget, const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot )
 	{
 		//TODO: Assert
 

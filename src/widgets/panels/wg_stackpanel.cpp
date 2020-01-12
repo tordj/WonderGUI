@@ -25,12 +25,12 @@
 #include <wg_util.h>
 #include <wg_patches.h>
 
-#include <wg_cpaddedslotarray.impl.h>
+#include <wg_cpaddedslotvector.impl.h>
 
 namespace wg
 {
-	template class CDynamicSlotArray<StackSlot>;
-	template class CPaddedSlotArray<StackSlot>;
+	template class CDynamicSlotVector<StackSlot>;
+	template class CPaddedSlotVector<StackSlot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
 

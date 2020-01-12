@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
@@ -35,9 +35,9 @@ namespace wg
 	class ModalSlot : public LayerSlot
 	{
 		friend class ModalLayer;
-		friend class CModalSlotArray;
-		template<class S> friend class CDynamicSlotArray;
-		template<class S> friend class SlotArray;
+		friend class CModalSlotVector;
+		template<class S> friend class CDynamicSlotVector;
+		template<class S> friend class SlotVector;
 
 	public:
 
@@ -79,20 +79,20 @@ namespace wg
 	};
 
 
-	class CModalSlotArray;
-	typedef	StrongComponentPtr<CModalSlotArray>	CModalSlotArray_p;
-	typedef	WeakComponentPtr<CModalSlotArray>	CModalSlotArray_wp;
+	class CModalSlotVector;
+	typedef	StrongComponentPtr<CModalSlotVector>	CModalSlotVector_p;
+	typedef	WeakComponentPtr<CModalSlotVector>	CModalSlotVector_wp;
 
-	//____ CModalSlotArray ________________________________________________________
+	//____ CModalSlotVector ________________________________________________________
 
-	class CModalSlotArray : public CDynamicSlotArray<ModalSlot>
+	class CModalSlotVector : public CDynamicSlotVector<ModalSlot>
 	{
 		friend class ModalLayer;
 	public:
 
 		//.____ Misc __________________________________________________________
 
-		inline CModalSlotArray_p	ptr() { return CModalSlotArray_p(this); }
+		inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
 
 		//.____ Content _______________________________________________________
 
@@ -107,14 +107,14 @@ namespace wg
 
 		//____ Holder _________________________________________________
 
-		class Holder : public CDynamicSlotArray<ModalSlot>::Holder
+		class Holder : public CDynamicSlotVector<ModalSlot>::Holder
 		{
 		};
 
-		CModalSlotArray(Holder * pHolder) : CDynamicSlotArray<ModalSlot>(pHolder) {}
+		CModalSlotVector(Holder * pHolder) : CDynamicSlotVector<ModalSlot>(pHolder) {}
 
-		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
-		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotArray<ModalSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotVector<ModalSlot>::_holder()); }
+		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotVector<ModalSlot>::_holder()); }
 
 
 	};
@@ -126,9 +126,9 @@ namespace wg
 
 	//____ ModalLayer __________________________________________________________
 
-	class ModalLayer : public Layer, protected CModalSlotArray::Holder
+	class ModalLayer : public Layer, protected CModalSlotVector::Holder
 	{
-		friend class CModalSlotArray;
+		friend class CModalSlotVector;
 
 	public:
 
@@ -138,7 +138,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CModalSlotArray		modalSlots;
+		CModalSlotVector		modalSlots;
 
 		//.____ Identification __________________________________________
 

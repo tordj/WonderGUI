@@ -20,20 +20,20 @@
 
 =========================================================================*/
 
-#ifndef	WG_CDYNAMICSLOTARRAY_DOT_H
-#define	WG_CDYNAMICSLOTARRAY_DOT_H
+#ifndef	WG_CDYNAMICSLOTVECTOR_DOT_H
+#define	WG_CDYNAMICSLOTVECTOR_DOT_H
 #pragma once
 
 #include <wg_cdynamicslotcollection.h>
-#include <wg_cstaticslotarray.h>
+#include <wg_cstaticslotvector.h>
 
 namespace wg
 {
 
 
-	//____ CDynamicSlotArray _________________________________________________________
+	//____ CDynamicSlotVector _________________________________________________________
 
-	template<class SlotType> class CDynamicSlotArray : public CDynamicSlotCollection
+	template<class SlotType> class CDynamicSlotVector : public CDynamicSlotCollection
 	{
 	public:
 
@@ -52,7 +52,7 @@ namespace wg
 
 		};
 
-		using		iterator = SlotArrayIterator<SlotType>;
+		using		iterator = SlotVectorIterator<SlotType>;
 
 		//.____ Operators __________________________________________
 
@@ -68,7 +68,7 @@ namespace wg
 
 		inline SlotType& at(int index) const
 		{
-//			if (index < 0 || index >= m_pSlotArray->size())
+//			if (index < 0 || index >= m_pSlotVector->size())
 //				return nullptr;
 
 			return m_pArray[index];
@@ -177,8 +177,8 @@ namespace wg
 
 
 	protected:
-		CDynamicSlotArray(Holder * pHolder) : m_pHolder(pHolder) {}
-		~CDynamicSlotArray() { _killBlock(_begin(), _end()); free(m_pBuffer); }
+		CDynamicSlotVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		~CDynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
@@ -308,4 +308,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CDYNAMICSLOTARRAY_DOT_H
+#endif //WG_CDYNAMICSLOTVECTOR_DOT_H

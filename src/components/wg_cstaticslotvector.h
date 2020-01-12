@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSTATICSLOTARRAY_DOT_H
-#define	WG_CSTATICSLOTARRAY_DOT_H
+#ifndef	WG_CSTATICSLOTVECTOR_DOT_H
+#define	WG_CSTATICSLOTVECTOR_DOT_H
 #pragma once
 
 #include <wg_cstaticslotcollection.h>
@@ -29,9 +29,9 @@
 namespace wg
 {
 
-	//____ SlotArrayIterator _______________________________________________________
+	//____ SlotVectorIterator _______________________________________________________
 
-	template<class SlotType> class SlotArrayIterator : public SlotIterator
+	template<class SlotType> class SlotVectorIterator : public SlotIterator
 	{
 	public:
 
@@ -44,42 +44,42 @@ namespace wg
 			return * static_cast<SlotType*>(pSlot);
 		}
 
-		inline SlotArrayIterator<SlotType>& operator++()
+		inline SlotVectorIterator<SlotType>& operator++()
 		{
 			pSlot = _slot() + 1;
 			return *this;
 		};
 
-		inline SlotArrayIterator<SlotType> operator++(int)
+		inline SlotVectorIterator<SlotType> operator++(int)
 		{
-			SlotArrayIterator<SlotType> tmp = *this;
+			SlotVectorIterator<SlotType> tmp = *this;
 			pSlot = _slot() + 1;
 			return tmp;
 		}
 
-		inline SlotArrayIterator<SlotType>& operator--()
+		inline SlotVectorIterator<SlotType>& operator--()
 		{
 			pSlot = _slot() - 1;
 			return *this;
 		}
 
-		inline SlotArrayIterator<SlotType> operator--(int)
+		inline SlotVectorIterator<SlotType> operator--(int)
 		{
-			SlotArrayIterator<SlotType> tmp = *this;
+			SlotVectorIterator<SlotType> tmp = *this;
 			pSlot = _slot()-1;
 			return tmp;
 		}
 
-		inline SlotArrayIterator<SlotType> operator+(int amount) const
+		inline SlotVectorIterator<SlotType> operator+(int amount) const
 		{
-			SlotArrayIterator<SlotType> it = *this;
+			SlotVectorIterator<SlotType> it = *this;
 			it._inc(amount);
 			return it;
 		}
 
-		inline SlotArrayIterator<SlotType> operator-(int amount) const
+		inline SlotVectorIterator<SlotType> operator-(int amount) const
 		{
-			SlotArrayIterator<SlotType> it = *this;
+			SlotVectorIterator<SlotType> it = *this;
 			it._dec(amount);
 			return it;
 		}
@@ -88,7 +88,7 @@ namespace wg
 
 		//.____ Internal _______________________________________________________________
 
-		SlotArrayIterator(SlotType * pSlot)
+		SlotVectorIterator(SlotType * pSlot)
 		{
 			this->pSlot = pSlot;
 			this->pHolder = nullptr;
@@ -108,9 +108,9 @@ namespace wg
 
 
 
-	//____ CStaticSlotArray _________________________________________________________
+	//____ CStaticSlotVector _________________________________________________________
 
-	template<class SlotType> class CStaticSlotArray : public CStaticSlotCollection
+	template<class SlotType> class CStaticSlotVector : public CStaticSlotCollection
 	{
 	public:
 
@@ -120,7 +120,7 @@ namespace wg
 
 		};
 
-		using		iterator = SlotArrayIterator<SlotType>;
+		using		iterator = SlotVectorIterator<SlotType>;
 
 		//.____ Operators __________________________________________
 
@@ -134,7 +134,7 @@ namespace wg
 
 		inline SlotType& at(int index) const
 		{
-//			if (index < 0 || index >= m_pSlotArray->size())
+//			if (index < 0 || index >= m_pSlotVector->size())
 //				return nullptr;
 
 			return m_pArray[index];
@@ -154,8 +154,8 @@ namespace wg
 		inline iterator	end() const { return iterator(_end()); }
 
 	protected:
-		CStaticSlotArray(Holder * pHolder) : m_pHolder(pHolder) {}
-		~CStaticSlotArray() { _killBlock(_begin(), _end()); free(m_pBuffer); }
+		CStaticSlotVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		~CStaticSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
 		SlotIterator	_end_iterator() override;
@@ -270,4 +270,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_CSTATICSLOTARRAY_DOT_H
+#endif //WG_CSTATICSLOTVECTOR_DOT_H

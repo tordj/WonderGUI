@@ -28,7 +28,7 @@
 #include <wg_container.h>
 #include <wg_skin.h>
 #include <wg_selectableslot.h>
-#include <wg_cselectableslotarray.h>
+#include <wg_cselectableslotvector.h>
 
 namespace wg
 {

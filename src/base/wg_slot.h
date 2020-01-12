@@ -40,8 +40,8 @@ namespace wg
 		friend class CStaticSlot;
 		friend class DynamicSlot;
 		template<class S> friend class CStaticSlotImpl;
-		template<class S> friend class CStaticSlotArray;
-		template<class S> friend class CDynamicSlotArray;
+		template<class S> friend class CStaticSlotVector;
+		template<class S> friend class CDynamicSlotVector;
 
 
 	public:
@@ -86,7 +86,7 @@ namespace wg
 			}
 		}
 
-		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
+		// IMPORTANT! SlotVector assumes that Slot destructor doesn't need to be called
 		// if content has been moved to another slot!
 
 		~StaticSlot()
@@ -174,8 +174,8 @@ namespace wg
 		friend class CSlot;
 		template<class S> friend class CStaticSlotImpl;
 		template<class S> friend class CDynamicSlotImpl;
-		template<class S> friend class CStaticSlotArray;
-		template<class S> friend class CDynamicSlotArray;
+		template<class S> friend class CStaticSlotVector;
+		template<class S> friend class CDynamicSlotVector;
 
 
 	public:
@@ -227,7 +227,7 @@ namespace wg
 		}
 
 
-		// IMPORTANT! SlotArray assumes that Slot destructor doesn't need to be called
+		// IMPORTANT! SlotVector assumes that Slot destructor doesn't need to be called
 		// if content has been moved to another slot!
 
 		~DynamicSlot()

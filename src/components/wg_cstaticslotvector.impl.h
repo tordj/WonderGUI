@@ -20,14 +20,14 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSTATICSLOTARRAY_IMPL_DOT_H
-#define	WG_CSTATICSLOTARRAY_IMPL_DOT_H
+#ifndef	WG_CSTATICSLOTVECTOR_IMPL_DOT_H
+#define	WG_CSTATICSLOTVECTOR_IMPL_DOT_H
 #pragma once
 
-#include <wg_cstaticslotarray.h>
+#include <wg_cstaticslotvector.h>
 #include <cstring>
 
-//#define INSTANTIATE_CHILDREN(SlotType)		template class CStaticSlotArray< SlotType >;
+//#define INSTANTIATE_CHILDREN(SlotType)		template class CStaticSlotVector< SlotType >;
 
 namespace wg
 {
@@ -36,7 +36,7 @@ namespace wg
 	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CStaticSlotArray<SlotType>::_begin_iterator()
+	SlotIterator CStaticSlotVector<SlotType>::_begin_iterator()
 	{
 		return iterator(_begin());
 	}
@@ -44,7 +44,7 @@ namespace wg
 	//____ _end_iterator() _____________________________________________________________
 
 	template < class SlotType>
-	SlotIterator CStaticSlotArray<SlotType>::_end_iterator()
+	SlotIterator CStaticSlotVector<SlotType>::_end_iterator()
 	{
 		return iterator(_end());
 	}
@@ -52,7 +52,7 @@ namespace wg
 	//____ _at() _____________________________________________________________
 
 	template < class SlotType>
-	StaticSlot& CStaticSlotArray<SlotType>::_at(int index)
+	StaticSlot& CStaticSlotVector<SlotType>::_at(int index)
 	{
 		return *_slot(index);
 	}
@@ -60,13 +60,13 @@ namespace wg
 	//____ _object() __________________________________________________________
 
 	template < class SlotType>
-	Object * CStaticSlotArray<SlotType>::_object()
+	Object * CStaticSlotVector<SlotType>::_object()
 	{
 		return m_pHolder->_object();
 	}
 
 	template < class SlotType>
-	const Object * CStaticSlotArray<SlotType>::_object() const
+	const Object * CStaticSlotVector<SlotType>::_object() const
 	{
 		return m_pHolder->_object();
 	}
@@ -75,7 +75,7 @@ namespace wg
 	//____ _releaseGuardPointer() _____________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
+	void CStaticSlotVector<SlotType>::_releaseGuardPointer(Widget * pToRelease, SlotType ** pPointerToGuard)
 	{
 		Container * pParent = pToRelease->_parent();
 
@@ -102,7 +102,7 @@ namespace wg
 	//____ _move() ____________________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
+	void CStaticSlotVector<SlotType>::_move(SlotType * pFrom, SlotType * pTo)
 	{
 		SlotType temp = std::move(*pFrom);
 		if (pFrom < pTo)
@@ -137,7 +137,7 @@ namespace wg
 	//____ _reorder() _________________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_reorder(int order[])
+	void CStaticSlotVector<SlotType>::_reorder(int order[])
 	{
 		if (m_size == 0)
 			return;
@@ -158,7 +158,7 @@ namespace wg
 	//____ _find() ____________________________________________________________
 
 	template < class SlotType>
-	SlotType * CStaticSlotArray<SlotType>::_find(const Widget* pWidget) const
+	SlotType * CStaticSlotVector<SlotType>::_find(const Widget* pWidget) const
 	{
 		for (auto p = _begin(); p < _end(); p++)
 			if (p->_widget() == pWidget)
@@ -170,7 +170,7 @@ namespace wg
 	//____ _reallocArray() ____________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_reallocArray(int capacity, int offset)
+	void CStaticSlotVector<SlotType>::_reallocArray(int capacity, int offset)
 	{
 		int size = sizeof(SlotType)*capacity;
 		SlotType* pOldBuffer = m_pBuffer;
@@ -199,7 +199,7 @@ namespace wg
 	//____ _reallocBlock() ____________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
+	void CStaticSlotVector<SlotType>::_reallocBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 		{
@@ -211,7 +211,7 @@ namespace wg
 	//____ _deleteBlock() _____________________________________________________
 
 	template < class SlotType>
-	SlotType* CStaticSlotArray<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
+	SlotType* CStaticSlotVector<SlotType>::_deleteBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		if (m_pBuffer == m_pArray)
 		{
@@ -264,7 +264,7 @@ namespace wg
 	//____ _insertBlock() _____________________________________________________
 
 	template < class SlotType>
-	SlotType* CStaticSlotArray<SlotType>::_insertBlock(SlotType * pPos, int entries)
+	SlotType* CStaticSlotVector<SlotType>::_insertBlock(SlotType * pPos, int entries)
 	{
 		if (entries <= m_capacity - m_size)
 		{
@@ -386,7 +386,7 @@ namespace wg
 	//____ _killBlock() __________________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
+	void CStaticSlotVector<SlotType>::_killBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 			(pBeg++)->~SlotType();
@@ -395,7 +395,7 @@ namespace wg
 	//____ _initBlock() __________________________________________________________
 
 	template < class SlotType>
-	void CStaticSlotArray<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
+	void CStaticSlotVector<SlotType>::_initBlock(SlotType * pBeg, SlotType * pEnd)
 	{
 		while (pBeg < pEnd)
 			new (pBeg++) SlotType(m_pHolder);
@@ -406,5 +406,5 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_CSLOTARRAY_IMPL_DOT_H
+#endif //WG_CSLOTVECTOR_IMPL_DOT_H
 

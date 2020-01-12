@@ -104,9 +104,9 @@ namespace wg
 		return 0;
 	}
 
-	//____ logError() _________________________________________________________
+	//____ handleError() _________________________________________________________
 
-	void Base::logError(ErrorCode code, const char * msg, const Object * pObject, const char * classname, const char * function, const char * file, int line)
+	void Base::handleError(ErrorCode code, const char * msg, const Object * pObject, const char * classname, const char * function, const char * file, int line)
 	{
 		if (s_pErrorHandler)
 		{

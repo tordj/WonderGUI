@@ -27,14 +27,14 @@
 #include <wg_base.h>
 #include <wg_inputhandler.h>
 
-#include <wg_cdynamicslotarray.impl.h>
+#include <wg_cdynamicslotvector.impl.h>
 
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotArray<ModalSlot>;
+	template class CDynamicSlotVector<ModalSlot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 
@@ -84,7 +84,7 @@ namespace wg
 
 	//____ pushFront() _________________________________________________________________
 
-	CModalSlotArray::iterator CModalSlotArray::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	CModalSlotVector::iterator CModalSlotVector::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
@@ -101,7 +101,7 @@ namespace wg
 
 	//____ pushBack() _________________________________________________________________
 
-	CModalSlotArray::iterator CModalSlotArray::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	CModalSlotVector::iterator CModalSlotVector::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 

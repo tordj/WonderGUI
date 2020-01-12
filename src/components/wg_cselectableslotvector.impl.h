@@ -20,27 +20,27 @@
 
 =========================================================================*/
 
-#ifndef	WG_CSELECTABLESLOTARRAY_IMPL_DOT_H
-#define	WG_CSELECTABLESLOTARRAY_IMPL_DOT_H
+#ifndef	WG_CSELECTABLESLOTVECTOR_IMPL_DOT_H
+#define	WG_CSELECTABLESLOTVECTOR_IMPL_DOT_H
 #pragma once
 
-#include <wg_cselectableslotarray.h>
-#include <wg_cdynamicslotarray.impl.h>
+#include <wg_cselectableslotvector.h>
+#include <wg_cdynamicslotvector.impl.h>
 
 namespace wg
 {
 	//____ select() ___________________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::select(int index, int amount)
+	void CSelectableSlotVector<SlotType>::select(int index, int amount)
 	{
 		//TODO: Assert
 
-		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(index), amount);
+		_holder()->_selectSlots(CDynamicSlotVector<SlotType>::_slot(index), amount);
 	};
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::select(const SlotIterator&  beg, const SlotIterator&  end)
+	void CSelectableSlotVector<SlotType>::select(const SlotIterator&  beg, const SlotIterator&  end)
 	{
 		//TODO: Assert
 
@@ -52,23 +52,23 @@ namespace wg
 	//____ selectAll() ________________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::selectAll()
+	void CSelectableSlotVector<SlotType>::selectAll()
 	{
-		_holder()->_selectSlots(CDynamicSlotArray<SlotType>::_slot(0), CDynamicSlotArray<SlotType>::size());
+		_holder()->_selectSlots(CDynamicSlotVector<SlotType>::_slot(0), CDynamicSlotVector<SlotType>::size());
 	};
 
 	//____ unselect() _________________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::unselect(int index, int amount)
+	void CSelectableSlotVector<SlotType>::unselect(int index, int amount)
 	{
 		//TODO: Assert
 
-		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_slot(index), amount);
+		_holder()->_unselectSlots(CDynamicSlotVector<SlotType>::_slot(index), amount);
 	};
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::unselect(const SlotIterator&  beg, const SlotIterator&  end)
+	void CSelectableSlotVector<SlotType>::unselect(const SlotIterator&  beg, const SlotIterator&  end)
 	{
 		//TODO: Assert
 
@@ -80,13 +80,13 @@ namespace wg
 	//____ unselectAll() ______________________________________________________
 
 	template <class SlotType>
-	void CSelectableSlotArray<SlotType>::unselectAll()
+	void CSelectableSlotVector<SlotType>::unselectAll()
 	{
-		_holder()->_unselectSlots(CDynamicSlotArray<SlotType>::_begin(), CDynamicSlotArray<SlotType>::size());
+		_holder()->_unselectSlots(CDynamicSlotVector<SlotType>::_begin(), CDynamicSlotVector<SlotType>::size());
 	};
 
 
 } // namespace wg
 
 
-#endif //WG_CSELECTABLESLOTARRAY_IMPL_DOT_H
+#endif //WG_CSELECTABLESLOTVECTOR_IMPL_DOT_H

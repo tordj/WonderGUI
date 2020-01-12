@@ -26,7 +26,7 @@
 #include <wg_sizebroker.h>
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_cpaddedslotarray.h>
+#include <wg_cpaddedslotvector.h>
 
 namespace wg
 {
@@ -41,11 +41,11 @@ namespace wg
 	class PackSlot : public PaddedSlot
 	{
 		friend class PackPanel;
-		friend class CPackSlotArray;
-		template<class S> friend class SlotArray;
-		friend class CPaddedSlotArray<PackSlot>::Holder;
-		friend class CDynamicSlotArray<PackSlot>::Holder;
-		friend class CDynamicSlotArray<PackSlot>;
+		friend class CPackSlotVector;
+		template<class S> friend class SlotVector;
+		friend class CPaddedSlotVector<PackSlot>::Holder;
+		friend class CDynamicSlotVector<PackSlot>::Holder;
+		friend class CDynamicSlotVector<PackSlot>;
 
 	public:
 
@@ -85,20 +85,20 @@ namespace wg
 	};
 
 
-	//____ CPackSlotArray ________________________________________________________
+	//____ CPackSlotVector ________________________________________________________
 
-	class CPackSlotArray;
-	typedef	StrongComponentPtr<CPackSlotArray>	CPackSlotArray_p;
-	typedef	WeakComponentPtr<CPackSlotArray>	CPackSlotArray_wp;
+	class CPackSlotVector;
+	typedef	StrongComponentPtr<CPackSlotVector>	CPackSlotVector_p;
+	typedef	WeakComponentPtr<CPackSlotVector>	CPackSlotVector_wp;
 
-	class CPackSlotArray : public CPaddedSlotArray<PackSlot>
+	class CPackSlotVector : public CPaddedSlotVector<PackSlot>
 	{
 		friend class PackPanel;
 	public:
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public CPaddedSlotArray<PackSlot>::Holder 	/** @private */
+		class Holder : public CPaddedSlotVector<PackSlot>::Holder 	/** @private */
 		{
 		public:
 			virtual void	_reweightSlots(PackSlot * pSlot, int nb, float weight) = 0;
@@ -115,13 +115,13 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline CPackSlotArray_p	ptr() { return CPackSlotArray_p(this); }
+		inline CPackSlotVector_p	ptr() { return CPackSlotVector_p(this); }
 
 	protected:
-		CPackSlotArray(Holder * pHolder) : CPaddedSlotArray<PackSlot>(pHolder) {}
+		CPackSlotVector(Holder * pHolder) : CPaddedSlotVector<PackSlot>(pHolder) {}
 
-		Holder *		_holder() { return static_cast<Holder*>(CPaddedSlotArray<PackSlot>::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(CPaddedSlotArray<PackSlot>::_holder()); }
+		Holder *		_holder() { return static_cast<Holder*>(CPaddedSlotVector<PackSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CPaddedSlotVector<PackSlot>::_holder()); }
 	};
 
 	//____ PackPanel ________________________________________________________________
@@ -131,9 +131,9 @@ namespace wg
 	 * A widget for arranging children horizontally or vertically.
 	 */
 
-	class PackPanel : public Panel, protected CPackSlotArray::Holder
+	class PackPanel : public Panel, protected CPackSlotVector::Holder
 	{
-		friend class CPackSlotArray;
+		friend class CPackSlotVector;
 
 	public:
 
@@ -143,7 +143,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CPackSlotArray		slots;
+		CPackSlotVector		slots;
 
 		//.____ Identification __________________________________________
 
@@ -186,7 +186,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Overloaded from CPaddedSlotArray::Holder
+		// Overloaded from CPaddedSlotVector::Holder
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
@@ -196,7 +196,7 @@ namespace wg
 		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;
 		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
 
-		// Overloaded from CPackSlotArray::Holder
+		// Overloaded from CPackSlotVector::Holder
 
 		void		_reweightSlots(PackSlot * pSlot, int nb, float weight) override;
 		void		_reweightSlots(PackSlot * pSlot, int nb, const float * pWeights) override;

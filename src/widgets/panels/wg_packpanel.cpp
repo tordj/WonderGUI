@@ -25,19 +25,19 @@
 #include <wg_packpanel.h>
 #include <wg_base.h>
 
-#include <wg_cpaddedslotarray.impl.h>
+#include <wg_cpaddedslotvector.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotArray<PackSlot>;
-	template class CPaddedSlotArray<PackSlot>;
+	template class CDynamicSlotVector<PackSlot>;
+	template class CPaddedSlotVector<PackSlot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
 
 
-	bool CPackSlotArray::setWeight(int index, int amount, float weight)
+	bool CPackSlotVector::setWeight(int index, int amount, float weight)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= size() || weight < 0.f)
 			return false;
@@ -47,7 +47,7 @@ namespace wg
 		return true;
 	}
 
-	bool CPackSlotArray::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
+	bool CPackSlotVector::setWeight(const SlotIterator& beg, const SlotIterator& end, float weight)
 	{
 		//TODO: Add assert
 
@@ -57,7 +57,7 @@ namespace wg
 		return true;
 	}
 
-	bool CPackSlotArray::setWeight(int index, int amount, const std::initializer_list<float> weights)
+	bool CPackSlotVector::setWeight(int index, int amount, const std::initializer_list<float> weights)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= size() || amount >(int) weights.size())
 			return false;
@@ -67,7 +67,7 @@ namespace wg
 		return true;
 	}
 
-	bool CPackSlotArray::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
+	bool CPackSlotVector::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
 	{
 		//TODO: Add assert
 

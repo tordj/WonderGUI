@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_cstaticslotarray.h>
+#include <wg_cstaticslotvector.h>
 
 #include <vector>
 
@@ -38,8 +38,8 @@ namespace wg
 	{
 		friend class PopupLayer;
 		friend class CPopupSlots;
-		friend class CStaticSlotArray<PopupSlot>;
-		friend class CStaticSlotArray<PopupSlot>::Holder;
+		friend class CStaticSlotVector<PopupSlot>;
+		friend class CStaticSlotVector<PopupSlot>::Holder;
 
 	public:
 		const static bool safe_to_relocate = false;
@@ -79,7 +79,7 @@ namespace wg
 
 	//____ CPopupSlots ________________________________________________________
 
-class CPopupSlots : public CStaticSlotArray<PopupSlot>
+class CPopupSlots : public CStaticSlotVector<PopupSlot>
 	{
 		friend class PopupLayer;
 
@@ -97,17 +97,17 @@ class CPopupSlots : public CStaticSlotArray<PopupSlot>
 		void	clear();
 
 	protected:
-		class Holder : public CStaticSlotArray<PopupSlot>::Holder
+		class Holder : public CStaticSlotVector<PopupSlot>::Holder
 		{
 		public:
 			virtual void		_removeSlots(int ofs, int nb) = 0;
 			virtual void		_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize) = 0;
 		};
 
-		CPopupSlots(Holder * pHolder) : CStaticSlotArray<PopupSlot>(pHolder) {}
+		CPopupSlots(Holder * pHolder) : CStaticSlotVector<PopupSlot>(pHolder) {}
 
-		const Holder *	_holder() const { return static_cast<const Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
-		Holder *	_holder() { return static_cast<Holder*>(CStaticSlotArray<PopupSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CStaticSlotVector<PopupSlot>::_holder()); }
+		Holder *	_holder() { return static_cast<Holder*>(CStaticSlotVector<PopupSlot>::_holder()); }
 	};
 
 

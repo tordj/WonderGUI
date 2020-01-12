@@ -729,7 +729,7 @@ namespace wg
 
 		glDeleteSync(m_idleSync);
 		m_idleSync = 0;
-/*
+*/
 		return true;
 	}
 

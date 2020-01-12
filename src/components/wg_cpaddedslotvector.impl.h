@@ -20,32 +20,32 @@
 
 =========================================================================*/
 
-#ifndef	WG_IPADDEDSLOTARRAY_IMPL_DOT_H
-#define	WG_IPADDEDSLOTARRAY_IMPL_DOT_H
+#ifndef	WG_IPADDEDSLOTVECTOR_IMPL_DOT_H
+#define	WG_IPADDEDSLOTVECTOR_IMPL_DOT_H
 #pragma once
 
-#include <wg_cpaddedslotarray.h>
-#include <wg_cdynamicslotarray.impl.h>
+#include <wg_cpaddedslotvector.h>
+#include <wg_cdynamicslotvector.impl.h>
 #include <wg_util.h>
 
 
 namespace wg
 {
-//	template class CSlotArray< SlotType >;
+//	template class CSlotVector< SlotType >;
 
 	//____ setPadding() _______________________________________________________
 
 	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(int index, int amount, Border padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(int index, int amount, Border padding)
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), amount, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, Util::qpixToRaw(padding));
 		return true;
 	}
 
 	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding)
 	{
 		//TODO: Assert
 
@@ -56,16 +56,16 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CDynamicSlotArray<SlotType>::_slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
+		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, reinterpret_cast<const BorderI *>(padding.begin()));
 		return true;
 	}
 
 	template<class SlotType>
-	bool CPaddedSlotArray<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
@@ -78,4 +78,4 @@ namespace wg
 } // namespace wg
 
 
-#endif //WG_IPADDEDSLOTARRAY_IMPL_DOT_H
+#endif //WG_IPADDEDSLOTVECTOR_IMPL_DOT_H

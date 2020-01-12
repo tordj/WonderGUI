@@ -26,7 +26,7 @@
 
 
 #include <wg_panel.h>
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
@@ -41,8 +41,8 @@ namespace wg
 	class LambdaSlot : public DynamicSlot
 	{
 		friend class LambdaPanel;
-		friend class CLambdaSlotArray;
-		friend class CDynamicSlotArray<LambdaSlot>;
+		friend class CLambdaSlotVector;
+		friend class CDynamicSlotVector<LambdaSlot>;
 
 	public:
 
@@ -81,13 +81,13 @@ namespace wg
 	};
 
 
-	class CLambdaSlotArray;
-	typedef	StrongComponentPtr<CLambdaSlotArray>	CLambdaSlotArray_p;
-	typedef	WeakComponentPtr<CLambdaSlotArray>		CLambdaSlotArray_wp;
+	class CLambdaSlotVector;
+	typedef	StrongComponentPtr<CLambdaSlotVector>	CLambdaSlotVector_p;
+	typedef	WeakComponentPtr<CLambdaSlotVector>		CLambdaSlotVector_wp;
 
-	//____ CLambdaSlotArray ________________________________________________________
+	//____ CLambdaSlotVector ________________________________________________________
 
-	class CLambdaSlotArray : public CDynamicSlotArray<LambdaSlot>
+	class CLambdaSlotVector : public CDynamicSlotVector<LambdaSlot>
 	{
 		friend class LambdaPanel;
 	public:
@@ -103,26 +103,26 @@ namespace wg
 
 		//.____ Misc __________________________________________________________
 
-		inline CLambdaSlotArray_p	ptr() { return CLambdaSlotArray_p(this); }
+		inline CLambdaSlotVector_p	ptr() { return CLambdaSlotVector_p(this); }
 
 	protected:
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public CDynamicSlotArray<LambdaSlot>::Holder
+		class Holder : public CDynamicSlotVector<LambdaSlot>::Holder
 		{
 		};
 
-		CLambdaSlotArray(CLambdaSlotArray::Holder * pHolder) : CDynamicSlotArray<LambdaSlot>(pHolder) {}
+		CLambdaSlotVector(CLambdaSlotVector::Holder * pHolder) : CDynamicSlotVector<LambdaSlot>(pHolder) {}
 
-		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotArray<LambdaSlot>::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotArray<LambdaSlot>::_holder()); }
+		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotVector<LambdaSlot>::_holder()); }
+		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotVector<LambdaSlot>::_holder()); }
 	};
 
 
 	//____ LambdaPanel _________________________________________________________
 
-	class LambdaPanel : public Panel, protected CLambdaSlotArray::Holder
+	class LambdaPanel : public Panel, protected CLambdaSlotVector::Holder
 	{
 
 	public:
@@ -133,7 +133,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CLambdaSlotArray	slots;
+		CLambdaSlotVector	slots;
 
 		//.____ Identification __________________________________________
 
@@ -164,7 +164,7 @@ namespace wg
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
 
-		// Methods for CLambdaSlotArray::Holder
+		// Methods for CLambdaSlotVector::Holder
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;

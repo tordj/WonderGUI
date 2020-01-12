@@ -24,7 +24,7 @@
 #include <wg_patches.h>
 #include <wg_util.h>
 
-#include <wg_cdynamicslotarray.impl.h>
+#include <wg_cdynamicslotvector.impl.h>
 #include <assert.h>
 
 
@@ -32,14 +32,14 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotArray<LambdaSlot>;
+	template class CDynamicSlotVector<LambdaSlot>;
 
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	//____ CLambdaSlotArray::pushFront() ________________________________________________
+	//____ CLambdaSlotVector::pushFront() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotVector::iterator CLambdaSlotVector::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -51,9 +51,9 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ CLambdaSlotArray::pushBack() ________________________________________________
+	//____ CLambdaSlotVector::pushBack() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	CLambdaSlotVector::iterator CLambdaSlotVector::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
@@ -65,9 +65,9 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ CLambdaSlotArray::insert() ________________________________________________
+	//____ CLambdaSlotVector::insert() ________________________________________________
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotVector::iterator CLambdaSlotVector::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
@@ -79,7 +79,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	CLambdaSlotArray::iterator CLambdaSlotArray::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	CLambdaSlotVector::iterator CLambdaSlotVector::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 

@@ -93,14 +93,14 @@
 #include <wg_textmapper.h>
 #include <wg_cdynamicslotcollection.h>
 #include <wg_cvaluedisplay.h>
-#include <wg_cselectableslotarray.h>
-#include <wg_cpaddedslotarray.h>
+#include <wg_cselectableslotvector.h>
+#include <wg_cpaddedslotvector.h>
 #include <wg_ctext.h>
 #include <wg_cvalueeditor.h>
 #include <wg_cshadows.h>
 #include <wg_cstatictextdisplay.h>
 #include <wg_geocomponent.h>
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 #include <wg_ccanvas.h>
 #include <wg_cstandardslot.h>
 #include <wg_cstaticslotcollection.h>
@@ -109,7 +109,7 @@
 #include <wg_cstaticvaluedisplay.h>
 #include <wg_ccolumnheader.h>
 #include <wg_ctextdisplay.h>
-#include <wg_cstaticslotarray.h>
+#include <wg_cstaticslotvector.h>
 #include <wg_ctexteditor.h>
 #include <wg_component.h>
 #include <wg_multiblockskin.h>

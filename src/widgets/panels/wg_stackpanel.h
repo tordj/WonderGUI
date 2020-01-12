@@ -26,7 +26,7 @@
 
 #include <wg_panel.h>
 #include <wg_paddedslot.h>
-#include <wg_cpaddedslotarray.h>
+#include <wg_cpaddedslotvector.h>
 
 
 namespace wg
@@ -42,8 +42,8 @@ namespace wg
 	class StackSlot : public PaddedSlot
 	{
 		friend class StackPanel;
-		friend class CStackSlotArray;
-		friend class CDynamicSlotArray<StackSlot>;
+		friend class CStackSlotVector;
+		friend class CDynamicSlotVector<StackSlot>;
 
 	public:
 
@@ -80,28 +80,28 @@ namespace wg
 	};
 
 
-	//____ CStackSlotArray ________________________________________________________
+	//____ CStackSlotVector ________________________________________________________
 
-	class CStackSlotArray;
-	typedef	StrongComponentPtr<CStackSlotArray>	CStackSlotArray_p;
-	typedef	WeakComponentPtr<CStackSlotArray>	CStackSlotArray_wp;
+	class CStackSlotVector;
+	typedef	StrongComponentPtr<CStackSlotVector>	CStackSlotVector_p;
+	typedef	WeakComponentPtr<CStackSlotVector>	CStackSlotVector_wp;
 
-	class CStackSlotArray : public CPaddedSlotArray<StackSlot>
+	class CStackSlotVector : public CPaddedSlotVector<StackSlot>
 	{
 		friend class StackPanel;
 	public:
 
 		//.____ Misc __________________________________________________________
 
-		inline CStackSlotArray_p	ptr() { return CStackSlotArray_p(this); }
+		inline CStackSlotVector_p	ptr() { return CStackSlotVector_p(this); }
 
 	protected:
 
-		class Holder : public CPaddedSlotArray<StackSlot>::Holder			/** @private */
+		class Holder : public CPaddedSlotVector<StackSlot>::Holder			/** @private */
 		{
 		};
 
-		CStackSlotArray(Holder * pHolder) : CPaddedSlotArray<StackSlot>(pHolder) {}
+		CStackSlotVector(Holder * pHolder) : CPaddedSlotVector<StackSlot>(pHolder) {}
 	};
 
 
@@ -111,9 +111,9 @@ namespace wg
 	/**
 	*/
 
-	class StackPanel : public Panel, protected CStackSlotArray::Holder
+	class StackPanel : public Panel, protected CStackSlotVector::Holder
 	{
-		friend class CStackSlotArray;
+		friend class CStackSlotVector;
 
 	public:
 
@@ -123,7 +123,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStackSlotArray	slots;
+		CStackSlotVector	slots;
 
 		//.____ Identification __________________________________________
 
@@ -155,7 +155,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		// Overloaded from StackCSlotArray::Holder
+		// Overloaded from StackCSlotVector::Holder
 
 		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
 		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;

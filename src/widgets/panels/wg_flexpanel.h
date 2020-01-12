@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_panel.h>
-#include <wg_cdynamicslotarray.h>
+#include <wg_cdynamicslotvector.h>
 
 namespace wg
 {
@@ -81,8 +81,8 @@ namespace wg
 	class FlexSlot : public DynamicSlot
 	{
 		friend class FlexPanel;
-		friend class CFlexSlotArray;
-		template<class S> friend class CDynamicSlotArray;
+		friend class CFlexSlotVector;
+		template<class S> friend class CDynamicSlotVector;
 
 	public:
 
@@ -169,13 +169,13 @@ namespace wg
 	};
 
 
-	//____ CFlexSlotArray ________________________________________________________
+	//____ CFlexSlotVector ________________________________________________________
 
-	class CFlexSlotArray;
-	typedef	StrongComponentPtr<CFlexSlotArray>	CFlexSlotArray_p;
-	typedef	WeakComponentPtr<CFlexSlotArray>	CFlexSlotArray_wp;
+	class CFlexSlotVector;
+	typedef	StrongComponentPtr<CFlexSlotVector>	CFlexSlotVector_p;
+	typedef	WeakComponentPtr<CFlexSlotVector>	CFlexSlotVector_wp;
 
-	class CFlexSlotArray : public CDynamicSlotArray<FlexSlot>
+	class CFlexSlotVector : public CDynamicSlotVector<FlexSlot>
 	{
 		friend class FlexPanel;
 	public:
@@ -199,19 +199,19 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline CFlexSlotArray_p ptr() { return CFlexSlotArray_p(this); }
+		inline CFlexSlotVector_p ptr() { return CFlexSlotVector_p(this); }
 
 
 	protected:
-		class Holder : public  CDynamicSlotArray<FlexSlot>::Holder
+		class Holder : public  CDynamicSlotVector<FlexSlot>::Holder
 		{
 		};
 
-		CFlexSlotArray(Holder * pHolder) : CDynamicSlotArray<FlexSlot>(pHolder) {}
+		CFlexSlotVector(Holder * pHolder) : CDynamicSlotVector<FlexSlot>(pHolder) {}
 
 
-		inline CFlexSlotArray::Holder * _holder() { return static_cast<CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
-		inline const CFlexSlotArray::Holder * _holder() const { return static_cast<const CFlexSlotArray::Holder*>(CDynamicSlotArray<FlexSlot>::_holder()); }
+		inline CFlexSlotVector::Holder * _holder() { return static_cast<CFlexSlotVector::Holder*>(CDynamicSlotVector<FlexSlot>::_holder()); }
+		inline const CFlexSlotVector::Holder * _holder() const { return static_cast<const CFlexSlotVector::Holder*>(CDynamicSlotVector<FlexSlot>::_holder()); }
 	};
 
 
@@ -226,7 +226,7 @@ namespace wg
 	 */
 
 
-	class FlexPanel : public Panel, protected CFlexSlotArray::Holder
+	class FlexPanel : public Panel, protected CFlexSlotVector::Holder
 	{
 	public:
 
@@ -236,7 +236,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CFlexSlotArray		slots;
+		CFlexSlotVector		slots;
 
 		//.____ Identification __________________________________________
 

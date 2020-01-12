@@ -27,21 +27,21 @@
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
 
-#include <wg_cselectableslotarray.impl.h>
+#include <wg_cselectableslotvector.impl.h>
 
 namespace wg
 {
 	using namespace Util;
 
-	template class CSelectableSlotArray<PackListSlot>;
-	template class CDynamicSlotArray<PackListSlot>;
+	template class CSelectableSlotVector<PackListSlot>;
+	template class CDynamicSlotVector<PackListSlot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
 
 
 	//____ insertSorted() ___________________________________________________
 
-	CPackListSlotArray::iterator CPackListSlotArray::insertSorted(Widget * pWidget)
+	CPackListSlotVector::iterator CPackListSlotVector::insertSorted(Widget * pWidget)
 	{
 		//TODO: Replace with assert
 //		if (!pWidget)
@@ -57,7 +57,7 @@ namespace wg
 
 	//____ sort() __________________________________________________________
 
-	void CPackListSlotArray::sort()
+	void CPackListSlotVector::sort()
 	{
 		_holder()->_sortEntries();
 	}

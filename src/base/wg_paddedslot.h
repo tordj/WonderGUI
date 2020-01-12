@@ -33,8 +33,8 @@ namespace wg
 
 	class PaddedSlot : public DynamicSlot
 	{
-		template<class S> friend class CDynamicSlotArray;
-		template<class S> friend class CPaddedSlotArray;
+		template<class S> friend class CDynamicSlotVector;
+		template<class S> friend class CPaddedSlotVector;
 	public:
 
 		//____ Holder _________________________________________________________
