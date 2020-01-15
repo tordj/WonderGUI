@@ -25,7 +25,7 @@
 #include <wg_gfxdevice.h>
 
 #include <wg_gfxdevice.h>
-#include <wg_surface.h>
+#include <wg3_surface.h>
 #include <wg_geo.h>
 #include <wg_blockset.h>
 #include <wg_text.h>
@@ -60,9 +60,9 @@ void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, con
     WgUtil::AdjustScaledArea(_block, canvas);
     
     const WgRect& src = _block.Rect();
-    const WgSurface * pSurf = _block.Surface();
+    wg::Surface * pSurf = _block.Surface();
 
-    pDevice->setBlitSource(pSurf->RealSurface());
+    pDevice->setBlitSource(pSurf);
     pDevice->blitNinePatch(canvas, canvasBorders, src, sourceBorders);
     
 }
@@ -644,7 +644,7 @@ void WgGfxDevice::_drawUnderline( wg::GfxDevice * pDevice, const WgText * pText,
 	const WgUnderline * pUnderline = pen.GetFont()->GetUnderline( pen.GetSize() );
 
     auto p = pDevice->blitSource();
-    pDevice->setBlitSource(pUnderline->pSurf->RealSurface());
+    pDevice->setBlitSource(pUnderline->pSurf);
     pDevice->blitHorrBar(pUnderline->rect, WgBorders( 0, pUnderline->rightBorder, 0, pUnderline->leftBorder ), false, WgCoord(_x + pUnderline->bearingX, _y + pUnderline->bearingY), pen.GetPosX());
     pDevice->setBlitSource(p);
     

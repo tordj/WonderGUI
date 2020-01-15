@@ -31,6 +31,7 @@
 
 #include <assert.h>
 #include <map>
+#include <functional>
 
 #ifndef WG_USERDEFINES_DOT_H
 #	include <wg_userdefines.h>
@@ -59,7 +60,7 @@ class WgMemPool;
 class WgWeakPtrHub;
 class WgMemStack;
 class WgCursor;
-class WgSurfaceFactory;
+
 
 struct WgContext;
 

@@ -31,7 +31,8 @@
 #	include <wg_smartptr.h>
 #endif
 
-class	WgSurface;
+#include <wg3_surface.h>
+
 class	WgGlyphset;
 
 
@@ -41,10 +42,10 @@ class	WgGlyphset;
 
 struct WgGlyphBitmap
 {
-	WgSurface*	pSurface;
-	WgRect		rect;
-	Sint16		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-	Sint16		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+    wg::Surface_p	pSurface;
+	WgRect		    rect;
+	Sint16		    bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+	Sint16		    bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 };
 
 
@@ -78,14 +79,12 @@ typedef WgGlyph*	WgGlyphPtr;
 
 struct WgUnderline
 {
-	WgUnderline() { pSurf = 0; rect = WgRect(0,0,0,0); bearingX = 0; bearingY = 0; leftBorder = 0; rightBorder = 0; }
-
-	WgSurface * pSurf;
-	WgRect		rect;
-	Sint8		bearingX;
-	Sint8		bearingY;
-	Uint8		leftBorder;
-	Uint8		rightBorder;
+    wg::Surface_p   pSurf;
+	WgRect		    rect;
+	Sint8		    bearingX = 0;
+	Sint8		    bearingY = 0;
+	Uint8		    leftBorder = 0;
+	Uint8		    rightBorder = 0;
 };
 
 //____ WgGlyphset _____________________________________________________________

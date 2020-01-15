@@ -34,12 +34,9 @@
 #include <wg_knob.h>
 #include <iostream>
 
-#include <wg_surface_soft.h>
-#include <wg_surfacefactory_soft.h>
-#include <wg_glsurface.h>
+#include <wg3_softsurface.h>
+#include <wg3_softsurfacefactory.h>
 #include <wg3_softgfxdevice.h>
-#include <wg3_glgfxdevice.h>
-#include <wg_surfacefactory_soft.h>
 #include "sdl_wglib.h"
 #include <wg_boxskin.h>
 #include <wg_volumemeter.h>
@@ -53,9 +50,6 @@
 #include <wg_popuplayer.h>
 #include <wg_blockset.h>
 #include <wg_shadowlayer.h>
-
-#include <wg3_softgfxdevice.h>
-#include <wg3_softsurfacefactory.h>
 
 
 #include "testwidget.h"
@@ -74,8 +68,8 @@ void packPanelPaddingTest( WgRootPanel * pRoot );
 //#define USE_OPEN_GL
 
 
-WgSurfaceFactory *	g_pSurfaceFactory = nullptr;
-wg::GfxDevice_p		g_pGfxDevice = nullptr;
+wg::SurfaceFactory_p	g_pSurfaceFactory;
+wg::GfxDevice_p		    g_pGfxDevice;
 //wg::SurfaceFactory_p g_pModernSurfaceFactory = nullptr;
 
 
@@ -219,11 +213,10 @@ int main ( int argc, char** argv )
 	else if (pScreen->format->BitsPerPixel == 24)
 		type = WgPixelType::BGR_8;
 
+    auto pCanvas = wg::SoftSurface::create( WgSize(width,height), type, wg::Blob::create(pScreen->pixels, nullptr), pScreen->pitch );
+    g_pGfxDevice = wg::SoftGfxDevice::create( pCanvas );
 
-	WgSurfaceSoft * pCanvas = new WgSurfaceSoft( WgSize(width,height), type, (unsigned char *) pScreen->pixels, pScreen->pitch );
-    g_pGfxDevice = wg::SoftGfxDevice::create( pCanvas->RealSurface() );
-
-	g_pSurfaceFactory = new WgSurfaceFactorySoft();
+    g_pSurfaceFactory = wg::SoftSurfaceFactory::create();
 //    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
@@ -253,11 +246,11 @@ int main ( int argc, char** argv )
 */
 	// Load bitmap font
 
-	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", * g_pSurfaceFactory );
+	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
 
 	// Load and setup cursor
 
-	WgSurface * pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", * g_pSurfaceFactory );
+	auto pCursorImg = sdl_wglib::LoadSurface("../resources/cursors.png", g_pSurfaceFactory );
 
 	WgGfxAnim * pCursorEOL = new WgGfxAnim();
 	pCursorEOL->SetSize( WgSize(8,8) );
@@ -563,6 +556,8 @@ int main ( int argc, char** argv )
 	// Exit WonderGUI
 
 	delete pRoot;
+
+    g_pSurfaceFactory = nullptr;
     g_pGfxDevice = nullptr;
 
 	WgBase::Exit();
@@ -904,7 +899,7 @@ void scrollPanelTest( WgRootPanel * pRoot )
 
 void shadowLayerTest( WgRootPanel * pRoot )
 {
-    WgSurface * pImgSurface = sdl_wglib::LoadSurface("../resources/shadow.png", * g_pSurfaceFactory );
+    auto pImgSurface = sdl_wglib::LoadSurface("../resources/shadow.png", g_pSurfaceFactory );
     
     WgBlockSkinPtr pShadowSkin = WgBlockSkin::CreateStaticFromSurface(pImgSurface, {0,128,128,0});
     pShadowSkin->SetContentPadding({0,128,128,0});
@@ -975,7 +970,7 @@ void shadowLayerTest( WgRootPanel * pRoot )
 
 WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 {
-	WgResDB * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", *g_pSurfaceFactory);
+	WgResDB * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", g_pSurfaceFactory);
 	if (!pDB)
 		return 0;
 
@@ -1002,24 +997,24 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	// Load images and specify blocks
 
-	WgSurface * pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", *g_pSurfaceFactory);
+	auto pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", g_pSurfaceFactory);
 	WgBlocksetPtr pBackBlock = WgBlockset::CreateFromSurface(pBackImg, WG_TILE_ALL);
 
-	WgSurface * pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", *g_pSurfaceFactory);
+	auto pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", g_pSurfaceFactory);
 	WgBlocksetPtr pFlagBlock = WgBlockset::CreateFromSurface(pFlagImg);
 
-	WgSurface * pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", *g_pSurfaceFactory);
+	auto pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", g_pSurfaceFactory);
 	WgBlocksetPtr pSplashBlock = WgBlockset::CreateFromSurface(pSplashImg);
 
-	WgSurface * pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", *g_pSurfaceFactory);
+	auto pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", g_pSurfaceFactory);
 	WgBlocksetPtr pBigBlock = WgBlockset::CreateFromSurface(pBigImg);
 
-	WgSurface * pPlateImg = sdl_wglib::LoadSurface("../resources/grey_pressable_plate.bmp", *g_pSurfaceFactory);
+	auto pPlateImg = sdl_wglib::LoadSurface("../resources/grey_pressable_plate.bmp", g_pSurfaceFactory);
 
-	WgSurface * pAnimSurf = sdl_wglib::LoadSurface("../resources/dummy_anim.png", *g_pSurfaceFactory);
+	auto pAnimSurf = sdl_wglib::LoadSurface("../resources/dummy_anim.png", g_pSurfaceFactory);
 
-	WgSurface * pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", *g_pSurfaceFactory);
-	pPlateImg_x2->SetScaleFactor(4096 * 2);
+	auto pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
+	pPlateImg_x2->setScale(2.f);
 
 	auto pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface(pPlateImg, 0, WgBorders(3));
 

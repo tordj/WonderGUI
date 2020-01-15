@@ -38,8 +38,6 @@ m_fadeStartColor(0xFFFFFFFF), m_fadeEndColor(0xFFFFFFFF), m_fadeTime(0), m_fadeT
 
 WgCanvasCapsule::~WgCanvasCapsule()
 {
-    if (m_pCanvas)
-        delete m_pCanvas;
 }
 
 //____ Type() _________________________________________________________________
@@ -58,14 +56,13 @@ const char * WgCanvasCapsule::GetClass()
 
 //____ SetSurfaceFactory() ____________________________________________________
 
-void WgCanvasCapsule::SetSurfaceFactory(WgSurfaceFactory * pFactory)
+void WgCanvasCapsule::SetSurfaceFactory(wg::SurfaceFactory * pFactory)
 {
     if (pFactory == m_pFactory)
         return;
 
     if (m_pCanvas)
     {
-        delete m_pCanvas;
         m_pCanvas = nullptr;
         _requestRender();
     }
@@ -219,11 +216,11 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
         if (!m_pFactory)
             return;                            // No SurfaceFactory set!
 
-        WgSize maxSize = m_pFactory->MaxSize();
+        WgSize maxSize = m_pFactory->maxSize();
         if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
             return;                            // Can't create a canvas of the required size!
 
-        m_pCanvas = m_pFactory->CreateSurface(_canvas.size(), WgPixelType::BGRA_8);
+        m_pCanvas = m_pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);
         m_dirtyPatches.Clear();
         m_dirtyPatches.Add(_canvas.size());
     }
@@ -268,7 +265,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
     if (!renderStack.IsEmpty())
     {
         auto pOldCanvas = pDevice->canvas();
-        pDevice->setCanvas(m_pCanvas->RealSurface());
+        pDevice->setCanvas(m_pCanvas);
 
         pDevice->setBlendMode(WgBlendMode::Replace);
         pDevice->setTintColor(WgColor::White);
@@ -312,7 +309,7 @@ void WgCanvasCapsule::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, 
 
     // Copy from our back canvas to the screen canvas
 
-    pDevice->setBlitSource(m_pCanvas->RealSurface());
+    pDevice->setBlitSource(m_pCanvas);
     pDevice->blit( WgCoord(_canvas.x, _canvas.y), { 0,0,_canvas.w,_canvas.h });
 }
 
@@ -332,9 +329,8 @@ void WgCanvasCapsule::_onCloneContent( const WgWidget * _pOrg )
 
 void WgCanvasCapsule::_onNewSize(const WgSize& size)
 {
-    if (m_pCanvas && size != m_pCanvas->PixelSize() )
+    if (m_pCanvas && size != m_pCanvas->size() )
     {
-        delete m_pCanvas;
         m_pCanvas = nullptr;
         _requestRender();
     }
@@ -371,7 +367,7 @@ void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, con
 {
 	//TODO: Support recursive masking.
 
-	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->PixelFormat()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
+	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
 		patches.Sub(WgRect(geo, clip));
 
     return;

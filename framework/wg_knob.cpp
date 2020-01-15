@@ -49,7 +49,7 @@ WgKnob::WgKnob()
 
 }
 
-WgKnob::WgKnob(WgSurfaceFactory * pFactory)
+WgKnob::WgKnob(wg::SurfaceFactory * pFactory)
 {
     WgKnob();
 
@@ -67,8 +67,6 @@ WgKnob::WgKnob(WgSurfaceFactory * pFactory)
 
 WgKnob::~WgKnob()
 { 
-	if(m_pSurf)
-		delete m_pSurf;
 }
 
 //____ Type() _________________________________________________________________
@@ -386,7 +384,6 @@ void WgKnob::_onNewSize(const WgSize& size)
 
 	if (m_size != newSize )
 	{
-		delete m_pSurf;
         m_pSurf = nullptr;
 		m_size = newSize;
 	}
@@ -401,7 +398,7 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
     {
         if( !m_pSurfaceFactory )
             return;
-        m_pSurf = m_pSurfaceFactory->CreateSurface(m_size*m_iOversampleX, WgPixelType::BGRA_8);
+        m_pSurf = m_pSurfaceFactory->createSurface(m_size*m_iOversampleX, WgPixelType::BGRA_8);
     }
 
 	if( !m_backBufferDirtyRect.isEmpty() )
@@ -429,7 +426,7 @@ void WgKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const Wg
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
-    pDevice->setBlitSource(m_pSurf->RealSurface());
+    pDevice->setBlitSource(m_pSurf);
     pDevice->blit(WgCoord(contentRect.x,contentRect.y),{0,0,m_size});
 }
 
@@ -481,7 +478,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 	WgColor col;
 
-	unsigned char* dest = (unsigned char*)m_pSurf->LockRegion(WgAccessMode::WriteOnly, region );
+	unsigned char* dest = (unsigned char*)m_pSurf->lockRegion(WgAccessMode::WriteOnly, region );
 
 	float x = 0.0f, y = 0.0f;
 	float y_inv = 0.0f;
@@ -494,7 +491,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 		y = (float)yc*yd - 1.0f;
 		y_inv = 1.0f / std::max(std::abs(y), 0.0001f);
 
-		unsigned int *ddest = (unsigned int *)(dest + m_pSurf->Pitch() * (yc-region.y));    // Don't forget about pitch
+		unsigned int *ddest = (unsigned int *)(dest + m_pSurf->pitch() * (yc-region.y));    // Don't forget about pitch
 		for (int xc = region.x; xc<region.x + region.w*oversampling; xc++)
 		{
 			// [-1, 1] coordinates
@@ -977,7 +974,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 	}
 
-	m_pSurf->Unlock();
+	m_pSurf->unlock();
 
 	// Downsample. Oversampling is not used.
 	//    _downsample(m_pSurf, m_iOversampleX);
@@ -1009,16 +1006,16 @@ WgColor WgKnob::Blend( const WgColor& start, const WgColor& dest, float grade )
     return col;
 }
 
-void WgKnob::_downsample(WgSurface* pSurf, const int oversample)
+void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
 {
     if(oversample == 1)
         return;
 
-    int w = pSurf->PixelSize().w; //Width();
-    int h = pSurf->PixelSize().h; //Height();
+    int w = pSurf->size().w; //Width();
+    int h = pSurf->size().h; //Height();
     unsigned int col = (255) | (2<<8) | (1<<16) | (192<<24);
 
-    unsigned int* data = (unsigned int*)pSurf->Lock(WgAccessMode::ReadWrite);
+    unsigned int* data = (unsigned int*)pSurf->lock(WgAccessMode::ReadWrite);
     int i=0, j=0;
 
     // Loop over small size
@@ -1046,7 +1043,7 @@ void WgKnob::_downsample(WgSurface* pSurf, const int oversample)
         }
     }
 
-    pSurf->Unlock();
+    pSurf->unlock();
 }
 
 //____ _onAlphaTest() ___________________________________________________________

@@ -27,7 +27,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_payload.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surfacefactory.h>
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
@@ -223,7 +223,7 @@ WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 
 //____ Screenshot() ___________________________________________________________
 
-WgSurface * WgWidget::Screenshot( int surfaceFlags )
+wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 {
     auto pDevice = WgBase::Context()->pDevice.rawPtr();
     auto pFactory =  WgBase::Context()->pFactory;
@@ -233,8 +233,8 @@ WgSurface * WgWidget::Screenshot( int surfaceFlags )
     
     WgSize sz = PixelSize();
     
-    auto pCanvas = pFactory->CreateSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
-    pCanvas->SetScaleFactor(m_scale);
+    auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
+    pCanvas->setScale(m_scale/4096.f);
     
     WgPatches patches;
     patches.Add( sz );
@@ -243,7 +243,7 @@ WgSurface * WgWidget::Screenshot( int surfaceFlags )
     auto pOldCanvas = pDevice->canvas();
     WgColor oldTint = pDevice->tintColor();
     WgBlendMode oldBlendMode = pDevice->blendMode();
-    pDevice->setCanvas(pCanvas->RealSurface());
+    pDevice->setCanvas(pCanvas);
     pDevice->setTintColor( WgColor::White);
 
     if( pDevice->isRendering() )

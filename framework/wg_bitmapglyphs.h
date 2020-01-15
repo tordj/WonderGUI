@@ -29,7 +29,7 @@
 
 #include <wg_glyphset.h>
 
-class	WgSurface;
+#include <wg3_surface.h>
 
 
 //____ WgBitmapGlyphs _____________________________________________________________
@@ -37,12 +37,12 @@ class	WgSurface;
 class WgBitmapGlyphs : public WgGlyphset
 {
 public:
-	WgBitmapGlyphs( WgSurface * pSurf, char * pGlyphSpec, bool binaryFile=false );
+    WgBitmapGlyphs( wg::Surface * pSurf, char * pGlyphSpec, bool binaryFile=false );
 	~WgBitmapGlyphs();
 
 	inline Type	GetType() const { return BITMAP; }
 
-	void					InsertGlyphs( WgSurface * pSurf, char* pGlyphSpec, bool binaryFile=false );
+    void					InsertGlyphs( wg::Surface * pSurf, char* pGlyphSpec, bool binaryFile=false );
 	void					CopyGlyphs( WgBitmapGlyphs* pOtherGlyphset );
 
 
@@ -65,7 +65,7 @@ private:
 	{
 	public:
 		Glyph();
-		Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, WgSurface * pSurf, const WgRect& rect );
+        Glyph( int advance, Sint8 bearingX, Sint8 bearingY, Uint32 kerningIndex, WgGlyphset * pGlyphset, wg::Surface * pSurf, const WgRect& rect );
 
 		const WgGlyphBitmap * GetBitmap() { return &m_src; }
 

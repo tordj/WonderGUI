@@ -24,7 +24,7 @@
 #include <wg_eventhandler.h>
 #include <wg_event.h>
 #include <wg_gfxdevice.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_base.h>
 #include <wg_context.h>
@@ -97,7 +97,6 @@ WgShadowLayer::WgShadowLayer() : m_frontHook(this)
 WgShadowLayer::~WgShadowLayer()
 {
     _stopReceiveTicks();
-    delete m_pShadowSurface;
 }
 
 //____ Type() _________________________________________________________________
@@ -559,7 +558,6 @@ void WgShadowLayer::_preRender()
 
 void WgShadowLayer::_onNewSize(const WgSize& size)
 {
-    delete m_pShadowSurface;
     m_pShadowSurface = nullptr;
     
     if( m_pSkin )
@@ -613,7 +611,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		auto pSurfaceFactory = WgBase::Context()->pFactory;
 
 		if (pSurfaceFactory)
-			m_pShadowSurface = pSurfaceFactory->CreateSurface(_canvas.size(), WgPixelType::BGRA_8);
+			m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);
 	}
 
 	if (m_pShadowSurface)
@@ -636,7 +634,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		{
 			auto oldCanvas = pDevice->canvas();
 
-			pDevice->setCanvas(m_pShadowSurface->RealSurface());
+			pDevice->setCanvas(m_pShadowSurface);
 
 			pDevice->setClipList(shadowPatches.Size(), shadowPatches.Begin());
 			pDevice->setTintColor(WgColor::White);
@@ -659,7 +657,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
         pDevice->setTintColor( { 255,255,255,m_shadowTint} );
 		pDevice->setBlendMode(WgBlendMode::Blend);
-		pDevice->setBlitSource( m_pShadowSurface->RealSurface() );
+		pDevice->setBlitSource( m_pShadowSurface );
 		pDevice->blit( _canvas.pos() );
 
 //        for (auto& shadow : m_shadows)

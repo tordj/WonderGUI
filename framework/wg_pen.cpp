@@ -260,7 +260,7 @@ void WgPen::BlitChar() const
 		int x = m_pos.x + pSrc->bearingX;
 		int y = m_pos.y + pSrc->bearingY;
 
-        m_pDevice->setBlitSource(pSrc->pSurface->RealSurface());            //TODO: Optimize!!!!
+        m_pDevice->setBlitSource(pSrc->pSurface);            //TODO: Optimize!!!!
         
         m_pDevice->blit( WgCoord(x,y), pSrc->rect);
 	}

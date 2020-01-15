@@ -22,7 +22,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 
 #include <wg_scrollchart.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surfacefactory.h>
 #include <wg_gfxdevice.h>
 #include <wg_pen.h>
 #include <wg_base.h>
@@ -128,7 +128,7 @@ WgSize WgScrollChart::PreferredPixelSize() const
 
 //____ SetSurfaceFactory() ____________________________________________________
 
-void WgScrollChart::SetSurfaceFactory(WgSurfaceFactory * pFactory)
+void WgScrollChart::SetSurfaceFactory(wg::SurfaceFactory * pFactory)
 {
 	m_pFactory = pFactory;
 	_regenCanvas();
@@ -724,7 +724,7 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 		m_scrollFraction += ticks;
 		
-		float samplesPerPixel = m_sampleTTL / (float) m_pCanvas->PixelSize().w;
+		float samplesPerPixel = m_sampleTTL / (float) m_pCanvas->size().w;
 
 		int scrollAmount =  (int) ((m_scrollFraction-1) / samplesPerPixel);
 
@@ -766,13 +766,13 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (m_pCanvas)
 	{
-		WgSize sz = m_pCanvas->PixelSize();
+		WgSize sz = m_pCanvas->size();
 		double	timestampInc = m_sampleTTL / (double)sz.w;
 
 		if (m_bRefreshCanvas || m_scrollAmount >= sz.w)
 		{
 			auto pOldCanvas = pDevice->canvas();
-			pDevice->setCanvas(m_pCanvas->RealSurface());
+			pDevice->setCanvas(m_pCanvas);
             pDevice->clearClipList();
 
 			pDevice->fill(sz, m_chartColor);
@@ -814,7 +814,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			//
 
 			auto pOldCanvas = pDevice->canvas();
-			pDevice->setCanvas(m_pCanvas->RealSurface());
+			pDevice->setCanvas(m_pCanvas);
 
 			if (m_canvasOfs + m_scrollAmount <= sz.w )
 			{
@@ -901,7 +901,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 
 	// Calculate yOfs, chart floor and valueFactor
 
-	int canvasHeight = m_pCanvas->PixelSize().h;
+	int canvasHeight = m_pCanvas->size().h;
 	float valueFactor = canvasHeight / (m_bottomValue - m_topValue);
 
 	float graphFloor;
@@ -986,7 +986,7 @@ void WgScrollChart::_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop,
 
 	//
 
-	int canvasHeight = m_pCanvas->PixelSize().h;
+	int canvasHeight = m_pCanvas->size().h;
 	float valueFactor = canvasHeight / (m_bottomValue - m_topValue);
 
 	float floor;
@@ -1137,14 +1137,14 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	if (m_pCanvas)
 	{
-		assert(m_pCanvas->PixelSize() == scrollCanvas.size());
+		assert(m_pCanvas->size() == scrollCanvas.size());
 	
-        pDevice->setBlitSource(m_pCanvas->RealSurface());
+        pDevice->setBlitSource(m_pCanvas);
 		if( m_windowBegin == 0 )
 			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y), { 0, 0, scrollCanvas.w, scrollCanvas.h });
 		else
 		{
-			int firstPartLen = m_pCanvas->PixelSize().w - m_canvasOfs;
+			int firstPartLen = m_pCanvas->size().w - m_canvasOfs;
 
 			pDevice->blit(WgCoord(scrollCanvas.x, scrollCanvas.y), { m_canvasOfs, 0, firstPartLen, scrollCanvas.h });
 			pDevice->blit(WgCoord(scrollCanvas.x + firstPartLen, scrollCanvas.y), { 0, 0, scrollCanvas.w - firstPartLen, scrollCanvas.h });
@@ -1237,11 +1237,7 @@ void WgScrollChart::_setScale(int scale)
 
 void WgScrollChart::_regenCanvas()
 {
-	if (m_pCanvas)
-	{
-		delete m_pCanvas;
 		m_pCanvas = nullptr;
-	}
 
 	if (m_pFactory)
 	{
@@ -1250,7 +1246,7 @@ void WgScrollChart::_regenCanvas()
 		if (sz.w <= 0 && sz.h <= 0)
 			return;
 
-		m_pCanvas = m_pFactory->CreateSurface(sz, WgPixelType::BGR_8);
+		m_pCanvas = m_pFactory->createSurface(sz, WgPixelType::BGR_8);
 //		m_pCanvas->Fill(m_chartColor);
 		m_canvasOfs = 0;
 		m_bRefreshCanvas = true;

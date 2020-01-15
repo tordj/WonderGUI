@@ -27,9 +27,7 @@
 #    include <wg_capsule.h>
 #endif
 
-#ifndef WG_SURFACEFACTORY_DOT_H
-#    include <wg_surfacefactory.h>
-#endif
+#include <wg3_surfacefactory.h>
 
 #ifndef WG_PATCHES_DOT_H
 #    include <wg_patches.h>
@@ -47,8 +45,8 @@ public:
 
 //    void                SetSkin(const WgSkinPtr& pSkin);        // Method added separately to those widgets that support skin so far.
 
-    void                SetSurfaceFactory(WgSurfaceFactory * pFactory);
-    const WgSurfaceFactory * SurfaceFactory() const { return m_pFactory; }
+    void                SetSurfaceFactory(wg::SurfaceFactory * pFactory);
+    wg::SurfaceFactory_p SurfaceFactory() const { return m_pFactory; }
 
     void                StartFade(WgColor destination, int ms);
     void                StopFade();
@@ -90,9 +88,9 @@ private:
     WgBlendMode        m_blendMode;
     WgTintMode         m_tintMode;
 
-    WgSurfaceFactory * m_pFactory;
-    WgSurface *        m_pCanvas;
-    WgPatches          m_dirtyPatches;            // Dirty patches on our own canvas.
+    wg::SurfaceFactory_p m_pFactory;
+    wg::Surface_p       m_pCanvas;
+    WgPatches           m_dirtyPatches;            // Dirty patches on our own canvas.
 };
 
 #endif //WG_CANVASCAPSULE_DOT_H

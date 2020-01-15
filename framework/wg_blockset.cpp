@@ -25,14 +25,14 @@
 #include <wg_blockset.h>
 #include <wg_colorset.h>
 #include <wg_geo.h>
-#include <wg_surface.h>
+#include <wg3_surface.h>
 #include <assert.h>
 #include <wg_mempool.h>
 
 WgMemPool * WgBlockset::g_pMemPool = 0;
 
 
-WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& sourceFrame, const WgBorders& canvasFrame, const WgBorders& padding, WgCoord contentShift, int scale, Uint32 flags )
+WgBlock::WgBlock( wg::Surface * pSurf, const WgRect& rect, const WgBorders& sourceFrame, const WgBorders& canvasFrame, const WgBorders& padding, WgCoord contentShift, int scale, Uint32 flags )
 {
 	m_pSurf			= pSurf;
 	m_rect			= rect;
@@ -46,10 +46,10 @@ WgBlock::WgBlock(	const WgSurface * pSurf, const WgRect& rect, const WgBorders& 
 	if( m_sourceFrame.left || m_sourceFrame.right || m_sourceFrame.top || m_sourceFrame.bottom )
 		m_flags |= WG_HAS_BORDERS;
 
-	if(m_rect.x + m_rect.w > (int)m_pSurf->PixelSize().w)
-		m_rect.w = m_pSurf->PixelSize().w - m_rect.x;
-	if(m_rect.y + m_rect.h > (int)m_pSurf->PixelSize().h)
-		m_rect.h = m_pSurf->PixelSize().h - m_rect.y;
+	if(m_rect.x + m_rect.w > (int)m_pSurf->size().w)
+		m_rect.w = m_pSurf->size().w - m_rect.x;
+	if(m_rect.y + m_rect.h > (int)m_pSurf->size().h)
+		m_rect.h = m_pSurf->size().h - m_rect.y;
 }
 
 
@@ -76,17 +76,17 @@ bool WgBlock::operator!=( const WgBlock& b) const
 
 //____ CreateFromSurface() _____________________________________________________
 
-WgBlocksetPtr WgBlockset::CreateFromSurface( WgSurface * pSurf, int flags )
+WgBlocksetPtr WgBlockset::CreateFromSurface( wg::Surface * pSurf, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
-	p->m_size		= pSurf->PointSize();
+	p->m_size		= pSurf->size() * pSurf->scale();
 	
 	return WgBlocksetPtr(p);
 }
 
 //____ CreateFromRect() ________________________________________________________
 
-WgBlocksetPtr WgBlockset::CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags )
+WgBlocksetPtr WgBlockset::CreateFromRect( wg::Surface * pSurf, const WgRect& normal, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
 	p->m_size			= normal;
@@ -102,7 +102,7 @@ WgBlocksetPtr WgBlockset::CreateFromRect( WgSurface * pSurf, const WgRect& norma
 
 //____ CreateFromRects() _______________________________________________________
 
-WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags )
+WgBlocksetPtr WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
 	p->m_size			= normal;
@@ -116,7 +116,7 @@ WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& norm
 	return WgBlocksetPtr(p);
 }
 
-WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags )
+WgBlocksetPtr WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
 	p->m_size			= normal;
@@ -130,7 +130,7 @@ WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& norm
 	return WgBlocksetPtr(p);
 }
 
-WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags )
+WgBlocksetPtr WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
 	p->m_size			= normal;
@@ -146,7 +146,7 @@ WgBlocksetPtr WgBlockset::CreateFromRects( WgSurface * pSurf, const WgRect& norm
 
 //____ CreateFromRow() _________________________________________________________
 
-WgBlocksetPtr WgBlockset::CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
+WgBlocksetPtr WgBlockset::CreateFromRow( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
 {
 	int w = (rect.w - (nBlocks-1)*padding)/nBlocks;
 	int h = rect.h;
@@ -179,7 +179,7 @@ WgBlocksetPtr WgBlockset::CreateFromRow( WgSurface * pSurf, const WgRect& rect, 
 
 //____ CreateFromColumn() ______________________________________________________
 
-WgBlocksetPtr WgBlockset::CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
+WgBlocksetPtr WgBlockset::CreateFromColumn( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int padding, int flags )
 {
 	int w = rect.w;
 	int h = (rect.h - (nBlocks-1)*padding)/nBlocks;
@@ -213,7 +213,7 @@ WgBlocksetPtr WgBlockset::CreateFromColumn( WgSurface * pSurf, const WgRect& rec
 
 //____ _alloc() ________________________________________________________________
 
-WgBlockset * WgBlockset::_alloc( const WgSurface * pSurf, int flags )
+WgBlockset * WgBlockset::_alloc( wg::Surface * pSurf, int flags )
 {
 	if( !g_pMemPool )
 		g_pMemPool = new WgMemPool( 16, sizeof(WgBlockset) );
@@ -224,7 +224,7 @@ WgBlockset * WgBlockset::_alloc( const WgSurface * pSurf, int flags )
 
 //____ Constructor() ___________________________________________________________
 
-WgBlockset::WgBlockset(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags ) : WgRefCountedPooled(pPool)
+WgBlockset::WgBlockset(	WgMemPool * pPool, wg::Surface * pSurf, Uint32 flags ) : WgRefCountedPooled(pPool)
 {
 	m_flags						= _verifyFlags(flags);
 	m_base.pSurf				= pSurf;
@@ -233,9 +233,9 @@ WgBlockset::WgBlockset(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags
 
 //____ AddAlternative() _______________________________________________________________
 
-bool WgBlockset::AddAlternative( const WgSurface * pSurf )
+bool WgBlockset::AddAlternative( wg::Surface * pSurf )
 {
-	if( !pSurf || pSurf->ScaleFactor() <= m_base.pSurf->ScaleFactor() )
+	if( !pSurf || pSurf->scale() <= m_base.pSurf->scale() )
 		return false;
 
 	LinkedAlt * p = new LinkedAlt();
@@ -287,15 +287,17 @@ const WgBlockset::Alt_Data* WgBlockset::_getAlt( int n ) const
 
 //____ _getAltForScale() _______________________________________________________
 
-const WgBlockset::Alt_Data*	WgBlockset::_getAltForScale( int scale ) const
+const WgBlockset::Alt_Data*	WgBlockset::_getAltForScale( int _scale ) const
 {
-	if( scale <= m_base.pSurf->ScaleFactor() )
+    float scale = _scale / 4096.f;
+    
+	if( scale <= m_base.pSurf->scale() )
 		return &m_base;
 
 	LinkedAlt * p = m_altChain.Last();
 	while( p )
 	{
-		if( p->data.pSurf->ScaleFactor() <= scale )
+		if( p->data.pSurf->scale() <= scale )
 			return &p->data;
 		p = p->Prev();
 	}
@@ -365,7 +367,7 @@ int WgBlockset::MinHeight( int scale ) const
 
 //____ Surface() _______________________________________________________________
 
-const WgSurface * WgBlockset::Surface( int scale ) const
+wg::Surface_p WgBlockset::Surface( int scale ) const
 {
 	const Alt_Data * p = _getAltForScale(scale);
 	if( !p )
@@ -522,7 +524,7 @@ WgBlock WgBlockset::_getBlock(WgMode m, const Alt_Data * p, int scale) const
 	Uint32 flags = m_flags & ~SKIP_MASK;
 	flags |= IsModeSkipable(m) ? WG_SKIP_NORMAL : 0;	// reuse bit
 
-	int scaleFactor = p->pSurf->ScaleFactor();
+    int scaleFactor = (int)(p->pSurf->scale() * 4096);
 
 	WgRect source((m_pos[m] * scaleFactor) / WG_SCALE_BASE, (m_size*scaleFactor) / WG_SCALE_BASE );
 	WgCoord shift( (m_contentShift[m].x * scale) >> WG_SCALE_BINALS, (m_contentShift[m].y * scale) >> WG_SCALE_BINALS );

@@ -44,8 +44,7 @@
 #include <vector>
 #include <deque>
 
-
-class WgSurfaceFactory;
+#include <wg3_surfacefactory.h>
 
 //____ WgScrollChart ____________________________________________________________
 
@@ -62,8 +61,8 @@ public:
 	void	SetPreferredChartSize(const WgSize& size);			// Preferred size of the wave area (widget minus all padding) set in POINTS, not pixels!
 	WgSize	PreferredPixelSize() const;
 
-	void		SetSurfaceFactory(WgSurfaceFactory * pFactory);
-	WgSurfaceFactory * SurfaceFactory() const {return m_pFactory;}
+    void		SetSurfaceFactory(wg::SurfaceFactory * pFactory);
+    wg::SurfaceFactory_p SurfaceFactory() const {return m_pFactory;}
 
 	void		SetCanvasPadding(WgBorders);
 	WgBorders	CanvasPadding() const { return m_pointPadding; }
@@ -266,8 +265,8 @@ private:
 	uint64_t	m_sampleBeginTimestamp;		// Timestamp of first samples in store
 	uint64_t	m_sampleEndTimestamp;		// Timestamp of last samples in store
 
-	WgSurfaceFactory *	m_pFactory;
-	WgSurface *			m_pCanvas;
+    wg::SurfaceFactory_p	m_pFactory;
+    wg::Surface_p	    m_pCanvas;
 	int					m_canvasOfs;		// offset in pixels for left edge of widget.
 	bool				m_bRefreshCanvas;	// Totally redraw everything on our canvas.
 

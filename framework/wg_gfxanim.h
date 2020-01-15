@@ -39,7 +39,8 @@
 #	include <wg_blockset.h>
 #endif
 
-class WgSurface;
+#include <wg3_surface.h>
+
 class WgGfxFrame;
 
 
@@ -64,15 +65,15 @@ public:
 	void		SetBlockFlags( Uint32 flags );
 	Uint32		BlockFlags() const { return m_blockFlags; }
 
-	bool		InsertFrame( int pos, WgSurface * pSurf, WgCoord ofs, int duration );
-	bool		InsertFrame( WgGfxFrame * pBefore, WgSurface * pSurf, WgCoord ofs, int duration );
-	bool		AddFrame( WgSurface * pSurf, WgCoord ofs, int duration );
-	int			AddFrames( WgSurface * pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
-	int			AddFrames( WgSurface * pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+    bool		InsertFrame( int pos, wg::Surface * pSurf, WgCoord ofs, int duration );
+    bool		InsertFrame( WgGfxFrame * pBefore, wg::Surface * pSurf, WgCoord ofs, int duration );
+    bool		AddFrame( wg::Surface * pSurf, WgCoord ofs, int duration );
+    int			AddFrames( wg::Surface * pSurf, WgCoord arrayOfs, WgSize arraySize, int duration, int nFrames = 0, WgSize spacing = WgSize() );
+    int			AddFrames( wg::Surface * pSurf, int duration, int nFrames = 0, WgSize spacing = WgSize() );
 
-	bool		SetAltFrame( int pos, int alt, WgSurface * pSurf, WgCoord ofs );
+    bool		SetAltFrame( int pos, int alt, wg::Surface * pSurf, WgCoord ofs );
 
-	int			SetAltFrames( int frameOffset, int scaleFactor, WgSurface * pSurf, WgCoord arrayOfs, WgSize arraySize, int nFrames = 0, WgSize spacing = WgSize() );
+    int			SetAltFrames( int frameOffset, int scaleFactor, wg::Surface * pSurf, WgCoord arrayOfs, WgSize arraySize, int nFrames = 0, WgSize spacing = WgSize() );
 
 	WgGfxFrame * GetFrame( int64_t ticks, WgGfxFrame * pProximity = 0 ) const;
 
@@ -102,7 +103,7 @@ public:
 	WgGfxFrame * GetNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
 	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
 
-	WgSurface *	pSurf[MAX_ANIM_ALT];
+    wg::Surface_p pSurf[MAX_ANIM_ALT];
 	WgCoord		ofs[MAX_ANIM_ALT];
 };
 

@@ -70,16 +70,13 @@ namespace wg
 
 	//____ Surface() ____________________________________________________________
 
-	Surface::Surface() :
-		m_accessMode( AccessMode::None ),
-		m_pPixels( nullptr ),
-		m_pClut( nullptr ),
-		m_scaleMode( ScaleMode::Nearest ),
-		m_bMipmapped(false)
-
+	Surface::Surface( int flags )
 	{
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
-	}
+        
+        if( flags & SurfaceFlag::Scale2X )
+            m_pixelQuartersPerPoint = 8;            // TODO: Add error handling if size not divisable.
+    }
 
 	//____ ~Surface() ____________________________________________________________
 
@@ -143,7 +140,17 @@ namespace wg
 		return size().h;
 	}
 
+    //____ setScale() _______________________________________________________________
 
+    bool Surface::setScale( float scale )
+    {
+        //TODO: Error check, only allow certain factors.
+        
+        m_pixelQuartersPerPoint = (int)(scale*4);
+        return true;
+    }
+
+    
 	//____ colorToPixel() ____________________________________________________________
 	/**
 	 * Convert specified color to a pixel in surface's native format.

@@ -36,11 +36,11 @@ WgBlockSkinPtr WgBlockSkin::Create()
 }
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStatic( WgSurface * pSurface, WgRect block, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateStatic( wg::Surface * pSurface, WgRect block, WgBorders frame )
 {
 	if( !pSurface || frame.width() >= block.w || frame.height() >= block.h ||
-		block.x < 0 || pSurface->PixelSize().w < block.right() ||
-		block.y < 0 || pSurface->PixelSize().h < block.bottom() )
+		block.x < 0 || pSurface->size().w < block.right() ||
+		block.y < 0 || pSurface->size().h < block.bottom() )
 		return 0;
 
 	WgBlockSkin * pSkin = new WgBlockSkin();
@@ -50,13 +50,13 @@ WgBlockSkinPtr WgBlockSkin::CreateStatic( WgSurface * pSurface, WgRect block, Wg
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnable( WgSurface * pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateEnable( wg::Surface * pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame )
 {
 	if( !pSurface || frame.width() >= blockSize.w || frame.height() >= blockSize.h ||
-		pSurface->PixelSize().w < ofsEnabled.x + blockSize.w ||
-		pSurface->PixelSize().w < ofsDisabled.x + blockSize.w ||
-		pSurface->PixelSize().h < ofsEnabled.y + blockSize.h ||
-		pSurface->PixelSize().h < ofsDisabled.y + blockSize.h )
+		pSurface->size().w < ofsEnabled.x + blockSize.w ||
+		pSurface->size().w < ofsDisabled.x + blockSize.w ||
+		pSurface->size().h < ofsEnabled.y + blockSize.h ||
+		pSurface->size().h < ofsDisabled.y + blockSize.h )
 		return 0;
 
 	WgBlockSkin * pSkin = new WgBlockSkin();
@@ -67,7 +67,7 @@ WgBlockSkinPtr WgBlockSkin::CreateEnable( WgSurface * pSurface, WgSize blockSize
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickable( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
 	// if( !pSurface || blockFrame.width() >= blockGeo.w || blockFrame.height() >= blockGeo.h ||
 	// 	pSurface->PixelSize().w < blockStartOfs.x + blockGeo.w + blockPitch.w*3 ||
@@ -90,7 +90,7 @@ WgBlockSkinPtr WgBlockSkin::CreateClickable( WgSurface * pSurface, WgSize blockG
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateSelectable( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -106,7 +106,7 @@ WgBlockSkinPtr WgBlockSkin::CreateSelectable( WgSurface * pSurface, WgSize block
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -140,7 +140,7 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectable( WgSurface * pSurface, WgSize 
 
 /** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
 */
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
@@ -180,21 +180,21 @@ WgBlockSkinPtr WgBlockSkin::CreateClickSelectableWidget( WgSurface * pSurface, W
 
 
 
-WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( WgSurface * pSurface, WgBorders frame )
+WgBlockSkinPtr WgBlockSkin::CreateStaticFromSurface( wg::Surface * pSurface, WgBorders frame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
-	pSkin->SetBlockGeo( pSurface->PointSize(), frame );
+	pSkin->SetBlockGeo( pSurface->size()/pSurface->scale(), frame );
 	pSkin->SetAllBlocks( WgCoord(0,0) );
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame )
 {
 	WgBlockSkin * pSkin = new WgBlockSkin();
 	pSkin->SetSurface( pSurface );
 
-	WgSize	sz = WgSize( (pSurface->PointSize().w-blockSpacing)/2, pSurface->PointSize().h );
+	WgSize	sz = WgSize( ((pSurface->size().w/pSurface->scale())-blockSpacing)/2, (pSurface->size().h/pSurface->scale()) );
 
 	pSkin->SetBlockGeo( sz, blockFrame );
 	pSkin->SetAllBlocks( WgCoord(0,0) );
@@ -202,21 +202,21 @@ WgBlockSkinPtr WgBlockSkin::CreateEnableFromSurface( WgSurface * pSurface, int b
 	return WgBlockSkinPtr(pSkin);
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame )
 {
-	WgSize	blockSize = WgSize( (pSurface->PixelSize().w-blockSpacing*3)/4, pSurface->PixelSize().h );
+	WgSize	blockSize = WgSize( (pSurface->size().w-blockSpacing*3)/4, pSurface->size().h );
 	return CreateClickable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateSelectableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame )
 {
-	WgSize	blockSize( (pSurface->PixelSize().w-blockSpacing*2)/3, pSurface->PixelSize().h );
+	WgSize	blockSize( (pSurface->size().w-blockSpacing*2)/3, pSurface->size().h );
 	return CreateSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
-WgBlockSkinPtr WgBlockSkin::CreateClickSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame )
+WgBlockSkinPtr WgBlockSkin::CreateClickSelectableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame )
 {
-	WgSize	blockSize( (pSurface->PixelSize().w-blockSpacing*4)/5, pSurface->PixelSize().h );
+	WgSize	blockSize( (pSurface->size().w-blockSpacing*4)/5, pSurface->size().h );
 	return CreateClickSelectable( pSurface, blockSize, WgCoord(0,0), WgSize(blockSize.w+blockSpacing,0), blockFrame );
 }
 
@@ -253,13 +253,13 @@ bool WgBlockSkin::SetBlockGeo( WgSize size, WgBorders frame )
 
 //____ setSurface() ______________________________________________________
 
-void WgBlockSkin::SetSurface( WgSurface * pSurf )
+void WgBlockSkin::SetSurface( wg::Surface * pSurf )
 {
 	m_pSurface = pSurf;
 	if( m_pSurface )
 	{
-		m_bOpaqueBlocks = pSurf->IsOpaque();
-		m_scale = m_pSurface->ScaleFactor();		
+		m_bOpaqueBlocks = pSurf->isOpaque();
+		m_scale = m_pSurface->scale()*4096;
 	}
 	else
 	{
@@ -396,7 +396,7 @@ void WgBlockSkin::OptimizeRenderMethods()
     
 	// Handle non-alpha surfaces the easy way
 
-	if( m_pSurface->IsOpaque() )
+	if( m_pSurface->isOpaque() )
 	{
 		for( int i = 0 ; i < WG_NB_STATES ; i++ )
 		{
@@ -421,7 +421,7 @@ void WgBlockSkin::OptimizeRenderMethods()
 
 	//
 
-	m_pSurface->Lock( WgAccessMode::ReadOnly );
+	m_pSurface->lock( WgAccessMode::ReadOnly );
 
 	for( int i = 0 ; i < WG_NB_STATES ; i++ )
 	{
@@ -470,20 +470,20 @@ void WgBlockSkin::OptimizeRenderMethods()
 		}
 	}
 
-	m_pSurface->Unlock();
+	m_pSurface->unlock();
 }
 
 //_____ _scanStateBlockSectionArea() __________________________________________
 
 void WgBlockSkin::_scanStateBlockSectionArea( StateData * pState, WgOrigo section, const WgRect& sectionArea )
 {
-	const WgPixelFormat * pFormat = m_pSurface->PixelFormat();
-	int pitch = m_pSurface->Pitch();
+	const WgPixelFormat * pFormat = m_pSurface->pixelDescription();
+	int pitch = m_pSurface->pitch();
 
 	if( pFormat->format != WgPixelType::BGRA_8 )
 		return;												// Only supports ARGB_8 for the moment.
 
-	unsigned char * p = ((unsigned char*)m_pSurface->Pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
+	unsigned char * p = ((unsigned char*)m_pSurface->pixels()) + sectionArea.x * pFormat->bits/8 + sectionArea.y * pitch;
 
 	unsigned int alphaAcc = 0;
 
@@ -534,7 +534,7 @@ void WgBlockSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgRect& 
     const WgBorders&    sourceBorders = m_frame.scale(m_scale);
     const WgBorders     canvasBorders = m_frame.scale(scale);
 
-    pDevice->setBlitSource(m_pSurface->RealSurface());
+    pDevice->setBlitSource(m_pSurface);
     pDevice->blitNinePatch(_canvas, canvasBorders, src, sourceBorders);
 
 	if (m_bHasBlendMode)
@@ -687,7 +687,7 @@ bool WgBlockSkin::MarkTest( const WgCoord& _ofs, const WgSize& canvas, WgState s
 
 		WgCoord srcOfs = m_state[WgUtil::_stateToIndex(state)].ofs;
 
-		alpha = m_pSurface->GetOpacity(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
+		alpha = m_pSurface->alpha(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
 	}
 
 	return ( alpha >= opacityTreshold);

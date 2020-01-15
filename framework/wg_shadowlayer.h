@@ -26,6 +26,7 @@
 
 #include <vector>
 #include <wg_layer.h>
+#include <wg3_surface.h>
 
 class WgShadowLayer;
 
@@ -152,7 +153,7 @@ protected:
 
 
     WgShadowHook    m_frontHook;
-    WgSurface *     m_pShadowSurface = nullptr;
+    wg::Surface_p   m_pShadowSurface;
     uint8_t         m_shadowTint = 255;
     
     std::vector<WgShadow>	m_shadows;

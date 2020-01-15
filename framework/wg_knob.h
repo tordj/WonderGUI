@@ -22,19 +22,17 @@
 #ifndef WG_KNOB_DOT_H
 #define WG_KNOB_DOT_H
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
+#include <wg3_surface.h>
 
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
+#include <wg3_surfacefactory.h>
+
 #ifndef WG_WIDGET_DOT_H
 #	include <wg_widget.h>
 #endif
 
 #include <cmath>
 #include <algorithm>
+#include <vector>
 
 //____ WgKnob ____________________________________________________________
 
@@ -44,7 +42,7 @@ class WgKnob : public WgWidget
 {
 public:
     WgKnob();
-    WgKnob(WgSurfaceFactory * pFactory);
+    WgKnob(wg::SurfaceFactory * pFactory);
     virtual ~WgKnob();
 
     virtual const char *Type( void ) const;
@@ -147,15 +145,15 @@ private:
 
 	WgRect	_calcUdateRect(float newAngleStart, float newAngleEnd, float newValue);
 	void	_redrawBackBuffer(WgRect region);
-	void	_downsample(WgSurface* pSurf, int oversample);
+    void	_downsample(wg::Surface* pSurf, int oversample);
     static inline WgColor Blend( const WgColor& start, const WgColor& dest, float grade );
 
     WgSize m_preferredSize;
 	bool	m_bOptimizeUpdateRect = false;
 	float	m_knobScale = 1.f;					// Scale the knob inside its area (0.f-1.f)
 
-    class WgSurface* m_pSurf = nullptr;
-    class WgSurfaceFactory* m_pSurfaceFactory = nullptr;
+    wg::Surface_p m_pSurf;
+    wg::SurfaceFactory_p m_pSurfaceFactory;
     float m_fValue;
 
     // For new knob mode.

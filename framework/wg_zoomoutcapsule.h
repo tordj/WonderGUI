@@ -27,7 +27,7 @@
 #	include <wg_capsule.h>
 #endif
 
-class WgSurfaceFactory;
+#include <wg3_surfacefactory.h>
 
 //____ WgZoomOutCapsule __________________________________________________________
 
@@ -77,7 +77,7 @@ public:
 
     WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
-    void            SetStaticScreenshot( WgSurface *  pSurface );
+    void            SetStaticScreenshot( wg::Surface *  pSurface );
     
 protected:
    
@@ -105,7 +105,7 @@ protected:
 private:
     bool        m_bTakingScreenshot = false;
     bool        m_bStaticScreenshot = false;
-	WgSurface * m_pScreenshot = nullptr;
+    wg::Surface_p m_pScreenshot;
     WgSkinPtr   m_pButtonSkin;
     WgSkinPtr   m_pOutlineSkin;
     

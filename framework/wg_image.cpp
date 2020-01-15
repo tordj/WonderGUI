@@ -39,8 +39,6 @@ WgImage::WgImage()
 
 WgImage::~WgImage()
 {
-    if( m_bDeleteImageWhenDone )
-        delete m_pImage;
 }
 
 //____ Type() _________________________________________________________________
@@ -90,19 +88,9 @@ void WgImage::SetSource( const WgBlocksetPtr& pBlockset )
 
 //____ SetImage() ______________________________________________________________
 
-void WgImage::SetImage( WgSurface * pSurface, bool bDeleteWhenDone )
+void WgImage::SetImage( wg::Surface * pSurface )
 {
-    if( m_pImage == pSurface )
-    {
-        m_bDeleteImageWhenDone = bDeleteWhenDone;
-        return;
-    }
-    
-    if( m_bDeleteImageWhenDone )
-        delete m_pImage;
-    
     m_pImage = pSurface;
-    m_bDeleteImageWhenDone = bDeleteWhenDone;
     
     _requestResize();
     _requestRender();
@@ -115,7 +103,7 @@ WgSize WgImage::PreferredPixelSize() const
 {
     if( m_pImage )
     {
-        WgSize sz = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
+        WgSize sz = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
 
         if( m_pSkin )
             sz += m_pSkin->ContentPadding(m_scale);
@@ -139,7 +127,7 @@ int  WgImage::MatchingPixelHeight(int pixelWidth) const
 
     if( m_pImage )
     {
-        imageSize = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
+        imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
         if( m_pSkin )
             paddingSize = m_pSkin->ContentPadding(m_scale);
     }
@@ -165,7 +153,7 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
     
     if( m_pImage )
     {
-        imageSize = (m_pImage->PixelSize() * m_scale) / m_pImage->ScaleFactor();
+        imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
         if( m_pSkin )
             paddingSize = m_pSkin->ContentPadding(m_scale);
     }
@@ -204,7 +192,7 @@ void WgImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
     if( m_pImage )
     {
-        pDevice->setBlitSource(m_pImage->RealSurface());
+        pDevice->setBlitSource(m_pImage);
         pDevice->stretchBlit(canvas);
     }
 	else if( m_pGfx )
@@ -233,10 +221,10 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
         WgRect canvas = m_pSkin ? m_pSkin->ContentRect(sz, m_state, m_scale) : WgRect(sz);       
         if( canvas.contains(ofs) )
         {
-            WgSize imgSize = m_pImage->PixelSize();
+            WgSize imgSize = m_pImage->size();
         
             WgCoord surfOfs = { (ofs.x - canvas.x)*imgSize.w/canvas.w, (ofs.y - canvas.y)*imgSize.h/canvas.h };
-            m_pImage->GetOpacity(surfOfs);
+            m_pImage->alpha(surfOfs);
         }
     }
 	else if( m_pGfx )

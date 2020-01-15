@@ -24,8 +24,8 @@
 #pragma once
 
 #include <wg_extendedskin.h>
-#include <wg_surface.h>
-
+#include <wg3_surface.h>
+#include <wg_color.h>
 
 	
 class WgBlockSkin;
@@ -42,18 +42,18 @@ public:
 	//.____ Creation __________________________________________
 
 	static WgBlockSkinPtr Create();
-	static WgBlockSkinPtr CreateStatic( WgSurface * pSurface, WgRect block, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnable( WgSurface * pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectable( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectable(WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableWidget( WgSurface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateStatic( wg::Surface * pSurface, WgRect block, WgBorders frame = WgBorders(0) );
+    static WgBlockSkinPtr CreateEnable( wg::Surface * pSurface, WgSize blockSize, WgCoord ofsEnabled, WgCoord ofsDisabled, WgBorders frame = WgBorders(0) );
+    static WgBlockSkinPtr CreateClickable( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateSelectable( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateClickSelectable(wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateClickSelectableWidget( wg::Surface * pSurface, WgSize blockGeo, WgCoord blockStartOfs, WgSize blockPitch, WgBorders blockFrame = WgBorders(0) );
 	
-	static WgBlockSkinPtr CreateStaticFromSurface( WgSurface * pSurface, WgBorders frame = WgBorders(0) );
-	static WgBlockSkinPtr CreateEnableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
-	static WgBlockSkinPtr CreateClickSelectableFromSurface( WgSurface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateStaticFromSurface( wg::Surface * pSurface, WgBorders frame = WgBorders(0) );
+    static WgBlockSkinPtr CreateEnableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateClickableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateSelectableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
+    static WgBlockSkinPtr CreateClickSelectableFromSurface( wg::Surface * pSurface, int blockSpacing, WgBorders blockFrame = WgBorders(0) );
 	
 	//.____ Rendering ________________________________________________
 
@@ -68,7 +68,7 @@ public:
 
 	//.____ Appearance _________________________________________________
 
-	void	SetSurface( WgSurface * pSurf );
+    void	SetSurface( wg::Surface * pSurf );
 	bool	SetBlockGeo( WgSize size, WgBorders frame = WgBorders(0) );
 	void	SetStateBlock( WgStateEnum state, const WgCoord& ofs );
 	
@@ -121,7 +121,7 @@ private:
 	
 	static const int ALL_SECTIONS = 0x1FF;
 	
-	WgSurface *		m_pSurface;
+    wg::Surface_p	m_pSurface;
 	WgSize			m_dimensions;                   // Stored in pixels
 	WgBorders		m_frame;                        // Stored in points
 	int				m_tiledSections;

@@ -47,7 +47,7 @@
 #include <functional>
 #include <vector>
 
-class WgSurfaceFactory;
+#include <wg3_surfacefactory.h>
 
 //____ WgChart ____________________________________________________________
 
@@ -122,7 +122,7 @@ public:
 	void	SetSampleRangeResponder(std::function<void(WgChart * pWidget, float firstSample, float lastSample)> func);	// Called when widgets sample range has changed.
 	void	SetValueRangeResponder(std::function<void(WgChart * pWidget, float topValue, float bottomValue)> func);		// Called when widgets value range has changed.
 
-    bool    SetBitmapCaching( int beginWaveId, int endWaveId, WgSurfaceFactory * pFactory );
+    bool    SetBitmapCaching( int beginWaveId, int endWaveId, wg::SurfaceFactory * pFactory );
     void    ClearBitmapCaching();
 
     
@@ -236,8 +236,8 @@ private:
 	std::function<void(WgChart * pWidget, float firstSample, float lastSample)> m_sampleRangeResponder;
 	std::function<void(WgChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
 
-    WgSurfaceFactory *  m_pSurfaceFactory = nullptr;
-    WgSurface *         m_pCacheBitmap = nullptr;
+    wg::SurfaceFactory_p  m_pSurfaceFactory;
+    wg::Surface *         m_pCacheBitmap;
     WgPatches           m_cacheDirt;
     
     int                 m_cacheFirst = 0;

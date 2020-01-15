@@ -22,7 +22,7 @@
 
 #include <memory.h>
 #include <wg_slider.h>
-#include <wg_surface.h>
+#include <wg3_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_slidertarget.h>
@@ -1062,8 +1062,7 @@ bool WgWidgetSlider::_setSlider( float _pos, float _size )
 		return true;
 
 	m_sliderPos		= _pos;
-	if(m_sliderSize == 1.f && m_sliderSize != _size)
-		m_sliderSize = _size;
+    m_sliderSize    = _size;
 
 	_requestRender();
 	return	true;

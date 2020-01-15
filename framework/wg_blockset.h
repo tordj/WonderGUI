@@ -40,7 +40,7 @@
 #endif
 
 #ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
+#	include <wg3_surface.h>
 #endif
 
 #include <wg_color.h>
@@ -87,11 +87,11 @@ enum WgBlockFlags
 class WgBlock
 {
 public:
-	WgBlock( const WgSurface * pSurf, const WgRect& rect, const WgBorders& sourceFrame, const WgBorders& canvasFrame, const WgBorders& padding, WgCoord contentShift, int scale, Uint32 flags );
+    WgBlock( wg::Surface * pSurf, const WgRect& rect, const WgBorders& sourceFrame, const WgBorders& canvasFrame, const WgBorders& padding, WgCoord contentShift, int scale, Uint32 flags );
 	WgBlock() : m_pSurf(0), m_flags(0) { }
 
 	inline const WgRect&		Rect() const { return m_rect; }
-	inline const WgSurface *	Surface() const { return m_pSurf; }
+    inline wg::Surface *	    Surface() const { return m_pSurf; }
 	inline const WgBorders&		SourceFrame() const { return m_sourceFrame; }
 	inline const WgBorders&		CanvasFrame() const { return m_canvasFrame; }
 	inline const WgRect			ContentRect( const WgRect& blockGeo ) const { return (blockGeo + m_contentShift) - m_padding; }
@@ -100,7 +100,7 @@ public:
 	inline int					Height() const { return m_rect.h; }
 	inline WgSize				Size() const { return WgSize(m_rect.w, m_rect.h); }
 	inline int 					OutputScale() const { return m_scale; }
-	inline int 					SurfaceScale() const { return m_pSurf->ScaleFactor(); }
+	inline int 					SurfaceScale() const { return (int) m_pSurf->scale()*4096; }
 
 	inline int					MinWidth() const { return m_canvasFrame.width(); }
 	inline int					MinHeight() const { return m_canvasFrame.height(); }
@@ -130,7 +130,7 @@ public:
 
 private:
 
-	const WgSurface *	m_pSurf;
+    wg::Surface *       m_pSurf;
 	WgRect				m_rect;
 	WgBorders 			m_sourceFrame;
 	WgBorders			m_canvasFrame;
@@ -152,14 +152,12 @@ typedef	WgSmartPtrPooled<WgBlockset>	WgBlocksetPtr;
 
 class WgBlockset : private WgLink, public WgRefCountedPooled
 {
-	friend class WgSurface;
-
 protected:
-	WgBlockset(	WgMemPool * pPool, const WgSurface * pSurf, Uint32 flags );
+    WgBlockset(	WgMemPool * pPool, wg::Surface * pSurf, Uint32 flags );
 
 	struct Alt_Data
 	{
-		const WgSurface *	pSurf;
+        wg::Surface_p	pSurf;
 	};
 
 	class LinkedAlt : public WgLink
@@ -171,16 +169,16 @@ protected:
 	};
 
 public:
-	static WgBlocksetPtr CreateFromSurface( WgSurface * pSurf, int flags = 0 );
-	static WgBlocksetPtr CreateFromRect( WgSurface * pSurf, const WgRect& normal, int flags = 0 );
-	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
-	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
-	static WgBlocksetPtr CreateFromRects( WgSurface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
-	static WgBlocksetPtr CreateFromRow( WgSurface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
-	static WgBlocksetPtr CreateFromColumn( WgSurface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
+    static WgBlocksetPtr CreateFromSurface( wg::Surface * pSurf, int flags = 0 );
+    static WgBlocksetPtr CreateFromRect( wg::Surface * pSurf, const WgRect& normal, int flags = 0 );
+    static WgBlocksetPtr CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, int flags = 0 );
+    static WgBlocksetPtr CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, int flags = 0 );
+    static WgBlocksetPtr CreateFromRects( wg::Surface * pSurf, const WgRect& normal, const WgCoord& marked, const WgCoord& selected, const WgCoord& disabled, const WgCoord& special, int flags = 0 );
+    static WgBlocksetPtr CreateFromRow( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
+    static WgBlocksetPtr CreateFromColumn( wg::Surface * pSurf, const WgRect& rect, int nBlocks, int spacing=0, int flags = 0 );
 
 
-	bool				AddAlternative( const WgSurface * pSurf);
+    bool				AddAlternative( wg::Surface * pSurf);
 
 //	bool				SetSize( WgSize size, int alt = 0 );
 //	bool				SetPos( WgMode mode, WgCoord pos, int alt = 0 );
@@ -207,7 +205,7 @@ public:
 	int					MinHeight( int scale ) const;
 	WgSize				MinSize( int scale ) const;
 		
-	const WgSurface *	Surface( int scale ) const;
+    wg::Surface_p     	Surface( int scale ) const;
 	WgBorders			Frame( int scale ) const;
 	WgBorders			Padding( int scale ) const;
 	WgCoord				ContentShift( WgMode mode, int scale ) const;
@@ -235,7 +233,7 @@ public:
 
 private:
 	static Uint32	_verifyFlags(Uint32 flags);
-	static WgBlockset * _alloc( const WgSurface * pSurf, int flags );
+    static WgBlockset * _alloc( wg::Surface * pSurf, int flags );
 
 	Alt_Data *		_getAlt( int n );
 	const Alt_Data*	_getAlt( int n ) const;

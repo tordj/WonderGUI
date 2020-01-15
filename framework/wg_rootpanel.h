@@ -23,6 +23,7 @@
 #define WG_ROOTPANEL_DOT_H
 
 #include <deque>
+#include <vector>
 
 #ifndef WG_CONTAINER_DOT_H
 #	include <wg_container.h>

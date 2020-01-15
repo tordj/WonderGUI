@@ -36,6 +36,8 @@
 #	include <wg_slidertarget.h>
 #endif
 
+#include <vector>
+
 class WgScrollPanel;
 
 //____ WgScrollHook _____________________________________________________________

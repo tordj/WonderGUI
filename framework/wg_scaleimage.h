@@ -28,13 +28,8 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
-
-#ifndef WG_SURFACEFACTORY_DOT_H
-#	include <wg_surfacefactory.h>
-#endif
+#include <wg3_surface.h>
+#include <wg3_surfacefactory.h>
 
 
 #include <vector>
@@ -51,11 +46,11 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgScaleImage(); };
 	
-	void			SetSurfaceFactory( WgSurfaceFactory * pFactory );
-	WgSurfaceFactory *	GetSurfaceFactory() const { return m_pSurfaceFactory; }
+    void			SetSurfaceFactory( wg::SurfaceFactory * pFactory );
+    wg::SurfaceFactory_p GetSurfaceFactory() const { return m_pSurfaceFactory; }
 
-	void			SetSource( WgSurface * pSurf );
-	WgSurface *		GetSource() const { return m_pOrgSurface; }
+    void			SetSource( wg::Surface * pSurf );
+    wg::Surface_p   GetSource() const { return m_pOrgSurface; }
 
 	void			SetImageScale( bool bScale );
 	inline bool		GetImageScale() const { return m_bScale; }
@@ -69,22 +64,22 @@ public:
 
 	WgSize			PreferredPixelSize() const;
 
-    void resample(WgSurface* src, WgSurface* dest)
+    void resample(wg::Surface* src, wg::Surface* dest)
     {
-        unsigned char* pSrc = (unsigned char*)src->Lock(WgAccessMode::ReadOnly);
-        unsigned char* pDest = (unsigned char*)dest->Lock(WgAccessMode::WriteOnly);
+        unsigned char* pSrc = (unsigned char*)src->lock(WgAccessMode::ReadOnly);
+        unsigned char* pDest = (unsigned char*)dest->lock(WgAccessMode::WriteOnly);
 
         bool quit = false;
         Resize_HQ_4ch(pSrc,
-                      src->Pitch()/4,
-                      src->PixelSize().h,
+                      src->pitch()/4,
+                      src->size().h,
                       pDest,
-                      dest->Pitch()/4,
-                      dest->PixelSize().h,
+                      dest->pitch()/4,
+                      dest->size().h,
                       &quit );
 
-		src->Unlock();
-        dest->Unlock();
+		src->unlock();
+        dest->unlock();
         
 
     }
@@ -456,7 +451,7 @@ public:
                                 unsigned int c = *dsrc2++;//dsrc[y*w1 + x];
                                 
                                 //NO: Check if we're in the padded area:
-                                if(x >= m_pOrgSurface->PixelSize().w)
+                                if(x >= m_pOrgSurface->size().w)
                                     c = 0;
                                 
                                 unsigned int r_src = (c    ) & 0xFF;
@@ -499,13 +494,13 @@ protected:
 
 private:
 
-	WgSurface *	m_pOrgSurface;				// Original surface
-	WgSurface *	m_pGenSurface;				// Generated surface
-	bool		m_bScale;					// Set if image should scale, not stretch
-	WgSize		m_maxImgSize;
-	WgRect		m_imgRect;					// Output rectangle for image within widget.
-	WgOrigo		m_imgOrigo;
-	WgSurfaceFactory * m_pSurfaceFactory;	
+    wg::Surface_p   m_pOrgSurface;				// Original surface
+    wg::Surface_p   m_pGenSurface;				// Generated surface
+	bool		    m_bScale;					// Set if image should scale, not stretch
+	WgSize		    m_maxImgSize;
+	WgRect		    m_imgRect;					// Output rectangle for image within widget.
+	WgOrigo		    m_imgOrigo;
+    wg::SurfaceFactory_p m_pSurfaceFactory;
 };
 
 

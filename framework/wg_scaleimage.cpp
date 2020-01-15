@@ -45,8 +45,6 @@ WgScaleImage::WgScaleImage()
 
 WgScaleImage::~WgScaleImage()
 {
-	if( m_pGenSurface != 0 )
-		delete m_pGenSurface;
 }
 
 //____ Type() _________________________________________________________________
@@ -65,14 +63,14 @@ const char * WgScaleImage::GetClass()
 
 //____ SetSurfaceFactory() ____________________________________________________
 
-void WgScaleImage::SetSurfaceFactory( WgSurfaceFactory * pFactory )
+void WgScaleImage::SetSurfaceFactory( wg::SurfaceFactory * pFactory )
 {
 	m_pSurfaceFactory = pFactory;
 }
 
 //____ SetSource() _____________________________________________________________
 
-void WgScaleImage::SetSource( WgSurface * pSurf )
+void WgScaleImage::SetSource( wg::Surface * pSurf )
 {
 	if( pSurf != m_pOrgSurface )
 	{
@@ -106,8 +104,8 @@ void WgScaleImage::SetImageMaxSize( WgSize max )
 
 void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 {
-    int w = m_pOrgSurface->PixelSize().w;
-	int h = m_pOrgSurface->PixelSize().h;
+    int w = m_pOrgSurface->size().w;
+	int h = m_pOrgSurface->size().h;
 
 	if( w > 0 && h > 0 )
 	{
@@ -153,11 +151,7 @@ void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 	else
 	{
 		m_imgRect.clear();
-		if( m_pGenSurface )
-		{
-			delete m_pGenSurface;
-			m_pGenSurface = 0;
-		}
+        m_pGenSurface = 0;
 	}
 }
 
@@ -168,19 +162,16 @@ void WgScaleImage::_regenerateSurface()
 {
 	// Check/set opacity
 	
-	if( m_pOrgSurface && m_pOrgSurface->IsOpaque() && !m_bScale )
+	if( m_pOrgSurface && m_pOrgSurface->isOpaque() && !m_bScale )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
 
 	//
 
-	if( m_pGenSurface )
-		delete m_pGenSurface;
-
 	if( m_pSurfaceFactory )
 	{
-		m_pGenSurface = m_pSurfaceFactory->CreateSurface( m_imgRect.size(), WgPixelType::BGRA_8 );
+		m_pGenSurface = m_pSurfaceFactory->createSurface( m_imgRect.size(), WgPixelType::BGRA_8 );
 
 		// Insert code here to stretch-copy content from m_pOrgSurface to m_pGenSurface
         resample(m_pOrgSurface, m_pGenSurface);
@@ -189,7 +180,7 @@ void WgScaleImage::_regenerateSurface()
 	}
 	else
 	{
-		m_pGenSurface = 0;
+		m_pGenSurface = nullptr;
 		return;
 	}
 
@@ -232,7 +223,7 @@ void WgScaleImage::SetImageOrigo( WgOrigo origo )
 WgSize WgScaleImage::PreferredPixelSize() const
 {
 	if( m_pOrgSurface )
-		return m_pOrgSurface->PixelSize();
+		return m_pOrgSurface->size();
 
 	return WgSize(1,1);
 }
@@ -266,7 +257,7 @@ void WgScaleImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	if( !m_pGenSurface )
 		return;
 
-    pDevice->setBlitSource(m_pGenSurface->RealSurface());
+    pDevice->setBlitSource(m_pGenSurface);
     pDevice->blit( { _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y } );
 }
 
@@ -281,7 +272,7 @@ bool WgScaleImage::_onAlphaTest( const WgCoord& ofs )
 	if (m_imgRect.contains(ofs))
 	{
 		WgCoord ofs2 = ofs - m_imgRect.pos();
-		Uint8 opacity = m_pGenSurface->GetOpacity(ofs2);
+		Uint8 opacity = m_pGenSurface->alpha(ofs2);
 		if (opacity > 0)
 			return true;
 	}

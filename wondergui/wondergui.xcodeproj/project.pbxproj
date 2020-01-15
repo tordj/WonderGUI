@@ -81,7 +81,6 @@
 		170F7BC72200773200B70B56 /* wg_switch.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD02200771900B70B56 /* wg_switch.h */; };
 		170F7BC92200773200B70B56 /* wg_orderedselectable.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD22200771900B70B56 /* wg_orderedselectable.h */; };
 		170F7BCA2200773200B70B56 /* wg_patches.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD32200771900B70B56 /* wg_patches.h */; };
-		170F7BCB2200773200B70B56 /* wg_surface.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD42200771900B70B56 /* wg_surface.h */; };
 		170F7BCC2200773200B70B56 /* wg_hook.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD52200771900B70B56 /* wg_hook.h */; };
 		170F7BCD2200773200B70B56 /* wg_multiblockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD62200771900B70B56 /* wg_multiblockskin.h */; };
 		170F7BCE2200773200B70B56 /* wg_pen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AD72200771A00B70B56 /* wg_pen.cpp */; };
@@ -119,7 +118,6 @@
 		170F7BF52200773200B70B56 /* wg_modallayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AFE2200772000B70B56 /* wg_modallayer.cpp */; };
 		170F7BFD2200773200B70B56 /* wg_iconholder.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B062200772100B70B56 /* wg_iconholder.h */; };
 		170F7BFE2200773200B70B56 /* wg_resloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B072200772100B70B56 /* wg_resloader.h */; };
-		170F7BFF2200773200B70B56 /* wg_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B082200772200B70B56 /* wg_surface.cpp */; };
 		170F7C002200773200B70B56 /* wg_string.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B092200772200B70B56 /* wg_string.h */; };
 		170F7C012200773200B70B56 /* wg_anim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B0A2200772200B70B56 /* wg_anim.cpp */; };
 		170F7C022200773200B70B56 /* wg_patches.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B0B2200772200B70B56 /* wg_patches.cpp */; };
@@ -165,7 +163,6 @@
 		170F7C2F2200773200B70B56 /* wg_simplevolumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B382200772900B70B56 /* wg_simplevolumemeter.h */; };
 		170F7C302200773200B70B56 /* wg_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B392200772900B70B56 /* wg_colorskin.cpp */; };
 		170F7C312200773200B70B56 /* wg_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B3A2200772900B70B56 /* wg_base.cpp */; };
-		170F7C322200773200B70B56 /* wg_surfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3B2200772900B70B56 /* wg_surfacefactory.h */; };
 		170F7C332200773200B70B56 /* wg_widgetholder.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3C2200772A00B70B56 /* wg_widgetholder.h */; };
 		170F7C342200773200B70B56 /* wg_mempool.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3D2200772A00B70B56 /* wg_mempool.h */; };
 		170F7C352200773200B70B56 /* wg_canvascapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3E2200772A00B70B56 /* wg_canvascapsule.h */; };
@@ -336,7 +333,6 @@
 		170F7AD02200771900B70B56 /* wg_switch.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_switch.h; path = ../framework/wg_switch.h; sourceTree = "<group>"; };
 		170F7AD22200771900B70B56 /* wg_orderedselectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_orderedselectable.h; path = ../framework/wg_orderedselectable.h; sourceTree = "<group>"; };
 		170F7AD32200771900B70B56 /* wg_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_patches.h; path = ../framework/wg_patches.h; sourceTree = "<group>"; };
-		170F7AD42200771900B70B56 /* wg_surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surface.h; path = ../framework/wg_surface.h; sourceTree = "<group>"; };
 		170F7AD52200771900B70B56 /* wg_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_hook.h; path = ../framework/wg_hook.h; sourceTree = "<group>"; };
 		170F7AD62200771900B70B56 /* wg_multiblockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_multiblockskin.h; path = ../framework/wg_multiblockskin.h; sourceTree = "<group>"; };
 		170F7AD72200771A00B70B56 /* wg_pen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_pen.cpp; path = ../framework/wg_pen.cpp; sourceTree = "<group>"; };
@@ -374,7 +370,6 @@
 		170F7AFE2200772000B70B56 /* wg_modallayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_modallayer.cpp; path = ../framework/wg_modallayer.cpp; sourceTree = "<group>"; };
 		170F7B062200772100B70B56 /* wg_iconholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_iconholder.h; path = ../framework/wg_iconholder.h; sourceTree = "<group>"; };
 		170F7B072200772100B70B56 /* wg_resloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_resloader.h; path = ../framework/wg_resloader.h; sourceTree = "<group>"; };
-		170F7B082200772200B70B56 /* wg_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_surface.cpp; path = ../framework/wg_surface.cpp; sourceTree = "<group>"; };
 		170F7B092200772200B70B56 /* wg_string.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_string.h; path = ../framework/wg_string.h; sourceTree = "<group>"; };
 		170F7B0A2200772200B70B56 /* wg_anim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_anim.cpp; path = ../framework/wg_anim.cpp; sourceTree = "<group>"; };
 		170F7B0B2200772200B70B56 /* wg_patches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_patches.cpp; path = ../framework/wg_patches.cpp; sourceTree = "<group>"; };
@@ -420,7 +415,6 @@
 		170F7B382200772900B70B56 /* wg_simplevolumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_simplevolumemeter.h; path = ../framework/wg_simplevolumemeter.h; sourceTree = "<group>"; };
 		170F7B392200772900B70B56 /* wg_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_colorskin.cpp; path = ../framework/wg_colorskin.cpp; sourceTree = "<group>"; };
 		170F7B3A2200772900B70B56 /* wg_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_base.cpp; path = ../framework/wg_base.cpp; sourceTree = "<group>"; };
-		170F7B3B2200772900B70B56 /* wg_surfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surfacefactory.h; path = ../framework/wg_surfacefactory.h; sourceTree = "<group>"; };
 		170F7B3C2200772A00B70B56 /* wg_widgetholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_widgetholder.h; path = ../framework/wg_widgetholder.h; sourceTree = "<group>"; };
 		170F7B3D2200772A00B70B56 /* wg_mempool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_mempool.h; path = ../framework/wg_mempool.h; sourceTree = "<group>"; };
 		170F7B3E2200772A00B70B56 /* wg_canvascapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_canvascapsule.h; path = ../framework/wg_canvascapsule.h; sourceTree = "<group>"; };
@@ -529,17 +523,10 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
-				1742687523390C6700A76233 /* wg_context.h */,
-				1741F03523190F4500029A27 /* wg_shadowlayer.cpp */,
-				1741F03623190F4500029A27 /* wg_shadowlayer.h */,
-				1717918422CB48DD00B10F51 /* Components */,
 				1717914D22CB48A000B10F51 /* Base */,
-				1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */,
-				1717914322CB46F900B10F51 /* wg_dragndroplayer.h */,
-				1717913E22CB46F800B10F51 /* wg_payload.h */,
-				1717913D22CB46F800B10F51 /* wg_zoomoutcapsule.cpp */,
-				1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */,
+				1717918422CB48DD00B10F51 /* Components */,
 				170F7CA72200782100B70B56 /* Debug.h */,
+				170F7A75220076C000B70B56 /* Products */,
 				170F7B0A2200772200B70B56 /* wg_anim.cpp */,
 				170F7AE12200771B00B70B56 /* wg_anim.h */,
 				170F7ADC2200771A00B70B56 /* wg_animplayer.cpp */,
@@ -583,10 +570,13 @@
 				170F7A982200771000B70B56 /* wg_colorskin.h */,
 				170F7AB12200771400B70B56 /* wg_container.cpp */,
 				170F7A7E2200770D00B70B56 /* wg_container.h */,
+				1742687523390C6700A76233 /* wg_context.h */,
 				170F7B672200773000B70B56 /* wg_cursor.cpp */,
 				170F7B0C2200772200B70B56 /* wg_cursor.h */,
 				170F7AF92200771F00B70B56 /* wg_cursorinstance.cpp */,
 				170F7B222200772600B70B56 /* wg_cursorinstance.h */,
+				1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */,
+				1717914322CB46F900B10F51 /* wg_dragndroplayer.h */,
 				170F7AC32200771700B70B56 /* wg_dynarray.h */,
 				170F7AFB2200772000B70B56 /* wg_event.cpp */,
 				170F7B3F2200772A00B70B56 /* wg_event.h */,
@@ -658,6 +648,7 @@
 				170F7A912200770F00B70B56 /* wg_panel.h */,
 				170F7B0B2200772200B70B56 /* wg_patches.cpp */,
 				170F7AD32200771900B70B56 /* wg_patches.h */,
+				1717913E22CB46F800B10F51 /* wg_payload.h */,
 				170F7AD72200771A00B70B56 /* wg_pen.cpp */,
 				170F7B172200772400B70B56 /* wg_pen.h */,
 				170F7ABB2200771500B70B56 /* wg_popuplayer.cpp */,
@@ -684,6 +675,8 @@
 				170F7B682200773000B70B56 /* wg_scrollpanel.h */,
 				170F7B292200772700B70B56 /* wg_shadercapsule.cpp */,
 				170F7B6F2200773100B70B56 /* wg_shadercapsule.h */,
+				1741F03523190F4500029A27 /* wg_shadowlayer.cpp */,
+				1741F03623190F4500029A27 /* wg_shadowlayer.h */,
 				170F7A952200771000B70B56 /* wg_simpleknob.cpp */,
 				170F7B312200772800B70B56 /* wg_simpleknob.h */,
 				170F7B262200772600B70B56 /* wg_simplevolumemeter.cpp */,
@@ -706,9 +699,6 @@
 				170F7AB32200771400B70B56 /* wg_stackpanel.h */,
 				170F7AF32200771E00B70B56 /* wg_string.cpp */,
 				170F7B092200772200B70B56 /* wg_string.h */,
-				170F7B082200772200B70B56 /* wg_surface.cpp */,
-				170F7AD42200771900B70B56 /* wg_surface.h */,
-				170F7B3B2200772900B70B56 /* wg_surfacefactory.h */,
 				170F7B662200773000B70B56 /* wg_switch.cpp */,
 				170F7AD02200771900B70B56 /* wg_switch.h */,
 				170F7AC22200771600B70B56 /* wg_tabordercapsule.cpp */,
@@ -748,8 +738,9 @@
 				170F7B502200772D00B70B56 /* wg_widgetcollection.h */,
 				170F7B132200772300B70B56 /* wg_widgetholder.cpp */,
 				170F7B3C2200772A00B70B56 /* wg_widgetholder.h */,
+				1717913D22CB46F800B10F51 /* wg_zoomoutcapsule.cpp */,
+				1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */,
 				170F7B1A2200772400B70B56 /* wondergui.h */,
-				170F7A75220076C000B70B56 /* Products */,
 			);
 			sourceTree = "<group>";
 		};
@@ -852,7 +843,6 @@
 				170F7C132200773200B70B56 /* wg_modallayer.h in Headers */,
 				170F7BB82200773200B70B56 /* wg_filler.h in Headers */,
 				1717917022CB48C400B10F51 /* wg3_color.h in Headers */,
-				170F7BCB2200773200B70B56 /* wg_surface.h in Headers */,
 				170F7C092200773200B70B56 /* wg_vectorglyphs.h in Headers */,
 				170F7BB62200773200B70B56 /* wg_char.h in Headers */,
 				170F7BAA2200773200B70B56 /* wg_stackpanel.h in Headers */,
@@ -931,7 +921,6 @@
 				170F7BE22200773200B70B56 /* wg_flexpanel.h in Headers */,
 				170F7BCA2200773200B70B56 /* wg_patches.h in Headers */,
 				170F7C122200773200B70B56 /* wg_textdisplay.h in Headers */,
-				170F7C322200773200B70B56 /* wg_surfacefactory.h in Headers */,
 				170F7B922200773200B70B56 /* wg_resdb.h in Headers */,
 				170F7C182200773200B70B56 /* wg_valuedisplay.h in Headers */,
 				1717918222CB48C400B10F51 /* wg3_surface.h in Headers */,
@@ -1063,7 +1052,6 @@
 				170F7B952200773200B70B56 /* wg_skin.cpp in Sources */,
 				170F7C222200773200B70B56 /* wg_valueformat.cpp in Sources */,
 				170F7C1F2200773200B70B56 /* wg_textmanager.cpp in Sources */,
-				170F7BFF2200773200B70B56 /* wg_surface.cpp in Sources */,
 				170F7BF22200773200B70B56 /* wg_event.cpp in Sources */,
 				1717916F22CB48C400B10F51 /* wg3_object.cpp in Sources */,
 				170F7C372200773200B70B56 /* wg_texttool.cpp in Sources */,

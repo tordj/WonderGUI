@@ -2,9 +2,10 @@
 #include <wg_util.h>
 #include <wg_geo.h>
 #include <wg_blockset.h>
-#include <wg_surface.h>
 #include <wg_widget.h>
 #include <wg_panel.h>
+
+#include <wg3_surface.h>
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
@@ -164,7 +165,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 
 	WgCoord srcOfs = block.Rect().pos();
 
-	alpha = block.Surface()->GetOpacity(srcOfs.x+ofs.x, srcOfs.y+ofs.y);
+    alpha = block.Surface()->alpha( {srcOfs.x+ofs.x, srcOfs.y+ofs.y} );
 	
 	return ( alpha >= opacityTreshold);
 }

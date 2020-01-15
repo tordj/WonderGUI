@@ -164,7 +164,7 @@ public:
     WgCoord			Local2absPoint( const WgCoord& cord ) const;		// Cordinate from local cordsys to global (in pixels)
     WgCoord			Abs2localPoint( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys (in pixels)
     
-    WgSurface *     Screenshot( int surfaceFlags = 0 );
+    wg::Surface_p     Screenshot( int surfaceFlags = 0 );
     
     int Scale() const { return m_scale; }
     

@@ -21,7 +21,6 @@
 =========================================================================*/
 
 #include <wg_checkbox.h>
-#include <wg_surface.h>
 #include <wg_gfxdevice.h>
 #include <wg_font.h>
 #include <wg_util.h>

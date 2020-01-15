@@ -28,11 +28,13 @@
 class WgSurfaceFactory;
 
 #include <wg3_gfxdevice.h>
+#include <wg3_surface.h>
+
 
 struct WgContext
 {
-    wg::GfxDevice_p pDevice = nullptr;
-    WgSurfaceFactory * pFactory = nullptr;
+    wg::GfxDevice_p         pDevice;
+    wg::SurfaceFactory_p    pFactory;
     float         scale = 1.f;
 };
 

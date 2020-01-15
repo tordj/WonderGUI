@@ -233,7 +233,7 @@ namespace wg
 
 		//
 
-        
+
 		inline BorderT<Type>& operator+=(const BorderT<Type>& k)        { top += k.top; right += k.right; bottom += k.bottom; left += k.left; return *this; }
 		inline BorderT<Type>& operator-=(const BorderT<Type>& k)        { top -= k.top; right -= k.right; bottom -= k.bottom; left -= k.left; return *this;}
 		inline BorderT<Type> operator+(const BorderT<Type>& k) const    { return {top+k.top, right+k.right, bottom+k.bottom, left+k.left}; }

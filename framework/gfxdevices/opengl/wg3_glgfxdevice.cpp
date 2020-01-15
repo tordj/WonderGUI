@@ -642,7 +642,7 @@ namespace wg
 		glBindVertexArray(m_vertexArrayId);
 
 
-		glFinish();
+		glFinish();  //TODO: Remove.
 
 
 		//
@@ -666,7 +666,7 @@ namespace wg
 
 		//
 
- 		glFinish();
+ 		glFinish(); //TODO: Remove.
 
 		// Restore render states from before beginRender()
 
@@ -688,6 +688,8 @@ namespace wg
 		glBindFramebuffer(GL_DRAW_FRAMEBUFFER, m_glDrawFrameBuffer);
 
 		glBindVertexArray(0);
+
+		//TODO: Reenable
 
 		//if( m_idleSync != 0 )
 		//	glDeleteSync(m_idleSync);
@@ -714,25 +716,24 @@ namespace wg
 		if( m_bRendering )
 			return false;
 
-		// if (m_idleSync == 0)
-		//		return true;
+		//TODO: Reenable
+/*
+		if (m_idleSync == 0)
+			return true;
 
-		
-        // GLint isSignaled = 0;
-        // glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
+		GLint isSignaled = 0;
+		glGetSynciv(m_idleSync, GL_SYNC_STATUS, 1, NULL, &isSignaled);
 
-        // if(isSignaled == GL_UNSIGNALED)
-        //     return false;
+		if(isSignaled == GL_UNSIGNALED)
+			return false;
 
-        // if (isSignaled == GL_SIGNALED)
-        //     glDeleteSync(m_idleSync);
-
-        // m_idleSync = 0;
-        
+		glDeleteSync(m_idleSync);
+		m_idleSync = 0;
+/*
 		return true;
-    }
+	}
 
-    //____ flush() _______________________________________________________________
+	//____ flush() _______________________________________________________________
 
 	void GlGfxDevice::flush()
 	{

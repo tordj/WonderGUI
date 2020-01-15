@@ -52,11 +52,11 @@ WgMultiBlockSkin::WgMultiBlockSkin(WgSize blockSize, WgBorders frame)
 
 //____ AddLayer() _____________________________________________________________
 
-int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord ofs)
+int WgMultiBlockSkin::AddLayer(wg::Surface * pSurf, WgCoord ofs)
 {
 	// HACK!
 
-	m_scale = pSurf->ScaleFactor();
+    m_scale = pSurf->scale()*4096;
 	m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
 
 	//
@@ -67,7 +67,7 @@ int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord ofs)
 	layer.blendMode = WgBlendMode::Blend;
 	layer.pSurface = pSurf;
 
-	if (pSurf->IsOpaque())
+	if (pSurf->isOpaque())
 		m_bIsOpaque = true;
 
 
@@ -83,11 +83,11 @@ int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord ofs)
 	return m_layers.size();
 }
 
-int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord blockStartOfs, WgSize blockPitch, std::initializer_list<WgState> stateBlocks)
+int WgMultiBlockSkin::AddLayer(wg::Surface * pSurf, WgCoord blockStartOfs, WgSize blockPitch, std::initializer_list<WgState> stateBlocks)
 {
 	// HACK!
 
-	m_scale = pSurf->ScaleFactor();
+	m_scale = pSurf->scale()*4096;
 	m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
 
 	//
@@ -104,7 +104,7 @@ int WgMultiBlockSkin::AddLayer(WgSurface * pSurf, WgCoord blockStartOfs, WgSize 
 	layer.pSurface = pSurf;
     layer.stateBlockMask = 0;
     
-	if (pSurf->IsOpaque())
+	if (pSurf->isOpaque())
 		m_bIsOpaque = true;
 
 	//
@@ -266,7 +266,7 @@ void WgMultiBlockSkin::Render( wg::GfxDevice * pDevice, WgState state, const WgR
 		const WgBorders&    sourceBorders = m_frame.scale(m_scale);
 		const WgBorders     canvasBorders = m_frame.scale(scale);
 
-        pDevice->setBlitSource(layer.pSurface->RealSurface());
+        pDevice->setBlitSource(layer.pSurface);
         pDevice->blitNinePatch(_canvas, canvasBorders, src, sourceBorders);
         
 	}
@@ -391,7 +391,7 @@ bool WgMultiBlockSkin::MarkTest( const WgCoord& _ofs, const WgSize& canvas, WgSt
 
 			WgCoord srcOfs = layer.blockOfs[stateIndex];
 
-			alpha = layer.pSurface->GetOpacity(srcOfs.x + ofs.x, srcOfs.y + ofs.y);
+			alpha = layer.pSurface->alpha(srcOfs.x + ofs.x, srcOfs.y + ofs.y);
 		}
 
 		if (alpha >= opacityTreshold)
@@ -442,7 +442,7 @@ void WgMultiBlockSkin::_updateStateOpacity(int stateIdx)
 
 	for (auto& layer : m_layers)
 	{
-		if (layer.blendMode == WgBlendMode::Replace || (layer.blendMode == WgBlendMode::Blend && layer.pSurface->IsOpaque() && layer.tintColor[stateIdx].a == 255) )
+		if (layer.blendMode == WgBlendMode::Replace || (layer.blendMode == WgBlendMode::Blend && layer.pSurface->isOpaque() && layer.tintColor[stateIdx].a == 255) )
 		{
 			bOpaque = true;
 			break;

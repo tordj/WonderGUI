@@ -48,8 +48,8 @@
 #	include <wg_colorset.h>
 #endif
 
+#include <wg3_surface.h>
 
-class WgSurface;
 class WgGlyphset;
 class WgFont;
 class WgAnim;
@@ -120,7 +120,7 @@ public:
 
 
 	typedef ResWrapper2<WgResDB*>		ResDBRes;
-	typedef ResWrapper2<WgSurface*>		SurfaceRes;
+    typedef ResWrapper2<wg::Surface_p>	SurfaceRes;
 	typedef ResWrapper2<WgGlyphset*>	GlyphsetRes;
 	typedef ResWrapper<WgFont*>			FontRes;
 	typedef ResWrapper<WgAnim*>			AnimRes;
@@ -139,7 +139,7 @@ public:
 
 	//----
 
-	static std::string	GenerateName( const WgSurface * data );
+    static std::string	GenerateName( const wg::Surface * data );
 	static std::string	GenerateName( const WgGlyphset * data );
 	static std::string	GenerateName( const WgFont * data );
 	static std::string	GenerateName( const WgAnim * data );
@@ -171,7 +171,7 @@ public:
 	bool				AddResDb( WgResDB* db, const std::string& file, MetaData * pMetaData = 0 );
 
 	bool				AddSurface( const std::string& id, const std::string& file, MetaData * pMetaData, bool bRequired );
-	bool				AddSurface( const std::string& id, WgSurface * pSurf, const std::string& filename, MetaData * pMetaData = 0 );
+    bool				AddSurface( const std::string& id, wg::Surface * pSurf, const std::string& filename, MetaData * pMetaData = 0 );
 
 	bool				AddGlyphset( const std::string& id, const std::string& file, MetaData * pMetaData = 0 );
 	bool				AddGlyphset( const std::string& id, WgGlyphset * pGlyphset, const std::string& file, MetaData * pMetaData = 0 );
@@ -232,7 +232,7 @@ public:
 
 
 
-	WgSurface *			GetSurface( const std::string& id ) const;
+    wg::Surface_p   	GetSurface( const std::string& id ) const;
 	WgGlyphset *		GetGlyphset( const std::string& id ) const;
 	WgFont *			GetFont( const std::string& id ) const;
 	WgAnim *			GetAnim( const std::string& id ) const;
@@ -270,7 +270,7 @@ public:
 	DataSetRes *		GetResDataSet( const std::string& id ) const;
 
 	ResDBRes *			FindResDbRes( const WgResDB * data ) const;
-	SurfaceRes *		FindResSurface( const WgSurface * data ) const;
+    SurfaceRes *		FindResSurface( const wg::Surface * data ) const;
 	GlyphsetRes *		FindResGlyphset( const WgGlyphset * data ) const;
 	FontRes *			FindResFont( const WgFont * data ) const;
 	AnimRes *			FindResAnim( const WgAnim * data ) const;
@@ -285,7 +285,7 @@ public:
 	SkinManagerRes *	FindResSkinManager( const WgSkinManager* data ) const;
 	WidgetRes *			FindResWidget( const WgWidget* data ) const;
 
-	std::string			FindSurfaceId( const WgSurface * data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
+    std::string			FindSurfaceId( const wg::Surface * data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
 	std::string			FindGlyphsetId( const WgGlyphset * data ) const		{ GlyphsetRes * r =	FindResGlyphset(data); return r ? r->id : ""; }
 	std::string			FindFontId( const WgFont * data ) const				{ FontRes *	r =		FindResFont(data); return r ? r->id : ""; }
 	std::string			FindAnimId( const WgAnim * data ) const				{ AnimRes *	r =		FindResAnim(data); return r ? r->id : ""; }

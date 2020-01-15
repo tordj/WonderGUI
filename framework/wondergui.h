@@ -116,10 +116,6 @@
 #	include <wg_string.h>
 #endif
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
-
 #ifndef WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif

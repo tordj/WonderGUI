@@ -23,7 +23,7 @@
 #include <wg_dragndroplayer.h>
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_image.h>
 #include <wg_eventhandler.h>
@@ -689,7 +689,7 @@ void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _ca
 
         auto pCanvas = m_pPicked->Screenshot();
         auto pImage = new WgImage();
-        pImage->SetImage( pCanvas, true );
+        pImage->SetImage( pCanvas );
         pImage->_onNewSize(sz);
 
         _replaceWidgetInHook(pImage);

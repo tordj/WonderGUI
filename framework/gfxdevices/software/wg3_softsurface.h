@@ -82,10 +82,10 @@ namespace wg
 
 
 	protected:
-		SoftSurface( SizeI size, PixelFormat format, const Color * pClut );
-		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, const Color * pClut );
-		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
-		SoftSurface( Surface * pOther );
+		SoftSurface( SizeI size, PixelFormat format, int flags, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+		SoftSurface( Surface * pOther, int flags );
 
 		virtual ~SoftSurface();
 

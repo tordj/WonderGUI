@@ -1,7 +1,7 @@
 #include "sdl_wglib.h"
 //#include <wg_surface_sdl.h>
-#include <wg_surface_soft.h>
-#include <wg_surfacefactory_soft.h>
+#include <wg3_softsurface.h>
+#include <wg3_softsurfacefactory.h>
 #include <wondergui.h>
 #include <wg_resdb.h>
 
@@ -120,10 +120,10 @@ namespace sdl_wglib
 
 	//____ SavePNG() ________________________________________________________
 
-	bool SavePNG(WgSurface * pSurface, const char * path)
+    bool SavePNG(wg::Surface * pSurface, const char * path)
 	{
-		WgSize size = pSurface->PixelSize();
-		const WgPixelFormat * pFmt = pSurface->PixelFormat();
+		WgSize size = pSurface->size();
+		const WgPixelFormat * pFmt = pSurface->pixelDescription();
 
 		SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
 
@@ -132,16 +132,16 @@ namespace sdl_wglib
 		if (err != 0)
 			return false;
 
-        char * pSrcPixels = (char *)pSurface->Lock(WgAccessMode::ReadOnly);
+        char * pSrcPixels = (char *)pSurface->lock(WgAccessMode::ReadOnly);
 
 		for (int y = 0; y < size.h; y++)
 		{
 			char * pDest = ((char *) pOutput->pixels) + pOutput->pitch * y;
-			char * pSource = pSrcPixels + pSurface->Pitch() * y;
+			char * pSource = pSrcPixels + pSurface->pitch() * y;
 			memcpy(pDest, pSource, size.w * pFmt->bits / 8);
 		}
 
-		pSurface->Unlock();
+		pSurface->unlock();
 
 		SDL_UnlockSurface(pOutput);
 
@@ -155,7 +155,7 @@ namespace sdl_wglib
 
 	//____ LoadSurface() __________________________________________________________
 
-	WgSurface * LoadSurface( const char * path, const WgSurfaceFactory& factory )
+    wg::Surface_p LoadSurface( const char * path, const wg::SurfaceFactory * factory )
 	{
 		SDL_Surface* bmp = IMG_Load(path);
 		if (!bmp)
@@ -178,7 +178,7 @@ namespace sdl_wglib
 		WgPixelFormat	pixelFormat;
 		ConvertPixelFormat( &pixelFormat, bmp->format );
 
-		WgSurface * pSurf = factory.CreateSurface( dimensions, type, (uint8_t*) bmp->pixels, bmp->pitch, pixelFormat );
+        wg::Surface_p pSurf = factory->createSurface( dimensions, type, (uint8_t*) bmp->pixels, bmp->pitch, &pixelFormat );
 
 		if( !pSurf )
 		{
@@ -192,7 +192,7 @@ namespace sdl_wglib
 
 	//____ LoadStdWidgets() _____________________________________________________
 
-	WgResDB * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const WgSurfaceFactory& factory )
+    WgResDB * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )
 	{
 		const int HSLIDER_BTN_OFS 		= 1;
 		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
@@ -207,9 +207,9 @@ namespace sdl_wglib
 		const int COMBOBOX_OFS			= SPLITS_AND_FRAME_OFS + 10;
 		const int TILES_OFS				= 192;
 
-		WgSurface * surfaces[3];
+        wg::Surface_p surfaces[3];
 
-		WgSurface * pSurface = LoadSurface( pImagePath, factory );
+        wg::Surface_p pSurface = LoadSurface( pImagePath, factory );
 		if( !pSurface )
 			return 0;
 
@@ -219,7 +219,7 @@ namespace sdl_wglib
 
 		if( pImagePathX2 )
 		{
-			WgSurface * pSurfaceX2 = LoadSurface( pImagePathX2, factory );
+			auto pSurfaceX2 = LoadSurface( pImagePathX2, factory );
 			if( !pSurfaceX2 )
 				return 0;
 				
@@ -230,7 +230,7 @@ namespace sdl_wglib
 
 		if( pImagePathX4 )
 		{
-			WgSurface * pSurfaceX4 = LoadSurface( pImagePathX4, factory );
+			auto pSurfaceX4 = LoadSurface( pImagePathX4, factory );
 			if( !pSurfaceX4 )
 				return 0;
 				
@@ -425,11 +425,11 @@ namespace sdl_wglib
 
 	//____ LoadBitmapFont() ____________________________________________________
 
-	WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const WgSurfaceFactory& factory )
+    WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory )
 	{
 		//TODO: This leaks memory until we have ref-counted
 
-		WgSurface * pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
+		auto pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
 
 		char * pFontSpec = (char*) LoadFile( pSpecPath );
 

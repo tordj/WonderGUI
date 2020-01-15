@@ -49,8 +49,8 @@ public:
 	void			SetSource( const WgBlocksetPtr& pBlockset );
 	WgBlocksetPtr	GetSource() const { return m_pGfx; }
 
-    void            SetImage( WgSurface * pSurface, bool bDeleteWhenDone );
-    WgSurface*      GetImage() const { return m_pImage; }
+    void            SetImage( wg::Surface * pSurface );
+    wg::Surface_p   GetImage() const { return m_pImage; }
 
     
 	WgSize			PreferredPixelSize() const;
@@ -72,9 +72,7 @@ protected:
 private:
 
 	WgBlocksetPtr	m_pGfx;
-    
-    WgSurface *     m_pImage = nullptr;
-    bool            m_bDeleteImageWhenDone = false;
+    wg::Surface_p   m_pImage;
 };
 
 

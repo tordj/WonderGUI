@@ -25,7 +25,7 @@
 #include <wg_util.h>
 #include <wg_eventhandler.h>
 #include <wg_patches.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surfacefactory.h>
 #include <wg_payload.h>
 #include <wg_image.h>
 #include <wg_base.h>
@@ -48,8 +48,6 @@ WgZoomOutCapsule::WgZoomOutCapsule()
 
 WgZoomOutCapsule::~WgZoomOutCapsule()
 {
-    if( !m_bStaticScreenshot )
-        delete m_pScreenshot;
 }
 
 //____ Type() _________________________________________________________________
@@ -207,7 +205,6 @@ void WgZoomOutCapsule::SetInnerTransition(float factor)
     {
         if( zoom == 1.f && !m_bStaticScreenshot )
         {
-            delete m_pScreenshot;
             m_pScreenshot = nullptr;
         }
         
@@ -287,7 +284,7 @@ WgWidget * WgZoomOutCapsule::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 //____ SetStaticScreenshot() ___________________________________________________
 
-void WgZoomOutCapsule::SetStaticScreenshot( WgSurface *  pSurface )
+void WgZoomOutCapsule::SetStaticScreenshot( wg::Surface *  pSurface )
 {
     m_pScreenshot = pSurface;
     m_bStaticScreenshot = true;
@@ -403,11 +400,11 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 
                 // We need a separate surface that will belong to our image.
                 
-                auto pSurface = WgBase::Context()->pFactory->CreateSurface(m_pScreenshot->PixelSize(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
-                pSurface->CopyFrom( m_pScreenshot, {0,0} );
+                auto pSurface = WgBase::Context()->pFactory->createSurface(m_pScreenshot->size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
+                pSurface->copyFrom( m_pScreenshot, {0,0} );
 
                 auto pImage = new WgImage();
-                pImage->SetImage(pSurface, true);
+                pImage->SetImage(pSurface);
 
                 // We need to know the scale factor of our drag-n-drop layer since that likely is different.
 
@@ -419,7 +416,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
                 //
                 
-                WgSize sz = m_pScreenshot->PixelSize()*m_minInnerZoom;
+                WgSize sz = m_pScreenshot->size()*m_minInnerZoom;
 
                 
                 auto pDragWidget = new WgSizeCapsule();
@@ -483,9 +480,6 @@ void WgZoomOutCapsule::_regenScreenshot()
     if( m_bStaticScreenshot )
         return;
     
-    if( m_pScreenshot )
-        delete m_pScreenshot;
-
     WgSize realSize = m_hook.PixelSize();
     WgSize prefSize = m_hook.Widget()->PreferredPixelSize();
     
@@ -605,7 +599,7 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
         }
         else if( m_pScreenshot )
         {
-            pDevice->setBlitSource(m_pScreenshot->RealSurface());
+            pDevice->setBlitSource(m_pScreenshot);
             pDevice->stretchBlit(_screenshotArea(canvas));
         }
     }
@@ -665,7 +659,6 @@ void WgZoomOutCapsule::_setScale( int scale )
     
     if( !m_bStaticScreenshot )
     {
-        delete m_pScreenshot;
         m_pScreenshot = nullptr;
     }
 }

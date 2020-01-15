@@ -7,10 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		170F7C9D220077C300B70B56 /* wg_surfacefactory_soft.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7C91220077C100B70B56 /* wg_surfacefactory_soft.h */; };
-		170F7C9E220077C300B70B56 /* wg_surfacefactory_soft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7C92220077C100B70B56 /* wg_surfacefactory_soft.cpp */; };
-		170F7CA3220077C300B70B56 /* wg_surface_soft.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7C97220077C200B70B56 /* wg_surface_soft.cpp */; };
-		170F7CA6220077C300B70B56 /* wg_surface_soft.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7C9A220077C200B70B56 /* wg_surface_soft.h */; };
 		1717913722CB46C100B10F51 /* wg3_softsurface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717913122CB46C000B10F51 /* wg3_softsurface.cpp */; };
 		1717913822CB46C100B10F51 /* wg3_softgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717913222CB46C000B10F51 /* wg3_softgfxdevice.h */; };
 		1717913922CB46C100B10F51 /* wg3_softsurfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717913322CB46C000B10F51 /* wg3_softsurfacefactory.h */; };
@@ -21,10 +17,6 @@
 
 /* Begin PBXFileReference section */
 		170F7C88220077A800B70B56 /* libwg_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwg_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		170F7C91220077C100B70B56 /* wg_surfacefactory_soft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surfacefactory_soft.h; path = ../framework/wg_soft/wg_surfacefactory_soft.h; sourceTree = "<group>"; };
-		170F7C92220077C100B70B56 /* wg_surfacefactory_soft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_surfacefactory_soft.cpp; path = ../framework/wg_soft/wg_surfacefactory_soft.cpp; sourceTree = "<group>"; };
-		170F7C97220077C200B70B56 /* wg_surface_soft.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_surface_soft.cpp; path = ../framework/wg_soft/wg_surface_soft.cpp; sourceTree = "<group>"; };
-		170F7C9A220077C200B70B56 /* wg_surface_soft.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_surface_soft.h; path = ../framework/wg_soft/wg_surface_soft.h; sourceTree = "<group>"; };
 		1717913122CB46C000B10F51 /* wg3_softsurface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_softsurface.cpp; path = ../framework/gfxdevices/software/wg3_softsurface.cpp; sourceTree = "<group>"; };
 		1717913222CB46C000B10F51 /* wg3_softgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_softgfxdevice.h; path = ../framework/gfxdevices/software/wg3_softgfxdevice.h; sourceTree = "<group>"; };
 		1717913322CB46C000B10F51 /* wg3_softsurfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_softsurfacefactory.h; path = ../framework/gfxdevices/software/wg3_softsurfacefactory.h; sourceTree = "<group>"; };
@@ -53,10 +45,6 @@
 				1717913422CB46C100B10F51 /* wg3_softsurface.h */,
 				1717913622CB46C100B10F51 /* wg3_softsurfacefactory.cpp */,
 				1717913322CB46C000B10F51 /* wg3_softsurfacefactory.h */,
-				170F7C97220077C200B70B56 /* wg_surface_soft.cpp */,
-				170F7C9A220077C200B70B56 /* wg_surface_soft.h */,
-				170F7C92220077C100B70B56 /* wg_surfacefactory_soft.cpp */,
-				170F7C91220077C100B70B56 /* wg_surfacefactory_soft.h */,
 				170F7C89220077A800B70B56 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -78,9 +66,7 @@
 			files = (
 				1717913A22CB46C100B10F51 /* wg3_softsurface.h in Headers */,
 				1717913922CB46C100B10F51 /* wg3_softsurfacefactory.h in Headers */,
-				170F7CA6220077C300B70B56 /* wg_surface_soft.h in Headers */,
 				1717913822CB46C100B10F51 /* wg3_softgfxdevice.h in Headers */,
-				170F7C9D220077C300B70B56 /* wg_surfacefactory_soft.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -141,8 +127,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				1717913722CB46C100B10F51 /* wg3_softsurface.cpp in Sources */,
-				170F7CA3220077C300B70B56 /* wg_surface_soft.cpp in Sources */,
-				170F7C9E220077C300B70B56 /* wg_surfacefactory_soft.cpp in Sources */,
 				1717913C22CB46C100B10F51 /* wg3_softsurfacefactory.cpp in Sources */,
 				1717913B22CB46C100B10F51 /* wg3_softgfxdevice.cpp in Sources */,
 			);
