@@ -72,7 +72,7 @@ bool lineEditorTest(CStandardSlot_p pSlot);
 bool popupOpenerTest(CStandardSlot_p pSlot);
 bool scrollbarTest(CStandardSlot_p pSlot);
 bool modalLayerTest(CStandardSlot_p pSlot);
-
+bool splitPanelTest(CStandardSlot_p pSlot);
 
 
 //____ main() _________________________________________________________________
@@ -491,7 +491,8 @@ int main(int argc, char** argv)
 //	lineEditorTest(pRoot->child.ptr());
 //	popupOpenerTest(pRoot->child.ptr());
 //	scrollbarTest(pRoot->child.ptr());
-	modalLayerTest(&pRoot->slot);
+//	modalLayerTest(&pRoot->slot);
+	splitPanelTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1782,6 +1783,30 @@ bool modalLayerTest(CStandardSlot_p pEntry)
 
 
 	pLayer->modalSlots << p;
+
+	return true;
+}
+
+//____ splitPanelTest() ______________________________________________________
+
+bool splitPanelTest(CStandardSlot_p pEntry)
+{
+	auto pSplit = SplitPanel::create();
+
+	pSplit->setHandleSkin(ColorSkin::create({ { StateEnum::Normal, Color::Black }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } }));
+	pSplit->setHandleThickness(10);
+
+	auto pContent1 = TextEditor::create();
+	pContent1->setSkin(StaticColorSkin::create(Color::AntiqueWhite));
+	pSplit->slots[0] = pContent1;
+
+	
+	auto pContent2 = TextEditor::create();
+	pContent2->setSkin(StaticColorSkin::create(Color::BlanchedAlmond));
+	pSplit->slots[1] = pContent2;
+
+
+	*pEntry = pSplit;
 
 	return true;
 }

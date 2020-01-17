@@ -78,4 +78,4 @@ namespace wg
 } // namespace wg
 
 
-#endif //WG_IPADDEDSLOTVECTOR_IMPL_DOT_H
+#endif //WG_CPADDEDSLOTVECTOR_IMPL_DOT_H

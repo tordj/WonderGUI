@@ -32,7 +32,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	SplitPanel::SplitPanel() : slotOne(this), slotTwo(this)
+	SplitPanel::SplitPanel() : slots(this)
 	{
 		m_bHorizontal = false;
 		m_handleThickness = 0;
@@ -172,11 +172,11 @@ namespace wg
 
 		SizeI sz;
 
-		if (slotOne._widget())
-			firstSz = slotOne._preferredSize();
+		if (slots[0]._widget())
+			firstSz = slots[0]._preferredSize();
 
-		if (slotTwo._widget())
-			secondSz = slotTwo._preferredSize();
+		if (slots[1]._widget())
+			secondSz = slots[1]._preferredSize();
 
 		if (m_bHorizontal)
 		{
@@ -234,9 +234,9 @@ namespace wg
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			length = m_brokerFunc(slotOne._widget(), slotTwo._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
 		else
-			length = _defaultBroker(slotOne._widget(), slotTwo._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
 
 		firstChildLength = length.rawAligned();
 
@@ -264,17 +264,17 @@ namespace wg
 
 		// Request render and set sizes
 
-		if (handleGeo != m_handleGeo || firstChildGeo != slotOne.m_geo || secondChildGeo != slotTwo.m_geo)
+		if (handleGeo != m_handleGeo || firstChildGeo != slots[0].m_geo || secondChildGeo != slots[1].m_geo)
 		{
 			_requestRender(contentGeo);
 
-			slotOne.m_geo = firstChildGeo;
-			if( slotOne._widget() )
-				slotOne._widget()->_resize(firstChildGeo);
+			slots[0].m_geo = firstChildGeo;
+			if( slots[0]._widget() )
+				slots[0]._widget()->_resize(firstChildGeo);
 
-			slotTwo.m_geo = secondChildGeo;
-			if (slotTwo._widget())
-				slotTwo._widget()->_resize(secondChildGeo);
+			slots[1].m_geo = secondChildGeo;
+			if (slots[1]._widget())
+				slots[1]._widget()->_resize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
 
@@ -286,19 +286,22 @@ namespace wg
 
 	//____ _defaultBroker() ___________________________________________________
 
-	QPix SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)
+	QPix SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, QPix _totalLength, float splitFactor, QPix _handleMovement)
 	{
+		int handleMovement = _handleMovement.raw;
+		int totalLength = _totalLength.raw;
+
 		int firstLength;
 
-		if (handleMovement.raw == 0)
+		if (handleMovement == 0)
 		{
 			switch (m_scaleBehavior)
 			{
 			case ScaleBehavior::ScaleFirst:
-				firstLength = totalLength - (m_bHorizontal ? slotTwo.m_geo.w : slotTwo.m_geo.h);
+				firstLength = totalLength - (m_bHorizontal ? slots[1].m_geo.w : slots[1].m_geo.h);
 				break;
 			case ScaleBehavior::ScaleSecond:
-				firstLength = m_bHorizontal ? slotOne.m_geo.w : slotOne.m_geo.h;
+				firstLength = m_bHorizontal ? slots[0].m_geo.w : slots[0].m_geo.h;
 				break;
 			case ScaleBehavior::ScaleBoth:
 				firstLength = (int)((splitFactor * totalLength) + 0.5f);
@@ -306,7 +309,7 @@ namespace wg
 			}
 		}
 		else
-			firstLength = (m_bHorizontal ? slotOne.m_geo.w : slotOne.m_geo.h) + handleMovement.raw;
+			firstLength = (m_bHorizontal ? slots[0].m_geo.w : slots[0].m_geo.h) + handleMovement;
 
 		int minLengthFirst = 0;
 		int minLengthSecond = 0;
@@ -317,28 +320,28 @@ namespace wg
 		{
 			if (pFirst)
 			{
-				minLengthFirst = slotOne._minSize().w;
-				maxLengthFirst = slotOne._maxSize().w;
+				minLengthFirst = slots[0]._minSize().w;
+				maxLengthFirst = slots[0]._maxSize().w;
 			}
 
 			if (pSecond)
 			{
-				minLengthSecond = slotTwo._minSize().w;
-				maxLengthSecond = slotTwo._maxSize().w;
+				minLengthSecond = slots[1]._minSize().w;
+				maxLengthSecond = slots[1]._maxSize().w;
 			}
 		}
 		else
 		{
 			if (pFirst)
 			{
-				minLengthFirst = slotOne._minSize().h;
-				maxLengthFirst = slotOne._maxSize().h;
+				minLengthFirst = slots[0]._minSize().h;
+				maxLengthFirst = slots[0]._maxSize().h;
 			}
 
 			if (pSecond)
 			{
-				minLengthSecond = slotTwo._minSize().h;
-				maxLengthSecond = slotTwo._maxSize().h;
+				minLengthSecond = slots[1]._minSize().h;
+				maxLengthSecond = slots[1]._maxSize().h;
 			}
 		}
 
@@ -354,7 +357,7 @@ namespace wg
 		if (firstLength > maxLengthFirst)
 			firstLength = maxLengthFirst;
 
-		return firstLength;
+		return QPix::fromRaw(firstLength);
 	}
 
 	//____ _refresh() ____________________________________________________________
@@ -479,14 +482,14 @@ namespace wg
 			container.add(RectI(geo, clip));
 		else
 		{
-			if (slotOne._widget())
-				slotOne._widget()->_collectPatches(container, slotOne.m_geo + geo.pos(), clip );
+			if (slots[0]._widget())
+				slots[0]._widget()->_collectPatches(container, slots[0].m_geo + geo.pos(), clip );
 
 			if( m_pHandleSkin )
 				container.add(RectI(m_handleGeo, clip));
 
-			if (slotTwo._widget())
-				slotTwo._widget()->_collectPatches(container, slotTwo.m_geo + geo.pos(), clip );
+			if (slots[1]._widget())
+				slots[1]._widget()->_collectPatches(container, slots[1].m_geo + geo.pos(), clip );
 		}
 	}
 
@@ -500,14 +503,14 @@ namespace wg
 				patches.sub(RectI(geo, clip));
 			else
 			{
-				if (slotOne._widget())
-					slotOne._widget()->_maskPatches(patches, slotOne.m_geo + geo.pos(), clip, blendMode );
+				if (slots[0]._widget())
+					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
 
 				if (m_pHandleSkin && m_pHandleSkin->isOpaque() )
 					patches.sub(RectI(m_handleGeo, clip));
 
-				if (slotTwo._widget())
-					slotTwo._widget()->_maskPatches(patches, slotTwo.m_geo + geo.pos(), clip, blendMode );
+				if (slots[1]._widget())
+					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
 			}
 		}
 	}
@@ -554,35 +557,35 @@ namespace wg
 
 	Widget * SplitPanel::_firstChild() const
 	{
-		if (slotOne._widget())
-			return slotOne._widget();
+		if (slots[0]._widget())
+			return slots[0]._widget();
 		else
-			return slotTwo._widget();
+			return slots[1]._widget();
 	}
 
 	//_____ _lastChild() ______________________________________________________
 
 	Widget * SplitPanel::_lastChild() const
 	{
-		if (slotTwo._widget())
-			return slotTwo._widget();
+		if (slots[1]._widget())
+			return slots[1]._widget();
 		else
-			return slotOne._widget();
+			return slots[0]._widget();
 	}
 
 	//_____ _firstSlotWithGeo() _______________________________________________
 
 	void SplitPanel::_firstSlotWithGeo(SlotWithGeo& package) const
 	{
-		if (slotOne._widget())
+		if (slots[0]._widget())
 		{
-			package.geo = slotOne.m_geo;
-			package.pSlot = &slotOne;
+			package.geo = slots[0].m_geo;
+			package.pSlot = &slots[0];
 		}
-		else if (slotTwo._widget())
+		else if (slots[1]._widget())
 		{
-			package.geo = slotTwo.m_geo;
-			package.pSlot = &slotTwo;
+			package.geo = slots[1].m_geo;
+			package.pSlot = &slots[1];
 		}
 		else
 		{
@@ -594,10 +597,10 @@ namespace wg
 
 	void SplitPanel::_nextSlotWithGeo(SlotWithGeo& package) const
 	{
-		if (package.pSlot == &slotOne && slotTwo._widget())
+		if (package.pSlot == &slots[0] && slots[1]._widget())
 		{
-			package.geo = slotTwo.m_geo;
-			package.pSlot = &slotTwo;
+			package.geo = slots[1].m_geo;
+			package.pSlot = &slots[1];
 		}
 		else
 			package.pSlot = nullptr;
@@ -607,19 +610,19 @@ namespace wg
 
 	CoordI SplitPanel::_childPos(const StaticSlot * pSlot) const
 	{
-		return static_cast<const CSplitSlot*>(pSlot)->m_geo.pos();
+		return static_cast<const SplitSlot*>(pSlot)->m_geo.pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
 	void SplitPanel::_childRequestRender(StaticSlot * pSlot)
 	{
-		_requestRender(static_cast<CSplitSlot*>(pSlot)->m_geo);
+		_requestRender(static_cast<SplitSlot*>(pSlot)->m_geo);
 	}
 
 	void SplitPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
 	{
-		_requestRender(rect + static_cast<CSplitSlot*>(pSlot)->m_geo.pos());
+		_requestRender(rect + static_cast<SplitSlot*>(pSlot)->m_geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -628,7 +631,7 @@ namespace wg
 	{
 		//TODO: Implement better solution, should be able to adapt width !!!
 
-		auto p = static_cast<CSplitSlot*>(pSlot);
+		auto p = static_cast<SplitSlot*>(pSlot);
 		p->_setSize(p->m_geo);
 	}
 
@@ -636,8 +639,8 @@ namespace wg
 
 	Widget * SplitPanel::_prevChild(const StaticSlot * pSlot) const
 	{
-		if (pSlot == &slotTwo)
-			return slotTwo._widget();
+		if (pSlot == &slots[1])
+			return slots[0]._widget();
 		else
 			return nullptr;
 	}
@@ -646,8 +649,8 @@ namespace wg
 
 	Widget * SplitPanel::_nextChild(const StaticSlot * pSlot) const
 	{
-		if (pSlot == &slotOne)
-			return slotTwo._widget();
+		if (pSlot == &slots[0])
+			return slots[1]._widget();
 		else
 			return nullptr;
 	}
@@ -663,7 +666,7 @@ namespace wg
 
 	void SplitPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
 	{
-		auto pSlot = static_cast<CSplitSlot*>(_pSlot);
+		auto pSlot = static_cast<SplitSlot*>(_pSlot);
 
 		pSlot->_setWidget(pNewWidget);
 		pNewWidget->_resize(pSlot->m_geo);

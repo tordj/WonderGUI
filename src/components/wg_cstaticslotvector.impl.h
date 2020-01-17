@@ -54,6 +54,9 @@ namespace wg
 	template < class SlotType>
 	StaticSlot& CStaticSlotVector<SlotType>::_at(int index)
 	{
+		if (index < 0 || index >= m_size)
+			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CStaticSlotVector", __func__, __FILE__, __LINE__);
+
 		return *_slot(index);
 	}
 
@@ -406,5 +409,5 @@ namespace wg
 
 } // namespace wg
 
-#endif //WG_CSLOTVECTOR_IMPL_DOT_H
+#endif //WG_CSTATICSLOTVECTOR_IMPL_DOT_H
 

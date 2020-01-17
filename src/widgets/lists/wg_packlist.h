@@ -82,7 +82,7 @@ namespace wg
 		friend class PackList;
 	public:
 
-		using		iterator = SlotVectorIterator<PackListSlot>;
+		using		iterator = SlotArrayIterator<PackListSlot>;
 
 		//.____ Misc __________________________________________________________
 

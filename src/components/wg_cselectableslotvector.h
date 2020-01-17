@@ -44,7 +44,7 @@ namespace wg
 		};
 
 
-//		using		iterator = SlotVectorIterator<SlotType>;
+//		using		iterator = SlotArrayIterator<SlotType>;
 
 		/** @private */
 

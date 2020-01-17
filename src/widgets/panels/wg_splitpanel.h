@@ -28,24 +28,19 @@
 
 #include <wg_panel.h>
 #include <wg_cslot.h>
-#include <wg_cstandardslot.h>
+#include <wg_cslotarray.h>
 
 
 namespace wg
 {
+	//____ SplitSlot _________________________________________________________
 
-
-	//____ CSplitSlot _________________________________________________________
-
-	class CSplitSlot;
-	typedef	StrongComponentPtr<CSplitSlot>	CSplitSlot_p;
-	typedef	WeakComponentPtr<CSplitSlot>	CSplitSlot_wp;
-
-	class CSplitSlot : public CDynamicSlotImpl<DynamicSlot>
+	class SplitSlot : public DynamicSlot
 	{
 		friend class SplitPanel;
+		template<class S, int X> friend class CSlotArray;
+
 	public:
-		using CDynamicSlotImpl<DynamicSlot>::operator=;
 
 		//.____ Geometry _________________________________________________
 
@@ -53,19 +48,41 @@ namespace wg
 		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
 		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
 
-		//.____ Misc __________________________________________________________
+		//.____ Operators __________________________________________
 
-		inline CSplitSlot_p  ptr() { return CSplitSlot_p(this); }
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
 	protected:
-		class Holder : public CDynamicSlotImpl<DynamicSlot>::Holder
-		{
-		};
-
-		CSplitSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
+		SplitSlot() : DynamicSlot(nullptr) {}
 
 		RectI	m_geo;
 	};
+
+
+	//____ CSplitSlotArray ________________________________________________________
+
+	class CSplitSlotArray;
+	typedef	StrongComponentPtr<CSplitSlotArray>	CSplitSlotArray_p;
+	typedef	WeakComponentPtr<CSplitSlotArray>	CSplitSlotArray_wp;
+
+	class CSplitSlotArray : public CSlotArray<SplitSlot,2>
+	{
+		friend class SplitPanel;
+	public:
+
+		//.____ Misc __________________________________________________________
+
+		inline CSplitSlotArray_p	ptr() { return CSplitSlotArray_p(this); }
+
+	protected:
+
+		class Holder : public CSlotArray<SplitSlot,2>::Holder			/** @private */
+		{
+		};
+
+		CSplitSlotArray(Holder * pHolder) : CSlotArray(pHolder) {}
+	};
+
 
 
 	//____ SplitPanel ___________________________________________________________
@@ -74,7 +91,7 @@ namespace wg
 	typedef	StrongPtr<SplitPanel>	SplitPanel_p;
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
-	class SplitPanel : public Panel, protected CSplitSlot::Holder
+	class SplitPanel : public Panel, protected CSplitSlotArray::Holder
 	{
 
 	public:
@@ -85,8 +102,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSplitSlot		slotOne;
-		CSplitSlot		slotTwo;
+		CSplitSlotArray			slots;
 
 		//.____ Identification __________________________________________
 

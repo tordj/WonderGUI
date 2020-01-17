@@ -455,6 +455,12 @@
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.impl.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cslotarray.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_slotiterator.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

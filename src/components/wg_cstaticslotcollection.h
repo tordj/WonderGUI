@@ -28,120 +28,10 @@
 #include <wg_pointers.h>
 #include <wg_container.h>
 #include <wg_slot.h>
+#include <wg_slotiterator.h>
 
 namespace wg
 {
-
-	//____ SlotIterator _______________________________________________________
-
-	class SlotIterator
-	{
-	public:
-
-		// Iterator traits, previously from std::iterator.
-		using value_type = StaticSlot;
-		using difference_type = std::ptrdiff_t;
-		using pointer = Widget * ;
-		using reference = StaticSlot & ;
-		using iterator_category = std::bidirectional_iterator_tag;
-
-		//.____ Creation ___________________________________________________
-
-		SlotIterator() = default;
-		explicit SlotIterator(StaticSlot* pSlot, void * pHolder, void * pExtra)
-		{
-			this->pSlot = pSlot;
-			this->pHolder = pHolder;
-			this->pExtra = pExtra;
-		}
-
-		//.____ Operators ______________________________________________________
-
-		inline reference operator*() const
-		{
-			return *pSlot;
-		}
-
-		inline pointer operator->() const
-		{
-			return pSlot->_widget();
-		}
-
-
-		inline SlotIterator& operator++()
-		{
-			_inc();
-			return *this;
-		}
-
-		inline SlotIterator operator++(int)
-		{
-			SlotIterator it = *this;
-			_inc();
-			return it;
-		}
-
-		inline SlotIterator& operator--()
-		{
-			_dec();
-			return *this;
-		}
-
-
-		inline SlotIterator operator--(int)
-		{
-			SlotIterator it = *this;
-			_dec();
-			return it;
-		}
-
-		inline SlotIterator operator+(int amount) const
-		{
-			SlotIterator it = *this;
-			it._inc(amount);
-			return it;
-		}
-
-		inline SlotIterator operator-(int amount) const
-		{
-			SlotIterator it = *this;
-			it._dec(amount);
-			return it;
-		}
-
-		inline bool operator==(const SlotIterator& rhs) const
-		{
-			return pSlot == rhs.pSlot;
-		}
-
-		inline bool operator!=(const SlotIterator& rhs) const
-		{
-			return pSlot != rhs.pSlot;
-		}
-
-		inline bool operator< (const SlotIterator& rhs) const { return pSlot < rhs.pSlot; }
-		inline bool operator> (const SlotIterator& rhs) const { return pSlot > rhs.pSlot; }
-		inline bool operator<=(const SlotIterator& rhs) const { return pSlot <= rhs.pSlot; }
-		inline bool operator>=(const SlotIterator& rhs) const { return pSlot >= rhs.pSlot; }
-
-		//.____ Internal _______________________________________________________________
-
-		inline StaticSlot * _slot() const { return pSlot; }
-
-	protected:
-
-		virtual void	_inc() {};
-		virtual void	_dec() {};
-
-		virtual void	_inc(int amount) {};
-		virtual void	_dec(int amount) {};
-
-		StaticSlot *	pSlot = nullptr;
-		void *			pHolder = nullptr;
-		void *			pExtra = nullptr;
-	};
-
-
 
 	class CStaticSlotCollection;
 	typedef	StrongComponentPtr<CStaticSlotCollection>	CStaticSlotCollection_p;
@@ -160,7 +50,7 @@ namespace wg
 		virtual bool	isEmpty() const = 0;
 
 		inline StaticSlot& at(int index) { return _at(index); }
-		virtual int index(Widget * pChild) const = 0;
+		virtual int index(const Widget * pWidget) const = 0;
 
 		//.____ Misc _______________________________________________________
 

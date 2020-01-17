@@ -81,6 +81,7 @@ namespace wg
 
 	enum class ErrorCode
 	{
+		OutOfRange,
 		OpenGL,
 		Other
 	};

@@ -52,7 +52,7 @@ namespace wg
 
 		};
 
-		using		iterator = SlotVectorIterator<SlotType>;
+		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
 
@@ -68,16 +68,18 @@ namespace wg
 
 		inline SlotType& at(int index) const
 		{
-//			if (index < 0 || index >= m_pSlotVector->size())
-//				return nullptr;
+			if (index < 0 || index >= m_size)
+				Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CDynamicSlotVector", __func__, __FILE__, __LINE__);
 
 			return m_pArray[index];
 		}
 
-		inline int		index(Widget * pChild) const override
+		inline int		index(const Widget * pWidget) const override
 		{
-			if (pChild->_holder() && pChild->_holder()->_container() == m_pHolder->_object())
-				return _index(static_cast<SlotType*>(pChild->_slot()));
+			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
+
+			if (pSlot >= m_pArray && pSlot < m_pArray + m_size )
+				return int(pSlot - m_pArray);
 
 			return -1;
 		}
@@ -257,10 +259,6 @@ namespace wg
 
 
 		SlotType*	_slot(int index) const { return &m_pArray[index]; }
-
-
-		SlotType*	_prev(const SlotType* pSlot) const { if (pSlot > m_pArray) return const_cast<SlotType*>(pSlot) - 1; return 0; }
-		SlotType*	_next(const SlotType* pSlot) const { if (pSlot < &m_pArray[m_size - 1]) return const_cast<SlotType*>(pSlot) + 1; return 0; }
 
 		int			_index(const SlotType* pSlot) const { return int(pSlot - m_pArray); }
 

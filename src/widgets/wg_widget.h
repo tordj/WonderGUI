@@ -94,6 +94,7 @@ namespace wg
 
 		template<class S> friend class CStaticSlotVector;
 		template<class S> friend class CDynamicSlotVector;
+		template<class S, int X> friend class CSlotArray;
 		template<class S, class H> friend class IChildrenSubclass;
 
 	public:

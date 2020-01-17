@@ -112,6 +112,7 @@
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
     <ClInclude Include="..\..\..\src\base\wg_qpix.h" />
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
+    <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
     <ClInclude Include="..\..\..\src\base\wg_mempool.h" />
@@ -143,6 +144,7 @@
     <ClInclude Include="..\..\..\src\base\wg_weakcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotholder.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccolumnheader.h" />

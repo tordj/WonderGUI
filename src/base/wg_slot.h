@@ -42,6 +42,7 @@ namespace wg
 		template<class S> friend class CStaticSlotImpl;
 		template<class S> friend class CStaticSlotVector;
 		template<class S> friend class CDynamicSlotVector;
+		template<class S, int SIZE> friend class CSlotArray;
 
 
 	public:

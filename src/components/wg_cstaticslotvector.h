@@ -25,88 +25,10 @@
 #pragma once
 
 #include <wg_cstaticslotcollection.h>
+#include <wg_base.h>
 
 namespace wg
 {
-
-	//____ SlotVectorIterator _______________________________________________________
-
-	template<class SlotType> class SlotVectorIterator : public SlotIterator
-	{
-	public:
-
-		using reference = SlotType & ;
-
-		//.____ Operators ____________________________________________________________
-
-		inline reference operator*() const
-		{
-			return * static_cast<SlotType*>(pSlot);
-		}
-
-		inline SlotVectorIterator<SlotType>& operator++()
-		{
-			pSlot = _slot() + 1;
-			return *this;
-		};
-
-		inline SlotVectorIterator<SlotType> operator++(int)
-		{
-			SlotVectorIterator<SlotType> tmp = *this;
-			pSlot = _slot() + 1;
-			return tmp;
-		}
-
-		inline SlotVectorIterator<SlotType>& operator--()
-		{
-			pSlot = _slot() - 1;
-			return *this;
-		}
-
-		inline SlotVectorIterator<SlotType> operator--(int)
-		{
-			SlotVectorIterator<SlotType> tmp = *this;
-			pSlot = _slot()-1;
-			return tmp;
-		}
-
-		inline SlotVectorIterator<SlotType> operator+(int amount) const
-		{
-			SlotVectorIterator<SlotType> it = *this;
-			it._inc(amount);
-			return it;
-		}
-
-		inline SlotVectorIterator<SlotType> operator-(int amount) const
-		{
-			SlotVectorIterator<SlotType> it = *this;
-			it._dec(amount);
-			return it;
-		}
-
-
-
-		//.____ Internal _______________________________________________________________
-
-		SlotVectorIterator(SlotType * pSlot)
-		{
-			this->pSlot = pSlot;
-			this->pHolder = nullptr;
-			this->pExtra = nullptr;
-		}
-
-		inline SlotType* _slot() const { return static_cast<SlotType*>(pSlot); }
-
-	protected:
-
-		void	_inc() override { pSlot = (static_cast<SlotType*>(pSlot) + 1); }
-		void	_dec() override { pSlot = (static_cast<SlotType*>(pSlot) - 1); }
-
-		void	_inc( int amount ) override { pSlot = (static_cast<SlotType*>(pSlot) + amount); }
-		void	_dec( int amount ) override { pSlot = (static_cast<SlotType*>(pSlot) - amount); }
-	};
-
-
 
 	//____ CStaticSlotVector _________________________________________________________
 
@@ -120,7 +42,7 @@ namespace wg
 
 		};
 
-		using		iterator = SlotVectorIterator<SlotType>;
+		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
 
@@ -134,16 +56,18 @@ namespace wg
 
 		inline SlotType& at(int index) const
 		{
-//			if (index < 0 || index >= m_pSlotVector->size())
-//				return nullptr;
+			if (index < 0 || index >= m_size )
+				Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CStaticSlotVector", __func__, __FILE__, __LINE__);
 
 			return m_pArray[index];
 		}
 
-		inline int		index(Widget * pChild) const override
+		inline int		index(const Widget * pWidget) const override
 		{
-			if (pChild->_holder() && pChild->_holder()->_container() == m_pHolder->_object())
-				return _index(static_cast<SlotType*>(pChild->_slot()));
+			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
+
+			if (pSlot >= m_pArray && pSlot < m_pArray + m_size)
+				return int(pSlot - m_pArray);
 
 			return -1;
 		}
@@ -219,10 +143,6 @@ namespace wg
 
 
 		SlotType*	_slot(int index) const { return &m_pArray[index]; }
-
-
-		SlotType*	_prev(const SlotType* pSlot) const { if (pSlot > m_pArray) return const_cast<SlotType*>(pSlot) - 1; return 0; }
-		SlotType*	_next(const SlotType* pSlot) const { if (pSlot < &m_pArray[m_size - 1]) return const_cast<SlotType*>(pSlot) + 1; return 0; }
 
 		int			_index(const SlotType* pSlot) const { return int(pSlot - m_pArray); }
 
