@@ -221,7 +221,6 @@ namespace wg
 		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );	///< @brief Copy other surface as a block
 
-
 	protected:
 		Surface();
 		virtual ~Surface();

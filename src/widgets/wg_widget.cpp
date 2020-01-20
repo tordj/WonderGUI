@@ -516,7 +516,7 @@ namespace wg
 				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
 				if (!pMsg->hasPayload())
 				{
-					pMsg->setPayload(Payload::create());
+					pMsg->setPayload(BasicPayload::create());
 				}
 				break;
 			}

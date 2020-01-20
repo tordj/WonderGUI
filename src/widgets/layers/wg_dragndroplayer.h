@@ -148,10 +148,10 @@ namespace wg
 
 		DragState		m_dragState = DragState::Idle;
 
-		DnDLayerSlot       m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+		DnDLayerSlot    m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
-		Payload_p		m_pPayload;
+		BasicPayload_p	m_pPayload;
 
 		int				m_dragStartTreshold = 3;
 		CoordI           m_dragWidgetOfs;                // Drag widgets offset from pointer.

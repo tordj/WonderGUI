@@ -49,15 +49,15 @@ namespace wg
 	class CStaticTextDisplay;
 	class CTextDisplay;
 	class CTextEditor;
-	class Payload;
+	class BasicPayload;
 
 	typedef WeakPtr<Object>		Object_wp;
 
 	typedef	StrongComponentPtr<CTextEditor>	CTextEditor_p;
 	typedef	WeakComponentPtr<CTextEditor>	CTextEditor_wp;
 
-	typedef    StrongPtr<Payload>  Payload_p;
-	typedef    WeakPtr<Payload>    Payload_wp;
+	typedef    StrongPtr<BasicPayload>  BasicPayload_p;
+	typedef    WeakPtr<BasicPayload>    BasicPayload_wp;
 
 
 	typedef WeakPtr<Widget> Widget_wp;
@@ -728,17 +728,17 @@ namespace wg
 		CoordI				pointerPosRaw() const { return Util::qpixToRaw(m_pointerPos); }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 
-		Payload_p			payload() const;
+		BasicPayload_p		payload() const;
 		Widget_p 			pickedFrom() const { return m_pPickedFrom; }
 		int                 pickCategory() const { return m_pickCategory; }
 
 	protected:
-		DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Coord				m_pointerPos;		// Screen position of pointer.
    		ModifierKeys		m_modKeys;			// Modifier keys pressed when message posted.
 
-		Payload_p           m_pPayload;
+		BasicPayload_p      m_pPayload;
 		Widget_p            m_pPickedFrom;
 		int                 m_pickCategory;
 	 };
@@ -758,7 +758,7 @@ namespace wg
 
 		//.____ Content ________________________________________________________
 
-		void				setPayload( Payload * pPayload );
+		void				setPayload( BasicPayload * pPayload );
 		bool				hasPayload() const { return m_pPayload; }
 
 		Coord				pickOfs() const { return m_pickOfs; }
@@ -797,7 +797,7 @@ namespace wg
 		bool			isAccepted() const { return m_bAccepted; }
 
 	protected:
-		DropProbeMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos  );
+		DropProbeMsg( Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos  );
 
   		bool		m_bAccepted;
 	};
@@ -822,7 +822,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropEnterMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropEnterMsg( Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
 	};
@@ -846,7 +846,7 @@ namespace wg
 		Widget_p            dragWidget() const;
 
 	protected:
-		DropMoveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropMoveMsg( Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pDragWidget, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
 		Widget_p            m_pDragWidget;
 	};
@@ -867,7 +867,7 @@ namespace wg
 		//.____ Content ________________________________________________________
 
 	protected:
-		DropLeaveMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos );
+		DropLeaveMsg( Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos );
 	};
 
 
@@ -891,7 +891,7 @@ namespace wg
 		bool		isAccepted() const { return m_bAccepted; }
 
 	protected:
-		DropDeliverMsg( Widget * pSource, int pickCategory, Payload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
+		DropDeliverMsg( Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
 
   		bool		m_bAccepted;
 	};
@@ -914,7 +914,7 @@ namespace wg
 
 
 	protected:
-		DropCancelMsg( Widget * pPickedFrom, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
+		DropCancelMsg( Widget * pPickedFrom, int pickCategory, BasicPayload * pPayload, ModifierKeys modKeys, Coord pointerPos );
 
 	};
 
@@ -936,7 +936,7 @@ namespace wg
 		Widget_p 	deliveredTo() const;
 
 	protected:
-		DropCompleteMsg( Widget * pPicked, Widget * pDeliveree, int pickCategory, Payload * pPayload, ModifierKeys modKeys, Coord pointerPos );
+		DropCompleteMsg( Widget * pPicked, Widget * pDeliveree, int pickCategory, BasicPayload * pPayload, ModifierKeys modKeys, Coord pointerPos );
 
   		Widget_p 	m_pDeliveree;
 	};

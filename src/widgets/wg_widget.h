@@ -30,6 +30,7 @@
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
+#include <wg_payload.h>
 
 namespace wg
 {
@@ -193,6 +194,10 @@ namespace wg
 
 		inline bool			isOpaque() const { return m_bOpaque; }
 
+		void				setPayload(BasicPayload * pPayload) { m_pPayload = pPayload; }
+		bool				hasPayload() const { return m_pPayload; }
+		BasicPayload_p		payload() const { return m_pPayload; }
+
 	protected:
 		Widget();
 		virtual ~Widget();
@@ -287,9 +292,10 @@ namespace wg
 		//
 
 		int				m_id;
+		BasicPayload_p	m_pPayload;
 
 		SlotHolder *	m_pHolder;
-		StaticSlot *		m_pSlot;
+		StaticSlot *	m_pSlot;
 
 		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;

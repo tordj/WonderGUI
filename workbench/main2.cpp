@@ -212,6 +212,48 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 	// Init WonderGUI
 	//------------------------------------------------------
+/*
+	struct StructX {
+
+		int aa, bb;
+
+	};
+
+	struct StructY {
+
+		int yy, zz;
+	};
+
+
+	const char * p = Payload<StructX>::CLASSNAME;
+	const char * q = Payload<StructY>::CLASSNAME;
+
+	Payload_p<StructX> pX = Payload<StructX>::create();
+
+	Payload_p<StructX> pX2 = pX;
+
+	Payload_p<StructX> pX3 = Payload<StructX>::create();
+
+	Payload_p<StructY> pY = Payload<StructY>::create();
+
+	if (pY->className() != pX->className())
+	{
+		int success = true;
+	}
+
+
+	if ( p == pX->className() )
+	{
+		int success = true;
+	}
+
+	if ( pX2->className() == pX3->className() )
+	{
+		int success = true;
+	}
+
+*/
+
 
 	Base::init();
 
