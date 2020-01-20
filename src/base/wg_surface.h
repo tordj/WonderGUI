@@ -74,6 +74,9 @@ namespace wg
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 
+        bool                setScale( float scale );
+        inline float        scale() const { return m_pixelQuartersPerPoint/4.f; }
+        
 		//.____ Appearance ____________________________________________________
 
 		virtual void		setScaleMode( ScaleMode mode );
@@ -124,6 +127,7 @@ namespace wg
 
 		const PixelDescription*	pixelDescription() const { return &m_pixelDescription; }///< @brief Get the pixel description for the surface.
 		PixelFormat			pixelFormat() const { return m_pixelDescription.format; }
+        int                 pixelBytes() const { return m_pixelDescription.bits/8; }
 
 		virtual bool		isOpaque() const = 0;				///< @brief Check if surface is entirely opaque.
 																///<
@@ -221,8 +225,9 @@ namespace wg
 		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );	///< @brief Copy other surface as a block
 
+
 	protected:
-		Surface();
+		Surface( int flags );
 		virtual ~Surface();
 
 		static const uint8_t *	s_pixelConvTabs[9];
@@ -234,14 +239,16 @@ namespace wg
 		int					m_pitch;
 		SizeI				m_size;				// Width and height in pixels.
 
-		ScaleMode			m_scaleMode;
-		bool				m_bMipmapped;
+        ScaleMode			m_scaleMode = ScaleMode::Nearest;
+		bool				m_bMipmapped = false;
 
-		AccessMode			m_accessMode;
-		Color *				m_pClut;			// Pointer at color lookup table. Always 256 entries long.
-		uint8_t *			m_pPixels;			// Pointer at pixels when surface locked.
-		RectI				m_lockRegion;		// Region of surface that is locked. Width/Height should be set to 0 when not locked.
+        AccessMode			m_accessMode = AccessMode::None;
+		Color *				m_pClut = nullptr;			        // Pointer at color lookup table. Always 256 entries long.
+		uint8_t *			m_pPixels = nullptr;			    // Pointer at pixels when surface locked.
+		RectI				m_lockRegion;		                // Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
+        // This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
+        int                 m_pixelQuartersPerPoint = 4;
 	};
 
 	//____ Surface::pitch() _______________________________________________
