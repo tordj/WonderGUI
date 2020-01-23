@@ -41,15 +41,7 @@
 #ifndef WG_GEO_DOT_H
 #	include <wg_geo.h>
 #endif
-/*
-#ifndef WG_SURFACE_DOT_H
-#	include <wg_surface.h>
-#endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-*/
 
 #include <wg3_gfxdevice.h>
 #include <wg_geo.h>
@@ -59,7 +51,6 @@
 typedef wg::WaveLine        WgWaveLine;
 
 class	WgBlock;
-class	WgSurface;
 class	WgText;
 class	WgCursorInstance;
 class 	WgPen;

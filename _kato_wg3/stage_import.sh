@@ -21,6 +21,7 @@ cp wg_object.h \
    wg_gfxdevice.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
+   wg_payload.* \
    wg_pointers.* \
    wg_qpix.* \
    wg_strongcomponentptr.* \

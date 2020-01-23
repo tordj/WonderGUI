@@ -133,10 +133,28 @@ static int TestThread(void *ptr)
 }
 */
 
+struct TestX {
+    int aa = 0;
+    int bb = 0;
+    int cc = 0;
+};
+
+struct WgModKeyMap
+{
+    WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
+    WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
+    WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
+    //    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;
+};
+
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
 {
+    TestX a = { .aa = 10, .bb = 20 };
+
+    WgModKeyMap    modKeyMap = { .stepWord = WG_MODKEY_ALT, .beginEndLine = WG_MODKEY_CTRL, .beginEndText = WG_MODKEY_CTRL };
+    
     
 	//------------------------------------------------------
 	// Init SDL

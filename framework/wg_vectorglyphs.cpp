@@ -29,8 +29,8 @@
 #ifdef	WG_USE_FREETYPE
 #include <wg_base.h>
 #include <wg_vectorglyphs.h>
-#include <wg_surface.h>
-#include <wg_surfacefactory.h>
+#include <wg3_surface.h>
+#include <wg3_surfacefactory.h>
 #include <assert.h>
 
 
@@ -40,7 +40,7 @@
 
 WgChain<WgVectorGlyphs::CacheSlot>	WgVectorGlyphs::s_cacheSlots[GLYPH_SLOT_SIZES];
 WgChain<WgVectorGlyphs::CacheSurf>	WgVectorGlyphs::s_cacheSurfaces;
-WgSurfaceFactory *					WgVectorGlyphs::s_pSurfaceFactory = 0;
+wg::SurfaceFactory_p				WgVectorGlyphs::s_pSurfaceFactory;
 
 
 //____ Constructor ____________________________________________________________
@@ -462,13 +462,13 @@ WgVectorGlyphs::CacheSlot * WgVectorGlyphs::_generateBitmap( Glyph * pGlyph )
 
 void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 {
-	WgSurface * pSurf = pSlot->bitmap.pSurface;
+    wg::Surface * pSurf = pSlot->bitmap.pSurface;
 
-	unsigned char * pDest = (unsigned char*) pSurf->LockRegion( WgAccessMode::WriteOnly, pSlot->bitmap.rect );
+	unsigned char * pDest = (unsigned char*) pSurf->lockRegion( WgAccessMode::WriteOnly, pSlot->bitmap.rect );
 	assert( pDest != 0 );
-	assert( pSurf->PixelFormat()->format == WgPixelType::BGRA_8 );
+	assert( pSurf->pixelDescription()->format == WgPixelType::BGRA_8 );
 
-	int dest_pitch = pSurf->Pitch();
+	int dest_pitch = pSurf->pitch();
 
 	// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 	// left over area of slots alpha channel.
@@ -499,7 +499,7 @@ void WgVectorGlyphs::_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot )
 	}
 */
 
-	pSurf->Unlock();
+	pSurf->unlock();
 }
 
 
@@ -594,7 +594,7 @@ WgVectorGlyphs::Glyph * WgVectorGlyphs::_addGlyph( Uint16 ch, int size, int adva
 
 //____ SetSurfaceFactory() ____________________________________________________
 
-void WgVectorGlyphs::SetSurfaceFactory( WgSurfaceFactory * pFactory )
+void WgVectorGlyphs::SetSurfaceFactory( wg::SurfaceFactory * pFactory )
 {
 	s_pSurfaceFactory = pFactory;
 }
@@ -662,8 +662,8 @@ int WgVectorGlyphs::AddCacheSlots( WgChain<CacheSlot> * pChain, const WgSize& sl
 
 	WgSize texSize = CalcTextureSize( slotSize, 16 );
 
-	WgSurface * pSurf = s_pSurfaceFactory->CreateSurface( texSize );
-	pSurf->Fill( WgColor( 255,255,255,0 ) );
+    wg::Surface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
+	pSurf->fill( WgColor( 255,255,255,0 ) );
 
 	CacheSurf * pCache = new CacheSurf( pSurf );
 	s_cacheSurfaces.PushBack( pCache );
@@ -729,7 +729,6 @@ WgSize WgVectorGlyphs::CalcTextureSize( const WgSize& slotSize, int nSlots )
 
 WgVectorGlyphs::CacheSurf::~CacheSurf()
 {
-	delete pSurf;
 }
 
 WgVectorGlyphs::Glyph::Glyph()

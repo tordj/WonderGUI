@@ -51,6 +51,14 @@ public:
 };
 
 
+struct WgModKeyMap
+{
+    WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
+    WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
+    WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
+//    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;
+};
+
 
 class WgEventHandler
 {
@@ -80,6 +88,9 @@ public:
 	bool	IsMouseButtonPressed( int button );
 	bool	IsKeyPressed( int native_keycode );
 	WgModifierKeys ModKeys() const { return m_modKeys; }
+
+    void                SetModKeyMap( const WgModKeyMap& key );
+    const WgModKeyMap&  GetModKeyMap() const { return m_modKeyMap; }
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }
 
@@ -185,6 +196,8 @@ private:
 	WgPointerStyle	m_pointerStyle;
 	WgModifierKeys	m_modKeys;
 
+    WgModKeyMap     m_modKeyMap;
+    
 	std::vector<WgWidgetWeakPtr>	m_vTickWidgets;		// Widgets that have requested periodic tick-events (i.e. on every processEvents() ).
 
 	// Current mouse state

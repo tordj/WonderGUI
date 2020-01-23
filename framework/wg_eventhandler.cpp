@@ -55,6 +55,13 @@ WgEventHandler::~WgEventHandler()
 {
 }
 
+//____ SetModKeyMap() _________________________________________________________
+
+void WgEventHandler::SetModKeyMap( const WgModKeyMap& map )
+{
+    m_modKeyMap = map;
+}
+
 //____ SetFocusGroup() ________________________________________________________
 
 bool WgEventHandler::SetFocusGroup( WgPanel * pFocusGroup )

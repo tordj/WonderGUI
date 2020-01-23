@@ -43,10 +43,9 @@
 #	include <wg_glyphset.h>
 #endif
 
+#include <wg3_surface.h>
+#include <wg3_surfacefactory.h>
 
-
-class WgSurface;
-class WgSurfaceFactory;
 
 struct	FT_FaceRec_;
 typedef struct FT_FaceRec_*	FT_Face;
@@ -90,7 +89,7 @@ public:
 	bool		SetRenderMode( RenderMode mode, int startSize, int endSize );
 	inline RenderMode	GetRenderMode( int size ) const { if( size >= 0 && size <= WG_MAX_FONTSIZE ) return m_renderMode[size]; else return MONOCHROME; }
 
-	static void	SetSurfaceFactory( WgSurfaceFactory * pFactory );
+    static void	SetSurfaceFactory( wg::SurfaceFactory * pFactory );
 	static void	ClearCache();
 
 private:
@@ -120,13 +119,13 @@ private:
 	class CacheSurf : public WgLink
 	{
 	public:
-		CacheSurf( WgSurface * _pSurf ) { pSurf = _pSurf; access = 0; }
+        CacheSurf( wg::Surface * _pSurf ) { pSurf = _pSurf; access = 0; }
 		~CacheSurf();
 
 		LINK_METHODS( CacheSurf );		
 
 		Uint32			access;			// Timestamp of last access.
-		WgSurface *		pSurf;
+        wg::Surface_p	pSurf;
 	};
 
 
@@ -183,7 +182,7 @@ private:
 
 	static WgChain<CacheSlot>	s_cacheSlots[GLYPH_SLOT_SIZES];
 	static WgChain<CacheSurf>	s_cacheSurfaces;
-	static WgSurfaceFactory *	s_pSurfaceFactory;
+    static wg::SurfaceFactory_p	s_pSurfaceFactory;
 
 	//____
 

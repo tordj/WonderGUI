@@ -23,7 +23,6 @@
 #define WG_RESLOADER_DOT_H
 
 #include <string>
-class WgSurface;
 class WgGlyphset;
 class WgResDB;
 

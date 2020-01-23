@@ -28,8 +28,7 @@
 #include <wg_layer.h>
 #include <wg_payload.h>
 #include <wg_key.h>
-
-class WgSurfaceFactory;
+#include <wg3_surfacefactory.h>
 
 //____ WgDragNDropHook ___________________________________________________________
 
@@ -71,7 +70,7 @@ public:
     virtual WgWidget * NewOfMyType() const override { return new WgDragNDropLayer(); };
 
     bool            Pick( WgWidget * pWidget, WgCoord pickOfs );
-    void            SetSurfaceFactory( WgSurfaceFactory * pFactory ) { m_pSurfaceFactory = pFactory; }
+    void            SetSurfaceFactory( wg::SurfaceFactory * pFactory ) { m_pSurfaceFactory = pFactory; }
 
     WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode ) override;
 

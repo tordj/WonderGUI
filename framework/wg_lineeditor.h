@@ -81,6 +81,8 @@ public:
 
 	void		SetSkin(const WgSkinPtr& pSkin);
 
+    void        SelectAll() { m_text.selectAll(); }
+
 protected:
 
 	bool	_isEditable() const { return m_text.IsEditable(); }

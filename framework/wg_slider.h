@@ -32,7 +32,6 @@
 #endif
 
 
-class WgSurface;
 class WgSliderTarget;
 class WgMenu;
 

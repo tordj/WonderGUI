@@ -39,14 +39,11 @@
 #	include <wg_chain.h>
 #endif
 
-#ifndef WG_SURFACE_DOT_H
-#	include <wg3_surface.h>
-#endif
+#include <wg3_surface.h>
 
 #include <wg_color.h>
 
 class WgBlock;
-class WgSurface;
 
 enum WgBlockFlags
 {

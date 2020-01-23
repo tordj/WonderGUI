@@ -79,7 +79,7 @@ bool WgBlock::operator!=( const WgBlock& b) const
 WgBlocksetPtr WgBlockset::CreateFromSurface( wg::Surface * pSurf, int flags )
 {
 	WgBlockset * p = _alloc( pSurf, flags );
-	p->m_size		= pSurf->size() * pSurf->scale();
+	p->m_size		= pSurf->pointSize();
 	
 	return WgBlocksetPtr(p);
 }

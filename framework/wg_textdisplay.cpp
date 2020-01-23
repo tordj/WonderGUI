@@ -330,15 +330,19 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( (type == WG_EVENT_KEY_PRESS || type == WG_EVENT_KEY_REPEAT) && IsEditable() && m_bFocused )
 	{
-		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+        const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
+
+        switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG_MODKEY_CTRL )
+				if( modKeys & modKeyMap.stepWord )
 					m_pText->gotoPrevWord();
-				else
+                else if( modKeys & modKeyMap.beginEndLine )
+                    m_pText->goBOL();
+                else
 					m_pText->goLeft();
 				bSwallowed = true;
                 _bringCursorInView();
@@ -347,9 +351,11 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( modKeys & WG_MODKEY_CTRL )
+				if( modKeys & modKeyMap.stepWord )
 					m_pText->gotoNextWord();
-				else
+                else if( modKeys & modKeyMap.beginEndLine )
+                    m_pText->goEOL();
+                else
 					m_pText->goRight();
 				bSwallowed = true;
                 _bringCursorInView();
@@ -359,7 +365,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				m_pText->CursorGoUp( 1, ScreenPixelGeo() );
+                if( modKeys & modKeyMap.beginEndText )
+                    m_pText->goBOF();
+                else
+                    m_pText->CursorGoUp( 1, ScreenPixelGeo() );
 				bSwallowed = true;
                 _bringCursorInView();
 				break;
@@ -368,7 +377,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				m_pText->CursorGoDown( 1, ScreenPixelGeo() );
+                if( modKeys & modKeyMap.beginEndText )
+                    m_pText->goEOF();
+                else
+                    m_pText->CursorGoDown( 1, ScreenPixelGeo() );
 				bSwallowed = true;
                 _bringCursorInView();
 				break;
@@ -376,8 +388,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			case WG_KEY_BACKSPACE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
-				else if( modKeys & WG_MODKEY_CTRL )
+				else if( modKeys & modKeyMap.stepWord )
 					m_pText->delPrevWord();
+                else if( modKeys & modKeyMap.beginEndLine )
+                    m_pText->delToBOL();
 				else
 					m_pText->delPrevChar();
 				bSwallowed = true;
@@ -387,8 +401,10 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			case WG_KEY_DELETE:
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
-				else if( modKeys & WG_MODKEY_CTRL )
+				else if( modKeys & modKeyMap.stepWord )
 					m_pText->delNextWord();
+                else if( modKeys & modKeyMap.beginEndLine )
+                    m_pText->delToEOL();
 				else
 					m_pText->delNextChar();
 				bSwallowed = true;

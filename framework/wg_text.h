@@ -352,6 +352,8 @@ public:
 	void			unputText( int nChar ){if(m_pCursor) m_pCursor->unputText( nChar );}
 	void 			delPrevWord(){if(m_pCursor) m_pCursor->delPrevWord();}
 	void 			delNextWord(){if(m_pCursor) m_pCursor->delNextWord();}
+    void            delToBOL(){if(m_pCursor) m_pCursor->delToBOL();}
+    void            delToEOL(){if(m_pCursor) m_pCursor->delToEOL();}
 	bool			delPrevChar(){return m_pCursor ? m_pCursor->delPrevChar():false;}
 	bool			delNextChar(){return m_pCursor ? m_pCursor->delNextChar():false;}
 

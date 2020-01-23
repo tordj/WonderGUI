@@ -448,6 +448,27 @@ void WgCursorInstance::delNextWord()
 	_updateLocation(line, column);
 }
 
+//_____________________________________________________________________
+void WgCursorInstance::delToBOL()
+{
+    int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
+    goBOL();
+    int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+    m_pText->deleteText( ofs2, ofs1-ofs2 );
+}
+
+//_____________________________________________________________________
+void WgCursorInstance::delToEOL()
+{
+    int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
+    int line = m_line;
+    int column = m_column;
+    goEOL();
+    int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+    m_pText->deleteText(ofs1, ofs2-ofs1);
+    _updateLocation(line, column);
+}
+
 //____ delPrevChar() __________________________________________________________
 
 bool WgCursorInstance::delPrevChar()

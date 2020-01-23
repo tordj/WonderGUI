@@ -24,7 +24,6 @@
 
 #include <wg_gfxdevice.h>
 
-#include <wg_gfxdevice.h>
 #include <wg3_surface.h>
 #include <wg_geo.h>
 #include <wg_blockset.h>

@@ -84,6 +84,8 @@ public:
 	void			unputText( int nChar );
 	void 			delPrevWord();
 	void 			delNextWord();
+    void            delToBOL();
+    void            delToEOL();
 	bool			delPrevChar();
 	bool			delNextChar();
 

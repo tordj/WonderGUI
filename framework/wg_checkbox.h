@@ -43,8 +43,6 @@
 #	include <wg_iconholder.h>
 #endif
 
-class	WgSurface;
-
 class	WgCheckBox : public WgWidget, public Wg_Interface_TextHolder, public WgIconHolder
 {
 public:

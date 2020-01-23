@@ -344,6 +344,8 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 	if( (event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT) && _isEditable() && m_bFocused )
 	{
+        const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
+
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		switch( key )
 		{
@@ -351,13 +353,17 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pEvent->ModKeys() & modKeyMap.stepWord )
 				{
 					if( m_bPasswordMode )
 						m_pText->goBOL();
 					else
 						m_pText->gotoPrevWord();
 				}
+                else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
+                {
+                    m_pText->goBOL();
+                }
 				else
 				{
 					m_pText->goLeft();
@@ -367,13 +373,17 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 				if( pEvent->ModKeys() & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-				if( pEvent->ModKeys() & WG_MODKEY_CTRL )
+				if( pEvent->ModKeys() & modKeyMap.stepWord )
 				{
 					if( m_bPasswordMode )
 						m_pText->goEOL();
 					else
 						m_pText->gotoNextWord();
 				}
+                else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
+                {
+                        m_pText->goEOL();
+                }
 				else
 				{
 					m_pText->goRight();
@@ -384,8 +394,10 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			{
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
-				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+				else if( (pEvent->ModKeys() & modKeyMap.stepWord) && !m_bPasswordMode)
 					m_pText->delPrevWord();
+                else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
+                    m_pText->delToBOL();
 				else
 					m_pText->delPrevChar();
 				break;
@@ -395,8 +407,10 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			{
 				if(m_pText->hasSelection())
 					m_pText->delSelection();
-				else if( (pEvent->ModKeys() & WG_MODKEY_CTRL) && !m_bPasswordMode)
+				else if( (pEvent->ModKeys() & modKeyMap.stepWord) && !m_bPasswordMode)
 					m_pText->delNextWord();
+                else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
+                    m_pText->delToEOL();
 				else
 					m_pText->delNextChar();
 				break;
