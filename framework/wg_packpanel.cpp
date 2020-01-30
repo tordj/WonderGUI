@@ -183,7 +183,7 @@ void WgPackPanel::SetBaselineMode( bool bBaseline )
 
 WgSize WgPackPanel::PreferredPixelSize() const
 {
-    return m_pSkin ? m_preferredSize + m_pSkin->ContentPadding(m_scale): m_preferredSize;
+    return m_pSkin ? m_preferredSize + _skinContentPadding( m_pSkin, m_scale ): m_preferredSize;
 }
 
 //____ MatchingPixelHeight() _______________________________________________________
@@ -191,7 +191,7 @@ WgSize WgPackPanel::PreferredPixelSize() const
 int WgPackPanel::MatchingPixelHeight( int width ) const
 {
     if( m_pSkin )
-        width -= m_pSkin->ContentPadding(m_scale).w;
+        width -= _skinContentPadding( m_pSkin, m_scale ).w;
     
 	int height = 0;
 
@@ -315,7 +315,7 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 	}
     
     if( m_pSkin )
-        height += m_pSkin->ContentPadding(m_scale).h;
+        height += _skinContentPadding( m_pSkin, m_scale ).h;
 
 	return height;
 }
@@ -325,7 +325,7 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
 int WgPackPanel::MatchingPixelWidth( int height ) const
 {
     if( m_pSkin )
-        height -= m_pSkin->ContentPadding(m_scale).h;
+        height -= _skinContentPadding( m_pSkin, m_scale ).h;
 
 	int width = 0;
 
@@ -463,7 +463,7 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
 	}
     
     if( m_pSkin )
-        width += m_pSkin->ContentPadding(m_scale).w;
+        width += _skinContentPadding( m_pSkin, m_scale ).w;
 
 	return width;
 }
@@ -869,7 +869,7 @@ void WgPackPanel::_refreshChildGeo()
     
 	WgRect contentRect = PixelSize();
 	if (m_pSkin)
-		contentRect = m_pSkin->ContentRect(contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
 	WgSize size = contentRect.size();
 

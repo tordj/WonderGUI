@@ -103,7 +103,7 @@ void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
 
 //____ SetPeakSkin() _________________________________________________________
 
-void WgSimpleVolumeMeter::SetPeakSkin(const WgSkinPtr& pSkin)
+void WgSimpleVolumeMeter::SetPeakSkin(wg::Skin * pSkin)
 {
 	//TODO: Should request resize too...
 
@@ -116,7 +116,7 @@ void WgSimpleVolumeMeter::SetPeakSkin(const WgSkinPtr& pSkin)
 
 //____ SetHoldSkin() _________________________________________________________
 
-void WgSimpleVolumeMeter::SetHoldSkin(const WgSkinPtr& pSkin)
+void WgSimpleVolumeMeter::SetHoldSkin(wg::Skin * pSkin)
 {
 	//TODO: Should request resize too...
 
@@ -421,7 +421,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			}
 
 			if (m_pHoldSkin)
-				m_pHoldSkin->Render(pDevice, WgStateEnum::Normal, _rect, m_scale);
+				_renderSkin( m_pHoldSkin, pDevice, WgStateEnum::Normal, _rect, m_scale);
 			else
 				pDevice->fill( r, c );
 		}
@@ -455,7 +455,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 			break;
 		}
 
-		m_pPeakSkin->Render(pDevice, WgStateEnum::Normal, r, m_scale);
+		_renderSkin( m_pPeakSkin, pDevice, WgStateEnum::Normal, r, m_scale);
 	}
 	else
 	{

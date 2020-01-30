@@ -8,6 +8,7 @@ mkdir components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
+mkdir skins
 cd ..
 
 cd ../../WonderGUI/src
@@ -51,3 +52,5 @@ cp wg_softgfxdevice.* \
    wg_softsurfacefactory.* \
    ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
 
+cd ../../skins
+cp *.cpp *.h ../../../wg2/_kato_wg3/imports/skins

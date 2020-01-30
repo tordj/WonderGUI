@@ -35,9 +35,6 @@
 #	include <wg_string.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
 
 #ifndef WG_PATCHES_DOT_H
 #    include <wg_patches.h>
@@ -48,6 +45,7 @@
 #include <vector>
 
 #include <wg3_surfacefactory.h>
+#include <wg3_skin.h>
 
 //____ WgChart ____________________________________________________________
 
@@ -67,7 +65,7 @@ public:
 	void		SetCanvasPadding(WgBorders);
 	WgBorders	CanvasPadding() const;
 
-	void	SetSkin(const WgSkinPtr& pSkin);
+	void	SetSkin(wg::Skin * pSkin);
 
 	struct GridLine
 	{
@@ -112,10 +110,10 @@ public:
 
 //	bool	SetResampleMethod();			// Nearest, Interpolate etc   We have two dimensions here...  Average, Maintain peaks...
 
-	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
-	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop);
+	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
@@ -167,7 +165,7 @@ protected:
 	{
 		WgOrigo				alignment;
 		WgCoord				offset;
-		WgSkinPtr			pSkin;
+		wg::Skin_p			pSkin;
 		WgTextpropPtr		pTextStyle;
 	};
 

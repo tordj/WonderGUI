@@ -7,12 +7,14 @@ mkdir components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
+mkdir skins
 cd ..
 
 
 cp -r ../framework/base exports/
 cp -r ../framework/components exports/
 cp -r ../framework/gfxdevices exports/
+cp -r ../framework/skins exports/
 
 rm exports/base/wg3_base.h
 rm exports/base/wg3_object.cpp

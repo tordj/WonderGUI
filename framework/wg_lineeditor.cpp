@@ -70,7 +70,7 @@ const char * WgLineEditor::GetClass()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgLineEditor::SetSkin(const WgSkinPtr& pSkin)
+void WgLineEditor::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -169,7 +169,7 @@ WgSize WgLineEditor::PreferredPixelSize() const
 {
 	WgSize sz = m_text.unwrappedSize();
 	if (m_pSkin)
-		sz = m_pSkin->SizeForContent(sz, m_scale);
+		sz = _skinSizeForContent(m_pSkin, sz, m_scale);
 	return sz;
 }
 
@@ -191,7 +191,7 @@ void WgLineEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 {
 	WgWidget::_onRender(pDevice, _canvas, _window);
 
-	WgRect textCanvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
+	WgRect textCanvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
 	WgText * pText = &m_text;
 	if( m_bPasswordMode )
@@ -271,7 +271,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			int y = 0;
 
 			if (m_pSkin)
-				x -= m_pSkin->ContentOfs(WgStateEnum::Normal, m_scale).x;
+				x -= _skinContentOfs( m_pSkin, WgStateEnum::Normal, m_scale).x;
 
 			if( m_bPasswordMode )
 			{

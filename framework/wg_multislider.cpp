@@ -65,7 +65,7 @@ WgSize WgMultiSlider::PreferredPixelSize() const
 
 //____ SetDefaults() __________________________________________________________
 
-void WgMultiSlider::SetDefaults(const WgSkinPtr& pSliderBgSkin, const WgSkinPtr& pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
+void WgMultiSlider::SetDefaults(wg::Skin * pSliderBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
 {
 	m_pDefaultBgSkin = pSliderBgSkin;
 	m_pDefaultHandleSkin = pHandleSkin;
@@ -105,8 +105,8 @@ void WgMultiSlider::SetGhostHandle(bool bGhost)
 //____ AddSlider() ____________________________________________________________
 
 int WgMultiSlider::AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, float startValue, float minValue, float maxValue, int steps,
-								SetValueFunc pSetValueFunc, const WgSkinPtr& pBgSkin,
-								const WgSkinPtr& pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
+								SetValueFunc pSetValueFunc, wg::Skin * pBgSkin,
+								wg::Skin * pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
 {
 	WgOrigo origo;
 
@@ -166,7 +166,7 @@ int WgMultiSlider::AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, f
 int WgMultiSlider::AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, float startValueX, float startValueY,
 								float minValueX, float maxValueX, int stepsX, float minValueY, float maxValueY, int stepsY,
 								SetValueFunc2D pSetValueFunc,
-								const WgSkinPtr& pBgSkin, const WgSkinPtr& pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
+								wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot, WgBorders handleMarkExtension, WgBorders sliderMarkExtension)
 {
 	if (origo != WgOrigo::NorthWest && origo != WgOrigo::NorthEast && origo != WgOrigo::SouthEast && origo != WgOrigo::SouthWest)
 		return -1;
@@ -290,7 +290,7 @@ bool WgMultiSlider::MarkTest(const WgCoord& ofs)
 
 //____ SetSkin() ______________________________________________________________
 
-void WgMultiSlider::SetSkin(const WgSkinPtr& pSkin)
+void WgMultiSlider::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -373,7 +373,7 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
 	for (auto& slider : m_sliders)
 	{
-		WgSkinPtr pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
+		wg::Skin_p pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 		if (pHandleSkin )
 		{
 			WgRect sliderGeo = _sliderGeo(slider, PixelSize());
@@ -381,7 +381,7 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
             // We are using WgStateEnum::Normal on purpose here, so that hover hightlights are not included. Not perfect, but the lesser of two evils...
             
-            if (handleGeo.contains(ofs) && pHandleSkin->MarkTest(ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Normal, m_markOpacity, m_scale))
+            if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Normal, m_markOpacity, m_scale))
 			{
 				fullyMarkedOfs = ofs - handleGeo.pos();
 				pFullyMarked = &slider;
@@ -467,12 +467,12 @@ void WgMultiSlider::_setSliderStates(Slider& slider, WgState newSliderState, WgS
 {
     // Request render where needed
     
-	WgSkin * pSliderSkin = slider.pBgSkin ? slider.pBgSkin.GetRealPtr() : m_pDefaultBgSkin.GetRealPtr();
-	WgSkin * pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin.GetRealPtr() : m_pDefaultHandleSkin.GetRealPtr();
+    wg::Skin * pSliderSkin = slider.pBgSkin ? slider.pBgSkin.rawPtr() : m_pDefaultBgSkin.rawPtr();
+    wg::Skin * pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin.rawPtr() : m_pDefaultHandleSkin.rawPtr();
 
-	if (pSliderSkin && !pSliderSkin->IsStateIdentical(slider.sliderState, newSliderState))
+	if (pSliderSkin && !pSliderSkin->isStateIdentical(slider.sliderState, newSliderState))
 		_requestRenderSlider(&slider);
-	else if (pHandleSkin && !pHandleSkin->IsStateIdentical(slider.handleState, newHandleState))
+	else if (pHandleSkin && !pHandleSkin->isStateIdentical(slider.handleState, newHandleState))
 		_requestRenderHandle(&slider);
 
     // Possibly send messages
@@ -507,7 +507,7 @@ void WgMultiSlider::_requestRenderSlider(Slider * pSlider)
 	WgRect sliderGeo = _sliderGeo(*pSlider, PixelSize());
 	WgRect handleGeo = _sliderHandleGeo(*pSlider, sliderGeo);
 
-	WgSkinPtr	pBgSkin = pSlider->pBgSkin ? pSlider->pBgSkin : m_pDefaultBgSkin;
+	wg::Skin_p	pBgSkin = pSlider->pBgSkin ? pSlider->pBgSkin : m_pDefaultBgSkin;
 
 	if (pBgSkin)
 	{
@@ -862,7 +862,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 				if (!bHandlePressed)
 				{
-					WgSize widgetContentSize = m_pSkin ? PixelSize() - m_pSkin->ContentPadding(m_scale) : PixelSize();
+					WgSize widgetContentSize = m_pSkin ? PixelSize() - _skinContentPadding(m_pSkin, m_scale) : PixelSize();
 					WgCoordF relPos = { markOfs.x / (pMarked->geo.w*widgetContentSize.w), markOfs.y / (pMarked->geo.h*widgetContentSize.h) };
 
 					if (pMarked->origo == WgOrigo::West || pMarked->origo == WgOrigo::East)		// Horizontal slider
@@ -916,7 +916,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				}
 				else if (pMarked)
 				{
-					WgSize widgetContentSize = m_pSkin ? PixelSize() - m_pSkin->ContentPadding(m_scale) : PixelSize();
+					WgSize widgetContentSize = m_pSkin ? PixelSize() - _skinContentPadding( m_pSkin, m_scale) : PixelSize();
 
 					m_selectedSlider = pMarked - &m_sliders.front();
 					m_selectedSliderHandle = -1;
@@ -1195,7 +1195,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	{
 		WgRect sliderGeo = _sliderGeo(slider, _canvas);
 
-		WgSkinPtr pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
+		wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 		if (pBgSkin)
 		{
 			WgRect bgGeo = _sliderSkinGeo(slider, sliderGeo);
@@ -1207,8 +1207,8 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 				filledPartState.setSelected(true);
 
 
-				if (pBgSkin->IsStateIdentical(emptyPartState, filledPartState))
-					pBgSkin->Render(pDevice, emptyPartState, bgGeo, m_scale);
+				if (pBgSkin->isStateIdentical(emptyPartState, filledPartState))
+					_renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
 				else
 				{
                     // Different parts of background should be rendered in different states.
@@ -1286,7 +1286,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
                     if( nRects > 0 )
                     {
                         pDevice->setClipList(nRects, pRects);
-                        pBgSkin->Render(pDevice, filledPartState, bgGeo, m_scale);
+                        _renderSkin( pBgSkin, pDevice, filledPartState, bgGeo, m_scale);
                     }
                     
                     // Generate cliplist for emptyPart1
@@ -1313,7 +1313,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
                     if( nRects > 0 )
                     {
                         pDevice->setClipList(nRects, pRects);
-                        pBgSkin->Render(pDevice, emptyPartState, bgGeo, m_scale);
+                        _renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
                     }
 
                     // Clean up
@@ -1326,11 +1326,11 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 			}
 		}
 
-		WgSkinPtr pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
+		wg::Skin_p pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 		if (pHandleSkin)
 		{
 			WgRect sliderHandleGeo = _sliderHandleGeo(slider, sliderGeo);
-			pHandleSkin->Render(pDevice, slider.handleState, sliderHandleGeo, m_scale);
+			_renderSkin( pHandleSkin, pDevice, slider.handleState, sliderHandleGeo, m_scale);
 		}
 	}
 }
@@ -1346,23 +1346,23 @@ bool WgMultiSlider::_onAlphaTest( const WgCoord& ofs )
 	{
 		WgRect sliderGeo = _sliderGeo(slider, PixelSize() );
 
-		WgSkinPtr pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
+		wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 		if (pBgSkin)
 		{
 			WgRect bgGeo = _sliderSkinGeo(slider, sliderGeo);
 
-			if( bgGeo.contains(ofs) && pBgSkin->MarkTest(ofs-bgGeo.pos(), bgGeo.size(), slider.sliderState, m_markOpacity, m_scale) )
+			if( bgGeo.contains(ofs) && _markTestSkin( pBgSkin, ofs-bgGeo.pos(), bgGeo.size(), slider.sliderState, m_markOpacity, m_scale) )
 				return true;
 		}
 
 		if (!m_bGhostHandle)
 		{
-			WgSkinPtr pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
+			wg::Skin_p pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 			if (pHandleSkin)
 			{
 				WgRect handleGeo = _sliderHandleGeo(slider, sliderGeo);
 
-				if (handleGeo.contains(ofs) && pHandleSkin->MarkTest(ofs - handleGeo.pos(), handleGeo.size(), slider.handleState, m_markOpacity, m_scale))
+				if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), slider.handleState, m_markOpacity, m_scale))
 					return true;
 			}
 		}
@@ -1468,8 +1468,8 @@ void WgMultiSlider::_updateHandlePos(Slider& slider)
 		_requestRender(newHandleGeo);
 	}
 
-	WgSkinPtr pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
-	if (pBgSkin && !pBgSkin->IsStateIdentical(slider.handleState, slider.handleState + WgStateEnum::Selected))
+	wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
+	if (pBgSkin && !pBgSkin->isStateIdentical(slider.handleState, slider.handleState + WgStateEnum::Selected))
 	{	
 		WgRect sliderSkinGeo = _sliderSkinGeo(slider, sliderGeo);
 		_requestRender(sliderSkinGeo);
@@ -1530,7 +1530,7 @@ void WgMultiSlider::_updateGeo(Slider& slider)
 
 WgRect  WgMultiSlider::_sliderGeo(Slider& slider, const WgRect& _canvas )
 {
-    WgRect canvas = m_pSkin ? m_pSkin->ContentRect( _canvas, m_state, m_scale ) : _canvas;
+    WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale ) : _canvas;
 
 	return { canvas.x + (int)(slider.geo.x * canvas.w + 0.5f), canvas.y + (int)(slider.geo.y * canvas.h + 0.5f), (int)(canvas.w * slider.geo.w), (int)(canvas.h * slider.geo.h) };
 }
@@ -1539,15 +1539,15 @@ WgRect  WgMultiSlider::_sliderGeo(Slider& slider, const WgRect& _canvas )
 
 WgRect  WgMultiSlider::_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo)
 {
-	WgSkinPtr pSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
+	wg::Skin_p pSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 
     if(pSkin)
     {
         WgRect bgGeo = sliderGeo;
-        bgGeo -= pSkin->ContentOfs(m_state, m_scale);
-        bgGeo += pSkin->ContentPadding(m_scale);
+        bgGeo -= _skinContentOfs( pSkin, m_state, m_scale);
+        bgGeo += _skinContentPadding( pSkin, m_scale);
 
-        WgSize min = pSkin->PreferredSize(m_scale);
+        WgSize min = _skinPreferredSize( pSkin, m_scale);
 
         return { bgGeo.pos(),std::max(bgGeo.w,min.w), std::max(bgGeo.h,min.h) };
     }
@@ -1560,9 +1560,9 @@ WgRect  WgMultiSlider::_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo)
 
 WgRect  WgMultiSlider::_sliderHandleGeo(Slider& slider, const WgRect& sliderGeo)
 {
-	WgSkinPtr pSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
+	wg::Skin_p pSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 
-	WgSize sz = pSkin ? pSkin->PreferredSize(m_scale) : WgSize(0,0);
+	WgSize sz = pSkin ? _skinPreferredSize( pSkin, m_scale) : WgSize(0,0);
 	WgCoordF handleHotspot = slider.handleHotspot.x == -1.f ? m_defaultHandleHotspot : slider.handleHotspot;
 
 

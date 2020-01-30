@@ -27,7 +27,9 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_payload.h>
+#include <wg3_base.h>
 #include <wg3_surfacefactory.h>
+#include <wg3_util.h>
 
 #	include <wg_rootpanel.h>
 #	include <wg_eventhandler.h>
@@ -508,7 +510,7 @@ void WgWidget::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 {
 	if (m_pSkin)
 	{
-		m_pSkin->Render(pDevice, m_state, _canvas, m_scale);
+		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale);
 	}
 }
 
@@ -572,7 +574,7 @@ void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandl
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
 {
 	if (m_pSkin)
-		return m_pSkin->MarkTest(ofs, PixelSize(), WgStateEnum::Normal, m_markOpacity, m_scale);
+		return _markTestSkin( m_pSkin, ofs, PixelSize(), WgStateEnum::Normal, m_markOpacity, m_scale);
 	else
 		return false;
 }
@@ -610,3 +612,148 @@ Wg_Interface_TextHolder* WgWidget::TempGetText()
 {
 	return 0;
 }
+
+//____ _renderSkin() ____________________________________________________________
+
+void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale )
+{
+    int pixelQuarters = (scale * 4) / 4096;
+
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), WgStateEnum::Focused );
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), WgStateEnum::Focused );
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+    }
+}
+
+//____ _markTestSkin() ______________________________________________________________
+
+bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return pSkin->_markTest( wg::Util::pixelsToRaw(ofs), wg::Util::pixelsToRaw(canvas), state, opacityTreshold );
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        bool ret = pSkin->_markTest( wg::Util::pixelsToRaw(ofs), wg::Util::pixelsToRaw(canvas), state, opacityTreshold );
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+
+//____ _skinMinSize() __________________________________________________________
+
+wg::SizeI WgWidget::_skinMinSize( wg::Skin * pSkin, int scale ) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_minSize());
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_minSize());
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+    
+}
+
+//____ _skinPreferredSize() __________________________________________________________
+
+wg::SizeI WgWidget::_skinPreferredSize( wg::Skin * pSkin, int scale ) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_preferredSize());
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_preferredSize());
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+
+//____ _skinSizeForContent() __________________________________________________________
+
+wg::SizeI WgWidget::_skinSizeForContent(wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_sizeForContent(wg::Util::pixelsToRaw(contentSize)));
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_sizeForContent(wg::Util::pixelsToRaw(contentSize)));
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+
+//____ _skinContentPadding() __________________________________________________________
+
+wg::SizeI WgWidget::_skinContentPadding(wg::Skin * pSkin, int scale) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_contentPadding());
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_contentPadding());
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+
+//____ _skinContentOfs() __________________________________________________________
+
+wg::CoordI WgWidget::_skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_contentOfs(state));
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::CoordI ret = wg::Util::rawToPixels(pSkin->_contentOfs(state));
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+
+//____ _skinContentRect() __________________________________________________________
+
+wg::RectI WgWidget::_skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_contentRect(wg::Util::pixelsToRaw(canvas),state));
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::RectI ret = wg::Util::rawToPixels(pSkin->_contentRect(wg::Util::pixelsToRaw(canvas),state));
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}
+

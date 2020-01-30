@@ -19,7 +19,6 @@
 		170F7B7C2200773200B70B56 /* wg_valueeditor.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A852200770E00B70B56 /* wg_valueeditor.h */; };
 		170F7B7D2200773200B70B56 /* wg_rulerlabels.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A862200770E00B70B56 /* wg_rulerlabels.cpp */; };
 		170F7B7E2200773200B70B56 /* wg_colorset.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A872200770E00B70B56 /* wg_colorset.h */; };
-		170F7B7F2200773200B70B56 /* wg_frameskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A882200770E00B70B56 /* wg_frameskin.h */; };
 		170F7B812200773200B70B56 /* wg_bitmapglyphs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A8A2200770E00B70B56 /* wg_bitmapglyphs.cpp */; };
 		170F7B822200773200B70B56 /* wg_button.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A8B2200770F00B70B56 /* wg_button.h */; };
 		170F7B832200773200B70B56 /* wg_texttool.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A8C2200770F00B70B56 /* wg_texttool.h */; };
@@ -31,13 +30,11 @@
 		170F7B8B2200773200B70B56 /* wg_capsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A942200771000B70B56 /* wg_capsule.h */; };
 		170F7B8C2200773200B70B56 /* wg_simpleknob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A952200771000B70B56 /* wg_simpleknob.cpp */; };
 		170F7B8D2200773200B70B56 /* wg_lineeditor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A962200771000B70B56 /* wg_lineeditor.cpp */; };
-		170F7B8F2200773200B70B56 /* wg_colorskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A982200771000B70B56 /* wg_colorskin.h */; };
 		170F7B902200773200B70B56 /* wg_text.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A992200771000B70B56 /* wg_text.cpp */; };
 		170F7B912200773200B70B56 /* wg_flowpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A9A2200771000B70B56 /* wg_flowpanel.h */; };
 		170F7B922200773200B70B56 /* wg_resdb.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A9B2200771100B70B56 /* wg_resdb.h */; };
 		170F7B932200773200B70B56 /* wg_widget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A9C2200771100B70B56 /* wg_widget.cpp */; };
 		170F7B942200773200B70B56 /* wg_smartptr.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A9D2200771100B70B56 /* wg_smartptr.cpp */; };
-		170F7B952200773200B70B56 /* wg_skin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7A9E2200771100B70B56 /* wg_skin.cpp */; };
 		170F7B962200773200B70B56 /* wg_popupopener.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7A9F2200771100B70B56 /* wg_popupopener.h */; };
 		170F7B982200773200B70B56 /* wg_blob.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AA12200771200B70B56 /* wg_blob.h */; };
 		170F7B9A2200773200B70B56 /* wg_volumemeter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AA32200771200B70B56 /* wg_volumemeter.cpp */; };
@@ -58,7 +55,6 @@
 		170F7BAB2200773200B70B56 /* wg_vectorpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AB42200771400B70B56 /* wg_vectorpanel.cpp */; };
 		170F7BAE2200773200B70B56 /* wg_refcounted.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AB72200771500B70B56 /* wg_refcounted.h */; };
 		170F7BAF2200773200B70B56 /* wg_smartptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AB82200771500B70B56 /* wg_smartptr.h */; };
-		170F7BB02200773200B70B56 /* wg_boxskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AB92200771500B70B56 /* wg_boxskin.cpp */; };
 		170F7BB12200773200B70B56 /* wg_hook.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7ABA2200771500B70B56 /* wg_hook.cpp */; };
 		170F7BB22200773200B70B56 /* wg_popuplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7ABB2200771500B70B56 /* wg_popuplayer.cpp */; };
 		170F7BB32200773200B70B56 /* wg_slider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7ABC2200771500B70B56 /* wg_slider.cpp */; };
@@ -82,7 +78,6 @@
 		170F7BC92200773200B70B56 /* wg_orderedselectable.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD22200771900B70B56 /* wg_orderedselectable.h */; };
 		170F7BCA2200773200B70B56 /* wg_patches.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD32200771900B70B56 /* wg_patches.h */; };
 		170F7BCC2200773200B70B56 /* wg_hook.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD52200771900B70B56 /* wg_hook.h */; };
-		170F7BCD2200773200B70B56 /* wg_multiblockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AD62200771900B70B56 /* wg_multiblockskin.h */; };
 		170F7BCE2200773200B70B56 /* wg_pen.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AD72200771A00B70B56 /* wg_pen.cpp */; };
 		170F7BD12200773200B70B56 /* wg_animplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7ADA2200771A00B70B56 /* wg_animplayer.h */; };
 		170F7BD22200773200B70B56 /* wg_eventlogger.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7ADB2200771A00B70B56 /* wg_eventlogger.h */; };
@@ -94,7 +89,6 @@
 		170F7BD82200773200B70B56 /* wg_anim.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AE12200771B00B70B56 /* wg_anim.h */; };
 		170F7BD92200773200B70B56 /* wg_stackpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AE22200771B00B70B56 /* wg_stackpanel.cpp */; };
 		170F7BDA2200773200B70B56 /* wg_eventfilter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AE32200771B00B70B56 /* wg_eventfilter.cpp */; };
-		170F7BDB2200773200B70B56 /* wg_blockskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AE42200771C00B70B56 /* wg_blockskin.cpp */; };
 		170F7BDC2200773200B70B56 /* wg_knob.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AE52200771C00B70B56 /* wg_knob.h */; };
 		170F7BDD2200773200B70B56 /* wg_rootpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7AE62200771C00B70B56 /* wg_rootpanel.cpp */; };
 		170F7BDE2200773200B70B56 /* wg_volumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7AE72200771C00B70B56 /* wg_volumemeter.h */; };
@@ -136,13 +130,11 @@
 		170F7C112200773200B70B56 /* wondergui.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B1A2200772400B70B56 /* wondergui.h */; };
 		170F7C122200773200B70B56 /* wg_textdisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B1B2200772500B70B56 /* wg_textdisplay.h */; };
 		170F7C132200773200B70B56 /* wg_modallayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B1C2200772500B70B56 /* wg_modallayer.h */; };
-		170F7C142200773200B70B56 /* wg_multiblockskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B1D2200772500B70B56 /* wg_multiblockskin.cpp */; };
 		170F7C152200773200B70B56 /* wg_scrollchart.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B1E2200772500B70B56 /* wg_scrollchart.h */; };
 		170F7C162200773200B70B56 /* wg_bitmapglyphs.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B1F2200772500B70B56 /* wg_bitmapglyphs.h */; };
 		170F7C172200773200B70B56 /* wg_text.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B202200772500B70B56 /* wg_text.h */; };
 		170F7C182200773200B70B56 /* wg_valuedisplay.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B212200772500B70B56 /* wg_valuedisplay.h */; };
 		170F7C192200773200B70B56 /* wg_cursorinstance.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B222200772600B70B56 /* wg_cursorinstance.h */; };
-		170F7C1A2200773200B70B56 /* wg_blockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B232200772600B70B56 /* wg_blockskin.h */; };
 		170F7C1C2200773200B70B56 /* wg_scrollpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B252200772600B70B56 /* wg_scrollpanel.cpp */; };
 		170F7C1D2200773200B70B56 /* wg_simplevolumemeter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B262200772600B70B56 /* wg_simplevolumemeter.cpp */; };
 		170F7C1F2200773200B70B56 /* wg_textmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B282200772700B70B56 /* wg_textmanager.cpp */; };
@@ -157,11 +149,9 @@
 		170F7C292200773200B70B56 /* wg_codepages.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B322200772800B70B56 /* wg_codepages.h */; };
 		170F7C2A2200773200B70B56 /* wg_textprop.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B332200772800B70B56 /* wg_textprop.h */; };
 		170F7C2B2200773200B70B56 /* wg_slider.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B342200772800B70B56 /* wg_slider.h */; };
-		170F7C2C2200773200B70B56 /* wg_skin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B352200772900B70B56 /* wg_skin.h */; };
 		170F7C2D2200773200B70B56 /* wg_packpanel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B362200772900B70B56 /* wg_packpanel.cpp */; };
 		170F7C2E2200773200B70B56 /* wg_charbuffer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B372200772900B70B56 /* wg_charbuffer.cpp */; };
 		170F7C2F2200773200B70B56 /* wg_simplevolumemeter.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B382200772900B70B56 /* wg_simplevolumemeter.h */; };
-		170F7C302200773200B70B56 /* wg_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B392200772900B70B56 /* wg_colorskin.cpp */; };
 		170F7C312200773200B70B56 /* wg_base.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B3A2200772900B70B56 /* wg_base.cpp */; };
 		170F7C332200773200B70B56 /* wg_widgetholder.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3C2200772A00B70B56 /* wg_widgetholder.h */; };
 		170F7C342200773200B70B56 /* wg_mempool.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B3D2200772A00B70B56 /* wg_mempool.h */; };
@@ -172,13 +162,10 @@
 		170F7C392200773200B70B56 /* wg_fpsdisplay.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B422200772B00B70B56 /* wg_fpsdisplay.cpp */; };
 		170F7C3A2200773200B70B56 /* wg_gfxanim.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B432200772B00B70B56 /* wg_gfxanim.cpp */; };
 		170F7C3B2200773200B70B56 /* wg_gfxanim.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B442200772B00B70B56 /* wg_gfxanim.h */; };
-		170F7C3C2200773200B70B56 /* wg_frameskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B452200772B00B70B56 /* wg_frameskin.cpp */; };
 		170F7C3D2200773200B70B56 /* wg_packpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B462200772B00B70B56 /* wg_packpanel.h */; };
 		170F7C3E2200773200B70B56 /* wg_refreshbutton.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B472200772B00B70B56 /* wg_refreshbutton.cpp */; };
 		170F7C3F2200773200B70B56 /* wg_layer.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B482200772C00B70B56 /* wg_layer.h */; };
 		170F7C402200773200B70B56 /* wg_oscilloscope.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B492200772C00B70B56 /* wg_oscilloscope.h */; };
-		170F7C422200773200B70B56 /* wg_extendedskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B4B2200772C00B70B56 /* wg_extendedskin.cpp */; };
-		170F7C432200773200B70B56 /* wg_extendedskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B4C2200772C00B70B56 /* wg_extendedskin.h */; };
 		170F7C452200773200B70B56 /* wg_button.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B4E2200772D00B70B56 /* wg_button.cpp */; };
 		170F7C462200773200B70B56 /* wg_layer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B4F2200772D00B70B56 /* wg_layer.cpp */; };
 		170F7C472200773200B70B56 /* wg_widgetcollection.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B502200772D00B70B56 /* wg_widgetcollection.h */; };
@@ -194,7 +181,6 @@
 		170F7C512200773200B70B56 /* wg_listpanel.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B5A2200772F00B70B56 /* wg_listpanel.h */; };
 		170F7C522200773200B70B56 /* wg_charseq.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B5B2200772F00B70B56 /* wg_charseq.cpp */; };
 		170F7C532200773200B70B56 /* wg_userdefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B5C2200772F00B70B56 /* wg_userdefines.h */; };
-		170F7C552200773200B70B56 /* wg_boxskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B5E2200772F00B70B56 /* wg_boxskin.h */; };
 		170F7C562200773200B70B56 /* wg_refreshbutton.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7B5F2200772F00B70B56 /* wg_refreshbutton.h */; };
 		170F7C572200773200B70B56 /* wg_canvascapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B602200772F00B70B56 /* wg_canvascapsule.cpp */; };
 		170F7C582200773200B70B56 /* wg_slidertarget.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7B612200772F00B70B56 /* wg_slidertarget.cpp */; };
@@ -219,42 +205,58 @@
 		1717914722CB46F900B10F51 /* wg_dragndroplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */; };
 		1717914B22CB46F900B10F51 /* wg_dragndroplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717914322CB46F900B10F51 /* wg_dragndroplayer.h */; };
 		1717914C22CB46F900B10F51 /* wg_zoomoutcapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */; };
-		1717916922CB48C400B10F51 /* wg3_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717914E22CB48C000B10F51 /* wg3_surface.cpp */; };
-		1717916A22CB48C400B10F51 /* wg3_nullgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717914F22CB48C000B10F51 /* wg3_nullgfxdevice.h */; };
-		1717916B22CB48C400B10F51 /* wg3_blob.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915022CB48C000B10F51 /* wg3_blob.h */; };
-		1717916C22CB48C400B10F51 /* wg3_geo.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915122CB48C000B10F51 /* wg3_geo.h */; };
-		1717916D22CB48C400B10F51 /* wg3_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915222CB48C100B10F51 /* wg3_util.h */; };
-		1717916E22CB48C400B10F51 /* wg3_enumextras.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915322CB48C100B10F51 /* wg3_enumextras.h */; };
-		1717916F22CB48C400B10F51 /* wg3_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717915422CB48C100B10F51 /* wg3_object.cpp */; };
-		1717917022CB48C400B10F51 /* wg3_color.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915522CB48C100B10F51 /* wg3_color.h */; };
-		1717917122CB48C400B10F51 /* wg3_object.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915622CB48C100B10F51 /* wg3_object.h */; };
-		1717917222CB48C400B10F51 /* wg3_geo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717915722CB48C100B10F51 /* wg3_geo.cpp */; };
-		1717917322CB48C400B10F51 /* wg3_strongptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915822CB48C100B10F51 /* wg3_strongptr.h */; };
-		1717917422CB48C400B10F51 /* wg3_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717915922CB48C100B10F51 /* wg3_color.cpp */; };
-		1717917522CB48C400B10F51 /* wg3_surfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915A22CB48C100B10F51 /* wg3_surfacefactory.h */; };
-		1717917622CB48C400B10F51 /* wg3_weakptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915B22CB48C200B10F51 /* wg3_weakptr.h */; };
-		1717917722CB48C400B10F51 /* wg3_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915C22CB48C200B10F51 /* wg3_base.h */; };
-		1717917922CB48C400B10F51 /* wg3_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717915E22CB48C200B10F51 /* wg3_types.h */; };
-		1717917B22CB48C400B10F51 /* wg3_gfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916022CB48C200B10F51 /* wg3_gfxdevice.cpp */; };
-		1717917C22CB48C400B10F51 /* wg3_pointers.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717916122CB48C200B10F51 /* wg3_pointers.h */; };
-		1717917D22CB48C400B10F51 /* wg3_nullgfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916222CB48C300B10F51 /* wg3_nullgfxdevice.cpp */; };
-		1717917E22CB48C400B10F51 /* wg3_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916322CB48C300B10F51 /* wg3_util.cpp */; };
-		1717917F22CB48C400B10F51 /* wg3_blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916422CB48C300B10F51 /* wg3_blob.cpp */; };
-		1717918022CB48C400B10F51 /* wg3_surfacefactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916522CB48C300B10F51 /* wg3_surfacefactory.cpp */; };
-		1717918122CB48C400B10F51 /* wg3_gfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717916622CB48C300B10F51 /* wg3_gfxdevice.h */; };
-		1717918222CB48C400B10F51 /* wg3_surface.h in Headers */ = {isa = PBXBuildFile; fileRef = 1717916722CB48C300B10F51 /* wg3_surface.h */; };
-		1717918322CB48C400B10F51 /* wg3_enumextras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1717916822CB48C400B10F51 /* wg3_enumextras.cpp */; };
-		1741F02A2317D98B00029A27 /* wg3_qpix.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0292317D98B00029A27 /* wg3_qpix.h */; };
-		1741F0322318219F00029A27 /* wg3_patches.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F02F2318219E00029A27 /* wg3_patches.cpp */; };
-		1741F0332318219F00029A27 /* wg3_patches.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F0302318219E00029A27 /* wg3_patches.h */; };
-		1741F0342318219F00029A27 /* wg3_qpix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F0312318219F00029A27 /* wg3_qpix.cpp */; };
 		1741F03723190F4500029A27 /* wg_shadowlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1741F03523190F4500029A27 /* wg_shadowlayer.cpp */; };
 		1741F03823190F4500029A27 /* wg_shadowlayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1741F03623190F4500029A27 /* wg_shadowlayer.h */; };
 		1742687623390C6700A76233 /* wg_context.h in Headers */ = {isa = PBXBuildFile; fileRef = 1742687523390C6700A76233 /* wg_context.h */; };
 		177A719F23C620CB003E629B /* wg3_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177A719D23C620CB003E629B /* wg3_component.cpp */; };
 		177A71A023C620CB003E629B /* wg3_component.h in Headers */ = {isa = PBXBuildFile; fileRef = 177A719E23C620CB003E629B /* wg3_component.h */; };
-		177A71A323C620EE003E629B /* wg3_strongcomponentptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 177A71A123C620EE003E629B /* wg3_strongcomponentptr.h */; };
-		177A71A423C620EE003E629B /* wg3_weakcomponentptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 177A71A223C620EE003E629B /* wg3_weakcomponentptr.h */; };
+		17E03D4223D9F37D00B0A3D8 /* wg3_weakcomponentptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2123D9F37900B0A3D8 /* wg3_weakcomponentptr.h */; };
+		17E03D4323D9F37D00B0A3D8 /* wg3_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2223D9F37900B0A3D8 /* wg3_surface.cpp */; };
+		17E03D4423D9F37D00B0A3D8 /* wg3_nullgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2323D9F37900B0A3D8 /* wg3_nullgfxdevice.h */; };
+		17E03D4523D9F37D00B0A3D8 /* wg3_blob.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2423D9F37900B0A3D8 /* wg3_blob.h */; };
+		17E03D4623D9F37D00B0A3D8 /* wg3_qpix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */; };
+		17E03D4723D9F37D00B0A3D8 /* wg3_geo.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2623D9F37900B0A3D8 /* wg3_geo.h */; };
+		17E03D4823D9F37D00B0A3D8 /* wg3_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2723D9F37900B0A3D8 /* wg3_util.h */; };
+		17E03D4923D9F37D00B0A3D8 /* wg3_enumextras.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2823D9F37900B0A3D8 /* wg3_enumextras.h */; };
+		17E03D4A23D9F37D00B0A3D8 /* wg3_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2923D9F37900B0A3D8 /* wg3_object.cpp */; };
+		17E03D4B23D9F37D00B0A3D8 /* wg3_qpix.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */; };
+		17E03D4C23D9F37D00B0A3D8 /* wg3_color.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2B23D9F37A00B0A3D8 /* wg3_color.h */; };
+		17E03D4D23D9F37D00B0A3D8 /* wg3_patches.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2C23D9F37A00B0A3D8 /* wg3_patches.cpp */; };
+		17E03D4E23D9F37D00B0A3D8 /* wg3_payload.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */; };
+		17E03D4F23D9F37D00B0A3D8 /* wg3_object.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2E23D9F37A00B0A3D8 /* wg3_object.h */; };
+		17E03D5023D9F37D00B0A3D8 /* wg3_geo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2F23D9F37A00B0A3D8 /* wg3_geo.cpp */; };
+		17E03D5123D9F37D00B0A3D8 /* wg3_strongcomponentptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3023D9F37A00B0A3D8 /* wg3_strongcomponentptr.h */; };
+		17E03D5223D9F37D00B0A3D8 /* wg3_strongptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3123D9F37A00B0A3D8 /* wg3_strongptr.h */; };
+		17E03D5323D9F37D00B0A3D8 /* wg3_color.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3223D9F37A00B0A3D8 /* wg3_color.cpp */; };
+		17E03D5423D9F37D00B0A3D8 /* wg3_patches.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3323D9F37B00B0A3D8 /* wg3_patches.h */; };
+		17E03D5523D9F37D00B0A3D8 /* wg3_payload.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3423D9F37B00B0A3D8 /* wg3_payload.cpp */; };
+		17E03D5623D9F37D00B0A3D8 /* wg3_surfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3523D9F37B00B0A3D8 /* wg3_surfacefactory.h */; };
+		17E03D5723D9F37D00B0A3D8 /* wg3_weakptr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3623D9F37B00B0A3D8 /* wg3_weakptr.h */; };
+		17E03D5823D9F37D00B0A3D8 /* wg3_base.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3723D9F37B00B0A3D8 /* wg3_base.h */; };
+		17E03D5923D9F37D00B0A3D8 /* wg3_types.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3823D9F37B00B0A3D8 /* wg3_types.h */; };
+		17E03D5A23D9F37D00B0A3D8 /* wg3_gfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3923D9F37B00B0A3D8 /* wg3_gfxdevice.cpp */; };
+		17E03D5B23D9F37D00B0A3D8 /* wg3_pointers.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3A23D9F37C00B0A3D8 /* wg3_pointers.h */; };
+		17E03D5C23D9F37D00B0A3D8 /* wg3_nullgfxdevice.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3B23D9F37C00B0A3D8 /* wg3_nullgfxdevice.cpp */; };
+		17E03D5D23D9F37D00B0A3D8 /* wg3_blob.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3C23D9F37C00B0A3D8 /* wg3_blob.cpp */; };
+		17E03D5E23D9F37D00B0A3D8 /* wg3_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3D23D9F37C00B0A3D8 /* wg3_util.cpp */; };
+		17E03D5F23D9F37D00B0A3D8 /* wg3_surfacefactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D3E23D9F37C00B0A3D8 /* wg3_surfacefactory.cpp */; };
+		17E03D6023D9F37D00B0A3D8 /* wg3_gfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D3F23D9F37C00B0A3D8 /* wg3_gfxdevice.h */; };
+		17E03D6123D9F37D00B0A3D8 /* wg3_enumextras.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D4023D9F37C00B0A3D8 /* wg3_enumextras.cpp */; };
+		17E03D6223D9F37D00B0A3D8 /* wg3_surface.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D4123D9F37D00B0A3D8 /* wg3_surface.h */; };
+		17E03D7223D9F3AF00B0A3D8 /* wg3_staticcolorskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6423D9F3AE00B0A3D8 /* wg3_staticcolorskin.h */; };
+		17E03D7323D9F3AF00B0A3D8 /* wg3_multiblockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6523D9F3AE00B0A3D8 /* wg3_multiblockskin.h */; };
+		17E03D7423D9F3AF00B0A3D8 /* wg3_boxskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6623D9F3AE00B0A3D8 /* wg3_boxskin.h */; };
+		17E03D7523D9F3AF00B0A3D8 /* wg3_staticcolorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D6723D9F3AE00B0A3D8 /* wg3_staticcolorskin.cpp */; };
+		17E03D7623D9F3AF00B0A3D8 /* wg3_blockskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D6823D9F3AE00B0A3D8 /* wg3_blockskin.cpp */; };
+		17E03D7723D9F3AF00B0A3D8 /* wg3_blockskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6923D9F3AE00B0A3D8 /* wg3_blockskin.h */; };
+		17E03D7823D9F3AF00B0A3D8 /* wg3_colorskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6A23D9F3AE00B0A3D8 /* wg3_colorskin.h */; };
+		17E03D7923D9F3AF00B0A3D8 /* wg3_skin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6B23D9F3AF00B0A3D8 /* wg3_skin.h */; };
+		17E03D7A23D9F3AF00B0A3D8 /* wg3_boxskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D6C23D9F3AF00B0A3D8 /* wg3_boxskin.cpp */; };
+		17E03D7B23D9F3AF00B0A3D8 /* wg3_multiblockskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D6D23D9F3AF00B0A3D8 /* wg3_multiblockskin.cpp */; };
+		17E03D7C23D9F3AF00B0A3D8 /* wg3_skin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D6E23D9F3AF00B0A3D8 /* wg3_skin.cpp */; };
+		17E03D7D23D9F3AF00B0A3D8 /* wg3_extendedskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */; };
+		17E03D7E23D9F3AF00B0A3D8 /* wg3_extendedskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */; };
+		17E03D7F23D9F3AF00B0A3D8 /* wg3_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -271,7 +273,6 @@
 		170F7A852200770E00B70B56 /* wg_valueeditor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_valueeditor.h; path = ../framework/wg_valueeditor.h; sourceTree = "<group>"; };
 		170F7A862200770E00B70B56 /* wg_rulerlabels.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_rulerlabels.cpp; path = ../framework/wg_rulerlabels.cpp; sourceTree = "<group>"; };
 		170F7A872200770E00B70B56 /* wg_colorset.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_colorset.h; path = ../framework/wg_colorset.h; sourceTree = "<group>"; };
-		170F7A882200770E00B70B56 /* wg_frameskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_frameskin.h; path = ../framework/wg_frameskin.h; sourceTree = "<group>"; };
 		170F7A8A2200770E00B70B56 /* wg_bitmapglyphs.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_bitmapglyphs.cpp; path = ../framework/wg_bitmapglyphs.cpp; sourceTree = "<group>"; };
 		170F7A8B2200770F00B70B56 /* wg_button.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_button.h; path = ../framework/wg_button.h; sourceTree = "<group>"; };
 		170F7A8C2200770F00B70B56 /* wg_texttool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_texttool.h; path = ../framework/wg_texttool.h; sourceTree = "<group>"; };
@@ -283,13 +284,11 @@
 		170F7A942200771000B70B56 /* wg_capsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_capsule.h; path = ../framework/wg_capsule.h; sourceTree = "<group>"; };
 		170F7A952200771000B70B56 /* wg_simpleknob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_simpleknob.cpp; path = ../framework/wg_simpleknob.cpp; sourceTree = "<group>"; };
 		170F7A962200771000B70B56 /* wg_lineeditor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_lineeditor.cpp; path = ../framework/wg_lineeditor.cpp; sourceTree = "<group>"; };
-		170F7A982200771000B70B56 /* wg_colorskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_colorskin.h; path = ../framework/wg_colorskin.h; sourceTree = "<group>"; };
 		170F7A992200771000B70B56 /* wg_text.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_text.cpp; path = ../framework/wg_text.cpp; sourceTree = "<group>"; };
 		170F7A9A2200771000B70B56 /* wg_flowpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_flowpanel.h; path = ../framework/wg_flowpanel.h; sourceTree = "<group>"; };
 		170F7A9B2200771100B70B56 /* wg_resdb.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_resdb.h; path = ../framework/wg_resdb.h; sourceTree = "<group>"; };
 		170F7A9C2200771100B70B56 /* wg_widget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_widget.cpp; path = ../framework/wg_widget.cpp; sourceTree = "<group>"; };
 		170F7A9D2200771100B70B56 /* wg_smartptr.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_smartptr.cpp; path = ../framework/wg_smartptr.cpp; sourceTree = "<group>"; };
-		170F7A9E2200771100B70B56 /* wg_skin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_skin.cpp; path = ../framework/wg_skin.cpp; sourceTree = "<group>"; };
 		170F7A9F2200771100B70B56 /* wg_popupopener.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_popupopener.h; path = ../framework/wg_popupopener.h; sourceTree = "<group>"; };
 		170F7AA12200771200B70B56 /* wg_blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_blob.h; path = ../framework/wg_blob.h; sourceTree = "<group>"; };
 		170F7AA32200771200B70B56 /* wg_volumemeter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_volumemeter.cpp; path = ../framework/wg_volumemeter.cpp; sourceTree = "<group>"; };
@@ -310,7 +309,6 @@
 		170F7AB42200771400B70B56 /* wg_vectorpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_vectorpanel.cpp; path = ../framework/wg_vectorpanel.cpp; sourceTree = "<group>"; };
 		170F7AB72200771500B70B56 /* wg_refcounted.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_refcounted.h; path = ../framework/wg_refcounted.h; sourceTree = "<group>"; };
 		170F7AB82200771500B70B56 /* wg_smartptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_smartptr.h; path = ../framework/wg_smartptr.h; sourceTree = "<group>"; };
-		170F7AB92200771500B70B56 /* wg_boxskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_boxskin.cpp; path = ../framework/wg_boxskin.cpp; sourceTree = "<group>"; };
 		170F7ABA2200771500B70B56 /* wg_hook.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_hook.cpp; path = ../framework/wg_hook.cpp; sourceTree = "<group>"; };
 		170F7ABB2200771500B70B56 /* wg_popuplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_popuplayer.cpp; path = ../framework/wg_popuplayer.cpp; sourceTree = "<group>"; };
 		170F7ABC2200771500B70B56 /* wg_slider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_slider.cpp; path = ../framework/wg_slider.cpp; sourceTree = "<group>"; };
@@ -334,7 +332,6 @@
 		170F7AD22200771900B70B56 /* wg_orderedselectable.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_orderedselectable.h; path = ../framework/wg_orderedselectable.h; sourceTree = "<group>"; };
 		170F7AD32200771900B70B56 /* wg_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_patches.h; path = ../framework/wg_patches.h; sourceTree = "<group>"; };
 		170F7AD52200771900B70B56 /* wg_hook.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_hook.h; path = ../framework/wg_hook.h; sourceTree = "<group>"; };
-		170F7AD62200771900B70B56 /* wg_multiblockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_multiblockskin.h; path = ../framework/wg_multiblockskin.h; sourceTree = "<group>"; };
 		170F7AD72200771A00B70B56 /* wg_pen.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_pen.cpp; path = ../framework/wg_pen.cpp; sourceTree = "<group>"; };
 		170F7ADA2200771A00B70B56 /* wg_animplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_animplayer.h; path = ../framework/wg_animplayer.h; sourceTree = "<group>"; };
 		170F7ADB2200771A00B70B56 /* wg_eventlogger.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_eventlogger.h; path = ../framework/wg_eventlogger.h; sourceTree = "<group>"; };
@@ -346,7 +343,6 @@
 		170F7AE12200771B00B70B56 /* wg_anim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_anim.h; path = ../framework/wg_anim.h; sourceTree = "<group>"; };
 		170F7AE22200771B00B70B56 /* wg_stackpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_stackpanel.cpp; path = ../framework/wg_stackpanel.cpp; sourceTree = "<group>"; };
 		170F7AE32200771B00B70B56 /* wg_eventfilter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_eventfilter.cpp; path = ../framework/wg_eventfilter.cpp; sourceTree = "<group>"; };
-		170F7AE42200771C00B70B56 /* wg_blockskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_blockskin.cpp; path = ../framework/wg_blockskin.cpp; sourceTree = "<group>"; };
 		170F7AE52200771C00B70B56 /* wg_knob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_knob.h; path = ../framework/wg_knob.h; sourceTree = "<group>"; };
 		170F7AE62200771C00B70B56 /* wg_rootpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_rootpanel.cpp; path = ../framework/wg_rootpanel.cpp; sourceTree = "<group>"; };
 		170F7AE72200771C00B70B56 /* wg_volumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_volumemeter.h; path = ../framework/wg_volumemeter.h; sourceTree = "<group>"; };
@@ -388,13 +384,11 @@
 		170F7B1A2200772400B70B56 /* wondergui.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wondergui.h; path = ../framework/wondergui.h; sourceTree = "<group>"; };
 		170F7B1B2200772500B70B56 /* wg_textdisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textdisplay.h; path = ../framework/wg_textdisplay.h; sourceTree = "<group>"; };
 		170F7B1C2200772500B70B56 /* wg_modallayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_modallayer.h; path = ../framework/wg_modallayer.h; sourceTree = "<group>"; };
-		170F7B1D2200772500B70B56 /* wg_multiblockskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_multiblockskin.cpp; path = ../framework/wg_multiblockskin.cpp; sourceTree = "<group>"; };
 		170F7B1E2200772500B70B56 /* wg_scrollchart.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_scrollchart.h; path = ../framework/wg_scrollchart.h; sourceTree = "<group>"; };
 		170F7B1F2200772500B70B56 /* wg_bitmapglyphs.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_bitmapglyphs.h; path = ../framework/wg_bitmapglyphs.h; sourceTree = "<group>"; };
 		170F7B202200772500B70B56 /* wg_text.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_text.h; path = ../framework/wg_text.h; sourceTree = "<group>"; };
 		170F7B212200772500B70B56 /* wg_valuedisplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_valuedisplay.h; path = ../framework/wg_valuedisplay.h; sourceTree = "<group>"; };
 		170F7B222200772600B70B56 /* wg_cursorinstance.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_cursorinstance.h; path = ../framework/wg_cursorinstance.h; sourceTree = "<group>"; };
-		170F7B232200772600B70B56 /* wg_blockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_blockskin.h; path = ../framework/wg_blockskin.h; sourceTree = "<group>"; };
 		170F7B252200772600B70B56 /* wg_scrollpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_scrollpanel.cpp; path = ../framework/wg_scrollpanel.cpp; sourceTree = "<group>"; };
 		170F7B262200772600B70B56 /* wg_simplevolumemeter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_simplevolumemeter.cpp; path = ../framework/wg_simplevolumemeter.cpp; sourceTree = "<group>"; };
 		170F7B282200772700B70B56 /* wg_textmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_textmanager.cpp; path = ../framework/wg_textmanager.cpp; sourceTree = "<group>"; };
@@ -409,11 +403,9 @@
 		170F7B322200772800B70B56 /* wg_codepages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_codepages.h; path = ../framework/wg_codepages.h; sourceTree = "<group>"; };
 		170F7B332200772800B70B56 /* wg_textprop.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_textprop.h; path = ../framework/wg_textprop.h; sourceTree = "<group>"; };
 		170F7B342200772800B70B56 /* wg_slider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_slider.h; path = ../framework/wg_slider.h; sourceTree = "<group>"; };
-		170F7B352200772900B70B56 /* wg_skin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_skin.h; path = ../framework/wg_skin.h; sourceTree = "<group>"; };
 		170F7B362200772900B70B56 /* wg_packpanel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_packpanel.cpp; path = ../framework/wg_packpanel.cpp; sourceTree = "<group>"; };
 		170F7B372200772900B70B56 /* wg_charbuffer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_charbuffer.cpp; path = ../framework/wg_charbuffer.cpp; sourceTree = "<group>"; };
 		170F7B382200772900B70B56 /* wg_simplevolumemeter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_simplevolumemeter.h; path = ../framework/wg_simplevolumemeter.h; sourceTree = "<group>"; };
-		170F7B392200772900B70B56 /* wg_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_colorskin.cpp; path = ../framework/wg_colorskin.cpp; sourceTree = "<group>"; };
 		170F7B3A2200772900B70B56 /* wg_base.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_base.cpp; path = ../framework/wg_base.cpp; sourceTree = "<group>"; };
 		170F7B3C2200772A00B70B56 /* wg_widgetholder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_widgetholder.h; path = ../framework/wg_widgetholder.h; sourceTree = "<group>"; };
 		170F7B3D2200772A00B70B56 /* wg_mempool.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_mempool.h; path = ../framework/wg_mempool.h; sourceTree = "<group>"; };
@@ -424,13 +416,10 @@
 		170F7B422200772B00B70B56 /* wg_fpsdisplay.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_fpsdisplay.cpp; path = ../framework/wg_fpsdisplay.cpp; sourceTree = "<group>"; };
 		170F7B432200772B00B70B56 /* wg_gfxanim.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_gfxanim.cpp; path = ../framework/wg_gfxanim.cpp; sourceTree = "<group>"; };
 		170F7B442200772B00B70B56 /* wg_gfxanim.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_gfxanim.h; path = ../framework/wg_gfxanim.h; sourceTree = "<group>"; };
-		170F7B452200772B00B70B56 /* wg_frameskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_frameskin.cpp; path = ../framework/wg_frameskin.cpp; sourceTree = "<group>"; };
 		170F7B462200772B00B70B56 /* wg_packpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_packpanel.h; path = ../framework/wg_packpanel.h; sourceTree = "<group>"; };
 		170F7B472200772B00B70B56 /* wg_refreshbutton.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_refreshbutton.cpp; path = ../framework/wg_refreshbutton.cpp; sourceTree = "<group>"; };
 		170F7B482200772C00B70B56 /* wg_layer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_layer.h; path = ../framework/wg_layer.h; sourceTree = "<group>"; };
 		170F7B492200772C00B70B56 /* wg_oscilloscope.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_oscilloscope.h; path = ../framework/wg_oscilloscope.h; sourceTree = "<group>"; };
-		170F7B4B2200772C00B70B56 /* wg_extendedskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_extendedskin.cpp; path = ../framework/wg_extendedskin.cpp; sourceTree = "<group>"; };
-		170F7B4C2200772C00B70B56 /* wg_extendedskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_extendedskin.h; path = ../framework/wg_extendedskin.h; sourceTree = "<group>"; };
 		170F7B4E2200772D00B70B56 /* wg_button.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_button.cpp; path = ../framework/wg_button.cpp; sourceTree = "<group>"; };
 		170F7B4F2200772D00B70B56 /* wg_layer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_layer.cpp; path = ../framework/wg_layer.cpp; sourceTree = "<group>"; };
 		170F7B502200772D00B70B56 /* wg_widgetcollection.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_widgetcollection.h; path = ../framework/wg_widgetcollection.h; sourceTree = "<group>"; };
@@ -446,7 +435,6 @@
 		170F7B5A2200772F00B70B56 /* wg_listpanel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_listpanel.h; path = ../framework/wg_listpanel.h; sourceTree = "<group>"; };
 		170F7B5B2200772F00B70B56 /* wg_charseq.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_charseq.cpp; path = ../framework/wg_charseq.cpp; sourceTree = "<group>"; };
 		170F7B5C2200772F00B70B56 /* wg_userdefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_userdefines.h; path = ../framework/wg_userdefines.h; sourceTree = "<group>"; };
-		170F7B5E2200772F00B70B56 /* wg_boxskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_boxskin.h; path = ../framework/wg_boxskin.h; sourceTree = "<group>"; };
 		170F7B5F2200772F00B70B56 /* wg_refreshbutton.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_refreshbutton.h; path = ../framework/wg_refreshbutton.h; sourceTree = "<group>"; };
 		170F7B602200772F00B70B56 /* wg_canvascapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_canvascapsule.cpp; path = ../framework/wg_canvascapsule.cpp; sourceTree = "<group>"; };
 		170F7B612200772F00B70B56 /* wg_slidertarget.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_slidertarget.cpp; path = ../framework/wg_slidertarget.cpp; sourceTree = "<group>"; };
@@ -471,42 +459,58 @@
 		1717913F22CB46F800B10F51 /* wg_dragndroplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_dragndroplayer.cpp; path = ../framework/wg_dragndroplayer.cpp; sourceTree = "<group>"; };
 		1717914322CB46F900B10F51 /* wg_dragndroplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_dragndroplayer.h; path = ../framework/wg_dragndroplayer.h; sourceTree = "<group>"; };
 		1717914422CB46F900B10F51 /* wg_zoomoutcapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_zoomoutcapsule.h; path = ../framework/wg_zoomoutcapsule.h; sourceTree = "<group>"; };
-		1717914E22CB48C000B10F51 /* wg3_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surface.cpp; path = ../framework/base/wg3_surface.cpp; sourceTree = "<group>"; };
-		1717914F22CB48C000B10F51 /* wg3_nullgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_nullgfxdevice.h; path = ../framework/base/wg3_nullgfxdevice.h; sourceTree = "<group>"; };
-		1717915022CB48C000B10F51 /* wg3_blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_blob.h; path = ../framework/base/wg3_blob.h; sourceTree = "<group>"; };
-		1717915122CB48C000B10F51 /* wg3_geo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_geo.h; path = ../framework/base/wg3_geo.h; sourceTree = "<group>"; };
-		1717915222CB48C100B10F51 /* wg3_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_util.h; path = ../framework/base/wg3_util.h; sourceTree = "<group>"; };
-		1717915322CB48C100B10F51 /* wg3_enumextras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_enumextras.h; path = ../framework/base/wg3_enumextras.h; sourceTree = "<group>"; };
-		1717915422CB48C100B10F51 /* wg3_object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_object.cpp; path = ../framework/base/wg3_object.cpp; sourceTree = "<group>"; };
-		1717915522CB48C100B10F51 /* wg3_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_color.h; path = ../framework/base/wg3_color.h; sourceTree = "<group>"; };
-		1717915622CB48C100B10F51 /* wg3_object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_object.h; path = ../framework/base/wg3_object.h; sourceTree = "<group>"; };
-		1717915722CB48C100B10F51 /* wg3_geo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_geo.cpp; path = ../framework/base/wg3_geo.cpp; sourceTree = "<group>"; };
-		1717915822CB48C100B10F51 /* wg3_strongptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_strongptr.h; path = ../framework/base/wg3_strongptr.h; sourceTree = "<group>"; };
-		1717915922CB48C100B10F51 /* wg3_color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_color.cpp; path = ../framework/base/wg3_color.cpp; sourceTree = "<group>"; };
-		1717915A22CB48C100B10F51 /* wg3_surfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_surfacefactory.h; path = ../framework/base/wg3_surfacefactory.h; sourceTree = "<group>"; };
-		1717915B22CB48C200B10F51 /* wg3_weakptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_weakptr.h; path = ../framework/base/wg3_weakptr.h; sourceTree = "<group>"; };
-		1717915C22CB48C200B10F51 /* wg3_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_base.h; path = ../framework/base/wg3_base.h; sourceTree = "<group>"; };
-		1717915E22CB48C200B10F51 /* wg3_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_types.h; path = ../framework/base/wg3_types.h; sourceTree = "<group>"; };
-		1717916022CB48C200B10F51 /* wg3_gfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_gfxdevice.cpp; path = ../framework/base/wg3_gfxdevice.cpp; sourceTree = "<group>"; };
-		1717916122CB48C200B10F51 /* wg3_pointers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_pointers.h; path = ../framework/base/wg3_pointers.h; sourceTree = "<group>"; };
-		1717916222CB48C300B10F51 /* wg3_nullgfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_nullgfxdevice.cpp; path = ../framework/base/wg3_nullgfxdevice.cpp; sourceTree = "<group>"; };
-		1717916322CB48C300B10F51 /* wg3_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_util.cpp; path = ../framework/base/wg3_util.cpp; sourceTree = "<group>"; };
-		1717916422CB48C300B10F51 /* wg3_blob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_blob.cpp; path = ../framework/base/wg3_blob.cpp; sourceTree = "<group>"; };
-		1717916522CB48C300B10F51 /* wg3_surfacefactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surfacefactory.cpp; path = ../framework/base/wg3_surfacefactory.cpp; sourceTree = "<group>"; };
-		1717916622CB48C300B10F51 /* wg3_gfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_gfxdevice.h; path = ../framework/base/wg3_gfxdevice.h; sourceTree = "<group>"; };
-		1717916722CB48C300B10F51 /* wg3_surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_surface.h; path = ../framework/base/wg3_surface.h; sourceTree = "<group>"; };
-		1717916822CB48C400B10F51 /* wg3_enumextras.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_enumextras.cpp; path = ../framework/base/wg3_enumextras.cpp; sourceTree = "<group>"; };
-		1741F0292317D98B00029A27 /* wg3_qpix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_qpix.h; path = ../framework/base/wg3_qpix.h; sourceTree = "<group>"; };
-		1741F02F2318219E00029A27 /* wg3_patches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_patches.cpp; path = ../framework/base/wg3_patches.cpp; sourceTree = "<group>"; };
-		1741F0302318219E00029A27 /* wg3_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_patches.h; path = ../framework/base/wg3_patches.h; sourceTree = "<group>"; };
-		1741F0312318219F00029A27 /* wg3_qpix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_qpix.cpp; path = ../framework/base/wg3_qpix.cpp; sourceTree = "<group>"; };
 		1741F03523190F4500029A27 /* wg_shadowlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_shadowlayer.cpp; path = ../framework/wg_shadowlayer.cpp; sourceTree = "<group>"; };
 		1741F03623190F4500029A27 /* wg_shadowlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_shadowlayer.h; path = ../framework/wg_shadowlayer.h; sourceTree = "<group>"; };
 		1742687523390C6700A76233 /* wg_context.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_context.h; path = ../framework/wg_context.h; sourceTree = "<group>"; };
 		177A719D23C620CB003E629B /* wg3_component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_component.cpp; path = ../framework/components/wg3_component.cpp; sourceTree = "<group>"; };
 		177A719E23C620CB003E629B /* wg3_component.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_component.h; path = ../framework/components/wg3_component.h; sourceTree = "<group>"; };
-		177A71A123C620EE003E629B /* wg3_strongcomponentptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_strongcomponentptr.h; path = ../framework/base/wg3_strongcomponentptr.h; sourceTree = "<group>"; };
-		177A71A223C620EE003E629B /* wg3_weakcomponentptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_weakcomponentptr.h; path = ../framework/base/wg3_weakcomponentptr.h; sourceTree = "<group>"; };
+		17E03D2123D9F37900B0A3D8 /* wg3_weakcomponentptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_weakcomponentptr.h; path = ../framework/base/wg3_weakcomponentptr.h; sourceTree = "<group>"; };
+		17E03D2223D9F37900B0A3D8 /* wg3_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surface.cpp; path = ../framework/base/wg3_surface.cpp; sourceTree = "<group>"; };
+		17E03D2323D9F37900B0A3D8 /* wg3_nullgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_nullgfxdevice.h; path = ../framework/base/wg3_nullgfxdevice.h; sourceTree = "<group>"; };
+		17E03D2423D9F37900B0A3D8 /* wg3_blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_blob.h; path = ../framework/base/wg3_blob.h; sourceTree = "<group>"; };
+		17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_qpix.cpp; path = ../framework/base/wg3_qpix.cpp; sourceTree = "<group>"; };
+		17E03D2623D9F37900B0A3D8 /* wg3_geo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_geo.h; path = ../framework/base/wg3_geo.h; sourceTree = "<group>"; };
+		17E03D2723D9F37900B0A3D8 /* wg3_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_util.h; path = ../framework/base/wg3_util.h; sourceTree = "<group>"; };
+		17E03D2823D9F37900B0A3D8 /* wg3_enumextras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_enumextras.h; path = ../framework/base/wg3_enumextras.h; sourceTree = "<group>"; };
+		17E03D2923D9F37900B0A3D8 /* wg3_object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_object.cpp; path = ../framework/base/wg3_object.cpp; sourceTree = "<group>"; };
+		17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_qpix.h; path = ../framework/base/wg3_qpix.h; sourceTree = "<group>"; };
+		17E03D2B23D9F37A00B0A3D8 /* wg3_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_color.h; path = ../framework/base/wg3_color.h; sourceTree = "<group>"; };
+		17E03D2C23D9F37A00B0A3D8 /* wg3_patches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_patches.cpp; path = ../framework/base/wg3_patches.cpp; sourceTree = "<group>"; };
+		17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_payload.h; path = ../framework/base/wg3_payload.h; sourceTree = "<group>"; };
+		17E03D2E23D9F37A00B0A3D8 /* wg3_object.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_object.h; path = ../framework/base/wg3_object.h; sourceTree = "<group>"; };
+		17E03D2F23D9F37A00B0A3D8 /* wg3_geo.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_geo.cpp; path = ../framework/base/wg3_geo.cpp; sourceTree = "<group>"; };
+		17E03D3023D9F37A00B0A3D8 /* wg3_strongcomponentptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_strongcomponentptr.h; path = ../framework/base/wg3_strongcomponentptr.h; sourceTree = "<group>"; };
+		17E03D3123D9F37A00B0A3D8 /* wg3_strongptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_strongptr.h; path = ../framework/base/wg3_strongptr.h; sourceTree = "<group>"; };
+		17E03D3223D9F37A00B0A3D8 /* wg3_color.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_color.cpp; path = ../framework/base/wg3_color.cpp; sourceTree = "<group>"; };
+		17E03D3323D9F37B00B0A3D8 /* wg3_patches.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_patches.h; path = ../framework/base/wg3_patches.h; sourceTree = "<group>"; };
+		17E03D3423D9F37B00B0A3D8 /* wg3_payload.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_payload.cpp; path = ../framework/base/wg3_payload.cpp; sourceTree = "<group>"; };
+		17E03D3523D9F37B00B0A3D8 /* wg3_surfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_surfacefactory.h; path = ../framework/base/wg3_surfacefactory.h; sourceTree = "<group>"; };
+		17E03D3623D9F37B00B0A3D8 /* wg3_weakptr.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_weakptr.h; path = ../framework/base/wg3_weakptr.h; sourceTree = "<group>"; };
+		17E03D3723D9F37B00B0A3D8 /* wg3_base.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_base.h; path = ../framework/base/wg3_base.h; sourceTree = "<group>"; };
+		17E03D3823D9F37B00B0A3D8 /* wg3_types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_types.h; path = ../framework/base/wg3_types.h; sourceTree = "<group>"; };
+		17E03D3923D9F37B00B0A3D8 /* wg3_gfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_gfxdevice.cpp; path = ../framework/base/wg3_gfxdevice.cpp; sourceTree = "<group>"; };
+		17E03D3A23D9F37C00B0A3D8 /* wg3_pointers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_pointers.h; path = ../framework/base/wg3_pointers.h; sourceTree = "<group>"; };
+		17E03D3B23D9F37C00B0A3D8 /* wg3_nullgfxdevice.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_nullgfxdevice.cpp; path = ../framework/base/wg3_nullgfxdevice.cpp; sourceTree = "<group>"; };
+		17E03D3C23D9F37C00B0A3D8 /* wg3_blob.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_blob.cpp; path = ../framework/base/wg3_blob.cpp; sourceTree = "<group>"; };
+		17E03D3D23D9F37C00B0A3D8 /* wg3_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_util.cpp; path = ../framework/base/wg3_util.cpp; sourceTree = "<group>"; };
+		17E03D3E23D9F37C00B0A3D8 /* wg3_surfacefactory.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surfacefactory.cpp; path = ../framework/base/wg3_surfacefactory.cpp; sourceTree = "<group>"; };
+		17E03D3F23D9F37C00B0A3D8 /* wg3_gfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_gfxdevice.h; path = ../framework/base/wg3_gfxdevice.h; sourceTree = "<group>"; };
+		17E03D4023D9F37C00B0A3D8 /* wg3_enumextras.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_enumextras.cpp; path = ../framework/base/wg3_enumextras.cpp; sourceTree = "<group>"; };
+		17E03D4123D9F37D00B0A3D8 /* wg3_surface.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_surface.h; path = ../framework/base/wg3_surface.h; sourceTree = "<group>"; };
+		17E03D6423D9F3AE00B0A3D8 /* wg3_staticcolorskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_staticcolorskin.h; path = ../framework/skins/wg3_staticcolorskin.h; sourceTree = "<group>"; };
+		17E03D6523D9F3AE00B0A3D8 /* wg3_multiblockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_multiblockskin.h; path = ../framework/skins/wg3_multiblockskin.h; sourceTree = "<group>"; };
+		17E03D6623D9F3AE00B0A3D8 /* wg3_boxskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_boxskin.h; path = ../framework/skins/wg3_boxskin.h; sourceTree = "<group>"; };
+		17E03D6723D9F3AE00B0A3D8 /* wg3_staticcolorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_staticcolorskin.cpp; path = ../framework/skins/wg3_staticcolorskin.cpp; sourceTree = "<group>"; };
+		17E03D6823D9F3AE00B0A3D8 /* wg3_blockskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_blockskin.cpp; path = ../framework/skins/wg3_blockskin.cpp; sourceTree = "<group>"; };
+		17E03D6923D9F3AE00B0A3D8 /* wg3_blockskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_blockskin.h; path = ../framework/skins/wg3_blockskin.h; sourceTree = "<group>"; };
+		17E03D6A23D9F3AE00B0A3D8 /* wg3_colorskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_colorskin.h; path = ../framework/skins/wg3_colorskin.h; sourceTree = "<group>"; };
+		17E03D6B23D9F3AF00B0A3D8 /* wg3_skin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_skin.h; path = ../framework/skins/wg3_skin.h; sourceTree = "<group>"; };
+		17E03D6C23D9F3AF00B0A3D8 /* wg3_boxskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_boxskin.cpp; path = ../framework/skins/wg3_boxskin.cpp; sourceTree = "<group>"; };
+		17E03D6D23D9F3AF00B0A3D8 /* wg3_multiblockskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_multiblockskin.cpp; path = ../framework/skins/wg3_multiblockskin.cpp; sourceTree = "<group>"; };
+		17E03D6E23D9F3AF00B0A3D8 /* wg3_skin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_skin.cpp; path = ../framework/skins/wg3_skin.cpp; sourceTree = "<group>"; };
+		17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_extendedskin.h; path = ../framework/skins/wg3_extendedskin.h; sourceTree = "<group>"; };
+		17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_extendedskin.cpp; path = ../framework/skins/wg3_extendedskin.cpp; sourceTree = "<group>"; };
+		17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_colorskin.cpp; path = ../framework/skins/wg3_colorskin.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -523,7 +527,8 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
-				1717914D22CB48A000B10F51 /* Base */,
+				17E03D6323D9F39C00B0A3D8 /* skins */,
+				17E03D2023D9F34900B0A3D8 /* base */,
 				1717918422CB48DD00B10F51 /* Components */,
 				170F7CA72200782100B70B56 /* Debug.h */,
 				170F7A75220076C000B70B56 /* Products */,
@@ -539,10 +544,6 @@
 				170F7AA12200771200B70B56 /* wg_blob.h */,
 				170F7B652200773000B70B56 /* wg_blockset.cpp */,
 				170F7AFA2200771F00B70B56 /* wg_blockset.h */,
-				170F7AE42200771C00B70B56 /* wg_blockskin.cpp */,
-				170F7B232200772600B70B56 /* wg_blockskin.h */,
-				170F7AB92200771500B70B56 /* wg_boxskin.cpp */,
-				170F7B5E2200772F00B70B56 /* wg_boxskin.h */,
 				170F7B4E2200772D00B70B56 /* wg_button.cpp */,
 				170F7A8B2200770F00B70B56 /* wg_button.h */,
 				170F7B602200772F00B70B56 /* wg_canvascapsule.cpp */,
@@ -566,8 +567,6 @@
 				170F7B142200772300B70B56 /* wg_color.h */,
 				170F7AAE2200771300B70B56 /* wg_colorset.cpp */,
 				170F7A872200770E00B70B56 /* wg_colorset.h */,
-				170F7B392200772900B70B56 /* wg_colorskin.cpp */,
-				170F7A982200771000B70B56 /* wg_colorskin.h */,
 				170F7AB12200771400B70B56 /* wg_container.cpp */,
 				170F7A7E2200770D00B70B56 /* wg_container.h */,
 				1742687523390C6700A76233 /* wg_context.h */,
@@ -586,8 +585,6 @@
 				170F7A922200770F00B70B56 /* wg_eventhandler.h */,
 				170F7A842200770E00B70B56 /* wg_eventlogger.cpp */,
 				170F7ADB2200771A00B70B56 /* wg_eventlogger.h */,
-				170F7B4B2200772C00B70B56 /* wg_extendedskin.cpp */,
-				170F7B4C2200772C00B70B56 /* wg_extendedskin.h */,
 				170F7B632200772F00B70B56 /* wg_filler.cpp */,
 				170F7AC12200771600B70B56 /* wg_filler.h */,
 				170F7B6E2200773100B70B56 /* wg_flexpanel.cpp */,
@@ -598,8 +595,6 @@
 				170F7B2C2200772700B70B56 /* wg_font.h */,
 				170F7B422200772B00B70B56 /* wg_fpsdisplay.cpp */,
 				170F7AA62200771200B70B56 /* wg_fpsdisplay.h */,
-				170F7B452200772B00B70B56 /* wg_frameskin.cpp */,
-				170F7A882200770E00B70B56 /* wg_frameskin.h */,
 				170F7AFC2200772000B70B56 /* wg_geo.h */,
 				170F7B432200772B00B70B56 /* wg_gfxanim.cpp */,
 				170F7B442200772B00B70B56 /* wg_gfxanim.h */,
@@ -634,8 +629,6 @@
 				170F7AB22200771400B70B56 /* wg_memstack.h */,
 				170F7AFE2200772000B70B56 /* wg_modallayer.cpp */,
 				170F7B1C2200772500B70B56 /* wg_modallayer.h */,
-				170F7B1D2200772500B70B56 /* wg_multiblockskin.cpp */,
-				170F7AD62200771900B70B56 /* wg_multiblockskin.h */,
 				170F7ACD2200771800B70B56 /* wg_multislider.cpp */,
 				170F7B0D2200772200B70B56 /* wg_multislider.h */,
 				170F7B0E2200772200B70B56 /* wg_orderedselectable.cpp */,
@@ -687,8 +680,6 @@
 				170F7B582200772E00B70B56 /* wg_sizecapsule.h */,
 				170F7AEE2200771D00B70B56 /* wg_sizescaler.cpp */,
 				170F7AF72200771F00B70B56 /* wg_sizescaler.h */,
-				170F7A9E2200771100B70B56 /* wg_skin.cpp */,
-				170F7B352200772900B70B56 /* wg_skin.h */,
 				170F7ABC2200771500B70B56 /* wg_slider.cpp */,
 				170F7B342200772800B70B56 /* wg_slider.h */,
 				170F7B612200772F00B70B56 /* wg_slidertarget.cpp */,
@@ -752,44 +743,6 @@
 			name = Products;
 			sourceTree = "<group>";
 		};
-		1717914D22CB48A000B10F51 /* Base */ = {
-			isa = PBXGroup;
-			children = (
-				177A71A123C620EE003E629B /* wg3_strongcomponentptr.h */,
-				177A71A223C620EE003E629B /* wg3_weakcomponentptr.h */,
-				1741F02F2318219E00029A27 /* wg3_patches.cpp */,
-				1741F0302318219E00029A27 /* wg3_patches.h */,
-				1741F0312318219F00029A27 /* wg3_qpix.cpp */,
-				1741F0292317D98B00029A27 /* wg3_qpix.h */,
-				1717915C22CB48C200B10F51 /* wg3_base.h */,
-				1717916422CB48C300B10F51 /* wg3_blob.cpp */,
-				1717915022CB48C000B10F51 /* wg3_blob.h */,
-				1717915922CB48C100B10F51 /* wg3_color.cpp */,
-				1717915522CB48C100B10F51 /* wg3_color.h */,
-				1717916822CB48C400B10F51 /* wg3_enumextras.cpp */,
-				1717915322CB48C100B10F51 /* wg3_enumextras.h */,
-				1717915722CB48C100B10F51 /* wg3_geo.cpp */,
-				1717915122CB48C000B10F51 /* wg3_geo.h */,
-				1717916022CB48C200B10F51 /* wg3_gfxdevice.cpp */,
-				1717916622CB48C300B10F51 /* wg3_gfxdevice.h */,
-				1717916222CB48C300B10F51 /* wg3_nullgfxdevice.cpp */,
-				1717914F22CB48C000B10F51 /* wg3_nullgfxdevice.h */,
-				1717915422CB48C100B10F51 /* wg3_object.cpp */,
-				1717915622CB48C100B10F51 /* wg3_object.h */,
-				1717916122CB48C200B10F51 /* wg3_pointers.h */,
-				1717915822CB48C100B10F51 /* wg3_strongptr.h */,
-				1717914E22CB48C000B10F51 /* wg3_surface.cpp */,
-				1717916722CB48C300B10F51 /* wg3_surface.h */,
-				1717916522CB48C300B10F51 /* wg3_surfacefactory.cpp */,
-				1717915A22CB48C100B10F51 /* wg3_surfacefactory.h */,
-				1717915E22CB48C200B10F51 /* wg3_types.h */,
-				1717916322CB48C300B10F51 /* wg3_util.cpp */,
-				1717915222CB48C100B10F51 /* wg3_util.h */,
-				1717915B22CB48C200B10F51 /* wg3_weakptr.h */,
-			);
-			name = Base;
-			sourceTree = "<group>";
-		};
 		1717918422CB48DD00B10F51 /* Components */ = {
 			isa = PBXGroup;
 			children = (
@@ -797,6 +750,67 @@
 				177A719E23C620CB003E629B /* wg3_component.h */,
 			);
 			name = Components;
+			sourceTree = "<group>";
+		};
+		17E03D2023D9F34900B0A3D8 /* base */ = {
+			isa = PBXGroup;
+			children = (
+				17E03D3723D9F37B00B0A3D8 /* wg3_base.h */,
+				17E03D3C23D9F37C00B0A3D8 /* wg3_blob.cpp */,
+				17E03D2423D9F37900B0A3D8 /* wg3_blob.h */,
+				17E03D3223D9F37A00B0A3D8 /* wg3_color.cpp */,
+				17E03D2B23D9F37A00B0A3D8 /* wg3_color.h */,
+				17E03D4023D9F37C00B0A3D8 /* wg3_enumextras.cpp */,
+				17E03D2823D9F37900B0A3D8 /* wg3_enumextras.h */,
+				17E03D2F23D9F37A00B0A3D8 /* wg3_geo.cpp */,
+				17E03D2623D9F37900B0A3D8 /* wg3_geo.h */,
+				17E03D3923D9F37B00B0A3D8 /* wg3_gfxdevice.cpp */,
+				17E03D3F23D9F37C00B0A3D8 /* wg3_gfxdevice.h */,
+				17E03D3B23D9F37C00B0A3D8 /* wg3_nullgfxdevice.cpp */,
+				17E03D2323D9F37900B0A3D8 /* wg3_nullgfxdevice.h */,
+				17E03D2923D9F37900B0A3D8 /* wg3_object.cpp */,
+				17E03D2E23D9F37A00B0A3D8 /* wg3_object.h */,
+				17E03D2C23D9F37A00B0A3D8 /* wg3_patches.cpp */,
+				17E03D3323D9F37B00B0A3D8 /* wg3_patches.h */,
+				17E03D3423D9F37B00B0A3D8 /* wg3_payload.cpp */,
+				17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */,
+				17E03D3A23D9F37C00B0A3D8 /* wg3_pointers.h */,
+				17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */,
+				17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */,
+				17E03D3023D9F37A00B0A3D8 /* wg3_strongcomponentptr.h */,
+				17E03D3123D9F37A00B0A3D8 /* wg3_strongptr.h */,
+				17E03D2223D9F37900B0A3D8 /* wg3_surface.cpp */,
+				17E03D4123D9F37D00B0A3D8 /* wg3_surface.h */,
+				17E03D3E23D9F37C00B0A3D8 /* wg3_surfacefactory.cpp */,
+				17E03D3523D9F37B00B0A3D8 /* wg3_surfacefactory.h */,
+				17E03D3823D9F37B00B0A3D8 /* wg3_types.h */,
+				17E03D3D23D9F37C00B0A3D8 /* wg3_util.cpp */,
+				17E03D2723D9F37900B0A3D8 /* wg3_util.h */,
+				17E03D2123D9F37900B0A3D8 /* wg3_weakcomponentptr.h */,
+				17E03D3623D9F37B00B0A3D8 /* wg3_weakptr.h */,
+			);
+			name = base;
+			sourceTree = "<group>";
+		};
+		17E03D6323D9F39C00B0A3D8 /* skins */ = {
+			isa = PBXGroup;
+			children = (
+				17E03D6823D9F3AE00B0A3D8 /* wg3_blockskin.cpp */,
+				17E03D6923D9F3AE00B0A3D8 /* wg3_blockskin.h */,
+				17E03D6C23D9F3AF00B0A3D8 /* wg3_boxskin.cpp */,
+				17E03D6623D9F3AE00B0A3D8 /* wg3_boxskin.h */,
+				17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */,
+				17E03D6A23D9F3AE00B0A3D8 /* wg3_colorskin.h */,
+				17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */,
+				17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */,
+				17E03D6D23D9F3AF00B0A3D8 /* wg3_multiblockskin.cpp */,
+				17E03D6523D9F3AE00B0A3D8 /* wg3_multiblockskin.h */,
+				17E03D6E23D9F3AF00B0A3D8 /* wg3_skin.cpp */,
+				17E03D6B23D9F3AF00B0A3D8 /* wg3_skin.h */,
+				17E03D6723D9F3AE00B0A3D8 /* wg3_staticcolorskin.cpp */,
+				17E03D6423D9F3AE00B0A3D8 /* wg3_staticcolorskin.h */,
+			);
+			name = skins;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -814,20 +828,23 @@
 				170F7BBB2200773200B70B56 /* wg_slidertarget.h in Headers */,
 				170F7BA72200773200B70B56 /* wg_chain.h in Headers */,
 				170F7BEF2200773200B70B56 /* wg_textmanager.h in Headers */,
+				17E03D5223D9F37D00B0A3D8 /* wg3_strongptr.h in Headers */,
 				170F7BBE2200773200B70B56 /* wg_charseq.h in Headers */,
 				170F7C0F2200773200B70B56 /* wg_textpropmanager.h in Headers */,
 				170F7C032200773200B70B56 /* wg_cursor.h in Headers */,
-				170F7BCD2200773200B70B56 /* wg_multiblockskin.h in Headers */,
 				1741F03823190F4500029A27 /* wg_shadowlayer.h in Headers */,
 				1717914B22CB46F900B10F51 /* wg_dragndroplayer.h in Headers */,
+				17E03D7423D9F3AF00B0A3D8 /* wg3_boxskin.h in Headers */,
 				170F7BB72200773200B70B56 /* wg_util.h in Headers */,
-				170F7C552200773200B70B56 /* wg_boxskin.h in Headers */,
+				17E03D4423D9F37D00B0A3D8 /* wg3_nullgfxdevice.h in Headers */,
 				170F7BF32200773200B70B56 /* wg_geo.h in Headers */,
 				170F7BE42200773200B70B56 /* wg_rootpanel.h in Headers */,
 				170F7C4F2200773200B70B56 /* wg_sizecapsule.h in Headers */,
 				170F7BC72200773200B70B56 /* wg_switch.h in Headers */,
 				170F7BDC2200773200B70B56 /* wg_knob.h in Headers */,
+				17E03D5923D9F37D00B0A3D8 /* wg3_types.h in Headers */,
 				177A71A023C620CB003E629B /* wg3_component.h in Headers */,
+				17E03D7223D9F3AF00B0A3D8 /* wg3_staticcolorskin.h in Headers */,
 				170F7C402200773200B70B56 /* wg_oscilloscope.h in Headers */,
 				170F7C5B2200773200B70B56 /* wg_widget.h in Headers */,
 				170F7C2B2200773200B70B56 /* wg_slider.h in Headers */,
@@ -839,104 +856,102 @@
 				170F7C4C2200773200B70B56 /* wg_eventfilter.h in Headers */,
 				170F7C362200773200B70B56 /* wg_event.h in Headers */,
 				170F7BC02200773200B70B56 /* wg_textlink.h in Headers */,
-				170F7C432200773200B70B56 /* wg_extendedskin.h in Headers */,
+				17E03D4E23D9F37D00B0A3D8 /* wg3_payload.h in Headers */,
+				17E03D4823D9F37D00B0A3D8 /* wg3_util.h in Headers */,
 				170F7C132200773200B70B56 /* wg_modallayer.h in Headers */,
 				170F7BB82200773200B70B56 /* wg_filler.h in Headers */,
-				1717917022CB48C400B10F51 /* wg3_color.h in Headers */,
 				170F7C092200773200B70B56 /* wg_vectorglyphs.h in Headers */,
 				170F7BB62200773200B70B56 /* wg_char.h in Headers */,
+				17E03D7D23D9F3AF00B0A3D8 /* wg3_extendedskin.h in Headers */,
+				17E03D5423D9F37D00B0A3D8 /* wg3_patches.h in Headers */,
 				170F7BAA2200773200B70B56 /* wg_stackpanel.h in Headers */,
 				170F7C332200773200B70B56 /* wg_widgetholder.h in Headers */,
-				170F7B7F2200773200B70B56 /* wg_frameskin.h in Headers */,
+				17E03D4F23D9F37D00B0A3D8 /* wg3_object.h in Headers */,
 				170F7B982200773200B70B56 /* wg_blob.h in Headers */,
-				1717917122CB48C400B10F51 /* wg3_object.h in Headers */,
 				170F7B9D2200773200B70B56 /* wg_fpsdisplay.h in Headers */,
 				170F7B962200773200B70B56 /* wg_popupopener.h in Headers */,
 				170F7C662200773200B70B56 /* wg_shadercapsule.h in Headers */,
 				170F7BC32200773200B70B56 /* wg_vectorpanel.h in Headers */,
 				170F7BE92200773200B70B56 /* wg_versionbridge.h in Headers */,
+				17E03D5623D9F37D00B0A3D8 /* wg3_surfacefactory.h in Headers */,
 				1717914C22CB46F900B10F51 /* wg_zoomoutcapsule.h in Headers */,
 				170F7C512200773200B70B56 /* wg_listpanel.h in Headers */,
-				177A71A323C620EE003E629B /* wg3_strongcomponentptr.h in Headers */,
 				170F7B8B2200773200B70B56 /* wg_capsule.h in Headers */,
+				17E03D7323D9F3AF00B0A3D8 /* wg3_multiblockskin.h in Headers */,
+				17E03D7723D9F3AF00B0A3D8 /* wg3_blockskin.h in Headers */,
 				170F7C0C2200773200B70B56 /* wg_types.h in Headers */,
 				170F7BA92200773200B70B56 /* wg_memstack.h in Headers */,
 				170F7C112200773200B70B56 /* wondergui.h in Headers */,
 				170F7C0B2200773200B70B56 /* wg_color.h in Headers */,
-				170F7B8F2200773200B70B56 /* wg_colorskin.h in Headers */,
-				1717916B22CB48C400B10F51 /* wg3_blob.h in Headers */,
 				170F7BFE2200773200B70B56 /* wg_resloader.h in Headers */,
-				1741F0332318219F00029A27 /* wg3_patches.h in Headers */,
 				170F7C002200773200B70B56 /* wg_string.h in Headers */,
 				1742687623390C6700A76233 /* wg_context.h in Headers */,
 				170F7C342200773200B70B56 /* wg_mempool.h in Headers */,
 				170F7BA62200773200B70B56 /* wg_gfxdevice.h in Headers */,
+				17E03D5B23D9F37D00B0A3D8 /* wg3_pointers.h in Headers */,
 				170F7C232200773200B70B56 /* wg_font.h in Headers */,
 				170F7C172200773200B70B56 /* wg_text.h in Headers */,
 				170F7C0E2200773200B70B56 /* wg_pen.h in Headers */,
 				170F7B862200773200B70B56 /* wg_glyphset.h in Headers */,
+				17E03D4223D9F37D00B0A3D8 /* wg3_weakcomponentptr.h in Headers */,
 				170F7C292200773200B70B56 /* wg_codepages.h in Headers */,
-				1717917C22CB48C400B10F51 /* wg3_pointers.h in Headers */,
-				170F7C2C2200773200B70B56 /* wg_skin.h in Headers */,
 				170F7BD82200773200B70B56 /* wg_anim.h in Headers */,
 				170F7C2F2200773200B70B56 /* wg_simplevolumemeter.h in Headers */,
 				170F7C612200773200B70B56 /* wg_lineeditor.h in Headers */,
 				170F7C192200773200B70B56 /* wg_cursorinstance.h in Headers */,
 				170F7BFD2200773200B70B56 /* wg_iconholder.h in Headers */,
+				17E03D4B23D9F37D00B0A3D8 /* wg3_qpix.h in Headers */,
 				170F7BAE2200773200B70B56 /* wg_refcounted.h in Headers */,
 				170F7C472200773200B70B56 /* wg_widgetcollection.h in Headers */,
-				1717916D22CB48C400B10F51 /* wg3_util.h in Headers */,
-				1717917322CB48C400B10F51 /* wg3_strongptr.h in Headers */,
-				170F7C1A2200773200B70B56 /* wg_blockskin.h in Headers */,
 				170F7B882200773200B70B56 /* wg_panel.h in Headers */,
 				170F7C282200773200B70B56 /* wg_simpleknob.h in Headers */,
+				17E03D7923D9F3AF00B0A3D8 /* wg3_skin.h in Headers */,
 				170F7C352200773200B70B56 /* wg_canvascapsule.h in Headers */,
 				170F7BD12200773200B70B56 /* wg_animplayer.h in Headers */,
+				17E03D6023D9F37D00B0A3D8 /* wg3_gfxdevice.h in Headers */,
 				170F7C4D2200773200B70B56 /* wg_interface_valueholder.h in Headers */,
-				1717917622CB48C400B10F51 /* wg3_weakptr.h in Headers */,
 				170F7BBD2200773200B70B56 /* wg_scaleimage.h in Headers */,
-				1717916E22CB48C400B10F51 /* wg3_enumextras.h in Headers */,
 				170F7C3B2200773200B70B56 /* wg_gfxanim.h in Headers */,
-				1717918122CB48C400B10F51 /* wg3_gfxdevice.h in Headers */,
-				1717916A22CB48C400B10F51 /* wg3_nullgfxdevice.h in Headers */,
-				1717917722CB48C400B10F51 /* wg3_base.h in Headers */,
 				170F7C602200773200B70B56 /* wg_interface_edittext.h in Headers */,
 				170F7C242200773200B70B56 /* wg_key.h in Headers */,
-				177A71A423C620EE003E629B /* wg3_weakcomponentptr.h in Headers */,
 				170F7C562200773200B70B56 /* wg_refreshbutton.h in Headers */,
 				170F7BEE2200773200B70B56 /* wg_sizescaler.h in Headers */,
 				170F7B912200773200B70B56 /* wg_flowpanel.h in Headers */,
-				1741F02A2317D98B00029A27 /* wg3_qpix.h in Headers */,
+				17E03D7823D9F3AF00B0A3D8 /* wg3_colorskin.h in Headers */,
 				170F7C152200773200B70B56 /* wg_scrollchart.h in Headers */,
 				170F7B772200773200B70B56 /* wg_sizebroker.h in Headers */,
-				1717916C22CB48C400B10F51 /* wg3_geo.h in Headers */,
 				170F7C532200773200B70B56 /* wg_userdefines.h in Headers */,
 				170F7BA22200773200B70B56 /* wg_rulerlabels.h in Headers */,
 				170F7B892200773200B70B56 /* wg_eventhandler.h in Headers */,
 				170F7C3D2200773200B70B56 /* wg_packpanel.h in Headers */,
+				17E03D4523D9F37D00B0A3D8 /* wg3_blob.h in Headers */,
 				170F7C682200773200B70B56 /* wg_interface_textholder.h in Headers */,
+				17E03D5823D9F37D00B0A3D8 /* wg3_base.h in Headers */,
 				170F7BAF2200773200B70B56 /* wg_smartptr.h in Headers */,
 				170F7BBC2200773200B70B56 /* wg_chart.h in Headers */,
+				17E03D5723D9F37D00B0A3D8 /* wg3_weakptr.h in Headers */,
+				17E03D5123D9F37D00B0A3D8 /* wg3_strongcomponentptr.h in Headers */,
+				17E03D4C23D9F37D00B0A3D8 /* wg3_color.h in Headers */,
+				17E03D4723D9F37D00B0A3D8 /* wg3_geo.h in Headers */,
 				170F7B832200773200B70B56 /* wg_texttool.h in Headers */,
 				170F7BE22200773200B70B56 /* wg_flexpanel.h in Headers */,
 				170F7BCA2200773200B70B56 /* wg_patches.h in Headers */,
+				17E03D6223D9F37D00B0A3D8 /* wg3_surface.h in Headers */,
 				170F7C122200773200B70B56 /* wg_textdisplay.h in Headers */,
 				170F7B922200773200B70B56 /* wg_resdb.h in Headers */,
 				170F7C182200773200B70B56 /* wg_valuedisplay.h in Headers */,
-				1717918222CB48C400B10F51 /* wg3_surface.h in Headers */,
 				170F7B7A2200773200B70B56 /* wg_charbuffer.h in Headers */,
 				170F7C272200773200B70B56 /* wg_checkbox.h in Headers */,
 				170F7BC92200773200B70B56 /* wg_orderedselectable.h in Headers */,
-				1717917922CB48C400B10F51 /* wg3_types.h in Headers */,
 				170F7CA82200782100B70B56 /* Debug.h in Headers */,
 				170F7C592200773200B70B56 /* wg_image.h in Headers */,
 				170F7B762200773200B70B56 /* wg_tabordercapsule.h in Headers */,
 				170F7BF12200773200B70B56 /* wg_blockset.h in Headers */,
 				170F7C162200773200B70B56 /* wg_bitmapglyphs.h in Headers */,
+				17E03D4923D9F37D00B0A3D8 /* wg3_enumextras.h in Headers */,
 				170F7C492200773200B70B56 /* wg_base.h in Headers */,
 				170F7C482200773200B70B56 /* wg_radiobutton.h in Headers */,
 				170F7BD22200773200B70B56 /* wg_eventlogger.h in Headers */,
-				1717917522CB48C400B10F51 /* wg3_surfacefactory.h in Headers */,
 				170F7BB42200773200B70B56 /* wg_valueformat.h in Headers */,
 				1717914622CB46F900B10F51 /* wg_payload.h in Headers */,
 				170F7B7C2200773200B70B56 /* wg_valueeditor.h in Headers */,
@@ -1003,13 +1018,12 @@
 				170F7C312200773200B70B56 /* wg_base.cpp in Sources */,
 				170F7C392200773200B70B56 /* wg_fpsdisplay.cpp in Sources */,
 				170F7BDD2200773200B70B56 /* wg_rootpanel.cpp in Sources */,
-				170F7C302200773200B70B56 /* wg_colorskin.cpp in Sources */,
 				170F7C3E2200773200B70B56 /* wg_refreshbutton.cpp in Sources */,
-				1717917F22CB48C400B10F51 /* wg3_blob.cpp in Sources */,
+				17E03D7A23D9F3AF00B0A3D8 /* wg3_boxskin.cpp in Sources */,
 				170F7B812200773200B70B56 /* wg_bitmapglyphs.cpp in Sources */,
+				17E03D4A23D9F37D00B0A3D8 /* wg3_object.cpp in Sources */,
 				170F7C4E2200773200B70B56 /* wg_chart.cpp in Sources */,
 				170F7C5C2200773200B70B56 /* wg_blockset.cpp in Sources */,
-				170F7C422200773200B70B56 /* wg_extendedskin.cpp in Sources */,
 				170F7C582200773200B70B56 /* wg_slidertarget.cpp in Sources */,
 				170F7BB32200773200B70B56 /* wg_slider.cpp in Sources */,
 				170F7BD32200773200B70B56 /* wg_animplayer.cpp in Sources */,
@@ -1017,6 +1031,7 @@
 				170F7BB92200773200B70B56 /* wg_tabordercapsule.cpp in Sources */,
 				170F7C522200773200B70B56 /* wg_charseq.cpp in Sources */,
 				170F7C252200773200B70B56 /* wg_eventhandler.cpp in Sources */,
+				17E03D7B23D9F3AF00B0A3D8 /* wg3_multiblockskin.cpp in Sources */,
 				170F7BEA2200773200B70B56 /* wg_string.cpp in Sources */,
 				170F7B842200773200B70B56 /* wg_iconholder.cpp in Sources */,
 				170F7C2D2200773200B70B56 /* wg_packpanel.cpp in Sources */,
@@ -1027,54 +1042,55 @@
 				170F7BE52200773200B70B56 /* wg_sizescaler.cpp in Sources */,
 				170F7BF42200773200B70B56 /* wg_util.cpp in Sources */,
 				1741F03723190F4500029A27 /* wg_shadowlayer.cpp in Sources */,
+				17E03D5023D9F37D00B0A3D8 /* wg3_geo.cpp in Sources */,
 				170F7BA52200773200B70B56 /* wg_colorset.cpp in Sources */,
 				170F7BDF2200773200B70B56 /* wg_interface_valueholder.cpp in Sources */,
 				170F7C462200773200B70B56 /* wg_layer.cpp in Sources */,
 				170F7B7D2200773200B70B56 /* wg_rulerlabels.cpp in Sources */,
-				170F7C3C2200773200B70B56 /* wg_frameskin.cpp in Sources */,
-				1717918322CB48C400B10F51 /* wg3_enumextras.cpp in Sources */,
-				1717917422CB48C400B10F51 /* wg3_color.cpp in Sources */,
 				170F7C672200773200B70B56 /* wg_scaleimage.cpp in Sources */,
-				1717917D22CB48C400B10F51 /* wg3_nullgfxdevice.cpp in Sources */,
 				170F7C4A2200773200B70B56 /* wg_chain.cpp in Sources */,
 				170F7C212200773200B70B56 /* wg_gfxdevice.cpp in Sources */,
 				170F7BD72200773200B70B56 /* wg_textprop.cpp in Sources */,
 				170F7BA82200773200B70B56 /* wg_container.cpp in Sources */,
-				1741F0322318219F00029A27 /* wg3_patches.cpp in Sources */,
 				170F7C652200773200B70B56 /* wg_flexpanel.cpp in Sources */,
 				170F7C4B2200773200B70B56 /* wg_sizecapsule.cpp in Sources */,
 				170F7BC62200773200B70B56 /* wg_interface_textholder.cpp in Sources */,
-				1717916922CB48C400B10F51 /* wg3_surface.cpp in Sources */,
 				170F7BF52200773200B70B56 /* wg_modallayer.cpp in Sources */,
 				170F7B732200773200B70B56 /* wg_checkbox.cpp in Sources */,
 				170F7C382200773200B70B56 /* wg_flowpanel.cpp in Sources */,
 				170F7B852200773200B70B56 /* wg_valuedisplay.cpp in Sources */,
-				170F7B952200773200B70B56 /* wg_skin.cpp in Sources */,
 				170F7C222200773200B70B56 /* wg_valueformat.cpp in Sources */,
 				170F7C1F2200773200B70B56 /* wg_textmanager.cpp in Sources */,
 				170F7BF22200773200B70B56 /* wg_event.cpp in Sources */,
-				1717916F22CB48C400B10F51 /* wg3_object.cpp in Sources */,
+				17E03D4D23D9F37D00B0A3D8 /* wg3_patches.cpp in Sources */,
 				170F7C372200773200B70B56 /* wg_texttool.cpp in Sources */,
 				170F7BB12200773200B70B56 /* wg_hook.cpp in Sources */,
 				170F7B942200773200B70B56 /* wg_smartptr.cpp in Sources */,
 				170F7BCE2200773200B70B56 /* wg_pen.cpp in Sources */,
 				170F7B8C2200773200B70B56 /* wg_simpleknob.cpp in Sources */,
 				170F7BB22200773200B70B56 /* wg_popuplayer.cpp in Sources */,
+				17E03D5D23D9F37D00B0A3D8 /* wg3_blob.cpp in Sources */,
+				17E03D7F23D9F3AF00B0A3D8 /* wg3_colorskin.cpp in Sources */,
 				170F7C1C2200773200B70B56 /* wg_scrollpanel.cpp in Sources */,
+				17E03D7C23D9F3AF00B0A3D8 /* wg3_skin.cpp in Sources */,
+				17E03D5323D9F37D00B0A3D8 /* wg3_color.cpp in Sources */,
 				170F7C5D2200773200B70B56 /* wg_switch.cpp in Sources */,
 				170F7BD52200773200B70B56 /* wg_mempool.cpp in Sources */,
 				170F7BE32200773200B70B56 /* wg_image.cpp in Sources */,
 				170F7C062200773200B70B56 /* wg_listpanel.cpp in Sources */,
 				170F7C452200773200B70B56 /* wg_button.cpp in Sources */,
+				17E03D7E23D9F3AF00B0A3D8 /* wg3_extendedskin.cpp in Sources */,
 				170F7BE12200773200B70B56 /* wg_blob.cpp in Sources */,
+				17E03D5C23D9F37D00B0A3D8 /* wg3_nullgfxdevice.cpp in Sources */,
 				170F7C3A2200773200B70B56 /* wg_gfxanim.cpp in Sources */,
 				170F7B902200773200B70B56 /* wg_text.cpp in Sources */,
 				170F7BD42200773200B70B56 /* wg_resdb.cpp in Sources */,
 				170F7B9A2200773200B70B56 /* wg_volumemeter.cpp in Sources */,
 				1717914722CB46F900B10F51 /* wg_dragndroplayer.cpp in Sources */,
 				170F7B782200773200B70B56 /* wg_capsule.cpp in Sources */,
+				17E03D7523D9F3AF00B0A3D8 /* wg3_staticcolorskin.cpp in Sources */,
+				17E03D4623D9F37D00B0A3D8 /* wg3_qpix.cpp in Sources */,
 				170F7B8D2200773200B70B56 /* wg_lineeditor.cpp in Sources */,
-				170F7C142200773200B70B56 /* wg_multiblockskin.cpp in Sources */,
 				170F7C5E2200773200B70B56 /* wg_cursor.cpp in Sources */,
 				170F7BAB2200773200B70B56 /* wg_vectorpanel.cpp in Sources */,
 				170F7C572200773200B70B56 /* wg_canvascapsule.cpp in Sources */,
@@ -1088,31 +1104,31 @@
 				170F7C0A2200773200B70B56 /* wg_widgetholder.cpp in Sources */,
 				170F7C632200773200B70B56 /* wg_vectorglyphs.cpp in Sources */,
 				170F7BD92200773200B70B56 /* wg_stackpanel.cpp in Sources */,
+				17E03D5523D9F37D00B0A3D8 /* wg3_payload.cpp in Sources */,
 				170F7BF02200773200B70B56 /* wg_cursorinstance.cpp in Sources */,
-				170F7BDB2200773200B70B56 /* wg_blockskin.cpp in Sources */,
-				1717917E22CB48C400B10F51 /* wg3_util.cpp in Sources */,
+				17E03D5E23D9F37D00B0A3D8 /* wg3_util.cpp in Sources */,
 				170F7B722200773200B70B56 /* wg_scrollchart.cpp in Sources */,
 				170F7BDA2200773200B70B56 /* wg_eventfilter.cpp in Sources */,
 				170F7BA32200773200B70B56 /* wg_glyphset.cpp in Sources */,
 				170F7C1D2200773200B70B56 /* wg_simplevolumemeter.cpp in Sources */,
-				1717917B22CB48C400B10F51 /* wg3_gfxdevice.cpp in Sources */,
-				1741F0342318219F00029A27 /* wg3_qpix.cpp in Sources */,
+				17E03D4323D9F37D00B0A3D8 /* wg3_surface.cpp in Sources */,
 				170F7C5A2200773200B70B56 /* wg_filler.cpp in Sources */,
+				17E03D5A23D9F37D00B0A3D8 /* wg3_gfxdevice.cpp in Sources */,
 				170F7BBF2200773200B70B56 /* wg_knob.cpp in Sources */,
 				170F7C502200773200B70B56 /* wg_memstack.cpp in Sources */,
 				170F7BA42200773200B70B56 /* wg_char.cpp in Sources */,
 				170F7C622200773200B70B56 /* wg_textpropmanager.cpp in Sources */,
 				170F7C022200773200B70B56 /* wg_patches.cpp in Sources */,
 				170F7C082200773200B70B56 /* wg_interface_edittext.cpp in Sources */,
+				17E03D7623D9F3AF00B0A3D8 /* wg3_blockskin.cpp in Sources */,
+				17E03D6123D9F37D00B0A3D8 /* wg3_enumextras.cpp in Sources */,
 				177A719F23C620CB003E629B /* wg3_component.cpp in Sources */,
-				1717918022CB48C400B10F51 /* wg3_surfacefactory.cpp in Sources */,
-				170F7BB02200773200B70B56 /* wg_boxskin.cpp in Sources */,
 				170F7B932200773200B70B56 /* wg_widget.cpp in Sources */,
 				170F7BE82200773200B70B56 /* wg_panel.cpp in Sources */,
+				17E03D5F23D9F37D00B0A3D8 /* wg3_surfacefactory.cpp in Sources */,
 				1717914522CB46F900B10F51 /* wg_zoomoutcapsule.cpp in Sources */,
 				170F7BD62200773200B70B56 /* wg_sizebroker.cpp in Sources */,
 				170F7C052200773200B70B56 /* wg_orderedselectable.cpp in Sources */,
-				1717917222CB48C400B10F51 /* wg3_geo.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1233,6 +1249,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = "../framework/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};
@@ -1243,6 +1260,7 @@
 			buildSettings = {
 				CODE_SIGN_STYLE = Automatic;
 				EXECUTABLE_PREFIX = lib;
+				HEADER_SEARCH_PATHS = "../framework/**";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
 			};

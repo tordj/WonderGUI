@@ -57,7 +57,7 @@ const char * WgImage::GetClass()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgImage::SetSkin(const WgSkinPtr& pSkin)
+void WgImage::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -106,14 +106,14 @@ WgSize WgImage::PreferredPixelSize() const
         WgSize sz = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
 
         if( m_pSkin )
-            sz += m_pSkin->ContentPadding(m_scale);
+            sz += _skinContentPadding( m_pSkin, m_scale);
         
         return sz;
     }
 	else if( m_pGfx )
 		return m_pGfx->Size(m_scale);
     else if( m_pSkin )
-        return m_pSkin->PreferredSize(m_scale);
+        return _skinPreferredSize( m_pSkin, m_scale);
 
 	return WgSize(1,1);
 }
@@ -129,12 +129,12 @@ int  WgImage::MatchingPixelHeight(int pixelWidth) const
     {
         imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
         if( m_pSkin )
-            paddingSize = m_pSkin->ContentPadding(m_scale);
+            paddingSize = _skinContentPadding( m_pSkin, m_scale);
     }
 	else if (m_pGfx)
 		imageSize = m_pGfx->Size(WG_SCALE_BASE);
     else if(m_pSkin)
-        imageSize = m_pSkin->PreferredSize(WG_SCALE_BASE);
+        imageSize = _skinPreferredSize( m_pSkin, WG_SCALE_BASE);
     else
         return 1;
 
@@ -155,12 +155,12 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
     {
         imageSize = (m_pImage->size() * m_scale) / (m_pImage->scale()*4096);
         if( m_pSkin )
-            paddingSize = m_pSkin->ContentPadding(m_scale);
+            paddingSize = _skinContentPadding( m_pSkin, m_scale);
     }
     else if (m_pGfx)
         imageSize = m_pGfx->Size(WG_SCALE_BASE);
     else if(m_pSkin)
-        imageSize = m_pSkin->PreferredSize(WG_SCALE_BASE);
+        imageSize = _skinPreferredSize( m_pSkin, WG_SCALE_BASE);
     else
         return 1;
 
@@ -188,7 +188,7 @@ void WgImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 {
 	WgWidget::_onRender(pDevice, _canvas, _window);
 
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
     if( m_pImage )
     {
@@ -215,10 +215,10 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
     
     if( m_pImage )
     {
-        if( m_pSkin && m_pSkin->MarkTest(ofs, sz, m_state, m_markOpacity, m_scale) )
+        if( m_pSkin && _markTestSkin( m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale) )
             return true;
 
-        WgRect canvas = m_pSkin ? m_pSkin->ContentRect(sz, m_state, m_scale) : WgRect(sz);       
+        WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, sz, m_state, m_scale) : WgRect(sz);
         if( canvas.contains(ofs) )
         {
             WgSize imgSize = m_pImage->size();
@@ -237,7 +237,7 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
     }
     else if( m_pSkin )
     {
-        return m_pSkin->MarkTest(ofs, sz, m_state, m_markOpacity, m_scale);
+        return _markTestSkin(m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale);
     }
 
     return false;

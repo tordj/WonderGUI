@@ -208,7 +208,7 @@ void WgShadowLayer::ClearShadows()
 
 //____ AddShadow() ____________________________________________________________
 
-bool WgShadowLayer::AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow)
+bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
 {
     if( !pWidget || !pShadow )
         return false;
@@ -218,9 +218,9 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow)
     WgCoord pos;
     _descendantPos(pWidget, pos);
     
-    WgRect geo = { pos - pShadow->ContentOfs(WgStateEnum::Normal, scale), pShadow->SizeForContent(pWidget->PixelSize(), scale) };
+    WgRect geo = { pos - _skinContentOfs( pShadow, WgStateEnum::Normal, scale), _skinSizeForContent( pShadow, pWidget->PixelSize(), scale) };
     
-    m_shadows.push_back( WgShadow(pWidget,pShadow.GetRealPtr(),geo));
+    m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
     
     WgPatches patches;
     patches.Add(geo);
@@ -260,7 +260,7 @@ void WgShadowLayer::RemoveShadow(WgWidget * pWidget)
 
 //____ SetSkin() ______________________________________________________________
 
-void WgShadowLayer::SetSkin(const WgSkinPtr& pSkin)
+void WgShadowLayer::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -288,7 +288,7 @@ int WgShadowLayer::MatchingPixelHeight( int width ) const
     int matchFront = 0;
     int matchBase = 0;
     
-    WgSize padding = m_pSkin ? m_pSkin->ContentPadding(m_scale) : WgSize(0,0);
+    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
     width -= padding.w;
     
     if (m_baseHook.Widget() )
@@ -306,7 +306,7 @@ int WgShadowLayer::MatchingPixelWidth( int height ) const
     int matchFront = 0;
     int matchBase = 0;
     
-    WgSize padding = m_pSkin ? m_pSkin->ContentPadding(m_scale) : WgSize(0,0);
+    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
     height -= padding.h;
     
     if (m_baseHook.Widget() )
@@ -323,7 +323,7 @@ WgSize WgShadowLayer::PreferredPixelSize() const
 {
     WgSize prefFront;
     WgSize prefBase;
-    WgSize padding = m_pSkin ? m_pSkin->ContentPadding(m_scale) : WgSize(0,0);
+    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
     
     if (m_baseHook.Widget() )
         prefBase = m_baseHook.Widget()->PreferredPixelSize();
@@ -515,8 +515,8 @@ void WgShadowLayer::_preRender()
             
             int scale = pWidget->Scale();
             
-            WgSkin * pSkin = pShadow->shadow();
-            WgRect geo = { pos - pSkin->ContentOfs(WgStateEnum::Normal,scale), pSkin->SizeForContent(widgetSize, scale) };
+            wg::Skin * pSkin = pShadow->shadow();
+            WgRect geo = { pos - _skinContentOfs( pSkin, WgStateEnum::Normal,scale), _skinSizeForContent( pSkin, widgetSize, scale) };
             
             if (geo != oldGeo)
             {
@@ -561,7 +561,7 @@ void WgShadowLayer::_onNewSize(const WgSize& size)
     m_pShadowSurface = nullptr;
     
     if( m_pSkin )
-        m_frontHook.m_geo = m_pSkin->ContentRect(size, m_state, m_scale);
+        m_frontHook.m_geo = _skinContentRect( m_pSkin, size, m_state, m_scale);
     else
         m_frontHook.m_geo = { 0,0,size };
 
@@ -594,7 +594,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 	if (m_pSkin)
 	{
 		pDevice->setClipList(patches.Size(), patches.Begin());
-		m_pSkin->Render(pDevice, m_state, _canvas, m_scale );
+		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
 	}
 
 	// Render base slot widgets
@@ -645,7 +645,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 			for (auto& shadow : m_shadows)
                 if( !shadow.m_geo.isEmpty() )
-                    shadow.shadow()->Render(pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
+                    _renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
 
 
 			pDevice->setCanvas(oldCanvas);

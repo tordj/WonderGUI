@@ -72,7 +72,7 @@ const char * WgPopupOpener::GetClass()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgPopupOpener::SetSkin(const WgSkinPtr& pSkin)
+void WgPopupOpener::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -143,7 +143,7 @@ Uint32 WgPopupOpener::GetTextAreaWidth()
 	WgRect	contentRect(0,0, PixelSize());
 
 	if( m_pSkin )
-		m_pSkin->ContentRect(contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
 
@@ -157,14 +157,14 @@ int WgPopupOpener::MatchingPixelHeight( int width ) const
 	int height = 0;
 
 	if( m_pSkin )
-		height = m_pSkin->PreferredSize(m_scale).h;
+		height = _skinPreferredSize( m_pSkin, m_scale).h;
 
 	if( m_text.nbChars() != 0 )
 	{
 		WgSize padding;
 
 		if (m_pSkin)
-			padding = m_pSkin->ContentPadding(m_scale);
+			padding = _skinContentPadding( m_pSkin, m_scale);
 
 		int heightForText = m_text.heightForWidth(width-padding.w) + padding.h;
 		if( heightForText > height )
@@ -184,14 +184,14 @@ WgSize WgPopupOpener::PreferredPixelSize() const
 	WgSize bestSize;
 
 	if (m_pSkin)
-		bestSize = m_pSkin->PreferredSize(m_scale);
+		bestSize = _skinPreferredSize( m_pSkin, m_scale);
 
 	if( m_text.nbChars() != 0 )
 	{
 		WgSize textSize = m_text.unwrappedSize();
 
 		if( m_pSkin )
-			textSize += m_pSkin->ContentPadding(m_scale);
+			textSize += _skinContentPadding( m_pSkin, m_scale);
 
 		if( textSize.w > bestSize.w )
 			bestSize.w = textSize.w;
@@ -246,7 +246,7 @@ void WgPopupOpener::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0,0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = m_pSkin->ContentRect(contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
 
@@ -275,7 +275,7 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	if (m_pSkin)
     {
-        m_pSkin->Render(pDevice, useState, _canvas, m_scale);
+        _renderSkin( m_pSkin, pDevice, useState, _canvas, m_scale);
     }
 
     WgBlock    block;
@@ -285,7 +285,7 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
     if (m_pSkin)
     {
-        contentRect = m_pSkin->ContentRect(_canvas, useState, m_scale);
+        contentRect = _skinContentRect( m_pSkin, _canvas, useState, m_scale);
     }
 
 	// Get icon and text rect from content rect
@@ -433,7 +433,7 @@ void WgPopupOpener::_onRefresh( void )
 {
 	if( m_pSkin )
 	{
-		if( m_pSkin->IsOpaque() )
+		if( m_pSkin->isOpaque() )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;

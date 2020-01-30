@@ -83,7 +83,7 @@ public:
         }
     };
 
-	void	SetSkin(const WgSkinPtr& pSkin);
+	void	SetSkin(wg::Skin * pSkin);
 	void	SetKnobScale(float scale);
 
 	// Speeds up things significantly by only updating needed quadrants, but generates artifacts if gradiants are present.

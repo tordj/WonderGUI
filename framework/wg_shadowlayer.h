@@ -37,14 +37,14 @@ class WgShadow
     friend class WgShadowLayer;
 public:
     /** @private */
-    WgShadow(WgWidget* pWidget, WgSkin* pSkin, WgRect geo ) : m_pWidget(pWidget), m_pSkin(pSkin), m_geo(geo) {}
+    WgShadow(WgWidget* pWidget, wg::Skin* pSkin, WgRect geo ) : m_pWidget(pWidget), m_pSkin(pSkin), m_geo(geo) {}
     
     WgWidget *    widget() const { return m_pWidget.GetRealPtr(); }
-    WgSkin *      shadow() const { return m_pSkin.GetRealPtr(); }
+    wg::Skin *      shadow() const { return m_pSkin.rawPtr(); }
     
 private:
     WgWidgetWeakPtr m_pWidget;
-    WgSkinPtr       m_pSkin;
+    wg::Skin_p       m_pSkin;
     WgRect          m_geo;
 };
 
@@ -102,12 +102,12 @@ public:
     int             NbShadows() const { return (int) m_shadows.size(); }
     
     void            ClearShadows();
-    bool            AddShadow(WgWidget * pWidget, const WgSkinPtr& pShadow);
+    bool            AddShadow(WgWidget * pWidget, wg::Skin * pShadow);
     
     void            RemoveShadow(int index);
     void            RemoveShadow(WgWidget * pWidget);
 
-    void            SetSkin(const WgSkinPtr& pSkin);        // Method added separately to those widgets that support skin so far.
+    void            SetSkin(wg::Skin * pSkin);        // Method added separately to those widgets that support skin so far.
 
     void            SetShadowTint( uint8_t alpha);
     uint8_t         ShadowTint() { return m_shadowTint; }

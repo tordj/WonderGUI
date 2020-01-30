@@ -32,11 +32,11 @@ public:
 	void			SetSections( float bottomFraction, float topFraction );
 	void			SetHoldHeight( float fraction );
 	
-	void			SetPeakSkin(const WgSkinPtr& pSkin);
-	WgSkinPtr		PeakSkin() const { return m_pPeakSkin;  }
+	void			SetPeakSkin(wg::Skin * pSkin);
+	wg::Skin_p		PeakSkin() const { return m_pPeakSkin;  }
 
-	void			SetHoldSkin(const WgSkinPtr& pSkin);
-	WgSkinPtr		HoldSkin() const { return m_pHoldSkin; }
+	void			SetHoldSkin(wg::Skin * pSkin);
+	wg::Skin_p		HoldSkin() const { return m_pHoldSkin; }
 
 
 	void			SetValue( float peak, float hold );
@@ -63,8 +63,8 @@ protected:
 	
 	
 	WgDirection		m_direction;
-	WgSkinPtr		m_pPeakSkin;
-	WgSkinPtr		m_pHoldSkin;
+	wg::Skin_p		m_pPeakSkin;
+	wg::Skin_p		m_pHoldSkin;
 	WgColor			m_sectionColors[3];
 	float			m_fSectionHeight[3];
 	float			m_fHoldHeight;

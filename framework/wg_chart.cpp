@@ -98,14 +98,14 @@ WgSize WgChart::PreferredPixelSize() const
 
 	sz += m_pixelPadding;
 	if (m_pSkin)
-		sz = m_pSkin->SizeForContent(sz,m_scale);
+		sz = _skinSizeForContent( m_pSkin, sz, m_scale);
 
 	return sz;
 }
 
 //____ SetSkin() ______________________________________________________________
 
-void WgChart::SetSkin(const WgSkinPtr& pSkin)
+void WgChart::SetSkin(wg::Skin * pSkin)
 {
     //TODO: Might need resampling if content padding has changed.
     
@@ -420,7 +420,7 @@ int WgChart::NativeSampleRange() const
     int width = PixelSize().w;
     
     if( m_pSkin )
-        width -= m_pSkin->ContentPadding(m_scale).w;
+        width -= _skinContentPadding( m_pSkin, m_scale).w;
 
     width -= m_pixelPadding.width();
     
@@ -446,7 +446,7 @@ void WgChart::SetDynamicSampleRange()
 
 //____ SetSampleLabelStyle() __________________________________________________
 
-void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop)
+void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
 {
 	m_sampleLabelStyle.alignment = alignment;
 	m_sampleLabelStyle.offset = offset;
@@ -476,7 +476,7 @@ void WgChart::SetSampleGridLines(int nLines, GridLine * pLines)
 
 //____ SetValueLabelStyle() ___________________________________________________
 
-void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop)
+void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
 {
 	m_valueLabelStyle.alignment = alignment;
 	m_valueLabelStyle.offset = offset;
@@ -617,7 +617,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
 
     pDevice->setBlendMode(WgBlendMode::Blend);
 
-    WgRect canvas = m_pSkin ? m_pSkin->ContentRect(m_pCacheBitmap->size(), WgStateEnum::Normal, m_scale) : WgRect(0,0,m_pCacheBitmap->size());
+    WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, m_pCacheBitmap->size(), WgStateEnum::Normal, m_scale) : WgRect(0,0,m_pCacheBitmap->size());
     WgRect waveCanvas = canvas - m_pixelPadding;
 
  
@@ -649,7 +649,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 {
 	WgWidget::_onRender(pDevice, _canvas, _window);
     
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale) : _canvas;
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale) : _canvas;
 
 	// Preparations for both grid and wave drawing
 
@@ -683,14 +683,14 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgCoord textOfs;
 				if (m_sampleLabelStyle.pSkin)
 				{
-					labelSize = m_sampleLabelStyle.pSkin->SizeForContent(labelSize, m_scale);
-					textOfs = m_sampleLabelStyle.pSkin->ContentRect(labelSize, WgStateEnum::Normal, m_scale).pos();
+					labelSize = _skinSizeForContent( m_sampleLabelStyle.pSkin, labelSize, m_scale);
+					textOfs = _skinContentRect( m_sampleLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale ).pos();
 				}
 
 				WgCoord labelPos = _placeLabel({ xOfs,canvas.y+canvas.h }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
 
 				if (m_sampleLabelStyle.pSkin)
-					m_sampleLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
+					_renderSkin( m_sampleLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
                 WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
@@ -731,14 +731,14 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgCoord textOfs;
 				if (m_valueLabelStyle.pSkin)
 				{
-					labelSize = m_valueLabelStyle.pSkin->SizeForContent(labelSize, m_scale);
-					textOfs = m_valueLabelStyle.pSkin->ContentRect(labelSize, WgStateEnum::Normal, m_scale).pos();
+					labelSize = _skinSizeForContent( m_valueLabelStyle.pSkin, labelSize, m_scale);
+					textOfs = _skinContentRect( m_valueLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale).pos();
 				}
 
 				WgCoord labelPos = _placeLabel({ canvas.x, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
-					m_valueLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale );
+					_renderSkin( m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
                 WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
@@ -941,7 +941,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 	WgSize	canvas = PixelSize();
 
 	if (m_pSkin)
-		canvas = m_pSkin->ContentRect(canvas, WgStateEnum::Normal, m_scale);
+		canvas = _skinContentRect( m_pSkin, canvas, WgStateEnum::Normal, m_scale);
 
 
 	canvas -= m_pixelPadding;
@@ -1101,7 +1101,7 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 {
 	// Calculate size of our sample canvas
 
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(PixelSize(), WgStateEnum::Normal, m_scale).size() : PixelSize();
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, PixelSize(), WgStateEnum::Normal, m_scale).size() : PixelSize();
 	canvas -= m_pixelPadding;
 
 	// Calculate needed margin (in pixels) for line thickness

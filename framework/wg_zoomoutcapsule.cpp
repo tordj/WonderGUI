@@ -66,7 +66,7 @@ const char * WgZoomOutCapsule::GetClass()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgZoomOutCapsule::SetSkin(const WgSkinPtr& pSkin)
+void WgZoomOutCapsule::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -78,7 +78,7 @@ void WgZoomOutCapsule::SetSkin(const WgSkinPtr& pSkin)
 
 //____ SetOutlineSkin() ________________________________________________________
 
-void WgZoomOutCapsule::SetOutlineSkin(const WgSkinPtr& pSkin)
+void WgZoomOutCapsule::SetOutlineSkin(wg::Skin * pSkin)
 {
     if (pSkin != m_pOutlineSkin)
     {
@@ -91,7 +91,7 @@ void WgZoomOutCapsule::SetOutlineSkin(const WgSkinPtr& pSkin)
 
 //____ SetButtonSkin() ____________________________________________________________
 
-void WgZoomOutCapsule::SetButtonSkin(const WgSkinPtr& pSkin)
+void WgZoomOutCapsule::SetButtonSkin(wg::Skin * pSkin)
 {
         if( pSkin != m_pButtonSkin )
         {
@@ -323,7 +323,7 @@ WgRect WgZoomOutCapsule::_childGeo()
     if( m_bTakingScreenshot )
     {
         if( m_pSkin )
-            return { m_pSkin->ContentOfs( m_state, m_scale ), m_hook.Widget()->PreferredPixelSize() };
+            return { _skinContentOfs( m_pSkin, m_state, m_scale ), m_hook.Widget()->PreferredPixelSize() };
         else
             return { 0,0, m_hook.Widget()->PreferredPixelSize() };
     }
@@ -385,7 +385,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
             WgCoord pickOfs = pEv->pickOfs();
             
-            WgRect canvas = m_pSkin ? m_pSkin->ContentRect(PixelSize(), m_state, m_scale) : WgRect(PixelSize());
+            WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale) : WgRect(PixelSize());
             
             WgRect screenshotArea = _screenshotArea(canvas);
             
@@ -579,14 +579,14 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
         pDevice->setTintColor({oldTint.r, oldTint.g, oldTint.b, newTint });
 
         if (m_pSkin)
-            m_pSkin->Render(pDevice, m_state, _canvas, m_scale);
+            _renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale);
 
-        WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
+        WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
         if( m_pButtonSkin )
         {
             pDevice->setTintColor({oldTint.r, oldTint.g, oldTint.b, uint8_t(newTint*m_outerZoom) });
-            m_pButtonSkin->Render(pDevice, m_buttonState, _buttonArea(canvas), m_scale);
+            _renderSkin( m_pButtonSkin, pDevice, m_buttonState, _buttonArea(canvas), m_scale);
         }
         pDevice->setTintColor(oldTint);
 
@@ -595,7 +595,7 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
         if( m_bOutlineMode )
         {
             if( m_pOutlineSkin )
-                m_pOutlineSkin->Render(pDevice, m_state, _screenshotArea(canvas), m_scale);
+                _renderSkin( m_pOutlineSkin, pDevice, m_state, _screenshotArea(canvas), m_scale);
         }
         else if( m_pScreenshot )
         {
@@ -611,7 +611,7 @@ bool WgZoomOutCapsule::_onAlphaTest( const WgCoord& ofs )
 {
     WgSize sz = PixelSize();
     
-    WgRect canvas = m_pSkin ? m_pSkin->ContentRect(sz, m_state, m_scale) : WgRect(sz);
+    WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, sz, m_state, m_scale) : WgRect(sz);
     
 	if( m_pScreenshot )
     {
@@ -634,7 +634,7 @@ bool WgZoomOutCapsule::_onAlphaTest( const WgCoord& ofs )
         
         if( r.contains(ofs) )
         {
-            int alpha = m_pButtonSkin->MarkTest(ofs - r.pos(), r.size(), m_state, m_markOpacity, m_scale);
+            int alpha = _markTestSkin( m_pButtonSkin, ofs - r.pos(), r.size(), m_state, m_markOpacity, m_scale);
             if( alpha >= m_markOpacity )
                 return true;
         }
@@ -642,7 +642,7 @@ bool WgZoomOutCapsule::_onAlphaTest( const WgCoord& ofs )
     
     if( m_pSkin )
     {
-        return m_pSkin->MarkTest(ofs, sz, m_state, m_markOpacity, m_scale);
+        return _markTestSkin( m_pSkin, ofs, sz, m_state, m_markOpacity, m_scale);
     }
 
     return false;
@@ -679,7 +679,7 @@ WgRect WgZoomOutCapsule::_buttonArea( WgRect canvas ) const
     if( !m_pButtonSkin )
         return { 0, 0, 0, 0 };
     
-    WgSize sz = m_pButtonSkin->PreferredSize(m_scale);
+    WgSize sz = _skinPreferredSize( m_pButtonSkin, m_scale);
     
     return { canvas.pos(), sz };
 }

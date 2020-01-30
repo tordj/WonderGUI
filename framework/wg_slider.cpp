@@ -159,8 +159,8 @@ bool WgWidgetSlider::SetSliderSize( float _size )
 
 //____ SetSkins() ____________________________________________________________
 
-bool WgWidgetSlider::SetSkins( WgSkinPtr pBgSkin, WgSkinPtr pBarSkin,
-                               WgSkinPtr pBtnBwdSkin, WgSkinPtr pBtnFwdSkin )
+bool WgWidgetSlider::SetSkins( wg::Skin * pBgSkin, wg::Skin * pBarSkin,
+                               wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin )
 {
     m_pBgSkin        = pBgSkin;
     m_pBarSkin        = pBarSkin;
@@ -239,22 +239,22 @@ void WgWidgetSlider::_headerFooterChanged()
 	if( m_bHorizontal )
 	{
         if( m_pBtnFwdSkin )
-            fwdLen = m_pBtnFwdSkin->PreferredSize(m_scale).w;
+            fwdLen = _skinPreferredSize(m_pBtnFwdSkin, m_scale).w;
         else if( m_pBtnFwdGfx )
 			fwdLen = m_pBtnFwdGfx->Width(m_scale);
         if( m_pBtnBwdSkin )
-            bwdLen = m_pBtnBwdSkin->PreferredSize(m_scale).w;
+            bwdLen = _skinPreferredSize(m_pBtnBwdSkin, m_scale).w;
         else if( m_pBtnBwdGfx )
 			bwdLen = m_pBtnBwdGfx->Width(m_scale);
 	}
 	else
 	{
         if( m_pBtnFwdSkin )
-            fwdLen = m_pBtnFwdSkin->PreferredSize(m_scale).h;
+            fwdLen = _skinPreferredSize(m_pBtnFwdSkin, m_scale).h;
         else if( m_pBtnFwdGfx )
 			fwdLen = m_pBtnFwdGfx->Height(m_scale);
         if( m_pBtnBwdSkin )
-            bwdLen = m_pBtnBwdSkin->PreferredSize(m_scale).h;
+            bwdLen = _skinPreferredSize(m_pBtnBwdSkin, m_scale).h;
         else if( m_pBtnBwdGfx )
 			bwdLen = m_pBtnBwdGfx->Height(m_scale);
 	}
@@ -338,9 +338,9 @@ void	WgWidgetSlider::_viewToPosLen( int * _wpPos, int * _wpLen )
 	int		minLen;
 
 	if( m_bHorizontal )
-        minLen = m_pBarSkin ? m_pBarSkin->MinSize(m_scale).w : m_pBarGfx->MinWidth(m_scale);
+        minLen = m_pBarSkin ? _skinMinSize( m_pBarSkin, m_scale ).w : m_pBarGfx->MinWidth(m_scale);
 	else
-		minLen = m_pBarSkin ? m_pBarSkin->MinSize(m_scale).h : m_pBarGfx->MinHeight(m_scale);
+		minLen = m_pBarSkin ? _skinMinSize( m_pBarSkin, m_scale ).h : m_pBarGfx->MinHeight(m_scale);
 
 	if( minLen < 4 )
 		minLen = 4;
@@ -433,8 +433,8 @@ void WgWidgetSlider::_updateMinSize()
 
     if( m_pBgSkin )
     {
-        WgSize min = m_pBgSkin->MinSize(m_scale);
-        WgSize def = m_pBgSkin->PreferredSize(m_scale);
+        WgSize min = _skinMinSize( m_pBgSkin, m_scale );
+        WgSize def = _skinPreferredSize( m_pBgSkin, m_scale );
 
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
@@ -453,8 +453,8 @@ void WgWidgetSlider::_updateMinSize()
 
     if( m_pBarSkin )
     {
-        WgSize min = m_pBarSkin->MinSize(m_scale);
-        WgSize def = m_pBarSkin->PreferredSize(m_scale);
+        WgSize min = _skinMinSize( m_pBarSkin, m_scale );
+        WgSize def = _skinPreferredSize( m_pBarSkin, m_scale );
 
         minW = Max( minW, m_bHorizontal ? min.w : def.w );
         minH = Max( minH, m_bHorizontal ? def.h : min.h );
@@ -481,7 +481,7 @@ void WgWidgetSlider::_updateMinSize()
 
     if( m_pBtnFwdSkin && (m_btnLayout & (HEADER_FWD | FOOTER_FWD)) )
     {
-        WgSize pref = m_pBtnFwdSkin->PreferredSize(m_scale);
+        WgSize pref = _skinPreferredSize( m_pBtnFwdSkin, m_scale );
 
         minW = Max( minW, pref.w );
         minH = Max( minH, pref.h );
@@ -496,7 +496,7 @@ void WgWidgetSlider::_updateMinSize()
 
     if( m_pBtnBwdSkin && (m_btnLayout & (HEADER_BWD | FOOTER_BWD)) )
     {
-        WgSize pref = m_pBtnBwdSkin->PreferredSize(m_scale);
+        WgSize pref = _skinPreferredSize( m_pBtnBwdSkin, m_scale );
 
         minW = Max( minW, pref.w );
         minH = Max( minH, pref.h );
@@ -535,16 +535,16 @@ void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, cons
 			_dest.y += _dest.h;
 }
 
-void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, WgSkinPtr pSkin, WgState state )
+void WgWidgetSlider::_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, wg::Skin * pSkin, WgState state )
 {
-    WgSize pref = pSkin->PreferredSize(m_scale);
+    WgSize pref = _skinPreferredSize( pSkin, m_scale );
 
     if (m_bHorizontal)
         _dest.w = pref.w;
     else
         _dest.h = pref.h;
 
-    pSkin->Render(pDevice, state, _dest, m_scale);
+    _renderSkin( pSkin, pDevice, state, _dest, m_scale);
 
     if( m_bHorizontal )
         _dest.x += _dest.w;
@@ -578,7 +578,7 @@ void WgWidgetSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		dest.h = PixelSize().h - m_headerLen - m_footerLen;
 
     if( m_pBgSkin )
-        m_pBgSkin->Render(pDevice, WgUtil::ModeToState(m_mode[C_BG]), dest, m_scale);
+        _renderSkin( m_pBgSkin, pDevice, WgUtil::ModeToState(m_mode[C_BG]), dest, m_scale );
 	else if( m_pBgGfx )
         WgGfxDevice::BlitBlock( pDevice, m_pBgGfx->GetBlock(m_mode[C_BG],m_scale), dest );
 
@@ -599,7 +599,7 @@ void WgWidgetSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
         if( m_pBarGfx )
             WgGfxDevice::BlitBlock( pDevice, m_pBarGfx->GetBlock(m_mode[C_BAR],m_scale), barDest );
         else
-            m_pBarSkin->Render(pDevice, WgUtil::ModeToState(m_mode[C_BAR]), barDest, m_scale);
+            _renderSkin( m_pBarSkin, pDevice, WgUtil::ModeToState(m_mode[C_BAR]), barDest, m_scale );
 	}
 
 	// Render footer buttons
@@ -651,16 +651,16 @@ bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock&
 
 //____ _markTestButton() _______________________________________________________
 
-bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, WgSkinPtr pSkin, WgState state )
+bool WgWidgetSlider::_markTestButton( WgCoord ofs, WgRect& _dest, wg::Skin * pSkin, WgState state )
 {
-    WgSize pref = pSkin->PreferredSize(m_scale);
+    WgSize pref = _skinPreferredSize( pSkin, m_scale );
 
     if( m_bHorizontal )
         _dest.w = pref.w;
     else
         _dest.h = pref.h;
 
-    bool retVal = pSkin->MarkTest(ofs - _dest.pos(), _dest.size(), state, m_markOpacity, m_scale );
+    bool retVal = _markTestSkin( pSkin, ofs - _dest.pos(), _dest.size(), state, m_markOpacity, m_scale );
 
     if( m_bHorizontal )
         _dest.x += _dest.w;
@@ -751,7 +751,7 @@ WgWidgetSlider::Component WgWidgetSlider::_findMarkedComponent( WgCoord ofs )
 		r.h -= m_headerLen + m_footerLen;
 	}
 
-    if( m_pBgSkin && m_pBgSkin->MarkTest(ofs - r, r.size(), WgUtil::ModeToState(m_mode[C_BG]), m_markOpacity, m_scale ) )
+    if( m_pBgSkin && _markTestSkin( m_pBgSkin, ofs - r, r.size(), WgUtil::ModeToState(m_mode[C_BG]), m_markOpacity, m_scale ) )
         return C_BG;
 
 	if( m_pBgGfx && WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode[C_BG],m_scale), r, m_markOpacity ) )
@@ -1045,7 +1045,7 @@ bool WgWidgetSlider::_markTestSlider( WgCoord ofs )
 	}
 
     if( m_pBarSkin )
-        return m_pBarSkin->MarkTest( ofs-area.pos(), area.size(), WgUtil::ModeToState(m_mode[C_BAR]), m_markOpacity, m_scale);
+        return _markTestSkin( m_pBarSkin, ofs-area.pos(), area.size(), WgUtil::ModeToState(m_mode[C_BAR]), m_markOpacity, m_scale );
     else
         return WgUtil::MarkTestBlock( ofs, m_pBarGfx->GetBlock(m_mode[C_BAR],m_scale), area, m_markOpacity );
 }

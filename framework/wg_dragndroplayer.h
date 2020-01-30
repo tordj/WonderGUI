@@ -152,7 +152,7 @@ protected:
     std::vector<WgWidgetWeakPtr>    m_vHoveredInside;    // All widgets that pointer is considered to be inside (= m_pDropHovered + its ancestors).
 
     
-    WgSurfaceFactory * m_pSurfaceFactory = nullptr;
+    wg::SurfaceFactory_p m_pSurfaceFactory = nullptr;
 
     bool            m_bDeleteDraggedWhenDone = false;
 };

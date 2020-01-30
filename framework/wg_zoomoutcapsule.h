@@ -41,11 +41,11 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgZoomOutCapsule(); };
 	
-	void			SetSkin(const WgSkinPtr& pSkin);
-    void            SetOutlineSkin(const WgSkinPtr& pSkin);
+	void			SetSkin(wg::Skin * pSkin);
+    void            SetOutlineSkin(wg::Skin * pSkin);
     
-    void            SetButtonSkin(const WgSkinPtr& pSkin);
-    WgSkinPtr       ButtonSkin() const { return m_pButtonSkin; };
+    void            SetButtonSkin(wg::Skin * pSkin);
+    wg::Skin_p       ButtonSkin() const { return m_pButtonSkin; };
     
 	int				MatchingPixelHeight(int pixelWidth) const;
 	int				MatchingPixelWidth(int pixelHeight) const;
@@ -106,8 +106,8 @@ private:
     bool        m_bTakingScreenshot = false;
     bool        m_bStaticScreenshot = false;
     wg::Surface_p m_pScreenshot;
-    WgSkinPtr   m_pButtonSkin;
-    WgSkinPtr   m_pOutlineSkin;
+    wg::Skin_p   m_pButtonSkin;
+    wg::Skin_p   m_pOutlineSkin;
     
     float       m_innerTransitionFactor = 1.f;
     float       m_minInnerZoom = 0.5f;

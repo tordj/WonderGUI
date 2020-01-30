@@ -129,7 +129,7 @@ public:
 	typedef std::function<WgRectF(SetGeoVisitor& visitor)>			SetGeoFunc;
 	
 
-	void	SetDefaults(const WgSkinPtr& pBgSkin, const WgSkinPtr& pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
+	void	SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
 	void	SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
@@ -144,7 +144,7 @@ public:
 																// In ghost-mode, handle will also get hover and press states when slider is hovered/pressed.
 	bool	IsGhostHandle() const { return m_bGhostHandle; }
 
-	void	SetSkin(const WgSkinPtr& pSkin);
+	void	SetSkin(wg::Skin * pSkin);
 
 	void	SetPressMode(WgMultiSlider::PressMode mode);
 	PressMode GetPressMode() const { return m_pressMode; }
@@ -154,14 +154,14 @@ public:
 	void	SetModifierKeys( WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys override = WG_MODKEY_NONE );
 
 	int		AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, float startValue = 0.f, float minValue = 0.f, float maxValue = 1.f, int steps = 0,
-						SetValueFunc pSetValueFunc = nullptr, const WgSkinPtr& pBgSkin = nullptr, 
-						const WgSkinPtr& pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f,-1.f }, 
+						SetValueFunc pSetValueFunc = nullptr, wg::Skin * pBgSkin = nullptr, 
+						wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f,-1.f }, 
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
 	int		AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, float startValueX = 0.f, float startValueY = 0.f, 
 						float minValueX = 0.f,  float maxValueX = 1.f, int stepsX = 0, float minValueY = 0.f, float maxValueY = 1.f, int stepsY = 0,
 						SetValueFunc2D pSetValueFunc = nullptr,
-						const WgSkinPtr& pBgSkin = nullptr, const WgSkinPtr& pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f, -1.f }, 
+						wg::Skin * pBgSkin = nullptr, wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f, -1.f }, 
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
     void    RemoveAllSliders();
@@ -201,8 +201,8 @@ protected:
 		WgState			handleState;
 		int				geoState;			// 0 = needs refresh, 1 = refresh in progress, 2 = refreshed.
 
-		WgSkinPtr		pBgSkin;
-		WgSkinPtr		pHandleSkin;
+		wg::Skin_p		pBgSkin;
+		wg::Skin_p		pHandleSkin;
 		WgBorders		handleMarkExtension;		// Frame surrounding handle that also marks the handle. Measured in points, not pixels.
 		WgBorders		sliderMarkExtension;		// Frame surrounding slider that also marks the slider. Measured in points, not pixels.
 
@@ -257,8 +257,8 @@ protected:
 private:
 
 
-	WgSkinPtr			m_pDefaultBgSkin;
-	WgSkinPtr			m_pDefaultHandleSkin;
+	wg::Skin_p			m_pDefaultBgSkin;
+	wg::Skin_p			m_pDefaultHandleSkin;
 	WgCoordF			m_defaultHandleHotspot = { 0.5f, 0.5f };
 	WgBorders			m_defaultHandleMarkExtension;
 	WgBorders			m_defaultSliderMarkExtension;

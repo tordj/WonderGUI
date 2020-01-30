@@ -70,7 +70,7 @@ const char * WgButton::GetClass()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgButton::SetSkin(const WgSkinPtr& pSkin)
+void WgButton::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -141,7 +141,7 @@ int WgButton::MatchingPixelHeight( int width ) const
 	int height = 0;
 
 	if( m_pSkin )
-		height = m_pSkin->PreferredSize(m_scale).h;
+		height = _skinPreferredSize( m_pSkin, m_scale).h;
 	else if( m_pBgGfx )
 		height = m_pBgGfx->Height(m_scale);
 
@@ -150,7 +150,7 @@ int WgButton::MatchingPixelHeight( int width ) const
 		WgSize padding;
 
 		if (m_pSkin)
-			padding = m_pSkin->ContentPadding(m_scale);
+			padding = _skinContentPadding( m_pSkin, m_scale);
 		else if( m_pBgGfx )
 			padding = m_pBgGfx->Padding(m_scale).size();
 
@@ -172,7 +172,7 @@ WgSize WgButton::PreferredPixelSize() const
 	WgSize bestSize;
 
 	if (m_pSkin)
-		bestSize = m_pSkin->PreferredSize(m_scale);
+		bestSize = _skinPreferredSize( m_pSkin, m_scale);
 	else if( m_pBgGfx )
 		bestSize = m_pBgGfx->Size(m_scale);
 
@@ -181,7 +181,7 @@ WgSize WgButton::PreferredPixelSize() const
 		WgSize textSize = m_text.unwrappedSize();
 
 		if( m_pSkin )
-			textSize += m_pSkin->ContentPadding(m_scale);
+			textSize += _skinContentPadding(m_pSkin, m_scale);
 		else if( m_pBgGfx )
 			textSize += m_pBgGfx->Padding(m_scale);
 
@@ -221,7 +221,7 @@ void WgButton::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0,0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = m_pSkin->ContentRect(contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 	else if( m_pBgGfx )
 		contentRect.shrink(m_pBgGfx->Padding(m_scale));
 
@@ -258,8 +258,8 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
         state.setPressed(m_bPressed);
         state.setEnabled(m_bEnabled);
 
-        m_pSkin->Render(pDevice, state, _canvas, m_scale);
-        contentRect = m_pSkin->ContentRect(_canvas, state, m_scale);
+        _renderSkin( m_pSkin, pDevice, state, _canvas, m_scale);
+        contentRect = _skinContentRect( m_pSkin, _canvas, state, m_scale);
     }
 	else if (m_pBgGfx)
 	{

@@ -45,9 +45,7 @@
 #	include <wg_event.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg3_skin.h>
 
 
 class Wg_Interface_TextHolder;
@@ -104,8 +102,8 @@ public:
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-//	void				SetSkin(const WgSkinPtr& pSkin);		// Method added separately to those widgets that support skin so far.
-	WgSkinPtr			Skin() const { return m_pSkin; }
+//	void				SetSkin(wg::Skin * pSkin);		// Method added separately to those widgets that support skin so far.
+	wg::Skin_p			Skin() const { return m_pSkin; }
 
 	virtual WgString	GetTooltipString() const { return m_tooltip; }
 	WgString			GetRealTooltipString() const { return m_tooltip; }
@@ -258,12 +256,23 @@ protected:
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
 
+    // Skin wrapping methods
+        
+    void            _renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale );
+    bool            _markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale ) const;
+    wg::SizeI       _skinMinSize( wg::Skin * pSkin, int scale ) const;
+    wg::SizeI       _skinPreferredSize( wg::Skin * pSkin, int scale ) const;
+    wg::SizeI       _skinSizeForContent( wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const;
+    wg::SizeI       _skinContentPadding(wg::Skin * pSkin, int scale) const;
+    wg::CoordI      _skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const;
+    wg::RectI       _skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const;
+
 	//
 
 	Uint32			m_id;
 	WgHook *		m_pHook;
 
-	WgSkinPtr		m_pSkin;
+	wg::Skin_p		m_pSkin;
 
 	int				m_scale;
 	WgPointerStyle	m_pointerStyle;

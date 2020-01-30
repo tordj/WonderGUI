@@ -107,14 +107,14 @@ int WgTextDisplay::MatchingPixelHeight( int width ) const
 	int height = 0;
 
 	if (m_pSkin)
-		height = m_pSkin->PreferredSize(m_scale).h;
+		height = _skinPreferredSize( m_pSkin, m_scale).h;
 
 	if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
 	{
 		WgSize padding;
 
 		if (m_pSkin)
-			padding = m_pSkin->ContentPadding(m_scale);
+			padding = _skinContentPadding( m_pSkin, m_scale);
 
 		int heightForText = m_text.heightForWidth(width - padding.w) + padding.h;
 		if (heightForText > height)
@@ -131,7 +131,7 @@ WgSize WgTextDisplay::PreferredPixelSize() const
 	WgSize bestSize;
 
 	if (m_pSkin)
-		bestSize = m_pSkin->PreferredSize(m_scale);
+		bestSize = _skinPreferredSize( m_pSkin, m_scale);
 
 
     if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
@@ -139,7 +139,7 @@ WgSize WgTextDisplay::PreferredPixelSize() const
 		WgSize textSize = m_text.unwrappedSize();
 
 		if (m_pSkin)
-			textSize += m_pSkin->ContentPadding(m_scale);
+			textSize += _skinContentPadding( m_pSkin, m_scale);
 
 		if (textSize.w > bestSize.w)
 			bestSize.w = textSize.w;
@@ -183,7 +183,7 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 {
     WgWidget::_onRender(pDevice,_canvas,_window);
 
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
 	//    m_text.setMode(WG_MODE_NORMAL);
 	//    m_text.setMode(WgUtil::StateToMode(m_state));
@@ -263,7 +263,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
         WgRect textCanvas = PixelSize();
         if( m_pSkin )
-            textCanvas = m_pSkin->ContentRect( textCanvas, WgStateEnum::Normal, m_scale );
+            textCanvas = _skinContentRect( m_pSkin, textCanvas, WgStateEnum::Normal, m_scale );
 
 		m_pText->CursorGotoCoord( pEvent->PointerPixelPos(), textCanvas );
         _bringCursorInView();
@@ -451,7 +451,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (oldState != m_state)
 	{
-		if (m_pSkin && !m_pSkin->IsStateIdentical(m_state, oldState))
+		if (m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState))
 			_requestRender();
 
 		m_text.setMode(WgUtil::StateToMode(m_state));
@@ -482,7 +482,7 @@ void WgTextDisplay::_bringCursorInView()
     int glyphWidth = pGlyphs->GetWhitespaceAdvance(attr.size);
 
     if(m_pSkin)
-        cursorPos += m_pSkin->ContentOfs(m_state, m_scale);
+        cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);
 
     WgRect mustHaveArea = { cursorPos.x - glyphWidth, cursorPos.y, glyphWidth*2, glyphHeight };
     WgRect niceToHaveArea = { cursorPos.x - glyphWidth, cursorPos.y - glyphHeight/2, glyphWidth*2, glyphHeight*2 };
@@ -528,7 +528,7 @@ void WgTextDisplay::_onNewSize( const WgSize& size )
 	WgRect	contentRect(0, 0, PixelSize());
 
 	if (m_pSkin)
-		contentRect = m_pSkin->ContentRect(contentRect, WgStateEnum::Normal, m_scale);
+		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
 	m_text.setLineWidth( contentRect.w );
 }
@@ -591,7 +591,7 @@ void WgTextDisplay::_textModified()
 
 //____ SetSkin() ______________________________________________________________
 
-void WgTextDisplay::SetSkin(const WgSkinPtr& pSkin)
+void WgTextDisplay::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{

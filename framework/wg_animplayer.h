@@ -50,7 +50,7 @@ public:
 	bool			SetSource( const WgBlocksetPtr& pStaticBlock );
 	WgBlocksetPtr	Source() const { return m_pStaticBlock; }
 
-    void            SetSkin(const WgSkinPtr& pSkin);
+    void            SetSkin(wg::Skin * pSkin);
     
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.

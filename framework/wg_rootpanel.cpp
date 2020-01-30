@@ -182,7 +182,7 @@ bool WgRootPanel::SetVisible( bool bVisible )
 
 //____ SetUpdatedRectOverlay() _________________________________________________
 
-void WgRootPanel::SetUpdatedRectOverlay( const WgSkinPtr& pUpdatedRectOverlay, int afterglowFrames )
+void WgRootPanel::SetUpdatedRectOverlay( wg::Skin * pUpdatedRectOverlay, int afterglowFrames )
 {
 	m_pUpdatedRectOverlay = pUpdatedRectOverlay;
 	m_afterglowFrames = afterglowFrames;
@@ -322,7 +322,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		for( const WgRect * pRect = m_afterglowRects[0].Begin() ; pRect != m_afterglowRects[0].End() ; pRect++ )
 		{
-			m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Focused, *pRect, WG_SCALE_BASE );		// Overlays are not scaled
+			m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Focused );
 		}
 
 		// Render overlays that have turned into afterglow
@@ -331,7 +331,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].Begin() ; pRect != m_afterglowRects[1].End() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->Render( m_pGfxDevice, WgStateEnum::Normal, *pRect, WG_SCALE_BASE );	// Overlays are not scaled
+				m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Normal );
 			}
 		}
 	}

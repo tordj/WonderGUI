@@ -23,6 +23,7 @@
 
 
 #include <wg_base.h>
+#include <wg3_base.h>
 
 #include <wg_textpropmanager.h>
 #include <wg_texttool.h>
@@ -331,3 +332,13 @@ void WgBase::MemStackRelease( int bytes )
 {	assert(s_pData!=0); 
 	return s_pData->pMemStack->Release(bytes); 
 }
+
+//____ Base::setQuartersPerPoint() ____________________________________________
+
+void wg::Base::setQuartersPerPoint( int quarterPixels )
+{
+    wg::QPix::s_pixelQuartersPerPoint = quarterPixels;
+    wg::QPix::s_scale = quarterPixels / 4.f;
+}
+
+

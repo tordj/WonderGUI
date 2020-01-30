@@ -145,7 +145,7 @@ WgSize WgFlowPanel::PreferredPixelSize() const
 int WgFlowPanel::MatchingPixelHeight( int width ) const
 {
     if( m_pSkin )
-        width -= m_pSkin->ContentPadding(m_scale).w;
+        width -= _skinContentPadding( m_pSkin, m_scale).w;
 
     int height = 0;
 
@@ -375,7 +375,7 @@ void WgFlowPanel::_updatePreferredPixelSize()
 	WgSize size = m_bHorizontal?WgSize(length,breadth):WgSize(breadth,length);
     
     if( m_pSkin )
-        size += m_pSkin->ContentPadding(m_scale);
+        size += _skinContentPadding( m_pSkin, m_scale);
     
 	if( size != m_preferredSize )
 	{
@@ -393,7 +393,7 @@ void WgFlowPanel::_refreshChildGeo()
     
 	WgRect canvas = PixelSize();
     if( m_pSkin )
-        canvas = m_pSkin->ContentRect(canvas, m_state, m_scale);
+        canvas = _skinContentRect( m_pSkin, canvas, m_state, m_scale);
 	
 	WgFlowHook * pH = FirstHook();
 

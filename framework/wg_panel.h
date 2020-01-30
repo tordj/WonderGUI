@@ -31,9 +31,7 @@
 #	include <wg_container.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg3_skin.h>
 
 class WgPatches;
 
@@ -85,7 +83,7 @@ public:
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-	void		SetSkin( const WgSkinPtr& pSkin );
+	void		SetSkin( wg::Skin * pSkin );
 
 	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
 	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }

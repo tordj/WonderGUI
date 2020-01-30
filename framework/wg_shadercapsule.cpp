@@ -54,7 +54,7 @@ const char * WgShaderCapsule::GetClass()
 
 //____ SetSkin() _______________________________________________________________
 
-void WgShaderCapsule::SetSkin( const WgSkinPtr& pSkin )
+void WgShaderCapsule::SetSkin( wg::Skin * pSkin )
 {
     if (pSkin != m_pSkin)
     {
@@ -120,7 +120,7 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
     pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
     
     if( m_pSkin )
-        m_pSkin->Render( pDevice, m_state, _canvas, m_scale );
+        _renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
     
 	// Set our tint color and blend mode.
 
@@ -147,7 +147,7 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
     {
         WgRect childCanvas = _canvas;
         if( m_pSkin )
-            childCanvas = m_pSkin->ContentRect( _canvas, m_state, m_scale );
+            childCanvas = _skinContentRect( m_pSkin, _canvas, m_state, m_scale );
         
 		m_hook.Widget()->_renderPatches( pDevice, childCanvas, childCanvas, _pPatches );
     }

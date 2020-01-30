@@ -38,7 +38,7 @@
 #include <wg3_softsurfacefactory.h>
 #include <wg3_softgfxdevice.h>
 #include "sdl_wglib.h"
-#include <wg_boxskin.h>
+#include <wg3_boxskin.h>
 #include <wg_volumemeter.h>
 #include <wg_simplevolumemeter.h>
 #include <wg_chart.h>
@@ -133,28 +133,10 @@ static int TestThread(void *ptr)
 }
 */
 
-struct TestX {
-    int aa = 0;
-    int bb = 0;
-    int cc = 0;
-};
-
-struct WgModKeyMap
-{
-    WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
-    WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
-    WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
-    //    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;
-};
-
 //____ main() _________________________________________________________________
 
 int main ( int argc, char** argv )
 {
-    TestX a = { .aa = 10, .bb = 20 };
-
-    WgModKeyMap    modKeyMap = { .stepWord = WG_MODKEY_ALT, .beginEndLine = WG_MODKEY_CTRL, .beginEndText = WG_MODKEY_CTRL };
-    
     
 	//------------------------------------------------------
 	// Init SDL
@@ -315,8 +297,8 @@ int main ( int argc, char** argv )
 
 	// Setup debug overlays
 	
-	WgBoxSkinPtr pOverlaySkin = WgBoxSkin::Create( WgColor(255,0,0,128), WgBorders(1), WgColor::Black);
-    pOverlaySkin->SetStateColor( WgStateEnum::Normal, WgColor::Transparent, WgColor::Red );
+    auto pOverlaySkin = wg::BoxSkin::create( WgBorders(1), WgColor(255,0,0,128), WgColor::Black);
+    pOverlaySkin->setColors( WgStateEnum::Normal, WgColor::Transparent, WgColor::Red );
 	pRoot->SetUpdatedRectOverlay( pOverlaySkin,0);
 	
 
@@ -684,15 +666,15 @@ void packPanelStressTest( WgRootPanel * pRoot )
     pRoot->SetChild(pBaseFlex);
     
 
-    auto pVPackSkin = WgBoxSkin::Create(WgColor::Blue, 10, WgColor::Red );
-    pVPackSkin->SetContentPadding(11);
+    auto pVPackSkin = wg::BoxSkin::create( 10, WgColor::Blue, WgColor::Red );
+    pVPackSkin->setContentPadding(11);
     
     auto pVPack = new WgPackPanel();
     pVPack->SetOrientation(WgOrientation::Vertical);
     pVPack->SetSkin( pVPackSkin );
 
     
-    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
+    auto pTextSkin = wg::ColorSkin::create(WgColor::Green);
 //    pTextSkin->SetContentPadding( {2,10,10,12} );
     
     auto pText1 = new WgTextDisplay();
@@ -721,18 +703,18 @@ void packPanelPaddingTest( WgRootPanel * pRoot )
 {
     auto pBaseFlex = new WgFlexPanel();
     pRoot->SetChild(pBaseFlex);
-    pBaseFlex->SetSkin( WgColorSkin::Create(WgColor::Yellow));
+    pBaseFlex->SetSkin( wg::ColorSkin::create(WgColor::Yellow));
 
-    auto pPanelSkin = WgBoxSkin::Create(WgColor::Red);
-    pPanelSkin->SetContentPadding( {10,10,10,10} );
+    auto pPanelSkin = wg::ColorSkin::create(WgColor::Red);
+    pPanelSkin->setContentPadding( {10,10,10,10} );
 
     
     auto pPackPanel = new WgPackPanel();
     pPackPanel->SetSkin(pPanelSkin);
     pBaseFlex->AddChild( pPackPanel, {10,10} );
     
-    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
-    pTextSkin->SetContentPadding( 5 );
+    auto pTextSkin = wg::ColorSkin::create(WgColor::Green);
+    pTextSkin->setContentPadding( 5 );
 
     auto pText = new WgTextDisplay();
     pText->SetText("TEXT  1.");
@@ -757,10 +739,10 @@ void flexHookGrowthTest( WgRootPanel * pRoot )
 {
     auto pBaseFlex = new WgFlexPanel();
     pRoot->SetChild(pBaseFlex);
-    pBaseFlex->SetSkin( WgColorSkin::Create(WgColor::Yellow));
+    pBaseFlex->SetSkin( wg::ColorSkin::create(WgColor::Yellow));
     
-    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
-    pTextSkin->SetContentPadding( {10,10,10,30} );
+    auto pTextSkin = wg::ColorSkin::create(WgColor::Green);
+    pTextSkin->setContentPadding( {10,10,10,30} );
     
     auto pText = new WgTextDisplay();
     pText->SetText("TEXT 1 WITH\nAUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
@@ -788,8 +770,8 @@ void cursorInViewTest( WgRootPanel * pRoot )
     auto pScrollPanel = new WgScrollPanel();
     pScrollPanel->SetContentSizePolicy(WgSizePolicy::Bound, WgSizePolicy::Default);
     
-    auto pTextSkin = WgBoxSkin::Create(WgColor::Green);
-    pTextSkin->SetContentPadding( {10,10,10,30} );
+    auto pTextSkin = wg::ColorSkin::create(WgColor::Green);
+    pTextSkin->setContentPadding( {10,10,10,30} );
     
     auto pText = new WgTextDisplay();
     pText->SetText("TEXT 1 WITH AUTOWRAPPING ENABLED SO THAT WE GET MULTIPLE LINES.");
@@ -867,14 +849,14 @@ void baselineTest( WgRootPanel * pRoot )
 
 void scrollPanelTest( WgRootPanel * pRoot )
 {
-    WgBoxSkinPtr    pBgSkin = WgBoxSkin::Create(WgColor::Green, 2, WgColor::Red );
-    pBgSkin->SetContentPadding(2);
+    wg::BoxSkin_p    pBgSkin = wg::BoxSkin::create(2, WgColor::Green, WgColor::Red );
+    pBgSkin->setContentPadding(2);
     
-    WgBoxSkinPtr    pButtonSkin = WgBoxSkin::Create(WgColor::Red, 2, WgColor::Black );
+    wg::BoxSkin_p    pButtonSkin = wg::BoxSkin::create(2, WgColor::Red, WgColor::Black );
 //    pButtonSkin->SetContentPadding(6);
 
-    WgBoxSkinPtr    pBarSkin = WgBoxSkin::Create(WgColor::Grey, 2, WgColor::DarkGrey );
-    pBarSkin->SetContentPadding(6);
+    wg::BoxSkin_p    pBarSkin = wg::BoxSkin::create(2, WgColor::Grey, WgColor::DarkGrey );
+    pBarSkin->setContentPadding(6);
 
     auto pScrollPanel = new WgScrollPanel();
     
@@ -919,8 +901,8 @@ void shadowLayerTest( WgRootPanel * pRoot )
 {
     auto pImgSurface = sdl_wglib::LoadSurface("../resources/shadow.png", g_pSurfaceFactory );
     
-    WgBlockSkinPtr pShadowSkin = WgBlockSkin::CreateStaticFromSurface(pImgSurface, {0,128,128,0});
-    pShadowSkin->SetContentPadding({0,128,128,0});
+    auto pShadowSkin = wg::BlockSkin::createStaticFromSurface(pImgSurface, {0,128,128,0});
+    pShadowSkin->setContentPadding({0,128,128,0});
 //    pImgSurface->SetScaleMode(WgScaleMode::Nearest);
     
     
@@ -1034,7 +1016,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	auto pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
 	pPlateImg_x2->setScale(2.f);
 
-	auto pPressablePlateSkin = WgBlockSkin::CreateClickableFromSurface(pPlateImg, 0, WgBorders(3));
+    auto pPressablePlateSkin = wg::BlockSkin::createClickableFromSurface(pPlateImg, 0, WgBorders(3));
 
 //	WgSurface * pInjectWidget = sdl_wglib::LoadSurface("../resources/IDR_MOD_INJECT_WIDGET_CHROME.2x.png", *g_pSurfaceFactory);
 //	pInjectWidget->SetScaleFactor(4096 * 2);
@@ -1054,7 +1036,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	WgFlexPanel * pBottom = new WgFlexPanel();
 	pPopupLayer->SetBase(pBottom); 
 //	pRoot->SetChild(pBottom);
-	pBottom->SetSkin(WgColorSkin::Create({60,60,60,255} ));
+    pBottom->SetSkin(wg::ColorSkin::create({60,60,60,255} ));
 //	pBottom->SetSkin(WgColorSkin::Create({ 255,255,255,255 }));
 
 	// Main Flex
@@ -2464,7 +2446,7 @@ WgFlexPanel * createPresetSelector()
 {
 	WgFlexPanel * pBottom = new WgFlexPanel();
 	
-    WgBoxSkinPtr pSkin = WgBoxSkin::Create(WgColor(0, 0, 0, 255), WgBorders(0), WgColor(0, 0, 0, 255));
+    wg::BoxSkin_p pSkin = wg::BoxSkin::create(WgBorders(0), WgColor(0, 0, 0, 255), WgColor(0, 0, 0, 255));
 
 	pBottom->SetSkin(pSkin);
 /*

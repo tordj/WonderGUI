@@ -19,10 +19,6 @@
 #	include <wg_blockset.h>
 #endif
 
-#ifndef WG_BLOCKSKIN_DOT_H
-#	include <wg_blockskin.h>
-#endif
-
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
 #endif
@@ -185,10 +181,6 @@
 #	include <wg_checkbox.h>
 #endif
 
-#ifndef WG_COLORSKIN_DOT_H
-#	include <wg_colorskin.h>
-#endif
-
 #ifndef WG_LINEEDITOR_DOT_H
 #	include <wg_lineeditor.h>
 #endif
@@ -269,8 +261,10 @@
 #	include <wg_listpanel.h>
 #endif
 
-#ifndef WG_MULTIBLOCKSKIN2_DOT_H
-#	include <wg_multiblockskin.h>
-#endif
+
+#include <wg3_colorskin.h>
+#include <wg3_blockskin.h>
+#include <wg3_multiblockskin.h>
+
 
 #endif //WONDERGUI_DOT_H

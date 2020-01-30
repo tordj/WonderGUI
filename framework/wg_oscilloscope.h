@@ -28,9 +28,7 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg3_skin.h>
 
 #ifndef WG_BLOCKSET_DOT_H
 #	include <wg_blockset.h>
@@ -51,7 +49,7 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgOscilloscope(); };
 
-	void	SetBackground( const WgSkinPtr& skin );
+	void	SetBackground( wg::Skin * skin );
 	void	SetGridColor( WgColor color );
 	void	SetVGridLines( int nLines, float pLines[] );
 	void	SetHGridLines( int nLines, float pLines[] );
@@ -94,7 +92,7 @@ private:
 		float	y;		// Offset in y from middle of oscillator. Range: -1.0 to 1.0;
 	};
 
-	WgSkinPtr		m_pBG;
+	wg::Skin_p		m_pBG;
 	WgColor			m_gridColor;
 	WgColor			m_lineColor;
 	float			m_lineThickness;

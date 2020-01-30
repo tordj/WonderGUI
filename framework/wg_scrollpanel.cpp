@@ -984,7 +984,7 @@ WgSize WgScrollPanel::_calcContentSize( WgSize mySize )
 
 void WgScrollPanel::_updateElementGeo( WgSize _mySize )
 {
-    WgRect myRect = m_pSkin ? m_pSkin->ContentRect( _mySize, m_state, m_scale ) : WgRect(_mySize);
+    WgRect myRect = m_pSkin ? _skinContentRect( m_pSkin, _mySize, m_state, m_scale ) : WgRect(_mySize);
     WgSize mySize = myRect.size();
 
 	WgSize newContentSize = _calcContentSize( mySize );
@@ -1548,7 +1548,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
     // Render skin
     
     if( m_pSkin )
-        m_pSkin->Render(pDevice, m_state, _canvas, m_scale);                // TODO: Optimize. Clip away window geometry if window background color is transparent.
+        _renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale);                // TODO: Optimize. Clip away window geometry if window background color is transparent.
     
 	// Render Window background color
 

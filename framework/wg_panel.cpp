@@ -68,7 +68,7 @@ void WgPanel::SetMaskOp( WgMaskOp operation )
 
 //____ SetSkin() _______________________________________________________________
 
-void WgPanel::SetSkin( const WgSkinPtr& pSkin )
+void WgPanel::SetSkin( wg::Skin * pSkin )
 {
 	if (pSkin != m_pSkin)
 	{
@@ -105,7 +105,7 @@ void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const 
 
 void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-    if( m_pSkin && m_pSkin->IsOpaque() )
+    if( m_pSkin && m_pSkin->isOpaque() )
     {
         patches.Sub( WgRect(geo,clip) );
         return;

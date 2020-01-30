@@ -43,7 +43,7 @@ public:
     static const char * GetClass();
     virtual WgWidget * NewOfMyType() const { return new WgCanvasCapsule(); };
 
-//    void                SetSkin(const WgSkinPtr& pSkin);        // Method added separately to those widgets that support skin so far.
+//    void                SetSkin(wg::Skin * pSkin);        // Method added separately to those widgets that support skin so far.
 
     void                SetSurfaceFactory(wg::SurfaceFactory * pFactory);
     wg::SurfaceFactory_p SurfaceFactory() const { return m_pFactory; }

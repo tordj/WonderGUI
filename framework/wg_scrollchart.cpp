@@ -121,7 +121,7 @@ WgSize WgScrollChart::PreferredPixelSize() const
 
 	sz += m_pixelPadding;
 	if (m_pSkin)
-		sz = m_pSkin->SizeForContent(sz, m_scale);
+		sz = _skinSizeForContent( m_pSkin, sz, m_scale);
 
 	return sz;
 }
@@ -138,11 +138,11 @@ void WgScrollChart::SetSurfaceFactory(wg::SurfaceFactory * pFactory)
 
 //____ SetSkin() ______________________________________________________________
 
-void WgScrollChart::SetSkin(const WgSkinPtr& pSkin)
+void WgScrollChart::SetSkin(wg::Skin * pSkin)
 {
 	m_pSkin = pSkin;
 
-	if (pSkin->IsOpaque())
+	if (pSkin->isOpaque())
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
@@ -333,7 +333,7 @@ void WgScrollChart::SetDynamicValueRange( bool bDynamic )
 
 //____ SetSampleLabelStyle() __________________________________________________
 
-void WgScrollChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop)
+void WgScrollChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
 {
 	m_sampleLabelStyle.alignment = alignment;
 	m_sampleLabelStyle.offset = offset;
@@ -363,7 +363,7 @@ void WgScrollChart::SetSampleGridLines(int nLines, GridLine * pLines)
 
 //____ SetValueLabelStyle() ___________________________________________________
 
-void WgScrollChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop)
+void WgScrollChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
 {
 	m_valueLabelStyle.alignment = alignment;
 	m_valueLabelStyle.offset = offset;
@@ -1074,7 +1074,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	{
 		if (m_chartColor.a == 255)
 		{
-            canvas = m_pSkin->ContentRect(_canvas, WgStateEnum::Normal, m_scale);
+            canvas = _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale);
 
             WgRect& coverage = canvas;
 
@@ -1110,14 +1110,14 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
                 
                 pDevice->setClipList(nRects, pRects);
                 
-                m_pSkin->Render(pDevice, WgStateEnum::Normal, _canvas, m_scale);
+                _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
 
                 pDevice->setClipList(oldClipListSize, pOldClipList);
                 WgBase::MemStackRelease(allocSize);
 			}
 		}
 		else
-			m_pSkin->Render(pDevice, WgStateEnum::Normal, _canvas, m_scale);
+			_renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
 
 	}
 	else
@@ -1184,14 +1184,14 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				WgCoord textOfs;
 				if (m_valueLabelStyle.pSkin)
 				{
-					labelSize = m_valueLabelStyle.pSkin->SizeForContent(labelSize, m_scale);
-					textOfs = m_valueLabelStyle.pSkin->ContentRect(labelSize, WgStateEnum::Normal, m_scale).pos();
+					labelSize = _skinSizeForContent( m_valueLabelStyle.pSkin, labelSize, m_scale);
+					textOfs = _skinContentRect( m_valueLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale).pos();
 				}
 
 				WgCoord labelPos = _placeLabel({ canvas.x, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
-					m_valueLabelStyle.pSkin->Render(pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
+					_renderSkin(m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
                 WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
@@ -1322,7 +1322,7 @@ WgRect WgScrollChart::_getScrollWindow() const
 	WgRect r = PixelSize();
 
 	if (m_pSkin)
-		r = m_pSkin->ContentRect(r, WgStateEnum::Normal, m_scale).size();
+		r = _skinContentRect( m_pSkin, r, WgStateEnum::Normal, m_scale).size();
 
 	r -= m_pixelPadding;
 

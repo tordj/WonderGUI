@@ -106,7 +106,7 @@ WgHook * WgCapsule::SetChild( WgWidget * pWidget )
     
     WgSize sz = PixelSize();
     if( m_pSkin )
-        sz -= m_pSkin->ContentPadding(m_scale);
+        sz -= _skinContentPadding( m_pSkin, m_scale);
     
 	m_hook._attachWidget(pWidget);
 	pWidget->_onNewSize(sz);
@@ -182,7 +182,7 @@ int WgCapsule::MatchingPixelHeight( int width ) const
 {
     WgSize padding;
     if( m_pSkin )
-        padding = m_pSkin->ContentPadding(m_scale);
+        padding = _skinContentPadding( m_pSkin, m_scale);
 
 	if( m_hook.Widget() )
 		return m_hook.Widget()->MatchingPixelHeight( width - padding.w ) + padding.h;
@@ -196,7 +196,7 @@ int WgCapsule::MatchingPixelWidth( int height ) const
 {
     WgSize padding;
     if( m_pSkin )
-        padding = m_pSkin->ContentPadding(m_scale);
+        padding = _skinContentPadding( m_pSkin, m_scale);
     
     if( m_hook.Widget() )
 		return m_hook.Widget()->MatchingPixelWidth( height - padding.h ) + padding.w;
@@ -216,7 +216,7 @@ WgSize WgCapsule::PreferredPixelSize() const
 		sz = WgSize(1,1);
     
     if( m_pSkin )
-        sz += m_pSkin->ContentPadding(m_scale);
+        sz += _skinContentPadding( m_pSkin, m_scale);
     
     return sz;
 }
@@ -234,7 +234,7 @@ void WgCapsule::_childAddedRemovedOrReplaced()
 WgCoord WgCapsule::_childPos()
 {
     if( m_pSkin )
-        return m_pSkin->ContentOfs(m_state,m_scale);
+        return _skinContentOfs( m_pSkin, m_state, m_scale);
     else
         return WgCoord();
 }
@@ -244,7 +244,7 @@ WgCoord WgCapsule::_childPos()
 WgSize WgCapsule::_childSize()
 {
     if( m_pSkin )
-        return PixelSize() - m_pSkin->ContentPadding(m_scale);
+        return PixelSize() - _skinContentPadding( m_pSkin, m_scale);
     else
         return PixelSize();
 }
@@ -254,7 +254,7 @@ WgSize WgCapsule::_childSize()
 WgRect WgCapsule::_childGeo()
 {
     if( m_pSkin )
-        return m_pSkin->ContentRect( { 0,0, PixelSize() }, m_state, m_scale );
+        return _skinContentRect( m_pSkin, { 0,0, PixelSize() }, m_state, m_scale );
     else
         return { 0,0, PixelSize() };
 }
@@ -273,13 +273,13 @@ void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, cons
 
 void WgCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-    if( m_pSkin && m_pSkin->IsOpaque(m_state) )
+    if( m_pSkin && m_pSkin->isOpaque(m_state) )
         patches.Sub( WgRect( geo, clip ) );
 	else if( m_hook.Widget() )
     {
         WgRect childGeo;
         if( m_pSkin )
-            childGeo = m_pSkin->ContentRect(geo,m_state,m_scale);
+            childGeo = _skinContentRect( m_pSkin, geo,m_state,m_scale);
         else
             childGeo = geo;
         
@@ -301,7 +301,7 @@ void WgCapsule::_onNewSize( const WgSize& size )
     {
         WgSize sz = size;
         if( m_pSkin )
-            sz -= m_pSkin->ContentPadding(m_scale);
+            sz -= _skinContentPadding( m_pSkin, m_scale);
         
         m_hook.Widget()->_onNewSize(sz);
     }
@@ -312,7 +312,7 @@ void WgCapsule::_onNewSize( const WgSize& size )
 void WgCapsule::_onRenderRequested()
 {
     if( m_pSkin )
-        _requestRender( m_pSkin->ContentRect(PixelSize(), m_state, m_scale) );
+        _requestRender( _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale) );
     else
         _requestRender();
 }
@@ -320,7 +320,7 @@ void WgCapsule::_onRenderRequested()
 void WgCapsule::_onRenderRequested(const WgRect& rect)
 {
     if( m_pSkin )
-        _requestRender( rect + m_pSkin->ContentOfs(m_state,m_scale) );
+        _requestRender( rect + _skinContentOfs( m_pSkin, m_state,m_scale) );
     else
         _requestRender(rect);
 }
@@ -360,7 +360,7 @@ WgHook * WgCapsule::_firstHookWithGeo( WgRect& geo ) const
 	if( m_hook.Widget() )
 	{
         if( m_pSkin )
-            geo = m_pSkin->ContentRect(PixelSize(), m_state, m_scale );
+            geo = _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale );
         else
             geo = WgRect(0,0,PixelSize());
 
@@ -384,7 +384,7 @@ WgHook * WgCapsule::_lastHookWithGeo( WgRect& geo ) const
 	if( m_hook.Widget() )
 	{
         if( m_pSkin )
-            geo = m_pSkin->ContentRect(PixelSize(), m_state, m_scale );
+            geo = _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale );
         else
             geo = WgRect(0,0,PixelSize());
 

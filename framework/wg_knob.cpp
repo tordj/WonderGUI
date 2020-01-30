@@ -119,7 +119,7 @@ void WgKnob::SetPreferredPixelSize(WgSize size)
 
 WgSize WgKnob::PreferredPixelSize() const
 {
-    return m_pSkin ? m_preferredSize + m_pSkin->ContentPadding(m_scale): m_preferredSize;
+    return m_pSkin ? m_preferredSize + _skinContentPadding( m_pSkin, m_scale): m_preferredSize;
 }
 
 //____ MatchingPixelHeight() __________________________________________________
@@ -128,7 +128,7 @@ int WgKnob::MatchingPixelHeight(int pixelWidth) const
 { 
 	if (m_pSkin)
 	{
-		WgSize padding = m_pSkin->ContentPadding(m_scale);
+		WgSize padding = _skinContentPadding( m_pSkin, m_scale);
 		pixelWidth = pixelWidth - padding.w + padding.h;
 	}
 
@@ -141,7 +141,7 @@ int WgKnob::MatchingPixelWidth(int pixelHeight) const
 { 
 	if (m_pSkin)
 	{
-		WgSize padding = m_pSkin->ContentPadding(m_scale);
+		WgSize padding = _skinContentPadding( m_pSkin, m_scale);
 		pixelHeight = pixelHeight - padding.h + padding.w;
 	}
 
@@ -343,7 +343,7 @@ void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 
 //____ SetSkin() ______________________________________________________________
 
-void WgKnob::SetSkin(const WgSkinPtr& pSkin)
+void WgKnob::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
@@ -375,7 +375,7 @@ void WgKnob::_onCloneContent( const WgWidget * _pOrg )
 
 void WgKnob::_onNewSize(const WgSize& size)
 {
-	WgSize sz = m_pSkin ? size - m_pSkin->ContentPadding(m_scale) : size;
+	WgSize sz = m_pSkin ? size - _skinContentPadding( m_pSkin, m_scale) : size;
 
 	const int w = std::max(std::min(sz.w, sz.h)*m_knobScale, 0.f);
 	const int h = w;
@@ -421,7 +421,7 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 //____ _onRender() _____________________________________________________________
 void WgKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(_canvas, m_state, m_scale) : _canvas;
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
@@ -1083,7 +1083,7 @@ void  WgKnob::_requestRenderBackBuffer(const WgRect& rect)
 	else
 		m_backBufferDirtyRect.growToContain( rect );
 
-	WgRect canvas = m_pSkin ? m_pSkin->ContentRect(PixelSize(), m_state, m_scale) : WgRect(PixelSize());
+	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, PixelSize(), m_state, m_scale) : WgRect(PixelSize());
 
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();

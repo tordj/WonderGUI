@@ -10,8 +10,8 @@
 		170F7A5E220073C400B70B56 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 170F7A5D220073C400B70B56 /* Assets.xcassets */; };
 		170F7CAA22007BA400B70B56 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7CA922007BA300B70B56 /* main.cpp */; };
 		170F7CB122007F6D00B70B56 /* sdl_wglib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */; };
-		170F7CB42200829800B70B56 /* libwg_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB32200829800B70B56 /* libwg_software.a */; };
-		170F7CB62200829800B70B56 /* libwondergui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB52200829800B70B56 /* libwondergui.a */; };
+		1797BB1423D9F10900CDB5F2 /* libwg_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB32200829800B70B56 /* libwg_software.a */; settings = {ATTRIBUTES = (Required, ); }; };
+		1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB52200829800B70B56 /* libwondergui.a */; };
 		17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316D23A0E33A006F2ED3 /* SDL2.framework */; };
 		17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316F23A0E379006F2ED3 /* SDL2_image.framework */; };
 /* End PBXBuildFile section */
@@ -34,10 +34,10 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1797BB1423D9F10900CDB5F2 /* libwg_software.a in Frameworks */,
+				1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */,
 				17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */,
 				17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */,
-				170F7CB42200829800B70B56 /* libwg_software.a in Frameworks */,
-				170F7CB62200829800B70B56 /* libwondergui.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -289,6 +289,7 @@
 					/Users/tord/Workspace/wg2,
 					/Users/tord/Workspace/wg2/Framework/opengl,
 					/Users/tord/Workspace/wg2/Framework/base,
+					/Users/tord/Workspace/wg2/Framework/skins,
 					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
@@ -329,6 +330,7 @@
 					/Users/tord/Workspace/wg2,
 					/Users/tord/Workspace/wg2/Framework/opengl,
 					/Users/tord/Workspace/wg2/Framework/base,
+					/Users/tord/Workspace/wg2/Framework/skins,
 					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,

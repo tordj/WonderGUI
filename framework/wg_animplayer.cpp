@@ -102,7 +102,7 @@ bool WgAnimPlayer::SetSource( const WgBlocksetPtr& pBlocks )
 
 //____ SetSkin() ________________________________________________________
 
-void WgAnimPlayer::SetSkin( const WgSkinPtr& pSkin )
+void WgAnimPlayer::SetSkin( wg::Skin * pSkin )
 {
     m_pSkin = pSkin;
     
@@ -277,7 +277,7 @@ WgSize WgAnimPlayer::PreferredPixelSize() const
 	if( m_pAnim )
 		return m_pAnim->Size(m_scale);
     else if( m_pSkin )
-        return m_pSkin->PreferredSize(m_scale);
+        return _skinPreferredSize(m_pSkin, m_scale);
 	else if( m_pStaticBlock )
 		return m_pStaticBlock->Size(m_scale);
 	else
@@ -386,7 +386,7 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
         WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
     else if( m_pSkin )
     {
-        m_pSkin->Render( pDevice, WgStateEnum::Normal, _canvas, m_scale );
+        _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale );
     }
     else if( m_pStaticBlock )
 	{

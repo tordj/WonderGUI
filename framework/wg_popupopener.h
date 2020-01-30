@@ -59,7 +59,7 @@ public:
 	void			SetIcon( const WgBlocksetPtr& pIconGfx );
 	WgBlocksetPtr	GetIconSource() const { return m_pIconGfx; }
 
-	void			SetSkin(const WgSkinPtr& pSkin);
+	void			SetSkin(wg::Skin * pSkin);
 
 	//.____ Behavior ____________________________________________
 

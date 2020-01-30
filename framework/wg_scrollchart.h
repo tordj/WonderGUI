@@ -35,9 +35,7 @@
 #	include <wg_string.h>
 #endif
 
-#ifndef WG_SKIN_DOT_H
-#	include <wg_skin.h>
-#endif
+#include <wg3_skin.h>
 
 
 #include <functional>
@@ -67,7 +65,7 @@ public:
 	void		SetCanvasPadding(WgBorders);
 	WgBorders	CanvasPadding() const { return m_pointPadding; }
 
-	void		SetSkin(const WgSkinPtr& pSkin);
+	void		SetSkin(wg::Skin * pSkin);
 
 	void		SetChartColor(WgColor color);
 	WgColor		ChartColor() const { return m_chartColor;  }
@@ -129,10 +127,10 @@ public:
 	bool	FeedSample(int waveId, SamplePair sample);
 
 
-	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop);
+	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
-	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, const WgSkinPtr& pSkin, const WgTextpropPtr& prop);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgScrollChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
@@ -196,7 +194,7 @@ protected:
 	{
 		WgOrigo				alignment;
 		WgCoord				offset;
-		WgSkinPtr			pSkin;
+		wg::Skin_p			pSkin;
 		WgTextpropPtr		pTextStyle;
 	};
 

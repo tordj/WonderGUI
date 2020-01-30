@@ -94,13 +94,13 @@ WgSize WgOscilloscope::PreferredPixelSize() const
 
 //____ SetBackground() ________________________________________________________
 
-void WgOscilloscope::SetBackground( const WgSkinPtr& skin )
+void WgOscilloscope::SetBackground( wg::Skin * skin )
 {
 	if( m_pBG != skin )
 	{
 		m_pBG = skin;
 		if( m_pBG )
-			m_bOpaque = m_pBG->IsOpaque();
+			m_bOpaque = m_pBG->isOpaque();
 		else
 			m_bOpaque = false;
 
@@ -423,7 +423,7 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 {
 	// Render background
 	if( m_pBG )
-		m_pBG->Render( pDevice, WgStateEnum::Normal, _canvas, m_scale );
+		_renderSkin( m_pBG, pDevice, WgStateEnum::Normal, _canvas, m_scale );
 
 	float centerX = _canvas.x + _canvas.w/2.f;
 	float centerY = _canvas.y + _canvas.h/2.f;

@@ -1236,7 +1236,7 @@ void WgFlexPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
     
     if( state != m_state )
     {
-        if( m_pSkin && !m_pSkin->IsStateIdentical(state, m_state) )
+        if( m_pSkin && !m_pSkin->isStateIdentical(state, m_state) )
             _requestRender();
     
         m_state = state;
