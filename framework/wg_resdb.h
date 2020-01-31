@@ -57,7 +57,6 @@ class WgCursor;
 class WgResLoader;
 class WgTab;
 class WgTextManager;
-class WgSkinManager;
 class WgMenuItem;
 
 class WgResDB
@@ -132,7 +131,6 @@ public:
 	typedef ResWrapper<WgMenuItem*>		MenuitemRes;
 	typedef ResWrapper<WgTab*>			TabRes;
 	typedef ResWrapper<WgTextManager*>	TextManagerRes;
-	typedef ResWrapper<WgSkinManager*>	SkinManagerRes;
 	typedef ResWrapper<WgWidget*>		WidgetRes;
 	typedef ResWrapper<void*>			DataSetRes;
 	
@@ -150,7 +148,6 @@ public:
 	static std::string	GenerateName( const WgBlocksetPtr& data );
 	static std::string	GenerateName( const WgMenuItem* data );
 	static std::string	GenerateName( const WgTextManager* data );
-	static std::string	GenerateName( const WgSkinManager* data );
 	static std::string	GenerateName( const WgWidget * data );
 
 	void				SetResLoader( WgResLoader * pLoader );
@@ -187,7 +184,6 @@ public:
 	bool				AddMenuitem( const std::string& id, WgMenuItem * pMenuitem, MetaData * pMetaData = 0 );
 	bool				AddTab( const std::string& id, WgTab * pTab, MetaData * pMetaData = 0 );
 	bool				AddTextManager( const std::string& id, WgTextManager* pTextManager, MetaData * pMetaData = 0 );
-	bool				AddSkinManager( const std::string& id, WgSkinManager* pSkinManager, MetaData * pMetaData = 0 );
 	bool				AddConnect( MetaData * pMetaData );
 	bool				AddWidget( const std::string& id, WgWidget * pWidget, MetaData * pMetaData = 0 );
 	bool				AddDataSet( const std::string& id, MetaData * pMetaData );
@@ -242,7 +238,6 @@ public:
 	WgColorsetPtr		GetColorset( const std::string& id ) const;
 	WgBlocksetPtr		GetBlockset( const std::string& id ) const;
 	WgTextManager *		GetTextManager( const std::string& id ) const;
-	WgSkinManager *		GetSkinManager( const std::string& id ) const;
 	WgMenuItem *		GetMenuitem( const std::string& id ) const;
 	WgTab*				GetTab( const std::string& id ) const;
 	WgWidget*			GetWidget( const std::string& id ) const;
@@ -282,7 +277,6 @@ public:
 	MenuitemRes *		FindResMenuitem( const WgMenuItem* data ) const;
 	TabRes *			FindResTab( const WgTab* data ) const;
 	TextManagerRes *	FindResTextManager( const WgTextManager* data ) const;
-	SkinManagerRes *	FindResSkinManager( const WgSkinManager* data ) const;
 	WidgetRes *			FindResWidget( const WgWidget* data ) const;
 
     std::string			FindSurfaceId( const wg::Surface * data ) const		{ SurfaceRes * r =	FindResSurface(data); return r ? r->id : ""; }
@@ -297,7 +291,6 @@ public:
 	std::string			FindMenuitemId( const WgMenuItem* data ) const		{ MenuitemRes *r =  FindResMenuitem(data); return r ? r->id : ""; }
 	std::string			FindTabId( const WgTab* data ) const				{ TabRes *r =		FindResTab(data); return r ? r->id : ""; }
 	std::string			FindTextManagerId( const WgTextManager* data ) const{ TextManagerRes *r =  	FindResTextManager(data); return r ? r->id : ""; }
-	std::string			FindSkinManagerId( const WgSkinManager* data ) const{ SkinManagerRes *r =  	FindResSkinManager(data); return r ? r->id : ""; }
 	std::string			FindWidgetId( const WgWidget* data ) const			{ WidgetRes *r =	FindResWidget(data); return r ? r->id : ""; }
 
 	inline ResDBRes *		GetFirstResDBRes() const { return m_resDbs.First(); }

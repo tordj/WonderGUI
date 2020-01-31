@@ -115,7 +115,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, CoordI blockPitch, const std::initializer_list<State>& stateBlocks)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks)
 	{
 		// HACK!
 
@@ -148,7 +148,7 @@ namespace wg
 			int index = _stateToIndex(state);
 
 			layer.stateBlockMask.setBit(index);
-			layer.blockOfs[index] = blockStartOfs + blockPitch*ofs;
+			layer.blockOfs[index] = blockStartOfs + CoordI( blockPitch.w*ofs, blockPitch.h*ofs );
 			ofs++;
 		}
 
@@ -176,12 +176,12 @@ namespace wg
 
 	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, CoordI blockStartOfs )
 	{
-		CoordI blockPitch;
+		SizeI blockPitch;
 
 		if (orientation == Orientation::Horizontal)
-			blockPitch.x = m_blockSizePoints.w + spacing;
+			blockPitch.w = m_blockSizePoints.w + spacing;
 		else
-			blockPitch.y = m_blockSizePoints.h + spacing;
+			blockPitch.h = m_blockSizePoints.h + spacing;
 
 		return addLayer(pSurf, blockStartOfs, blockPitch, stateBlocks);
 	}

@@ -893,10 +893,19 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		{
 			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
 			p->m_translatedKeyCode = WgBase::TranslateKey(p->m_nativeKeyCode);
+            break;
 		}
-		break;
 
-
+        case WG_EVENT_MOUSEBUTTON_RELEASE:
+        {
+            auto p = static_cast<WgEvent::MouseButtonRelease*>(pEvent);
+            
+            int button = p->Button();
+            
+            if( m_pLatestPressEvents[button] )
+                p->m_pressModKeys = m_pLatestPressEvents[button]->ModKeys();
+            break;
+        }
 		default:
 			break;
 	}

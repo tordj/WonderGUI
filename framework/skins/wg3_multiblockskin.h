@@ -60,7 +60,7 @@ namespace wg
 		//.____ Appearance _________________________________________________
 
 		int		addLayer(Surface * pSurf, CoordI ofs);
-		int		addLayer(Surface * pSurf, CoordI blockStartOfs, CoordI blockPitch, const std::initializer_list<State>& stateBlocks);		// DEPRECATED!!!
+		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks);		// DEPRECATED!!!
 		int		addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
 
 		bool	setLayerTint(int layerIdx, Color tintColor);

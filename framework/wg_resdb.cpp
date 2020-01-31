@@ -226,13 +226,6 @@ std::string	WgResDB::GenerateName( const WgTextManager* data )
 	return std::string("_textmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
 }
 
-std::string	WgResDB::GenerateName( const WgSkinManager* data )
-{
-	static int nGenerated = 0;
-	char pBuf[100];
-	return std::string("_skinmanager__") + WgTextTool::itoa(++nGenerated, pBuf, 10);
-}
-
 void WgResDB::SetResLoader( WgResLoader * pLoader )
 {
 	m_pResLoader = pLoader;
@@ -561,23 +554,6 @@ bool WgResDB::AddTextManager( const std::string& id, WgTextManager* pManager, Me
 
 //____ () _________________________________________________________
 
-bool WgResDB::AddSkinManager( const std::string& id, WgSkinManager* pManager, MetaData * pMetaData )
-{
-	assert(m_mapSkinManagers.find(id) == m_mapSkinManagers.end());
-	if(m_mapSkinManagers.find(id) == m_mapSkinManagers.end())
-	{
-		SkinManagerRes* p = new SkinManagerRes(id, pManager, pMetaData);
-		m_skinManagers.PushBack(p);
-		if(id.size())
-			m_mapSkinManagers[id] = p;
-		return true;
-	}
-	return false;
-}
-
-
-//____ () _________________________________________________________
-
 bool WgResDB::AddConnect( MetaData * pMetaData )
 {
 	ConnectRes* p = new ConnectRes(pMetaData);
@@ -712,15 +688,6 @@ WgTextManager * WgResDB::GetTextManager( const std::string& id ) const
 	TextManagerRes* managerRes = GetResTextManager(id);
 	return managerRes ? managerRes->res : 0;
 }
-
-//____ () _________________________________________________________
-
-WgSkinManager * WgResDB::GetSkinManager( const std::string& id ) const
-{
-	SkinManagerRes* managerRes = GetResSkinManager(id);
-	return managerRes ? managerRes->res : 0;
-}
-
 
 //____ () _________________________________________________________
 
@@ -1292,25 +1259,6 @@ WgResDB::TextManagerRes* WgResDB::FindResTextManager( const WgTextManager* meta 
 		}
 	}
 	for(res = GetFirstResTextManager(); res; res = res->Next())
-		if(res->res == meta)
-			return res;
-	return 0;
-}
-
-//____ () _________________________________________________________
-
-WgResDB::SkinManagerRes* WgResDB::FindResSkinManager( const WgSkinManager* meta ) const
-{
-	SkinManagerRes * res = 0;
-	for(ResDBRes* db = GetFirstResDBRes(); db; db = db->Next())
-	{
-		if(db->res)
-		{
-			if((res = db->res->FindResSkinManager(meta)))
-				return res;
-		}
-	}
-	for(res = GetFirstResSkinManager(); res; res = res->Next())
 		if(res->res == meta)
 			return res;
 	return 0;

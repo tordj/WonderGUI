@@ -250,7 +250,8 @@ namespace WgEvent
 		m_type = WG_EVENT_MOUSEBUTTON_RELEASE;
 
 		m_bPressInside = true;			// Always assumed to have had the press inside our window.
-		m_bReleaseInside = true;			// Always assumed to be inside our window now.
+		m_bReleaseInside = true;		// Always assumed to be inside our window now.
+        m_pressModKeys = WG_MODKEY_NONE;
 	}
 
 	MouseButtonRelease::MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
@@ -269,6 +270,7 @@ namespace WgEvent
 		
 		m_bPressInside		= pOrg->m_bPressInside;
 		m_bReleaseInside	= pOrg->m_bReleaseInside;
+        m_pressModKeys      = pOrg->m_pressModKeys;
 		MouseButtonEvent::_cloneContentFrom( pOrg );
 	}
 

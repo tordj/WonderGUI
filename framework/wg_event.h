@@ -204,12 +204,15 @@ namespace WgEvent
 		bool			PressInside() const;
 		bool			ReleaseInside() const;
 
+        WgModifierKeys  PressModKeys() const { return m_pressModKeys; }
+
 	protected:
 		MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
 
 		bool			m_bPressInside;
 		bool			m_bReleaseInside;
+        WgModifierKeys  m_pressModKeys;     // ModKeys pressed when the button was pressed. Set by _finalizeEvent().
 	};
 
 	class KeyPress : public KeyEvent
