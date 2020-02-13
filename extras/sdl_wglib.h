@@ -11,7 +11,10 @@
 //#include <SDL2/SDL_image.h>
 #endif
 
+#include <map>
+
 #include <wg_types.h>
+#include <wg_widget.h>
 
 #include <wg3_surface.h>
 
@@ -35,7 +38,7 @@ namespace sdl_wglib
     wg::Surface_p LoadSurface( const char * path, const wg::SurfaceFactory * factory );
     bool		SavePNG( wg::Surface * pSurface, const char * path);
 
-    WgResDB *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory * factory );
+    std::map<std::string,WgWidget*> *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory * factory );
 
     WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory );
 	

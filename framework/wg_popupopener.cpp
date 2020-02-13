@@ -85,18 +85,18 @@ void WgPopupOpener::SetSkin(wg::Skin * pSkin)
 
 //____ SetIcon() ______________________________________________________________
 
-void WgPopupOpener::SetIcon( const WgBlocksetPtr& pIconGfx )
+void WgPopupOpener::SetIcon( wg::Skin * pIconSkin )
 {
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconSkin;
 	_iconModified();
 }
 
-bool WgPopupOpener::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
+bool WgPopupOpener::SetIcon( wg::Skin * pIconSkin, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
 {
 	if( scale < 0 || scale > 1.f )
 		return false;
 
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconSkin;
 	m_iconOrigo = origo;
 	m_iconBorders = borders;
 	m_iconScale = scale;
@@ -145,7 +145,7 @@ Uint32 WgPopupOpener::GetTextAreaWidth()
 	if( m_pSkin )
 		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
 	return textRect.w;
 }
@@ -200,7 +200,7 @@ WgSize WgPopupOpener::PreferredPixelSize() const
 			bestSize.h = textSize.h;
 	}
 
-	bestSize = _expandTextRect(bestSize, m_pIconGfx, m_scale);
+	bestSize = _expandTextRect(bestSize, m_pIconSkin, m_scale);
 
 	return bestSize;
 }
@@ -248,7 +248,7 @@ void WgPopupOpener::_onNewSize( const WgSize& size )
 	if (m_pSkin)
 		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
 	m_text.setLineWidth(textRect.w);
 }
@@ -290,22 +290,22 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx, m_scale );
+	WgRect iconRect = _getIconRect( contentRect, m_pIconSkin, m_scale );
 	WgRect textRect = _getTextRect( contentRect, iconRect );
 
 	// Convert WgState to WgMode
 
-	WgMode mode = WgUtil::StateToMode(useState);
 
 	// Render icon
 
-	if( m_pIconGfx )
-        WgGfxDevice::BlitBlock( pDevice, m_pIconGfx->GetBlock(mode, m_scale), iconRect );
+	if( m_pIconSkin )
+        _renderSkin(m_pIconSkin, pDevice, useState, iconRect, m_scale);
 
 	// Print text
 
  	if( !m_text.IsEmpty() )
 	{
+        WgMode mode = WgUtil::StateToMode(useState);
 		m_text.setMode(mode);
 
         WgGfxDevice::PrintText( pDevice, &m_text, textRect );
@@ -456,7 +456,7 @@ void WgPopupOpener::_onCloneContent( const WgWidget * _pOrg )
 	m_pText = &m_text;
 	m_text.setHolder( this );
 
-	m_pIconGfx		= pOrg->m_pIconGfx;
+	m_pIconSkin		= pOrg->m_pIconSkin;
 //	m_state			= pOrg->m_state;
 }
 

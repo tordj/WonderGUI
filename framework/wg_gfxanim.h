@@ -46,6 +46,138 @@ class WgGfxFrame;
 
 #define MAX_ANIM_ALT 5
 
+class WgBlock;
+
+enum WgBlockFlags
+{
+    WG_OPAQUE_CENTER    = 0x001,
+    WG_OPAQUE            = 0x003,
+    
+    WG_TILE_CENTER        = 0x004,
+    WG_SCALE_CENTER        = 0x008,
+    WG_FIXED_CENTER        = 0x010,
+    
+    WG_TILE_LEFT        = 0x020,
+    WG_TILE_RIGHT        = 0x040,
+    WG_TILE_TOP            = 0x080,
+    WG_TILE_BOTTOM        = 0x100,
+    
+    
+    
+    WG_TILE_BORDERS        = WG_TILE_LEFT | WG_TILE_RIGHT | WG_TILE_TOP | WG_TILE_BOTTOM,
+    WG_TILE_ALL            = WG_TILE_BORDERS | WG_TILE_CENTER,
+    
+    // On a skip-request the block is assumed to be totally transparent and
+    // will not be rendered at all (even if it actually contains graphics).
+    
+    WG_SKIP_NORMAL        = 0x200,
+    WG_SKIP_MARKED        = 0x400,
+    WG_SKIP_SELECTED    = 0x800,
+    WG_SKIP_DISABLED    = 0x1000,
+    WG_SKIP_SPECIAL        = 0x2000,
+    
+    // Flags that can not be set by user
+    
+    WG_HAS_BORDERS        = 0x4000,
+};
+
+//____ WgBlock ________________________________________________________________
+
+class WgBlock
+{
+public:
+    WgBlock() : m_pSurf(0), m_flags(0) { }
+
+    WgBlock( wg::Surface * pSurf, const WgRect& rect, const WgBorders& sourceFrame, const WgBorders& canvasFrame, const WgBorders& padding, WgCoord contentShift, int scale, Uint32 flags )
+    {
+        m_pSurf            = pSurf;
+        m_rect            = rect;
+        m_sourceFrame    = sourceFrame;
+        m_canvasFrame    = canvasFrame;
+        m_flags            = flags;
+        m_padding        = padding;
+        m_contentShift    = contentShift;
+        m_scale         = scale;
+        
+        if( m_sourceFrame.left || m_sourceFrame.right || m_sourceFrame.top || m_sourceFrame.bottom )
+            m_flags |= WG_HAS_BORDERS;
+        
+        if(m_rect.x + m_rect.w > (int)m_pSurf->size().w)
+            m_rect.w = m_pSurf->size().w - m_rect.x;
+        if(m_rect.y + m_rect.h > (int)m_pSurf->size().h)
+            m_rect.h = m_pSurf->size().h - m_rect.y;
+    }
+
+    
+    
+    inline const WgRect&        Rect() const { return m_rect; }
+    inline wg::Surface *        Surface() const { return m_pSurf; }
+    inline const WgBorders&        SourceFrame() const { return m_sourceFrame; }
+    inline const WgBorders&        CanvasFrame() const { return m_canvasFrame; }
+    inline const WgRect            ContentRect( const WgRect& blockGeo ) const { return (blockGeo + m_contentShift) - m_padding; }
+    inline Uint32                Flags() const { return m_flags; }
+    inline int                    Width() const { return m_rect.w; }
+    inline int                    Height() const { return m_rect.h; }
+    inline WgSize                Size() const { return WgSize(m_rect.w, m_rect.h); }
+    inline int                     OutputScale() const { return m_scale; }
+    inline int                     SurfaceScale() const { return (int) m_pSurf->scale()*4096; }
+    
+    inline int                    MinWidth() const { return m_canvasFrame.width(); }
+    inline int                    MinHeight() const { return m_canvasFrame.height(); }
+    inline WgSize                MinSize() const { return m_canvasFrame.size(); }
+    
+    inline bool                    IsOpaque() const { return ((m_flags & WG_OPAQUE) != 0); }
+    inline bool                    HasOpaqueCenter() const { return ((m_flags & WG_OPAQUE_CENTER) != 0); }
+    inline bool                    HasBorders() const { return ((m_flags & WG_HAS_BORDERS) != 0); }
+    
+    inline bool                    HasTiles() const { return ((m_flags & WG_TILE_ALL) != 0); }
+    inline bool                    HasTiledCenter() const { return ((m_flags & WG_TILE_CENTER) != 0); }
+    inline bool                    HasTiledTopBorder() const { return ((m_flags & WG_TILE_TOP) != 0); }
+    inline bool                    HasTiledBottomBorder() const { return ((m_flags & WG_TILE_BOTTOM) != 0); }
+    inline bool                    HasTiledLeftBorder() const { return ((m_flags & WG_TILE_LEFT) != 0); }
+    inline bool                    HasTiledRightBorder() const { return ((m_flags & WG_TILE_RIGHT) != 0); }
+    
+    inline bool                    IsScaled() const { return ((m_flags & WG_SCALE_CENTER) != 0); }
+    inline bool                    IsFixedSize() const { return ((m_flags & WG_FIXED_CENTER) != 0); }
+    
+    inline bool                    IsSkipable() const    { return ((m_flags & WG_SKIP_NORMAL) != 0); }
+    
+    inline bool                    IsValid() const { return (m_pSurf && m_rect.w != 0 && m_rect.h != 0 )?true:false; }
+    
+    
+    bool    operator==( const WgBlock& b) const
+    {
+        if( m_pSurf == b.m_pSurf && m_rect == b.m_rect /*Ś&& m_frame == b.m_frame &&
+                                                        m_flags == b.m_flags && m_padding == b.m_padding &&
+                                                        m_contentShift == b.m_contentShift*/ )
+            return true;
+        
+        return false;
+    }
+    
+    bool    operator!=( const WgBlock& b) const
+    {
+        if( m_pSurf == b.m_pSurf && m_rect == b.m_rect && m_sourceFrame == b.m_sourceFrame &&
+           m_canvasFrame == b.m_canvasFrame &&
+           m_flags == b.m_flags && m_padding == b.m_padding &&
+           m_contentShift == b.m_contentShift )
+            return false;
+        
+        return true;
+    }
+    
+private:
+    
+    wg::Surface *       m_pSurf;
+    WgRect                m_rect;
+    WgBorders             m_sourceFrame;
+    WgBorders            m_canvasFrame;
+    WgBorders            m_padding;
+    WgCoord                m_contentShift;
+    Uint32                m_flags;
+    int                 m_scale = WG_SCALE_BASE;
+};
+
 //____ Class WgGfxAnim ________________________________________________________
 
 class	WgGfxAnim : public WgAnim

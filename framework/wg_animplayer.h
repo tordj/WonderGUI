@@ -47,8 +47,7 @@ public:
 	bool			SetAnimation( WgGfxAnim * pAnim );
 	WgGfxAnim *		Animation() const { return m_pAnim; }
 
-	bool			SetSource( const WgBlocksetPtr& pStaticBlock );
-	WgBlocksetPtr	Source() const { return m_pStaticBlock; }
+    void			SetSource( wg::Skin * pSkin ) { SetSkin(pSkin); }
 
     void            SetSkin(wg::Skin * pSkin);
     
@@ -94,7 +93,6 @@ private:
 
 	WgGfxAnim *		m_pAnim;
 	WgBlock			m_animFrame;			// Frame currently used by animation.
-	WgBlocksetPtr	m_pStaticBlock;			// Blockset used when no animation is displayed (not set or widget disabled) and no skin set.
 
 	bool			m_bPlaying;
 	double			m_playPos;

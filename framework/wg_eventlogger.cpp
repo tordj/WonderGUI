@@ -393,22 +393,6 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-		case WG_EVENT_EDITVALUE_MODIFY:
-		{
-			id = "EditvalueModify";
-			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
-			sprintf( params, "value=%ld fraction=%f", (long)pEvent->Value(), pEvent->Fraction() );
-			break;
-		}
-
-		case WG_EVENT_EDITVALUE_SET:
-		{
-			id = "EditvalueSet";
-			const WgEvent::EditvalueEvent * pEvent = static_cast<const WgEvent::EditvalueEvent*>(_pEvent);
-			sprintf( params, "value=%ld fraction=%f", (long)pEvent->Value(), pEvent->Fraction() );
-			break;
-		}
-
 		case WG_EVENT_SLIDER_MOVE:
 		{
 			id = "SliderMove";

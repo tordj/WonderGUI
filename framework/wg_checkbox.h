@@ -65,20 +65,8 @@ public:
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
-	bool			SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
-
-	WgBlocksetPtr	GetCheckedSource() const { return m_pBlockChecked; }
-	WgBlocksetPtr	GetUncheckedSource() const { return m_pBlockUnchecked; }
-
-	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked,
-							  const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
-	void			SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked );
-	void			SetCheckedIcon( const WgBlocksetPtr& pChecked );
-	void			SetUncheckedIcon( const WgBlocksetPtr& pUnchecked );
-
-
-	WgBlocksetPtr	GetCheckedIcon() const { return m_pIconChecked; }
-	WgBlocksetPtr	GetUncheckedIcon() const { return m_pIconUnchecked; }
+    void			SetIcon( wg::Skin * pIconSkin, const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
+    void			SetIcon( wg::Skin * pIconSkin );
 
 	inline bool		IsChecked() { return m_bChecked; };
 
@@ -127,11 +115,7 @@ private:
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-	WgBlocksetPtr	m_pIconUnchecked;
-	WgBlocksetPtr	m_pIconChecked;
-
-	WgBlocksetPtr	m_pBlockUnchecked;
-	WgBlocksetPtr	m_pBlockChecked;
+    wg::Skin_p        m_pIconSkin;
 	WgText			m_text;
 
 	ClickArea		m_clickArea;

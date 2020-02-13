@@ -80,36 +80,20 @@ void WgButton::SetSkin(wg::Skin * pSkin)
 	}
 }
 
-
-//____ SetSource() ____________________________________________________________
-
-bool WgButton::SetSource( const WgBlocksetPtr& pGfx )
-{
-	m_pBgGfx = pGfx;
-
-	if( pGfx && pGfx->IsOpaque() )
-		m_bOpaque = true;
-	else
-		m_bOpaque = false;
-
-	_requestRender();
-	return true;
-}
-
 //____ SetIcon() ______________________________________________________________
 
-void WgButton::SetIcon( const WgBlocksetPtr& pIconGfx )
+void WgButton::SetIcon( wg::Skin * pIconSkin )
 {
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconSkin;
 	_iconModified();
 }
 
-bool WgButton::SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
+bool WgButton::SetIcon( wg::Skin * pIconSkin, WgOrigo origo, WgBorders borders, float scale, bool bPushText )
 {
 	if( scale < 0 || scale > 1.f )
 		return false;
 
-	m_pIconGfx = pIconGfx;
+	m_pIconSkin = pIconSkin;
 	m_iconOrigo = origo;
 	m_iconBorders = borders;
 	m_iconScale = scale;
@@ -126,10 +110,10 @@ Uint32 WgButton::GetTextAreaWidth()
 {
 	WgRect	contentRect(0,0, PixelSize());
 
-	if( m_pBgGfx )
-		contentRect.shrink(m_pBgGfx->Padding(m_scale));
+	if( m_pSkin )
+        contentRect = _skinContentRect(m_pSkin, {0,0,PixelSize()}, wg::StateEnum::Normal, m_scale);
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
 	return textRect.w;
 }
@@ -142,8 +126,6 @@ int WgButton::MatchingPixelHeight( int width ) const
 
 	if( m_pSkin )
 		height = _skinPreferredSize( m_pSkin, m_scale).h;
-	else if( m_pBgGfx )
-		height = m_pBgGfx->Height(m_scale);
 
 	if( m_text.nbChars() != 0 )
 	{
@@ -151,8 +133,6 @@ int WgButton::MatchingPixelHeight( int width ) const
 
 		if (m_pSkin)
 			padding = _skinContentPadding( m_pSkin, m_scale);
-		else if( m_pBgGfx )
-			padding = m_pBgGfx->Padding(m_scale).size();
 
 		int heightForText = m_text.heightForWidth(width-padding.w) + padding.h;
 		if( heightForText > height )
@@ -173,8 +153,6 @@ WgSize WgButton::PreferredPixelSize() const
 
 	if (m_pSkin)
 		bestSize = _skinPreferredSize( m_pSkin, m_scale);
-	else if( m_pBgGfx )
-		bestSize = m_pBgGfx->Size(m_scale);
 
 	if( m_text.nbChars() != 0 )
 	{
@@ -182,8 +160,6 @@ WgSize WgButton::PreferredPixelSize() const
 
 		if( m_pSkin )
 			textSize += _skinContentPadding(m_pSkin, m_scale);
-		else if( m_pBgGfx )
-			textSize += m_pBgGfx->Padding(m_scale);
 
 		if( textSize.w > bestSize.w )
 			bestSize.w = textSize.w;
@@ -192,7 +168,7 @@ WgSize WgButton::PreferredPixelSize() const
 			bestSize.h = textSize.h;
 	}
 
-	bestSize = _expandTextRect(bestSize, m_pIconGfx, m_scale);
+	bestSize = _expandTextRect(bestSize, m_pIconSkin, m_scale);
 
 	return bestSize;
 }
@@ -222,10 +198,8 @@ void WgButton::_onNewSize( const WgSize& size )
 
 	if (m_pSkin)
 		contentRect = _skinContentRect( m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
-	else if( m_pBgGfx )
-		contentRect.shrink(m_pBgGfx->Padding(m_scale));
 
-	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconGfx, m_scale ) );
+	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
 	m_text.setLineWidth(textRect.w);
 }
@@ -249,35 +223,28 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
     WgBlock    block;
     WgRect contentRect = _canvas;
 
+    WgState    state;
+    state.setFocused(m_bFocused);
+    state.setSelected(m_bSelected);
+    state.setHovered(m_bPointerInside);
+    state.setPressed(m_bPressed);
+    state.setEnabled(m_bEnabled);
+
     if (m_pSkin)
     {
-        WgState    state;
-        state.setFocused(m_bFocused);
-        state.setSelected(m_bSelected);
-        state.setHovered(m_bPointerInside);
-        state.setPressed(m_bPressed);
-        state.setEnabled(m_bEnabled);
-
         _renderSkin( m_pSkin, pDevice, state, _canvas, m_scale);
         contentRect = _skinContentRect( m_pSkin, _canvas, state, m_scale);
     }
-	else if (m_pBgGfx)
-	{
-		block = m_pBgGfx->GetBlock(m_mode, m_scale);
-
-        WgGfxDevice::BlitBlock(pDevice, block, _canvas);
-		WgRect contentRect = block.ContentRect(_canvas);
-	}
 
 	// Get icon and text rect from content rect
 
-	WgRect iconRect = _getIconRect( contentRect, m_pIconGfx, m_scale );
+	WgRect iconRect = _getIconRect( contentRect, m_pIconSkin, m_scale );
 	WgRect textRect = _getTextRect( contentRect, iconRect );
 
 	// Render icon
 
-	if( m_pIconGfx )
-        WgGfxDevice::BlitBlock( pDevice, m_pIconGfx->GetBlock(m_mode, m_scale), iconRect );
+	if( m_pIconSkin )
+        _renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
 
 	// Print text
 
@@ -285,10 +252,7 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 	{        
 		m_text.setMode(m_mode);
 
-		if( m_pBgGfx )
-			m_text.SetBgBlockColors( m_pBgGfx->TextColors() );
-
-        WgGfxDevice::PrintText( pDevice, &m_text, textRect );        
+        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}
 }
 
@@ -415,9 +379,9 @@ WgMode WgButton::_getRenderMode()
 
 void WgButton::_onRefresh( void )
 {
-	if( m_pBgGfx )
+	if( m_pSkin )
 	{
-		if( m_pBgGfx->IsOpaque() )
+		if( m_pSkin->isOpaque() )
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
@@ -447,8 +411,6 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 	m_pText = &m_text;
 	m_text.setHolder( this );
 
-	m_pBgGfx		= pOrg->m_pBgGfx;
-	m_pIconGfx		= pOrg->m_pIconGfx;
 	m_mode			= pOrg->m_mode;
 }
 
@@ -456,17 +418,12 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs )
 {
-	if (m_pSkin)
+    //TODO: Take icon into account.
+
+    if (m_pSkin)
 		return WgWidget::_onAlphaTest(ofs);
-
-	if( !m_pBgGfx )
-		return false;
-
-	WgSize	sz = PixelSize();
-
-	//TODO: Take icon into account.
-
-	return	WgUtil::MarkTestBlock( ofs, m_pBgGfx->GetBlock(m_mode,m_scale), WgRect(0,0,sz), m_markOpacity );
+    
+    return false;
 }
 
 //____ _onGotInputFocus() ______________________________________________________

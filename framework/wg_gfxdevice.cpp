@@ -36,8 +36,6 @@
 #include <wg3_util.h>
 
 
-#include <wg_versionbridge.h>
-
 using namespace wg::Util;
 
 //____ BlitBlock() ________________________________________________________

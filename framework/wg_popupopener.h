@@ -55,9 +55,9 @@ public:
 
 	//____ Methods __________________________________________
 
-	bool			SetIcon( const WgBlocksetPtr& pIconGfx, WgOrigo origo, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
-	void			SetIcon( const WgBlocksetPtr& pIconGfx );
-	WgBlocksetPtr	GetIconSource() const { return m_pIconGfx; }
+    bool			SetIcon( wg::Skin * pIconSkin, WgOrigo origo, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
+	void			SetIcon( wg::Skin * pIconSkin );
+    wg::Skin_p	    GetIconSource() const { return m_pIconSkin; }
 
 	void			SetSkin(wg::Skin * pSkin);
 
@@ -112,7 +112,7 @@ protected:
 
 	WgText			m_text;
 
-	WgBlocksetPtr	m_pIconGfx;
+    wg::Skin_p	    m_pIconSkin;
 	
 	bool			m_bReturnPressed;
 

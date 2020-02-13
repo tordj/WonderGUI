@@ -86,20 +86,6 @@ bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
 	return true;
 }
 
-//____ SetSource() ________________________________________________________
-
-bool WgAnimPlayer::SetSource( const WgBlocksetPtr& pBlocks )
-{
-	m_pStaticBlock = pBlocks;
-
-	if( !m_pAnim || !m_bEnabled )
-	{
-		_requestResize();
-		_requestRender();
-	}
-	return true;
-}
-
 //____ SetSkin() ________________________________________________________
 
 void WgAnimPlayer::SetSkin( wg::Skin * pSkin )
@@ -278,8 +264,6 @@ WgSize WgAnimPlayer::PreferredPixelSize() const
 		return m_pAnim->Size(m_scale);
     else if( m_pSkin )
         return _skinPreferredSize(m_pSkin, m_scale);
-	else if( m_pStaticBlock )
-		return m_pStaticBlock->Size(m_scale);
 	else
 		return WgSize(0,0);
 }
@@ -388,13 +372,13 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
     {
         _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale );
     }
-    else if( m_pStaticBlock )
+    else if( m_pSkin )
 	{
-		WgMode mode = WG_MODE_NORMAL;
+        WgState state;
 		if( !m_bEnabled )
-			mode = WG_MODE_DISABLED;
+			state.setEnabled(true);
 
-        WgGfxDevice::BlitBlock( pDevice, m_pStaticBlock->GetBlock(mode,m_scale), _canvas );
+        _renderSkin(m_pSkin, pDevice, state, _canvas, m_scale);
 	}
     
     // Reset tint color
@@ -419,7 +403,6 @@ void WgAnimPlayer::_onCloneContent( const WgWidget * _pOrg )
 
 	m_pAnim				= pOrg->m_pAnim;
 	m_animFrame			= pOrg->m_animFrame;
-	m_pStaticBlock		= pOrg->m_pStaticBlock;
 
 	m_bPlaying			= pOrg->m_bPlaying;
 	m_playPos			= pOrg->m_playPos;
@@ -434,13 +417,13 @@ bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 
 	if( m_pAnim && m_bEnabled && m_animFrame.IsValid() )
 		return WgUtil::MarkTestBlock( ofs, m_animFrame, WgRect(0,0,sz), m_markOpacity );
-	else if( m_pStaticBlock )
+	else if( m_pSkin )
 	{
-		WgMode mode = WG_MODE_NORMAL;
-		if( !m_bEnabled )
-			mode = WG_MODE_DISABLED;
+//		WgMode mode = WG_MODE_NORMAL;
+//		if( !m_bEnabled )
+//			mode = WG_MODE_DISABLED;
 
-		return WgUtil::MarkTestBlock( ofs, m_pStaticBlock->GetBlock(mode,m_scale), WgRect(0,0,sz), m_markOpacity );
+        return _markTestSkin(m_pSkin, ofs, WgRect(0,0,sz), WgStateEnum::Normal, m_markOpacity, m_scale);
 	}
 	return false;
 }

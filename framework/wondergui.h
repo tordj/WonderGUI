@@ -15,10 +15,6 @@
 #	include <wg_bitmapglyphs.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
-
 #ifndef WG_CHAIN_DOT_H
 #	include <wg_chain.h>
 #endif
@@ -185,10 +181,6 @@
 #	include <wg_lineeditor.h>
 #endif
 
-#ifndef WG_VALUEEDITOR_DOT_H
-#	include <wg_valueeditor.h>
-#endif
-
 #ifndef WG_FILLER_DOT_H
 #	include <wg_filler.h>
 #endif
@@ -225,10 +217,6 @@
 #	include <wg_radiobutton.h>
 #endif
 
-#ifndef WG_REFRESHBUTTON_DOT_H
-#	include <wg_refreshbutton.h>
-#endif
-
 #ifndef WG_SHADERCAPSULE_DOT_H
 #	include <wg_shadercapsule.h>
 #endif
@@ -249,16 +237,8 @@
 #	include <wg_textdisplay.h>
 #endif
 
-#ifndef WG_VALUEDISPLAY_DOT_H
-#	include <wg_valuedisplay.h>
-#endif
-
 #ifndef WG_SCROLLPANEL_DOT_H
 #	include <wg_scrollpanel.h>
-#endif
-
-#ifndef WG_LISTPANEL_DOT_H
-#	include <wg_listpanel.h>
 #endif
 
 

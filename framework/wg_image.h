@@ -46,8 +46,7 @@ public:
 	
 	void			SetSkin(wg::Skin * pSkin);
 
-	void			SetSource( const WgBlocksetPtr& pBlockset );
-	WgBlocksetPtr	GetSource() const { return m_pGfx; }
+    void			SetSource(wg::Skin * pSkin) { SetSkin(pSkin); };
 
     void            SetImage( wg::Surface * pSurface );
     wg::Surface_p   GetImage() const { return m_pImage; }
@@ -71,7 +70,6 @@ protected:
 
 private:
 
-	WgBlocksetPtr	m_pGfx;
     wg::Surface_p   m_pImage;
 };
 

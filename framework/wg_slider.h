@@ -27,9 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_BLOCKSET_DOT_H
-#	include <wg_blockset.h>
-#endif
+#include <wg3_skin.h>
 
 
 class WgSliderTarget;
@@ -82,10 +80,10 @@ class	WgWidgetSlider : public WgWidget
 
 		float			GetSliderPos() const { return m_sliderPos; }
 		float			GetSliderSize() const { return m_sliderSize; }
-		WgBlocksetPtr 	GetBgSource() const { return m_pBgGfx; }
-		WgBlocksetPtr 	GetBarSource() const { return m_pBarGfx; }
-		WgBlocksetPtr 	GetBwdSource() const { return m_pBtnBwdGfx; }
-		WgBlocksetPtr 	GetFwdSource() const { return m_pBtnFwdGfx; }
+        wg::Skin_p      GetBgSkin() const { return m_pBgSkin; }
+        wg::Skin_p 	    GetBarSkin() const { return m_pBarSkin; }
+        wg::Skin_p      GetBwdSkin() const { return m_pBtnBwdSkin; }
+        wg::Skin_p      GetFwdSkin() const { return m_pBtnFwdSkin; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
 
 		void	SetBgPressMode( BgPressMode mode );
@@ -97,9 +95,11 @@ class	WgWidgetSlider : public WgWidget
 		bool	SetSliderSize( float size );
 
         bool    SetSkins( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin );
-
-		bool	SetSource( WgBlocksetPtr pBgGfx, WgBlocksetPtr pBarGfx, WgBlocksetPtr pBtnBwdGfx, WgBlocksetPtr pBtnFwdGfx ); // DEPRECATED!!!
-		bool	SetButtonLayout(  ButtonLayout layout );
+    
+        // DEPRECATED!!!
+        bool    SetSource( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin )
+                            { return SetSkins( pBgSkin, pBarSkin, pBtnBwdSkin, pBtnFwdSkin ); }
+        bool	SetButtonLayout(  ButtonLayout layout );
 
 		bool	SetSliderTarget( WgSliderTarget * pTarget );
 
@@ -130,11 +130,6 @@ class	WgWidgetSlider : public WgWidget
 			C_NONE			= -1,
 
 		};
-
-		WgBlocksetPtr	m_pBgGfx;
-		WgBlocksetPtr	m_pBarGfx;
-		WgBlocksetPtr	m_pBtnFwdGfx;
-		WgBlocksetPtr	m_pBtnBwdGfx;
 
         wg::Skin_p       m_pBgSkin;
         wg::Skin_p       m_pBarSkin;
@@ -172,9 +167,7 @@ class	WgWidgetSlider : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-        void		_renderButton( wg::GfxDevice * pDevice, WgRect& _dest, const WgBlock& _block );
         void        _renderButton( wg::GfxDevice * pDevice, WgRect& _dest, wg::Skin * pSkin, WgState state );
-		bool		_markTestButton( WgCoord ofs, WgRect& _dest, const WgBlock& _block );
         bool        _markTestButton( WgCoord ofs, WgRect& _dest, wg::Skin * pSkin, WgState state );
 		bool		_markTestSlider( WgCoord ofs );
 		void		_headerFooterChanged();

@@ -99,9 +99,6 @@ WgModalLayer * g_pModal = 0;
 
 WgWidget * pWidgetToMove = 0;
 
-WgValueDisplay * m_pCounter = 0;
-WgValueDisplay * m_pCounter2 = 0;
-
 WgVolumeMeter * m_pVolMeter = 0;
 WgSimpleVolumeMeter * m_pSimpleVolMeter1 = 0;
 WgOscilloscope * g_pOsc = 0;
@@ -344,13 +341,6 @@ int main ( int argc, char** argv )
 
 			g_pSpriteHook->SetPointOfs(pos);
 		}
-
-
-		if( m_pCounter )
-			m_pCounter->IncValue();
-		
-		if( m_pCounter2 )
-			m_pCounter2->IncValue();
 		
 		
 		if( m_pVolMeter )
@@ -970,7 +960,7 @@ void shadowLayerTest( WgRootPanel * pRoot )
 
 WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 {
-	WgResDB * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", g_pSurfaceFactory);
+    std::map<std::string,WgWidget*> * pDB = sdl_wglib::LoadStdWidgets("../resources/blocks.png", "../resources/blocks_x2.png", "../resources/blocks_x4.png", g_pSurfaceFactory);
 	if (!pDB)
 		return 0;
 
@@ -998,16 +988,16 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	// Load images and specify blocks
 
 	auto pBackImg = sdl_wglib::LoadSurface("../resources/What-Goes-Up-3.bmp", g_pSurfaceFactory);
-	WgBlocksetPtr pBackBlock = WgBlockset::CreateFromSurface(pBackImg, WG_TILE_ALL);
+	auto pBackBlock = WgBlockset::CreateFromSurface(pBackImg, WG_TILE_ALL);
 
 	auto pFlagImg = sdl_wglib::LoadSurface("cb2.bmp", g_pSurfaceFactory);
-	WgBlocksetPtr pFlagBlock = WgBlockset::CreateFromSurface(pFlagImg);
+	auto pFlagBlock = WgBlockset::CreateFromSurface(pFlagImg);
 
 	auto pSplashImg = sdl_wglib::LoadSurface("../resources/splash.png", g_pSurfaceFactory);
-	WgBlocksetPtr pSplashBlock = WgBlockset::CreateFromSurface(pSplashImg);
+	auto pSplashBlock = WgBlockset::CreateFromSurface(pSplashImg);
 
 	auto pBigImg = sdl_wglib::LoadSurface("../resources/frog.jpg", g_pSurfaceFactory);
-	WgBlocksetPtr pBigBlock = WgBlockset::CreateFromSurface(pBigImg);
+	auto pBigBlock = WgBlockset::CreateFromSurface(pBigImg);
 
 	auto pPlateImg = sdl_wglib::LoadSurface("../resources/grey_pressable_plate.bmp", g_pSurfaceFactory);
 
@@ -1979,15 +1969,6 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	
 	{
-
-/*		
-		m_pCounter = new WgValueDisplay();
-		m_pCounter->SetValue(123);
-		m_pCounter->SetRange(0, 100000);
-		pFlex->AddChild( m_pCounter );
-		m_pCounter = 0;
-		m_pCounter2 = 0;
-*/
 
 /*
 		WgFlexPanel * pExtraFlex = new WgFlexPanel();

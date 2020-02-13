@@ -55,11 +55,12 @@ protected:
 
 	virtual void	_iconModified() = 0;
 
-	WgRect			_getIconRect( const WgRect& contentRect, const WgBlocksetPtr& pBlockset, int scale ) const;
+    WgRect			_getIconRect( const WgRect& contentRect, wg::Skin * pSkin, int scale ) const;
 	WgRect			_getIconRect( const WgRect& contentRect, const WgSize& iconSize, int scale ) const;
 	WgRect			_getTextRect( const WgRect& contentRect, const WgRect& iconRect ) const;
-	WgSize			_expandTextRect(WgSize textRectSize, WgBlocksetPtr pIconBlock, int scale) const;
+    WgSize			_expandTextRect(WgSize textRectSize, wg::Skin * pSkin, int scale) const;
 
+    wg::SizeI       _skinPrefSize( wg::Skin * pSkin, int scale ) const;
 
 
 	void			_onCloneContent( const WgIconHolder * _pOrg );

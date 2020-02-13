@@ -22,6 +22,8 @@
 
 #include <wg_iconholder.h>
 #include <wg_util.h>
+#include <wg3_util.h>
+#include <wg3_base.h>
 
 #include <algorithm>
 
@@ -91,10 +93,10 @@ void WgIconHolder::SetIconPushingText( bool bPush )
 
 */
 
-WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgBlocksetPtr& pBlocks, int scale ) const
+WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, wg::Skin * pSkin, int scale ) const
 {
-	if( pBlocks )
-		return _getIconRect(contentRect, WgSize(pBlocks->Size(scale)), scale);
+	if( pSkin )
+		return _getIconRect(contentRect, _skinPrefSize( pSkin, scale ), scale);
 	else
 		return WgRect();
 }
@@ -198,12 +200,12 @@ WgRect WgIconHolder::_getTextRect( const WgRect& contentRect, const WgRect& icon
 
 //____ _expandTextRect() ______________________________________________________
 
-WgSize WgIconHolder::_expandTextRect(WgSize textRectSize, WgBlocksetPtr pIconBlock, int scale) const
+WgSize WgIconHolder::_expandTextRect(WgSize textRectSize, wg::Skin * pIconSkin, int scale) const
 {
-	if (!pIconBlock)
+	if (!pIconSkin)
 		return textRectSize;
 
-	WgSize iconSize = pIconBlock->Size(scale) + m_iconBorders.scale(scale);
+	WgSize iconSize = _skinPrefSize(pIconSkin, scale) + m_iconBorders.scale(scale);
 
 	if (m_bIconPushText)
 	{
@@ -225,6 +227,24 @@ void WgIconHolder::_onCloneContent( const WgIconHolder * _pOrg )
 	m_iconScale			= _pOrg->m_iconScale;
 	m_bIconPushText		= _pOrg->m_bIconPushText;
 	m_iconBorders		= _pOrg->m_iconBorders;
+}
+
+//____ _skinPreferredSize() __________________________________________________________
+
+wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+    
+    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return wg::Util::rawToPixels(pSkin->_preferredSize());
+    else
+    {
+        wg::Base::setQuartersPerPoint(pixelQuarters);
+        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_preferredSize());
+        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
 }
 
 

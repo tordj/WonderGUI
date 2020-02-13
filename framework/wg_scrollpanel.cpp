@@ -665,7 +665,7 @@ void WgScrollPanel::SetSliderPositions( bool bBottom, bool bRight )
 
 //____ SetFillerBlocks() ______________________________________________________
 
-void WgScrollPanel::SetFillerBlocks( const WgBlocksetPtr& pBlocks )
+void WgScrollPanel::SetFillerBlocks( wg::Skin * pBlocks )
 {
 	m_pFillerBlocks = pBlocks;
 	_requestRender( m_geoFiller );
@@ -1603,7 +1603,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 		WgRect canvas = m_geoFiller + _canvas.pos();
         
         pDevice->setClipList(patches.Size(), patches.Begin());
-        WgGfxDevice::BlitBlock( pDevice, m_pFillerBlocks->GetBlock( mode, m_scale ), canvas );
+        _renderSkin(m_pFillerBlocks, pDevice, WgUtil::ModeToState(mode), canvas, m_scale);
 	}
 }
 
@@ -1644,7 +1644,7 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 
 			// Maska against corner piece
 
-			if( !m_geoFiller.isEmpty() && m_pFillerBlocks && m_pFillerBlocks->IsOpaque() )
+			if( !m_geoFiller.isEmpty() && m_pFillerBlocks && m_pFillerBlocks->isOpaque() )
 				patches.Sub( WgRect(m_geoFiller + geo.pos(), clip) );
 
 			break;
@@ -1665,11 +1665,10 @@ bool WgScrollPanel::_onAlphaTest( const WgCoord& ofs )
 	{
 		WgMode mode = m_bEnabled?WG_MODE_NORMAL:WG_MODE_DISABLED;
 
-		if( WgUtil::MarkTestBlock( ofs, m_pFillerBlocks->GetBlock(mode, m_scale), m_geoFiller, m_markOpacity ) )
-			return true;
+        return _markTestSkin(m_pFillerBlocks, ofs, m_geoFiller, WgUtil::ModeToState(mode), m_markOpacity, m_scale);
 	}
-
-	return false;
+    else
+        return false;
 }
 
 //____ _onCloneContent() _______________________________________________________

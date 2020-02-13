@@ -61,7 +61,7 @@ public:
 
 	void	ClearMarkers();
 	void	AddMarker( int xOfs, float yOfs );
-	void	SetMarkerGfx( const WgBlocksetPtr& pBlockset );
+    void	SetMarkerGfx( wg::Skin * pSkin );
 
 	WgSize	PreferredPixelSize() const;
 	
@@ -114,7 +114,7 @@ private:
 	int				m_nMarkers;
 	Marker *		m_pMarkers;
 	
-	WgBlocksetPtr	m_pMarkerGfx;
+    wg::Skin_p	    m_pMarkerSkin;
 
 	// Anti-alias
 	int m_iNextPixel;

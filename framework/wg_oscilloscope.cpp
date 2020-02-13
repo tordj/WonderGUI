@@ -393,11 +393,11 @@ void WgOscilloscope::AddMarker( int xOfs, float yOfs )
 
 //____ SetMarkerGfx() _________________________________________________________
 
-void WgOscilloscope::SetMarkerGfx( const WgBlocksetPtr& pBlockset )
+void WgOscilloscope::SetMarkerGfx( wg::Skin * pSkin )
 {
-	if( m_pMarkerGfx != pBlockset )
+	if( m_pMarkerSkin != pSkin )
 	{
-		m_pMarkerGfx = pBlockset;
+		m_pMarkerSkin = pSkin;
 		_requestRender();
 	}
 }
@@ -473,11 +473,11 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		int x = m_pMarkers[i].x;
 		int y = (int) (m_pMarkers[i].y*scaleY+centerY);
 
-		dest.setSize( m_pMarkerGfx->Size(m_scale) );
+		dest.setSize( _skinPreferredSize(m_pMarkerSkin, m_scale) );
 		dest.x = x - dest.w / 2;
 		dest.y = y - dest.h / 2;
 
-        WgGfxDevice::BlitBlock( pDevice, m_pMarkerGfx->GetBlock(WG_MODE_NORMAL,m_scale), dest );
+        _renderSkin(m_pMarkerSkin, pDevice, wg::StateEnum::Normal, dest, m_scale);
 	}
 
 }

@@ -49,8 +49,6 @@ class WgButton;
 class WgCheckBox;
 class WgRadioButton;
 class WgAnimPlayer;
-class WgValueDisplay;
-class WgValueEditor;
 class WgWidgetSlider;
 class WgMenu;
 class WgPopupLayer;
@@ -653,32 +651,6 @@ namespace WgEvent
 		float	m_fraction;
 	};
 
-	//____ WgValueEditor events _____________________________________
-
-	class EditvalueEvent : public Event
-	{
-		friend class EditvalueModify;
-		friend class EditvalueSet;
-	public:
-		WgValueEditor * Editvalue() const;
-		int64_t		Value() const;
-		double		Fraction() const;
-	protected:
-		int64_t		m_value;
-		double		m_fraction;
-	};
-
-	class EditvalueModify : public EditvalueEvent
-	{
-	public:
-		EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction );
-	};
-
-	class EditvalueSet : public EditvalueEvent
-	{
-	public:
-		EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction );
-	};
 
 	//____ WgWidgetSlider events ________________________________________________
 

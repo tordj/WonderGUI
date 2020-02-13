@@ -167,12 +167,6 @@ public:
 	static WgEventFilter	AnimationUpdate();
 	static WgEventFilter	AnimationUpdate( WgAnimPlayer * pWidget );
 
-	static WgEventFilter	EditvalueModify();
-	static WgEventFilter	EditvalueModify( WgValueEditor * pWidget );
-
-	static WgEventFilter	EditvalueSet();
-	static WgEventFilter	EditvalueSet( WgValueEditor * pWidget );
-
 	static WgEventFilter	SliderMove();
 	static WgEventFilter	SliderMove( WgWidgetSlider * pWidget );
 

@@ -224,8 +224,8 @@ public:
 	bool				IsVSliderVisible();
 	bool				IsHSliderVisible();
 
-	void				SetFillerBlocks( const WgBlocksetPtr& pBlocks );
-	WgBlocksetPtr		FillerBlocks() const { return m_pFillerBlocks; }
+    void				SetFillerBlocks( wg::Skin * pFillerSkin );
+    wg::Skin_p          FillerBlocks() const { return m_pFillerBlocks; }
 
 
     WgRect              ViewGeoPixels() const;                // Geometry of View window within WgScrollPanel widget.
@@ -367,7 +367,7 @@ private:
 	WgHook*	_lastHook() const;
 
 
-	WgBlocksetPtr	m_pFillerBlocks;
+    wg::Skin_p	    m_pFillerBlocks;
 	WgRect			m_geoFiller;
 
     WgWidgetWeakPtr m_pScrollIntoViewChild;                 // Child that should be scrolled into viewSection of view.

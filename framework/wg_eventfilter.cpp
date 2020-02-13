@@ -29,7 +29,6 @@
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
 #include <wg_animplayer.h>
-#include <wg_valueeditor.h>
 
 #ifdef SOFTUBE_USE_PACE_FUSION
 #include "PaceFusion.h"
@@ -528,31 +527,6 @@ WgEventFilter	WgEventFilter::AnimationUpdate( WgAnimPlayer * pWidget )
 {
 	return WgEventFilter( WG_EVENT_ANIMATION_UPDATE, pWidget, _filterTypeWidget );
 }
-
-//____ EditvalueModify() _______________________________________________________
-
-WgEventFilter	WgEventFilter::EditvalueModify()
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::EditvalueModify( WgValueEditor * pWidget )
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_MODIFY, pWidget, _filterTypeWidget );
-}
-
-//____ EditvalueSet() _______________________________________________________
-
-WgEventFilter	WgEventFilter::EditvalueSet()
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, 0, _filterTypeWidget );
-}
-
-WgEventFilter	WgEventFilter::EditvalueSet( WgValueEditor * pWidget )
-{
-	return WgEventFilter( WG_EVENT_EDITVALUE_SET, pWidget, _filterTypeWidget );
-}
-
 
 //____ SliderMove() __________________________________________________________
 

@@ -61,28 +61,14 @@ void WgImage::SetSkin(wg::Skin * pSkin)
 {
 	if (pSkin != m_pSkin)
 	{
+        if( pSkin && pSkin->isOpaque() )
+            m_bOpaque = true;
+        else
+            m_bOpaque = false;
+
 		m_pSkin = pSkin;
 		_requestResize();
 		_requestRender();
-	}
-}
-
-
-//____ SetSource() _____________________________________________________________
-
-void WgImage::SetSource( const WgBlocksetPtr& pBlockset )
-{
-	if( m_pGfx != pBlockset )
-	{
-		m_pGfx = pBlockset;
-
-		if( m_pGfx && m_pGfx->IsOpaque() )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
-
-        _requestResize();
-        _requestRender();
 	}
 }
 
@@ -110,8 +96,6 @@ WgSize WgImage::PreferredPixelSize() const
         
         return sz;
     }
-	else if( m_pGfx )
-		return m_pGfx->Size(m_scale);
     else if( m_pSkin )
         return _skinPreferredSize( m_pSkin, m_scale);
 
@@ -131,8 +115,6 @@ int  WgImage::MatchingPixelHeight(int pixelWidth) const
         if( m_pSkin )
             paddingSize = _skinContentPadding( m_pSkin, m_scale);
     }
-	else if (m_pGfx)
-		imageSize = m_pGfx->Size(WG_SCALE_BASE);
     else if(m_pSkin)
         imageSize = _skinPreferredSize( m_pSkin, WG_SCALE_BASE);
     else
@@ -157,8 +139,6 @@ int  WgImage::MatchingPixelWidth(int pixelHeight) const
         if( m_pSkin )
             paddingSize = _skinContentPadding( m_pSkin, m_scale);
     }
-    else if (m_pGfx)
-        imageSize = m_pGfx->Size(WG_SCALE_BASE);
     else if(m_pSkin)
         imageSize = _skinPreferredSize( m_pSkin, WG_SCALE_BASE);
     else
@@ -179,7 +159,6 @@ void WgImage::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgImage * pOrg = (WgImage*) _pOrg;
 
-	m_pGfx = pOrg->m_pGfx;
 }
 
 //____ _onRender() _____________________________________________________________
@@ -194,16 +173,6 @@ void WgImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
     {
         pDevice->setBlitSource(m_pImage);
         pDevice->stretchBlit(canvas);
-    }
-	else if( m_pGfx )
-    {
-        WgBlock    block;
-        if( m_bEnabled )
-            block = m_pGfx->GetBlock(WG_MODE_NORMAL, m_scale);
-        else
-            block = m_pGfx->GetBlock(WG_MODE_DISABLED, m_scale);
-        
-        WgGfxDevice::BlitBlock( pDevice, block, canvas);
     }
 }
 
@@ -226,14 +195,6 @@ bool WgImage::_onAlphaTest( const WgCoord& ofs )
             WgCoord surfOfs = { (ofs.x - canvas.x)*imgSize.w/canvas.w, (ofs.y - canvas.y)*imgSize.h/canvas.h };
             m_pImage->alpha(surfOfs);
         }
-    }
-	else if( m_pGfx )
-    {
-        WgMode mode = WG_MODE_NORMAL;
-        if( !m_bEnabled )
-            mode = WG_MODE_DISABLED;
-        
-        return WgUtil::MarkTestBlock( ofs, m_pGfx->GetBlock(mode,m_scale), WgRect(0,0,sz.w,sz.h), m_markOpacity );
     }
     else if( m_pSkin )
     {
@@ -263,7 +224,7 @@ void WgImage::_setScale( int scale )
 {
     WgWidget::_setScale(scale);
 
-    if( m_pGfx || m_pSkin || m_pImage )
+    if( m_pSkin || m_pImage )
         _requestResize();
 }
 

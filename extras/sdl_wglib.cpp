@@ -3,7 +3,6 @@
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
 #include <wondergui.h>
-#include <wg_resdb.h>
 
 namespace sdl_wglib
 {
@@ -192,7 +191,7 @@ namespace sdl_wglib
 
 	//____ LoadStdWidgets() _____________________________________________________
 
-    WgResDB * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )
+    std::map<std::string,WgWidget*> * LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )
 	{
 		const int HSLIDER_BTN_OFS 		= 1;
 		const int VSLIDER_BTN_OFS 		= HSLIDER_BTN_OFS + 19;
@@ -237,55 +236,47 @@ namespace sdl_wglib
 			surfaces[2] = pSurfaceX4;
 		}
 		
-		WgBlocksetPtr pHSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pHSliderBtnBwdBlocks->SetFrame(WgBorders(3));
-		pHSliderBtnBwdBlocks->SetPadding(WgBorders(4));
+		auto pHSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHSliderBtnBwdBlocks->setFrame(WgBorders(3));
+		pHSliderBtnBwdBlocks->setContentPadding(WgBorders(4));
 
-		WgBlocksetPtr pHSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pHSliderBtnFwdBlocks->SetFrame(WgBorders(3));
-		pHSliderBtnFwdBlocks->SetPadding(WgBorders(4));
+		auto pHSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,HSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pHSliderBtnFwdBlocks->setFrame(WgBorders(3));
+		pHSliderBtnFwdBlocks->setContentPadding(WgBorders(4));
 
-		WgBlocksetPtr pVSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pVSliderBtnBwdBlocks->SetFrame(WgBorders(3));
-		pVSliderBtnBwdBlocks->SetPadding(WgBorders(4));
+		auto pVSliderBtnBwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVSliderBtnBwdBlocks->setFrame(WgBorders(3));
+		pVSliderBtnBwdBlocks->setContentPadding(WgBorders(4));
 
-		WgBlocksetPtr pVSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
-		pVSliderBtnFwdBlocks->SetFrame(WgBorders(3));
-		pVSliderBtnFwdBlocks->SetPadding(WgBorders(4));
+		auto pVSliderBtnFwdBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(77,VSLIDER_BTN_OFS,74,17), 4, 2, WG_OPAQUE);
+		pVSliderBtnFwdBlocks->setFrame(WgBorders(3));
+		pVSliderBtnFwdBlocks->setContentPadding(WgBorders(4));
 
-		WgBlocksetPtr pSliderBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
-		pSliderBlocks->SetFrame(WgBorders(2));
-		pSliderBlocks->SetPadding(WgBorders(3));
+		auto pSliderBlocks	= WgBlockset::CreateFromRow(pSurface, WgRect(1,SLIDER_OFS,38,8), 4, 2, WG_OPAQUE);
+		pSliderBlocks->setFrame(WgBorders(2));
+		pSliderBlocks->setContentPadding(WgBorders(3));
 
-		WgBlocksetPtr pSliderBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
-		pSliderBackBlocks->SetFrame(WgBorders(2));
-		pSliderBackBlocks->SetPadding(WgBorders(2));
+		auto pSliderBackBlocks	= WgBlockset::CreateFromRect(pSurface, WgRect(1,SLIDER_BACK_OFS,5,5), WG_OPAQUE );
+		pSliderBackBlocks->setFrame(WgBorders(2));
+		pSliderBackBlocks->setContentPadding(WgBorders(2));
 
-		WgBlocksetPtr pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
-		pResizeButtonBlocks->SetFrame(WgBorders(3));
+		auto pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
+		pResizeButtonBlocks->setFrame(WgBorders(3));
 
-		WgBlocksetPtr pCheckboxUncheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
-		pCheckboxUncheckedBlocks->SetFrame(WgBorders(2));
-		pCheckboxUncheckedBlocks->SetPadding(WgBorders(3));
+        auto pCheckboxIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,CHECKBOX_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Orientation::Horizontal, 2 );
+		pCheckboxIconSkin->setContentPadding(WgBorders(3));
 
-		WgBlocksetPtr pCheckboxCheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(53,CHECKBOX_OFS,50,11), 4, 2, WG_OPAQUE);
-		pCheckboxCheckedBlocks->SetFrame(WgBorders(2));
-		pCheckboxCheckedBlocks->SetPadding(WgBorders(3));
-
-		WgBlocksetPtr pRadiobuttonUncheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
-		pRadiobuttonUncheckedBlocks->SetPadding(WgBorders(3));
-
-		WgBlocksetPtr pRadiobuttonCheckedBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(53,RADIOBUTTON_OFS,50,11), 4, 2, WG_OPAQUE);
-		pRadiobuttonCheckedBlocks->SetPadding(WgBorders(3));
+        auto pRadiobuttonIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,RADIOBUTTON_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Orientation::Horizontal, 2 );
+        pRadiobuttonIconSkin->setContentPadding(WgBorders(3));
 
 
 		WgRect buttonRects[4] { WgRect(1,BUTTON_OFS,8,8), WgRect(1+10,BUTTON_OFS,8,8), WgRect(1+20,BUTTON_OFS,8,8), WgRect(1+30,BUTTON_OFS,8,8) };
 		WgBorders buttonFrame(3);
 		WgBorders buttonPadding(4);
 		
-		WgBlocksetPtr pButtonBlocks = WgBlockset::CreateFromRects(pSurface, buttonRects[0], buttonRects[1], buttonRects[2], buttonRects[3], WG_OPAQUE);
-		pButtonBlocks->SetFrame(buttonFrame);
-		pButtonBlocks->SetPadding(buttonPadding);
+		auto pButtonBlocks = WgBlockset::CreateFromRects(pSurface, buttonRects[0], buttonRects[1], buttonRects[2], buttonRects[3], WG_OPAQUE);
+		pButtonBlocks->setFrame(buttonFrame);
+		pButtonBlocks->setContentPadding(buttonPadding);
 /*
 		for( int i = 0 ; i < 2 ; i++ )
 		{
@@ -308,29 +299,29 @@ namespace sdl_wglib
 
 
 
-		WgBlocksetPtr pPlateBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
-		pPlateBlocks->SetFrame(WgBorders(3));
-		pPlateBlocks->SetPadding(WgBorders(4));
+		auto pPlateBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,PLATE_OFS,38,8), 4, 2, WG_OPAQUE);
+		pPlateBlocks->setFrame(WgBorders(3));
+		pPlateBlocks->setContentPadding(WgBorders(4));
 
-		WgBlocksetPtr pHSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
+		auto pHSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,2), WG_OPAQUE);
 
-		WgBlocksetPtr pVSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
+		auto pVSplitBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(11,SPLITS_AND_FRAME_OFS,2,8), WG_OPAQUE);
 
-		WgBlocksetPtr pFrameBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
-		pFrameBlocks->SetFrame(WgBorders(2));
-		pFrameBlocks->SetPadding(WgBorders(3));
+		auto pFrameBlocks = WgBlockset::CreateFromRect(pSurface, WgRect(1,SPLITS_AND_FRAME_OFS,8,8), WG_OPAQUE);
+		pFrameBlocks->setFrame(WgBorders(2));
+		pFrameBlocks->setContentPadding(WgBorders(3));
 
-		WgBlocksetPtr pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
-		pComboboxBlocks->SetFrame(WgBorders(1,1,20,1));
-		pComboboxBlocks->SetPadding(WgBorders(2,2,21,2));
+		auto pComboboxBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,COMBOBOX_OFS,98,20), 4, 2, WG_OPAQUE);
+		pComboboxBlocks->setFrame(WgBorders(1,1,20,1));
+		pComboboxBlocks->setContentPadding(WgBorders(2,2,21,2));
 
-		WgBlocksetPtr pBgCheckeredGreyBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
-		WgBlocksetPtr pBgBlueGradientBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
+		auto pBgCheckeredGreyBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(0,TILES_OFS,64,64), WG_OPAQUE | WG_TILE_ALL );
+		auto pBgBlueGradientBlocks = WgBlockset::CreateFromRect( pSurface, WgRect(1*64,TILES_OFS,64,64), WG_OPAQUE );
 
 		WgColorsetPtr pSelectionColors = WgColorset::Create( WgColor(0x0), WgColor(0x40FFFFFF), WgColor(0x80FFFFFF), WgColor(0x40000000), WgColor(0x0) );
 
 
-		WgResDB * pDB = new WgResDB();
+        std::map<std::string,WgWidget*> * pDB = new std::map<std::string,WgWidget*>;
 
 
 
@@ -338,37 +329,37 @@ namespace sdl_wglib
 
 		WgButton * pButton = new WgButton();
 		pButton->SetSource( pButtonBlocks );
-		pDB->AddWidget( "button", pButton );
+        (*pDB)["button"] = pButton;
 
 		// Create standard plate
 
 		WgImage * pPlate = new WgImage();
 		pPlate->SetSource( pPlateBlocks );
-		pDB->AddWidget( "plate", pPlate );
+        (*pDB)["plate"] = pPlate;
 
 		// Create standard checkbox
 
 		WgCheckBox * pCheckbox = new WgCheckBox();
-		pCheckbox->SetIcons( pCheckboxUncheckedBlocks, pCheckboxCheckedBlocks );
-		pDB->AddWidget( "checkbox", pCheckbox );
+		pCheckbox->SetIcon( pCheckboxIconSkin );
+        (*pDB)["checkbox"] = pCheckbox;
 
 		// Create standard radiobutton
 
 		WgRadioButton * pRadiobutton = new WgRadioButton();
-		pRadiobutton->SetIcons( pRadiobuttonUncheckedBlocks, pRadiobuttonCheckedBlocks );
-		pDB->AddWidget( "radiobutton", pRadiobutton );
+		pRadiobutton->SetIcon( pRadiobuttonIconSkin );
+        (*pDB)["radiobutton"] = pRadiobutton;
 
 		// Create standard horizontal slider
 
 		WgHSlider * pHSlider = new WgHSlider();
 		pHSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pHSliderBtnBwdBlocks, pHSliderBtnFwdBlocks );
-		pDB->AddWidget( "hslider", pHSlider );
+        (*pDB)["hslider"] = pHSlider;
 
 		// Create standard vertical slider
 
 		WgVSlider * pVSlider = new WgVSlider();
 		pVSlider->SetSource( pSliderBackBlocks, pSliderBlocks, pVSliderBtnBwdBlocks, pVSliderBtnFwdBlocks );
-		pDB->AddWidget( "vslider", pVSlider );
+        (*pDB)["vslider"] = pVSlider;
 
 		// Create standard menubar
 /*
@@ -380,11 +371,11 @@ namespace sdl_wglib
 
 		WgImage * pBgCheckeredGrey = new WgImage();
 		pBgCheckeredGrey->SetSource( pBgCheckeredGreyBlocks );
-		pDB->AddWidget( "bg_checkered_grey", pBgCheckeredGrey );
+        (*pDB)["bg_checkered_grey"] = pBgCheckeredGrey;
 
 		WgImage * pBgBlueGradient = new WgImage();
 		pBgBlueGradient->SetSource( pBgBlueGradientBlocks );
-		pDB->AddWidget( "bg_blue_gradient", pBgBlueGradient );
+        (*pDB)["bg_blue_gradient"] = pBgBlueGradient;
 
 		// Create standard menu
 /*
@@ -408,16 +399,19 @@ namespace sdl_wglib
 		{
 			WgScrollPanel * pView = new WgScrollPanel();
 			
-			WgWidget * pHSlider = pDB->CloneWidget( "hslider" );
-			WgWidget * pVSlider = pDB->CloneWidget( "vslider" );
+            auto pHSlider2 = new WgHSlider();
+            pHSlider2->CloneContent(pHSlider);
+
+            auto pVSlider2 = new WgVSlider();
+            pVSlider2->CloneContent(pVSlider);
 
 			if( pHSlider )
-				pView->SetHSlider( static_cast<WgHSlider*>(pHSlider) );
+				pView->SetHSlider( pHSlider2 );
 			if( pVSlider )
-				pView->SetVSlider( static_cast<WgVSlider*>(pVSlider) );
+				pView->SetVSlider( pVSlider2 );
 
 			pView->SetFillerBlocks( pPlateBlocks );
-			pDB->AddWidget( "view", pView );
+            (*pDB)["view"] = pView;
 		}
 
 		return pDB;

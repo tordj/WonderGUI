@@ -27,8 +27,6 @@
 #include <wg_checkbox.h>
 #include <wg_radiobutton.h>
 #include <wg_animplayer.h>
-#include <wg_valuedisplay.h>
-#include <wg_valueeditor.h>
 #include <wg_slider.h>
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
@@ -746,43 +744,6 @@ namespace WgEvent
 	float AnimationUpdate::Fraction() const
 	{
 		return m_fraction;
-	}
-
-	//____ Editvalue event methods ___________________________________________
-
-	WgValueEditor * EditvalueEvent::Editvalue() const
-	{
-		WgWidget * pWidget = m_pWidget.GetRealPtr();
-		if( pWidget )
-			return static_cast<WgValueEditor*>(pWidget);
-		else
-			return 0;
-	}
-
-	int64_t EditvalueEvent::Value() const
-	{
-		return m_value;
-	}
-
-	double EditvalueEvent::Fraction() const
-	{
-		return m_fraction;
-	}
-
-	EditvalueModify::EditvalueModify( WgValueEditor * pWidget, int64_t value, double fraction )
-	{
-		m_type = WG_EVENT_EDITVALUE_MODIFY;
-		m_pWidget = pWidget;
-		m_value = value;
-		m_fraction = fraction;
-	}
-
-	EditvalueSet::EditvalueSet( WgValueEditor * pWidget, int64_t value, double fraction )
-	{
-		m_type = WG_EVENT_EDITVALUE_SET;
-		m_pWidget = pWidget;
-		m_value = value;
-		m_fraction = fraction;
 	}
 
 	//____ Slider event methods _______________________________________________

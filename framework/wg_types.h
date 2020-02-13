@@ -190,9 +190,6 @@ enum    WgEventType
     WG_EVENT_TAB_SELECT,                    // Posted when a new tab is selected.
     WG_EVENT_TAB_PRESS,                        // Posted every time any mousebutton is pressed on a widget.
     
-    WG_EVENT_EDITVALUE_MODIFY,                // Posted for every change to value through keyboard (once for every accepted keystroke).
-    WG_EVENT_EDITVALUE_SET,                    // Posted when edited value is 'set' by removing cursor.
-    
     WG_EVENT_SLIDER_MOVE,
     WG_EVENT_SLIDER_STEP_FWD,
     WG_EVENT_SLIDER_STEP_BWD,

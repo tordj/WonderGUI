@@ -5,6 +5,8 @@
 #include <wg3_surface.h>
 #include <wg_widget.h>
 #include <wg_panel.h>
+#include <wg_gfxanim.h>
+
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 {
@@ -67,6 +69,7 @@ bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
 
 	return true;
 }
+
 
 //____ MarkTestBlock() ________________________________________________________
 
@@ -168,6 +171,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 	
 	return ( alpha >= opacityTreshold);
 }
+
 
 //____ PixelTypeToFormat() _____________________________________________________
 

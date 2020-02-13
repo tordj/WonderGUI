@@ -67,26 +67,13 @@ const char * WgCheckBox::GetClass( void )
 	return c_widgetType;
 }
 
+//____ SetIcon() ______________________________________________________________
 
-//____ SetSource() ____________________________________________________________
-
-bool WgCheckBox::SetSource( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked )
-{
-	m_pBlockUnchecked	= pUnchecked;
-	m_pBlockChecked		= pChecked;
-
-	_onRefresh();
-	return true;
-}
-
-//____ SetIcons() ______________________________________________________________
-
-void WgCheckBox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked,
+void WgCheckBox::SetIcon( wg::Skin * pIconSkin,
 								const WgOrigo& origo, WgBorders borders, float scale,
 								bool bPushText )
 {
-	m_pIconUnchecked	= pUnchecked;
-	m_pIconChecked		= pChecked;
+	m_pIconSkin	        = pIconSkin;
 	m_iconOrigo	= origo;
 	m_iconScale			= scale;
 	m_bIconPushText		= bPushText;
@@ -94,28 +81,11 @@ void WgCheckBox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr&
 	_onRefresh();
 }
 
-//____ SetIcons() ______________________________________________________________
+//____ SetIcon() ______________________________________________________________
 
-void WgCheckBox::SetIcons( const WgBlocksetPtr& pUnchecked, const WgBlocksetPtr& pChecked )
+void WgCheckBox::SetIcon( wg::Skin * pIconSkin )
 {
-	m_pIconUnchecked	= pUnchecked;
-	m_pIconChecked		= pChecked;
-	_onRefresh();
-}
-
-//____ SetCheckedIcon() _______________________________________________________
-
-void WgCheckBox::SetCheckedIcon( const WgBlocksetPtr& pChecked )
-{
-	m_pIconChecked		= pChecked;
-	_onRefresh();
-}
-
-//____ SetUncheckedIcon() _____________________________________________________
-
-void WgCheckBox::SetUncheckedIcon( const WgBlocksetPtr& pUnchecked )
-{
-	m_pIconUnchecked	= pUnchecked;
+	m_pIconSkin	        = pIconSkin;
 	_onRefresh();
 }
 
@@ -176,15 +146,15 @@ WgSize WgCheckBox::PreferredPixelSize() const
 	if( m_text.nbChars() > 0 )
 		textPreferredSize = m_text.unwrappedSize();
 
-	if( m_pBlockUnchecked )
+	if( m_pSkin )
 	{
-		bgPreferredSize = m_pBlockUnchecked->Size(m_scale);
-		textPreferredSize += m_pBlockUnchecked->Padding(m_scale);
+		bgPreferredSize = _skinPreferredSize(m_pSkin, m_scale);
+		textPreferredSize += _skinContentPadding(m_pSkin, m_scale);
 	}
 
-	if( m_pIconUnchecked )
+	if( m_pIconSkin )
 	{
-		iconPreferredSize = m_pIconUnchecked->Size(m_scale) + m_iconBorders.size();
+		iconPreferredSize = _skinPreferredSize(m_pIconSkin, m_scale) + m_iconBorders.size();
 
 		//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorders, iconScale and bgPreferredSize
 	}
@@ -293,10 +263,8 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 
 	WgSize	iconSize;
 
-	if( m_pIconUnchecked )
-		iconSize = m_pIconUnchecked->Size(m_scale);
-	else if( m_pIconChecked )
-		iconSize = m_pIconChecked->Size(m_scale);
+	if( m_pIconSkin )
+		iconSize = _skinPreferredSize(m_pIconSkin, m_scale);
 
 	return _getTextRect( widgetSize, _getIconRect( WgRect(0,0,widgetSize), iconSize, m_scale ) ).w;
 }
@@ -318,48 +286,22 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 			mode = WG_MODE_SELECTED;
 	}
 
-	// Get blocksets for background and icon
-
-	WgBlocksetPtr	pBgBlockset, pIconBlockset;
-
-	if( m_bChecked )
-	{
-		pBgBlockset = m_pBlockChecked;
-		pIconBlockset = m_pIconChecked;
-	}
-	else
-	{
-		pBgBlockset = m_pBlockUnchecked;
-		pIconBlockset = m_pIconUnchecked;
-	}
-
-	// Get block for background
-
-	WgBlock			bgBlock;
-
-	if( pBgBlockset )
-		bgBlock = pBgBlockset->GetBlock(mode,m_scale);
-
+    WgState state = WgUtil::ModeToState(mode);
+    
 	// Blit background
 
-    WgGfxDevice::BlitBlock( pDevice, bgBlock, _canvas );
-
+    if( m_pSkin )
+        _renderSkin(m_pSkin, pDevice, state, _canvas, m_scale );
+    
 	// Get the content rect and icon rect
 
-	WgRect contentRect	= bgBlock.ContentRect(_canvas);
-	WgRect iconRect		= _getIconRect( contentRect, pIconBlockset, m_scale );
-
-	// Get block for icon
-
-	WgBlock		iconBlock;
-
-	if( pIconBlockset )
-		iconBlock = pIconBlockset->GetBlock(mode,m_scale);
+    WgRect contentRect	= m_pSkin ? _skinContentRect(m_pSkin, _canvas, state, m_scale) : _canvas;
+	WgRect iconRect		= _getIconRect( contentRect, m_pIconSkin, m_scale );
 
 	// Blit icon
 
 	if( iconRect.w > 0 && iconRect.h > 0 )
-        WgGfxDevice::BlitBlock( pDevice, iconBlock, iconRect );
+        _renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
 
 	// Print text
 
@@ -367,10 +309,6 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 	{
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
 		m_pText->setMode( mode );
-
-		if( pBgBlockset )
-			m_text.SetBgBlockColors( pBgBlockset->TextColors() );
-
 
         WgGfxDevice::PrintText( pDevice, m_pText, textRect );
 	}
@@ -380,8 +318,7 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 void WgCheckBox::_onRefresh( void )
 {
-	if( m_pBlockChecked && m_pBlockUnchecked && m_pBlockChecked->IsOpaque() &&
-		m_pBlockUnchecked->IsOpaque() )
+	if( m_pSkin && m_pSkin->isOpaque() )
 		m_bOpaque = true;
 	else
 		m_bOpaque = false;
@@ -420,12 +357,6 @@ void WgCheckBox::_onCloneContent( const WgWidget * _pOrg )
 	m_bOver				= false;
 	m_bPressed			= false;
 
-	m_pBlockUnchecked	= pOrg->m_pBlockUnchecked;
-	m_pBlockChecked		= pOrg->m_pBlockChecked;
-
-	m_pIconUnchecked	= pOrg->m_pIconUnchecked;
-	m_pIconChecked		= pOrg->m_pIconChecked;
-
 	m_text				= pOrg->m_text;
 	m_clickArea			= pOrg->m_clickArea;
 
@@ -457,9 +388,7 @@ void WgCheckBox::_iconModified()
 
 bool WgCheckBox::_markTestTextArea( int _x, int _y )
 {
-	WgBlocksetPtr	pIconBlockset = m_bChecked?m_pIconChecked:m_pIconUnchecked;
-
-	WgRect	contentRect = _getTextRect( PixelSize(), _getIconRect( PixelSize(), pIconBlockset, m_scale ) );
+	WgRect	contentRect = _getTextRect( PixelSize(), _getIconRect( PixelSize(), m_pIconSkin, m_scale ) );
 
 	if( m_text.CoordToOfs( WgCoord(_x,_y), contentRect ) != -1 )
 		return true;
@@ -484,42 +413,8 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 	// Get blocksets for background and icon
 
-	WgBlocksetPtr	pBgBlockset, pIconBlockset;
-
-	if( m_bChecked )
-	{
-		pBgBlockset = m_pBlockChecked;
-		pIconBlockset = m_pIconChecked;
-	}
-	else
-	{
-		pBgBlockset = m_pBlockUnchecked;
-		pIconBlockset = m_pIconUnchecked;
-	}
-
-
-	WgBlock bgBlock;
-	WgBlock iconBlock;
-
 	WgSize	bgSize		= PixelSize();
-	WgRect	iconRect	= _getIconRect( bgSize, pIconBlockset, m_scale );
-
-	if( m_bChecked )
-	{
-		if( m_pBlockChecked )
-			bgBlock = m_pBlockChecked->GetBlock(mode,m_scale);
-
-		if( m_pIconChecked )
-			iconBlock = m_pIconChecked->GetBlock(mode,m_scale);
-	}
-	else
-	{
-		if( m_pBlockUnchecked )
-			bgBlock = m_pBlockUnchecked->GetBlock(mode,m_scale);
-
-		if( m_pIconUnchecked )
-			iconBlock = m_pIconUnchecked->GetBlock(mode,m_scale);
-	}
+	WgRect	iconRect	= _getIconRect( bgSize, m_pIconSkin, m_scale );
 
 
 	switch( m_clickArea )
@@ -550,7 +445,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			//
 
-			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize), m_markOpacity )) ||
+            if( (m_pSkin && _markTestSkin(m_pSkin, ofs, WgRect(0,0,bgSize), wg::StateEnum::Normal, m_markOpacity, m_scale)) ||
 				_markTestTextArea( ofs.x, ofs.y ) ||
 				iconRect.contains( ofs ) )
 				return true;
@@ -559,8 +454,8 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		}
 		case ALPHA:			// Alpha test on background and icon.
 		{
-			if( (bgBlock.IsValid() && WgUtil::MarkTestBlock( ofs, bgBlock, WgRect(0,0,bgSize), m_markOpacity)) ||
-				(iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect, m_markOpacity )) )
+			if( (m_pSkin && _markTestSkin(m_pSkin, ofs, WgRect(0,0,bgSize), wg::StateEnum::Normal, m_markOpacity, m_scale)) ||
+               (m_pIconSkin && _markTestSkin( m_pIconSkin, ofs, iconRect, wg::StateEnum::Normal, m_markOpacity, m_scale )) )
 				return true;
 
 			return false;
@@ -569,7 +464,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 			return true;
 		case ICON:			// Only the icon (alpha test) is clickable.
 		{
-			if( iconBlock.IsValid() && WgUtil::MarkTestBlock( ofs, iconBlock, iconRect, m_markOpacity ) )
+			if( m_pIconSkin && _markTestSkin( m_pIconSkin, ofs, iconRect, wg::StateEnum::Normal, m_markOpacity, m_scale ) )
 				return true;
 
 			return false;
