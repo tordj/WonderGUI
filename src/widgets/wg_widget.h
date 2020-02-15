@@ -205,89 +205,89 @@ namespace wg
 		void				_setSlot(StaticSlot * pSlot);
 		SlotHolder *		_holder() { return m_pHolder; }
 		const SlotHolder *	_holder() const { return m_pHolder; }
-		StaticSlot *			_slot() const { return m_pSlot; }
+		StaticSlot *		_slot() const { return m_pSlot; }
 
 		virtual BlendMode	_getBlendMode() const;
 
 		virtual Widget* 	_newOfMyType() const = 0;
 
-		virtual bool	_markTest(const CoordI& ofs);
+		virtual bool		_markTest(const CoordI& ofs);
 
-		bool            _requestPreRenderCall();
+		bool            	_requestPreRenderCall();
 
 		// Methods for geometry in quarterpixels
 
-		inline CoordI	_globalPos() const { return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI(); }
-		inline RectI	_globalGeo() const { return  m_pHolder ? RectI(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectI(0, 0, m_size); }
+		inline CoordI		_globalPos() const { return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI(); }
+		inline RectI		_globalGeo() const { return  m_pHolder ? RectI(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectI(0, 0, m_size); }
 
-		CoordI			_toGlobal(const CoordI& coord) const;
-		CoordI			_toLocal(const CoordI& coord) const;
+		CoordI				_toGlobal(const CoordI& coord) const;
+		CoordI				_toLocal(const CoordI& coord) const;
 
-		virtual int		_matchingHeight(int width) const;
-		virtual int		_matchingWidth(int height) const;
+		virtual int			_matchingHeight(int width) const;
+		virtual int			_matchingWidth(int height) const;
 
-		virtual SizeI	_preferredSize() const;
-		virtual SizeI	_minSize() const;
-		virtual SizeI	_maxSize() const;
+		virtual SizeI		_preferredSize() const;
+		virtual SizeI		_minSize() const;
+		virtual SizeI		_maxSize() const;
 
 
 		// Convenient calls to holder
 
 
 
-		inline void		_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
-		inline void		_requestRender( const RectI& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
-		inline void		_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
-		inline void		_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
-		inline void		_requestInView( const RectI& mustHaveArea, const RectI& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
+		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
+		inline void			_requestRender( const RectI& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
+		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
+		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
+		inline void			_requestInView( const RectI& mustHaveArea, const RectI& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
-		inline Widget *	_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
-		inline Widget *	_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
+		inline Widget *		_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
+		inline Widget *		_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
-		inline RectI	_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectI(); }
+		inline RectI		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectI(); }
 
 		// To be overloaded by Widget
 
-		virtual void	_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
-		virtual void	_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
+		virtual void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
+		virtual void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
 
-		Widget *		_clone() const;
-		virtual void	_cloneContent( const Widget * _pOrg );
+		Widget *			_clone() const;
+		virtual void		_cloneContent( const Widget * _pOrg );
 
-		virtual void    _preRender();
-		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		virtual void    	_preRender();
+		virtual void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
 
-		virtual void	_refresh();
-		virtual void	_resize( const SizeI& size );
-		virtual void	_setSkin( Skin * pSkin );
-		virtual void	_setState( State state );
+		virtual void		_refresh();
+		virtual void		_resize( const SizeI& size );
+		virtual void		_setSkin( Skin * pSkin );
+		virtual void		_setState( State state );
 
-		virtual void	_receive( Msg * pMsg );
-		virtual	bool	_alphaTest( const CoordI& ofs );
+		virtual void		_receive( Msg * pMsg );
+		virtual	bool		_alphaTest( const CoordI& ofs );
 
-		virtual SizeI	_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+		virtual SizeI		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for components to access
 
-		virtual Object * _object() override;
+		virtual Object * 	_object() override;
 		virtual const Object * _object() const override;
 
-		virtual CoordI	_componentPos( const GeoComponent * pComponent ) const override;
-		virtual SizeI	_componentSize( const GeoComponent * pComponent ) const override;
-		virtual RectI	_componentGeo( const GeoComponent * pComponent ) const override;
-		virtual CoordI	_globalComponentPos( const GeoComponent * pComponent ) const override;
-		virtual RectI	_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		virtual CoordI		_componentPos( const GeoComponent * pComponent ) const override;
+		virtual SizeI		_componentSize( const GeoComponent * pComponent ) const override;
+		virtual RectI		_componentGeo( const GeoComponent * pComponent ) const override;
+		virtual CoordI		_globalComponentPos( const GeoComponent * pComponent ) const override;
+		virtual RectI		_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		virtual void	_componentRequestRender( const GeoComponent * pComponent ) override;
-		virtual void	_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
-		virtual void	_componentRequestResize( const GeoComponent * pComponent ) override;
+		virtual void		_componentRequestRender( const GeoComponent * pComponent ) override;
+		virtual void		_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		virtual void		_componentRequestResize( const GeoComponent * pComponent ) override;
 
- 		virtual void	_componentRequestFocus( const GeoComponent * pComponent ) override;
-		virtual void	_componentRequestInView( const GeoComponent * pComponent ) override;
-		virtual void	_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
+ 		virtual void		_componentRequestFocus( const GeoComponent * pComponent ) override;
+		virtual void		_componentRequestInView( const GeoComponent * pComponent ) override;
+		virtual void		_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
 
-		virtual void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		virtual void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
 		//
 

@@ -29,6 +29,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="widgets">
+    <File Name="../../src/widgets/wg_sidecanvas.cpp"/>
+    <File Name="../../src/widgets/wg_sidecanvas.h"/>
     <File Name="../../src/widgets/wg_selectbox.h"/>
     <File Name="../../src/widgets/wg_selectbox.cpp"/>
     <VirtualDirectory Name="capsules">

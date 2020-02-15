@@ -434,13 +434,8 @@ namespace wg
 
 	void Widget::_setSkin( Skin * pSkin )
 	{
-		if( !m_pSkin || !pSkin || m_pSkin->_contentPadding() != pSkin->_contentPadding() ||
-			m_pSkin->_preferredSize() != pSkin->_preferredSize() ||
-			m_pSkin->_minSize() != pSkin->_minSize() )
-		{
-			_requestResize();
-		}
-
+		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->_contentPadding() != pSkin->_contentPadding() ||
+								m_pSkin->_preferredSize() != pSkin->_preferredSize() || m_pSkin->_minSize() != pSkin->_minSize() );
 
 		if( pSkin && pSkin->isOpaque(m_state) )
 			m_bOpaque = true;
@@ -449,6 +444,9 @@ namespace wg
 
 		m_pSkin = pSkin;
 		_requestRender();
+
+		if( bRequestResize )
+			_requestResize();
 	}
 
 	//____ _setState() _________________________________________________________

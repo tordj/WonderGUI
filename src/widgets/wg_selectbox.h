@@ -25,6 +25,7 @@
 
 
 #include <wg_widget.h>
+#include <wg_sidecanvas.h>
 #include <wg_ctextdisplay.h>
 #include <wg_cvector.h>
 
@@ -55,7 +56,7 @@ namespace wg
 	typedef	WeakPtr<SelectBox>		SelectBox_wp;
 
 
-	class SelectBox : public Widget, protected CVector<SelectBoxEntry>::Holder
+	class SelectBox : public Widget, protected CVector<SelectBoxEntry>::Holder, protected SideCanvas::Holder
 	{
 	public:
 		//.____ Creation __________________________________________
@@ -93,15 +94,36 @@ namespace wg
 
 		//
 		
-		void	_didAddEntries(SelectBoxEntry * pEntry, int nb) override;
-		void	_didMoveEntries(SelectBoxEntry * pFrom, SelectBoxEntry * pTo, int nb) override;
-		void	_willEraseEntries(SelectBoxEntry * pSlot, int nb) override;
+		void		_didAddEntries(SelectBoxEntry * pEntry, int nb) override;
+		void		_didMoveEntries(SelectBoxEntry * pFrom, SelectBoxEntry * pTo, int nb) override;
+		void		_willEraseEntries(SelectBoxEntry * pSlot, int nb) override;
 
 		//
 		
+		int			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const;
+		int			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const;
+
+		SizeI		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const ;
+		SizeI		_sideCanvasMinSize( const SideCanvas * pCanvas ) const;
+		SizeI		_sideCanvasMaxSize( const SideCanvas * pCanvas ) const;
+		void		_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectI& geo, const RectI& clip );
+		void		_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
+
+		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+
+		void		_sideCanvasRefresh( SideCanvas * pCanvas);
+		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeI& size );
+		void		_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) ;
+		void		_sideCanvasSetState( SideCanvas * pCanvas,  State state );
+
+		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg );
+		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordI& ofs );			
+	
+
 		
 
 	private:
+		SideCanvas_p	m_pListDisplay;
 
 
 	};
