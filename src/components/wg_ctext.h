@@ -41,7 +41,7 @@ namespace wg
 
 	//____ CText __________________________________________________________________
 
-	class CText : public GeoComponent		/** @private */
+	class CText : public GeoComponent, protected Text		/** @private */
 	{
 		friend class TextMapper;
 		friend class StdTextMapper;
@@ -108,47 +108,53 @@ namespace wg
 
 		virtual RectI		_rectForRange( int ofs, int length ) const;
 
-		// Alternative calls, guaranteed to return valid values.
-
 		TextMapper *		_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
-		virtual const EditState * _editState() const;
 
-		inline void			_mapperRequestRender() { _requestRender(); }
-		void				_mapperRequestRender(const RectI& rect);
-		inline void			_mapperRequestResize() { _requestResize(); }
+		// Needed by Text
+
+		inline void			_mapperRequestRender() override { _requestRender(); }
+		void				_mapperRequestRender(const RectI& rect) override;
+		inline void			_mapperRequestResize() override { _requestResize(); }
+
+		virtual SizeI		_textSize() const override { return m_size; }
+		virtual State		_textState() const override { return m_state; }
+		virtual TextStyle * _textStyle() const override { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
+		
+		virtual const Char *_textBegin() const override { return m_charBuffer.chars(); }
+		virtual int 		_textLength() const override { return m_charBuffer.nbChars(); }
+
+		virtual bool		_caretVisible() const override { return false; }
+		virtual int			_caretOffset() const override { return 0; }
+		virtual std::tuple<int,int>	_selectedText() const override { return std::make_tuple(0,0); };		// Begin/end of selection
+
+
 
 	protected:
 
 		SizeI				m_size;
-
-		union
-		{
-			void *			m_pTextMapperData;
-			int				m_textMapperData;
-		};
 
 		State				m_state;
 		TextStyle_p			m_pStyle;
 		CharBuffer			m_charBuffer;
 		TextMapper_p		m_pTextMapper;
 
+		// Here so it can be shared by CTextEditor and CValueEditor
+
+		class EditState
+		{
+		public:
+			EditState() : bCaret(false), bShiftDown(false), bButtonDown(false), selectOfs(0), caretOfs(0), wantedOfs(-1) {}
+
+			bool 			bCaret;			// Set if caret should be displayed.
+			bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
+			bool			bButtonDown;	// Set when mouse button was pressed inside component and still is down.
+			int 			selectOfs;		// Selection is between selectOfs and caretOfs.
+			int				caretOfs;		// End of selection and caret offset (if displaying)
+			int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.
+			TextStyle_p		pCharStyle;		// Style of characters to be inserted by caret.
+		};
 	};
-
-	class EditState
-	{
-	public:
-		EditState() : bCaret(false), bShiftDown(false), bButtonDown(false), selectOfs(0), caretOfs(0), wantedOfs(-1) {}
-
-		bool 			bCaret;			// Set if caret should be displayed.
-		bool			bShiftDown;		// Set if caret is in "selection mode" modifying the selection when moving.
-		bool			bButtonDown;	// Set when mouse button was pressed inside component and still is down.
-		int 			selectOfs;		// Selection is between selectOfs and caretOfs.
-		int				caretOfs;		// End of selection and caret offset (if displaying)
-		int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.
-		TextStyle_p		pCharStyle;		// Style of characters to be inserted by caret.
-	};
-
 
 
 } // namespace wg

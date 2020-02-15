@@ -21,11 +21,11 @@
 =========================================================================*/
 
 #include <wg_stdtextmapper.h>
-#include <wg_ctext.h>
 #include <wg_textstyle.h>
 #include <wg_gfxdevice.h>
 #include <wg_char.h>
 #include <wg_msgrouter.h>
+#include <wg_base.h>
 
 #include <stdlib.h>
 #include <algorithm>
@@ -39,7 +39,7 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
-		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedComponent(nullptr), m_tickRouteId(0)
+		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
 	{
 	}
 
@@ -82,29 +82,29 @@ namespace wg
 		return 0;
 	}
 
-	//____ addComponent() _________________________________________________________
+	//____ addText() _________________________________________________________
 
-	void StdTextMapper::addComponent( CText * pText )
+	void StdTextMapper::addText( Text * pText )
 	{
-		CharBuffer * pBuffer = _charBuffer(pText);
-		int nLines = _countLines( pText, pBuffer );
+		const Char * pChars = _chars(pText);
+		int nLines = _countLines( pText, pChars );
 
-		_setComponentDataBlock(pText,0);					// Make sure pointer is null for the realloc call.
+		_setTextDataBlock(pText,0);					// Make sure pointer is null for the realloc call.
 		void * pBlock = _reallocBlock(pText,nLines);
 
-		_updateLineInfo( pText, pBlock, pBuffer );
+		_updateLineInfo( pText, pBlock, pChars );
 	}
 
-	//____ removeComponent() _________________________________________________________
+	//____ removeText() _________________________________________________________
 
-	void StdTextMapper::removeComponent( CText * pText )
+	void StdTextMapper::removeText( Text * pText )
 	{
 		free( _dataBlock(pText) );
-		_setComponentDataBlock(pText, 0);
+		_setTextDataBlock(pText, 0);
 
-		if( pText == m_pFocusedComponent )
+		if( pText == m_pFocusedText )
 		{
-			m_pFocusedComponent = 0;
+			m_pFocusedText = 0;
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 			m_tickRouteId = 0;
 		}
@@ -118,7 +118,7 @@ namespace wg
 		{
 			m_alignment = alignment;
 
-			//TODO: Make all components dirty
+			//TODO: Make all Texts dirty
 		}
 	}
 
@@ -130,7 +130,7 @@ namespace wg
 		{
 			m_bLineWrap = bWrap;
 
-			//TODO: Make all components dirty
+			//TODO: Make all Texts dirty
 		}
 	}
 
@@ -165,7 +165,7 @@ namespace wg
 
 	//____ charAtPos() _________________________________________________________
 
-	int StdTextMapper::charAtPos( const CText * pText, CoordI pos ) const
+	int StdTextMapper::charAtPos( const Text * pText, CoordI pos ) const
 	{
 		int line = _lineAtPosY(pText, pos.y, SelectMode::Marked );
 		if( line == -1 )
@@ -176,12 +176,12 @@ namespace wg
 
 	//_____ charPos() ______________________________________________________
 
-	CoordI StdTextMapper::charPos( const CText * pText, int charOfs ) const
+	CoordI StdTextMapper::charPos( const Text * pText, int charOfs ) const
 	{
 		int line = charLine(pText, charOfs);
 
 		int ofsX = _charPosX(pText, charOfs);
-		int ofsY = _linePosY(_dataBlock(pText), line, pText->_size().h );
+		int ofsY = _linePosY(_dataBlock(pText), line, _size(pText).h );
 
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 		ofsY += pLine->base;
@@ -191,7 +191,7 @@ namespace wg
 
 	//____ charRect() ________________________________________________________
 
-	RectI StdTextMapper::charRect( const CText * pText, int charOfs ) const
+	RectI StdTextMapper::charRect( const Text * pText, int charOfs ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -199,7 +199,7 @@ namespace wg
 
 		// Find correct line and determine yOfs
 
-		int yOfs = _textPosY( pHeader, pText->_size().h );
+		int yOfs = _textPosY( pHeader, _size(pText).h );
 		while( pLineInfo->length <= charOfs )
 		{
 			yOfs += pLineInfo->spacing;
@@ -209,12 +209,12 @@ namespace wg
 
 		// Determine xOfs by parsing line until character
 
-		int xOfs = _linePosX( pLineInfo, pText->_size().w );
+		int xOfs = _linePosX( pLineInfo, _size(pText).w );
 
 		TextAttr		baseAttr;
 		_baseStyle(pText)->exportAttr( _state(pText), &baseAttr );
 
-		const Char * pFirst = _charBuffer(pText)->chars() + pLineInfo->offset;
+		const Char * pFirst = _chars(pText) + pLineInfo->offset;
 		const Char * pLast = pFirst + charOfs;
 
 		xOfs += _charDistance( pFirst, pLast, baseAttr, _state(pText) );
@@ -242,7 +242,7 @@ namespace wg
 
 	//____ charLine() ________________________________________________________
 
-	int StdTextMapper::charLine( const CText * pText, int charOfs ) const
+	int StdTextMapper::charLine( const Text * pText, int charOfs ) const
 	{
 		if( charOfs < 0 )
 			return -1;
@@ -262,7 +262,7 @@ namespace wg
 
 	//____ lineBegin() ________________________________________________________
 
-	int StdTextMapper::lineBegin( const CText * pText, int lineNb ) const
+	int StdTextMapper::lineBegin( const Text * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -276,7 +276,7 @@ namespace wg
 
 	//____ lineEnd() ___________________________________________________________
 
-	int StdTextMapper::lineEnd( const CText * pText, int lineNb ) const
+	int StdTextMapper::lineEnd( const Text * pText, int lineNb ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHeader = _header(pBlock);
@@ -290,7 +290,7 @@ namespace wg
 
 	//____ wordBegin() _________________________________________________________
 
-	int StdTextMapper::wordBegin( const CText * pText, int charOfs ) const
+	int StdTextMapper::wordBegin( const Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -298,7 +298,7 @@ namespace wg
 
 	//____ wordEnd() ___________________________________________________________
 
-	int StdTextMapper::wordEnd( const CText * pText, int charOfs ) const
+	int StdTextMapper::wordEnd( const Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs+1;
@@ -367,19 +367,21 @@ namespace wg
 
 	void StdTextMapper::receive( Msg * pMsg )
 	{
-		if( pMsg->type() == MsgType::Tick && m_pFocusedComponent )
+		if( pMsg->type() == MsgType::Tick && m_pFocusedText )
 		{
-			const EditState * pEditState = m_pFocusedComponent->_editState();
-
-			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-			if( pEditState && pEditState->bCaret && pCaret )
-			{
-				int ms = static_cast<TickMsg*>(pMsg)->timediff();
-
-				bool bDirty = pCaret->tick( ms );
-				if( bDirty )
+			if( _caretVisible(m_pFocusedText) )
+			{				
+				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+				if( pCaret )
 				{
-					_setComponentDirty( m_pFocusedComponent, pCaret->dirtyRect(charRect(m_pFocusedComponent, pEditState->caretOfs)) );
+					int ms = static_cast<TickMsg*>(pMsg)->timediff();
+
+					bool bDirty = pCaret->tick( ms );
+					if( bDirty )
+					{
+						int caretOfs = _caretOfs(m_pFocusedText);
+						_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
+					}
 				}
 			}
 		}
@@ -387,13 +389,13 @@ namespace wg
 
 	//____ _render()___________________________________________________________
 
-	void StdTextMapper::render( CText * pText, GfxDevice * pDevice, const RectI& canvas )
+	void StdTextMapper::render( Text * pText, GfxDevice * pDevice, const RectI& canvas )
 	{
 
 		void * pBlock = _dataBlock(pText);
 		BlockHeader * pHeader = _header(pBlock);
 		LineInfo * pLineInfo = _lineInfo(pBlock);
-		const Char * pCharArray = _charBuffer(pText)->chars();
+		const Char * pCharArray = _chars(pText);
 
 		CoordI lineStart = canvas.pos();
 		lineStart.y += _textPosY( pHeader, canvas.h );
@@ -422,7 +424,8 @@ namespace wg
 		_renderBack( pText, pDevice, canvas );
 
 
-		const EditState * pEditState = _editState( pText );
+		int selBeg, selEnd;
+		std::tie(selBeg,selEnd) = _selection(pText);
 
 		// Get selection start and end
 
@@ -431,14 +434,8 @@ namespace wg
 
 		bool bInSelection = false;
 
-		if( pEditState && pEditState->selectOfs != pEditState->caretOfs )
+		if( selBeg != selEnd )
 		{
-			int selBeg = pEditState->selectOfs;
-			int selEnd = pEditState->caretOfs;
-			if( selBeg > selEnd )
-				std::swap( selBeg, selEnd );
-
-
 			if( m_selectionBackRenderMode != BlendMode::Ignore )
 			{
 				if( m_selectionBackRenderMode != BlendMode::Undefined )
@@ -559,12 +556,15 @@ namespace wg
 
 		// Render caret (if there is any)
 
-		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		if( pEditState && pEditState->bCaret && pCaret )
-		{
-			pCaret->render( pDevice, charRect(pText, pEditState->caretOfs) + canvas.pos() );
-		}
+		if( _caretVisible(pText) )
+		{			
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 
+			if( pCaret )
+			{
+				pCaret->render( pDevice, charRect(pText, _caretOfs(pText)) + canvas.pos() );
+			}
+		}
 		// Pop any changes to cliplist.
 
 		popClipList(pDevice, popData);
@@ -575,9 +575,9 @@ namespace wg
 
 	//____ _renderBack()___________________________________________________________
 
-	void StdTextMapper::_renderBack( CText * pText, GfxDevice * pDevice, const RectI& canvas )
+	void StdTextMapper::_renderBack( Text * pText, GfxDevice * pDevice, const RectI& canvas )
 	{
-		const Char * pCharArray = _charBuffer(pText)->chars();
+		const Char * pCharArray = _chars(pText);
 		const Char * pBeg = pCharArray;
 		const Char * pChar;
 
@@ -613,7 +613,7 @@ namespace wg
 
 	//____ _renderBackSection() ________________________________________________
 
-	void StdTextMapper::_renderBackSection( CText * pText, GfxDevice * pDevice, const RectI& canvas,
+	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const RectI& canvas,
 											int begChar, int endChar, Color color )
 	{
 
@@ -673,73 +673,80 @@ namespace wg
 
 	//____ caretMove() ________________________________________________________
 
-	void StdTextMapper::caretMove( CText * pText, int ofs )
+	void StdTextMapper::caretMove( Text * pText, int newOfs, int oldOfs )
 	{
-		const EditState * pEditState = pText->_editState();
-
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		if( pEditState->bCaret && pCaret )
+		if( _caretVisible(pText) && pCaret )
 		{
 			bool bDirty = pCaret->restartCycle();
 
-			if( bDirty || pEditState->caretOfs != ofs )
+			if( bDirty || oldOfs != newOfs )
 			{
-				_setComponentDirty( pText, pCaret->dirtyRect( charRect(pText, ofs) ));
+				_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, newOfs) ));
 
-				if( pEditState->caretOfs != ofs )
-					_setComponentDirty( pText, pCaret->dirtyRect( charRect(pText, pEditState->caretOfs)) );
+				if( oldOfs != newOfs )
+					_setTextDirty( pText, pCaret->dirtyRect( charRect(pText, oldOfs)) );
 			}
 		}
 	}
 
 	//____ selectionChange() __________________________________________________
 
-	void StdTextMapper::selectionChange( CText * pText, int selectOfs, int caretOfs )
+	void StdTextMapper::selectionChange( Text * pText, int selectOfs, int caretOfs, int oldSelectOfs, int oldCaretOfs )
 	{
-		RectI dirt;
+		int oldBeg = std::min(oldSelectOfs,oldCaretOfs);
+		int oldEnd = std::max(oldSelectOfs,oldCaretOfs);
 
-		const EditState * pEditState = pText->_editState();
+		int newBeg = std::min(selectOfs,caretOfs);
+		int newEnd = std::max(selectOfs,caretOfs);
 
-		if( selectOfs != pEditState->selectOfs )
+		// Two cases here, either new and old selection overlaps or they are completely disjointed
+		
+		if( (newBeg < oldBeg && newEnd > oldBeg) || (newBeg > oldBeg && oldEnd > newBeg) )
 		{
-			int beg = std::min(selectOfs,pEditState->selectOfs);
-			int len = std::max(selectOfs,pEditState->selectOfs) - beg;
-			dirt = rectForRange( pText, beg, len );
-		}
-
-		if( caretOfs != pEditState->caretOfs )
-		{
-			int beg = std::min(caretOfs,pEditState->caretOfs);
-			int len = std::max(caretOfs,pEditState->caretOfs) - beg;
-
-			if( dirt.isEmpty() )
-				dirt = rectForRange( pText, beg, len );
-			else
-				dirt.growToContain(rectForRange( pText, beg, len ) );
-
-			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-			if( pEditState->bCaret && pCaret )
+			//  Selection is overlapping, we just need to modify it at the edges
+			
+			if( oldBeg != newBeg )
 			{
-				pCaret->restartCycle();
-				dirt.growToContain( pCaret->dirtyRect( charRect(pText, caretOfs) ));
-				dirt.growToContain( pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs)) );
+				int beg = std::min(oldBeg,newBeg);
+				int len = std::max(oldBeg,newBeg) - beg;
+
+				_setTextDirty( pText, rectForRange( pText, beg, len ) );
 			}
+
+			if( oldEnd != newEnd )
+			{
+				int beg = std::min(oldEnd,newEnd);
+				int len = std::max(oldEnd,newEnd) - beg;
+
+				_setTextDirty( pText, rectForRange( pText, beg, len ) );
+			}			
 		}
-
-		_setComponentDirty( pText, dirt );
+		else
+		{
+			// Selection is not overlapping, we have two dirty areas
+			
+			if( oldEnd != oldBeg )
+				_setTextDirty( pText, rectForRange( pText, oldBeg, oldEnd - oldBeg ));
+			if( newEnd != oldEnd > 0 )
+				_setTextDirty( pText, rectForRange( pText, newBeg, newEnd - oldBeg ));
+		}
+		
+		// Update/redraw the caret
+		
+		caretMove( pText, caretOfs, oldCaretOfs );		
 	}
-
 
 	//____ onTextModified() ____________________________________________________
 
-	void StdTextMapper::onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded )
+	void StdTextMapper::onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded )
 	{
 		onRefresh(pText);
 	}
 
 	//____ onResized() ___________________________________________________________
 
-	void StdTextMapper::onResized( CText * pText, SizeI newSize, SizeI oldSize )
+	void StdTextMapper::onResized( Text * pText, SizeI newSize, SizeI oldSize )
 	{
 		if (m_bLineWrap)
 			onRefresh(pText);
@@ -750,21 +757,21 @@ namespace wg
 
 	//____ onStateChanged() ______________________________________________________
 
-	void StdTextMapper::onStateChanged( CText * pText, State newState, State oldState )
+	void StdTextMapper::onStateChanged( Text * pText, State newState, State oldState )
 	{
-		// TODO: Support for more than one input device, focusing different (or same) components.
+		// TODO: Support for more than one input device, focusing different (or same) texts.
 
 		if( newState.isFocused() != oldState.isFocused() )
 		{
 			if( newState.isFocused() )
 			{
-				m_pFocusedComponent = pText;
+				m_pFocusedText = pText;
 				if( !m_tickRouteId )
 					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 			}
 			else
 			{
-				m_pFocusedComponent = 0;
+				m_pFocusedText = 0;
 				if( m_tickRouteId )
 				{
 					Base::msgRouter()->deleteRoute( m_tickRouteId );
@@ -776,51 +783,51 @@ namespace wg
 
 	//____ onStyleChanged() ______________________________________________________
 
-	void StdTextMapper::onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
+	void StdTextMapper::onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle )
 	{
 		//TODO: Optimize: only update line info if textsize possibly affected.
 
 		void * pBlock = _dataBlock(pText);
 
-		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
+		_updateLineInfo( pText, pBlock, _chars(pText) );
 
-		_setComponentDirty(pText);
+		_setTextDirty(pText);
 	}
 
 	//____ onCharStyleChanged() __________________________________________________
 
-	void StdTextMapper::onCharStyleChanged( CText * pText, int ofs, int len )
+	void StdTextMapper::onCharStyleChanged( Text * pText, int ofs, int len )
 	{
 		void * pBlock = _dataBlock(pText);
 
-		_updateLineInfo( pText, pBlock, _charBuffer(pText) );
+		_updateLineInfo( pText, pBlock, _chars(pText) );
 
-		_setComponentDirty(pText);
+		_setTextDirty(pText);
 	}
 
 	//____ onRefresh() ___________________________________________________________
 
-	void StdTextMapper::onRefresh( CText * pText )
+	void StdTextMapper::onRefresh( Text * pText )
 	{
-		CharBuffer * pBuffer = _charBuffer(pText);
-		int nLines = _countLines( pText, pBuffer );
+		const Char * pChars = _chars(pText);
+		int nLines = _countLines( pText, pChars );
 
 		void * pBlock = _dataBlock(pText);
 		if( !pBlock || _header(pBlock)->nbLines != nLines )
 			pBlock = _reallocBlock(pText,nLines);
 
-		_updateLineInfo( pText, pBlock, pBuffer );
-		_setComponentDirty(pText);
+		_updateLineInfo( pText, pBlock, pChars );
+		_setTextDirty(pText);
 	}
 
 	//___ rectForRange() _________________________________________________________
 
-	RectI StdTextMapper::rectForRange( const CText * pText, int ofs, int length ) const
+	RectI StdTextMapper::rectForRange( const Text * pText, int ofs, int length ) const
 	{
 		int begChar = ofs;
 		int endChar = ofs + length;
 
-		SizeI canvas = pText->_size();
+		SizeI canvas = _size(pText);
 
 
 		CoordI begPos = charPos(pText, begChar);
@@ -881,26 +888,26 @@ namespace wg
 
 	// Includes left/right margin where applicable.
 
-	RectI StdTextMapper::rectForCaret( const CText * pText ) const
+	RectI StdTextMapper::rectForCaret( const Text * pText ) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		if( !pText->_editState()->bCaret || !pCaret )
+		if( !_caretVisible(pText) || !pCaret )
 			return RectI();
 
-		return pCaret->dirtyRect( charRect(pText, pText->_editState()->caretOfs) );
+		return pCaret->dirtyRect( charRect(pText, _caretOfs(pText) ) );
 	}
 
 
 	//____ textDirection() ____________________________________________________
 
-	Direction StdTextMapper::textDirection( CText * pText, int charOfs ) const
+	Direction StdTextMapper::textDirection( Text * pText, int charOfs ) const
 	{
 		return Direction::Right;
 	}
 
 	//____ caretToPos() _____________________________________________________
 
-	int StdTextMapper::caretToPos( CText * pText, CoordI pos, int& wantedLineOfs ) const
+	int StdTextMapper::caretToPos( Text * pText, CoordI pos, int& wantedLineOfs ) const
 	{
 		wantedLineOfs = -1;
 
@@ -910,7 +917,7 @@ namespace wg
 
 	//____ caretUp() ___________________________________________________________
 
-	int StdTextMapper::caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretUp( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -926,7 +933,7 @@ namespace wg
 
 	//____ caretDown() _________________________________________________________
 
-	int StdTextMapper::caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretDown( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine(pText, charOfs );
 
@@ -942,7 +949,7 @@ namespace wg
 
 	//____ caretLeft() _________________________________________________________
 
-	int StdTextMapper::caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretLeft( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		if( charOfs > 0 )
 			charOfs--;
@@ -953,9 +960,9 @@ namespace wg
 
 	//____ caretRight() ________________________________________________________
 
-	int StdTextMapper::caretRight( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretRight( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
-		if( charOfs < _charBuffer(pText)->length() )
+		if( charOfs < _length(pText) )
 			charOfs++;
 
 		wantedLineOfs = -1;
@@ -964,7 +971,7 @@ namespace wg
 
 	//____ caretHome() ________________________________________________________
 
-	int StdTextMapper::caretHome( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretHome( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -979,7 +986,7 @@ namespace wg
 
 	//____ caretEnd() ________________________________________________________
 
-	int StdTextMapper::caretEnd( CText * pText, int charOfs, int& wantedLineOfs ) const
+	int StdTextMapper::caretEnd( Text * pText, int charOfs, int& wantedLineOfs ) const
 	{
 		int line = charLine( pText, charOfs );
 
@@ -994,7 +1001,7 @@ namespace wg
 
 	//____ caretPrevWord() _____________________________________________________
 
-	int StdTextMapper::caretPrevWord( CText * pText, int charOfs ) const
+	int StdTextMapper::caretPrevWord( Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -1002,7 +1009,7 @@ namespace wg
 
 	//____ caretNextWord() _____________________________________________________
 
-	int StdTextMapper::caretNextWord( CText * pText, int charOfs ) const
+	int StdTextMapper::caretNextWord( Text * pText, int charOfs ) const
 	{
 		//TODO: Implement!
 		return charOfs;
@@ -1011,9 +1018,9 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 
-	String StdTextMapper::tooltip( const CText * pText ) const
+	String StdTextMapper::tooltip( const Text * pText ) const
 	{
-		//TODO: Return the text if it overflows the component.
+		//TODO: Return the text if it overflows the mapped area?
 
 		return String();
 	}
@@ -1021,40 +1028,39 @@ namespace wg
 
 	//____ preferredSize() _________________________________________________________
 
-	SizeI StdTextMapper::preferredSize( const CText * pText ) const
+	SizeI StdTextMapper::preferredSize( const Text * pText ) const
 	{
 		return _header(_dataBlock(pText))->preferredSize;
 	}
 
 	//____ matchingWidth() _________________________________________________________
 
-	int StdTextMapper::matchingWidth( const CText * pText, int height ) const
+	int StdTextMapper::matchingWidth( const Text * pText, int height ) const
 	{
 		return	_header(_dataBlock(pText))->preferredSize.w;
 	}
 
 	//____ matchingHeight() ________________________________________________________
 
-	int StdTextMapper::matchingHeight( const CText * pText, int width ) const
+	int StdTextMapper::matchingHeight( const Text * pText, int width ) const
 	{
-		return _calcMatchingHeight(_charBuffer(pText), _baseStyle(pText), _state(pText), width);
+		return _calcMatchingHeight(_chars(pText), _baseStyle(pText), _state(pText), width);
 	}
 
 	//____ _countLines() ___________________________________________________________
 
-	int StdTextMapper::_countLines( CText * pText, const CharBuffer * pBuffer ) const
+	int StdTextMapper::_countLines( Text * pText, const Char * pChars ) const
 	{
 		if (m_bLineWrap)
-			return _countWrapLines(pBuffer, _baseStyle(pText), _state(pText), pText->_size().w);
+			return _countWrapLines(pChars, _baseStyle(pText), _state(pText), _size(pText).w);
 		else
-			return _countFixedLines(pBuffer);
+			return _countFixedLines(pChars);
 	}
 
 	//____ _countFixedLines() ___________________________________________________________
 
-	int StdTextMapper::_countFixedLines(const CharBuffer * pBuffer) const
+	int StdTextMapper::_countFixedLines(const Char * pChars) const
 	{
-		const Char * pChars = pBuffer->chars();
 		int lines = 0;
 		while (true)
 		{
@@ -1071,10 +1077,8 @@ namespace wg
 
 	//____ _countWrapLines() ________________________________________________
 
-	int StdTextMapper::_countWrapLines(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
+	int StdTextMapper::_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
 	{
-		const Char * pChars = pBuffer->chars();
-
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
 
@@ -1204,10 +1208,9 @@ namespace wg
 
 	//____ _calcMatchingHeight() ________________________________________________
 
-	int StdTextMapper::_calcMatchingHeight(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
+	int StdTextMapper::_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth) const
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		const Char * pChars = pBuffer->chars();
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
@@ -1402,14 +1405,14 @@ namespace wg
 
 	//____ _reallocBlock() _________________________________________________________
 
-	void * StdTextMapper::_reallocBlock( CText* pText, int nLines )
+	void * StdTextMapper::_reallocBlock( Text* pText, int nLines )
 	{
 		void * pBlock = _dataBlock(pText);
 		if( pBlock )
 			free( pBlock );
 
 		pBlock = malloc( sizeof(BlockHeader) + sizeof(LineInfo)*nLines);
-		_setComponentDataBlock(pText, pBlock);
+		_setTextDataBlock(pText, pBlock);
 		((BlockHeader *)pBlock)->nbLines = nLines;
 
 		return pBlock;
@@ -1418,7 +1421,7 @@ namespace wg
 
 	//____ _updateLineInfo() _______________________________________________________
 
-	void StdTextMapper::_updateLineInfo( CText * pText, void * pBlock, const CharBuffer * pBuffer )
+	void StdTextMapper::_updateLineInfo( Text * pText, void * pBlock, const Char * pChars )
 	{
 		BlockHeader * pHeader = _header(_dataBlock(pText));
 		SizeI preferredSize;
@@ -1428,12 +1431,12 @@ namespace wg
 		{
 			//TODO: This is slow, calling both _updateFixedLineInfo and _updateWrapLineInfo if line is wrapped, just so we can update preferredSize.
 
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText));
-			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText), pText->_size().w);
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText));
+			pHeader->textSize = _updateWrapLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText), _size(pText).w);
 		}
 		else
 		{
-			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pBuffer, _baseStyle(pText), _state(pText));
+			preferredSize = _updateFixedLineInfo(_header(pBlock), _lineInfo(pBlock), pChars, _baseStyle(pText), _state(pText));
 			pHeader->textSize = preferredSize;
 		}
 
@@ -1441,16 +1444,16 @@ namespace wg
 		if (preferredSize != pHeader->preferredSize)
 		{
 			pHeader->preferredSize = preferredSize;
-			_requestComponentResize(pText);
+			_requestTextResize(pText);
 		}
 	}
 
 	//____ _updateWrapLineInfo() ________________________________________________
 
-	SizeI StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth )
+	SizeI StdTextMapper::_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		const Char * pChars = pBuffer->chars();
+		const Char * pTextStart = pChars;
 
 		TextAttr		baseAttr;
 		pBaseStyle->exportAttr(state, &baseAttr);
@@ -1481,7 +1484,7 @@ namespace wg
 		int bpMaxDescendGap = 0;							// Including the line gap.
 
 
-		pLines->offset = int(pChars - pBuffer->chars());
+		pLines->offset = int(pChars - pTextStart);
 
 		while (true)
 		{
@@ -1561,7 +1564,7 @@ namespace wg
 
 				// Finish this line
 
-				pLines->length = int(pChars - (pBuffer->chars() + pLines->offset)) + 1; 		// +1 to include line terminator.
+				pLines->length = int(pChars - (pTextStart + pLines->offset)) + 1; 		// +1 to include line terminator.
 
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
@@ -1583,7 +1586,7 @@ namespace wg
 
 				pChars++;			// Line terminator belongs to previous line.
 
-				pLines->offset = int(pChars - pBuffer->chars());
+				pLines->offset = int(pChars - pTextStart);
 				width = 0;
 				potentialWidth = 0;
 				pBreakpoint = nullptr;
@@ -1612,7 +1615,7 @@ namespace wg
 
 					// Finish this line
 
-					pLines->length = int(pBreakpoint - (pBuffer->chars() + pLines->offset));
+					pLines->length = int(pBreakpoint - (pTextStart + pLines->offset));
 
 					pLines->width = bpWidth;
 					pLines->height = bpMaxAscend + bpMaxDescend;
@@ -1631,7 +1634,7 @@ namespace wg
 
 					pChars = pBreakpoint;
 
-					pLines->offset = int(pChars - pBuffer->chars());
+					pLines->offset = int(pChars - pTextStart);
 					width = 0;
 					potentialWidth = 0;
 					pBreakpoint = nullptr;
@@ -1675,11 +1678,11 @@ namespace wg
 
 	//____ _updateFixedLineInfo() ________________________________________________
 
-	SizeI StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle,
+	SizeI StdTextMapper::_updateFixedLineInfo( BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle,
 												State state )
 	{
 		Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-		const Char * pChars = pBuffer->chars();
+		const Char * pTextStart = pChars;
 
 		SizeI		size;
 
@@ -1700,7 +1703,7 @@ namespace wg
 		int spaceAdv = 0;
 		int width = 0;
 
-		pLines->offset = int(pChars - pBuffer->chars());
+		pLines->offset = int(pChars - pTextStart);
 
 		while( true )
 		{
@@ -1772,7 +1775,7 @@ namespace wg
 
 				// Finish this line
 
-				pLines->length = int(pChars - (pBuffer->chars() + pLines->offset)) +1; 		// +1 to include line terminator.
+				pLines->length = int(pChars - (pTextStart + pLines->offset)) +1; 		// +1 to include line terminator.
 
 				pLines->width = width;
 				pLines->height = maxAscend + maxDescend;
@@ -1796,7 +1799,7 @@ namespace wg
 
 				pChars++;			// Line terminator belongs to previous line.
 
-				pLines->offset = int(pChars - pBuffer->chars());
+				pLines->offset = int(pChars - pTextStart);
 				width = 0;
 				pPrevGlyph = nullptr;
 
@@ -1881,24 +1884,24 @@ namespace wg
 
 	//____ _charPosX() _________________________________________________________
 
-	int StdTextMapper::_charPosX( const CText * pText, int charOfs ) const
+	int StdTextMapper::_charPosX( const Text * pText, int charOfs ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + charLine(pText, charOfs);
-		const Char * pBufferStart = _charBuffer(pText)->chars();
+		const Char * pChars = _chars(pText);
 
 		TextAttr attr;
 		_baseStyle(pText)->exportAttr( _state(pText), &attr );
 
-		return _linePosX( pLine, pText->_size().w ) + _charDistance( pBufferStart + pLine->offset, pBufferStart + charOfs, attr, _state(pText) );
+		return _linePosX( pLine, _size(pText).w ) + _charDistance( pChars + pLine->offset, pChars + charOfs, attr, _state(pText) );
 	}
 
 	//____ _lineAtPosY() _______________________________________________________
 
-	int StdTextMapper::_lineAtPosY( const CText * pText, int posY, SelectMode mode ) const
+	int StdTextMapper::_lineAtPosY( const Text * pText, int posY, SelectMode mode ) const
 	{
 		const void * pBlock = _dataBlock(pText);
 		const BlockHeader * pHead = _header(pBlock);
-		int linePosY = _textPosY( pHead, pText->_size().h );
+		int linePosY = _textPosY( pHead, _size(pText).h );
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) );
 
 		if( posY < linePosY )
@@ -1975,12 +1978,12 @@ namespace wg
 
 	//____ _charAtPosX() _______________________________________________________
 
-	int StdTextMapper::_charAtPosX( const CText * pText, int line, int posX, SelectMode mode ) const
+	int StdTextMapper::_charAtPosX( const Text * pText, int line, int posX, SelectMode mode ) const
 	{
 		const LineInfo * pLine = _lineInfo( _dataBlock(pText) ) + line;
 
 
-		int distance = _linePosX( pLine, pText->_size().w );
+		int distance = _linePosX( pLine, _size(pText).w );
 
 		// Handle special case when we are left of line.
 
@@ -2004,7 +2007,7 @@ namespace wg
 
 		// We are somewhere inside the line, lets loop through characters
 
-		const Char * pTextBegin = _charBuffer(pText)->chars();
+		const Char * pTextBegin = _chars(pText);
 		State state = _state(pText);
 
 		TextAttr baseAttr;

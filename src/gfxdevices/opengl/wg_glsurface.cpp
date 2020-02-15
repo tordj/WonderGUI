@@ -112,7 +112,7 @@ namespace wg
 	//____ Constructor _____________________________________________________________
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
         HANDLE_GLERROR(glGetError());
 /*
@@ -148,7 +148,7 @@ namespace wg
 	}
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
 	{
 		// Set general information
 
@@ -162,7 +162,7 @@ namespace wg
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
 	{
 	   _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
@@ -186,7 +186,7 @@ namespace wg
 	}
 
 
-	GlSurface::GlSurface( Surface * pOther, int flags )
+	GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
 	{
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;

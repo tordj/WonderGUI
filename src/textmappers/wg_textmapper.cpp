@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_textmapper.h>
-#include <wg_ctext.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -59,48 +59,43 @@ namespace wg
 
 	//____ tooltip() _______________________________________________________________
 
-	String TextMapper::tooltip( const CText * pText ) const
+	String TextMapper::tooltip( const Text * pText ) const
 	{
 		return String();
 	}
 
-	//____ _charBuffer() ___________________________________________________________
+	//____ _chars() ___________________________________________________________
 
-	CharBuffer * TextMapper::_charBuffer( CText * pText ) const
+	const Char * TextMapper::_chars( const Text * pText ) const
 	{
-		return &(pText->m_charBuffer);
-	}
-
-	const CharBuffer * TextMapper::_charBuffer( const CText * pText ) const
-	{
-		return &(pText->m_charBuffer);
+		return pText->_textBegin();
 	}
 
 	//____ _dataBlock() _______________________________________________________
 
-	void * TextMapper::_dataBlock( CText * pText) const
+	void * TextMapper::_dataBlock( Text * pText) const
 	{
-		return pText->m_pTextMapperData;
+		return pText->m_pMapperData;
 	}
 
-	const void * TextMapper::_dataBlock( const CText * pText) const
+	const void * TextMapper::_dataBlock( const Text * pText) const
 	{
-		return pText->m_pTextMapperData;
+		return pText->m_pMapperData;
 	}
 
 
 	//____ _dataInt() _________________________________________________________
 
-	int TextMapper::_dataInt( const CText * pText ) const
+	int TextMapper::_dataInt( const Text * pText ) const
 	{
-		return pText->m_textMapperData;
+		return pText->m_mapperData;
 	}
 
 	//____ _baseStyle() _________________________________________________________
 
-	const TextStyle * TextMapper::_baseStyle( const CText * pText ) const
+	const TextStyle * TextMapper::_baseStyle( const Text * pText ) const
 	{
-		TextStyle * pStyle = pText->m_pStyle.rawPtr();
+		TextStyle * pStyle = pText->_textStyle();
 		if( pStyle == 0 )
 			pStyle = Base::defaultStyle().rawPtr();
 
@@ -109,50 +104,78 @@ namespace wg
 
 	//____ _state() _________________________________________________________
 
-	State TextMapper::_state( const CText * pText ) const
+	State TextMapper::_state( const Text * pText ) const
 	{
-		return pText->m_state;
+		return pText->_textState();
 	}
 
-	//____ _editState() _________________________________________________________
+	//____ _setTextDataBlock() ____________________________________________________
 
-	const EditState * TextMapper::_editState( const CText * pText ) const
+	void  TextMapper::_setTextDataBlock( Text * pText, void * pBlock )
 	{
-		return pText->_editState();
+		pText->m_pMapperData = pBlock;
 	}
 
+	//____ _setTextDataInt() ______________________________________________________
 
-	//____ _setComponentDataBlock() ____________________________________________________
-
-	void  TextMapper::_setComponentDataBlock( CText * pText, void * pBlock )
+	void  TextMapper::_setTextDataInt( Text * pText, int data )
 	{
-		pText->m_pTextMapperData = pBlock;
+		pText->m_mapperData = data;
 	}
 
-	//____ _setComponentDataInt() ______________________________________________________
+	//____ _setTextDirty() ____________________________________________________
 
-	void  TextMapper::_setComponentDataInt( CText * pText, int data )
-	{
-		pText->m_textMapperData = data;
-	}
-
-	//____ _setComponentDirty() ____________________________________________________
-
-	void  TextMapper::_setComponentDirty( CText * pText )
+	void  TextMapper::_setTextDirty( Text * pText )
 	{
 		pText->_mapperRequestRender();
 	}
 
-	void  TextMapper::_setComponentDirty( CText * pText, const RectI& rect )
+	void  TextMapper::_setTextDirty( Text * pText, const RectI& rect )
 	{
 		pText->_mapperRequestRender( rect );
 	}
 
-	//____ _requestComponentResize() _______________________________________________
+	//____ _requestTextResize() _______________________________________________
 
-	void TextMapper::_requestComponentResize( CText * pText )
+	void TextMapper::_requestTextResize( Text * pText )
 	{
 		pText->_mapperRequestResize();
+	}
+
+	//____ _size() _____________________________________________________________
+
+	SizeI TextMapper::_size( const Text * pText ) const
+	{
+		return pText->_textSize();
+	}
+
+	//____ _length() ___________________________________________________________
+
+	int TextMapper::_length( const Text * pText ) const
+	{
+		return pText->_textLength();
+	}
+
+
+	//____ _caretVisible() _____________________________________________________
+
+	bool TextMapper::_caretVisible( const Text * pText ) const
+	{
+		return pText->_caretVisible();
+	}
+
+	//____ _caretOfs() ____________________________________________________________
+
+	int TextMapper::_caretOfs( const Text * pText ) const
+	{
+		return pText->_caretOffset();
+	}
+
+	//____ _selection() ________________________________________________________
+	
+	std::tuple<int,int>	TextMapper::_selection( const Text * pText ) const
+	{
+		return pText->_selectedText();
 	}
 
 

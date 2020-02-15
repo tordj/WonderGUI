@@ -95,4 +95,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_FILLER_DOT_H
+#endif //WG_IMAGE_DOT_H

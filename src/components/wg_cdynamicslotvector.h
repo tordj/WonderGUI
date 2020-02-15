@@ -30,10 +30,10 @@
 namespace wg
 {
 
-
 	//____ CDynamicSlotVector _________________________________________________________
 
-	template<class SlotType> class CDynamicSlotVector : public CDynamicSlotCollection
+	template<class SlotType> 
+	class CDynamicSlotVector : public CDynamicSlotCollection
 	{
 	public:
 

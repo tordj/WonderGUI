@@ -35,7 +35,7 @@ namespace wg
 
 	//____ Constructor ____________________________________________________________
 
-	Image::Image() : m_pSurface(0)
+	Image::Image()
 	{
 	}
 

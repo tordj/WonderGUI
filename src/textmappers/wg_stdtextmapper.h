@@ -78,64 +78,64 @@ namespace wg
 
 		//.____ Internal __________________________________________
 
-		virtual void	addComponent( CText * pText ) override;
-		virtual void	removeComponent( CText * pText ) override;
+		virtual void	addText( Text * pText ) override;
+		virtual void	removeText( Text * pText ) override;
 
-		virtual int		charAtPos( const CText * pText, CoordI pos ) const override;
-		virtual CoordI	charPos( const CText * pText, int charOfs ) const override;	// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual RectI	charRect( const CText * pText, int charOfs ) const override;
-		virtual int		charLine( const CText * pText, int charOfs ) const override;
+		virtual int		charAtPos( const Text * pText, CoordI pos ) const override;
+		virtual CoordI	charPos( const Text * pText, int charOfs ) const override;	// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual RectI	charRect( const Text * pText, int charOfs ) const override;
+		virtual int		charLine( const Text * pText, int charOfs ) const override;
 
-//		virtual int		charLineOfs( const CText * pText, int charOfs ) const;
-//		virtual CoordI	lineTopLeftPos( const CText * pText, int line ) const;
-//		virtual CoordI	lineBaselinePos( const CText * pText, int line ) const;
-//		virtual int		lineWidth( const CText * pText, int line ) const;
-//		virtual int		lineHeight( const CText * pText, int line ) const;
-//		virtual RectI	lineGeo( const CText * pText, int line ) const;
-//		virtual int		lines( const CText * pText ) const;
+//		virtual int		charLineOfs( const Text * pText, int charOfs ) const;
+//		virtual CoordI	lineTopLeftPos( const Text * pText, int line ) const;
+//		virtual CoordI	lineBaselinePos( const Text * pText, int line ) const;
+//		virtual int		lineWidth( const Text * pText, int line ) const;
+//		virtual int		lineHeight( const Text * pText, int line ) const;
+//		virtual RectI	lineGeo( const Text * pText, int line ) const;
+//		virtual int		lines( const Text * pText ) const;
 
-		virtual int		lineBegin( const CText * pText, int lineNb ) const override;
-		virtual int		lineEnd( const CText * pText, int lineNb ) const override;
+		virtual int		lineBegin( const Text * pText, int lineNb ) const override;
+		virtual int		lineEnd( const Text * pText, int lineNb ) const override;
 
-		virtual int		wordBegin( const CText * pText, int charOfs ) const override;
-		virtual int		wordEnd( const CText * pText, int charOfs ) const override;
+		virtual int		wordBegin( const Text * pText, int charOfs ) const override;
+		virtual int		wordEnd( const Text * pText, int charOfs ) const override;
 
 
 		virtual void 	receive( Msg * pMsg ) override;
-		virtual void 	render( CText * pText, GfxDevice * pDevice, const RectI& canvas ) override;
+		virtual void 	render( Text * pText, GfxDevice * pDevice, const RectI& canvas ) override;
 
-		virtual void	caretMove( CText * pText, int newOfs ) override;
-		virtual void	selectionChange( CText * pText, int newSelectOfs, int newCaretOfs ) override;
+		virtual void	caretMove( Text * pText, int newOfs, int oldOfs ) override;
+		virtual void	selectionChange( Text * pText, int newBeg, int newLen, int oldBeg, int oldLen ) override;
 
-		virtual void	onTextModified( CText * pText, int ofs, int charsRemoved, int charsAdded ) override;
-		virtual void	onResized( CText * pText, SizeI newSize, SizeI oldSize ) override;
-		virtual void	onStateChanged( CText * pText, State newState, State oldState ) override;
-		virtual void	onStyleChanged( CText * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) override;
-		virtual void	onCharStyleChanged( CText * pText, int ofs, int len ) override;
-		virtual void	onRefresh( CText * pText ) override;
+		virtual void	onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded ) override;
+		virtual void	onResized( Text * pText, SizeI newSize, SizeI oldSize ) override;
+		virtual void	onStateChanged( Text * pText, State newState, State oldState ) override;
+		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) override;
+		virtual void	onCharStyleChanged( Text * pText, int ofs, int len ) override;
+		virtual void	onRefresh( Text * pText ) override;
 
 
 
-		virtual SizeI	preferredSize( const CText * pText ) const override;
-		virtual int		matchingWidth( const CText * pText, int height ) const override;
-		virtual int		matchingHeight( const CText * pText, int width ) const override;
+		virtual SizeI	preferredSize( const Text * pText ) const override;
+		virtual int		matchingWidth( const Text * pText, int height ) const override;
+		virtual int		matchingHeight( const Text * pText, int width ) const override;
 
-		virtual RectI	rectForRange( const CText * pText, int ofs, int length ) const override;
-		virtual RectI	rectForCaret( const CText * pText ) const override;
+		virtual RectI	rectForRange( const Text * pText, int ofs, int length ) const override;
+		virtual RectI	rectForCaret( const Text * pText ) const override;
 
-		virtual String 	tooltip( const CText * pText ) const override;
+		virtual String 	tooltip( const Text * pText ) const override;
 
-		virtual Direction 	textDirection( CText * pText, int charOfs ) const override;
-		virtual int		caretToPos( CText * pText, CoordI pos, int& wantedLineOfs ) const override;
-		virtual int		caretUp( CText * pText, int charOfs, int& wantedLineOfs ) const override;
-		virtual int		caretDown( CText * pText, int charOfs, int& wantedLineOfs ) const override;
-		virtual int		caretLeft( CText * pText, int charOfs, int& wantedLineOfs ) const override;
-		virtual int		caretRight( CText * pText, int charOfs, int& wantedLineOfs ) const override;
-		virtual int		caretHome( CText * pText, int charOfs, int& wantedLineOfs ) const override;
-		virtual int		caretEnd( CText * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual Direction 	textDirection( Text * pText, int charOfs ) const override;
+		virtual int		caretToPos( Text * pText, CoordI pos, int& wantedLineOfs ) const override;
+		virtual int		caretUp( Text * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual int		caretDown( Text * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual int		caretLeft( Text * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual int		caretRight( Text * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual int		caretHome( Text * pText, int charOfs, int& wantedLineOfs ) const override;
+		virtual int		caretEnd( Text * pText, int charOfs, int& wantedLineOfs ) const override;
 
-		virtual int		caretPrevWord( CText * pText, int charOfs ) const override;
-		virtual int		caretNextWord( CText * pText, int charOfs ) const override;
+		virtual int		caretPrevWord( Text * pText, int charOfs ) const override;
+		virtual int		caretNextWord( Text * pText, int charOfs ) const override;
 
 
 
@@ -163,18 +163,18 @@ namespace wg
 
 		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
 
-		int				_countLines( CText * pText, const CharBuffer * pBuffer ) const;
+		int				_countLines( Text * pText, const Char * pChars ) const;
 
-		int				_countFixedLines(const CharBuffer * pBuffer) const;
-		int				_countWrapLines(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
-		int				_calcMatchingHeight(const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
+		int				_countFixedLines(const Char * pChars) const;
+		int				_countWrapLines(const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
+		int				_calcMatchingHeight(const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth) const;
 
-		void *			_reallocBlock( CText * pText, int lines );
+		void *			_reallocBlock( Text * pText, int lines );
 
-		void			_updateLineInfo(CText * pText, void * pBlock, const CharBuffer * pBuffer );
+		void			_updateLineInfo(Text * pText, void * pBlock, const Char * pChars );
 
-		SizeI			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state);
-		SizeI			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const CharBuffer * pBuffer, const TextStyle * pBaseStyle, State state, int maxLineWidth);
+		SizeI			_updateFixedLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state);
+		SizeI			_updateWrapLineInfo(BlockHeader * pHeader, LineInfo * pLines, const Char * pChars, const TextStyle * pBaseStyle, State state, int maxLineWidth);
 
 
 		int				_charDistance( const Char * pFirst, const Char * pLast, const TextAttr& baseAttr, State state ) const;
@@ -187,10 +187,10 @@ namespace wg
 		int				_linePosX( const LineInfo * pLine, int canvasWidth ) const;
 		int				_linePosY( const void * pBlock, int line, int canvasHeight ) const;
 		int				_textPosY( const BlockHeader * pHeader, int canvasHeight ) const;
-		int				_charPosX( const CText * pText, int charOfs ) const;
+		int				_charPosX( const Text * pText, int charOfs ) const;
 
-		void 			_renderBack( CText * pText, GfxDevice * pDevice, const RectI& canvas );
-		void 			_renderBackSection( CText * pText, GfxDevice * pDevice, const RectI& canvas,
+		void 			_renderBack( Text * pText, GfxDevice * pDevice, const RectI& canvas );
+		void 			_renderBackSection( Text * pText, GfxDevice * pDevice, const RectI& canvas,
 											int begChar, int endChar, Color color );
 
 
@@ -202,8 +202,8 @@ namespace wg
 			ClosestEnd				// Select character/line whose end is closest to offset.
 		};
 
-		int				_lineAtPosY( const CText * pText, int posY, SelectMode mode ) const;
-		int				_charAtPosX( const CText * pText, int line, int posX, SelectMode mode ) const;
+		int				_lineAtPosY( const Text * pText, int posY, SelectMode mode ) const;
+		int				_charAtPosX( const Text * pText, int line, int posX, SelectMode mode ) const;
 
 		Origo			m_alignment;
 		Caret_p			m_pCaret;
@@ -216,7 +216,7 @@ namespace wg
 		BlendMode		m_selectionCharBlend;
 
 
-		CText *	m_pFocusedComponent;
+		Text *			m_pFocusedText;
 		RouteId			m_tickRouteId;
 	};
 

@@ -30,14 +30,14 @@ namespace wg
 
 	CText::CText(Holder * pHolder ) : GeoComponent( pHolder )
 	{
-		_textMapper()->addComponent(this);
+		_textMapper()->addText(this);
 	}
 
 	//____ Destructor ______________________________________________________________
 
 	CText::~CText()
 	{
-		_textMapper()->removeComponent(this);
+		_textMapper()->removeText(this);
 	}
 
 	//____ setStyle() ______________________________________________________________
@@ -65,9 +65,9 @@ namespace wg
 		if( pTextMapper == m_pTextMapper )
 			return;
 
-		_textMapper()->removeComponent(this);
+		_textMapper()->removeText(this);
 		m_pTextMapper = pTextMapper;
-		_textMapper()->addComponent(this);
+		_textMapper()->addText(this);
 	}
 
 	//____ clearTextMapper() ________________________________________________________
@@ -77,9 +77,9 @@ namespace wg
 		if( !m_pTextMapper )
 			return;
 
-		_textMapper()->removeComponent(this);
+		_textMapper()->removeText(this);
 		m_pTextMapper = 0;
-		_textMapper()->addComponent(this);
+		_textMapper()->addText(this);
 	}
 
 	//____ _setState() ______________________________________________________________
@@ -293,14 +293,6 @@ namespace wg
 	{
 		m_charBuffer.clearStyle(ofs, len);
 		_textMapper()->onCharStyleChanged(this, ofs, len);
-	}
-
-
-	//____ _editState() ________________________________________________________
-
-	const EditState * CText::_editState() const
-	{
-		return nullptr;
 	}
 
 	//____ _mapperRequestRender() _______________________________________________

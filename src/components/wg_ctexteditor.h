@@ -133,11 +133,17 @@ namespace wg
 
 		//
 
+		virtual bool	_caretVisible() const override { return m_editState.bCaret; }
+		virtual int		_caretOffset() const override { return m_editState.caretOfs; }
+		virtual std::tuple<int,int>	_selectedText() const override 
+		{ 
+			int beg = std::min(m_editState.selectOfs,m_editState.caretOfs);
+			int end = std::max(m_editState.selectOfs,m_editState.caretOfs);
+			
+			return std::make_tuple(beg,end);
+		};
 
-
-
-
-	protected:
+		//
 
 		enum class MoveMethod
 		{
@@ -147,11 +153,9 @@ namespace wg
 		};
 
 
-		bool				_moveCaret( int caretOfs, MoveMethod method );
-		void				_updateDisplayArea();
-		void				_updateInsertStyle();
-
-		const EditState * 	_editState() const override;
+		bool			_moveCaret( int caretOfs, MoveMethod method );
+		void			_updateDisplayArea();
+		void			_updateInsertStyle();
 
 
 		void			_caretToEnd();

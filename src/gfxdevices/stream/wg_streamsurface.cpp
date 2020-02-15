@@ -78,7 +78,7 @@ namespace wg
 
 	//____ Constructor _____________________________________________________________
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, int flags, const Color * pClut)
+	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -115,7 +115,7 @@ namespace wg
 		}
 	}
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut)
+	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -142,7 +142,7 @@ namespace wg
 		_sendPixels(size, (uint8_t*) pBlob->data(), pitch);
 	}
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut)
+	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -189,7 +189,7 @@ namespace wg
 	}
 
 
-	StreamSurface::StreamSurface( GfxOutStream& stream, Surface * pOther, int flags )
+	StreamSurface::StreamSurface( GfxOutStream& stream, Surface * pOther, int flags ) : Surface(flags)
 	{
 		PixelFormat format = pOther->pixelFormat();
 		uint8_t * pPixels = (uint8_t*)pOther->lock(AccessMode::ReadOnly);

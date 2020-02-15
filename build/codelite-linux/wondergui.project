@@ -29,6 +29,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="widgets">
+    <File Name="../../src/widgets/wg_selectbox.h"/>
+    <File Name="../../src/widgets/wg_selectbox.cpp"/>
     <VirtualDirectory Name="capsules">
       <File Name="../../src/widgets/capsules/wg_capsule.cpp"/>
       <File Name="../../src/widgets/capsules/wg_capsule.h"/>
@@ -266,6 +268,9 @@
   <Dependencies Name="Debug"/>
   <Dependencies Name="Release"/>
   <VirtualDirectory Name="components">
+    <File Name="../../src/components/wg_component.cpp"/>
+    <File Name="../../src/components/wg_cvector.impl.h"/>
+    <File Name="../../src/components/wg_cvector.h"/>
     <File Name="../../src/components/wg_geocomponent.h"/>
     <File Name="../../src/components/wg_cvalueeditor.h"/>
     <File Name="../../src/components/wg_cvalueeditor.cpp"/>
@@ -280,24 +285,24 @@
     <File Name="../../src/components/wg_cstaticvaluedisplay.cpp"/>
     <File Name="../../src/components/wg_cstatictextdisplay.h"/>
     <File Name="../../src/components/wg_cstatictextdisplay.cpp"/>
+    <File Name="../../src/components/wg_cstaticslotvector.impl.h"/>
+    <File Name="../../src/components/wg_cstaticslotvector.h"/>
     <File Name="../../src/components/wg_cstaticslotcollection.h"/>
-    <File Name="../../src/components/wg_cstaticslotarray.impl.h"/>
-    <File Name="../../src/components/wg_cstaticslotarray.h"/>
     <File Name="../../src/components/wg_cstandardslot.h"/>
+    <File Name="../../src/components/wg_cslotarray.h"/>
     <File Name="../../src/components/wg_cslot.h"/>
     <File Name="../../src/components/wg_cshadows.h"/>
     <File Name="../../src/components/wg_cshadows.cpp"/>
-    <File Name="../../src/components/wg_cselectableslotarray.impl.h"/>
-    <File Name="../../src/components/wg_cselectableslotarray.h"/>
-    <File Name="../../src/components/wg_cpaddedslotarray.impl.h"/>
-    <File Name="../../src/components/wg_cpaddedslotarray.h"/>
+    <File Name="../../src/components/wg_cselectableslotvector.impl.h"/>
+    <File Name="../../src/components/wg_cselectableslotvector.h"/>
+    <File Name="../../src/components/wg_cpaddedslotvector.impl.h"/>
+    <File Name="../../src/components/wg_cpaddedslotvector.h"/>
     <File Name="../../src/components/wg_component.h"/>
-    <File Name="../../src/components/wg_component.cpp"/>
     <File Name="../../src/components/wg_cicondisplay.h"/>
     <File Name="../../src/components/wg_cicondisplay.cpp"/>
+    <File Name="../../src/components/wg_cdynamicslotvector.impl.h"/>
+    <File Name="../../src/components/wg_cdynamicslotvector.h"/>
     <File Name="../../src/components/wg_cdynamicslotcollection.h"/>
-    <File Name="../../src/components/wg_cdynamicslotarray.impl.h"/>
-    <File Name="../../src/components/wg_cdynamicslotarray.h"/>
     <File Name="../../src/components/wg_ccolumnheader.h"/>
     <File Name="../../src/components/wg_ccolumnheader.cpp"/>
     <File Name="../../src/components/wg_ccanvas.h"/>
