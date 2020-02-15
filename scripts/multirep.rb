@@ -9,6 +9,7 @@ $statementFile = nil
 $match = "any"					# word, begin, end, any
 $separator = "="
 $tasks = []
+$bSilent = false
 
 
 def generateRegexp( match, string )
@@ -32,6 +33,8 @@ def getParamsAndStatementFile()
 			$match = $*.shift
 		elsif param == "-sep"
 			$separator = $*.shift
+		elsif param == "-silent"
+			$bSilent = true
 		else
 			$statementFile = param
 			break
@@ -64,6 +67,7 @@ def printUsage()
 	puts "params:"
 	puts "-match [part]    Part of words to match (whole/begin/end/any)."
 	puts "-sep   [string]  Separator used in statementFile (default: '=')"
+	puts "-silent          Less verbose output"
 	puts
 	puts "Takes a statement-file containing lines with search/replace statements like"
 	puts "'searchterm = replacement' and performs all of them on all files specified."
@@ -91,16 +95,41 @@ loadStatements( $statementFile )
 printf( "%d replace statements to run on %d files.\n", $tasks.size, $*.length )
 
 for fileName in $*
-	puts "Processing: " + fileName
+	
+	if( $bSilent == false )
+		print "Processing: " + fileName + "..."
+	end
 
 	content = IO.readlines(fileName)
 
-	for task in $tasks
-		content.map! { |line| line.gsub( task[:regexp],task[:replace]) }
+	modifiedLines = 0;
+	content.map! do |line|
+
+		lineModified = false;
+		for task in $tasks
+			if( line.gsub!( task[:regexp],task[:replace]) != nil )
+				lineModified = true
+			end
+		end
+		if( lineModified == true )
+			modifiedLines += 1
+		end
+		line
 	end
 
-	f = File.new( fileName, "w")
-	f.puts content
-	f.close
+	if( modifiedLines > 0 )
+		if( $bSilent == true )
+			print " #{modifiedLines} lines changed in #{fileName}.\n"
+		else
+			print " #{modifiedLines} lines changed.\n"
+		end
+		f = File.new( fileName, "w")
+		f.puts content
+		f.close
+	elsif( $bSilent == false )
+		print "\n"
+	end
 end
+
+puts 'DONE'
 

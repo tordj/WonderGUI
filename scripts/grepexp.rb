@@ -7,15 +7,17 @@ exp = Regexp.new($*.shift)
 
 
 for fileName in $*
-	puts "Processing: " + fileName
+#	puts "Processing: " + fileName
 
 	content = IO.readlines(fileName)
 
-	for line in content
+	content.each_with_index do |line, linenb|
 
 		res = line[exp,0]
 
-		puts res
+		if( res != NIL )
+			print( "#{fileName} : #{linenb}. #{line}" )
+		end
 	end
 end
 
