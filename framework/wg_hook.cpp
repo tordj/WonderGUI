@@ -48,8 +48,21 @@ void WgHook::_attachWidget( WgWidget * pWidget )
 	if( m_pWidget )
 		m_pWidget->_onNewHook(0);
 
-	m_pWidget = pWidget;
+    // Update scale while we don't have any parent and won't cause a flood of _requestResize().
+    
+    int scale;
+    WgContainer * p =  _parent();
+    if( p )
+        scale = p->m_scale;
+    else
+        scale = Root()->Scale();
+    
+    if( scale != pWidget->m_scale )
+        pWidget->_setScale( scale );
 
+    //
+    
+    m_pWidget = pWidget;
 	if( pWidget )
 		pWidget->_onNewHook(this);
 }

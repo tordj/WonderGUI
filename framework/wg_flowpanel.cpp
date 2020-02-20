@@ -295,6 +295,27 @@ void WgFlowPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 	_refreshAllWidgets();
 }
 
+//____ _onWidgetsAppeared() ______________________________________________________
+
+void WgFlowPanel::_onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    // Update cached preferred size of new children
+    
+    WgFlowHook * p = static_cast<WgFlowHook*>(pFirst);
+
+    p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+    while( p != pLast )
+    {
+        p = static_cast<WgFlowHook*>(p->Next());
+        p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+    }
+    
+    //
+    
+    _refreshAllWidgets();
+}
+
+
 //____ _onWidgetDisappeared() ___________________________________________________
 
 void WgFlowPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )

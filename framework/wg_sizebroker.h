@@ -41,6 +41,8 @@ public:
     
 	virtual int SetItemLengths( WgSizeBrokerItem * pItems, int nItems, int totalLength ) const = 0;
 
+    virtual bool OverridesDefaultSizes() const { return false; }        // Needs to return true if a packpanel providing the exact combined length requested
+                                                                    // by all children still should ask the sizebroker for their lengths.
 protected:
 	WgSizeBroker();
 };

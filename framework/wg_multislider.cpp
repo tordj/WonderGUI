@@ -276,7 +276,7 @@ bool WgMultiSlider::MarkTest(const WgCoord& ofs)
 
 	// Check against our sliders (backgrounds)
 
-	if (_markedSlider(ofs))
+	if (m_pressMode != WgMultiSlider::PressMode::NoMovement && _markedSlider(ofs))
 		return true;
 
 	// Check against our slider handles
@@ -287,18 +287,6 @@ bool WgMultiSlider::MarkTest(const WgCoord& ofs)
 	return false;
 }
 
-
-//____ SetSkin() ______________________________________________________________
-
-void WgMultiSlider::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
-}
 
 //____ SetPressMode() _________________________________________________________
 

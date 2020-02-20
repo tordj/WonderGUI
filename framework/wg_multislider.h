@@ -144,8 +144,6 @@ public:
 																// In ghost-mode, handle will also get hover and press states when slider is hovered/pressed.
 	bool	IsGhostHandle() const { return m_bGhostHandle; }
 
-	void	SetSkin(wg::Skin * pSkin);
-
 	void	SetPressMode(WgMultiSlider::PressMode mode);
 	PressMode GetPressMode() const { return m_pressMode; }
 

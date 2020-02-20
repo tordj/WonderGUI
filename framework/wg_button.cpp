@@ -68,17 +68,6 @@ const char * WgButton::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgButton::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
-}
 
 //____ SetIcon() ______________________________________________________________
 

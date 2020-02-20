@@ -41,7 +41,6 @@ public:
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgZoomOutCapsule(); };
 	
-	void			SetSkin(wg::Skin * pSkin);
     void            SetOutlineSkin(wg::Skin * pSkin);
     
     void            SetButtonSkin(wg::Skin * pSkin);

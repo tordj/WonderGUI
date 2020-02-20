@@ -79,8 +79,6 @@ public:
 	bool		IsAutoEllipsisDefault() const { return false; };
 
 
-	void		SetSkin(wg::Skin * pSkin);
-
     void        SelectAll() { m_text.selectAll(); }
 
 protected:

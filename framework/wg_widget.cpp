@@ -63,6 +63,18 @@ WgPointerStyle WgWidget::GetPointerStyle() const
 	return m_pointerStyle;
 }
 
+//____ SetSkin() ______________________________________________________________
+
+void WgWidget::SetSkin(wg::Skin * pSkin)
+{
+    if (pSkin != m_pSkin)
+    {
+        m_pSkin = pSkin;
+        _requestResize();
+        _requestRender();
+    }
+}
+
 //____ SetEnabled() _______________________________________________________________
 
 void WgWidget::SetEnabled( bool bEnabled )
@@ -143,19 +155,6 @@ void WgWidget::_onNewHook( WgHook * pHook )
 	}
 
     m_pHook = pHook;
-
-    if( pHook )
-    {
-        int scale;
-        WgContainer * p =  pHook->_parent();
-        if( p )
-            scale = p->m_scale;
-        else
-            scale = pHook->Root()->Scale();
-        
-        if( scale != m_scale )
-            _setScale( scale );
-    }
 
 }
 
@@ -621,11 +620,11 @@ void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State
 
     int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
     if( pixelQuarters == globalPixelQuarters )
-        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), WgStateEnum::Focused );
+        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), state );
     else
     {
         wg::Base::setQuartersPerPoint(pixelQuarters);
-        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), WgStateEnum::Focused );
+        pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), state );
         wg::Base::setQuartersPerPoint(globalPixelQuarters);
     }
 }

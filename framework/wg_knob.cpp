@@ -341,18 +341,6 @@ void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgKnob::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestRender();
-		_requestResize();
-	}
-}
-
 //____ SetKnobScale() ______________________________________________________________
 
 void WgKnob::SetKnobScale(float scale)

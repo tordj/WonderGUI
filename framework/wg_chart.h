@@ -235,7 +235,7 @@ private:
 	std::function<void(WgChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
 
     wg::SurfaceFactory_p  m_pSurfaceFactory;
-    wg::Surface *         m_pCacheBitmap;
+    wg::Surface_p         m_pCacheBitmap;
     WgPatches           m_cacheDirt;
     
     int                 m_cacheFirst = 0;

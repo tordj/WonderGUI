@@ -64,18 +64,6 @@ const char * WgZoomOutCapsule::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgZoomOutCapsule::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
-}
-
 //____ SetOutlineSkin() ________________________________________________________
 
 void WgZoomOutCapsule::SetOutlineSkin(wg::Skin * pSkin)

@@ -59,8 +59,6 @@ public:
 	void			SetIcon( wg::Skin * pIconSkin );
     wg::Skin_p	    GetIconSource() const { return m_pIconSkin; }
 
-	void			SetSkin(wg::Skin * pSkin);
-
 	//.____ Behavior ____________________________________________
 
 	void		SetPopup(WgWidget * pPopup);

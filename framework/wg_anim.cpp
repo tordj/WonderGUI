@@ -307,8 +307,11 @@ WgKeyFrame * WgAnim::_keyFrame( int64_t ticks, WgKeyFrame * pProximity ) const
 	}
 	else
 	{
-		while( pProximity->m_timestamp + pProximity->m_duration <= ticks )
+		// If no next exist, return last valid frame (should always be last)
+		while (pProximity->Next() && pProximity->m_timestamp + pProximity->m_duration <= ticks)
+		{
 			pProximity = pProximity->Next();
+		}
 	}
 	
 	return pProximity;

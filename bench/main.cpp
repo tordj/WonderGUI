@@ -64,6 +64,7 @@ void packPanelStressTest( WgRootPanel * pRoot );
 void cursorInViewTest( WgRootPanel * pRoot );
 void flexHookGrowthTest( WgRootPanel * pRoot );
 void packPanelPaddingTest( WgRootPanel * pRoot );
+void packPanelTextWrapTest( WgRootPanel * pRoot );
 
 //#define USE_OPEN_GL
 
@@ -218,7 +219,7 @@ int main ( int argc, char** argv )
 #endif
 
     WgContext context;
-    context.scale = 1.f;
+    context.scale = 2.f;
     context.pDevice = g_pGfxDevice;
     context.pFactory = g_pSurfaceFactory;
     WgBase::SetContext(context);
@@ -282,10 +283,12 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
-    packPanelPaddingTest( pRoot );
+//    packPanelPaddingTest( pRoot );
+//    packPanelTextWrapTest( pRoot );
+
 //    flexHookGrowthTest( pRoot );
 
-//    cursorInViewTest( pRoot );
+    cursorInViewTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
 //    scrollPanelTest(pRoot);
@@ -722,6 +725,58 @@ void packPanelPaddingTest( WgRootPanel * pRoot )
     pPackPanel->AddChild(pText2);
 }
 
+//____ packPanelTextWrapTest() _________________________________________________________
+
+void packPanelTextWrapTest( WgRootPanel * pRoot )
+{
+    auto pBaseFlex = new WgFlexPanel();
+    pRoot->SetChild(pBaseFlex);
+    pBaseFlex->SetSkin( wg::ColorSkin::create(WgColor::Yellow));
+    
+    auto pPanelSkin = wg::ColorSkin::create(WgColor::Red);
+    pPanelSkin->setContentPadding( {10,10,10,10} );
+    
+    
+    auto pPackPanel = new WgPackPanel();
+    pPackPanel->SetOrientation( wg::Orientation::Vertical);
+    pPackPanel->SetSkin(pPanelSkin);
+    
+    auto pSizeConstrainer = new WgSizeCapsule();
+    pSizeConstrainer->SetChild(pPackPanel);
+    pSizeConstrainer->SetPreferredSize( {300,-1} );
+    
+    pBaseFlex->AddChild( pSizeConstrainer, {10,10} );
+
+    auto pTextSkin = wg::ColorSkin::create(WgColor::Green);
+    pTextSkin->setContentPadding( 5 );
+    
+    auto pText = new WgTextDisplay();
+    pText->SetText("TEXT  1.");
+    pText->SetSkin( pTextSkin );
+    //    pText->SetTextWrap(true);
+    // pText->SetEditMode(WgTextEditMode::Editable);
+    pPackPanel->AddChild(pText);
+
+    auto pText2 = new WgTextDisplay();
+    pText2->SetText("TEXT 2.");
+    pText2->SetSkin( pTextSkin );
+    //    pText2->SetTextWrap(true);
+    pText2->SetEditMode(WgTextEditMode::Editable);
+
+    auto pInterferer = new WgPackPanel();
+    pInterferer->SetSizeBroker(new WgUniformSizeBroker());
+    pInterferer->AddChild(pText2);
+    
+    auto pBalast = new WgFiller();
+    pBalast->SetPreferredPointSize({20,20});
+    pInterferer->AddChild(pBalast)->SetWeight(0.f);
+    
+    
+    
+    
+    pPackPanel->AddChild(pInterferer);
+}
+
 
 //____ flexHookGrowthTest() _________________________________________________________
 
@@ -769,8 +824,27 @@ void cursorInViewTest( WgRootPanel * pRoot )
     pText->SetTextWrap(true);
     pText->SetEditMode(WgTextEditMode::Editable);
     
-    pScrollPanel->SetContent(pText);
-    pBaseFlex->AddChild(pScrollPanel, {50,50,150,50});
+    auto pPackX = new WgPackPanel();
+    pPackX->SetOrientation(WgOrientation::Horizontal);
+    pPackX->AddChild(pText);
+    pPackX->SetSizeBroker(new WgUniformSizeBroker() );
+    
+    auto pPackSkin = wg::ColorSkin::create(WgColor::Brown);
+    pPackSkin->setContentPadding( {10,10,10,10} );
+
+    auto pFiller = new WgFiller();
+    pFiller->SetPreferredPointSize({10,10});
+    pPackX->AddChild(pFiller);
+    pPackX->SetSkin(pPackSkin);
+
+    auto pPackY = new WgPackPanel();
+    pPackY->SetOrientation(WgOrientation::Horizontal);
+    pPackY->AddChild(pPackX);
+    pPackY->SetSizeBroker(new WgUniformSizeBroker() );
+    pPackY->SetSkin(pPackSkin);
+
+    pScrollPanel->SetContent(pPackY);
+    pBaseFlex->AddChild(pScrollPanel, {50,50,300,60});
     
 }
 
@@ -1006,7 +1080,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	auto pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
 	pPlateImg_x2->setScale(2.f);
 
-    auto pPressablePlateSkin = wg::BlockSkin::createClickableFromSurface(pPlateImg, 0, WgBorders(3));
+    auto pPressablePlateSkin = wg::BlockSkin::create(pPlateImg, {0,0,pPlateImg->pointSize().w/3,pPlateImg->pointSize().h}, {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed} , WgBorders(3), wg::Orientation::Horizontal );
 
 //	WgSurface * pInjectWidget = sdl_wglib::LoadSurface("../resources/IDR_MOD_INJECT_WIDGET_CHROME.2x.png", *g_pSurfaceFactory);
 //	pInjectWidget->SetScaleFactor(4096 * 2);

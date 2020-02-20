@@ -70,7 +70,7 @@ wg::BlockSkin_p WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& 
 	p->m_pos[WG_MODE_DISABLED]		= normal;
 	p->m_pos[WG_MODE_SPECIAL]		= normal;
 
-	return WgBlocksetPtr(p);
+	return wg::BlockSkin_p(p);
 */
 }
 
@@ -94,7 +94,7 @@ wg::BlockSkin_p WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& 
 	p->m_pos[WG_MODE_DISABLED]		= disabled;
 	p->m_pos[WG_MODE_SPECIAL]		= normal;
 
-	return WgBlocksetPtr(p);
+	return wg::BlockSkin_p(p);
 */
 }
 
@@ -120,7 +120,7 @@ wg::BlockSkin_p WgBlockset::CreateFromRects( wg::Surface * pSurf, const WgRect& 
 	p->m_pos[WG_MODE_DISABLED]		= disabled;
 	p->m_pos[WG_MODE_SPECIAL]		= special;
 
-	return WgBlocksetPtr(p);
+	return wg::BlockSkin_p(p);
 */
 }
 
@@ -176,7 +176,7 @@ wg::BlockSkin_p WgBlockset::CreateFromRow( wg::Surface * pSurf, const WgRect& re
 	if( nBlocks > 4 )
 		p->m_pos[WG_MODE_SPECIAL].x	= rect.x + ofs*4;
 
-	return WgBlocksetPtr(p);
+	return wg::BlockSkin_p(p);
 */
 }
 
@@ -236,7 +236,7 @@ wg::BlockSkin_p WgBlockset::CreateFromColumn( wg::Surface * pSurf, const WgRect&
 	if( nBlocks > 4 )
 		p->m_pos[WG_MODE_SPECIAL].y	= rect.y + ofs*4;
 
-	return WgBlocksetPtr(p);
+	return wg::BlockSkin_p(p);
  */
 }
 

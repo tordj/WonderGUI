@@ -623,6 +623,10 @@ bool WgEventHandler::_forwardEvent( const WgEvent::Event * _pEvent )
             pEvent = new WgEvent::MouseEnter(WgCoord());
             pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseEnter*>(_pEvent) );
             break;
+        case WG_EVENT_MOUSE_MOVE:
+            pEvent = new WgEvent::MouseMove(WgCoord());
+            pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseMove*>(_pEvent) );
+            break;
         case WG_EVENT_MOUSE_LEAVE:
             pEvent = new WgEvent::MouseLeave();
             pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseLeave*>(_pEvent) );

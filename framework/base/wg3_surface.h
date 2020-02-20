@@ -82,6 +82,8 @@ namespace wg
         inline float        scale() const { return m_pixelQuartersPerPoint/4.f; }
         
         SizeI               pointSize() const {return (m_size * 4) / m_pixelQuartersPerPoint; }
+
+        int                 pixelQuartersPerPoint() const { return m_pixelQuartersPerPoint; }
         
 		//.____ Appearance ____________________________________________________
 

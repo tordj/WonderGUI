@@ -477,15 +477,17 @@ void WgTextDisplay::_bringCursorInView()
     WgTextAttr attr;
     m_pText->GetBaseAttr(attr);
     
-    auto pGlyphs = attr.pFont->GetGlyphset(attr.style, attr.size);
-    int glyphHeight = pGlyphs->GetHeight(attr.size);
-    int glyphWidth = pGlyphs->GetWhitespaceAdvance(attr.size);
+    int size = attr.size * m_scale >> WG_SCALE_BINALS;
+
+    auto pGlyphs = attr.pFont->GetGlyphset(attr.style, size);
+    int glyphHeight = pGlyphs->GetHeight(size);
+    int glyphWidth = pGlyphs->GetWhitespaceAdvance(size);
 
     if(m_pSkin)
         cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);
 
     WgRect mustHaveArea = { cursorPos.x - glyphWidth, cursorPos.y, glyphWidth*2, glyphHeight };
-    WgRect niceToHaveArea = { cursorPos.x - glyphWidth, cursorPos.y - glyphHeight/2, glyphWidth*2, glyphHeight*2 };
+    WgRect niceToHaveArea = { mustHaveArea.x, mustHaveArea.y - glyphHeight/2, mustHaveArea.w, mustHaveArea.h + glyphHeight };
 
     WgRect canvas = WgRect( 0,0, PixelSize() );
     _requestInView( WgRect(mustHaveArea,canvas), WgRect(niceToHaveArea, canvas) );
@@ -573,6 +575,13 @@ void WgTextDisplay::_setScale( int scale )
 
 	m_text.SetScale(scale);
 
+    WgRect    contentRect(0, 0, PixelSize());
+    
+    if (m_pSkin)
+        contentRect = _skinContentRect(m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+    
+    m_text.setLineWidth( contentRect.w );
+    
 	_requestResize();
 }
 
@@ -586,19 +595,6 @@ void WgTextDisplay::_textModified()
     _requestResize();
 	_requestRender();
     _queueEvent(new WgEvent::TextModify(this, m_pText));
-}
-
-
-//____ SetSkin() ______________________________________________________________
-
-void WgTextDisplay::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
 }
 
 //____ InsertTextAtCursor() ___________________________________________________

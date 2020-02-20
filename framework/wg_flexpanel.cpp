@@ -1309,7 +1309,6 @@ void WgFlexPanel::_setScale( int scale )
 		pHook = pHook->Prev();
 	}
     
-    if( m_preferredSize.w > 0 && m_preferredSize.h > 0 )
         _requestResize();
 }
 

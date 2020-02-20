@@ -579,9 +579,15 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
     WgSize newPreferred = p->_paddedPreferredPixelSize(m_scale);
     p->m_preferredSize = newPreferred;
 
-    int oldLengthForBreadth = p->m_preferredLengthForBreadth;
-    int newLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + p->m_padding.width(): p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + p->m_padding.height();
-    p->m_preferredLengthForBreadth = newLengthForBreadth;
+    WgBorders padding = p->m_padding.scale(m_scale);
+    
+    int oldWidthForHeight = p->m_preferredWidthForHeight;
+    int newWidthForHeight = p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + padding.width();
+    p->m_preferredWidthForHeight = newWidthForHeight;
+
+    int oldHeightForWidth = p->m_preferredHeightForWidth;
+    int newHeightForWidth = p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + padding.height();
+    p->m_preferredHeightForWidth = newHeightForWidth;
 
     // Early out if we can determine that the request will have no effect on geo
     
@@ -593,7 +599,7 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 	}
 	else
 	{
-        if( newPreferred == oldPreferred && newLengthForBreadth == oldLengthForBreadth )
+        if( newPreferred == oldPreferred && newHeightForWidth == oldHeightForWidth && newWidthForHeight == oldWidthForHeight )
         {
 //            _requestResize();
             return;
@@ -606,7 +612,7 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 		    
 		    if( newPreferred.h <=  m_preferredSize.h && oldPreferred.h < m_preferredSize.h )
 		    {
-		        if( newLengthForBreadth == oldLengthForBreadth )
+		        if( newHeightForWidth == oldHeightForWidth && newWidthForHeight == oldWidthForHeight )
 		            return;
 		    }
 		    
@@ -618,7 +624,8 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
 
 		    if( newPreferred.w <=  m_preferredSize.w && oldPreferred.w < m_preferredSize.w )
 		    {
-		        if( newLengthForBreadth == oldLengthForBreadth )
+		        if( newHeightForWidth == oldHeightForWidth &&
+                    newWidthForHeight == oldWidthForHeight )
 		            return;
 		    }
 		}
@@ -656,6 +663,33 @@ void WgPackPanel::_onResizeRequested( WgVectorHook * pHook )
     }
 }
 
+//____ _onWidgetsAppeared() ______________________________________________________
+
+void WgPackPanel::_onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    // Update cached preferred size of children
+    
+    WgPackHook * p = static_cast<WgPackHook*>(pFirst);
+    
+    do {
+        p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+        
+        WgBorders padding = p->m_padding.scale(m_scale);
+        p->m_preferredWidthForHeight = p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + padding.width();
+        p->m_preferredHeightForWidth = p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + padding.height();
+        
+        p = static_cast<WgPackHook*>(p->Next());
+        
+    } while (p != pLast );
+    
+    // Update cached preferred size of us
+    
+    if( m_bFreezeGeo )
+        m_bWantsGeoUpdate = true;
+    else
+        _refreshAllWidgets();
+}
+
 //____ _onWidgetAppeared() ______________________________________________________
 
 void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
@@ -665,7 +699,9 @@ void WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 	WgPackHook * p = static_cast<WgPackHook*>(pInserted);
 	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
 
-    p->m_preferredLengthForBreadth = m_bHorizontal ? p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + p->m_padding.width() : p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + p->m_padding.height();
+    WgBorders padding = p->m_padding.scale(m_scale);
+    p->m_preferredWidthForHeight = p->m_pWidget->MatchingPixelWidth(p->m_geo.h) + padding.width();
+    p->m_preferredHeightForWidth = p->m_pWidget->MatchingPixelHeight(p->m_geo.w) + padding.height();
 
 	// Update cached preferred size of us
 
@@ -884,7 +920,7 @@ void WgPackPanel::_refreshChildGeo()
     
 	// Optimized special case, just copy preferred to length.
 
-	if( !m_pSizeBroker || wantedLength == givenLength )
+	if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->OverridesDefaultSizes()) )
 	{
 		WgCoord pos = contentRect.pos();
 		WgPackHook * p = FirstHook();

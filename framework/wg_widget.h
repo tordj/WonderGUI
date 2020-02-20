@@ -102,7 +102,7 @@ public:
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-//	void				SetSkin(wg::Skin * pSkin);		// Method added separately to those widgets that support skin so far.
+    virtual void		SetSkin(wg::Skin * pSkin);
 	wg::Skin_p			Skin() const { return m_pSkin; }
 
 	virtual WgString	GetTooltipString() const { return m_tooltip; }

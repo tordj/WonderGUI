@@ -83,8 +83,6 @@ public:
 	void		SetMaskOp( WgMaskOp operation );
 	WgMaskOp	MaskOp() const { return m_maskOp; }
 
-	void		SetSkin( wg::Skin * pSkin );
-
 	inline WgPanelHook *	FirstHook() const { return static_cast<WgPanelHook*>(_firstHook()); }
 	inline WgPanelHook *	LastHook() const { return static_cast<WgPanelHook*>(_lastHook()); }
 

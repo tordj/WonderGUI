@@ -54,8 +54,6 @@ public:
 
 	//____ Methods __________________________________________
 
-	void		SetSkin(wg::Skin * pSkin);
-
 	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
 	inline int		MaxLines() { return m_maxLines; }
 

@@ -84,6 +84,7 @@ public:
 	
 
 	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
+    inline WgStackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
 	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
@@ -119,6 +120,7 @@ protected:
 	void	_onRenderRequested( WgVectorHook * pHook );
 	void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
 	void	_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
+    void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
 	void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void	_onWidgetsReordered();
 	void	_refreshAllWidgets();

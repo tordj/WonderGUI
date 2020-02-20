@@ -62,7 +62,9 @@ protected:
     float           m_baseline;         // Baseline position (0.0-1.0) for widget.
 	WgRect			m_geo;				// Real geo of child (no padding included).
 	WgSize			m_preferredSize;	// Cached padded preferred size from the child.
-    int             m_preferredLengthForBreadth;    // Cached padded preferred length for current breadth of the child.
+
+        int             m_preferredWidthForHeight;    // Cached padded preferred 
+    int             m_preferredHeightForWidth;    // Cached padded preferred length for current breadth of the child.
 	WgPackPanel *	m_pParent;
 };
 
@@ -82,6 +84,7 @@ public:
 	virtual WgWidget * NewOfMyType() const { return new WgPackPanel(); };
 
 	inline WgPackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChild(pWidget)); }
+    inline WgPackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgPackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
 	inline WgPackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgPackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 	
@@ -130,6 +133,7 @@ protected:
 	void			_onRenderRequested( WgVectorHook * pHook );
 	void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
 	void			_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
+    void            _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
 	void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void			_onWidgetsReordered();
 	void			_refreshAllWidgets();

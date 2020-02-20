@@ -86,9 +86,7 @@ namespace wg
 	{
 		// HACK!
 
-//		m_scale = pSurf->ScaleFactor();
-//		m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
-		m_blockSize = m_blockSizePoints;
+        m_blockSize = (m_blockSizePoints*pSurf->pixelQuartersPerPoint()) / 4;
 
 		//
 
@@ -105,7 +103,7 @@ namespace wg
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			layer.blockOfs[i] = ofs;
+			layer.blockOfs[i] = ofs*pSurf->pixelQuartersPerPoint()/4;
 			layer.tintColor[i] = Color::White;
 
 			_updateStateOpacity(i);
@@ -119,9 +117,12 @@ namespace wg
 	{
 		// HACK!
 
-//		m_scale = pSurf->ScaleFactor();
-//		m_blockSize = (m_blockSizePoints*m_scale) / WG_SCALE_BASE;
-		m_blockSize = m_blockSizePoints;
+        m_blockSize = (m_blockSizePoints*pSurf->pixelQuartersPerPoint()) / 4;
+
+		//
+
+		blockStartOfs = (blockStartOfs*pSurf->pixelQuartersPerPoint()) / 4;
+		blockPitch = (blockPitch*pSurf->pixelQuartersPerPoint()) / 4;
 
 		//
 
@@ -323,7 +324,7 @@ namespace wg
 
 			const RectI&	src = RectI(layer.blockOfs[stateIndex], m_blockSize);
 
-			const BorderI&    sourceBorders = m_frame;
+			const BorderI&    sourceBorders = m_frame*layer.pSurface->pixelQuartersPerPoint();
 			const BorderI     canvasBorders = pointsToPixels(m_frame);
 
 			pDevice->blitNinePatch( canvas, canvasBorders, src, sourceBorders );
@@ -350,9 +351,9 @@ namespace wg
 
 	SizeI MultiBlockSkin::_preferredSize() const
 	{
-		SizeI content = ExtendedSkin::_preferredSize();
-		SizeI frame = pointsToRawAligned(m_frame);
-		return SizeI::max(content, frame);
+        // Preferred size is to map each point of the surface to a pixel of the skinarea.
+        
+        return m_blockSizePoints*QPix::pixelQuartersPerPoint();
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -371,6 +372,9 @@ namespace wg
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
+
+        if( m_bIsOpaque )
+            return true;
 
 		int stateIndex = _stateToIndex(state);
 

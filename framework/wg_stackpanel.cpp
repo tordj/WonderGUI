@@ -304,6 +304,52 @@ void WgStackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 	_onRenderRequested( pInserted );
 }
 
+//____ _onWidgetsAppeared() _____________________________________________________
+
+void WgStackPanel::_onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast )
+{
+    bool    bRequestResize = false;
+    
+    WgVectorHook * p = pFirst;
+    
+    do {
+        // Check if we need to resize to fit Widget in current width
+        
+        int height = p->Widget()->MatchingPixelHeight(m_size.w);
+        if( height > m_size.h )
+            bRequestResize = true;
+        
+        // Update bestSize
+        
+        WgSize preferred = p->Widget()->PreferredPixelSize();
+        
+        if (preferred.w > m_preferredSize.w || preferred.h > m_preferredSize.h)
+        {
+            m_preferredSize = preferred;
+            bRequestResize = true;
+        }
+        
+        
+        p = static_cast<WgVectorHook*>(p->Next());
+
+    } while (p != pLast );
+    
+    
+    if( bRequestResize )
+        _requestResize();
+    
+    // Adapt inserted Widgets to our size and force render
+
+    p = pFirst;
+    do {
+        p->Widget()->_onNewSize(m_size);
+        _onRenderRequested( p );
+        p->Next();
+    } while (p != pLast);
+    
+}
+
+
 //____ _onWidgetDisappeared() __________________________________________________
 
 void WgStackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )

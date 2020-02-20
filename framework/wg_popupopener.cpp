@@ -70,19 +70,6 @@ const char * WgPopupOpener::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgPopupOpener::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
-}
-
-
 //____ SetIcon() ______________________________________________________________
 
 void WgPopupOpener::SetIcon( wg::Skin * pIconSkin )

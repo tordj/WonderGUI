@@ -68,19 +68,6 @@ const char * WgLineEditor::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgLineEditor::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestResize();
-		_requestRender();
-	}
-}
-
-
 //____ SetEditMode() __________________________________________________________
 
 void WgLineEditor::SetEditMode(WgTextEditMode mode)

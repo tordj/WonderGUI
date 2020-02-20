@@ -63,8 +63,6 @@ public:
 	void			SetIcon( wg::Skin * pIconSkin );
     wg::Skin_p	    GetIconSource() const { return m_pIconSkin; }
 
-	void			SetSkin(wg::Skin * pSkin);
-    
     // DEPRECATED!!!
     void            SetSource(wg::Skin * pSkin) { SetSkin(pSkin); }
 

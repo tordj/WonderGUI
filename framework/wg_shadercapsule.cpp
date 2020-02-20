@@ -52,17 +52,6 @@ const char * WgShaderCapsule::GetClass()
 	return c_widgetType;
 }
 
-//____ SetSkin() _______________________________________________________________
-
-void WgShaderCapsule::SetSkin( wg::Skin * pSkin )
-{
-    if (pSkin != m_pSkin)
-    {
-        m_pSkin = pSkin;
-        _requestRender();
-    }
-}
-
 //____ SetColor() ______________________________________________________________
 
 void WgShaderCapsule::SetColor( const WgColor& color)

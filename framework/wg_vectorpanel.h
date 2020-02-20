@@ -88,6 +88,7 @@ public:
 
 
 	WgVectorHook * AddChild( WgWidget * pWidget );
+    WgVectorHook * AddChildren( WgWidget * pWidgets[], int nb );
 	WgVectorHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
 	WgVectorHook * InsertChildSorted( WgWidget * pWidget );
 
@@ -121,7 +122,8 @@ protected:
 	virtual void	_onRenderRequested( WgVectorHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect ) = 0;
 	virtual void	_onWidgetAppeared( WgVectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
-	virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
+    virtual void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ) = 0;                // so parent can update geometry and possibly request
+    virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onWidgetsReordered() = 0;
 	virtual void	_refreshAllWidgets() = 0;
 	virtual WgVectorHook * _newHook() = 0;

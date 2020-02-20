@@ -76,6 +76,7 @@ public:
 	virtual WgWidget * NewOfMyType() const { return new WgFlowPanel(); };
 
 	inline WgFlowHook * AddChild( WgWidget * pWidget ) { return static_cast<WgFlowHook*>(WgVectorPanel::AddChild(pWidget)); }
+    inline WgFlowHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgFlowHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
 	inline WgFlowHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgFlowHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgFlowHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgFlowHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 	
@@ -117,7 +118,8 @@ protected:
 	void			_onRenderRequested( WgVectorHook * pHook );
 	void			_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
 	void			_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
-	void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
+    void            _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ); 
+    void			_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void			_onWidgetsReordered();
 	void			_refreshAllWidgets();
 	WgVectorHook *	_newHook();

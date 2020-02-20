@@ -107,8 +107,6 @@ public:
     void            RemoveShadow(int index);
     void            RemoveShadow(WgWidget * pWidget);
 
-    void            SetSkin(wg::Skin * pSkin);        // Method added separately to those widgets that support skin so far.
-
     void            SetShadowTint( uint8_t alpha);
     uint8_t         ShadowTint() { return m_shadowTint; }
     

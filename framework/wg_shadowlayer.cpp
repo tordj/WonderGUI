@@ -258,18 +258,6 @@ void WgShadowLayer::RemoveShadow(WgWidget * pWidget)
 	}   
 }
 
-//____ SetSkin() ______________________________________________________________
-
-void WgShadowLayer::SetSkin(wg::Skin * pSkin)
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestRender();
-		_requestResize();
-	}
-}
-
 //____ SetShadowTint() __________________________________________________________
 
 void WgShadowLayer::SetShadowTint( uint8_t alpha )

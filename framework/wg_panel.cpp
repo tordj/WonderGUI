@@ -66,17 +66,6 @@ void WgPanel::SetMaskOp( WgMaskOp operation )
 	}
 }
 
-//____ SetSkin() _______________________________________________________________
-
-void WgPanel::SetSkin( wg::Skin * pSkin )
-{
-	if (pSkin != m_pSkin)
-	{
-		m_pSkin = pSkin;
-		_requestRender();
-	}
-}
-
 //____ _onCloneContent() _______________________________________________________
 
 void WgPanel::_onCloneContent( const WgPanel * _pOrg )

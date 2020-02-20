@@ -206,6 +206,32 @@ WgVectorHook * WgVectorPanel::AddChild( WgWidget * pWidget )
 	return pHook;
 }
 
+//____ AddChildren() _____________________________________________________________
+
+WgVectorHook * WgVectorPanel::AddChildren( WgWidget * pWidgets[], int nb )
+{
+    WgVectorHook * pFirst = nullptr;
+    WgVectorHook * pLast = nullptr;
+
+    if( nb == 0 )
+        return nullptr;
+    
+    for( int i = 0 ; i < nb ; i++ )
+    {
+        WgVectorHook * pHook = _newHook();
+        m_hooks.PushBack(pHook);
+        pHook->_attachWidget( pWidgets[i] );
+        
+        if( !pFirst )
+            pFirst = pHook;
+        pLast = pHook;
+    }
+    
+    _onWidgetsAppeared(pFirst, pLast);
+    return pFirst;
+}
+
+
 //____ InsertChild() __________________________________________________________
 
 WgVectorHook * WgVectorPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibling )

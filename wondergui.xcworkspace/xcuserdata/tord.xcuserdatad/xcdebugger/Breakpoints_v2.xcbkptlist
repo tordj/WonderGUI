@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.524469"
+            timestampString = "603893114.169984"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "849"
-            endingLineNumber = "849"
+            startingLineNumber = "923"
+            endingLineNumber = "923"
             landmarkName = "scrollPanelTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.52456"
+            timestampString = "603893114.170382"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "847"
-            endingLineNumber = "847"
+            startingLineNumber = "921"
+            endingLineNumber = "921"
             landmarkName = "scrollPanelTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3124,7 +3124,23 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.524893"
+            timestampString = "603893114.170723"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "687"
+            endingLineNumber = "687"
+            landmarkName = "packPanelStressTest( WgRootPanel * pRoot )"
+            landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bench/main.cpp"
+            timestampString = "603893114.17097"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "684"
@@ -3140,27 +3156,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.52495"
+            timestampString = "603893114.171207"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "681"
-            endingLineNumber = "681"
-            landmarkName = "packPanelStressTest( WgRootPanel * pRoot )"
-            landmarkType = "9">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "bench/main.cpp"
-            timestampString = "602413984.525"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "694"
-            endingLineNumber = "694"
+            startingLineNumber = "697"
+            endingLineNumber = "697"
             landmarkName = "packPanelPaddingTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3172,12 +3172,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_packpanel.cpp"
-            timestampString = "601807412.8388799"
+            timestampString = "603625703.794852"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "730"
             endingLineNumber = "730"
-            landmarkName = "WgPackPanel::_refreshAllWidgets()"
+            landmarkName = "WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3188,12 +3188,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_packpanel.cpp"
-            timestampString = "601807412.838937"
+            timestampString = "603625703.794917"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "755"
             endingLineNumber = "755"
-            landmarkName = "WgPackPanel::_updatePreferredPixelSize()"
+            landmarkName = "WgPackPanel::_refreshAllWidgets()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3204,11 +3204,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.52512"
+            timestampString = "603893114.171497"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "697"
-            endingLineNumber = "697"
+            startingLineNumber = "700"
+            endingLineNumber = "700"
             landmarkName = "packPanelPaddingTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3284,11 +3284,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "602413984.5253429"
+            timestampString = "603893114.171818"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "503"
-            endingLineNumber = "503"
+            startingLineNumber = "506"
+            endingLineNumber = "506"
             landmarkName = "main ( int argc, char** argv )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3300,7 +3300,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_widget.cpp"
-            timestampString = "601807412.840188"
+            timestampString = "603625218.865676"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "513"
@@ -3323,6 +3323,38 @@
             endingLineNumber = "266"
             landmarkName = "LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )"
             landmarkType = "9">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_sizecapsule.cpp"
+            timestampString = "603381077.107378"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "123"
+            endingLineNumber = "123"
+            landmarkName = "WgSizeCapsule::PreferredPixelSize()"
+            landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "framework/wg_packpanel.cpp"
+            timestampString = "603625703.795675"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "577"
+            endingLineNumber = "577"
+            landmarkName = "WgPackPanel::_onResizeRequested( WgVectorHook * pHook )"
+            landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

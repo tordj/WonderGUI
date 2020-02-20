@@ -285,8 +285,20 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 		if( m_bPressed )
 			mode = WG_MODE_SELECTED;
 	}
-
-    WgState state = WgUtil::ModeToState(mode);
+    
+    // Get correct state
+    
+    WgState state = m_state;
+    
+    if( m_bOver )
+    {
+        state.setHovered(true);
+        if( m_bPressed )
+            state.setPressed(true);
+    }
+    
+    if( m_bChecked )
+        state.setSelected(true);
     
 	// Blit background
 
