@@ -30,6 +30,7 @@
 #include <wg_color.h>
 #include <wg_pointers.h>
 #include <wg_blob.h>
+#include <wg_payload.h>
 
 namespace wg
 {
@@ -65,6 +66,9 @@ namespace wg
 		static const char	CLASSNAME[];
 		static Surface_p	cast( Object * pObject );
 
+        inline void         setId(int id) { m_id = id; }
+        inline int          id() const { return m_id; }
+
 		//.____ Geometry _________________________________________________
 
 		SizeI				size() const { return m_size; }		///< @brief Get the size in pixels of the surface.
@@ -76,6 +80,10 @@ namespace wg
 
         bool                setScale( float scale );
         inline float        scale() const { return m_pixelQuartersPerPoint/4.f; }
+        
+        SizeI               pointSize() const {return (m_size * 4) / m_pixelQuartersPerPoint; }
+
+        int                 pixelQuartersPerPoint() const { return m_pixelQuartersPerPoint; }
         
 		//.____ Appearance ____________________________________________________
 
@@ -225,6 +233,10 @@ namespace wg
 		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );	///< @brief Copy other surface as a block
 
+        //.____ Misc _________________________________________________________
+        
+        inline void         setPayload( BasicPayload * pPayload ) { m_pPayload = pPayload; }
+        inline BasicPayload_p payload() const { return m_pPayload; }
 
 	protected:
 		Surface( int flags );
@@ -234,6 +246,8 @@ namespace wg
 
 		RectI				_lockAndAdjustRegion( AccessMode modeNeeded, const RectI& region );
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT = nullptr );
+
+        int                 m_id = 0;
 
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
@@ -247,10 +261,13 @@ namespace wg
 		uint8_t *			m_pPixels = nullptr;			    // Pointer at pixels when surface locked.
 		RectI				m_lockRegion;		                // Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
+        BasicPayload_p      m_pPayload;
+        
         // This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
         int                 m_pixelQuartersPerPoint = 4;
 	};
 
+    
 	//____ Surface::pitch() _______________________________________________
 	/**
 	 * Get the pitch of the locked region.

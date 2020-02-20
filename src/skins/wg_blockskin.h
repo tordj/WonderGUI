@@ -78,10 +78,10 @@ namespace wg
 		Surface_p		surface() const { return m_pSurface; }
 
 		void			setBlockSize(SizeI size);
-		SizeI			blockSize() const { return m_dimensions; }
+		SizeI			blockSize() const { return m_dimensions*4/m_pSurface->pixelQuartersPerPoint(); }
 
 		void			setFrame(BorderI frame);
-		BorderI			frame() const { return m_frame; }
+		BorderI			frame() const { return m_frame*4/m_pSurface->pixelQuartersPerPoint(); }
 
 		//.____ Misc ____________________________________________________
 
@@ -94,27 +94,8 @@ namespace wg
 		//.____ Deprecated ____________________________________________________
 
 		static BlockSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
-		static BlockSkin_p createEnable(Surface * pSurface, SizeI blockSize, CoordI ofsEnabled, CoordI ofsDisabled, BorderI frame = BorderI(0));
-		static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createSelectable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createClickSelectable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createClickSelectableWidget(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-
-		static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
-		static BlockSkin_p createEnableFromSurface(Surface * pSurface, int blockSpacing, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createClickableFromSurface(Surface * pSurface, int blockSpacing, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createSelectableFromSurface(Surface * pSurface, int blockSpacing, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createClickSelectableFromSurface(Surface * pSurface, int blockSpacing, BorderI blockFrame = BorderI(0));
-
-
-		void	setStateBlock(StateEnum state, const CoordI& ofs);
-		bool	setBlockGeo(SizeI size, BorderI frame = BorderI(0));
-
-		void	setAllBlocks(const CoordI& ofs);
-		void	setDisabledBlock(const CoordI& ofs);
-		void	setHoveredBlocks(const CoordI& ofs);
-		void	setPressedBlocks(const CoordI& ofs);
-		void	setSelectedBlocks(const CoordI& ofs);
+        static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
+        static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
 
 		//.____ Internal _______________________________________
 
@@ -140,8 +121,8 @@ namespace wg
 		void		_updateUnsetStateColors();
 
 		Surface_p	m_pSurface;
-		SizeI		m_dimensions;
-		BorderI		m_frame;
+		SizeI		m_dimensions;   // Pixels
+		BorderI		m_frame;        // Pixels
 
 		bool		m_bOpaque;
 

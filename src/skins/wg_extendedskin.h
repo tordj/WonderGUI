@@ -74,8 +74,8 @@ namespace wg
 	protected:
 		void _refreshUnsetStates();
 
-		BorderI				m_contentPadding;
-		CoordI				m_contentShift[StateEnum_Nb];
+        BorderI				m_contentPadding;                   // Unit: Points
+        CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 

@@ -94,6 +94,22 @@ namespace wg
 	protected:
 
 		static char m_className[64];
+
+		//TODO: FIX THIS!
+		// This is ugly and depends on specific preprocessor directives in MSVC, GCC and CLANG.
+		// Using any other compiler is likely to break it.
+		// We can't just use the standard __func__ since that doesn't include the class name.
+
+		static const char * _getClassName() 
+		{ 	
+#if	defined(__clang__) || defined(_MSC_VER)
+			return __FUNCTION__;
+#elif defined*__GNUC__
+			return __PRETTY_FUNCTION__;
+#elif 
+#error Compilation failure! wg::Payload<>::_getClassName doesn't recognize the compiler. 
+#endif
+		}
 	};
 
 

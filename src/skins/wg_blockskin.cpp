@@ -42,32 +42,44 @@ namespace wg
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, BorderI frame )
 	{
-		if (pSurface == nullptr || frame.width() >= pSurface->size().w || frame.height() >= pSurface->size().h  )
+        BorderI pixelFrame = (frame*pSurface->pixelQuartersPerPoint()) / 4;
+        
+		if (pSurface == nullptr || pixelFrame.width() >= pSurface->size().w || pixelFrame.height() >= pSurface->size().h  )
 			return nullptr;
 
-		return BlockSkin_p( new BlockSkin(pSurface, pSurface->size(), frame) );
+		return BlockSkin_p( new BlockSkin(pSurface, pSurface->size(), pixelFrame) );
 	}
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, RectI block, BorderI frame)
 	{
-		if (pSurface == nullptr)
+        if (pSurface == nullptr)
 			return nullptr;
 
 		SizeI surfSize = pSurface->size();
-
-		if( frame.width() >= surfSize.w || frame.height() >= surfSize.h ||
-			block.x < 0 || block.y < 0 || block.right() > surfSize.w || block.bottom() > surfSize.h )
+        BorderI pixelFrame = frame*pSurface->pixelQuartersPerPoint() / 4;
+        RectI pixelBlock = block*pSurface->pixelQuartersPerPoint() / 4;
+        
+		if( pixelFrame.width() >= surfSize.w || pixelFrame.height() >= surfSize.h ||
+			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
 			return nullptr;
 
-		return BlockSkin_p(new BlockSkin(pSurface, block, frame));
+		return BlockSkin_p(new BlockSkin(pSurface, pixelBlock, pixelFrame));
 	}
 
-	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame, Orientation orientation, int spacing)
+	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Orientation orientation, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
 
+        // Get pixel values
+        
 		SizeI surfSize = pSurface->size();
+        RectI firstBlock = _firstBlock*pSurface->pixelQuartersPerPoint() / 4;
+        BorderI frame = _frame*pSurface->pixelQuartersPerPoint() / 4;
+        int   spacing = _spacing*pSurface->pixelQuartersPerPoint() / 4;
+        
+        // Check so all blocks fit
+        
 		int nBlocks = (int) stateBlocks.size();
 		RectI blockArea = firstBlock;
 		if (orientation == Orientation::Horizontal)
@@ -79,9 +91,11 @@ namespace wg
 			blockArea.x < 0 || blockArea.y < 0 || blockArea.right() > surfSize.w || blockArea.bottom() > surfSize.h)
 			return nullptr;
 
+        // Create the skin
+        
 		BlockSkin * p = new BlockSkin(pSurface, firstBlock, frame);
 
-		p->setBlocks(stateBlocks, orientation, spacing, firstBlock.pos());
+		p->setBlocks(stateBlocks, orientation, _spacing, _firstBlock.pos());
 		return BlockSkin_p(p);
 	}
 
@@ -92,13 +106,6 @@ namespace wg
 		return create(pSurface, block, frame);
 	}
 
-	BlockSkin_p BlockSkin::createEnable( Surface * pSurface, SizeI blockSize, CoordI ofsEnabled, CoordI ofsDisabled, BorderI frame )
-	{
-		auto p = create(pSurface, { ofsEnabled,blockSize }, frame);
-		if( p )
-			p->setBlock(StateEnum::Disabled, ofsDisabled);
-		return BlockSkin_p(p);
-	}
 
 	BlockSkin_p BlockSkin::createClickable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
 	{
@@ -123,112 +130,9 @@ namespace wg
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::createSelectable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
-	{
-		auto p = create(pSurface, blockGeo, blockFrame);
-		if (p)
-		{
-			Orientation o;
-			int spacing;
-			if (blockPitch.w > 0)
-			{
-				o = Orientation::Horizontal;
-				spacing = blockPitch.w - blockGeo.w;
-			}
-			else
-			{
-				o = Orientation::Vertical;
-				spacing = blockPitch.h - blockGeo.h;
-			}
-
-			p->setBlocks({ StateEnum::Normal, StateEnum::Selected, StateEnum::Disabled }, o, spacing, blockStartOfs);
-		}
-		return BlockSkin_p(p);
-	}
-
-	BlockSkin_p BlockSkin::createClickSelectable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
-	{
-		auto p = create(pSurface, blockGeo, blockFrame);
-		if (p)
-		{
-			Orientation o;
-			int spacing;
-			if (blockPitch.w > 0)
-			{
-				o = Orientation::Horizontal;
-				spacing = blockPitch.w - blockGeo.w;
-			}
-			else
-			{
-				o = Orientation::Vertical;
-				spacing = blockPitch.h - blockGeo.h;
-			}
-
-			p->setBlocks({ StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, o, spacing, blockStartOfs);
-		}
-		return BlockSkin_p(p);
-	}
-
-	/** Usable for state button etc, where a widget is normal/hovered/pressed/disabled as well as selected/unselected
-	*/
-	BlockSkin_p BlockSkin::createClickSelectableWidget( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
-	{
-		auto p = create(pSurface, blockGeo, blockFrame);
-		if (p)
-		{
-			Orientation o;
-			int spacing;
-			if (blockPitch.w > 0)
-			{
-				o = Orientation::Horizontal;
-				spacing = blockPitch.w - blockGeo.w;
-			}
-			else
-			{
-				o = Orientation::Vertical;
-				spacing = blockPitch.h - blockGeo.h;
-			}
-
-			p->setBlocks({ StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::SelectedPressed, StateEnum::Disabled, StateEnum::DisabledSelected }, o, spacing, blockStartOfs);
-		}
-		return BlockSkin_p(p);
-	}
-
-
 	BlockSkin_p BlockSkin::createStaticFromSurface( Surface * pSurface, BorderI frame )
 	{
 		return create(pSurface, frame);
-	}
-
-	BlockSkin_p BlockSkin::createEnableFromSurface( Surface * pSurface, int blockSpacing, BorderI blockFrame )
-	{
-		BlockSkin * pSkin = new BlockSkin();
-		pSkin->setSurface( pSurface );
-
-		SizeI	sz = SizeI( (pSurface->width()-blockSpacing)/2, pSurface->height() );
-
-		pSkin->setBlockGeo( sz, blockFrame );
-		pSkin->setAllBlocks( CoordI(0,0) );
-		pSkin->setDisabledBlock( CoordI(sz.w+blockSpacing,0) );
-		return BlockSkin_p(pSkin);
-	}
-
-	BlockSkin_p BlockSkin::createClickableFromSurface( Surface * pSurface, int blockSpacing, BorderI blockFrame )
-	{
-		SizeI	blockSize = SizeI( (pSurface->width()-blockSpacing*3)/4, pSurface->height() );
-		return createClickable( pSurface, blockSize, CoordI(0,0), SizeI(blockSize.w+blockSpacing,0), blockFrame );
-	}
-
-	BlockSkin_p BlockSkin::createSelectableFromSurface( Surface * pSurface, int blockSpacing, BorderI blockFrame )
-	{
-		SizeI	blockSize( (pSurface->width()-blockSpacing*2)/3, pSurface->height() );
-		return createSelectable( pSurface, blockSize, CoordI(0,0), SizeI(blockSize.w+blockSpacing,0), blockFrame );
-	}
-
-	BlockSkin_p BlockSkin::createClickSelectableFromSurface( Surface * pSurface, int blockSpacing, BorderI blockFrame )
-	{
-		SizeI	blockSize( (pSurface->width()-blockSpacing*4)/5, pSurface->height() );
-		return createClickSelectable( pSurface, blockSize, CoordI(0,0), SizeI(blockSize.w+blockSpacing,0), blockFrame );
 	}
 
 	//____ Constructor ____________________________________________________________
@@ -284,65 +188,12 @@ namespace wg
 		return 0;
 	}
 
-
-	//____ setBlockGeo() __________________________________________________________
-
-	bool BlockSkin::setBlockGeo( SizeI size, BorderI frame )
-	{
-		if( size.w <= frame.width() || size.h <= frame.height() )
-			return false;
-
-		m_dimensions	= size;
-		m_frame			= frame;
-		return true;
-	}
-
-	//____ setStateBlock() ________________________________________________________
-
-	void BlockSkin::setStateBlock( StateEnum state, const CoordI& ofs )
-	{
-		setBlock(state, ofs);
-	}
-
-	//____ setAllBlocks() _________________________________________________________
-
-	void BlockSkin::setAllBlocks( const CoordI& ofs )
-	{
-		setBlock(ofs);
-	}
-
-	//____ setDisabledBlock() _____________________________________________________
-
-	void BlockSkin::setDisabledBlock( const CoordI& ofs )
-	{
-		setBlock(StateEnum::Disabled, ofs);
-	}
-
-	//____ setHoveredBlocks() _____________________________________________________
-
-	void BlockSkin::setHoveredBlocks( const CoordI& ofs )
-	{
-		setBlock(StateEnum::Hovered, ofs);
-	}
-
-	//____ setPressedBlocks() _____________________________________________________
-
-	void BlockSkin::setPressedBlocks( const CoordI& ofs )
-	{
-		setBlock(StateEnum::Pressed, ofs);
-	}
-
-	//____ setSelectedBlocks() ____________________________________________________
-
-	void BlockSkin::setSelectedBlocks( const CoordI& ofs )
-	{
-		setBlock(StateEnum::Selected, ofs);
-	}
-
 	//____ setBlock() _____________________________________________________________
 
 	void BlockSkin::setBlock(CoordI ofs)
 	{
+        ofs = ofs*m_pSurface->pixelQuartersPerPoint() / 4;
+
 		m_stateBlocks[0] = ofs;
 		m_stateBlockMask = 1;
 
@@ -351,7 +202,9 @@ namespace wg
 
 	void BlockSkin::setBlock(State state, CoordI ofs)
 	{
-		int i = _stateToIndex(state);
+        ofs = ofs*m_pSurface->pixelQuartersPerPoint() / 4;
+
+        int i = _stateToIndex(state);
 
 		m_stateBlocks[i] = ofs;
 		m_stateBlockMask.setBit(i);
@@ -360,8 +213,11 @@ namespace wg
 
 	//____ setBlocks() ________________________________________________________
 
-	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, CoordI blockStartOfs )
+	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation, int _spacing, CoordI _blockStartOfs )
 	{
+        CoordI blockStartOfs = _blockStartOfs*m_pSurface->pixelQuartersPerPoint() / 4;
+        int spacing = _spacing*m_pSurface->pixelQuartersPerPoint() / 4;
+
 		CoordI pitch = orientation == Orientation::Horizontal ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
 
 		int ofs = 0;
@@ -379,7 +235,7 @@ namespace wg
 
 	RectI BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_dimensions };
+		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->pixelQuartersPerPoint() };
 	}
 
 	//____ setTint() __________________________________________________________
@@ -445,14 +301,14 @@ namespace wg
 
 	void BlockSkin::setBlockSize(SizeI size)
 	{
-		m_dimensions = size;
+		m_dimensions = size*m_pSurface->pixelQuartersPerPoint() / 4;
 	}
 
 	//____ setFrame() ____________________________________________________________
 
 	void BlockSkin::setFrame(BorderI frame)
 	{
-		m_frame = frame;
+		m_frame = frame*m_pSurface->pixelQuartersPerPoint() / 4;
 	}
 
 	//____ _render() _______________________________________________________________
@@ -471,7 +327,7 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( rawToPixels(_canvas), pointsToPixels(m_frame), { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch( rawToPixels(_canvas), pointsToPixels(m_frame*4/m_pSurface->pixelQuartersPerPoint()), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
@@ -481,8 +337,8 @@ namespace wg
 
 	SizeI BlockSkin::_minSize() const
 	{
-		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = pointsToRawAligned(m_frame);
+		SizeI content = pointsToRawAligned(m_contentPadding);
+		SizeI frame = pointsToRawAligned(m_frame*4/m_pSurface->pixelQuartersPerPoint());
 		return SizeI::max( content, frame );
 	}
 
@@ -490,9 +346,10 @@ namespace wg
 
 	SizeI BlockSkin::_preferredSize() const
 	{
-		SizeI content = ExtendedSkin::_preferredSize();
-		SizeI frame = pointsToRawAligned(m_frame);
-		return SizeI::max(content, frame);
+        //This takes the scale of the surface into account
+        // Preferred size is to map each point of the surface to a pixel of the skinarea.
+        
+        return ((m_dimensions*4)/m_pSurface->pixelQuartersPerPoint())*QPix::pixelQuartersPerPoint();
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -500,7 +357,7 @@ namespace wg
 	SizeI BlockSkin::_sizeForContent( const SizeI contentSize ) const
 	{
 		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI min = pointsToRawAligned(m_frame);
+		SizeI min = pointsToRawAligned(m_frame*4/m_pSurface->pixelQuartersPerPoint());
 
 		return SizeI::max(sz, min);
 	}
