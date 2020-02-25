@@ -165,52 +165,70 @@ namespace wg
 		return m_pHolder->_sideCanvasAlphaTest(this,ofs);		
 	}
 	
-	
+	//____ _Holder::_sideCanvasMatchingHeight() ____________________________________________
 	
 	int SideCanvas::Holder::_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const
 	{
 		return _sideCanvasPreferredSize(pCanvas).h;
 	}
 	
+	//____ _Holder::_sideCanvasMatchingWidth() ____________________________________________
+
 	int SideCanvas::Holder::_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const
 	{
 		return _sideCanvasPreferredSize(pCanvas).w;		
 	}
+
+	//____ _Holder::_sideCanvasMinSize() ____________________________________________
 
 	SizeI SideCanvas::Holder::_sideCanvasMinSize( const SideCanvas * pCanvas ) const
 	{
 		return pCanvas->Widget::_minSize();
 	}
 	
+	//____ _Holder::_sideCanvasMaxSize() ____________________________________________
+
 	SizeI SideCanvas::Holder::_sideCanvasMaxSize( const SideCanvas * pCanvas ) const
 	{
 		return pCanvas->Widget::_maxSize();
 	}
+
+	//____ _Holder::_sideCanvasCollectPatches() ____________________________________________
 
 	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectI& geo, const RectI& clip )
 	{
 		return pCanvas->Widget::_collectPatches(container, geo, clip);
 	}
 
+	//____ _Holder::_sideCanvasMaskPatches() ____________________________________________
+
 	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
 	{
 		return pCanvas->Widget::_maskPatches(patches,geo,clip,blendMode);
 	}
+
+	//____ _Holder::_sideCanvasRefresh() ____________________________________________
 
 	void SideCanvas::Holder::_sideCanvasRefresh( SideCanvas * pCanvas)
 	{
 		return pCanvas->Widget::_refresh();
 	}
 
+	//____ _Holder::_sideCanvasSetSkin() ____________________________________________
+
 	void SideCanvas::Holder::_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) 
 	{
 		return pCanvas->Widget::_setSkin(pSkin);
 	}
 
+	//____ _Holder::_sideCanvasSetState() ____________________________________________
+
 	void SideCanvas::Holder::_sideCanvasSetState( SideCanvas * pCanvas,  State state )
 	{
 		return pCanvas->Widget::_setState(state);
 	}
+
+	//____ _Holder::_sideCanvasReceive() ____________________________________________
 
 	void SideCanvas::Holder::_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg )
 	{

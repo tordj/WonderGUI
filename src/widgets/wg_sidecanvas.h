@@ -78,10 +78,9 @@ namespace wg
 
 	protected:
 	
-	
-	
 		SideCanvas( Holder * pHolder );
 		virtual ~SideCanvas();
+		virtual Widget* _newOfMyType() const override { return nullptr; };
 
 		int			_matchingHeight(int width) const override;
 		int			_matchingWidth(int height) const override;
@@ -104,7 +103,6 @@ namespace wg
 		bool		_alphaTest( const CoordI& ofs ) override;
 
 		Holder * 	m_pHolder;
-
 	};
 	
 	

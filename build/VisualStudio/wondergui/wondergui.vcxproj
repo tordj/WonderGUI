@@ -163,6 +163,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cvector.h" />
     <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctext.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstatictextdisplay.h" />
@@ -215,6 +216,8 @@
     <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_scrollbar.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_selectbox.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_sidecanvas.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_simplevolumemeter.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_texteditor.h" />
@@ -327,6 +330,8 @@
     <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_scrollbar.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_selectbox.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_sidecanvas.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_simplevolumemeter.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_texteditor.cpp" />

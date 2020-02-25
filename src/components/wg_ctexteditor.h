@@ -24,6 +24,7 @@
 #define WG_CTEXTEDITOR_DOT_H
 #pragma once
 
+#include <algorithm>
 
 #include <wg_ctextdisplay.h>
 

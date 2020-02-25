@@ -36,6 +36,7 @@ namespace wg
 
 	class SelectBoxEntry : private Text
 	{
+		friend class SelectBox;
 	public:
 		SelectBoxEntry( int id, String& text ) : m_id(id), m_string(text) {};
 		
@@ -43,9 +44,28 @@ namespace wg
 		inline String	text() { return m_string; }
 
 	protected:
-	
+
+		// Overloaded from Text
+
+		SizeI		_textSize() const override;
+		State		_textState() const override;
+		TextStyle * _textStyle() const override;
+
+		const Char *_textBegin() const override;
+		int 		_textLength() const override;
+
+		bool		_caretVisible() const override;
+		int			_caretOffset() const override;
+		std::tuple<int, int>	_selectedText() const override;
+
+		void		_mapperRequestRender() override;
+		void		_mapperRequestRender(const RectI& rect) override;
+		void		_mapperRequestResize() override;
+
 		int			m_id;
-		String 		m_string;		
+		int			m_height = 0;
+		String 		m_string;
+		SelectBox * m_pParent = nullptr;
 	};
 		
 
@@ -58,6 +78,7 @@ namespace wg
 
 	class SelectBox : public Widget, protected CVector<SelectBoxEntry>::Holder, protected SideCanvas::Holder
 	{
+		friend class SelectBoxEntry;
 	public:
 		//.____ Creation __________________________________________
 
@@ -77,6 +98,26 @@ namespace wg
 
 		//.____ Appearance ________________________________________________________
 
+		void			setEntrySkin(Skin * pSkin);
+		Skin_p			entrySkin() const { return m_pEntrySkin;  }
+
+		void			setEntryStyle(TextStyle * pStyle);
+		TextStyle_p		entryStyle() const { return m_pEntryStyle; }
+
+		void			setListTextMapper(TextMapper * pTextMapper);
+		TextStyle_p		listTextMapper() const { return m_pListTextMapper; }
+
+		void			setListSkin(Skin * pSkin);
+		Skin_p			listSkin() const { return m_pListDisplay->skin(); }
+
+		//.___ Control _____________________________________________________________
+
+		void			selectEntry(const CVector<SelectBoxEntry>::iterator& it);
+		bool			selectEntryById(int id);
+		void			selectEntryByIndex(int index);
+
+		int				selectedEntryId() const;
+		inline int		selectedEntryIndex() const { return m_selectedEntryIndex; }
 
 	protected:
 		SelectBox();
@@ -86,11 +127,24 @@ namespace wg
 		SizeI		_preferredSize() const override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		bool		_alphaTest( const CoordI& ofs ) override;
 
 		class TextAccess : public CTextDisplay { friend class SelectBox; };
 		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
 		TextAccess& _text() { return static_cast<TextAccess&>(text); }
+
+		class MySideCanvas : public SideCanvas 
+		{ 
+			friend class SelectBox; 
+			MySideCanvas(SideCanvas::Holder* pHolder) : SideCanvas(pHolder) {}
+		};
+		typedef	StrongPtr<MySideCanvas>	MySideCanvas_p;
+		typedef	WeakPtr<MySideCanvas>	MySideCanvas_wp;
+
+		void		_updateListCanvasOpacity();
+		void		_requestRenderEntry(SelectBoxEntry* pEntry);
+		void		_selectEntry(int idx);
+		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper().rawPtr(); }
+		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper().rawPtr();  }
 
 		//
 		
@@ -100,30 +154,37 @@ namespace wg
 
 		//
 		
-		int			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const;
-		int			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const;
+		int			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const override;
+		int			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const override;
 
-		SizeI		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const ;
-		SizeI		_sideCanvasMinSize( const SideCanvas * pCanvas ) const;
-		SizeI		_sideCanvasMaxSize( const SideCanvas * pCanvas ) const;
-		void		_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectI& geo, const RectI& clip );
-		void		_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
+		SizeI		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const  override;
+		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 
-		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		void		_sideCanvasRefresh( SideCanvas * pCanvas) override;
+		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeI& size ) override;
 
-		void		_sideCanvasRefresh( SideCanvas * pCanvas);
-		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeI& size );
-		void		_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) ;
-		void		_sideCanvasSetState( SideCanvas * pCanvas,  State state );
-
-		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg );
-		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordI& ofs );			
+		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg ) override;
+		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordI& ofs ) override;			
 	
+		void		_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin) override;
+		void		_sideCanvasSetState(SideCanvas * pCanvas, State state) override;
 
 		
 
 	private:
-		SideCanvas_p	m_pListDisplay;
+
+		MySideCanvas_p	m_pListCanvas;
+		TextMapper_p	m_pListTextMapper;
+		int				m_selectedEntryIndex = -1;
+		int				m_hoveredEntryIndex = -1;
+
+		Skin_p			m_pEntrySkin;
+		TextStyle_p		m_pEntryStyle;
+
+		int				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
+
+		int				m_listCanvasMatchingHeight = 0;
+		SizeI			m_listCanvasPreferredSize;
 
 
 	};

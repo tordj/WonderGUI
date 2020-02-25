@@ -230,6 +230,9 @@ namespace wg
 		virtual SizeI		_minSize() const;
 		virtual SizeI		_maxSize() const;
 
+		inline RectI		_contentRect() const { return m_pSkin ? m_pSkin->_contentRect(m_size, m_state) : RectI( m_size ); }
+		inline RectI		_contentRect(const RectI& canvas) const { return m_pSkin ? m_pSkin->_contentRect(canvas, m_state) : canvas; }
+		inline SizeI		_contentPadding() const { return m_pSkin ? m_pSkin->_contentPadding() : SizeI(); }
 
 		// Convenient calls to holder
 
@@ -303,12 +306,12 @@ namespace wg
 		String			m_tooltip;
 		int				m_markOpacity;
 
-		bool			m_bOpaque;
-		bool			m_bTabLock;		// If set, the widget prevents focus shifting away from it with tab.
-		bool			m_bSelectable;	// Set if widget is allowed to be selected.
+		bool			m_bOpaque;			// Set if widget is totally opaque, no need to render anything behind.
+		bool			m_bTabLock;			// If set, the widget prevents focus shifting away from it with tab.
+		bool			m_bSelectable;		// Set if widget is allowed to be selected.
 
-		State			m_state;
-		SizeI			m_size;
+		State			m_state;			// Current state of widget.
+		SizeI			m_size;				// Current size of widget.
 
 		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
 		uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
@@ -316,7 +319,7 @@ namespace wg
 		bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
 
 //	private:
-		bool			m_bPressed;		// Keeps track of pressed button when mouse leaves/re-enters widget.
+		bool			m_bPressed;			// Keeps track of pressed button when mouse leaves/re-enters widget.
 
 	};
 

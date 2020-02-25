@@ -461,6 +461,15 @@
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_selectbox.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_sidecanvas.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cvector.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -789,6 +798,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cstatictextdisplay.cpp">
       <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_selectbox.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_sidecanvas.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

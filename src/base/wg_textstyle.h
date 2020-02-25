@@ -137,7 +137,7 @@ namespace wg
 		inline Color			combBgColor( State state ) const;
 		inline int				combSize( State state ) const;
 		inline TextDecoration 	combDecoration( State state ) const;
-		inline BlendMode		combcolorBlendMode( State state ) const;
+		inline BlendMode		combColorBlendMode( State state ) const;
 		inline BlendMode		combBgColorBlendMode( State state ) const;
 		inline BlendMode		combRenderMode( State state ) const;
 		inline BlendMode		combBgRenderMode( State state ) const;

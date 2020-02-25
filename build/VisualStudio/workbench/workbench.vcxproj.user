@@ -4,6 +4,7 @@
     <LocalDebuggerWorkingDirectory>..\..\..\workbench</LocalDebuggerWorkingDirectory>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
     <LocalDebuggerCommandArguments>&gt; log.txt</LocalDebuggerCommandArguments>
+    <LocalDebuggerDebuggerType>Auto</LocalDebuggerDebuggerType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LocalDebuggerWorkingDirectory>..\..\..\workbench</LocalDebuggerWorkingDirectory>
