@@ -88,8 +88,8 @@ public:
 	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
-	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.First()); }
-	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.Last()); }
+	inline WgStackHook* FirstHook() const { return static_cast<WgStackHook*>(m_hooks.first()); }
+	inline WgStackHook* LastHook() const { return static_cast<WgStackHook*>(m_hooks.last()); }
 
 	// Overloaded from WgWidget
 

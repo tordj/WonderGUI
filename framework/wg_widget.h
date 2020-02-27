@@ -32,11 +32,6 @@
 #	include <wg_geo.h>
 #endif
 
-
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
 #ifndef WG_HOOK_DOT_H
 #	include <wg_hook.h>
 #endif
@@ -45,6 +40,7 @@
 #	include <wg_event.h>
 #endif
 
+#include <wg3_string.h>
 #include <wg3_skin.h>
 
 
@@ -105,9 +101,9 @@ public:
     virtual void		SetSkin(wg::Skin * pSkin);
 	wg::Skin_p			Skin() const { return m_pSkin; }
 
-	virtual WgString	GetTooltipString() const { return m_tooltip; }
-	WgString			GetRealTooltipString() const { return m_tooltip; }
-	inline void			SetTooltipString( const WgString& str ) { m_tooltip = str; }
+	virtual wg::String	GetTooltipString() const { return m_tooltip; }
+	wg::String			GetRealTooltipString() const { return m_tooltip; }
+	inline void			SetTooltipString( const wg::String& str ) { m_tooltip = str; }
 
 	inline void			Refresh() { _onRefresh(); }
 	void				SetEnabled(bool bEnabled);
@@ -277,7 +273,7 @@ protected:
 	int				m_scale;
 	WgPointerStyle	m_pointerStyle;
 
-	WgString		m_tooltip;
+	wg::String		m_tooltip;
 	int				m_markOpacity;
 
 	bool			m_bOpaque;

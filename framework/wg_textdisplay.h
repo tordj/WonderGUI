@@ -57,7 +57,7 @@ public:
 	inline void		SetMaxLines( int nLines ) { m_maxLines = nLines; }
 	inline int		MaxLines() { return m_maxLines; }
 
-	Uint32	InsertTextAtCursor( const WgCharSeq& str );
+	Uint32	InsertTextAtCursor( const wg::CharSeq& str );
 	bool	InsertCharAtCursor( Uint16 c );
 
 	void		GoBOL();
@@ -69,7 +69,7 @@ public:
 	virtual WgTextEditMode	GetEditMode() const { return m_text.GetEditMode(); }
 
 	WgPointerStyle		GetPointerStyle() const;
-	WgString			GetTooltipString() const;
+	wg::String			GetTooltipString() const;
 
 	virtual bool TempIsInputField() const { return IsEditable(); }
 	virtual Wg_Interface_TextHolder* TempGetText() { return this; }

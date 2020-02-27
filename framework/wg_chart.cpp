@@ -24,7 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_pen.h>
 #include <wg_base.h>
-#include <wg_texttool.h>
+#include <wg3_texttool.h>
 #include <wg_util.h>
 #include <wg3_surfacefactory.h>
 
@@ -446,12 +446,12 @@ void WgChart::SetDynamicSampleRange()
 
 //____ SetSampleLabelStyle() __________________________________________________
 
-void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
+void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
 {
 	m_sampleLabelStyle.alignment = alignment;
 	m_sampleLabelStyle.offset = offset;
 	m_sampleLabelStyle.pSkin = pSkin;
-	m_sampleLabelStyle.pTextStyle = prop;
+	m_sampleLabelStyle.pTextStyle = pStyle;
 	_requestRender();
 }
 
@@ -476,12 +476,12 @@ void WgChart::SetSampleGridLines(int nLines, GridLine * pLines)
 
 //____ SetValueLabelStyle() ___________________________________________________
 
-void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop)
+void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
 {
 	m_valueLabelStyle.alignment = alignment;
 	m_valueLabelStyle.offset = offset;
 	m_valueLabelStyle.pSkin = pSkin;
-	m_valueLabelStyle.pTextStyle = prop;
+	m_valueLabelStyle.pTextStyle = pStyle;
 	_requestRender();
 }
 
@@ -665,19 +665,20 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 			int xOfs = waveCanvas.x + (int) ((line.pos - m_firstSample) * sampleScale);
 			pDevice->drawLine({ xOfs, canvas.y }, WgDirection::Down, canvas.h, line.color, line.thickness * m_scale / WG_SCALE_BASE);
 
-			if (!line.label.IsEmpty())
+			if (!line.label.isEmpty())
 			{
 				WgPen	pen(pDevice, _canvas);
-				WgTextAttr attr;
+                wg::TextAttr attr;
 
-				WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
-				WgTextTool::AddPropAttributes(attr, m_sampleLabelStyle.pTextStyle);
+                WgBase::GetDefaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+                if( m_sampleLabelStyle.pTextStyle )
+                    m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 				attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
 				pen.SetAttributes(attr);
 
 
 				WgSize labelSize;
-				labelSize.w = WgTextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.Chars());
+//MUSTFIX!                labelSize.w = wg::TextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -693,7 +694,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					_renderSkin( m_sampleLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
-                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
+                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
 			}
 		}
 	}
@@ -713,19 +714,21 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 			int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
 			pDevice->drawLine({ canvas.x, yOfs }, WgDirection::Right, canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE );
 
-			if (!line.label.IsEmpty())
+			if (!line.label.isEmpty())
 			{
 				WgPen	pen(pDevice, _canvas);
-				WgTextAttr attr;
+                wg::TextAttr attr;
 
-				WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
-				WgTextTool::AddPropAttributes(attr, m_valueLabelStyle.pTextStyle);
-				attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
+                WgBase::GetDefaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+                if( m_valueLabelStyle.pTextStyle )
+                    m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
+
+                attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
 				pen.SetAttributes(attr);
 
 
 				WgSize labelSize;
-				labelSize.w = WgTextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.Chars());
+//MUSTFIX!                labelSize.w = wg::TextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -741,7 +744,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					_renderSkin( m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
-                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.Chars());
+                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
 			}
 		}
 	}

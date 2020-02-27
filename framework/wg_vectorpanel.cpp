@@ -199,7 +199,7 @@ WgVectorHook * WgVectorPanel::AddChild( WgWidget * pWidget )
 		return 0;
 
 	WgVectorHook * pHook = _newHook();
-	m_hooks.PushBack(pHook);
+	m_hooks.pushBack(pHook);
 	pHook->_attachWidget( pWidget );
 
 	_onWidgetAppeared(pHook);
@@ -219,7 +219,7 @@ WgVectorHook * WgVectorPanel::AddChildren( WgWidget * pWidgets[], int nb )
     for( int i = 0 ; i < nb ; i++ )
     {
         WgVectorHook * pHook = _newHook();
-        m_hooks.PushBack(pHook);
+        m_hooks.pushBack(pHook);
         pHook->_attachWidget( pWidgets[i] );
         
         if( !pFirst )
@@ -302,7 +302,7 @@ WgWidget * WgVectorPanel::ReleaseChild( WgWidget * pWidget )
 
 bool WgVectorPanel::DeleteAllChildren()
 {
-	m_hooks.Clear();
+	m_hooks.clear();
 	_refreshAllWidgets();
 
 	return true;
@@ -312,14 +312,14 @@ bool WgVectorPanel::DeleteAllChildren()
 
 bool WgVectorPanel::ReleaseAllChildren()
 {
-	WgVectorHook * pHook = m_hooks.First();
+	WgVectorHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		pHook->_releaseWidget();
 		pHook = pHook->Next();
 	}
 
-	m_hooks.Clear();
+	m_hooks.clear();
 	_refreshAllWidgets();
 
 	return true;

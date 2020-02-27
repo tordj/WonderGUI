@@ -28,6 +28,7 @@
 #endif
 
 #include <wg3_surfacefactory.h>
+#include <wg_color.h>
 
 //____ WgZoomOutCapsule __________________________________________________________
 

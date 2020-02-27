@@ -32,6 +32,7 @@
 #include <assert.h>
 #include <map>
 #include <functional>
+#include <string>
 
 #ifndef WG_USERDEFINES_DOT_H
 #	include <wg_userdefines.h>
@@ -41,9 +42,7 @@
 #	include <wg_key.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
+#include <wg3_textstyle.h>
 
 //#include <wg3_gfxdevice.h>
 
@@ -55,9 +54,6 @@ typedef struct FT_LibraryRec_  *FT_Library;
 
 
 class WgFont;
-class WgTextpropManager;
-class WgMemPool;
-class WgWeakPtrHub;
 class WgMemStack;
 class WgCursor;
 
@@ -100,14 +96,8 @@ public:
 //	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
 //	static const WgTextMgrPtr& GetDefaultTextManager();
 
-	static void 	SetDefaultTextprop( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultTextprop() { assert(s_pData!=0); return s_pData->pDefaultTextprop; }
-
-	static void 	SetDefaultSelectionProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultSelectionProp() { assert(s_pData!=0); return s_pData->pDefaultSelectionProp; }
-
-	static void 	SetDefaultLinkProp( const WgTextpropPtr& pProp );
-	static WgTextpropPtr GetDefaultLinkProp() { assert(s_pData!=0); return s_pData->pDefaultLinkProp; }
+    static void 	SetDefaultStyle( wg::TextStyle* pTextStyle );
+    static wg::TextStyle_p GetDefaultStyle() { assert(s_pData!=0); return s_pData->pDefaultTextStyle; }
 
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
@@ -138,21 +128,13 @@ public:
     
     static void     handleError( wg::ErrorCode code, const char * pMsg, const wg::Object * pObject, const char * pClass, const char * pFunction, const char * pFile, int line );
 
-    
-	//____
-
-	static WgWeakPtrHub *	AllocWeakPtrHub();
-	static void			FreeWeakPtrHub( WgWeakPtrHub * pHub );
-
 private:
 
 	struct Data
 	{
         WgContext *         pContext;
         
-		WgTextpropPtr		pDefaultTextprop;
-		WgTextpropPtr		pDefaultSelectionProp;
-		WgTextpropPtr		pDefaultLinkProp;
+        wg::TextStyle_p		pDefaultTextStyle;
 		WgCursor *			pDefaultCursor;
 
 		// Settings for keyboard/pointer input
@@ -170,7 +152,6 @@ private:
 
 		//
 
-		WgMemPool *			pWeakPtrPool;
 		WgMemStack *		pMemStack;
 
 #ifdef WG_USE_FREETYPE

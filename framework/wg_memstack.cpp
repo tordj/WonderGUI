@@ -47,13 +47,13 @@ WgMemStack::WgMemStack( int blockSize ) : m_blockSize(blockSize)
 
 char * WgMemStack::Alloc( int bytes )
 {
-	BlockHeader * p = m_blocks.Last();
+	BlockHeader * p = m_blocks.last();
 
 	if( !p || p->size - p->allocated < bytes )
 	{
 		int size = m_blockSize>=bytes?m_blockSize:bytes;
 		p = new BlockHeader(size);
-		m_blocks.PushBack(p);
+		m_blocks.pushBack(p);
 	}
 
 	char * pBytes = p->pBlock + p->allocated;
@@ -65,16 +65,16 @@ char * WgMemStack::Alloc( int bytes )
 
 void WgMemStack::Release( int bytes )
 {
-	assert( !m_blocks.IsEmpty() && bytes <= m_blocks.Last()->allocated );
+	assert( !m_blocks.isEmpty() && bytes <= m_blocks.last()->allocated );
 
-	m_blocks.Last()->allocated -= bytes;
-	if( m_blocks.Last()->allocated == 0 && m_blocks.First() != m_blocks.Last() )
-		delete m_blocks.PopBack();
+	m_blocks.last()->allocated -= bytes;
+	if( m_blocks.last()->allocated == 0 && m_blocks.first() != m_blocks.last() )
+		delete m_blocks.popBack();
 }
 
 //____ Clear() ________________________________________________________________
 
 void WgMemStack::Clear()
 {
-	m_blocks.Clear();
+	m_blocks.clear();
 }

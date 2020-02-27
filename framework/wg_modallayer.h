@@ -30,10 +30,10 @@
 
 class WgModalLayer;
 
-class WgModalHook : public WgLayerHook, protected WgLink
+class WgModalHook : public WgLayerHook, protected wg::Link
 {
 	friend class WgModalLayer;
-	friend class WgChain<WgModalHook>;
+	friend class wg::Chain<WgModalHook>;
 
 public:
 	const char *Type( void ) const;
@@ -137,7 +137,7 @@ private:
 
 	// Overloaded from WgLayer
 
-	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.First(); }
+	WgLayerHook *	_firstLayerHook() const { return m_modalHooks.first(); }
 
 	//
 
@@ -154,7 +154,7 @@ private:
 	WgHook *	_lastHookWithGeo( WgRect& geo ) const;
 	WgHook *	_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const;
 
-	WgChain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
+	wg::Chain<WgModalHook>	m_modalHooks;		// First modal widget lies at the bottom.
 
 	WgWidgetWeakPtr			m_pBaseKeyFocus;
 

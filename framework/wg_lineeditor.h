@@ -65,7 +65,7 @@ public:
 	void		GoBOF() { GoBOL(); }
 	void		GoEOF() { GoEOL(); }
 
-	Uint32		InsertTextAtCursor( const WgCharSeq& str );
+	Uint32		InsertTextAtCursor( const wg::CharSeq& str );
 	bool		InsertCharAtCursor( Uint16 c );
 
 	virtual void			SetEditMode(WgTextEditMode mode);

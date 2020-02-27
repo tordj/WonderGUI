@@ -21,10 +21,10 @@
 =========================================================================*/
 #include	<stdio.h>
 #include	<wg_fpsdisplay.h>
-#include	<wg_texttool.h>
 #include	<wg_gfxdevice.h>
 #include	<wg_color.h>
-#include	<wg_char.h>
+#include	<wg3_char.h>
+#include    <wg3_texttool.h>
 #include	<wg_pen.h>
 #include	<wg_base.h>
 
@@ -72,11 +72,11 @@ const char * WgFpsDisplay::GetClass( void )
 }
 
 
-//____ SetTextProperties() ____________________________________________________
+//____ SetTextStyle() ____________________________________________________
 
-void WgFpsDisplay::SetTextProperties( const WgTextpropPtr& pProp )
+void WgFpsDisplay::SetTextStyle( wg::TextStyle * pStyle )
 {
-	m_pProp = pProp;
+	m_pStyle = pStyle;
 	_requestRender();
 }
 
@@ -134,14 +134,14 @@ void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	//____
 
 	char	temp[40];
-	WgChar	temp2[40];
+    wg::Char	temp2[40];
 	const char *	pTemp;
 
 	WgPen	pen( pDevice, _canvas);
-	WgTextAttr attr;
+    wg::TextAttr attr;
 
-	WgTextTool::AddPropAttributes(attr, WgBase::GetDefaultTextprop());
-	WgTextTool::AddPropAttributes(attr, m_pProp);
+    if( m_pStyle )
+        m_pStyle->exportAttr( wg::StateEnum::Normal, &attr );
 
 	pen.SetAttributes( attr );
 	pen.SetPos( WgCoord(_canvas.x, _canvas.y + pen.GetBaseline()) );
@@ -150,27 +150,27 @@ void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	pTemp = temp;
 	sprintf( temp, "Now: %.2f", fpsCurrent );
-	WgTextTool::readString( pTemp, temp2, 39 );
+    wg::TextTool::readString( pTemp, temp2, 39 );
 
     WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Min: %.2f", fpsMin );
-	WgTextTool::readString( pTemp, temp2, 39 );
+    wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
     WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Avg: %.2f", fpsAvg );
-	WgTextTool::readString( pTemp, temp2, 39 );
+    wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
     WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Max: %.2f", fpsMax );
-	WgTextTool::readString( pTemp, temp2, 39 );
+    wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
     WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
@@ -206,7 +206,7 @@ void WgFpsDisplay::_onCloneContent( const WgWidget * _pOrg )
 {
 	WgFpsDisplay * pOrg		= (WgFpsDisplay *) _pOrg;
 
-	m_pProp			= pOrg->m_pProp;
+	m_pStyle			= pOrg->m_pStyle;
 	m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 
 	for( int i = 0 ; i < TICK_BUFFER ; i++ )

@@ -33,12 +33,12 @@ class WgFlexPanel;
 
 //____ WgFlexHook _____________________________________________________________
 
-class WgFlexHook : public WgPanelHook, protected WgLink
+class WgFlexHook : public WgPanelHook, protected wg::Link
 {
 	friend class WgWidget;
 	friend class WgPanel;
 	friend class WgFlexPanel;
-	friend class WgChain<WgFlexHook>;
+	friend class wg::Chain<WgFlexHook>;
 
 public:
 
@@ -281,8 +281,8 @@ public:
 	const WgFlexAnchor *	Anchor( int index );
 
 
-	WgFlexHook*		FirstHook() const { return m_hooks.First(); }
-	WgFlexHook*		LastHook() const { return m_hooks.Last(); }
+	WgFlexHook*		FirstHook() const { return m_hooks.first(); }
+	WgFlexHook*		LastHook() const { return m_hooks.last(); }
 
 	// Overloaded from WgWidget
 
@@ -310,7 +310,7 @@ private:
 	WgHook *		_lastHookWithGeo( WgRect& writeGeo ) const;
 	WgHook *		_prevHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const;
 
-	WgChain<WgFlexHook>			m_hooks;
+	wg::Chain<WgFlexHook>			m_hooks;
 	std::vector<WgFlexAnchor>	m_anchors;
 
 	bool			m_bConfineChildren;

@@ -173,7 +173,7 @@ private:
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
-	int		_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain );
+    int		_deleteCallbacksOnType( WgEventType type, wg::Chain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	void 	_updateMarkedWidget(bool bMouseMoved);
@@ -238,7 +238,7 @@ private:
 
 	// Callbacks
 
-	class Callback : public WgLink
+    class Callback : public wg::Link
 	{
 	public:
 		virtual ~Callback() {};
@@ -310,9 +310,9 @@ private:
 	};
 
 
-	WgChain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
+	wg::Chain<Callback>						m_globalCallbacks;	// Callbacks called for every event.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >	m_widgetCallbacks;	// Callbacks for Widget-specific events.
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >	m_widgetCallbacks;	// Callbacks for Widget-specific events.
 
 
 };

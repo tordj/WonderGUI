@@ -27,6 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
+#include <wg_color.h>
 
 //____ WgSwitch ____________________________________________________________
 

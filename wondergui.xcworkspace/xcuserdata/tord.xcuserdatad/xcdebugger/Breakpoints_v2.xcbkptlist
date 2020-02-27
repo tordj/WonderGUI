@@ -10,11 +10,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.169984"
+            timestampString = "604484814.570875"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "923"
-            endingLineNumber = "923"
+            startingLineNumber = "924"
+            endingLineNumber = "924"
             landmarkName = "scrollPanelTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.170382"
+            timestampString = "604484814.570969"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "921"
-            endingLineNumber = "921"
+            startingLineNumber = "922"
+            endingLineNumber = "922"
             landmarkName = "scrollPanelTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3124,11 +3124,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.170723"
+            timestampString = "604484814.5713"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "687"
-            endingLineNumber = "687"
+            startingLineNumber = "688"
+            endingLineNumber = "688"
             landmarkName = "packPanelStressTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3140,11 +3140,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.17097"
+            timestampString = "604484814.571376"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "684"
-            endingLineNumber = "684"
+            startingLineNumber = "685"
+            endingLineNumber = "685"
             landmarkName = "packPanelStressTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3156,13 +3156,13 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.171207"
+            timestampString = "604484814.5714509"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "697"
-            endingLineNumber = "697"
-            landmarkName = "packPanelPaddingTest( WgRootPanel * pRoot )"
-            landmarkType = "9">
+            startingLineNumber = "698"
+            endingLineNumber = "698"
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -3172,7 +3172,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_packpanel.cpp"
-            timestampString = "603625703.794852"
+            timestampString = "604484814.571527"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "730"
@@ -3188,12 +3188,12 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_packpanel.cpp"
-            timestampString = "603625703.794917"
+            timestampString = "604484814.571579"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "755"
             endingLineNumber = "755"
-            landmarkName = "WgPackPanel::_refreshAllWidgets()"
+            landmarkName = "WgPackPanel::_onWidgetsReordered()"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3204,11 +3204,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.171497"
+            timestampString = "604484814.571628"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "700"
-            endingLineNumber = "700"
+            startingLineNumber = "701"
+            endingLineNumber = "701"
             landmarkName = "packPanelPaddingTest( WgRootPanel * pRoot )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3284,11 +3284,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "bench/main.cpp"
-            timestampString = "603893114.171818"
+            timestampString = "604484814.571852"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "506"
-            endingLineNumber = "506"
+            startingLineNumber = "505"
+            endingLineNumber = "505"
             landmarkName = "main ( int argc, char** argv )"
             landmarkType = "9">
          </BreakpointContent>
@@ -3316,7 +3316,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "extras/sdl_wglib.cpp"
-            timestampString = "602413984.525426"
+            timestampString = "604424422.723627"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "266"
@@ -3348,7 +3348,7 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "framework/wg_packpanel.cpp"
-            timestampString = "603625703.795675"
+            timestampString = "604484814.572041"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "577"

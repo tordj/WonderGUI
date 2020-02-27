@@ -23,10 +23,11 @@
 #include <wg_lineeditor.h>
 
 #include	<wg_key.h>
-#include	<wg_font.h>
+#include	<wg3_font.h>
 #include 	<wg_gfxdevice.h>
 #include 	<wg_pen.h>
 #include 	<wg_eventhandler.h>
+#include    <wg_base.h>
 
 #include <algorithm>
 
@@ -113,7 +114,7 @@ void WgLineEditor::SetPasswordGlyph( Uint16 glyph )
 
 //____ InsertTextAtCursor() ___________________________________________________
 
-Uint32 WgLineEditor::InsertTextAtCursor( const WgCharSeq& str )
+Uint32 WgLineEditor::InsertTextAtCursor( const wg::CharSeq& str )
 {
 	if( !_isEditable() )
 		return 0;
@@ -195,9 +196,8 @@ void WgLineEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		pText->SetAutoEllipsis(false);
 		pText->SetScale(m_text.Scale());
 		pText->setAlignment(m_text.alignment());
-		pText->setProperties(m_text.getProperties());
-		pText->setSelectionProperties(m_text.getSelectionProperties());
-		pText->setMode(m_text.mode());
+		pText->setStyle(m_text.getStyle());
+		pText->setState(m_text.state());
 
 		pText->SetEditMode(m_text.GetEditMode());
 		pText->showCursor();
@@ -262,7 +262,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			if( m_bPasswordMode )
 			{
-				WgTextAttr	attr;
+                wg::TextAttr	attr;
 				m_pText->GetBaseAttr( attr );
 
 				WgPen	pen;
@@ -485,13 +485,16 @@ void WgLineEditor::_adjustViewOfs()
 
 	if( m_bFocused && m_pText->getFont() )
 	{
-		WgCursor * pCursor = WgTextTool::GetCursor( m_pText );
+        WgCursor * pCursor = m_pText->getCursorStyle();
+        if( !pCursor )
+            pCursor = WgBase::GetDefaultCursor();
+        
 		if( !pCursor )
 			return;
 
 		int cursCol	= m_pText->column();
 
-		WgTextAttr	attr;
+        wg::TextAttr	attr;
 		m_pText->GetBaseAttr( attr );
 
 		WgPen	pen;
@@ -566,7 +569,7 @@ void WgLineEditor::_adjustViewOfs()
 
 void WgLineEditor::_onEnable()
 {
-	m_text.setMode(WG_MODE_NORMAL);
+    m_text.setState(wg::StateEnum::Normal);
 	_requestRender();
 }
 
@@ -574,7 +577,7 @@ void WgLineEditor::_onEnable()
 
 void WgLineEditor::_onDisable()
 {
-	m_text.setMode(WG_MODE_DISABLED);
+    m_text.setState(wg::StateEnum::Disabled);
 	_requestRender();
 }
 

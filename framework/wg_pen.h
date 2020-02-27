@@ -34,19 +34,15 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
+#include <wg3_textstyle.h>
 
-#ifndef WG_GLYPHSET_DOT_H
-#	include <wg_glyphset.h>
-#endif
+#include <wg3_font.h>
 
 #ifndef	WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
 #endif
 
-class WgTextNode;
+class WgCursor;
 
 //____ WgPen _____________________________________________________________
 
@@ -62,17 +58,14 @@ public:
 	~WgPen() {}
 
     inline void				SetDevice( wg::GfxDevice * pDevice ) { m_pDevice = pDevice; }
-	void					SetTextNode( WgTextNode * pNode ) { m_pTextNode = pNode; _onAttrChanged(); }
 	void					SetScale( int scale );
 
 	void					SetOrigo( const WgCoord& pos ) { m_origo = pos; }
 
-	bool					SetAttributes( const WgTextAttr& attr );
+    bool					SetAttributes( const wg::TextAttr& attr );
 	bool					SetSize( int size );
-	void					SetFont( WgFont * pFont );
-	void					SetStyle( WgFontStyle style );
+    void					SetFont( wg::Font * pFont );
 	void					SetColor( WgColor color );
-//	void					SetCharVisibility( int visibilityFlags );		// We need something better here...
 
 
 	inline void				SetPos( const WgCoord& pos ) { m_pos = pos; }
@@ -87,13 +80,13 @@ public:
 	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
 	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.SetAdvance(0); }
-	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pGlyphs->GetKerning( m_pPrevGlyph, m_pGlyph, m_size ); }
+	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pFont->kerning( m_pPrevGlyph, m_pGlyph); }
 
-	inline void				AdvancePos() { m_pos.x += m_pGlyph->Advance(); }							///< Advances position past current character.
-	inline void				AdvancePosMonospaced() { m_pos.x += m_pGlyphs->GetMaxGlyphAdvance(m_size); }	///< Advances position past current character using monospace spacing.
+	inline void				AdvancePos() { m_pos.x += m_pGlyph->advance(); }							///< Advances position past current character.
+	inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance(); }	///< Advances position past current character using monospace spacing.
 	void					AdvancePosCursor( const WgCursorInstance& instance );
 
-	inline WgGlyphPtr		GetGlyph() const { return m_pGlyph; }
+    inline wg::Glyph_p		GetGlyph() const { return m_pGlyph; }
 	inline WgCoord			GetPos() const { return m_pos; }
 	inline int				GetPosX() const { return m_pos.x; }
 	inline int				GetPosY() const { return m_pos.y; }
@@ -102,16 +95,13 @@ public:
 //	inline int				GetBlitPosX() const { return m_pos.x + m_pGlyph->BearingX(); }
 //	inline int				GetBlitPosY() const { return m_pos.y + m_pGlyph->BearingY(); }
 
-	inline WgFont *			GetFont() const { return m_pFont; }
+    inline wg::Font *		GetFont() const { return m_pFont; }
 	inline int				GetSize() const { return m_size; }
-	inline WgFontStyle		GetStyle() const { return m_style; }
 	inline WgColor			GetColor() const { return m_color; }
-	inline WgGlyphset *		GetGlyphset() const { return m_pGlyphs; }
 
-
-	inline int				GetLineSpacing() const { return m_pGlyphs->GetLineSpacing(m_size); }
-	inline int				GetLineHeight() const { return m_pGlyphs->GetHeight(m_size); }
-	inline int				GetBaseline() const { return m_pGlyphs->GetBaseline(m_size); }
+	inline int				GetLineSpacing() const { return m_pFont->lineGap(); }
+	inline int				GetLineHeight() const { return m_pFont->maxAscend() + m_pFont->maxDescend(); }
+	inline int				GetBaseline() const { return m_pFont->maxAscend(); }
 
 	void					BlitChar() const;
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
@@ -120,12 +110,14 @@ private:
 	void _init();
 
 	void _onAttrChanged();
+    
+    WgCursor * _getCursor(const WgText * pText) const;
 
-	class DummyGlyph : public WgGlyph
+    class DummyGlyph : public wg::Glyph
 	{
 	public:
-		DummyGlyph() : WgGlyph( 0, 0, 0 ) {}
-		const WgGlyphBitmap * GetBitmap() { return 0; }
+        DummyGlyph() : wg::Glyph( 0, 0, 0 ) {}
+        const wg::GlyphBitmap * getBitmap() { return nullptr; }
 
 		void SetAdvance( int advance ) { m_advance = advance; }
 	};
@@ -134,15 +126,13 @@ private:
 
 	//
 
-	WgGlyphset *m_pGlyphs;			// Pointer at our glyphs.
+    wg::Font_p      m_pFont;		// Pointer at our glyphs.
 
-	WgGlyphPtr		m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
-	WgGlyphPtr		m_pGlyph;		// Current glyph.
+    wg::Glyph_p	    m_pPrevGlyph;	// Previous glyph, saved to allow for kerning.
+    wg::Glyph_p		m_pGlyph;		// Current glyph.
 
-	WgFont *		m_pFont;		// Pointer back to the font.
 	int				m_wantedSize;	// Size we requested.
 	int				m_size;			// Fontsize we got a glyphset for, which might be smaller than what we requested.
-	WgFontStyle		m_style;		// Style of glyphset we requested.
 	WgColor			m_color;		// Color this pen draws in.
 
 	bool			m_bShowSpace;	// Set if space control character should be shown (usually a dot in the middle of the cell).
@@ -156,7 +146,6 @@ private:
 	int				m_tabWidth;		// Tab width in pixels.
 
     wg::GfxDevice_p	m_pDevice;		// Device used for blitting.
-	WgTextNode *	m_pTextNode;	// TextManager used for scaling/layouting the text.
 
 	int				m_scale;		// Widget scale, for text sizes.
 

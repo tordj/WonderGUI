@@ -31,18 +31,16 @@
 
 
 class WgPopupLayer;
-typedef	WgSmartPtr<WgPopupLayer>	WgPopupLayer_p;
-typedef	WgWeakPtr<WgPopupLayer>	WgPopupLayer_wp;
 
 typedef class WgWeakPtr<WgWidget> Widget_wp;
 
 
 //____ WgPopupHook ___________________________________________________________
 
-class WgPopupHook : public WgLayerHook, protected WgLink		/** @private */
+class WgPopupHook : public WgLayerHook, protected wg::Link		/** @private */
 {
 	friend class WgPopupLayer;
-	friend class WgChain<WgPopupHook>;
+	friend class wg::Chain<WgPopupHook>;
 
 public:
 	const char *Type(void) const;
@@ -109,9 +107,9 @@ public:
 
 
 
-	virtual const char *Type(void) const;
+	virtual const char *Type(void) const override;
 	static const char * GetClass();
-	virtual WgWidget * NewOfMyType() const { return new WgPopupLayer(); };
+	virtual WgWidget * NewOfMyType() const override { return new WgPopupLayer(); };
 
 
 	int				NbPopups() const;
@@ -122,17 +120,17 @@ public:
 
 	WgWidget * 		FindWidget(const WgCoord& ofs, WgSearchMode mode) override;
 
-	bool			DeleteChild(WgWidget * pWidget) { return 0; }
-	WgWidget *		ReleaseChild(WgWidget * pWidget) { return 0; }
+	bool			DeleteChild(WgWidget * pWidget) override { return 0; }
+	WgWidget *		ReleaseChild(WgWidget * pWidget) override { return 0; }
 
-	bool			DeleteAllChildren() { return 0; }
-	bool			ReleaseAllChildren() { return 0; }
+	bool			DeleteAllChildren() override { return 0; }
+	bool			ReleaseAllChildren() override { return 0; }
 
 	void			SetDelays(int popupOpenDelay, int popupFadeInDelay, int popupCloseDelay, int popupFadeOutDelay);
 
 protected:
 
-	WgPopupLayer *	_getPopupLayer() const { return const_cast<WgPopupLayer*>(this); }
+	WgPopupLayer *	_getPopupLayer() const override { return const_cast<WgPopupLayer*>(this); }
 	 
 	void			_stealKeyboardFocus();
 	void			_restoreKeyboardFocus();
@@ -183,7 +181,7 @@ protected:
 	void			_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
 
 
-	WgChain<WgPopupHook>	m_popupHooks;		// First menu lies at the bottom.
+	wg::Chain<WgPopupHook>	m_popupHooks;		// First menu lies at the bottom.
 	Widget_wp				m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
 

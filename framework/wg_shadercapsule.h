@@ -27,6 +27,7 @@
 #	include <wg_capsule.h>
 #endif
 
+#include <wg_color.h>
 
 class WgShaderCapsule : public WgCapsule
 {

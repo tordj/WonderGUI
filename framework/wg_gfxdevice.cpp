@@ -23,13 +23,14 @@
 #include <algorithm>
 
 #include <wg_gfxdevice.h>
+#include <wg_base.h>
 
 #include <wg3_surface.h>
 #include <wg_geo.h>
 #include <wg_blockset.h>
 #include <wg_text.h>
 #include <wg_cursorinstance.h>
-#include <wg_font.h>
+#include <wg3_font.h>
 #include <wg_gfxanim.h>
 #include <wg_util.h>
 #include <wg_pen.h>
@@ -76,10 +77,9 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 
 	WgPen pen;
 	pen.SetDevice( pDevice );
-	pen.SetTextNode( pText->getNode() );
 	pen.SetScale( pText->Scale() );
 
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	pText->GetBaseAttr(attr);
 
 	if( attr.pFont == 0 )
@@ -173,9 +173,9 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 	WgColor baseCol	= pDevice->tintColor();
 	WgColor	color	= baseCol;
 
-	const WgChar * pChars = pText->getText();
-	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-	WgTextAttr		attr;
+    const wg::Char * pChars = pText->getText();
+	Uint16	hStyle	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+    wg::TextAttr		attr;
 
 	WgRange	selection = pText->getSelection();
 
@@ -185,15 +185,15 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
  	{
 		// Act on possible change of character attributes.
 
-		if( pChars[i].PropHandle() != hProp || i == selection.Begin() || i == selection.End() )
+		if( pChars[i].styleHandle() != hStyle || i == selection.Begin() || i == selection.End() )
 		{
-			bool bWasUnderlined = attr.bUnderlined;
+            bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
 
-			hProp = pChars[i].PropHandle();
+			hStyle = pChars[i].styleHandle();
 
 			pText->GetCharAttr( attr, i );
 			pen.SetAttributes(attr);
-			if( !pen.GetGlyphset() )
+			if( !pen.GetFont() )
 				return;											// Better not to print than to crash...
 
 			// Set tint colors (if changed)
@@ -206,7 +206,7 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 
 			// Check if this is start of underlined text and in that case draw the underline.
 
-			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
+			if( attr.decoration == wg::TextDecoration::Underline && (i==0 || !bWasUnderlined) )
 			{
 				_drawUnderline( pDevice, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
 			}
@@ -215,7 +215,7 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 
 		// Calculate position and blit the glyph.
 
-		Uint16 ch = pChars[i].Glyph();
+		Uint16 ch = pChars[i].code();
 
 		bool bBlit = pen.SetChar( ch );
 		pen.ApplyKerning();
@@ -242,7 +242,7 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 		// If character after line-end was a WgExtChar::HyphenBreakPermitted we need
 		// to render a normal hyphen.
 
-		if( pChars[ofs+len].Glyph() == int(WgExtChar::HyphenBreakPermitted) )
+		if( pChars[ofs+len].code() == int(WgExtChar::HyphenBreakPermitted) )
 		{
 			if( pen.SetChar( '-' ) )
 			{
@@ -269,10 +269,10 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 	WgColor baseCol	= pDevice->tintColor();
 	WgColor	color	= baseCol;
 
-	const WgChar * pChars = pText->getText();
-	Uint16	hProp	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-	WgTextAttr		attr;
-	WgTextAttr		baseAttr;
+    const wg::Char * pChars = pText->getText();
+	Uint16	hStyle	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+    wg::TextAttr		attr;
+    wg::TextAttr		baseAttr;
 
 	WgRange	selection = pText->getSelection();
 	int		ellipsisWidth = 0;
@@ -285,23 +285,23 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 	Uint16	ellipsisChar = int(WgExtChar::Ellipsis);
 	ellipsisWidth = 0;
-	WgGlyphPtr pEllipsis = pen.GetFont()->GetGlyph( int(WgExtChar::Ellipsis), pen.GetStyle(), pen.GetSize() );
+    wg::Glyph_p pEllipsis = pen.GetFont()->getGlyph( int(WgExtChar::Ellipsis) );
 
 	if( !pEllipsis )
 	{
-		pEllipsis = pen.GetFont()->GetGlyph( '.', pen.GetStyle(), pen.GetSize() );
+		pEllipsis = pen.GetFont()->getGlyph( '.' );
 		ellipsisChar = '.';
 	}
 
 	if( pEllipsis )
 	{
-		const WgGlyphBitmap * pBitmap = pEllipsis->GetBitmap();
+        const wg::GlyphBitmap * pBitmap = pEllipsis->getBitmap();
 		if( pBitmap )
 		{
 			if( ellipsisChar == int(WgExtChar::Ellipsis) )
 				ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
 			else
-				ellipsisWidth = pEllipsis->Advance()*2+pBitmap->rect.w + pBitmap->bearingX;
+				ellipsisWidth = pEllipsis->advance()*2+pBitmap->rect.w + pBitmap->bearingX;
 		}
 	}
 
@@ -311,15 +311,15 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
  	{
 		// Act on possible change of character attributes.
 
-		if( pChars[i].PropHandle() != hProp || i == selection.Begin() || i == selection.End() )
+		if( pChars[i].styleHandle() != hStyle || i == selection.Begin() || i == selection.End() )
 		{
-			bool bWasUnderlined = attr.bUnderlined;
+            bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
 
-			hProp = pChars[i].PropHandle();
+			hStyle = pChars[i].styleHandle();
 
 			pText->GetCharAttr( attr, i );
 			pen.SetAttributes(attr);
-			if( !pen.GetGlyphset() )
+			if( !pen.GetFont() )
 				return;											// Better not to print than to crash...
 
 			// Set tint colors (if changed)
@@ -332,7 +332,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 			// Check if this is start of underlined text and in that case draw the underline.
 
-			if( attr.bUnderlined && (i==0 || !bWasUnderlined) )
+			if( attr.decoration == wg::TextDecoration::Underline && (i==0 || !bWasUnderlined) )
 			{
 				_drawUnderline( pDevice, pText, pen.GetPosX(), pen.GetPosY(), i, (ofs+len)-i );
 			}
@@ -340,14 +340,14 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 		// Calculate position and blit the glyph.
 
-		Uint16 ch = pChars[i].Glyph();
+		Uint16 ch = pChars[i].code();
 
 		bool bBlit = pen.SetChar( ch );
 
 		WgCoord savedPos = pen.GetPos();
 		pen.ApplyKerning();
-		WgGlyphPtr pGlyph = pen.GetGlyph();
-		if( pen.GetPosX() +  pGlyph->Advance() + ellipsisWidth > endX )
+        wg::Glyph_p pGlyph = pen.GetGlyph();
+		if( pen.GetPosX() +  pGlyph->advance() + ellipsisWidth > endX )
 		{
 			pen.SetPos( savedPos );
 			break;
@@ -398,7 +398,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, const WgRect& dest )
 {
-	WgMode mode = pText->mode();
+    wg::State state = pText->state();
 
 	// Take care of selection background color (if we have any)
 
@@ -409,11 +409,13 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	selStart = pText->LineColToOffset(startLine, startCol);
 	selEnd = pText->LineColToOffset(endLine,endCol);
 
-	WgTextpropPtr pSelProp = WgTextTool::GetSelectionProperties(pText);
+    wg::TextStyle * pStyle = pText->getStyle();
+    if( !pStyle )
+        pStyle = WgBase::GetDefaultStyle();
 
-	if( selStart != selEnd && pSelProp->IsBgColored() )
+	if( selStart != selEnd && pStyle->combBgColor(state).a != 0 )
 	{
-		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, pSelProp->BgColor(mode) );
+		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, pStyle->combBgColor(state) );
 	}
 	else
 	{
@@ -424,11 +426,11 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	// Scan through the text, drawing character specific backgrounds
 	// (and in the future punching holes in the general background?)
 
-	Uint16	hProp = 0xFFFF;
+	Uint16	hStyle = 0xFFFF;
 	WgColor	color;
 	int		startOfs = 0;
 
-	const WgChar * pChars = pText->getText();
+    const wg::Char * pChars = pText->getText();
 	int nChars = pText->nbChars();
 
 	for( int ofs = 0 ; ofs < nChars ; ofs++ )
@@ -442,11 +444,11 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 			ofs = startOfs;
 		}
 
-		if( pChars[ofs].PropHandle() != hProp )
+		if( pChars[ofs].styleHandle() != hStyle )
 		{
 			// Update hProp and get background color
 
-			hProp = pChars[ofs].PropHandle();
+			hStyle = pChars[ofs].styleHandle();
 
 			WgColor newColor = pText->GetCharBgColor(ofs);
 
@@ -525,7 +527,7 @@ void WgGfxDevice::_drawTextSectionBg( wg::GfxDevice * pDevice, const WgText * pT
 
 //____ PrintLine() ________________________________________________________
 
-void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars, WgMode mode )
+void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::TextAttr& baseAttr, const wg::Char * _pLine, int maxChars, wg::State state )
 {
 	if( !_pLine )
 		return;
@@ -533,29 +535,30 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const WgTextAt
 	WgColor baseCol	= pDevice->tintColor();
 	WgColor	color	= baseCol;
 
-	Uint16	hProp				= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-	WgTextAttr	attr;
+	Uint16	hStyle		= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
+    wg::TextAttr	attr;
 
 	pen.FlushChar();
 
 	// Print loop
 
 	int i;
-	for( i = 0 ; i < maxChars && !_pLine[i].IsEndOfLine(); i++ )
+	for( i = 0 ; i < maxChars && !_pLine[i].isEndOfLine(); i++ )
  	{
 		// Act on possible change of character attributes.
 
-		if( _pLine[i].PropHandle() != hProp )
+		if( _pLine[i].styleHandle() != hStyle )
 		{
 
 			attr = baseAttr;
+            
+            if(_pLine[i].styleHandle())
+                _pLine[i].stylePtr()->addToAttr(state, &attr);
 
-			WgTextTool::AddPropAttributes( attr, _pLine[i].Properties(), mode );
-
-			hProp = _pLine[i].PropHandle();
+			hStyle = _pLine[i].styleHandle();
 
 			pen.SetAttributes( attr );
-			if( !pen.GetGlyphset() )
+			if( !pen.GetFont() )
 				return;											// No glyphset, better to leave than to crash...
 
 			// Set tint colors (if changed)
@@ -580,7 +583,7 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const WgTextAt
 
 		// Calculate position and blit the glyph.
 
-		Uint16 ch = _pLine[i].Glyph();
+		Uint16 ch = _pLine[i].code();
 
 		bool bBlit = pen.SetChar( ch );
 		pen.ApplyKerning();
@@ -610,39 +613,41 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const WgTextAt
 
 void WgGfxDevice::_drawUnderline( wg::GfxDevice * pDevice, const WgText * pText, int _x, int _y, int ofs, int maxChars )
 {
-	Uint32 hProp = 0xFFFF;
+    
+    Uint32 hStyle = 0xFFFF;
 
 	WgPen pen;
-	const WgChar * pChars = pText->getText();
-	pen.SetTextNode( pText->getNode() );
+    const wg::Char * pChars = pText->getText();
 	pen.SetScale( pText->Scale() );
 
-	for( int i = ofs ; i < ofs + maxChars && !pChars[i].IsEndOfLine() ; i++ )
+	for( int i = ofs ; i < ofs + maxChars && !pChars[i].isEndOfLine() ; i++ )
 	{
-		if( pChars[i].PropHandle() != hProp )
+		if( pChars[i].styleHandle() != hStyle )
 		{
-			WgTextAttr attr;
+            wg::TextAttr attr;
 			pText->GetCharAttr( attr, i );
 
-			if( attr.bUnderlined )
+			if( attr.decoration == wg::TextDecoration::Underline )
 			{
-				hProp = pChars[i].PropHandle();
+				hStyle = pChars[i].styleHandle();
 				pen.SetAttributes( attr );
 			}
 			else
 				break;
 		}
 
-		pen.SetChar( pChars[i].Glyph() );
+		pen.SetChar( pChars[i].code() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 	}
 
+    //MUSTFIX!
+/*
 	const WgUnderline * pUnderline = pen.GetFont()->GetUnderline( pen.GetSize() );
 
     auto p = pDevice->blitSource();
     pDevice->setBlitSource(pUnderline->pSurf);
     pDevice->blitHorrBar(pUnderline->rect, WgBorders( 0, pUnderline->rightBorder, 0, pUnderline->leftBorder ), false, WgCoord(_x + pUnderline->bearingX, _y + pUnderline->bearingY), pen.GetPosX());
     pDevice->setBlitSource(p);
-    
+*/
 }

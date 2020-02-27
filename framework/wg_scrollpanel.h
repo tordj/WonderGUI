@@ -36,6 +36,8 @@
 #	include <wg_slidertarget.h>
 #endif
 
+#include <wg_color.h>
+
 #include <vector>
 
 class WgScrollPanel;
@@ -351,7 +353,6 @@ protected:
 	
     bool        m_bOverlayScrollbars;
 
-//	ViewWidgetCollection	m_elementsCollection;	// WgWidgetCollection for the elements widgets.
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
 	WgColor			m_bgColor;

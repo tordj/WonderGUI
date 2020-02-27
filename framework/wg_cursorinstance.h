@@ -37,8 +37,10 @@
 #	include <wg_color.h>
 #endif
 
+#include <wg3_charseq.h>
+
+
 class WgText;
-class WgCharSeq;
 class WgPen;
 
 //____ WgCursorInstance ________________________________________________________
@@ -80,7 +82,7 @@ public:
 	void			getSoftPos( int &line, int &col ) const;
 
 	bool			putChar( Uint16 character );
-	int				putText( const WgCharSeq& seq );
+	int				putText( const wg::CharSeq& seq );
 	void			unputText( int nChar );
 	void 			delPrevWord();
 	void 			delNextWord();

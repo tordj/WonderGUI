@@ -30,13 +30,13 @@ Wg_Interface_TextHolder::Wg_Interface_TextHolder()
 }
 
 
-//____ SetTextMode() __________________________________________________________
+//____ SetTextState() __________________________________________________________
 
-void Wg_Interface_TextHolder::SetTextMode( WgMode _mode )
+void Wg_Interface_TextHolder::SetTextState( wg::State _state )
 {
-	if( _mode != m_pText->mode() )
+	if( _state != m_pText->state() )
 	{
-		m_pText->setMode(_mode);
+		m_pText->setState(_state);
 		_textModified();
 	}
 }
@@ -98,7 +98,7 @@ void Wg_Interface_TextHolder::ClearText()
 }
 
 
-void Wg_Interface_TextHolder::SetText( const WgCharSeq& seq )
+void Wg_Interface_TextHolder::SetText( const wg::CharSeq& seq )
 {
 //    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 1 called: %s", seq.GetUTF8().ptr) );
 
@@ -106,14 +106,14 @@ void Wg_Interface_TextHolder::SetText( const WgCharSeq& seq )
 	_textModified();
 }
 
-void Wg_Interface_TextHolder::SetText( const WgCharBuffer * pBuffer )
+void Wg_Interface_TextHolder::SetText( const wg::CharBuffer * pBuffer )
 {
     DBGM(DBG_GUI_APP, ("GUI_APP: SetText 2 called") );
 	m_pText->setText( pBuffer );
 	_textModified();
 }
 
-void Wg_Interface_TextHolder::SetText( const WgString& str )
+void Wg_Interface_TextHolder::SetText( const wg::String& str )
 {
     DBGM(DBG_GUI_APP, ("GUI_APP: SetText 3 called") );
 	m_pText->setText( str );
@@ -127,21 +127,21 @@ void Wg_Interface_TextHolder::SetText( const WgText * pText )
 	_textModified();
 }
 
-int Wg_Interface_TextHolder::AddText( const WgCharSeq& seq )
+int Wg_Interface_TextHolder::AddText( const wg::CharSeq& seq )
 {
 	int nAdded = m_pText->addText( seq );
 	_textModified();
 	return nAdded;
 }
 
-int Wg_Interface_TextHolder::InsertText( int ofs, const WgCharSeq& seq )
+int Wg_Interface_TextHolder::InsertText( int ofs, const wg::CharSeq& seq )
 {
 	int nAdded = m_pText->insertText( ofs, seq );
 	_textModified();
 	return nAdded;
 }
 
-int Wg_Interface_TextHolder::ReplaceText( int ofs, int nDelete, const WgCharSeq& seq )
+int Wg_Interface_TextHolder::ReplaceText( int ofs, int nDelete, const wg::CharSeq& seq )
 {
 	int nAdded = m_pText->replaceText( ofs, nDelete, seq );
 	_textModified();
@@ -161,21 +161,21 @@ void Wg_Interface_TextHolder::DeleteSelectedText()
 	_textModified();
 }
 
-int Wg_Interface_TextHolder::AddChar( const WgChar& character )
+int Wg_Interface_TextHolder::AddChar( const wg::Char& character )
 {
 	int nAdded = m_pText->addChar( character );
 	_textModified();
 	return nAdded;
 }
 
-int Wg_Interface_TextHolder::InsertChar( int ofs, const WgChar& character )
+int Wg_Interface_TextHolder::InsertChar( int ofs, const wg::Char& character )
 {
 	int nAdded = m_pText->insertChar( ofs, character );
 	_textModified();
 	return nAdded;
 }
 
-int Wg_Interface_TextHolder::ReplaceChar( int ofs, const WgChar& character )
+int Wg_Interface_TextHolder::ReplaceChar( int ofs, const wg::Char& character )
 {
 	int nAdded = m_pText->replaceChar( ofs, character );
 	_textModified();

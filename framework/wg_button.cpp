@@ -239,7 +239,7 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 
  	if( !m_text.IsEmpty() )
 	{        
-		m_text.setMode(m_mode);
+		m_text.setState(state);
 
         WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}

@@ -17,6 +17,7 @@
 #include <wg_widget.h>
 
 #include <wg3_surface.h>
+#include <wg3_font.h>
 
 namespace wg
 {
@@ -40,7 +41,7 @@ namespace sdl_wglib
 
     std::map<std::string,WgWidget*> *	LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory * factory );
 
-    WgFont *	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory );
+    wg::Font_p	LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory );
 	
 	int 		FileSize( const char * pPath );
 	void * 		LoadFile( const char * pPath );

@@ -409,7 +409,7 @@ void WgFlowPanel::_updatePreferredPixelSize()
 
 void WgFlowPanel::_refreshChildGeo()
 {
-    if( m_hooks.IsEmpty() )
+    if( m_hooks.isEmpty() )
         return;
     
 	WgRect canvas = PixelSize();

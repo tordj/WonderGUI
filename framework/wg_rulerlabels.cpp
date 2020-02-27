@@ -10,7 +10,6 @@ static const char	c_widgetType[] = {"RulerLabels"};
 WgRulerLabels::WgRulerLabels()
 {
 	m_direction = WgDirection::Right;
-    m_pTextManager = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -35,20 +34,19 @@ const char * WgRulerLabels::GetClass()
 
 //____ AddLabel() ____________________________________________________________
 
-void WgRulerLabels::AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProps, float offset, WgOrigo origo )
+void WgRulerLabels::AddLabel( const wg::CharSeq& text, wg::TextStyle * pStyle, float offset, WgOrigo origo )
 {
 	Label * pLabel = new Label();
 	pLabel->text.setText(text);
-	pLabel->text.setProperties(pProps);
+	pLabel->text.setStyle(pStyle);
 	pLabel->text.setAlignment(origo);
-    pLabel->text.setManager(m_pTextManager);
 	pLabel->offset = offset;
     pLabel->text.SetAutoEllipsis(false);
 
-    if( m_labels.IsEmpty() )
+    if( m_labels.isEmpty() )
         pLabel->text.setHolder(this);
     
-	m_labels.PushBack(pLabel);
+	m_labels.pushBack(pLabel);
 	_requestResize();
 	_requestRender();
 }
@@ -62,25 +60,6 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 	_requestRender();
 }
 
-//____ SetTextManager() ________________________________________________________
-
-void WgRulerLabels::SetTextManager( WgTextManager * pTextManager )
-{
-    if( pTextManager != m_pTextManager )
-    {
-        m_pTextManager = pTextManager;
-        
-        Label * p = m_labels.First();
-        while( p )
-        {
-            p->text.setManager(pTextManager);
-            p = p->Next();
-        }
-    }
-
-}
-
-
 //____ PreferredPixelSize() ________________________________________________________________
 
 WgSize WgRulerLabels::PreferredPixelSize() const
@@ -91,7 +70,7 @@ WgSize WgRulerLabels::PreferredPixelSize() const
  
     if( m_direction == WgDirection::Up || m_direction == WgDirection::Down )
     {
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
         {
             int w = pLabel->text.unwrappedWidth();
@@ -99,12 +78,12 @@ WgSize WgRulerLabels::PreferredPixelSize() const
                 preferred.w = w;
   
             preferred.h += pLabel->text.getLine(0)->lineSpacing;            
-            pLabel = pLabel->Next();
+            pLabel = pLabel->next();
         }
     }
     else
     {
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
         {
             WgSize sz = pLabel->text.unwrappedSize();
@@ -113,7 +92,7 @@ WgSize WgRulerLabels::PreferredPixelSize() const
             if( sz.h > preferred.h )
                 preferred.h = sz.h;
             
-            pLabel = pLabel->Next();
+            pLabel = pLabel->next();
         }
     }
     	
@@ -127,7 +106,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 {
 	if( m_direction == WgDirection::Up || m_direction == WgDirection::Down )
 	{
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
 		{
 			int height = pLabel->text.height();
@@ -154,12 +133,12 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 			}
 			
             WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );
-			pLabel = pLabel->Next();
+			pLabel = pLabel->next();
 		}
 	}
 	else
 	{
-		Label * pLabel = m_labels.First();
+		Label * pLabel = m_labels.first();
 		while( pLabel )
 		{
 			int width = pLabel->text.width();
@@ -186,7 +165,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 			}
 			
             WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );				
-			pLabel = pLabel->Next();
+			pLabel = pLabel->next();
 		}
 	}
 	
@@ -212,11 +191,11 @@ void WgRulerLabels::_setScale( int scale )
 {
 	WgWidget::_setScale(scale);
 
-	Label * pLabel = m_labels.First();
+	Label * pLabel = m_labels.first();
 	while( pLabel )
 	{
 		pLabel->text.SetScale(scale);
-		pLabel = pLabel->Next();
+		pLabel = pLabel->next();
 	}
 	_requestResize();
 }

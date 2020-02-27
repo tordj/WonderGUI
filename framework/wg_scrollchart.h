@@ -31,10 +31,7 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
+#include <wg3_string.h>
 #include <wg3_skin.h>
 
 
@@ -78,7 +75,7 @@ public:
 		float	pos;
 		float	thickness;
 		WgColor	color;
-		WgString label;
+		wg::String label;
 	};
 
 	struct SamplePair {
@@ -127,10 +124,10 @@ public:
 	bool	FeedSample(int waveId, SamplePair sample);
 
 
-	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
+    void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
-	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, const WgTextpropPtr& prop);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgScrollChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
@@ -195,7 +192,7 @@ protected:
 		WgOrigo				alignment;
 		WgCoord				offset;
 		wg::Skin_p			pSkin;
-		WgTextpropPtr		pTextStyle;
+        wg::TextStyle_p		pTextStyle;
 	};
 
     void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);

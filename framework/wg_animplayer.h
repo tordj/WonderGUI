@@ -32,6 +32,8 @@
 #	include <wg_gfxanim.h>
 #endif
 
+#include <wg_color.h>
+
 class WgAnimPlayer:public WgWidget
 {
 public:

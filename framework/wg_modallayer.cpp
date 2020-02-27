@@ -266,7 +266,7 @@ WgModalHook * WgModalLayer::AddModal( WgWidget * pWidget, const WgRect& geometry
 	pHook->_attachWidget(pWidget);
 	pHook->m_origo = origo;
 	pHook->m_placementGeo = geometry;
-	m_modalHooks.PushBack(pHook);
+	m_modalHooks.pushBack(pHook);
 
 	// Refresh geometry and request render.
 
@@ -279,7 +279,7 @@ WgModalHook * WgModalLayer::AddModal( WgWidget * pWidget, const WgRect& geometry
 
 bool WgModalLayer::DeleteAllModal()
 {
-	m_modalHooks.Clear();
+	m_modalHooks.clear();
 	_requestRender();
 	_updateKeyboardFocus();
 	return true;
@@ -289,14 +289,14 @@ bool WgModalLayer::DeleteAllModal()
 
 bool WgModalLayer::ReleaseAllModal()
 {
-	WgModalHook * pHook = m_modalHooks.First();
+	WgModalHook * pHook = m_modalHooks.first();
 	while( pHook )
 	{
 		pHook->_releaseWidget();
 		pHook = pHook->_next();
 	}
 
-	m_modalHooks.Clear();
+	m_modalHooks.clear();
 	_requestRender();
 	_updateKeyboardFocus();
 	return true;
@@ -364,14 +364,14 @@ bool WgModalLayer::ReleaseAllChildren()
 
 WgModalHook * WgModalLayer::FirstModal()
 {
-	return m_modalHooks.First();
+	return m_modalHooks.first();
 }
 
 //____ LastModal() _______________________________________________________
 
 WgModalHook * WgModalLayer::LastModal()
 {
-	return m_modalHooks.Last();
+	return m_modalHooks.last();
 }
 
 //____ MatchingPixelHeight() _______________________________________________________
@@ -413,7 +413,7 @@ WgWidget *  WgModalLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 
 	if( mode == WgSearchMode::ActionTarget )
 	{
-		WgModalHook * pHook = m_modalHooks.Last();
+		WgModalHook * pHook = m_modalHooks.last();
 
 		if( pHook )
 		{
@@ -490,7 +490,7 @@ void WgModalLayer::_updateKeyboardFocus()
 
 	// Find which child-branch to focus and switch to our previously saved focus
 
-	WgModalHook * pHook = m_modalHooks.Last();
+	WgModalHook * pHook = m_modalHooks.last();
 
 	WgWidget * 	pSavedFocus = 0;
 	WgHook *	pBranch	= 0;
@@ -539,7 +539,7 @@ void WgModalLayer::_onNewSize( const WgSize& sz )
  
 	// Refresh modal widgets geometry, their positions might have changed.
 
-	WgModalHook * pHook = m_modalHooks.First();
+	WgModalHook * pHook = m_modalHooks.first();
 
 	while( pHook )
 	{
@@ -559,7 +559,7 @@ void WgModalLayer::_onCloneContent( const WgWidget * _pOrg )
 void WgModalLayer::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
 
-	if( !m_modalHooks.IsEmpty() && FindWidget( _pEvent->PointerPixelPos(), WgSearchMode::ActionTarget ) == this )
+	if( !m_modalHooks.isEmpty() && FindWidget( _pEvent->PointerPixelPos(), WgSearchMode::ActionTarget ) == this )
 	{
 		switch( _pEvent->Type() )
 		{
@@ -597,14 +597,14 @@ WgHook* WgModalLayer::_firstHook() const
 	if( m_baseHook.Widget() )
 		return const_cast<BaseHook*>(&m_baseHook);
 	else
-		return m_modalHooks.First();
+		return m_modalHooks.first();
 }
 
 //____ _lastHook() ____________________________________________________________
 
 WgHook* WgModalLayer::_lastHook() const
 {
-	return m_modalHooks.Last();
+	return m_modalHooks.last();
 }
 
 //____ _firstHookWithGeo() _____________________________________________________
@@ -618,7 +618,7 @@ WgHook * WgModalLayer::_firstHookWithGeo( WgRect& geo ) const
 	}
 	else
 	{
-		WgModalHook * p = m_modalHooks.First();
+		WgModalHook * p = m_modalHooks.first();
 		if( p )
 			geo = p->m_geo;
 
@@ -641,7 +641,7 @@ WgHook * WgModalLayer::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 
 WgHook * WgModalLayer::_lastHookWithGeo( WgRect& geo ) const
 {
-	WgModalHook * p = m_modalHooks.Last();
+	WgModalHook * p = m_modalHooks.last();
 	if( p )
 	{
 		geo = p->m_geo;

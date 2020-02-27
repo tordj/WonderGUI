@@ -204,9 +204,7 @@ void WgPopupOpener::_setState(WgState state)
 	}
 //	WgWidget::_setState(state);
 
-	WgMode mode = WgUtil::StateToMode(m_state);
-
-	m_text.setMode(mode);
+	m_text.setState(state);
 	_requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
 }
 
@@ -292,8 +290,7 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
  	if( !m_text.IsEmpty() )
 	{
-        WgMode mode = WgUtil::StateToMode(useState);
-		m_text.setMode(mode);
+		m_text.setState(useState);
 
         WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}

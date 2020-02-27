@@ -22,7 +22,7 @@
 
 #include <wg_textdisplay.h>
 #include <wg_key.h>
-#include <wg_font.h>
+#include <wg3_font.h>
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 #include <wg_util.h>
@@ -163,9 +163,9 @@ WgPointerStyle WgTextDisplay::GetPointerStyle() const
 
 //____ GetTooltipString() _____________________________________________________
 
-WgString WgTextDisplay::GetTooltipString() const
+wg::String WgTextDisplay::GetTooltipString() const
 {
-	if( !m_tooltip.IsEmpty() )
+	if( !m_tooltip.isEmpty() )
 		return m_tooltip;
 	else
 	{
@@ -454,7 +454,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		if (m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState))
 			_requestRender();
 
-		m_text.setMode(WgUtil::StateToMode(m_state));
+		m_text.setState(m_state);
 	}
 
 
@@ -474,14 +474,14 @@ void WgTextDisplay::_bringCursorInView()
 
     WgCoord cursorPos = { pCursor->ofsX(), pCursor->ofsY() };
 
-    WgTextAttr attr;
+    wg::TextAttr attr;
     m_pText->GetBaseAttr(attr);
     
     int size = attr.size * m_scale >> WG_SCALE_BINALS;
 
-    auto pGlyphs = attr.pFont->GetGlyphset(attr.style, size);
-    int glyphHeight = pGlyphs->GetHeight(size);
-    int glyphWidth = pGlyphs->GetWhitespaceAdvance(size);
+    attr.pFont->setSize(size);
+    int glyphHeight = attr.pFont->maxAdvance() + attr.pFont->maxDescend();
+    int glyphWidth = attr.pFont->whitespaceAdvance();
 
     if(m_pSkin)
         cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);
@@ -511,7 +511,7 @@ bool WgTextDisplay::_onAlphaTest( const WgCoord& ofs )
 
 void WgTextDisplay::_onEnable( void )
 {
-	m_text.setMode(WG_MODE_NORMAL);
+    m_text.setState(wg::StateEnum::Normal);
 	_requestRender();
 }
 
@@ -519,7 +519,7 @@ void WgTextDisplay::_onEnable( void )
 
 void WgTextDisplay::_onDisable( void )
 {
-	m_text.setMode(WG_MODE_DISABLED);
+    m_text.setState(wg::StateEnum::Disabled);
 	_requestRender();
 }
 
@@ -599,7 +599,7 @@ void WgTextDisplay::_textModified()
 
 //____ InsertTextAtCursor() ___________________________________________________
 
-Uint32 WgTextDisplay::InsertTextAtCursor( const WgCharSeq& str )
+Uint32 WgTextDisplay::InsertTextAtCursor( const wg::CharSeq& str )
 {
 	if( !IsEditable() )
 		return 0;

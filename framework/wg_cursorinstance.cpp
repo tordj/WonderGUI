@@ -27,13 +27,8 @@
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_TEXTTOOL_DOT_H
-#	include <wg_texttool.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
-#endif
+#	include <wg3_texttool.h>
+#	include <wg3_font.h>
 
 
 //____ Constructor() __________________________________________________________
@@ -192,9 +187,9 @@ void WgCursorInstance::gotoPrevWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	const WgChar* pText = m_pText->getLineText(line) + col - 1;
+    const wg::Char* pText = m_pText->getLineText(line) + col - 1;
 
-	while( !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
+	while( !isspace(pText->code()) && !ispunct(pText->code()) )
 	{
 		if(col == 0)
 		{
@@ -231,9 +226,9 @@ void WgCursorInstance::gotoBeginningOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	const WgChar* pText = m_pText->getLineText(line) + col - 1;
+    const wg::Char* pText = m_pText->getLineText(line) + col - 1;
 
-	while( isspace(pText->Glyph()) || ispunct(pText->Glyph()) )
+	while( isspace(pText->code()) || ispunct(pText->code()) )
 	{
 		if(col == 0)
 		{
@@ -270,11 +265,11 @@ void WgCursorInstance::gotoNextWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	const WgChar* pText = m_pText->getLineText(line) + col;
+    const wg::Char* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && (isspace(pText->Glyph()) || ispunct(pText->Glyph())) )
+	while( !pText->isEndOfText() && (isspace(pText->code()) || ispunct(pText->code())) )
 	{
-		if(pText->IsEndOfLine())
+		if(pText->isEndOfLine())
 			line++, col = 0;
 		else
 			col++;
@@ -297,11 +292,11 @@ void WgCursorInstance::gotoEndOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-	const WgChar* pText = m_pText->getLineText(line) + col;
+    const wg::Char* pText = m_pText->getLineText(line) + col;
 
-	while( !pText->IsEndOfText() && !isspace(pText->Glyph()) && !ispunct(pText->Glyph()) )
+	while( !pText->isEndOfText() && !isspace(pText->code()) && !ispunct(pText->code()) )
 	{
-		if(pText->IsEndOfLine())
+		if(pText->isEndOfLine())
 			line++, col = 0;
 		else
 			col++;
@@ -395,7 +390,7 @@ bool WgCursorInstance::putChar( Uint16 character )
 
 //____ putText() ______________________________________________________________
 
-int	WgCursorInstance::putText( const WgCharSeq& seq )
+int	WgCursorInstance::putText( const wg::CharSeq& seq )
 {
 	m_wantedOfsX = -1;
 
@@ -407,7 +402,7 @@ int	WgCursorInstance::putText( const WgCharSeq& seq )
 	if( m_bInsert )
 		nInserted = m_pText->insertText( ofs, seq );
 	else
-		nInserted = m_pText->replaceText( ofs, seq.Length(), seq );
+		nInserted = m_pText->replaceText( ofs, seq.length(), seq );
 
 	nLines = m_pText->nbLines() - nLines;
 

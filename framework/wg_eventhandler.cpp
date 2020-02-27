@@ -192,25 +192,25 @@ bool WgEventHandler::IsKeyPressed( int native_keycode )
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent) )
 {
 	Callback * p = new FunctionCallback( WgEventFilter(), fp );
-	m_globalCallbacks.PushBack( p );
+	m_globalCallbacks.pushBack( p );
 }
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, void * pParam), void * pParam )
 {
 	Callback * p = new FunctionCallbackParam( WgEventFilter(), fp, pParam );
-	m_globalCallbacks.PushBack( p );
+	m_globalCallbacks.pushBack( p );
 }
 
 void WgEventHandler::AddCallback( void(*fp)(const WgEvent::Event * pEvent, WgWidget * pDest), WgWidget * pDest )
 {
 	Callback * p = new WidgetCallback( WgEventFilter(), fp, pDest );
-	m_globalCallbacks.PushBack( p );
+	m_globalCallbacks.pushBack( p );
 }
 
 void WgEventHandler::AddCallback( WgEventListener * pListener )
 {
 	Callback * p = new ListenerCallback( WgEventFilter(), pListener );
-	m_globalCallbacks.PushBack( p );
+	m_globalCallbacks.pushBack( p );
 }
 
 void WgEventHandler::AddCallback( const WgEventFilter& filter, void(*fp)(const WgEvent::Event * pEvent) )
@@ -265,12 +265,12 @@ int WgEventHandler::DeleteCallbacksTo( const WgEventListener * pListener )
 
 int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget )
 {
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr( const_cast<WgWidget*>(pWidget) ));
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr( const_cast<WgWidget*>(pWidget) ));
 
 	if( it == m_widgetCallbacks.end() )
 		return 0;
 
-	int nDeleted = it->second.Size();
+	int nDeleted = it->second.size();
 	m_widgetCallbacks.erase(it);
 	return nDeleted;
 }
@@ -283,12 +283,12 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 
 	// Delete Widget-specific callbacks on this event type
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.begin();
 	while( it != m_widgetCallbacks.end() )
 	{
 		nDeleted += _deleteCallbacksOnType( type, &it->second );
 
-		if( it->second.Size() == 0 )
+		if( it->second.size() == 0 )
 			m_widgetCallbacks.erase(it++);
 		else
 			++it;
@@ -299,27 +299,27 @@ int WgEventHandler::DeleteCallbacksOn( WgEventType type )
 
 int WgEventHandler::DeleteCallbacksOn( const WgWidget * pWidget, WgEventType type )
 {
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find( WgWidgetWeakPtr(const_cast<WgWidget*>(pWidget)));
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.find( WgWidgetWeakPtr(const_cast<WgWidget*>(pWidget)));
 
 	if( it == m_widgetCallbacks.end() )
 		return 0;
 
 	int nDeleted = 0;
-	Callback * p = it->second.First();
+	Callback * p = it->second.first();
 	while( p )
 	{
 		if( p->Filter().EventType() == type )
 		{
-			Callback * pNext = p->Next();
+			Callback * pNext = p->next();
 			delete p;
 			nDeleted++;
 			p = pNext;
 		}
 		else
-			p = p->Next();
+			p = p->next();
 	}
 
-	if( it->second.Size() == 0 )
+	if( it->second.size() == 0 )
 		m_widgetCallbacks.erase(it);
 
 	return nDeleted;
@@ -355,7 +355,7 @@ int WgEventHandler::DeleteCallback( const WgEventFilter& filter, void(*fp)( cons
 
 int WgEventHandler::DeleteAllCallbacks()
 {
-	m_globalCallbacks.Clear();
+	m_globalCallbacks.clear();
 	m_widgetCallbacks.clear();
 	return false;
 }
@@ -368,14 +368,14 @@ int WgEventHandler::DeleteDeadCallbacks()
 
 	// Delete any dead global callbacks
 
-	Callback * p = m_globalCallbacks.First();
+	Callback * p = m_globalCallbacks.first();
 	while( p )
 	{
 		if( p->IsAlive() )
-			p = p->Next();
+			p = p->next();
 		else
 		{
-			Callback * pNext = p->Next();
+			Callback * pNext = p->next();
 			delete p;
 			nDeleted++;
 			p = pNext;
@@ -385,25 +385,25 @@ int WgEventHandler::DeleteDeadCallbacks()
 	// Delete any dead Widget-specific callbacks.
 	// These can be dead by either sender or receiver having been deleted.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.begin();
 
 	while( it != m_widgetCallbacks.end() )
 	{
 		if( !it->first )
 		{
-			nDeleted += it->second.Size();
+			nDeleted += it->second.size();
 			m_widgetCallbacks.erase(it++);		// Sender is dead, delete whole branch of callbacks.
 		}
 		else
 		{
-			Callback * p = it->second.First();
+			Callback * p = it->second.first();
 			while( p )
 			{
 				if( p->IsAlive() )
-					p = p->Next();
+					p = p->next();
 				else
 				{
-					Callback * pNext = p->Next();
+					Callback * pNext = p->next();
 					delete p;					// Receiver is dead, delete callback.
 					nDeleted++;
 					p = pNext;
@@ -425,12 +425,12 @@ void WgEventHandler::_addCallback( const WgEventFilter& filter, Callback * pCall
 	{
 		WgWidgetWeakPtr pWidget = filter.Widget();
 
-		WgChain<Callback>& chain = m_widgetCallbacks[pWidget];
+		wg::Chain<Callback>& chain = m_widgetCallbacks[pWidget];
 
-		chain.PushBack(pCallback);
+		chain.pushBack(pCallback);
 	}
 	else
-		m_globalCallbacks.PushBack( pCallback );
+		m_globalCallbacks.pushBack( pCallback );
 }
 
 
@@ -442,14 +442,14 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 
 	// Delete any global callbacks for this receiver.
 
-	Callback * p = m_globalCallbacks.First();
+	Callback * p = m_globalCallbacks.first();
 	while( p )
 	{
 		if( p->Receiver() != pReceiver )
-			p = p->Next();
+			p = p->next();
 		else
 		{
-			Callback * pNext = p->Next();
+			Callback * pNext = p->next();
 			delete p;
 			nDeleted++;
 			p = pNext;
@@ -458,18 +458,18 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 
 	// Delete any Widget-specific callbacks for this receiver.
 
-	std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.begin();
+	std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.begin();
 
 	while( it != m_widgetCallbacks.end() )
 	{
-		Callback * p = it->second.First();
+		Callback * p = it->second.first();
 		while( p )
 		{
 			if( p->Receiver() != pReceiver )
-				p = p->Next();
+				p = p->next();
 			else
 			{
-				Callback * pNext = p->Next();
+				Callback * pNext = p->next();
 				delete p;					// Receiver is dead, delete callback.
 				nDeleted++;
 				p = pNext;
@@ -483,23 +483,23 @@ int WgEventHandler::_deleteCallbacksTo( const void * pReceiver )
 
 //____ _deleteCallbacksOnType() _______________________________________________
 
-int WgEventHandler::_deleteCallbacksOnType( WgEventType type, WgChain<Callback> * pChain )
+int WgEventHandler::_deleteCallbacksOnType( WgEventType type, wg::Chain<Callback> * pChain )
 {
 	int nDeleted = 0;
-	Callback * p = pChain->First();
+	Callback * p = pChain->first();
 
 	while( p )
 	{
 
 		if( p->Filter().EventType() == type )
 		{
-			Callback * pNext = p->Next();
+			Callback * pNext = p->next();
 			delete p;
 			nDeleted++;
 			p = pNext;
 		}
 		else
-			p = p->Next();
+			p = p->next();
 	}
 	return nDeleted;
 }
@@ -511,11 +511,11 @@ int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * p
 	// Deletes all callbacks created with exactly the same filter settings and receiver.
 
 	int nDeleted = 0;
-	WgChain<Callback>*	pChain;
+	wg::Chain<Callback>*	pChain;
 
 	if( filter.FiltersWidget() )
 	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
+		std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
 
 		if( it == m_widgetCallbacks.end() )
 			return 0;					// No callbacks for Widget
@@ -529,23 +529,23 @@ int WgEventHandler::_deleteCallback( const WgEventFilter& filter, const void * p
 
 	// We now have the right chain and need to check all the callbacks.
 
-	Callback * p = pChain->First();
+	Callback * p = pChain->first();
 	while( p )
 	{
 		if( filter.EventType() == p->Filter().EventType() && pReceiver == p->Receiver() )
 		{
-			Callback * pNext = p->Next();
+			Callback * pNext = p->next();
 			delete p;
 			nDeleted++;
 			p = pNext;
 		}
 		else
-			p = p->Next();
+			p = p->next();
 	}
 
-	if( pChain->Size() == 0 && pChain != &m_globalCallbacks )
+	if( pChain->size() == 0 && pChain != &m_globalCallbacks )
 	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
+		std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it = m_widgetCallbacks.find(WgWidgetWeakPtr(filter.Widget()));
 		m_widgetCallbacks.erase(it);
 
 	}
@@ -828,21 +828,21 @@ void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
 {
 	// Call all global callbacks
 
-	Callback * pCallback = m_globalCallbacks.First();
+	Callback * pCallback = m_globalCallbacks.first();
 
 	while( pCallback )
 	{
 		pCallback->ProcessEvent( pEvent );
-		pCallback = pCallback->Next();
+		pCallback = pCallback->next();
 	}
 
 	// Call all Widget-specific callbacks
 
-	WgChain<Callback> * pChain = 0;
+	wg::Chain<Callback> * pChain = 0;
 
 	if( pEvent->Widget() )
 	{
-		std::map<WgWidgetWeakPtr,WgChain<Callback> >::iterator it;
+		std::map<WgWidgetWeakPtr,wg::Chain<Callback> >::iterator it;
 
 		it = m_widgetCallbacks.find(pEvent->WidgetWeakPtr());
 		if( it != m_widgetCallbacks.end() )
@@ -852,12 +852,12 @@ void WgEventHandler::_processEventCallbacks( WgEvent::Event * pEvent )
 	if( !pChain )
 		return;
 
-	pCallback = pChain->First();
+	pCallback = pChain->first();
 
 	while( pCallback )
 	{
 		pCallback->ProcessEvent( pEvent );
-		pCallback = pCallback->Next();
+		pCallback = pCallback->next();
 	}
 }
 

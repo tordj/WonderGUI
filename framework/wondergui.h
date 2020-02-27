@@ -11,30 +11,6 @@
 #	include <wg_base.h>
 #endif
 
-#ifndef WG_BITMAPGLYPHS_DOT_H
-#	include <wg_bitmapglyphs.h>
-#endif
-
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
-
-#ifndef WG_CHAR_DOT_H
-#	include <wg_char.h>
-#endif
-
-#ifndef WG_CHARBUFFER_DOT_H
-#	include <wg_charbuffer.h>
-#endif
-
-#ifndef WG_CHARSEQ_DOT_H
-#	include <wg_charseq.h>
-#endif
-
-#ifndef WG_CODEPAGES_DOT_H
-#	include <wg_codepages.h>
-#endif
-
 #ifndef WG_COLOR_DOT_H
 #	include <wg_color.h>
 #endif
@@ -57,10 +33,6 @@
 
 #ifndef WG_FLOWPANEL_DOT_H
 #	include <wg_flowpanel.h>
-#endif
-
-#ifndef WG_FONT_DOT_H
-#	include <wg_font.h>
 #endif
 
 #ifndef WG_GEO_DOT_H
@@ -104,28 +76,8 @@
 #	include <wg_smartptr.h>
 #endif
 
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
-
 #ifndef WG_TEXT_DOT_H
 #	include <wg_text.h>
-#endif
-
-#ifndef WG_TEXTMANAGER_DOT_H
-#	include <wg_textmanager.h>
-#endif
-
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
-
-#ifndef WG_TEXTPROPMANAGER_DOT_H
-#	include <wg_textpropmanager.h>
-#endif
-
-#ifndef WG_TEXTTOOL_DOT_H
-#	include <wg_texttool.h>
 #endif
 
 #ifndef WG_TYPES_DOT_H
@@ -142,14 +94,6 @@
 
 #ifndef WG_VALUEFORMAT_DOT_H
 #	include <wg_valueformat.h>
-#endif
-
-#ifndef WG_VECTORGLYPHS_DOT_H
-#	include <wg_vectorglyphs.h>
-#endif
-
-#ifndef WG_WIDGETCOLLECTION_DOT_H
-#	include <wg_widgetcollection.h>
 #endif
 
 #ifndef WG_PANEL_DOT_H
@@ -199,10 +143,6 @@
 
 #ifndef WG_MODAL_LAYER_DOT_H
 #	include <wg_modallayer.h>
-#endif
-
-#ifndef WG_MODAL_LAYER_DOT_H
-#	include <wg_multislider.h>
 #endif
 
 #ifndef WG_OSCILLOSCOPE_DOT_H

@@ -24,11 +24,14 @@
 
 #include <wg_base.h>
 #include <wg3_base.h>
+#include <wg3_textstyle.h>
+#include <wg3_texttool.h>
+#include <wg3_textstylemanager.h>
 
-#include <wg_textpropmanager.h>
-#include <wg_texttool.h>
 #include <wg_memstack.h>
 #include <wg_context.h>
+#include <wg_refcounted.h>
+#include <wg_mempool.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -48,14 +51,14 @@ void WgBase::Init()
     if(s_iSoftubeNumberOfInstances != 1)
         return;
     
-    
+    wg::TextStyleManager::init();
+
 	assert( s_pData == 0 );
 	s_pData = new Data;
     
     s_pData->pContext = new WgContext;
 
 	s_pData->pDefaultCursor = 0;
-	s_pData->pWeakPtrPool = new WgMemPool( 128, sizeof( WgWeakPtrHub ) );
 	s_pData->pMemStack = new WgMemStack( 4096 );
 
 	s_pData->doubleClickTimeTreshold 		= 250;
@@ -72,7 +75,7 @@ void WgBase::Init()
 	s_pData->bFreeTypeInitialized = false;
 #endif
 
-	WgTextTool::setDefaultBreakRules();
+    wg::TextTool::setDefaultBreakRules();
 }
 
 //____ Exit() __________________________________________________________________
@@ -85,6 +88,7 @@ void WgBase::Exit()
     
 	assert( s_pData != 0 );
 
+    
 #ifdef WG_USE_FREETYPE
 
 	WgVectorGlyphs::SetSurfaceFactory(0);
@@ -94,10 +98,11 @@ void WgBase::Exit()
 		FT_Done_FreeType( s_pData->freeTypeLibrary );
 #endif
     delete s_pData->pContext;
-	delete s_pData->pWeakPtrPool;
 	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
+
+    wg::TextStyleManager::exit();
 }
 
 //____ handleError() _________________________________________________________
@@ -143,23 +148,6 @@ void WgBase::SetContext( const WgContext& context )
 }
 
 
-//____ AllocWeakPtrHub() ______________________________________________________
-
-WgWeakPtrHub * WgBase::AllocWeakPtrHub()
-{
-	assert( s_pData != 0 );
-	return (WgWeakPtrHub*) s_pData->pWeakPtrPool->AllocEntry();
-}
-
-//____ FreeWeakPtrHub() _______________________________________________________
-
-void WgBase::FreeWeakPtrHub( WgWeakPtrHub * pHub )
-{
-	assert( s_pData != 0 );
-	s_pData->pWeakPtrPool->FreeEntry( pHub );
-}
-
-
 //____ InitFreeType() _________________________________________________________
 
 #ifdef WG_USE_FREETYPE
@@ -181,45 +169,12 @@ bool WgBase::InitFreeType()
 #endif
 
 
+//____ SetDefaultStyle() ___________________________________________________
 
-//____ SetDefaultTextManager() _________________________________________________
-
-/*void WgBase::SetDefaultTextManager( const WgTextMgrPtr& pManager )
-{
-	m_pDefTextMgr = pManager;
-}
-
-
-//____ GetDefaultTextManager() _________________________________________________
-
-const WgTextMgrPtr& WgBase::GetDefaultTextManager()
-{
-	return m_pDefTextMgr;
-}
-*/
-
-//____ SetDefaultTextprop() ___________________________________________________
-
-void WgBase::SetDefaultTextprop( const WgTextpropPtr& pProp )
+void WgBase::SetDefaultStyle( wg::TextStyle * pStyle )
 {
 	assert( s_pData != 0 );
-	s_pData->pDefaultTextprop = pProp;
-}
-
-//____ SetDefaultSelectionProp() ___________________________________________________
-
-void WgBase::SetDefaultSelectionProp( const WgTextpropPtr& pProp )
-{
-	assert( s_pData != 0 );
-	s_pData->pDefaultSelectionProp = pProp;
-}
-
-//____ SetDefaultLinkProp() ___________________________________________________
-
-void WgBase::SetDefaultLinkProp( const WgTextpropPtr& pProp )
-{
-	assert( s_pData != 0 );
-	s_pData->pDefaultLinkProp = pProp;
+	s_pData->pDefaultTextStyle = pStyle;
 }
 
 

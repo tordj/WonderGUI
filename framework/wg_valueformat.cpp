@@ -22,11 +22,11 @@
 
 #include <cmath>
 
-#include <wg_texttool.h>
+#include <wg3_texttool.h>
 #include <wg_valueformat.h>
-#include <wg_charseq.h>
-#include <wg_char.h>
-#include <wg_string.h>
+#include <wg3_charseq.h>
+#include <wg3_char.h>
+#include <wg3_string.h>
 #include <assert.h>
 
 //____ Constructor ____________________________________________________________
@@ -35,7 +35,7 @@ WgValueFormatter::WgValueFormatter()
 {
 }
 
-WgValueFormatter::WgValueFormatter( const WgCharSeq& format ) : m_format(format)
+WgValueFormatter::WgValueFormatter( const wg::CharSeq& format ) : m_format(format)
 {
 }
 
@@ -47,62 +47,62 @@ WgValueFormatter::~WgValueFormatter()
 
 //____ SetFormat() ____________________________________________________________
 
-void WgValueFormatter::SetFormat( const WgCharSeq& format )
+void WgValueFormatter::SetFormat( const wg::CharSeq& format )
 {
 	m_format.setFormat(format);
 }
 
 //____ Prefix() _______________________________________________________________
 
-WgString WgValueFormatter::Prefix() const
+wg::String WgValueFormatter::Prefix() const
 {
 	return m_format.prefix;
 }
 
 //____ Suffix() _______________________________________________________________
 
-WgString WgValueFormatter::Suffix() const
+wg::String WgValueFormatter::Suffix() const
 {
 	return m_format.suffix;
 }
 
 //____ Format() _______________________________________________________________
 
-WgString WgValueFormatter::Format( Sint64 value ) const
+wg::String WgValueFormatter::Format( Sint64 value ) const
 {
-	WgCharBuffer	buff;
-	buff.SetCapacity( 32,32 );
+    wg::CharBuffer	buff;
+	buff.setUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
-	buff.PushFront( m_format.prefix );
-	buff.PushBack( m_format.suffix );
+	buff.pushFront( m_format.prefix );
+	buff.pushBack( m_format.suffix );
 
 	if( value < 0 )
-		buff.PushFront( WgChar('-') );
+        buff.pushFront( wg::Char('-') );
 	else if( value >= 0 && m_format.bPlus )
-		buff.PushFront( WgChar('+') );
+        buff.pushFront( wg::Char('+') );
 
-	return WgString(&buff);
+	return wg::String(&buff);
 }
 
 //____ FormatNoPreSuffix() ____________________________________________________
 
-WgString WgValueFormatter::FormatNoPreSuffix( Sint64 value ) const
+wg::String WgValueFormatter::FormatNoPreSuffix( Sint64 value ) const
 {
-	WgCharBuffer	buff;
-	buff.SetCapacity( 32,32 );
+    wg::CharBuffer	buff;
+	buff.setUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
 
 	if( value < 0 )
-		buff.PushFront( WgChar('-') );
+        buff.pushFront( wg::Char('-') );
 	else if( value >= 0 && m_format.bPlus )
-		buff.PushFront( WgChar('+') );
+        buff.pushFront( wg::Char('+') );
 
-	return WgString(&buff);
+	return wg::String(&buff);
 }
 
 //____ _formatValue() _________________________________________________________
 
-void WgValueFormatter::_formatValue( WgCharBuffer * pBuffer, Sint64 value ) const
+void WgValueFormatter::_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) const
 {
 	const WgValueFormat& f = m_format;
 
@@ -119,12 +119,12 @@ void WgValueFormatter::_formatValue( WgCharBuffer * pBuffer, Sint64 value ) cons
 		{
 			if( f.bForceDecimals || decPart != 0 )
 			{
-				pBuffer->PushBack( WgChar(f.period) );
+                pBuffer->pushBack( wg::Char(f.period) );
 
 				for( int i = f.decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-					pBuffer->PushBack( WgChar( (Uint16)(decPart/m_format.scale) + 0x30 ));
+                    pBuffer->pushBack( wg::Char( (Uint16)(decPart/m_format.scale) + 0x30 ));
 					decPart = decPart % m_format.scale;
 				}
 			}
@@ -148,16 +148,16 @@ void WgValueFormatter::_formatValue( WgCharBuffer * pBuffer, Sint64 value ) cons
 	if( f.grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
-			pBuffer->PushFront( WgChar(temp2[i]) );
+            pBuffer->pushFront( wg::Char(temp2[i]) );
 	}
 	else
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-				pBuffer->PushFront( WgChar(f.separator) );
+                pBuffer->pushFront( wg::Char(f.separator) );
 
-			pBuffer->PushFront( WgChar(temp2[i]) );
+            pBuffer->pushFront( wg::Char(temp2[i]) );
 		}
 	}
 
@@ -168,9 +168,9 @@ void WgValueFormatter::_formatValue( WgCharBuffer * pBuffer, Sint64 value ) cons
 		for( int i = n ; i < f.integers ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-				pBuffer->PushFront( WgChar(f.separator) );
+                pBuffer->pushFront( wg::Char(f.separator) );
 
-			pBuffer->PushFront( WgChar(0x30) );
+            pBuffer->pushFront( wg::Char(0x30) );
 		}
 	}
 }
@@ -191,7 +191,7 @@ WgValueFormat::WgValueFormat()
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
-	bSetTextprop	= false;
+	bSetTextStyle	= false;
 	bForceDecimals	= true;
 	noDecimalThreshold	= 0;
 	scale			= 1;
@@ -199,7 +199,7 @@ WgValueFormat::WgValueFormat()
 
 //____ WgValueFormat() ________________________________________________________
 
-WgValueFormat::WgValueFormat( const WgCharSeq& format )
+WgValueFormat::WgValueFormat( const wg::CharSeq& format )
 {
 	setFormat( format );
 }
@@ -220,8 +220,8 @@ WgValueFormat::WgValueFormat( const WgValueFormat& in )
 	bPlus			= in.bPlus;
 	bZeroIsNegative = in.bZeroIsNegative;
 	bForcePeriod	= in.bForcePeriod;
-	pTextProperties	= in.pTextProperties;
-	bSetTextprop	= in.bSetTextprop;
+	pTextStyle	    = in.pTextStyle;
+	bSetTextStyle	= in.bSetTextStyle;
 	bForceDecimals	= in.bForceDecimals;
 	noDecimalThreshold = in.noDecimalThreshold;
 	scale			= in.scale;
@@ -236,7 +236,7 @@ WgValueFormat::WgValueFormat( int nInt, int nDec, int grouping, bool bPlus,
 	separator		= _separator /*0xA0=NO_BREAK_SPACE*/;
 	period			= 0x2e;
 
-	bSetTextprop	= false;
+	bSetTextStyle	= false;
 	bForceDecimals	= true;
 	bZeroIsNegative = false;
 	noDecimalThreshold	= 0;
@@ -250,7 +250,7 @@ WgValueFormat::WgValueFormat( int nInt, int nDec, int grouping, bool bPlus,
 
 //____ setFormat() ____________________________________________________________
 
-void WgValueFormat::setFormat( const WgCharSeq& format )
+void WgValueFormat::setFormat( const wg::CharSeq& format )
 {
 	integers		= 1;
 	decimals		= 0;
@@ -260,26 +260,26 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 	bPlus			= false;
 	bZeroIsNegative = false;
 	bForcePeriod	= false;
-	bSetTextprop	= false;
+	bSetTextStyle	= false;
 	bForceDecimals	= true;
 	noDecimalThreshold	= 0;
 	scale			= 1;
 
-	WgCharSeq::WgCharBasket basket = format.GetWgChars();
+    wg::CharSeq::CharBasket basket = format.getChars();
 
-	const WgChar * pBeg = basket.ptr;
-	const WgChar * pEnd = basket.ptr + basket.length;
+    const wg::Char * pBeg = basket.ptr;
+    const wg::Char * pEnd = basket.ptr + basket.length;
 
 	// Copy prefix
 
-	const WgChar * p = pBeg;
-	while(  p < pEnd && p->Glyph() != '1' )
+    const wg::Char * p = pBeg;
+	while(  p < pEnd && p->code() != '1' )
 	{
-		assert( p->Glyph() < '0' || p->Glyph() > '9' );		// No numerics allowed in prefix.
+		assert( p->code() < '0' || p->code() > '9' );		// No numerics allowed in prefix.
 		p++;
 	}
 
-	prefix = WgCharSeq( pBeg, p - pBeg );
+    prefix = wg::CharSeq( pBeg, p - pBeg );
 
 	pBeg = p;
 
@@ -290,7 +290,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	// Save textprops of the '1' character.
 
-	pTextProperties = pBeg->Properties();
+	pTextStyle = pBeg->stylePtr();
 	pBeg++;
 
 	//
@@ -304,8 +304,8 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	if( pEnd - pBeg >= 2 )
 	{
-		Uint16 sep = pBeg->Glyph();
-		Uint16 after = pBeg[1].Glyph();
+		Uint16 sep = pBeg->code();
+		Uint16 after = pBeg[1].code();
 
 		if( (sep < '0' || sep > '9') && after == '0' )
 		{
@@ -324,7 +324,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	int nZeroes = 0;
 
-	while( pBeg != pEnd && pBeg->Glyph() == '0' )
+	while( pBeg != pEnd && pBeg->code() == '0' )
 	{
 		pBeg++;
 		nZeroes++;
@@ -342,22 +342,22 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	if( pEnd - pBeg >= 2 )
 	{
-		Uint16 sep = pBeg->Glyph();
-		Uint16 after = pBeg[1].Glyph();
+		Uint16 sep = pBeg->code();
+		Uint16 after = pBeg[1].code();
 
 		if( after == '0' || after == 'x' || after == 'X' )
 		{
 			period = sep;
 			pBeg+=1;
 			nZeroes = 0;
-			while( pBeg != pEnd && pBeg->Glyph() == '0' )
+			while( pBeg != pEnd && pBeg->code() == '0' )
 			{
 				pBeg++;
 				nZeroes++;
 			}
 
 			int nXes = 0;
-			while( pBeg != pEnd && (pBeg->Glyph() == 'x' || pBeg->Glyph() == 'X') )
+			while( pBeg != pEnd && (pBeg->code() == 'x' || pBeg->code() == 'X') )
 			{
 				pBeg++;
 				nXes++;
@@ -375,7 +375,7 @@ void WgValueFormat::setFormat( const WgCharSeq& format )
 
 	// Copy suffix
 
-	suffix = WgCharSeq( pBeg, pEnd - pBeg );
+    suffix = wg::CharSeq( pBeg, pEnd - pBeg );
 }
 
 //____ setFormat() ____________________________________________________________
@@ -398,28 +398,28 @@ void WgValueFormat::setFormat( int _nInt, int _nDec, int _grouping, bool _bPlus,
 
 //____ setPrefix(1) ___________________________________________________________
 
-void WgValueFormat::setPrefix( const WgString& str )
+void WgValueFormat::setPrefix( const wg::String& str )
 {
 	prefix = str;
 }
 
 //____ setPrefix(2) ___________________________________________________________
 
-void WgValueFormat::setPrefix( const WgCharSeq& seq )
+void WgValueFormat::setPrefix( const wg::CharSeq& seq )
 {
 	prefix = seq;
 }
 
 //____ setSuffix(1) ___________________________________________________________
 
-void WgValueFormat::setSuffix( const WgString& str )
+void WgValueFormat::setSuffix( const wg::String& str )
 {
 	suffix = str;
 }
 
 //____ setSuffix(2) ___________________________________________________________
 
-void WgValueFormat::setSuffix( const WgCharSeq& seq )
+void WgValueFormat::setSuffix( const wg::CharSeq& seq )
 {
 	suffix = seq;
 }

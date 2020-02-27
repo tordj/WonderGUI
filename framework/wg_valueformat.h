@@ -28,17 +28,11 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
+#include <wg3_textstyle.h>
 
-#ifndef WG_CHARSEQ_DOT_H
-#	include <wg_charseq.h>
-#endif
+#include <wg3_charseq.h>
 
-#ifndef WG_STRING_DOT_H
-#	include <wg_string.h>
-#endif
+#include <wg3_string.h>
 
 
 //____ WgValueFormat __________________________________________________________
@@ -47,27 +41,27 @@ class WgValueFormat
 {
 	public:
 		WgValueFormat();
-		WgValueFormat( const WgCharSeq& format );
+		WgValueFormat( const wg::CharSeq& format );
 		WgValueFormat( const WgValueFormat& in );
 		WgValueFormat(	int nInt, int nDec, int grouping = 0, bool bPlus = false,
 						Uint16 _separator = 0xA0 /*0xA0=NO_BREAK_SPACE*/, Uint16 period = 0x2e, bool bForcePeriod = false, const char * pPrefix = 0, const char * pSuffix = 0 );
 
-		void setFormat( const WgCharSeq& format );
+		void setFormat( const wg::CharSeq& format );
 
 		void setFormat( int nInt, int nDec, int grouping, bool bPlus = false,
 						Uint16 _separator = 0, Uint16 period = 0, bool bForcePeriod = false );
 
-		void setPrefix( const WgString& str );
-		void setPrefix( const WgCharSeq& seq );
-		inline const WgString& getPrefix() const { return prefix; }
+		void setPrefix( const wg::String& str );
+		void setPrefix( const wg::CharSeq& seq );
+		inline const wg::String& getPrefix() const { return prefix; }
 
-		void setSuffix( const WgString& str );
-		void setSuffix( const WgCharSeq& seq );
-		inline const WgString& getSuffix() const { return suffix; }
+		void setSuffix( const wg::String& str );
+		void setSuffix( const wg::CharSeq& seq );
+		inline const wg::String& getSuffix() const { return suffix; }
 
-		inline void setTextProperties( WgTextpropPtr& _pProperties ) { pTextProperties = _pProperties; bSetTextprop = true; }
-		inline void clearTextProperties() { bSetTextprop = false; }
-		inline WgTextpropPtr getTextProperties() const { return pTextProperties; }
+        inline void setTextStyle( wg::TextStyle * _pStyle ) { pTextStyle = _pStyle; bSetTextStyle = true; }
+		inline void clearTextStyle() { bSetTextStyle = false; }
+        inline wg::TextStyle_p getTextStyle() const { return pTextStyle; }
 
 		inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 		inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -106,13 +100,13 @@ class WgValueFormat
 		Uint8		grouping;			/// Number of integers to group together. 0 = no grouping
 		Uint16		separator;			/// Character to separate integer groups with.
 		Uint16		period;				/// Character used for separating integer and decimal part
-		WgString	prefix;				/// Characters preceding the value, like $, £ or similar.
-		WgString	suffix;				/// Characters following the value.
+		wg::String	prefix;				/// Characters preceding the value, like $, £ or similar.
+		wg::String	suffix;				/// Characters following the value.
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?
-	WgTextpropPtr 	pTextProperties;	/// Text properties for generated text.
-		bool		bSetTextprop;		/// Set if properties should be set for text.
+    wg::TextStyle_p pTextStyle;	/// Text properties for generated text.
+		bool		bSetTextStyle;		/// Set if properties should be set for text.
 		bool		bForceDecimals;		/// Display decimals even if they are 0
 		int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
 		int			scale;				/// Value is scaled by this value before being formatted.
@@ -151,21 +145,21 @@ class WgValueFormatter
 {
 public:
 	WgValueFormatter();
-	WgValueFormatter( const WgCharSeq& format );
+	WgValueFormatter( const wg::CharSeq& format );
 	~WgValueFormatter();
 
-	void SetFormat( const WgCharSeq& format );
+	void SetFormat( const wg::CharSeq& format );
 
-	WgString Prefix() const;
-	WgString Suffix() const;
+	wg::String Prefix() const;
+	wg::String Suffix() const;
 	int		 Decimals() const { return m_format.decimals; }
 
-	WgString Format( Sint64 value ) const;
-	WgString FormatNoPreSuffix( Sint64 value ) const;
+	wg::String Format( Sint64 value ) const;
+	wg::String FormatNoPreSuffix( Sint64 value ) const;
 
 private:
 
-	void	_formatValue( WgCharBuffer * pBuffer, Sint64 value ) const;
+    void	_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) const;
 
 	WgValueFormat	m_format;
 };

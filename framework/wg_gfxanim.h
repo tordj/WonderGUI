@@ -232,8 +232,8 @@ public:
 
 	// Derived from WgKeyFrame: Uint32	timestamp
 
-	WgGfxFrame * GetNext(void) {return (WgGfxFrame *) WgKeyFrame::Next();};
-	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::Prev();};
+	WgGfxFrame * GetNext(void) {return (WgGfxFrame *) WgKeyFrame::next();};
+	WgGfxFrame * GetPrev(void) {return (WgGfxFrame *) WgKeyFrame::prev();};
 
     wg::Surface_p pSurf[MAX_ANIM_ALT];
 	WgCoord		ofs[MAX_ANIM_ALT];

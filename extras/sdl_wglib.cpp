@@ -2,6 +2,7 @@
 //#include <wg_surface_sdl.h>
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
+#include <wg3_bitmapfont.h>
 #include <wondergui.h>
 
 namespace sdl_wglib
@@ -419,18 +420,15 @@ namespace sdl_wglib
 
 	//____ LoadBitmapFont() ____________________________________________________
 
-    WgFont * LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory )
+    wg::Font_p LoadBitmapFont( const char * pImgPath, const char * pSpecPath, const wg::SurfaceFactory * factory )
 	{
 		//TODO: This leaks memory until we have ref-counted
 
-		auto pFontImg = sdl_wglib::LoadSurface( pImgPath, factory );
+		auto pFontSurf = sdl_wglib::LoadSurface( pImgPath, factory );
 
-		char * pFontSpec = (char*) LoadFile( pSpecPath );
+		auto pFontSpec = (char*) LoadFile( pSpecPath );
 
-		WgBitmapGlyphs * pGlyphs = new WgBitmapGlyphs( pFontImg, pFontSpec );
-
-		WgFont * pFont = new WgFont();
-		pFont->SetBitmapGlyphs( pGlyphs, WG_STYLE_NORMAL, 0 );
+        auto pFont = wg::BitmapFont::create( pFontSurf, pFontSpec );
 
 		free( pFontSpec );
 		return pFont;

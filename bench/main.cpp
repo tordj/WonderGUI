@@ -29,16 +29,19 @@
 //#include <wg_glgfxdevice.h>
 
 
-#include <wg_bitmapglyphs.h>
-#include <wg_vectorglyphs.h>
 #include <wg_knob.h>
 #include <iostream>
 
 #include <wg3_softsurface.h>
 #include <wg3_softsurfacefactory.h>
 #include <wg3_softgfxdevice.h>
-#include "sdl_wglib.h"
 #include <wg3_boxskin.h>
+#include <wg3_bitmapfont.h>
+#include <wg3_freetypefont.h>
+#include <wg3_textstyle.h>
+
+
+#include "sdl_wglib.h"
 #include <wg_volumemeter.h>
 #include <wg_simplevolumemeter.h>
 #include <wg_chart.h>
@@ -244,7 +247,7 @@ int main ( int argc, char** argv )
 */
 	// Load bitmap font
 
-	WgFont * pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
+	auto pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
 
 	// Load and setup cursor
 
@@ -272,13 +275,14 @@ int main ( int argc, char** argv )
 
 	// Set default textprop
 
-	WgTextprop prop;
+    auto pTextStyle = wg::TextStyle::create();
+    
+    pTextStyle->setFont(pFont);
+    pTextStyle->setColor(wg::Color::White);
+    pTextStyle->setSize(16);
+    
 
-	prop.SetFont(pFont);
-	prop.SetColor( WgColor::Black );
-	prop.SetSize(16);
-
-	WgBase::SetDefaultTextprop( prop.Register() );
+	WgBase::SetDefaultStyle( pTextStyle );
 
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
@@ -553,6 +557,8 @@ int main ( int argc, char** argv )
     g_pSurfaceFactory = nullptr;
     g_pGfxDevice = nullptr;
 
+    pTextStyle = nullptr;
+    
 	WgBase::Exit();
 
 	IMG_Quit();
@@ -2148,31 +2154,31 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 /*
 	{
 		WgMenu * pSubMenu1_1 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 11"), WgString("Help text for entry 11"), WgBlocksetPtr(), 0 ));
-		pSubMenu1_1->AddItem( new WgMenuEntry( WgString("ENTRY 12"), WgString("Help text for entry 12"), WgBlocksetPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( wg::String("ENTRY 11"), wg::String("Help text for entry 11"), WgBlocksetPtr(), 0 ));
+		pSubMenu1_1->AddItem( new WgMenuEntry( wg::String("ENTRY 12"), wg::String("Help text for entry 12"), WgBlocksetPtr(), 0 ));
 		
 		WgMenu * pSubMenu1 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 7"), WgString("Help text for entry 7"), WgBlocksetPtr(), 0 ));
-		pSubMenu1->AddItem( new WgMenuEntry( WgString("ENTRY 8"), WgString("Help text for entry 8"), WgBlocksetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuEntry( wg::String("ENTRY 7"), wg::String("Help text for entry 7"), WgBlocksetPtr(), 0 ));
+		pSubMenu1->AddItem( new WgMenuEntry( wg::String("ENTRY 8"), wg::String("Help text for entry 8"), WgBlocksetPtr(), 0 ));
 		pSubMenu1->AddItem( new WgMenuSeparator() );
-		pSubMenu1->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1_1"), WgString("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
+		pSubMenu1->AddItem( new WgMenuSubMenu( wg::String("SUBMENU 1_1"), wg::String("Help text for submenu 1_1"), WgBlocksetPtr(), 0, pSubMenu1_1 ) );
 
 		WgMenu * pSubMenu2 = (WgMenu*) pDB->CloneWidget( "menu" );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 9"), WgString("Help text for entry 9"), WgBlocksetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuEntry( wg::String("ENTRY 9"), wg::String("Help text for entry 9"), WgBlocksetPtr(), 0 ));
 		pSubMenu2->AddItem( new WgMenuSeparator() );
-		pSubMenu2->AddItem( new WgMenuEntry( WgString("ENTRY 10"), WgString("Help text for entry 10"), WgBlocksetPtr(), 0 ));
+		pSubMenu2->AddItem( new WgMenuEntry( wg::String("ENTRY 10"), wg::String("Help text for entry 10"), WgBlocksetPtr(), 0 ));
 
 		WgMenu * pMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 1"), WgString("Help text for entry 1"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 1"), wg::String("Help text for entry 1"), WgBlocksetPtr(), 0 ));
 		pMenu->AddItem( new WgMenuSeparator() );
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 2"), WgString("Help text for entry 2"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 3"), WgString("Help text for entry 3"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 4"), WgString("Help text for entry 4"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 5"), WgString("Help text for entry 5"), WgBlocksetPtr(), 0 ));
-		pMenu->AddItem( new WgMenuEntry( WgString("ENTRY 6"), WgString("Help text for entry 6"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 2"), wg::String("Help text for entry 2"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 3"), wg::String("Help text for entry 3"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 4"), wg::String("Help text for entry 4"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 5"), wg::String("Help text for entry 5"), WgBlocksetPtr(), 0 ));
+		pMenu->AddItem( new WgMenuEntry( wg::String("ENTRY 6"), wg::String("Help text for entry 6"), WgBlocksetPtr(), 0 ));
 
-		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 1"), WgString("Help text for submenu 1"), WgBlocksetPtr(), 0, pSubMenu1 ) );
-		pMenu->AddItem( new WgMenuSubMenu( WgString("SUBMENU 2"), WgString("Help text for submenu 2"), WgBlocksetPtr(), 0, pSubMenu2 ) );
+		pMenu->AddItem( new WgMenuSubMenu( wg::String("SUBMENU 1"), wg::String("Help text for submenu 1"), WgBlocksetPtr(), 0, pSubMenu1 ) );
+		pMenu->AddItem( new WgMenuSubMenu( wg::String("SUBMENU 2"), wg::String("Help text for submenu 2"), WgBlocksetPtr(), 0, pSubMenu2 ) );
 
 		addResizablePanel( pFlex, pMenu, pEventHandler );
 		pMenu->GrabFocus();
@@ -2186,16 +2192,16 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 		WgMenubar * pMenubar = WgCast<WgMenubar>(pDB->CloneWidget("menubar"));
 
 		WgMenu * pFileMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pFileMenu->AddItem( new WgMenuEntry( WgString("Open..."), WgString("Open a file"), WgBlocksetPtr(), 0 ));
-		pFileMenu->AddItem( new WgMenuEntry( WgString("Save"), WgString("Save the file"), WgBlocksetPtr(), 0 ));
+		pFileMenu->AddItem( new WgMenuEntry( wg::String("Open..."), wg::String("Open a file"), WgBlocksetPtr(), 0 ));
+		pFileMenu->AddItem( new WgMenuEntry( wg::String("Save"), wg::String("Save the file"), WgBlocksetPtr(), 0 ));
 		pFileMenu->AddItem( new WgMenuSeparator() );
-		pFileMenu->AddItem( new WgMenuEntry( WgString("Quit"), WgString("Quit this program"), WgBlocksetPtr(), 0 ));
+		pFileMenu->AddItem( new WgMenuEntry( wg::String("Quit"), wg::String("Quit this program"), WgBlocksetPtr(), 0 ));
 		pMenubar->AddMenu( "FILE", pFileMenu );
 	
 		WgMenu * pHelpMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pHelpMenu->AddItem( new WgMenuEntry( WgString("Help"), WgString("Get some help"), WgBlocksetPtr(), 0 ));
+		pHelpMenu->AddItem( new WgMenuEntry( wg::String("Help"), wg::String("Get some help"), WgBlocksetPtr(), 0 ));
 		pHelpMenu->AddItem( new WgMenuSeparator() );
-		pHelpMenu->AddItem( new WgMenuEntry( WgString("About"), WgString("About this program"), WgBlocksetPtr(), 0 ));
+		pHelpMenu->AddItem( new WgMenuEntry( wg::String("About"), wg::String("About this program"), WgBlocksetPtr(), 0 ));
 		pMenubar->AddMenu( "HELP", pHelpMenu );
 
 		addResizablePanel( pFlex, pMenubar, pEventHandler );
@@ -2233,8 +2239,8 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 		WgCombobox * pCombobox = WgCast<WgCombobox>(pDB->CloneWidget("combobox"));
 
 		WgMenu * pComboMenu = (WgMenu*) pDB->CloneWidget( "menu" );
-		pComboMenu->AddItem( new WgMenuEntry( 1, WgString("Alfa"), WgString("First"), WgBlocksetPtr(), 0 ) );
-		pComboMenu->AddItem( new WgMenuEntry( 2, WgString("Beta"), WgString("Second"), WgBlocksetPtr(), 0 ) );
+		pComboMenu->AddItem( new WgMenuEntry( 1, wg::String("Alfa"), wg::String("First"), WgBlocksetPtr(), 0 ) );
+		pComboMenu->AddItem( new WgMenuEntry( 2, wg::String("Beta"), wg::String("Second"), WgBlocksetPtr(), 0 ) );
 		pCombobox->SetMenu( pComboMenu );
 
 		addResizablePanel( pFlex, pCombobox, pEventHandler );

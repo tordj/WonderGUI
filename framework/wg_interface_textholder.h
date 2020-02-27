@@ -41,61 +41,32 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 public:
 	virtual WgTextEditMode GetEditMode() const  { return WgTextEditMode::Static; }
 
-	virtual void			SetTextManager( WgTextManager * pManager ) { m_pText->setManager( pManager ); _textModified(); }
-	inline WgTextManager * GetTextManager() const { return m_pText->getManager(); }
-
-// -------------
-
-	inline WgTextpropPtr GetTextProperties() { return m_pText->getProperties(); }
+    inline wg::TextStyle_p GetTextStyle() { return m_pText->getStyle(); }
 
 	inline WgColor			GetTextColor() const { return m_pText->getColor(); }
-	inline WgColor			GetTextColor(WgMode mode) const { return m_pText->getColor(mode); }
-	inline WgFontStyle		GetTextStyle(WgMode mode) const { return m_pText->getStyle(mode); }
-	inline int				GetBreakLevel() const { return m_pText->getBreakLevel(); }
-	inline WgFont *			GetFont() const { return m_pText->getFont(); }
-	inline WgTextLinkPtr	GetLink() const { return m_pText->getLink(); }
+    inline WgColor			GetTextColor(wg::State state) const { return m_pText->getColor(state); }
+    inline wg::Font_p		GetFont() const { return m_pText->getFont(); }
+    inline wg::TextLink_p   GetLink() const { return m_pText->getLink(); }
 
 // -------------
 
-	inline void			SetTextProperties( const WgTextpropPtr& pProp )		{ m_pText->setProperties(pProp); _textModified(); }
+    inline void			SetTextStyle( wg::TextStyle* pStyle )		{ m_pText->setStyle(pStyle); _textModified(); }
 
 	inline void			SetTextColor( const WgColor color )					{ if( m_pText->setColor(color) ) _textModified(); }
-	inline void			SetTextColor( const WgColor color, WgMode mode )		{ if( m_pText->setColor(color,mode) )  _textModified(); }
+    inline void			SetTextColor( const WgColor color, wg::State state )		{ if( m_pText->setColor(color,state) )  _textModified(); }
 
-	inline void			SetTextStyle( WgFontStyle style )					{ m_pText->setStyle(style); _textModified(); }
-	inline void			SetTextStyle( WgFontStyle style, WgMode mode )		{ m_pText->setStyle(style,mode); _textModified(); }
-
-	inline void			SetBreakLevel( int level )							{ m_pText->setBreakLevel(level); _textModified(); }
-
-	inline void			SetFont( WgFont * pFont )							{ m_pText->setFont(pFont); _textModified(); }
-	inline void			SetLink( WgTextLinkPtr pLink )						{ m_pText->setLink(pLink); _textModified(); }
+    inline void			SetFont( wg::Font * pFont )							{ m_pText->setFont(pFont); _textModified(); }
+    inline void			SetLink( wg::TextLink * pLink )						{ m_pText->setLink(pLink); _textModified(); }
 
 // -------------
 
-	inline void			ClearTextProperties()								{ m_pText->clearProperties(); _textModified(); }
+	inline void			ClearTextStyle()								{ m_pText->clearStyle(); _textModified(); }
 
 	inline void			ClearTextColor()										{ m_pText->clearColor(); _textModified(); }
-	inline void			ClearTextColor( WgMode mode )						{ m_pText->clearColor(mode); _textModified(); }
-
-	inline void			ClearTextStyle()										{ m_pText->clearStyle(); _textModified(); }
-	inline void			ClearTextStyle( WgMode mode )						{ m_pText->clearStyle(mode); _textModified(); }
-
-	inline void			ClearBreakLevel()									{ m_pText->clearBreakLevel(); _textModified(); }
+    inline void			ClearTextColor( wg::State state )						{ m_pText->clearColor(state); _textModified(); }
 
 	inline void			ClearFont()											{ m_pText->clearFont(); _textModified(); }
 	inline void			ClearLink()											{ m_pText->clearLink(); _textModified(); }
-
-//	-----------
-
-	inline void			SetSelectionProperties( const WgTextpropPtr& pProp ) { m_pText->setSelectionProperties(pProp); _textModified(); }
-	inline WgTextpropPtr GetSelectionProperties() const { return m_pText->getSelectionProperties(); }
-	inline void			ClearSelectionProperties() { m_pText->clearSelectionProperties(); _textModified(); }
-
-//	-----------
-
-	inline void			SetLinkProperties( const WgTextpropPtr& pProp ) { m_pText->setLinkProperties(pProp); _textModified(); }
-	inline WgTextpropPtr GetLinkProperties() const { return m_pText->getLinkProperties(); }
-	inline void			ClearLinkProperties() { m_pText->clearLinkProperties(); _textModified(); }
 
 //	-----------
 
@@ -116,26 +87,26 @@ public:
 //	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionBgColor(color); }
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }
 
-	void				SetTextMode( WgMode mode );
+    void				SetTextState( wg::State state );
 	void				SetTextAlignment( const WgOrigo alignment );
 	void				SetTextTintMode( WgTintMode mode );
 
 	void				ClearText();
 
-	void		SetText( const WgCharSeq& seq );
-	void		SetText( const WgCharBuffer * buffer );
-	void		SetText( const WgString& str );
+	void		SetText( const wg::CharSeq& seq );
+    void		SetText( const wg::CharBuffer * buffer );
+	void		SetText( const wg::String& str );
 	void		SetText( const WgText * pText );
 
-	int			AddText( const WgCharSeq& seq );
-	int			InsertText( int ofs, const WgCharSeq& seq );
-	int			ReplaceText( int ofs, int nDelete, const WgCharSeq& seq );
+	int			AddText( const wg::CharSeq& seq );
+	int			InsertText( int ofs, const wg::CharSeq& seq );
+	int			ReplaceText( int ofs, int nDelete, const wg::CharSeq& seq );
 	int			DeleteText( int ofs, int len );
 	void		DeleteSelectedText();
 
-	int			AddChar( const WgChar& character );
-	int			InsertChar( int ofs, const WgChar& character );
-	int			ReplaceChar( int ofs, const WgChar& character );
+	int			AddChar( const wg::Char& character );
+	int			InsertChar( int ofs, const wg::Char& character );
+	int			ReplaceChar( int ofs, const wg::Char& character );
 	int			DeleteChar( int ofs );
 
 	void				SetLineSpaceAdjustment( float adjustment );
@@ -148,7 +119,7 @@ public:
 	inline bool			AutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
 	virtual bool		IsAutoEllipsisDefault() const = 0;
 
-	inline WgMode		TextMode() const { return m_pText->mode(); }
+    inline wg::State	TextState() const { return m_pText->state(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
 	inline WgOrigo TextAlignment() const;
 	inline WgText *		TextObj() const;

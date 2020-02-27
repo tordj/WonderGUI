@@ -156,10 +156,10 @@ bool WgGfxAnim::AddFrame( wg::Surface * pSurf, WgCoord ofs, int duration )
 
 bool WgGfxAnim::SetAltFrame( int pos, int alt, wg::Surface * pSurf, WgCoord ofs )
 {
-	if( pos < 0 || pos >= m_keyframes.Size() || alt <= 0 || alt >= MAX_ANIM_ALT )
+	if( pos < 0 || pos >= m_keyframes.size() || alt <= 0 || alt >= MAX_ANIM_ALT )
 		return false;
 		
-	WgGfxFrame * p = static_cast<WgGfxFrame*> (m_keyframes.Get(pos));
+	WgGfxFrame * p = static_cast<WgGfxFrame*> (m_keyframes.get(pos));
 
 	p->pSurf[alt] = pSurf;
 	p->ofs[alt] = ofs;

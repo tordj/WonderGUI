@@ -293,6 +293,7 @@
 					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
+					/Users/tord/Workspace/wg2/Framework/fonts/freetype,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -334,6 +335,7 @@
 					/Users/tord/Workspace/wg2/Framework/components,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
 					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
+					/Users/tord/Workspace/wg2/Framework/fonts/freetype,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

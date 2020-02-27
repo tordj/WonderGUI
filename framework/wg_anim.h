@@ -27,9 +27,7 @@
 #	include <wg_types.h>
 #endif
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg3_chain.h>
 
 class		WgKeyFrame;
 struct	WgAnimPlayPos;
@@ -37,7 +35,7 @@ struct	WgAnimPlayPos;
 
 //____ Class WgKeyFrame _______________________________________________________
 
-class WgKeyFrame : public WgLink
+class WgKeyFrame : public wg::Link
 {
 	friend class WgAnim;
 public:
@@ -67,7 +65,7 @@ public:
 
 	bool				DeleteKeyFrame( int pos );
 	bool				DeleteKeyFrame( WgKeyFrame * pKeyFrame );
-	void				Clear( void ) { m_keyframes.Clear(); };
+	void				Clear( void ) { m_keyframes.clear(); };
 
 	int					Duration( void ) { return m_duration; };
 	WgAnimMode			PlayMode( void ) { return m_playMode; };
@@ -86,11 +84,11 @@ protected:
 
 	// Meant to be overloaded with public methods returning right type.
 
-    const WgKeyFrame *	_firstKeyFrame( void ) const {return m_keyframes.First();};
-    const WgKeyFrame *	_lastKeyFrame( void ) const {return m_keyframes.Last();};
+    const WgKeyFrame *	_firstKeyFrame( void ) const {return m_keyframes.first();};
+    const WgKeyFrame *	_lastKeyFrame( void ) const {return m_keyframes.last();};
 
-	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.First();};
-	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.Last();};
+	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.first();};
+	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.last();};
 
 	//
 
@@ -103,7 +101,7 @@ protected:
 	float				m_scale;			// Only used for getKeyFrame
 	int					m_duration;
 	WgAnimMode			m_playMode;	
-	WgChain<WgKeyFrame>	m_keyframes;
+	wg::Chain<WgKeyFrame>	m_keyframes;
 };
 
 //____ Struct WgAnimPlayPos ___________________________________________________

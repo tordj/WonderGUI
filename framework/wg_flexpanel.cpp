@@ -157,14 +157,14 @@ bool WgFlexHook::SetPadding( WgBorders padding )
 
 void WgFlexHook::Top()
 {
-	MoveOver( _chain()->Last() );
+	MoveOver( _chain()->last() );
 }
 
 //____ WgFlexHook::Bottom() ___________________________________________________
 
 void WgFlexHook::Bottom()
 {
-	MoveUnder( _chain()->First() );
+	MoveUnder( _chain()->first() );
 }
 
 //____ WgFlexHook::Up() _______________________________________________________
@@ -228,7 +228,7 @@ bool WgFlexHook::MoveOver( WgFlexHook * pSibling )
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
 
-	WgFlexHook * pFirst = _chain()->First();
+	WgFlexHook * pFirst = _chain()->first();
 	while( pFirst != this && pFirst != pSibling )
 		pFirst = pFirst->_next();
 
@@ -286,7 +286,7 @@ bool WgFlexHook::MoveUnder( WgFlexHook * pSibling )
 	if( !pSibling || pSibling->m_pParent != m_pParent || pSibling == this )
 		return false;
 
-	WgFlexHook * pFirst = _chain()->First();
+	WgFlexHook * pFirst = _chain()->first();
 	while( pFirst != this && pFirst != pSibling )
 		pFirst = pFirst->_next();
 
@@ -793,7 +793,7 @@ void WgFlexPanel::SetConfineChildren( bool bConfineChildren )
 	{
 		m_bConfineChildren = bConfineChildren;
 
-		WgFlexHook * pHook = m_hooks.First();
+		WgFlexHook * pHook = m_hooks.first();
 		while( pHook )
 		{
 			pHook->_refreshRealGeo();
@@ -814,7 +814,7 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget )
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,_scaledPreferredPixelSize(pWidget)), WgBorders(0) );
 	p->_attachWidget( pWidget );
 
-	m_hooks.PushBack(p);
+	m_hooks.pushBack(p);
 
 	p->SetFloating();
 	return p;
@@ -830,7 +830,7 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, int anchorTopLeft, int a
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,_scaledPreferredPixelSize(pWidget)), padding );
 	p->_attachWidget( pWidget );
 
-	m_hooks.PushBack(p);
+	m_hooks.pushBack(p);
 
 	p->SetAnchored( anchorTopLeft, anchorBottomRight, padding );
 	return p;
@@ -850,7 +850,7 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgCoord& pos, int 
 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,bestSize), padding );
 	p->_attachWidget( pWidget );
-	m_hooks.PushBack(p);
+	m_hooks.pushBack(p);
 	p->SetFloating( pos, anchor, hotspot );
 	return p;
 }
@@ -868,7 +868,7 @@ WgFlexHook * WgFlexPanel::AddChild( WgWidget * pWidget, const WgRect& geometry, 
 	WgFlexHook * p = new WgFlexHook( this, WgRect(0,0,_scaledPreferredPixelSize(pWidget)), padding );
 	p->_attachWidget( pWidget );
 
-	m_hooks.PushBack(p);
+	m_hooks.pushBack(p);
 
 	p->SetFloating( geometry, anchor, hotspot );
 	return p;
@@ -985,7 +985,7 @@ bool WgFlexPanel::DeleteAllChildren()
 
 	// Collect dirty areas and delete hooks, taking any connected widgets with them.
 
-	WgFlexHook * pHook = m_hooks.First();
+	WgFlexHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		if( pHook->m_bVisible )
@@ -1007,7 +1007,7 @@ bool WgFlexPanel::DeleteAllChildren()
 
 bool WgFlexPanel::ReleaseAllChildren()
 {
-	WgFlexHook * pHook = m_hooks.First();
+	WgFlexHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		pHook->_releaseWidget();
@@ -1038,7 +1038,7 @@ bool WgFlexPanel::ReplaceAnchor( int index, float relativeX, float relativeY, co
 
 	// Update geometry for all widgets using this anchor.
 
-	WgFlexHook * pHook = m_hooks.First();
+	WgFlexHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		if( (pHook->m_bFloating && pHook->m_anchor == index) ||
@@ -1065,7 +1065,7 @@ bool WgFlexPanel::DeleteAnchor( int index )
 	// update of geometry since we need to update all anchors first.
 
 	std::vector<WgFlexHook*>	vNeedsUpdate;
-	WgFlexHook * pHook = m_hooks.First();
+	WgFlexHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		// Check if this widget will have its geometry altered.
@@ -1116,7 +1116,7 @@ void WgFlexPanel::DeleteAllAnchors()
 	// update of geometry since we need to update all anchors first.
 
 	std::vector<WgFlexHook*>	vNeedsUpdate;
-	WgFlexHook * pHook = m_hooks.First();
+	WgFlexHook * pHook = m_hooks.first();
 	while( pHook )
 	{
 		// Check if this widget will have its geometry altered.
@@ -1187,7 +1187,7 @@ WgSize WgFlexPanel::PreferredPixelSize() const
     {
         WgSize minSize;
 
-        WgFlexHook * pHook = m_hooks.First();
+        WgFlexHook * pHook = m_hooks.first();
         while( pHook )
         {
             WgSize sz = pHook->_sizeNeededForGeo();
@@ -1285,7 +1285,7 @@ void WgFlexPanel::_onCloneContent( const WgWidget * _pOrg )
 
 void WgFlexPanel::_onNewSize( const WgSize& size )
 {
-	WgFlexHook * pHook = m_hooks.Last();
+	WgFlexHook * pHook = m_hooks.last();
 
 	while( pHook )
 	{
@@ -1301,7 +1301,7 @@ void WgFlexPanel::_setScale( int scale )
 {
 	WgPanel::_setScale( scale );
 	
-	WgFlexHook * pHook = m_hooks.Last();
+	WgFlexHook * pHook = m_hooks.last();
 
 	while( pHook )
 	{
@@ -1330,7 +1330,7 @@ WgSize WgFlexPanel::_scaledPreferredPixelSize( WgWidget * pWidget )
 
 WgHook * WgFlexPanel::_firstHookWithGeo( WgRect& writeGeo ) const
 {
-	WgFlexHook * p = m_hooks.First();
+	WgFlexHook * p = m_hooks.first();
 	if( p )
 		writeGeo = p->m_realGeo;
 
@@ -1352,7 +1352,7 @@ WgHook * WgFlexPanel::_nextHookWithGeo( WgRect& writeGeo, WgHook * pHook ) const
 
 WgHook * WgFlexPanel::_lastHookWithGeo( WgRect& writeGeo ) const
 {
-	WgFlexHook * p = m_hooks.Last();
+	WgFlexHook * p = m_hooks.last();
 	if( p )
 		writeGeo = p->m_realGeo;
 

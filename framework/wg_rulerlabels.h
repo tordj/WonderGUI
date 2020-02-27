@@ -5,17 +5,13 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg3_chain.h>
 
 #ifndef WG_TEXT_DOT_H
 #	include <wg_text.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
+#include <wg3_textstyle.h>
 
 //____ WgRulerLabels ____________________________________________________________
 
@@ -31,8 +27,7 @@ public:
 	
 	//____ Methods __________________________________________
 	
-	void			AddLabel( const WgCharSeq& text, const WgTextpropPtr& pProp, float offset, WgOrigo origo );
-    void            SetTextManager( WgTextManager * pTextManager );
+    void			AddLabel( const wg::CharSeq& text, wg::TextStyle * pStyle, float offset, WgOrigo origo );
 	WgSize			PreferredPixelSize() const;
 	void			SetDirection( WgDirection direction );
 	
@@ -45,7 +40,7 @@ protected:
 
     void            _textModified( WgText * pText );
 	
-	class Label : public WgLink
+    class Label : public wg::Link
 	{
 	public:
 		LINK_METHODS(Label);
@@ -54,9 +49,8 @@ protected:
 		float		offset;
 	};
 	
-	WgChain<Label>	m_labels;
+	wg::Chain<Label>	m_labels;
 	WgDirection		m_direction;
-    WgTextManager * m_pTextManager;
 };
 
 

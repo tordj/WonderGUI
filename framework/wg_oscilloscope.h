@@ -35,6 +35,7 @@
 #endif
 
 #include <wg_geo.h>
+#include <wg_color.h>
 
 //____ WgOscilloscope ____________________________________________________________
 #define WG_OSC_PIXEL_BUFFER_SIZE 16000

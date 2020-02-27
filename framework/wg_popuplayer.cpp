@@ -121,7 +121,7 @@ WgPopupLayer::~WgPopupLayer()
 	// In contrast to all other panels we only delete our base child on exit.
 	// Menus don't belong to us, we just display them, so they are not ours to delete.
 
-	WgPopupHook * pHook = m_popupHooks.First();
+	WgPopupHook * pHook = m_popupHooks.first();
 	while (pHook)
 	{
 		pHook->_releaseWidget();
@@ -147,14 +147,14 @@ const char * WgPopupLayer::GetClass()
 
 int WgPopupLayer::NbPopups() const
 {
-	return m_popupHooks.Size();
+	return m_popupHooks.size();
 }
 
 //____ Push() _________________________________________________________________
 
 void WgPopupLayer::Push(WgWidget * pPopup, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgCoord attachOfs, bool bAutoClose, bool bDelay, WgSize maxSize)
 {
-	if (!m_popupHooks.IsEmpty())
+	if (!m_popupHooks.isEmpty())
 		_closeAllOpenUntil(pOpener, true);
 
 	_addSlot(pPopup, pOpener, launcherGeo, attachPoint, attachOfs, bAutoClose, bDelay, maxSize);
@@ -167,7 +167,7 @@ void WgPopupLayer::Pop(int nb)
 	if (nb <= 0)
 		return;
 
-	nb = std::min(nb, m_popupHooks.Size());
+	nb = std::min(nb, m_popupHooks.size());
 
 	_removeSlots(nb);
 }
@@ -177,7 +177,7 @@ void WgPopupLayer::Pop(int nb)
 void WgPopupLayer::Pop(WgWidget * pPopup)
 {
 	int index = 0;
-	auto p = m_popupHooks.First();
+	auto p = m_popupHooks.first();
 
 	while (p && p->m_pWidget != pPopup)
 	{
@@ -195,10 +195,10 @@ void WgPopupLayer::Pop(WgWidget * pPopup)
 
 void WgPopupLayer::Clear()
 {
-	if (m_popupHooks.IsEmpty())
+	if (m_popupHooks.isEmpty())
 		return;
 
-	_removeSlots(m_popupHooks.Size());
+	_removeSlots(m_popupHooks.size());
 }
 
 
@@ -392,11 +392,11 @@ WgWidget *  WgPopupLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 	// MenuPanel has its own _findWidget() method since we need special treatment of
 	// searchmode ACTION_TARGET when a menu is open.
 	
-	if( mode == WgSearchMode::ActionTarget && !m_popupHooks.IsEmpty() )
+	if( mode == WgSearchMode::ActionTarget && !m_popupHooks.isEmpty() )
 	{
 		// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 	
-		WgPopupHook * pSlot = m_popupHooks.First();
+		WgPopupHook * pSlot = m_popupHooks.first();
 		WgWidget * pResult = 0;
 	
 		while( pSlot && !pResult )
@@ -419,7 +419,7 @@ WgWidget *  WgPopupLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 		{
 			// Check the root opener
 				
-			WgPopupHook * pSlot = m_popupHooks.Last();
+			WgPopupHook * pSlot = m_popupHooks.last();
 			if( pSlot->pOpener )
 			{
 				WgWidget * pOpener = pSlot->pOpener.GetRealPtr();
@@ -480,14 +480,14 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
 
-	if( !m_popupHooks.IsEmpty() )
+	if( !m_popupHooks.isEmpty() )
 	{
 		WgPopupHook * pCover;
 
 		if (pSlot)
 			pCover = pSlot->Prev();
 		else
-			pCover = m_popupHooks.Last();
+			pCover = m_popupHooks.last();
 
 		while (pCover)
 		{
@@ -543,7 +543,7 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	std::vector<WidgetRenderContext> renderList;
 
-	auto pSlot = m_popupHooks.First();
+	auto pSlot = m_popupHooks.first();
 
 	while (pSlot != nullptr )
 	{
@@ -646,7 +646,7 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 			int ms = static_cast<const WgEvent::Tick*>(pEvent)->Millisec();
 
-			WgPopupHook * pHook = m_popupHooks.First();
+			WgPopupHook * pHook = m_popupHooks.first();
 			while (pHook)
 			{
 				WgPopupHook * pNext = pHook->_next();
@@ -714,14 +714,14 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 		case WG_EVENT_MOUSE_ENTER:
 		case WG_EVENT_MOUSE_MOVE:
 		{
-			if (m_popupHooks.IsEmpty())
+			if (m_popupHooks.isEmpty())
 				break;
 
 			WgCoord 	pointerPos = pEvent->PointerPixelPos() - ScreenPixelPos();
 
             // Popups that are of type 'auto closing' needs special attention
 
-			WgPopupHook * pHook = m_popupHooks.First();
+			WgPopupHook * pHook = m_popupHooks.first();
             if (pHook && pHook->bAutoClose )
             {
                 // Promote popup in state PeekOpen to state WeakOpen if pointer has entered its geo.
@@ -749,7 +749,7 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 			// Promoting to WeakOpen Should also promote any ancestor also in state ClosingDelay.
 
 
-			pHook = m_popupHooks.First();
+			pHook = m_popupHooks.first();
 			while (pHook)
 			{
 				if (pHook->state == WgPopupHook::State::ClosingDelay)
@@ -780,7 +780,7 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 			WgWidget * pMarked = FindWidget(pointerPos, WgSearchMode::ActionTarget);
 
-			if (pMarked != this && (pMarked->IsSelectable() && m_popupHooks.First()->bAutoClose))
+			if (pMarked != this && (pMarked->IsSelectable() && m_popupHooks.first()->bAutoClose))
 				_closeAutoOpenedUntil(pMarked, false);
 
 		}				
@@ -808,12 +808,12 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
 		{
-			if (m_popupHooks.IsEmpty())
+			if (m_popupHooks.isEmpty())
 				break;					// Popup was removed already on the press.
 
 			// Allow us to release the mouse within opener without closing any popups
 
-			WgPopupHook * pSlot = m_popupHooks.First();
+			WgPopupHook * pSlot = m_popupHooks.first();
 			if (pSlot->pOpener)
 			{
 				WgWidget * pOpener = pSlot->pOpener.GetRealPtr();
@@ -829,19 +829,19 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 		}
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 		{
-			if (m_popupHooks.IsEmpty())
+			if (m_popupHooks.isEmpty())
 				break;
 
 			auto pEv = static_cast<const WgEvent::MouseButtonPress*>(pEvent);
 
 			auto pSource = static_cast<WgWidget*>(pEvent->ForwardedFrom() );
 			if (!pSource || pSource == this )
-				_removeSlots(m_popupHooks.Size());
+				_removeSlots(m_popupHooks.size());
 			else if (pSource->IsSelectable())
 			{
 				pHandler->QueueEvent(new WgEvent::Selected(pSource));
 
-				_removeSlots(m_popupHooks.Size());
+				_removeSlots(m_popupHooks.size());
 			}
 			return;
 		}
@@ -854,7 +854,7 @@ void WgPopupLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHan
 	
 			if( pEv->TranslatedKeyCode() == WgKey::WG_KEY_ESCAPE )
 			{
-				if( !m_popupHooks.IsEmpty() )
+				if( !m_popupHooks.isEmpty() )
 				{
 					_removeSlots(1);
 					return;
@@ -882,7 +882,7 @@ void WgPopupLayer::_closeAutoOpenedUntil(WgWidget * pStayOpen, bool bCloseImmedi
 	// Remove all children ontop of pStayOpen, which is now either a child of ours or null, in which case
 	// all will be removed.
 
-	auto p = m_popupHooks.First();
+	auto p = m_popupHooks.first();
 	while (p && p->bAutoClose && p->m_pWidget != pStayOpen)
 	{
         _beginClosing(p, bCloseImmediately);
@@ -902,7 +902,7 @@ void WgPopupLayer::_closeAllOpenUntil(WgWidget * pStayOpen, bool bCloseImmediate
     // Remove all children ontop of pStayOpen, which is now either a child of ours or null, in which case
     // all will be removed.
     
-    auto p = m_popupHooks.First();
+    auto p = m_popupHooks.first();
     while (p && p->m_pWidget != pStayOpen)
     {
         _beginClosing(p, bCloseImmediately);
@@ -954,14 +954,14 @@ void WgPopupLayer::_stealKeyboardFocus()
 	
 	// Save old keyboard focus, which we assume belonged to previous menu in hierarchy.
 	
-	if( m_popupHooks.Size() < 2 )
+	if( m_popupHooks.size() < 2 )
 		m_pKeyFocus = _eventHandler()->KeyboardFocus();
 	else
-		m_popupHooks.Get(1)->pKeyFocus = _eventHandler()->KeyboardFocus();
+		m_popupHooks.get(1)->pKeyFocus = _eventHandler()->KeyboardFocus();
 	
 	// Steal keyboard focus to top menu
 	
-	WgWidget * pWidget = m_popupHooks.First()->m_pWidget;
+	WgWidget * pWidget = m_popupHooks.first()->m_pWidget;
 
 	pWidget->GrabFocus();
 
@@ -979,13 +979,13 @@ void WgPopupLayer::_restoreKeyboardFocus()
 	
 	//
 	
-	if (m_popupHooks.IsEmpty())
+	if (m_popupHooks.isEmpty())
 	{
 		if( m_pKeyFocus )
 		m_pKeyFocus->GrabFocus();
 	}
 	else
-		 m_popupHooks.First()->m_pWidget->GrabFocus();
+		 m_popupHooks.first()->m_pWidget->GrabFocus();
 
 }
 
@@ -1005,7 +1005,7 @@ void WgPopupLayer::_addSlot(WgWidget * _pPopup, WgWidget * _pOpener, const WgRec
 {
 	WgPopupHook * pHook = new WgPopupHook(this);
 	pHook->_attachWidget(_pPopup);
-	m_popupHooks.PushFront(pHook);
+	m_popupHooks.pushFront(pHook);
 
 	pHook->pOpener = _pOpener;
 	pHook->launcherGeo = _launcherGeo;
@@ -1020,7 +1020,7 @@ void WgPopupLayer::_addSlot(WgWidget * _pPopup, WgWidget * _pOpener, const WgRec
 	_updateGeo(pHook, true);
 	_stealKeyboardFocus();
 
-	if( m_popupHooks.Size() == 1 )
+	if( m_popupHooks.size() == 1 )
 		_startReceiveTicks();
 }
 
@@ -1031,9 +1031,9 @@ void WgPopupLayer::_removeSlots(int nb)
 {
 	WgEventHandler * pEH = _eventHandler();
 
-	nb = std::min(nb, m_popupHooks.Size());
+	nb = std::min(nb, m_popupHooks.size());
 
-	WgPopupHook * pHook = (WgPopupHook *) m_popupHooks.First();
+	WgPopupHook * pHook = (WgPopupHook *) m_popupHooks.first();
 
 
 	for (int i = 0; i < nb; i++)
@@ -1052,7 +1052,7 @@ void WgPopupLayer::_removeSlots(int nb)
 	}
 	_restoreKeyboardFocus();
 
-	if (m_popupHooks.IsEmpty() )
+	if (m_popupHooks.isEmpty() )
 		_stopReceiveTicks();
 }
 
@@ -1073,7 +1073,7 @@ void WgPopupLayer::_removeSlot(WgPopupHook * p)
 
 	_restoreKeyboardFocus();
 
-	if (m_popupHooks.IsEmpty())
+	if (m_popupHooks.isEmpty())
 		_stopReceiveTicks();
 }
 
@@ -1083,7 +1083,7 @@ void WgPopupLayer::_removeSlot(WgPopupHook * p)
 
 WgLayerHook * WgPopupLayer::_firstLayerHook() const
 {
-	return m_popupHooks.First();
+	return m_popupHooks.first();
 }
 
 //____ _firstHook() ___________________________________________________________
@@ -1093,14 +1093,14 @@ WgHook* WgPopupLayer::_firstHook() const
 	if (m_baseHook.Widget())
 		return const_cast<BaseHook*>(&m_baseHook);
 	else
-		return m_popupHooks.First();
+		return m_popupHooks.first();
 }
 
 //____ _lastHook() ____________________________________________________________
 
 WgHook* WgPopupLayer::_lastHook() const
 {
-    auto p =m_popupHooks.Last();
+    auto p =m_popupHooks.last();
     if( p )
         return p;
     if (m_baseHook.Widget())
@@ -1119,7 +1119,7 @@ WgHook * WgPopupLayer::_firstHookWithGeo(WgRect& geo) const
 	}
 	else
 	{
-		WgPopupHook * p = m_popupHooks.First();
+		WgPopupHook * p = m_popupHooks.first();
 		if (p)
 			geo = p->m_geo;
 
@@ -1142,7 +1142,7 @@ WgHook * WgPopupLayer::_nextHookWithGeo(WgRect& geo, WgHook * pHook) const
 
 WgHook * WgPopupLayer::_lastHookWithGeo(WgRect& geo) const
 {
-	WgPopupHook * p = m_popupHooks.Last();
+	WgPopupHook * p = m_popupHooks.last();
 	if (p)
 	{
 		geo = p->m_geo;

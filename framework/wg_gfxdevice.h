@@ -33,9 +33,8 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include <wg_textprop.h>
-#endif
+#include <wg3_textstyle.h>
+#include <wg3_char.h>
 
 
 #ifndef WG_GEO_DOT_H
@@ -67,7 +66,7 @@ public:
 
 	// Low-level print methods
 
-	static void		PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const WgTextAttr& baseAttr, const WgChar * _pLine, int maxChars = INT_MAX, WgMode mode = WG_MODE_NORMAL );
+    static void		PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::TextAttr& baseAttr, const wg::Char * _pLine, int maxChars = INT_MAX, wg::State statem = wg::StateEnum::Normal );
 
     static void     BlitBlock( wg::GfxDevice * pDevice, const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
 

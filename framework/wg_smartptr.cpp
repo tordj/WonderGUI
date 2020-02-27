@@ -30,7 +30,7 @@ WgWeakPtrImpl::WgWeakPtrImpl( WgWeakPtrTarget * pObj )
 	{
 		if( !pObj->m_pHub )
 		{
-			m_pHub = WgBase::AllocWeakPtrHub();
+			m_pHub = new WgWeakPtrHub();
 			m_pHub->refCnt = 1;
 			m_pHub->pObj = pObj;
 			pObj->m_pHub = m_pHub;
@@ -58,7 +58,7 @@ WgWeakPtrImpl::~WgWeakPtrImpl()
 		{
 			if( m_pHub->pObj )
 				m_pHub->pObj->m_pHub = 0;
-			WgBase::FreeWeakPtrHub(m_pHub);
+			delete m_pHub;
 		}
 	}
 }
@@ -77,7 +77,7 @@ void WgWeakPtrImpl::copy( WgWeakPtrImpl const & r)
 			{
 				if( m_pHub->pObj )
 					m_pHub->pObj->m_pHub = 0;
-				WgBase::FreeWeakPtrHub(m_pHub);
+				delete m_pHub;
 			}
 		}
 

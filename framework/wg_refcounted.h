@@ -19,22 +19,6 @@ private:
 };
 
 
-//____ WgRefCountedPooled _____________________________________________________
-
-class WgRefCountedPooled
-{
-	template<class T> friend class WgSmartPtrPooled;
-
-protected:
-	WgRefCountedPooled(WgMemPool * pPool) {m_ref = 0;m_pPool = pPool; }
-	virtual ~WgRefCountedPooled() {};
-
-private:
-	Uint32		m_ref;
-	WgMemPool * m_pPool;
-};
-
-
 //____ WgWeakPtrTarget _________________________________________________________
 
 class WgWeakPtrTarget;

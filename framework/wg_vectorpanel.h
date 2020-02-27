@@ -31,17 +31,15 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
-#endif
+#include <wg3_chain.h>
 
 class WgVectorPanel;
 
 
-class WgVectorHook : public WgPanelHook, protected WgLink
+class WgVectorHook : public WgPanelHook, protected wg::Link
 {
 	friend class WgVectorPanel;
-	friend class WgChain<WgVectorHook>;
+	friend class wg::Chain<WgVectorHook>;
 
 
 public:
@@ -110,8 +108,8 @@ protected:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 
-	WgHook*			_firstHook() const { return m_hooks.First(); }
-	WgHook*			_lastHook() const { return m_hooks.Last(); }
+	WgHook*			_firstHook() const { return m_hooks.first(); }
+	WgHook*			_lastHook() const { return m_hooks.last(); }
 
 	int				_compareWidgets(const WgWidget * p1, const WgWidget * p2) { return m_pSortFunc?m_pSortFunc(p1,p2):0; }
 
@@ -130,7 +128,7 @@ protected:
 
 	//
 
-	WgChain<WgVectorHook>	m_hooks;
+	wg::Chain<WgVectorHook>	m_hooks;
 
 	WgSortOrder			m_sortOrder;
 	WgWidgetSortFunc	m_pSortFunc;

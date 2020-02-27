@@ -33,6 +33,8 @@
 #    include <wg_patches.h>
 #endif
 
+#include <wg_color.h>
+
 class WgCanvasCapsule : public WgCapsule
 {
 public:

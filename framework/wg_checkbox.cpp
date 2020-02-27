@@ -22,7 +22,7 @@
 
 #include <wg_checkbox.h>
 #include <wg_gfxdevice.h>
-#include <wg_font.h>
+#include <wg3_font.h>
 #include <wg_util.h>
 #include <wg_rootpanel.h>
 #include <wg_eventhandler.h>
@@ -273,19 +273,7 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 //____ _onRender() ________________________________________________________
 
 void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
-{
-	// Get correct mode
-
-	WgMode	mode = WG_MODE_NORMAL;
-	if( !m_bEnabled )
-		mode = WG_MODE_DISABLED;
-	else if( m_bOver )
-	{
-		mode = WG_MODE_MARKED;
-		if( m_bPressed )
-			mode = WG_MODE_SELECTED;
-	}
-    
+{    
     // Get correct state
     
     WgState state = m_state;
@@ -320,7 +308,7 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
  	if( m_text.nbLines()!= 0 )
 	{
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
-		m_pText->setMode( mode );
+		m_pText->setState( state );
 
         WgGfxDevice::PrintText( pDevice, m_pText, textRect );
 	}

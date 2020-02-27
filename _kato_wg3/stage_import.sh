@@ -9,15 +9,24 @@ mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
 mkdir skins
+mkdir fonts
 cd ..
 
 cd ../../WonderGUI/src
 
 cd base
 cp wg_object.h \
+   wg_bitmapfont.* \
    wg_blob.* \
+   wg_chain.* \
+   wg_char.* \
+   wg_charbuffer.* \
+   wg_charseq.* \
+   wg_codepages.* \
    wg_color.* \
+   wg_dummyfont.* \
    wg_enumextras.* \
+   wg_font.* \
    wg_geo.* \
    wg_gfxdevice.* \
    wg_nullgfxdevice.* \
@@ -25,10 +34,15 @@ cp wg_object.h \
    wg_payload.* \
    wg_pointers.* \
    wg_qpix.* \
+   wg_string.* \
    wg_strongcomponentptr.* \
    wg_strongptr.* \
    wg_surface.* \
    wg_surfacefactory.* \
+   wg_textlink.* \
+   wg_textstyle.* \
+   wg_textstylemanager.* \
+   wg_texttool.* \
    wg_types.* \
    wg_util.* \
    wg_weakcomponentptr.* \
@@ -40,17 +54,14 @@ cp wg_component.* \
    ../../../wg2/_kato_wg3/imports/components
 
 cd ../gfxdevices/opengl
-cp wg_glgfxdevice.* \
-   wg_glshaders.* \
-   wg_glsurface.* \
-   wg_glsurfacefactory.* \
-   ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl
+cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl
 
 cd ../software
-cp wg_softgfxdevice.* \
-   wg_softsurface.* \
-   wg_softsurfacefactory.* \
-   ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
+cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
 
 cd ../../skins
-cp *.cpp *.h ../../../wg2/_kato_wg3/imports/skins
+cp * ../../../wg2/_kato_wg3/imports/skins
+
+cd ../fonts
+cp -r * ../../../wg2/_kato_wg3/imports/fonts
+

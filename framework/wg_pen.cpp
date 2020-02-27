@@ -21,13 +21,11 @@
 =========================================================================*/
 
 #include <wg_pen.h>
-#include <wg_texttool.h>
 #include <wg_text.h>
-#include <wg_font.h>
+#include <wg3_font.h>
 #include <wg_cursorinstance.h>
 #include <wg_gfxanim.h>
 #include <wg_blockset.h>
-#include <wg_textmanager.h>
 #include <wg_base.h>
 
 WgPen::WgPen()
@@ -49,14 +47,11 @@ WgPen::WgPen( wg::GfxDevice * pDevice, const WgCoord& origo )
 void WgPen::_init()
 {
 	m_pDevice = 0;
-	m_pTextNode = 0;
 
 	m_pFont = 0;
-	m_pGlyphs = 0;
 
 	m_size = 0;
 	m_wantedSize = 0;
-	m_style = WG_STYLE_NORMAL;
 
 	m_pGlyph = &m_dummyGlyph;
 	m_pPrevGlyph = &m_dummyGlyph;
@@ -86,30 +81,25 @@ void WgPen::_onAttrChanged()
 {
 	if( !m_pFont )
 	{
-		m_pGlyphs = 0;
 		return;
 	}
 
-	if( m_pTextNode )
-		m_size = (int) m_pTextNode->GetSize( m_pFont, m_style, m_wantedSize );
-	else
-		m_size = m_wantedSize;
-
-	m_size = m_size * m_scale >> WG_SCALE_BINALS;
-
-	m_pGlyphs = m_pFont->GetGlyphset( m_style, m_size );
+	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
+    m_pFont->setSize(m_size);
 }
 
 //____ SetAttributes() ________________________________________________________
 
-bool WgPen::SetAttributes( const WgTextAttr& attr )
+bool WgPen::SetAttributes( const wg::TextAttr& attr )
 {
 	if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 		return false;
 
-	m_pFont			= attr.pFont;
+    if( attr.pFont != m_pFont || attr.size != m_wantedSize )
+        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+
+    m_pFont			= attr.pFont;
 	m_wantedSize	= attr.size;
-	m_style			= attr.style;
 	m_color			= attr.color;
 	_onAttrChanged();
 	return true;
@@ -122,25 +112,25 @@ bool WgPen::SetSize( int size )
 	if( size < 0 && size > WG_MAX_FONTSIZE )
 		return false;
 
-	m_wantedSize = size;
-	_onAttrChanged();
+    if( size != m_wantedSize )
+    {
+        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+        m_wantedSize = size;
+        _onAttrChanged();
+    }
 	return true;
 }
 
 //____ SetFont() ______________________________________________________________
 
-void WgPen::SetFont( WgFont * pFont )
+void WgPen::SetFont( wg::Font * pFont )
 {
-	m_pFont = pFont;
-	_onAttrChanged();
-}
-
-//____ SetStyle() _____________________________________________________________
-
-void WgPen::SetStyle( WgFontStyle style )
-{
-	m_style = style;
-	_onAttrChanged();
+    if( pFont != m_pFont )
+    {
+        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+        m_pFont = pFont;
+        _onAttrChanged();
+    }
 }
 
 //____ SetColor() _____________________________________________________________
@@ -164,8 +154,8 @@ bool WgPen::SetChar( Uint32 chr )
 	{
 		if( chr == ' ' && !m_bShowSpace )
 		{
-			if(m_pGlyphs)
-				m_dummyGlyph.SetAdvance( m_pGlyphs->GetWhitespaceAdvance( m_size ) );
+			if(m_pFont)
+				m_dummyGlyph.SetAdvance( m_pFont->whitespaceAdvance() );
 			else
 				m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
@@ -204,7 +194,7 @@ bool WgPen::SetChar( Uint32 chr )
 
 	// Get the glyph from our Glyphset.
 
-	if( !m_pGlyphs )
+	if( !m_pFont )
 	{
 		m_pGlyph = &m_dummyGlyph;
 		return false;
@@ -212,38 +202,29 @@ bool WgPen::SetChar( Uint32 chr )
 
 	// First we try to get the glyph from our Glyphset.
 
-	WgGlyphPtr p = m_pGlyphs->GetGlyph( chr, m_size );
+    wg::Glyph_p p = m_pFont->getGlyph( chr );
 	if( !p )
 	{
-		// If not in glyphset we get the closest match in size/style from Font.
+        // The glyph doesn't exist in this font, try to get the unicode
+        // WHITE_BOX as a replacement glyph.
 
-		p = m_pFont->GetGlyph( chr, m_style, m_size );
-		if( !p )
-		{
-			// The glyph doesn't exist in this font, try to get the unicode
-			// WHITE_BOX as a replacement glyph.
+        p = m_pFont->getGlyph( 0xFFFD );
+        if( !p )
+        {
+            // We don't have the white box, try with the most suitable
+            // common ascii character instead...
 
-			p = m_pFont->GetGlyph( 0xFFFD, m_style, m_size );
-			if( !p )
-			{
-				// We don't have the white box, try with the most suitable
-				// common ascii character instead...
+            p = m_pFont->getGlyph( '*' );
+            if( !p )
+            {
+                // Total failure, nothing to render...
 
-				p = m_pFont->GetGlyph( '*', m_style, m_size );
-				if( !p )
-				{
-					// Total failure, nothing to render...
-
-					m_pGlyph = &m_dummyGlyph;
-					m_dummyGlyph.SetAdvance(0);
-					return false;
-				}
-			}
-		}
+                m_pGlyph = &m_dummyGlyph;
+                m_dummyGlyph.SetAdvance(0);
+                return false;
+            }
+        }
 	}
-
-	if( m_pPrevGlyph->Glyphset() != p->Glyphset() )
-		m_pPrevGlyph = &m_dummyGlyph; // We can't do kerning between glyphs from different glyphsets.
 
 	m_pGlyph = p;
 	return true;
@@ -253,7 +234,7 @@ bool WgPen::SetChar( Uint32 chr )
 
 void WgPen::BlitChar() const
 {
-	const WgGlyphBitmap * pSrc = m_pGlyph->GetBitmap();
+    const wg::GlyphBitmap * pSrc = m_pGlyph->getBitmap();
 
 	if( pSrc )
 	{
@@ -270,7 +251,7 @@ void WgPen::BlitChar() const
 
 bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 {
-	WgCursor * pCursor = WgTextTool::GetCursor(instance.m_pText);
+	WgCursor * pCursor = _getCursor(instance.m_pText);
 	if( pCursor == 0 )
 		return false;
 
@@ -344,7 +325,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 {
-	WgCursor * pCursor = WgTextTool::GetCursor( instance.m_pText );
+	WgCursor * pCursor = _getCursor( instance.m_pText );
 	if( pCursor == 0 )
 		return;
 
@@ -363,5 +344,15 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 	}
 
 	m_pos.x += advance;
+}
+
+//____ _getCursor() _____________________________________________________
+
+WgCursor * WgPen::_getCursor(const WgText * pText) const
+{
+    WgCursor * p = pText->getCursorStyle();
+    if(p)
+        return p;
+    return WgBase::GetDefaultCursor();
 }
 

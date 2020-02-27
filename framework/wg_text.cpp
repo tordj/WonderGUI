@@ -29,17 +29,17 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <wg_text.h>
-#include <wg_font.h>
+#include <wg3_font.h>
 #include <wg_valueformat.h>
 #include <wg_text.h>			// UGLY DEPENDENCY FOR QUICKHACK IN INSERT TEXT METHODS!!!
-#include <wg_texttool.h>
-#include <wg_charseq.h>
-#include <wg_charbuffer.h>
+#include <wg3_texttool.h>
+#include <wg3_charseq.h>
+#include <wg3_charbuffer.h>
 #include <wg_pen.h>
 #include <wg_interface_textholder.h>
 #include <wg_base.h>
-#include <wg_textlink.h>
-#include <wg_string.h>
+#include <wg3_textlink.h>
+#include <wg3_string.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 #include <wg_widget.h>
@@ -55,19 +55,19 @@ WgText::WgText()
 	Init();
 }
 
-WgText::WgText( const WgCharSeq& seq )
+WgText::WgText( const wg::CharSeq& seq )
 {
 	Init();
 	setText( seq );
 }
 
-WgText::WgText( const WgCharBuffer * pBuffer )
+WgText::WgText( const wg::CharBuffer * pBuffer )
 {
 	Init();
 	setText( pBuffer );
 }
 
-WgText::WgText( const WgString& str )
+WgText::WgText( const wg::String& str )
 {
 	Init();
 	setText( str );
@@ -77,20 +77,19 @@ WgText::WgText( const WgString& str )
 
 void WgText::Init()
 {
-	m_pManagerNode	= 0;
 	m_pHolder		= 0;
 	m_pCursor		= 0;
 	m_pCursorStyle	= 0;
 
 	m_scale = WG_SCALE_BASE;
 
-	m_markedLinkMode = WG_MODE_NORMAL;
+    m_markedLinkState = wg::StateEnum::Normal;
 
 	m_alignment		= WgOrigo::NorthWest;
 	m_tintMode		= WG_TINTMODE_MULTIPLY;
 	m_lineSpaceAdj	= 1.f;
 
-	m_mode		= WG_MODE_NORMAL;
+    m_state		    = wg::StateEnum::Normal;
 
 	m_pHardLines	= new WgTextLine[1];
 	m_nHardLines	= 1;
@@ -118,26 +117,11 @@ void WgText::Init()
 
 WgText::~WgText()
 {
-	delete m_pManagerNode;
-
 	if( m_pSoftLines != m_pHardLines )
 		delete [] m_pSoftLines;
 
 	delete [] m_pHardLines;
 	delete m_pCursor;
-}
-
-//____ setManager() ___________________________________________________________
-
-void WgText::setManager( WgTextManager * pManager )
-{
-	if( m_pManagerNode )
-		delete m_pManagerNode;
-
-	if( pManager )
-		m_pManagerNode = pManager->_newNode( this );
-	else
-		m_pManagerNode = 0;
 }
 
 //____ setCursorStyle() _______________________________________________________
@@ -156,7 +140,7 @@ void WgText::setCursorStyle( WgCursor * pCursor )
 
 void WgText::_regenHardLines()
 {
-	int nLines = WgTextTool::countLines( m_buffer.Chars() );
+    int nLines = wg::TextTool::countLines( m_buffer.chars() );
 
 	if( m_nHardLines != nLines )
 	{
@@ -171,13 +155,13 @@ void WgText::_regenHardLines()
 
 	int		line = 0;
 	int		ofs = 0;
-	const WgChar * p = m_buffer.Chars();
+    const wg::Char * p = m_buffer.chars();
 
 	m_pHardLines[line].ofs = ofs;
 
-	while( !p[ofs].IsEndOfText() )
+	while( !p[ofs].isEndOfText() )
 	{
-		if( p[ofs].IsEndOfLine() )
+		if( p[ofs].isEndOfLine() )
 		{
 			m_pHardLines[line].nChars = ofs - m_pHardLines[line].ofs;
 			line++;
@@ -193,7 +177,7 @@ void WgText::_regenHardLines()
 
 void WgText::clear()
 {
-	m_buffer.Reset();
+	m_buffer.reset();
 
 	if( m_pSoftLines != m_pHardLines )
 		delete [] m_pSoftLines;
@@ -223,45 +207,45 @@ void WgText::clear()
 }
 
 
-void WgText::setText( const WgCharSeq& seq )
+void WgText::setText( const wg::CharSeq& seq )
 {
-	m_buffer.Clear();
+	m_buffer.clear();
 
-	if( seq.Length() <= m_maxChars )
-		m_buffer.PushBack( seq );
+	if( seq.length() <= m_maxChars )
+		m_buffer.pushBack( seq );
 	else
-		m_buffer.PushBack( WgCharSeq(seq, 0, m_maxChars) );
+        m_buffer.pushBack( wg::CharSeq(seq, 0, m_maxChars) );
     _textModified();
 
 	clearSelection();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
-void WgText::setText( const WgCharBuffer * buffer )
+void WgText::setText( const wg::CharBuffer * buffer )
 {
 	m_buffer = * buffer;
-	if( (int) m_buffer.Length() > m_maxChars )
-		m_buffer.Delete( m_maxChars, INT_MAX );
+	if( (int) m_buffer.length() > m_maxChars )
+		m_buffer.remove( m_maxChars, INT_MAX );
     _textModified();
 
 	clearSelection();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
-void WgText::setText( const WgString& str )
+void WgText::setText( const wg::String& str )
 {
-	if( (int) str.Length() <= m_maxChars )
+	if( (int) str.length() <= m_maxChars )
 		m_buffer = str;
 	else
-		m_buffer = WgCharSeq(str,0,m_maxChars);
+        m_buffer = wg::CharSeq(str,0,m_maxChars);
 
     _textModified();
 	clearSelection();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 }
 
 
@@ -270,8 +254,8 @@ void WgText::setText( const WgText * pText )
 	// TODO: Optimize, we can simply copy the hardlines array. Softlines needs to be generated though.
 
 	m_buffer = * pText->getBuffer();
-	if( (int) m_buffer.Length() > m_maxChars )
-		m_buffer.Delete( m_maxChars, INT_MAX );
+	if( (int) m_buffer.length() > m_maxChars )
+		m_buffer.remove( m_maxChars, INT_MAX );
 
     _textModified();
 	clearSelection();
@@ -364,27 +348,26 @@ int WgText::getSoftLineWidthPart( int _line, int startCol, int nCol ) const
 		nCol = pLine->nChars-startCol;
 
 
-	const WgChar * pString = m_buffer.Chars() + pLine->ofs;
+    const wg::Char * pString = m_buffer.chars() + pLine->ofs;
 
 	WgPen pen;
-	Uint16 hProp = 0xFFFF;
+	Uint16 hStyle = 0xFFFF;
 
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 
-	pen.SetTextNode( m_pManagerNode );
 	pen.SetScale( m_scale );
 
 	for( int i = 0 ; i < nCol ; i++ )
 	{
-		if( pString->IsEndOfLine() )
+		if( pString->isEndOfLine() )
 			break;
 
-		if( pString->PropHandle() != hProp )
+		if( pString->styleHandle() != hStyle )
 		{
 			GetCharAttr( attr, pLine->ofs + i );
 			pen.SetAttributes( attr );
 		}
-		pen.SetChar( pString->Glyph() );
+		pen.SetChar( pString->code() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 		pString++;
@@ -495,7 +478,7 @@ int WgText::heightForWidth( int width ) const
 		WgTextLine		lineArray[maxLines];
 		WgTextLine *	pLines = lineArray;
 
-		int nSoftLines = _countWriteSoftLines( width, m_buffer.Chars(), pLines, maxLines );
+		int nSoftLines = _countWriteSoftLines( width, m_buffer.chars(), pLines, maxLines );
 
 		// If the TextLines didn't fit in our little array we need to allocate a bigger one
 		// and regenerate
@@ -503,7 +486,7 @@ int WgText::heightForWidth( int width ) const
 		if( nSoftLines > maxLines )
 		{
 			pLines = new WgTextLine[nSoftLines];
-			_countWriteSoftLines( width, m_buffer.Chars(), pLines, nSoftLines );
+			_countWriteSoftLines( width, m_buffer.chars(), pLines, nSoftLines );
 		}
 
 		// Generate line-info, so height-member is filled in.
@@ -549,134 +532,55 @@ int WgText::softLineSpacing( int line )
 }
 
 
-void WgText::setLinkProperties( const WgTextpropPtr& pProp )
+void WgText::setStyle( wg::TextStyle * pStyle )
 {
-	if( m_pLinkProp != pProp )
-	{
-		m_pLinkProp = pProp;
-		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
-		_refreshAllLines();
-	}
-}
-
-void WgText::clearLinkProperties()
-{
-	if( m_pLinkProp )
-	{
-		m_pLinkProp = 0;
-		_regenSoftLines();		//TODO: Optimize: Only do if we have links.
-		_refreshAllLines();
-	}
-}
-
-void WgText::setSelectionProperties( const WgTextpropPtr& pProp )
-{
-	if( m_pSelectionProp != pProp )
-	{
-		m_pSelectionProp = pProp;
-		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
-		_refreshAllLines();
-	}
-}
-
-void WgText::clearSelectionProperties()
-{
-	if( m_pSelectionProp )
-	{
-		m_pSelectionProp = 0;
-		_regenSoftLines();		//TODO: Optimize: Only do if we have selected text.
-		_refreshAllLines();
-	}
-}
-
-
-void WgText::setSelectionBgColor(WgColor color )
-{
-	WgTextprop	prop = * m_pSelectionProp;
-	prop.SetBgColor(color);
-	m_pSelectionProp = prop.Register();
-}
-
-
-void WgText::setProperties( const WgTextpropPtr& pProp )
-{
-	m_pBaseProp = pProp;
+	m_pBaseStyle = pStyle;
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
 bool WgText::setColor( const WgColor color )
 {
-    if( m_pBaseProp->IsColored() && m_pBaseProp->IsColorStatic() && m_pBaseProp->Color() == color )
+    if( m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
         return false;
     
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetColor(color);
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->setColor(color);
     return true;
 }
 
-bool WgText::setColor( const WgColor color, WgMode mode )
+bool WgText::setColor( const WgColor color, wg::State state )
 {
-    if( m_pBaseProp->IsColored(mode) && m_pBaseProp->Color(mode) == color )
+    if( m_pBaseStyle->colorBlendMode(state) != wg::BlendMode::Undefined && m_pBaseStyle->color(state) == color )
         return false;
 
-    WgTextprop	prop = * m_pBaseProp;
-	prop.SetColor(color,mode);
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->setColor(color,state);
     return true;
 }
 
-void WgText::setStyle( WgFontStyle style )
+void WgText::setFont( wg::Font * pFont )
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetStyle(style);
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->setFont(pFont);
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
-void WgText::setStyle( WgFontStyle style, WgMode mode )
+void WgText::setLink( wg::TextLink * pLink )
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetStyle(style,mode);
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->setLink(pLink);
+
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
-void WgText::setFont( WgFont * pFont )
+void WgText::clearStyle()
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetFont(pFont);
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
-}
-
-void WgText::setLink( const WgTextLinkPtr& pLink )
-{
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetLink(pLink);
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
-}
-
-void WgText::setBreakLevel( int level )
-{
-	WgTextprop	prop = * m_pBaseProp;
-	prop.SetBreakLevel(level);
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
-}
-
-void WgText::clearProperties()
-{
-	if( m_pBaseProp )
+	if( m_pBaseStyle )
 	{
-		m_pBaseProp = 0;
+		m_pBaseStyle = 0;
 		_regenSoftLines();
 		_refreshAllLines();
 	}
@@ -684,59 +588,28 @@ void WgText::clearProperties()
 
 void WgText::clearColor()
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearColor();
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->clearColor();
 }
 
-void WgText::clearColor( WgMode mode )
+void WgText::clearColor( wg::State state )
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearColor(mode);
-	m_pBaseProp = prop.Register();
-}
-
-void WgText::clearStyle()
-{
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearStyle();
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
-}
-
-void WgText::clearStyle( WgMode mode )
-{
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearStyle(mode);
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
-}
-
-void WgText::clearBreakLevel()
-{
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearBreakLevel();
-	m_pBaseProp = prop.Register();
-	_regenSoftLines();
-	_refreshAllLines();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->clearColor(state);
 }
 
 void WgText::clearFont()
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearFont();
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->clearFont();
 	_regenSoftLines();
 	_refreshAllLines();
 }
 
 void WgText::clearLink()
 {
-	WgTextprop	prop = * m_pBaseProp;
-	prop.ClearLink();
-	m_pBaseProp = prop.Register();
+    m_pBaseStyle = m_pBaseStyle->clone();
+    m_pBaseStyle->clearLink();
 	_regenSoftLines();
 	_refreshAllLines();
 }
@@ -776,53 +649,14 @@ char *	WgText::getTextUTF8() const
 
 int	WgText::getTextUTF8( char * pDest, int maxBytes ) const
 {
-	return WgTextTool::getTextUTF8(getText(), pDest, maxBytes);
+    return wg::TextTool::getTextUTF8(getText(), pDest, maxBytes);
 }
 
 //____ getTextSizeUTF8() ______________________________________________________
 
 int	WgText::getTextSizeUTF8() const
 {
-	return WgTextTool::getTextSizeUTF8(getText());
-}
-
-//____ getTextFormattedUTF8() _________________________________________________
-
-char * WgText::getTextFormattedUTF8() const
-{
-	int bytes = getTextSizeFormattedUTF8();
-	char * pDest = new char[bytes+1];
-	getTextFormattedUTF8(pDest, bytes+1);
-	return pDest;
-}
-
-//____ getTextFormattedUTF8() __________________________________________________
-
-int WgText::getTextFormattedUTF8( char * pDest, int maxBytes ) const
-{
-	return WgTextTool::getTextFormattedUTF8( getText(), pDest, maxBytes );
-}
-
-//____ getTextSizeFormattedUTF8() ______________________________________________
-
-int WgText::getTextSizeFormattedUTF8() const
-{
-	return WgTextTool::getTextSizeFormattedUTF8(getText(), INT_MAX);
-}
-
-
-char * WgText::getSelectedTextFormattedUTF8() const
-{
-	if(m_selStartLine == m_selEndLine && m_selStartCol == m_selEndCol)
-		return 0;
-
-	const WgChar* pTextStart = getLineText(m_selStartLine) + m_selStartCol;
-	const WgChar* pTextEnd = getLineText(m_selEndLine) + m_selEndCol;
-	int nChars = pTextEnd - pTextStart;
-	int nBytes = WgTextTool::getTextSizeFormattedUTF8(pTextStart, nChars);
-	char * pDest = new char[nBytes + 1];
-	WgTextTool::getTextFormattedUTF8(pTextStart, pDest, nBytes + 1);
-	return pDest;
+    return wg::TextTool::getTextSizeUTF8(getText());
 }
 
 char * WgText::getSelectedTextUTF8() const
@@ -830,12 +664,12 @@ char * WgText::getSelectedTextUTF8() const
 	if(m_selStartLine == m_selEndLine && m_selStartCol == m_selEndCol)
 		return 0;
 
-	const WgChar* pTextStart = getLineText(m_selStartLine) + m_selStartCol;
-	const WgChar* pTextEnd = getLineText(m_selEndLine) + m_selEndCol;
-	int nChars = pTextEnd - pTextStart;
-	int nBytes = WgTextTool::getTextSizeUTF8(pTextStart, nChars);
+    const wg::Char* pTextStart = getLineText(m_selStartLine) + m_selStartCol;
+    const wg::Char* pTextEnd = getLineText(m_selEndLine) + m_selEndCol;
+	int nChars = int(pTextEnd - pTextStart);
+    int nBytes = wg::TextTool::getTextSizeUTF8(pTextStart, nChars);
 	char * pDest = new char[nBytes + 1];
-	WgTextTool::getTextUTF8(pTextStart, pDest, nBytes + 1);
+    wg::TextTool::getTextUTF8(pTextStart, pDest, nBytes + 1);
 	return pDest;
 }
 
@@ -913,8 +747,8 @@ int WgText::compareTo( const WgText * _pOther, bool bCheckCase ) const
 
 void WgText::setValue( double value, const WgValueFormat& form )
 {
-	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseValue( value, form, str );
+    wg::Char	str[s_parseBufLen];
+    wg::Char * pStr = _parseValue( value, form, str );
 	setText( pStr );
 }
 
@@ -922,15 +756,15 @@ void WgText::setValue( double value, const WgValueFormat& form )
 
 void WgText::setScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form )
 {
-	WgChar	str[s_parseBufLen];
-	WgChar * pStr = _parseScaledValue( value, scale, form, str );
+    wg::Char	str[s_parseBufLen];
+    wg::Char * pStr = _parseScaledValue( value, scale, form, str );
 	setText( pStr );
 }
 
 
 //____ _parseValue() ___________________________________________________________
 
-WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
+wg::Char * WgText::_parseValue( double value, const WgValueFormat& f, wg::Char tempstring[s_parseBufLen] )
 {
 
 	// Write period and decimal part
@@ -938,7 +772,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 	// length of buffer - decimals - suffix - end color - null terminator
 	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
-	WgChar * p = tempstring + fractionOffset;
+    wg::Char * p = tempstring + fractionOffset;
 	if( f.decimals || f.bForcePeriod )
 	{
 		if( 0 == f.noDecimalThreshold || (int)value < f.noDecimalThreshold )
@@ -947,13 +781,13 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 			if( f.bForceDecimals || decPart != 0. )
 			{
-				p->SetGlyph(f.period);
+				p->setCode(f.period);
 				p++;
 
 				for( int i = f.decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-					p->SetGlyph((Uint16)decPart + 0x30);
+					p->setCode((Uint16)decPart + 0x30);
 					p++;
 					decPart = decPart - (int) decPart;
 				}
@@ -963,14 +797,14 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 
 	// Add suffix
 
-	const WgChar * pSuffix = f.suffix.Chars();
+    const wg::Char * pSuffix = f.suffix.chars();
 
-	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < f.suffix.length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
 
-	p->SetGlyph(0);
+	p->setCode(0);
 	p++;
 
 	// Write integer part to temp area (backwards)
@@ -994,7 +828,7 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 		for( int i = 0 ; i < n ; i++ )
 		{
 			p--;
-			p->SetGlyph(temp2[i]);
+			p->setCode(temp2[i]);
 		}
 	}
 	else
@@ -1004,11 +838,11 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 			if( i != 0 && (i % f.grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(f.separator);
+				p->setCode(f.separator);
 			}
 
 			p--;
-			p->SetGlyph(temp2[i]);
+			p->setCode(temp2[i]);
 		}
 	}
 
@@ -1021,20 +855,20 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 			if( i != 0 && (i % f.grouping) == 0 )
 			{
 				p--;
-				p->SetGlyph(f.separator);
+				p->setCode(f.separator);
 			}
 
 			p--;
-			p->SetGlyph(0x30);
+			p->setCode(0x30);
 		}
 
 	}
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = f.prefix.Chars();
+    const wg::Char * pPrefix = f.prefix.chars();
 
-	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = f.prefix.length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign before prefix.
@@ -1042,25 +876,25 @@ WgChar * WgText::_parseValue( double value, const WgValueFormat& f, WgChar temps
 	if( value < 0 )
 	{
 		p--;
-		p->SetGlyph('-');
+		p->setCode('-');
 	}
 	else if( f.bPlus )
 	{
 		p--;
-		p->SetGlyph('+');
+		p->setCode('+');
 	}
 
 	// Set character attributes
 
-	if( f.bSetTextprop )
-		WgTextTool::SetProperties( f.pTextProperties, tempstring, s_parseBufLen );
+	if( f.bSetTextStyle )
+        wg::TextTool::setStyle( f.pTextStyle, tempstring, s_parseBufLen );
 
 	return p;
 }
 
 //____ _parseScaledValue() _____________________________________________________
 
-WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, WgChar tempstring[s_parseBufLen] )
+wg::Char * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& f, wg::Char tempstring[s_parseBufLen] )
 {
 
 	Sint64 absVal = value >= 0 ? value : -value;
@@ -1073,33 +907,33 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 	// length of buffer - decimals - suffix - end color - null terminator
 	int fractionOffset = s_parseBufLen - 16 - 4 - 1 - 1;
 
-	WgChar * p = tempstring + fractionOffset;
+    wg::Char * p = tempstring + fractionOffset;
 	if( f.decimals || f.bForcePeriod )
 	{
 		if( 0 == f.noDecimalThreshold || (int)absVal < f.noDecimalThreshold )
 		{
 			if( f.bForceDecimals || decPart != 0 )
 			{
-				p++->SetGlyph(f.period);
+				p++->setCode(f.period);
 
 				for( int i = f.decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-					p++->SetGlyph(((Uint16)(decPart/scale)) + 0x30);
+					p++->setCode(((Uint16)(decPart/scale)) + 0x30);
 					decPart = decPart % scale;
 				}
 			}
 		}
 	}
 
-	const WgChar * pSuffix = f.suffix.Chars();
+    const wg::Char * pSuffix = f.suffix.chars();
 
-	for( int i = 0 ; i < f.suffix.Length() && i < 4 ; i++ )
+	for( int i = 0 ; i < f.suffix.length() && i < 4 ; i++ )
 		* p++ = pSuffix[i];
 
 	// Terminate string
 
-	p++->SetGlyph(0);						// Just to be sure, might already have been terminated as part of suffix.
+	p++->setCode(0);						// Just to be sure, might already have been terminated as part of suffix.
 
 	// Write integer part to temp area (backwards)
 
@@ -1119,16 +953,16 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 	if( f.grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
-			(--p)->SetGlyph(temp2[i]);
+			(--p)->setCode(temp2[i]);
 	}
 	else
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-				(--p)->SetGlyph(f.separator);
+				(--p)->setCode(f.separator);
 
-			(--p)->SetGlyph(temp2[i]);
+			(--p)->setCode(temp2[i]);
 		}
 	}
 
@@ -1139,31 +973,31 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 		for( int i = n ; i < f.integers ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-				(--p)->SetGlyph(f.separator);
+				(--p)->setCode(f.separator);
 
-			(--p)->SetGlyph(0x30);
+			(--p)->setCode(0x30);
 		}
 
 	}
 
 	// Possibly put a prefix at the start
 
-	const WgChar * pPrefix = f.prefix.Chars();
+    const wg::Char * pPrefix = f.prefix.chars();
 
-	for( int i = f.prefix.Length()-1 ; i >= 0 ; i-- )
+	for( int i = f.prefix.length()-1 ; i >= 0 ; i-- )
 		* --p = pPrefix[i];
 
 	// Possibly put a plus or minus sign at the very start.
 
 	if( value < 0 || (value == 0 && f.bZeroIsNegative) )
-		(--p)->SetGlyph((short) '-');
+		(--p)->setCode((short) '-');
 	else if( f.bPlus )
-		(--p)->SetGlyph((short) '+');
+		(--p)->setCode((short) '+');
 
 	// Set character attributes
 
-	if( f.bSetTextprop )
-		WgTextTool::SetProperties(f.pTextProperties, tempstring, s_parseBufLen );
+	if( f.bSetTextStyle )
+        wg::TextTool::setStyle(f.pTextStyle, tempstring, s_parseBufLen );
 
 	return p;
 }
@@ -1181,7 +1015,7 @@ WgChar * WgText::_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFor
 
 int WgText::nbChars() const
 {
-	return m_buffer.Length();
+	return m_buffer.length();
 }
 
 //____ refresh() ______________________________________________________________
@@ -1209,12 +1043,12 @@ void WgText::_textModified()
 
 //____ addChar() ______________________________________________________________
 
-int WgText::addChar( const WgChar& character )
+int WgText::addChar( const wg::Char& character )
 {
-	if( m_buffer.Length() == m_maxChars )
+	if( m_buffer.length() == m_maxChars )
 		return 0;
 
-	int nAdded = m_buffer.PushBack( character );
+	int nAdded = m_buffer.pushBack( character );
     _textModified();
 
 	return nAdded;
@@ -1223,51 +1057,51 @@ int WgText::addChar( const WgChar& character )
 
 //____ addText() ______________________________________________________________
 
-int WgText::addText( const WgCharSeq& seq )
+int WgText::addText( const wg::CharSeq& seq )
 {
 	int nAdded;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
-		nAdded = m_buffer.PushBack( WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() )
+        nAdded = m_buffer.pushBack( wg::CharSeq( seq, 0, m_maxChars - m_buffer.length() ) );
 	else
-		nAdded = m_buffer.PushBack( seq );
+		nAdded = m_buffer.pushBack( seq );
 
     _textModified();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nAdded;
  }
 
 //____ insertText() ___________________________________________________________
 
-int WgText::insertText( int ofs, const WgCharSeq& seq )
+int WgText::insertText( int ofs, const wg::CharSeq& seq )
 {
 	int nInserted;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() )
-		nInserted = m_buffer.Insert( ofs, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() )
+        nInserted = m_buffer.insert( ofs, wg::CharSeq( seq, 0, m_maxChars - m_buffer.length() ) );
 	else
-		nInserted = m_buffer.Insert( ofs, seq );
+		nInserted = m_buffer.insert( ofs, seq );
 
     _textModified();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nInserted;
 }
 
 //____ replaceText() __________________________________________________________
 
-int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
+int WgText::replaceText( int ofs, int nDelete, const wg::CharSeq& seq )
 {
 	int nInserted;
-	if( (int) seq.Length() > m_maxChars - (int) m_buffer.Length() - nDelete )
-		nInserted = m_buffer.Replace( ofs, nDelete, WgCharSeq( seq, 0, m_maxChars - m_buffer.Length() - nDelete ) );
+	if( (int) seq.length() > m_maxChars - (int) m_buffer.length() - nDelete )
+        nInserted = m_buffer.replace( ofs, nDelete, wg::CharSeq( seq, 0, m_maxChars - m_buffer.length() - nDelete ) );
 	else
-		nInserted = m_buffer.Replace( ofs, nDelete, seq );
+		nInserted = m_buffer.replace( ofs, nDelete, seq );
 
     _textModified();
 
-	assert( m_buffer.FindFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
+	assert( m_buffer.findFirst( WG_ESCAPE_CODE ) == -1 );		// Forgotten to wrap text in WgCharSeqEscaped?
 
 	return nInserted;
 }
@@ -1276,7 +1110,7 @@ int WgText::replaceText( int ofs, int nDelete, const WgCharSeq& seq )
 
 int WgText::deleteText( int ofs, int nChars )
 {
-	int nDeleted = m_buffer.Delete( ofs, nChars );
+	int nDeleted = m_buffer.remove( ofs, nChars );
     _textModified();
 
 	return nDeleted;
@@ -1285,9 +1119,9 @@ int WgText::deleteText( int ofs, int nChars )
 
 //____ replaceChar() __________________________________________________________
 
-int WgText::replaceChar( int ofs, const WgChar& character )
+int WgText::replaceChar( int ofs, const wg::Char& character )
 {
-	int nReplaced = m_buffer.Replace( ofs, character );
+	int nReplaced = m_buffer.replace( ofs, character );
     _textModified();
 
 	return nReplaced;
@@ -1296,12 +1130,12 @@ int WgText::replaceChar( int ofs, const WgChar& character )
 
 //____ insertChar() ___________________________________________________________
 
-int WgText::insertChar( int ofs, const WgChar& character )
+int WgText::insertChar( int ofs, const wg::Char& character )
 {
-	if( m_buffer.Length() == m_maxChars )
+	if( m_buffer.length() == m_maxChars )
 		return 0;
 
-	int nInserted = m_buffer.Insert( ofs, character );
+	int nInserted = m_buffer.insert( ofs, character );
     _textModified();
 
 	return nInserted;
@@ -1311,7 +1145,7 @@ int WgText::insertChar( int ofs, const WgChar& character )
 
 int WgText::deleteChar( int ofs )
 {
-	int nDeleted = m_buffer.Delete( ofs, 1 );
+	int nDeleted = m_buffer.remove( ofs, 1 );
     _textModified();
 
 	return nDeleted;
@@ -1397,22 +1231,22 @@ WgTextLine * WgText::getSoftLine( int line ) const
 
 //____ getLineText() __________________________________________________________
 
-const WgChar * WgText::getLineText( int line ) const
+const wg::Char * WgText::getLineText( int line ) const
 {
 	if( line < 0 || line >= m_nHardLines )
 		return 0;
 
-	return m_buffer.Chars() + m_pHardLines[line].ofs;
+	return m_buffer.chars() + m_pHardLines[line].ofs;
 }
 
 //____ getSoftLineText() ______________________________________________________
 
-const WgChar * WgText::getSoftLineText( int line ) const
+const wg::Char * WgText::getSoftLineText( int line ) const
 {
 	if( line < 0 || line >= m_nSoftLines )
 		return 0;
 
-	return m_buffer.Chars() + m_pSoftLines[line].ofs;
+	return m_buffer.chars() + m_pSoftLines[line].ofs;
 }
 
 //____ SetScale() ______________________________________________________________
@@ -1461,7 +1295,7 @@ bool WgText::SetMaxChars( int max )
 	if( max != m_maxChars )
 	{
 		m_maxChars = max;
-		if( m_maxChars > (int) m_buffer.Length() )
+		if( m_maxChars > (int) m_buffer.length() )
 			deleteText(m_maxChars, INT_MAX);
 	}
 	return true;
@@ -1518,7 +1352,7 @@ void WgText::posSoft2Hard( int &line, int &col ) const
 
 	WgTextLine * pLine = &m_pSoftLines[line];
 
-	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
+    const wg::Char * pOfs = m_buffer.chars() + pLine->ofs;
 
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
@@ -1528,11 +1362,11 @@ void WgText::posSoft2Hard( int &line, int &col ) const
 	// Convert character pointer to hard line/col
 
 	int ln = 0;
-	while( pOfs > m_buffer.Chars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
+	while( pOfs > m_buffer.chars() + m_pHardLines[ln].ofs + m_pHardLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.Chars() + m_pHardLines[ln].ofs);
+	col = pOfs - (m_buffer.chars() + m_pHardLines[ln].ofs);
 	return;
 }
 
@@ -1547,7 +1381,7 @@ void WgText::posHard2Soft( int &line, int &col ) const
 
 	WgTextLine * pLine = &m_pHardLines[line];
 
-	const WgChar * pOfs = m_buffer.Chars() + pLine->ofs;
+    const wg::Char * pOfs = m_buffer.chars() + pLine->ofs;
 	if( col > pLine->nChars )
 		pOfs += pLine->nChars;
 	else
@@ -1556,36 +1390,35 @@ void WgText::posHard2Soft( int &line, int &col ) const
 	// Convert character pointer to soft line/col
 
 	int ln = line;							// Corresponding soft line needs to be same or higher...
-	while( pOfs > m_buffer.Chars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
+	while( pOfs > m_buffer.chars() + m_pSoftLines[ln].ofs + m_pSoftLines[ln].nChars )
 		ln++;
 
 	line = ln;
-	col = pOfs - (m_buffer.Chars() + m_pSoftLines[ln].ofs);
+	col = pOfs - (m_buffer.chars() + m_pSoftLines[ln].ofs);
 	return;
 }
 
 //____ _countWriteSoftLines() __________________________________________________
 
-int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLine * pWriteLines, int maxWrite ) const
+int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextLine * pWriteLines, int maxWrite ) const
 {
-	const WgChar *	p = pStart;
+    const wg::Char *	p = pStart;
 	int			nSoftLines = 0;
-	Uint16		hProp = 0xFFFF;					// Force immediate update of textprop.
+	Uint16		hStyle = 0xFFFF;					// Force immediate update of textprop.
 	bool		bEndOfText = false;
 
 	WgPen		pen;
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 
 	maxWidth -= _cursorMaxWidth();
 
-	pen.SetTextNode( m_pManagerNode );
 	pen.SetScale( m_scale );
 
 	while( !bEndOfText )
 	{
 
-		const WgChar * 	pLineStart = p;
-		const WgChar *	pbp = 0;				// BreakPoint-pointer.
+        const wg::Char * 	pLineStart = p;
+        const wg::Char *	pbp = 0;				// BreakPoint-pointer.
 		bool			bBreakSkips = false;	// Set if the character on the breakpoint should be skipped.
 		bool			bBreakAfterPrev = false;// Set if we can break here due to a WgBreakRules::BreakBefore on previous character.
 
@@ -1594,21 +1427,21 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 
 			// Update if textproperties have changed.
 
-			if( p->PropHandle() != hProp )
+			if( p->styleHandle() != hStyle )
 			{
-				GetCharAttr(attr, p - m_buffer.Chars());
+				GetCharAttr(attr, p - m_buffer.chars());
 				pen.SetAttributes(attr);
-				hProp = p->PropHandle();
+				hStyle = p->styleHandle();
 			}
 
 			// Break if this is end of line or end of text
 
-			if( p->Glyph() == '\n' )
+			if( p->code() == '\n' )
 			{
 				bBreakSkips = true;
 				break;
 			}
-			else if( p->Glyph() == 0 )
+			else if( p->code() == 0 )
 			{
 				bEndOfText = true;
 				bBreakSkips = false;
@@ -1627,7 +1460,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 
 			// Check if we can move the breakpoint up to this character.
 
-			WgBreakRules breakStatus = WgTextTool::isBreakAllowed( p->glyph, attr.breakLevel );
+            WgBreakRules breakStatus = wg::TextTool::isBreakAllowed( p->code() );
 			switch( breakStatus )
 			{
 			case WgBreakRules::BreakBefore:
@@ -1637,13 +1470,13 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 
 			case WgBreakRules::BreakOn:
 
-				if( p->Glyph() == int(WgExtChar::HyphenBreakPermitted) )
+				if( p->code() == int(WgExtChar::HyphenBreakPermitted) )
 				{
 					// Check so a hyphen will fit on the line as well, otherwise we can't break here.
 					// We don't take kerning into account here, not so important.
 
-					WgGlyphPtr pHyphen = pen.GetGlyphset()->GetGlyph( '-', pen.GetSize() );
-					if( !pHyphen || (pen.GetPosX() + pHyphen->Advance()) > maxWidth )
+                    wg::Glyph_p pHyphen = pen.GetFont()->getGlyph( '-' );
+					if( !pHyphen || (pen.GetPosX() + pHyphen->advance()) > maxWidth )
 						break;			// Can't break here, hyphen wouldn't fit on line.
 				}
 
@@ -1667,14 +1500,14 @@ int WgText::_countWriteSoftLines( int maxWidth, const WgChar * pStart, WgTextLin
 
 			// Increase line length
 
-			pen.SetChar( p->Glyph() );
+			pen.SetChar( p->code() );
 			pen.ApplyKerning();
 
 
 			// Check if we need to put a softbreak.
 
 //			Uint32 len = pen.GetBlitPosX() + pen.GetGlyph()->rect.w; // No advance on last character of line, just bearingX + width
-			int len = pen.GetPosX() + pen.GetGlyph()->Advance();
+			int len = pen.GetPosX() + pen.GetGlyph()->advance();
 			if( len > maxWidth )
 			{
 				if( pbp != 0 && pbp != pLineStart )
@@ -1722,7 +1555,7 @@ void WgText::_regenSoftLines()
 
 	// If we don't wrap, we have no softlines...
 
-	if( !m_bWrap || m_buffer.Length() == 0 )
+	if( !m_bWrap || m_buffer.length() == 0 )
 	{
 		if( bHasSoftLineArray )
 			delete [] m_pSoftLines;
@@ -1735,9 +1568,9 @@ void WgText::_regenSoftLines()
 	int nSoftLines;
 
 	if( bHasSoftLineArray )
-		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.chars(), m_pSoftLines, m_nSoftLines );
 	else
-		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.Chars(), 0, 0 );
+		nSoftLines = _countWriteSoftLines( m_lineWidth, m_buffer.chars(), 0, 0 );
 
 	// If we don't have any softbreaks we can just point at
 	// the hardlines since they are the same.
@@ -1773,7 +1606,7 @@ void WgText::_regenSoftLines()
 
 	// Fill in the softlines-array.
 
-	_countWriteSoftLines( m_lineWidth, m_buffer.Chars(), m_pSoftLines, m_nSoftLines );
+	_countWriteSoftLines( m_lineWidth, m_buffer.chars(), m_pSoftLines, m_nSoftLines );
 }
 
 //____ _refreshAllLines() _________________________________________________________
@@ -1803,23 +1636,22 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 	int maxDescend = 0;
 	int maxLineDescend = 0;
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
+    const wg::Char * pChars = m_buffer.chars() + pLine->ofs;
 	int		nChars = pLine->nChars;
-	Uint16	hProp = 0xFFFF;
+	Uint16	hStyle = 0xFFFF;
 
 	WgPen pen;
-	pen.SetTextNode( m_pManagerNode );
 	pen.SetScale( m_scale );
 
 	// We must have at least one character, even if it is just CR/LF or EndOfString.
 
 	if( nChars == 0 )
 	{
-		WgTextAttr	attr;
+        wg::TextAttr	attr;
 		GetBaseAttr( attr );
 		pen.SetAttributes( attr );
 
-		if( pen.GetGlyphset() != 0 )
+		if( pen.GetFont() != 0 )
 		{
 			int height		= pen.GetLineHeight();
 			int baseline	= pen.GetBaseline();
@@ -1836,15 +1668,15 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 
 		for( int i = 0 ; i < nChars ; i++ )
 		{
-			if( pChars[i].PropHandle() != hProp )
+			if( pChars[i].styleHandle() != hStyle )
 			{
-				WgTextAttr	attr;
+                wg::TextAttr	attr;
 				GetCharAttr( attr, pLine->ofs + i );
 				pen.SetAttributes( attr );
 
-				hProp = pChars[i].PropHandle();
+				hStyle = pChars[i].styleHandle();
 
-				if( pen.GetGlyphset() == 0 )
+				if( pen.GetFont() == 0 )
 					break;									// Bail out instead of crashing.
 
 				int height		= pen.GetLineHeight();
@@ -1861,7 +1693,7 @@ void WgText::_refreshLineInfo( WgTextLine * pLine ) const
 					maxLineDescend = spacing - baseline;
 			}
 
-			pen.SetChar( pChars[i].Glyph() );
+			pen.SetChar( pChars[i].code() );
 			pen.ApplyKerning();
 			pen.AdvancePos();
 		}
@@ -2038,23 +1870,22 @@ int WgText::CoordToColumn( int line, const WgCoord& coord, const WgRect& contain
 	if( coord.x >= xStart + pLine->width )
 		return bCursorMode?pLine->nChars:-1;
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
-	Uint16	hProp = 0xFFFF;
+    const wg::Char * pChars = m_buffer.chars() + pLine->ofs;
+	Uint16	hStyle = 0xFFFF;
 	WgPen pen;
-	pen.SetTextNode( m_pManagerNode );
 	pen.SetScale( m_scale );
 	pen.SetOrigo( WgCoord(xStart,0) );
 	pen.SetPosX(xStart);
 
 	for( int i = 0 ; i < pLine->nChars ; i++ )
 	{
-		if( pChars[i].PropHandle()!= hProp )
+		if( pChars[i].styleHandle()!= hStyle )
 		{
-			WgTextAttr	attr;
+            wg::TextAttr	attr;
 			GetCharAttr( attr, pLine->ofs + i );
 			pen.SetAttributes( attr );
 
-			hProp = pChars[i].PropHandle();
+			hStyle = pChars[i].styleHandle();
 		}
 /*
 		if( cursColumn == 0 )
@@ -2062,7 +1893,7 @@ int WgText::CoordToColumn( int line, const WgCoord& coord, const WgRect& contain
 		cursColumn--;
 */
 		int charStartX = pen.GetPosX();
-		pen.SetChar( pChars[i].Glyph() );
+		pen.SetChar( pChars[i].code() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 		int charEndX = pen.GetPosX();
@@ -2109,7 +1940,7 @@ int WgText::CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCur
 
 //____ CoordToLink() __________________________________________________________
 
-WgTextLinkPtr WgText::CoordToLink( const WgCoord& coord, const WgRect& container ) const
+wg::TextLink_p WgText::CoordToLink( const WgCoord& coord, const WgRect& container ) const
 {
 	int ofs = CoordToOfs( coord, container );
 	if( ofs >= 0 )
@@ -2155,7 +1986,7 @@ WgTextPos WgText::OfsToPos( int ofs ) const
 	if( ofs < 0 )
 		return WgTextPos(0,0);
 
-	if( ofs >= (int) m_buffer.Length() )
+	if( ofs >= (int) m_buffer.length() )
 		return WgTextPos(m_nSoftLines-1, m_pSoftLines[m_nSoftLines-1].nChars);
 
 	int ln = 0;
@@ -2175,10 +2006,9 @@ int WgText::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 
 	WgTextLine * pLine = &m_pSoftLines[pos.line];
 
-	const WgChar * pChars = m_buffer.Chars() + pLine->ofs;
-	Uint16	hProp = 0xFFFF;
+    const wg::Char * pChars = m_buffer.chars() + pLine->ofs;
+	Uint16	hStyle = 0xFFFF;
 	WgPen pen;
-	pen.SetTextNode( m_pManagerNode );
 	pen.SetScale( m_scale );
 	int startX = LineStartX( pos.line, container );
 	pen.SetOrigo( WgCoord(startX,0) );
@@ -2186,13 +2016,13 @@ int WgText::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 
 	for( int i = 0 ; i < pos.col ; i++ )
 	{
-		if( pChars[i].PropHandle()!= hProp )
+		if( pChars[i].styleHandle()!= hStyle )
 		{
-			WgTextAttr	attr;
+            wg::TextAttr	attr;
 			GetCharAttr( attr, pLine->ofs + i );
 			pen.SetAttributes( attr );
 
-			hProp = pChars[i].PropHandle();
+            hStyle = pChars[i].styleHandle();
 		}
 /*
 		if( cursColumn == 0 )
@@ -2200,7 +2030,7 @@ int WgText::PosToCoordX( const WgTextPos& _pos, const WgRect& container ) const
 		cursColumn--;
 */
 
-		pen.SetChar( pChars[i].Glyph() );
+		pen.SetChar( pChars[i].code() );
 		pen.ApplyKerning();
 		pen.AdvancePos();
 	}
@@ -2444,10 +2274,10 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			WgCoord pointerOfs = pEvent->PointerPixelPos();
 			
-			WgTextLinkPtr pLink = CoordToLink( pointerOfs, container );
+            wg::TextLink_p pLink = CoordToLink( pointerOfs, container );
 			if( m_pMarkedLink && pLink != m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()) );
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->link()) );
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2456,10 +2286,10 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 			{
 				if( pLink != m_pMarkedLink )
 				{
-					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Widget(), pLink->Link() ));
+					pEventHandler->QueueEvent( new WgEvent::LinkMark(pEvent->Widget(), pLink->link() ));
 
 					m_pMarkedLink = pLink;
-					m_markedLinkMode = WG_MODE_MARKED;
+                    m_markedLinkState.setHovered(true);
 					bRefresh = true;
 				}
 			}
@@ -2471,7 +2301,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->Link()));
+				pEventHandler->QueueEvent( new WgEvent::LinkUnmark(pEvent->Widget(), m_pMarkedLink->link()));
 				m_pMarkedLink = 0;
 				bRefresh = true;
 			}
@@ -2482,8 +2312,8 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
-				m_markedLinkMode = WG_MODE_SELECTED;
+				pEventHandler->QueueEvent( new WgEvent::LinkPress(pEvent->Widget(), m_pMarkedLink->link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				m_markedLinkState.setSelected(true);
 				bRefresh = true;
 			}
 			break;
@@ -2493,7 +2323,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkRepeat(pEvent->Widget(), m_pMarkedLink->link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 			}
 			break;
 		}
@@ -2502,12 +2332,12 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		{
 			if( m_pMarkedLink )
 			{
-				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkRelease(pEvent->Widget(), m_pMarkedLink->link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
-				if( m_markedLinkMode == WG_MODE_SELECTED )
-					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				if( m_markedLinkState.isSelected() )
+					pEventHandler->QueueEvent( new WgEvent::LinkClick(pEvent->Widget(), m_pMarkedLink->link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 
-				m_markedLinkMode = WG_MODE_MARKED;
+				m_markedLinkState.setHovered(true);
 				bRefresh = true;
 			}
 			break;
@@ -2515,7 +2345,7 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 
 		case WG_EVENT_MOUSEBUTTON_DOUBLE_CLICK:
 			if( m_pMarkedLink )
-				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Widget(), m_pMarkedLink->Link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
+				pEventHandler->QueueEvent( new WgEvent::LinkDoubleClick(pEvent->Widget(), m_pMarkedLink->link(), static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() ));
 			break;
 
 		default:
@@ -2653,79 +2483,58 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 
 //____ GetBaseAttr() __________________________________________________________
 
-void WgText::GetBaseAttr( WgTextAttr& attr ) const
+void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 {
-	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
+    WgBase::GetDefaultStyle()->exportAttr(m_state, &attr);
+
+    WgMode mode = WgUtil::StateToMode(m_state);
+    if( m_pBgBlockColors )
+        attr.color = m_pBgBlockColors->Color(mode);
+    
+    if( m_pBaseColors )
+        attr.color = m_pBaseColors->Color(mode);
+
+    if( m_pBaseStyle )
+        m_pBaseStyle->addToAttr(m_state, &attr);
 }
 
 //____ GetCharAttr() __________________________________________________________
 
-bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
+bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
 {
-	if( charOfs >= (int) m_buffer.Length() )
+	if( charOfs >= (int) m_buffer.length() )
 		return false;
 
-	attr.Clear();
-	WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultTextprop(), m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBgBlockColors, m_mode );
-	WgTextTool::SetAttrColor( attr, m_pBaseColors, m_mode );
-	WgTextTool::AddPropAttributes( attr, m_pBaseProp, m_mode );
+    wg::State state = m_state;
 
-	// Add selection properties if character is selected
-
-	if( m_selStartLine != m_selEndLine || m_selStartCol != m_selEndCol )
-	{
-		int selStart = LineColToOffset( m_selStartLine, m_selStartCol );
-		int selEnd = LineColToOffset( m_selEndLine, m_selEndCol );
-
-		if( charOfs >= selStart && charOfs < selEnd )
-		{
-			if( m_pSelectionProp )
-				WgTextTool::AddPropAttributes( attr, m_pSelectionProp, m_mode );
-			else
-				WgTextTool::AddPropAttributes( attr, WgBase::GetDefaultSelectionProp(), m_mode );
-		}
-	}
-
-	// Add link properties if character is part of a link
-
-	WgTextpropPtr pCharProp = m_buffer.Chars()[charOfs].Properties();
-
-	WgTextLinkPtr pLink = pCharProp->Link();
-	if( !pLink )
-		pLink = m_pBaseProp->Link();
-
-	if( pLink )
-	{
-		WgTextpropPtr pProp = m_pLinkProp?m_pLinkProp:WgBase::GetDefaultLinkProp();
-
-		WgMode	mode;
-
-		if( pLink == m_pMarkedLink )
-		{
-			mode = m_markedLinkMode;
-		}
-		else
-		{
-			if( m_mode == WG_MODE_DISABLED )
-				mode = WG_MODE_DISABLED;
-			else if( pLink->HasBeenAccessed() )
-				mode = WG_MODE_SPECIAL;
-			else
-				mode = WG_MODE_NORMAL;
-		}
-
-
-		WgTextTool::AddPropAttributes( attr, pProp, mode );
-	}
+    if( m_selStartLine != m_selEndLine || m_selStartCol != m_selEndCol )
+    {
+        int selStart = LineColToOffset( m_selStartLine, m_selStartCol );
+        int selEnd = LineColToOffset( m_selEndLine, m_selEndCol );
+        
+        if( charOfs >= selStart && charOfs < selEnd )
+            state.setSelected(true);
+    }
+    
+    WgBase::GetDefaultStyle()->exportAttr(state, &attr);
+    
+    WgMode mode = WgUtil::StateToMode(state);
+    
+    if( m_pBgBlockColors )
+        attr.color = m_pBgBlockColors->Color(mode);
+    
+    if( m_pBaseColors )
+        attr.color = m_pBaseColors->Color(mode);
+    
+    if( m_pBaseStyle )
+        m_pBaseStyle->addToAttr(state, &attr);
 
 	// Add characters own properties
 
-	WgTextTool::AddPropAttributes( attr, pCharProp, m_mode );
+    wg::TextStyle * pCharStyle = m_buffer.chars()[charOfs].stylePtr();
+
+    if( pCharStyle )
+        pCharStyle->addToAttr(state, &attr);
 
 	return true;
 }
@@ -2733,15 +2542,15 @@ bool WgText::GetCharAttr( WgTextAttr& attr, int charOfs ) const
 bool WgText::IsCharUnderlined( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
-	return attr.bUnderlined;
+    return (attr.decoration == wg::TextDecoration::Underline);
 }
 
 WgColor WgText::GetCharColor( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.color;
 }
@@ -2749,47 +2558,31 @@ WgColor WgText::GetCharColor( int charOfs ) const
 WgColor WgText::GetCharBgColor( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.bgColor;
-}
-
-WgFontStyle WgText::GetCharStyle( int charOfs ) const
-{
-	//TODO: Optimize
-	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
-	return attr.style;
 }
 
 int WgText::GetCharSize( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.size;
 }
 
-WgFont * WgText::GetCharFont( int charOfs ) const
+wg::Font_p WgText::GetCharFont( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.pFont;
 }
 
-int WgText::GetCharBreakLevel( int charOfs ) const
+wg::TextLink_p WgText::GetCharLink( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
-	GetCharAttr(attr,charOfs);
-	return attr.breakLevel;
-}
-
-WgTextLinkPtr WgText::GetCharLink( int charOfs ) const
-{
-	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.pLink;
 }
@@ -2797,7 +2590,7 @@ WgTextLinkPtr WgText::GetCharLink( int charOfs ) const
 bool WgText::IsCharLink( int charOfs ) const
 {
 	//TODO: Optimize
-	WgTextAttr	attr;
+    wg::TextAttr	attr;
 	GetCharAttr(attr,charOfs);
 	return attr.pLink?true:false;
 }

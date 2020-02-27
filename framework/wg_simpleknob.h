@@ -27,6 +27,8 @@
 #	include <wg_widget.h>
 #endif
 
+#include <wg_color.h>
+
 #include <math.h>
 
 //____ WgSimpleKnob ____________________________________________________________

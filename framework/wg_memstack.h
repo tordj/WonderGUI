@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #ifndef WG_CHAIN_DOT_H
-#	include <wg_chain.h>
+#	include <wg3_chain.h>
 #endif
 
 class WgMemStack
@@ -36,7 +36,7 @@ public:
 
 private:
 
-	class BlockHeader : public WgLink
+    class BlockHeader : public wg::Link
 	{
 	public:
 		BlockHeader(int bytes);
@@ -48,5 +48,5 @@ private:
 	};
 
 	int						m_blockSize;
-	WgChain<BlockHeader>	m_blocks;
+    wg::Chain<BlockHeader>	m_blocks;
 };

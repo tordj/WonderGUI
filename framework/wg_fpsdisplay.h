@@ -27,9 +27,7 @@
 #	include <wg_widget.h>
 #endif
 
-#ifndef WG_TEXTPROP_DOT_H
-#	include	<wg_textprop.h>
-#endif
+#include	<wg3_textstyle.h>
 
 class WgFont;
 
@@ -46,7 +44,7 @@ class WgFpsDisplay:public WgWidget
 
 		//____ Methods __________________________________________
 
-		void	SetTextProperties( const WgTextpropPtr& pProp );
+        void	SetTextStyle( wg::TextStyle * pStyle );
 		WgSize	PreferredPixelSize() const;
 
 	protected:
@@ -56,7 +54,7 @@ class WgFpsDisplay:public WgWidget
 
 	private:
 
-		WgTextpropPtr	m_pProp;
+        wg::TextStyle *	m_pStyle;
 
 
 		Uint32 *		m_pTickBuffer;
