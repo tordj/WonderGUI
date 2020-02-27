@@ -33,10 +33,7 @@
 #	include <wg_geo.h>
 #endif
 
-#ifndef WG_PATCHES_DOT_H
-#	include <wg_patches.h>
-#endif
-
+#include <wg3_patches.h>
 #include <wg3_skin.h>
 #include <wg3_gfxdevice.h>
 
@@ -84,11 +81,11 @@ public:
 	const WgRootPanel *		CastToRoot() const { return this; }
 
 
-	inline int				NbDirtyRects() const { return m_dirtyPatches.Size(); }
-	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.IsEmpty() ? 0 : m_dirtyPatches.Begin(); }
+	inline int				NbDirtyRects() const { return m_dirtyPatches.size(); }
+	inline const WgRect*	FirstDirtyRect() const { return m_dirtyPatches.isEmpty() ? 0 : m_dirtyPatches.begin(); }
 
-	inline int				NbUpdatedRects() const { return m_updatedPatches.Size(); }
-	inline const WgRect*	FirstUpdatedRect() const { return m_updatedPatches.IsEmpty() ? 0 : m_updatedPatches.Begin(); }
+	inline int				NbUpdatedRects() const { return m_updatedPatches.size(); }
+	inline const WgRect*	FirstUpdatedRect() const { return m_updatedPatches.isEmpty() ? 0 : m_updatedPatches.begin(); }
 
 
 	bool	Render();
@@ -100,7 +97,7 @@ public:
 
 	void	SetUpdatedRectOverlay( wg::Skin * pUpdatedRectOverlay, int afterglowFrames = 3 );
 
-	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.Add( rect ); }
+	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
 
 	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
@@ -148,15 +145,15 @@ protected:
     void                _inViewRequested( WgHook * pChild );
     void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
     
-	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
-	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
+	wg::Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
+	wg::Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
     std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
     
 	wg::Skin_p			m_pUpdatedRectOverlay;
 	int					m_afterglowFrames;
 
-	std::deque<WgPatches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
+	std::deque<wg::Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 	
 
     wg::GfxDevice_p		m_pGfxDevice;

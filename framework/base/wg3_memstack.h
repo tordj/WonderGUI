@@ -1,52 +1,65 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
+#ifndef WG3_MEMSTACK_DOT_H
+#define WG3_MEMSTACK_DOT_H
+#pragma once
 
-#ifndef WG_CHAIN_DOT_H
-#	include <wg3_chain.h>
-#endif
+#include <wg3_chain.h>
 
-class WgMemStack
+namespace wg
 {
-public:
-	WgMemStack( int blockSize );
-	~WgMemStack() {}
 
-	char *  Alloc( int bytes );
-	void	Release( int bytes );
-	void	Clear();
-
-private:
-
-    class BlockHeader : public wg::Link
+	class MemStack
 	{
 	public:
-		BlockHeader(int bytes);
-		~BlockHeader();
+		//.____ Creation __________________________________________
 
-		char *	pBlock;
-		int		size;
-		int		allocated;
+		MemStack( int blockSize );
+		~MemStack() {}
+
+		//.____ Misc _______________________________________________________
+
+		char *  alloc( int bytes );
+		void	release( int bytes );
+		void	clear();
+		bool	isEmpty() const;
+
+	private:
+
+		class BlockHeader : public Link
+		{
+		public:
+			BlockHeader(int bytes);
+			~BlockHeader();
+
+			char *	pBlock;
+			int		size;
+			int		allocated;
+		};
+
+		int					m_blockSize;
+		Chain<BlockHeader>	m_blocks;
 	};
 
-	int						m_blockSize;
-    wg::Chain<BlockHeader>	m_blocks;
-};
+
+} // namespace wg
+#endif //WG3_MEMSTACK_DOT_H

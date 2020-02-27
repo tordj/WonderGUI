@@ -28,7 +28,7 @@
 	#include <wg_layer.h>
 #endif
 
-
+#include <wg3_chain.h>
 
 class WgPopupLayer;
 
@@ -169,7 +169,7 @@ protected:
 
 	// Overloaded from container
 
-    void			_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
+    void			_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches) override;
 //		void			_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
 //		void			_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 

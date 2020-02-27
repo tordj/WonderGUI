@@ -39,6 +39,8 @@
 #	include <wg_key.h>
 #endif
 
+#include <wg3_chain.h>
+
 class WgRootPanel;
 class WgPanel;
 

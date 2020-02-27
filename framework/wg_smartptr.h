@@ -1,10 +1,6 @@
 #ifndef	WG_SMARTPTR_DOT_H
 #define	WG_SMARTPTR_DOT_H
 
-#ifndef WG_MEMPOOL_DOT_H
-#	include <wg_mempool.h>
-#endif
-
 #ifndef	WG_REFCOUNTED_DOT_H
 #	include <wg_refcounted.h>
 #endif

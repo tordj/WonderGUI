@@ -28,7 +28,7 @@
 //#include "Debug.h"
 #include <wg_event.h>
 #include <wg_eventhandler.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_util.h>
 
 static const char	c_widgetType[] = {"Knob"};
@@ -380,7 +380,7 @@ void WgKnob::_onNewSize(const WgSize& size)
 
 //____ _renderPatches() _______________________________________________________
 
-void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
+void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
 {
 	if (!m_pSurf)
     {
@@ -399,7 +399,7 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 	pDevice->setTintColor(m_kColor * orgTintColor);
 
-    pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+    pDevice->setClipList(_pPatches->size(), _pPatches->begin());
     _onRender(pDevice, _canvas, _window);
 
 	pDevice->setTintColor(orgTintColor);

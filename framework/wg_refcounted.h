@@ -1,6 +1,7 @@
 #ifndef	WG_REFCOUNTED_DOT_H
 #define WG_REFCOUNTED_DOT_H
 
+#include <cstdint>
 
 //____ WgRefCounted ___________________________________________________________
 
@@ -15,7 +16,7 @@ protected:
 	virtual ~WgRefCounted() {};
 
 private:
-	Uint32	m_ref;
+	uint32_t	m_ref;
 };
 
 

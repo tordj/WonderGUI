@@ -115,7 +115,7 @@ public:
 
 protected:
     void    _onCloneContent( const WgWidget * _pOrg );
-    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
+    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches);
     void    _onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
     bool    _onAlphaTest( const WgCoord& ofs );
     void    _onEnable();

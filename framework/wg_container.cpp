@@ -24,7 +24,7 @@
 #include <wg_container.h>
 #include <wg_panel.h>
 
-#include <wg_patches.h>
+#include <wg3_patches.h>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -340,32 +340,32 @@ public:
 
 	WgWidget *	pWidget;
 	WgRect		geo;
-	WgPatches	patches;
+	wg::Patches	patches;
 };
 
-void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
+	wg::Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		if( _canvas.intersectsWith( *pRect ) )
-			patches.Push( WgRect(*pRect,_canvas) );
+			patches.push( WgRect(*pRect,_canvas) );
 	}
 
 
 	// Render container itself
 
-    pDevice->setClipList(patches.Size(), patches.Begin());
+    pDevice->setClipList(patches.size(), patches.begin());
     _onRender(pDevice, _canvas, _window );
 
 
 	// Render children
 
-	WgRect	dirtBounds = patches.Union();
+	WgRect	dirtBounds = patches.getUnion();
 
 	if( m_bSiblingsOverlap )
 	{
@@ -394,11 +394,11 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			p->patches.Push( &patches );
+			p->patches.push( &patches );
 
 			p->pWidget->_onMaskPatches( patches, p->geo, p->geo, pDevice->blendMode() );		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
-			if( patches.IsEmpty() )
+			if( patches.isEmpty() )
 				break;
 		}
 
@@ -437,7 +437,7 @@ void WgContainer::_onCloneContent( const WgContainer * _pOrg )
 
 //____ _onCollectPatches() _______________________________________________________
 
-void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgContainer::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
 {
 	WgRect childGeo;
 	WgHook * p = _firstHookWithGeo( childGeo );
@@ -453,7 +453,7 @@ void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, co
 
 //____ _onMaskPatches() __________________________________________________________
 
-void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgContainer::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	// Default implementation, should probably be made redundant over time...
 

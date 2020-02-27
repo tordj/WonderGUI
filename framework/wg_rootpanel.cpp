@@ -203,8 +203,8 @@ bool WgRootPanel::Render( const WgRect& clip )
     // It should prevent us from doing anything with the GPU
     if (!m_bVisible)
     {
-        m_updatedPatches.Clear(); // Probably not necessary, but wanna make sure they don't fill up...
-        m_dirtyPatches.Clear();   // Probably not necessary, but wanna make sure they don't fill up...
+        m_updatedPatches.clear(); // Probably not necessary, but wanna make sure they don't fill up...
+        m_dirtyPatches.clear();   // Probably not necessary, but wanna make sure they don't fill up...
         return true;              // Not an error, just hidden.
     }
 
@@ -243,20 +243,20 @@ bool WgRootPanel::BeginRender()
 	{
 		// Remove from afterglow queue patches that are overlapped by our new dirty patches.
 
-		for( std::deque<WgPatches>::iterator it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; ++it )
-			it->Sub(&m_dirtyPatches);
+		for( std::deque<wg::Patches>::iterator it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; ++it )
+			it->sub(&m_dirtyPatches);
 
 		// Add our new dirty patches to the top of the afterglow queue.
 
 
-		m_afterglowRects.push_front(WgPatches());
-		m_afterglowRects.front().Add(&m_dirtyPatches);
+		m_afterglowRects.push_front(wg::Patches());
+		m_afterglowRects.front().add(&m_dirtyPatches);
 
 		// Possibly remove overlays from the back, put them into dirty rects for re-render
 
 		while( (int) m_afterglowRects.size() > m_afterglowFrames+1 )
 		{
-			m_dirtyPatches.Add( &m_afterglowRects.back() );
+			m_dirtyPatches.add( &m_afterglowRects.back() );
 			m_afterglowRects.pop_back();
 		}
 
@@ -264,7 +264,7 @@ bool WgRootPanel::BeginRender()
 
 		if( m_afterglowRects.size() > 1 )
 		{
-			m_dirtyPatches.Add( &m_afterglowRects[1] );
+			m_dirtyPatches.add( &m_afterglowRects[1] );
 		}
 	}
 
@@ -296,18 +296,18 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 	// Copy and clip our dirty patches
 	// TODO: Optimize when clip rectangle equals canvas
 
-	WgPatches dirtyPatches( m_dirtyPatches.Size() );
+	wg::Patches dirtyPatches( m_dirtyPatches.size() );
 
 	WgRect clipped;
-	for( const WgRect * pRect = m_dirtyPatches.Begin() ; pRect != m_dirtyPatches.End() ; pRect++ )
+	for( const WgRect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
 	{
 		if( clipped.intersection( *pRect, clip ) )
-			dirtyPatches.Push( clipped );
+			dirtyPatches.push( clipped );
 	}
 
 	// Render the dirty patches recursively
 
-    if( m_dirtyPatches.Size() > 0 )
+    if( m_dirtyPatches.size() > 0 )
         m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
 
 	// Handle updated rect overlays
@@ -320,7 +320,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		// Render our new overlays
 
-		for( const WgRect * pRect = m_afterglowRects[0].Begin() ; pRect != m_afterglowRects[0].End() ; pRect++ )
+		for( const WgRect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 		{
 			m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Focused );
 		}
@@ -329,7 +329,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		if( m_afterglowRects.size() > 1 )
 		{
-			for( const WgRect * pRect = m_afterglowRects[1].Begin() ; pRect != m_afterglowRects[1].End() ; pRect++ )
+			for( const WgRect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 			{
 				m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Normal );
 			}
@@ -350,9 +350,9 @@ bool WgRootPanel::EndRender( void )
 	// Turn dirty patches into updated patches
 	//TODO: Optimize by just making a swap.
 
-	m_updatedPatches.Clear();
-	m_updatedPatches.Add(&m_dirtyPatches);
-	m_dirtyPatches.Clear();
+	m_updatedPatches.clear();
+	m_updatedPatches.add(&m_dirtyPatches);
+	m_dirtyPatches.clear();
 
 	return m_pGfxDevice->endRender();
 }

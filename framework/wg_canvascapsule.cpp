@@ -202,7 +202,7 @@ WgBlendMode WgCanvasCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
     // Make sure we have children
 
@@ -221,15 +221,15 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
             return;                            // Can't create a canvas of the required size!
 
         m_pCanvas = m_pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);
-        m_dirtyPatches.Clear();
-        m_dirtyPatches.Add(_canvas.size());
+        m_dirtyPatches.clear();
+        m_dirtyPatches.add(_canvas.size());
     }
 
     // Go through dirty patches from screen canvas and update our back canvas where they overlap with our own
 
-    WgPatches renderStack;
+    wg::Patches renderStack;
 
-    for (const WgRect * pScreenRect = _pPatches->Begin(); pScreenRect != _pPatches->End(); pScreenRect++)
+    for (const WgRect * pScreenRect = _pPatches->begin(); pScreenRect != _pPatches->end(); pScreenRect++)
     {
         WgRect r( _canvas, *pScreenRect );
 
@@ -239,17 +239,17 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
             r.x -= _canvas.x;
             r.y -= _canvas.y;
 
-            for (const WgRect * pLocalDirt = m_dirtyPatches.Begin(); pLocalDirt != m_dirtyPatches.End(); pLocalDirt++)
+            for (const WgRect * pLocalDirt = m_dirtyPatches.begin(); pLocalDirt != m_dirtyPatches.end(); pLocalDirt++)
             {
                 if (pLocalDirt->intersectsWith(r))
                 {
-                    renderStack.Push(WgRect(*pLocalDirt,r));
+                    renderStack.push(WgRect(*pLocalDirt,r));
                     bIntersected = true;
                 }
             }
             
             if (bIntersected)
-                m_dirtyPatches.Sub(r);
+                m_dirtyPatches.sub(r);
         }
     }
 
@@ -262,7 +262,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
     oldTC = pDevice->tintColor();
 
 
-    if (!renderStack.IsEmpty())
+    if (!renderStack.isEmpty())
     {
         auto pOldCanvas = pDevice->canvas();
         pDevice->setCanvas(m_pCanvas);
@@ -270,7 +270,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
         pDevice->setBlendMode(WgBlendMode::Replace);
         pDevice->setTintColor(WgColor::White);
 
-        pDevice->setClipList(renderStack.Size(), renderStack.Begin());
+        pDevice->setClipList(renderStack.size(), renderStack.begin());
         pDevice->fill(WgColor::Transparent);
 
         pDevice->setBlendMode(WgBlendMode::Blend);
@@ -342,33 +342,33 @@ void WgCanvasCapsule::_onNewSize(const WgSize& size)
 
 void WgCanvasCapsule::_onRenderRequested()
 {
-    m_dirtyPatches.Clear();
-    m_dirtyPatches.Add(PixelSize());
+    m_dirtyPatches.clear();
+    m_dirtyPatches.add(PixelSize());
     _requestRender();
 }
 
 void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 {
-    m_dirtyPatches.Add(rect);
+    m_dirtyPatches.add(rect);
     _requestRender(rect);
 }
 
 //____ _onCollectPatches() ____________________________________________________
 
-void WgCanvasCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgCanvasCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
 {
 	if (m_tintColor.a > 0 || m_blendMode == WgBlendMode::Replace)
-		container.Add( WgRect( geo, clip ) );
+		container.add( WgRect( geo, clip ) );
 }
 
 //____ _onMaskPatches() _______________________________________________________
 
-void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgCanvasCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	//TODO: Support recursive masking.
 
 	if( m_pCanvas && ((m_tintColor.a == 255 && m_pCanvas->pixelDescription()->A_bits == 0) || m_blendMode == WgBlendMode::Replace) )
-		patches.Sub(WgRect(geo, clip));
+		patches.sub(WgRect(geo, clip));
 
     return;
 }

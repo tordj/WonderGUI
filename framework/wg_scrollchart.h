@@ -195,7 +195,7 @@ protected:
         wg::TextStyle_p		pTextStyle;
 	};
 
-    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);
+    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches);
 
 	void	_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 	void	_onCloneContent( const WgWidget * _pOrg );

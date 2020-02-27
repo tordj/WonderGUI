@@ -85,9 +85,9 @@ protected:
     WgSize  _childSize();
     WgRect  _childGeo();
     
-    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-    void    _onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-    void    _onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+    void    _onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
+    void    _onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
 	void	_onCloneContent( const WgWidget * _pOrg );
     void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );

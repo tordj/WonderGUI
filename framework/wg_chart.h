@@ -32,11 +32,7 @@
 #endif
 
 #include <wg3_string.h>
-
-
-#ifndef WG_PATCHES_DOT_H
-#    include <wg_patches.h>
-#endif
+#include <wg3_patches.h>
 
 
 #include <functional>
@@ -170,7 +166,7 @@ protected:
     void    _updateBitmapCache( wg::GfxDevice * pDevice );
     void    _renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& waveCanvas );
 
-    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
 	void	_onCloneContent( const WgWidget * _pOrg );
     void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
@@ -234,7 +230,7 @@ private:
 
     wg::SurfaceFactory_p  m_pSurfaceFactory;
     wg::Surface_p         m_pCacheBitmap;
-    WgPatches           m_cacheDirt;
+    wg::Patches           m_cacheDirt;
     
     int                 m_cacheFirst = 0;
     int                 m_cacheLast = 0;

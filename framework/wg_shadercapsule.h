@@ -50,10 +50,10 @@ public:
 	WgWidget * 	FindWidget(const WgCoord& ofs, WgSearchMode mode);
 
 protected:
-    void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
+    void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
 
-	void		_onCollectPatches(WgPatches& container, const WgRect& geo, const WgRect& clip);
-	void		_onMaskPatches(WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode);
+	void		_onCollectPatches(wg::Patches& container, const WgRect& geo, const WgRect& clip);
+	void		_onMaskPatches(wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode);
 
 	void		_onCloneContent( const WgWidget * _pOrg );
 	WgBlendMode _getBlendMode() const;

@@ -23,7 +23,7 @@
 #include <wg_scrollpanel.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
@@ -1528,22 +1528,22 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
 //____ _renderPatches() ________________________________________________________
 
-void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	WgPatches 	patches( _pPatches->Size() );								// TODO: Optimize by pre-allocating?
+	wg::Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 
-	for( const WgRect * pRect = _pPatches->Begin() ; pRect != _pPatches->End() ; pRect++ )
+	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
 		if( _window.intersectsWith( *pRect ) )
-			patches.Push( WgRect(*pRect,_window) );
+			patches.push( WgRect(*pRect,_window) );
 	}
 
 	//
 
-	WgRect	dirtBounds = patches.Union();
+	WgRect	dirtBounds = patches.getUnion();
 
     // Render skin
     
@@ -1556,7 +1556,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	{
 		WgRect window = m_elements[WINDOW].m_windowGeo + _canvas.pos();
 
-        pDevice->setClipList(patches.Size(), patches.Begin());
+        pDevice->setClipList(patches.size(), patches.begin());
         pDevice->fill( window, m_bgColor );
 	}
 
@@ -1573,12 +1573,12 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
         {
             // We need to eliminate dirt outside our view window
             
-            WgPatches     winPatches( patches.Size() );
+            wg::Patches     winPatches( patches.size() );
             
-            for( const WgRect * pRect = patches.Begin() ; pRect != patches.End() ; pRect++ )
+            for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
             {
                 if( window.intersectsWith( *pRect ) )
-                    winPatches.Push( WgRect(*pRect,window) );
+                    winPatches.push( WgRect(*pRect,window) );
             }
 
             m_elements[WINDOW].Widget()->_renderPatches( pDevice, canvas, window, &winPatches );
@@ -1602,7 +1602,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 	{
 		WgRect canvas = m_geoFiller + _canvas.pos();
         
-        pDevice->setClipList(patches.Size(), patches.Begin());
+        pDevice->setClipList(patches.size(), patches.begin());
         _renderSkin(m_pFillerBlocks, pDevice, WgUtil::ModeToState(mode), canvas, m_scale);
 	}
 }
@@ -1610,14 +1610,14 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 //____ _onCollectPatches() _______________________________________________________
 
-void WgScrollPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgScrollPanel::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
 {
-	container.Add( WgRect(geo,clip) );
+	container.add( WgRect(geo,clip) );
 }
 
 //____ _onMaskPatches() __________________________________________________________
 
-void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgScrollPanel::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	switch( m_maskOp )
 	{
@@ -1628,7 +1628,7 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 			WgScrollHook * p = &m_elements[WINDOW];
 
 			if( m_bgColor.a == 255 )
-				patches.Sub( WgRect( p->m_windowGeo + geo.pos(), clip) );
+				patches.sub( WgRect( p->m_windowGeo + geo.pos(), clip) );
 			else if( p->Widget() )
 				p->Widget()->_onMaskPatches( patches, p->m_canvasGeo + geo.pos(), WgRect(p->m_windowGeo + geo.pos(), clip), blendMode );
 
@@ -1645,14 +1645,14 @@ void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const
 			// Maska against corner piece
 
 			if( !m_geoFiller.isEmpty() && m_pFillerBlocks && m_pFillerBlocks->isOpaque() )
-				patches.Sub( WgRect(m_geoFiller + geo.pos(), clip) );
+				patches.sub( WgRect(m_geoFiller + geo.pos(), clip) );
 
 			break;
 		}
 		case WgMaskOp::Skip:
 			break;
 		case WgMaskOp::Mask:
-			patches.Sub( WgRect(geo,clip) );
+			patches.sub( WgRect(geo,clip) );
 			break;
 	}
 }

@@ -27,6 +27,7 @@
 #	include <wg_layer.h>
 #endif
 
+#include <wg3_chain.h>
 
 class WgModalLayer;
 

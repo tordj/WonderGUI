@@ -29,6 +29,8 @@
 #	include <wg_panel.h>
 #endif
 
+#include <wg3_chain.h>
+
 class WgFlexPanel;
 
 //____ WgFlexHook _____________________________________________________________

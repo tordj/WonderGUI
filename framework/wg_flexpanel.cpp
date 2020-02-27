@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_flexpanel.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_util.h>
 
 static const char	c_widgetType[] = {"FlexPanel"};
@@ -981,7 +981,7 @@ WgWidget * WgFlexPanel::ReleaseChild( WgWidget * pWidget )
 
 bool WgFlexPanel::DeleteAllChildren()
 {
-	WgPatches	dirt;
+	wg::Patches	dirt;
 
 	// Collect dirty areas and delete hooks, taking any connected widgets with them.
 
@@ -989,7 +989,7 @@ bool WgFlexPanel::DeleteAllChildren()
 	while( pHook )
 	{
 		if( pHook->m_bVisible )
-			dirt.Add( pHook->m_realGeo );
+			dirt.add( pHook->m_realGeo );
 		WgFlexHook * pDelete = pHook;
 		pHook = pHook->Next();
 		delete pDelete;
@@ -997,7 +997,7 @@ bool WgFlexPanel::DeleteAllChildren()
 
 	// RequestRender on all dirty patches
 
-	for( const WgRect * pRect = dirt.Begin() ; pRect != dirt.End() ; pRect++ )
+	for( const WgRect * pRect = dirt.begin() ; pRect != dirt.end() ; pRect++ )
 		_requestRender( * pRect );
 
 	return true;
@@ -1254,8 +1254,8 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 
 	// Clip our geometry and put it in a dirtyrect-list
 
-	WgPatches patches;
-	patches.Add( WgRect( rect, WgRect(0,0,PixelSize())) );
+	wg::Patches patches;
+	patches.add( WgRect( rect, WgRect(0,0,PixelSize())) );
 
 	// Remove portions of patches that are covered by opaque upper siblings
 
@@ -1270,7 +1270,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 
 	// Make request render calls
 
-	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
+	for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 		_requestRender( * pRect );
 }
 

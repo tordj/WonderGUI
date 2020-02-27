@@ -27,11 +27,10 @@
 #include <wg3_textstyle.h>
 #include <wg3_texttool.h>
 #include <wg3_textstylemanager.h>
+#include <wg3_memstack.h>
 
-#include <wg_memstack.h>
 #include <wg_context.h>
 #include <wg_refcounted.h>
-#include <wg_mempool.h>
 
 #ifdef WG_USE_FREETYPE
 #	include <ft2build.h>
@@ -59,7 +58,7 @@ void WgBase::Init()
     s_pData->pContext = new WgContext;
 
 	s_pData->pDefaultCursor = 0;
-	s_pData->pMemStack = new WgMemStack( 4096 );
+    s_pData->pMemStack = new wg::MemStack( 4096 );
 
 	s_pData->doubleClickTimeTreshold 		= 250;
 	s_pData->doubleClickDistanceTreshold 	= 2;
@@ -278,14 +277,14 @@ WgKey WgBase::TranslateKey( int native_keycode )
 char * WgBase::MemStackAlloc( int bytes )
 { 
 	assert(s_pData!=0); 
-	return s_pData->pMemStack->Alloc(bytes);
+	return s_pData->pMemStack->alloc(bytes);
 }
 
 //____ MemStackRelease() ______________________________________________________
 
 void WgBase::MemStackRelease( int bytes )
 {	assert(s_pData!=0); 
-	return s_pData->pMemStack->Release(bytes); 
+	return s_pData->pMemStack->release(bytes); 
 }
 
 //____ Base::setQuartersPerPoint() ____________________________________________

@@ -22,7 +22,7 @@
 
 #include <wg_modallayer.h>
 #include <wg_util.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_eventhandler.h>
 
 static const char	c_widgetType[] = {"ModalLayer"};

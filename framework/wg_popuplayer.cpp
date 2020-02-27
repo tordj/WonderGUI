@@ -22,7 +22,7 @@
 
 #include <wg_popuplayer.h>
 #include <wg_util.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
@@ -474,8 +474,8 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 
 	// Clip our geometry and put it in a dirtyrect-list
 	
-	WgPatches patches;
-	patches.Add( WgRect( rect, WgRect(0,0,m_size)) );
+	wg::Patches patches;
+	patches.add( WgRect( rect, WgRect(0,0,m_size)) );
 	
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
 	// possibly filling list with many small dirty rects instead.
@@ -499,7 +499,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 	}
 	// Make request render calls
 	
-	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
+	for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 		_requestRender( * pRect );
 }
 
@@ -513,31 +513,31 @@ public:
 
 	WgPopupHook *	pSlot;
 	WgRect			geo;
-	WgPatches		patches;
+	wg::Patches		patches;
 };
 
-void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
+void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	WgPatches 	patches(_pPatches->Size());								// TODO: Optimize by pre-allocating?
+	wg::Patches 	patches(_pPatches->size());								// TODO: Optimize by pre-allocating?
 
-	for (const WgRect * pRect = _pPatches->Begin(); pRect != _pPatches->End(); pRect++)
+	for (const WgRect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
 	{
 		if (_canvas.intersectsWith(*pRect))
-			patches.Push(WgRect(*pRect, _canvas));
+			patches.push(WgRect(*pRect, _canvas));
 	}
 
 	// Render container itself
 
-    pDevice->setClipList(patches.Size(), patches.Begin());
+    pDevice->setClipList(patches.size(), patches.begin());
     _onRender(pDevice, _canvas, _window);
 
 
 	// Render children
 
-	WgRect	dirtBounds = patches.Union();
+	WgRect	dirtBounds = patches.getUnion();
 
 	// Create WidgetRenderContext's for popups that might get dirty patches
 
@@ -561,18 +561,18 @@ void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas
 	{
 		WidgetRenderContext * p = &renderList[i];
 
-		p->patches.Push(&patches);
+		p->patches.push(&patches);
 		if( p->pSlot->state != WgPopupHook::State::Opening && p->pSlot->state != WgPopupHook::State::Closing )
 			p->pSlot->m_pWidget->_onMaskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
-		if (patches.IsEmpty())
+		if (patches.isEmpty())
 			break;
 	}
 
 	// Any dirt left in patches is for base child, lets render that first
 
 
-	if (!patches.IsEmpty())
+	if (!patches.isEmpty())
 		m_baseHook.Widget()->_renderPatches(pDevice, _canvas, _window, &patches);
 
 

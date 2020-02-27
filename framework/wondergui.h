@@ -56,10 +56,6 @@
 #	include <wg_key.h>
 #endif
 
-#ifndef WG_MEMPOOL_DOT_H
-#	include <wg_mempool.h>
-#endif
-
 #ifndef WG_PEN_DOT_H
 #	include <wg_pen.h>
 #endif

@@ -44,7 +44,6 @@
 
 #include <wg3_textstyle.h>
 
-//#include <wg3_gfxdevice.h>
 
 #ifdef WG_USE_FREETYPE
 
@@ -53,16 +52,13 @@ typedef struct FT_LibraryRec_  *FT_Library;
 #endif
 
 
-class WgFont;
-class WgMemStack;
 class WgCursor;
-
-
 struct WgContext;
 
 namespace wg
 {
     class Object;
+    class MemStack;
 };
 
 
@@ -152,7 +148,7 @@ private:
 
 		//
 
-		WgMemStack *		pMemStack;
+        wg::MemStack *		pMemStack;
 
 #ifdef WG_USE_FREETYPE
 		bool				bFreeTypeInitialized;

@@ -29,6 +29,7 @@ cp wg_object.h \
    wg_font.* \
    wg_geo.* \
    wg_gfxdevice.* \
+   wg_memstack.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
    wg_payload.* \

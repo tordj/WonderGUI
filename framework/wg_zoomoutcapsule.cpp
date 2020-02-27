@@ -24,7 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_eventhandler.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg3_surfacefactory.h>
 #include <wg_payload.h>
 #include <wg_image.h>
@@ -486,16 +486,16 @@ void WgZoomOutCapsule::_regenScreenshot()
 
 //____ _onCollectPatches() ______________________________________________________
 
-void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgZoomOutCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
 {
     // Do the simple thing here
     
-    container.Add( WgRect( geo, clip ) );
+    container.add( WgRect( geo, clip ) );
 }
 
 //____ _onMaskPatches() _________________________________________________________
 
-void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgZoomOutCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
     if( m_innerZoom == 1.f )
         WgCapsule::_onMaskPatches( patches, geo, clip, blendMode );
@@ -508,7 +508,7 @@ void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, co
 
 //____ _renderPatches() __________________________________________________________
 
-void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
     if( m_innerZoom == 1.f && m_outerZoom == 1.f )
     {
@@ -542,7 +542,7 @@ void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _c
             pDevice->setTintColor( oldTint * m_tint );
         }
 
-        pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+        pDevice->setClipList(_pPatches->size(), _pPatches->begin());
         _onRender( pDevice, _canvas, _window );
         
         if( m_tint != WgColor::White )

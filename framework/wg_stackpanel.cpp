@@ -22,7 +22,7 @@
 
 #include <wg_stackpanel.h>
 #include <wg_util.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 
 static const char	c_widgetType[] = {"StackPanel"};
 static const char	c_hookType[] = {"StackHook"};
@@ -249,8 +249,8 @@ void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook, const WgRect& _rec
 	WgRect rect = _rect + pHook->_getGeo(WgRect(0,0,m_size)).pos();
 
 
-	WgPatches patches;
-	patches.Add( rect );
+	wg::Patches patches;
+	patches.add( rect );
 
 	// Remove portions of patches that are covered by opaque upper siblings
 
@@ -266,7 +266,7 @@ void WgStackPanel::_onRenderRequested( WgVectorHook * _pHook, const WgRect& _rec
 
 	// Make request render calls
 
-	for( const WgRect * pRect = patches.Begin() ; pRect < patches.End() ; pRect++ )
+	for( const WgRect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 		_requestRender( * pRect );
 }
 

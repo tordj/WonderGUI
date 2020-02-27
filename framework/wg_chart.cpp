@@ -545,7 +545,7 @@ bool WgChart::SetBitmapCaching( int firstWaveId, int lastWaveId, wg::SurfaceFact
         if( m_pCacheBitmap )
         {
             m_pCacheBitmap = nullptr;
-            m_cacheDirt.Clear();
+            m_cacheDirt.clear();
         }
         
         m_pSurfaceFactory = pFactory;
@@ -565,7 +565,7 @@ void WgChart::ClearBitmapCaching()
         m_pCacheBitmap = nullptr;
 
     m_pSurfaceFactory = nullptr;
-    m_cacheDirt.Clear();
+    m_cacheDirt.clear();
 }
 
 
@@ -580,17 +580,17 @@ void WgChart::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _renderPatches() ________________________________________________________
 
-void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
     if( m_cacheFirst > 0 )
     {
         if( !m_pCacheBitmap )
         {
             m_pCacheBitmap = m_pSurfaceFactory->createSurface( _canvas.size() );
-            m_cacheDirt.Add( _canvas.size() );
+            m_cacheDirt.add( _canvas.size() );
         }
         
-        if( !m_cacheDirt.IsEmpty() )
+        if( !m_cacheDirt.isEmpty() )
             _updateBitmapCache( pDevice );
     }
     
@@ -612,7 +612,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
     pDevice->setBlendMode(WgBlendMode::Replace);
     pDevice->setTintColor(WgColor::White);
 
-    pDevice->setClipList(m_cacheDirt.Size(), m_cacheDirt.Begin());
+    pDevice->setClipList(m_cacheDirt.size(), m_cacheDirt.begin());
     pDevice->fill(WgColor::Transparent);
 
     pDevice->setBlendMode(WgBlendMode::Blend);
@@ -621,7 +621,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
     WgRect waveCanvas = canvas - m_pixelPadding;
 
  
-    m_cacheDirt.Clip( { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h } );
+    m_cacheDirt.clip( { waveCanvas.x, canvas.y, waveCanvas.w, canvas.h } );
 
     for( int i = m_cacheFirst-1 ; i <= m_cacheLast-1 ; i++ )
         _renderWave( m_waves[i], pDevice, waveCanvas );
@@ -636,7 +636,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
         pDirt++;
     }
 */
-    m_cacheDirt.Clear();
+    m_cacheDirt.clear();
     pDevice->setCanvas(pOldCanvas);
     pDevice->setTintColor(oldTint);
     pDevice->setBlendMode(oldBlend);
@@ -1291,14 +1291,14 @@ void WgChart::_requestRenderOnNewSamples(   int begOrgSamples, int nbOrgTopSampl
 void WgChart::_requestRenderInCache()
 {
     if( m_pCacheBitmap )
-        m_cacheDirt.Add( m_pCacheBitmap->size() );
+        m_cacheDirt.add( m_pCacheBitmap->size() );
     _requestRender();
 }
 
 void WgChart::_requestRenderInCache( const WgRect& rect )
 {
     if( m_pCacheBitmap )
-        m_cacheDirt.Add( rect );
+        m_cacheDirt.add( rect );
     _requestRender(rect);
 }
 

@@ -42,7 +42,7 @@
 
 #include <wg3_string.h>
 #include <wg3_skin.h>
-
+#include <wg3_patches.h>
 
 class Wg_Interface_TextHolder;
 class WgContainer;
@@ -50,7 +50,6 @@ class WgPanel;
 class WgCapsule;
 class WgLayer;
 class WgEventHandler;
-class WgPatches;
 
 
 class WgWidget : public WgWeakPtrTarget
@@ -232,9 +231,9 @@ protected:
 
     virtual void    _preRender();
 
-    virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
-	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
-	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+    virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+	virtual void	_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
+	virtual void	_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
     virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	virtual void	_onNewSize( const WgSize& size );

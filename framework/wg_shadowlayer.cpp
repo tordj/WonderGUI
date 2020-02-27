@@ -25,7 +25,7 @@
 #include <wg_event.h>
 #include <wg_gfxdevice.h>
 #include <wg3_surfacefactory.h>
-#include <wg_patches.h>
+#include <wg3_patches.h>
 #include <wg_base.h>
 #include <wg_context.h>
 #include <wg_util.h>
@@ -222,8 +222,8 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
     
     m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
     
-    WgPatches patches;
-    patches.Add(geo);
+    wg::Patches patches;
+    patches.add(geo);
     
     // Remove portions of patches that are covered by opaque front widgets
     
@@ -231,7 +231,7 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
     
     // Make request render calls
     
-    for (const WgRect * pRect = patches.Begin(); pRect < patches.End(); pRect++)
+    for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
         _requestRender(*pRect);
     
     return true;
@@ -334,8 +334,8 @@ void WgShadowLayer::_requestRenderShadows(int ofs, int nb)
 {
 	for (auto p = &m_shadows[ofs]; p != &m_shadows[ofs + nb]; p++)
 	{
-		WgPatches patches;
-		patches.Add(p->m_geo);
+		wg::Patches patches;
+		patches.add(p->m_geo);
 
 		// Remove portions of patches that are covered by opaque front widgets
 
@@ -343,7 +343,7 @@ void WgShadowLayer::_requestRenderShadows(int ofs, int nb)
 
 		// Make request render calls
 
-		for (const WgRect * pRect = patches.Begin(); pRect < patches.End(); pRect++)
+		for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
 	}
 }
@@ -474,7 +474,7 @@ void WgShadowLayer::_preRender()
 {
     // Check for removed children and changes to geo that will affect shadows.
     
-    WgPatches patches;
+    wg::Patches patches;
     
     for (auto it = m_shadows.begin(); it < m_shadows.end();)
     {
@@ -485,7 +485,7 @@ void WgShadowLayer::_preRender()
         
         if (pWidget == nullptr)
         {
-            patches.Add(pShadow->m_geo);
+            patches.add(pShadow->m_geo);
             it = m_shadows.erase(it);
             continue;
         }
@@ -508,8 +508,8 @@ void WgShadowLayer::_preRender()
             
             if (geo != oldGeo)
             {
-                patches.Add(oldGeo);
-                patches.Add(geo);
+                patches.add(oldGeo);
+                patches.add(geo);
                 pShadow->m_geo = geo;
             }
         }
@@ -520,7 +520,7 @@ void WgShadowLayer::_preRender()
             
             if (!oldGeo.isEmpty())
             {
-                patches.Add(oldGeo);
+                patches.add(oldGeo);
                 pShadow->m_geo = {0,0,0,0};
             }
         }
@@ -530,7 +530,7 @@ void WgShadowLayer::_preRender()
     
     // Early out if there is nothing to update in shadow layer.
     
-    if (patches.IsEmpty())
+    if (patches.isEmpty())
         return;
     
     // Mask foreground from shadow updates and request render on the remains.
@@ -538,7 +538,7 @@ void WgShadowLayer::_preRender()
     if (m_frontHook.Widget())
         m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, WgBlendMode::Blend);
     
-    for (const WgRect * pRect = patches.Begin(); pRect < patches.End(); pRect++)
+    for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
         _requestRender(*pRect);
 }
 
@@ -561,27 +561,27 @@ void WgShadowLayer::_onNewSize(const WgSize& size)
 
 //____ _renderPatches() _______________________________________________________
 
-void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
+void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
 {
 	WgRect contentGeo = m_frontHook.m_geo + _canvas.pos();
 
-	WgPatches patches;
-	patches.Push(_pPatches);
+	wg::Patches patches;
+	patches.push(_pPatches);
 
 	// Generate masked patches for our skin, baseSlot widget, and shadow.
 
 	if (m_frontHook.Widget() )
 		m_frontHook.Widget()->_onMaskPatches(patches, contentGeo, contentGeo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
-	patches.Clip(_canvas);
-	if (patches.IsEmpty())
+	patches.clip(_canvas);
+	if (patches.isEmpty())
 		return;
 
 	// If we have a skin, render it
 
 	if (m_pSkin)
 	{
-		pDevice->setClipList(patches.Size(), patches.Begin());
+		pDevice->setClipList(patches.size(), patches.begin());
 		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
 	}
 
@@ -604,27 +604,27 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (m_pShadowSurface)
 	{
-		WgPatches   shadowPatches;
+		wg::Patches   shadowPatches;
 
 		if (bFullSurfaceUpdate)
-			shadowPatches.Push({ 0,0, _canvas.size() });
+			shadowPatches.push({ 0,0, _canvas.size() });
 		else
 		{
-			const WgRect * pPatches = patches.Begin();
-			for (int i = 0; i < patches.Size(); i++)
-				shadowPatches.Push(pPatches[i] - _canvas.pos());
+			const WgRect * pPatches = patches.begin();
+			for (int i = 0; i < patches.size(); i++)
+				shadowPatches.push(pPatches[i] - _canvas.pos());
 		}
 
 		auto oldBlendMode = pDevice->blendMode();
 		auto oldTint = pDevice->tintColor();
 
-		if (!shadowPatches.IsEmpty())
+		if (!shadowPatches.isEmpty())
 		{
 			auto oldCanvas = pDevice->canvas();
 
 			pDevice->setCanvas(m_pShadowSurface);
 
-			pDevice->setClipList(shadowPatches.Size(), shadowPatches.Begin());
+			pDevice->setClipList(shadowPatches.size(), shadowPatches.begin());
 			pDevice->setTintColor(WgColor::White);
 			pDevice->setBlendMode(WgBlendMode::Replace);
 			pDevice->fill({ 0,0,0,0 });
@@ -637,7 +637,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 
 			pDevice->setCanvas(oldCanvas);
-			pDevice->setClipList(patches.Size(), patches.Begin());
+			pDevice->setClipList(patches.size(), patches.begin());
 		}
 
 

@@ -237,8 +237,8 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
     auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
     pCanvas->setScale(m_scale/4096.f);
     
-    WgPatches patches;
-    patches.Add( sz );
+    wg::Patches patches;
+    patches.add( sz );
     
   
     auto pOldCanvas = pDevice->canvas();
@@ -484,24 +484,24 @@ void WgWidget::_preRender()
 
 //____ _renderPatches() ________________________________________________________
 
-void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
+void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
-    pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+    pDevice->setClipList(_pPatches->size(), _pPatches->begin());
     _onRender( pDevice, _canvas, _window );
 }
 
 //____ Fillers _______________________________________________________________
 
-void WgWidget::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
+void WgWidget::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
 {
-		container.Add( WgRect( geo, clip ) );
+		container.add( WgRect( geo, clip ) );
 }
 
-void WgWidget::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgWidget::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( (m_bOpaque && blendMode == WgBlendMode::Blend) || blendMode == WgBlendMode::Replace )
 	{
-		patches.Sub( WgRect( geo, clip ) );
+		patches.sub( WgRect( geo, clip ) );
 	}
 }
 
