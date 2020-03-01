@@ -165,7 +165,7 @@ namespace wg
 	int SelectBox::selectedEntryId() const
 	{
 		if (m_selectedEntryIndex >= 0)
-			return entries[m_selectedEntryIndex].id;
+			return entries[m_selectedEntryIndex].id();
 		else
 			return -1;
 	}

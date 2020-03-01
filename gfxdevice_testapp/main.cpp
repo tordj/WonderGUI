@@ -738,15 +738,15 @@ bool setup_chrome()
 	// Load resources
 
 	auto pPlateSurface = FileUtil::loadSurface("../resources/grey_plate.bmp", g_pBaseSurfaceFactory );
-	BlockSkin_p pPlateSkin = BlockSkin::createStaticFromSurface(pPlateSurface, BorderI(3));
+	BlockSkin_p pPlateSkin = BlockSkin::create(pPlateSurface, BorderI(3));
 	pPlateSkin->setContentPadding(BorderI(5));
 
 	auto pPressablePlateSurface = FileUtil::loadSurface("../resources/grey_pressable_plate.bmp", g_pBaseSurfaceFactory );
-	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface(pPressablePlateSurface, 0, BorderI(3));
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	auto pButtonSurface = FileUtil::loadSurface("../resources/simple_button.bmp", g_pBaseSurfaceFactory );
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, BorderI(3));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 

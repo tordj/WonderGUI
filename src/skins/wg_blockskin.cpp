@@ -99,7 +99,34 @@ namespace wg
 		return BlockSkin_p(p);
 	}
 
+	BlockSkin_p BlockSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Orientation orientation, int _spacing)
+	{
+		if (pSurface == nullptr || stateBlocks.size() < 1)
+			return nullptr;
 
+
+		SizeI	surfSize = pSurface->size();
+		int		nBlocks = stateBlocks.size();
+		BorderI frame = _frame * pSurface->pixelQuartersPerPoint() / 4;
+		int   spacing = _spacing * pSurface->pixelQuartersPerPoint() / 4;
+
+		// Check so blocks fit evenly
+
+		int		length = orientation == Orientation::Horizontal ? surfSize.w : surfSize.h;
+
+		if ((length - (nBlocks - 1) * spacing) % nBlocks != 0)
+			return nullptr;
+
+		// Create the skin
+
+		int blockLen = (length - (nBlocks - 1) * spacing) / nBlocks;
+
+		SizeI blockSize = orientation == Orientation::Horizontal ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
+
+		BlockSkin * p = new BlockSkin(pSurface, blockSize, frame);
+		p->setBlocks(stateBlocks, orientation, spacing, CoordI(0, 0));
+		return BlockSkin_p(p);
+	}
 
 	BlockSkin_p BlockSkin::createStatic( Surface * pSurface, RectI block, BorderI frame )
 	{

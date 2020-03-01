@@ -112,6 +112,13 @@ namespace wg
 
 
 	//____ releaseFromParent() ________________________________________________
+	/**
+	 * @brief Releases widget from its parent.
+	 *
+	 * Removes the widget from its parent.
+	 *
+	 * @return Nothing.
+	*/
 
 	void Widget::releaseFromParent()
 	{
@@ -121,6 +128,17 @@ namespace wg
 
 
 	//____ pointerStyle() ________________________________________
+	/**
+	 * @brief Returns mouse pointer style.
+	 *
+	 * Returns the style the mouse pointer should have when hovering over this widget. This is typically
+	 * the style previously set with setPointerStyle(), but some widgets might override and change this 
+	 * dynamically depending on the exact position of the pointer and state of the widget. I.e. a widget might
+	 * switch to PointerStyle::Ibeam when hovering over some editable text.
+	 *
+	 * @return PointerStyle for mouse pointer given its current position/status within the widget. If pointer 
+	 * is outside widget, the style previously set with setPointerStyle() is returned.
+	*/
 
 	PointerStyle Widget::pointerStyle() const
 	{
@@ -128,6 +146,18 @@ namespace wg
 	}
 
 	//____ setDropTarget() ____________________________________________________
+	/**
+	 * @brief Set widget to become a destination for drag-n-drop operations.
+	 *
+	 * Setting a widget as drop target makes it a potential destination for drag-n-drop operations.
+	 * 
+	 * Any widget that is a drop target receives a DropProbe-message when the mouse enters it 
+	 * during a drag-n-drop operation. By accepting the DropProbe-message, the widget acknowledges 
+	 * that it (probably) can accept the dragged content if dropped upon it and will start receiving other
+	 * drop-related messages (DropEnter, DropMove, DropLeave and DropDeliver).
+	 *
+	 * @return Nothing.
+	*/
 
 	void Widget::setDropTarget(bool bDropTarget)
 	{
@@ -181,16 +211,6 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
-	bool Widget::_markTest( const CoordI& ofs )
-	{
-		if( m_markOpacity >= 256  || ofs.x < 0 || ofs.y < 0 || ofs.x >= m_size.w || ofs.y >= m_size.h)
-			return false;
-
-		if( m_markOpacity <= 0 )
-			return true;
-
-		return _alphaTest(ofs);
-	}
 
 	//____ setSkin() ______________________________________________________________
 	/**
@@ -215,6 +235,18 @@ namespace wg
 		_setSkin( pSkin );
 	}
 
+	//____ _markTest()_____________________________________________________________
+
+	bool Widget::_markTest(const CoordI& ofs)
+	{
+		if (m_markOpacity >= 256 || ofs.x < 0 || ofs.y < 0 || ofs.x >= m_size.w || ofs.y >= m_size.h)
+			return false;
+
+		if (m_markOpacity <= 0)
+			return true;
+
+		return _alphaTest(ofs);
+	}
 
 	//____ clone() _________________________________________________________
 

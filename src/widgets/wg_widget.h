@@ -157,29 +157,29 @@ namespace wg
 		//.____ Appearance _________________________________________________
 
 		virtual void		setSkin( Skin * pSkin );
-		Skin_p				skin( ) const	{ return m_pSkin; }
+		inline Skin_p		skin() const;
 
-		inline void			setTooltip( const String& str ) { m_tooltip = str; }
-		virtual String		tooltip() const { return m_tooltip; }
+		inline void			setTooltip(const String& str);
+		inline virtual String tooltip() const;
 
-		void				setPointerStyle( PointerStyle style )	{ m_pointerStyle = style; }
-		virtual PointerStyle	pointerStyle() const;
+		inline void			setPointerStyle(PointerStyle style);
+		virtual PointerStyle pointerStyle() const;
 
 
 		//.____ Behavior _______________________________________________________
 
-		void				setMarkOpacity( int opacity ) { m_markOpacity = opacity; }
-		int					markOpacity() const { return m_markOpacity; }
+		inline void			setMarkOpacity(int opacity);
+		inline int			markOpacity() const;
 
-		void				setTabLock( bool bLock ) { m_bTabLock = bLock; }
-		bool				isTabLocked() const { return m_bTabLock; }
+		inline void			setTabLock(bool bLock);
+		inline bool			isTabLocked() const;
 
 		void                setPickable( bool bPickable, int category = 0 );
-		bool                isPickable() const { return m_bPickable; }
-		int                 pickCategory() const { return m_pickCategory; }
+		inline bool         isPickable() const;
+		inline int          pickCategory() const;
 
 		void                setDropTarget( bool bDropTarget );
-		bool                isDropTarget() const { return m_bDropTarget; }
+		inline bool         isDropTarget() const;
 
 
 		//.____ Misc _________________________________________________________________
@@ -187,16 +187,16 @@ namespace wg
 		inline bool			markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override;
 
-		inline void			refresh() { _refresh(); }
+		inline void			refresh();
 
-		inline Widget_p		clone() const { return _clone(); }
-		Widget_p			newOfMyType() const { return _newOfMyType(); } 					///< @brief Create and return a new widget of the same type.
+		inline Widget_p		clone() const;
+		inline Widget_p		newOfMyType() const;
 
-		inline bool			isOpaque() const { return m_bOpaque; }
+		inline bool			isOpaque() const;
 
-		void				setPayload(BasicPayload * pPayload) { m_pPayload = pPayload; }
-		bool				hasPayload() const { return m_pPayload; }
-		BasicPayload_p		payload() const { return m_pPayload; }
+		inline void			setPayload(BasicPayload * pPayload);
+		inline bool			hasPayload() const;
+		inline BasicPayload_p payload() const;
 
 	protected:
 		Widget();
@@ -326,6 +326,9 @@ namespace wg
 
 
 	//____ Inline methods __________________________________________________________
+
+
+	//____ setId() __________________________
 	/**
 	* @brief	Set a user specified ID for this widget.
 	*
@@ -340,6 +343,7 @@ namespace wg
 		m_id = id;
 	}
 
+	//____ id() __________________________
 	/**
 	* @brief	Read the ID set through setId().
 	*
@@ -355,10 +359,12 @@ namespace wg
 
 
 
+	//____ pos() __________________________
 	/**
 	 * @brief	Get the local position of widget.
 	 *
-	 * Get the local position of the widget, which is the position relative to parent.
+	 * Get the local position of the widget, which is the position 
+	 * of its north-west corner relative to parents north-west corner.
 	 *
 	 * @return Widgets position relative to its parent.
 	 */
@@ -370,6 +376,7 @@ namespace wg
 	}
 
 
+	//____ size() __________________________
 	/**
 	 * @brief	Get the size of of widget.
 	 *
@@ -382,6 +389,7 @@ namespace wg
 		return Util::rawToQpix(m_size);
 	}
 
+	//____ geo() __________________________
 	/**
 	 * @brief	Get the local geometry of widget.
 	 *
@@ -397,6 +405,7 @@ namespace wg
 		return Rect(0,0,m_size);
 	}
 
+	//____ globalPos() __________________________
 	/**
 	 * @brief	Get the global position of widget.
 	 *
@@ -409,6 +418,7 @@ namespace wg
 		return Util::rawToQpix(_globalPos());
 	}
 
+	//____ globalGeo() __________________________
 	/**
 	 * @brief	Get the global geometry of widget.
 	 *
@@ -516,7 +526,7 @@ namespace wg
 	 * the constraints and limitations the container needs to work with. If a container can't
 	 * provide a widget its preferred size, it is likely to decide the closest width or height
 	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
-	 * after which it will decide the size of the child and notify it.
+	 * after which it will decide the size of the child.
 	 *
 	 * @return The preferred size of the widget.
 	 */
@@ -598,6 +608,7 @@ namespace wg
 	}
 
 
+	//____ state() ____________________________________________________________
 	/**
 	 * @brief	Return the state of widget.
 	 *
@@ -605,7 +616,7 @@ namespace wg
 	 * such as if it is disabled, has mouse pointer inside its geometry, is pressed or selected.
 	 *
 	 * This is just for information. WonderGUI doesn't allow the state to be manipulated except
-	 * as allowed by specific API:s like setEnabled().
+	 * as allowed by specific API:s, like setEnabled().
 	 *
 	 * @return Reference to state object representing the current state of the widget.
 	 */
@@ -615,6 +626,7 @@ namespace wg
 		return m_state;
 	}
 
+	//____ isEnabled() ____________________________________________________________
 	/**
 	 * @brief	Get the enabled/disabled state of widget.
 	 *
@@ -626,6 +638,7 @@ namespace wg
 		return m_state.isEnabled();
 	}
 
+	//____ isSelectable() ____________________________________________________________
 	/**
 	 * @brief	Get the selectable flag of widget.
 	 *
@@ -643,7 +656,9 @@ namespace wg
 
 
 
-	/** @brief Get keyboard focus.
+	//____ grabFocus() ____________________________________________________________
+	/** 
+	* @brief Get keyboard focus.
 	*
 	* Attempt to get keyboard focus. This can be blocked by parent or further up the hierarchy.
 	* Widget needs to descend from a RootPanel in order to be able to get keyboard focus.
@@ -661,7 +676,9 @@ namespace wg
 		return false;
 	}
 
-	/** @brief Release keyboard focus.
+	//____ releaseFocus() ____________________________________________________________
+	/** 
+	* @brief Release keyboard focus.
 	*
 	* Attempt to release keyboard focus, returning it to previous widget being focused.
 	*
@@ -678,7 +695,9 @@ namespace wg
 		return false;
 	}
 
-	/** @brief Check if widget has keyboard focus.
+	//____ isFocused() ____________________________________________________________
+	/** 
+	 * @brief Check if widget has keyboard focus.
 	 *
 	 * Check if widget has keyboard focus.
 	 *
@@ -690,7 +709,9 @@ namespace wg
 		return m_state.isFocused();
 	}
 
-	/** @brief Get next sibling.
+	//____ nextSibling() ____________________________________________________________
+	/** 
+	 * @brief Get next sibling.
 	 *
 	 * Get the widgets next sibling. Order of siblings is determined by parent
 	 * but is generally either left to right, top to bottom or background to foreground.
@@ -705,7 +726,9 @@ namespace wg
 		return nullptr;
 	}
 
-	/** @brief Get previous sibling.
+	//____ prevSibling() ____________________________________________________________
+	/** 
+	 * @brief Get previous sibling.
 	 *
 	 * Get the widgets previous sibling. Order of siblings is determined by parent
 	 * but is generally either left to right, top to bottom or background to foreground.
@@ -720,6 +743,167 @@ namespace wg
 		return 0;
 	}
 
+	//____ skin() _____________________________________________________________
+	/**
+	 * @brief Get the skin used by widget.
+	 *
+	 * Get the skin used by this widget. If a widget has several skins, this is the background skin,
+	 * covering the area of the widget and padding its content.
+	 *
+	 * @return Pointer to the skin used by this widget.
+	 */
+
+	Skin_p Widget::skin() const 
+	{ 
+		return m_pSkin; 
+	}
+
+	//____ setTooltip() _______________________________________________________
+	/**
+	 * @brief Set widgets tooltip string.
+	 *
+	 * Sets a string that is used as the tooltip for the widget. A tooltip with this
+	 * text will be displayed by the TooltipLayer (if one is present in the hierarchy) when 
+	 * the mouse hovers over the widget.
+	 *
+	 * Note: A widget may override the tooltip set by this method and display another 
+	 * text, depending on the situation and exact position of the pointer.
+	 * 
+	 * @return void
+	 */
+
+	void Widget::setTooltip(const String& str) 
+	{ 
+		m_tooltip = str; 
+	}
+
+	//____ tooltip() __________________________________________________________
+	/**
+	 * @brief Get widgets tooltip string.
+	 *
+	 * Gets the string to be displayed in a tooltip when the mouse hovers over the widget.
+	 *
+	 * Note: This string might be different from what has been set using setTooltip().
+	 * Some widgets can decide to display something else depending on the situation 
+	 * and exact position of the pointer.
+	 *
+	 * @return void
+	 */
+
+	String Widget::tooltip() const 
+	{ 
+		return m_tooltip; 
+	}
+
+	//____ setPointerStyle() __________________________________________________
+
+	void Widget::setPointerStyle(PointerStyle style) 
+	{ 
+		m_pointerStyle = style; 
+	}
+
+	//____ setMarkOpacity() ___________________________________________________
+
+	void Widget::setMarkOpacity(int opacity) 
+	{ 
+		m_markOpacity = opacity; 
+	}
+
+	//____ markOpacity() ______________________________________________________
+
+	int Widget::markOpacity() const 
+	{ 
+		return m_markOpacity; 
+	}
+
+	//____ setTabLock() _______________________________________________________
+
+	void Widget::setTabLock(bool bLock) 
+	{ 
+		m_bTabLock = bLock; 
+	}
+
+	//____ isTabLocked() ______________________________________________________
+
+	bool Widget::isTabLocked() const 
+	{ 
+		return m_bTabLock; 
+	}
+
+	//____ isPickable() _______________________________________________________
+
+	bool Widget::isPickable() const 
+	{ 
+		return m_bPickable; 
+	}
+
+	//____ pickCategory() _____________________________________________________
+
+	int Widget::pickCategory() const 
+	{ 
+		return m_pickCategory; 
+	}
+
+	//____ isDropTarget() ____________________________________________________
+
+	bool Widget::isDropTarget() const 
+	{ 
+		return m_bDropTarget; 
+	}
+
+	//____ refresh() __________________________________________________________
+
+	void Widget::refresh() 
+	{ 
+		_refresh(); 
+	}
+
+	//____ clone() ____________________________________________________________
+
+	Widget_p Widget::clone() const 
+	{ 
+		return _clone(); 
+	}
+
+	//____ newOfMyType() ______________________________________________________
+	/**
+	 * @brief Create and return a new widget of the same type.
+	 */
+
+	Widget_p Widget::newOfMyType() const 
+	{ 
+		return _newOfMyType(); 
+	}
+
+	//____ isOpaque() _________________________________________________________
+
+	bool Widget::isOpaque() const 
+	{ 
+		return m_bOpaque; 
+	}
+
+
+
+	//____ setPayload() _______________________________________________________
+
+	void Widget::setPayload(BasicPayload * pPayload)
+	{ 
+		m_pPayload = pPayload; 
+	}
+
+	//____ hasPayload() _______________________________________________________
+
+	bool Widget::hasPayload() const 
+	{ 
+		return m_pPayload; 
+	}
+
+	//____ payload() __________________________________________________________
+
+	BasicPayload_p Widget::payload() const 
+	{ 
+		return m_pPayload; 
+	}
 
 
 } // namespace wg

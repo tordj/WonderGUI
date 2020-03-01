@@ -46,6 +46,7 @@ namespace wg
 		};
 		
 		using		iterator = typename std::vector<EntryType>::iterator;
+		using		const_iterator = typename std::vector<EntryType>::const_iterator;
 
 		CVector(Holder * pHolder) : m_pHolder(pHolder) {}
 
@@ -79,10 +80,13 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		inline iterator	begin() const { return m_entries.begin(); }
-		inline iterator	end() const { return m_entries.end(); }
+		inline iterator	begin() { return m_entries.begin(); }
+		inline iterator	end() { return m_entries.end(); }
 
-		
+		inline const_iterator	begin() const { return m_entries.begin(); }
+		inline const_iterator	end() const { return m_entries.end(); }
+
+
 	protected:
 //		~CVector() {}
 	

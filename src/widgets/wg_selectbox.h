@@ -40,8 +40,8 @@ namespace wg
 	public:
 		SelectBoxEntry( int id, String& text ) : m_id(id), m_string(text) {};
 		
-		inline int		id() { return m_id; }
-		inline String	text() { return m_string; }
+		inline int		id() const { return m_id; }
+		inline String	text() const { return m_string; }
 
 	protected:
 
@@ -105,10 +105,10 @@ namespace wg
 		TextStyle_p		entryStyle() const { return m_pEntryStyle; }
 
 		void			setListTextMapper(TextMapper * pTextMapper);
-		TextStyle_p		listTextMapper() const { return m_pListTextMapper; }
+		TextMapper_p	listTextMapper() const { return m_pListTextMapper; }
 
 		void			setListSkin(Skin * pSkin);
-		Skin_p			listSkin() const { return m_pListDisplay->skin(); }
+		Skin_p			listSkin() const { return m_pListCanvas->skin(); }
 
 		//.___ Control _____________________________________________________________
 

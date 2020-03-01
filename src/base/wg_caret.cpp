@@ -72,7 +72,7 @@ namespace wg
 	 * Set the carets animation mode (insert, overwrite or end of line).
 	 *
 	 * @param mode One of Insert, Overwrite or Eol (end of line)
-	 * @return True
+	 * @return True if caret needs to be redrawn.
 	 */
 
 	bool Caret::setMode( CaretMode mode )
@@ -87,7 +87,6 @@ namespace wg
 	}
 
 	//____ setCycleLength() ____________________________________________________
-
 	/**
 	 * @brief Set the length of the caret animation cycle (blink frequency)
 	 *
@@ -109,7 +108,13 @@ namespace wg
 	}
 
 	//____ restartCycle() ______________________________________________________
-
+	/**
+	 * @brief Restart the caret animation cycle
+	 *
+	 * Restarts the carets animation cycle. This is typically done when the caret is moved.
+	 *
+	 * @return True if the caret needs to be redrawn.
+	 */
  	bool Caret::restartCycle()
 	{
 		int oldTicks = m_ticks;
@@ -120,6 +125,20 @@ namespace wg
 
 
 	//____ eolWidth() ______________________________________________________________
+	/**
+	 * @brief Pixels needed for the end of line character.
+	 *
+	 * Calculates the number of pixels needed for rendering an end-of-line caret.
+	 * 
+	 * Since the end-of-line caret is placed after the last character of the line, the
+	 * TextMapper needs to know how much extra space needs to be reserved past the end of
+	 * the line to fit the caret in an editable text-field.
+	 * 
+	 * @param eolCell The size of the last cell of the line in pixels. Typically the
+	 * height of the previous cell is used to determine the carets width.
+	 *
+	 * @return Number of extra pixels needed to fit the caret after the line.
+	 */
 
 	int Caret::eolWidth( const SizeI& eolCell ) const
 	{
@@ -127,6 +146,13 @@ namespace wg
 	}
 
 	//____ tick() __________________________________________________________________
+	/**
+	 * @brief Increment time for caret animation.
+	 *
+	 * Increments the time for the caret animation and returns whether caret needs to be redrawn.
+	 *
+	 * @return True if the caret needs to be redrawn.
+	 */
 
 	bool Caret::tick( int ms )
 	{
@@ -137,6 +163,15 @@ namespace wg
 	}
 
 	//____ dirtyRect() _____________________________________________________________
+	/**
+	 * @brief Returns the rectangle occupied by the caret.
+	 *
+	 * Returns the rectangle occupied by the caret, the area that needs to be redrawn 
+	 * when the caret animation is updated or caret is moved.
+	 *
+	 * @param cell The position and size of the character cell with the caret.
+	 * @return The position and size of the caret.
+	 */
 
 	RectI Caret::dirtyRect( RectI cell ) const
 	{
@@ -152,6 +187,18 @@ namespace wg
 	}
 
 	//____ render() ________________________________________________________________
+	/**
+	 * @brief Render the caret.
+	 *
+	 * Renders the caret in position for the character occupying the 'cell' specified.
+	 *
+	 * @param cell The position and size of the character cell with the caret.
+	 *
+	 * Please note that the caret might be rendered outside the cell specified. Call dirtyRect()
+	 * with the same cell rectangle to get the area that a call to render() will affect.
+	 *
+	 * @return Void.
+	 */
 
 	void Caret::render( GfxDevice * pDevice, RectI cell )
 	{

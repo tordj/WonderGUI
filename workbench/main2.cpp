@@ -420,42 +420,42 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::createClickableFromSurface(pButtonSurface, 0, BorderI(3));
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pBackgroundSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pBackgroundSkin = BlockSkin::createStaticFromSurface(pBackgroundSurface);
+	BlockSkin_p pBackgroundSkin = BlockSkin::create(pBackgroundSurface);
 
 
 	pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pSplashSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSplashSkin = BlockSkin::createStaticFromSurface(pSplashSurface);
+	BlockSkin_p pSplashSkin = BlockSkin::create(pSplashSurface);
 
 
 	pSDLSurf = IMG_Load("../resources/state_button.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pStateButtonSkin = BlockSkin::createClickSelectableFromSurface(pStateButtonSurface, 0, BorderI(3));
+	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
 	pStateButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::createClickableFromSurface(pPressablePlateSurface, 0, BorderI(3));
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	pSDLSurf = IMG_Load("../resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pListEntrySkin = BlockSkin::createClickSelectableFromSurface(pListEntrySurface, 0, BorderI(2));
+	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(2), Orientation::Horizontal);
 
 	pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -469,7 +469,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pUpDownArrowSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pUpDownArrowSkin = BlockSkin::createSelectableFromSurface(pUpDownArrowSurface, 0, BorderI(0));
+	Skin_p pUpDownArrowSkin = BlockSkin::create(pUpDownArrowSurface, { StateEnum::Normal, StateEnum::Selected }, BorderI(0));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
