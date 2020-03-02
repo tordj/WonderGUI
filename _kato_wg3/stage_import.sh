@@ -15,7 +15,7 @@ cd ..
 cd ../../WonderGUI/src
 
 cd base
-cp wg_object.h \
+cp wg_object.* \
    wg_bitmapfont.* \
    wg_blob.* \
    wg_chain.* \
@@ -24,11 +24,13 @@ cp wg_object.h \
    wg_charseq.* \
    wg_codepages.* \
    wg_color.* \
+   wg_context.* \
    wg_dummyfont.* \
    wg_enumextras.* \
    wg_font.* \
    wg_geo.* \
    wg_gfxdevice.* \
+   wg_mempool.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \
    wg_patches.* \

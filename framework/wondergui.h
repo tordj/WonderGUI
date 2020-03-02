@@ -60,10 +60,6 @@
 #	include <wg_pen.h>
 #endif
 
-#ifndef WG_REFCOUNTED_DOT_H
-#	include <wg_refcounted.h>
-#endif
-
 #ifndef WG_ROOTPANEL_DOT_H
 #	include <wg_rootpanel.h>
 #endif

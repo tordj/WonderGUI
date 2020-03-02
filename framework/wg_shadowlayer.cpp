@@ -27,7 +27,7 @@
 #include <wg3_surfacefactory.h>
 #include <wg3_patches.h>
 #include <wg_base.h>
-#include <wg_context.h>
+#include <wg3_context.h>
 #include <wg_util.h>
 
 #include <algorithm>
@@ -596,7 +596,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (!m_pShadowSurface)
 	{
-		auto pSurfaceFactory = WgBase::Context()->pFactory;
+        auto pSurfaceFactory = wg::Base::activeContext()->surfaceFactory();
 
 		if (pSurfaceFactory)
 			m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);

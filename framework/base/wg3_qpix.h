@@ -26,12 +26,14 @@
 
 #include <cstdint>
 
+class WgBase;
 
 namespace wg
 {
 	class QPix
 	{
 		friend class Base;
+        friend class ::WgBase;
 
 	public:
 		//.____ Creation __________________________________________

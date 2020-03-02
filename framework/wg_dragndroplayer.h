@@ -26,7 +26,7 @@
 
 #include <vector>
 #include <wg_layer.h>
-#include <wg_payload.h>
+#include <wg3_payload.h>
 #include <wg_key.h>
 #include <wg3_surfacefactory.h>
 
@@ -138,8 +138,8 @@ protected:
 
     WgDragNDropHook     m_dragHook;            // Slot for widget being dragged, when it is dragged.
 
-    WgWidgetWeakPtr	m_pPicked;
-    WgPayloadPtr	m_pPayload;
+    WgWidgetWeakPtr	    m_pPicked;
+    wg::BasicPayload_p	m_pPayload;
 
     int				m_dragStartTreshold = 3;
     WgCoord         m_dragWidgetOfs;               // Drag widgets offset from pointer.

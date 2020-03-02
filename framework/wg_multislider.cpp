@@ -1257,7 +1257,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
                     int     oldClipListSize = pDevice->clipListSize();
                     
                     int allocSize = oldClipListSize*sizeof(WgRect)*2;
-                    WgRect * pRects = (WgRect*) WgBase::MemStackAlloc( allocSize );
+                    WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
 
                     // Generate cliplist for filledPart
 
@@ -1307,7 +1307,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
                     // Clean up
 
                     pDevice->setClipList(oldClipListSize, pOldClipList);
-                    WgBase::MemStackRelease(allocSize);
+                    wg::Base::memStackRelease(allocSize);
                     
 				}
 

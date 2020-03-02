@@ -14,6 +14,12 @@ class WgBlock;
 class WgWidget;
 class WgPanelHook;
 
+namespace wg
+{
+    class TextAttr;
+    class Char;
+}
+
 
 //____ WgUtil _________________________________________________________________
 
@@ -61,6 +67,7 @@ namespace WgUtil
 		return s_indexToStateTable[index];
 	}
 
+    uint32_t lineWidth( void * pNode, const wg::TextAttr& attr, wg::State mode, const wg::Char * pString );
 
 
 	// A simple checksum algorithm that just performs a long division

@@ -22,6 +22,7 @@
 
 #include <wg_iconholder.h>
 #include <wg_util.h>
+#include <wg_base.h>
 #include <wg3_util.h>
 #include <wg3_base.h>
 
@@ -240,9 +241,9 @@ wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
         return wg::Util::rawToPixels(pSkin->_preferredSize());
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::SizeI ret = wg::Util::rawToPixels(pSkin->_preferredSize());
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }

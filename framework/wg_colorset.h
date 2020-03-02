@@ -31,15 +31,14 @@
 #	include <wg_color.h>
 #endif
 
-#ifndef WG_SMARTPTR_DOT_H
-#	include <wg_smartptr.h>
-#endif
+#include <wg3_object.h>
+#include <wg3_pointers.h>
 
 class WgColorset;
 
-typedef	WgSmartPtr<WgColorset>	WgColorsetPtr;
+typedef	wg::StrongPtr<WgColorset>	WgColorsetPtr;
 
-class WgColorset : public WgRefCounted
+class WgColorset : public wg::Object
 {
 public:
 	static WgColorsetPtr	Create();

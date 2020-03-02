@@ -2485,7 +2485,7 @@ bool WgText::OnAction( WgInput::UserAction action, int button_key, const WgRect&
 
 void WgText::GetBaseAttr( wg::TextAttr& attr ) const
 {
-    WgBase::GetDefaultStyle()->exportAttr(m_state, &attr);
+    wg::Base::defaultStyle()->exportAttr(m_state, &attr);
 
     WgMode mode = WgUtil::StateToMode(m_state);
     if( m_pBgBlockColors )
@@ -2516,7 +2516,7 @@ bool WgText::GetCharAttr( wg::TextAttr& attr, int charOfs ) const
             state.setSelected(true);
     }
     
-    WgBase::GetDefaultStyle()->exportAttr(state, &attr);
+    wg::Base::defaultStyle()->exportAttr(state, &attr);
     
     WgMode mode = WgUtil::StateToMode(state);
     

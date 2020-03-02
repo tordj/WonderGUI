@@ -411,7 +411,7 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 
     wg::TextStyle * pStyle = pText->getStyle();
     if( !pStyle )
-        pStyle = WgBase::GetDefaultStyle();
+        pStyle = wg::Base::defaultStyle();
 
 	if( selStart != selEnd && pStyle->combBgColor(state).a != 0 )
 	{
@@ -641,7 +641,7 @@ void WgGfxDevice::_drawUnderline( wg::GfxDevice * pDevice, const WgText * pText,
 		pen.AdvancePos();
 	}
 
-    //MUSTFIX!
+    // Niklas is almost certain we don't use underline anywhere so I'll skip migrating this.
 /*
 	const WgUnderline * pUnderline = pen.GetFont()->GetUnderline( pen.GetSize() );
 

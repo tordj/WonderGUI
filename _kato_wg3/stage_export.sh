@@ -19,7 +19,7 @@ cp -r ../framework/skins exports/
 cp -r ../framework/fonts exports/ 
 
 rm exports/base/wg3_base.h
-rm exports/base/wg3_object.cpp
+rm exports/base/wg3_base.cpp
 
 
 ruby flip_files.rb exports/**/*.cpp exports/**/*.h exports/gfxdevices/**/*.cpp exports/gfxdevices/**/*.h exports/fonts/**/*.cpp exports/fonts/**/*.h

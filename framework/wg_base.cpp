@@ -28,19 +28,14 @@
 #include <wg3_texttool.h>
 #include <wg3_textstylemanager.h>
 #include <wg3_memstack.h>
+#include <wg3_gfxdevice.h>
+#include <wg3_surface.h>
 
-#include <wg_context.h>
-#include <wg_refcounted.h>
+#include <wg_smartptr.h>
 
-#ifdef WG_USE_FREETYPE
-#	include <ft2build.h>
-#	include <wg_vectorglyphs.h>
-#	include FT_FREETYPE_H
-#endif
 
 WgBase::Data *			WgBase::s_pData = 0;
 int WgBase::s_iSoftubeNumberOfInstances = 0;
-std::function<void(WgError&)>    WgBase::s_pErrorHandler = nullptr;
 
 //____ Init() __________________________________________________________________
 
@@ -50,15 +45,12 @@ void WgBase::Init()
     if(s_iSoftubeNumberOfInstances != 1)
         return;
     
-    wg::TextStyleManager::init();
+    wg::Base::init();
 
 	assert( s_pData == 0 );
 	s_pData = new Data;
     
-    s_pData->pContext = new WgContext;
-
 	s_pData->pDefaultCursor = 0;
-    s_pData->pMemStack = new wg::MemStack( 4096 );
 
 	s_pData->doubleClickTimeTreshold 		= 250;
 	s_pData->doubleClickDistanceTreshold 	= 2;
@@ -68,11 +60,6 @@ void WgBase::Init()
 
 	s_pData->keyRepeatDelay 	= 300;
 	s_pData->keyRepeatRate 		= 150;
-
-
-#ifdef WG_USE_FREETYPE
-	s_pData->bFreeTypeInitialized = false;
-#endif
 
     wg::TextTool::setDefaultBreakRules();
 }
@@ -87,95 +74,11 @@ void WgBase::Exit()
     
 	assert( s_pData != 0 );
 
-    
-#ifdef WG_USE_FREETYPE
-
-	WgVectorGlyphs::SetSurfaceFactory(0);
-	WgVectorGlyphs::ClearCache();
-
-	if( s_pData->bFreeTypeInitialized )
-		FT_Done_FreeType( s_pData->freeTypeLibrary );
-#endif
-    delete s_pData->pContext;
-	delete s_pData->pMemStack;
 	delete s_pData;
 	s_pData = 0;
 
-    wg::TextStyleManager::exit();
+    wg::Base::exit();
 }
-
-//____ handleError() _________________________________________________________
-
-void WgBase::handleError(wg::ErrorCode code, const char * msg, const wg::Object * pObject, const char * classname, const char * function, const char * file, int line)
-{
-    if (s_pErrorHandler)
-    {
-        WgError    error;
-        
-        error.code = code;
-        error.message = msg;
-        error.pObject = pObject;
-        error.classname = classname;
-        error.function = function;
-        error.file = file;
-        error.line = line;
-        
-        s_pErrorHandler(error);
-    }
-}
-
-//____ setErrorHandler() _________________________________________________________
-
-void WgBase::setErrorHandler(std::function<void(WgError&)> handler)
-{
-    s_pErrorHandler = handler;
-}
-
-//____ errorHandler() ____________________________________________________________
-
-std::function<void(WgError&)>    WgBase::errorHandler()
-{
-    return s_pErrorHandler;
-}
-
-//____ SetContext() __________________________________________________________
-
-void WgBase::SetContext( const WgContext& context )
-{
-    assert( s_pData != 0 );
-    * s_pData->pContext = context;
-}
-
-
-//____ InitFreeType() _________________________________________________________
-
-#ifdef WG_USE_FREETYPE
-bool WgBase::InitFreeType()
-{
-	assert( s_pData != 0 );
-	if( s_pData->bFreeTypeInitialized )
-		return true;
-
-	FT_Error err = FT_Init_FreeType( &s_pData->freeTypeLibrary );
-	if( err == 0 )
-	{
-		s_pData->bFreeTypeInitialized = true;
-		return true;
-	}
-
-	return false;
-}
-#endif
-
-
-//____ SetDefaultStyle() ___________________________________________________
-
-void WgBase::SetDefaultStyle( wg::TextStyle * pStyle )
-{
-	assert( s_pData != 0 );
-	s_pData->pDefaultTextStyle = pStyle;
-}
-
 
 //____ SetDefaultCursor() ___________________________________________________
 
@@ -272,24 +175,9 @@ WgKey WgBase::TranslateKey( int native_keycode )
 		return WG_KEY_UNMAPPED;
 }
 
-//____ MemStackAlloc() ________________________________________________________
+//____ _setQuartersPerPoint() ____________________________________________
 
-char * WgBase::MemStackAlloc( int bytes )
-{ 
-	assert(s_pData!=0); 
-	return s_pData->pMemStack->alloc(bytes);
-}
-
-//____ MemStackRelease() ______________________________________________________
-
-void WgBase::MemStackRelease( int bytes )
-{	assert(s_pData!=0); 
-	return s_pData->pMemStack->release(bytes); 
-}
-
-//____ Base::setQuartersPerPoint() ____________________________________________
-
-void wg::Base::setQuartersPerPoint( int quarterPixels )
+void WgBase::_setQuartersPerPoint( int quarterPixels )
 {
     wg::QPix::s_pixelQuartersPerPoint = quarterPixels;
     wg::QPix::s_scale = quarterPixels / 4.f;

@@ -6,6 +6,7 @@
 #include <wg_widget.h>
 #include <wg_panel.h>
 #include <wg_gfxanim.h>
+#include <wg_pen.h>
 
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
@@ -509,4 +510,38 @@ float WgUtil::ParametricBlendInOut(float t)
     return sqt / (2.0f * (sqt - t) + 1.0f);
 }
 
+//____ lineWidth() ____________________________________________________________________
 
+uint32_t WgUtil::lineWidth( void * pNode, const wg::TextAttr& attr, wg::State state, const wg::Char * pString )
+{
+    wg::TextAttr    attr2;
+    
+    WgPen pen;
+    Uint16 hStyle = 0xFFFF;
+    
+    while( !pString->isEndOfLine() )
+    {
+        if( pString->styleHandle() != hStyle )
+        {
+            attr2 = attr;
+            
+            auto pStyle = pString->stylePtr();
+            
+            if( pStyle )
+                pStyle->addToAttr( state, &attr2 );
+            pen.SetAttributes( attr2 );
+        }
+        pen.SetChar( pString->code() );
+        pen.ApplyKerning();
+        pen.AdvancePos();
+        pString++;
+    }
+    
+    // We include the terminator in case it is set to be visible.
+    
+    pen.SetChar( pString->code() );
+    pen.ApplyKerning();
+    pen.AdvancePos();
+    
+    return pen.GetPosX();
+}

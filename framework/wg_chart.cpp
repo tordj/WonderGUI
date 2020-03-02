@@ -670,7 +670,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgPen	pen(pDevice, _canvas);
                 wg::TextAttr attr;
 
-                WgBase::GetDefaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+                wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
                 if( m_sampleLabelStyle.pTextStyle )
                     m_sampleLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 				attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
@@ -678,7 +678,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 
 				WgSize labelSize;
-//MUSTFIX!                labelSize.w = wg::TextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.chars());
+                labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -719,7 +719,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 				WgPen	pen(pDevice, _canvas);
                 wg::TextAttr attr;
 
-                WgBase::GetDefaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+                wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
                 if( m_valueLabelStyle.pTextStyle )
                     m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 
@@ -728,7 +728,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 
 				WgSize labelSize;
-//MUSTFIX!                labelSize.w = wg::TextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.chars());
+                labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -757,7 +757,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 	WgRect waveClip( waveCanvas.x, canvas.y, waveCanvas.w, canvas.h );		// Samples stay within padding, values may stretch outside.
     
     int allocSize = oldClipListSize*sizeof(WgRect);
-    WgRect * pRects = (WgRect*) WgBase::MemStackAlloc( allocSize );
+    WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
     int nRects = 0;
     
     for( int i = 0 ; i < oldClipListSize ; i++ )
@@ -782,7 +782,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 	}
 
     pDevice->setClipList(oldClipListSize, pOldClipList);
-    WgBase::MemStackRelease(allocSize);
+    wg::Base::memStackRelease(allocSize);
 }
 
 //____ _renderWave() __________________________________________________________
@@ -984,7 +984,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		nbNewTopSamples = nResampled;
 
 		if( bRequestRenderOnChanges )
-			pNewTopSamples = (int*) WgBase::MemStackAlloc( nResampled * sizeof(int) );
+			pNewTopSamples = (int*) wg::Base::memStackAlloc( nResampled * sizeof(int) );
 		else
 		{
 			pWave->resampledTop.resize(nResampled);
@@ -1020,7 +1020,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		nbNewBottomSamples = nResampled;
 
 		if (bRequestRenderOnChanges)
-			pNewBottomSamples = (int*) WgBase::MemStackAlloc(nResampled * sizeof(int));
+			pNewBottomSamples = (int*) wg::Base::memStackAlloc(nResampled * sizeof(int));
 		else
 		{
 			pWave->resampledBottom.resize(nResampled);
@@ -1071,14 +1071,14 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		{
 			pWave->resampledBottom.resize(nResampled);
 			memcpy(&pWave->resampledBottom[0], pNewBottomSamples, nbNewBottomSamples * sizeof(int));
-			WgBase::MemStackRelease(nbNewBottomSamples * sizeof(int));
+			wg::Base::memStackRelease(nbNewBottomSamples * sizeof(int));
 		}
 
 		if( nbNewTopSamples > 0 )
 		{
 			pWave->resampledTop.resize(nResampled);
 			memcpy(&pWave->resampledTop[0], pNewTopSamples, nbNewTopSamples * sizeof(int));
-			WgBase::MemStackRelease(nbNewTopSamples * sizeof(int));
+			wg::Base::memStackRelease(nbNewTopSamples * sizeof(int));
 		}
 	}
 

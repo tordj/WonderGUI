@@ -42,18 +42,12 @@
 #	include <wg_key.h>
 #endif
 
+#include <wg3_base.h>
 #include <wg3_textstyle.h>
-
-
-#ifdef WG_USE_FREETYPE
-
-typedef struct FT_LibraryRec_  *FT_Library;
-
-#endif
+#include <wg3_context.h>
 
 
 class WgCursor;
-struct WgContext;
 
 namespace wg
 {
@@ -79,22 +73,7 @@ class WgBase
 public:
 	static void Init();
 	static void Exit();
-
-
-#ifdef WG_USE_FREETYPE
-	static bool					InitFreeType();
-	static inline FT_Library	GetFreeTypeLibrary() { assert(s_pData!=0); return s_pData->freeTypeLibrary; }
-#endif
-
-    static void     SetContext( const WgContext& context );
-    static const WgContext *     Context() { assert(s_pData!=0); return s_pData->pContext; }
-
-//	static void SetDefaultTextManager( const WgTextMgrPtr& pManager );
-//	static const WgTextMgrPtr& GetDefaultTextManager();
-
-    static void 	SetDefaultStyle( wg::TextStyle* pTextStyle );
-    static wg::TextStyle_p GetDefaultStyle() { assert(s_pData!=0); return s_pData->pDefaultTextStyle; }
-
+    
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
@@ -116,21 +95,13 @@ public:
 	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
 	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
 
-	static char *	MemStackAlloc( int bytes );
-	static void		MemStackRelease( int bytes );
+    static void     _setQuartersPerPoint( int quarterPixels );   
 
-    static void     setErrorHandler(std::function<void(WgError&)> handler);
-    std::function<void(WgError&)>    errorHandler();
     
-    static void     handleError( wg::ErrorCode code, const char * pMsg, const wg::Object * pObject, const char * pClass, const char * pFunction, const char * pFile, int line );
-
 private:
 
 	struct Data
-	{
-        WgContext *         pContext;
-        
-        wg::TextStyle_p		pDefaultTextStyle;
+	{        
 		WgCursor *			pDefaultCursor;
 
 		// Settings for keyboard/pointer input
@@ -148,19 +119,10 @@ private:
 
 		//
 
-        wg::MemStack *		pMemStack;
-
-#ifdef WG_USE_FREETYPE
-		bool				bFreeTypeInitialized;
-		FT_Library			freeTypeLibrary;
-#endif
-
 	};
 
     static int                              s_iSoftubeNumberOfInstances;
 	static Data *	                        s_pData;
-    static std::function<void(WgError&)>    s_pErrorHandler;
 };
-
 
 #endif //WG_BASE_DOT_H

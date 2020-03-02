@@ -41,7 +41,7 @@
 #	include <wg_smartptr.h>
 #endif
 
-
+#include <wg3_payload.h>
 
 class WgEventHandler;
 class WgWidget;
@@ -56,11 +56,9 @@ class WgModalLayer;
 class WgInterfaceEditText;
 class WgText;
 class WgMultiSlider;
-class WgPayload;
 class WgDragNDropLayer;
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
-typedef class WgSmartPtr<WgPayload> WgPayloadPtr;
 
 namespace WgEvent
 {
@@ -312,16 +310,16 @@ namespace WgEvent
         friend class ::WgDragNDropLayer;
     public:
         
-        WgPayloadPtr       payload() const { return m_pPayload; }
-        WgWidgetWeakPtr    pickedFrom() const { return m_pPickedFrom; }
-        int                pickCategory() const { return m_pickCategory; }
+        wg::BasicPayload_p  payload() const { return m_pPayload; }
+        WgWidgetWeakPtr     pickedFrom() const { return m_pPickedFrom; }
+        int                 pickCategory() const { return m_pickCategory; }
         
     protected:
-        DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
         virtual void     _cloneContentFrom( const Event * pOrg );
 
-        WgPayloadPtr        m_pPayload;
-        WgWidgetWeakPtr    m_pPickedFrom;
+        wg::BasicPayload_p  m_pPayload;
+        WgWidgetWeakPtr     m_pPickedFrom;
         int                 m_pickCategory;
     };
     
@@ -330,7 +328,7 @@ namespace WgEvent
         friend class ::WgDragNDropLayer;
     public:
         
-        void                setPayload( WgPayload * pPayload );
+        void                setPayload( wg::BasicPayload * pPayload );
         bool                hasPayload() const { return m_pPayload; }
         
         WgCoord               pickOfs() const { return m_pickOfs; }
@@ -359,7 +357,7 @@ namespace WgEvent
         bool            isAccepted() const { return m_bAccepted; }
         
     protected:
-        DropProbe( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
         
         bool        m_bAccepted;
     };
@@ -373,7 +371,7 @@ namespace WgEvent
         WgWidget *          dragWidget() const { return m_pDragWidget; }
         
     protected:
-        DropEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+        DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
         
         WgWidget *          m_pDragWidget;
     };
@@ -387,7 +385,7 @@ namespace WgEvent
         WgWidget *          dragWidget() const { return m_pDragWidget; }
         
     protected:
-        DropMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+        DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
         
         WgWidget *          m_pDragWidget;
     };
@@ -397,7 +395,7 @@ namespace WgEvent
         friend class ::WgDragNDropLayer;
         
     protected:
-        DropLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+        DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
     };
     
     class DropDeliver : public DragNDrop
@@ -410,7 +408,7 @@ namespace WgEvent
         bool            isAccepted() const { return m_bAccepted; }
         
     protected:
-        DropDeliver( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+        DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
         
         bool        m_bAccepted;
     };
@@ -420,7 +418,7 @@ namespace WgEvent
         friend class ::WgDragNDropLayer;
         
     protected:
-        DropCancel( WgWidget * pPickedFrom, int pickCategory, WgPayload * pPayload );
+        DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload );
         
     };
     
@@ -432,7 +430,7 @@ namespace WgEvent
         WgWidget *      deliveredTo() const { return m_pDeliveree; }
         
     protected:
-        DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, WgPayload * pPayload );
+        DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload );
         
         WgWidget *     m_pDeliveree;
     };
@@ -444,7 +442,7 @@ namespace WgEvent
     public:
         
     protected:
-        DropHoverEnter( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+        DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
     };
     
     class DropHoverMove : public DragNDrop
@@ -453,7 +451,7 @@ namespace WgEvent
     public:
         
     protected:
-        DropHoverMove( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+        DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
     };
     
     class DropHoverLeave : public DragNDrop
@@ -461,7 +459,7 @@ namespace WgEvent
         friend class ::WgDragNDropLayer;
         
     protected:
-        DropHoverLeave( WgWidget * pSource, int pickCategory, WgPayload * pPayload, WgWidget * pPickedFrom );
+        DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
     };
 
     

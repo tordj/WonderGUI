@@ -26,13 +26,12 @@
 #include <wg_eventhandler.h>
 #include <wg3_patches.h>
 #include <wg3_surfacefactory.h>
-#include <wg_payload.h>
 #include <wg_image.h>
 #include <wg_base.h>
 #include <wg_sizecapsule.h>
 #include <wg_shadercapsule.h>
 #include <wg_util.h>
-#include <wg_context.h>
+#include <wg3_context.h>
 #include <wg_dragndroplayer.h>
 
 
@@ -379,7 +378,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
             
             if( screenshotArea.contains(pickOfs) || m_innerZoom > 0.95f )
             {
-                pEv->setPayload(WgPayloadWidget::Create(m_hook.Widget()).GetRealPtr());
+                pEv->setPayload(wg::Payload<WgWidgetWeakPtr>::create(m_hook.Widget()));
                 
                 // Generate a screenshot
 
@@ -388,7 +387,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
                 
                 // We need a separate surface that will belong to our image.
                 
-                auto pSurface = WgBase::Context()->pFactory->createSurface(m_pScreenshot->size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
+                auto pSurface = wg::Base::activeContext()->surfaceFactory()->createSurface(m_pScreenshot->size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
                 pSurface->copyFrom( m_pScreenshot, {0,0} );
 
                 auto pImage = new WgImage();

@@ -47,7 +47,7 @@
 #include <wg_chart.h>
 #include <wg_scrollchart.h>
 #include <wg_canvascapsule.h>
-#include <wg_context.h>
+#include <wg3_context.h>
 
 #include <wg_popupopener.h>
 #include <wg_popuplayer.h>
@@ -221,11 +221,11 @@ int main ( int argc, char** argv )
 //    g_pModernSurfaceFactory = wg::SoftSurfaceFactory::create();
 #endif
 
-    WgContext context;
-    context.scale = 2.f;
-    context.pDevice = g_pGfxDevice;
-    context.pFactory = g_pSurfaceFactory;
-    WgBase::SetContext(context);
+    auto pContext = wg::Context::create();
+    pContext->setScale(2.f);
+    pContext->setGfxDevice(g_pGfxDevice);
+    pContext->setSurfaceFactory(g_pSurfaceFactory);
+    wg::Base::setActiveContext(pContext);
 
     
 	//	pGfxDevice->SetBilinearFiltering( true );
@@ -282,7 +282,7 @@ int main ( int argc, char** argv )
     pTextStyle->setSize(16);
     
 
-	WgBase::SetDefaultStyle( pTextStyle );
+    wg::Base::setDefaultStyle( pTextStyle );
 
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
@@ -1046,7 +1046,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 	WgRootPanel * pRoot = new WgRootPanel(pDevice);
 
-    pRoot->SetScale(WgBase::Context()->scale*4096);
+    pRoot->SetScale(wg::Base::activeContext()->scale()*4096);
 
 	WgEventHandler * pEventHandler = pRoot->EventHandler();
 

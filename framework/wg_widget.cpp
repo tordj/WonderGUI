@@ -22,11 +22,11 @@
 
 #include <wg_widget.h>
 #include <wg_base.h>
-#include <wg_context.h>
+#include <wg3_context.h>
 #include <wg_types.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg_payload.h>
+#include <wg3_payload.h>
 #include <wg3_base.h>
 #include <wg3_surfacefactory.h>
 #include <wg3_util.h>
@@ -226,8 +226,8 @@ WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 
 wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 {
-    auto pDevice = WgBase::Context()->pDevice.rawPtr();
-    auto pFactory =  WgBase::Context()->pFactory;
+    auto pDevice = wg::Base::activeContext()->gfxDevice();
+    auto pFactory =  wg::Base::activeContext()->surfaceFactory();
     
     if( !pDevice || !pFactory )
         return nullptr;
@@ -540,7 +540,7 @@ void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandl
             auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
             if (!pEvent->hasPayload())
             {
-                const_cast<WgEvent::DropPick*>(pEvent)->setPayload(WgPayloadWidget::Create(this).GetRealPtr());
+                const_cast<WgEvent::DropPick*>(pEvent)->setPayload(wg::Payload<WgWidgetWeakPtr>::create(this));
             }
             bForward = false;
             break;
@@ -623,9 +623,9 @@ void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State
         pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), state );
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         pSkin->_render( pDevice, wg::Util::pixelsToRaw(rect), state );
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
     }
 }
 
@@ -640,9 +640,9 @@ bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg:
         return pSkin->_markTest( wg::Util::pixelsToRaw(ofs), wg::Util::pixelsToRaw(canvas), state, opacityTreshold );
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         bool ret = pSkin->_markTest( wg::Util::pixelsToRaw(ofs), wg::Util::pixelsToRaw(canvas), state, opacityTreshold );
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }
@@ -658,9 +658,9 @@ wg::SizeI WgWidget::_skinMinSize( wg::Skin * pSkin, int scale ) const
         return wg::Util::rawToPixels(pSkin->_minSize());
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::SizeI ret = wg::Util::rawToPixels(pSkin->_minSize());
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
     
@@ -677,9 +677,9 @@ wg::SizeI WgWidget::_skinPreferredSize( wg::Skin * pSkin, int scale ) const
         return wg::Util::rawToPixels(pSkin->_preferredSize());
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::SizeI ret = wg::Util::rawToPixels(pSkin->_preferredSize());
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }
@@ -695,9 +695,9 @@ wg::SizeI WgWidget::_skinSizeForContent(wg::Skin * pSkin, const wg::SizeI conten
         return wg::Util::rawToPixels(pSkin->_sizeForContent(wg::Util::pixelsToRaw(contentSize)));
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::SizeI ret = wg::Util::rawToPixels(pSkin->_sizeForContent(wg::Util::pixelsToRaw(contentSize)));
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }
@@ -713,9 +713,9 @@ wg::SizeI WgWidget::_skinContentPadding(wg::Skin * pSkin, int scale) const
         return wg::Util::rawToPixels(pSkin->_contentPadding());
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::SizeI ret = wg::Util::rawToPixels(pSkin->_contentPadding());
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }
@@ -731,9 +731,9 @@ wg::CoordI WgWidget::_skinContentOfs(wg::Skin * pSkin, wg::State state, int scal
         return wg::Util::rawToPixels(pSkin->_contentOfs(state));
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::CoordI ret = wg::Util::rawToPixels(pSkin->_contentOfs(state));
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }
@@ -749,9 +749,9 @@ wg::RectI WgWidget::_skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, 
         return wg::Util::rawToPixels(pSkin->_contentRect(wg::Util::pixelsToRaw(canvas),state));
     else
     {
-        wg::Base::setQuartersPerPoint(pixelQuarters);
+        WgBase::_setQuartersPerPoint(pixelQuarters);
         wg::RectI ret = wg::Util::rawToPixels(pSkin->_contentRect(wg::Util::pixelsToRaw(canvas),state));
-        wg::Base::setQuartersPerPoint(globalPixelQuarters);
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }
 }

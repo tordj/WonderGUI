@@ -238,7 +238,7 @@ void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 	}
 
 	int allocSize = sizeof(WgRect)*nSegments;
-	WgRect * pSegments = reinterpret_cast<WgRect*>(WgBase::MemStackAlloc(allocSize));
+	WgRect * pSegments = reinterpret_cast<WgRect*>(wg::Base::memStackAlloc(allocSize));
 
 
 	int ofs = 0;
@@ -264,7 +264,7 @@ void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 	
 	// Return memory allocated for render segments
 	
-	WgBase::MemStackRelease(allocSize);
+	wg::Base::memStackRelease(allocSize);
 }
 
 //____ _updateRenderSegments()__________________________________________________

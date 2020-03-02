@@ -318,7 +318,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                     if( pProbed && pProbed != this && pProbed != m_pProbed.GetRealPtr() )
                     {
                         m_pProbed = pProbed;
-                        pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), this ));
+                        pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this ));
                     }
                     break;
                 }
@@ -338,7 +338,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                         // Untarget previous target. Probing possibly new target we leave for next round.
                         
                         if( m_pTargeted )
-                            pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ));
+                            pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ));
                         
                         m_pTargeted = nullptr;
                         m_dragState = DragState::Dragging;
@@ -352,7 +352,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                         if( targetOfs != m_targetOfs )
                         {
                             m_targetOfs = targetOfs;
-                            pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
+                            pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
                         }
                     }
                     break;
@@ -480,9 +480,9 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
                 {
                     if( m_pTargeted )
                     {
-                        pHandler->QueueEvent(new WgEvent::DropDeliver(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), this));
+                        pHandler->QueueEvent(new WgEvent::DropDeliver(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this));
                         m_dragState = DragState::Delivering;
-                        pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr()));
+                        pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
                         m_pTargeted = nullptr;
                     }
                     else
@@ -564,7 +564,7 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
             {
                 WgWidget * pTargeted = pEvent->Widget();
 
-                pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr(), m_dragHook.m_pWidget,  this));
+                pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget,  this));
 
                 m_pProbed = nullptr;
                 m_pTargeted = pTargeted;
@@ -633,7 +633,7 @@ void WgDragNDropLayer::_cancel()
 
     if( m_pTargeted )
     {
-        _eventHandler()->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr()));
+        _eventHandler()->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
         m_pTargeted = nullptr;
     }
 
@@ -657,7 +657,7 @@ void WgDragNDropLayer::_complete( WgWidget * pDeliveredTo )
         _replaceWidgetInHook(nullptr);
     }
     
-    _eventHandler()->QueueEvent(new WgEvent::DropComplete(m_pPicked.GetRealPtr(), pDeliveredTo, m_pickCategory, m_pPayload.GetRealPtr()));
+    _eventHandler()->QueueEvent(new WgEvent::DropComplete(m_pPicked.GetRealPtr(), pDeliveredTo, m_pickCategory, m_pPayload));
     m_pPicked = nullptr;
     m_pPayload = nullptr;
     m_dragState = DragState::Idle;
@@ -736,18 +736,18 @@ void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
         int ofs = _widgetPosInList( pWidget, m_vHoveredInside );
         if( ofs >= 0 )
         {
-            _queueEvent( new WgEvent::DropHoverMove( m_vHoveredInside[ofs].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+            _queueEvent( new WgEvent::DropHoverMove( m_vHoveredInside[ofs].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
             m_vHoveredInside[ofs] = 0;
         }
         else
-            _queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+            _queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
     }
     
     // Send MouseLeave to those that were left.
     
     for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
         if(m_vHoveredInside[i] )
-            _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+            _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
     
     // Replace the old list with a new one.
     
@@ -761,7 +761,7 @@ void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
 void WgDragNDropLayer::_clearDropHovered()
 {
     for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
-        _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload.GetRealPtr(), m_pPicked.GetRealPtr() ) );
+        _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
 
     m_vHoveredInside.clear();
 }

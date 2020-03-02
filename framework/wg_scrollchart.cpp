@@ -896,7 +896,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 	int nSamples = (_canvas.w+1) + margin*2;
 	int bufferSize = nSamples * sizeof(int) * 2;
 
-	int * pTopBuffer = (int*) WgBase::MemStackAlloc(bufferSize);
+	int * pTopBuffer = (int*) wg::Base::memStackAlloc(bufferSize);
 	int * pBottomBuffer = pTopBuffer + nSamples;
 
 	// Calculate yOfs, chart floor and valueFactor
@@ -954,7 +954,7 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 		}
 	}
 
-	WgBase::MemStackRelease(bufferSize);
+	wg::Base::memStackRelease(bufferSize);
 }
 
 //____ _resampleWavePortion() _________________________________________________
@@ -1090,7 +1090,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
                 int     oldClipListSize = pDevice->clipListSize();
                 
                 int allocSize = oldClipListSize*sizeof(WgRect)*4;
-                WgRect * pRects = (WgRect*) WgBase::MemStackAlloc( allocSize );
+                WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
                 int nRects = 0;
                 
                 for( int i = 0 ; i < oldClipListSize ; i++ )
@@ -1113,7 +1113,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
                 _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
 
                 pDevice->setClipList(oldClipListSize, pOldClipList);
-                WgBase::MemStackRelease(allocSize);
+                wg::Base::memStackRelease(allocSize);
 			}
 		}
 		else
@@ -1172,7 +1172,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				WgPen	pen(pDevice, _canvas);
                 wg::TextAttr attr;
 
-                WgBase::GetDefaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+                wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
                 if( m_valueLabelStyle.pTextStyle )
                     m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 
@@ -1180,7 +1180,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				pen.SetAttributes(attr);
 
 				WgSize labelSize;
-//MUSTFIX!				labelSize.w = WgTextTool::lineWidth(nullptr, attr, WG_MODE_NORMAL, line.label.Chars());
+                labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
