@@ -470,6 +470,9 @@
     <ClInclude Include="..\..\..\src\components\wg_cvector.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -804,6 +807,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_sidecanvas.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_lambdaskin.cpp">
+      <Filter>skins</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
