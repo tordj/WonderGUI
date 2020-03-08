@@ -221,13 +221,13 @@ namespace wg
 		{
 			length = m_size.w;
 			if( m_pSkin )
-				length -= m_pSkin->_contentPadding().w;
+				length -= m_pSkin->_contentPaddingSize().w;
 		}
 		else
 		{
 			length = m_size.h;
 			if( m_pSkin )
-				length -= m_pSkin->_contentPadding().h;
+				length -= m_pSkin->_contentPaddingSize().h;
 		}
 
 		length -= m_headerLen + m_footerLen;
@@ -503,13 +503,13 @@ namespace wg
 		{
 			maxLen = m_size.w;
 			if( m_pSkin )
-				maxLen -= m_pSkin->_contentPadding().w;
+				maxLen -= m_pSkin->_contentPaddingSize().w;
 		}
 		else
 		{
 			maxLen = m_size.h;
 			if( m_pSkin )
-				maxLen -= m_pSkin->_contentPadding().h;
+				maxLen -= m_pSkin->_contentPaddingSize().h;
 		}
 		maxLen -= m_headerLen + m_footerLen;
 
@@ -646,8 +646,8 @@ namespace wg
 
 		if( m_pSkin )
 		{
-			minW += m_pSkin->_contentPadding().w;
-			minH += m_pSkin->_contentPadding().h;
+			minW += m_pSkin->_contentPaddingSize().w;
+			minH += m_pSkin->_contentPaddingSize().h;
 		}
 
 		// Set if changed.

@@ -122,7 +122,15 @@ namespace wg
 
 	//____ _contentPadding() ______________________________________________________________
 
-	SizeI StaticColorSkin::_contentPadding() const
+	BorderI StaticColorSkin::_contentPadding() const
+	{
+		return BorderI();
+	}
+
+
+	//____ _contentPaddingSize() ______________________________________________________________
+
+	SizeI StaticColorSkin::_contentPaddingSize() const
 	{
 		return SizeI();
 	}

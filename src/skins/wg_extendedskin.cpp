@@ -66,7 +66,9 @@ namespace wg
 		m_contentPadding = padding;
 	}
 
-	Size ExtendedSkin::contentPaddingAdapted() const
+	//____ contentPaddingAdapted() _______________________________________________
+
+	Border ExtendedSkin::contentPaddingAdapted() const
 	{
 		return Util::rawToQpix(_contentPadding());
 	}
@@ -156,7 +158,14 @@ namespace wg
 
 	//____ _contentPadding() _______________________________________________________
 
-	SizeI ExtendedSkin::_contentPadding() const
+	BorderI ExtendedSkin::_contentPadding() const
+	{
+		return pointsToRawAligned(m_contentPadding);
+	}
+
+	//____ _contentPaddingSize() _______________________________________________________
+
+	SizeI ExtendedSkin::_contentPaddingSize() const
 	{
 		return pointsToRawAligned(m_contentPadding);
 	}

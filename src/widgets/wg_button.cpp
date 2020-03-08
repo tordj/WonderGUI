@@ -90,7 +90,7 @@ namespace wg
 			SizeI padding;
 
 			if( m_pSkin )
-				padding = m_pSkin->_contentPadding();
+				padding = m_pSkin->_contentPaddingSize();
 
 			int heightForText = _text()._matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
@@ -140,7 +140,7 @@ namespace wg
 		RectI	contentRect(0,0,_size);
 
 		if( m_pSkin )
-			contentRect -= m_pSkin->_contentPadding();
+			contentRect -= m_pSkin->_contentPaddingSize();
 
 		RectI textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
@@ -326,7 +326,7 @@ namespace wg
 		SizeI	sz = m_size;
 
 		if( m_pSkin )
-			sz -= m_pSkin->_contentPadding();
+			sz -= m_pSkin->_contentPaddingSize();
 
 		RectI iconRect = _icon()._getIconRect( sz );
 

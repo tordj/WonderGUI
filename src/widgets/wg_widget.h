@@ -232,7 +232,7 @@ namespace wg
 
 		inline RectI		_contentRect() const { return m_pSkin ? m_pSkin->_contentRect(m_size, m_state) : RectI( m_size ); }
 		inline RectI		_contentRect(const RectI& canvas) const { return m_pSkin ? m_pSkin->_contentRect(canvas, m_state) : canvas; }
-		inline SizeI		_contentPadding() const { return m_pSkin ? m_pSkin->_contentPadding() : SizeI(); }
+		inline SizeI		_contentPaddingSize() const { return m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI(); }
 
 		// Convenient calls to holder
 

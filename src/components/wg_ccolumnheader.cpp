@@ -268,7 +268,7 @@ namespace wg
 	{
 		SizeI	s  = m_size;
 		if( m_pSkin )
-			s -= m_pSkin->_contentPadding();
+			s -= m_pSkin->_contentPaddingSize();
 		return s;
 	}
 

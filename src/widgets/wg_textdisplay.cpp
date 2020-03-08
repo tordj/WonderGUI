@@ -103,7 +103,7 @@ namespace wg
 		int textWidth = _text()._matchingWidth(height);
 
 		if (m_pSkin)
-			textWidth += m_pSkin->_contentPadding().w;
+			textWidth += m_pSkin->_contentPaddingSize().w;
 
 		return textWidth;
 	}
@@ -117,7 +117,7 @@ namespace wg
 		int textHeight = _text()._matchingHeight(width);
 
 		if (m_pSkin)
-			textHeight += m_pSkin->_contentPadding().h;
+			textHeight += m_pSkin->_contentPaddingSize().h;
 
 		return textHeight;
 	}
@@ -198,10 +198,10 @@ namespace wg
 
 	void TextDisplay::_setSkin( Skin * pSkin )
 	{
-		SizeI oldTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+		SizeI oldTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 		Widget::_setSkin(pSkin);
 
-		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+		SizeI newTextCanvas = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
 			_text()._setSize(newTextCanvas);
@@ -215,7 +215,7 @@ namespace wg
 
 		SizeI textSize = size;
 		if( m_pSkin )
-			textSize -= m_pSkin->_contentPadding();
+			textSize -= m_pSkin->_contentPaddingSize();
 
 		_text()._setSize( textSize );
 	}

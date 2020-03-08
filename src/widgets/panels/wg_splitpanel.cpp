@@ -197,7 +197,7 @@ namespace wg
 
 		if (m_pSkin)
 		{
-			sz += m_pSkin->_contentPadding();
+			sz += m_pSkin->_contentPaddingSize();
 			SizeI skinSz = m_pSkin->_preferredSize();
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;

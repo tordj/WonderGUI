@@ -151,7 +151,7 @@ namespace wg
 	{
 		SizeI size = m_preferredContentSize;
 		if (m_pSkin)
-			size += m_pSkin->_contentPadding();
+			size += m_pSkin->_contentPaddingSize();
 
 		return size;
 	}
@@ -233,7 +233,7 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			height += m_pSkin->_contentPadding().h;
+			height += m_pSkin->_contentPaddingSize().h;
 
 		return height;
 	}
@@ -315,7 +315,7 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			width += m_pSkin->_contentPadding().w;
+			width += m_pSkin->_contentPaddingSize().w;
 
 		return width;
 	}
@@ -598,7 +598,7 @@ namespace wg
 		// Recalculate preferred sizes for widget and content.
 
 		SizeI newPreferredContentSize = _calcPreferredSize();
-		SizeI newPreferredSize = m_pSkin ? newPreferredContentSize + m_pSkin->_contentPadding() : newPreferredContentSize;
+		SizeI newPreferredSize = m_pSkin ? newPreferredContentSize + m_pSkin->_contentPaddingSize() : newPreferredContentSize;
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -702,7 +702,7 @@ namespace wg
 
 		if (m_pSkin)
 		{
-			sz -= m_pSkin->_contentPadding();
+			sz -= m_pSkin->_contentPaddingSize();
 			contentOfs = m_pSkin->_contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
 		}
 

@@ -179,7 +179,7 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text()._setSize( SizeI(_text()._preferredSize().w, size.h - m_pSkin->_contentPadding().h ) );
+			_text()._setSize( SizeI(_text()._preferredSize().w, size.h - m_pSkin->_contentPaddingSize().h ) );
 		else
 			_text()._setSize( SizeI( _text()._preferredSize().w, size.h ) );
 	}
@@ -201,7 +201,7 @@ namespace wg
 	SizeI LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return SizeI( _text()._preferredSize().w, m_size.h - m_pSkin->_contentPadding().h );
+			return SizeI( _text()._preferredSize().w, m_size.h - m_pSkin->_contentPaddingSize().h );
 		else
 			return SizeI( _text()._preferredSize().w, m_size.h );
 	}
@@ -259,7 +259,7 @@ namespace wg
 
 		int height = m_size.h;
 		if( m_pSkin )
-			height -= m_pSkin->_contentPadding().h;
+			height -= m_pSkin->_contentPaddingSize().h;
 
 		if( preferred.h != height )
 			_requestResize();
@@ -276,7 +276,7 @@ namespace wg
 
 		SizeI window = m_size;
 		if( m_pSkin )
-			window -= m_pSkin->_contentPadding();
+			window -= m_pSkin->_contentPaddingSize();
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;

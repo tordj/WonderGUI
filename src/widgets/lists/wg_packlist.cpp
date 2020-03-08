@@ -187,7 +187,7 @@ namespace wg
 
 	SizeI PackList::_preferredSize() const
 	{
-		SizeI sz = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+		SizeI sz = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
 		SizeI headerSize = _header()._preferredSize();
 
 		if (m_bHorizontal)
@@ -214,7 +214,7 @@ namespace wg
 		{
 			int height = m_contentPreferredBreadth;
 			if (m_pSkin)
-				height += m_pSkin->_contentPadding().h;
+				height += m_pSkin->_contentPaddingSize().h;
 
 			return std::max(height, _header()._preferredSize().h);
 		}
@@ -223,7 +223,7 @@ namespace wg
 			int height = _header()._matchingHeight(width);
 			if (m_pSkin)
 			{
-				SizeI pad = m_pSkin->_contentPadding();
+				SizeI pad = m_pSkin->_contentPaddingSize();
 				width -= pad.w;
 				height += pad.h;
 			}
@@ -246,7 +246,7 @@ namespace wg
 			int width = _header()._matchingWidth(height);
 			if (m_pSkin)
 			{
-				SizeI pad = m_pSkin->_contentPadding();
+				SizeI pad = m_pSkin->_contentPaddingSize();
 				height -= pad.w;
 				width += pad.h;
 			}
@@ -262,7 +262,7 @@ namespace wg
 		{
 			int width = m_contentPreferredBreadth;
 			if (m_pSkin)
-				width += m_pSkin->_contentPadding().w;
+				width += m_pSkin->_contentPaddingSize().w;
 
 			return std::max(width, _header()._preferredSize().w);
 		}
@@ -438,7 +438,7 @@ namespace wg
 
 		SizeI size = _size;
 		if( m_pSkin )
-			size -= m_pSkin->_contentPadding();
+			size -= m_pSkin->_contentPaddingSize();
 
 		int newContentBreadth;
 
@@ -495,7 +495,7 @@ namespace wg
 	void PackList::_refreshList()
 	{
 		if( m_pEntrySkin[0] )
-			m_entryPadding = m_pEntrySkin[0]->_contentPadding();
+			m_entryPadding = m_pEntrySkin[0]->_contentPaddingSize();
 
 		m_contentPreferredLength = 0;
 		m_contentPreferredBreadth = 0;

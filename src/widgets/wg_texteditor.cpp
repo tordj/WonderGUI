@@ -83,7 +83,7 @@ namespace wg
 		int textHeight = _text()._matchingHeight( width );
 
 		if( m_pSkin )
-			textHeight += m_pSkin->_contentPadding().h;
+			textHeight += m_pSkin->_contentPaddingSize().h;
 
 		return textHeight;
 	}
@@ -169,7 +169,7 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text()._setSize(size - m_pSkin->_contentPadding());
+			_text()._setSize(size - m_pSkin->_contentPaddingSize());
 		else
 			_text()._setSize(size);
 	}

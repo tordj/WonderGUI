@@ -139,7 +139,7 @@ namespace wg
 		{
 			SizeI size = { std::max(0, m_preferred.w), std::max(0, m_preferred.h) };
 			if (m_pSkin)
-				size += m_pSkin->_contentPadding();
+				size += m_pSkin->_contentPaddingSize();
 
 			return size;
 		}
@@ -284,7 +284,7 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			pref += m_pSkin->_contentPadding();
+			pref += m_pSkin->_contentPaddingSize();
 
 		return pref;
 	}

@@ -81,7 +81,7 @@ namespace wg
 	{
 		if( _slot()->_widget() )
 		{
-			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+			SizeI padding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
 
 			return _slot()->_matchingHeight( width-padding.w ) + padding.h;
 		}
@@ -95,7 +95,7 @@ namespace wg
 	{
 		if( _slot()->_widget() )
 		{
-			SizeI padding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+			SizeI padding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
 
 			return _slot()->_matchingWidth(height - padding.h) + padding.w;
 		}
@@ -110,7 +110,7 @@ namespace wg
 		if (_slot()->_widget())
 		{
 			if (m_pSkin)
-				return _slot()->_preferredSize() + m_pSkin->_contentPadding();
+				return _slot()->_preferredSize() + m_pSkin->_contentPaddingSize();
 
 			return _slot()->_preferredSize();
 		}
@@ -210,7 +210,7 @@ namespace wg
 
 		if (_slot()->_widget())
 		{
-			SizeI sz = m_pSkin ? size - m_pSkin->_contentPadding() : size;
+			SizeI sz = m_pSkin ? size - m_pSkin->_contentPaddingSize() : size;
 			_slot()->_widget()->_resize(sz);
 		}
 	}
@@ -261,7 +261,7 @@ namespace wg
 
 		if (pWidget)
 		{
-			SizeI sz = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+			SizeI sz = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 			pWidget->_resize(sz);
 		}
 

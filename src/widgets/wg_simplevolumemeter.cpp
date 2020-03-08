@@ -119,7 +119,7 @@ namespace wg
 			m_fSectionHeight[1] = middleFraction;
 			m_fSectionHeight[2] = topFraction;
 
-			SizeI canvasSize = m_pSkin ? SizeI() - m_pSkin->_contentPadding() : SizeI();
+			SizeI canvasSize = m_pSkin ? SizeI() - m_pSkin->_contentPaddingSize() : SizeI();
 
 			_updateValueDisplays( canvasSize );
 			_requestRender();
@@ -136,7 +136,7 @@ namespace wg
 		{
 			m_fHoldHeight = fraction;
 
-			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 			_updateValueDisplays( size );
 			_requestRender();
 		}
@@ -220,7 +220,7 @@ namespace wg
 		{
 			m_direction = direction;
 
-			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+			SizeI size = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 			_updateValueDisplays(size);
 			_requestResize();
 			_requestRender();
@@ -333,7 +333,7 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		SizeI canvasSize = m_pSkin ? size - m_pSkin->_contentPadding() : size;
+		SizeI canvasSize = m_pSkin ? size - m_pSkin->_contentPaddingSize() : size;
 
 		_updateValueDisplays( canvasSize );
 	}
@@ -563,7 +563,7 @@ namespace wg
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
 
-		SizeI canvasSize = m_pSkin ? m_size - m_pSkin->_contentPadding() : m_size;
+		SizeI canvasSize = m_pSkin ? m_size - m_pSkin->_contentPaddingSize() : m_size;
 		_updateValueDisplays( canvasSize );
 	}
 

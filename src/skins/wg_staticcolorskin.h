@@ -67,7 +67,8 @@ namespace wg
 		SizeI	_preferredSize() const override;
 		SizeI	_sizeForContent(const SizeI contentSize) const override;
 
-		SizeI	_contentPadding() const override;
+		BorderI _contentPadding() const override;
+		SizeI	_contentPaddingSize() const override;
 		CoordI	_contentOfs(State state) const override;
 		RectI	_contentRect(const RectI& canvas, State state) const override;
 

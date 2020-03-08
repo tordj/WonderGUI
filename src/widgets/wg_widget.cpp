@@ -466,7 +466,7 @@ namespace wg
 
 	void Widget::_setSkin( Skin * pSkin )
 	{
-		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->_contentPadding() != pSkin->_contentPadding() ||
+		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->_contentPaddingSize() != pSkin->_contentPaddingSize() ||
 								m_pSkin->_preferredSize() != pSkin->_preferredSize() || m_pSkin->_minSize() != pSkin->_minSize() );
 
 		if( pSkin && pSkin->isOpaque(m_state) )
@@ -638,7 +638,7 @@ namespace wg
 	SizeI Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return m_size - m_pSkin->_contentPadding();
+			return m_size - m_pSkin->_contentPaddingSize();
 		else
 			return m_size;
 	}

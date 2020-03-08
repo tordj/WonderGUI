@@ -119,14 +119,22 @@ namespace wg
 		int				selectedEntryId() const;
 		inline int		selectedEntryIndex() const { return m_selectedEntryIndex; }
 
+		//.____ Misc _________________________________________________________________
+
+		void 			receive(Msg * pMsg) override;
+
+
 	protected:
 		SelectBox();
 		virtual ~SelectBox();
 		virtual Widget* _newOfMyType() const override { return new SelectBox(); };
 
 		SizeI		_preferredSize() const override;
+		int			_matchingHeight(int width) const override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void		_resize(const SizeI& size) override;
+
 
 		class TextAccess : public CTextDisplay { friend class SelectBox; };
 		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
@@ -143,6 +151,9 @@ namespace wg
 		void		_updateListCanvasOpacity();
 		void		_requestRenderEntry(SelectBoxEntry* pEntry);
 		void		_selectEntry(int idx);
+		State		_entryState(int idx);
+		int			_findEntry(const CoordI& ofsInListPanel, CoordI * pOfsOut = 0);
+
 		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper().rawPtr(); }
 		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper().rawPtr();  }
 
@@ -182,6 +193,10 @@ namespace wg
 		TextStyle_p		m_pEntryStyle;
 
 		int				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
+		BorderI			m_entryContentPadding;			// Padding of content of an entry in the list, in quarterpixels.
+
+		SizeI			m_preferredSize;
+		int				m_matchingHeight = 0;			// Matching height for current width.
 
 		int				m_listCanvasMatchingHeight = 0;
 		SizeI			m_listCanvasPreferredSize;

@@ -113,7 +113,7 @@ namespace wg
 			sz = { 16*4,16*4 };
 
 		if (m_pSkin)
-			sz += m_pSkin->_contentPadding();
+			sz += m_pSkin->_contentPaddingSize();
 
 		return sz;
 	}
@@ -137,11 +137,11 @@ namespace wg
 
 	void Canvas::_setSkin(Skin * pSkin)
 	{
-		SizeI oldPadding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+		SizeI oldPadding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
 
 		Widget::_setSkin(pSkin);
 
-		SizeI newPadding = m_pSkin ? m_pSkin->_contentPadding() : SizeI();
+		SizeI newPadding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
 		if (newPadding != oldPadding)
 			_canvas()._setComponentSize(m_size - newPadding);
 	}

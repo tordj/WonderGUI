@@ -49,7 +49,7 @@ namespace wg
 
 		void			setContentPadding( BorderI padding );
 		inline BorderI	contentPadding() const { return m_contentPadding; }
-		Size			contentPaddingAdapted() const;
+		Border			contentPaddingAdapted() const;
 
 		//.____ Behavior _______________________________________________________
 
@@ -66,7 +66,8 @@ namespace wg
 		virtual SizeI	_minSize() const override;
 		virtual SizeI	_preferredSize() const override;
 		virtual SizeI	_sizeForContent(const SizeI contentSize) const override;
-		virtual SizeI	_contentPadding() const override;
+		virtual BorderI	_contentPadding() const override;
+		virtual SizeI	_contentPaddingSize() const override;
 		virtual CoordI	_contentOfs(State state) const override;
 		virtual RectI	_contentRect(const RectI& canvas, State state) const override;
 
