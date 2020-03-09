@@ -70,9 +70,11 @@ namespace wg
 		virtual SizeI	_preferredSize() const = 0;
 		virtual SizeI	_sizeForContent(const SizeI contentSize) const = 0;
 
-		virtual SizeI	_contentPadding() const = 0;
+		virtual BorderI	_contentPadding() const = 0;
+		virtual SizeI	_contentPaddingSize() const = 0;
 		virtual CoordI	_contentOfs(State state) const = 0;
 		virtual RectI	_contentRect(const RectI& canvas, State state) const = 0;
+		 
 
 		virtual void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
 

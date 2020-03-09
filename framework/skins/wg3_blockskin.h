@@ -47,8 +47,8 @@ namespace wg
 		static BlockSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
 
-		// DEPRECATED CREATE METHODS!
 
 
 		//.____ Identification __________________________________________

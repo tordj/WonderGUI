@@ -82,6 +82,7 @@ namespace wg
 	enum class ErrorCode
 	{
 		OutOfRange,
+		InvalidInterator,
 		OpenGL,
 		Other
 	};

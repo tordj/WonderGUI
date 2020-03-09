@@ -900,5 +900,112 @@ namespace wg
 	}
 
 
+	/**
+	 * @fn virtual uint32_t	Surface::pixel( CoordI coord ) const
+	 *
+	 * Get the raw pixel value from the specified coordinate of the surface.
+	 *
+	 * @param coord Coordinate of pixel to get.
+	 *
+	 * The coordinate must be within the surface boundaries. A coordinate outside
+	 * the surface will result in undefined behavior.
+	 *
+	 * If pixel is less than 32 bits in size, it is packed into the lower 
+	 * bits of the return value with the rest of the bits cleared.
+	 *
+	 * @return Pixel value in surface's native format.
+	 *
+	 */ 
+
+
+	/**
+	 * @fn virtual uint8_t Surface::alpha(CoordI coord) const
+	 *
+	 * Get the alpha value from the specified coordinate of the surface.
+	 *
+	 * @param coord Coordinate of pixel.
+	 *
+	 * Gets the alpha value of the pixel at the specified coordinate in the range of 0-255.
+	 * The alpha value is by default used for opacity level,
+	 * where 0 is a fully transparent pixel and 255 is opaque.
+	 *
+	 * The coordinate specified must be within the surface boundaries. A coordinate outside
+	 * the surface will result in undefined behavior.
+	 *
+	 * @return Alpha value of pixel at coordinate.
+	 */
+
+	/**
+	 * @fn virtual bool Surface::isOpaque() const
+	 *
+	 * Check if surface is entirely opaque.
+	 *
+	 * A surface is opaque if it contains no transparent or semi-transparent
+	 * pixels at all and therefore is guaranteed to completely cover any graphics
+	 * behind it. This method is called regularly in time-critical sections of
+	 * the code to optimize rendering operations and therefore should not do any
+	 * time consuming operations.
+	 *
+	 * @return True if surface is guaranteed to only contain completely opaque pixels. False if
+	 * if it does contain (semi)transparent pixels or we simply just don't know.
+	 */
+
+	/**
+	 * @fn virtual uint8_t * Surface::lock(AccessMode mode)
+	 *
+	 * Locks the surface to gain direct access to the pixel data.
+	 *
+	 * @param mode	AccessMode for the locked surface, can be AccessMode::ReadOnly, AccessMode::WriteOnly
+	 *				or AccessMode::ReadWrite.
+	 *
+	 * Locking a surface gives the user direct access to the raw pixel data of the surface.
+	 * The mode of access can be limited to read-only or write-only, which might yield
+	 * performance gains on some platforms as compared to read and write access.
+	 *
+	 * The first pixel of the first line of raw pixel data starts at the address returned
+	 * by this method. The rest of the pixels for the same line follows. There might be some
+	 * extra bytes between the end of one line and the beginning of the next which should
+	 * neither be read or written. Use the value returned by pitch() to properly calculate
+	 * the start adress of each line.
+	 *
+	 * Once you are done with a surface you should release it by calling unlock() after
+	 * which no access of the raw pixel data is allowed until the surface has been locked again.
+	 * Be aware that the address and pitch of the raw pixel data might change between calls to
+	 * lock().
+	 *
+	 * You should not use the surface as source or destination in any GfxDevice or
+	 * Surface::copyTo() calls while it
+	 * is locked as that might result in undefined behavior on certain Surface implementations
+	 * and hardware architectures.
+	 *
+	 * @return Pointer to start of pixel data or null if failed.
+	 */
+
+	/**
+	 * @fn virtual uint8_t * Surface::lockRegion(AccessMode mode, const RectI& region)
+	 *
+	 * Locks a limited region of the surface to gain direct access to its pixel data.
+	 *
+	 * @param mode	AccessMode for the locked surface, can be AccessMode::ReadOnly, AccessMode::WriteOnly
+	 *				or AccessMode::ReadWrite.
+	 * @param region	The rectangular region of the surface to lock.
+	 *
+	 * Identical to lock() except that just a specific region of the surface may be accessed
+	 * and that the pointer returned is to the first pixel of that region, not the entire surface.
+	 *
+	 * Use pitch() to get the distance from the start of one pixel row of the region to the next.
+	 * Use unlock() to release the surface when you are done with it.
+	 *
+	 * Just locking a specific region of a surface as opposed to the whole of it might yield
+	 * performance gains depending on Surface implementation and hardware architecture in use.
+	 *
+	 * @return Pointer to start of pixel data for specified region or null if failed.
+	 */
+
+	/**
+	 * @fn virtual void Surface::unlock()
+	 *
+	 * Unlocks a surface that has previously been locked by a call to lock() or lockRegion().
+	 */
 
 } // namespace wg
