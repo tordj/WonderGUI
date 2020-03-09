@@ -89,30 +89,30 @@ namespace wg
 	//____ Class Link _____________________________________________________________
 
 	#define	LINK_METHODS( type ) \
-		inline bool	moveUp() { return Link::_moveUp(); }; \
-		inline bool	moveDown() { return Link::_moveDown(); }; \
-		inline bool	moveFirst( Chain<type> * pChain = 0 ) { return Link::_moveFirst( pChain ); }; \
-		inline bool	moveLast( Chain<type> * pChain = 0 ) { return Link::_moveLast( pChain ); }; \
-		inline bool	moveAfter( type * pLink ) { return Link::_moveAfter( pLink ); }; \
-		inline bool	moveBefore( type * pLink) { return Link::_moveBefore( pLink ); }; \
-		inline bool	disconnect() {return Link::_disconnect(); }; \
+        inline bool	moveUp() { return wg::Link::_moveUp(); }; \
+        inline bool	moveDown() { return wg::Link::_moveDown(); }; \
+        inline bool	moveFirst( wg::Chain<type> * pChain = 0 ) { return wg::Link::_moveFirst( pChain ); }; \
+        inline bool	moveLast( wg::Chain<type> * pChain = 0 ) { return wg::Link::_moveLast( pChain ); }; \
+        inline bool	moveAfter( type * pLink ) { return wg::Link::_moveAfter( pLink ); }; \
+        inline bool	moveBefore( type * pLink) { return wg::Link::_moveBefore( pLink ); }; \
+        inline bool	disconnect() {return wg::Link::_disconnect(); }; \
 		inline type *	prev() const { return (type *) m_pPrev; }; \
 		inline type *	next() const { return (type *) m_pNext; }; \
-		inline Chain<type> * chain() const { return (Chain<type> *) m_pChain; }; \
-		inline int		index() const { return Link::_index(); };
+        inline wg::Chain<type> * chain() const { return (wg::Chain<type> *) m_pChain; }; \
+        inline int		index() const { return wg::Link::_index(); };
 
 	#define	PROTECTED_LINK_METHODS( type ) \
-		inline bool	_moveUp() { return Link::_moveUp(); }; \
-		inline bool	_moveDown() { return Link::_moveDown(); }; \
-		inline bool	_moveFirst( Chain<type> * pChain = 0 ) { return Link::_moveFirst( pChain ); }; \
-		inline bool	_moveLast( Chain<type> * pChain = 0 ) { return Link::_moveLast( pChain ); }; \
-		inline bool	_moveAfter( type * pLink ) { return Link::_moveAfter( pLink ); }; \
-		inline bool	_moveBefore( type * pLink) { return Link::_moveBefore( pLink ); }; \
-		inline bool	_disconnect() {return Link::_disconnect(); }; \
+        inline bool	_moveUp() { return wg::Link::_moveUp(); }; \
+        inline bool	_moveDown() { return wg::Link::_moveDown(); }; \
+        inline bool	_moveFirst( wg::Chain<type> * pChain = 0 ) { return wg::Link::_moveFirst( pChain ); }; \
+        inline bool	_moveLast( wg::Chain<type> * pChain = 0 ) { return wg::Link::_moveLast( pChain ); }; \
+        inline bool	_moveAfter( type * pLink ) { return wg::Link::_moveAfter( pLink ); }; \
+        inline bool	_moveBefore( type * pLink) { return wg::Link::_moveBefore( pLink ); }; \
+        inline bool	_disconnect() {return wg::Link::_disconnect(); }; \
 		inline type *	_prev() const { return (type *) m_pPrev; }; \
 		inline type *	_next() const { return (type *) m_pNext; }; \
-		inline Chain<type> * _chain() const { return (Chain<type> *) m_pChain; }; \
-		inline int		_index() const { return Link::_index(); };
+        inline wg::Chain<type> * _chain() const { return (wg::Chain<type> *) m_pChain; }; \
+        inline int		_index() const { return wg::Link::_index(); };
 
 
 

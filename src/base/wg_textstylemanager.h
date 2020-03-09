@@ -27,6 +27,8 @@
 
 #include <wg_textstyle.h>
 
+class WgBase;   // Needed by WG2
+
 namespace wg
 {
 	class TextStyleManager  /** @private */
@@ -36,6 +38,7 @@ namespace wg
 	friend class Char;
 	friend class CharBuffer;
 	friend class TextTool;
+    friend class ::WgBase;        // Needed by WG2
 	public:
 
 		static TextStyle_p 	getPointer( TextStyle_h handle );

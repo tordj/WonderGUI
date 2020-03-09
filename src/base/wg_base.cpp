@@ -31,7 +31,9 @@
 #include <wg_standardformatter.h>
 #include <wg_inputhandler.h>
 #include <wg_context.h>
-
+#include <wg_textstyle.h>
+#include <wg_texttool.h>
+#include <wg_textstylemanager.h>
 
 namespace wg
 {

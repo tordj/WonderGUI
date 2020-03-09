@@ -24,15 +24,10 @@
 #define	WG_BASE_DOT_H
 #pragma once
 
-/*
-#include <wg_textmgr.h>
-*/
-
 #include <assert.h>
 
-#include <wg_userdefines.h>
-#include <wg_key.h>
 #include <wg_strongptr.h>
+#include <wg_types.h>
 
 #include <string>
 #include <functional>

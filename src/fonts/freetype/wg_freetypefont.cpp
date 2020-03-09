@@ -24,8 +24,6 @@
    TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with Pen).
 */
 
-#include <wg_userdefines.h>
-
 #include <wg_qpix.h>
 #include <wg_freetypefont.h>
 #include <wg_surface.h>

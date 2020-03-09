@@ -25,9 +25,9 @@
 #define	WG_CHAR_DOT_H
 #pragma once
 
-#include "wg_types.h"
+#include <wg_types.h>
 
-#include "wg_textstylemanager.h"
+#include <wg_textstylemanager.h>
 
 #include <wg_texttool.h>
 

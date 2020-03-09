@@ -142,6 +142,14 @@ namespace wg
 		inline BlendMode		combRenderMode( State state ) const;
 		inline BlendMode		combBgRenderMode( State state ) const;
 
+        inline bool             isColorStatic() const { return m_bStaticColor; }
+        inline bool             isBgColorStatic() const { return m_bStaticBgColor; }
+        inline bool             isSizeStatic() const { return m_bStaticSize; }
+        inline bool             isDecorationStatic() const { return m_bStaticDecoration; }
+        inline bool             isRenderModeStatic() const { return m_bStaticRenderMode; }
+        inline bool             isBgRenderModeStatic() const { return m_bStaticBgRenderMode; }
+
+        
 		//.____ Misc __________________________________________________________
 
 		inline TextStyle_h	handle() { return m_handle; }
@@ -151,7 +159,9 @@ namespace wg
 
 		bool			isIdentical( TextStyle * pOther );
 		bool			isIdenticalForState( TextStyle * pOther, State state );
-
+        
+        TextStyle_p     clone() const;
+        
 	protected:
 		TextStyle();
 		virtual ~TextStyle();
@@ -178,6 +188,13 @@ namespace wg
 		bool		_refreshComb();
 		void		_clearSet( AttrSet * pSet );
 
+        bool        _isColorStatic() const;
+        bool        _isBgColorStatic() const;
+        bool        _isSizeStatic() const;
+        bool        _isDecorationStatic() const;
+        bool        _isRenderModeStatic() const;
+        bool        _isBgRenderModeStatic() const;
+        
 		TextStyle_p	m_pParent;
 		TextStyle *	m_pFirstChild;
 		TextStyle *	m_pNextSibling;
@@ -187,6 +204,13 @@ namespace wg
 		AttrSet		m_specAttr;
 		AttrSet		m_combAttr;
 
+        bool        m_bStaticColor = true;         // Combined color is identical in all states.
+        bool        m_bStaticBgColor = true;       // Combined background color is identical in all states.
+        bool        m_bStaticSize = true;          // Combined size is identical for in states.
+        bool        m_bStaticDecoration = true;    // Combined decoration is identical in all states.
+        bool        m_bStaticRenderMode = true;
+        bool        m_bStaticBgRenderMode = true;
+        
 
 		TextStyle_h	m_handle;
 	};

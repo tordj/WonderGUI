@@ -27,17 +27,12 @@
 #include <cstdint>
 
 #include <wg_pointers.h>
-
+#include <wg_surfacefactory.h>
+#include <wg_gfxdevice.h>
 
 
 namespace wg
 {
-	class GfxDevice;
-	class SurfaceFactory;
-
-	typedef	StrongPtr<GfxDevice>		GfxDevice_p;
-	typedef	StrongPtr<SurfaceFactory>	SurfaceFactory_p;
-
 	class Context;
 	typedef	StrongPtr<Context>	Context_p;
 	typedef	WeakPtr<Context>	Context_wp;

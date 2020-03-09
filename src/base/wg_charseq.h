@@ -27,7 +27,6 @@
 #include <string>
 
 #include <wg_types.h>
-#include <wg_userdefines.h>
 
 namespace wg
 {

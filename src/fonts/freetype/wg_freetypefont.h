@@ -25,8 +25,6 @@
 #define WG_FREETYPEFONT_DOT_H
 #pragma once
 
-#include <wg_userdefines.h>
-
 
 #include <wg_types.h>
 #include <wg_chain.h>

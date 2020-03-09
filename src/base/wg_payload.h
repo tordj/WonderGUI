@@ -46,8 +46,8 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
+		virtual bool		isInstanceOf(const char * pClassName) const override;
+		virtual const char * className(void) const override;
 		static const char	CLASSNAME[];
 		static BasicPayload_p	cast(Object * pObject);
 
@@ -69,6 +69,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static Payload_p<Type> create() { return Payload_p<Type>(new Payload<Type>()); }
+        static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); * static_cast<Type*>(p) = load; return Payload_p<Type>(p); }
 
 		//.____ Identification _________________________________________________
 
@@ -95,23 +96,9 @@ namespace wg
 
 		static char m_className[64];
 
-		//TODO: FIX THIS!
-		// This is ugly and depends on specific preprocessor directives in MSVC, GCC and CLANG.
-		// Using any other compiler is likely to break it.
-		// We can't just use the standard __func__ since that doesn't include the class name.
-
-		static const char * _getClassName() 
-		{ 	
-#if	defined(__clang__) || defined(_MSC_VER)
-			return __FUNCTION__;
-#elif defined*__GNUC__
-			return __PRETTY_FUNCTION__;
-#elif 
-#error Compilation failure! wg::Payload<>::_getClassName doesn't recognize the compiler. 
-#endif
-		}
 	};
 
+    // Generating 
 
 	template<class Type> char Payload<Type>::m_className[64] = { "Payload type 0x" };
 	template<class Type> const char * Payload<Type>::CLASSNAME = [](char* p) 

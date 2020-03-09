@@ -24,7 +24,6 @@
 #define WG_TEXTTOOL_DOT_H
 #pragma once
 
-#include <wg_userdefines.h>
 #include <wg_types.h>
 #include <wg_textstyle.h>
 #include <wg_charseq.h>
@@ -114,9 +113,6 @@ namespace wg
 		static uint32_t	getTextFormatted( const Char * pSrc, uint16_t * pDest, uint32_t maxChars, const ResDB * pResDB = 0 );
 		static uint32_t	getTextSizeFormatted( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
 
-		static uint32_t	getTextFormattedUTF8( const Char * pSrc, char * pDest, uint32_t maxBytes, const ResDB * pResDB = 0 );
-		static uint32_t	getTextSizeFormattedUTF8( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
-
 		static uint32_t	strlen( const uint16_t * pSrc );
 		static uint32_t	strlen( const Char * pSrc );
 		static int		strcmp( const uint16_t * pStr1, const uint16_t * pStr2 );
@@ -137,7 +133,7 @@ namespace wg
 
 		static char *           itoa( int value, char * str, int base );
 
-		static BreakRules		isBreakAllowed( uint16_t chr, int breakLevel );
+		static BreakRules		isBreakAllowed( uint16_t chr, int breakLevel = 3 );
 
 		static void				clearBreakRules();
 		static bool				setBreakRule( unsigned char character, int level, BreakRules rule );

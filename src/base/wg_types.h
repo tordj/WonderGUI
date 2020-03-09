@@ -241,6 +241,8 @@ namespace wg
 		_874,		///< Windows Thai
 	};
 
+	static const CodePage DefaultCodePage = CodePage::_1252;
+
 	//____ BreakRules ____________________________________________________________
 
 	enum class BreakRules : uint8_t
