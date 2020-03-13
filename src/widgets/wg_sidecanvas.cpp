@@ -57,16 +57,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SideCanvas_p SideCanvas::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SideCanvas_p( static_cast<SideCanvas*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() _________________________________________________________________
 	
 	int SideCanvas::_matchingHeight(int width) const

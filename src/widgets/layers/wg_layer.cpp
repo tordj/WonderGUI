@@ -52,18 +52,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Layer_p Layer::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Layer_p( static_cast<Layer*>(pObject) );
-
-		return 0;
-	}
-
-
-
 	//____ _matchingHeight() _______________________________________________________
 
 	int Layer::_matchingHeight( int width ) const

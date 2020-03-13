@@ -58,16 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Capsule_p Capsule::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Capsule_p( static_cast<Capsule*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() ________________________________________________________
 
 	int Capsule::_matchingHeight( int width ) const

@@ -44,15 +44,5 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SurfaceFactory_p SurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SurfaceFactory_p( static_cast<SurfaceFactory*>(pObject) );
-
-		return 0;
-	}
-
 
 } // namespace wg

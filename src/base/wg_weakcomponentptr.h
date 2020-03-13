@@ -138,7 +138,6 @@ namespace wg
 
 		WeakPtrHub *	m_pHub;
 		Cls *			m_pComponent;
-
 	};
 
 

@@ -66,16 +66,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	LineEditor_p LineEditor::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return LineEditor_p( static_cast<LineEditor*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _preferredSize() _____________________________________________________________
 
 	SizeI LineEditor::_preferredSize() const

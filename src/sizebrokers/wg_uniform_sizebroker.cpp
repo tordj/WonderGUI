@@ -44,16 +44,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	UniformSizeBroker_p UniformSizeBroker::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return UniformSizeBroker_p( static_cast<UniformSizeBroker*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setItemLengths() _______________________________________________________
 
 	QPix UniformSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const

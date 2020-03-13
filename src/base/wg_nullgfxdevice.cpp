@@ -60,16 +60,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	NullGfxDevice_p NullGfxDevice::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return NullGfxDevice_p( static_cast<NullGfxDevice*>(pObject) );
-
-		return 0;
-	}
-
 	//____ surfaceClassName() _______________________________________________________
 
 	const char * NullGfxDevice::surfaceClassName( void ) const

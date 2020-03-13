@@ -63,16 +63,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	List_p List::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return List_p( static_cast<List*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setEntrySkin() _________________________________________________________
 
 	void List::setEntrySkin( Skin * pSkin )
@@ -149,7 +139,7 @@ namespace wg
 		{
 			case MsgType::MouseMove:
 			{
-				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
+				MouseMoveMsg * pMsg = static_cast<MouseMoveMsg*>(_pMsg);
 				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( pEntry && pEntry->_widget() != m_pHoveredChild.rawPtr() )
 				{
@@ -168,7 +158,7 @@ namespace wg
 			}
 			case MsgType::MouseLeave:
 			{
-				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
+				MouseLeaveMsg_p pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
 				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( m_pHoveredChild && !pEntry )
 				{
@@ -183,7 +173,7 @@ namespace wg
 			{
 				grabFocus();
 
-				MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
+				MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
 					CoordI ofs = _toLocal(pMsg->pointerPosRaw());
@@ -266,7 +256,7 @@ namespace wg
 				break;
 			}
 			case MsgType::MouseRelease:
-				if( m_selectMode != SelectMode::Unselectable && MouseReleaseMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( m_selectMode != SelectMode::Unselectable &&  static_cast<MouseReleaseMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
 					RectI dirtyRect( m_lassoBegin, m_lassoEnd );
 					_requestRender(dirtyRect);
@@ -276,17 +266,17 @@ namespace wg
 				}
 				break;
 			case MsgType::MouseClick:
-				if( m_selectMode != SelectMode::Unselectable && MouseClickMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( m_selectMode != SelectMode::Unselectable &&  static_cast<MouseClickMsg*>(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
 			case MsgType::MouseDoubleClick:
 			case MsgType::MouseRepeat:
-				if( m_selectMode != SelectMode::Unselectable && MouseButtonMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( m_selectMode != SelectMode::Unselectable &&  static_cast<MouseButtonMsg*>(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
 			case MsgType::MouseDrag:
 			{
-				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
+				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
 					CoordI ofs = _listArea().limit(_toLocal(pMsg->pointerPosRaw()));

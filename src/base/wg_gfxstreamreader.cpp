@@ -74,16 +74,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxStreamReader_p GfxStreamReader::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxStreamReader_p( static_cast<GfxStreamReader*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _hasChunk() ________________________________________________________
 
 	bool GfxStreamReader::_hasChunk()

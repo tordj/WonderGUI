@@ -65,16 +65,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StackPanel_p StackPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StackPanel_p( static_cast<StackPanel*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() _______________________________________________________
 
 	int StackPanel::_matchingHeight( int width ) const

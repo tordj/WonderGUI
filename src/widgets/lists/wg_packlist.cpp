@@ -105,16 +105,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	PackList_p PackList::cast( Object * pObj )
-	{
-		if( pObj && pObj->isInstanceOf(CLASSNAME) )
-			return PackList_p( static_cast<PackList*>(pObj) );
-
-		return 0;
-	}
-
 	//____ setOrientation() _______________________________________________________
 
 	void PackList::setOrientation( Orientation orientation )
@@ -559,7 +549,7 @@ namespace wg
 					if( m_selectMode == SelectMode::Unselectable )
 						break;
 
-					Key keyCode = KeyPressMsg::cast(_pMsg)->translatedKeyCode();
+					Key keyCode = static_cast<KeyPressMsg*>(_pMsg)->translatedKeyCode();
 //					ModifierKeys	modKeys = KeyPressMsg::cast(_pMsg)->modKeys();
 					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) ||
 						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||
@@ -575,7 +565,7 @@ namespace wg
 					if( m_selectMode == SelectMode::Unselectable )
 						break;
 
-					Key keyCode = KeyMsg::cast(_pMsg)->translatedKeyCode();
+					Key keyCode = static_cast<KeyMsg*>(_pMsg)->translatedKeyCode();
 //					ModifierKeys	modKeys = KeyMsg::cast(_pMsg)->modKeys();
 					if( (m_bHorizontal && (keyCode == Key::Left || keyCode == Key::Right)) ||
 						(!m_bHorizontal && (keyCode == Key::Up || keyCode == Key::Down || keyCode == Key::PageUp || keyCode == Key::PageDown)) ||

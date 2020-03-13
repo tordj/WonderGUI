@@ -45,14 +45,4 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ValueFormatter_p ValueFormatter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ValueFormatter_p( static_cast<ValueFormatter*>(pObject) );
-
-		return 0;
-	}
-
 } // namespace wg

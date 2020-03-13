@@ -54,17 +54,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Panel_p Panel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Panel_p( static_cast<Panel*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ _isPanel() ______________________________________________________________
 
 	bool Panel::_isPanel() const

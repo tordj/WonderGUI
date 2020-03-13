@@ -62,16 +62,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	TextLink_p TextLink::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextLink_p( static_cast<TextLink*>(pObject) );
-
-		return 0;
-	}
-
 	//____ style() _____________________________________________________________
 
 	TextStyle_p TextLink::style() const

@@ -81,16 +81,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SimpleVolumeMeter_p SimpleVolumeMeter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SimpleVolumeMeter_p( static_cast<SimpleVolumeMeter*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setColors() ___________________________________________________________
 
 	void SimpleVolumeMeter::setColors( Color bottom, Color middle, Color top )

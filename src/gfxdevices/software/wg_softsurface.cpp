@@ -188,16 +188,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SoftSurface_p SoftSurface::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurface_p( static_cast<SoftSurface*>(pObject) );
-
-		return 0;
-	}
-
 	//____ pixel() _________________________________________________________________
 
 	uint32_t SoftSurface::pixel( CoordI coord ) const

@@ -70,16 +70,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	MultiBlockSkin_p MultiBlockSkin::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return MultiBlockSkin_p(static_cast<MultiBlockSkin*>(pObject));
-
-		return 0;
-	}
-
 	//____ addLayer() _____________________________________________________________
 
 	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI ofs)

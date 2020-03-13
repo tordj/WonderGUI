@@ -46,16 +46,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SoftSurfaceFactory_p SoftSurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurfaceFactory_p( static_cast<SoftSurfaceFactory*>(pObject) );
-
-		return 0;
-	}
-
 	//____ maxSize() ________________________________________________________________
 
 	SizeI SoftSurfaceFactory::maxSize() const

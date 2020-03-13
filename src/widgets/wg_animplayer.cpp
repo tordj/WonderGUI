@@ -73,17 +73,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	AnimPlayer_p AnimPlayer::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return AnimPlayer_p( static_cast<AnimPlayer*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setAnimation() ____________________________________________________________
 
 	bool AnimPlayer::setAnimation( GfxAnim * pAnim )
@@ -274,7 +263,7 @@ namespace wg
 				if( !m_pAnim || !m_state.isEnabled() )
 					return;
 
-				m_playPos += TickMsg::cast(pMsg)->timediff() * m_speed;
+				m_playPos += static_cast<TickMsg*>(pMsg)->timediff() * m_speed;
 				_playPosUpdated();
 
 			}

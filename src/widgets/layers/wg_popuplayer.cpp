@@ -109,16 +109,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	PopupLayer_p PopupLayer::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PopupLayer_p( static_cast<PopupLayer*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _updateGeo() __________________________________________________________
 
 	void PopupLayer::_updateGeo(Slot* pSlot, bool bForceResize)
@@ -593,7 +583,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				CoordI 	pointerPos = InputMsg::cast(_pMsg)->pointerPosRaw() - _globalPos();
+				CoordI 	pointerPos = static_cast<InputMsg*>(_pMsg)->pointerPosRaw() - _globalPos();
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
@@ -703,7 +693,7 @@ namespace wg
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
 
-					CoordI 	absPos = MouseReleaseMsg::cast(_pMsg)->pointerPosRaw();
+					CoordI 	absPos = static_cast<MouseReleaseMsg*>(_pMsg)->pointerPosRaw();
 					Rect	openerGeo = pOpener->_globalGeo();
 
 					if (pOpener->_markTest(absPos - openerGeo.pos()))
@@ -717,9 +707,9 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				auto pMsg = MousePressMsg::cast(_pMsg);
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 
-				auto pSource = Widget::cast(_pMsg->originalSource());
+				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )
 					_removeSlots(0,popupSlots.size());
 				else if (pSource->isSelectable())
@@ -739,7 +729,7 @@ namespace wg
 			case MsgType::KeyPress:
 			case MsgType::KeyRepeat:
 			{
-				KeyMsg_p pMsg = KeyMsg::cast(_pMsg);
+				auto pMsg = static_cast<KeyMsg*>(_pMsg);
 
 				if( pMsg->translatedKeyCode() == Key::Escape )
 				{

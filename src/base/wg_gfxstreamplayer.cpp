@@ -69,16 +69,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxStreamPlayer_p GfxStreamPlayer::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return GfxStreamPlayer_p(static_cast<GfxStreamPlayer*>(pObject));
-
-		return 0;
-	}
-
 	//____ isEmpty() __________________________________________________________
 
 	bool GfxStreamPlayer::isEmpty() const

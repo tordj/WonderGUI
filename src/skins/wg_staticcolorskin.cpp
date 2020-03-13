@@ -63,16 +63,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StaticColorSkin_p StaticColorSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StaticColorSkin_p( static_cast<StaticColorSkin*>(pObject) );
-
-		return 0;
-	}
-
 	//____ isStateIdentical() _________________________________________________
 
 	bool StaticColorSkin::isStateIdentical(State state, State comparedTo) const

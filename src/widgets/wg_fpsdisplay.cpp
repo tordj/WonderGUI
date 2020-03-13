@@ -93,17 +93,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	FpsDisplay_p FpsDisplay::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FpsDisplay_p( static_cast<FpsDisplay*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ _preferredSize() __________________________________________________________
 
 	SizeI FpsDisplay::_preferredSize() const
@@ -160,7 +149,7 @@ namespace wg
 
 				m_tickBufferOfs = (++m_tickBufferOfs) % c_tickBuffer;
 
-				int msDiff = TickMsg::cast(pMsg)->timediff();
+				int msDiff = static_cast<TickMsg*>(pMsg)->timediff();
 				if( msDiff > 0 )
 					m_pTickBuffer[m_tickBufferOfs] = msDiff;
 				else

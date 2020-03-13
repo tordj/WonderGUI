@@ -58,17 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SizeCapsule_p SizeCapsule::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SizeCapsule_p( static_cast<SizeCapsule*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setPreferredSize() _____________________________________________________
 
 	void SizeCapsule::setPreferredSize( Size _size )

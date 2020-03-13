@@ -76,16 +76,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StreamGfxDevice_p StreamGfxDevice::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StreamGfxDevice_p( static_cast<StreamGfxDevice*>(pObject) );
-
-		return 0;
-	}
-
 	//____ surfaceClassName() _______________________________________________________
 
 	const char * StreamGfxDevice::surfaceClassName( void ) const
@@ -134,7 +124,7 @@ namespace wg
 	{
 		if (_pSurface)
 		{
-			StreamSurface * pSurface = StreamSurface::cast(_pSurface);
+			StreamSurface * pSurface = static_cast<StreamSurface*>(_pSurface);
 			if (!pSurface)
 				return false;			// Surface must be of type StreamSurface!
 		}

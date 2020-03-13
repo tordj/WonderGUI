@@ -121,16 +121,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	LambdaPanel_p LambdaPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return LambdaPanel_p( static_cast<LambdaPanel*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setMinSize() _________________________________________________________________
 
 	bool LambdaPanel::setMinSize(Size _min)

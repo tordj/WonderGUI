@@ -45,16 +45,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Receiver_p Receiver::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Receiver_p( static_cast<Receiver*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _onRouteAdded() _________________________________________________________
 
 	void  Receiver::_onRouteAdded()

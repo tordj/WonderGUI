@@ -44,13 +44,4 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	BasicPayload_p BasicPayload::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return BasicPayload_p(static_cast<BasicPayload*>(pObject));
-
-		return 0;
-	}
 }

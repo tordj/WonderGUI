@@ -59,17 +59,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Anim_p Anim::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Anim_p( static_cast<Anim*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setPlayMode() __________________________________________________________
 
 	bool Anim::setPlayMode( AnimMode mode )

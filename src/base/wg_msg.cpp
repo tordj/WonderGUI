@@ -46,14 +46,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	Msg_p Msg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Msg_p( static_cast<Msg*>(pObject) );
-
-		return 0;
-	}
-
 	void Msg::setCopyTo( Receiver * pReceiver )
 	{
 		m_pCopyTo = pReceiver;
@@ -148,14 +140,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	InputMsg_p InputMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return InputMsg_p( static_cast<InputMsg*>(pObject) );
-
-		return 0;
-	}
-
 
 
 	//____ KeyMsg ____________________________________________________________
@@ -173,14 +157,6 @@ namespace wg
 	const char * KeyMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	KeyMsg_p KeyMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return KeyMsg_p( static_cast<KeyMsg*>(pObject) );
-
-		return 0;
 	}
 
 	bool KeyMsg::isCursorKey() const
@@ -219,14 +195,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	MouseButtonMsg_p MouseButtonMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseButtonMsg_p( static_cast<MouseButtonMsg*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ FocusGainedMsg ________________________________________________________
 
@@ -250,14 +218,6 @@ namespace wg
 	const char * FocusGainedMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	FocusGainedMsg_p FocusGainedMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FocusGainedMsg_p( static_cast<FocusGainedMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -285,14 +245,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	FocusLostMsg_p FocusLostMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FocusLostMsg_p( static_cast<FocusLostMsg*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ MouseEnterMsg _______________________________________________________
 
@@ -316,14 +268,6 @@ namespace wg
 	const char * MouseEnterMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	MouseEnterMsg_p MouseEnterMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseEnterMsg_p( static_cast<MouseEnterMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -350,14 +294,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	MouseLeaveMsg_p MouseLeaveMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseLeaveMsg_p( static_cast<MouseLeaveMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ MouseMoveMsg __________________________________________________________
 
 	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
@@ -379,14 +315,6 @@ namespace wg
 	const char * MouseMoveMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	MouseMoveMsg_p MouseMoveMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseMoveMsg_p( static_cast<MouseMoveMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -413,14 +341,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	MousePressMsg_p MousePressMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MousePressMsg_p( static_cast<MousePressMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ MouseRepeatMsg ______________________________________________________
 
 	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
@@ -443,15 +363,6 @@ namespace wg
 	{
 		return CLASSNAME;
 	}
-
-	MouseRepeatMsg_p MouseRepeatMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseRepeatMsg_p( static_cast<MouseRepeatMsg*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ MouseReleaseMsg _____________________________________________________
 
@@ -477,14 +388,6 @@ namespace wg
 	const char * MouseReleaseMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	MouseReleaseMsg_p MouseReleaseMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseReleaseMsg_p( static_cast<MouseReleaseMsg*>(pObject) );
-
-		return 0;
 	}
 
 	bool MouseReleaseMsg::releaseInside() const
@@ -517,14 +420,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	MouseClickMsg_p MouseClickMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseClickMsg_p( static_cast<MouseClickMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ MouseDoubleClickMsg _____________________________________________________
 
 	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
@@ -546,14 +441,6 @@ namespace wg
 	const char * MouseDoubleClickMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	MouseDoubleClickMsg_p MouseDoubleClickMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseDoubleClickMsg_p( static_cast<MouseDoubleClickMsg*>(pObject) );
-
-		return 0;
 	}
 
 	//____ KeyPressMsg ___________________________________________________________
@@ -580,14 +467,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	KeyPressMsg_p KeyPressMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return KeyPressMsg_p( static_cast<KeyPressMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ KeyRepeatMsg ___________________________________________________________
 
 	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
@@ -612,14 +491,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	KeyRepeatMsg_p KeyRepeatMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return KeyRepeatMsg_p( static_cast<KeyRepeatMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ KeyReleaseMsg ________________________________________________________
 
 	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
@@ -642,14 +513,6 @@ namespace wg
 	const char * KeyReleaseMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	KeyReleaseMsg_p KeyReleaseMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return KeyReleaseMsg_p( static_cast<KeyReleaseMsg*>(pObject) );
-
-		return 0;
 	}
 
 	//____ TextInputMsg __________________________________________________________
@@ -684,14 +547,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	TextInputMsg_p TextInputMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextInputMsg_p( static_cast<TextInputMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ EditCommandMsg __________________________________________________________
 
 	const char EditCommandMsg::CLASSNAME[] = {"EditCommandMsg"};
@@ -717,14 +572,6 @@ namespace wg
 	const char * EditCommandMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	EditCommandMsg_p EditCommandMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return EditCommandMsg_p( static_cast<EditCommandMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -764,14 +611,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	WheelRollMsg_p WheelRollMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return WheelRollMsg_p( static_cast<WheelRollMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ TickMsg _______________________________________________________________
 
 	const char TickMsg::CLASSNAME[] = {"TickMsg"};
@@ -794,14 +633,6 @@ namespace wg
 	const char * TickMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	TickMsg_p TickMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TickMsg_p( static_cast<TickMsg*>(pObject) );
-
-		return 0;
 	}
 
 	//____ PointerChangeMsg _______________________________________________________________
@@ -833,13 +664,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	PointerChangeMsg_p PointerChangeMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PointerChangeMsg_p( static_cast<PointerChangeMsg*>(pObject) );
-
-		return 0;
-	}
 
 	//____ DragNDropMsg _______________________________________________________
 
@@ -872,14 +696,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	DragNDropMsg_p DragNDropMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return DragNDropMsg_p( static_cast<DragNDropMsg*>(pObject) );
-
-		return 0;
-	}
-
 	BasicPayload_p DragNDropMsg::payload() const
 	{
 		return m_pPayload;
@@ -907,14 +723,6 @@ namespace wg
 	const char * DropPickMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	DropPickMsg_p DropPickMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return DropPickMsg_p( static_cast<DropPickMsg*>(pObject) );
-
-		return 0;
 	}
 
 	void DropPickMsg::setPayload( BasicPayload * pPayload )
@@ -965,14 +773,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	DropProbeMsg_p DropProbeMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropProbeMsg_p(static_cast<DropProbeMsg*>(pObject));
-
-		return 0;
-	}
-
 	void DropProbeMsg::accept(bool bAccepted)
 	{
 		m_bAccepted = bAccepted;
@@ -1000,14 +800,6 @@ namespace wg
 	const char * DropEnterMsg::className(void) const
 	{
 		return CLASSNAME;
-	}
-
-	DropEnterMsg_p DropEnterMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropEnterMsg_p(static_cast<DropEnterMsg*>(pObject));
-
-		return 0;
 	}
 
 	void DropEnterMsg::setDragWidget(Widget * pWidget)
@@ -1045,14 +837,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	DropMoveMsg_p DropMoveMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropMoveMsg_p(static_cast<DropMoveMsg*>(pObject));
-
-		return 0;
-	}
-
 	void DropMoveMsg::setDragWidget(Widget * pWidget)
 	{
 		m_pDragWidget = pWidget;
@@ -1085,14 +869,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	DropLeaveMsg_p DropLeaveMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropLeaveMsg_p(static_cast<DropLeaveMsg*>(pObject));
-
-		return 0;
-	}
-
 	//____ DropDeliverMsg ___________________________________________________
 
 	const char DropDeliverMsg::CLASSNAME[] = { "DropDeliverMsg" };
@@ -1114,14 +890,6 @@ namespace wg
 	const char * DropDeliverMsg::className(void) const
 	{
 		return CLASSNAME;
-	}
-
-	DropDeliverMsg_p DropDeliverMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropDeliverMsg_p(static_cast<DropDeliverMsg*>(pObject));
-
-		return 0;
 	}
 
 	Widget_p DropDeliverMsg::deliveredTo() const
@@ -1156,14 +924,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	DropCancelMsg_p DropCancelMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropCancelMsg_p(static_cast<DropCancelMsg*>(pObject));
-
-		return 0;
-	}
-
 	//____ DropCompleteMsg ___________________________________________________
 
 	const char DropCompleteMsg::CLASSNAME[] = { "DropCompleteMsg" };
@@ -1185,14 +945,6 @@ namespace wg
 	const char * DropCompleteMsg::className(void) const
 	{
 		return CLASSNAME;
-	}
-
-	DropCompleteMsg_p DropCompleteMsg::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DropCompleteMsg_p(static_cast<DropCompleteMsg*>(pObject));
-
-		return 0;
 	}
 
 	Widget_p DropCompleteMsg::deliveredTo() const
@@ -1223,14 +975,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	SelectMsg_p SelectMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SelectMsg_p( static_cast<SelectMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ ToggleMsg ______________________________________________
 
 	const char ToggleMsg::CLASSNAME[] = {"ToggleMsg"};
@@ -1258,14 +1002,6 @@ namespace wg
 	const char * ToggleMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ToggleMsg_p ToggleMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ToggleMsg_p( static_cast<ToggleMsg*>(pObject) );
-
-		return 0;
 	}
 
 	//____ ValueChangeMsg ___________________________________________
@@ -1309,14 +1045,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	ValueUpdateMsg_p ValueUpdateMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ValueUpdateMsg_p( static_cast<ValueUpdateMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ RangeUpdateMsg ___________________________________________
 
 	const char RangeUpdateMsg::CLASSNAME[] = {"RangeUpdateMsg"};
@@ -1343,14 +1071,6 @@ namespace wg
 	const char * RangeUpdateMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	RangeUpdateMsg_p RangeUpdateMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RangeUpdateMsg_p( static_cast<RangeUpdateMsg*>(pObject) );
-
-		return 0;
 	}
 
 	int RangeUpdateMsg::offset() const
@@ -1414,14 +1134,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	TextEditMsg_p TextEditMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextEditMsg_p( static_cast<TextEditMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ ItemMsg ________________________________________________________
 
 	const char ItemMsg::CLASSNAME[] = {"ItemMsg"};
@@ -1442,14 +1154,6 @@ namespace wg
 	const char * ItemMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ItemMsg_p ItemMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemMsg_p( static_cast<ItemMsg*>(pObject) );
-
-		return 0;
 	}
 
 	int ItemMsg::itemId() const
@@ -1485,14 +1189,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	ItemToggleMsg_p ItemToggleMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemToggleMsg_p( static_cast<ItemToggleMsg*>(pObject) );
-
-		return 0;
-	}
-
 	bool ItemToggleMsg::isSet() const
 	{
 		return m_bSet;
@@ -1519,14 +1215,6 @@ namespace wg
 	const char * ItemMousePressMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ItemMousePressMsg_p ItemMousePressMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemMousePressMsg_p( static_cast<ItemMousePressMsg*>(pObject) );
-
-		return 0;
 	}
 
 	MouseButton ItemMousePressMsg::button() const
@@ -1566,14 +1254,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	ItemListMsg_p ItemListMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemListMsg_p( static_cast<ItemListMsg*>(pObject) );
-
-		return 0;
-	}
-
 	int ItemListMsg::nbItems() const
 	{
 		return m_nbItems;
@@ -1606,14 +1286,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	ItemsSelectMsg_p ItemsSelectMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemsSelectMsg_p( static_cast<ItemsSelectMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ ItemsUnselectMsg ________________________________________________________
 
 	const char ItemsUnselectMsg::CLASSNAME[] = {"ItemsUnselectMsg"};
@@ -1634,14 +1306,6 @@ namespace wg
 	const char * ItemsUnselectMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ItemsUnselectMsg_p ItemsUnselectMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ItemsUnselectMsg_p( static_cast<ItemsUnselectMsg*>(pObject) );
-
-		return 0;
 	}
 
 	//____ PopupClosedMsg ____________________________________________
@@ -1668,14 +1332,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	PopupClosedMsg_p PopupClosedMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PopupClosedMsg_p( static_cast<PopupClosedMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ ModalMoveOutsideMsg ___________________________________________________
 
 	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
@@ -1697,14 +1353,6 @@ namespace wg
 	const char * ModalMoveOutsideMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ModalMoveOutsideMsg_p ModalMoveOutsideMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ModalMoveOutsideMsg_p( static_cast<ModalMoveOutsideMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -1731,14 +1379,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	ModalBlockedPressMsg_p ModalBlockedPressMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ModalBlockedPressMsg_p( static_cast<ModalBlockedPressMsg*>(pObject) );
-
-		return 0;
-	}
-
 	//____ ModalBlockedReleaseMsg _____________________________________________
 
 	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
@@ -1760,14 +1400,6 @@ namespace wg
 	const char * ModalBlockedReleaseMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	ModalBlockedReleaseMsg_p ModalBlockedReleaseMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ModalBlockedReleaseMsg_p( static_cast<ModalBlockedReleaseMsg*>(pObject) );
-
-		return 0;
 	}
 
 
@@ -1796,14 +1428,6 @@ namespace wg
 	const char * MouseDragMsg::className( void ) const
 	{
 		return CLASSNAME;
-	}
-
-	MouseDragMsg_p MouseDragMsg::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MouseDragMsg_p( static_cast<MouseDragMsg*>(pObject) );
-
-		return 0;
 	}
 
 	Coord MouseDragMsg::draggedTotal() const

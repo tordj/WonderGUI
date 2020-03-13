@@ -315,16 +315,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	FlexPanel_p FlexPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FlexPanel_p( static_cast<FlexPanel*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setConfineWidgets() ___________________________________________________
 
 	void FlexPanel::setConfineWidgets( bool bConfineWidgets )

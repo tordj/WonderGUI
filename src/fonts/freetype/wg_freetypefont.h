@@ -67,7 +67,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const;
 		const char *		className( void ) const;
 		static const char	CLASSNAME[];
-		static FreeTypeFont_p	cast( Object * pObject );
 
 		//.____ Rendering ______________________________________________________
 

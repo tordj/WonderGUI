@@ -65,16 +65,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	MsgRouter_p MsgRouter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MsgRouter_p( static_cast<MsgRouter*>(pObject) );
-
-		return 0;
-	}
-
 	//____ broadcastTo() ___________________________________________________________
 
 	RouteId  MsgRouter::broadcastTo( Receiver * pReceiver )

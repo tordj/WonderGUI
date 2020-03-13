@@ -72,16 +72,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxStreamWriter_p GfxStreamWriter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxStreamWriter_p( static_cast<GfxStreamWriter*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _object() __________________________________________________________
 
 	Object * GfxStreamWriter::_object()

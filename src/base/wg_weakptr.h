@@ -137,6 +137,10 @@ namespace wg
 
 		inline operator bool() const { return (m_pHub != 0 && m_pHub->pObj != 0); }
 
+		using raw_type = Cls * ;
+		inline static const char * classname() { return Cls::CLASSNAME; }
+
+	protected:
 		WeakPtrHub * m_pHub;
 	};
 

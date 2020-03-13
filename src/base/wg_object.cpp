@@ -156,24 +156,6 @@ namespace wg
 	}
 
 	/**
-	 * @brief Dynamic casting of smartpointer to a Object derived class.
-	 *
-	 * Dynamic casting of smartpointer to a Object derived class.
-	 *
-	 * @param pObject	Pointer to be cast.
-	 *
-	 * This method is needed to cast a smartpointer to one of its subclasses. It can also be used to
-	 * cast from a subclass to a baseclass, but is more expensive than a normal static cast.
-	 *
-	 * @return If successful, the returned pointer points to the cast object. On failure a null pointer is returned.
-	 */
-
-	Object_p Object::cast( Object * pObject )
-	{
-		return pObject;
-	}
-
-	/**
 	* @brief Set a callback for when object is destroyed.
 	*
 	* Set a callback that will be called when the object is destroyed.

@@ -135,16 +135,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxDevice_p GfxDevice::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxDevice_p( static_cast<GfxDevice*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setClipList() __________________________________________________________
 
 	bool GfxDevice::setClipList(int nRectangles, const RectI * pRectangles)

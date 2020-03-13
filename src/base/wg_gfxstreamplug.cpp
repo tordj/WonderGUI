@@ -77,16 +77,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _____________________________________________________________
-
-	GfxStreamPlug_p GfxStreamPlug::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxStreamPlug_p( static_cast<GfxStreamPlug*>(pObject) );
-
-		return 0;
-	}
-
 	//____ openOutput() _______________________________________________________
 
 	void GfxStreamPlug::openOutput(int index)

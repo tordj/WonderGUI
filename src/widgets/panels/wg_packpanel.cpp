@@ -116,16 +116,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	PackPanel_p PackPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return PackPanel_p( static_cast<PackPanel*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setOrientation() ______________________________________________________
 
 	void PackPanel::setOrientation( Orientation orientation )

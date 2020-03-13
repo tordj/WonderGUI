@@ -271,7 +271,6 @@ namespace wg
 			bool				isInstanceOf( const char * pClassName ) const override;
 			const char *		className( void ) const override;
 			static const char	CLASSNAME[];
-			static Msg_p		cast( Object * pObject );
 			MsgType				type() const { return m_type; }
 			bool				isMouseMsg() const;
 			bool				isMouseButtonMsg() const;
@@ -331,7 +330,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static InputMsg_p	cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -365,7 +363,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseButtonMsg_p	cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -393,7 +390,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static KeyMsg_p		cast( Object * pObject );
 
 		//.____ Content ____________________________________________________
 
@@ -420,7 +416,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static FocusGainedMsg_p	cast( Object * pObject );
 
 	protected:
 		FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -437,7 +432,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static FocusLostMsg_p	cast( Object * pObject );
 
 	protected:
 		FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -458,7 +452,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseEnterMsg_p	cast( Object * pObject );
 	protected:
 		MouseEnterMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -478,7 +471,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseLeaveMsg_p	cast( Object * pObject );
 	protected:
 		MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -498,7 +490,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseMoveMsg_p	cast( Object * pObject );
 	protected:
 		MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -518,7 +509,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MousePressMsg_p	cast( Object * pObject );
 	protected:
 		MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -538,7 +528,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseReleaseMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -561,7 +550,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static KeyPressMsg_p	cast( Object * pObject );
+
 	protected:
 		KeyPressMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -577,7 +566,7 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static KeyReleaseMsg_p	cast( Object * pObject );
+
 	protected:
 		KeyReleaseMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -593,7 +582,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static TextInputMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -618,7 +606,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static EditCommandMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -644,7 +631,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static WheelRollMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -671,7 +657,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static TickMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -695,7 +680,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static PointerChangeMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -720,7 +704,6 @@ namespace wg
 		bool                isInstanceOf( const char * pClassName ) const override;
 		const char *        className( void ) const override;
 		static const char   CLASSNAME[];
-		static DragNDropMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -754,7 +737,6 @@ namespace wg
 		bool                isInstanceOf( const char * pClassName ) const override;
 		const char *        className( void ) const override;
 		static const char   CLASSNAME[];
-		static DropPickMsg_p cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -789,7 +771,6 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const override;
 		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
-		static DropProbeMsg_p   cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -814,7 +795,6 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const override;
 		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
-		static DropEnterMsg_p   cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -838,7 +818,6 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const override;
 		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
-		static DropMoveMsg_p    cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -862,7 +841,6 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const override;
 		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
-		static DropLeaveMsg_p   cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -882,7 +860,6 @@ namespace wg
 		bool                isInstanceOf( const char * pClassName ) const override;
 		const char *        className( void ) const override;
 		static const char   CLASSNAME[];
-		static DropDeliverMsg_p cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -908,7 +885,6 @@ namespace wg
 		bool                isInstanceOf( const char * pClassName ) const override;
 		const char *        className( void ) const override;
 		static const char   CLASSNAME[];
-		static DropCancelMsg_p    cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -929,7 +905,6 @@ namespace wg
 		bool                isInstanceOf( const char * pClassName ) const override;
 		const char *        className( void ) const override;
 		static const char   CLASSNAME[];
-		static DropCompleteMsg_p    cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -960,7 +935,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static SelectMsg_p	cast( Object * pObject );
 
 	protected:
 		SelectMsg( Object * pSource );
@@ -980,7 +954,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ToggleMsg_p	cast( Object * pObject );
 
 		//.____ Content _________________________________________________
 
@@ -1006,7 +979,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ValueUpdateMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1037,7 +1009,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static RangeUpdateMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1071,7 +1042,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static TextEditMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1114,7 +1084,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1137,7 +1106,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemToggleMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1159,7 +1127,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemMousePressMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1181,7 +1148,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemListMsg_p	cast( Object * pObject );
 
 		//.____ Content ________________________________________________________
 
@@ -1210,7 +1176,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemsSelectMsg_p	cast( Object * pObject );
 
 	protected:
 			ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
@@ -1230,7 +1195,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ItemsUnselectMsg_p	cast( Object * pObject );
 
 	protected:
 		ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
@@ -1248,7 +1212,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static PopupClosedMsg_p	cast( Object * pObject );
 
 	protected:
 		PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller );
@@ -1266,7 +1229,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ModalMoveOutsideMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalMoveOutsideMsg( char inputId, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1281,7 +1243,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ModalBlockedPressMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1296,7 +1257,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ModalBlockedReleaseMsg_p	cast( Object * pObject );
 
 	protected:
 		ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1319,7 +1279,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseDragMsg_p	cast( Object * pObject );
 
 		//.____ Content ______________________________________________
 
@@ -1355,7 +1314,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseRepeatMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1374,7 +1332,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseClickMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1393,7 +1350,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static MouseDoubleClickMsg_p	cast( Object * pObject );
 
 	protected:
 		MouseDoubleClickMsg( char inputId, MouseButton button, Object * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1408,7 +1364,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static KeyRepeatMsg_p	cast( Object * pObject );
 
 	protected:
 		KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );

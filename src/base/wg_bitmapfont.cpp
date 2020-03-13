@@ -114,16 +114,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	BitmapFont_p BitmapFont::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BitmapFont_p( static_cast<BitmapFont*>(pObject) );
-
-		return 0;
-	}
-
 	//____ hasGlyph() _________________________________________________
 
 	inline bool BitmapFont::hasGlyph( uint16_t chr )

@@ -59,17 +59,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ValueDisplay_p ValueDisplay::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ValueDisplay_p( static_cast<ValueDisplay*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ _preferredSize() __________________________________________________________
 
 	SizeI ValueDisplay::_preferredSize() const

@@ -140,14 +140,4 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Blob_p Blob::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Blob_p( static_cast<Blob*>(pObject) );
-
-		return 0;
-	}
-
 } // namespace wg

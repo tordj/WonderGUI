@@ -65,16 +65,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ResDB_p ResDB::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ResDB_p( static_cast<ResDB*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ () _________________________________________________________
 

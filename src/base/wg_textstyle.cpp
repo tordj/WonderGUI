@@ -75,16 +75,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	TextStyle_p TextStyle::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextStyle_p( static_cast<TextStyle*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setParent() _____________________________________________________________
 
 	bool TextStyle::setParent( TextStyle * pParent )
@@ -463,7 +453,8 @@ namespace wg
             m_bStaticColor = _isColorStatic();
 		}
 		else
-		{			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.colorBlendMode[i] = BlendMode::Undefined;
 				m_specAttr.color[i] = Color::White;

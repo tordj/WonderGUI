@@ -260,16 +260,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StreamSurface_p StreamSurface::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StreamSurface_p( static_cast<StreamSurface*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setScaleMode() __________________________________________________________
 
 	void StreamSurface::setScaleMode( ScaleMode mode )

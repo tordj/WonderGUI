@@ -28,6 +28,19 @@
 #include <wg_strongcomponentptr.h>
 #include <wg_weakcomponentptr.h>
 
+namespace wg
+{
+
+	template <class Type_p>
+	Type_p wg_cast(Object* pObject) {
+
+		if (pObject && pObject->isInstanceOf(Type_p::classname()) )
+			return static_cast<typename Type_p::raw_type>(pObject);
+
+		return nullptr;
+	}
+}
+
 
 #endif //WG_POINTERS_DOT_H
 

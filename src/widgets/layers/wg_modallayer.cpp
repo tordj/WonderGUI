@@ -205,16 +205,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ModalLayer_p ModalLayer::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ModalLayer_p( static_cast<ModalLayer*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() _______________________________________________________
 
 	int ModalLayer::_matchingHeight( int width ) const
@@ -502,7 +492,7 @@ namespace wg
 
 		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
 		{
-			InputMsg_p pMsg = InputMsg::cast(_pMsg);
+			InputMsg * pMsg = static_cast<InputMsg*>(_pMsg);
 
 			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerPosRaw(), SearchMode::ActionTarget ) == this )
 			{
@@ -510,14 +500,14 @@ namespace wg
 				{
 					case MsgType::MousePress:
 					{
-						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
+						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;
 
 					case MsgType::MouseRelease:
 					{
-						MouseButtonMsg_p pMsg = MouseButtonMsg::cast(_pMsg);
+						MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 						Base::msgRouter()->post( new ModalBlockedPressMsg( pMsg->inputId(), pMsg->button(), this, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 					}
 					break;

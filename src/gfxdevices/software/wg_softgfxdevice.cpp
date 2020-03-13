@@ -1494,16 +1494,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SoftGfxDevice_p SoftGfxDevice::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftGfxDevice_p( static_cast<SoftGfxDevice*>(pObject) );
-
-		return 0;
-	}
-
 	//____ surfaceClassName() _______________________________________________________
 
 	const char * SoftGfxDevice::surfaceClassName( void ) const

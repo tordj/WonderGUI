@@ -65,16 +65,6 @@ namespace wg
 		return CLASSNAME; 
 	}
 	
-	//____ cast() _________________________________________________________________
-	
-	TestWidget_p TestWidget::cast( const Object_p& pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TestWidget_p( static_cast<TestWidget*>(pObject.rawPtr()) );
-	
-		return 0;
-	}
-
 	//____ _preferredSize() __________________________________________________________
 
 	SizeI TestWidget::_preferredSize() const
@@ -109,7 +99,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void TestWidget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const RectI& _clip )
+	void TestWidget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
  //       pDevice->setBlendMode(BlendMode::Invert);
         
@@ -133,13 +123,13 @@ namespace wg
 
 	//____ _receive() ______________________________________________________________
 
-	void TestWidget::_receive( const Msg_p& pMsg )
+	void TestWidget::_receive( Msg* pMsg )
 	{
 		switch( pMsg->type() )
 		{
 			case MsgType::Tick:
 			{
-                const TickMsg_p pTick = TickMsg::cast(pMsg);
+                auto pTick = static_cast<TickMsg*>(pMsg);
 				
 				RectI area( 0,0, m_size );
 				

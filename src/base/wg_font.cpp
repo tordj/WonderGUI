@@ -49,16 +49,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Font_p Font::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Font_p( static_cast<Font*>(pObject) );
-
-		return 0;
-	}
-
 	//____ isMonochrome() ______________________________________________________
 
 	bool Font::isMonochrome()

@@ -76,17 +76,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	RefreshButton_p RefreshButton::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RefreshButton_p( static_cast<RefreshButton*>(pObject) );
-
-		return 0;
-	}
-
-
 	//_____________________________________________________________________________
 	void RefreshButton::setAnimation( GfxAnim * pAnimation )
 	{
@@ -204,7 +193,7 @@ namespace wg
 				{
 					if( m_refreshMode != PROGRESS )
 					{
-						TickMsg_p pTick = TickMsg::cast(pMsg);
+						TickMsg_p pTick = static_cast<TickMsg*>(pMsg);
 
 						GfxFrame * pOldFrame = m_pRefreshAnim->getFrame( m_animTimer );
 						m_animTimer += pTick->timediff();
@@ -232,7 +221,7 @@ namespace wg
 
 			case MsgType::KeyRelease:
 			{
-				KeyReleaseMsg_p pKeyRelease = KeyReleaseMsg::cast(pMsg);
+				KeyReleaseMsg_p pKeyRelease = static_cast<KeyReleaseMsg*>(pMsg);
 
 				if( m_bAutoRefresh && pKeyRelease->translatedKeyCode() == Key::Return )
 					startRefresh();
@@ -242,7 +231,7 @@ namespace wg
 
 			case MsgType::MouseRelease:
 			{
-				MouseReleaseMsg_p pBtnRelease = MouseReleaseMsg::cast(pMsg);
+				MouseReleaseMsg_p pBtnRelease = static_cast<MouseReleaseMsg*>(pMsg);
 
 				if( m_bAutoRefresh && m_bPressed && pBtnRelease->button() == MouseButton::Left )
 					startRefresh();

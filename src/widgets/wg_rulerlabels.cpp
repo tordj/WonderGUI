@@ -38,17 +38,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	RulerLabels_p RulerLabels::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RulerLabels_p( static_cast<RulerLabels*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ addLabel() ____________________________________________________________
 
 	void RulerLabels::addLabel( const CharSeq& text, TextStyle * pStyle, float offset )

@@ -62,16 +62,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _____________________________________________________________
-
-	LambdaSkin_p LambdaSkin::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return LambdaSkin_p(static_cast<LambdaSkin*>(pObject));
-
-		return 0;
-	}
-
 	//____ setMinSize() _______________________________________________________
 
 	void LambdaSkin::setMinSize(SizeI pointSize)

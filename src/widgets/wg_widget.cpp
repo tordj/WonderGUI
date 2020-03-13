@@ -65,17 +65,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Widget_p Widget::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Widget_p( static_cast<Widget*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ isContainer() ______________________________________________________
 	/**
 	 * @brief Check if this widget is a container.

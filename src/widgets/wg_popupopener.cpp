@@ -62,16 +62,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	PopupOpener_p PopupOpener::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return PopupOpener_p(static_cast<PopupOpener*>(pObject));
-
-		return 0;
-	}
-
 	//____ setPopup() _________________________________________________________
 
 	void PopupOpener::setPopup(Widget * pPopup)
@@ -178,7 +168,7 @@ namespace wg
 
 			case MsgType::MousePress:
 			{
-				if (!m_bOpenOnHover && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left)
+				if (!m_bOpenOnHover && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
 				{
 					if (m_bOpen)
 					{
@@ -207,7 +197,7 @@ namespace wg
 				break;
 		}
 
-		if (pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left)
+		if (pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
 			pMsg->swallow();
 
 	}

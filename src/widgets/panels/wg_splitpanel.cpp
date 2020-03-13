@@ -65,16 +65,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SplitPanel_p SplitPanel::cast(Object * pObj)
-	{
-		if (pObj && pObj->isInstanceOf(CLASSNAME))
-			return SplitPanel_p(static_cast<SplitPanel*>(pObj));
-
-		return 0;
-	}
-
 	//____ setOrientation() _______________________________________________________
 
 	void SplitPanel::setOrientation(Orientation orientation)
@@ -384,7 +374,7 @@ namespace wg
 				if (m_handleState.isPressed())
 					return;
 
-				CoordI pos = InputMsg::cast(pMsg)->pointerPosRaw() - _globalPos();
+				CoordI pos = static_cast<InputMsg*>(pMsg)->pointerPosRaw() - _globalPos();
 
 				bool bHovered = m_handleGeo.contains(pos);
 				handleState.setHovered(bHovered);
@@ -401,7 +391,7 @@ namespace wg
 			}
 			case MsgType::MousePress:
 			{
-				auto p = MouseButtonMsg::cast(pMsg);
+				auto p = static_cast<MouseButtonMsg*>(pMsg);
 
 				if (p->button() != MouseButton::Left)
 					return;
@@ -418,7 +408,7 @@ namespace wg
 
 			case MsgType::MouseRelease:
 			{
-				auto p = MouseButtonMsg::cast(pMsg);
+				auto p = static_cast<MouseButtonMsg*>(pMsg);
 
 				if (p->button() != MouseButton::Left)
 					return;
@@ -433,7 +423,7 @@ namespace wg
 
 			case MsgType::MouseDrag:
 			{
-				auto p = MouseButtonMsg::cast(pMsg);
+				auto p = static_cast<MouseButtonMsg*>(pMsg);
 
 				if (p->button() != MouseButton::Left)
 					return;

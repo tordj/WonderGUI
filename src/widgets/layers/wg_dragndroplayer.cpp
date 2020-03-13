@@ -70,16 +70,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	DragNDropLayer_p DragNDropLayer::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return DragNDropLayer_p( static_cast<DragNDropLayer*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _findWidget() __________________________________________________________
 
 	Widget * DragNDropLayer::_findWidget( const CoordI& ofs, SearchMode mode )
@@ -288,7 +278,7 @@ namespace wg
 				if (pMsg->button() != MouseButton::Left || m_dragState != DragState::Idle || pMsg->sourceRawPtr() == nullptr )
 					break;
 
-				auto pSource = Widget::cast(pMsg->originalSource());
+				auto pSource = static_cast<Widget*>(pMsg->originalSource().rawPtr());
 
 				while (pSource && pSource != this && !pSource->isPickable())
 					pSource = pSource->parent();

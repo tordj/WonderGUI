@@ -61,16 +61,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ToggleGroup_p ToggleGroup::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ToggleGroup_p( static_cast<ToggleGroup*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setRequireSelected() _______________________________________________________
 	/**
 	 * Sets the requireSelected flag of this group, which means that there will always

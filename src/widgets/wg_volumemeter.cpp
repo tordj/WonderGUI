@@ -99,18 +99,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	VolumeMeter_p VolumeMeter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return VolumeMeter_p( static_cast<VolumeMeter*>(pObject) );
-
-		return 0;
-	}
-
-
-
 	//____ setDirection() ________________________________________________________
 
 	void VolumeMeter::setDirection( Direction direction )
@@ -122,7 +110,6 @@ namespace wg
 			_requestRender();
 		}
 	}
-
 
 	//____ setLEDColors() ___________________________________________________________
 

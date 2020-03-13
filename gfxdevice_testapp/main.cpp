@@ -986,7 +986,7 @@ bool setup_chrome()
 
 	Base::msgRouter()->addRoute(pTestList, MsgType::ItemsSelect, [&](Msg* _pMsg) {
 
-		auto pMsg = ItemsSelectMsg::cast(_pMsg);
+		auto pMsg = static_cast<ItemsSelectMsg*>(_pMsg);
 		auto p = pMsg->items();
 		for (int x = 0; x < pMsg->nbItems(); x++)
 			g_tests[p[x].id].bActive = true;
@@ -997,7 +997,7 @@ bool setup_chrome()
 
 	Base::msgRouter()->addRoute(pTestList, MsgType::ItemsUnselect, [&](Msg* _pMsg) {
 
-		auto pMsg = ItemsUnselectMsg::cast(_pMsg);
+		auto pMsg = static_cast<ItemsUnselectMsg*>(_pMsg);
 		auto p = pMsg->items();
 		for (int x = 0; x < pMsg->nbItems(); x++)
 			g_tests[p[x].id].bActive = false;
@@ -1125,7 +1125,7 @@ bool init_wondergui()
 
     // g_pBaseSurfaceFactory = SoftSurfaceFactory::create();
     
-    // g_pBaseGfxDevice = SoftGfxDevice::create( SoftSurface::cast(g_pWindowSurface));
+    // g_pBaseGfxDevice = SoftGfxDevice::create( wg_cast<SoftSurface_p>(g_pWindowSurface));
 
     
 	Context_p pContext = Context::create();

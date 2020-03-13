@@ -58,16 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	TimeFormatter_p TimeFormatter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TimeFormatter_p( static_cast<TimeFormatter*>(pObject) );
-
-		return 0;
-	}
-
 	//____ format() _______________________________________________________________
 
 	String TimeFormatter::format( int64_t value, int scale ) const

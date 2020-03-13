@@ -135,7 +135,7 @@ namespace wg
 		{
 			case MsgType::MouseMove:
 			{
-				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
+				MouseMoveMsg_p pMsg = static_cast<MouseMoveMsg*>(_pMsg);
 				CoordI ofs = pMsg->pointerPosRaw();
 				RectI geo = _globalGeo();
 				bool bHovered = geo.contains(ofs) && (!Base::inputHandler()->isAnyButtonPressed() ||
@@ -150,7 +150,7 @@ namespace wg
 
 			case MsgType::MouseLeave:
 			{
-				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
+				MouseLeaveMsg_p pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
 				if( m_state.isHovered() )
 				{
 					m_state.setPressed(false);
@@ -162,7 +162,7 @@ namespace wg
 
 			case MsgType::MousePress:
 			{
-				MousePressMsg_p pMsg = MousePressMsg::cast(_pMsg);
+				MousePressMsg_p pMsg = static_cast<MousePressMsg*>(_pMsg);
 				CoordI ofs = pMsg->pointerPosRaw();
 				RectI geo = _globalGeo();
 				if(pMsg->button() == MouseButton::Left && geo.contains(ofs))
@@ -178,7 +178,7 @@ namespace wg
 
 			case MsgType::MouseDrag:
 			{
-				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
+				MouseDragMsg_p pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if( m_bPressed )
 				{
 					CoordI ofs = pMsg->pointerPosRaw();
@@ -197,7 +197,7 @@ namespace wg
 
 			case MsgType::MouseRelease:
 			{
-				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
+				MouseReleaseMsg_p pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
 				if(pMsg->button() == MouseButton::Left && m_bPressed )
 				{
 					m_bPressed = false;

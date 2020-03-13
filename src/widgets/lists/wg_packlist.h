@@ -135,7 +135,6 @@ namespace wg
 		virtual bool		isInstanceOf( const char * pClassName ) const override;
 		virtual const char *className( void ) const override;
 		static const char	CLASSNAME[];
-		static PackList_p	cast( Object * pObject );
 
 		//.____ Geometry ____________________________________________
 

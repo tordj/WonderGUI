@@ -93,16 +93,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	BoxSkin_p BoxSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BoxSkin_p( static_cast<BoxSkin*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setBlendMode() _____________________________________________________
 
 	void BoxSkin::setBlendMode(BlendMode mode)

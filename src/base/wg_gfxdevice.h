@@ -70,7 +70,6 @@ namespace wg
 		bool					isInstanceOf( const char * pClassName ) const override;
 		const char *			className( void ) const override;
 		static const char		CLASSNAME[];
-		static GfxDevice_p		cast( Object * pObject );
 		virtual const char *	surfaceClassName( void ) const = 0;
 
 		//.____ Misc _______________________________________________________

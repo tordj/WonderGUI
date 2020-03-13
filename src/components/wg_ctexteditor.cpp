@@ -96,7 +96,7 @@ namespace wg
 			{
 				if( m_editState.bCaret )
 				{
-					KeyMsg_p p = KeyMsg::cast(pMsg);
+					KeyMsg * p = static_cast<KeyMsg*>(pMsg);
 					ModifierKeys modKeys = p->modKeys();
 
 					switch( p->translatedKeyCode() )
@@ -171,17 +171,17 @@ namespace wg
 			}
 
 			case MsgType::KeyRelease:
-				if( KeyMsg::cast(pMsg)->translatedKeyCode() == Key::Shift )
+				if(static_cast<KeyMsg*>(pMsg)->translatedKeyCode() == Key::Shift )
 					m_editState.bShiftDown = false;
 				break;
 
 			case MsgType::TextInput:
-				caretPut( TextInputMsg::cast(pMsg)->text() );
+				caretPut(static_cast<TextInputMsg*>(pMsg)->text() );
 				break;
 
 			case MsgType::EditCommand:
 			{
-				EditCmd cmd = EditCommandMsg::cast(pMsg)->command();
+				EditCmd cmd = static_cast<EditCommandMsg*>(pMsg)->command();
 
 				switch( cmd )
 				{

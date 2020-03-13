@@ -61,17 +61,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Filler_p Filler::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Filler_p( static_cast<Filler*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setPreferredSize() _______________________________________________________
 
 	void Filler::setPreferredSize( const Size& _size )

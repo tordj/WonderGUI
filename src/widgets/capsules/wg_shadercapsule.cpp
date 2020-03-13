@@ -59,17 +59,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ShaderCapsule_p ShaderCapsule::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ShaderCapsule_p( static_cast<ShaderCapsule*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setTintColor() ______________________________________________________
 
 	void ShaderCapsule::setTintColor( Color color, BlendMode mode )

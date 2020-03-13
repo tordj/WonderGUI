@@ -64,16 +64,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	TextDisplay_p TextDisplay::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextDisplay_p( static_cast<TextDisplay*>(pObject) );
-
-		return 0;
-	}
-
 	//____ pointerStyle() ________________________________________
 
 	PointerStyle TextDisplay::pointerStyle() const

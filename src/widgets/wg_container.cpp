@@ -57,16 +57,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Container_p Container::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Container_p( static_cast<Container*>(pObject) );
-
-		return 0;
-	}
-
 	//____ isContainer() ______________________________________________________________
 
 	bool Container::isContainer() const

@@ -51,7 +51,7 @@ namespace wg
 		if( !_pMsg->isMouseMsg() )
 			return;
 
-		InputMsg_p pMsg = InputMsg::cast( _pMsg );
+		auto pMsg = static_cast<InputMsg*>( _pMsg );
 
 		switch( pMsg->type() )
 		{
@@ -62,7 +62,7 @@ namespace wg
 
 				// Get link from character properties
 
-				CoordI localPos = static_cast<InputMsg*>( pMsg.rawPtr() )->pointerPosRaw() - _globalPos();
+				CoordI localPos = static_cast<InputMsg*>( pMsg )->pointerPosRaw() - _globalPos();
 				int markedChar = _textMapper()->charAtPos(this, rawToPixels(localPos));
 				if( markedChar >= 0 )
 				{
@@ -106,7 +106,7 @@ namespace wg
 			case MsgType::MousePress:
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MousePressMsg*>(pMsg.rawPtr())->button();
+					MouseButton button = static_cast<MousePressMsg*>(pMsg)->button();
 					Base::msgRouter()->post( MousePressMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
@@ -122,7 +122,7 @@ namespace wg
 			case MsgType::MouseRepeat:
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MouseRepeatMsg*>(pMsg.rawPtr())->button();
+					MouseButton button = static_cast<MouseRepeatMsg*>(pMsg)->button();
 					Base::msgRouter()->post( MouseRepeatMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
@@ -134,8 +134,8 @@ namespace wg
 				//TODO: Should only post if press was inside.
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MouseReleaseMsg*>(pMsg.rawPtr())->button();
-					bool bReleasedInside = static_cast<MouseReleaseMsg*>(pMsg.rawPtr())->releaseInside();
+					MouseButton button = static_cast<MouseReleaseMsg*>(pMsg)->button();
+					bool bReleasedInside = static_cast<MouseReleaseMsg*>(pMsg)->releaseInside();
 					Base::msgRouter()->post( MouseReleaseMsg::create( pMsg->inputId(), button, m_pMarkedLink.rawPtr(), bReleasedInside, pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
@@ -147,7 +147,7 @@ namespace wg
 				//TODO: Doesn't check if we stay on link during whole click.
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MouseClickMsg*>(pMsg.rawPtr())->button();
+					MouseButton button = static_cast<MouseClickMsg*>(pMsg)->button();
 					Base::msgRouter()->post( MouseClickMsg::create(pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp() ) );
 
 					if( button == MouseButton::Left )
@@ -162,7 +162,7 @@ namespace wg
 				//TODO: Doesn't check if we stay on link during whole double click.
 				if( m_pMarkedLink )
 				{
-					MouseButton button = static_cast<MouseDoubleClickMsg*>(pMsg.rawPtr())->button();
+					MouseButton button = static_cast<MouseDoubleClickMsg*>(pMsg)->button();
 					Base::msgRouter()->post( MouseDoubleClickMsg::create(pMsg->inputId(), button, m_pMarkedLink.rawPtr(), pMsg->modKeys(), pMsg->pointerPos(), pMsg->timestamp()) );
 
 					if( button == MouseButton::Left )

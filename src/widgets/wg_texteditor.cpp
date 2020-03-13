@@ -64,16 +64,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	TextEditor_p TextEditor::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextEditor_p( static_cast<TextEditor*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() _______________________________________________________
 
 	int TextEditor::_matchingHeight( int width ) const

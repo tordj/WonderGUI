@@ -91,6 +91,13 @@ int main(int argc, char** argv)
 
 	auto pPackPanel = PackPanel::create();
 
+	auto pBase = wg_cast<Widget_p>(pPackPanel);
+
+	auto pPanel = wg_cast<Panel_p>(pBase);
+	auto pCapsule = wg_cast<Capsule_p>(pBase);
+
+	auto pBlob = wg_cast<Blob_p>(pBase);
+
 //	pPackPanel->slots[0].
 
 //	auto it = pPackPanel->slots.begin();
@@ -412,7 +419,7 @@ int main(int argc, char** argv)
 		Base::setDefaultTextMapper(pMapper);
 	*/
 
-	StdTextMapper::cast(Base::defaultTextMapper())->setSelectionBack(Color(255, 255, 255, 255), BlendMode::Invert);
+	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(Color(255, 255, 255, 255), BlendMode::Invert);
 
 	// Init skins
 

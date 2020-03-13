@@ -39,10 +39,9 @@ namespace wg
 	public:
 		static TestWidget_p	create() { return TestWidget_p(new TestWidget()); }
 	
-		bool		isInstanceOf( const char * pClassName ) const;
-		const char *className( void ) const;
+		bool		isInstanceOf( const char * pClassName ) const override;
+		const char *className( void ) const override;
 		static const char	CLASSNAME[];
-		static TestWidget_p	cast( const Object_p& pObject );
 
 		void	start();
 		void	stop();
@@ -54,10 +53,10 @@ namespace wg
 
 		virtual Widget* _newOfMyType() const { return new TestWidget(); };
 	
-		SizeI			_preferredSize() const;
-		void			_cloneContent( const Widget * _pOrg );
-		virtual void	_receive( const Msg_p& pMsg );
-		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window, const RectI& _clip );
+		SizeI			_preferredSize() const override;
+		void			_cloneContent( const Widget * _pOrg ) override;
+		virtual void	_receive( Msg * pMsg ) override;
+		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
 
 	private:
 

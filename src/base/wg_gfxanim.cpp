@@ -58,16 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxAnim_p GfxAnim::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GfxAnim_p( static_cast<GfxAnim*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setSize() ______________________________________________________________
 
 	void GfxAnim::setSize( SizeI size )

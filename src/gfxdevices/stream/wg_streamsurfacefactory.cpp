@@ -57,16 +57,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StreamSurfaceFactory_p StreamSurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StreamSurfaceFactory_p( static_cast<StreamSurfaceFactory*>(pObject) );
-
-		return 0;
-	}
-
 	//____ maxSize() ______________________________________________________________
 
 	SizeI StreamSurfaceFactory::maxSize() const

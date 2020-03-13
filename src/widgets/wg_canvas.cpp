@@ -60,16 +60,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _____________________________________________________________
-
-	Canvas_p Canvas::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Canvas_p( static_cast<Canvas*>(pObject) );
-
-		return 0;
-	}
-
 	//____ _matchingHeight() ___________________________________________________
 
 	int Canvas::_matchingHeight(int width) const

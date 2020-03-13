@@ -150,6 +150,8 @@ namespace wg
 
 		inline Cls* rawPtr() const { return m_pObj; }
 
+		using raw_type = Cls*;
+		inline static const char * classname() { return Cls::CLASSNAME; }
 
 protected:
 		Cls *	m_pObj;

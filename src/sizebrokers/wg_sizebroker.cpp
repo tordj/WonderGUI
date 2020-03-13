@@ -55,17 +55,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	SizeBroker_p SizeBroker::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SizeBroker_p( static_cast<SizeBroker*>(pObject) );
-
-		return 0;
-	}
-
-
 	/*
 	int SizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, int _totalLength ) const
 	{

@@ -66,16 +66,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GfxStreamLogger_p GfxStreamLogger::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return GfxStreamLogger_p(static_cast<GfxStreamLogger*>(pObject));
-
-		return 0;
-	}
-
 	//____ isEmpty() __________________________________________________________
 
 	bool GfxStreamLogger::isEmpty() const

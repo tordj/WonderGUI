@@ -366,16 +366,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GlSurface_p GlSurface::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlSurface_p( static_cast<GlSurface*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setScaleMode() __________________________________________________________
 
 	void GlSurface::setScaleMode( ScaleMode mode )

@@ -500,16 +500,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ScrollPanel_p ScrollPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ScrollPanel_p( static_cast<ScrollPanel*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setStepFunc() ____________________________________________________
 
 	void ScrollPanel::setStepFunc(std::function<int(Direction, int steps)> function)
@@ -1110,7 +1100,7 @@ namespace wg
 		{
 			case MsgType::WheelRoll:
 			{
-				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
+				WheelRollMsg * pMsg = static_cast<WheelRollMsg*>(_pMsg);
 
 				if( pMsg->wheel() == m_wheelForScroll )
 				{

@@ -63,16 +63,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _____________________________________________________________
-
-	SelectBox_p SelectBox::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SelectBox_p( static_cast<SelectBox*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setEntrySkin() _____________________________________________________
 
 	void SelectBox::setEntrySkin(Skin * pSkin)

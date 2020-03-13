@@ -82,16 +82,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	InputHandler_p InputHandler::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return InputHandler_p( static_cast<InputHandler*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setDoubleClickTresholds() _______________________________________________
 
 	bool InputHandler::setDoubleClickTresholds( int time, int distance )
@@ -739,7 +729,7 @@ namespace wg
 
 		if( pMsg->type() == MsgType::Tick ) {
 
-			int64_t timestamp = TickMsg::cast(pMsg)->timestamp();
+			int64_t timestamp = static_cast<TickMsg*>(pMsg)->timestamp();
 
 			_handleButtonRepeats( timestamp );
 			_handleKeyRepeats( timestamp );

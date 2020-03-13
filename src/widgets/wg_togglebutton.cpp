@@ -73,16 +73,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ToggleButton_p ToggleButton::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ToggleButton_p( static_cast<ToggleButton*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setSelected() __________________________________________________________
 
 	bool ToggleButton::setSelected( bool bSelected )
@@ -150,7 +140,7 @@ namespace wg
 		switch( _pMsg->type() )
 		{
 			case MsgType::KeyPress:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
+				if( static_cast<KeyMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = true;
 					_pMsg->swallow();
@@ -158,12 +148,12 @@ namespace wg
 				break;
 
 			case MsgType::KeyRepeat:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
+				if( static_cast<KeyMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 					_pMsg->swallow();
 				break;
 
 			case MsgType::KeyRelease:
-				if( KeyMsg::cast(_pMsg)->translatedKeyCode() == Key::Return )
+				if( static_cast<KeyMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
 					_pMsg->swallow();
@@ -177,14 +167,14 @@ namespace wg
 				state.setHovered(false);
 				break;
 			case MsgType::MousePress:
-				if( MousePressMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( static_cast<MousePressMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
 					m_bPressed = true;
 					_pMsg->swallow();
 				}
 				break;
 			case MsgType::MouseRelease:
-				if( MouseReleaseMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( static_cast<MouseReleaseMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
 					m_bPressed = false;
 					_pMsg->swallow();
@@ -194,7 +184,7 @@ namespace wg
 			case MsgType::MouseDoubleClick:
 			case MsgType::MouseRepeat:
 			case MsgType::MouseDrag:
-				if( MouseButtonMsg::cast(_pMsg)->button() == MouseButton::Left )
+				if( static_cast<MouseButtonMsg*>(_pMsg)->button() == MouseButton::Left )
 					_pMsg->swallow();
 				break;
 

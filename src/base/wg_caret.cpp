@@ -55,16 +55,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Caret_p Caret::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Caret_p( static_cast<Caret*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setMode() _______________________________________________________________
 	/**
 	 * @brief Set the carets animation mode (insert, overwrite or end of line).

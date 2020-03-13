@@ -397,16 +397,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GlGfxDevice_p GlGfxDevice::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlGfxDevice_p( static_cast<GlGfxDevice*>(pObject) );
-
-		return 0;
-	}
-
 	//____ surfaceClassName() _______________________________________________________
 
 	const char * GlGfxDevice::surfaceClassName( void ) const

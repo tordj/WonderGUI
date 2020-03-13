@@ -49,7 +49,6 @@ namespace wg
 		virtual bool		isInstanceOf(const char * pClassName) const override;
 		virtual const char * className(void) const override;
 		static const char	CLASSNAME[];
-		static BasicPayload_p	cast(Object * pObject);
 
 	protected:
 		BasicPayload() {}
@@ -83,14 +82,6 @@ namespace wg
 
 		const char *			className(void) const override { return CLASSNAME; }
 		static const char *		CLASSNAME;
-
-		static Payload_p<Type>	cast(Object * pObject)
-		{
-			if (pObject && pObject->isInstanceOf(CLASSNAME))
-				return Payload_p<Type>(static_cast<Payload<Type>*>(pObject));
-
-			return 0;
-		}
 
 	protected:
 

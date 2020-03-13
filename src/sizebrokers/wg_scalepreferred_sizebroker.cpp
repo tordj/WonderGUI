@@ -44,16 +44,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	ScalePreferredSizeBroker_p ScalePreferredSizeBroker::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ScalePreferredSizeBroker_p( static_cast<ScalePreferredSizeBroker*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setItemLengths() _______________________________________________________
 
 	QPix ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const

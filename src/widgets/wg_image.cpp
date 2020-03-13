@@ -62,16 +62,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Image_p Image::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Image_p( static_cast<Image*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setImage() _____________________________________________________________
 
 	void Image::setImage( Surface * pSurface, const RectI& rect )

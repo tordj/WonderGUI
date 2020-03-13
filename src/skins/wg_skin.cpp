@@ -44,16 +44,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Skin_p Skin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Skin_p( static_cast<Skin*>(pObject) );
-
-		return 0;
-	}
-
 	//____ minSize() __________________________________________________________
 
 	Size Skin::minSize() const

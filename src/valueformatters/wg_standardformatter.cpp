@@ -61,16 +61,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StandardFormatter_p StandardFormatter::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StandardFormatter_p( static_cast<StandardFormatter*>(pObject) );
-
-		return 0;
-	}
-
 	//____ format() _______________________________________________________________
 
 	String StandardFormatter::format( int64_t value, int scale ) const

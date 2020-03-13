@@ -119,17 +119,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	FreeTypeFont_p FreeTypeFont::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FreeTypeFont_p( static_cast<FreeTypeFont*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ init() _________________________________________________________
 
 	bool FreeTypeFont::init( SurfaceFactory * pFactory )

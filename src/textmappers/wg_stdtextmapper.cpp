@@ -72,16 +72,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	StdTextMapper_p StdTextMapper::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StdTextMapper_p( static_cast<StdTextMapper*>(pObject) );
-
-		return 0;
-	}
-
 	//____ addText() _________________________________________________________
 
 	void StdTextMapper::addText( Text * pText )

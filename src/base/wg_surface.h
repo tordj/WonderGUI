@@ -64,7 +64,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static Surface_p	cast( Object * pObject );
 
 		inline void         setId(int id);
 		inline int          id() const;

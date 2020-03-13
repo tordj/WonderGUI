@@ -58,17 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	DummyFont_p DummyFont::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return DummyFont_p( static_cast<DummyFont*>(pObject) );
-
-		return 0;
-	}
-
-
 	int DummyFont::nbGlyphs()
 	{
 		return 0;

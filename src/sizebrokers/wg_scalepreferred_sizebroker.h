@@ -43,7 +43,6 @@ namespace wg
 		bool				isInstanceOf( const char * pClassName ) const override;
 		const char *		className( void ) const override;
 		static const char	CLASSNAME[];
-		static ScalePreferredSizeBroker_p	cast( Object * pObject );
 
 		//.____ Misc __________________________________________________
 

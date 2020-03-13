@@ -205,16 +205,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	BlockSkin_p BlockSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BlockSkin_p( static_cast<BlockSkin*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setBlock() _____________________________________________________________
 
 	void BlockSkin::setBlock(CoordI ofs)

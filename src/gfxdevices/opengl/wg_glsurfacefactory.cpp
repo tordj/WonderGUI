@@ -50,16 +50,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	GlSurfaceFactory_p GlSurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return GlSurfaceFactory_p( static_cast<GlSurfaceFactory*>(pObject) );
-
-		return 0;
-	}
-
 	//____ maxSize() ______________________________________________________________
 
 	SizeI GlSurfaceFactory::maxSize() const

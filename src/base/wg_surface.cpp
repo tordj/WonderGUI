@@ -101,16 +101,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Surface_p Surface::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Surface_p( static_cast<Surface*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setScaleMode() __________________________________________________________
 
 	void Surface::setScaleMode( ScaleMode mode )

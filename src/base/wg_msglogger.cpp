@@ -64,17 +64,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	MsgLogger_p MsgLogger::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return MsgLogger_p( static_cast<MsgLogger*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ IgnoreMsg ____________________________________________________________
 
 	void MsgLogger::ignoreMsg( MsgType type )
@@ -226,10 +215,10 @@ namespace wg
 			case MsgType::Dummy:
 				break;
 			case MsgType::Tick:
-				snprintf( params, c_paramLen, " millisec=%d", TickMsg::cast(_pMsg)->timediff() );
+				snprintf( params, c_paramLen, " millisec=%d", static_cast<TickMsg*>(_pMsg)->timediff() );
 				break;
 			case MsgType::PointerChange:
-				snprintf( params, c_paramLen, " style=%s", _formatPointerStyle( PointerChangeMsg::cast(_pMsg)).c_str() );
+				snprintf( params, c_paramLen, " style=%s", _formatPointerStyle( static_cast<PointerChangeMsg*>(_pMsg)).c_str() );
 				break;
 			case MsgType::MouseEnter:
 				break;
@@ -238,14 +227,14 @@ namespace wg
 			case MsgType::MouseLeave:
 				break;
 			case MsgType::MousePress:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(MousePressMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton( static_cast<MousePressMsg*>(_pMsg)->button()).c_str() );
 				break;
 			case MsgType::MouseRepeat:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(MouseRepeatMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton( static_cast<MouseRepeatMsg*>(_pMsg)->button()).c_str() );
 				break;
 			case MsgType::MouseDrag:
 			{
-				MouseDragMsg_p pMsg = MouseDragMsg::cast(_pMsg);
+				MouseDragMsg_p pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
 				CoordF	now		= pMsg->currPos();
 				CoordF 	prev	= pMsg->prevPos();
@@ -260,7 +249,7 @@ namespace wg
 			}
 			case MsgType::MouseRelease:
 			{
-				MouseReleaseMsg_p pMsg = MouseReleaseMsg::cast(_pMsg);
+				MouseReleaseMsg_p pMsg = static_cast<MouseReleaseMsg*>(_pMsg);
 
 				const static char outside[] = "outside";
 				const static char inside[] = "inside";
@@ -274,42 +263,42 @@ namespace wg
 				break;
 			}
 			case MsgType::MouseClick:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(MouseClickMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<MouseClickMsg*>(_pMsg)->button()).c_str() );
 				break;
 			case MsgType::MouseDoubleClick:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(MouseDoubleClickMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<MouseDoubleClickMsg*>(_pMsg)->button()).c_str() );
 				break;
 
 			case MsgType::KeyPress:
 			{
-				KeyPressMsg_p pMsg = KeyPressMsg::cast(_pMsg);
+				KeyPressMsg_p pMsg = static_cast<KeyPressMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRepeat:
 			{
-				KeyRepeatMsg_p pMsg = KeyRepeatMsg::cast(_pMsg);
+				KeyRepeatMsg_p pMsg = static_cast<KeyRepeatMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::KeyRelease:
 			{
-				KeyReleaseMsg_p pMsg = KeyReleaseMsg::cast(_pMsg);
+				KeyReleaseMsg_p pMsg = static_cast<KeyReleaseMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " wg_keycode=%d native_keycode=%d", (int) pMsg->translatedKeyCode(), pMsg->nativeKeyCode() );
 				break;
 			}
 			case MsgType::TextInput:
 			{
-//				snprintf(params, c_paramLen, " content=%s", TextInputMsg::cast(_pMsg)->text().chars());
+//				snprintf(params, c_paramLen, " content=%s", TextInputMsg_p>(_pMsg)->text().chars());
 				break;
 			}
 			case MsgType::EditCommand:
-				snprintf( params, c_paramLen, " cmd=%s", _formatEditCommand(EditCommandMsg::cast(_pMsg)->command()).c_str() );
+				snprintf( params, c_paramLen, " cmd=%s", _formatEditCommand(static_cast<EditCommandMsg*>(_pMsg)->command()).c_str() );
 				break;
 
 			case MsgType::WheelRoll:
 			{
-				WheelRollMsg_p pMsg = WheelRollMsg::cast(_pMsg);
+				WheelRollMsg_p pMsg = static_cast<WheelRollMsg*>(_pMsg);
 				snprintf(params, c_paramLen, "wheel=%d distance=(%.2f,%.2f)", pMsg->wheel(), (float) pMsg->distance().x, (float) pMsg->distance().y);
 				break;
 			}
@@ -318,52 +307,52 @@ namespace wg
 				break;
 
 			case MsgType::Toggle:
-				snprintf( params, c_paramLen, " set=%d", (int) (ToggleMsg::cast(_pMsg)->isSet()) );
+				snprintf( params, c_paramLen, " set=%d", (int) (static_cast<ToggleMsg*>(_pMsg)->isSet()) );
 				break;
 
 			case MsgType::ValueUpdate:
 			{
-				ValueUpdateMsg_p pMsg = ValueUpdateMsg::cast(_pMsg);
+				ValueUpdateMsg_p pMsg = static_cast<ValueUpdateMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " value=%lld fraction=%f", (long long int) pMsg->value(), pMsg->fraction() );
 				break;
 			}
 
 			case MsgType::RangeUpdate:
 			{
-				RangeUpdateMsg_p pMsg = RangeUpdateMsg::cast(_pMsg);
+				RangeUpdateMsg_p pMsg = static_cast<RangeUpdateMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " offset=%d length=%d fracOfs=%f fracLen=%f final=%s", pMsg->offset(), pMsg->length(), pMsg->fracOffset(), pMsg->fracLength(), pMsg->isFinal()?"true":"false" );
 				break;
 			}
 
 			case MsgType::TextEdit:
 			{
-				TextEditMsg_p pMsg = TextEditMsg::cast(_pMsg);
+				TextEditMsg_p pMsg = static_cast<TextEditMsg*>(_pMsg);
 				break;
 			}
 
 			case MsgType::ItemToggle:
 			{
-				ItemToggleMsg_p pMsg = ItemToggleMsg::cast(_pMsg);
+				ItemToggleMsg_p pMsg = static_cast<ItemToggleMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " set=%s id=%d object=%p", pMsg->isSet()?"true":"false", pMsg->itemId(), pMsg->itemObject().rawPtr() );
 				break;
 			}
 			case MsgType::ItemMousePress:
 			{
-				ItemMousePressMsg_p pMsg = ItemMousePressMsg::cast(_pMsg);
+				ItemMousePressMsg_p pMsg = static_cast<ItemMousePressMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " id=%d mouseButton=%s", pMsg->itemId(), _formatMouseButton(pMsg->button()).c_str() );
 				break;
 			}
 
 			case MsgType::ItemsSelect:
 			{
-				ItemsSelectMsg_p pMsg = ItemsSelectMsg::cast(_pMsg);
+				ItemsSelectMsg_p pMsg = static_cast<ItemsSelectMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
 
 			case MsgType::ItemsUnselect:
 			{
-				ItemsUnselectMsg_p pMsg = ItemsUnselectMsg::cast(_pMsg);
+				ItemsUnselectMsg_p pMsg = static_cast<ItemsUnselectMsg*>(_pMsg);
 				snprintf( params, c_paramLen, " nbItems=%d", pMsg->nbItems() );
 				break;
 			}
@@ -371,10 +360,10 @@ namespace wg
 			case MsgType::ModalMoveOutside:
 				break;
 			case MsgType::ModalBlockedPress:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(ModalBlockedPressMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<ModalBlockedPressMsg*>(_pMsg)->button()).c_str() );
 				break;
 			case MsgType::ModalBlockedRelease:
-				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(ModalBlockedReleaseMsg::cast(_pMsg)->button()).c_str() );
+				snprintf( params, c_paramLen, " button=%s", _formatMouseButton(static_cast<ModalBlockedReleaseMsg*>(_pMsg)->button()).c_str() );
 				break;
 
 			default:
@@ -390,7 +379,7 @@ namespace wg
 
 		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
 		{
-			InputMsg_p p = InputMsg::cast(_pMsg);
+			InputMsg_p p = static_cast<InputMsg*>(_pMsg);
 			timestamp = _formatTimestamp( p->timestamp() );
 			modkeys = _formatModkeys( p );
 			pointerPos = _formatPointerPos( p );

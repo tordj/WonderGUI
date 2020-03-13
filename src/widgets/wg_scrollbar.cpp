@@ -83,16 +83,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Scrollbar_p Scrollbar::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Scrollbar_p( static_cast<Scrollbar*>(pObject) );
-
-		return 0;
-	}
-
 	//____ setOrientation() _______________________________________________________
 	/**
 	 * Set if scrollbar should be horizontal or vertical.
@@ -856,7 +846,7 @@ namespace wg
 		_viewToPosLen( &handlePos, &handleLen );
 
 		MsgRouter_p	pHandler = Base::msgRouter();
-		CoordI pos = InputMsg::cast(pMsg)->pointerPosRaw() - _globalPos();
+		CoordI pos = static_cast<InputMsg*>(pMsg)->pointerPosRaw() - _globalPos();
 
 		int		pointerOfs;
 		int		length;
@@ -885,7 +875,7 @@ namespace wg
 		{
 			case MsgType::MouseRelease:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
+				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
 					return;
 
 				// Just put them all to NORMAL and request render.
@@ -936,7 +926,7 @@ namespace wg
 
 			case MsgType::MousePress:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
+				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
 					return;
 
 				Component c = _findMarkedComponent(pos);
@@ -1000,7 +990,7 @@ namespace wg
 
 			case MsgType::MouseRepeat:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
+				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
 					return;
 
 				if( m_states[C_HANDLE].isPressed() )
@@ -1040,7 +1030,7 @@ namespace wg
 
 			case MsgType::MouseDrag:
 			{
-				if( MouseButtonMsg::cast(pMsg)->button() != MouseButton::Left )
+				if( static_cast<MouseButtonMsg*>(pMsg)->button() != MouseButton::Left )
 					return;
 
 				if( m_states[C_HANDLE].isPressed() )
@@ -1070,7 +1060,7 @@ namespace wg
 
 			case MsgType::WheelRoll:
 			{
-				WheelRollMsg_p p = WheelRollMsg::cast(pMsg);
+				WheelRollMsg_p p = static_cast<WheelRollMsg*>(pMsg);
 
 				if( p->wheel() == 1 )
 				{
@@ -1092,7 +1082,7 @@ namespace wg
 
 		// Swallow all button 1 messages.
 
-		if( pMsg->isMouseButtonMsg() && MouseButtonMsg::cast(pMsg)->button() == MouseButton::Left )
+		if( pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left )
 				pMsg->swallow();
 
 	}

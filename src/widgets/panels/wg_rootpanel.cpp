@@ -87,17 +87,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	RootPanel_p RootPanel::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return RootPanel_p( static_cast<RootPanel*>(pObject) );
-
-		return 0;
-	}
-
-
 	//____ setGfxDevice() _________________________________________________________
 
 	bool RootPanel::setGfxDevice( GfxDevice * pDevice )

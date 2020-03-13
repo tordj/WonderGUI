@@ -58,16 +58,6 @@ namespace wg
 		return CLASSNAME;
 	}
 
-	//____ cast() _________________________________________________________________
-
-	Context_p Context::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return Context_p(static_cast<Context*>(pObject));
-
-		return 0;
-	}
-
 	//____ setScale() _________________________________________________________
 
 	bool Context::setScale(float scale)

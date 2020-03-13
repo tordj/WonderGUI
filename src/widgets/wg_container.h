@@ -74,7 +74,6 @@ namespace wg
 			virtual bool			isInstanceOf( const char * pClassName ) const override;
 			virtual const char *	className( void ) const override;
 			static const char		CLASSNAME[];
-			static Container_p		cast( Object * pObject );
 
 			bool					isContainer() const override;
 
