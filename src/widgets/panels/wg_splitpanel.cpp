@@ -610,19 +610,19 @@ namespace wg
 
 	CoordI SplitPanel::_childPos(const StaticSlot * pSlot) const
 	{
-		return static_cast<const SplitSlot*>(pSlot)->m_geo.pos();
+		return static_cast<const Slot*>(pSlot)->m_geo.pos();
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
 	void SplitPanel::_childRequestRender(StaticSlot * pSlot)
 	{
-		_requestRender(static_cast<SplitSlot*>(pSlot)->m_geo);
+		_requestRender(static_cast<Slot*>(pSlot)->m_geo);
 	}
 
 	void SplitPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
 	{
-		_requestRender(rect + static_cast<SplitSlot*>(pSlot)->m_geo.pos());
+		_requestRender(rect + static_cast<Slot*>(pSlot)->m_geo.pos());
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -631,7 +631,7 @@ namespace wg
 	{
 		//TODO: Implement better solution, should be able to adapt width !!!
 
-		auto p = static_cast<SplitSlot*>(pSlot);
+		auto p = static_cast<Slot*>(pSlot);
 		p->_setSize(p->m_geo);
 	}
 
@@ -666,7 +666,7 @@ namespace wg
 
 	void SplitPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewWidget)
 	{
-		auto pSlot = static_cast<SplitSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		pSlot->_setWidget(pNewWidget);
 		pNewWidget->_resize(pSlot->m_geo);

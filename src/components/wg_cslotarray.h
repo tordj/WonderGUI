@@ -36,12 +36,6 @@ namespace wg
 	{
 	public:
 
-		class Holder : public SlotType::Holder	/** @private */
-		{
-		public:
-
-		};
-
 		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
@@ -78,7 +72,7 @@ namespace wg
 		inline iterator	end() const { return iterator(&m_slots[SIZE]); }
 
 	protected:
-		CSlotArray(Holder * pHolder) : m_pHolder(pHolder) 
+		CSlotArray(SlotHolder * pHolder) : m_pHolder(pHolder) 
 		{
 			for (auto& slot : m_slots)
 				slot.m_pHolder = pHolder;
@@ -100,8 +94,8 @@ namespace wg
 
 
 	//////
-		inline Holder *		_holder() { return m_pHolder; }
-		inline const Holder *	_holder() const { return m_pHolder; }
+		inline SlotHolder *			_holder() { return m_pHolder; }
+		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
 		bool		_contains(const SlotType * pSlot) const { return (pSlot >= m_slots && pSlot < &m_slots[SIZE]); }
 
@@ -117,8 +111,8 @@ namespace wg
 
 	private:
 
-		SlotType	m_slots[SIZE];
-		Holder *	m_pHolder;
+		SlotType	 m_slots[SIZE];
+		SlotHolder * m_pHolder;
 	};
 
 } // namespace wg

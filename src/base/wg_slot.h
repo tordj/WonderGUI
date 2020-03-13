@@ -37,10 +37,11 @@ namespace wg
 		friend class Widget;
 		friend class SlotIterator;
 		friend class SlotHolder;
+		friend class CSlot;
 		friend class CStaticSlot;
 		friend class DynamicSlot;
-		template<class S> friend class CStaticSlotImpl;
-		template<class S> friend class CStaticSlotVector;
+		template<class S> friend class CSlotImpl;
+		template<class S> friend class CSlotVector;
 		template<class S> friend class CDynamicSlotVector;
 		template<class S, int SIZE> friend class CSlotArray;
 
@@ -163,7 +164,6 @@ namespace wg
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;
 	};
-
 
 	//____ DynamicSlot __________________________________________________________
 

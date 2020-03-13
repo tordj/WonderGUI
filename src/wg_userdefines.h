@@ -35,9 +35,6 @@
 
 namespace wg
 {
-	//____ font & print related defines ___________________________________________
-
-	static const CodePage DefaultCodePage = CodePage::_1252;
 }
 
 //=============================================================================

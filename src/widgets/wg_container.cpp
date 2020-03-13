@@ -147,23 +147,35 @@ namespace wg
 		return m_pHolder ? m_pHolder->_root() : nullptr;
 	}
 
+	//____ _object() __________________________________________________________
+
+	Object * Container::_object()
+	{
+		return this;
+	}
+
+	const Object * Container::_object() const
+	{
+		return this;
+	}
+
 	//____ _childRequestFocus() ______________________________________________________
 
-	bool Container::_childRequestFocus( StaticSlot * pSlot, Widget * pWidget )
+	bool Container::_childRequestFocus(StaticSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childRequestFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _ChildReleaseFocus() ______________________________________________________
 
-	bool Container::_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget )
+	bool Container::_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget )
 	{
 		return m_pHolder ? m_pHolder->_childReleaseFocus( m_pSlot, pWidget ) : false;
 	}
 
 	//____ _childRequestInView() _____________________________________________________
 
-	void Container::_childRequestInView( StaticSlot * pSlot )
+	void Container::_childRequestInView(StaticSlot * pSlot )
 	{
 		if( m_pHolder )
 		{
@@ -172,7 +184,7 @@ namespace wg
 		}
 	}
 
-	void Container::_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void Container::_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
 	{
 		if( m_pHolder )
 		{
@@ -181,6 +193,66 @@ namespace wg
 		}
 	}
 
+	//____ _selectSlots() _____________________________________________________
+
+	void Container::_selectSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support selection
+	}
+
+	//____ _unselectSlots() ___________________________________________________
+
+	void Container::_unselectSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support selection
+	}
+
+	//____ _repadSlots() ______________________________________________________
+
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, BorderI padding)
+	{
+		return;				// By default we don't support padding
+	}
+
+	void Container::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding)
+	{
+		return;				// By default we don't support padding
+	}
+
+	//____ _didAddSlots() _____________________________________________________
+
+	void Container::_didAddSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support adding/moving/erasing slots
+	}
+
+	//____ _didMoveSlots() ____________________________________________________
+
+	void Container::_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb)
+	{
+		return;				// By default we don't support adding/moving/erasing slots
+	}
+
+	//____ _willEraseSlots() __________________________________________________
+
+	void Container::_willEraseSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support adding/moving/erasing slots
+	}
+
+	//____ _hideSlots() _______________________________________________________
+
+	void Container::_hideSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support hiding
+	}
+
+	//____ _unhideSlots() _____________________________________________________
+
+	void Container::_unhideSlots(StaticSlot * pSlot, int nb)
+	{
+		return;				// By default we don't support hiding
+	}
 
 	//____ _isPanel() ______________________________________________________________
 

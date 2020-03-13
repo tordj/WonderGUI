@@ -150,13 +150,13 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg_p pMsg = MouseMoveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
+				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( pEntry && pEntry->_widget() != m_pHoveredChild.rawPtr() )
 				{
 					RectI geo;
 					if( m_pHoveredChild )
 					{
-						_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() );
+						_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
 						_requestRender(geo);
 					}
 
@@ -169,11 +169,11 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = MouseLeaveMsg::cast(_pMsg);
-				ListSlot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
+				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
 				if( m_pHoveredChild && !pEntry )
 				{
 					RectI geo;
-					_getEntryGeo( geo, (ListSlot*) m_pHoveredChild->_slot() );
+					_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
 				}
@@ -191,7 +191,7 @@ namespace wg
 						break;								// Click on header or somewhere else outside the real list.
 
 					RectI listArea = _listArea();
-					ListSlot * pEntry = _findEntry(ofs);
+					Slot * pEntry = _findEntry(ofs);
 
 					ofs = listArea.limit(ofs);
 					m_lassoBegin = ofs;
@@ -220,17 +220,17 @@ namespace wg
 								{
 									// Select range from focused to clicked entry.
 
-									ListSlot * pFocused = (ListSlot*) m_pFocusedChild->_slot();
-									ListSlot * pBeginSel = wg::min( pEntry, pFocused );
-									ListSlot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
+									Slot * pFocused = (Slot*) m_pFocusedChild->_slot();
+									Slot * pBeginSel = wg::min( pEntry, pFocused );
+									Slot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
 									_selectSlots( pBeginSel, pEndSel, true );
 
 									// Unselect the rest if not CTRL-click.
 
 									if( !(pMsg->modKeys() & MODKEY_CTRL) )
 									{
-										ListSlot * pBegin = _beginSlots();
-										ListSlot * pEnd = _endSlots();
+										Slot * pBegin = _beginSlots();
+										Slot * pEnd = _endSlots();
 										if( pBegin < pBeginSel )
 											_unselectSlots( pBegin, pBeginSel, true );
 										if( pEnd > pEndSel )
@@ -319,7 +319,7 @@ namespace wg
 
 	Widget * List::_firstChild() const
 	{
-		ListSlot * p = _beginSlots();
+		Slot * p = _beginSlots();
 		if (p == _endSlots())
 			return nullptr;
 
@@ -330,7 +330,7 @@ namespace wg
 
 	Widget * List::_lastChild() const
 	{
-		ListSlot * p = _endSlots();
+		Slot * p = _endSlots();
 		if (p == _beginSlots())
 			return nullptr;
 
@@ -339,12 +339,12 @@ namespace wg
 
 	//____ _setSlotSelection() _________________________________________________________
 
-	int List::_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelected, bool bPostMsg)
+	int List::_setSlotSelection(Slot * pBegin, Slot * pEnd, bool bSelected, bool bPostMsg)
 	{
 		// Count slots to be selected (if we need to post a message)
 
 		int nbChanges = 0;
-		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
+		for (Slot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
 			if (p->m_bVisible && bSelected != p->m_bSelected && (p->_widget()->isSelectable() || bSelected == false) )
 				nbChanges++;
@@ -360,7 +360,7 @@ namespace wg
 		//
 
 		int nbItems = 0;
-		for (ListSlot * p = pBegin; p < pEnd; p = _nextSlot(p))
+		for (Slot * p = pBegin; p < pEnd; p = _nextSlot(p))
 		{
 			if( p->m_bVisible && bSelected != p->m_bSelected && (p->_widget()->isSelectable() || bSelected == false))
 			{
@@ -398,11 +398,11 @@ namespace wg
 
 	//____ _flipSelection() _________________________________________________________
 
-	int List::_flipSelection( ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg )
+	int List::_flipSelection( Slot * pBegin, Slot * pEnd, bool bPostMsg )
 	{
 		int nSelected = 0;
 		int nDeselected = 0;
-		ListSlot * pLast = _prevSlot(pEnd);
+		Slot * pLast = _prevSlot(pEnd);
 
 		// Request render for the range
 
@@ -421,7 +421,7 @@ namespace wg
 			int nToSelect = 0;
 			int nToDeselect = 0;
 
-			for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
+			for( Slot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 			{
 				if (pSlot->m_bVisible)
 				{
@@ -440,7 +440,7 @@ namespace wg
 
 		// Loop through entries
 
-		for( ListSlot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
+		for( Slot * pSlot = pBegin ; pSlot != pEnd ; pSlot = _nextSlot(pSlot) )
 		{
 
 			if (pSlot->m_bVisible && (pSlot->_widget()->isSelectable() || pSlot->m_bSelected))

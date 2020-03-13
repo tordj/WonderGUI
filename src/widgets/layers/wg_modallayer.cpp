@@ -34,48 +34,48 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<ModalSlot>;
+	template class CDynamicSlotVector<ModalLayer::Slot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
 
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
 
-	//____ ModalSlot::setOrigo() ____________________________________________________
+	//____ Slot::setOrigo() ____________________________________________________
 
-	void ModalSlot::setOrigo(const Origo origo)
+	void ModalLayer::Slot::setOrigo(const Origo origo)
 	{
 		m_origo = origo;
 		_holder()->_refreshRealGeo(this);
 	}
 
-	//____ ModalSlot::setGeo() ____________________________________________________
+	//____ Slot::setGeo() ____________________________________________________
 
-	void ModalSlot::setGeo(const Rect& geometry)
+	void ModalLayer::Slot::setGeo(const Rect& geometry)
 	{
 		m_placementGeo = qpixToRaw(geometry);
 		_holder()->_refreshRealGeo(this);
 	}
 
-	//____ ModalSlot::setOffset() ____________________________________________________
+	//____ Slot::setOffset() ____________________________________________________
 
-	void ModalSlot::setOffset(const Coord& ofs)
+	void ModalLayer::Slot::setOffset(const Coord& ofs)
 	{
 		m_placementGeo.setPos(qpixToRaw(ofs));
 		_holder()->_refreshRealGeo(this);
 	}
 
-	//____ ModalSlot::setSize() ____________________________________________________
+	//____ Slot::setSize() ____________________________________________________
 
-	void ModalSlot::setSize(const Size& size)
+	void ModalLayer::Slot::setSize(const Size& size)
 	{
 		m_placementGeo.setSize(qpixToRaw(size));
 		_holder()->_refreshRealGeo(this);
 	}
 
-	//____ ModalSlot::move() ____________________________________________________
+	//____ Slot::move() ____________________________________________________
 
-	void ModalSlot::move(const Coord& ofs)
+	void ModalLayer::Slot::move(const Coord& ofs)
 	{
 		m_placementGeo += qpixToRaw(ofs);
 		_holder()->_refreshRealGeo(this);
@@ -84,13 +84,13 @@ namespace wg
 
 	//____ pushFront() _________________________________________________________________
 
-	CModalSlotVector::iterator CModalSlotVector::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		ModalSlot * pSlot = _pushFrontEmpty();
+		Slot * pSlot = _pushFrontEmpty();
 		pSlot->m_geo = qpixToRaw(geometry);
 		pSlot->m_origo = origo;
 
@@ -101,13 +101,13 @@ namespace wg
 
 	//____ pushBack() _________________________________________________________________
 
-	CModalSlotVector::iterator CModalSlotVector::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
-		ModalSlot * pSlot = _pushBackEmpty();
+		Slot * pSlot = _pushBackEmpty();
 		pSlot->m_geo = qpixToRaw(geometry);
 		pSlot->m_origo = origo;
 
@@ -118,7 +118,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void ModalLayer::_refreshRealGeo( ModalSlot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
+	void ModalLayer::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
 		SizeI sz = pSlot->m_placementGeo.size();
 
@@ -158,7 +158,7 @@ namespace wg
 			_requestResize();
 		else
 		{
-			auto p = static_cast<ModalSlot*>(pSlot);
+			auto p = static_cast<Slot*>(pSlot);
 			_refreshRealGeo( p, true );
 		}
 	}
@@ -172,7 +172,7 @@ namespace wg
 		else
 		{
 			_willEraseSlots(pSlot, 1);
-			modalSlots._erase((ModalSlot*)pSlot);
+			modalSlots._erase((Slot*)pSlot);
 		}
 	}
 
@@ -256,7 +256,7 @@ namespace wg
 		{
 			if( !modalSlots.isEmpty() )
 			{
-				ModalSlot * pSlot = modalSlots._last();
+				Slot * pSlot = modalSlots._last();
 
 				if( pSlot->_widget()->isContainer() )
 				{
@@ -320,14 +320,14 @@ namespace wg
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				ModalSlot * pSlot = static_cast<ModalSlot*>(p->_slot());
+				Slot * pSlot = static_cast<Slot*>(p->_slot());
 				pSlot->m_pKeyFocus = pFocused;
 			}
 		}
 
 		// Find which child-branch to focus and switch to our previously saved focus
 
-		ModalSlot * pSlot = modalSlots._last();
+		Slot * pSlot = modalSlots._last();
 
 		Widget * 	pSavedFocus = nullptr;
 		StaticSlot *		pBranch	= nullptr;
@@ -370,7 +370,7 @@ namespace wg
 
 	void ModalLayer::_didAddSlots(StaticSlot * _pSlot, int nb)
 	{
-		ModalSlot * pSlot = (ModalSlot*) _pSlot;
+		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
 			_refreshRealGeo(&pSlot[i]);
 
@@ -387,8 +387,8 @@ namespace wg
 			return;
 		}
 
-		auto pFrom = static_cast<ModalSlot*>(_pFrom);
-		auto pTo = static_cast<ModalSlot*>(_pTo);
+		auto pFrom = static_cast<Slot*>(_pFrom);
+		auto pTo = static_cast<Slot*>(_pTo);
 
 
 		// Now we have switched places, pTo contains the widget that was moved
@@ -397,7 +397,7 @@ namespace wg
 		{
 			// Request render on all areas covered by siblings we have skipped in front of.
 
-			ModalSlot * p = pTo+1;
+			Slot * p = pTo+1;
 			while (p <= pFrom)
 			{
 				RectI cover(pTo->m_geo, p->m_geo);
@@ -411,7 +411,7 @@ namespace wg
 		{
 			// Request render on our siblings for the area we previously have covered.
 
-			ModalSlot * p = pFrom;
+			Slot * p = pFrom;
 			while (p < pTo)
 			{
 				RectI cover(pTo->m_geo, p->m_geo);
@@ -428,7 +428,7 @@ namespace wg
 
 	void ModalLayer::_willEraseSlots(StaticSlot * _pSlot, int nb)
 	{
-		ModalSlot * pSlot = (ModalSlot*) _pSlot;
+		Slot * pSlot = (Slot*) _pSlot;
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			_childRequestRender(pSlot+i);
@@ -455,14 +455,14 @@ namespace wg
 
 	//____ _beginLayerSlots() __________________________________________________
 
-	const LayerSlot * ModalLayer::_beginLayerSlots() const
+	const Layer::Layer::Slot * ModalLayer::_beginLayerSlots() const
 	{
 		return modalSlots._begin();
 	}
 
 	//____ _endLayerSlots() ____________________________________________________
 
-	const LayerSlot *  ModalLayer::_endLayerSlots() const
+	const Layer::Layer::Slot *  ModalLayer::_endLayerSlots() const
 	{
 		return modalSlots._end();
 	}
@@ -471,7 +471,7 @@ namespace wg
 
 	int ModalLayer::_sizeOfLayerSlot() const
 	{
-		return sizeof(ModalSlot);
+		return sizeof(Slot);
 	}
 
 

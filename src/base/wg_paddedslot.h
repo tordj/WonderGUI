@@ -37,17 +37,6 @@ namespace wg
 		template<class S> friend class CPaddedSlotVector;
 	public:
 
-		//____ Holder _________________________________________________________
-
-		class Holder : public SlotHolder		/** @private */
-		{
-		public:
-			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
-
-			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
-		};
-
 //		void		setPadding(const BorderI& padding);
 //		inline const BorderI& padding() const { return m_padding; }
 

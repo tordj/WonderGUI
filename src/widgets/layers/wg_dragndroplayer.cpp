@@ -112,7 +112,7 @@ namespace wg
 			_requestResize();
 		else
 		{
-			auto p = static_cast<DnDLayerSlot*>(pSlot);
+			auto p = static_cast<Slot*>(pSlot);
 
 			Size pref = p->_preferredSize();
 			Size max = Size::max(pref, p->m_geo.size());
@@ -134,14 +134,14 @@ namespace wg
 
 	//____ _beginLayerSlots() _______________________________________________
 
-	const LayerSlot * DragNDropLayer::_beginLayerSlots() const
+	const Layer::Slot * DragNDropLayer::_beginLayerSlots() const
 	{
 		return &m_dragSlot;
 	}
 
 	//____ _endLayerSlots() ________________________________________________
 
-	const LayerSlot * DragNDropLayer::_endLayerSlots() const
+	const Layer::Slot * DragNDropLayer::_endLayerSlots() const
 	{
 		if( m_dragSlot._widget() )
 			return (&m_dragSlot) + 1;
@@ -153,12 +153,12 @@ namespace wg
 
 	int DragNDropLayer::_sizeOfLayerSlot() const
 	{
-		return sizeof(LayerSlot);
+		return sizeof(Slot);
 	}
 
 	//____ _onRequestRender() _______________________________________________
 
-	void DragNDropLayer::_onRequestRender(const RectI& rect, const LayerSlot * pSlot)
+	void DragNDropLayer::_onRequestRender(const RectI& rect, const Layer::Slot * pSlot)
 	{
 		// We don't mask against drag widget, it is assumed to be too small/transparent/irregular
 		// for that to make sense.

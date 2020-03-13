@@ -67,7 +67,7 @@ namespace wg
 		inline StrongComponentPtr<CStaticSlot>	ptr() { return StrongComponentPtr<CStaticSlot>(this); }
 
 	protected:
-		virtual StaticSlot *			_slot() = 0;
+		virtual StaticSlot *		_slot() = 0;
 		virtual const StaticSlot *	_slot() const = 0;
 	};
 
@@ -111,13 +111,9 @@ namespace wg
 
 	public:
 
-		class Holder : public SlotType::Holder	/** @private */
-		{
-		};
-
 		/** @private */
 
-		CStaticSlotImpl(Holder * pHolder) : SlotType(pHolder) {}
+		CStaticSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
 
 		//.____ Operators __________________________________________
 
@@ -154,13 +150,9 @@ namespace wg
 
 	public:
 
-		class Holder : public SlotType::Holder	/** @private */
-		{
-		};
-
 		/** @private */
 
-		CDynamicSlotImpl(Holder * pHolder) : SlotType(pHolder) {}
+		CDynamicSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
 
 
 		//.____ Operators __________________________________________

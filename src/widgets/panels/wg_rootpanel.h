@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected CStandardSlot::Holder
+	class RootPanel : public Object, protected SlotHolder
 	{
 		friend class Widget;
 		friend class Container;
@@ -133,16 +133,18 @@ namespace wg
 
 		RectI			_geo() const;
 
-		// WidgetHolder methods
+		// SlotHolder methods
+
+		Container *  	_container() override;
+		RootPanel *		_root() override;
+		Object *		_object() override;
+		const Object *	_object() const override;
 
 		CoordI			_childPos( const StaticSlot * pSlot ) const override;
 		CoordI			_childGlobalPos( const StaticSlot * pSlot ) const override;
 
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
 		RectI			_childWindowSection( const StaticSlot * pSlot ) const override;
-
-		Container *  	_container() override;
-		RootPanel *		_root() override;
 
 		void			_childRequestRender( StaticSlot * pSlot ) override;
 		void			_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
@@ -160,11 +162,18 @@ namespace wg
 		void			_releaseChild( StaticSlot * pSlot ) override;
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override;
 
-		// ChildHolder methods
+		void			_selectSlots(StaticSlot * pSlot, int nb) override;
+		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
-		Object *		_object() override;
-		const Object *	_object() const override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) override;
 
+		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
+		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
+
+		void			_hideSlots(StaticSlot * pSlot, int nb) override;
+		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
 		//
 

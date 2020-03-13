@@ -33,15 +33,15 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CSelectableSlotVector<PackListSlot>;
-	template class CDynamicSlotVector<PackListSlot>;
+	template class CSelectableSlotVector<PackList::Slot>;
+	template class CDynamicSlotVector<PackList::Slot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
 
 
 	//____ insertSorted() ___________________________________________________
 
-	CPackListSlotVector::iterator CPackListSlotVector::insertSorted(Widget * pWidget)
+	PackList::CSlots::iterator PackList::CSlots::insertSorted(Widget * pWidget)
 	{
 		//TODO: Replace with assert
 //		if (!pWidget)
@@ -57,7 +57,7 @@ namespace wg
 
 	//____ sort() __________________________________________________________
 
-	void CPackListSlotVector::sort()
+	void PackList::CSlots::sort()
 	{
 		_holder()->_sortEntries();
 	}
@@ -67,7 +67,7 @@ namespace wg
 
 	PackList::PackList() : header(this), slots(this)
 	{
-		m_sizeOfSlot = sizeof(PackListSlot);
+		m_sizeOfSlot = sizeof(Slot);
 		m_bSiblingsOverlap = false;
 		m_bHorizontal = false;
 		m_sortOrder = SortOrder::Ascending;
@@ -305,7 +305,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				static_cast<const PackListSlot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+				static_cast<const Slot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}
@@ -343,7 +343,7 @@ namespace wg
 
 		for( int i = _getEntryAt( startOfs ) ; i < slots.size() ; i++ )
 		{
-			PackListSlot * pSlot = slots._slot(i);
+			Slot * pSlot = slots._slot(i);
 			Widget * pChild = pSlot->_widget();
 
 			// Get entry geometry, skin and state
@@ -399,7 +399,7 @@ namespace wg
 				{
 					ClipPopData clipPop = limitClipList(pDevice, rawToPixels(canvas));
 					if( pDevice->clipListSize() > 0 )
-						static_cast<const PackListSlot*>(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
+						static_cast<const Slot*>(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
 					popClipList(pDevice,clipPop);
 				}
 				_nextSlotWithGeo( child );
@@ -692,7 +692,7 @@ namespace wg
 		StaticSlot * pBeg = min(pFrom, pTo);
 		StaticSlot * pEnd = pFrom == pBeg ? pTo + 1 : pFrom + nb;
 
-		_requestRenderChildren((PackListSlot*)pBeg, (PackListSlot*)pEnd);	// Request render on dirty area
+		_requestRenderChildren((Slot*)pBeg, (Slot*)pEnd);	// Request render on dirty area
 	}
 
 
@@ -704,8 +704,8 @@ namespace wg
 
 		// Unselect slots that will be removed.
 
-		ListSlot * pSlot = (ListSlot*)_pSlot;
-		ListSlot * pEnd = (ListSlot*)(((char *)_pSlot) + m_sizeOfSlot * nb);
+		List::Slot * pSlot = (List::Slot*)_pSlot;
+		List::Slot * pEnd = (List::Slot*)(((char *)_pSlot) + m_sizeOfSlot * nb);
 		_setSlotSelection(pSlot, pEnd, false, true);
 	}
 
@@ -713,7 +713,7 @@ namespace wg
 
 	void PackList::_hideSlots(StaticSlot * _pSlot, int nb)
 	{
-		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
+		Slot * pSlot = static_cast<Slot*>(_pSlot);
 
 		_requestRenderChildren(pSlot,slots._end());	// Request render on dirty area
 
@@ -742,7 +742,7 @@ namespace wg
 
 	void PackList::_unhideSlots(StaticSlot * _pSlot, int nb)
 	{
-		PackListSlot * pSlot = static_cast<PackListSlot*>(_pSlot);
+		Slot * pSlot = static_cast<Slot*>(_pSlot);
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -798,27 +798,27 @@ namespace wg
 
 	void PackList::_selectSlots(StaticSlot * pSlot, int nb)
 	{
-		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, true, false);
+		_setSlotSelection(static_cast<List::Slot*>(pSlot), static_cast<List::Slot*>(pSlot) + nb, true, false);
 	}
 
 	//____ _unselectSlots() ______________________________________________________
 
 	void PackList::_unselectSlots(StaticSlot * pSlot, int nb)
 	{
-		_setSlotSelection(static_cast<ListSlot*>(pSlot), static_cast<ListSlot*>(pSlot) + nb, false, false);
+		_setSlotSelection(static_cast<List::Slot*>(pSlot), static_cast<List::Slot*>(pSlot) + nb, false, false);
 	}
 
 
 	//____ _beginSlots() _____________________________________________________
 
-	ListSlot * PackList::_beginSlots() const
+	List::List::Slot * PackList::_beginSlots() const
 	{
 		return slots._begin();
 	}
 
 	//____ _endSlots() _____________________________________________________
 
-	ListSlot * PackList::_endSlots() const
+	List::List::Slot * PackList::_endSlots() const
 	{
 		return slots._end();
 	}
@@ -836,7 +836,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			PackListSlot * pSlot = slots._slot(middle);
+			Slot * pSlot = slots._slot(middle);
 
 			if( pSlot->m_ofs + pSlot->m_length < pixelofs )
 				first = middle + 1;
@@ -862,7 +862,7 @@ namespace wg
 
 		while( first <= last )
 		{
-			PackListSlot * pSlot = slots._slot(middle);
+			Slot * pSlot = slots._slot(middle);
 
 			int cmpRes = m_sortFunc( pSlot->_widget(), pWidget )*negator;
 
@@ -883,7 +883,7 @@ namespace wg
 
 	//____ _findEntry() ___________________________________________________________
 
-	ListSlot * PackList::_findEntry( const CoordI& ofs )
+	List::List::Slot * PackList::_findEntry( const CoordI& ofs )
 	{
 		RectI list = _listArea();
 
@@ -919,7 +919,7 @@ namespace wg
 
 			if( entry != slots.size() )
 			{
-				PackListSlot * pSlot = slots._slot(entry);
+				Slot * pSlot = slots._slot(entry);
 				RectI childGeo;
 				_getChildGeo( childGeo, pSlot );
 				if( childGeo.contains(ofs) )
@@ -975,7 +975,7 @@ namespace wg
 			if( m_nbPreferredBreadthEntries == 0 )
 			{
 				int highest = 0;
-				for( PackListSlot * p = slots._begin() ; p < slots._end() ; p++ )
+				for( Slot * p = slots._begin() ; p < slots._end() ; p++ )
 				{
 					if (p->m_prefBreadth == breadth)
 						continue;
@@ -996,7 +996,7 @@ namespace wg
 
 	//____ _requestRenderChildren() ___________________________________________
 
-	void PackList::_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd)
+	void PackList::_requestRenderChildren(Slot * pBegin, Slot * pEnd)
 	{
 		RectI box = _listArea();
 
@@ -1021,7 +1021,7 @@ namespace wg
 
 	//____ _updateChildOfsFrom() __________________________________________________
 
-	void PackList::_updateChildOfsFrom( PackListSlot * pSlot )
+	void PackList::_updateChildOfsFrom( Slot * pSlot )
 	{
 		int ofs = 0;
 		if( pSlot > slots._begin() )
@@ -1073,9 +1073,9 @@ namespace wg
 
 	//____ _getEntryGeo() _________________________________________________________
 
-	void PackList::_getEntryGeo( RectI& geo, const ListSlot * _pSlot ) const
+	void PackList::_getEntryGeo( RectI& geo, const List::Slot * _pSlot ) const
 	{
-		const PackListSlot * pSlot = static_cast<const PackListSlot*>(_pSlot);
+		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
 		geo = _listArea();
 
@@ -1094,7 +1094,7 @@ namespace wg
 
 	//____ _getChildGeo() _________________________________________________________
 
-	void PackList::_getChildGeo( RectI& geo, const PackListSlot * pSlot ) const
+	void PackList::_getChildGeo( RectI& geo, const Slot * pSlot ) const
 	{
 		geo = _listArea();
 
@@ -1123,7 +1123,7 @@ namespace wg
 
 	int PackList::_paddedLimitedMatchingHeight( StaticSlot * _pSlot, int paddedWidth )
 	{
-		auto pSlot = static_cast<PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		int height = pSlot->_matchingHeight( paddedWidth - m_entryPadding.w ) + m_entryPadding.h;
 		limit( height, m_minEntrySize.h, m_maxEntrySize.h );
@@ -1134,7 +1134,7 @@ namespace wg
 
 	int PackList::_paddedLimitedMatchingWidth( StaticSlot * _pSlot, int paddedHeight )
 	{
-		auto pSlot = static_cast<PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		int width = pSlot->_matchingWidth( paddedHeight - m_entryPadding.h ) + m_entryPadding.w;
 		limit( width, m_minEntrySize.w, m_maxEntrySize.w );
@@ -1145,7 +1145,7 @@ namespace wg
 
 	SizeI PackList::_paddedLimitedPreferredSize( StaticSlot * _pSlot )
 	{
-		auto pSlot = static_cast<PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		SizeI sz = pSlot->_preferredSize();
 		sz += m_entryPadding;
@@ -1175,7 +1175,7 @@ namespace wg
 
 	CoordI PackList::_childPos( const StaticSlot * _pSlot ) const
 	{
-		const PackListSlot * pSlot = reinterpret_cast<const PackListSlot*>(_pSlot);
+		const Slot * pSlot = reinterpret_cast<const Slot*>(_pSlot);
 
 		RectI geo;
 		_getChildGeo(geo, pSlot);
@@ -1187,7 +1187,7 @@ namespace wg
 
 	void PackList::_childRequestRender( StaticSlot * _pSlot )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
 		RectI geo;
 		_getChildGeo(geo, pSlot);
@@ -1196,7 +1196,7 @@ namespace wg
 
 	void PackList::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
 		RectI geo;
 		_getChildGeo(geo, pSlot);
@@ -1213,7 +1213,7 @@ namespace wg
 	{
 		bool	bReqResize = false;
 
-		PackListSlot * pSlot = reinterpret_cast<PackListSlot*>(_pSlot);
+		Slot * pSlot = reinterpret_cast<Slot*>(_pSlot);
 
 		if (pSlot->m_bVisible && m_minEntrySize != m_maxEntrySize)
 		{
@@ -1275,7 +1275,7 @@ namespace wg
 
 	Widget * PackList::_prevChild( const StaticSlot * _pSlot ) const
 	{
-		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<const Slot*>(_pSlot);
 
 		if (pSlot > slots._begin())
 			return pSlot[-1]._widget();
@@ -1287,7 +1287,7 @@ namespace wg
 
 	Widget * PackList::_nextChild( const StaticSlot * _pSlot ) const
 	{
-		auto pSlot = static_cast<const PackListSlot*>(_pSlot);
+		auto pSlot = static_cast<const Slot*>(_pSlot);
 
 		if (pSlot < slots._last())
 			return pSlot[1]._widget();
@@ -1300,14 +1300,14 @@ namespace wg
 	void PackList::_releaseChild(StaticSlot * pSlot)
 	{
 		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<PackListSlot*>(pSlot));
+		slots._erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() _____________________________________________________
 
 	void PackList::_replaceChild(StaticSlot * pSlot, Widget * pNewChild)
 	{
-		static_cast<PackListSlot*>(pSlot)->_setWidget(pNewChild);
+		static_cast<Slot*>(pSlot)->_setWidget(pNewChild);
 		_childRequestResize(pSlot);
 	}
 
@@ -1319,7 +1319,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			PackListSlot * pSlot = slots._first();
+			Slot * pSlot = slots._first();
 			package.pSlot = pSlot;
 			_getChildGeo(package.geo, pSlot);
 		}
@@ -1329,7 +1329,7 @@ namespace wg
 
 	void PackList::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		PackListSlot * pSlot = (PackListSlot*)package.pSlot;
+		Slot * pSlot = (Slot*)package.pSlot;
 
 		if (pSlot == slots._last())
 			package.pSlot = nullptr;

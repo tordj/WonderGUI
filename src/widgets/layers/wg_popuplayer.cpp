@@ -34,14 +34,14 @@
 namespace wg
 {
 	using namespace Util;
-	template class CStaticSlotVector<PopupSlot>;
+	template class CStaticSlotVector<PopupLayer::Slot>;
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
 
 
 	//____ pushFront() ________________________________________________
 
-	void CPopupSlots::pushFront(const Widget_p& _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
+	void PopupLayer::CSlots::pushFront(const Widget_p& _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
 		_holder()->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
@@ -49,7 +49,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void CPopupSlots::pop(int nb)
+	void PopupLayer::CSlots::pop(int nb)
 	{
 		if( nb <= 0 )
 			return;
@@ -61,7 +61,7 @@ namespace wg
 
 	//____ pop() ________________________________________________
 
-	void CPopupSlots::pop(Widget * pPopup)
+	void PopupLayer::CSlots::pop(Widget * pPopup)
 	{
 		int i = index(pPopup);
 		if (i > -1)
@@ -70,7 +70,7 @@ namespace wg
 
 	//____ clear() ________________________________________________
 
-	void CPopupSlots::clear()
+	void PopupLayer::CSlots::clear()
 	{
 		if( isEmpty() )
 			return;
@@ -121,7 +121,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	void PopupLayer::_updateGeo(PopupSlot* pSlot, bool bForceResize)
+	void PopupLayer::_updateGeo(Slot* pSlot, bool bForceResize)
 	{
 		// Get size of parent and correct launcherGeo
 
@@ -302,7 +302,7 @@ namespace wg
 		{
 			// In search mode ACTION_TARGET we limit our target to us, our menu-branches and the menu-opener if a menu is open.
 
-			PopupSlot * pSlot = popupSlots._begin();
+			Slot * pSlot = popupSlots._begin();
 			Widget * pResult = 0;
 
 			while( pSlot != popupSlots._end() && !pResult )
@@ -321,7 +321,7 @@ namespace wg
 			{
 				// Check the root opener
 
-				PopupSlot * pSlot = popupSlots._last();
+				Slot * pSlot = popupSlots._last();
 				if( pSlot->m_pOpener )
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
@@ -350,11 +350,11 @@ namespace wg
 
 	//____ _onRequestRender() _____________________________________________________
 
-	void PopupLayer::_onRequestRender( const RectI& rect, const LayerSlot * pSlot )
+	void PopupLayer::_onRequestRender( const RectI& rect, const Layer::Slot * pSlot )
 	{
 		// Don not render anything if not visible
 
-		if (pSlot && ((PopupSlot*)pSlot)->m_state == PopupSlot::State::OpeningDelay)
+		if (pSlot && ((Slot*)pSlot)->m_state == Slot::State::OpeningDelay)
 			return;
 
 		// Clip our geometry and put it in a dirtyrect-list
@@ -367,16 +367,16 @@ namespace wg
 
 		if( !popupSlots.isEmpty() )
 		{
-			PopupSlot * pCover;
+			Slot * pCover;
 
 			if (pSlot)
-				pCover = ((PopupSlot*)pSlot) - 1;
+				pCover = ((Slot*)pSlot) - 1;
 			else
 				pCover = popupSlots._last();
 
 			while (pCover >= popupSlots._begin())
 			{
-				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != PopupSlot::State::OpeningDelay && pCover->m_state != PopupSlot::State::Opening && pCover->m_state != PopupSlot::State::Closing)
+				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
 					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 				pCover--;
@@ -394,9 +394,9 @@ namespace wg
 	{
 	public:
 		WidgetRenderContext() : pSlot(0) {}
-		WidgetRenderContext(PopupSlot * pSlot, const RectI& geo) : pSlot(pSlot), geo(geo) {}
+		WidgetRenderContext(PopupLayer::Slot * pSlot, const RectI& geo) : pSlot(pSlot), geo(geo) {}
 
-		PopupSlot *	pSlot;
+		PopupLayer::Slot *	pSlot;
 		RectI		geo;
 		ClipPopData clipPop;
 	};
@@ -420,7 +420,7 @@ namespace wg
 		{
 			RectI geo = pSlot->m_geo + _canvas.pos();
 
-			if (geo.intersectsWith(dirtBounds) && pSlot->m_state != PopupSlot::State::OpeningDelay)
+			if (geo.intersectsWith(dirtBounds) && pSlot->m_state != Slot::State::OpeningDelay)
 				renderList.push_back(WidgetRenderContext(pSlot, geo));
 		}
 
@@ -440,7 +440,7 @@ namespace wg
 			WidgetRenderContext * p = &renderList[i];
 
 			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
-			if( p->pSlot->m_state != PopupSlot::State::Opening && p->pSlot->m_state != PopupSlot::State::Closing )
+			if( p->pSlot->m_state != Slot::State::Opening && p->pSlot->m_state != Slot::State::Closing )
 				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if (patches.isEmpty())
@@ -464,10 +464,10 @@ namespace wg
 
 			Color tint = Color::White;
 
-			if (p->pSlot->m_state == PopupSlot::State::Opening)
+			if (p->pSlot->m_state == Slot::State::Opening)
 				tint.a = 255 * p->pSlot->m_stateCounter / m_openingFadeMs;
 
-			if (p->pSlot->m_state == PopupSlot::State::Closing)
+			if (p->pSlot->m_state == Slot::State::Closing)
 				tint.a = 255 - (255 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
 			if (tint.a == 255)
@@ -529,13 +529,13 @@ namespace wg
 
 				// Update state for all open popups
 
-				for (PopupSlot* pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
+				for (Slot* pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
 				{
-					PopupSlot& popup = *pSlot;
+					Slot& popup = *pSlot;
 
 					switch (popup.m_state)
 					{
-					case PopupSlot::State::OpeningDelay:
+					case Slot::State::OpeningDelay:
 						if (popup.m_stateCounter + ms < m_openingDelayMs)
 						{
 							popup.m_stateCounter += ms;
@@ -543,21 +543,21 @@ namespace wg
 						}
 						else
 						{
-							popup.m_state = PopupSlot::State::Opening;
+							popup.m_state = Slot::State::Opening;
 							popup.m_stateCounter -= m_openingDelayMs;
 							// No break here, let's continue down to opening...
 						}
-					case PopupSlot::State::Opening:
+					case Slot::State::Opening:
 						popup.m_stateCounter += ms;
 						_requestRender(popup.m_geo);
 						if (popup.m_stateCounter >= m_openingFadeMs)
 						{
 							popup.m_stateCounter = 0;
-							popup.m_state = popup.m_bAutoClose ? PopupSlot::State::PeekOpen : PopupSlot::State::FixedOpen;
+							popup.m_state = popup.m_bAutoClose ? Slot::State::PeekOpen : Slot::State::FixedOpen;
 						}
 						break;
 
-					case PopupSlot::State::ClosingDelay:
+					case Slot::State::ClosingDelay:
 						if (popup.m_stateCounter + ms < m_closingDelayMs)
 						{
 							popup.m_stateCounter += ms;
@@ -565,11 +565,11 @@ namespace wg
 						}
 						else
 						{
-							popup.m_state = PopupSlot::State::Closing;
+							popup.m_state = Slot::State::Closing;
 							popup.m_stateCounter -= m_closingDelayMs;
 							// No break here, let's continue down to closing...
 						}
-					case PopupSlot::State::Closing:
+					case Slot::State::Closing:
 						popup.m_stateCounter += ms;
 						_requestRender(popup.m_geo);
 						// Removing any closed popups is done in next loop
@@ -582,7 +582,7 @@ namespace wg
 
 				// Close any popup that is due for closing.
 
-				while (!popupSlots.isEmpty() && popupSlots._first()->m_state == PopupSlot::State::Closing && popupSlots._first()->m_stateCounter >= m_closingFadeMs)
+				while (!popupSlots.isEmpty() && popupSlots._first()->m_state == Slot::State::Closing && popupSlots._first()->m_stateCounter >= m_closingFadeMs)
 					_removeSlots(0, 1);
 
 			break;
@@ -597,17 +597,17 @@ namespace wg
 
 				// Top popup can be in state PeekOpen, which needs special attention.
 
-				PopupSlot * pSlot = popupSlots._first();
-				if (pSlot && pSlot->m_state == PopupSlot::State::PeekOpen)
+				Slot * pSlot = popupSlots._first();
+				if (pSlot && pSlot->m_state == Slot::State::PeekOpen)
 				{
 					// Promote popup to state WeakOpen if pointer has entered its geo,
 					// otherwise begin delayed closing if pointer has left launcherGeo.
 
 					if (pSlot->m_geo.contains(pointerPos))
-						pSlot->m_state = PopupSlot::State::WeakOpen;
+						pSlot->m_state = Slot::State::WeakOpen;
 					else if (!pSlot->m_launcherGeo.contains(pointerPos))
 					{
-						pSlot->m_state = PopupSlot::State::ClosingDelay;
+						pSlot->m_state = Slot::State::ClosingDelay;
 						pSlot->m_stateCounter = 0;
 					}
 				}
@@ -617,23 +617,23 @@ namespace wg
 				// to state WeakOpen if pointer has entered its geo.
 				// Promoting to WeakOpen Should also promote any ancestor also in state ClosingDelay.
 
-				for (PopupSlot * pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
+				for (Slot * pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
 				{
-					PopupSlot& popup = *pSlot;
+					Slot& popup = *pSlot;
 
-					if (popup.m_state == PopupSlot::State::ClosingDelay)
+					if (popup.m_state == Slot::State::ClosingDelay)
 					{
 						if (popup.m_launcherGeo.contains(pointerPos))
 						{
-							popup.m_state = PopupSlot::State::PeekOpen;
+							popup.m_state = Slot::State::PeekOpen;
 							popup.m_stateCounter = 0;
 						}
 						else if (popup.m_geo.contains(pointerPos))
 						{
-							PopupSlot * p = &popup;
-							while (p != popupSlots._end() && p->m_state == PopupSlot::State::ClosingDelay)
+							Slot * p = &popup;
+							while (p != popupSlots._end() && p->m_state == Slot::State::ClosingDelay)
 							{
-								p->m_state = PopupSlot::State::WeakOpen;
+								p->m_state = Slot::State::WeakOpen;
 								p->m_stateCounter = 0;
 								p++;
 							}
@@ -662,9 +662,9 @@ namespace wg
 					auto p = popupSlots._first();
 					while (p->m_bAutoClose && p->_widget() != pMarked)
 					{
-						if (p->m_state != PopupSlot::State::Closing && p->m_state != PopupSlot::State::ClosingDelay)
+						if (p->m_state != Slot::State::Closing && p->m_state != Slot::State::ClosingDelay)
 						{
-							p->m_state = PopupSlot::State::ClosingDelay;
+							p->m_state = Slot::State::ClosingDelay;
 							p->m_stateCounter = 0;
 						}
 						p++;
@@ -681,10 +681,10 @@ namespace wg
 				// Top popup can be in state PeekOpen, which should begin closing when
 				// pointer has left.
 
-				PopupSlot * pSlot = m_popups.first();
-				if (pSlot && pSlot->m_state == PopupSlot::State::PeekOpen)
+				Slot * pSlot = m_popups.first();
+				if (pSlot && pSlot->m_state == Slot::State::PeekOpen)
 				{
-					pSlot->m_state = PopupSlot::State::ClosingDelay;
+					pSlot->m_state = Slot::State::ClosingDelay;
 					pSlot->m_stateCounter = 0;
 				}
 			}
@@ -698,7 +698,7 @@ namespace wg
 
 				// Allow us to release the mouse within opener without closing any popups
 
-				PopupSlot * pSlot = popupSlots._first();
+				Slot * pSlot = popupSlots._first();
 				if (pSlot->m_pOpener)
 				{
 					Widget * pOpener = pSlot->m_pOpener.rawPtr();
@@ -804,7 +804,7 @@ namespace wg
 		if( pSlot == &mainSlot )
 			_requestResize();
 		else
-			_updateGeo( (PopupSlot *) pSlot, true );
+			_updateGeo( (Slot *) pSlot, true );
 	}
 
 	//____ _releaseChild() _____________________________________________________
@@ -817,7 +817,7 @@ namespace wg
 		{
 			// PopupLayer is stack-based, releasing a popup forces us to also close all ontop of it
 
-			_removeSlots(0, popupSlots._index(static_cast<PopupSlot*>(pSlot)) + 1);
+			_removeSlots(0, popupSlots._index(static_cast<Slot*>(pSlot)) + 1);
 		}
 	}
 
@@ -825,12 +825,12 @@ namespace wg
 
 	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const RectI& _launcherGeo, Origo _attachPoint, bool _bAutoClose, SizeI _maxSize)
 	{
-		PopupSlot * pSlot = popupSlots._pushFrontEmpty();
+		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;
 		pSlot->m_launcherGeo = _launcherGeo;
 		pSlot->m_attachPoint = _attachPoint;
 		pSlot->m_bAutoClose = _bAutoClose;
-		pSlot->m_state = PopupSlot::State::OpeningDelay;
+		pSlot->m_state = Slot::State::OpeningDelay;
 		pSlot->m_stateCounter = 0;
 		pSlot->m_maxSize = _maxSize;
 
@@ -850,7 +850,7 @@ namespace wg
 	{
 		MsgRouter * pEH = Base::msgRouter().rawPtr();
 
-		PopupSlot * pSlot = popupSlots._slot(ofs);
+		Slot * pSlot = popupSlots._slot(ofs);
 
 		nb = min(nb, popupSlots.size());
 
@@ -873,14 +873,14 @@ namespace wg
 
 	//____ _beginLayerSlots() __________________________________________________
 
-	const LayerSlot * PopupLayer::_beginLayerSlots() const
+	const Layer::Slot * PopupLayer::_beginLayerSlots() const
 	{
 		return popupSlots._begin();
 	}
 
 	//____ _endLayerSlots() __________________________________________________
 
-	const LayerSlot * PopupLayer::_endLayerSlots() const
+	const Layer::Slot * PopupLayer::_endLayerSlots() const
 	{
 		return popupSlots._end();
 	}
@@ -889,7 +889,7 @@ namespace wg
 
 	int PopupLayer::_sizeOfLayerSlot() const
 	{
-		return sizeof(PopupSlot);
+		return sizeof(Slot);
 	}
 
 

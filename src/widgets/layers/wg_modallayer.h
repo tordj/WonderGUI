@@ -30,107 +30,95 @@
 namespace wg
 {
 
-	//____ ModalSlot ___________________________________________________________
-
-	class ModalSlot : public LayerSlot
-	{
-		friend class ModalLayer;
-		friend class CModalSlotVector;
-		template<class S> friend class CDynamicSlotVector;
-		template<class S> friend class SlotVector;
-
-	public:
-
-		//.____ Geometry _________________________________________________
-
-		void			setOrigo(const Origo origo);
-		inline Origo	origo() const { return m_origo; }
-
-		void			setGeo(const Rect& geometry);
-
-		void			setOffset(const Coord& ofs);
-		inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
-
-		void			setSize(const Size& size);
-
-		void			move(const Coord& ofs);
-
-	protected:
-
-		class Holder : public LayerSlot::Holder
-		{
-		public:
-			virtual void	_refreshRealGeo(ModalSlot * pSlot, bool bForceResize = false) = 0;
-		};
-
-		ModalSlot(Holder * pHolder) : LayerSlot(pHolder) {}
-
-		inline Holder * _holder() { return static_cast<Holder*>(LayerSlot::_holder()); }
-		inline const Holder * _holder() const { return static_cast<const Holder*>(LayerSlot::_holder()); }
-
-		const static bool safe_to_relocate = false;
-
-		bool		m_bVisible = true;
-		Origo		m_origo = Origo::NorthWest;
-		RectI		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
-											// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
-		Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
-
-	};
-
-
-	class CModalSlotVector;
-	typedef	StrongComponentPtr<CModalSlotVector>	CModalSlotVector_p;
-	typedef	WeakComponentPtr<CModalSlotVector>	CModalSlotVector_wp;
-
-	//____ CModalSlotVector ________________________________________________________
-
-	class CModalSlotVector : public CDynamicSlotVector<ModalSlot>
-	{
-		friend class ModalLayer;
-	public:
-
-		//.____ Misc __________________________________________________________
-
-		inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
-
-		//.____ Content _______________________________________________________
-
-		iterator	pushFront( const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest );
-		iterator	pushFront(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest ) { return pushFront( pWidget, Rect(pos,0,0), origo); }
-
-		iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
-		iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
-
-
-	protected:
-
-		//____ Holder _________________________________________________
-
-		class Holder : public CDynamicSlotVector<ModalSlot>::Holder
-		{
-		};
-
-		CModalSlotVector(Holder * pHolder) : CDynamicSlotVector<ModalSlot>(pHolder) {}
-
-		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotVector<ModalSlot>::_holder()); }
-		Holder *	_holder() { return static_cast<Holder*>(CDynamicSlotVector<ModalSlot>::_holder()); }
-
-
-	};
-
-
 	class ModalLayer;
 	typedef	StrongPtr<ModalLayer>	ModalLayer_p;
 	typedef	WeakPtr<ModalLayer>		ModalLayer_wp;
 
 	//____ ModalLayer __________________________________________________________
 
-	class ModalLayer : public Layer, protected CModalSlotVector::Holder
+	class ModalLayer : public Layer
 	{
-		friend class CModalSlotVector;
+		friend class Slot;
+		friend class CSlots;
 
 	public:
+
+		//____ Slot ___________________________________________________________
+
+		class Slot : public Layer::Slot
+		{
+			friend class ModalLayer;
+			friend class CSlots;
+			template<class S> friend class CDynamicSlotVector;
+			template<class S> friend class SlotVector;
+
+		public:
+
+			//.____ Geometry _________________________________________________
+
+			void			setOrigo(const Origo origo);
+			inline Origo	origo() const { return m_origo; }
+
+			void			setGeo(const Rect& geometry);
+
+			void			setOffset(const Coord& ofs);
+			inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
+
+			void			setSize(const Size& size);
+
+			void			move(const Coord& ofs);
+
+		protected:
+
+			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+
+			inline ModalLayer * _holder() { return static_cast<ModalLayer*>(Layer::Slot::_holder()); }
+			inline const ModalLayer * _holder() const { return static_cast<const ModalLayer*>(Layer::Slot::_holder()); }
+
+			const static bool safe_to_relocate = false;
+
+			bool		m_bVisible = true;
+			Origo		m_origo = Origo::NorthWest;
+			RectI		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+												// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
+			Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
+
+		};
+
+
+		class CSlots;
+		typedef	StrongComponentPtr<CSlots>	CModalSlotVector_p;
+		typedef	WeakComponentPtr<CSlots>	CModalSlotVector_wp;
+
+		//____ CSlots ________________________________________________________
+
+		class CSlots : public CDynamicSlotVector<Slot>
+		{
+			friend class ModalLayer;
+		public:
+
+			//.____ Misc __________________________________________________________
+
+			inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
+
+			//.____ Content _______________________________________________________
+
+			iterator	pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
+			iterator	pushFront(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushFront(pWidget, Rect(pos, 0, 0), origo); }
+
+			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
+			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
+
+
+		protected:
+
+			CSlots(SlotHolder * pHolder) : CDynamicSlotVector<Slot>(pHolder) {}
+
+			const ModalLayer *	_holder() const { return static_cast<const ModalLayer*>(CDynamicSlotVector<Slot>::_holder()); }
+			ModalLayer *	_holder() { return static_cast<ModalLayer*>(CDynamicSlotVector<Slot>::_holder()); }
+
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -138,7 +126,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CModalSlotVector		modalSlots;
+		CSlots		modalSlots;
 
 		//.____ Identification __________________________________________
 
@@ -156,58 +144,11 @@ namespace wg
 
 	private:
 
+		void            _refreshRealGeo(Slot * pSlot, bool bForceResize = false);
+
 		ModalLayer *	_getModalLayer() const  override { return const_cast<ModalLayer*>(this); }
 
 		void			_updateKeyboardFocus();
-
-		// Overloaded from Container
-
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
-
-		// Overloaded from WidgetHolder
-
-		Container *		_container() override { return this; }
-		RootPanel *		_root() override { return Container::_root(); }
-		Object *		_object() override { return this; }
-		const Object *	_object() const override { return this; }
-
-		CoordI			_childPos(const StaticSlot * pSlot) const override { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(const StaticSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(const StaticSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(const StaticSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
-
-		void			_childRequestRender(StaticSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
-
-		bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
-		bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
-
-		void			_childRequestInView(StaticSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
-		void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
-
-		Widget *		_prevChild(const StaticSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const StaticSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
-
-		//TODO: We should allow replacement of modal slots.
-		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
-
-		void			_childRequestResize( StaticSlot * pSlot ) override;
-		void			_releaseChild(StaticSlot * pSlot) override;
-
-		// Methods for ModalSlotsHolder
-
-		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
-		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
-		void			_hideSlots(StaticSlot *, int nb) override;
-		void			_unhideSlots(StaticSlot *, int nb) override;
-		void            _refreshRealGeo( ModalSlot * pSlot, bool bForceResize = false ) override;
-
-		// Overloaded from Layer
-
-		const LayerSlot * 	_beginLayerSlots() const override;
-		const LayerSlot * 	_endLayerSlots() const override;
-		int				_sizeOfLayerSlot() const override;
 
 		// Overloaded from Widget
 
@@ -216,9 +157,31 @@ namespace wg
 
 		SizeI			_preferredSize() const override;
 
-		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize( const SizeI& size ) override;
-		void			_receive( Msg * pMsg ) override;
+		void			_cloneContent(const Widget * _pOrg) override;
+		void			_resize(const SizeI& size) override;
+		void			_receive(Msg * pMsg) override;
+
+		// Overloaded from Container
+
+		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
+
+		//TODO: We should allow replacement of modal slots.
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
+
+		void			_childRequestResize( StaticSlot * pSlot ) override;
+		void			_releaseChild(StaticSlot * pSlot) override;
+
+		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
+		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
+		void			_hideSlots(StaticSlot *, int nb) override;
+		void			_unhideSlots(StaticSlot *, int nb) override;
+
+		// Overloaded from Layer
+
+		const Layer::Slot * _beginLayerSlots() const override;
+		const Layer::Slot * _endLayerSlots() const override;
+		int					_sizeOfLayerSlot() const override;
 
 		//
 
@@ -226,9 +189,7 @@ namespace wg
 		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
 		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
-
 		Widget_wp			m_pBaseKeyFocus;
-
 	};
 
 

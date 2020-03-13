@@ -35,34 +35,6 @@ namespace wg
 	typedef	WeakPtr<Layer>		Layer_wp;
 
 
-	//____ LayerSlot ___________________________________________________________
-
-	class LayerSlot : public StaticSlot
-	{
-		friend class Layer;
-	public:
-		class Holder : public StaticSlot::Holder		/** @private */
-		{
-		};
-
-		//.____ Geometry _________________________________________________
-
-		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
-		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
-		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
-
-
-	protected:
-		LayerSlot(Holder * pHolder) : StaticSlot(pHolder) {}
-
-		inline void _setSize( SizeI size ) { m_geo.setSize(size); StaticSlot::_setSize(size); }
-		inline void _setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
-
-		RectI	m_geo;
-	};
-
-
-
 	/**
 	 * @brief	Base class for containers that provides layers of different kinds.
 	 *
@@ -84,10 +56,33 @@ namespace wg
 	 *
 	 **/
 
-	class Layer : public Container, private CStandardSlot::Holder
+	class Layer : public Container
 	{
 
 	public:
+
+		//____ Slot ___________________________________________________________
+
+		class Slot : public StaticSlot
+		{
+			friend class Layer;
+
+			//.____ Geometry _________________________________________________
+
+			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+			inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+			inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+
+		protected:
+			Slot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
+
+			inline void _setSize(SizeI size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
+			inline void _setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
+
+			RectI	m_geo;
+		};
+
 
 		//.____ Components _______________________________________
 
@@ -104,61 +99,25 @@ namespace wg
 	protected:
 		Layer();
 
-		// Overloaded from SlotHolder
+		// Overloaded from Container
 
-/*
-		inline Container * _container() = 0;
-		inline RootPanel *	_root() = 0;
-		inline Object *		_object() = 0;
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
 
-
-		inline bool			_isChildVisible(const StaticSlot * pSlot) const = 0;
-		inline RectI		_childWindowSection(const StaticSlot * pSlot) const = 0;			// Returns the window section within the childs canvas.
-
-		inline void			_childRequestResize(StaticSlot * pSlot) = 0;
-
-		inline bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) = 0;					// Request focus on behalf of me, child or grandchild.
-		inline bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) = 0;
-
-		inline void			_childRequestInView(StaticSlot * pSlot) = 0;
-		inline void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) = 0;
-*/
-		using		Container::_container;
-		using		Container::_childGlobalPos;
-		using		Container::_isChildVisible;
-		using		Container::_childWindowSection;
-//		using		Container::_childRequestResize;
-		using		Container::_childRequestFocus;
-		using		Container::_childReleaseFocus;
-		using		Container::_childRequestInView;
-
-
-
+		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		CoordI		_childPos( const StaticSlot * pSlot ) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
-//		void		_childRequestResize( Slot * pSlot ) override;
+//		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
 		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
 
 		void		_releaseChild( StaticSlot * pSlot ) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pNewWidget) override;
-
-		// Overloaded from Container
-
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
-
-
-		// Overloaded from ChildHolder
-
-		Object *	_object() override { return this; }
 
 		// Overloaded from Widget
 
@@ -173,20 +132,20 @@ namespace wg
 
 		//
 
-		virtual	void	_onRequestRender( const RectI& rect, const LayerSlot * pSlot );	// rect is in our coordinate system.
+		virtual	void	_onRequestRender( const RectI& rect, const Slot * pSlot );	// rect is in our coordinate system.
 
-		virtual const LayerSlot * _beginLayerSlots() const = 0;
-		virtual const LayerSlot * _endLayerSlots() const = 0;
+		virtual const Slot * _beginLayerSlots() const = 0;
+		virtual const Slot * _endLayerSlots() const = 0;
 		virtual int			_sizeOfLayerSlot() const = 0;
 
-		inline LayerSlot * _beginLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
-		inline LayerSlot * _endLayerSlots() { return const_cast<LayerSlot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
+		inline Slot * _beginLayerSlots() { return const_cast<Slot*>(const_cast<const Layer*>(this)->_beginLayerSlots()); }
+		inline Slot * _endLayerSlots() { return const_cast<Slot*>(const_cast<const Layer*>(this)->_endLayerSlots()); }
 
-		inline LayerSlot * _incLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)+sizeOf); }
-		inline const LayerSlot * _incLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)+sizeOf); }
+		inline Slot * _incLayerSlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)+sizeOf); }
+		inline const Slot * _incLayerSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)+sizeOf); }
 
-		inline LayerSlot * _decLayerSlot( LayerSlot * pSlot, int sizeOf ) const { return (LayerSlot*) (((char*)pSlot)-sizeOf); }
-		inline const LayerSlot * _decLayerSlot( const LayerSlot * pSlot, int sizeOf ) const { return (const LayerSlot*) (((char*)pSlot)-sizeOf); }
+		inline Slot * _decLayerSlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)-sizeOf); }
+		inline const Slot * _decLayerSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)-sizeOf); }
 
 		class SlotAccess : public CStandardSlot { friend class Layer; };
 		SlotAccess * _mainSlot() { return static_cast<SlotAccess*>(&mainSlot); }

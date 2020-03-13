@@ -39,18 +39,8 @@ namespace wg
 
 		//____ Holder _________________________________________________________
 
-		class Holder : public SlotHolder		/** @private */
-		{
-		public:
-			virtual void	_selectSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_unselectSlots(StaticSlot * pSlot, int nb) = 0;
-
-			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
-		};
-
 		/** @private */
-		SelectableSlot(Holder* pHolder) : DynamicSlot(pHolder) {} 
+		SelectableSlot(SlotHolder* pHolder) : DynamicSlot(pHolder) {} 
 
 		//.____ State __________________________________________________________
 
@@ -75,8 +65,8 @@ namespace wg
 		SelectableSlot& operator=(SelectableSlot&& o) = default;
 
 
-		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
-		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+		inline SlotHolder * _holder() { return static_cast<Holder*>(m_pHolder); }
+		inline const SlotHolder * _holder() const { return static_cast<Holder*>(m_pHolder); }
 
 		bool		m_bVisible = false;
 		bool		m_bSelected = false;

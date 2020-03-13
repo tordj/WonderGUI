@@ -41,236 +41,215 @@ namespace wg
 	typedef	StrongPtr<ScrollPanel>	ScrollPanel_p;
 	typedef	WeakPtr<ScrollPanel>	ScrollPanel_wp;
 
-	//____ ScrollbarSlot ______________________________________________________
-
-	class ScrollbarSlot : public DynamicSlot
-	{
-		friend class ScrollbarEntry;
-		friend class ScrollPanel;
-	public:
-	protected:
-		ScrollbarSlot() : DynamicSlot(nullptr) {}
-
-		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
-		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
-		SizeI		_paddedMaxSize() const { return _maxSize() + m_padding; }
-		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
-		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
-
-		RectI			geo;
-		bool			bAutoHide = false;
-		bool			bAutoScroll = false;
-		Direction		placement;
-
-		BorderI		m_padding;
-		bool		m_bVisible;
-	};
-
-
-
-	//____ ViewSlot ______________________________________________________
-
-	class ViewSlot : public DynamicSlot
-	{
-		friend class ScrollPanel;
-	public:
-
-	protected:
-
-		//____ Holder ____________________________________________________
-
-		class Holder : public DynamicSlot::Holder
-		{
-		};
-
-		ViewSlot(ViewSlot::Holder *pHolder) : DynamicSlot(pHolder) {}
-
-
-		int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
-		int			_paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
-		float		_paddedWindowLenX();
-		float		_paddedWindowLenY();
-
-		float		_windowFractionX() const;
-		float		_windowFractionY() const;
-		float		_windowOffsetX() const;
-		float		_windowOffsetY() const;
-
-		bool		_updateCanvasGeo();
-		SizeI		_sizeFromPolicy(SizeI specifiedSize) const;
-
-		bool		_setWindowPos(CoordI pos);
-		bool		_setWindowOffset(CoordF ofs);
-		bool		_setWindowOffsetX(float ofs);
-		bool		_setWindowOffsetY(float ofs);
-
-		RectI			m_windowGeo;		// Geometry of Widgets window inside parent.
-		RectI			m_canvasGeo;		// Geometry of Widgets canvas.
-
-		SizePolicy		m_widthPolicy = SizePolicy::Default;
-		SizePolicy		m_heightPolicy = SizePolicy::Default;
-		Origo			m_contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
-		SizeI			m_contentSize;
-		CoordI			m_viewPixOfs;
-
-		BorderI			m_scrollBorder;
-		BorderI			m_rubberBorder;
-		MouseButton		m_dragButton = MouseButton::None;
-
-
-
-	};
-
-
-
-	class CViewSlot;
-	typedef	StrongComponentPtr<CViewSlot>	CViewSlot_p;
-	typedef	WeakComponentPtr<CViewSlot>		CViewSlot_wp;
-
-
-	//____ CViewSlot ______________________________________________________
-
-	class CViewSlot : public CDynamicSlotImpl<ViewSlot>
-	{
-		friend class ScrollPanel;
-
-	public:
-
-		//.____ Operators _____________________________________________________
-
-		CViewSlot& operator=(const Widget_p& pWidget);
-
-		//.____ Geometry ______________________________________________________
-
-		Size		canvasSize() const { return m_contentSize; };
-
-		void		setOrigo(Origo origo);
-		Origo		origo() const { return m_contentOrigo; }
-
-		void		setWidthPolicy(SizePolicy policy);
-		SizePolicy	widthPolicy() const { return m_widthPolicy; }
-
-		void		setHeightPolicy(SizePolicy policy);
-		SizePolicy	heightPolicy() const { return m_heightPolicy; }
-
-		Rect		windowRect() const;
-		Coord		windowPos() const { return m_viewPixOfs; };
-		Size		windowSize() const;
-
-		RectF		windowSection() const;
-		CoordF		windowOffset() const;
-		SizeF		windowFraction() const;
-
-		bool		setWindowPos( Coord pos );
-		bool		setWindowOffset( CoordF ofs);
-
-		bool		setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo = Origo::Center, Coord viewOfs = { 0,0 });
-
-		//.____ Control _______________________________________________________
-
-		bool		step( Direction dir );
-		bool		jump( Direction dir );
-
-		void		setScrollBorder(Border border);
-
-		void		setRubberBorder(Border border);
-
-		void		setDragButton(MouseButton button);
-
-		//.____ Misc __________________________________________________________
-
-		inline CViewSlot_p	ptr() { return CViewSlot_p(this); }
-
-	private:
-
-		//____ Holder _______________________________________________
-
-		class Holder : public CDynamicSlotImpl<ViewSlot>::Holder
-		{
-		public:
-			virtual bool		_setWindowPos(CoordI pos) = 0;
-			virtual bool		_setWindowOffset(CoordF ofs) = 0;
-			virtual bool		_step(Direction dir, int nSteps = 1) = 0;
-			virtual bool		_jump(Direction dir, int nJumps = 1) = 0;
-			virtual void		_requestRender(const RectI& rect) = 0;
-			virtual void		_updateViewGeo() = 0;
-		};
-
-
-		CViewSlot(Holder * pHolder) : CDynamicSlotImpl(pHolder) {}
-
-		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
-		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
-
-//	inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
-//		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
-
-	};
-
-
-	//____ ScrollbarEntry ______________________________________________________
-
-	class ScrollbarEntry : public Component
-	{
-	public:
-		/** @private */
-
-		ScrollbarEntry(ScrollbarSlot * pSlot, ScrollPanel * pPanel) : m_pSlot(pSlot), m_pHolder(pPanel) {}
-
-		//.____ State _________________________________________________________
-
-		bool		isVisible() const { return m_pSlot->m_bVisible; }
-
-		//.____ Behavior ______________________________________________________
-
-		void		setAutoHide(bool autohide);
-		bool		autoHide() const { return m_pSlot->bAutoHide; }
-
-		bool		setAutoScroll(bool bAuto);
-		bool		autoScroll() const { return m_pSlot->bAutoScroll; }
-
-		//.____ Geometry ______________________________________________________
-
-		bool		setPlacement( Direction );
-		Direction	placement() const { return m_pSlot->placement; }
-
-
-		//.____ Content _______________________________________________________
-
-		inline Widget_p get() const { return m_pSlot->widget(); }
-		void clear();
-
-		//.____ Operators _____________________________________________________
-
-		ScrollbarEntry operator=(const Scrollbar_p& pWidget);
-		inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->_widget()); }
-
-		inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
-		inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
-
-		inline operator bool() const { return m_pSlot->_widget() != nullptr; }
-
-		//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
-		inline Widget* operator->() const { return m_pSlot->_widget(); }
-
-
-	protected:
-		Object * _object() override;
-		const Object * _object() const override;
-
-		ScrollbarSlot *	m_pSlot;
-		ScrollPanel * m_pHolder;
-
-	};
-
 
 	//____ ScrollPanel ________________________________________________________
 
-	class ScrollPanel : public Panel, protected CViewSlot::Holder
+	class ScrollPanel : public Panel
 	{
 		friend class CViewSlot;
 		friend class ScrollbarEntry;
 	public:
+
+		//____ ScrollbarSlot ______________________________________________________
+
+		class ScrollbarSlot : public DynamicSlot
+		{
+			friend class ScrollbarEntry;
+			friend class ScrollPanel;
+		public:
+		protected:
+			ScrollbarSlot() : DynamicSlot(nullptr) {}
+
+			SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
+			SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
+			SizeI		_paddedMaxSize() const { return _maxSize() + m_padding; }
+			int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
+			int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
+
+			RectI			geo;
+			bool			bAutoHide = false;
+			bool			bAutoScroll = false;
+			Direction		placement;
+
+			BorderI		m_padding;
+			bool		m_bVisible;
+		};
+
+
+
+		//____ ViewSlot ______________________________________________________
+
+		class ViewSlot : public DynamicSlot
+		{
+			friend class ScrollPanel;
+		public:
+
+		protected:
+
+			ViewSlot(SlotHolder *pHolder) : DynamicSlot(pHolder) {}
+
+
+			int			_paddedWindowPixelLenX();				// Width of view after childs window padding has been applied.
+			int			_paddedWindowPixelLenY();				// Height of view after childs window padding has been applied.
+			float		_paddedWindowLenX();
+			float		_paddedWindowLenY();
+
+			float		_windowFractionX() const;
+			float		_windowFractionY() const;
+			float		_windowOffsetX() const;
+			float		_windowOffsetY() const;
+
+			bool		_updateCanvasGeo();
+			SizeI		_sizeFromPolicy(SizeI specifiedSize) const;
+
+			bool		_setWindowPos(CoordI pos);
+			bool		_setWindowOffset(CoordF ofs);
+			bool		_setWindowOffsetX(float ofs);
+			bool		_setWindowOffsetY(float ofs);
+
+			RectI			m_windowGeo;		// Geometry of Widgets window inside parent.
+			RectI			m_canvasGeo;		// Geometry of Widgets canvas.
+
+			SizePolicy		m_widthPolicy = SizePolicy::Default;
+			SizePolicy		m_heightPolicy = SizePolicy::Default;
+			Origo			m_contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
+			SizeI			m_contentSize;
+			CoordI			m_viewPixOfs;
+
+			BorderI			m_scrollBorder;
+			BorderI			m_rubberBorder;
+			MouseButton		m_dragButton = MouseButton::None;
+		};
+
+
+
+		class CViewSlot;
+		typedef	StrongComponentPtr<CViewSlot>	CViewSlot_p;
+		typedef	WeakComponentPtr<CViewSlot>		CViewSlot_wp;
+
+
+		//____ CViewSlot ______________________________________________________
+
+		class CViewSlot : public CDynamicSlotImpl<ViewSlot>
+		{
+			friend class ScrollPanel;
+
+		public:
+
+			//.____ Operators _____________________________________________________
+
+			CViewSlot& operator=(const Widget_p& pWidget);
+
+			//.____ Geometry ______________________________________________________
+
+			Size		canvasSize() const { return m_contentSize; };
+
+			void		setOrigo(Origo origo);
+			Origo		origo() const { return m_contentOrigo; }
+
+			void		setWidthPolicy(SizePolicy policy);
+			SizePolicy	widthPolicy() const { return m_widthPolicy; }
+
+			void		setHeightPolicy(SizePolicy policy);
+			SizePolicy	heightPolicy() const { return m_heightPolicy; }
+
+			Rect		windowRect() const;
+			Coord		windowPos() const { return m_viewPixOfs; };
+			Size		windowSize() const;
+
+			RectF		windowSection() const;
+			CoordF		windowOffset() const;
+			SizeF		windowFraction() const;
+
+			bool		setWindowPos(Coord pos);
+			bool		setWindowOffset(CoordF ofs);
+
+			bool		setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo = Origo::Center, Coord viewOfs = { 0,0 });
+
+			//.____ Control _______________________________________________________
+
+			bool		step(Direction dir);
+			bool		jump(Direction dir);
+
+			void		setScrollBorder(Border border);
+
+			void		setRubberBorder(Border border);
+
+			void		setDragButton(MouseButton button);
+
+			//.____ Misc __________________________________________________________
+
+			inline CViewSlot_p	ptr() { return CViewSlot_p(this); }
+
+		private:
+
+
+			CViewSlot(SlotHolder * pHolder) : CDynamicSlotImpl(pHolder) {}
+
+			inline ScrollPanel * _holder() { return static_cast<ScrollPanel*>(m_pHolder); }
+			inline const Holder * _holder() const { return static_cast<ScrollPanel*>(m_pHolder); }
+
+			//	inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
+			//		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
+
+		};
+
+
+		//____ ScrollbarEntry ______________________________________________________
+
+		class ScrollbarEntry : public Component
+		{
+		public:
+			/** @private */
+
+			ScrollbarEntry(ScrollbarSlot * pSlot, ScrollPanel * pPanel) : m_pSlot(pSlot), m_pHolder(pPanel) {}
+
+			//.____ State _________________________________________________________
+
+			bool		isVisible() const { return m_pSlot->m_bVisible; }
+
+			//.____ Behavior ______________________________________________________
+
+			void		setAutoHide(bool autohide);
+			bool		autoHide() const { return m_pSlot->bAutoHide; }
+
+			bool		setAutoScroll(bool bAuto);
+			bool		autoScroll() const { return m_pSlot->bAutoScroll; }
+
+			//.____ Geometry ______________________________________________________
+
+			bool		setPlacement(Direction);
+			Direction	placement() const { return m_pSlot->placement; }
+
+
+			//.____ Content _______________________________________________________
+
+			inline Widget_p get() const { return m_pSlot->widget(); }
+			void clear();
+
+			//.____ Operators _____________________________________________________
+
+			ScrollbarEntry operator=(const Scrollbar_p& pWidget);
+			inline operator Scrollbar_p() const { return Scrollbar_p((Scrollbar*)m_pSlot->_widget()); }
+
+			inline bool operator==(Widget * other) const { return other == m_pSlot->_widget(); }
+			inline bool operator!=(Widget * other) const { return other != m_pSlot->_widget(); }
+
+			inline operator bool() const { return m_pSlot->_widget() != nullptr; }
+
+			//		inline Widget& operator*() const{ return * m_pSlotCan->pWidget; };
+			inline Widget* operator->() const { return m_pSlot->_widget(); }
+
+
+		protected:
+			Object * _object() override;
+			const Object * _object() const override;
+
+			ScrollbarSlot *	m_pSlot;
+			ScrollPanel * m_pHolder;
+
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -349,20 +328,19 @@ namespace wg
 		bool		_alphaTest(const CoordI& ofs) override;
 		void		_cloneContent(const Widget * _pOrg) override;
 
-		// Overloaded from SlotHolder
+		// Overloaded from Container
 
-		Container *	_container() override { return this; }
-		RootPanel *	_root() override { return Container::_root(); }
-		Object *	_object() override { return this; }
-		const Object *	_object() const override { return this; }
+		Widget *	_findWidget(const CoordI& pos, SearchMode mode) override;
+
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
+
+		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		CoordI		_childPos(const StaticSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
 		RectI		_childWindowSection(const StaticSlot * pSlot) const override;
 
-		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
@@ -377,21 +355,7 @@ namespace wg
 		void		_releaseChild(StaticSlot * pSlot) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
 
-		// Overloaded from ChildHolder
 
-		inline void		_requestRender(const RectI& rect) override { Panel::_requestRender(rect); }
-		inline void		_requestRender() { Panel::_requestRender(); }
-		virtual void	_updateViewGeo() override { _updateElementGeo(m_size); }
-
-		// Overloaded from Container
-
-		Widget *	_findWidget(const CoordI& pos, SearchMode mode) override;
-
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-
-		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
-		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
 		// Internal
 
@@ -419,12 +383,15 @@ namespace wg
 
 		SizeI		_calcContentSize(SizeI mySize);
 		void		_updateElementGeo(SizeI mySize, StaticSlot * pForceUpdate = nullptr );
-		bool		_setWindowPos(CoordI pos) override;
-		bool		_setWindowOffset(CoordF ofs) override;
+
+		void		_updateViewGeo() { _updateElementGeo(m_size); }
+
+		bool		_setWindowPos(CoordI pos);
+		bool		_setWindowOffset(CoordF ofs);
 
 
-		bool		_step(Direction dir, int nSteps = 1) override;
-		bool		_jump(Direction dir, int nJumps = 1) override;
+		bool		_step(Direction dir, int nSteps = 1);
+		bool		_jump(Direction dir, int nJumps = 1);
 		bool		_wheelRoll(Direction dir, int nSteps = 1);
 
 		int			_defaultStepFunction(Direction dir, int steps);

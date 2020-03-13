@@ -30,20 +30,6 @@
 
 namespace wg
 {
-	//____ DnDLayerSlot ___________________________________________________________
-
-	class DnDLayerSlot : public LayerSlot
-	{
-		friend class DragNDropLayer;
-
-	protected:
-		class Holder : public LayerSlot::Holder
-		{
-		};
-
-		DnDLayerSlot(Holder *pHolder) : LayerSlot(pHolder) {}
-	};
-
 
 	class   DragNDropLayer;
 	typedef	StrongPtr<DragNDropLayer>	DragNDropLayer_p;
@@ -51,9 +37,21 @@ namespace wg
 
 	//____ DragNDropLayer ____________________________________________________________
 
-	class DragNDropLayer : public Layer, protected DnDLayerSlot::Holder
+	class DragNDropLayer : public Layer
 	{
 	public:
+
+		//____ Slot ___________________________________________________________
+
+		class Slot : public Layer::Slot
+		{
+			friend class DragNDropLayer;
+
+		protected:
+
+			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -74,52 +72,26 @@ namespace wg
 
 //        DragNDropLayer *    _getDragNDropLayer() const { return const_cast<DragNDropLayer*>(this); }
 
+		// Overloaded from Widget
+
+		void            _cloneContent(const Widget * _pOrg) override;
+		void            _receive(Msg * pMsg) override;
+		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+
 		// Overloaded from Container
 
 		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
-
-		// Overloaded from WidgetHolder
-
-		Container *		_container() override { return this; }
-		RootPanel *		_root() override { return Container::_root(); }
-		Object *		_object() override { return this; }
-		const Object *	_object() const override { return this; }
-
-		CoordI			_childPos(const StaticSlot * pSlot) const override { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(const StaticSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(const StaticSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(const StaticSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
-
-		void			_childRequestRender(StaticSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
-
-		bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
-		bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
-
-		void			_childRequestInView(StaticSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
-		void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
-
-		Widget *		_prevChild(const StaticSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const StaticSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
-
-		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 
 		void            _childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
 
 		// Overloaded from Layer
 
-		const LayerSlot *	_beginLayerSlots() const override;
-		const LayerSlot *	_endLayerSlots() const override;
+		const Layer::Slot *	_beginLayerSlots() const override;
+		const Layer::Slot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const RectI& rect, const LayerSlot * pSlot) override;    // rect is in our coordinate system.
-
-		// Overloaded from Widget
-
-		void            _cloneContent( const Widget * _pOrg ) override;
-		void            _receive( Msg * pMsg ) override;
-		void            _render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void				_onRequestRender(const RectI& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
 
 		// Internal
 
@@ -148,7 +120,7 @@ namespace wg
 
 		DragState		m_dragState = DragState::Idle;
 
-		DnDLayerSlot    m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+		Slot    m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
 		BasicPayload_p	m_pPayload;

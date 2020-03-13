@@ -32,46 +32,46 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CDynamicSlotVector<LambdaSlot>;
+	template class CDynamicSlotVector<LambdaPanel::Slot>;
 
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
 
-	//____ CLambdaSlotVector::pushFront() ________________________________________________
+	//____ CSlots::pushFront() ________________________________________________
 
-	CLambdaSlotVector::iterator CLambdaSlotVector::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::pushFront(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		LambdaSlot * pSlot = _pushFrontEmpty();
+		Slot * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
-	//____ CLambdaSlotVector::pushBack() ________________________________________________
+	//____ CSlots::pushBack() ________________________________________________
 
-	CLambdaSlotVector::iterator CLambdaSlotVector::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
+	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::pushBack(const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func)
 	{
 		//TODO: Assert
 
 		pWidget->releaseFromParent();
-		LambdaSlot * pSlot = _pushBackEmpty();
+		Slot * pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;
 		_holder()->_didAddSlots(pSlot, 1);
 		return iterator(pSlot);
 	}
 
-	//____ CLambdaSlotVector::insert() ________________________________________________
+	//____ CSlots::insert() ________________________________________________
 
-	CLambdaSlotVector::iterator CLambdaSlotVector::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::insert( int index, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
-		LambdaSlot * pSlot = _insertEmpty(index);
+		Slot * pSlot = _insertEmpty(index);
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;
@@ -79,11 +79,11 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	CLambdaSlotVector::iterator CLambdaSlotVector::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
+	LambdaPanel::CSlots::iterator LambdaPanel::CSlots::insert( iterator pos, const Widget_p& pWidget, std::function<Rect(Widget * pWidget, Size parentSize)> func )
 	{
 		//TODO: Assert
 
-		LambdaSlot * pSlot = _insertEmpty(pos._slot());
+		Slot * pSlot = _insertEmpty(pos._slot());
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 		pSlot->m_func = func;
@@ -248,7 +248,7 @@ namespace wg
 			package.pSlot = nullptr;
 		else
 		{
-			LambdaSlot * pSlot = slots._first();
+			Slot * pSlot = slots._first();
 			package.pSlot = pSlot;
 			package.geo = pSlot->m_geo;
 		}
@@ -259,7 +259,7 @@ namespace wg
 
 	void LambdaPanel::_nextSlotWithGeo( SlotWithGeo& package ) const
 	{
-		LambdaSlot * pSlot = (LambdaSlot*) package.pSlot;
+		Slot * pSlot = (Slot*) package.pSlot;
 
 		if( pSlot == slots._last() )
 			package.pSlot = nullptr;
@@ -275,21 +275,21 @@ namespace wg
 
 	void LambdaPanel::_didAddSlots( StaticSlot * pSlot, int nb )
 	{
-		_unhideSlots(static_cast<LambdaSlot*>(pSlot), nb);
+		_unhideSlots(static_cast<Slot*>(pSlot), nb);
 	}
 
 	//____ _willEraseSlots() _________________________________________________
 
 	void LambdaPanel::_willEraseSlots( StaticSlot * pSlot, int nb )
 	{
-		_hideSlots(static_cast<LambdaSlot*>(pSlot), nb);
+		_hideSlots(static_cast<Slot*>(pSlot), nb);
 	}
 
 	//____ _hideSlots() __________________________________________________________
 
 	void LambdaPanel::_hideSlots( StaticSlot * _pSlot, int nb )
 	{
-		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
@@ -305,7 +305,7 @@ namespace wg
 
 	void LambdaPanel::_unhideSlots( StaticSlot * _pSlot, int nb )
 	{
-		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		for( int i = 0 ; i < nb ; i++ )
 		{
@@ -323,7 +323,7 @@ namespace wg
 
 	void LambdaPanel::_updateSlotGeo(StaticSlot * _pSlot, int nb)
 	{
-		auto pSlot = static_cast<LambdaSlot*>(_pSlot);
+		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		for (int i = 0; i < nb; i++)
 		{
@@ -345,8 +345,8 @@ namespace wg
 			return;
 		}
 
-		auto pFrom = static_cast<LambdaSlot*>(_pFrom);
-		auto pTo = static_cast<LambdaSlot*>(_pTo);
+		auto pFrom = static_cast<Slot*>(_pFrom);
+		auto pTo = static_cast<Slot*>(_pTo);
 
 		if (pTo->m_bVisible)		// This is correct, we have already switched places...
 		{
@@ -354,7 +354,7 @@ namespace wg
 			{
 				// Request render on all areas covered by siblings we have skipped in front of.
 
-				LambdaSlot * p = pTo+1;
+				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
 					RectI cover(pTo->m_geo, p->m_geo);
@@ -368,7 +368,7 @@ namespace wg
 			{
 				// Request render on our siblings for the area we previously have covered.
 
-				LambdaSlot * p = pFrom;
+				Slot * p = pFrom;
 				while (p < pTo)
 				{
 					RectI cover(pTo->m_geo, p->m_geo);
@@ -386,20 +386,20 @@ namespace wg
 
 	CoordI LambdaPanel::_childPos( const StaticSlot * pSlot ) const
 	{
-		return ((LambdaSlot*)pSlot)->m_geo.pos();
+		return ((Slot*)pSlot)->m_geo.pos();
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot )
 	{
-		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
+		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
 	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
 	{
-		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
+		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
 	}
 
@@ -407,14 +407,14 @@ namespace wg
 
 	void LambdaPanel::_childRequestResize( StaticSlot * pSlot )
 	{
-		_updateGeo(static_cast<LambdaSlot*>(pSlot), true);
+		_updateGeo(static_cast<Slot*>(pSlot), true);
 	}
 
 	//____ _prevChild() __________________________________________________________
 
 	Widget * LambdaPanel::_prevChild( const StaticSlot * _pSlot ) const
 	{
-		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
+		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
 		if (pSlot > slots._begin())
 			return pSlot[-1]._widget();
@@ -427,7 +427,7 @@ namespace wg
 
 	Widget * LambdaPanel::_nextChild( const StaticSlot * _pSlot ) const
 	{
-		const LambdaSlot * pSlot = static_cast<const LambdaSlot*>(_pSlot);
+		const Slot * pSlot = static_cast<const Slot*>(_pSlot);
 
 		if (pSlot < slots._last())
 			return pSlot[1]._widget();
@@ -440,14 +440,14 @@ namespace wg
 	void LambdaPanel::_releaseChild(StaticSlot * pSlot)
 	{
 		_willEraseSlots(pSlot, 1);
-		slots._erase(static_cast<LambdaSlot*>(pSlot));
+		slots._erase(static_cast<Slot*>(pSlot));
 	}
 
 	//____ _replaceChild() ______________________________________________________
 
 	void LambdaPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
-		LambdaSlot * pSlot = static_cast<LambdaSlot*>(_pSlot);
+		Slot * pSlot = static_cast<Slot*>(_pSlot);
 
 		slots._releaseGuardPointer(pNewChild, &pSlot);
 		pSlot->_setWidget(pNewChild);
@@ -478,7 +478,7 @@ namespace wg
 
 	//____ _updateGeo() _______________________________________________________
 
-	void LambdaPanel::_updateGeo(LambdaSlot * pSlot, bool bForceResize )
+	void LambdaPanel::_updateGeo(Slot * pSlot, bool bForceResize )
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
@@ -501,7 +501,7 @@ namespace wg
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
-				const LambdaSlot * pCover = pSlot + 1;
+				const Slot * pCover = pSlot + 1;
 				while (pCover < slots._end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
@@ -526,7 +526,7 @@ namespace wg
 
 	//____ _onRequestRender() ____________________________________________________
 
-	void LambdaPanel::_onRequestRender( const RectI& rect, const LambdaSlot * pSlot )
+	void LambdaPanel::_onRequestRender( const RectI& rect, const Slot * pSlot )
 	{
 		if (!pSlot->m_bVisible)
 			return;
@@ -538,7 +538,7 @@ namespace wg
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
-		for (LambdaSlot * pCover = slots._begin(); pCover < pSlot ; pCover++)
+		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
 				pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, 65536, 65536), _getBlendMode());

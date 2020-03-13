@@ -68,6 +68,19 @@ namespace wg
 
 		virtual void		_releaseChild(StaticSlot * pSlot) = 0;
 		virtual void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild) = 0;
+
+		virtual void		_selectSlots(StaticSlot * pSlot, int nb) = 0;
+		virtual void		_unselectSlots(StaticSlot * pSlot, int nb) = 0;
+
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) = 0;
+
+		virtual void		_didAddSlots(StaticSlot * pSlot, int nb) = 0;
+		virtual void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;
+		virtual void		_willEraseSlots(StaticSlot * pSlot, int nb) = 0;
+
+		virtual void		_hideSlots(StaticSlot * pSlot, int nb) = 0;
+		virtual void		_unhideSlots(StaticSlot * pSlot, int nb) = 0;
 	};
 
 } // namespace wg

@@ -38,23 +38,6 @@ namespace wg
 	typedef	WeakPtr<List>		List_wp;
 
 
-
-	//____ ListSlot ____________________________________________________________
-
-	class ListSlot : public SelectableSlot
-	{
-		friend class List;
-
-	public:
-
-		class Holder : public SelectableSlot::Holder		/** @private */
-		{
-		};
-
-	protected:
-		ListSlot(Holder * pHolder) : SelectableSlot(pHolder) {}
-	};
-
 	//____ List _________________________________________________________________
 
 	/**
@@ -67,6 +50,17 @@ namespace wg
 	class List : public Container
 	{
 	public:
+
+		//____ Slot ____________________________________________________________
+
+		class Slot : public SelectableSlot
+		{
+			friend class List;
+
+		protected:
+			Slot(SlotHolder * pHolder) : SelectableSlot(pHolder) {}
+		};
+
 
 		//.____ Identification __________________________________________
 
@@ -100,20 +94,20 @@ namespace wg
 
 		void			_cloneContent( const Widget * _pOrg ) override;
 
-		int				_selectSlot(ListSlot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
-		int				_selectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
-		int				_unselectSlots(ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }
+		int				_selectSlot(Slot * pSlot, bool bPostMsg) { return _setSlotSelection(pSlot, _nextSlot(pSlot), true, bPostMsg); }
+		int				_selectSlots(Slot * pBegin, Slot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, true, bPostMsg); }
+		int				_unselectSlots(Slot * pBegin, Slot * pEnd, bool bPostMsg) { return _setSlotSelection(pBegin, pEnd, false, bPostMsg); }
 
 		Widget*			_firstChild() const override;
 		Widget*			_lastChild() const override;
 
 
-		virtual int		_setSlotSelection(ListSlot * pBegin, ListSlot * pEnd, bool bSelect, bool bPostMsg);
+		virtual int		_setSlotSelection(Slot * pBegin, Slot * pEnd, bool bSelect, bool bPostMsg);
 
-		virtual int		_flipSelection( ListSlot * pBegin, ListSlot * pEnd, bool bPostMsg );
+		virtual int		_flipSelection( Slot * pBegin, Slot * pEnd, bool bPostMsg );
 
-		virtual ListSlot * _findEntry( const CoordI& ofs ) = 0;
-		virtual void	_getEntryGeo( RectI& geo, const ListSlot * pSlot ) const = 0;
+		virtual Slot * _findEntry( const CoordI& ofs ) = 0;
+		virtual void	_getEntryGeo( RectI& geo, const Slot * pSlot ) const = 0;
 
 		virtual RectI	_listArea() const = 0;										// Area for the entries (contentRect minus header).
 		virtual RectI	_listWindow() const = 0;
@@ -123,14 +117,14 @@ namespace wg
 		virtual void	_onLassoUpdated( const RectI& oldLasso, const RectI& newLasso ) = 0;
 
 
-		virtual ListSlot * _beginSlots() const = 0;
-		virtual ListSlot * _endSlots() const = 0;
+		virtual Slot * _beginSlots() const = 0;
+		virtual Slot * _endSlots() const = 0;
 
-		inline ListSlot * _nextSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
-		inline const ListSlot * _nextSlot( const ListSlot * pSlot, int sizeOf ) const { return (const ListSlot*) (((char*)pSlot)+m_sizeOfSlot); }
+		inline Slot * _nextSlot( Slot * pSlot ) const { return (Slot*) (((char*)pSlot)+m_sizeOfSlot); }
+		inline const Slot * _nextSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)+m_sizeOfSlot); }
 
-		inline ListSlot * _prevSlot( ListSlot * pSlot ) const { return (ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
-		inline const ListSlot * _prevSlot( const ListSlot * pSlot ) const { return (const ListSlot*) (((char*)pSlot)-m_sizeOfSlot); }
+		inline Slot * _prevSlot( Slot * pSlot ) const { return (Slot*) (((char*)pSlot)-m_sizeOfSlot); }
+		inline const Slot * _prevSlot( const Slot * pSlot ) const { return (const Slot*) (((char*)pSlot)-m_sizeOfSlot); }
 
 		int				m_sizeOfSlot;
 

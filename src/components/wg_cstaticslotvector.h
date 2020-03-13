@@ -36,12 +36,6 @@ namespace wg
 	{
 	public:
 
-		class Holder : public SlotType::Holder	/** @private */
-		{
-		public:
-
-		};
-
 		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
@@ -78,7 +72,7 @@ namespace wg
 		inline iterator	end() const { return iterator(_end()); }
 
 	protected:
-		CStaticSlotVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		CStaticSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~CStaticSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
@@ -92,8 +86,8 @@ namespace wg
 
 
 	//////
-		inline Holder *		_holder() { return m_pHolder; }
-		inline const Holder *	_holder() const { return m_pHolder; }
+		inline SlotHolder *			_holder() { return m_pHolder; }
+		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
 		SlotType*		_pushFrontEmpty()
 						{
@@ -186,7 +180,7 @@ namespace wg
 		SlotType *	m_pArray = nullptr;
 		int			m_size = 0;
 
-		Holder *	m_pHolder;
+		SlotHolder * m_pHolder;
 	};
 
 } // namespace wg

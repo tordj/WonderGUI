@@ -36,19 +36,11 @@ namespace wg
 	{
 	public:
 
-		class Holder : public CDynamicSlotVector<SlotType>::Holder		/** @private */
-		{
-		public:
-			virtual void	_selectSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_unselectSlots(StaticSlot * pSlot, int nb) = 0;
-		};
-
-
 //		using		iterator = SlotArrayIterator<SlotType>;
 
 		/** @private */
 
-		CSelectableSlotVector(Holder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
+		CSelectableSlotVector(SlotHolder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
 		//.____ Control _______________________________________________________
 
@@ -62,8 +54,8 @@ namespace wg
 		void	unselectAll();
 
 	protected:
-		Holder * _holder() { return static_cast<Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
-		const Holder * _holder() const { return static_cast<const Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		SlotHolder * _holder() { return static_cast<SlotHolder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(CDynamicSlotVector<SlotType>::_holder()); }
 
 
 	};

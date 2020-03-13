@@ -37,85 +37,75 @@ namespace wg
 	typedef	WeakPtr<StackPanel>		StackPanel_wp;
 
 
-	//____ StackSlot ____________________________________________________________
-
-	class StackSlot : public PaddedSlot
-	{
-		friend class StackPanel;
-		friend class CStackSlotVector;
-		friend class CDynamicSlotVector<StackSlot>;
-
-	public:
-
-		//.____ Properties _________________________________________________
-
-		void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
-		inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
-
-		void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
-		inline Origo		origo() const { return m_origo; }
-
-		//.____ Operators __________________________________________
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-	protected:
-		class Holder : public PaddedSlot::Holder
-		{
-		public:
-			virtual void		_setSizePolicy(StackSlot * pSlot, SizePolicy2D policy) = 0;
-			virtual void		_setOrigo(StackSlot * pSlot, Origo origo) = 0;
-		};
-
-		StackSlot(Holder * pHolder) : PaddedSlot(pHolder) {}
-		StackSlot(StackSlot&& o) = default;
-		StackSlot& operator=(StackSlot&& o) = default;
-
-
-		Holder *		_holder() { return static_cast<Holder*>(PaddedSlot::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(PaddedSlot::_holder()); }
-
-		Origo			m_origo			= Origo::Center;
-		SizePolicy2D	m_sizePolicy	= SizePolicy2D::Original;
-	};
-
-
-	//____ CStackSlotVector ________________________________________________________
-
-	class CStackSlotVector;
-	typedef	StrongComponentPtr<CStackSlotVector>	CStackSlotVector_p;
-	typedef	WeakComponentPtr<CStackSlotVector>	CStackSlotVector_wp;
-
-	class CStackSlotVector : public CPaddedSlotVector<StackSlot>
-	{
-		friend class StackPanel;
-	public:
-
-		//.____ Misc __________________________________________________________
-
-		inline CStackSlotVector_p	ptr() { return CStackSlotVector_p(this); }
-
-	protected:
-
-		class Holder : public CPaddedSlotVector<StackSlot>::Holder			/** @private */
-		{
-		};
-
-		CStackSlotVector(Holder * pHolder) : CPaddedSlotVector<StackSlot>(pHolder) {}
-	};
-
-
-
 	//____ StackPanel ___________________________________________________________
 
 	/**
 	*/
 
-	class StackPanel : public Panel, protected CStackSlotVector::Holder
+	class StackPanel : public Panel
 	{
-		friend class CStackSlotVector;
+		friend class Slot;
+		friend class CSlots;
 
 	public:
+
+		//____ Slot ____________________________________________________________
+
+		class Slot : public PaddedSlot
+		{
+			friend class StackPanel;
+			friend class CSlots;
+			friend class CDynamicSlotVector<Slot>;
+
+		public:
+
+			//.____ Properties _________________________________________________
+
+			void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
+			inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
+
+			void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
+			inline Origo		origo() const { return m_origo; }
+
+			//.____ Operators __________________________________________
+
+			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		protected:
+
+			Slot(SlotHolder * pHolder) : PaddedSlot(pHolder) {}
+			Slot(Slot&& o) = default;
+			Slot& operator=(Slot&& o) = default;
+
+
+			StackPanel *		_holder() { return static_cast<StackPanel*>(PaddedSlot::_holder()); }
+			const StackPanel *	_holder() const { return static_cast<const StackPanel*>(PaddedSlot::_holder()); }
+
+			Origo			m_origo = Origo::Center;
+			SizePolicy2D	m_sizePolicy = SizePolicy2D::Original;
+		};
+
+
+		//____ CSlots ________________________________________________________
+
+		class CSlots;
+		typedef	StrongComponentPtr<CSlots>	CSlots_p;
+		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
+
+		class CSlots : public CPaddedSlotVector<Slot>
+		{
+			friend class StackPanel;
+		public:
+
+			//.____ Misc __________________________________________________________
+
+			inline CSlots_p	ptr() { return CSlots_p(this); }
+
+		protected:
+
+			CSlots(SlotHolder * pHolder) : CPaddedSlotVector<Slot>(pHolder) {}
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -123,7 +113,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CStackSlotVector	slots;
+		CSlots	slots;
 
 		//.____ Identification __________________________________________
 
@@ -155,36 +145,7 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		// Overloaded from StackCSlotVector::Holder
-
-		void		_didAddSlots( StaticSlot * pSlot, int nb ) override;
-		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
-		void		_willEraseSlots( StaticSlot * pSlot, int nb ) override;
-		void		_hideSlots( StaticSlot *, int nb ) override;
-		void		_unhideSlots( StaticSlot *, int nb ) override;
-		void		_repadSlots( StaticSlot *, int nb, BorderI padding ) override;
-		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
-		void		_setSizePolicy(StackSlot * pSlot, SizePolicy2D policy) override;
-		void		_setOrigo(StackSlot * pSlot, Origo origo) override;
-
-
-		// Overloaded from StackSlotHolder
-
-		Container *	_container() override { return this; }
-		RootPanel *	_root() override { return Container::_root(); }
-		Object *	_object() override { return this; }
-		const Object *	_object() const override { return this; }
-
 		CoordI		_childPos(const StaticSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
-
-		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
-
-		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
 		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
@@ -196,16 +157,30 @@ namespace wg
 		void		_releaseChild(StaticSlot * pSlot) override;
 		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
+		void		_didAddSlots(StaticSlot * pSlot, int nb) override;
+		void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
+		void		_hideSlots(StaticSlot *, int nb) override;
+		void		_unhideSlots(StaticSlot *, int nb) override;
+		void		_repadSlots(StaticSlot *, int nb, BorderI padding) override;
+		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
+
+		//
+
+		void		_setSizePolicy(Slot * pSlot, SizePolicy2D policy);
+		void		_setOrigo(Slot * pSlot, Origo origo);
+
+
 		// Internal to StackPanel
 
 		SizeI 	_calcPreferredSize();
 		void	_adaptChildrenToSize();
 
-		void	_hideChildren( StackSlot * pSlot, int nb );
-		void	_unhideChildren( StackSlot * pSlot, int nb );
+		void	_hideChildren( Slot * pSlot, int nb );
+		void	_unhideChildren( Slot * pSlot, int nb );
 
 
-		RectI	_childGeo( const StackSlot * pSlot ) const;
+		RectI	_childGeo( const Slot * pSlot ) const;
 
 		SizeI	m_preferredSize;
 	};

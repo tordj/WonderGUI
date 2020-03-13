@@ -34,16 +34,9 @@ namespace wg
 	{
 	public:
 
-		class Holder : public CDynamicSlotVector<SlotType>::Holder  /** @private */
-		{
-		public:
-			virtual void	_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
-			virtual void	_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) = 0;
-		};
-
 		/** @private */
 
-		CPaddedSlotVector(Holder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
+		CPaddedSlotVector(SlotHolder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
 		//.____ Geometry ______________________________________________________
 
@@ -53,8 +46,8 @@ namespace wg
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
 
 	protected:
-		Holder *		_holder() { return static_cast<Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
-		const Holder *	_holder() const { return static_cast<const Holder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		SlotHolder *		_holder() { return static_cast<SlotHolder*>(CDynamicSlotVector<SlotType>::_holder()); }
+		const SlotHolder *	_holder() const { return static_cast<const SlotHolder*>(CDynamicSlotVector<SlotType>::_holder()); }
 	};
 
 

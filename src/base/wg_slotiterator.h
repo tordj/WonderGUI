@@ -28,7 +28,7 @@
 namespace wg
 {
 	class Widget;
-	class StaticSlot;
+	class Slot;
 
 
 

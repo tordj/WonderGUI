@@ -36,7 +36,7 @@ namespace wg
 	const char ScrollPanel::CLASSNAME[] = {"ScrollPanel"};
 
 
-	float ViewSlot::_windowFractionX() const
+	float ScrollPanel::ViewSlot::_windowFractionX() const
 	{
 		if (m_contentSize.w == 0)
 			return 1.f;
@@ -51,7 +51,7 @@ namespace wg
 		}
 	}
 
-	float ViewSlot::_windowFractionY() const
+	float ScrollPanel::ViewSlot::_windowFractionY() const
 	{
 		if (m_contentSize.h == 0)
 			return 1.f;
@@ -66,7 +66,7 @@ namespace wg
 		}
 	}
 
-	float ViewSlot::_windowOffsetX() const
+	float ScrollPanel::ViewSlot::_windowOffsetX() const
 	{
 		int size = m_contentSize.w - m_windowGeo.w;
 		if (size > 0)
@@ -75,7 +75,7 @@ namespace wg
 		return 0;
 	}
 
-	float ViewSlot::_windowOffsetY() const
+	float ScrollPanel::ViewSlot::_windowOffsetY() const
 	{
 		int size = m_contentSize.h - m_windowGeo.h;
 		if (size > 0)
@@ -88,7 +88,7 @@ namespace wg
 
 	//____ updateCanvasGeo() __________________________________________________
 
-	bool ViewSlot::_updateCanvasGeo()
+	bool ScrollPanel::ViewSlot::_updateCanvasGeo()
 	{
 		RectI	out(m_windowGeo.pos() - m_viewPixOfs, m_contentSize);
 
@@ -114,7 +114,7 @@ namespace wg
 
 	//____ sizeFromPolicy() ________________________________________________________
 
-	SizeI ViewSlot::_sizeFromPolicy(SizeI specifiedSize) const
+	SizeI ScrollPanel::ViewSlot::_sizeFromPolicy(SizeI specifiedSize) const
 	{
 		SizeI	defaultSize = _preferredSize();
 
@@ -167,7 +167,7 @@ namespace wg
 
 	//____ setWindowPos() ______________________________________________________
 
-	bool ViewSlot::_setWindowPos(CoordI pos)
+	bool ScrollPanel::ViewSlot::_setWindowPos(CoordI pos)
 	{
 		if (pos == m_viewPixOfs)
 			return true;
@@ -207,7 +207,7 @@ namespace wg
 
 	//____ setWindowOffset() ___________________________________________________________
 
-	bool ViewSlot::_setWindowOffset( CoordF ofs)
+	bool ScrollPanel::ViewSlot::_setWindowOffset( CoordF ofs)
 	{
 		limit(ofs.x, 0.f, 1.f);
 		limit(ofs.y, 0.f, 1.f);
@@ -220,7 +220,7 @@ namespace wg
 
 	//____ setWindowOffsetX() ___________________________________________________________
 
-	bool ViewSlot::_setWindowOffsetX(float ofs)
+	bool ScrollPanel::ViewSlot::_setWindowOffsetX(float ofs)
 	{
 		limit(ofs, 0.f, 1.f);
 
@@ -230,7 +230,7 @@ namespace wg
 
 	//____ setWindowOffsetY() ___________________________________________________________
 
-	bool ViewSlot::_setWindowOffsetY(float ofs)
+	bool ScrollPanel::ViewSlot::_setWindowOffsetY(float ofs)
 	{
 		limit(ofs, 0.f, 1.f);
 
@@ -241,7 +241,7 @@ namespace wg
 
 	//____ paddedWindowPixelLenX() _______________________________________________
 
-	int ViewSlot::_paddedWindowPixelLenX()
+	int ScrollPanel::ViewSlot::_paddedWindowPixelLenX()
 	{
 		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 		return	m_windowGeo.w - windowPadding.w;
@@ -249,7 +249,7 @@ namespace wg
 
 	//____ paddedWindowPixelLenY() ________________________________________________________
 
-	int ViewSlot::_paddedWindowPixelLenY()
+	int ScrollPanel::ViewSlot::_paddedWindowPixelLenY()
 	{
 		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 		return m_windowGeo.h - windowPadding.h;
@@ -257,7 +257,7 @@ namespace wg
 
 	//____ paddedWindowLenX() _____________________________________________________________
 
-	float ViewSlot::_paddedWindowLenX()
+	float ScrollPanel::ViewSlot::_paddedWindowLenX()
 	{
 		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 
@@ -274,7 +274,7 @@ namespace wg
 
 	//____ paddedWindowLenY() _____________________________________________________________
 
-	float ViewSlot::_paddedWindowLenY()
+	float ScrollPanel::ViewSlot::_paddedWindowLenY()
 	{
 		SizeI	windowPadding = m_pWidget ? m_pWidget->_windowPadding() : SizeI(0, 0);
 
@@ -289,7 +289,7 @@ namespace wg
 		return len;
 	}
 
-	CViewSlot& CViewSlot::operator=(const Widget_p& pWidget)
+	ScrollPanel::CViewSlot& ScrollPanel::CViewSlot::operator=(const Widget_p& pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
@@ -297,7 +297,7 @@ namespace wg
 		return *this;
 	}
 
-	void CViewSlot::setOrigo(Origo origo)
+	void ScrollPanel::CViewSlot::setOrigo(Origo origo)
 	{
 		if (origo == m_contentOrigo)
 			return;
@@ -309,7 +309,7 @@ namespace wg
 			_holder()->_requestRender(m_windowGeo);
 	}
 
-	void CViewSlot::setWidthPolicy(SizePolicy policy)
+	void ScrollPanel::CViewSlot::setWidthPolicy(SizePolicy policy)
 	{
 		if (policy != m_widthPolicy)
 		{
@@ -318,7 +318,7 @@ namespace wg
 		}
 	}
 
-	void CViewSlot::setHeightPolicy(SizePolicy policy)
+	void ScrollPanel::CViewSlot::setHeightPolicy(SizePolicy policy)
 	{
 		if (policy != m_heightPolicy)
 		{
@@ -327,75 +327,75 @@ namespace wg
 		}
 	}
 
-	Rect CViewSlot::windowRect() const
+	Rect ScrollPanel::CViewSlot::windowRect() const
 	{
 		return Rect( rawToQpix(m_viewPixOfs), rawToQpix(m_windowGeo.size()));
 	}
 
-	Size CViewSlot::windowSize() const
+	Size ScrollPanel::CViewSlot::windowSize() const
 	{
 		return rawToQpix(m_windowGeo.size());
 	}
 
-	RectF CViewSlot::windowSection() const
+	RectF ScrollPanel::CViewSlot::windowSection() const
 	{
 		return RectF(_windowOffsetX(), _windowOffsetY(), _windowFractionX(), _windowFractionY());
 	}
 
-	CoordF CViewSlot::windowOffset() const
+	CoordF ScrollPanel::CViewSlot::windowOffset() const
 	{
 		return CoordF(_windowOffsetX(), _windowOffsetY() );
 	}
 
-	SizeF CViewSlot::windowFraction() const
+	SizeF ScrollPanel::CViewSlot::windowFraction() const
 	{
 		return SizeF(_windowFractionX(), _windowFractionY());
 	}
 
-	bool CViewSlot::setWindowPos(Coord pos)
+	bool ScrollPanel::CViewSlot::setWindowPos(Coord pos)
 	{
 		return _holder()->_setWindowPos(qpixToRaw(pos));
 	}
 
-	bool CViewSlot::setWindowOffset(CoordF ofs)
+	bool ScrollPanel::CViewSlot::setWindowOffset(CoordF ofs)
 	{
 		return _holder()->_setWindowOffset(ofs);
 	}
 
-	bool CViewSlot::step(Direction dir)
+	bool ScrollPanel::CViewSlot::step(Direction dir)
 	{
 		return _holder()->_step(dir);
 	}
 
-	bool CViewSlot::jump(Direction dir)
+	bool ScrollPanel::CViewSlot::jump(Direction dir)
 	{
 		return _holder()->_jump(dir);
 	}
 
-	bool CViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
+	bool ScrollPanel::CViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
 	{
 		//TODO: Implement!
 
 		return false;
 	}
 
-	void CViewSlot::setScrollBorder(Border border)
+	void ScrollPanel::CViewSlot::setScrollBorder(Border border)
 	{
 		m_scrollBorder = border;
 	}
 
-	void CViewSlot::setRubberBorder(Border border)
+	void ScrollPanel::CViewSlot::setRubberBorder(Border border)
 	{
 		m_rubberBorder = border;
 	}
 
-	void CViewSlot::setDragButton(MouseButton button)
+	void ScrollPanel::CViewSlot::setDragButton(MouseButton button)
 	{
 		m_dragButton = button;
 	}
 
 
-	void ScrollbarEntry::setAutoHide(bool autohide)
+	void ScrollPanel::ScrollbarEntry::setAutoHide(bool autohide)
 	{
 		if (autohide == m_pSlot->bAutoHide)
 			return;
@@ -404,13 +404,13 @@ namespace wg
 		m_pHolder->_updateElementGeo(m_pHolder->m_size);
 	}
 
-	bool ScrollbarEntry::setAutoScroll(bool autoscroll)
+	bool ScrollPanel::ScrollbarEntry::setAutoScroll(bool autoscroll)
 	{
 		m_pSlot->bAutoScroll = autoscroll;
 		return true;
 	}
 
-	bool ScrollbarEntry::setPlacement(Direction placement)
+	bool ScrollPanel::ScrollbarEntry::setPlacement(Direction placement)
 	{
 		if ((placement == Direction::Up || placement == Direction::Down) && (m_pSlot->placement == Direction::Left || m_pSlot->placement == Direction::Right))
 			return false;
@@ -426,7 +426,7 @@ namespace wg
 		return true;
 	}
 
-	ScrollbarEntry ScrollbarEntry::operator=(const Scrollbar_p& pWidget)
+	ScrollPanel::ScrollbarEntry ScrollPanel::ScrollbarEntry::operator=(const Scrollbar_p& pWidget)
 	{
 		if (pWidget)
 			pWidget->releaseFromParent();
@@ -434,17 +434,17 @@ namespace wg
 		return *this;
 	}
 
-	void ScrollbarEntry::clear()
+	void ScrollPanel::ScrollbarEntry::clear()
 	{
 		m_pHolder->_replaceChild(m_pSlot, nullptr);
 	}
 
-	Object * ScrollbarEntry::_object()
+	Object * ScrollPanel::ScrollbarEntry::_object()
 	{
 		return m_pHolder;
 	}
 
-	const Object * ScrollbarEntry::_object() const
+	const Object * ScrollPanel::ScrollbarEntry::_object() const
 	{
 		return m_pHolder;
 	}

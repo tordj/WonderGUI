@@ -37,21 +37,6 @@ namespace wg
 	{
 	public:
 
-		class Holder : public SlotType::Holder	/** @private */
-		{
-		public:
-			virtual void	_didAddSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;
-			virtual void	_willEraseSlots(StaticSlot * pSlot, int nb) = 0;
-
-			virtual void	_hideSlots(StaticSlot * pSlot, int nb) = 0;
-			virtual void	_unhideSlots(StaticSlot * pSlot, int nb) = 0;
-
-			//		virtual void	_willReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
-			//		virtual void	_didReplaceWidgets(StaticSlot * pSlot, int nb) = 0;
-
-		};
-
 		using		iterator = SlotArrayIterator<SlotType>;
 
 		//.____ Operators __________________________________________
@@ -179,7 +164,7 @@ namespace wg
 
 
 	protected:
-		CDynamicSlotVector(Holder * pHolder) : m_pHolder(pHolder) {}
+		CDynamicSlotVector(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 		~CDynamicSlotVector() { _killBlock(_begin(), _end()); free(m_pBuffer); }
 
 		SlotIterator	_begin_iterator() override;
@@ -208,8 +193,8 @@ namespace wg
 
 
 	//////
-		inline Holder *		_holder() { return m_pHolder; }
-		inline const Holder *	_holder() const { return m_pHolder; }
+		inline SlotHolder *		_holder() { return m_pHolder; }
+		inline const SlotHolder *	_holder() const { return m_pHolder; }
 
 		SlotType*		_pushFrontEmpty()
 		{
@@ -302,7 +287,7 @@ namespace wg
 		SlotType *	m_pArray = nullptr;
 		int			m_size = 0;
 
-		Holder *	m_pHolder;
+		SlotHolder * m_pHolder;
 	};
 
 } // namespace wg

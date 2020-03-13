@@ -45,7 +45,7 @@ namespace wg
 	 * Base class for all widgets that can hold child widgets.
 	 */
 
-	class Container : public Widget
+	class Container : public Widget, protected SlotHolder
 	{
 		friend class MsgRouter;
 
@@ -96,23 +96,47 @@ namespace wg
 
 			bool                    _descendantPos( Widget * pDescendant, CoordI& pos );         // Descendants position in our local coordinate system, return false if isn't a descendant.
 
-			// Default implementations for some methods of SlotHolder
+			// SlotHolder methods
 
-			Container *				_container();
-			RootPanel *				_root();
+			Container *				_container() override;
+			RootPanel *				_root() override;
+			Object *				_object() override;
+			const Object *			_object() const override;
 
-			virtual CoordI			_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of a child.
-			virtual CoordI			_childGlobalPos( const StaticSlot * pSlot ) const;
+			virtual CoordI			_childPos( const StaticSlot * pSlot ) const override = 0;				///< Get the local position of a child.
+			virtual CoordI			_childGlobalPos( const StaticSlot * pSlot ) const override;
 
-			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const;
-			virtual RectI			_childWindowSection( const StaticSlot * pSlot ) const;		// Returns the window section within the childs canvas.
+			virtual bool			_isChildVisible( const StaticSlot * pSlot ) const override;
+			virtual RectI			_childWindowSection( const StaticSlot * pSlot ) const override;		// Returns the window section within the childs canvas.
 
-			virtual bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget );					// Request focus on behalf of me, child or grandchild.
-			virtual bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget );
+			virtual void			_childRequestRender(StaticSlot * pSlot) override = 0;
+			virtual void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override = 0;
+			virtual void			_childRequestResize(StaticSlot * pSlot) override = 0;
 
-			virtual void			_childRequestInView( StaticSlot * pSlot );
-			virtual void			_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea );
+			virtual bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) override;					// Request focus on behalf of me, child or grandchild.
+			virtual bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 
+			virtual void			_childRequestInView( StaticSlot * pSlot ) override;
+			virtual void			_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
+
+			virtual Widget *		_prevChild(const StaticSlot * pSlot) const override = 0;
+			virtual Widget *		_nextChild(const StaticSlot * pSlot) const override = 0;
+
+			virtual void			_releaseChild(StaticSlot * pSlot) override = 0;
+			virtual void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override = 0;
+
+			virtual void			_selectSlots(StaticSlot * pSlot, int nb) override;
+			virtual void			_unselectSlots(StaticSlot * pSlot, int nb) override;
+
+			virtual void			_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) override;
+			virtual void			_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) override;
+
+			virtual void			_didAddSlots(StaticSlot * pSlot, int nb) override;
+			virtual void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
+			virtual void			_willEraseSlots(StaticSlot * pSlot, int nb) override;
+
+			virtual void			_hideSlots(StaticSlot * pSlot, int nb) override;
+			virtual void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
 			//
 

@@ -38,84 +38,6 @@ namespace wg
 	typedef	StrongPtr<PackList>		PackList_p;
 	typedef	WeakPtr<PackList>		PackList_wp;
 
-
-	//____ PackListSlot ____________________________________________________________
-
-	class PackListSlot : public ListSlot
-	{
-		friend class CPackListSlotVector;
-		friend class PackList;
-		template<class S> friend class SlotVector;
-		friend class CDynamicSlotVector<PackListSlot>::Holder;
-		friend class CDynamicSlotVector<PackListSlot>;
-
-	public:
-
-		//.____ Operators __________________________________________
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-	protected:
-		class Holder : public ListSlot::Holder
-		{
-		};
-
-		PackListSlot(Holder *pHolder) : ListSlot(pHolder) {}
-
-		PackListSlot(PackListSlot&& o) = default;
-		PackListSlot& operator=(PackListSlot&& o) = default;
-
-		int				m_ofs;				// Offset in pixels for start of this list item.
-		int				m_length;			// Length in pixels of this list item. Includes widget padding.
-		int				m_prefBreadth;		// Prefereed breadth of this widget.
-	};
-
-
-	//____ CPackListSlotVector ______________________________________________________
-
-	class CPackListSlotVector;
-	typedef	StrongComponentPtr<CPackListSlotVector>	CPackListSlotVector_p;
-	typedef	WeakComponentPtr<CPackListSlotVector>	CPackListSlotVector_wp;
-
-	class CPackListSlotVector : public CSelectableSlotVector<PackListSlot>
-	{
-		friend class PackList;
-	public:
-
-		using		iterator = SlotArrayIterator<PackListSlot>;
-
-		//.____ Misc __________________________________________________________
-
-		inline CPackListSlotVector_p	ptr() { return CPackListSlotVector_p(this); }
-
-		//.____ Content _______________________________________________________
-
-		iterator	insertSorted(Widget * pWidget);
-
-		//.____ Ordering ______________________________________________________
-
-		void		sort();
-
-	protected:
-
-		//____ Holder _________________________________________________________
-
-		class Holder : public CSelectableSlotVector<PackListSlot>::Holder
-		{
-		public:
-			virtual int		_getInsertionPoint(const Widget * pWidget) const = 0;
-			virtual bool	_sortEntries() = 0;
-			virtual bool	_hasSortFunction() const = 0;
-		};
-
-		CPackListSlotVector(Holder * pHolder) : CSelectableSlotVector<PackListSlot>(pHolder) {}
-
-
-		inline const Holder *	_holder() const { return static_cast<const Holder*>(CSelectableSlotVector<PackListSlot>::_holder()); }
-		inline Holder *			_holder() { return static_cast<Holder*>(CSelectableSlotVector<PackListSlot>::_holder()); }
-	};
-
-
 	//____ PackList ____________________________________________________________
 
 	/**
@@ -127,11 +49,77 @@ namespace wg
 	 *
 	 */
 
-	class PackList : public List, protected CPackListSlotVector::Holder
+	class PackList : public List
 	{
-		friend class CPackListSlotVector;
+		friend class Slot;
+		friend class CSlots;
 
 	public:
+
+		//____ Slot ____________________________________________________________
+
+		class Slot : public List::Slot
+		{
+			friend class CSlots;
+			friend class PackList;
+			template<class S> friend class SlotVector;
+			friend class CDynamicSlotVector<Slot>;
+
+		public:
+
+			//.____ Operators __________________________________________
+
+			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		protected:
+
+			Slot(SlotHolder *pHolder) : List::Slot(pHolder) {}
+
+			Slot(Slot&& o) = default;
+			Slot& operator=(Slot&& o) = default;
+
+			int				m_ofs;				// Offset in pixels for start of this list item.
+			int				m_length;			// Length in pixels of this list item. Includes widget padding.
+			int				m_prefBreadth;		// Prefereed breadth of this widget.
+		};
+
+
+		//____ CSlots ______________________________________________________
+
+		class CSlots;
+		typedef	StrongComponentPtr<CSlots>	CSlots_p;
+		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
+
+		class CSlots : public CSelectableSlotVector<Slot>
+		{
+			friend class PackList;
+		public:
+
+			using		iterator = SlotArrayIterator<Slot>;
+
+			//.____ Misc __________________________________________________________
+
+			inline CSlots_p	ptr() { return CSlots_p(this); }
+
+			//.____ Content _______________________________________________________
+
+			iterator	insertSorted(Widget * pWidget);
+
+			//.____ Ordering ______________________________________________________
+
+			void		sort();
+
+		protected:
+
+			//____ Holder _________________________________________________________
+
+			CSlots(SlotHolder * pHolder) : CSelectableSlotVector<Slot>(pHolder) {}
+
+
+			inline const PackList *	_holder() const { return static_cast<const PackList*>(CSelectableSlotVector<Slot>::_holder()); }
+			inline PackList *		_holder() { return static_cast<PackList*>(CSelectableSlotVector<Slot>::_holder()); }
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -140,7 +128,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CColumnHeader		header;
-		CPackListSlotVector	slots;
+		CSlots	slots;
 
 		//.____ Identification __________________________________________
 
@@ -189,8 +177,40 @@ namespace wg
 		void			_receive( Msg * pMsg ) override;
 		SizeI			_windowPadding() const override;
 
+		// Overloaded from List
 
-		// Overloaded from PackListCSlotVector::Holder
+		List::Slot *	_findEntry(const CoordI& ofs) override;
+		void			_getEntryGeo(RectI& geo, const List::Slot * pSlot) const override;
+
+		RectI			_listArea() const override;
+		RectI			_listWindow() const override;
+		RectI			_listCanvas() const override;
+
+		void			_onEntrySkinChanged(SizeI oldPadding, SizeI newPadding) override;
+		void			_onLassoUpdated(const RectI& oldLasso, const RectI& newLasso) override;
+
+		List::Slot *	_beginSlots() const override;
+		List::Slot *	_endSlots() const override;
+
+
+		// Overloaded from Container
+
+		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
+		void			_nextSlotWithGeo(SlotWithGeo& package) const override;
+
+		Widget * 		_findWidget(const CoordI& ofs, SearchMode mode) override;
+
+		CoordI			_childPos(const StaticSlot * pSlot) const override;
+
+		void			_childRequestRender(StaticSlot * pSlot) override;
+		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void			_childRequestResize(StaticSlot * pSlot) override;
+
+		Widget *		_prevChild(const StaticSlot * pSlot) const override;
+		Widget *		_nextChild(const StaticSlot * pSlot) const override;
+
+		void			_releaseChild(StaticSlot * pSlot) override;
+		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
@@ -201,64 +221,7 @@ namespace wg
 
 		void			_selectSlots(StaticSlot * pSlot, int nb) override;
 		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
-		Object *		_object() override { return this; }
-		const Object *	_object() const override { return this; }
 
-		int				_getInsertionPoint(const Widget * pWidget) const override;
-		bool			_hasSortFunction() const override { return m_sortFunc != nullptr; }
-		bool			_sortEntries() override;
-
-
-		// Overloaded from List
-
-		ListSlot *		_findEntry(const CoordI& ofs) override;
-		void			_getEntryGeo(RectI& geo, const ListSlot * pSlot) const override;
-
-		RectI			_listArea() const override;
-		RectI			_listWindow() const override;
-		RectI			_listCanvas() const override;
-
-		void			_onEntrySkinChanged(SizeI oldPadding, SizeI newPadding) override;
-		void			_onLassoUpdated(const RectI& oldLasso, const RectI& newLasso) override;
-
-		ListSlot *		_beginSlots() const override;
-		ListSlot *		_endSlots() const override;
-
-
-		// Overloaded from Container
-
-		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
-		void			_nextSlotWithGeo(SlotWithGeo& package) const override;
-
-		Widget * 		_findWidget(const CoordI& ofs, SearchMode mode) override;
-
-
-		// Overloaded from PackListSlotHolder
-
-		Container *	_container() override { return this; }
-		RootPanel *	_root() override { return Container::_root(); }
-
-		CoordI		_childPos(const StaticSlot * pSlot) const override;
-		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
-
-		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
-
-		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
-
-
-		void		_childRequestRender(StaticSlot * pSlot) override;
-		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
-		void		_childRequestResize(StaticSlot * pSlot) override;
-
-		Widget *	_prevChild(const StaticSlot * pSlot) const override;
-		Widget *	_nextChild(const StaticSlot * pSlot) const override;
-
-		void		_releaseChild(StaticSlot * pSlot) override;
-		void		_replaceChild(StaticSlot * pSlot, Widget * pNewChild ) override;
 
 		// Overloaded from GeoComponent::Holder
 
@@ -271,12 +234,17 @@ namespace wg
 
 		// Internal
 
-		void			_requestRenderChildren(PackListSlot * pBegin, PackListSlot * pEnd);
+		int				_getInsertionPoint(const Widget * pWidget) const;
+		bool			_hasSortFunction() const { return m_sortFunc != nullptr; }
+		bool			_sortEntries();
 
-		void			_updateChildOfsFrom( PackListSlot* pSlot );
+
+		void			_requestRenderChildren(Slot * pBegin, Slot * pEnd);
+
+		void			_updateChildOfsFrom( Slot* pSlot );
 
 
-		void			_getChildGeo( RectI& geo, const PackListSlot * pSlot ) const;
+		void			_getChildGeo( RectI& geo, const Slot * pSlot ) const;
 		int				_getEntryAt( int pixelofs ) const;
 		RectI			_headerGeo() const;
 

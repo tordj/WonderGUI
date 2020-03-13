@@ -49,7 +49,7 @@ namespace wg
 	* such as size, tint and transparency.
 	*/
 
-	class Capsule : public Container, protected CStandardSlot::Holder
+	class Capsule : public Container
 	{
 	public:
 
@@ -68,46 +68,6 @@ namespace wg
 		Capsule();
 		virtual ~Capsule();
 
-		// Overloaded from SlotHolder
-
-		Container *	_container() override { return this; }
-		RootPanel *	_root() override { return Container::_root(); }
-		Object *	_object() override { return this; }
-		const Object * _object() const override;
-
-		CoordI		_childGlobalPos(const StaticSlot * pSlot) const override { return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible(const StaticSlot * pSlot) const override { return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection(const StaticSlot * pSlot) const override { return Container::_childWindowSection(pSlot); }
-
-		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
-
-		void		_childRequestInView(StaticSlot * pSlot) override { return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
-
-		CoordI		_childPos( const StaticSlot * pSlot ) const override;
-
-		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
-		void		_childRequestResize( StaticSlot * pSlot ) override;
-
-		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
-		Widget *	_nextChild( const StaticSlot * pSlot ) const override;
-
-		void		_releaseChild( StaticSlot * pSlot ) override;
-		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
-
-
-
-
-		// Overloaded from Container
-
-		Widget *	_firstChild() const override;
-		Widget *	_lastChild() const override;
-
-		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
-		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
-
 		// Overloaded from Widget
 
 		int			_matchingHeight(int width) const override;
@@ -115,12 +75,31 @@ namespace wg
 
 		SizeI		_preferredSize() const override;
 
+		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip) override;
+		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode) override;
+		void		_cloneContent(const Widget * _pOrg) override;
+		void		_resize(const SizeI& size) override;
 
-		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
-		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
-		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const SizeI& size ) override;
+		// Overloaded from Container
 
+		Widget *	_firstChild() const override;
+		Widget *	_lastChild() const override;
+		Widget *	_prevChild(const StaticSlot * pSlot) const override;
+		Widget *	_nextChild(const StaticSlot * pSlot) const override;
+
+		CoordI		_childPos( const StaticSlot * pSlot ) const override;
+
+		void		_childRequestRender( StaticSlot * pSlot ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestResize( StaticSlot * pSlot ) override;
+
+		void		_releaseChild( StaticSlot * pSlot ) override;
+		void		_replaceChild(StaticSlot * pSlot, Widget * pWidget) override;
+
+		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
+		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
+
+		//
 
 		class SlotAccess : public CStandardSlot { friend class Capsule; };
 		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }

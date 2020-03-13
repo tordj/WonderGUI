@@ -33,57 +33,6 @@
 
 namespace wg
 {
-	//____ SplitSlot _________________________________________________________
-
-	class SplitSlot : public DynamicSlot
-	{
-		friend class SplitPanel;
-		template<class S, int X> friend class CSlotArray;
-
-	public:
-
-		//.____ Geometry _________________________________________________
-
-		inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
-		inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
-		inline Rect		geo() const { return Util::rawToQpix(m_geo); }
-
-		//.____ Operators __________________________________________
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-	protected:
-		SplitSlot() : DynamicSlot(nullptr) {}
-
-		RectI	m_geo;
-	};
-
-
-	//____ CSplitSlotArray ________________________________________________________
-
-	class CSplitSlotArray;
-	typedef	StrongComponentPtr<CSplitSlotArray>	CSplitSlotArray_p;
-	typedef	WeakComponentPtr<CSplitSlotArray>	CSplitSlotArray_wp;
-
-	class CSplitSlotArray : public CSlotArray<SplitSlot,2>
-	{
-		friend class SplitPanel;
-	public:
-
-		//.____ Misc __________________________________________________________
-
-		inline CSplitSlotArray_p	ptr() { return CSplitSlotArray_p(this); }
-
-	protected:
-
-		class Holder : public CSlotArray<SplitSlot,2>::Holder			/** @private */
-		{
-		};
-
-		CSplitSlotArray(Holder * pHolder) : CSlotArray(pHolder) {}
-	};
-
-
 
 	//____ SplitPanel ___________________________________________________________
 
@@ -91,10 +40,57 @@ namespace wg
 	typedef	StrongPtr<SplitPanel>	SplitPanel_p;
 	typedef	WeakPtr<SplitPanel>	SplitPanel_wp;
 
-	class SplitPanel : public Panel, protected CSplitSlotArray::Holder
+	class SplitPanel : public Panel
 	{
 
 	public:
+
+		//____ Slot _________________________________________________________
+
+		class Slot : public DynamicSlot
+		{
+			friend class SplitPanel;
+			template<class S, int X> friend class CSlotArray;
+
+		public:
+
+			//.____ Geometry _________________________________________________
+
+			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
+			inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
+			inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+
+			//.____ Operators __________________________________________
+
+			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		protected:
+			Slot() : DynamicSlot(nullptr) {}
+
+			RectI	m_geo;
+		};
+
+
+		//____ CSlots ________________________________________________________
+
+		class CSlots;
+		typedef	StrongComponentPtr<CSlots>	CSlots_p;
+		typedef	WeakComponentPtr<CSlots>	CSlots_wp;
+
+		class CSlots : public CSlotArray<Slot, 2>
+		{
+			friend class SplitPanel;
+		public:
+
+			//.____ Misc __________________________________________________________
+
+			inline CSlots_p	ptr() { return CSlots_p(this); }
+
+		protected:
+
+			CSlots(SlotHolder * pHolder) : CSlotArray(pHolder) {}
+		};
+
 
 		//.____ Creation __________________________________________
 
@@ -102,7 +98,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSplitSlotArray			slots;
+		CSlots			slots;
 
 		//.____ Identification __________________________________________
 
@@ -179,23 +175,7 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		// Overloaded from SlotHolder
-
-		Container *	_container() override	{ return this; }
-		RootPanel *	_root() override		{ return Container::_root(); }
-		Object *	_object() override		{ return this; }
-		const Object *	_object() const override { return this; }
-
 		CoordI		_childPos( const StaticSlot * pSlot) const override;
-		CoordI		_childGlobalPos( const StaticSlot * pSlot) const override		{ return Container::_childGlobalPos(pSlot); }
-		bool		_isChildVisible( const StaticSlot * pSlot) const override		{ return Container::_isChildVisible(pSlot); }
-		RectI		_childWindowSection( const StaticSlot * pSlot) const override	{ return Container::_childWindowSection(pSlot); }
-
-		bool		_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childRequestFocus(pSlot, pWidget); }
-		bool		_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Container::_childReleaseFocus(pSlot, pWidget); }
-
-		void		_childRequestInView(StaticSlot * pSlot) override			{ return Container::_childRequestInView(pSlot); }
-		void		_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Container::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
 		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;

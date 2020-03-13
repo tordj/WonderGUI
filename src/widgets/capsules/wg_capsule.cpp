@@ -68,13 +68,6 @@ namespace wg
 		return 0;
 	}
 
-	//____ _object() _________________________________________________________
-
-	const Object * Capsule::_object() const
-	{
-		return this;
-	}
-
 	//____ _matchingHeight() ________________________________________________________
 
 	int Capsule::_matchingHeight( int width ) const
