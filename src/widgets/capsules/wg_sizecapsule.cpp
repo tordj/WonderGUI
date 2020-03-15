@@ -21,6 +21,8 @@
 =========================================================================*/
 
 #include <wg_sizecapsule.h>
+#include <wg_internal.h>
+
 #include <algorithm>
 
 namespace wg
@@ -124,7 +126,7 @@ namespace wg
 
 	SizeI SizeCapsule::_preferredSize() const
 	{
-		if (!_slot()->_widget())
+		if (!slot._widget())
 		{
 			SizeI size = { std::max(0, m_preferred.w), std::max(0, m_preferred.h) };
 			if (m_pSkin)
@@ -171,7 +173,7 @@ namespace wg
 			// Preferred size not set in size capsule.
 			// We take preferred from child and check against our min/max.
 
-			pref = _slot()->_preferredSize();
+			pref = OO(slot)._preferredSize();
 
 			if (pref.w > m_max.w && pref.h > m_max.h)
 			{
@@ -282,8 +284,8 @@ namespace wg
 
 	SizeI SizeCapsule::_minSize() const
 	{
-		if( _slot()->_widget() )
-			return SizeI::max(m_min,_slot()->_minSize());
+		if( slot._widget() )
+			return SizeI::max(m_min,OO(slot)._minSize());
 		else
 			return m_min;
 	}
@@ -292,8 +294,8 @@ namespace wg
 
 	SizeI SizeCapsule::_maxSize() const
 	{
-		if( _slot()->_widget() )
-			return SizeI::min(m_max,_slot()->_maxSize());
+		if( slot._widget() )
+			return SizeI::min(m_max,OO(slot)._maxSize());
 		else
 			return m_max;
 	}
@@ -306,17 +308,17 @@ namespace wg
 		{
 			int h = m_preferred.h;
 
-			if( _slot()->_widget() )
+			if( slot._widget() )
 			{
-				int max = _slot()->_maxSize().h;
-				int min = _slot()->_minSize().h;
+				int max = OO(slot)._maxSize().h;
+				int min = OO(slot)._minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
-		else if( _slot()->_widget() )
+		else if( slot._widget() )
 		{
-			int h = _slot()->_matchingHeight(width);
+			int h = OO(slot)._matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -332,17 +334,17 @@ namespace wg
 		{
 			int w = m_preferred.w;
 
-			if( _slot()->_widget() )
+			if( slot._widget() )
 			{
-				int max = _slot()->_maxSize().w;
-				int min = _slot()->_minSize().w;
+				int max = OO(slot)._maxSize().w;
+				int min = OO(slot)._minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
-		else if( _slot()->_widget() )
+		else if( slot._widget() )
 		{
-			int w = _slot()->_matchingWidth(height);
+			int w = OO(slot)._matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

@@ -37,19 +37,8 @@ namespace wg
 		friend class Widget;
 		friend class SlotIterator;
 		friend class SlotHolder;
-		friend class CSlot;
-		friend class CStaticSlot;
-		friend class DynamicSlot;
-		template<class S> friend class CSlotImpl;
-		template<class S> friend class CSlotVector;
-		template<class S> friend class CDynamicSlotVector;
-		template<class S, int SIZE> friend class CSlotArray;
-
 
 	public:
-		/** @private */
-		using		Holder = SlotHolder;
-
 
 		//.____ Operators __________________________________________
 
@@ -66,11 +55,15 @@ namespace wg
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
 
-		//.____ Geometry _________________________________________________
+		//.____ Geometry ______________________________________________________
 
 		inline Coord	pos() const { return Util::rawToQpix(m_pHolder->_childPos(this)); }
 		inline Size		size() const { return Util::rawToQpix(_size()); }
 		inline Rect		geo() const { return Util::rawToQpix( RectI(m_pHolder->_childPos(this),_size())); }
+
+		//.____ Internal ______________________________________________________
+
+		inline Widget * _widget() const { return m_pWidget; }
 
 	protected:
 		const static bool safe_to_relocate = true;
@@ -144,8 +137,6 @@ namespace wg
 			}
 		}
 
-		inline Widget * _widget() const { return m_pWidget; }
-
 		inline SlotHolder * _holder() { return m_pHolder; }
 		inline const SlotHolder * _holder() const { return m_pHolder; }
 
@@ -172,12 +163,6 @@ namespace wg
 		friend class Widget;
 		friend class SlotIterator;
 		friend class SlotHolder;
-		friend class CSlot;
-		template<class S> friend class CStaticSlotImpl;
-		template<class S> friend class CDynamicSlotImpl;
-		template<class S> friend class CStaticSlotVector;
-		template<class S> friend class CDynamicSlotVector;
-
 
 	public:
 

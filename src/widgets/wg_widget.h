@@ -65,29 +65,7 @@ namespace wg
 
 	class Widget : public Receiver, protected GeoComponent::Holder
 	{
-		friend class MsgRouter;
-		friend class InputHandler;
-
-		friend class RootPanel;
-		friend class FlexPanel;
-		friend class ModalLayer;
-		friend class ScrollPanel;
-		friend class List;
-		friend class PackList;
-		friend class Capsule;
-		friend class Layer;
-		friend class StackPanel;
 		friend class Container;
-		friend class Panel;
-		friend class PackPanel;
-		friend class IStackPanelChildren;
-		friend class ShaderCapsule;
-		friend class PopupLayer;
-		friend class ViewSlot;
-		friend class LambdaPanel;
-		friend class DragNDropLayer;
-		friend class ShadowLayer;
-
 		friend class GeoComponent;
 		friend class StaticSlot;
 		friend class DynamicSlot;
@@ -95,7 +73,6 @@ namespace wg
 		template<class S> friend class CStaticSlotVector;
 		template<class S> friend class CDynamicSlotVector;
 		template<class S, int X> friend class CSlotArray;
-		template<class S, class H> friend class IChildrenSubclass;
 
 	public:
 

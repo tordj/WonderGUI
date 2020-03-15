@@ -23,6 +23,7 @@
 #include <wg_flexpanel.h>
 #include <wg_patches.h>
 #include <wg_util.h>
+#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 
@@ -463,7 +464,7 @@ namespace wg
 		for(Slot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, pCover->m_realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls

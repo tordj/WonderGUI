@@ -47,25 +47,7 @@ namespace wg
 
 	class Container : public Widget, protected SlotHolder
 	{
-		friend class MsgRouter;
-
 		friend class SlotHolder;
-
-		friend class Menu;
-		friend class Menubar;
-		friend class Combobox;
-		friend class PopupOpener;
-
-		friend class RootPanel;
-		friend class FlexPanel;
-		friend class PopupLayer;
-		friend class ModalLayer;
-		friend class DragNDropLayer;
-		friend class ScrollPanel;
-		friend class StackPanel;
-		friend class Capsule;
-		friend class PackList;
-		friend class WidgetSlot;
 
 		public:
 
@@ -168,12 +150,7 @@ namespace wg
 			virtual void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
 			virtual void			_cloneContent( const Widget * _pOrg ) override;
 
-			class SlotAccess : public StaticSlot { friend class Container; };
-			Container::SlotAccess * _access(StaticSlot * pSlot) { return static_cast<SlotAccess*>(pSlot); }
-			const Container::SlotAccess * _access(const StaticSlot * pSlot) const { return static_cast<const SlotAccess*>(pSlot); }
-
-
-			bool			m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
+			bool				m_bSiblingsOverlap;	// Set if children (might be) overlapping each other (special considerations to be taken during rendering).
 
 	};
 

@@ -98,11 +98,6 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		//
-
-		class SlotAccess : public CStandardSlot { friend class Capsule; };
-		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
-		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 	};
 
 

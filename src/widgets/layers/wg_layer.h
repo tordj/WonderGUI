@@ -146,11 +146,6 @@ namespace wg
 		inline Slot * _decLayerSlot( Slot * pSlot, int sizeOf ) const { return (Slot*) (((char*)pSlot)-sizeOf); }
 		inline const Slot * _decLayerSlot( const Slot * pSlot, int sizeOf ) const { return (const Slot*) (((char*)pSlot)-sizeOf); }
 
-		class SlotAccess : public CStandardSlot { friend class Layer; };
-		SlotAccess * _mainSlot() { return static_cast<SlotAccess*>(&mainSlot); }
-		const SlotAccess * _mainSlot() const { return static_cast<const SlotAccess*>(&mainSlot); }
-
-
 	};
 
 

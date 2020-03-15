@@ -23,6 +23,7 @@
 #include <wg_base.h>
 #include <wg_rootpanel.h>
 #include <wg_container.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -328,7 +329,7 @@ namespace wg
 		// common ancestor .
 
 		Widget * pFirstAlreadyMarked = 0;
-		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = OO(pWidget)->_parent() )
 		{
 			int ofs = _widgetPosInList( pWidget, m_vEnteredWidgets );
 			if( ofs >= 0 )
@@ -357,7 +358,7 @@ namespace wg
 		// Replace the old list with a new one.
 
 		m_vEnteredWidgets.clear();
-		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->_parent() )
+		for( Widget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = OO(pWidget)->_parent() )
 			m_vEnteredWidgets.push_back( pWidget );
 
 		// Return first already marked, calling function might need it.

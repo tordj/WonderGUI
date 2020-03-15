@@ -84,9 +84,6 @@ namespace wg
 		int		_matchingWidth(int height) const override;
 
 	private:
-		class SlotAccess : public CStandardSlot { friend class SizeCapsule; };
-		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
-		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 
 		SizeI			m_min;
 		SizeI			m_max = { INT_MAX,INT_MAX };

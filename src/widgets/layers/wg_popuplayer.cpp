@@ -27,6 +27,7 @@
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
+#include <wg_internal.h>
 #include <wg_cstaticslotvector.impl.h>
 
 #include <algorithm>
@@ -300,7 +301,7 @@ namespace wg
 				if( pSlot->m_geo.contains( ofs ) )
 				{
 					if( pSlot->_widget()->isContainer() )
-						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
+						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					else if( pSlot->_markTest( ofs - pSlot->m_geo.pos() ) )
 						pResult = pSlot->_widget();
 				}
@@ -314,7 +315,7 @@ namespace wg
 				Slot * pSlot = popupSlots._last();
 				if( pSlot->m_pOpener )
 				{
-					Widget * pOpener = pSlot->m_pOpener.rawPtr();
+					OWidget * pOpener = OO(pSlot->m_pOpener.rawPtr());
 
 					CoordI 	absPos 		= ofs + _globalPos();
 					RectI	openerGeo 	= Util::qpixToRaw(pOpener->globalGeo());
@@ -367,7 +368,7 @@ namespace wg
 			while (pCover >= popupSlots._begin())
 			{
 				if (pCover->m_geo.intersectsWith(rect) && pCover->m_state != Slot::State::OpeningDelay && pCover->m_state != Slot::State::Opening && pCover->m_state != Slot::State::Closing)
-					pCover->_widget()->_maskPatches(patches, pCover->m_geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
+					OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectI(0, 0, INT_MAX, INT_MAX), _getBlendMode());
 
 				pCover--;
 			}
@@ -431,7 +432,7 @@ namespace wg
 
 			p->clipPop = patchesToClipList(pDevice, p->geo, patches);
 			if( p->pSlot->m_state != Slot::State::Opening && p->pSlot->m_state != Slot::State::Closing )
-				p->pSlot->_widget()->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
+				OO(p->pSlot->_widget())->_maskPatches(patches, p->geo, p->geo, pDevice->blendMode());		//TODO: Need some optimizations here, grandchildren can be called repeatedly! Expensive!
 
 			if (patches.isEmpty())
 				break;
@@ -439,10 +440,10 @@ namespace wg
 
 		// Any dirt left in patches is for base child, lets render that first
 
-		if (_mainSlot()->_widget() && !patches.isEmpty())
+		if ( mainSlot._widget() && !patches.isEmpty())
 		{
 			ClipPopData popData = patchesToClipList(pDevice, _window, patches);
-			_mainSlot()->_widget()->_render(pDevice, _canvas, _window);
+			OO(mainSlot._widget())->_render(pDevice, _canvas, _window);
 			popClipList(pDevice, popData);
 		}
 
@@ -461,12 +462,12 @@ namespace wg
 				tint.a = 255 - (255 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
 			if (tint.a == 255)
-				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
+				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 			else
 			{
 				Color oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
-				p->pSlot->_widget()->_render(pDevice, p->geo, p->geo);
+				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);
 			}
 			popClipList(pDevice,p->clipPop);
@@ -644,8 +645,8 @@ namespace wg
 				{
 					// Trace hierarchy from marked to one of our children.
 
-					while (pMarked->_parent() != this)
-						pMarked = pMarked->_parent();
+					while (OO(pMarked)->_parent() != this)
+						pMarked = OO(pMarked)->_parent();
 
 					//
 
@@ -691,7 +692,7 @@ namespace wg
 				Slot * pSlot = popupSlots._first();
 				if (pSlot->m_pOpener)
 				{
-					Widget * pOpener = pSlot->m_pOpener.rawPtr();
+					OWidget * pOpener = OO(pSlot->m_pOpener.rawPtr());
 
 					CoordI 	absPos = static_cast<MouseReleaseMsg*>(_pMsg)->pointerPosRaw();
 					Rect	openerGeo = pOpener->_globalGeo();
@@ -767,7 +768,7 @@ namespace wg
 
 		Widget * pWidget = popupSlots._first()->_widget();
 
-		_childRequestFocus( pWidget->_slot(), pWidget );
+		_childRequestFocus(popupSlots._first(), pWidget );
 	}
 
 	//____ _restoreKeyboardFocus() _________________________________________________

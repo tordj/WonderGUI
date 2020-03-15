@@ -22,6 +22,7 @@
 
 #include <wg_layer.h>
 #include <wg_patches.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -56,8 +57,8 @@ namespace wg
 
 	int Layer::_matchingHeight( int width ) const
 	{
-		if( _mainSlot()->_widget() )
-			return _mainSlot()->_matchingHeight( width );
+		if( mainSlot._widget() )
+			return OO(mainSlot)._matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -66,8 +67,8 @@ namespace wg
 
 	int Layer::_matchingWidth( int height ) const
 	{
-		if( _mainSlot()->_widget() )
-			return _mainSlot()->_matchingWidth( height );
+		if( mainSlot._widget() )
+			return OO(mainSlot)._matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -76,8 +77,8 @@ namespace wg
 
 	SizeI Layer::_preferredSize() const
 	{
-		if( _mainSlot()->_widget() )
-			return _mainSlot()->_preferredSize();
+		if( mainSlot._widget() )
+			return OO(mainSlot)._preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -103,7 +104,7 @@ namespace wg
 		while( pCover <  pEnd )
 		{
 			if( pCover->m_geo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, pCover->m_geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, pCover->m_geo, RectI(0,0,INT_MAX,INT_MAX ), _getBlendMode() );
 
 			pCover = _incLayerSlot(pCover,incNext);
 		}
@@ -123,15 +124,15 @@ namespace wg
 		if (p != _endLayerSlots())
 			return p->_widget();
 
-		return _mainSlot()->_widget();
+		return mainSlot._widget();
 	}
 
 	//____ _lastChild() ____________________________________________________________
 
 	Widget* Layer::_lastChild() const
 	{
-		if (_mainSlot()->_widget())
-			return _mainSlot()->_widget();
+		if (mainSlot._widget())
+			return mainSlot._widget();
 		else
 		{
 			const Slot * pSlot = _endLayerSlots();
@@ -155,7 +156,7 @@ namespace wg
 			package.geo = p->m_geo;
 			package.pSlot = p;
 		}
-		else if (_mainSlot()->_widget())
+		else if (mainSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
 			package.pSlot = &mainSlot;
@@ -182,7 +183,7 @@ namespace wg
 			package.geo = ((Slot*)p)->m_geo;
 			package.pSlot = p;
 		}
-		else if (_mainSlot()->_widget())
+		else if (mainSlot._widget())
 		{
 			package.geo = RectI(0, 0, m_size);
 			package.pSlot = &mainSlot;
@@ -204,7 +205,7 @@ namespace wg
 	{
 		if (pSlot == &mainSlot)
 		{
-			_mainSlot()->_setWidget(nullptr);
+			OO(mainSlot)._setWidget(nullptr);
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -216,9 +217,9 @@ namespace wg
 	{
 		if (pSlot == &mainSlot)
 		{
-			_mainSlot()->_setWidget(pNewWidget);
+			OO(mainSlot)._setWidget(pNewWidget);
 			if( pNewWidget )
-				pNewWidget->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
+				OO(pNewWidget)->_resize(m_size);			//TODO: Should be content size here (and in all other _setWidget() methods?)
 			_onRequestRender(RectI(0, 0, m_size), 0);
 			_requestResize();
 		}
@@ -230,8 +231,8 @@ namespace wg
 	{
 		Container::_resize(size);
 
-		if (_mainSlot()->_widget())
-			_mainSlot()->_widget()->_resize(size);
+		if ( mainSlot._widget())
+			OO(mainSlot._widget())->_resize(size);
 	}
 
 
@@ -301,7 +302,7 @@ namespace wg
 		if (p < _endLayerSlots())
 			return p->_widget();
 
-		return _mainSlot()->_widget();
+		return mainSlot._widget();
 	}
 
 

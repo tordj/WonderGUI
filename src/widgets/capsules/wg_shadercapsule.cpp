@@ -23,6 +23,7 @@
 #include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -99,7 +100,7 @@ namespace wg
 		if( m_pSkin )
 			m_pSkin->_render( pDevice, _canvas, m_state );
 
-		if (!_slot()->_widget())
+		if (!slot._widget())
 			return;
 
 
@@ -122,11 +123,11 @@ namespace wg
 		if (canvas != _canvas)
 		{
 			auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
-			_slot()->_widget()->_render(pDevice, canvas, canvas );
+			OO(slot._widget())->_render(pDevice, canvas, canvas );
 			popClipList(pDevice, savedClipData);
 		}
 		else
-			_slot()->_widget()->_render( pDevice, canvas, canvas );
+			OO(slot._widget())->_render( pDevice, canvas, canvas );
 
 		// Reset old blend mode and tint color
 

@@ -177,10 +177,6 @@ namespace wg
 		void			_removeSlots(int ofs, int nb);
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
 
-		class MainSlotAccess : public CStandardSlot { friend class PopupLayer; };
-		MainSlotAccess * _mainSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
-		const MainSlotAccess * _mainSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
-
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 
 		RouteId			m_tickRouteId = 0;

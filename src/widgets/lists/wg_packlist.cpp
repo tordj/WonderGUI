@@ -26,6 +26,7 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
+#include <wg_internal.h>
 
 #include <wg_cselectableslotvector.impl.h>
 
@@ -295,7 +296,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				static_cast<const Slot*>(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+				OO(static_cast<const Slot*>(child.pSlot)->_widget())->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}
@@ -389,7 +390,7 @@ namespace wg
 				{
 					ClipPopData clipPop = limitClipList(pDevice, rawToPixels(canvas));
 					if( pDevice->clipListSize() > 0 )
-						static_cast<const Slot*>(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
+						OO(static_cast<const Slot*>(child.pSlot)->_widget())->_render(pDevice, canvas, canvas);
 					popClipList(pDevice,clipPop);
 				}
 				_nextSlotWithGeo( child );
@@ -453,7 +454,7 @@ namespace wg
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_resize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeI(newEntryLength, newContentBreadth) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 				else
 				{
@@ -462,7 +463,7 @@ namespace wg
 					pSlot->m_length = newEntryLength;
 					ofs += newEntryLength;
 
-					pWidget->_resize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
+					OO(pWidget)->_resize( SizeI(newContentBreadth, newEntryLength) );				//TODO: Should be able to do a _setSize() that prevents child from doing a _requestRender().
 				}
 			}
 			m_contentLength = ofs;
@@ -773,7 +774,7 @@ namespace wg
 
 				RectI childGeo;
 				_getChildGeo(childGeo, pSlot + i);
-				pChild->_resize(childGeo);
+				OO(pChild)->_resize(childGeo);
 			}
 		}
 
@@ -916,7 +917,7 @@ namespace wg
 				{
 					if( pSlot->_widget()->isContainer() )
 					{
-						pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
+						pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - childGeo.pos(), mode );
 					}
 					else if( mode == SearchMode::Geometry || pSlot->_markTest( ofs - childGeo.pos() ) )
 					{
@@ -1247,7 +1248,7 @@ namespace wg
 
 				RectI childGeo;
 				_getChildGeo(childGeo,pSlot);
-				pSlot->_widget()->_resize(childGeo);
+				OO(pSlot->_widget())->_resize(childGeo);
 			}
 		}
 

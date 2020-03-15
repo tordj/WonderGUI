@@ -26,6 +26,7 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
+#include <wg_internal.h>
 
 #include <wg_cdynamicslotvector.impl.h>
 
@@ -209,8 +210,8 @@ namespace wg
 
 	int ModalLayer::_matchingHeight( int width ) const
 	{
-		if( _baseSlot()->_widget() )
-			return _baseSlot()->_matchingHeight( width );
+		if( mainSlot._widget() )
+			return OO(mainSlot)._matchingHeight( width );
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -219,8 +220,8 @@ namespace wg
 
 	int ModalLayer::_matchingWidth( int height ) const
 	{
-		if( _baseSlot()->_widget() )
-			return _baseSlot()->_matchingWidth( height );
+		if( mainSlot._widget() )
+			return OO(mainSlot)._matchingWidth( height );
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -229,8 +230,8 @@ namespace wg
 
 	SizeI ModalLayer::_preferredSize() const
 	{
-		if( _baseSlot()->_widget() )
-			return _baseSlot()->_preferredSize();
+		if( mainSlot._widget() )
+			return OO(mainSlot)._preferredSize();
 		else
 			return SizeI(1,1);
 	}
@@ -250,7 +251,7 @@ namespace wg
 
 				if( pSlot->_widget()->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
+					Widget * pResult = static_cast<OContainer*>(pSlot->_widget())->_findWidget( ofs - pSlot->m_geo.pos(), mode );
 					if( pResult )
 						return pResult;
 				}
@@ -262,16 +263,18 @@ namespace wg
 						return this;
 				}
 			}
-			else if( _baseSlot()->_widget() )
+			else if( mainSlot._widget() )
 			{
-				if( _baseSlot()->_widget()->isContainer() )
+				Widget * pWidget = mainSlot._widget();
+
+				if( pWidget->isContainer() )
 				{
-					Widget * pResult = static_cast<Container*>(_baseSlot()->_widget())->_findWidget( ofs, mode );
+					Widget * pResult = static_cast<OContainer*>(pWidget)->_findWidget( ofs, mode );
 					if( pResult )
 						return pResult;
 				}
 				else
-					return _baseSlot()->_widget();
+					return pWidget;
 			}
 
 			return nullptr;
@@ -297,20 +300,20 @@ namespace wg
 
 		Widget * p = pFocused;
 		while( p && p->parent() && p->parent().rawPtr() != this )
-			p = p->_parent();
+			p = OO(p)->_parent();
 
-		if( p && p->_parent() != this )
+		if( p && OO(p)->_parent() != this )
 			return;								// Focus belongs to a Widget that is not a descendant to us,
 												// so we can't save and shouldn't steal focus.
 
 		// Save old focus so we can return it properly in the future.
 		if( p )
 		{
-			if( p == _baseSlot()->_widget() )
+			if( p == mainSlot._widget() )
 				m_pBaseKeyFocus = pFocused;
 			else
 			{
-				Slot * pSlot = static_cast<Slot*>(p->_slot());
+				Slot * pSlot = static_cast<Slot*>(OO(p)->_slot());
 				pSlot->m_pKeyFocus = pFocused;
 			}
 		}
@@ -331,7 +334,7 @@ namespace wg
 			pSlot->m_pKeyFocus = nullptr;								// Needs to be cleared for the future.
 			pBranch = pSlot;
 		}
-		else if( _baseSlot()->_widget() )
+		else if( mainSlot._widget() )
 		{
 			pSavedFocus = m_pBaseKeyFocus.rawPtr();
 			m_pBaseKeyFocus = nullptr;								// Needs to be cleared for the future.
@@ -341,12 +344,12 @@ namespace wg
 		// Verify that saved focus still is within branch and is not hidden
 
 		Widget * pW = pSavedFocus;
-		while( pW && pW->_parent() != this )
-			pW = pW->_parent();
+		while( pW && OO(pW)->_parent() != this )
+			pW = OO(pW)->_parent();
 
 		if( pW )
 		{
-			StaticSlot * pSlot = (StaticSlot*) pW->_slot();
+			StaticSlot * pSlot = (StaticSlot*) OO(pW)->_slot();
 			if( pSlot != pBranch )
 				pSavedFocus = 0;				// Previously focused Widget is no longer a child of focused branch.
 		}

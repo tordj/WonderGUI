@@ -77,9 +77,6 @@ namespace wg
 
 
 	private:
-		class SlotAccess : public CStandardSlot { friend class ShaderCapsule; };
-		SlotAccess * _slot() { return static_cast<SlotAccess*>(&slot); }
-		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
 
 		Color			m_tintColor;
 		BlendMode		m_tintMode;

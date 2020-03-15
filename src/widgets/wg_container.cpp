@@ -27,6 +27,7 @@
 #include <wg_patches.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -120,7 +121,7 @@ namespace wg
 
 	RectI Container::_childWindowSection( const StaticSlot * pSlot ) const
 	{
-		return RectI( 0,0, _access(pSlot)->_size() );
+		return RectI( 0,0, OO(pSlot)->_size() );
 	}
 
 	//____ _container() _____________________________________________________________
@@ -169,7 +170,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			RectI area( _childPos( pSlot ), _access(pSlot)->_size() );
+			RectI area( _childPos( pSlot ), OO(pSlot)->_size() );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}
@@ -262,7 +263,7 @@ namespace wg
 		{
 			if( child.geo.contains( ofs ) )
 			{
-				Widget * pWidget = _access(child.pSlot)->_widget();
+				Widget * pWidget = OO(child.pSlot)->_widget();
 
 				if (pWidget->isContainer())
 				{
@@ -270,7 +271,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || _access(child.pSlot)->_markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || OO(child.pSlot)->_markTest( ofs - child.geo.pos() ) )
 					return pWidget;
 			}
 			_nextSlotWithGeo( child );
@@ -377,7 +378,7 @@ namespace wg
 				RectI geo = child.geo + _canvas.pos();
 
 				if( geo.intersectsWith( dirtBounds ) )
-					renderList.push_back( WidgetRenderContext(_access(child.pSlot)->_widget(), geo ) );
+					renderList.push_back( WidgetRenderContext(OO(child.pSlot)->_widget(), geo ) );
 
 				_nextSlotWithGeo( child );
 			}
@@ -426,7 +427,7 @@ namespace wg
 					ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
 
 					if( pDevice->clipListSize() > 0 )
-						_access(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
+						OO(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);
 
 					popClipList( pDevice, popData );
 				}
@@ -459,7 +460,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				_access(child.pSlot)->_widget()->_collectPatches( container, child.geo + geo.pos(), clip );
+				OO(child.pSlot)->_widget()->_collectPatches( container, child.geo + geo.pos(), clip );
 				_nextSlotWithGeo( child );
 			}
 		}
@@ -479,7 +480,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				_access(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
+				OO(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), clip, blendMode );
 				_nextSlotWithGeo( child );
 			}
 		}

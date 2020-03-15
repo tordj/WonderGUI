@@ -24,6 +24,7 @@
 
 #include <wg_packpanel.h>
 #include <wg_base.h>
+#include <wg_internal.h>
 
 #include <wg_cpaddedslotvector.impl.h>
 
@@ -748,7 +749,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->_widget()->_resize( geo.size() );
+							OO(p->_widget())->_resize( geo.size() );
 							p->m_bResizeRequired = false;
 						}
 
@@ -775,7 +776,7 @@ namespace wg
 
 				if( p->m_bResizeRequired )
 				{
-					p->_widget()->_resize(geo.size());
+					OO(p->_widget())->_resize(geo.size());
 					p->m_bResizeRequired = false;
 				}
 			}
@@ -830,7 +831,7 @@ namespace wg
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
-							p->_widget()->_resize( geo.size() );
+							OO(p->_widget())->_resize( geo.size() );
 							p->m_bResizeRequired = false;
 						}
 					}
@@ -857,7 +858,7 @@ namespace wg
 
 				if (p->m_bResizeRequired)
 				{
-					p->_widget()->_resize(geo.size());
+					OO(p->_widget())->_resize(geo.size());
 					p->m_bResizeRequired = false;
 				}
 			}

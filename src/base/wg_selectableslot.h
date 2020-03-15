@@ -33,8 +33,6 @@ namespace wg
 
 	class SelectableSlot : public DynamicSlot
 	{
-		template<class S> friend class CDynamicSlotVector;
-		template<class S> friend class CSelectableSlotVector;
 	public:
 
 		//____ Holder _________________________________________________________
@@ -65,8 +63,8 @@ namespace wg
 		SelectableSlot& operator=(SelectableSlot&& o) = default;
 
 
-		inline SlotHolder * _holder() { return static_cast<Holder*>(m_pHolder); }
-		inline const SlotHolder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(m_pHolder); }
+		inline const SlotHolder * _holder() const { return static_cast<SlotHolder*>(m_pHolder); }
 
 		bool		m_bVisible = false;
 		bool		m_bSelected = false;

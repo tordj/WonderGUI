@@ -25,6 +25,7 @@
 #include <wg_popuplayer.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -177,7 +178,7 @@ namespace wg
 					else
 					{
 						_open();
-						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, _parent()->_getPopupLayer());
+						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, OO(_parent())->_getPopupLayer());
 						m_bPressed = false;		// We have yielded our press...
 					}
 				}
@@ -271,7 +272,7 @@ namespace wg
 
 	void PopupOpener::_open()
 	{
-		auto pLayer = _parent()->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pushFront(m_pPopup, this, rawToQpix(_globalGeo()), m_attachPoint, m_bOpenOnHover );
@@ -284,7 +285,7 @@ namespace wg
 
 	void PopupOpener::_close()
 	{
-		auto pLayer = _parent()->_getPopupLayer();
+		auto pLayer = OO(_parent())->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
 			pLayer->popupSlots.pop(m_pPopup.rawPtr());

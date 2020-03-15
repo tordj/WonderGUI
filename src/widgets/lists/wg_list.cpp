@@ -25,6 +25,7 @@
 #include <wg_cicondisplay.h>
 #include <wg_ctextdisplay.h>
 #include <wg_gfxdevice.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -146,7 +147,7 @@ namespace wg
 					RectI geo;
 					if( m_pHoveredChild )
 					{
-						_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
+						_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
 						_requestRender(geo);
 					}
 
@@ -163,7 +164,7 @@ namespace wg
 				if( m_pHoveredChild && !pEntry )
 				{
 					RectI geo;
-					_getEntryGeo( geo, (Slot*) m_pHoveredChild->_slot() );
+					_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
 				}
@@ -210,7 +211,7 @@ namespace wg
 								{
 									// Select range from focused to clicked entry.
 
-									Slot * pFocused = (Slot*) m_pFocusedChild->_slot();
+									Slot * pFocused = (Slot*) OO(m_pFocusedChild)->_slot();
 									Slot * pBeginSel = wg::min( pEntry, pFocused );
 									Slot * pEndSel = _nextSlot(wg::max( pEntry, pFocused ));
 									_selectSlots( pBeginSel, pEndSel, true );
@@ -358,7 +359,7 @@ namespace wg
 
 				State	state = p->_widget()->state();
 				state.setSelected(bSelected);
-				p->_widget()->_setState( state );
+				OO(p->_widget())->_setState( state );
 
 				if( bPostMsg )
 				{
@@ -438,7 +439,7 @@ namespace wg
 				pSlot->m_bSelected = !pSlot->m_bSelected;
 				State	state = pSlot->_widget()->state();
 				state.setSelected(pSlot->m_bSelected);
-				pSlot->_widget()->_setState(state);
+				OO(pSlot->_widget())->_setState(state);
 
 				if (bPostMsg)
 				{

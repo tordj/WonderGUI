@@ -33,15 +33,13 @@ namespace wg
 
 	class PaddedSlot : public DynamicSlot
 	{
-		template<class S> friend class CDynamicSlotVector;
-		template<class S> friend class CPaddedSlotVector;
 	public:
 
 //		void		setPadding(const BorderI& padding);
 //		inline const BorderI& padding() const { return m_padding; }
 
 		/** @private */
-		PaddedSlot(Holder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {} 
+		PaddedSlot(SlotHolder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {} 
 
 		//.____ Appearance ____________________________________________________
 
@@ -52,7 +50,7 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void			setPadding( const Border& padding) { static_cast<Holder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
+		void			setPadding( const Border& padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
 		inline Border	padding() const { return Util::rawToQpix(m_padding); }
 
 		//.____ Operators __________________________________________
@@ -63,8 +61,8 @@ namespace wg
 		PaddedSlot(PaddedSlot&& o) = default;
 		PaddedSlot& operator=(PaddedSlot&& o) = default;
 
-		inline Holder * _holder() { return static_cast<Holder*>(m_pHolder); }
-		inline const Holder * _holder() const { return static_cast<Holder*>(m_pHolder); }
+		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(m_pHolder); }
+		inline const SlotHolder * _holder() const { return static_cast<SlotHolder*>(m_pHolder); }
 
 		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
 		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }

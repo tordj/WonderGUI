@@ -28,6 +28,7 @@
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
 #include <wg_image.h>
+#include <wg_internal.h>
 
 
 
@@ -77,16 +78,18 @@ namespace wg
 		// Widget being dragged is totally transparent to the mouse, so we just
 		// forward to our child.
 
-		if( _baseSlot()->_widget() )
+		if( mainSlot._widget() )
 		{
-			if (_baseSlot()->_widget()->isContainer())
+			Widget * pWidget = mainSlot._widget();
+
+			if (pWidget->isContainer())
 			{
-				Widget * pRes = static_cast<Container*>(_baseSlot()->_widget())->_findWidget(ofs, mode);
+				Widget * pRes = static_cast<OContainer*>(pWidget)->_findWidget(ofs, mode);
 				if (pRes)
 					return pRes;
 			}
-			else if (mode == SearchMode::Geometry || _baseSlot()->_markTest(ofs))
-				return _baseSlot()->_widget();
+			else if (mode == SearchMode::Geometry || OO(mainSlot)._markTest(ofs))
+				return mainSlot._widget();
 		}
 		else if( mode == SearchMode::Geometry )
 			return this;
@@ -530,7 +533,7 @@ namespace wg
 			pDevice->setClipList(1, &noClip);
 			pDevice->setCanvas(pCanvas);
 			pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
-			m_pPicked->_render(pDevice, sz, sz);
+			OO(m_pPicked)->_render(pDevice, sz, sz);
 			pDevice->setCanvas(pOldCanvas);
 			pDevice->setTintColor(oldTint);
 			pDevice->setClipList(nOldClip, pOldClip);

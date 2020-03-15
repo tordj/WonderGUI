@@ -181,12 +181,6 @@ namespace wg
 		const Layer::Slot * _endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		//
-
-		class MainSlotAccess : public CStandardSlot { friend class ModalLayer; };
-		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
-		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
-
 		Widget_wp			m_pBaseKeyFocus;
 	};
 

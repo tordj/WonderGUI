@@ -26,6 +26,7 @@
 #include <wg_patches.h>
 #include <wg_gfxdevice.h>
 #include <wg_slot.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -107,7 +108,7 @@ namespace wg
 
 				while(child.pSlot)
 				{
-					_access(child.pSlot)->_widget()->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
+					OO(child.pSlot->_widget())->_maskPatches( patches, child.geo + geo.pos(), myClip, blendMode );
 					_nextSlotWithGeo( child );
 				}
 				break;

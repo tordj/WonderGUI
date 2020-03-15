@@ -183,10 +183,6 @@ namespace wg
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
 
-		class SlotAccess : public CStandardSlot { friend class RootPanel; };
-		SlotAccess *		_slot() { return static_cast<SlotAccess*>(&slot); }
-		const SlotAccess * _slot() const { return static_cast<const SlotAccess*>(&slot); }
-
 		Patches				m_dirtyPatches;		// Dirty patches that needs to be rendered.
 		Patches				m_updatedPatches;	// Patches that were updated in last rendering session.
 

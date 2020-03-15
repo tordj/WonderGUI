@@ -189,9 +189,6 @@ namespace wg
 			inline ScrollPanel * _holder() { return static_cast<ScrollPanel*>(m_pHolder); }
 			inline const Holder * _holder() const { return static_cast<ScrollPanel*>(m_pHolder); }
 
-			//	inline ViewSlot * _slot() { return static_cast<ViewSlot*>(m_pSlot); }
-			//		inline const ViewSlot * _slot() const { return static_cast<ViewSlot*>(m_pSlot); }
-
 		};
 
 

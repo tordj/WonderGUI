@@ -24,6 +24,7 @@
 #include <wg_stackpanel.h>
 #include <wg_util.h>
 #include <wg_patches.h>
+#include <wg_internal.h>
 
 #include <wg_cpaddedslotvector.impl.h>
 
@@ -313,7 +314,7 @@ namespace wg
 		{
 			RectI geo = _childGeo(pCover);
 			if( pCover->m_bVisible && geo.intersectsWith( rect ) )
-				pCover->_widget()->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
@@ -421,7 +422,7 @@ namespace wg
 			if( !pSlot[i].m_bVisible )
 			{
 				pSlot[i].m_bVisible = true;
-				pSlot[i]._widget()->_resize(_childGeo(pSlot).size() );
+				OO(pSlot[i]._widget())->_resize(_childGeo(pSlot).size() );
 				_childRequestRender( pSlot + i );
 			}
 		}
@@ -524,7 +525,7 @@ namespace wg
 		while( pSlot != pEnd )
 		{
 			if( pSlot->m_bVisible )
-				pSlot->_widget()->_resize( _childGeo(pSlot) );
+				OO(pSlot->_widget())->_resize( _childGeo(pSlot) );
 			pSlot++;
 		}
 	}
