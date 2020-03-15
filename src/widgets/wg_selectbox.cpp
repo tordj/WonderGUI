@@ -304,7 +304,7 @@ namespace wg
 
 	int SelectBox::_findEntry(const CoordI& ofsInListPanel, CoordI * pOfsOut)
 	{
-		RectI contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : m_pListCanvas->m_size;
+		RectI contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : RectI(m_pListCanvas->m_size);
 
 		if (contentRect.contains(ofsInListPanel))
 		{
@@ -496,7 +496,7 @@ namespace wg
 
 			if (entryIdx >= 0)
 			{
-				RectI contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : m_pListCanvas->m_size;
+				RectI contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : RectI(m_pListCanvas->m_size);
 				RectI entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
 
 				return m_pEntrySkin->_markTest(ofsInEntry, entryGeo, _entryState(entryIdx), m_pListCanvas->m_markOpacity);

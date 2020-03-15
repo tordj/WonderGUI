@@ -32,6 +32,8 @@
 namespace wg
 {
 
+	class SelectBox;
+	
 	//____ SelectBoxEntry ________________________________________________________
 
 	class SelectBoxEntry : private Text
@@ -153,8 +155,8 @@ namespace wg
 		State		_entryState(int idx);
 		int			_findEntry(const CoordI& ofsInListPanel, CoordI * pOfsOut = 0);
 
-		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper().rawPtr(); }
-		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper().rawPtr();  }
+		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper(); }
+		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper();  }
 
 		//
 		
