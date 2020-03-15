@@ -256,6 +256,25 @@
 		1767530223C0E4790040B4FF /* wg_cshadows.h in Headers */ = {isa = PBXBuildFile; fileRef = 176752DE23C0E4780040B4FF /* wg_cshadows.h */; };
 		1767530323C0E4790040B4FF /* wg_cdynamicslotarray.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176752DF23C0E4780040B4FF /* wg_cdynamicslotarray.impl.h */; };
 		1767530423C0E4790040B4FF /* wg_ctext.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176752E023C0E4780040B4FF /* wg_ctext.cpp */; };
+		176817CB241E420400D03076 /* wg_cpaddedslotvector.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C0241E420200D03076 /* wg_cpaddedslotvector.h */; };
+		176817CC241E420400D03076 /* wg_cselectableslotvector.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C1241E420300D03076 /* wg_cselectableslotvector.h */; };
+		176817CD241E420500D03076 /* wg_cpaddedslotvector.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C2241E420300D03076 /* wg_cpaddedslotvector.impl.h */; };
+		176817CE241E420500D03076 /* wg_cstaticslotvector.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C3241E420300D03076 /* wg_cstaticslotvector.impl.h */; };
+		176817CF241E420500D03076 /* wg_cslotarray.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C4241E420300D03076 /* wg_cslotarray.h */; };
+		176817D0241E420500D03076 /* wg_cvector.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C5241E420400D03076 /* wg_cvector.h */; };
+		176817D1241E420500D03076 /* wg_cdynamicslotvector.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C6241E420400D03076 /* wg_cdynamicslotvector.h */; };
+		176817D2241E420500D03076 /* wg_cdynamicslotvector.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C7241E420400D03076 /* wg_cdynamicslotvector.impl.h */; };
+		176817D3241E420500D03076 /* wg_cselectableslotvector.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C8241E420400D03076 /* wg_cselectableslotvector.impl.h */; };
+		176817D4241E420500D03076 /* wg_cstaticslotvector.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817C9241E420400D03076 /* wg_cstaticslotvector.h */; };
+		176817D5241E420500D03076 /* wg_cvector.impl.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817CA241E420400D03076 /* wg_cvector.impl.h */; };
+		176817D8241E421F00D03076 /* wg_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817D6241E421E00D03076 /* wg_internal.h */; };
+		176817D9241E421F00D03076 /* wg_slotiterator.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817D7241E421E00D03076 /* wg_slotiterator.h */; };
+		176817DC241E423100D03076 /* wg_lambdaskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176817DA241E423100D03076 /* wg_lambdaskin.cpp */; };
+		176817DD241E423100D03076 /* wg_lambdaskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817DB241E423100D03076 /* wg_lambdaskin.h */; };
+		176817E2241E424A00D03076 /* wg_sidecanvas.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176817DE241E424900D03076 /* wg_sidecanvas.cpp */; };
+		176817E3241E424A00D03076 /* wg_selectbox.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817DF241E424900D03076 /* wg_selectbox.h */; };
+		176817E4241E424A00D03076 /* wg_selectbox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176817E0241E424900D03076 /* wg_selectbox.cpp */; };
+		176817E5241E424A00D03076 /* wg_sidecanvas.h in Headers */ = {isa = PBXBuildFile; fileRef = 176817E1241E424900D03076 /* wg_sidecanvas.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -509,6 +528,25 @@
 		176752DE23C0E4780040B4FF /* wg_cshadows.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cshadows.h; sourceTree = "<group>"; };
 		176752DF23C0E4780040B4FF /* wg_cdynamicslotarray.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cdynamicslotarray.impl.h; sourceTree = "<group>"; };
 		176752E023C0E4780040B4FF /* wg_ctext.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_ctext.cpp; sourceTree = "<group>"; };
+		176817C0241E420200D03076 /* wg_cpaddedslotvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cpaddedslotvector.h; sourceTree = "<group>"; };
+		176817C1241E420300D03076 /* wg_cselectableslotvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cselectableslotvector.h; sourceTree = "<group>"; };
+		176817C2241E420300D03076 /* wg_cpaddedslotvector.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cpaddedslotvector.impl.h; sourceTree = "<group>"; };
+		176817C3241E420300D03076 /* wg_cstaticslotvector.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cstaticslotvector.impl.h; sourceTree = "<group>"; };
+		176817C4241E420300D03076 /* wg_cslotarray.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cslotarray.h; sourceTree = "<group>"; };
+		176817C5241E420400D03076 /* wg_cvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cvector.h; sourceTree = "<group>"; };
+		176817C6241E420400D03076 /* wg_cdynamicslotvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cdynamicslotvector.h; sourceTree = "<group>"; };
+		176817C7241E420400D03076 /* wg_cdynamicslotvector.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cdynamicslotvector.impl.h; sourceTree = "<group>"; };
+		176817C8241E420400D03076 /* wg_cselectableslotvector.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cselectableslotvector.impl.h; sourceTree = "<group>"; };
+		176817C9241E420400D03076 /* wg_cstaticslotvector.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cstaticslotvector.h; sourceTree = "<group>"; };
+		176817CA241E420400D03076 /* wg_cvector.impl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_cvector.impl.h; sourceTree = "<group>"; };
+		176817D6241E421E00D03076 /* wg_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_internal.h; sourceTree = "<group>"; };
+		176817D7241E421E00D03076 /* wg_slotiterator.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_slotiterator.h; sourceTree = "<group>"; };
+		176817DA241E423100D03076 /* wg_lambdaskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_lambdaskin.cpp; sourceTree = "<group>"; };
+		176817DB241E423100D03076 /* wg_lambdaskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_lambdaskin.h; sourceTree = "<group>"; };
+		176817DE241E424900D03076 /* wg_sidecanvas.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_sidecanvas.cpp; sourceTree = "<group>"; };
+		176817DF241E424900D03076 /* wg_selectbox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_selectbox.h; sourceTree = "<group>"; };
+		176817E0241E424900D03076 /* wg_selectbox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = wg_selectbox.cpp; sourceTree = "<group>"; };
+		176817E1241E424900D03076 /* wg_sidecanvas.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = wg_sidecanvas.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -578,6 +616,10 @@
 				171693A2229C6AA400196AB0 /* wg_rulerlabels.h */,
 				1716939F229C6AA400196AB0 /* wg_scrollbar.cpp */,
 				17169399229C6AA300196AB0 /* wg_scrollbar.h */,
+				176817E0241E424900D03076 /* wg_selectbox.cpp */,
+				176817DF241E424900D03076 /* wg_selectbox.h */,
+				176817DE241E424900D03076 /* wg_sidecanvas.cpp */,
+				176817E1241E424900D03076 /* wg_sidecanvas.h */,
 				171693AD229C6AA500196AB0 /* wg_simplevolumemeter.cpp */,
 				17169391229C6AA300196AB0 /* wg_simplevolumemeter.h */,
 				171693B1229C6AA600196AB0 /* wg_textdisplay.cpp */,
@@ -635,6 +677,8 @@
 				17169369229C69E900196AB0 /* wg_colorskin.h */,
 				1716936C229C69E900196AB0 /* wg_extendedskin.cpp */,
 				17169367229C69E900196AB0 /* wg_extendedskin.h */,
+				176817DA241E423100D03076 /* wg_lambdaskin.cpp */,
+				176817DB241E423100D03076 /* wg_lambdaskin.h */,
 				17169365229C69E900196AB0 /* wg_multiblockskin.cpp */,
 				1716936B229C69E900196AB0 /* wg_multiblockskin.h */,
 				17169360229C69E800196AB0 /* wg_skin.cpp */,
@@ -672,21 +716,30 @@
 				176752C023C0E4760040B4FF /* wg_cdynamicslotarray.h */,
 				176752DF23C0E4780040B4FF /* wg_cdynamicslotarray.impl.h */,
 				176752DB23C0E4780040B4FF /* wg_cdynamicslotcollection.h */,
+				176817C6241E420400D03076 /* wg_cdynamicslotvector.h */,
+				176817C7241E420400D03076 /* wg_cdynamicslotvector.impl.h */,
 				176752D523C0E4770040B4FF /* wg_cicondisplay.cpp */,
 				176752C223C0E4760040B4FF /* wg_cicondisplay.h */,
 				176752CB23C0E4770040B4FF /* wg_component.cpp */,
 				176752D223C0E4770040B4FF /* wg_component.h */,
 				176752D323C0E4770040B4FF /* wg_cpaddedslotarray.h */,
 				176752D023C0E4770040B4FF /* wg_cpaddedslotarray.impl.h */,
+				176817C0241E420200D03076 /* wg_cpaddedslotvector.h */,
+				176817C2241E420300D03076 /* wg_cpaddedslotvector.impl.h */,
 				176752DD23C0E4780040B4FF /* wg_cselectableslotarray.h */,
 				176752CF23C0E4770040B4FF /* wg_cselectableslotarray.impl.h */,
+				176817C1241E420300D03076 /* wg_cselectableslotvector.h */,
+				176817C8241E420400D03076 /* wg_cselectableslotvector.impl.h */,
 				176752DC23C0E4780040B4FF /* wg_cshadows.cpp */,
 				176752DE23C0E4780040B4FF /* wg_cshadows.h */,
 				176752D723C0E4780040B4FF /* wg_cslot.h */,
+				176817C4241E420300D03076 /* wg_cslotarray.h */,
 				176752BD23C0E4750040B4FF /* wg_cstandardslot.h */,
 				176752C423C0E4760040B4FF /* wg_cstaticslotarray.h */,
 				176752C723C0E4760040B4FF /* wg_cstaticslotarray.impl.h */,
 				176752BE23C0E4750040B4FF /* wg_cstaticslotcollection.h */,
+				176817C9241E420400D03076 /* wg_cstaticslotvector.h */,
+				176817C3241E420300D03076 /* wg_cstaticslotvector.impl.h */,
 				176752CC23C0E4770040B4FF /* wg_cstatictextdisplay.cpp */,
 				176752CA23C0E4770040B4FF /* wg_cstatictextdisplay.h */,
 				176752C323C0E4760040B4FF /* wg_cstaticvaluedisplay.cpp */,
@@ -700,6 +753,8 @@
 				176752BF23C0E4760040B4FF /* wg_cvaluedisplay.h */,
 				176752D823C0E4780040B4FF /* wg_cvalueeditor.cpp */,
 				176752C623C0E4760040B4FF /* wg_cvalueeditor.h */,
+				176817C5241E420400D03076 /* wg_cvector.h */,
+				176817CA241E420400D03076 /* wg_cvector.impl.h */,
 				176752D123C0E4770040B4FF /* wg_geocomponent.h */,
 			);
 			name = Components;
@@ -762,6 +817,7 @@
 				176751FA23C0E4420040B4FF /* wg_gfxstreamwriter.h */,
 				1767524223C0E4500040B4FF /* wg_inputhandler.cpp */,
 				1767524F23C0E4530040B4FF /* wg_inputhandler.h */,
+				176817D6241E421E00D03076 /* wg_internal.h */,
 				1767524A23C0E4520040B4FF /* wg_key.h */,
 				1767521723C0E4470040B4FF /* wg_mempool.cpp */,
 				1767521D23C0E4480040B4FF /* wg_mempool.h */,
@@ -796,6 +852,7 @@
 				1767522F23C0E44B0040B4FF /* wg_shadow.h */,
 				176751EA23C0E4410040B4FF /* wg_slot.h */,
 				1767522623C0E44A0040B4FF /* wg_slotholder.h */,
+				176817D7241E421E00D03076 /* wg_slotiterator.h */,
 				1767520E23C0E4450040B4FF /* wg_string.cpp */,
 				1767524C23C0E4520040B4FF /* wg_string.h */,
 				1767523423C0E44C0040B4FF /* wg_strongcomponentptr.h */,
@@ -916,17 +973,21 @@
 				176752E623C0E4780040B4FF /* wg_cicondisplay.h in Headers */,
 				176752FB23C0E4780040B4FF /* wg_cslot.h in Headers */,
 				1767529823C0E4540040B4FF /* wg_surface.h in Headers */,
+				176817D8241E421F00D03076 /* wg_internal.h in Headers */,
 				171693E8229C6AE700196AB0 /* wg_sizecapsule.h in Headers */,
 				176752ED23C0E4780040B4FF /* wg_cstaticvaluedisplay.h in Headers */,
 				1716941A229C6B4A00196AB0 /* wg_panel.h in Headers */,
 				1767528123C0E4540040B4FF /* wg_gfxstreamreader.h in Headers */,
 				1767527F23C0E4540040B4FF /* wg_pointers.h in Headers */,
+				176817E5241E424A00D03076 /* wg_sidecanvas.h in Headers */,
 				1767525223C0E4530040B4FF /* wg_textlink.h in Headers */,
 				176752BB23C0E4540040B4FF /* wg_gfxstreamplug.h in Headers */,
+				176817CD241E420500D03076 /* wg_cpaddedslotvector.impl.h in Headers */,
 				1716942E229C6DA400196AB0 /* wg_popuplayer.h in Headers */,
 				171693D8229C6AA700196AB0 /* wg_animplayer.h in Headers */,
 				17169417229C6B4A00196AB0 /* wg_flexpanel.h in Headers */,
 				171693E9229C6AE700196AB0 /* wg_capsule.h in Headers */,
+				176817CF241E420500D03076 /* wg_cslotarray.h in Headers */,
 				1767529523C0E4540040B4FF /* wg_gfxanim.h in Headers */,
 				1767527823C0E4530040B4FF /* wg_enumextras.h in Headers */,
 				1767529423C0E4540040B4FF /* wg_weakcomponentptr.h in Headers */,
@@ -946,6 +1007,7 @@
 				1767529F23C0E4540040B4FF /* wg_msglogger.h in Headers */,
 				1767526E23C0E4530040B4FF /* wg_geo.h in Headers */,
 				17169377229C69EA00196AB0 /* wg_colorskin.h in Headers */,
+				176817E3241E424A00D03076 /* wg_selectbox.h in Headers */,
 				176752A423C0E4540040B4FF /* wg_scrollbartarget.h in Headers */,
 				1767525A23C0E4530040B4FF /* wg_caret.h in Headers */,
 				1767526523C0E4530040B4FF /* wg_object.h in Headers */,
@@ -962,12 +1024,15 @@
 				1716938D229C6A5F00196AB0 /* wg_timeformatter.h in Headers */,
 				1716942F229C6DA400196AB0 /* wg_modallayer.h in Headers */,
 				171693C4229C6AA700196AB0 /* wg_texteditor.h in Headers */,
+				176817DD241E423100D03076 /* wg_lambdaskin.h in Headers */,
 				176752FF23C0E4790040B4FF /* wg_cdynamicslotcollection.h in Headers */,
 				176752EE23C0E4780040B4FF /* wg_cstatictextdisplay.h in Headers */,
 				1767529E23C0E4540040B4FF /* wg_paddedslot.h in Headers */,
 				176752F223C0E4780040B4FF /* wg_ccolumnheader.h in Headers */,
+				176817D1241E420500D03076 /* wg_cdynamicslotvector.h in Headers */,
 				171693DA229C6AA700196AB0 /* wg_button.h in Headers */,
 				1767530123C0E4790040B4FF /* wg_cselectableslotarray.h in Headers */,
+				176817D3241E420500D03076 /* wg_cselectableslotvector.impl.h in Headers */,
 				171693C3229C6AA700196AB0 /* wg_canvas.h in Headers */,
 				176752B023C0E4540040B4FF /* wg_color.h in Headers */,
 				1767528A23C0E4540040B4FF /* wg_mempool.h in Headers */,
@@ -1002,25 +1067,32 @@
 				1767528F23C0E4540040B4FF /* wg_resloader.h in Headers */,
 				176752B923C0E4540040B4FF /* wg_string.h in Headers */,
 				17169416229C6B4A00196AB0 /* wg_rootpanel.h in Headers */,
+				176817D0241E420500D03076 /* wg_cvector.h in Headers */,
 				176752E423C0E4780040B4FF /* wg_cdynamicslotarray.h in Headers */,
 				1767529723C0E4540040B4FF /* wg_togglegroup.h in Headers */,
+				176817CE241E420500D03076 /* wg_cstaticslotvector.impl.h in Headers */,
 				1767526D23C0E4530040B4FF /* wg_memstack.h in Headers */,
 				176752AD23C0E4540040B4FF /* wg_context.h in Headers */,
 				17169381229C6A0A00196AB0 /* wg_textmapper.h in Headers */,
 				17169432229C6DA400196AB0 /* wg_dragndroplayer.h in Headers */,
+				176817D5241E420500D03076 /* wg_cvector.impl.h in Headers */,
 				17169379229C69EA00196AB0 /* wg_multiblockskin.h in Headers */,
+				176817D9241E421F00D03076 /* wg_slotiterator.h in Headers */,
 				171693CF229C6AA700196AB0 /* wg_filler.h in Headers */,
+				176817CB241E420400D03076 /* wg_cpaddedslotvector.h in Headers */,
 				176752A323C0E4540040B4FF /* wg_charseq.h in Headers */,
 				176752F623C0E4780040B4FF /* wg_component.h in Headers */,
 				17169400229C6B3300196AB0 /* wg_packlist.h in Headers */,
 				1767529023C0E4540040B4FF /* wg_base.h in Headers */,
 				1767525323C0E4530040B4FF /* wg_nullgfxdevice.h in Headers */,
+				176817D4241E420500D03076 /* wg_cstaticslotvector.h in Headers */,
 				176752BC23C0E4540040B4FF /* wg_inputhandler.h in Headers */,
 				17169421229C6B4A00196AB0 /* wg_lambdapanel.h in Headers */,
 				171693C1229C6AA700196AB0 /* wg_scrollbar.h in Headers */,
 				0C6239961D81615000DE671D /* wg_userdefines.h in Headers */,
 				176752A023C0E4540040B4FF /* wg_chain.h in Headers */,
 				171693EA229C6AE700196AB0 /* wg_shadercapsule.h in Headers */,
+				176817D2241E420500D03076 /* wg_cdynamicslotvector.impl.h in Headers */,
 				171693D1229C6AA700196AB0 /* wg_lineeditor.h in Headers */,
 				17169370229C69EA00196AB0 /* wg_skin.h in Headers */,
 				1716941D229C6B4A00196AB0 /* wg_splitpanel.h in Headers */,
@@ -1029,6 +1101,7 @@
 				176752F423C0E4780040B4FF /* wg_cpaddedslotarray.impl.h in Headers */,
 				171693C2229C6AA700196AB0 /* wg_image.h in Headers */,
 				1767527023C0E4530040B4FF /* wg_bitmapfont.h in Headers */,
+				176817CC241E420400D03076 /* wg_cselectableslotvector.h in Headers */,
 				176752A123C0E4540040B4FF /* wg_strongcomponentptr.h in Headers */,
 				171693C8229C6AA700196AB0 /* wg_togglebutton.h in Headers */,
 				1767525723C0E4530040B4FF /* wg_slot.h in Headers */,
@@ -1116,6 +1189,7 @@
 				176752F023C0E4780040B4FF /* wg_cstatictextdisplay.cpp in Sources */,
 				176752A923C0E4540040B4FF /* wg_charseq.cpp in Sources */,
 				171693E6229C6AE700196AB0 /* wg_capsule.cpp in Sources */,
+				176817DC241E423100D03076 /* wg_lambdaskin.cpp in Sources */,
 				176752E723C0E4780040B4FF /* wg_cstaticvaluedisplay.cpp in Sources */,
 				1767527A23C0E4530040B4FF /* wg_gfxstreamlogger.cpp in Sources */,
 				176752A523C0E4540040B4FF /* wg_object.cpp in Sources */,
@@ -1176,10 +1250,12 @@
 				17169431229C6DA400196AB0 /* wg_layer.cpp in Sources */,
 				176752AA23C0E4540040B4FF /* wg_color.cpp in Sources */,
 				1767526223C0E4530040B4FF /* wg_togglegroup.cpp in Sources */,
+				176817E2241E424A00D03076 /* wg_sidecanvas.cpp in Sources */,
 				171693DE229C6AA700196AB0 /* wg_image.cpp in Sources */,
 				1767528423C0E4540040B4FF /* wg_mempool.cpp in Sources */,
 				1767525023C0E4530040B4FF /* wg_textlink.cpp in Sources */,
 				1767527123C0E4530040B4FF /* wg_texttool.cpp in Sources */,
+				176817E4241E424A00D03076 /* wg_selectbox.cpp in Sources */,
 				171693B7229C6AA700196AB0 /* wg_filler.cpp in Sources */,
 				1716941B229C6B4A00196AB0 /* wg_lambdapanel.cpp in Sources */,
 				176752A623C0E4540040B4FF /* wg_caret.cpp in Sources */,
