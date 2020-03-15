@@ -23,6 +23,7 @@
 #include <wg_splitpanel.h>
 #include <wg_patches.h>
 #include <wg_msg.h>
+#include <wg_internal.h>
 
 //TODO: Set opaque if there is no skin (or skin has no borders) and both children and the handle are opaque.
 
@@ -260,11 +261,11 @@ namespace wg
 
 			slots[0].m_geo = firstChildGeo;
 			if( slots[0]._widget() )
-				slots[0]._widget()->_resize(firstChildGeo);
+				OO(slots[0]._widget())->_resize(firstChildGeo);
 
 			slots[1].m_geo = secondChildGeo;
 			if (slots[1]._widget())
-				slots[1]._widget()->_resize(secondChildGeo);
+				OO(slots[1]._widget())->_resize(secondChildGeo);
 
 			m_handleGeo = handleGeo;
 
@@ -473,13 +474,13 @@ namespace wg
 		else
 		{
 			if (slots[0]._widget())
-				slots[0]._widget()->_collectPatches(container, slots[0].m_geo + geo.pos(), clip );
+				OO(slots[0]._widget())->_collectPatches(container, slots[0].m_geo + geo.pos(), clip );
 
 			if( m_pHandleSkin )
 				container.add(RectI(m_handleGeo, clip));
 
 			if (slots[1]._widget())
-				slots[1]._widget()->_collectPatches(container, slots[1].m_geo + geo.pos(), clip );
+				OO(slots[1]._widget())->_collectPatches(container, slots[1].m_geo + geo.pos(), clip );
 		}
 	}
 
@@ -494,13 +495,13 @@ namespace wg
 			else
 			{
 				if (slots[0]._widget())
-					slots[0]._widget()->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
+					OO(slots[0]._widget())->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
 
 				if (m_pHandleSkin && m_pHandleSkin->isOpaque() )
 					patches.sub(RectI(m_handleGeo, clip));
 
 				if (slots[1]._widget())
-					slots[1]._widget()->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
+					OO(slots[1]._widget())->_maskPatches(patches, slots[1].m_geo + geo.pos(), clip, blendMode );
 			}
 		}
 	}
@@ -659,7 +660,7 @@ namespace wg
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
 		pSlot->_setWidget(pNewWidget);
-		pNewWidget->_resize(pSlot->m_geo);
+		OO(pNewWidget)->_resize(pSlot->m_geo);
 		_updatePreferredSize();
 		bool bGeoChanged = _updateGeo();
 		if (!bGeoChanged)

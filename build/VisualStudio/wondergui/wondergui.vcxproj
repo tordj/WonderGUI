@@ -108,6 +108,7 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamreader.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
+    <ClInclude Include="..\..\..\src\base\wg_internal.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_payload.h" />
     <ClInclude Include="..\..\..\src\base\wg_qpix.h" />

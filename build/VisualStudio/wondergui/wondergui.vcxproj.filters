@@ -473,6 +473,9 @@
     <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h">
       <Filter>skins</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_internal.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">

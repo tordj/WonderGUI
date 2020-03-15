@@ -85,7 +85,6 @@ namespace wg
 		friend class PopupLayer;
 		friend class ViewSlot;
 		friend class LambdaPanel;
-		friend class SplitPanel;
 		friend class DragNDropLayer;
 		friend class ShadowLayer;
 
