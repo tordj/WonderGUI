@@ -30,6 +30,7 @@
 #include <wg_packpanel.h>
 #include <wg_valuedisplay.h>
 #include <wg_textdisplay.h>
+#include <wg_internal.h>
 
 #include <wg_cstaticslotvector.impl.h>
 
@@ -195,7 +196,7 @@ namespace wg
 
 		if (!mainSlot.isEmpty())
 		{
-			_baseSlot()->_widget()->_render(pDevice, contentRect, contentRect);
+			OO(_baseSlot()->_widget())->_render(pDevice, contentRect, contentRect);
 		}
 
 		if (m_bEditMode)
@@ -216,7 +217,7 @@ namespace wg
 				if (pDevice->clipBounds().intersectsWith(geo))
 				{
 					ClipPopData popData = limitClipList(pDevice, rawToPixels(palette.m_geo));
-					palette._widget()->_render(pDevice, geo, geo);
+					OO(palette._widget())->_render(pDevice, geo, geo);
 
 					popClipList(pDevice, popData);
 				}
@@ -324,7 +325,7 @@ namespace wg
 		{
 			if (m_pSelectedWidget)
 			{
-				RectI geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				RectI geo = OO(m_pSelectedWidget)->_globalGeo() - _globalPos();
 				geo += m_pSelectionSkin->_contentPadding();
 				_requestRender(geo);
 			}
@@ -333,7 +334,7 @@ namespace wg
 
 			if (m_pSelectedWidget)
 			{
-				RectI geo = m_pSelectedWidget->_globalGeo() - _globalPos();
+				RectI geo = OO(m_pSelectedWidget)->_globalGeo() - _globalPos();
 				geo += m_pSelectionSkin->_contentPadding();
 				_requestRender(geo);
 			}
@@ -344,7 +345,7 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			m_pSlotToolbox->slots.clear();
-			m_pSlotToolbox->slots << _createGenericSlotTool(*m_pSelectedWidget->_slot());
+			m_pSlotToolbox->slots << _createGenericSlotTool(*OO(m_pSelectedWidget)->_slot());
 
 			m_pWidgetToolbox->slots.clear();
 			m_pWidgetToolbox->slots << _createGenericWidgetTool(m_pSelectedWidget);
@@ -405,14 +406,14 @@ namespace wg
 
 	//____ _beginLayerSlots() __________________________________________________
 
-	const LayerSlot * DesignLayer::_beginLayerSlots() const
+	const Layer::Slot * DesignLayer::_beginLayerSlots() const
 	{
 		return palettes._begin();
 	}
 
 	//____ _endLayerSlots() ____________________________________________________
 
-	const LayerSlot *  DesignLayer::_endLayerSlots() const
+	const Layer::Slot *  DesignLayer::_endLayerSlots() const
 	{
 		return palettes._end();
 	}
@@ -479,10 +480,10 @@ namespace wg
 
 						if (m_pressedToolbox == -1)
 						{
-							auto pContainer = Container::cast(_baseSlot()->_widget());
+							auto pContainer = wg_cast<Container_p>(_baseSlot()->_widget());
 							if (pContainer)
 							{
-								Widget * pWidget = pContainer->_findWidget(mousePos, SearchMode::MarkPolicy);
+								Widget * pWidget = OO(pContainer)->_findWidget(mousePos, SearchMode::MarkPolicy);
 								if (pWidget)
 									_selectWidget(pWidget);
 							}

@@ -33,7 +33,7 @@ namespace wg
 
 	//____ DesignToolboxSlot ___________________________________________________________
 
-	class DesignToolboxSlot : public LayerSlot
+	class DesignToolboxSlot : public Layer::Slot
 	{
 		friend class DesignLayer;
 		friend class CDesignToolboxSlotVector;
@@ -44,10 +44,10 @@ namespace wg
 
 
 	protected:
-		DesignToolboxSlot(Holder * pHolder) : LayerSlot(pHolder) {}
+		DesignToolboxSlot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
 
-		inline Holder * _holder() { return static_cast<Holder*>(LayerSlot::_holder()); }
-		inline const Holder * _holder() const { return static_cast<const Holder*>(LayerSlot::_holder()); }
+		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(Layer::Slot::_holder()); }
+		inline const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(Layer::Slot::_holder()); }
 
 		const static bool safe_to_relocate = false;
 
@@ -63,7 +63,7 @@ namespace wg
 	{
 		friend class DesignLayer;
 
-		CDesignToolboxVector(Holder * pHolder) : CStaticSlotVector<DesignToolboxSlot>(pHolder) {}
+		CDesignToolboxVector(SlotHolder * pHolder) : CStaticSlotVector<DesignToolboxSlot>(pHolder) {}
 	};
 
 
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ DesignLayer __________________________________________________________
 
-	class DesignLayer : public Layer, protected CDesignToolboxVector::Holder
+	class DesignLayer : public Layer
 	{
 
 	public:
@@ -152,8 +152,8 @@ namespace wg
 
 		// Overloaded from Layer
 
-		const LayerSlot * 	_beginLayerSlots() const override;
-		const LayerSlot * 	_endLayerSlots() const override;
+		const Layer::Slot * 	_beginLayerSlots() const override;
+		const Layer::Slot * 	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
 		// Overloaded from Widget
