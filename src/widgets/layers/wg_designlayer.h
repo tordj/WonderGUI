@@ -194,6 +194,7 @@ namespace wg
 		PackPanel_p	m_pWidgetToolbox;
 
 		int			m_pressedToolbox = -1;			// Index for palette that is pressed.
+		CoordI		m_pressedToolboxStartOfs;
 	};
 
 	//____ paletteSkin() ______________________________________________________

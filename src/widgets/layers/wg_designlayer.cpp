@@ -54,8 +54,8 @@ namespace wg
 		pSelSkin->setContentPadding(1);
 		m_pSelectionSkin = pSelSkin;
 
-		auto pPalSkin = BoxSkin::create({ 10,2,2,2 }, Color::DarkBlue, Color::Yellow);
-		pPalSkin->setContentPadding({ 10,2,2,2 });
+		auto pPalSkin = BoxSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow);
+		pPalSkin->setContentPadding({ 16,2,2,2 });
 		m_pToolboxSkin = pPalSkin;
 
 		// Add two default palettes
@@ -214,9 +214,10 @@ namespace wg
 				if (m_pToolboxSkin)
 					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentPadding(), StateEnum::Normal);
 
-				if (pDevice->clipBounds().intersectsWith(geo))
+				RectI rawPaletteGeo = rawToPixels(palette.m_geo);
+				if (pDevice->clipBounds().intersectsWith(rawPaletteGeo))
 				{
-					ClipPopData popData = limitClipList(pDevice, rawToPixels(palette.m_geo));
+					ClipPopData popData = limitClipList(pDevice, rawPaletteGeo);
 					OO(palette._widget())->_render(pDevice, geo, geo);
 
 					popClipList(pDevice, popData);
@@ -259,7 +260,7 @@ namespace wg
 			CoordI ofs = origoToOfs(origo, surroundBox.size()) - origoToOfs(origo, wantedSize) + surroundBox.pos();
 			ofs += pSlot->m_placementPos;
 
-			RectI geo = { ofs,wantedSize };
+			RectI geo = pixelAligned( RectI( ofs,wantedSize ) );
 
 			if (geo.x < 0)
 			{
@@ -304,8 +305,8 @@ namespace wg
 				pSlot->m_geo = childGeo;
 			}
 
-			if (pSlot->_size() != geo.size())
-				pSlot->_setSize(geo);
+			if (pSlot->_size() != childGeo.size())
+				pSlot->_setSize(childGeo);
 		}
 		else
 		{
@@ -467,12 +468,18 @@ namespace wg
 
 						// Check for press on palette edge
 
-						for (int i = 0; i < palettes.size(); i++)
+						if (m_pToolboxSkin)
 						{
-							if (palettes[i].m_geo.contains(mousePos))
+							BorderI	contentPadding = m_pToolboxSkin->_contentPadding();
+
+							for (int i = 0; i < palettes.size(); i++)
 							{
-								m_pressedToolbox = i;
-								break;
+								if ((palettes[i].m_geo + contentPadding).contains(mousePos) )
+								{
+									m_pressedToolbox = i;
+									m_pressedToolboxStartOfs = palettes[i].m_placementPos;
+									break;
+								}
 							}
 						}
 
@@ -494,6 +501,30 @@ namespace wg
 				break;
 			}
 
+			case MsgType::MouseDrag:
+			{
+				if (m_pressedToolbox >= 0)
+				{
+					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+
+					palettes[m_pressedToolbox].m_placementPos = m_pressedToolboxStartOfs + pMsg->draggedTotalRaw();
+					_refreshRealGeo(&palettes[m_pressedToolbox]);
+				}
+
+				break;
+			}
+
+			case MsgType::MouseRelease:
+			{
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+
+				if (pMsg->button() == MouseButton::Left)
+					m_pressedToolbox = -1;
+
+				break;
+			}
+
+
 			default:
 				break;
 		};
@@ -505,34 +536,104 @@ namespace wg
 
 	Widget_p DesignLayer::_createGenericSlotTool(const StaticSlot& slot)
 	{
-		auto pVBox = PackPanel::create();
-		pVBox->setOrientation(Orientation::Horizontal);
+		auto pColumns = PackPanel::create();
+		pColumns->setOrientation(Orientation::Horizontal);
 
-		//
+		auto pHeaderColumn = PackPanel::create();
+		pHeaderColumn->setOrientation(Orientation::Vertical);
 
-		char buffer[256];
-		sprintf(buffer, "%d, %d", slot.pos().x >> 2, slot.pos().y >> 2);
+		auto pValueColumn = PackPanel::create();
+		pValueColumn->setOrientation(Orientation::Vertical);
 
-		auto pPos = TextDisplay::create();
-		pPos->text.set( buffer );
+		pColumns->slots << pHeaderColumn;
+		pColumns->slots << pValueColumn;
 
-		auto pPosLabel = TextDisplay::create();
-		pPosLabel->text.set("Position: ");
+		// Position
 
-		pVBox->slots << pPosLabel;
-		pVBox->slots << pPos;
+		{
+			auto pLabel = TextDisplay::create();
+			pLabel->text.set("Position: ");
 
-		return pVBox;
+			CoordF pos = slot.pos();
+
+			char buffer[256];
+			sprintf(buffer, "%.2f, %.2f", pos.x, pos.y);
+
+			auto pValue = TextDisplay::create();
+			pValue->text.set(buffer);
+
+			pHeaderColumn->slots << pLabel;
+			pValueColumn->slots << pValue;
+		}
+
+		// Size
+
+		{
+			auto pLabel = TextDisplay::create();
+			pLabel->text.set("Size: ");
+
+			SizeF size = slot.size();
+
+			char buffer[256];
+			sprintf(buffer, "%.2f, %.2f", size.w, size.h);
+
+			auto pValue = TextDisplay::create();
+			pValue->text.set(buffer);
+
+			pHeaderColumn->slots << pLabel;
+			pValueColumn->slots << pValue;
+		}
+
+
+
+		return pColumns;
 	}
 
 	//____ _createGenericWidgetTool() ______________________________________
 
 	Widget_p DesignLayer::_createGenericWidgetTool( Widget * pWidget )
 	{
-		auto pVBox = PackPanel::create();
-		pVBox->setOrientation(Orientation::Horizontal);
+		auto pColumns = PackPanel::create();
+		pColumns->setOrientation(Orientation::Horizontal);
 
-		return pVBox;
+		auto pHeaderColumn = PackPanel::create();
+		pHeaderColumn->setOrientation(Orientation::Vertical);
+
+		auto pValueColumn = PackPanel::create();
+		pValueColumn->setOrientation(Orientation::Vertical);
+
+		pColumns->slots << pHeaderColumn;
+		pColumns->slots << pValueColumn;
+
+		// ClassName
+
+		{
+			auto pNameLabel = TextDisplay::create();
+			pNameLabel->text.set("className: ");
+
+			auto pName = TextDisplay::create();
+			pName->text.set(pWidget->className());
+
+			pHeaderColumn->slots << pNameLabel;
+			pValueColumn->slots << pName;
+		}
+
+		// Id
+
+		{
+			char buffer[16];
+
+			auto pIdLabel = TextDisplay::create();
+			pIdLabel->text.set("id: ");
+
+			auto pId = TextDisplay::create();
+			pId->text.set(itoa(pWidget->id(), buffer, 10));
+
+			pHeaderColumn->slots << pIdLabel;
+			pValueColumn->slots << pId;
+		}
+
+		return pColumns;
 	}
 
 

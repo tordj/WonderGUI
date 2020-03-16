@@ -297,6 +297,8 @@ int main(int argc, char** argv)
 #endif
 	Base::setActiveContext(pContext);
 
+	FreeTypeFont::init(Base::activeContext()->surfaceFactory());
+
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -389,7 +391,7 @@ int main(int argc, char** argv)
 	// Init font
 
 	PixelDescription	pixelDesc;
-
+/*
 	char * pFontSpec = (char*)loadFile("../resources/anuvverbubbla_8x8.fnt");
 
 	SDL_Surface * pFontSurf = IMG_Load("../resources/anuvverbubbla_8x8.png");
@@ -403,17 +405,17 @@ int main(int argc, char** argv)
 	pStyle->setFont(pBmpFont);
 	pStyle->setSize(8);
 	Base::setDefaultStyle(pStyle);
+*/
 
+	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
 
-//	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
-
-//	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
-
-//	TextStyle_p pStyle = TextStyle::create();
-//	pStyle->setFont(pFont);
-//	pStyle->setSize(16);
-//	Base::setDefaultStyle(pStyle);
+	TextStyle_p pStyle = TextStyle::create();
+	pStyle->setFont(pFont);
+	pStyle->setSize(16);
+	pStyle->setColor(Color::Black);
+	Base::setDefaultStyle(pStyle);
 
 	/*
 		StdTextMapper_p pMapper = StdTextMapper::create();
@@ -1244,6 +1246,7 @@ int main(int argc, char** argv)
 
 	// Exit WonderGUI
 
+	FreeTypeFont::exit();
 	Base::exit();
 
 	// Exit SDL
