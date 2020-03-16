@@ -73,6 +73,8 @@ bool popupOpenerTest(CStandardSlot_p pSlot);
 bool scrollbarTest(CStandardSlot_p pSlot);
 bool modalLayerTest(CStandardSlot_p pSlot);
 bool splitPanelTest(CStandardSlot_p pSlot);
+bool designLayerTest(CStandardSlot_p pSlot);
+
 
 
 //____ main() _________________________________________________________________
@@ -536,12 +538,13 @@ int main(int argc, char** argv)
 //	shadowLayerTest(pRoot->child.ptr());
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
-//	textClipTest(pRoot->child.ptr());
-//	lineEditorTest(pRoot->child.ptr());
-//	popupOpenerTest(pRoot->child.ptr());
-//	scrollbarTest(pRoot->child.ptr());
+//	textClipTest(&pRoot->slot);
+//	lineEditorTest&pRoot->slot);
+//	popupOpenerTest(&pRoot->slot);
+//	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
-	splitPanelTest(&pRoot->slot);
+//	splitPanelTest(&pRoot->slot);
+	designLayerTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1856,6 +1859,41 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 
 
 	*pEntry = pSplit;
+
+	return true;
+}
+
+//____ designLayerTest() ______________________________________________________
+
+bool designLayerTest(CStandardSlot_p pSlot)
+{
+	auto pDesignLayer = DesignLayer::create();
+
+	auto pFlexPanel = FlexPanel::create();
+	pFlexPanel->setSkin(ColorSkin::create(Color::Thistle));
+
+	auto pFiller1 = Filler::create();
+	pFiller1->setSkin(ColorSkin::create(Color::Azure));
+	pFiller1->setPreferredSize({ 20,20 });
+
+	auto pFiller2 = Filler::create();
+	pFiller2->setSkin(ColorSkin::create(Color::Maroon));
+	pFiller2->setPreferredSize({ 20,20 });
+
+	auto pFiller3 = Filler::create();
+	pFiller3->setSkin(ColorSkin::create(Color::CadetBlue));
+	pFiller3->setPreferredSize({ 20,20 });
+
+	pFlexPanel->slots.pushFrontMovable(pFiller1, Rect(10, 10, 50, 50));
+	pFlexPanel->slots.pushFrontMovable(pFiller2, Rect(20, 20, 50, 50));
+	pFlexPanel->slots.pushFrontMovable(pFiller3, Rect(30, 30, 50, 50));
+
+	pDesignLayer->mainSlot = pFlexPanel;
+	*pSlot = pDesignLayer;
+
+	pDesignLayer->setEditMode(true);
+
+//	*pSlot = pFlexPanel;
 
 	return true;
 }

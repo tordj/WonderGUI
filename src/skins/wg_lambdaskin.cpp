@@ -39,10 +39,27 @@ namespace wg
 		return LambdaSkin_p(new LambdaSkin());
 	}
 
+	LambdaSkin_p LambdaSkin::create(const Blueprint& blueprint)
+	{
+		return LambdaSkin_p(new LambdaSkin(blueprint));
+	}
+
+
 	//____ Constructor ________________________________________________________
 
 	LambdaSkin::LambdaSkin()
 	{
+	}
+
+	LambdaSkin::LambdaSkin(const Blueprint& blueprint)
+	{
+		m_markTestFunc		= blueprint.markTestFunc;
+		m_minSize			= blueprint.minSize;
+		m_opacityTestFunc	= blueprint.opacityTestFunc;
+		m_bOpaque			= blueprint.opaque;
+		m_preferredSize		= blueprint.preferredSize;
+		m_renderFunc		= blueprint.renderFunc;
+		m_stateCompareFunc	= blueprint.stateCompareFunc;
 	}
 
 	//____ isInstanceOf() _____________________________________________________

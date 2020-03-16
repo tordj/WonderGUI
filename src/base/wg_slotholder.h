@@ -21,8 +21,8 @@
 =========================================================================*/
 
 
-#ifndef WG_WIDGETHOLDER_DOT_H
-#define WG_WIDGETHOLDER_DOT_H
+#ifndef WG_SLOTHOLDER_DOT_H
+#define WG_SLOTHOLDER_DOT_H
 #pragma once
 
 #include <wg_geo.h>
@@ -84,4 +84,4 @@ namespace wg
 	};
 
 } // namespace wg
-#endif //WG_WIDGETHOLDER_DOT_H
+#endif //WG_SLOTHOLDER_DOT_H

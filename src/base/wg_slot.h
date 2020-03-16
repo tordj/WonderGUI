@@ -54,6 +54,7 @@ namespace wg
 
 		inline Widget_p widget() const { return Widget_p(m_pWidget); }
 		inline Widget*	rawWidgetPtr() const { return m_pWidget; }
+		inline bool		isEmpty() const { return !m_pWidget; }
 
 		//.____ Geometry ______________________________________________________
 

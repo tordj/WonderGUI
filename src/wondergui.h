@@ -136,6 +136,7 @@
 #include <wg_popuplayer.h>
 #include <wg_layer.h>
 #include <wg_dragndroplayer.h>
+#include <wg_designlayer.h>
 #include <wg_filler.h>
 #include <wg_popupopener.h>
 #include <wg_widget.h>
