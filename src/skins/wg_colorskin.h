@@ -41,8 +41,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static ColorSkin_p	create();
-		static ColorSkin_p 	create(Color color );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors );
+		static ColorSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 

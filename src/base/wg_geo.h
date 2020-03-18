@@ -131,21 +131,17 @@ namespace wg
 		inline CoordT<Type> operator+(const CoordT<Type>& k) const { return { x + k.x, y + k.y }; }
 		inline CoordT<Type> operator-(const CoordT<Type>& k) const { return { x - k.x, y - k.y }; }
 
-		inline CoordT<Type>& operator*=(int v) { x = (Type)(x*v); y = (Type)(x*v); return *this; }
-		inline CoordT<Type>& operator/=(int v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(int v) const { return { (Type)(x*v), (Type)(y*v) }; }
-		inline CoordT<Type> operator/(int v) const { return { (Type)(x / v), (Type)(y / v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		CoordT<Type>& operator*=(Type2 v) { x = (Type)(x*v); y = (Type)(x*v); return *this; }
 
-		inline CoordT<Type>& operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
-		inline CoordT<Type>& operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(float v) const { return { (Type)(x*v), (Type)(y*v) }; }
-		inline CoordT<Type> operator/(float v) const { return { (Type)(x / v), (Type)(y / v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline CoordT<Type>& operator/=(Type2 v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
 
-		inline CoordT<Type>& operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); return *this; }
-		inline CoordT<Type>& operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); return *this; }
-		inline CoordT<Type> operator*(double v) const { return { (Type)(x*v), (Type)(y*v) }; }
-		inline CoordT<Type> operator/(double v) const { return { (Type)(x / v), (Type)(y / v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline CoordT<Type> operator*(Type2 v) const { return { (Type)(x*v), (Type)(y*v) }; }
 
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline CoordT<Type> operator/(Type2 v) const { return { (Type)(x / v), (Type)(y / v) }; }
 
 
 		//.____ Properties __________________________________________
@@ -240,21 +236,18 @@ namespace wg
 		inline BorderT<Type> operator-(const BorderT<Type>& k) const    { return {top-k.top, right-k.right, bottom-k.bottom, left-k.left}; }
 
 
-        inline BorderT<Type>& operator*=(int v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
-        inline BorderT<Type>& operator/=(int v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
-        inline BorderT<Type> operator*(int v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
-        inline BorderT<Type> operator/(int v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline BorderT<Type>& operator*=(Type2 v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
         
-        inline BorderT<Type>& operator*=(float v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
-        inline BorderT<Type>& operator/=(float v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
-        inline BorderT<Type> operator*(float v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
-        inline BorderT<Type> operator/(float v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
-        
-        inline BorderT<Type>& operator*=(double v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
-        inline BorderT<Type>& operator/=(double v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
-        inline BorderT<Type> operator*(double v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
-        inline BorderT<Type> operator/(double v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline BorderT<Type>& operator/=(Type2 v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
 
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline BorderT<Type> operator*(Type2 v) const { return { (Type)(top*v), (Type)(right*v), (Type)(bottom*v), (Type)(left*v) }; }
+
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline BorderT<Type> operator/(Type2 v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
+       
         
 		bool			operator==(const BorderT<Type>& borders) const { return left == borders.left &&
 																			right == borders.right &&
@@ -341,20 +334,18 @@ namespace wg
 		inline SizeT<Type> operator+(const BorderT<Type>& k) const	{ return { w + k.left + k.right, h + k.top + k.bottom }; }
 		inline SizeT<Type> operator-(const BorderT<Type>& k) const	{ return { w - k.left - k.right, h - k.top - k.bottom }; }
 
-		inline SizeT<Type>& operator*=(int x)		{ w *= x; h *= x; return *this; }
-		inline SizeT<Type>& operator/=(int x)		{ w /= x; h /= x; return *this; }
-		inline SizeT<Type> operator*(int x) const	{ return { w * x, h * x }; }
-		inline SizeT<Type> operator/(int x) const	{ return { w / x, h / x }; }
 
-		inline SizeT<Type>& operator*=(float x)		{ w = (Type)(w*x); h = (Type)(h*x); return *this; }
-		inline SizeT<Type>& operator/=(float x)		{ w = (Type)(w / x); h = (Type)(h / x); return *this; }
-		inline SizeT<Type> operator*(float x) const { return { (Type)(w*x), (Type)(h*x) }; }
-		inline SizeT<Type> operator/(float x) const { return { (Type)(w / x), (Type)(h / x) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline SizeT<Type>& operator*=(Type2 x)		{ w = (Type)(w*x); h = (Type)(h*x); return *this; }
 
-		inline SizeT<Type>& operator*=(double x)	{ w = (Type) (w*x); h = (Type) (h*x); return *this; }
-		inline SizeT<Type>& operator/=(double x)	{ w = (Type) (w/x); h = (Type) (h/x); return *this; }
-		inline SizeT<Type> operator*(double x) const{ return { (Type) (w*x), (Type) (h*x) }; }
-		inline SizeT<Type> operator/(double x) const{ return { (Type) (w/x), (Type) (h/x) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline SizeT<Type>& operator/=(Type2 x)		{ w = (Type)(w/x); h = (Type)(h/x); return *this; }
+
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline SizeT<Type> operator*(Type2 x) const	{ return { (Type)(w*x), (Type)(h*x) }; }
+
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline SizeT<Type> operator/(Type2 x) const	{ return { (Type)(w/x), (Type)(h/x) }; }
 
 
 		static inline SizeT<Type> min( SizeT<Type> sz1, SizeT<Type> sz2 ) { return SizeT<Type>( sz1.w<sz2.w?sz1.w:sz2.w, sz1.h<sz2.h?sz1.h:sz2.h ); }
@@ -551,21 +542,17 @@ namespace wg
 		inline RectT<Type> operator+(const BorderT<Type>& k) const;
 		inline RectT<Type> operator-(const BorderT<Type>& k) const;
 
-		inline RectT<Type>& operator*=(int v) { x *= v; y *= v; w *= v; h *= v; return *this; }
-		inline RectT<Type>& operator/=(int v) { x /= v; y /= v; w /= v; h /= v; return *this; }
-		inline RectT<Type> operator*(int v) const { return { x * v, y * v, w * v, h * v }; }
-		inline RectT<Type> operator/(int v) const { return { x / v, y / v, w / v, h / v }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline RectT<Type>& operator*=(Type2 v) { x *= v; y *= v; w *= v; h *= v; return *this; }
 
-		inline RectT<Type>& operator*=(float v) { x = (Type)(x*v); y = (Type)(y*v); w = (Type)(w*v); h = (Type)(h*v); return *this; }
-		inline RectT<Type>& operator/=(float v) { x = (Type)(x / v); y = (Type)(y / v); w = (Type)(w / v); h = (Type)(h / v); return *this; }
-		inline RectT<Type> operator*(float v) const { return { (Type)(x*v), (Type)(y*v), (Type)(w*v), (Type)(h*v) }; }
-		inline RectT<Type> operator/(float v) const { return { (Type)(x/v), (Type)(y/v), (Type)(w/v), (Type)(h/v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline RectT<Type>& operator/=(Type2 v) { x /= v; y /= v; w /= v; h /= v; return *this; }
 
-		inline RectT<Type>& operator*=(double v) { x = (Type)(x*v); y = (Type)(y*v); w = (Type)(w*v); h = (Type)(h*v); return *this; }
-		inline RectT<Type>& operator/=(double v) { x = (Type)(x / v); y = (Type)(y / v); w = (Type)(w / v); h = (Type)(h / v); return *this; }
-		inline RectT<Type> operator*(double v) const { return { (Type)(x*v), (Type)(y*v), (Type)(w*v), (Type)(h*v) }; }
-		inline RectT<Type> operator/(double v) const { return { (Type)(x / v), (Type)(y / v), (Type)(w / v), (Type)(h / v) }; }
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline RectT<Type> operator*(Type2 v) const { return { x * v, y * v, w * v, h * v }; }
 
+		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
+		inline RectT<Type> operator/(Type2 v) const { return { x / v, y / v, w / v, h / v }; }
 
 
 		//.____ Properties __________________________________________

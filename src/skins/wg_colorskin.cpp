@@ -39,16 +39,18 @@ namespace wg
 		return ColorSkin_p(new ColorSkin());
 	}
 
-	ColorSkin_p ColorSkin::create(Color color)
+	ColorSkin_p ColorSkin::create(Color color, BorderI contentPadding )
 	{
-		return ColorSkin_p(new ColorSkin(color));
+		auto p = new ColorSkin(color);
+		p->setContentPadding(contentPadding);
+		return p;
 	}
 
-	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors )
+	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors, BorderI contentPadding )
 	{
-		ColorSkin_p p = new ColorSkin();
+		auto p = new ColorSkin();
 		p->setColor(stateColors);
-
+		p->setContentPadding(contentPadding);
 		return p;
 	}
 
