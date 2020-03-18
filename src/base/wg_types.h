@@ -286,24 +286,24 @@ namespace wg
 
 	enum class PointerStyle : uint8_t	//. autoExtras
 	{
-		Arrow,						// default arrow
+		Arrow,				// default arrow
 		Default = Arrow,	// default arrow
-		Hourglass,					// hourglass
-		Hand,							// hand
-		OpenHand,							// open hand
-		ClosedHand,							// closed hand
-		Crosshair,					// crosshair
-		Help,							// help
-		Ibeam,						// I-beam
-		Stop,							// slashed circle
-		UpArrow,						// arrow pointing up
-		ResizeAll,						// four-pointed arrow in all directions
-		ResizeNeSw,					// double-pointed arrow pointing northeast and southwest
-		ResizeNwSe,					// double-pointed arrow pointing northwest and southeast
-		ResizeNS,						// double-pointed arrow pointing north and south
-		ResizeWE,						// double-pointed arrow pointing west and east
-		ResizeBeamNS,						// double-pointed arrow pointing north and south
-		ResizeBeamWE,						// double-pointed arrow pointing north and south
+		Hourglass,			// hourglass
+		Hand,				// hand
+		OpenHand,			// open hand
+		ClosedHand,			// closed hand
+		Crosshair,			// crosshair
+		Help,				// help
+		Ibeam,				// I-beam
+		Stop,				// slashed circle
+		UpArrow,			// arrow pointing up
+		ResizeAll,			// four-pointed arrow in all directions
+		ResizeNeSw,			// double-pointed arrow pointing northeast and southwest
+		ResizeNwSe,			// double-pointed arrow pointing northwest and southeast
+		ResizeNS,			// double-pointed arrow pointing north and south
+		ResizeWE,			// double-pointed arrow pointing west and east
+		ResizeBeamNS,		// double-pointed arrow pointing north and south
+		ResizeBeamWE,		// double-pointed arrow pointing north and south
 	};
 
 	//____ MouseButton _________________________________________________________
@@ -468,6 +468,10 @@ namespace wg
 		ModalMoveOutside,
 		ModalBlockedPress,
 		ModalBlockedRelease,
+
+		PianoKeyPress,
+		PianoKeyRelease
+
 	};
 
 

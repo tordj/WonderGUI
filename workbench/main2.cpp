@@ -18,6 +18,10 @@
 
 #include <wondergui.h>
 
+#include <bitset>
+#include <string>
+#include <iostream>
+#include <climits>
 
 #include <wg_softsurface.h>
 #include <wg_softsurfacefactory.h>
@@ -74,6 +78,7 @@ bool scrollbarTest(CStandardSlot_p pSlot);
 bool modalLayerTest(CStandardSlot_p pSlot);
 bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
+bool pianoKeyboardTest(CStandardSlot_p pSlot);
 
 
 
@@ -184,7 +189,7 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1024, height = 768;
+	int posX = 100, posY = 100, width = 2300, height = 768;
 
 
 #ifdef USE_OPEN_GL
@@ -269,7 +274,7 @@ int main(int argc, char** argv)
 	Base::setErrorHandler([](Error&) { int x = 0; });
 
 	Context_p pContext = Context::create();
-	pContext->setScale(1.0);
+	pContext->setScale(1.00);
 
 #ifdef USE_OPEN_GL
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
@@ -546,7 +551,8 @@ int main(int argc, char** argv)
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
 //	splitPanelTest(&pRoot->slot);
-	designLayerTest(&pRoot->slot);
+//	designLayerTest(&pRoot->slot);
+	pianoKeyboardTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1898,5 +1904,52 @@ bool designLayerTest(CStandardSlot_p pSlot)
 
 //	*pSlot = pFlexPanel;
 
+	return true;
+}
+
+//____ pianoKeyboardTest() ____________________________________________________
+
+bool pianoKeyboardTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	{
+		Surface_p pOddWhiteKeys = loadSurface("../resources/whiteoddkeys.png", PixelFormat::BGRA_8);
+		Surface_p pEvenWhiteKeys = loadSurface("../resources/whiteevenkeys.png", PixelFormat::BGRA_8);
+		Surface_p pBlackKeys = loadSurface("../resources/blackkeys.png", PixelFormat::BGRA_8);
+
+		auto pSimplePiano = PianoKeyboard::create();
+		pSimplePiano->setSkin(ColorSkin::create(Color::Black, { 60,10,10,10 }));
+		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
+		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed });
+
+		pBaseLayer->slots.pushFrontMovable(pSimplePiano, { 20,20,0,0 });
+
+		pSimplePiano->selectKey(3);
+		pSimplePiano->selectKey(6);
+		pSimplePiano->selectKey(9);
+	}
+/*
+	{
+		Surface_p pOddWhiteKeys = loadSurface("../resources/NisOddWhite.png", PixelFormat::BGRA_8);
+		Surface_p pEvenWhiteKeys = loadSurface("../resources/NisEvenWhite.png", PixelFormat::BGRA_8);
+		Surface_p pBlackKeys = loadSurface("../resources/NisBlack.png", PixelFormat::BGRA_8);
+
+		auto pNisPiano = PianoKeyboard::create();
+		pNisPiano->setSkin(ColorSkin::create(Color::Black, { 0,0,0,0 }));
+		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
+		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Pressed });
+
+		pBaseLayer->slots.pushFrontMovable(pNisPiano, { 20,220,0,0 });
+
+		pNisPiano->selectKey(3);
+		pNisPiano->selectKey(6);
+		pNisPiano->selectKey(9);
+	}
+*/
+
+
+	*pSlot = pBaseLayer;
 	return true;
 }

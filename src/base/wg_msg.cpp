@@ -1332,6 +1332,7 @@ namespace wg
 		return CLASSNAME;
 	}
 
+
 	//____ ModalMoveOutsideMsg ___________________________________________________
 
 	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
@@ -1379,6 +1380,7 @@ namespace wg
 		return CLASSNAME;
 	}
 
+
 	//____ ModalBlockedReleaseMsg _____________________________________________
 
 	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
@@ -1398,6 +1400,58 @@ namespace wg
 	}
 
 	const char * ModalBlockedReleaseMsg::className( void ) const
+	{
+		return CLASSNAME;
+	}
+
+
+	//____ PianoKeyPressMsg ___________________________________________________
+
+	const char PianoKeyPressMsg::CLASSNAME[] = { "PianoKeyPressMsg" };
+
+	PianoKeyPressMsg::PianoKeyPressMsg(Object * pSource, int keyIdx, int64_t timestamp )
+	{
+		m_type = MsgType::PianoKeyPress;
+		m_pSource = pSource;
+		m_keyIdx = keyIdx;
+		m_timestamp = timestamp;
+	}
+
+	bool PianoKeyPressMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return Msg::isInstanceOf(pClassName);
+	}
+
+	const char * PianoKeyPressMsg::className(void) const
+	{
+		return CLASSNAME;
+	}
+
+
+	//____ PianoKeyReleaseMsg _________________________________________________
+
+	const char PianoKeyReleaseMsg::CLASSNAME[] = { "PianoKeyReleaseMsg" };
+
+	PianoKeyReleaseMsg::PianoKeyReleaseMsg(Object * pSource, int keyIdx, int64_t timestamp)
+	{
+		m_type = MsgType::PianoKeyRelease;
+		m_pSource = pSource;
+		m_keyIdx = keyIdx;
+		m_timestamp = timestamp;
+	}
+
+	bool PianoKeyReleaseMsg::isInstanceOf(const char * pClassName) const
+	{
+		if (pClassName == CLASSNAME)
+			return true;
+
+		return Msg::isInstanceOf(pClassName);
+	}
+
+	const char * PianoKeyReleaseMsg::className(void) const
 	{
 		return CLASSNAME;
 	}

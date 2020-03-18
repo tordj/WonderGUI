@@ -1263,6 +1263,72 @@ namespace wg
 	};
 
 
+	//____ PianoKeyPressMsg ___________________________________________________
+	/**
+	 *	@brief Key is pressed by users action.
+	 *
+	 * This message is posted when a piano key is pressed as the result of a user action, e.i.
+	 * pressing left mouse key on a piano key or moving pointer to key while pressed.
+	 * 
+	 * No message is posted if piano key is pressed through an API call or key already is
+	 * pressed when user presses it.
+	 *
+	 */
+
+	class PianoKeyPressMsg : public Msg
+	{
+		friend class PianoKeyboard;
+	public:
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf(const char * pClassName) const override;
+		const char *		className(void) const override;
+		static const char	CLASSNAME[];
+
+		int					key() { return m_keyIdx; }
+		int64_t				timestamp() const { return m_timestamp; }
+
+	protected:
+		PianoKeyPressMsg(Object * pSource, int keyIdx, int64_t timestamp);
+
+		int		m_keyIdx;
+		int64_t	m_timestamp;
+	};
+
+	//____ PianoKeyReleaseMsg ___________________________________________________
+	/**
+	 *	@brief Key is released by users action.
+	 *
+	 * This message is posted when a piano key is released as the result of a user action, e.i.
+	 * releasing mouse key on a piano key or moving pointer away from key while pressed.
+	 *
+	 * No message is posted if piano key remains pressed (due to pressed state set
+	 * through API call).
+	 *
+	 */
+
+	class PianoKeyReleaseMsg : public Msg
+	{
+		friend class PianoKeyboard;
+	public:
+		//.____ Identification __________________________________________
+
+		bool				isInstanceOf(const char * pClassName) const override;
+		const char *		className(void) const override;
+		static const char	CLASSNAME[];
+
+		int					key() { return m_keyIdx; }
+		int64_t				timestamp() const { return m_timestamp; }
+
+	protected:
+		PianoKeyReleaseMsg(Object * pSource, int keyIdx, int64_t timestamp);
+
+		int		m_keyIdx;
+		int64_t	m_timestamp;
+	};
+
+
+
 	//____ Internally posted messages ____________________________________________
 
 	class MouseDragMsg : public MouseButtonMsg

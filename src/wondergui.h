@@ -159,5 +159,6 @@
 #include <wg_lineeditor.h>
 #include <wg_volumemeter.h>
 #include <wg_animplayer.h>
+#include <wg_pianokeyboard.h>
 
 #endif //WONDERGUI_DOT_H
