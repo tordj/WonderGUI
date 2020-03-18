@@ -233,21 +233,21 @@ int main ( int argc, char** argv )
 
 
 	// Load TTF-font
-/*
-	WgVectorGlyphs::SetSurfaceFactory( g_pSurfaceFactory );
+
+	wg::FreeTypeFont::init(g_pSurfaceFactory);
 
 	char	ttfname[] = { "../resources/DroidSans.ttf" };
 
 	int size = sdl_wglib::FileSize( ttfname );
 	char * pFontFile = (char*) sdl_wglib::LoadFile( ttfname );
-	WgVectorGlyphs * pGlyphs = new WgVectorGlyphs( pFontFile , size, 0 );
+	
+	auto pFontBlob = wg::Blob::create(pFontFile, size, [pFontFile] { free(pFontFile); });
 
-	WgFont * pFont = new WgFont();
-	pFont->SetDefaultVectorGlyphs( pGlyphs );
-*/
+	auto pFont = wg::FreeTypeFont::create(pFontBlob,0);
+	
 	// Load bitmap font
 
-	auto pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
+//	auto pFont = sdl_wglib::LoadBitmapFont( "../resources/anuvverbubbla_8x8.png", "../resources/anuvverbubbla_8x8.fnt", g_pSurfaceFactory );
 
 	// Load and setup cursor
 
@@ -279,7 +279,7 @@ int main ( int argc, char** argv )
     
     pTextStyle->setFont(pFont);
     pTextStyle->setColor(wg::Color::White);
-    pTextStyle->setSize(16);
+    pTextStyle->setSize(8);
     
 
     wg::Base::setDefaultStyle( pTextStyle );

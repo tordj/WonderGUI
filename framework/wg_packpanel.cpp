@@ -224,7 +224,7 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
                     if( pH->IsVisible() )
                     {
                         int b = pH->_paddedMatchingPixelHeight( pI->output, m_scale );
-                        int ascend = b * pH->m_baseline;
+                        int ascend = int(b * pH->m_baseline);
                         int descend = b - ascend;
                         
                         if( ascend > maxAscend )
@@ -274,7 +274,7 @@ int WgPackPanel::MatchingPixelHeight( int width ) const
                     if( pH->IsVisible() )
                     {
                         int b = pH->m_preferredSize.h;
-                        int ascend = b * pH->m_baseline;
+                        int ascend = int(b * pH->m_baseline);
                         int descend = b - ascend;
                         
                         if( ascend > maxAscend )
@@ -357,7 +357,7 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
                     if( pH->IsVisible() )
                     {
                         int b = pH->_paddedMatchingPixelWidth( pI->output, m_scale );
-                        int ascend = b * pH->m_baseline;
+                        int ascend = int(b * pH->m_baseline);
                         int descend = b - ascend;
                         
                         if( ascend > maxAscend )
@@ -407,7 +407,7 @@ int WgPackPanel::MatchingPixelWidth( int height ) const
                     if( pH->IsVisible() )
                     {
                         int b = pH->m_preferredSize.w;
-                        int ascend = b * pH->m_baseline;
+                        int ascend = int(b * pH->m_baseline);
                         int descend = b - ascend;
                         
                         if( ascend > maxAscend )
@@ -805,7 +805,7 @@ void WgPackPanel::_updatePreferredPixelSize()
                     length += pH->m_preferredSize.w;
                     
                     int b = pH->m_preferredSize.h;
-                    int ascend = b * pH->m_baseline;
+                    int ascend = int(b * pH->m_baseline);
                     int descend = b - ascend;
                     
                     if( ascend > maxAscend )
@@ -826,7 +826,7 @@ void WgPackPanel::_updatePreferredPixelSize()
                     length += pH->m_preferredSize.h;
 
                     int b = pH->m_preferredSize.w;
-                    int ascend = b * pH->m_baseline;
+                    int ascend = int(b * pH->m_baseline);
                     int descend = b - ascend;
                     
                     if( ascend > maxAscend )
@@ -1062,7 +1062,7 @@ void WgPackPanel::_refreshChildGeo()
                 else
                     pGeo->h = p->_paddedMatchingPixelHeight(pGeo->w, m_scale);
 
-                int ascend = pGeo->h * p->m_baseline;
+                int ascend = int(pGeo->h * p->m_baseline);
                 if( ascend > baseLineOfs )
                     baseLineOfs = ascend;
                 
@@ -1076,7 +1076,7 @@ void WgPackPanel::_refreshChildGeo()
             {
                 // Todo adjust y,h so that it fits.
                 
-                int ascend = pGeo->h * p->m_baseline;
+                int ascend = int(pGeo->h * p->m_baseline);
                 pGeo->y = baseLineOfs - ascend;
                 p = p->Next();
                 pGeo++;
@@ -1091,7 +1091,7 @@ void WgPackPanel::_refreshChildGeo()
                 else
                     pGeo->w = p->_paddedMatchingPixelWidth(pGeo->h, m_scale);
 
-                int ascend = pGeo->w * p->m_baseline;
+                int ascend = int(pGeo->w * p->m_baseline);
                 if( ascend > baseLineOfs )
                     baseLineOfs = ascend;
 
@@ -1105,7 +1105,7 @@ void WgPackPanel::_refreshChildGeo()
             {
                 // Todo adjust x,w so that it fits.
                 
-                int ascend = pGeo->w * p->m_baseline;
+                int ascend = int(pGeo->w * p->m_baseline);
                 pGeo->x = baseLineOfs - ascend;
                 p = p->Next();
                 pGeo++;

@@ -33,6 +33,8 @@
 #include <wg_multislider.h>
 #include <wg3_payload.h>
 
+#include <cassert>
+
 namespace WgEvent
 {
 	//____ Event ______________________________________________________________

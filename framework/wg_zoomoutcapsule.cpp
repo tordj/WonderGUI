@@ -146,11 +146,11 @@ WgSize WgZoomOutCapsule::UnzoomedPreferredPixelSize() const
 int WgZoomOutCapsule::MatchingPixelHeight(int pixelWidth) const
 {
     int preferredWidth = WgCapsule::PreferredPixelSize().w;
-    int preferredScaled = preferredWidth * m_outerZoom;
+    int preferredScaled = int(preferredWidth * m_outerZoom);
     
     float fraction = pixelWidth / (float) preferredScaled;
     
-    int matching = WgCapsule::MatchingPixelHeight(preferredWidth*fraction) * m_outerZoom;
+    int matching = int(WgCapsule::MatchingPixelHeight(int(preferredWidth*fraction)) * m_outerZoom);
     
     int min = m_minPointSize.h * m_scale / WG_SCALE_BASE;
     
@@ -165,11 +165,11 @@ int WgZoomOutCapsule::MatchingPixelHeight(int pixelWidth) const
 int WgZoomOutCapsule::MatchingPixelWidth(int pixelHeight) const
 {
     int preferredHeight = WgCapsule::PreferredPixelSize().h;
-    int preferredScaled = preferredHeight * m_outerZoom;
+    int preferredScaled = int(preferredHeight * m_outerZoom);
     
     float fraction = pixelHeight / (float) preferredScaled;
 
-    int matching = WgCapsule::MatchingPixelWidth(preferredHeight*fraction) * m_outerZoom;
+    int matching = int(WgCapsule::MatchingPixelWidth(int(preferredHeight*fraction)) * m_outerZoom);
     
     int min = m_minPointSize.w * m_scale / WG_SCALE_BASE;
     

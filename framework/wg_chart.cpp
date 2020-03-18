@@ -769,7 +769,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
     
     pDevice->setClipList(nRects, pRects);
     
-    for( int i = 0 ; i < m_waves.size() ; i++ )
+    for( int i = 0 ; i < (int) m_waves.size() ; i++ )
 	{
         if( i == m_cacheFirst-1 )
         {
@@ -962,7 +962,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 	if (valueFactor < 0)
 	{
 		floor = m_bottomValue;
-		yOfs = canvas.h*256;
+		yOfs = (float) canvas.h*256;
 	}
 	else
 	{
@@ -970,7 +970,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		yOfs = 0;
 	}
 
-	int newDefault = yOfs + (int)((pWave->defaultSample - floor) * valueFactor * 256);
+	int newDefault = int(yOfs) + (int)((pWave->defaultSample - floor) * valueFactor * 256);
 	int newFirst = (int)((pWave->firstSample - m_firstSample) * sampleScale);
 
 
@@ -994,7 +994,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		if (nResampled == pWave->nSamples)
 		{
 			for (int i = 0; i < nResampled; i++)
-				pNewTopSamples[i] = yOfs + (int)((pWave->orgTopSamples[i] - floor) * valueFactor * 256);
+				pNewTopSamples[i] = int(yOfs) + (int)((pWave->orgTopSamples[i] - floor) * valueFactor * 256);
 		}
 		else
 		{
@@ -1010,7 +1010,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 				int val1 = (int)((pWave->orgTopSamples[ofs] - floor) * valueFactor * 256);
 				int val2 = (int)((pWave->orgTopSamples[ofs+1] - floor) * valueFactor * 256);
 
-				pNewTopSamples[i] = yOfs + ((val1*frac1 + val2*frac2) >> 8) ;
+				pNewTopSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 8) ;
 			}
 		}
 	}
@@ -1030,7 +1030,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 		if (nResampled == pWave->nSamples)
 		{
 			for (int i = 0; i < nResampled; i++)
-				pNewBottomSamples[i] = yOfs + (int)((pWave->orgBottomSamples[i] - floor) * valueFactor * 256);
+				pNewBottomSamples[i] = int(yOfs) + (int)((pWave->orgBottomSamples[i] - floor) * valueFactor * 256);
 		}
 		else
 		{
@@ -1046,7 +1046,7 @@ void WgChart::_resampleWave(Wave * pWave, bool bRequestRenderOnChanges )
 				int val1 = (int)((pWave->orgBottomSamples[ofs] - floor) * valueFactor * 256);
 				int val2 = (int)((pWave->orgBottomSamples[ofs + 1] - floor) * valueFactor * 256);
 
-				pNewBottomSamples[i] = yOfs + ((val1*frac1 + val2*frac2) >> 8);
+				pNewBottomSamples[i] = int(yOfs) + ((val1*frac1 + val2*frac2) >> 8);
 			}
 		}
 	}

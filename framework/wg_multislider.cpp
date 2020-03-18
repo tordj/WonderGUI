@@ -1019,8 +1019,8 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 						
 						if (m_finetuneStepIncrement == 0.f)
 						{
-							stepIncrement.x = 1 / (sliderGeo.w - 0.0001);
-							stepIncrement.y = 1 / (sliderGeo.h - 0.0001);
+							stepIncrement.x = 1 / (sliderGeo.w - 0.0001f);
+							stepIncrement.y = 1 / (sliderGeo.h - 0.0001f);
 						}
 						else
 						{
@@ -1038,8 +1038,8 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 					}
 					else
 					{
-						movement.x = sliderGeo.w == 0 ? 0 : ((float) dragNow.x) / (sliderGeo.w-0.0001);
-						movement.y = sliderGeo.h == 0 ? 0 : ((float) dragNow.y) / (sliderGeo.h-0.0001);
+						movement.x = sliderGeo.w == 0 ? 0 : ((float) dragNow.x) / (sliderGeo.w-0.0001f);
+						movement.y = sliderGeo.h == 0 ? 0 : ((float) dragNow.y) / (sliderGeo.h-0.0001f);
 
 						m_finetuneRemainder = { 0,0 };
 					}

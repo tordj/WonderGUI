@@ -15,15 +15,11 @@
     <ClCompile Include="..\framework\gfxdevices\opengl\wg3_glshaders.cpp" />
     <ClCompile Include="..\framework\gfxdevices\opengl\wg3_glsurface.cpp" />
     <ClCompile Include="..\framework\gfxdevices\opengl\wg3_glsurfacefactory.cpp" />
-    <ClCompile Include="..\framework\opengl\wg_glsurface.cpp" />
-    <ClCompile Include="..\framework\opengl\wg_glsurfacefactory.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\framework\gfxdevices\opengl\wg3_glgfxdevice.h" />
     <ClInclude Include="..\framework\gfxdevices\opengl\wg3_glsurface.h" />
     <ClInclude Include="..\framework\gfxdevices\opengl\wg3_glsurfacefactory.h" />
-    <ClInclude Include="..\framework\opengl\wg_glsurface.h" />
-    <ClInclude Include="..\framework\opengl\wg_glsurfacefactory.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{81D3EB2B-52E7-442A-9BA0-07F9585EF684}</ProjectGuid>
@@ -59,12 +55,12 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\glew\include;.;..\framework;..\framework\opengl;..\framework\gfxdevices\opengl;..\framework\interfaces;..\framework\base;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\glew\include;.;..\framework;..\framework\opengl;..\framework\gfxdevices\opengl;..\framework\components;..\framework\base;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
-    <IncludePath>..\..\glew\include;.;..\framework;..\framework\opengl;..\framework\gfxdevices\opengl;..\framework\interfaces;..\framework\base;$(IncludePath)</IncludePath>
+    <IncludePath>..\..\glew\include;.;..\framework;..\framework\opengl;..\framework\gfxdevices\opengl;..\framework\components;..\framework\base;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

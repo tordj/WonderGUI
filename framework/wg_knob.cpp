@@ -238,8 +238,8 @@ WgRect WgKnob::_calcUdateRect(float newAngleStart, float newAngleEnd, float newV
 
 		// Apparently we need some margin because of the fade at the end...
 
-		changeBeg -= 0.3;
-		changeEnd += 0.3;
+		changeBeg -= 0.3f;
+		changeEnd += 0.3f;
 
 		//
 
@@ -365,7 +365,7 @@ void WgKnob::_onNewSize(const WgSize& size)
 {
 	WgSize sz = m_pSkin ? size - _skinContentPadding( m_pSkin, m_scale) : size;
 
-	const int w = std::max(std::min(sz.w, sz.h)*m_knobScale, 0.f);
+	const int w = std::max(int(std::min(sz.w, sz.h)*m_knobScale), 0);
 	const int h = w;
 
 	WgSize newSize(w, h);
