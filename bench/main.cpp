@@ -53,6 +53,7 @@
 #include <wg_popuplayer.h>
 #include <wg_blockset.h>
 #include <wg_shadowlayer.h>
+#include <wg_pianokeyboard.h>
 
 
 #include "testwidget.h"
@@ -68,6 +69,7 @@ void cursorInViewTest( WgRootPanel * pRoot );
 void flexHookGrowthTest( WgRootPanel * pRoot );
 void packPanelPaddingTest( WgRootPanel * pRoot );
 void packPanelTextWrapTest( WgRootPanel * pRoot );
+bool pianoKeyboardTest(WgRootPanel * pRoot);
 
 //#define USE_OPEN_GL
 
@@ -145,7 +147,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1000, height = 600;
+	int posX = 100, posY = 100, width = 3000, height = 1500;
 
 	int flags = 0;
 
@@ -222,7 +224,7 @@ int main ( int argc, char** argv )
 #endif
 
     auto pContext = wg::Context::create();
-    pContext->setScale(2.f);
+    pContext->setScale(1.00f);
     pContext->setGfxDevice(g_pGfxDevice);
     pContext->setSurfaceFactory(g_pSurfaceFactory);
     wg::Base::setActiveContext(pContext);
@@ -281,6 +283,7 @@ int main ( int argc, char** argv )
     pTextStyle->setColor(wg::Color::White);
     pTextStyle->setSize(8);
     
+    
 
     wg::Base::setDefaultStyle( pTextStyle );
 
@@ -289,15 +292,17 @@ int main ( int argc, char** argv )
 
 //    packPanelPaddingTest( pRoot );
 //    packPanelTextWrapTest( pRoot );
-
 //    flexHookGrowthTest( pRoot );
-
-    cursorInViewTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
 //    scrollPanelTest(pRoot);
 //    shadowLayerTest(pRoot);
 //	manuBlendTest();
+
+
+//    cursorInViewTest( pRoot );
+	pianoKeyboardTest(pRoot);
+
 
 	// Setup debug overlays
 	
@@ -1033,6 +1038,50 @@ void shadowLayerTest( WgRootPanel * pRoot )
 
 }
 
+
+//____ pianoKeyboardTest() ____________________________________________________
+
+bool pianoKeyboardTest(WgRootPanel * pRoot)
+{
+	auto pBaseLayer = new WgFlexPanel();
+	pBaseLayer->SetSkin(wg::ColorSkin::create(wg::Color::PapayaWhip));
+
+	auto pSkin = wg::ColorSkin::create(wg::Color::Black);
+	pSkin->setContentPadding({ 60,10,10,10 });
+
+	{
+
+		wg::Surface_p pOddWhiteKeys		= sdl_wglib::LoadSurface("../resources/whiteoddkeys.png", g_pSurfaceFactory);
+		wg::Surface_p pEvenWhiteKeys	= sdl_wglib::LoadSurface("../resources/whiteevenkeys.png", g_pSurfaceFactory);
+		wg::Surface_p pBlackKeys		= sdl_wglib::LoadSurface("../resources/blackkeys.png", g_pSurfaceFactory);
+
+		auto pSimplePiano = new WgPianoKeyboard();
+
+		pSimplePiano->SetSkin(pSkin);
+		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
+		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed });
+
+		pBaseLayer->AddChild(pSimplePiano, { 20,20 });
+	}
+
+	{
+		wg::Surface_p pOddWhiteKeys = sdl_wglib::LoadSurface("../resources/NisOddWhite.png", g_pSurfaceFactory);
+		wg::Surface_p pEvenWhiteKeys = sdl_wglib::LoadSurface("../resources/NisEvenWhite.png", g_pSurfaceFactory);
+		wg::Surface_p pBlackKeys = sdl_wglib::LoadSurface("../resources/NisBlack.png", g_pSurfaceFactory);
+
+		auto pNisPiano = new WgPianoKeyboard();
+		pNisPiano->SetSkin(pSkin);
+		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
+		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Normal, wg::StateEnum::Pressed });
+
+		pBaseLayer->AddChild(pNisPiano, { 20,220 });
+
+//		pNisPiano->setFlipKeyOnPress(true);
+	}
+
+	pRoot->SetChild(pBaseLayer);
+	return true;
+}
 
 
 

@@ -1058,7 +1058,7 @@ void WgScrollChart::_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _can
 
 		for (auto& line : m_valueGridLines)
 		{
-			int yOfs = startOfs + (int)((line.pos - top) * mul + 0.5f);
+			int yOfs = int(startOfs) + (int)((line.pos - top) * mul + 0.5f);
 			pDevice->drawLine({ _canvas.x, yOfs }, WgDirection::Right, _canvas.w, line.color, line.thickness * m_scale / WG_SCALE_BASE);
 		}
 	}
@@ -1161,11 +1161,11 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		bottom = std::max(m_topValue, m_bottomValue);
 
 		mul = scrollCanvas.h / (m_bottomValue - m_topValue);
-		startOfs = mul > 0 ? scrollCanvas.y : scrollCanvas.y + scrollCanvas.h;
+		startOfs = float(mul > 0 ? scrollCanvas.y : scrollCanvas.y + scrollCanvas.h);
 
 		for (auto& line : m_valueGridLines)
 		{
-			int yOfs = startOfs + (int)((line.pos - top) * mul + 0.5f);
+			int yOfs = int(startOfs) + (int)((line.pos - top) * mul + 0.5f);
 
 			if (!line.label.isEmpty())
 			{

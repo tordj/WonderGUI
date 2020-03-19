@@ -322,7 +322,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		for( const WgRect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 		{
-			m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Focused );
+			m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect*4, WgStateEnum::Focused );
 		}
 
 		// Render overlays that have turned into afterglow
@@ -331,7 +331,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect, WgStateEnum::Normal );
+				m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect*4, WgStateEnum::Normal );
 			}
 		}
 	}

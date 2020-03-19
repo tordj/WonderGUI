@@ -212,6 +212,7 @@
     <ClInclude Include="framework\fonts\freetype\wg3_freetypefont.h">
       <Filter>Fonts\Freetype</Filter>
     </ClInclude>
+    <ClInclude Include="framework\wg_pianokeyboard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -414,5 +415,6 @@
     <ClCompile Include="framework\fonts\freetype\wg3_freetypefont.cpp">
       <Filter>Fonts\Freetype</Filter>
     </ClCompile>
+    <ClCompile Include="framework\wg_pianokeyboard.cpp" />
   </ItemGroup>
 </Project>

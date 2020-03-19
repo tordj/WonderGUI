@@ -168,6 +168,7 @@
     <ClInclude Include="framework\wg_packpanel.h" />
     <ClInclude Include="framework\wg_panel.h" />
     <ClInclude Include="framework\wg_pen.h" />
+    <ClInclude Include="framework\wg_pianokeyboard.h" />
     <ClInclude Include="framework\wg_popuplayer.h" />
     <ClInclude Include="framework\wg_popupopener.h" />
     <ClInclude Include="framework\wg_radiobutton.h" />
@@ -278,6 +279,7 @@
     <ClCompile Include="framework\wg_packpanel.cpp" />
     <ClCompile Include="framework\wg_panel.cpp" />
     <ClCompile Include="framework\wg_pen.cpp" />
+    <ClCompile Include="framework\wg_pianokeyboard.cpp" />
     <ClCompile Include="framework\wg_popuplayer.cpp" />
     <ClCompile Include="framework\wg_popupopener.cpp" />
     <ClCompile Include="framework\wg_radiobutton.cpp" />

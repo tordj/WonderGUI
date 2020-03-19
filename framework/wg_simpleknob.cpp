@@ -108,7 +108,7 @@ void WgSimpleKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	if( sz > 1 )
 	{
         m_iNextPixel = 0;
-        drawCircle(_canvas.x + sz/2, _canvas.y + sz/2, sz/2, sz/2);
+        drawCircle(_canvas.x + sz/2, _canvas.y + sz/2, (float)sz/2, (float)sz/2);
         pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 //        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
         
@@ -118,7 +118,7 @@ void WgSimpleKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
         const float y =  cos(d*PI/180.0f + m_fValue*(360.0f-d*2)*PI/180.0f)*(0.92f*float(sz)/2.0f);
 
         m_iNextPixel = 0;
-        drawLine(_canvas.x + rad, _canvas.y + rad, _canvas.x + rad + x, _canvas.y + rad + y);
+        drawLine( float(_canvas.x + rad), float(_canvas.y + rad), _canvas.x + rad + x, _canvas.y + rad + y);
         pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 //        pDevice->ClipPlotPixels(_clip, m_iNextPixel, m_pAAPix, m_pAACol);
 	}
@@ -152,20 +152,20 @@ void WgSimpleKnob::drawCircle(const int centerX, const int centerY, const float 
     const float ry2 = radY*radY;
     int quarter;
     
-    quarter = round(rx2 / sqrt(rx2 + ry2));
+    quarter = (int) round(rx2 / sqrt(rx2 + ry2));
     for (int x=0; x<=quarter; x++) {
-        float y = radY * sqrt(1.0-x*x/rx2);
+        float y = radY * (float) sqrt(1.0-x*x/rx2);
         float e = y - floor(y);
-        plot4(centerX, centerY, x, -floor(y), e);
-        plot4(centerX, centerY, x, -floor(y)+1, 1.0-e);
+        plot4(centerX, centerY, x, (int) -floor(y), (float) e);
+        plot4(centerX, centerY, x, (int) -floor(y)+1, (float) 1.0-e);
     }
     
-    quarter = round(ry2 / sqrt(rx2 + ry2));
+    quarter = (int) round(ry2 / sqrt(rx2 + ry2));
     for (int y=0; y<=quarter; y++) {
-        float x = radX * sqrt(1.0-y*y/ry2);
+        float x = radX * (float) sqrt(1.0-y*y/ry2);
         float e = x - floor(x);
-        plot4(centerX, centerY, -floor(x),   y, e);
-        plot4(centerX, centerY, -floor(x)+1, y, 1.0-e);
+        plot4(centerX, centerY, (int) -floor(x),   y, (float) e);
+        plot4(centerX, centerY, (int) -floor(x)+1, y, (float) 1.0-e);
     }
 }
 
@@ -199,8 +199,8 @@ void WgSimpleKnob::drawLine(float x0, float y0, float x1, float y1)
         
     xend = round(x0);
     yend = y0 + gradient * (xend - x0);
-    xgap = rfpart(x0 + 0.5);
-    xpxl1 = xend;
+    xgap = rfpart(x0 + 0.5f);
+    xpxl1 = (int) xend;
     ypxl1 = ipart(yend);
         
     if (steep) {
@@ -215,8 +215,8 @@ void WgSimpleKnob::drawLine(float x0, float y0, float x1, float y1)
     // Second end point
     xend = round(x1);
     yend = y1 + gradient * (xend - x1);
-    xgap = fpart(x1 + 0.5);
-    xpxl2 = xend;
+    xgap = fpart(x1 + 0.5f);
+    xpxl2 = (int) xend;
     ypxl2 = ipart(yend);
         
     if (steep) {

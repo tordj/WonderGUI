@@ -1058,6 +1058,25 @@ namespace WgEvent
 		m_button		= button;
 	}
 
+	//____ PianoKey event methods ________________________________________________
+
+	PianoKeyPress::PianoKeyPress(WgWidget * pSource, int keyIdx, int64_t timestamp)
+	{
+		m_type			= WG_EVENT_PIANOKEY_PRESS;
+		m_pWidget		= pSource;
+		m_keyIdx		= keyIdx;
+		m_timestamp		= timestamp;
+	}
+
+	PianoKeyRelease::PianoKeyRelease(WgWidget * pSource, int keyIdx, int64_t timestamp)
+	{
+		m_type			= WG_EVENT_PIANOKEY_RELEASE;
+		m_pWidget		= pSource;
+		m_keyIdx		= keyIdx;
+		m_timestamp		= timestamp;
+	}
+
+
 	//____ Knob event methods ____________________________________________________
 
 	KnobTurn::KnobTurn( WgWidget * pWidget, int pos, float fraction )

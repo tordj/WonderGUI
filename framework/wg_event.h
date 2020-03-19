@@ -57,6 +57,7 @@ class WgInterfaceEditText;
 class WgText;
 class WgMultiSlider;
 class WgDragNDropLayer;
+class WgPianoKeyboard;
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;
 
@@ -961,6 +962,62 @@ namespace WgEvent
 	public:
 		LinkDoubleClick( WgWidget * pWidget, std::string link, int button );
 	};
+
+	//____ PianoKeyPress ___________________________________________________
+	/**
+	 *	@brief Key is pressed by users action.
+	 *
+	 * This event is posted when a piano key is pressed as the result of a user action, e.i.
+	 * pressing left mouse key on a piano key or moving pointer to key while pressed.
+	 *
+	 * No event is posted if piano key is pressed through an API call or key already is
+	 * pressed when user presses it.
+	 *
+	 */
+
+	class PianoKeyPress : public Event
+	{
+		friend class ::WgPianoKeyboard;
+	public:
+
+		int					key() { return m_keyIdx; }
+		int64_t				timestamp() const { return m_timestamp; }
+
+	protected:
+		PianoKeyPress(WgWidget * pSource, int keyIdx, int64_t timestamp);
+
+		int		m_keyIdx;
+		int64_t	m_timestamp;
+	};
+
+	//____ PianoKeyRelease ___________________________________________________
+	/**
+	 *	@brief Key is released by users action.
+	 *
+	 * This event is posted when a piano key is released as the result of a user action, e.i.
+	 * releasing mouse key on a piano key or moving pointer away from key while pressed.
+	 *
+	 * No event is posted if piano key remains pressed (due to pressed state set
+	 * through API call).
+	 *
+	 */
+
+	class PianoKeyRelease : public Event
+	{
+		friend class ::WgPianoKeyboard;
+	public:
+	
+		int					key() { return m_keyIdx; }
+		int64_t				timestamp() const { return m_timestamp; }
+
+	protected:
+		PianoKeyRelease(WgWidget * pSource, int keyIdx, int64_t timestamp);
+
+		int		m_keyIdx;
+		int64_t	m_timestamp;
+	};
+
+
 
 	//____ Internally posted events ____________________________________________
 
