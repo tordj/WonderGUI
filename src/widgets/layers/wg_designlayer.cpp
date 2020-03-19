@@ -141,8 +141,8 @@ namespace wg
 
 	int DesignLayer::_matchingHeight(int width) const
 	{
-		if (_baseSlot()->_widget())
-			return _baseSlot()->_matchingHeight(width);
+		if (mainSlot._widget())
+			return OO(mainSlot)._matchingHeight(width);
 		else
 			return Widget::_matchingHeight(width);
 	}
@@ -151,8 +151,8 @@ namespace wg
 
 	int DesignLayer::_matchingWidth(int height) const
 	{
-		if (_baseSlot()->_widget())
-			return _baseSlot()->_matchingWidth(height);
+		if (mainSlot._widget())
+			return OO(mainSlot)._matchingWidth(height);
 		else
 			return Widget::_matchingWidth(height);
 	}
@@ -161,8 +161,8 @@ namespace wg
 
 	SizeI DesignLayer::_preferredSize() const
 	{
-		if (_baseSlot()->_widget())
-			return _baseSlot()->_preferredSize();
+		if (mainSlot._widget())
+			return OO(mainSlot)._preferredSize();
 		else
 			return SizeI(1, 1);
 	}
@@ -196,7 +196,7 @@ namespace wg
 
 		if (!mainSlot.isEmpty())
 		{
-			OO(_baseSlot()->_widget())->_render(pDevice, contentRect, contentRect);
+			OO(mainSlot._widget())->_render(pDevice, contentRect, contentRect);
 		}
 
 		if (m_bEditMode)
@@ -487,7 +487,7 @@ namespace wg
 
 						if (m_pressedToolbox == -1)
 						{
-							auto pContainer = wg_cast<Container_p>(_baseSlot()->_widget());
+							auto pContainer = wg_cast<Container_p>(mainSlot._widget());
 							if (pContainer)
 							{
 								Widget * pWidget = OO(pContainer)->_findWidget(mousePos, SearchMode::MarkPolicy);

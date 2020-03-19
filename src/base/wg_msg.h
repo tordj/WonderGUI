@@ -1285,6 +1285,8 @@ namespace wg
 		const char *		className(void) const override;
 		static const char	CLASSNAME[];
 
+		//.____ Content ________________________________________________________
+
 		int					key() { return m_keyIdx; }
 		int64_t				timestamp() const { return m_timestamp; }
 
@@ -1316,6 +1318,8 @@ namespace wg
 		bool				isInstanceOf(const char * pClassName) const override;
 		const char *		className(void) const override;
 		static const char	CLASSNAME[];
+
+		//.____ Content ________________________________________________________
 
 		int					key() { return m_keyIdx; }
 		int64_t				timestamp() const { return m_timestamp; }

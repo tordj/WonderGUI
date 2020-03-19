@@ -172,12 +172,7 @@ namespace wg
 		Widget_p		_createGenericSlotTool(const StaticSlot& slot);
 		Widget_p		_createGenericWidgetTool(Widget * pWidget);
 
-
 		//
-
-		class MainSlotAccess : public CStandardSlot { friend class DesignLayer; };
-		MainSlotAccess * _baseSlot() { return static_cast<MainSlotAccess*>(&mainSlot); }
-		const MainSlotAccess * _baseSlot() const { return static_cast<const MainSlotAccess*>(&mainSlot); }
 
 		RectI			_selectionGeo() const;
 		void			_refreshRealGeo(DesignToolboxSlot * pSlot);
