@@ -54,6 +54,10 @@ namespace wg
 
 		public:
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Geometry _________________________________________________
 
 			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
@@ -167,6 +171,8 @@ namespace wg
 		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

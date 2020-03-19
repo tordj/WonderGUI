@@ -113,23 +113,6 @@ namespace wg
 
 		~CharBuffer() { _derefBuffer(); }
 
-
-		//.____ Operators ______________________________________________________
-
-		CharBuffer& operator=( CharBuffer const & r);
-		CharBuffer& operator=( String const & r);
-		CharBuffer& operator=( CharSeq const & r);
-
-		inline bool operator==(const CharBuffer& other) const { return _compareBuffers( this->m_pHead, other.m_pHead ); }
-		inline bool operator!=(const CharBuffer& other) const { return !_compareBuffers( this->m_pHead, other.m_pHead ); }
-
-		// These operator[] are slow, please use chars() or beginWrite() instead.
-
-		Char&				operator[](int i)								{ if( m_pHead->m_refCnt > 1 ) _reshapeBuffer(0,0,m_pHead->m_len,0); return *(Char*)_ptr(i); }
-		const Char&		operator[](int i) const							{ return *(const Char*)_ptr(i); }
-
-		inline operator bool() const { return m_pHead->m_len != 0?true:false; }
-
 		//.____ Content ___________________________________________________________
 
 		void	trim();
@@ -208,12 +191,26 @@ namespace wg
 		int					compareCharCodesTo( const CharBuffer * pBuffer );
 		int					compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer );
 
-
-
 		// Methods mostly for debugging and profiling purposes.
 
-		inline int		refCount() const;
-		inline static int nbBuffers();
+		inline int			refCount() const;
+		inline static int	nbBuffers();
+
+		//.____ Operators ______________________________________________________
+
+		CharBuffer& operator=(CharBuffer const & r);
+		CharBuffer& operator=(String const & r);
+		CharBuffer& operator=(CharSeq const & r);
+
+		inline bool operator==(const CharBuffer& other) const { return _compareBuffers(this->m_pHead, other.m_pHead); }
+		inline bool operator!=(const CharBuffer& other) const { return !_compareBuffers(this->m_pHead, other.m_pHead); }
+
+		// These operator[] are slow, please use chars() or beginWrite() instead.
+
+		Char&				operator[](int i) { if (m_pHead->m_refCnt > 1) _reshapeBuffer(0, 0, m_pHead->m_len, 0); return *(Char*)_ptr(i); }
+		const Char&		operator[](int i) const { return *(const Char*)_ptr(i); }
+
+		inline operator bool() const { return m_pHead->m_len != 0 ? true : false; }
 
 	private:
 

@@ -59,6 +59,10 @@ namespace wg
 
 		public:
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Properties _________________________________________________
 
 			void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
@@ -137,6 +141,8 @@ namespace wg
 		void		_resize( const SizeI& size ) override;
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

@@ -30,6 +30,7 @@
 namespace wg
 {
 	const char SplitPanel::CLASSNAME[] = { "SplitPanel" };
+	const TypeInfo SplitPanel::Slot::TYPEINFO = { "SplitPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	//____ Constructor ____________________________________________________________
 
@@ -543,6 +544,12 @@ namespace wg
 		Panel::_setState(state);
 	}
 
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	SplitPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
+	}
 
 	//_____ _firstChild() _____________________________________________________
 

@@ -1488,7 +1488,7 @@ namespace wg
 
 	}
 
-	//____ _setWidget() __________________________________________________________
+	//____ _replaceChild() __________________________________________________________
 
 	void ScrollPanel::_replaceChild(StaticSlot * _pSlot, Widget * pWidget)
 	{
@@ -1530,6 +1530,17 @@ namespace wg
 			_requestRender(pSlot->geo);					// If geometry is same as the old one, we need to request render ourselves.
 		}
 	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	ScrollPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		//The slots are technically not DynamicSlots, but none offer any extra functionality 
+		// so as far as the rest of the world is concerned...
+
+		return &DynamicSlot::TYPEINFO;
+	}
+
 
 	//____ _firstChild() ______________________________________________________
 

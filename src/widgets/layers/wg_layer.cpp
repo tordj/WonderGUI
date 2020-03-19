@@ -28,6 +28,7 @@ namespace wg
 {
 
 	const char Layer::CLASSNAME[] = {"Layer"};
+	const TypeInfo Layer::Slot::TYPEINFO = { "Layer::Slot", &StaticSlot::TYPEINFO };
 
 
 	//____ Constructor ____________________________________________________________

@@ -29,7 +29,6 @@
 
 namespace wg
 {
-
 	//____ StaticSlot __________________________________________________________
 
 	class StaticSlot
@@ -40,15 +39,11 @@ namespace wg
 
 	public:
 
-		//.____ Operators __________________________________________
+		//.____ Identification ________________________________________________
 
-		inline operator Widget_p() const { return widget(); }
+		const TypeInfo * typeInfo(void) const { return m_pHolder->_slotTypeInfo(this); }
 
-		inline bool operator==(Widget * other) const { return other == _widget(); }
-		inline bool operator!=(Widget * other) const { return other != _widget(); }
-
-		inline Widget* operator->() const { return _widget(); }
-
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -62,9 +57,19 @@ namespace wg
 		inline Size		size() const { return Util::rawToQpix(_size()); }
 		inline Rect		geo() const { return Util::rawToQpix( RectI(m_pHolder->_childPos(this),_size())); }
 
+		//.____ Operators __________________________________________
+
+		inline operator Widget_p() const { return widget(); }
+
+		inline bool operator==(Widget * other) const { return other == _widget(); }
+		inline bool operator!=(Widget * other) const { return other != _widget(); }
+
+		inline Widget* operator->() const { return _widget(); }
+
 		//.____ Internal ______________________________________________________
 
 		inline Widget * _widget() const { return m_pWidget; }
+
 
 	protected:
 		const static bool safe_to_relocate = true;
@@ -167,16 +172,20 @@ namespace wg
 
 	public:
 
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content _______________________________________________________
+
+		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
+
 		//.____ Operators __________________________________________
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
 
 		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
 
-
-		//.____ Content _______________________________________________________
-
-		inline void		setWidget(const Widget_p& pWidget) { if (pWidget) pWidget->releaseFromParent(); m_pHolder->_replaceChild(this, pWidget); }
 
 	protected:
 		const static bool safe_to_relocate = true;

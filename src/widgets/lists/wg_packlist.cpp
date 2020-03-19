@@ -38,6 +38,7 @@ namespace wg
 	template class CDynamicSlotVector<PackList::Slot>;
 
 	const char PackList::CLASSNAME[] = {"PackList"};
+	const TypeInfo PackList::Slot::TYPEINFO = { "PackList::Slot", &List::Slot::TYPEINFO };
 
 
 	//____ insertSorted() ___________________________________________________
@@ -1300,6 +1301,13 @@ namespace wg
 	{
 		static_cast<Slot*>(pSlot)->_setWidget(pNewChild);
 		_childRequestResize(pSlot);
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	PackList::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
 	}
 
 	//____ _firstSlotWithGeo() ____________________________________________________

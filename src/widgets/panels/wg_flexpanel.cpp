@@ -36,6 +36,7 @@ namespace wg
 	template class CDynamicSlotVector<FlexPanel::Slot>;
 
 	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
+	const TypeInfo FlexPanel::Slot::TYPEINFO = { "FlexPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	float	FlexPos::s_origoTab[9][2] = {	0.f, 0.f,
 												0.5f, 0.f,
@@ -523,6 +524,13 @@ namespace wg
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_refreshRealGeo(pSlot, true);
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	FlexPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
 	}
 
 

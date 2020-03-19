@@ -199,6 +199,13 @@ namespace wg
 		}
 	}
 
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	Capsule::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &DynamicSlot::TYPEINFO;
+	}
+
 	//____ _firstChild() ____________________________________________________________
 
 	Widget* Capsule::_firstChild() const

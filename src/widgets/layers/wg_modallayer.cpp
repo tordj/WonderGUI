@@ -38,6 +38,7 @@ namespace wg
 	template class CDynamicSlotVector<ModalLayer::Slot>;
 
 	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
+	const TypeInfo ModalLayer::Slot::TYPEINFO = { "ModalLayer::Slot", &Layer::Slot::TYPEINFO };
 
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
 
@@ -234,6 +235,16 @@ namespace wg
 			return OO(mainSlot)._preferredSize();
 		else
 			return SizeI(1,1);
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	ModalLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		if (pSlot == &mainSlot)
+			return &DynamicSlot::TYPEINFO;
+
+		return &Slot::TYPEINFO;
 	}
 
 	//____ _findWidget() ____________________________________________________________

@@ -41,6 +41,10 @@ namespace wg
 		/** @private */
 		PaddedSlot(SlotHolder* pHolder) : DynamicSlot(pHolder), m_bVisible(false) {} 
 
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Appearance ____________________________________________________
 
 		inline void		hide() { _holder()->_hideSlots(this, 1); }

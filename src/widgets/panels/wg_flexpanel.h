@@ -103,7 +103,10 @@ namespace wg
 			template<class S> friend class CDynamicSlotVector;
 
 		public:
+			 
+			//.____ Identification ________________________________________________
 
+			const static TypeInfo	TYPEINFO;
 
 			//.____ Properties _________________________________________________________
 
@@ -250,6 +253,8 @@ namespace wg
 
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

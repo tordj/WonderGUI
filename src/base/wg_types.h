@@ -212,6 +212,13 @@ namespace wg
 
 	typedef uint16_t		TextStyle_h;
 
+	//____ TypeInfo __________________________________________________________
+
+	struct TypeInfo
+	{
+		const char * className;
+		const TypeInfo * pPrev;
+	};
 
 	//____ ExtChar __________________________________________________________
 

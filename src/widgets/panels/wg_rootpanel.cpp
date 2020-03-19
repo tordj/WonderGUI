@@ -396,6 +396,13 @@ namespace wg
 		return _geo();
 	}
 
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	RootPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &DynamicSlot::TYPEINFO;
+	}
+
 	//____ _container() __________________________________________________
 
 	Container * RootPanel::_container()

@@ -67,6 +67,10 @@ namespace wg
 
 		public:
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Operators __________________________________________
 
 			inline void operator=(Widget * pWidget) { setWidget(pWidget); }
@@ -193,6 +197,8 @@ namespace wg
 
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void			_nextSlotWithGeo(SlotWithGeo& package) const override;

@@ -38,6 +38,7 @@ namespace wg
 	template class CStaticSlotVector<PopupLayer::Slot>;
 
 	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
+	const TypeInfo PopupLayer::Slot::TYPEINFO = { "PopupLayer::Slot", &Layer::Slot::TYPEINFO };
 
 
 	//____ pushFront() ________________________________________________
@@ -279,6 +280,16 @@ namespace wg
 
 		if (bForceResize || pSlot->_size() != geo.size())
 			pSlot->_setSize(geo);
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	PopupLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		if (pSlot == &mainSlot)
+			return &DynamicSlot::TYPEINFO;
+
+		return &Slot::TYPEINFO;
 	}
 
 

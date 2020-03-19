@@ -39,9 +39,10 @@ namespace wg
 {
 	using namespace Util;
 
-	template class CStaticSlotVector<DesignToolboxSlot>;
+	template class CStaticSlotVector<DesignLayer::ToolboxSlot>;
 
 	const char DesignLayer::CLASSNAME[] = { "DesignLayer" };
+	const TypeInfo DesignLayer::ToolboxSlot::TYPEINFO = { "DesignLayer::ToolboxSlot", &Layer::Slot::TYPEINFO };
 
 
 	//____ Constructor ____________________________________________________________
@@ -244,7 +245,7 @@ namespace wg
 
 	//____ _refreshRealGeo() __________________________________________________
 
-	void DesignLayer::_refreshRealGeo(DesignToolboxSlot * pSlot)
+	void DesignLayer::_refreshRealGeo(ToolboxSlot * pSlot)
 	{
 		if (m_pSelectedWidget)
 		{
@@ -375,6 +376,15 @@ namespace wg
 
 	}
 
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	DesignLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		if (pSlot == &mainSlot)
+			return &DynamicSlot::TYPEINFO;
+
+		return &ToolboxSlot::TYPEINFO;
+	}
 
 	//____ _childRequestResize() ______________________________________________
 
@@ -384,7 +394,7 @@ namespace wg
 			_requestResize();
 		else
 		{
-			auto p = static_cast<DesignToolboxSlot*>(pSlot);
+			auto p = static_cast<ToolboxSlot*>(pSlot);
 			_refreshRealGeo( p );
 		}
 	}
@@ -397,7 +407,7 @@ namespace wg
 			Layer::_releaseChild(pSlot);
 		else
 		{
-			auto p = static_cast<DesignToolboxSlot*>(pSlot);
+			auto p = static_cast<ToolboxSlot*>(pSlot);
 
 			if (p->m_bVisible)
 				_requestRender(p->m_geo);
@@ -423,7 +433,7 @@ namespace wg
 
 	int DesignLayer::_sizeOfLayerSlot() const
 	{
-		return sizeof(DesignToolboxSlot);
+		return sizeof(ToolboxSlot);
 	}
 
 

@@ -87,26 +87,7 @@ namespace wg
 		Char( uint16_t charCode, TextStyle * pStyle ) { m_code = charCode; m_style = pStyle->handle(); pStyle->_incRefCount(); }
 		~Char() { if( m_style ) TextStyleManager::_getPointer(m_style)->_decRefCount(); }
 
-		//.____ Operators ______________________________________________________
-
-		inline Char & operator=(const Char &ref)
-		{
-			if(m_style == ref.m_style)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
-			{							// also speeds things up...
-				m_all = ref.m_all;
-			}
-			else
-			{
-				if(m_style)
-					TextStyleManager::_getPointer(m_style)->_decRefCount();
-				m_all = ref.m_all;
-				if(m_style)
-					TextStyleManager::_getPointer(m_style)->_incRefCount();
-			}
-			return *this;
-		}
-
-		//.____ Misc ___________________________________________________________
+		//.____ Content ___________________________________________________________
 
 		inline bool				equals(const Char& ch) const { return m_all == ch.m_all; }
 
@@ -154,6 +135,25 @@ namespace wg
 								/// @return True if the character code is a space or ExtChar::NoBreakSpace.
 
 		inline bool 			isWhitespace() const { if( m_code == ' ' || m_code == (uint16_t)ExtChar::NoBreakSpace ) return true; return false; }
+
+		//.____ Operators ______________________________________________________
+
+		inline Char & operator=(const Char &ref)
+		{
+			if (m_style == ref.m_style)		// Don't dec/inc ref if properties are same! Could be a self-assignment...
+			{							// also speeds things up...
+				m_all = ref.m_all;
+			}
+			else
+			{
+				if (m_style)
+					TextStyleManager::_getPointer(m_style)->_decRefCount();
+				m_all = ref.m_all;
+				if (m_style)
+					TextStyleManager::_getPointer(m_style)->_incRefCount();
+			}
+			return *this;
+		}
 
 	protected:
 

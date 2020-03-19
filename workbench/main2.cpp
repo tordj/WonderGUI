@@ -189,7 +189,7 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 2300, height = 768;
+	int posX = 100, posY = 100, width = 1300, height = 768;
 
 
 #ifdef USE_OPEN_GL
@@ -551,8 +551,8 @@ int main(int argc, char** argv)
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
 //	splitPanelTest(&pRoot->slot);
-//	designLayerTest(&pRoot->slot);
-	pianoKeyboardTest(&pRoot->slot);
+	designLayerTest(&pRoot->slot);
+//	pianoKeyboardTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses

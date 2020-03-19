@@ -32,6 +32,7 @@ namespace wg
 
 
 	const char List::CLASSNAME[] = {"List"};
+	const TypeInfo List::Slot::TYPEINFO = { "List::Slot", &SelectableSlot::TYPEINFO };
 
 
 

@@ -826,6 +826,9 @@
     <ClCompile Include="..\..\..\src\widgets\wg_pianokeyboard.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_slot.cpp">
+      <Filter>slots</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="ClassDiagram.cd" />

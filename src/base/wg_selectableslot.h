@@ -35,10 +35,12 @@ namespace wg
 	{
 	public:
 
-		//____ Holder _________________________________________________________
-
 		/** @private */
-		SelectableSlot(SlotHolder* pHolder) : DynamicSlot(pHolder) {} 
+		SelectableSlot(SlotHolder* pHolder) : DynamicSlot(pHolder) {}
+
+		//.____ Identification ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
 
 		//.____ State __________________________________________________________
 
@@ -57,6 +59,7 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
 
 	protected:
 		SelectableSlot(SelectableSlot&& o) = default;

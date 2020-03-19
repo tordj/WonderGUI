@@ -38,19 +38,6 @@ namespace wg
 	{
 	public:
 
-		//.____ Operators __________________________________________
-
-		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
-
-		inline operator Widget_p() const { return widget(); }
-
-		inline bool operator==(Widget * other) const { return other == _slot()->_widget(); }
-		inline bool operator!=(Widget * other) const { return other != _slot()->_widget(); }
-
-		inline Widget* operator->() const { return _slot()->_widget(); }
-
-		inline operator StaticSlot&() { return *_slot(); }
-
 		//.____ Content _______________________________________________________
 
 		inline bool		isEmpty() const { return _slot()->rawWidgetPtr() == nullptr; }
@@ -65,6 +52,19 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline StrongComponentPtr<CStaticSlot>	ptr() { return StrongComponentPtr<CStaticSlot>(this); }
+
+		//.____ Operators __________________________________________
+
+		//		inline ISlot operator=(ISlot& iSlot) { Widget_p pWidget = iSlot.m_pSlot->_widget(); if (pWidget) pWidget->releaseFromParent();  m_pHolder->_setWidget(m_pSlot, pWidget); return *this; }
+
+		inline operator Widget_p() const { return widget(); }
+
+		inline bool operator==(Widget * other) const { return other == _slot()->_widget(); }
+		inline bool operator!=(Widget * other) const { return other != _slot()->_widget(); }
+
+		inline Widget* operator->() const { return _slot()->_widget(); }
+
+		inline operator StaticSlot&() { return *_slot(); }
 
 	protected:
 		virtual StaticSlot *		_slot() = 0;
@@ -81,12 +81,6 @@ namespace wg
 	{
 	public:
 
-		//.____ Operators __________________________________________
-
-		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
-
-		inline operator DynamicSlot&() { return * static_cast<DynamicSlot*>(_slot()); }
-
 		//.____ Content _______________________________________________________
 
 		inline void		setWidget(Widget * pWidget) { static_cast<DynamicSlot*>(_slot())->setWidget(pWidget); }
@@ -96,6 +90,12 @@ namespace wg
 		//.____ Misc __________________________________________________________
 
 		inline StrongComponentPtr<CDynamicSlot>	ptr() { return StrongComponentPtr<CDynamicSlot>(this); }
+
+		//.____ Operators __________________________________________
+
+		inline void operator=(Widget * pWidget) { setWidget(pWidget); }
+
+		inline operator DynamicSlot&() { return *static_cast<DynamicSlot*>(_slot()); }
 
 	};
 
@@ -115,15 +115,6 @@ namespace wg
 
 		CStaticSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
 
-		//.____ Operators __________________________________________
-
-		inline operator Widget_p() const { return SlotType::widget(); }
-
-		inline bool operator==(Widget * other) const { return other == SlotType::_widget(); }
-		inline bool operator!=(Widget * other) const { return other != SlotType::_widget(); }
-
-		inline Widget* operator->() const { return SlotType::_widget(); }
-
 		//.____ Content _______________________________________________________
 
 		inline Widget_p widget() const { return Widget_p(SlotType::_widget()); }
@@ -132,6 +123,15 @@ namespace wg
 		inline Coord	pos() const { return SlotType::pos(); }
 		inline Size		size() const { return SlotType::size(); }
 		inline Rect		geo() const { return SlotType::geo(); }
+
+		//.____ Operators __________________________________________
+
+		inline operator Widget_p() const { return SlotType::widget(); }
+
+		inline bool operator==(Widget * other) const { return other == SlotType::_widget(); }
+		inline bool operator!=(Widget * other) const { return other != SlotType::_widget(); }
+
+		inline Widget* operator->() const { return SlotType::_widget(); }
 
 	protected:
 		Object * _object() override { return SlotType::_holder()->_object(); }
@@ -154,6 +154,17 @@ namespace wg
 
 		CDynamicSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
 
+		//.____ Content _______________________________________________________
+
+		inline void		setWidget(Widget * pWidget) { SlotType::setWidget(pWidget); }
+
+		inline bool		isEmpty() const { return SlotType::isEmpty(); }
+		inline Widget_p widget() const { return Widget_p(SlotType::_widget()); }
+		inline Widget*	rawWidgetPtr() const { return SlotType::rawWidgetPtr(); }
+
+		inline Coord	pos() const { return SlotType::pos(); }
+		inline Size		size() const { return SlotType::size(); }
+		inline Rect		geo() const { return SlotType::geo(); }
 
 		//.____ Operators __________________________________________
 
@@ -166,17 +177,6 @@ namespace wg
 
 		inline Widget* operator->() const { return SlotType::_widget(); }
 
-		//.____ Content _______________________________________________________
-
-		inline void		setWidget(Widget * pWidget) { SlotType::setWidget(pWidget); }
-
-		inline bool		isEmpty() const { return SlotType::isEmpty(); }
-		inline Widget_p widget() const { return Widget_p(SlotType::_widget()); }
-		inline Widget*	rawWidgetPtr() const { return SlotType::rawWidgetPtr(); }
-
-		inline Coord	pos() const { return SlotType::pos(); }
-		inline Size		size() const { return SlotType::size(); }
-		inline Rect		geo() const { return SlotType::geo(); }
 
 	protected:
 		Object * _object() override { return SlotType::_holder()->_object(); }

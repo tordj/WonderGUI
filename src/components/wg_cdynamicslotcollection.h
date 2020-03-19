@@ -42,10 +42,6 @@ namespace wg
 
 		using		iterator = SlotIterator;
 
-		//.____ Operators __________________________________________
-
-		inline iterator operator<<(const Widget_p& pWidget) { return _pushBack(pWidget); }
-
 		//.____ Content _______________________________________________________
 
 		inline  iterator	pushFront(const Widget_p& pWidget) { return _pushFront(pWidget); }
@@ -131,6 +127,10 @@ namespace wg
 		//.____ Misc _______________________________________________________
 
 		inline CDynamicSlotCollection_p ptr() { return CDynamicSlotCollection_p(this); }
+
+		//.____ Operators __________________________________________
+
+		inline iterator operator<<(const Widget_p& pWidget) { return _pushBack(pWidget); }
 
 	protected:
 		virtual iterator	_pushFront(Widget * pWidget) = 0;

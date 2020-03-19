@@ -40,6 +40,34 @@ namespace wg
 		QPix(int point) : raw(point * QPix::pixelQuartersPerPoint()) {}
 		QPix(float point) : raw(int(point * QPix::pixelQuartersPerPoint())) {}
 
+		//.____ Misc ______________________________________________
+
+		inline void setPixel(int pixelValue) { raw = pixelValue << 2; }
+		inline void setPoint(int pointValue) { raw = pointValue * QPix::pixelQuartersPerPoint(); }
+
+		static inline QPix fromPixel(int pixel) { QPix p; p.raw = pixel << 2; return p; }
+		static inline QPix fromPixel(float pixel) { QPix p; p.raw = (int)(pixel * 4); return p; }
+		static inline QPix fromPixel(double pixel) { QPix p; p.raw = (int)(pixel * 4); return p; }
+
+		static inline QPix fromRaw(int rawValue) { QPix p; p.raw = rawValue; return p; }
+
+		inline int roundToPixel() { return (raw * QPix::pixelQuartersPerPoint() + 2) >> 2; }
+		inline void	pixelAlign() { raw = (raw + 2) & 0xFFFFFFFC; }
+		inline int rawAligned() { return (raw + 2) & 0xFFFFFFFC; }
+
+		union
+		{
+			struct
+			{
+				uint32_t quarters : 2;
+				int32_t pixel : 30;
+			};
+			int32_t raw;
+		};
+
+		inline static int		pixelQuartersPerPoint() { return s_pixelQuartersPerPoint; }
+		inline static float		scale() { return s_scale; }
+
 		//.____ Operators ___________________________________________
 
 		operator int() const { return raw / QPix::pixelQuartersPerPoint(); }
@@ -99,7 +127,7 @@ namespace wg
 
 
 		friend int& operator+= (int& num, const QPix& point) { num += point.raw / QPix::pixelQuartersPerPoint(); return num; }
-		friend int& operator-= (int& num, const QPix& point) { num -= point.raw / QPix::pixelQuartersPerPoint(); return num;  }
+		friend int& operator-= (int& num, const QPix& point) { num -= point.raw / QPix::pixelQuartersPerPoint(); return num; }
 		friend int& operator*= (int& num, const QPix& point) { num = (num * point.raw) / QPix::pixelQuartersPerPoint(); return num; }
 		friend int& operator/= (int& num, const QPix& point) { num = num * QPix::pixelQuartersPerPoint() / point.raw; return num; }
 
@@ -154,34 +182,6 @@ namespace wg
 		friend float operator/(QPix& first, const QPix& second) { return first.raw / float(second.raw); }
 
 		//		friend int operator+= (QPix& first, int second) { return second + (first.raw >> 2); }
-
-		//.____ Misc ______________________________________________
-
-		inline void setPixel(int pixelValue) { raw = pixelValue << 2; }
-		inline void setPoint(int pointValue) { raw = pointValue * QPix::pixelQuartersPerPoint(); }
-
-		static inline QPix fromPixel(int pixel) { QPix p; p.raw = pixel << 2; return p; }
-		static inline QPix fromPixel(float pixel) { QPix p; p.raw = (int)(pixel * 4); return p; }
-		static inline QPix fromPixel(double pixel) { QPix p; p.raw = (int)(pixel * 4); return p; }
-
-		static inline QPix fromRaw(int rawValue) { QPix p; p.raw = rawValue; return p; }
-
-		inline int roundToPixel() { return (raw * QPix::pixelQuartersPerPoint() + 2) >> 2; }
-		inline void	pixelAlign() { raw = (raw + 2) & 0xFFFFFFFC; }
-		inline int rawAligned() { return (raw + 2) & 0xFFFFFFFC; }
-
-		union
-		{
-			struct
-			{
-				uint32_t quarters : 2;
-				int32_t pixel : 30;
-			};
-			int32_t raw;
-		};
-
-		inline static int		pixelQuartersPerPoint() { return s_pixelQuartersPerPoint; }
-		inline static float		scale() { return s_scale; }
 
 
 	protected:

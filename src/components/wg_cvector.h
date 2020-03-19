@@ -50,14 +50,6 @@ namespace wg
 
 		CVector(Holder * pHolder) : m_pHolder(pHolder) {}
 
-		//.____ Operators __________________________________________
-
-		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
-		inline iterator operator<<(const std::initializer_list<const EntryType>& entries) { return pushBack(entries); }
-
-		inline EntryType& operator[](int index) { return m_entries[index]; }
-		inline const EntryType& operator[](int index) const { return m_entries[index]; }
-
 		//.____ Content _______________________________________________________
 
 		inline int		size() const { return m_entries.size(); }
@@ -86,6 +78,13 @@ namespace wg
 		inline const_iterator	begin() const { return m_entries.begin(); }
 		inline const_iterator	end() const { return m_entries.end(); }
 
+		//.____ Operators __________________________________________
+
+		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
+		inline iterator operator<<(const std::initializer_list<const EntryType>& entries) { return pushBack(entries); }
+
+		inline EntryType& operator[](int index) { return m_entries[index]; }
+		inline const EntryType& operator[](int index) const { return m_entries[index]; }
 
 	protected:
 //		~CVector() {}

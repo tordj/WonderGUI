@@ -134,6 +134,8 @@ namespace wg
 
 		// SlotHolder methods
 
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
+
 		Container *  	_container() override;
 		RootPanel *		_root() override;
 		Object *		_object() override;

@@ -56,6 +56,11 @@ namespace wg
 		class Slot : public SelectableSlot
 		{
 			friend class List;
+		public:
+
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
 
 		protected:
 			Slot(SlotHolder * pHolder) : SelectableSlot(pHolder) {}

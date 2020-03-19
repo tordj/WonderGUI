@@ -36,6 +36,7 @@ namespace wg
 	template class CPaddedSlotVector<PackPanel::Slot>;
 
 	const char PackPanel::CLASSNAME[] = {"PackPanel"};
+	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &PaddedSlot::TYPEINFO };
 
 
 	void PackPanel::Slot::setWeight(float weight) 
@@ -316,6 +317,13 @@ namespace wg
 			width += m_pSkin->_contentPaddingSize().w;
 
 		return width;
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	PackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
 	}
 
 	//____ _firstChild() __________________________________________________________

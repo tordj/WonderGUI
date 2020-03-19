@@ -34,6 +34,7 @@ namespace wg
 	template class CPaddedSlotVector<StackPanel::Slot>;
 
 	const char StackPanel::CLASSNAME[] = {"StackPanel"};
+	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &PaddedSlot::TYPEINFO };
 
 
 	//____ Constructor ____________________________________________________________
@@ -131,6 +132,13 @@ namespace wg
 
 		Panel::_resize(size);
 		_adaptChildrenToSize();
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	StackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
 	}
 
 	//____ _firstChild() _______________________________________________________

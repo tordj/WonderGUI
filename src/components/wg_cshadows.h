@@ -67,12 +67,6 @@ namespace wg
 		/** @private */
 		CShadows(ShadowHolder * pHolder, std::vector<Shadow> * pVector) : m_pHolder(pHolder), m_pShadows(pVector) {}
 
-		//.____ Operators __________________________________________
-
-		const Shadow& operator[](int index) const { return m_pShadows->operator[](index); }
-		inline CShadows& operator<<(std::tuple<Widget*, Skin*> shadow) { add(std::get<0>(shadow), std::get<1>(shadow)); return *this; }
-		inline CShadows& operator<<(std::initializer_list <std::tuple<Widget*, Skin*>> shadows) { add(shadows); return *this; }
-
 		//.____ Appearance ________________________________________________________
 
 		void		setTint(uint8_t alpha) { m_pHolder->_setShadowTint(alpha); }
@@ -101,6 +95,12 @@ namespace wg
 
 		inline const_iterator	begin() const { return m_pShadows->begin(); }
 		inline const_iterator	end() const { return m_pShadows->end(); }
+
+		//.____ Operators __________________________________________
+
+		const Shadow& operator[](int index) const { return m_pShadows->operator[](index); }
+		inline CShadows& operator<<(std::tuple<Widget*, Skin*> shadow) { add(std::get<0>(shadow), std::get<1>(shadow)); return *this; }
+		inline CShadows& operator<<(std::initializer_list <std::tuple<Widget*, Skin*>> shadows) { add(shadows); return *this; }
 
 	private:
 

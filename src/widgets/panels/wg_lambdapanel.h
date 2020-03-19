@@ -55,6 +55,10 @@ namespace wg
 
 		public:
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Properties _________________________________________________
 
 			inline void	setFunction(const std::function<Rect(Widget * pWidget, Size parentSize)>& func) { m_func = func; static_cast<LambdaPanel*>(_holder())->_updateSlotGeo(this, 1); }
@@ -145,6 +149,8 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new LambdaPanel(); };
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

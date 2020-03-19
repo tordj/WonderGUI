@@ -38,11 +38,6 @@ namespace wg
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
-		//.____ Operators __________________________________________
-
-		inline SlotType& operator[](int index) { return m_slots[index]; }
-		inline const SlotType& operator[](int index) const { return m_slots[index]; }
-
 		//.____ Content _______________________________________________________
 
 		inline int		size() const override { return SIZE; }
@@ -70,6 +65,11 @@ namespace wg
 
 		inline iterator	begin() const { return iterator(&m_slots[0]); }
 		inline iterator	end() const { return iterator(&m_slots[SIZE]); }
+
+		//.____ Operators __________________________________________
+
+		inline SlotType& operator[](int index) { return m_slots[index]; }
+		inline const SlotType& operator[](int index) const { return m_slots[index]; }
 
 	protected:
 		CSlotArray(SlotHolder * pHolder) : m_pHolder(pHolder) 

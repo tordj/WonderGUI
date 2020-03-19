@@ -46,6 +46,11 @@ namespace wg
 		class Slot : public Layer::Slot
 		{
 			friend class DragNDropLayer;
+		public:
+
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
 
 		protected:
 
@@ -78,6 +83,8 @@ namespace wg
 		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
 

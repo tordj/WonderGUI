@@ -67,12 +67,17 @@ namespace wg
 		{
 			friend class Layer;
 
+		public:
+
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Geometry _________________________________________________
 
 			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
 			inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
 			inline Rect		geo() const { return Util::rawToQpix(m_geo); }
-
 
 		protected:
 			Slot(SlotHolder * pHolder) : StaticSlot(pHolder) {}

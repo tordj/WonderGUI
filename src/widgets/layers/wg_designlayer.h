@@ -31,41 +31,6 @@
 namespace wg
 {
 
-	//____ DesignToolboxSlot ___________________________________________________________
-
-	class DesignToolboxSlot : public Layer::Slot
-	{
-		friend class DesignLayer;
-		friend class CDesignToolboxSlotVector;
-		template<class S> friend class CStaticSlotVector;
-		template<class S> friend class SlotVector;
-
-	public:
-
-
-	protected:
-		DesignToolboxSlot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
-
-		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(Layer::Slot::_holder()); }
-		inline const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(Layer::Slot::_holder()); }
-
-		const static bool safe_to_relocate = false;
-
-		bool		m_bVisible = true;
-		Origo		m_placement = Origo::NorthWest;
-		CoordI		m_placementPos;			// Widgets pos relative selected widget and origo.
-	};
-
-
-	//____ CDesignToolboxVector _________________________________________________
-
-	class CDesignToolboxVector : public CStaticSlotVector<DesignToolboxSlot>
-	{
-		friend class DesignLayer;
-
-		CDesignToolboxVector(SlotHolder * pHolder) : CStaticSlotVector<DesignToolboxSlot>(pHolder) {}
-	};
-
 
 	class DesignLayer;
 	typedef	StrongPtr<DesignLayer>	DesignLayer_p;
@@ -78,13 +43,52 @@ namespace wg
 
 	public:
 
+		//____ ToolboxSlot ___________________________________________________________
+
+		class ToolboxSlot : public Layer::Slot
+		{
+			friend class DesignLayer;
+			friend class CDesignToolboxSlotVector;
+			template<class S> friend class CStaticSlotVector;
+			template<class S> friend class SlotVector;
+
+		public:
+
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
+		protected:
+			ToolboxSlot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
+
+			inline SlotHolder * _holder() { return static_cast<SlotHolder*>(Layer::Slot::_holder()); }
+			inline const SlotHolder * _holder() const { return static_cast<const SlotHolder*>(Layer::Slot::_holder()); }
+
+			const static bool safe_to_relocate = false;
+
+			bool		m_bVisible = true;
+			Origo		m_placement = Origo::NorthWest;
+			CoordI		m_placementPos;			// Widgets pos relative selected widget and origo.
+		};
+
+
+		//____ CToolboxVector _________________________________________________
+
+		class CToolboxVector : public CStaticSlotVector<ToolboxSlot>
+		{
+			friend class DesignLayer;
+
+			CToolboxVector(SlotHolder * pHolder) : CStaticSlotVector<ToolboxSlot>(pHolder) {}
+		};
+
+
 		//.____ Creation __________________________________________
 
 		static DesignLayer_p	create() { return DesignLayer_p(new DesignLayer()); }
 
 		//.____ Components _______________________________________
 
-		CDesignToolboxVector	palettes;
+		CToolboxVector	palettes;
 
 		//.____ Identification __________________________________________
 
@@ -122,27 +126,7 @@ namespace wg
 
 		// Overloaded from SlotHolder
 
-		Container *		_container() override { return this; }
-		RootPanel *		_root() override { return Container::_root(); }
-		Object *		_object() override { return this; }
-		const Object *	_object() const override { return this; }
-
-		CoordI			_childPos(const StaticSlot * pSlot) const override { return Layer::_childPos(pSlot); }
-		CoordI			_childGlobalPos(const StaticSlot * pSlot) const override { return Layer::_childGlobalPos(pSlot); }
-		bool			_isChildVisible(const StaticSlot * pSlot) const override { return Layer::_isChildVisible(pSlot); }
-		RectI			_childWindowSection(const StaticSlot * pSlot) const override { return Layer::_childWindowSection(pSlot); }
-
-		void			_childRequestRender(StaticSlot * pSlot) override { return Layer::_childRequestRender(pSlot); }
-		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override { return Layer::_childRequestRender(pSlot); }
-
-		bool			_childRequestFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childRequestFocus(pSlot, pWidget); }
-		bool			_childReleaseFocus(StaticSlot * pSlot, Widget * pWidget) override { return Layer::_childReleaseFocus(pSlot, pWidget); }
-
-		void			_childRequestInView(StaticSlot * pSlot) override { return Layer::_childRequestInView(pSlot); }
-		void			_childRequestInView(StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea) override { return Layer::_childRequestInView(pSlot, mustHaveArea, niceToHaveArea); }
-
-		Widget *		_prevChild(const StaticSlot * pSlot) const override { return Layer::_prevChild(pSlot); }
-		Widget *		_nextChild(const StaticSlot * pSlot) const override { return Layer::_nextChild(pSlot); }
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		//TODO: We should allow replacement of modal slots.
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
@@ -175,7 +159,7 @@ namespace wg
 		//
 
 		RectI			_selectionGeo() const;
-		void			_refreshRealGeo(DesignToolboxSlot * pSlot);
+		void			_refreshRealGeo(ToolboxSlot * pSlot);
 		void			_selectWidget(Widget * pWidget);
 		//
 

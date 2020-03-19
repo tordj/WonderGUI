@@ -136,10 +136,6 @@ namespace wg
 
 		public:
 
-			//.____ Operators _____________________________________________________
-
-			CViewSlot& operator=(const Widget_p& pWidget);
-
 			//.____ Geometry ______________________________________________________
 
 			Size		canvasSize() const { return m_contentSize; };
@@ -180,6 +176,10 @@ namespace wg
 			//.____ Misc __________________________________________________________
 
 			inline CViewSlot_p	ptr() { return CViewSlot_p(this); }
+
+			//.____ Operators _____________________________________________________
+
+			CViewSlot& operator=(const Widget_p& pWidget);
 
 		private:
 
@@ -324,6 +324,8 @@ namespace wg
 		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_findWidget(const CoordI& pos, SearchMode mode) override;
 

@@ -37,6 +37,7 @@ namespace wg
 
 
 	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
+	const TypeInfo LambdaPanel::Slot::TYPEINFO = { "LambdaPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	//____ CSlots::pushFront() ________________________________________________
 
@@ -210,6 +211,14 @@ namespace wg
 	{
 		return m_preferredSize;
 	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	LambdaPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		return &Slot::TYPEINFO;
+	}
+
 
 	//____ _firstChild() _______________________________________________________
 

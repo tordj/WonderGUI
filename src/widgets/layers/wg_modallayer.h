@@ -54,6 +54,10 @@ namespace wg
 
 		public:
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 			//.____ Geometry _________________________________________________
 
 			void			setOrigo(const Origo origo);
@@ -97,10 +101,6 @@ namespace wg
 			friend class ModalLayer;
 		public:
 
-			//.____ Misc __________________________________________________________
-
-			inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
-
 			//.____ Content _______________________________________________________
 
 			iterator	pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
@@ -109,6 +109,9 @@ namespace wg
 			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
 			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
 
+			//.____ Misc __________________________________________________________
+
+			inline CModalSlotVector_p	ptr() { return CModalSlotVector_p(this); }
 
 		protected:
 
@@ -160,6 +163,8 @@ namespace wg
 		void			_receive(Msg * pMsg) override;
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 

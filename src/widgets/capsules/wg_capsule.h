@@ -81,6 +81,8 @@ namespace wg
 
 		// Overloaded from Container
 
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
+
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;

@@ -57,6 +57,10 @@ namespace wg
 		public:
 			const static bool safe_to_relocate = false;
 
+			//.____ Identification ________________________________________________
+
+			const static TypeInfo	TYPEINFO;
+
 		protected:
 
 			Slot(SlotHolder * pHolder) : Layer::Slot(pHolder) {}
@@ -141,6 +145,8 @@ namespace wg
 		void			_updateGeo(Slot * pSlot, bool bForceResize = false);
 
 		// Overloaded from Container
+
+		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
 

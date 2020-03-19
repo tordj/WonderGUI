@@ -39,6 +39,7 @@ namespace wg
 {
 	using namespace Util;
 	const char DragNDropLayer::CLASSNAME[] = {"DragNDropLayer"};
+	const TypeInfo DragNDropLayer::Slot::TYPEINFO = { "DragNDropLayer::Slot", &Layer::Slot::TYPEINFO };
 
 	//____ Constructor ____________________________________________________________
 
@@ -69,6 +70,16 @@ namespace wg
 	const char * DragNDropLayer::className( void ) const
 	{
 		return CLASSNAME;
+	}
+
+	//____ _slotTypeInfo() ________________________________________________________
+
+	const TypeInfo*	DragNDropLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	{
+		if (pSlot == &mainSlot)
+			return &DynamicSlot::TYPEINFO;
+
+		return &Slot::TYPEINFO;
 	}
 
 	//____ _findWidget() __________________________________________________________
