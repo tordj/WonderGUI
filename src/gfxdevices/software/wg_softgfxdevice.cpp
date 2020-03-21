@@ -36,7 +36,7 @@ namespace wg
 {
 	using namespace Util;
 
-	const char SoftGfxDevice::CLASSNAME[] = {"SoftGfxDevice"};
+	const TypeInfo SoftGfxDevice::TYPEINFO = { "SoftGfxDevice", &GfxDevice::TYPEINFO };
 
 	int SoftGfxDevice::s_mulTab[256];
 
@@ -1450,7 +1450,7 @@ namespace wg
 	}
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	SoftGfxDevice::SoftGfxDevice() : GfxDevice(SizeI(0,0))
 	{
@@ -1477,31 +1477,21 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SoftGfxDevice::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SoftGfxDevice::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return GfxDevice::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	//____ className() ____________________________________________________________
+	//____ surfaceType() _______________________________________________________
 
-	const char * SoftGfxDevice::className( void ) const
+	const TypeInfo& SoftGfxDevice::surfaceType( void ) const
 	{
-		return CLASSNAME;
+		return SoftSurface::TYPEINFO;
 	}
 
-	//____ surfaceClassName() _______________________________________________________
-
-	const char * SoftGfxDevice::surfaceClassName( void ) const
-	{
-		return SoftSurface::CLASSNAME;
-	}
-
-	//____ surfaceClassName() _______________________________________________________
+	//____ surfaceFactory() _______________________________________________________
 
 	SurfaceFactory_p SoftGfxDevice::surfaceFactory()
 	{
@@ -2603,7 +2593,7 @@ namespace wg
 		if (pSource == m_pBlitSource)
 			return true;
 
-		if (!pSource || !pSource->isInstanceOf(SoftSurface::CLASSNAME))
+		if (!pSource || !pSource->isInstanceOf(SoftSurface::TYPEINFO))
 		{
 			m_pBlitSource = nullptr;
 			GfxDevice::m_pBlitSource = nullptr;

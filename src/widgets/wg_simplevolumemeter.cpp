@@ -29,9 +29,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char SimpleVolumeMeter::CLASSNAME[] = {"SimpleVolumeMeter"};
+	const TypeInfo SimpleVolumeMeter::TYPEINFO = { "SimpleVolumeMeter", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SimpleVolumeMeter::SimpleVolumeMeter()
 	{
@@ -64,21 +64,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SimpleVolumeMeter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SimpleVolumeMeter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SimpleVolumeMeter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setColors() ___________________________________________________________

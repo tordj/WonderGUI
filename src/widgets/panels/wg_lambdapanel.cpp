@@ -36,7 +36,7 @@ namespace wg
 	template class CDynamicSlotVector<LambdaPanel::Slot>;
 
 
-	const char LambdaPanel::CLASSNAME[] = {"LambdaPanel"};
+	const TypeInfo LambdaPanel::TYPEINFO = { "LambdaPanel", &Panel::TYPEINFO };
 	const TypeInfo LambdaPanel::Slot::TYPEINFO = { "LambdaPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	//____ CSlots::pushFront() ________________________________________________
@@ -93,7 +93,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512*4,512*4), m_maxSize(INT_MAX,INT_MAX)
 	{
@@ -106,21 +106,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool LambdaPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& LambdaPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * LambdaPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setMinSize() _________________________________________________________________
@@ -214,9 +204,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	LambdaPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	LambdaPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 

@@ -25,23 +25,13 @@ namespace wg
 {
 
 
-	const char UniformSizeBroker::CLASSNAME[] = {"UniformSizeBroker"};
+	const TypeInfo UniformSizeBroker::TYPEINFO = { "UniformSizeBroker", &SizeBroker::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool UniformSizeBroker::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& UniformSizeBroker::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return SizeBroker::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * UniformSizeBroker::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setItemLengths() _______________________________________________________

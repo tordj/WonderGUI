@@ -33,7 +33,7 @@ using namespace std;
 namespace wg
 {
 
-	const char GfxDevice::CLASSNAME[] = {"GfxDevice"};
+	const TypeInfo GfxDevice::TYPEINFO = { "GfxDevice", &Object::TYPEINFO };
 
 	int GfxDevice::s_gfxDeviceCount = 0;
 	int *	GfxDevice::s_pCurveTab = nullptr;
@@ -87,7 +87,7 @@ namespace wg
 
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	GfxDevice::GfxDevice( SizeI canvasSize )
 	{
@@ -117,22 +117,11 @@ namespace wg
 		}
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool GfxDevice::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GfxDevice::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxDevice::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setClipList() __________________________________________________________

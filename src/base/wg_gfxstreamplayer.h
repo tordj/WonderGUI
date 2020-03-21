@@ -25,7 +25,7 @@ should contact Tord Jansson [tord.jansson@gmail.com] for details.
 #pragma once
 
 #include <wg_object.h>
-#include <wg_gfxinstream.h>
+#include <wg_cgfxinstream.h>
 #include <wg_gfxdevice.h>
 
 #include <vector>
@@ -43,13 +43,12 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamPlayer_p	create(GfxInStream& In, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		static GfxStreamPlayer_p	create(CGfxInStream& In, GfxDevice * pDevice, SurfaceFactory * pFactory);
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________
 
@@ -61,12 +60,12 @@ namespace wg
 		bool		playFrame();
 
 	protected:
-		GfxStreamPlayer(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
+		GfxStreamPlayer(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory);
 		~GfxStreamPlayer();
 
 		RectI				m_clipRects[GfxStream::c_maxClipRects];
 
-		GfxInStream_p		m_pStream;
+		CGfxInStream_p		m_pStream;
 		GfxDevice_p			m_pDevice;
 		SurfaceFactory_p	m_pSurfaceFactory;
 

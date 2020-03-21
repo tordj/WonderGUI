@@ -329,12 +329,6 @@
     <ClInclude Include="..\..\..\src\skins\wg_colorskin.h">
       <Filter>skins</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_gfxinstream.h">
-      <Filter>gfxstream</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_gfxoutstream.h">
-      <Filter>gfxstream</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_gfxstream.h">
       <Filter>gfxstream</Filter>
     </ClInclude>
@@ -481,6 +475,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_pianokeyboard.h">
       <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cgfxinstream.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cgfxoutstream.h">
+      <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cvector.impl.h">
+      <Filter>components</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -745,12 +748,6 @@
     <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_gfxinstream.cpp">
-      <Filter>gfxstream</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_gfxoutstream.cpp">
-      <Filter>gfxstream</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp">
       <Filter>gfxstream</Filter>
     </ClCompile>
@@ -828,6 +825,30 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_slot.cpp">
       <Filter>slots</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_geocomponent.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cgfxinstream.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cgfxoutstream.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cdynamicslotcollection.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cstaticslotcollection.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cslot.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cstandardslot.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_ctextdisplay.cpp">
+      <Filter>components</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

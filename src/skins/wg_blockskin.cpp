@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char BlockSkin::CLASSNAME[] = {"BlockSkin"};
+	const TypeInfo BlockSkin::TYPEINFO = { "BlockSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -162,7 +162,7 @@ namespace wg
 		return create(pSurface, frame);
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	BlockSkin::BlockSkin()
 	{
@@ -188,21 +188,12 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool BlockSkin::isInstanceOf( const char * pClassName ) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& BlockSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * BlockSkin::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setBlock() _____________________________________________________________

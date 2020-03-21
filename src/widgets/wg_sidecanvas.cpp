@@ -26,9 +26,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char SideCanvas::CLASSNAME[] = {"SideCanvas"};
+	const TypeInfo SideCanvas::TYPEINFO = { "SideCanvas", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SideCanvas::SideCanvas( Holder * pHolder ) : m_pHolder(pHolder)
 	{
@@ -40,21 +40,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SideCanvas::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SideCanvas::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SideCanvas::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _________________________________________________________________

@@ -53,9 +53,10 @@ namespace wg
 	public:
 		static ResDB_p	create() { return ResDB_p(new ResDB()); }
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		//.____ Identification _________________________________________________
+
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		class MetaData
 		{

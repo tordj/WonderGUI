@@ -35,7 +35,7 @@ namespace wg
 
 	template class CDynamicSlotVector<FlexPanel::Slot>;
 
-	const char FlexPanel::CLASSNAME[] = {"FlexPanel"};
+	const TypeInfo FlexPanel::TYPEINFO = { "FlexPanel", &Panel::TYPEINFO };
 	const TypeInfo FlexPanel::Slot::TYPEINFO = { "FlexPanel::Slot", &DynamicSlot::TYPEINFO };
 
 	float	FlexPos::s_origoTab[9][2] = {	0.f, 0.f,
@@ -287,7 +287,7 @@ namespace wg
 		return iterator(pSlot);
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	FlexPanel::FlexPanel() : slots(this)
 	{
@@ -300,21 +300,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool FlexPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FlexPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * FlexPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setConfineWidgets() ___________________________________________________
@@ -528,9 +518,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	FlexPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	FlexPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 

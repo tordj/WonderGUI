@@ -34,7 +34,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char Scrollbar::CLASSNAME[] = {"Scrollbar"};
+	const TypeInfo Scrollbar::TYPEINFO = { "Scrollbar", &Widget::TYPEINFO };
 
 
 	//____ Scrollbar() ____________________________________________________
@@ -66,21 +66,11 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Scrollbar::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Scrollbar::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Scrollbar::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setOrientation() _______________________________________________________

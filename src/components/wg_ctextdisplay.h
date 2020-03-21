@@ -50,6 +50,12 @@ namespace wg
 
 		CTextDisplay(Holder * pHolder) : CStaticTextDisplay(pHolder) {}
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _____________________________________________
 
 		inline void			clear() { _clear(); }

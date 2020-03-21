@@ -58,10 +58,10 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const override;
-		const char *			className(void) const override;
-		static const char		CLASSNAME[];
-		const char *			surfaceClassName(void) const override;
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		const TypeInfo&		surfaceType(void) const override;
 
 
 		//.____ Misc _______________________________________________________
@@ -307,7 +307,7 @@ namespace wg
 
 		//
 
-		static void onGlError(GLenum errorCode, const Object * pObject, const char * pClassName, const char * func, const char * file, int line);
+		static void onGlError(GLenum errorCode, const Object * pObject, const TypeInfo& pClassType, const char * func, const char * file, int line);
 
 	};
 

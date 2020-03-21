@@ -25,14 +25,21 @@
 
 namespace wg
 {
+	const TypeInfo CStaticValueDisplay::TYPEINFO = { "CStaticValueDisplay", &CText::TYPEINFO };
 
-
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	CStaticValueDisplay::CStaticValueDisplay(GeoComponent::Holder * pHolder) : CText(pHolder)
 	{
 		m_value = 0;
 		m_scale = 1;
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CStaticValueDisplay::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ setFormatter() __________________________________________________________

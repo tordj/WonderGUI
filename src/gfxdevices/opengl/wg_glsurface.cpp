@@ -32,11 +32,11 @@
 
 namespace wg
 {
-	const char GlSurface::CLASSNAME[] = {"GlSurface"};
+	const TypeInfo GlSurface::TYPEINFO = { "GlSurface", &Surface::TYPEINFO };
 
 	SizeI	GlSurface::s_maxSize;
 
-#define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); }
+#define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
 
 
@@ -109,7 +109,7 @@ namespace wg
 
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 
     GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
@@ -349,21 +349,11 @@ namespace wg
 
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GlSurface::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GlSurface::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Surface::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GlSurface::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setScaleMode() __________________________________________________________

@@ -124,7 +124,7 @@ namespace wg
 		static void			memStackRelease( int bytes );
 
 
-		static void			handleError( ErrorCode code, const char * pMsg, const Object * pObject, const char * pClass, const char * pFunction, const char * pFile, int line );
+		static void			handleError( ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo& pClassType, const char * pFunction, const char * pFile, int line );
 
 
 	private:

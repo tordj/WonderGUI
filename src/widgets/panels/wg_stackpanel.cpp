@@ -33,11 +33,11 @@ namespace wg
 	template class CDynamicSlotVector<StackPanel::Slot>;
 	template class CPaddedSlotVector<StackPanel::Slot>;
 
-	const char StackPanel::CLASSNAME[] = {"StackPanel"};
+	const TypeInfo StackPanel::TYPEINFO = { "StackPanel", &Panel::TYPEINFO };
 	const TypeInfo StackPanel::Slot::TYPEINFO = { "StackPanel::Slot", &PaddedSlot::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	StackPanel::StackPanel() : slots(this)
 	{
@@ -50,21 +50,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StackPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StackPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StackPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -136,9 +126,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	StackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	StackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//____ _firstChild() _______________________________________________________

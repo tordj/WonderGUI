@@ -29,7 +29,7 @@
 namespace wg
 {
 
-	const char TextEditor::CLASSNAME[] = {"TextEditor"};
+	const TypeInfo TextEditor::TYPEINFO = { "TextEditor", &Widget::TYPEINFO };
 
 
 
@@ -46,22 +46,11 @@ namespace wg
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool TextEditor::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextEditor::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextEditor::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________

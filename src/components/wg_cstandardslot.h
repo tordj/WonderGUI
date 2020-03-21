@@ -39,6 +39,13 @@ namespace wg
 		/** @private */
 		CStandardSlot(SlotHolder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+
 		//.____ Misc __________________________________________________________
 
 		inline CStandardSlot_p  ptr() { return CStandardSlot_p(this); }

@@ -27,9 +27,9 @@
 namespace wg
 {
 
-	const char GfxAnim::CLASSNAME[] = {"GfxAnim"};
+	const TypeInfo GfxAnim::TYPEINFO = { "GfxAnim", &Anim::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	GfxAnim::GfxAnim()
 	{
@@ -41,21 +41,11 @@ namespace wg
 		m_size = size;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxAnim::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GfxAnim::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Anim::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxAnim::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setSize() ______________________________________________________________

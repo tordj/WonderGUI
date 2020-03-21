@@ -34,7 +34,7 @@ namespace wg
 	template <class Type_p>
 	Type_p wg_cast(Object* pObject) {
 
-		if (pObject && pObject->isInstanceOf(Type_p::classname()) )
+		if (pObject && pObject->isInstanceOf(Type_p::typeInfo()) )
 			return static_cast<typename Type_p::raw_type>(pObject);
 
 		return nullptr;

@@ -31,7 +31,7 @@
 namespace wg
 {
 
-	const char ResDB::CLASSNAME[] = {"ResDB"};
+	const TypeInfo ResDB::TYPEINFO = { "ResDB", &Object::TYPEINFO };
 
 
 	//____ () _________________________________________________________
@@ -48,21 +48,11 @@ namespace wg
 		clear();
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ResDB::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ResDB::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ResDB::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 

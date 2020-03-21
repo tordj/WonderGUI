@@ -39,6 +39,11 @@ namespace wg
 	public:
 		CColumnHeader(GeoComponent::Holder * pHolder);
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Components ___________________________________________
 
 		CIconDisplay		icon;

@@ -79,9 +79,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Internal __________________________________________
 

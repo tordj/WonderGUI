@@ -29,6 +29,8 @@
 
 namespace wg
 {
+	template<class SlotType> const TypeInfo CSelectableSlotVector<SlotType>::TYPEINFO = { "CSelectableSlotVector<Unknow>", &CDynamicSlotVector<SlotType>::TYPEINFO };
+
 	//____ select() ___________________________________________________________
 
 	template <class SlotType>

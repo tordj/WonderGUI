@@ -20,21 +20,30 @@
 
 =========================================================================*/
 
-#include <wg_gfxinstream.h>
+#include <wg_cgfxinstream.h>
 #include <assert.h>
 
 namespace wg
 {
+	const TypeInfo CGfxInStream::TYPEINFO = { "CGfxInStream", &Component::TYPEINFO };
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CGfxInStream::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ isEmpty() __________________________________________________________
 
-	bool GfxInStream::isEmpty()
+	bool CGfxInStream::isEmpty()
 	{
 		return !m_pHolder->_hasChunk();
 	}
 
 	//____ peek() _____________________________________________________________
 
-	GfxStream::Header GfxInStream::peek()
+	GfxStream::Header CGfxInStream::peek()
 	{
 		if (m_pHolder->_hasChunk())
 			return m_pHolder->_peekChunk();
@@ -46,7 +55,7 @@ namespace wg
 
 	//____ operator>> _________________________________________________________
 
-	GfxInStream& GfxInStream::operator>> (GfxStream::Header& header)
+	CGfxInStream& CGfxInStream::operator>> (GfxStream::Header& header)
 	{
 		if (m_pHolder->_hasChunk())
 		{
@@ -62,59 +71,59 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (int16_t& i)
+	CGfxInStream& CGfxInStream::operator>> (int16_t& i)
 	{
 		i = m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (uint16_t& i)
+	CGfxInStream& CGfxInStream::operator>> (uint16_t& i)
 	{
 		i = m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (int32_t& i)
+	CGfxInStream& CGfxInStream::operator>> (int32_t& i)
 	{
 		i = m_pHolder->_pullInt();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (float& f)
+	CGfxInStream& CGfxInStream::operator>> (float& f)
 	{
 		f = m_pHolder->_pullFloat();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (CoordI& coord)
+	CGfxInStream& CGfxInStream::operator>> (CoordI& coord)
 	{
 		coord.x = m_pHolder->_pullShort();
 		coord.y = m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (CoordF& coord)
+	CGfxInStream& CGfxInStream::operator>> (CoordF& coord)
 	{
 		coord.x = m_pHolder->_pullFloat();
 		coord.y = m_pHolder->_pullFloat();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (SizeI& sz)
+	CGfxInStream& CGfxInStream::operator>> (SizeI& sz)
 	{
 		sz.w = m_pHolder->_pullShort();
 		sz.h = m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (SizeF& sz)
+	CGfxInStream& CGfxInStream::operator>> (SizeF& sz)
 	{
 		sz.w = m_pHolder->_pullFloat();
 		sz.h = m_pHolder->_pullFloat();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (RectI& rect)
+	CGfxInStream& CGfxInStream::operator>> (RectI& rect)
 	{
 		rect.x = m_pHolder->_pullShort();
 		rect.y = m_pHolder->_pullShort();
@@ -123,7 +132,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (RectF& rect)
+	CGfxInStream& CGfxInStream::operator>> (RectF& rect)
 	{
 		rect.x = m_pHolder->_pullFloat();
 		rect.y = m_pHolder->_pullFloat();
@@ -132,49 +141,49 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Color& color)
+	CGfxInStream& CGfxInStream::operator>> (Color& color)
 	{
 		color.argb = m_pHolder->_pullInt();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Direction& dir)
+	CGfxInStream& CGfxInStream::operator>> (Direction& dir)
 	{
 		dir = (Direction)m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (BlendMode& blendMode)
+	CGfxInStream& CGfxInStream::operator>> (BlendMode& blendMode)
 	{
 		blendMode = (BlendMode) m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (Orientation& o)
+	CGfxInStream& CGfxInStream::operator>> (Orientation& o)
 	{
 		o = (Orientation)m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (PixelFormat& t)
+	CGfxInStream& CGfxInStream::operator>> (PixelFormat& t)
 	{
 		t = (PixelFormat)m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (ScaleMode& m)
+	CGfxInStream& CGfxInStream::operator>> (ScaleMode& m)
 	{
 		m = (ScaleMode)m_pHolder->_pullShort();
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (const DataChunk& data)
+	CGfxInStream& CGfxInStream::operator>> (const DataChunk& data)
 	{
 		m_pHolder->_pullBytes(data.bytes, (char*) data.pBuffer);
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (int mtx[2][2])
+	CGfxInStream& CGfxInStream::operator>> (int mtx[2][2])
 	{
 		mtx[0][0] = m_pHolder->_pullChar();
 		mtx[0][1] = m_pHolder->_pullChar();
@@ -183,7 +192,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxInStream& GfxInStream::operator>> (float mtx[2][2])
+	CGfxInStream& CGfxInStream::operator>> (float mtx[2][2])
 	{
 		mtx[0][0] = m_pHolder->_pullFloat();
 		mtx[0][1] = m_pHolder->_pullFloat();

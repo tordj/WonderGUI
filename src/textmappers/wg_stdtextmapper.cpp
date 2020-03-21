@@ -34,9 +34,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char StdTextMapper::CLASSNAME[] = {"StdTextMapper"};
+	const TypeInfo StdTextMapper::TYPEINFO = { "StdTextMapper", &TextMapper::TYPEINFO };
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
 		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
@@ -55,21 +55,11 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StdTextMapper::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StdTextMapper::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return TextMapper::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StdTextMapper::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ addText() _________________________________________________________

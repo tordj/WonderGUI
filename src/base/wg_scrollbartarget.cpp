@@ -33,7 +33,7 @@ namespace wg
 
 			if( pWidget )
 			{
-				if( pWidget->isInstanceOf(Scrollbar::CLASSNAME) )
+				if( pWidget->isInstanceOf(Scrollbar::TYPEINFO) )
 						static_cast<Scrollbar*>(pWidget)->_setHandle(pos,size);
 			}
 

@@ -50,6 +50,12 @@ namespace wg
 		CText(Holder * pHolder );
 		virtual ~CText();
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Appearance _____________________________________________
 
 		virtual void		setStyle(TextStyle * pStyle);

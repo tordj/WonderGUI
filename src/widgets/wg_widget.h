@@ -30,7 +30,6 @@
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
-#include <wg_payload.h>
 
 namespace wg
 {
@@ -56,6 +55,10 @@ namespace wg
 	typedef	StrongPtr<Msg>			Msg_p;
 	typedef	WeakPtr<Msg>			Msg_wp;
 
+	class BasicPayload;
+	typedef	StrongPtr<BasicPayload>	BasicPayload_p;
+	typedef	WeakPtr<BasicPayload>	BasicPayload_wp;
+
 
 	/**
 	 * @brief Base class for widgets.
@@ -78,9 +81,8 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		inline void			setId(int id);
 		inline int			id() const;
@@ -169,9 +171,9 @@ namespace wg
 
 		inline bool			isOpaque() const;
 
-		inline void			setPayload(BasicPayload * pPayload);
-		inline bool			hasPayload() const;
-		inline BasicPayload_p payload() const;
+		void				setPayload(BasicPayload * pPayload);
+		bool				hasPayload() const;
+		BasicPayload_p		payload() const;
 
 	protected:
 		Widget();
@@ -856,30 +858,6 @@ namespace wg
 	{ 
 		return m_bOpaque; 
 	}
-
-
-
-	//____ setPayload() _______________________________________________________
-
-	void Widget::setPayload(BasicPayload * pPayload)
-	{ 
-		m_pPayload = pPayload; 
-	}
-
-	//____ hasPayload() _______________________________________________________
-
-	bool Widget::hasPayload() const 
-	{ 
-		return m_pPayload; 
-	}
-
-	//____ payload() __________________________________________________________
-
-	BasicPayload_p Widget::payload() const 
-	{ 
-		return m_pPayload; 
-	}
-
 
 } // namespace wg
 #endif

@@ -29,10 +29,19 @@ namespace wg
 {
 	using namespace Util;
 
-	//____ Constructor _____________________________________________________________
+	const TypeInfo CStaticTextDisplay::TYPEINFO = { "CStaticTextDisplay", &CText::TYPEINFO };
+
+	//____ constructor _____________________________________________________________
 
 	CStaticTextDisplay::CStaticTextDisplay(Holder * pHolder ) : CText( pHolder )
 	{
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CStaticTextDisplay::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ markedLink() _____________________________________________________

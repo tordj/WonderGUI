@@ -27,19 +27,19 @@
 namespace wg
 {
 
-	const char GfxStreamPlayer::CLASSNAME[] = { "GfxStreamPlayer" };
+	const TypeInfo GfxStreamPlayer::TYPEINFO = { "GfxStreamPlayer", &Object::TYPEINFO };
 
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamPlayer_p GfxStreamPlayer::create(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory)
+	GfxStreamPlayer_p GfxStreamPlayer::create(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory)
 	{
 		return new GfxStreamPlayer(in, pDevice, pFactory);
 	}
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
-	GfxStreamPlayer::GfxStreamPlayer(GfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory)
+	GfxStreamPlayer::GfxStreamPlayer(CGfxInStream& in, GfxDevice * pDevice, SurfaceFactory * pFactory)
 	{
 		m_pStream = in.ptr();
 		m_pDevice = pDevice;
@@ -52,21 +52,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxStreamPlayer::isInstanceOf(const char * pClassName) const
+	const TypeInfo& GfxStreamPlayer::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxStreamPlayer::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ isEmpty() __________________________________________________________

@@ -26,6 +26,7 @@
 
 namespace wg
 {
+	struct TypeInfo;
 
 	template<class Cls> class StrongPtr		/** @private */
 	{
@@ -70,7 +71,7 @@ namespace wg
 		inline Cls* rawPtr() const { return m_pObj; }
 
 		using raw_type = Cls*;
-		inline static const char * classname() { return Cls::CLASSNAME; }
+		inline static const TypeInfo& typeInfo() { return Cls::TYPEINFO; }
 
 		//.____ Operators ______________________________________________________
 

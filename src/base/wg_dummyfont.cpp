@@ -26,9 +26,9 @@ namespace wg
 {
 
 
-	const char DummyFont::CLASSNAME[] = {"DummyFont"};
+	const TypeInfo DummyFont::TYPEINFO = { "DummyFont", &Font::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	DummyFont::DummyFont() : m_glyph(this)
 	{
@@ -41,92 +41,112 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool DummyFont::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& DummyFont::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Font::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	//____ className() ____________________________________________________________
-
-	const char * DummyFont::className( void ) const
-	{
-		return CLASSNAME;
-	}
+	//____ nbGlyphs() _________________________________________________________
 
 	int DummyFont::nbGlyphs()
 	{
 		return 0;
 	}
 
+	//____ hasGlyphs() ________________________________________________________
+
 	bool DummyFont::hasGlyphs()
 	{
 		return false;
 	}
+
+	//____ isMonospace() ______________________________________________________
 
 	bool DummyFont::isMonospace()
 	{
 		return true;
 	}
 
+	//____ isMonochrome() _____________________________________________________
+
 	bool DummyFont::isMonochrome()
 	{
 		return true;
 	}
+
+	//____ hasGlyph() _________________________________________________________
 
 	bool DummyFont::hasGlyph( uint16_t chr )
 	{
 		return false;
 	}
 
+	//____ setSize() _________________________________________________________
+
 	bool DummyFont::setSize( int size )
 	{
 		return false;
 	}
+
+	//____ size() _____________________________________________________________
 
 	int DummyFont::size()
 	{
 		return 1;
 	}
 
+	//____ kerning() __________________________________________________________
+
 	int DummyFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		return 0;
 	}
+
+	//____ getGlyph() _________________________________________________________
 
 	Glyph_p DummyFont::getGlyph( uint16_t chr )
 	{
 		return &m_glyph;
 	}
 
+	//____ lineGap() __________________________________________________________
+
 	int DummyFont::lineGap()
 	{
 		return 1;
 	}
+
+	//____ whitespaceAdvance() ________________________________________________
 
 	int DummyFont::whitespaceAdvance()
 	{
 		return 1;
 	}
 
+	//____ maxAdvance() _______________________________________________________
+
 	int DummyFont::maxAdvance()
 	{
 		return 1;
 	}
+
+	//____ maxAscend() ________________________________________________________
 
 	int DummyFont::maxAscend()
 	{
 		return 1;
 	}
 
+	//____ maxDescend() _______________________________________________________
+
 	int DummyFont::maxDescend()
 	{
 		return 0;
 	}
+
+	//____ DummyGlyph::Constructor ____________________________________________
 
 	DummyFont::DummyGlyph::DummyGlyph( Font * pFont )
 	: Glyph( 1, 0, pFont )

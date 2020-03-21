@@ -32,9 +32,9 @@
 namespace wg
 {
 
-	const char RefreshButton::CLASSNAME[] = {"RefreshButton"};
+	const TypeInfo RefreshButton::TYPEINFO = { "RefreshButton", &Button::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	RefreshButton::RefreshButton() : refreshText(this)
 	{
@@ -59,21 +59,11 @@ namespace wg
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool RefreshButton::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& RefreshButton::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Button::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * RefreshButton::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//_____________________________________________________________________________

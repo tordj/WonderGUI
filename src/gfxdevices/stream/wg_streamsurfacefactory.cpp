@@ -31,30 +31,20 @@
 namespace wg
 {
 
-	const char StreamSurfaceFactory::CLASSNAME[] = {"StreamSurfaceFactory"};
+	const TypeInfo StreamSurfaceFactory::TYPEINFO = { "StreamSurfaceFactory", &SurfaceFactory::TYPEINFO };
 
-	//____ Constructor ________________________________________________________
+	//____ constructor ________________________________________________________
 
-	StreamSurfaceFactory::StreamSurfaceFactory(GfxOutStream& stream) : m_pStream(&stream)
+	StreamSurfaceFactory::StreamSurfaceFactory(CGfxOutStream& stream) : m_pStream(&stream)
 	{
 
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StreamSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StreamSurfaceFactory::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return SurfaceFactory::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StreamSurfaceFactory::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ maxSize() ______________________________________________________________

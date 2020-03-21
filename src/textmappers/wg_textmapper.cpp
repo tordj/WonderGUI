@@ -26,25 +26,14 @@
 namespace wg
 {
 
-	const char TextMapper::CLASSNAME[] = {"TextMapper"};
+	const TypeInfo TextMapper::TYPEINFO = { "TextMapper", &Receiver::TYPEINFO };
 
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool TextMapper::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextMapper::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextMapper::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ tooltip() _______________________________________________________________

@@ -35,7 +35,7 @@ namespace wg
 	template class CDynamicSlotVector<PackPanel::Slot>;
 	template class CPaddedSlotVector<PackPanel::Slot>;
 
-	const char PackPanel::CLASSNAME[] = {"PackPanel"};
+	const TypeInfo PackPanel::TYPEINFO = { "PackPanel", &Panel::TYPEINFO };
 	const TypeInfo PackPanel::Slot::TYPEINFO = { "PackPanel::Slot", &PaddedSlot::TYPEINFO };
 
 
@@ -86,7 +86,7 @@ namespace wg
 		return true;
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	PackPanel::PackPanel() : slots(this)
 	{
@@ -101,21 +101,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool PackPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& PackPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * PackPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setOrientation() ______________________________________________________
@@ -321,9 +311,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	PackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	PackPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//____ _firstChild() __________________________________________________________

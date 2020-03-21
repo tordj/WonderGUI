@@ -26,11 +26,11 @@
 namespace wg
 {
 
-	const char TextStyle::CLASSNAME[] = {"TextStyle"};
+	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
 
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	TextStyle::TextStyle()
 	{
@@ -58,21 +58,11 @@ namespace wg
 		TextStyleManager::_releaseHandle(m_handle);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool TextStyle::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextStyle::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextStyle::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setParent() _____________________________________________________________

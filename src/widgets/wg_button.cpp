@@ -32,9 +32,9 @@
 namespace wg
 {
 
-	const char Button::CLASSNAME[] = {"Button"};
+	const TypeInfo Button::TYPEINFO = { "Button", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Button::Button() : icon(this), label(this)
 	{
@@ -48,21 +48,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Button::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Button::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Button::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________

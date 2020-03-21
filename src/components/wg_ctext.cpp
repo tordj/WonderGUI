@@ -26,11 +26,20 @@ namespace wg
 {
 	using namespace Util;
 
-	//____ Constructor _____________________________________________________________
+	const TypeInfo CText::TYPEINFO = { "CText", &GeoComponent::TYPEINFO };
+
+	//____ constructor _____________________________________________________________
 
 	CText::CText(Holder * pHolder ) : GeoComponent( pHolder )
 	{
 		_textMapper()->addText(this);
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CText::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ Destructor ______________________________________________________________

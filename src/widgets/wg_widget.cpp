@@ -30,10 +30,9 @@
 namespace wg
 {
 
-	const char Widget::CLASSNAME[] = {"Widget"};
+	const TypeInfo Widget::TYPEINFO = { "Widget", &Receiver::TYPEINFO };
 
-
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
@@ -48,21 +47,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Widget::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Widget::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Receiver::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Widget::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ isContainer() ______________________________________________________
@@ -223,6 +212,28 @@ namespace wg
 	{
 		_setSkin( pSkin );
 	}
+
+	//____ setPayload() _______________________________________________________
+
+	void Widget::setPayload(BasicPayload * pPayload)
+	{
+		m_pPayload = pPayload;
+	}
+
+	//____ hasPayload() _______________________________________________________
+
+	bool Widget::hasPayload() const
+	{
+		return m_pPayload;
+	}
+
+	//____ payload() __________________________________________________________
+
+	BasicPayload_p Widget::payload() const
+	{
+		return m_pPayload;
+	}
+
 
 	//____ _markTest()_____________________________________________________________
 

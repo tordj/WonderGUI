@@ -28,7 +28,7 @@
 namespace wg
 {
 
-	const char StaticColorSkin::CLASSNAME[] = {"StaticColorSkin"};
+	const TypeInfo StaticColorSkin::TYPEINFO = { "StaticColorSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
@@ -39,28 +39,18 @@ namespace wg
 		return StaticColorSkin_p(new StaticColorSkin(col));
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	StaticColorSkin::StaticColorSkin( Color col )
 	{
 		m_color = col;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StaticColorSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StaticColorSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Skin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StaticColorSkin::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ isStateIdentical() _________________________________________________

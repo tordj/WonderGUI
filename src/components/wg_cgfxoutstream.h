@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_GFXOUTSTREAM_DOT_H
-#define	WG_GFXOUTSTREAM_DOT_H
+#ifndef	WG_CGFXOUTSTREAM_DOT_H
+#define	WG_CGFXOUTSTREAM_DOT_H
 #pragma once
 
 #include <wg_component.h>
@@ -35,14 +35,14 @@
 namespace wg
 {
 
-	class GfxOutStream;
-	typedef	StrongComponentPtr<GfxOutStream>	GfxOutStream_p;
-	typedef	WeakComponentPtr<GfxOutStream>		GfxOutStream_wp;
+	class CGfxOutStream;
+	typedef	StrongComponentPtr<CGfxOutStream>	CGfxOutStream_p;
+	typedef	WeakComponentPtr<CGfxOutStream>		CGfxOutStream_wp;
 
 
-	//____ GfxOutStreamHolder ___________________________________________________
+	//____ CGfxOutStreamHolder ___________________________________________________
 
-	class GfxOutStreamHolder /** @private */
+	class CGfxOutStreamHolder /** @private */
 	{
 	public:
 		virtual Object * _object() = 0;
@@ -61,17 +61,22 @@ namespace wg
 		virtual void	_pushBytes(int nBytes, char * pBytes) = 0;
 	};
 
-	//____ GfxOutStream __________________________________________________________
+	//____ CGfxOutStream __________________________________________________________
 
-	class GfxOutStream : public Component, public GfxStream
+	class CGfxOutStream : public Component, public GfxStream
 	{
 	public:
-		GfxOutStream(GfxOutStreamHolder * pHolder);
+		CGfxOutStream(CGfxOutStreamHolder * pHolder);
 
 		enum Command
 		{
 			HeaderEnd
 		};
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________
 
@@ -81,35 +86,35 @@ namespace wg
 		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
 		inline bool		reopen() { return m_pHolder->_reopenStream(); }
 
-		GfxOutStream&	operator<< (Header);
-		GfxOutStream&	operator<< (int16_t);
-		GfxOutStream&	operator<< (uint16_t);
-		GfxOutStream&	operator<< (int32_t);
-		GfxOutStream&	operator<< (float);
+		CGfxOutStream&	operator<< (Header);
+		CGfxOutStream&	operator<< (int16_t);
+		CGfxOutStream&	operator<< (uint16_t);
+		CGfxOutStream&	operator<< (int32_t);
+		CGfxOutStream&	operator<< (float);
 
-		GfxOutStream&	operator<< (const CoordI&);
-		GfxOutStream&	operator<< (const CoordF&);
-		GfxOutStream&	operator<< (const SizeI&);
-		GfxOutStream&	operator<< (const SizeF&);
-		GfxOutStream&	operator<< (const RectI&);
-		GfxOutStream&	operator<< (const RectF&);
+		CGfxOutStream&	operator<< (const CoordI&);
+		CGfxOutStream&	operator<< (const CoordF&);
+		CGfxOutStream&	operator<< (const SizeI&);
+		CGfxOutStream&	operator<< (const SizeF&);
+		CGfxOutStream&	operator<< (const RectI&);
+		CGfxOutStream&	operator<< (const RectF&);
 
-		GfxOutStream&	operator<< (Color);
-		GfxOutStream&	operator<< (Direction);
-		GfxOutStream&	operator<< (BlendMode);
-		GfxOutStream&	operator<< (Orientation);
-		GfxOutStream&	operator<< (PixelFormat);
-		GfxOutStream&	operator<< (ScaleMode);
-		GfxOutStream&	operator<< (const DataChunk&);
+		CGfxOutStream&	operator<< (Color);
+		CGfxOutStream&	operator<< (Direction);
+		CGfxOutStream&	operator<< (BlendMode);
+		CGfxOutStream&	operator<< (Orientation);
+		CGfxOutStream&	operator<< (PixelFormat);
+		CGfxOutStream&	operator<< (ScaleMode);
+		CGfxOutStream&	operator<< (const DataChunk&);
 
-		GfxOutStream&	operator<< (const int[2][2]);
-		GfxOutStream&	operator<< (const float[2][2]);
+		CGfxOutStream&	operator<< (const int[2][2]);
+		CGfxOutStream&	operator<< (const float[2][2]);
 
 
 
 		//.____ Misc __________________________________________________
 
-		inline GfxOutStream_p	ptr() { return GfxOutStream_p(this); }
+		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
 
 		short			allocObjectId();
 		void			freeObjectId(short id);
@@ -125,9 +130,9 @@ namespace wg
 		uint8_t					m_freeIdStackSize;
 
 
-		GfxOutStreamHolder * 	m_pHolder;
+		CGfxOutStreamHolder * 	m_pHolder;
 	};
 
 
 } // namespace wg
-#endif //WG_GFXOUTSTREAM_DOT_H
+#endif //WG_CGFXOUTSTREAM_DOT_H

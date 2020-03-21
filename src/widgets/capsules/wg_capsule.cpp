@@ -27,10 +27,10 @@
 namespace wg
 {
 
-	const char Capsule::CLASSNAME[] = {"Capsule"};
+	const TypeInfo Capsule::TYPEINFO = { "Capsule", &Container::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Capsule::Capsule() : slot(this)
 	{
@@ -42,21 +42,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Capsule::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Capsule::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Container::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Capsule::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() ________________________________________________________
@@ -201,9 +191,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	Capsule::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	Capsule::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &DynamicSlot::TYPEINFO;
+		return DynamicSlot::TYPEINFO;
 	}
 
 	//____ _firstChild() ____________________________________________________________

@@ -44,6 +44,12 @@ namespace wg
 
 		CTextEditor(Holder * pHolder );
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ State __________________________________________________
 
 		void			setEditMode(TextEditMode mode);

@@ -30,10 +30,10 @@
 namespace wg
 {
 
-	const char MsgRouter::CLASSNAME[] = {"MsgRouter"};
+	const TypeInfo MsgRouter::TYPEINFO = { "MsgRouter", &Object::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	MsgRouter::MsgRouter()
 	{
@@ -48,21 +48,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool MsgRouter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MsgRouter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * MsgRouter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ broadcastTo() ___________________________________________________________

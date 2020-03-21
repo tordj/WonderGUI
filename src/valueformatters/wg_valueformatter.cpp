@@ -25,24 +25,14 @@
 namespace wg
 {
 
-	const char ValueFormatter::CLASSNAME[] = {"ValueFormatter"};
+	const TypeInfo ValueFormatter::TYPEINFO = { "ValueFormatter", &Object::TYPEINFO };
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ValueFormatter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ValueFormatter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ValueFormatter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 } // namespace wg

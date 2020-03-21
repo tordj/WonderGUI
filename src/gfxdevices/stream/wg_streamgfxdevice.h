@@ -26,7 +26,7 @@
 #include <wg_geo.h>
 
 #include <wg_gfxdevice.h>
-#include <wg_gfxoutstream.h>
+#include <wg_cgfxoutstream.h>
 
 namespace wg
 {
@@ -41,14 +41,14 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( SizeI canvas, GfxOutStream& stream );
+		static StreamGfxDevice_p	create( SizeI canvas, CGfxOutStream& stream );
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
-		const char *			surfaceClassName( void ) const override;
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		const TypeInfo&		surfaceType( void ) const override;
 
 		//.____ Misc _______________________________________________________
 
@@ -113,7 +113,7 @@ namespace wg
 
 
 	protected:
-		StreamGfxDevice( SizeI canvas, GfxOutStream& stream );
+		StreamGfxDevice( SizeI canvas, CGfxOutStream& stream );
 		~StreamGfxDevice();
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
@@ -127,7 +127,7 @@ namespace wg
 
 
 		SurfaceFactory_p	m_pSurfaceFactory;
-		GfxOutStream_p		m_pStream;
+		CGfxOutStream_p		m_pStream;
 		bool	m_bRendering;
 	};
 } // namespace wg

@@ -27,11 +27,19 @@
 
 namespace wg
 {
+	const TypeInfo CValueDisplay::TYPEINFO = { "CValueDisplay", &CStaticValueDisplay::TYPEINFO };
 
 	//____ constructor ________________________________________________________
 
 	CValueDisplay::CValueDisplay(GeoComponent::Holder * pHolder) : CStaticValueDisplay(pHolder), m_minValue(std::numeric_limits<int64_t>::min()), m_maxValue(std::numeric_limits<int64_t>::max())
 	{
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CValueDisplay::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ clear() _________________________________________________________________

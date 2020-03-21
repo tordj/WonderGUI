@@ -32,10 +32,10 @@
 namespace wg
 {
 
-	const char AnimPlayer::CLASSNAME[] = {"AnimPlayer"};
+	const TypeInfo AnimPlayer::TYPEINFO = { "AnimPlayer", &Widget::TYPEINFO };
 
 
-	//____ Constructor _________________________________________________________________
+	//____ constructor _________________________________________________________________
 
 	AnimPlayer::AnimPlayer()
 	{
@@ -56,21 +56,11 @@ namespace wg
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool AnimPlayer::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& AnimPlayer::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * AnimPlayer::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setAnimation() ____________________________________________________________

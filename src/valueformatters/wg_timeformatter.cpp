@@ -25,9 +25,9 @@
 namespace wg
 {
 
-	const char TimeFormatter::CLASSNAME[] = {"TimeFormatter"};
+	const TypeInfo TimeFormatter::TYPEINFO = { "TimeFormatter", &ValueFormatter::TYPEINFO };
 
-	//____ Constructors ____________________________________________________________
+	//____ constructors ____________________________________________________________
 
 	TimeFormatter::TimeFormatter( const CharSeq& format24 )
 	{
@@ -40,22 +40,11 @@ namespace wg
 		m_formatPM = formatPM;
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool TimeFormatter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TimeFormatter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ValueFormatter::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TimeFormatter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ format() _______________________________________________________________

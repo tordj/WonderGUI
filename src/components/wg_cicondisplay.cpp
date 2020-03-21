@@ -26,14 +26,22 @@
 
 namespace wg
 {
+	const TypeInfo CIconDisplay::TYPEINFO = { "CIconDisplay", &GeoComponent::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	CIconDisplay::CIconDisplay( GeoComponent::Holder * pHolder ) : GeoComponent(pHolder)
 	{
 		m_origo			= Origo::NorthWest;
 		m_scale			= 0.f;
 		m_bOverlap		= true;
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CIconDisplay::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ set() ___________________________________________________________________

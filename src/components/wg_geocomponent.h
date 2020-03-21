@@ -37,10 +37,12 @@ namespace wg
 	class GeoComponent : public Component		/** @private */
 	{
 	public:
+
+		//____ Holder _________________________________________________________
+
 		class Holder		/** @private */
 		{
-			friend class GeoComponent;
-		protected:
+		public:
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
@@ -61,9 +63,14 @@ namespace wg
 			virtual void	_receiveComponentNotif(GeoComponent * pComponent, ComponentNotif notification, int value, void * pData) = 0;
 		};
 
-
 		GeoComponent( Holder * pHolder ) : m_pHolder(pHolder) {}
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+	protected:
 		inline CoordI	_pos() const { return m_pHolder->_componentPos(this); }
 		inline SizeI	_size() const { return m_pHolder->_componentSize(this); }
 		inline RectI	_geo() const { return m_pHolder->_componentGeo(this); }
@@ -80,14 +87,12 @@ namespace wg
 
 		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pHolder->_receiveComponentNotif(this, notification, value, pData); }
 
-		inline Object *			_object() override { return m_pHolder->_object(); }
-		inline const Object *	_object() const override { return m_pHolder->_object(); }
+		Object *		_object() override;
+		const Object *	_object() const override;
 
 	protected:
 		Holder *		m_pHolder;
 	};
-
-
 
 
 } // namespace wg

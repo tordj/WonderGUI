@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_GFXINSTREAM_DOT_H
-#define	WG_GFXINSTREAM_DOT_H
+#ifndef	WG_CGFXINSTREAM_DOT_H
+#define	WG_CGFXINSTREAM_DOT_H
 #pragma once
 
 #include <wg_component.h>
@@ -36,14 +36,14 @@
 namespace wg
 {
 
-	class GfxInStream;
-	typedef	StrongComponentPtr<GfxInStream>		GfxInStream_p;
-	typedef	WeakComponentPtr<GfxInStream>		GfxInStream_wp;
+	class CGfxInStream;
+	typedef	StrongComponentPtr<CGfxInStream>	CGfxInStream_p;
+	typedef	WeakComponentPtr<CGfxInStream>		CGfxInStream_wp;
 
 
-	//____ GfxInStreamHolder ___________________________________________________
+	//____ CGfxInStreamHolder ___________________________________________________
 
-	class GfxInStreamHolder /** @private */
+	class CGfxInStreamHolder /** @private */
 	{
 	public:
 
@@ -66,12 +66,17 @@ namespace wg
 		virtual bool	_reopenStream() = 0;
 	};
 
-	//____ GfxInStream ________________________________________________________
+	//____ CGfxInStream ________________________________________________________
 
-	class GfxInStream : public Component, GfxStream
+	class CGfxInStream : public Component, GfxStream
 	{
 	public:
-		GfxInStream(GfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
+		CGfxInStream(CGfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________
 
@@ -84,43 +89,43 @@ namespace wg
 		bool				isEmpty();
 		GfxStream::Header	peek();
 
-		GfxInStream& operator>> (Header& header);
+		CGfxInStream& operator>> (Header& header);
 
-		GfxInStream& operator>> (int16_t&);
-		GfxInStream& operator>> (uint16_t&);
-		GfxInStream& operator>> (int32_t&);
-		GfxInStream& operator>> (float&);
+		CGfxInStream& operator>> (int16_t&);
+		CGfxInStream& operator>> (uint16_t&);
+		CGfxInStream& operator>> (int32_t&);
+		CGfxInStream& operator>> (float&);
 
 
-		GfxInStream& operator>> (CoordI&);
-		GfxInStream& operator>> (CoordF&);
-		GfxInStream& operator>> (SizeI&);
-		GfxInStream& operator>> (SizeF&);
-		GfxInStream& operator>> (RectI&);
-		GfxInStream& operator>> (RectF&);
-		GfxInStream& operator>> (Color&);
-		GfxInStream& operator>> (Direction&);
-		GfxInStream& operator>> (BlendMode&);
-		GfxInStream& operator>> (Orientation&);
-		GfxInStream& operator>> (PixelFormat&);
-		GfxInStream& operator>> (ScaleMode&);
-		GfxInStream& operator>> (const DataChunk&);
+		CGfxInStream& operator>> (CoordI&);
+		CGfxInStream& operator>> (CoordF&);
+		CGfxInStream& operator>> (SizeI&);
+		CGfxInStream& operator>> (SizeF&);
+		CGfxInStream& operator>> (RectI&);
+		CGfxInStream& operator>> (RectF&);
+		CGfxInStream& operator>> (Color&);
+		CGfxInStream& operator>> (Direction&);
+		CGfxInStream& operator>> (BlendMode&);
+		CGfxInStream& operator>> (Orientation&);
+		CGfxInStream& operator>> (PixelFormat&);
+		CGfxInStream& operator>> (ScaleMode&);
+		CGfxInStream& operator>> (const DataChunk&);
 
-		GfxInStream& operator>> (int[2][2]);
-		GfxInStream& operator>> (float[2][2]);
+		CGfxInStream& operator>> (int[2][2]);
+		CGfxInStream& operator>> (float[2][2]);
 
 		//.____ Misc __________________________________________________
 
-		inline GfxInStream_p	ptr() { return GfxInStream_p(this); }
+		inline CGfxInStream_p	ptr() { return CGfxInStream_p(this); }
 
 	protected:
 		Object *				_object() override { return m_pHolder->_object(); }
 		const Object *			_object() const override { return m_pHolder->_object(); }
 
-		GfxInStreamHolder * 	m_pHolder;
+		CGfxInStreamHolder * 	m_pHolder;
 	};
 
 
 } // namespace wg
-#endif //WG_GFXINSTREAM_DOT_H
+#endif //WG_CGFXINSTREAM_DOT_H
 #pragma once

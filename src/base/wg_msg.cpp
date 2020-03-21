@@ -31,19 +31,11 @@ namespace wg
 
 	//____ Msg ______________________________________________________________
 
-	const char Msg::CLASSNAME[] = {"Msg"};
+	const TypeInfo Msg::TYPEINFO = { "Msg", &Object::TYPEINFO };
 
-	bool Msg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Msg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	const char * Msg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void Msg::setCopyTo( Receiver * pReceiver )
@@ -125,38 +117,22 @@ namespace wg
 
 	//____ InputMsg __________________________________________________________
 
-	const char InputMsg::CLASSNAME[] = {"InputMsg"};
+	const TypeInfo InputMsg::TYPEINFO = { "InputMsg", &Msg::TYPEINFO };
 
-	bool InputMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& InputMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * InputMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 
 	//____ KeyMsg ____________________________________________________________
 
-	const char KeyMsg::CLASSNAME[] = {"KeyMsg"};
+	const TypeInfo KeyMsg::TYPEINFO = { "KeyMsg", &InputMsg::TYPEINFO };
 
-	bool KeyMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& KeyMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * KeyMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	bool KeyMsg::isCursorKey() const
@@ -180,25 +156,17 @@ namespace wg
 
 	//____ MouseButtonMsg _____________________________________________________
 
-	const char MouseButtonMsg::CLASSNAME[] = {"MouseButtonMsg"};
+	const TypeInfo MouseButtonMsg::TYPEINFO = { "MouseButtonMsg", &InputMsg::TYPEINFO };
 
-	bool MouseButtonMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseButtonMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseButtonMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ FocusGainedMsg ________________________________________________________
 
-	const char FocusGainedMsg::CLASSNAME[] = {"FocusGainedMsg"};
+	const TypeInfo FocusGainedMsg::TYPEINFO = { "FocusGainedMsg", &InputMsg::TYPEINFO };
 
 	FocusGainedMsg::FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
@@ -207,23 +175,15 @@ namespace wg
 		m_pCopyTo 	= pWidget;
 	}
 
-	bool FocusGainedMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FocusGainedMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * FocusGainedMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ FocusLostMsg __________________________________________________________
 
-	const char FocusLostMsg::CLASSNAME[] = {"FocusLostMsg"};
+	const TypeInfo FocusLostMsg::TYPEINFO = { "FocusLostMsg", &InputMsg::TYPEINFO };
 
 	FocusLostMsg::FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
@@ -232,23 +192,15 @@ namespace wg
 		m_pCopyTo 	= pWidget;
 	}
 
-	bool FocusLostMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FocusLostMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * FocusLostMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ MouseEnterMsg _______________________________________________________
 
-	const char MouseEnterMsg::CLASSNAME[] = {"MouseEnterMsg"};
+	const TypeInfo MouseEnterMsg::TYPEINFO = { "MouseEnterMsg", &InputMsg::TYPEINFO };
 
 	MouseEnterMsg::MouseEnterMsg( char inputId, Object * pObject, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
@@ -257,23 +209,15 @@ namespace wg
 //		m_pCopyTo 	= pWidget;
 	}
 
-	bool MouseEnterMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseEnterMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseEnterMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ MouseLeaveMsg ________________________________________________________
 
-	const char MouseLeaveMsg::CLASSNAME[] = {"MouseLeaveMsg"};
+	const TypeInfo MouseLeaveMsg::TYPEINFO = { "MouseLeaveMsg", &InputMsg::TYPEINFO };
 
 	MouseLeaveMsg::MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
@@ -281,22 +225,14 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MouseLeaveMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseLeaveMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseLeaveMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ MouseMoveMsg __________________________________________________________
 
-	const char MouseMoveMsg::CLASSNAME[] = {"MouseMoveMsg"};
+	const TypeInfo MouseMoveMsg::TYPEINFO = { "MouseMoveMsg", &InputMsg::TYPEINFO };
 
 	MouseMoveMsg::MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys,pointerPos,timestamp)
 	{
@@ -304,23 +240,15 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MouseMoveMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseMoveMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseMoveMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ MousePressMsg ______________________________________________________
 
-	const char MousePressMsg::CLASSNAME[] = {"MousePressMsg"};
+	const TypeInfo MousePressMsg::TYPEINFO = { "MousePressMsg", &MouseButtonMsg::TYPEINFO };
 
 	MousePressMsg::MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
@@ -328,22 +256,14 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MousePressMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MousePressMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MousePressMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ MouseRepeatMsg ______________________________________________________
 
-	const char MouseRepeatMsg::CLASSNAME[] = {"MouseRepeatMsg"};
+	const TypeInfo MouseRepeatMsg::TYPEINFO = { "MouseRepeatMsg", &MouseButtonMsg::TYPEINFO };
 
 	MouseRepeatMsg::MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
@@ -351,22 +271,14 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MouseRepeatMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseRepeatMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseRepeatMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ MouseReleaseMsg _____________________________________________________
 
-	const char MouseReleaseMsg::CLASSNAME[] = {"MouseReleaseMsg"};
+	const TypeInfo MouseReleaseMsg::TYPEINFO = { "MouseReleaseMsg", &MouseButtonMsg::TYPEINFO };
 
 
 	MouseReleaseMsg::MouseReleaseMsg( char inputId, MouseButton button, Object * pSource, bool bReleaseInside, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
@@ -377,17 +289,9 @@ namespace wg
 		m_bReleaseInside = bReleaseInside;
 	}
 
-	bool MouseReleaseMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseReleaseMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseReleaseMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	bool MouseReleaseMsg::releaseInside() const
@@ -399,7 +303,7 @@ namespace wg
 
 	//____ MouseClickMsg _____________________________________________________
 
-	const char MouseClickMsg::CLASSNAME[] = {"MouseClickMsg"};
+	const TypeInfo MouseClickMsg::TYPEINFO = { "MouseClickMsg", &MouseButtonMsg::TYPEINFO };
 
 	MouseClickMsg::MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
@@ -407,22 +311,14 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MouseClickMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseClickMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseClickMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ MouseDoubleClickMsg _____________________________________________________
 
-	const char MouseDoubleClickMsg::CLASSNAME[] = {"MouseDoubleClickMsg"};
+	const TypeInfo MouseDoubleClickMsg::TYPEINFO = { "MouseDoubleClickMsg", &MouseButtonMsg::TYPEINFO };
 
 	MouseDoubleClickMsg::MouseDoubleClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId,button,modKeys,pointerPos,timestamp)
 	{
@@ -430,22 +326,14 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool MouseDoubleClickMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseDoubleClickMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseDoubleClickMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ KeyPressMsg ___________________________________________________________
 
-	const char KeyPressMsg::CLASSNAME[] = {"KeyPressMsg"};
+	const TypeInfo KeyPressMsg::TYPEINFO = { "KeyPressMsg", &KeyMsg::TYPEINFO };
 
 	KeyPressMsg::KeyPressMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,nativeKeyCode,translatedKeyCode,modKeys,pointerPos,timestamp)
 	{
@@ -454,22 +342,14 @@ namespace wg
 		m_pCopyTo		= pWidget;
 	}
 
-	bool KeyPressMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& KeyPressMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return KeyMsg::isInstanceOf(pClassName);
-	}
-
-	const char * KeyPressMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ KeyRepeatMsg ___________________________________________________________
 
-	const char KeyRepeatMsg::CLASSNAME[] = {"KeyRepeatMsg"};
+	const TypeInfo KeyRepeatMsg::TYPEINFO = { "KeyRepeatMsg", &KeyMsg::TYPEINFO };
 
 	KeyRepeatMsg::KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode, translated_keycode,modKeys,pointerPos,timestamp)
 	{
@@ -478,22 +358,14 @@ namespace wg
 		m_pCopyTo 		= pWidget;
 	}
 
-	bool KeyRepeatMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& KeyRepeatMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return KeyMsg::isInstanceOf(pClassName);
-	}
-
-	const char * KeyRepeatMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ KeyReleaseMsg ________________________________________________________
 
-	const char KeyReleaseMsg::CLASSNAME[] = {"KeyReleaseMsg"};
+	const TypeInfo KeyReleaseMsg::TYPEINFO = { "KeyReleaseMsg", &KeyMsg::TYPEINFO };
 
 	KeyReleaseMsg::KeyReleaseMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : KeyMsg(inputId,native_keycode,translated_keycode,modKeys,pointerPos,timestamp)
 	{
@@ -502,22 +374,14 @@ namespace wg
 		m_pCopyTo		= pWidget;
 	}
 
-	bool KeyReleaseMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& KeyReleaseMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return KeyMsg::isInstanceOf(pClassName);
-	}
-
-	const char * KeyReleaseMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ TextInputMsg __________________________________________________________
 
-	const char TextInputMsg::CLASSNAME[] = {"TextInputMsg"};
+	const TypeInfo TextInputMsg::TYPEINFO = { "TextInputMsg", &Msg::TYPEINFO };
 
 
 	TextInputMsg::TextInputMsg( char inputId, String text, Widget * pWidget )
@@ -534,22 +398,14 @@ namespace wg
 		return m_text;
 	}
 
-	bool TextInputMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextInputMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * TextInputMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ EditCommandMsg __________________________________________________________
 
-	const char EditCommandMsg::CLASSNAME[] = {"EditCommandMsg"};
+	const TypeInfo EditCommandMsg::TYPEINFO = { "EditCommandMsg", &Msg::TYPEINFO };
 
 
 	EditCommandMsg::EditCommandMsg( char inputId, EditCmd command, Widget * pWidget )
@@ -561,23 +417,15 @@ namespace wg
 		m_inputId		= inputId;
 	}
 
-	bool EditCommandMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& EditCommandMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * EditCommandMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ WheelRollMsg __________________________________________________________
 
-	const char WheelRollMsg::CLASSNAME[] = {"WheelRollMsg"};
+	const TypeInfo WheelRollMsg::TYPEINFO = { "WheelRollMsg", &InputMsg::TYPEINFO };
 
 	WheelRollMsg::WheelRollMsg( char inputId, int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( inputId, modKeys, pointerPos, timestamp )
 	{
@@ -598,22 +446,14 @@ namespace wg
 		return m_distance;
 	}
 
-	bool WheelRollMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& WheelRollMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * WheelRollMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ TickMsg _______________________________________________________________
 
-	const char TickMsg::CLASSNAME[] = {"TickMsg"};
+	const TypeInfo TickMsg::TYPEINFO = { "TickMsg", &Msg::TYPEINFO };
 
 	TickMsg::TickMsg( int64_t timestamp, int timediff )
 	{
@@ -622,22 +462,14 @@ namespace wg
 		m_timediff = timediff;
 	}
 
-	bool TickMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TickMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * TickMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ PointerChangeMsg _______________________________________________________________
 
-	const char PointerChangeMsg::CLASSNAME[] = {"PointerChangeMsg"};
+	const TypeInfo PointerChangeMsg::TYPEINFO = { "PointerChangeMsg", &Msg::TYPEINFO };
 
 	PointerChangeMsg::PointerChangeMsg( char inputId, PointerStyle style )
 	{
@@ -651,23 +483,15 @@ namespace wg
 		return m_style;
 	}
 
-	bool PointerChangeMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& PointerChangeMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * PointerChangeMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ DragNDropMsg _______________________________________________________
 
-	const char DragNDropMsg::CLASSNAME[] = {"DragNDropMsg"};
+	const TypeInfo DragNDropMsg::TYPEINFO = { "DragNDropMsg", &Msg::TYPEINFO };
 
 	DragNDropMsg::DragNDropMsg( MsgType type, Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
 	{
@@ -683,17 +507,14 @@ namespace wg
 		m_pPayload = pPayload;
 	}
 
-	bool DragNDropMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& DragNDropMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	const char * DragNDropMsg::className( void ) const
-	{
-		return CLASSNAME;
+	bool DragNDropMsg::hasPayload() const 
+	{ 
+		return m_pPayload; 
 	}
 
 	BasicPayload_p DragNDropMsg::payload() const
@@ -703,7 +524,7 @@ namespace wg
 
 	//____ DropPickMsg ___________________________________________________
 
-	const char DropPickMsg::CLASSNAME[] = {"DropPickMsg"};
+	const TypeInfo DropPickMsg::TYPEINFO = { "DropPickMsg", &DragNDropMsg::TYPEINFO };
 
 	DropPickMsg::DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos )
 	: DragNDropMsg( MsgType::DropPick, pSource, 0, nullptr, pSource, pFinalReceiver, modKeys, pointerPos ),
@@ -712,17 +533,9 @@ namespace wg
 	{
 	}
 
-	bool DropPickMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& DropPickMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropPickMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void DropPickMsg::setPayload( BasicPayload * pPayload )
@@ -753,24 +566,16 @@ namespace wg
 
 	//____ DropProbeMsg ___________________________________________________
 
-	const char DropProbeMsg::CLASSNAME[] = { "DropProbeMsg" };
+	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DragNDropMsg::TYPEINFO };
 
 	DropProbeMsg::DropProbeMsg(Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropProbe, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos)
 	{
 	}
 
-	bool DropProbeMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropProbeMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropProbeMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void DropProbeMsg::accept(bool bAccepted)
@@ -780,7 +585,7 @@ namespace wg
 
 	//____ DropEnterMsg ___________________________________________________
 
-	const char DropEnterMsg::CLASSNAME[] = { "DropEnterMsg" };
+	const TypeInfo DropEnterMsg::TYPEINFO = { "DropEnterMsg", &DragNDropMsg::TYPEINFO };
 
 	DropEnterMsg::DropEnterMsg(Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
 							   Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
@@ -789,17 +594,9 @@ namespace wg
 	{
 	}
 
-	bool DropEnterMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropEnterMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropEnterMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void DropEnterMsg::setDragWidget(Widget * pWidget)
@@ -815,7 +612,7 @@ namespace wg
 
 	//____ DropMoveMsg ___________________________________________________
 
-	const char DropMoveMsg::CLASSNAME[] = { "DropMoveMsg" };
+	const TypeInfo DropMoveMsg::TYPEINFO = { "DropMoveMsg", &DragNDropMsg::TYPEINFO };
 
 	DropMoveMsg::DropMoveMsg(Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pDragWidget,
 							 Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
@@ -824,17 +621,9 @@ namespace wg
 	{
 	}
 
-	bool DropMoveMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropMoveMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropMoveMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void DropMoveMsg::setDragWidget(Widget * pWidget)
@@ -849,29 +638,21 @@ namespace wg
 
 	//____ DropLeaveMsg ___________________________________________________
 
-	const char DropLeaveMsg::CLASSNAME[] = { "DropLeaveMsg" };
+	const TypeInfo DropLeaveMsg::TYPEINFO = { "DropLeaveMsg", &DragNDropMsg::TYPEINFO };
 
 	DropLeaveMsg::DropLeaveMsg(Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropLeave, pSource, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
 
-	bool DropLeaveMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropLeaveMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropLeaveMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ DropDeliverMsg ___________________________________________________
 
-	const char DropDeliverMsg::CLASSNAME[] = { "DropDeliverMsg" };
+	const TypeInfo DropDeliverMsg::TYPEINFO = { "DropDeliverMsg", &DragNDropMsg::TYPEINFO };
 
 	DropDeliverMsg::DropDeliverMsg(Widget * pSource, int pickCategory, BasicPayload * pPayload, Widget * pPickedFrom, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropDeliver, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver, modKeys, pointerPos),
@@ -879,17 +660,9 @@ namespace wg
 	{
 	}
 
-	bool DropDeliverMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropDeliverMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropDeliverMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	Widget_p DropDeliverMsg::deliveredTo() const
@@ -904,29 +677,21 @@ namespace wg
 
 	//____ DropCancelMsg ___________________________________________________
 
-	const char DropCancelMsg::CLASSNAME[] = { "DropCancelMsg" };
+	const TypeInfo DropCancelMsg::TYPEINFO = { "DropCancelMsg", &DragNDropMsg::TYPEINFO };
 
 	DropCancelMsg::DropCancelMsg(Widget * pPickedFrom, int pickCategory, BasicPayload * pPayload, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropCancel, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr, modKeys, pointerPos)
 	{
 	}
 
-	bool DropCancelMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropCancelMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropCancelMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ DropCompleteMsg ___________________________________________________
 
-	const char DropCompleteMsg::CLASSNAME[] = { "DropCompleteMsg" };
+	const TypeInfo DropCompleteMsg::TYPEINFO = { "DropCompleteMsg", &DragNDropMsg::TYPEINFO };
 
 	DropCompleteMsg::DropCompleteMsg(Widget * pPicked, Widget * pDeliveree, int pickCategory, BasicPayload * pPayload, ModifierKeys modKeys, Coord pointerPos)
 		: DragNDropMsg( MsgType::DropComplete, pPicked, pickCategory, pPayload, pPicked, nullptr, modKeys, pointerPos),
@@ -934,17 +699,9 @@ namespace wg
 	{
 	}
 
-	bool DropCompleteMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& DropCompleteMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return DragNDropMsg::isInstanceOf(pClassName);
-	}
-
-	const char * DropCompleteMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	Widget_p DropCompleteMsg::deliveredTo() const
@@ -954,7 +711,7 @@ namespace wg
 
 	//____ SelectMsg _________________________________________________________
 
-	const char SelectMsg::CLASSNAME[] = {"SelectMsg"};
+	const TypeInfo SelectMsg::TYPEINFO = { "SelectMsg", &Msg::TYPEINFO };
 
 	SelectMsg::SelectMsg( Object * pSource )
 	{
@@ -962,22 +719,14 @@ namespace wg
 		m_pSource 		= pSource;
 	}
 
-	bool SelectMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SelectMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * SelectMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ ToggleMsg ______________________________________________
 
-	const char ToggleMsg::CLASSNAME[] = {"ToggleMsg"};
+	const TypeInfo ToggleMsg::TYPEINFO = { "ToggleMsg", &Msg::TYPEINFO };
 
 	ToggleMsg::ToggleMsg( Object * pSource, bool bSet )
 	{
@@ -991,22 +740,14 @@ namespace wg
 		return m_bSet;
 	}
 
-	bool ToggleMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ToggleMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * ToggleMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ ValueChangeMsg ___________________________________________
 
-	const char ValueUpdateMsg::CLASSNAME[] = {"ValueUpdateMsg"};
+	const TypeInfo ValueUpdateMsg::TYPEINFO = { "ValueUpdateMsg", &Msg::TYPEINFO };
 
 	ValueUpdateMsg::ValueUpdateMsg( Object * pSource, int64_t value, double fraction, bool bFinal )
 	{
@@ -1032,22 +773,14 @@ namespace wg
 		return m_bFinal;
 	}
 
-	bool ValueUpdateMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ValueUpdateMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * ValueUpdateMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ RangeUpdateMsg ___________________________________________
 
-	const char RangeUpdateMsg::CLASSNAME[] = {"RangeUpdateMsg"};
+	const TypeInfo RangeUpdateMsg::TYPEINFO = { "RangeUpdateMsg", &Msg::TYPEINFO };
 
 	RangeUpdateMsg::RangeUpdateMsg( Object * pSource, int intOfs, int intLength, double fracOfs, double fracLength, bool bFinal )
 	{
@@ -1060,17 +793,9 @@ namespace wg
 		m_bFinal	= bFinal;
 	}
 
-	bool RangeUpdateMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& RangeUpdateMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * RangeUpdateMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	int RangeUpdateMsg::offset() const
@@ -1101,7 +826,7 @@ namespace wg
 
 	//____ TextEditMsg ________________________________________________________
 
-	const char TextEditMsg::CLASSNAME[] = {"TextEditMsg"};
+	const TypeInfo TextEditMsg::TYPEINFO = { "TextEditMsg", &Msg::TYPEINFO };
 
 	CTextEditor_p TextEditMsg::text() const
 	{
@@ -1121,39 +846,23 @@ namespace wg
 		return m_bFinal;
 	}
 
-	bool TextEditMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextEditMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * TextEditMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ ItemMsg ________________________________________________________
 
-	const char ItemMsg::CLASSNAME[] = {"ItemMsg"};
+	const TypeInfo ItemMsg::TYPEINFO = { "ItemMsg", &Msg::TYPEINFO };
 
 	ItemMsg::ItemMsg( Object * pSource, int itemId, Object * pItemObject ) : m_item(itemId,pItemObject)
 	{
 		m_pSource 	= pSource;
 	}
 
-	bool ItemMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	int ItemMsg::itemId() const
@@ -1168,7 +877,7 @@ namespace wg
 
 	//____ ItemToggleMsg ________________________________________________________
 
-	const char ItemToggleMsg::CLASSNAME[] = {"ItemToggleMsg"};
+	const TypeInfo ItemToggleMsg::TYPEINFO = { "ItemToggleMsg", &ItemMsg::TYPEINFO };
 
 	ItemToggleMsg::ItemToggleMsg( Object * pSource, int itemId, Object * pItemObject, bool bSet ) : ItemMsg(pSource,itemId,pItemObject)
 	{
@@ -1176,17 +885,9 @@ namespace wg
 		m_bSet = bSet;
 	}
 
-	bool ItemToggleMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemToggleMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ItemMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemToggleMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	bool ItemToggleMsg::isSet() const
@@ -1196,7 +897,7 @@ namespace wg
 
 	//____ ItemMousePressMsg ________________________________________________________
 
-	const char ItemMousePressMsg::CLASSNAME[] = {"ItemMousePressMsg"};
+	const TypeInfo ItemMousePressMsg::TYPEINFO = { "ItemMousePressMsg", &ItemMsg::TYPEINFO };
 
 	ItemMousePressMsg::ItemMousePressMsg( Object * pSource, int itemId, Object * pItemObject, MouseButton button ) : ItemMsg(pSource,itemId,pItemObject)
 	{
@@ -1204,17 +905,9 @@ namespace wg
 		m_button = button;
 	}
 
-	bool ItemMousePressMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemMousePressMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ItemMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemMousePressMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	MouseButton ItemMousePressMsg::button() const
@@ -1224,7 +917,7 @@ namespace wg
 
 	//____ ItemListMsg ________________________________________________________
 
-	const char ItemListMsg::CLASSNAME[] = {"ItemListMsg"};
+	const TypeInfo ItemListMsg::TYPEINFO = { "ItemListMsg", &Msg::TYPEINFO };
 
 	ItemListMsg::ItemListMsg( Object * pSource, int nbItems, ItemInfo * pItems )
 	{
@@ -1241,17 +934,9 @@ namespace wg
 		delete [] m_pItems;
 	}
 
-	bool ItemListMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemListMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemListMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	int ItemListMsg::nbItems() const
@@ -1266,51 +951,35 @@ namespace wg
 
 	//____ ItemsSelectMsg ________________________________________________________
 
-	const char ItemsSelectMsg::CLASSNAME[] = {"ItemsSelectMsg"};
+	const TypeInfo ItemsSelectMsg::TYPEINFO = { "ItemsSelectMsg", &ItemListMsg::TYPEINFO };
 
 	ItemsSelectMsg::ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems ) : ItemListMsg(pSource,nbItems,pItems)
 	{
 		m_type = MsgType::ItemsSelect;
 	}
 
-	bool ItemsSelectMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemsSelectMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ItemListMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemsSelectMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ ItemsUnselectMsg ________________________________________________________
 
-	const char ItemsUnselectMsg::CLASSNAME[] = {"ItemsUnselectMsg"};
+	const TypeInfo ItemsUnselectMsg::TYPEINFO = { "ItemsUnselectMsg", &ItemListMsg::TYPEINFO };
 
 	ItemsUnselectMsg::ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems ) : ItemListMsg(pSource,nbItems,pItems)
 	{
 		m_type = MsgType::ItemsUnselect;
 	}
 
-	bool ItemsUnselectMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ItemsUnselectMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ItemListMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ItemsUnselectMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ PopupClosedMsg ____________________________________________
 
-	const char PopupClosedMsg::CLASSNAME[] = {"PopupClosedMsg"};
+	const TypeInfo PopupClosedMsg::TYPEINFO = { "PopupClosedMsg", &Msg::TYPEINFO };
 
 	PopupClosedMsg::PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller )
 	{
@@ -1319,23 +988,15 @@ namespace wg
 		m_pSource		= pPopup;
 	}
 
-	bool PopupClosedMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& PopupClosedMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * PopupClosedMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ ModalMoveOutsideMsg ___________________________________________________
 
-	const char ModalMoveOutsideMsg::CLASSNAME[] = {"ModalMoveOutsideMsg"};
+	const TypeInfo ModalMoveOutsideMsg::TYPEINFO = { "ModalMoveOutsideMsg", &InputMsg::TYPEINFO };
 
 	ModalMoveOutsideMsg::ModalMoveOutsideMsg( char inputId, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg(inputId, modKeys, pointerPos, timestamp)
 	{
@@ -1343,23 +1004,15 @@ namespace wg
 		m_pSource		= pSource;
 	}
 
-	bool ModalMoveOutsideMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ModalMoveOutsideMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return InputMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ModalMoveOutsideMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ ModalBlockedPressMsg _______________________________________________
 
-	const char ModalBlockedPressMsg::CLASSNAME[] = {"ModalBlockedPressMsg"};
+	const TypeInfo ModalBlockedPressMsg::TYPEINFO = { "ModalBlockedPressMsg", &InputMsg::TYPEINFO };
 
 	ModalBlockedPressMsg::ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button, modKeys, pointerPos, timestamp )
 	{
@@ -1367,23 +1020,15 @@ namespace wg
 		m_pSource 		= pSource;
 	}
 
-	bool ModalBlockedPressMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ModalBlockedPressMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ModalBlockedPressMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ ModalBlockedReleaseMsg _____________________________________________
 
-	const char ModalBlockedReleaseMsg::CLASSNAME[] = {"ModalBlockedReleaseMsg"};
+	const TypeInfo ModalBlockedReleaseMsg::TYPEINFO = { "ModalBlockedReleaseMsg", &InputMsg::TYPEINFO };
 
 	ModalBlockedReleaseMsg::ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
 	{
@@ -1391,23 +1036,15 @@ namespace wg
 		m_pSource 		= pSource;
 	}
 
-	bool ModalBlockedReleaseMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ModalBlockedReleaseMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * ModalBlockedReleaseMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ PianoKeyPressMsg ___________________________________________________
 
-	const char PianoKeyPressMsg::CLASSNAME[] = { "PianoKeyPressMsg" };
+	const TypeInfo PianoKeyPressMsg::TYPEINFO = { "PianoKeyPressMsg", &Msg::TYPEINFO };
 
 	PianoKeyPressMsg::PianoKeyPressMsg(Object * pSource, int keyIdx, int64_t timestamp )
 	{
@@ -1417,23 +1054,15 @@ namespace wg
 		m_timestamp = timestamp;
 	}
 
-	bool PianoKeyPressMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& PianoKeyPressMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * PianoKeyPressMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ PianoKeyReleaseMsg _________________________________________________
 
-	const char PianoKeyReleaseMsg::CLASSNAME[] = { "PianoKeyReleaseMsg" };
+	const TypeInfo PianoKeyReleaseMsg::TYPEINFO = { "PianoKeyReleaseMsg", &Msg::TYPEINFO };
 
 	PianoKeyReleaseMsg::PianoKeyReleaseMsg(Object * pSource, int keyIdx, int64_t timestamp)
 	{
@@ -1443,23 +1072,15 @@ namespace wg
 		m_timestamp = timestamp;
 	}
 
-	bool PianoKeyReleaseMsg::isInstanceOf(const char * pClassName) const
+	const TypeInfo& PianoKeyReleaseMsg::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Msg::isInstanceOf(pClassName);
-	}
-
-	const char * PianoKeyReleaseMsg::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 
 	//____ MouseDragMsg _________________________________________________________
 
-	const char MouseDragMsg::CLASSNAME[] = {"MouseDragMsg"};
+	const TypeInfo MouseDragMsg::TYPEINFO = { "MouseDragMsg", &MouseButtonMsg::TYPEINFO };
 
 
 	MouseDragMsg::MouseDragMsg( char inputId, MouseButton button, Object * pSource, const Coord& startPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : MouseButtonMsg(inputId, button,modKeys,pointerPos,timestamp)
@@ -1471,17 +1092,9 @@ namespace wg
 		m_prevPos = prevPos;
 	}
 
-	bool MouseDragMsg::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MouseDragMsg::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return MouseButtonMsg::isInstanceOf(pClassName);
-	}
-
-	const char * MouseDragMsg::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	Coord MouseDragMsg::draggedTotal() const

@@ -29,7 +29,7 @@
 namespace wg
 {
 
-	const char TextDisplay::CLASSNAME[] = {"TextDisplay"};
+	const TypeInfo TextDisplay::TYPEINFO = { "TextDisplay", &Widget::TYPEINFO };
 
 
 
@@ -46,22 +46,11 @@ namespace wg
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool TextDisplay::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextDisplay ::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextDisplay::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ pointerStyle() ________________________________________

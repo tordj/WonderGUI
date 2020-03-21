@@ -25,23 +25,13 @@ namespace wg
 {
 
 
-	const char ScalePreferredSizeBroker::CLASSNAME[] = {"ScalePreferredSizeBroker"};
+	const TypeInfo ScalePreferredSizeBroker::TYPEINFO = { "ScalePreferredSizeBroker", &SizeBroker::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ScalePreferredSizeBroker::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ScalePreferredSizeBroker::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return SizeBroker::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ScalePreferredSizeBroker::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setItemLengths() _______________________________________________________

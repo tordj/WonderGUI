@@ -24,6 +24,16 @@
 
 namespace wg
 {
+	const TypeInfo CShadows::TYPEINFO = { "CShadows", &Component::TYPEINFO };
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CShadows::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+
 	//____ clear() ____________________________________________________________
 
 	void CShadows::clear()

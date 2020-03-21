@@ -29,9 +29,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char Canvas::CLASSNAME[] = {"Canvas"};
+	const TypeInfo Canvas::TYPEINFO = { "Canvas", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Canvas::Canvas() : canvas(this)
 	{
@@ -43,21 +43,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Canvas::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Canvas::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ________________________________________________________
-
-	const char * Canvas::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() ___________________________________________________

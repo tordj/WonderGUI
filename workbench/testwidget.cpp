@@ -30,9 +30,9 @@
 
 namespace wg
 {
-	const char TestWidget::CLASSNAME[] = {"TestWidget"};
+	const TypeInfo TestWidget::TYPEINFO = { "TestWidget", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	TestWidget::TestWidget()
 	{
@@ -48,23 +48,13 @@ namespace wg
 		
 	}
 
-	//____ isInstanceOf() _________________________________________________________
-	
-	bool TestWidget::isInstanceOf( const char * pClassName ) const
-	{ 
-		if( pClassName==CLASSNAME )
-			return true;
-	
-		return Widget::isInstanceOf(pClassName);
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& TestWidget::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
-	
-	//____ className() ____________________________________________________________
-	
-	const char * TestWidget::className( void ) const
-	{ 
-		return CLASSNAME; 
-	}
-	
+
 	//____ _preferredSize() __________________________________________________________
 
 	SizeI TestWidget::_preferredSize() const

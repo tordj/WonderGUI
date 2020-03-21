@@ -37,7 +37,7 @@ namespace wg
 
 	template class CDynamicSlotVector<ModalLayer::Slot>;
 
-	const char ModalLayer::CLASSNAME[] = {"ModalLayer"};
+	const TypeInfo ModalLayer::TYPEINFO = { "ModalLayer", &Layer::TYPEINFO };
 	const TypeInfo ModalLayer::Slot::TYPEINFO = { "ModalLayer::Slot", &Layer::Slot::TYPEINFO };
 
 	//TODO: Improve Modal geometry handling, should be able to run on PreferredSize by default, answering to resize-requests.
@@ -178,7 +178,7 @@ namespace wg
 		}
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	ModalLayer::ModalLayer() : modalSlots(this)
 	{
@@ -190,21 +190,12 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool ModalLayer::isInstanceOf( const char * pClassName ) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& ModalLayer::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Layer::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ModalLayer::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________
@@ -239,12 +230,12 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	ModalLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	ModalLayer::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
-			return &DynamicSlot::TYPEINFO;
+			return DynamicSlot::TYPEINFO;
 
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//____ _findWidget() ____________________________________________________________
@@ -504,7 +495,7 @@ namespace wg
 	{
 		Layer::_receive(_pMsg);
 
-		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
+		if( _pMsg->isInstanceOf( InputMsg::TYPEINFO ) )
 		{
 			InputMsg * pMsg = static_cast<InputMsg*>(_pMsg);
 

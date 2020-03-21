@@ -25,7 +25,8 @@
 namespace wg
 {
 
-	const char NullGfxDevice::CLASSNAME[] = {"NullGfxDevice"};
+	const TypeInfo NullGfxDevice::TYPEINFO = { "NullGfxDevice", &GfxDevice::TYPEINFO };
+	const TypeInfo NullGfxDevice::SURFACETYPEINFO = { "[no surface exists for NullGfxDevice]", nullptr };
 
 
 	//____ create() _______________________________________________________________
@@ -43,28 +44,18 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool NullGfxDevice::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& NullGfxDevice::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return GfxDevice::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	//____ className() ____________________________________________________________
+	//____ surfaceType() _______________________________________________________
 
-	const char * NullGfxDevice::className( void ) const
+	const TypeInfo& NullGfxDevice::surfaceType( void ) const
 	{
-		return CLASSNAME;
-	}
-
-	//____ surfaceClassName() _______________________________________________________
-
-	const char * NullGfxDevice::surfaceClassName( void ) const
-	{
-		return nullptr;
+		return SURFACETYPEINFO;
 	}
 
 	//____ surfaceFactory() _______________________________________________________

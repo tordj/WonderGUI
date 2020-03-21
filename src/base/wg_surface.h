@@ -30,7 +30,6 @@
 #include <wg_color.h>
 #include <wg_pointers.h>
 #include <wg_blob.h>
-#include <wg_payload.h>
 
 namespace wg
 {
@@ -39,6 +38,10 @@ namespace wg
 	class Surface;
 	typedef	StrongPtr<Surface>	Surface_p;
 	typedef	WeakPtr<Surface>	Surface_wp;
+
+	class BasicPayload;
+	typedef	StrongPtr<BasicPayload>	BasicPayload_p;
+	typedef	WeakPtr<BasicPayload>	BasicPayload_wp;
 
 	//____ Surface ______________________________________________________________
 	/**
@@ -61,9 +64,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		inline void         setId(int id);
 		inline int          id() const;
@@ -130,8 +132,8 @@ namespace wg
 
         //.____ Misc _________________________________________________________
         
-		inline void         setPayload(BasicPayload * pPayload);
-		inline BasicPayload_p payload() const;
+		void				setPayload(BasicPayload * pPayload);
+		BasicPayload_p		payload() const;
 
 	protected:
 		Surface( int flags );
@@ -369,19 +371,6 @@ namespace wg
 			return m_lockRegion;
 	}
 
-	//____ setPayload() _______________________________________________________
-
-	void Surface::setPayload(BasicPayload * pPayload) 
-	{ 
-		m_pPayload = pPayload; 
-	}
-
-	//_____ payload() _________________________________________________________
-
-	BasicPayload_p Surface::payload() const
-	{
-		return m_pPayload; 
-	}
 
 	//==============================================================================
 

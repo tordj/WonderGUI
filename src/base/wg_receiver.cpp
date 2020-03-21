@@ -24,25 +24,15 @@
 namespace wg
 {
 
-	const char Receiver::CLASSNAME[] = {"Receiver"};
+	const TypeInfo Receiver::TYPEINFO = { "Receiver", &Object::TYPEINFO };
 
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Receiver::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Receiver::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Receiver::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _onRouteAdded() _________________________________________________________

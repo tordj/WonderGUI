@@ -46,10 +46,10 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
-		const char *			surfaceClassName( void ) const override;
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		const TypeInfo&			surfaceType( void ) const override;
 
 		//.____ Misc _______________________________________________________
 
@@ -77,6 +77,8 @@ namespace wg
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, const int simpleTransform[2][2]) override;
+
+		const static TypeInfo	SURFACETYPEINFO;
 
 	};
 

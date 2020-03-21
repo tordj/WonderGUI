@@ -70,6 +70,11 @@ namespace wg
 		CCanvas(GeoComponent::Holder * pHolder);
 		virtual ~CCanvas() {};
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Control _______________________________________________
 
 		bool				setDevice(GfxDevice * pDevice);

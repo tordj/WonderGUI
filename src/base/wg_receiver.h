@@ -40,11 +40,11 @@ namespace wg
 	{
 		friend class MsgRouter;
 	public:
+
 		//.____ Identification _________________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Misc ____________________________________________________________
 

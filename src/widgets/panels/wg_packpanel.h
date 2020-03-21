@@ -129,9 +129,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool		isInstanceOf( const char * pClassName ) const override;
-		const char *className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Geometry ____________________________________________
 
@@ -160,7 +159,7 @@ namespace wg
 
 		// Overloaded from Container
 
-		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
+		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		Widget *	_firstChild() const override;
 		Widget *	_lastChild() const override;

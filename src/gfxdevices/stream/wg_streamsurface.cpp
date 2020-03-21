@@ -33,7 +33,7 @@
 
 namespace wg
 {
-	const char StreamSurface::CLASSNAME[] = {"StreamSurface"};
+	const TypeInfo StreamSurface::TYPEINFO = { "StreamSurface", &Surface::TYPEINFO };
 
 	//____ maxSize() _______________________________________________________________
 
@@ -44,7 +44,7 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-	StreamSurface_p	StreamSurface::create( GfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color * pClut )
+	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
 			return StreamSurface_p();
@@ -52,7 +52,7 @@ namespace wg
 		return StreamSurface_p(new StreamSurface(stream,size,format,flags,pClut));
 	}
 
-	StreamSurface_p	StreamSurface::create( GfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return StreamSurface_p();
@@ -60,7 +60,7 @@ namespace wg
 		return StreamSurface_p(new StreamSurface(stream,size,format,pBlob,pitch,flags,pClut));
 	}
 
-	StreamSurface_p	StreamSurface::create( GfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
 			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
@@ -69,16 +69,16 @@ namespace wg
 		return  StreamSurface_p(new StreamSurface(stream,size,format,pPixels,pitch, pPixelDescription,flags,pClut));
 	};
 
-	StreamSurface_p	StreamSurface::create( GfxOutStream& stream, Surface * pOther, int flags )
+	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream, Surface * pOther, int flags )
 	{
 		return StreamSurface_p(new StreamSurface( stream,pOther,flags ));
 	}
 
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, int flags, const Color * pClut) : Surface(flags)
+	StreamSurface::StreamSurface( CGfxOutStream& stream,SizeI size, PixelFormat format, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -115,7 +115,7 @@ namespace wg
 		}
 	}
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut) : Surface(flags)
+	StreamSurface::StreamSurface( CGfxOutStream& stream,SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -142,7 +142,7 @@ namespace wg
 		_sendPixels(size, (uint8_t*) pBlob->data(), pitch);
 	}
 
-	StreamSurface::StreamSurface( GfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut) : Surface(flags)
+	StreamSurface::StreamSurface( CGfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut) : Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -189,7 +189,7 @@ namespace wg
 	}
 
 
-	StreamSurface::StreamSurface( GfxOutStream& stream, Surface * pOther, int flags ) : Surface(flags)
+	StreamSurface::StreamSurface( CGfxOutStream& stream, Surface * pOther, int flags ) : Surface(flags)
 	{
 		PixelFormat format = pOther->pixelFormat();
 		uint8_t * pPixels = (uint8_t*)pOther->lock(AccessMode::ReadOnly);
@@ -243,21 +243,11 @@ namespace wg
 		_sendDeleteSurface();
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StreamSurface::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StreamSurface::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Surface::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StreamSurface::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setScaleMode() __________________________________________________________

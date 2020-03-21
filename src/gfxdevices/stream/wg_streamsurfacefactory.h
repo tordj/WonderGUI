@@ -40,13 +40,12 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StreamSurfaceFactory_p	create( GfxOutStream& stream ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(stream)); }
+		static StreamSurfaceFactory_p	create( CGfxOutStream& stream ) { return StreamSurfaceFactory_p(new StreamSurfaceFactory(stream)); }
 
 		//.____ Identification __________________________________________
 
-		bool						isInstanceOf( const char * pClassName ) const override;
-		const char *				className( void ) const override;
-		static const char			CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Geometry _________________________________________________
 
@@ -60,10 +59,10 @@ namespace wg
 		Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const override;
 
 	protected:
-		StreamSurfaceFactory( GfxOutStream& stream);
+		StreamSurfaceFactory( CGfxOutStream& stream);
 
 
-		GfxOutStream_p	m_pStream;
+		CGfxOutStream_p	m_pStream;
 	};
 }
 

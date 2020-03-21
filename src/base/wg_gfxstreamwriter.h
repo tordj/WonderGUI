@@ -24,7 +24,7 @@
 #define	WG_GFXSTREAMWRITER_DOT_H
 #pragma once
 
-#include <wg_gfxoutstream.h>
+#include <wg_cgfxoutstream.h>
 
 #include <functional>
 
@@ -35,7 +35,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamWriter>	GfxStreamWriter_p;
 	typedef	WeakPtr<GfxStreamWriter>	GfxStreamWriter_wp;
 
-	class GfxStreamWriter : public Object, protected GfxOutStreamHolder
+	class GfxStreamWriter : public Object, protected CGfxOutStreamHolder
 	{
 	public:
 
@@ -45,13 +45,12 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		GfxOutStream		stream;
+		CGfxOutStream		stream;
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 

@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Identification ________________________________________________
 
-		const TypeInfo * typeInfo(void) const { return m_pHolder->_slotTypeInfo(this); }
+		const TypeInfo& typeInfo(void) const { return m_pHolder->_slotTypeInfo(this); }
 
 		const static TypeInfo	TYPEINFO;
 

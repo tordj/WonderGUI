@@ -360,6 +360,19 @@ int main(int argc, char** argv)
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
 
+
+	auto pPayload = Payload<Rect>::create();
+
+	const TypeInfo& typeInfo1 = pPayload->typeInfo();
+
+	const TypeInfo& typeInfo2 = Payload<Rect>::TYPEINFO;
+
+	if (pPayload->isInstanceOf(Payload<Rect>::TYPEINFO))
+	{
+		int x = 0;
+	}
+
+
 /*
 	PixelFormat format = PixelFormat::Unknown;
 

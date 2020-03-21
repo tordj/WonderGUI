@@ -27,8 +27,7 @@
 namespace wg
 {
 
-	const char Object::CLASSNAME[] = {"Object"};
-
+	const TypeInfo	Object::TYPEINFO = { "Object", nullptr };
 
 	WeakPtrHub * WeakPtrHub::getHub(Object * pObj)
 	{
@@ -111,41 +110,46 @@ namespace wg
 	 *
 	 * Check if the object is an instance or subclass of specified class.
 	 *
-	 * @param pClassName	Pointer to the class name. This needs to be a pointer returned by
-	 * 						a call to Object::className() or the CLASSNAME member of a subclass of Object.
+	 * @param typeInfo		Reference to TypeInfo. This needs to be a reference returned by
+	 * 						a call to Object::typeInfo() or the TYPEINFO member of a subclass of Object.
 	 *
-	 * This method compares the specified class name to the CLASSNAME member of all classes implemented by the
+	 * This method compares the specified class type to the TYPEINFO member of all classes implemented by the
 	 * object. This is needed when checking if the object implements a class other than the leaf class.
-	 * When just checking for a leaf class, a direct comparison between object->className() and Foo::CLASSNAME
+	 * When just checking for a leaf class, a direct comparison between object->typeInfo() and Foo::TYPEINFO
 	 * is faster.
 	 *
 	 * @return True if the object implements the specied class.
 	 *
 	 */
 
-	bool Object::isInstanceOf( const char * pClassName ) const
+	bool Object::isInstanceOf( const TypeInfo& _typeInfo ) const
 	{
-		return (pClassName==CLASSNAME);
+		const TypeInfo* p = &typeInfo();
+
+		while (p != nullptr)
+		{
+			if (p == &_typeInfo)
+				return true;
+			p = p->pSuperClass;
+		}
+		return false;
 	}
 
 	/**
-	 * @brief Get a char pointer which identifies the class of the object.
+	 * @brief Get class information about the object.
 	 *
-	 * Get a char pointer which identifies the class of the object.
+	 * Get class information about the object.
 	 *
-	 * The char pointer points to a char string containing the class name without the Wg prefix.
-	 * The pointer itself can be used for object type comparison since it is always the same for
-	 * objects of the same type. There is no need to do a string compare on the string content.
+	 * The TypeInfo is a static struct with class information for the object.
+	 * The struct is the same for all objects of same class, so if two objects share
+	 * the same TypeInfo struct they are of the same class.
 	 *
-	 * To see if an object is an instance of class Foo you can compare the pointer to Foo::CLASSNAME.
-	 * To see if an object is an instance of a subclass of Foo, you will need to call object->isInstanceOf( Foo::CLASSNAME ).
-	 *
-	 * @return Pointer to a char string containing the class name.
+	 * @return Reference to the TypeInfo struct for the class of the object.
 	 */
 
-	const char * Object::className( void ) const
+	const TypeInfo& Object::typeInfo(void) const
 	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	void Object::_destroy()

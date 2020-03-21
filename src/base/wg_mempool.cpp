@@ -5,7 +5,7 @@
 namespace wg
 {
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	MemPool::MemPool( int entriesPerBlock, int entrySize )
 	{

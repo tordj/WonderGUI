@@ -28,11 +28,12 @@
 
 namespace wg
 {
-	
+	template<class EntryType> const TypeInfo CVector<EntryType>::TYPEINFO = { "CVector<Unknow>", &Component::TYPEINFO };
+
 	//____ pushBack() _________________________________________________________________
 
 	template < class EntryType>
-	CSlotVector<EntryType>::iterator CVector<EntryType>::pushBack(const EntryType& entry)
+	CVector<EntryType>::iterator CVector<EntryType>::pushBack(const EntryType& entry)
 	{
 		m_entries.push_back(entry);		
 		m_pHolder->_didAddEntries(&m_entries.back(), 1);
@@ -40,7 +41,7 @@ namespace wg
 	}
 
 	template < class EntryType>
-	CSlotVector<EntryType>::iterator CVector<EntryType>::pushBack(std::initializer_list<const EntryType&> > entries)
+	CVector<EntryType>::iterator CVector<EntryType>::pushBack(const std::initializer_list<const EntryType>& entries)
 	{
 		int offset = m_entries.size();
 		
@@ -52,35 +53,58 @@ namespace wg
 	//____ insert() ______________________________________________________________
 
 	template < class EntryType>
-	void CVector<EntryType>::insert(int index, const EntryType& entry)
+	CVector<EntryType>::iterator CVector<EntryType>::insert(int index, const EntryType& entry)
 	{
 		//TODO: Add assert
 
-		m_entries.insert( m_entries.begin() + index, entry);
+		auto it = m_entries.insert( m_entries.begin() + index, entry);
 		m_pHolder->_didAddEntries( &m_entries[index], 1);
+		return it;
 	}
 
 	//____ erase() ________________________________________________________________
 
 	template < class EntryType>
-	void CVector<EntryType>::erase(int index)
+	CVector<EntryType>::iterator CVector<EntryType>::erase(int index)
 	{
 		//TODO: Add assert
 
-		m_pHolder->_willEraseEntries( &m_entries[index], amount);
-		m_entries.erase(m_entries.begin()+index);
+		m_pHolder->_willEraseEntries( &m_entries[index], 1);
+		return m_entries.erase(m_entries.begin()+index);
 	}
 
 
 	template < class EntryType>
-	void CVector<EntryType>::erase(int index, int amount)
+	CVector<EntryType>::iterator CVector<EntryType>::erase(int index, int amount)
 	{
 		//TODO: Add assert
 
 		m_pHolder->_willEraseEntries( &m_entries[index], amount);
-		m_entries.erase(m_entries.begin()+index,m_entries.begin()+index+amount );
+		return m_entries.erase(m_entries.begin()+index,m_entries.begin()+index+amount );
 	}
 
+	//____ clear() ____________________________________________________________
+
+	template < class EntryType>
+	void CVector<EntryType>::clear()
+	{
+		m_pHolder->_willEraseEntries(&m_entries[0], m_entries.size());
+		m_entries.clear();
+	}
+
+	//____ _object() __________________________________________________________
+
+	template < class EntryType>
+	const Object * 	CVector<EntryType>::_object() const
+	{ 
+		return m_pHolder->_object(); 
+	}
+
+	template < class EntryType>
+	Object * CVector<EntryType>::_object() 
+	{ 
+		return m_pHolder->_object(); 
+	}
 
 
 } // namespace wg

@@ -40,6 +40,8 @@ namespace wg
 		class Holder	/** @private */
 		{
 		public:
+			virtual Object * _object() = 0;
+
 			virtual void	_didAddEntries(EntryType * pEntry, int nb) = 0;
 			virtual void	_didMoveEntries(EntryType * pFrom, EntryType * pTo, int nb) = 0;
 			virtual void	_willEraseEntries(EntryType * pSlot, int nb) = 0;
@@ -49,6 +51,11 @@ namespace wg
 		using		const_iterator = typename std::vector<EntryType>::const_iterator;
 
 		CVector(Holder * pHolder) : m_pHolder(pHolder) {}
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -95,6 +102,7 @@ namespace wg
 		Holder *				m_pHolder;
 		std::vector<EntryType>	m_entries;
 	};
+
 } //namespace
 
 #endif //WG_CVECTOR_DOT_H

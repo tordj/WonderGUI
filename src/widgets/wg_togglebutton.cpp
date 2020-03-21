@@ -32,7 +32,7 @@
 namespace wg
 {
 
-	const char ToggleButton::CLASSNAME[] = {"ToggleButton"};
+	const TypeInfo ToggleButton::TYPEINFO = { "ToggleButton", &Widget::TYPEINFO };
 
 
 
@@ -56,21 +56,11 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ToggleButton::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ToggleButton::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ToggleButton::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setSelected() __________________________________________________________

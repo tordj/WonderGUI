@@ -40,6 +40,12 @@ namespace wg
 	public:
 		CStaticValueDisplay(Holder * pHolder);
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Appearance _____________________________________________
 
 		void				setFormatter( ValueFormatter * pFormatter );

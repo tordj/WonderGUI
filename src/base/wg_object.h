@@ -24,11 +24,13 @@
 #pragma once
 
 #include <wg_strongptr.h>
+#include <wg_types.h>
 
 namespace wg
 {
 
 	class Object;
+	struct TypeInfo;
 
 	typedef StrongPtr<Object>	Object_p;
 
@@ -77,9 +79,10 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		virtual bool		isInstanceOf( const char * pClassName ) const;
-		virtual const char *className( void ) const;
-		static const char	CLASSNAME[];
+		virtual const TypeInfo& typeInfo(void) const;
+		const static TypeInfo	TYPEINFO;
+
+		bool		isInstanceOf(const TypeInfo& typeInfo) const;
 
 		//.____ Misc __________________________________________________________
 

@@ -38,6 +38,11 @@ namespace wg
 
 		using		iterator = SlotArrayIterator<SlotType>;
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _______________________________________________________
 
 		inline int		size() const override { return m_size; }
@@ -46,7 +51,7 @@ namespace wg
 		inline SlotType& at(int index) const
 		{
 			if (index < 0 || index >= m_size )
-				Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CStaticSlotVector", __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 
 			return m_pArray[index];
 		}

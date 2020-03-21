@@ -27,31 +27,21 @@
 namespace wg
 {
 
-	const char Layer::CLASSNAME[] = {"Layer"};
+	const TypeInfo Layer::TYPEINFO = { "Layer", &Container::TYPEINFO };
 	const TypeInfo Layer::Slot::TYPEINFO = { "Layer::Slot", &StaticSlot::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Layer::Layer() : mainSlot(this)
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Layer::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Layer::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Container::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Layer::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _matchingHeight() _______________________________________________________

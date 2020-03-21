@@ -37,7 +37,13 @@ namespace wg
 		CValueDisplay(Holder * pHolder);
 		~CValueDisplay() {}
 
-		// ModValue methods
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content _____________________________________________
 
 		void				clear();
 		bool				set( int64_t value, int scale );

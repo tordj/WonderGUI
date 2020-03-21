@@ -92,10 +92,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
-		static DesignLayer_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance _________________________________________________
 
@@ -126,7 +124,7 @@ namespace wg
 
 		// Overloaded from SlotHolder
 
-		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
+		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		//TODO: We should allow replacement of modal slots.
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }

@@ -26,7 +26,7 @@
 namespace wg
 {
 
-	const char TextLink::CLASSNAME[] = {"TextLink"};
+	const TypeInfo TextLink::TYPEINFO = { "TextLink", &Object::TYPEINFO };
 
 	//____ constructor _________________________________________________________
 
@@ -45,21 +45,11 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool TextLink::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextLink::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextLink::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ style() _____________________________________________________________

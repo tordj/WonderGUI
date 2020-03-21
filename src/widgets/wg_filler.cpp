@@ -29,9 +29,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char Filler::CLASSNAME[] = {"Filler"};
+	const TypeInfo Filler::TYPEINFO = { "Filler", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Filler::Filler()
 	{
@@ -44,21 +44,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Filler::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Filler::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Filler::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setPreferredSize() _______________________________________________________

@@ -27,7 +27,7 @@
 #include <iostream>
 
 #include <wg_object.h>
-#include <wg_gfxinstream.h>
+#include <wg_cgfxinstream.h>
 
 namespace wg
 {
@@ -42,13 +42,12 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GfxStreamLogger_p	create( GfxInStream& in, std::ostream& out );
+		static GfxStreamLogger_p	create( CGfxInStream& in, std::ostream& out );
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________
 
@@ -60,12 +59,12 @@ namespace wg
 		bool		logFrame();
 
 	protected:
-		GfxStreamLogger( GfxInStream& in, std::ostream& out );
+		GfxStreamLogger( CGfxInStream& in, std::ostream& out );
 		~GfxStreamLogger();
 
 		int		_readPrintPatches();
 
-		GfxInStream_p	m_pGfxStream;
+		CGfxInStream_p	m_pGfxStream;
 		std::ostream&	m_charStream;
 	};
 

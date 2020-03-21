@@ -25,7 +25,7 @@
 namespace wg
 {
 
-	const char Anim::CLASSNAME[] = {"Anim"};
+	const TypeInfo	Anim::TYPEINFO = { "Anim", &Object::TYPEINFO };
 
 	//____ Anim() _______________________________________________________________
 
@@ -42,21 +42,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Anim::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Anim::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Anim::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setPlayMode() __________________________________________________________

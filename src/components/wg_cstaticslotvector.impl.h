@@ -33,6 +33,8 @@ namespace wg
 {
 	class Widget;
 
+	template<class SlotType> const TypeInfo CStaticSlotVector<SlotType>::TYPEINFO = { "CStaticSlotVector<Unknow>", &CStaticSlotCollection::TYPEINFO };
+
 	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>
@@ -55,7 +57,7 @@ namespace wg
 	StaticSlot& CStaticSlotVector<SlotType>::_at(int index)
 	{
 		if (index < 0 || index >= m_size)
-			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CStaticSlotVector", __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 
 		return *_slot(index);
 	}

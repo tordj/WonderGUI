@@ -28,7 +28,7 @@
 namespace wg
 {
 
-	const char GfxStreamWriter::CLASSNAME[] = {"GfxStreamWriter"};
+	const TypeInfo GfxStreamWriter::TYPEINFO = { "GfxStreamWriter", &Object::TYPEINFO };
 
 
 	//____ create() ___________________________________________________________
@@ -38,7 +38,7 @@ namespace wg
 		return new GfxStreamWriter(dispatcher, maxPackageSize);
 	}
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	GfxStreamWriter::GfxStreamWriter(std::function<void(int nBytes, const void * pData)> dispatcher, int maxPackageSize) : stream(this)
 	{
@@ -55,21 +55,11 @@ namespace wg
 		delete[] m_pBuffer;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxStreamWriter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GfxStreamWriter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxStreamWriter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _object() __________________________________________________________

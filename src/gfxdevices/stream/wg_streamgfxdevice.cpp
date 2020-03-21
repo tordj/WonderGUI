@@ -32,22 +32,22 @@ using namespace std;
 
 namespace wg
 {
-	const char StreamGfxDevice::CLASSNAME[] = { "StreamGfxDevice" };
+	const TypeInfo StreamGfxDevice::TYPEINFO = { "StreamGfxDevice", &GfxDevice::TYPEINFO };
 
 
 
 	//____ create() _______________________________________________________________
 
-	StreamGfxDevice_p StreamGfxDevice::create( SizeI canvas, GfxOutStream& stream )
+	StreamGfxDevice_p StreamGfxDevice::create( SizeI canvas, CGfxOutStream& stream )
 	{
 		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));
 		return p;
 	}
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
-	StreamGfxDevice::StreamGfxDevice( SizeI canvas, GfxOutStream& stream ) : GfxDevice(canvas)
+	StreamGfxDevice::StreamGfxDevice( SizeI canvas, CGfxOutStream& stream ) : GfxDevice(canvas)
 	{
 		m_pStream = &stream;
 		m_bRendering = false;
@@ -59,28 +59,18 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StreamGfxDevice::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StreamGfxDevice::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return GfxDevice::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	//____ className() ____________________________________________________________
+	//____ surfaceType() _______________________________________________________
 
-	const char * StreamGfxDevice::className( void ) const
+	const TypeInfo& StreamGfxDevice::surfaceType( void ) const
 	{
-		return CLASSNAME;
-	}
-
-	//____ surfaceClassName() _______________________________________________________
-
-	const char * StreamGfxDevice::surfaceClassName( void ) const
-	{
-		return StreamSurface::CLASSNAME;
+		return StreamSurface::TYPEINFO;
 	}
 
 	//____ surfaceFactory() ______________________________________________________
@@ -174,7 +164,7 @@ namespace wg
 
 	bool StreamGfxDevice::setBlitSource(Surface * pSource)
 	{
-		if (!pSource || !pSource->isInstanceOf(StreamSurface::CLASSNAME) )
+		if (!pSource || !pSource->isInstanceOf(StreamSurface::TYPEINFO) )
 			return false;
 
 		m_pBlitSource = pSource;

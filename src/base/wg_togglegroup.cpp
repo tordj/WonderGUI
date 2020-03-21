@@ -25,10 +25,10 @@
 namespace wg
 {
 
-	const char ToggleGroup::CLASSNAME[] = {"ToggleGroup"};
+	const TypeInfo ToggleGroup::TYPEINFO = { "ToggleGroup", &Object::TYPEINFO };
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	ToggleGroup::ToggleGroup()
 	{
@@ -44,21 +44,11 @@ namespace wg
 			m_entries[i]->_setToggleGroup(0);
 }
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ToggleGroup::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ToggleGroup::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ToggleGroup::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setRequireSelected() _______________________________________________________

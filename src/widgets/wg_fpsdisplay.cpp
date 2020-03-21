@@ -32,7 +32,7 @@
 namespace wg
 {
 
-	const char FpsDisplay::CLASSNAME[] = {"FpsDisplay"};
+	const TypeInfo FpsDisplay::TYPEINFO = { "FpsDisplay", &Widget::TYPEINFO };
 
 
 
@@ -76,21 +76,11 @@ namespace wg
 	}
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool FpsDisplay::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FpsDisplay::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * FpsDisplay::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _preferredSize() __________________________________________________________

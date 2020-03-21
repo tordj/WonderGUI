@@ -26,7 +26,10 @@
 
 namespace wg
 {
-	//____ Constructor ___________________________________________________________
+	const TypeInfo CColumnHeader::TYPEINFO = { "CColumnHeader", &GeoComponent::TYPEINFO };
+
+
+	//____ constructor ___________________________________________________________
 
 	CColumnHeader::CColumnHeader(GeoComponent::Holder * pHolder) : GeoComponent(pHolder), icon(this), arrow(this), label(this)
 	{
@@ -34,6 +37,12 @@ namespace wg
 		m_sortOrder = SortOrder::None;
 	}
 
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CColumnHeader::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
 	//____ setSkin() _____________________________________________________________
 

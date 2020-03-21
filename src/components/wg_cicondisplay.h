@@ -45,6 +45,11 @@ namespace wg
 		CIconDisplay( GeoComponent::Holder * pHolder );
 		virtual ~CIconDisplay() {};
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _____________________________________________
 
 		bool			set(Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),

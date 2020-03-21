@@ -26,19 +26,19 @@
 namespace wg
 {
 
-	const char GfxStreamLogger::CLASSNAME[] = { "GfxStreamLogger" };
+	const TypeInfo GfxStreamLogger::TYPEINFO = { "GfxStreamLogger", &Object::TYPEINFO };
 
 
 	//____ create() ___________________________________________________________
 
-	GfxStreamLogger_p GfxStreamLogger::create(GfxInStream& in, std::ostream& out)
+	GfxStreamLogger_p GfxStreamLogger::create(CGfxInStream& in, std::ostream& out)
 	{
 		return new GfxStreamLogger(in, out);
 	}
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
-	GfxStreamLogger::GfxStreamLogger(GfxInStream& in, std::ostream& out) : m_charStream(out)
+	GfxStreamLogger::GfxStreamLogger(CGfxInStream& in, std::ostream& out) : m_charStream(out)
 	{
 		m_pGfxStream = in.ptr();
 	}
@@ -49,21 +49,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxStreamLogger::isInstanceOf(const char * pClassName) const
+	const TypeInfo& GfxStreamLogger::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxStreamLogger::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ isEmpty() __________________________________________________________

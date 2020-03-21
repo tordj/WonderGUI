@@ -23,11 +23,12 @@
 #include <limits>
 #include <memory.h>
 #include <wg_surface.h>
+#include <wg_payload.h>
 
 namespace wg
 {
 
-	const char Surface::CLASSNAME[] = {"Surface"};
+	const TypeInfo Surface::TYPEINFO = { "Surface", &Object::TYPEINFO };
 
 	const uint8_t pixelConvTab_0[] = { 0xff };				// If a channel is missing it is assumed to have full value (alpha in RGB_8 is 255, RGB in A8 are all 255)
 	const uint8_t pixelConvTab_2[] = { 0, 0xff };
@@ -84,21 +85,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Surface::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Surface::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Surface::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setScaleMode() __________________________________________________________
@@ -424,6 +415,21 @@ namespace wg
 
 		return retVal;
 	}
+
+	//____ setPayload() _______________________________________________________
+
+	void Surface::setPayload(BasicPayload * pPayload)
+	{
+		m_pPayload = pPayload;
+	}
+
+	//_____ payload() _________________________________________________________
+
+	BasicPayload_p Surface::payload() const
+	{
+		return m_pPayload;
+	}
+
 
 
 	//____ _copyFrom() _________________________________________________________

@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char ColorSkin::CLASSNAME[] = {"ColorSkin"};
+	const TypeInfo ColorSkin::TYPEINFO = { "ColorSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -55,7 +55,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	ColorSkin::ColorSkin()
 	{
@@ -72,21 +72,11 @@ namespace wg
 		setColor(color);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ColorSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ColorSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ColorSkin::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setBlendMode() _____________________________________________________

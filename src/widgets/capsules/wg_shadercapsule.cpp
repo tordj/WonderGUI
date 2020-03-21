@@ -29,9 +29,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char ShaderCapsule::CLASSNAME[] = {"ShaderCapsule"};
+	const TypeInfo ShaderCapsule::TYPEINFO = { "ShaderCapsule", &Capsule::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	ShaderCapsule::ShaderCapsule() : m_tintColor(0xFFFFFFFF), m_tintMode(BlendMode::Replace), m_renderMode(BlendMode::Blend)
 	{
@@ -43,21 +43,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ShaderCapsule::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ShaderCapsule::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Capsule::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ShaderCapsule::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setTintColor() ______________________________________________________

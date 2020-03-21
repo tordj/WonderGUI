@@ -31,7 +31,7 @@ namespace wg
 {
 	using namespace Util;
 
-	const char MultiBlockSkin::CLASSNAME[] = { "MultiBlockSkin" };
+	const TypeInfo MultiBlockSkin::TYPEINFO = { "MultiBlockSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -41,7 +41,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	MultiBlockSkin::MultiBlockSkin(SizeI blockSize, BorderI frame)
 	{
@@ -53,21 +53,11 @@ namespace wg
 		m_bStateOpaque[i] = false;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool MultiBlockSkin::isInstanceOf(const char * pClassName) const
+	const TypeInfo& MultiBlockSkin::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * MultiBlockSkin::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ addLayer() _____________________________________________________________

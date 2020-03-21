@@ -43,13 +43,22 @@ namespace wg
 {
 	using namespace Util;
 
-	//____ Constructor _____________________________________________________________
+	const TypeInfo CTextEditor::TYPEINFO = { "CTextEditor", &CTextDisplay::TYPEINFO };
+
+	//____ constructor _____________________________________________________________
 
 	CTextEditor::CTextEditor(Holder * pHolder ) : CTextDisplay(pHolder)
 	{
 		m_editMode = TextEditMode::Editable;
 		m_maxLines = 0;
 		m_maxChars = 0;
+	}
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CTextEditor::typeInfo(void) const
+	{
+		return TYPEINFO;
 	}
 
 	//____ setMaxLines() _________________________________________________________

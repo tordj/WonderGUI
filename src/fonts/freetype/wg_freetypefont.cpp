@@ -37,7 +37,7 @@
 namespace wg
 {
 
-	const char FreeTypeFont::CLASSNAME[] = {"FreeTypeFont"};
+	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
 	bool				FreeTypeFont::s_bFreeTypeInitialized = false;
 	FT_Library			FreeTypeFont::s_freeTypeLibrary;
@@ -47,7 +47,7 @@ namespace wg
 	SurfaceFactory_p				FreeTypeFont::s_pSurfaceFactory = 0;
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
 	{
@@ -102,21 +102,11 @@ namespace wg
 		FT_Done_Face( m_ftFace );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool FreeTypeFont::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FreeTypeFont::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Font::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * FreeTypeFont::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ init() _________________________________________________________

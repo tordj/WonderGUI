@@ -20,15 +20,17 @@
 
 =========================================================================*/
 
-#include <wg_gfxoutstream.h>
+#include <wg_cgfxoutstream.h>
 #include <assert.h>
 
 namespace wg
 {
 
-	//____ Constructor ________________________________________________________
+	const TypeInfo CGfxOutStream::TYPEINFO = { "CGfxOutStream", &Component::TYPEINFO };
 
-	GfxOutStream::GfxOutStream(GfxOutStreamHolder * pHolder) :
+	//____ constructor ________________________________________________________
+
+	CGfxOutStream::CGfxOutStream(CGfxOutStreamHolder * pHolder) :
 		m_pHolder(pHolder),
 		m_idCounter(1),
 		m_pFreeIdStack(nullptr),
@@ -37,10 +39,16 @@ namespace wg
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CGfxOutStream::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
 	//____ operator<< _________________________________________________________
 
-	GfxOutStream&  GfxOutStream::operator<< (GfxStream::Header header)
+	CGfxOutStream&  CGfxOutStream::operator<< (GfxStream::Header header)
 	{
 		m_pHolder->_reserveStream(header.size + 4);
 		m_pHolder->_pushShort((short)header.type);
@@ -48,59 +56,59 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (int16_t int16)
+	CGfxOutStream&  CGfxOutStream::operator<< (int16_t int16)
 	{
 		m_pHolder->_pushShort(int16);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (uint16_t uint16)
+	CGfxOutStream&  CGfxOutStream::operator<< (uint16_t uint16)
 	{
 		m_pHolder->_pushShort(uint16);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (int32_t int32)
+	CGfxOutStream&  CGfxOutStream::operator<< (int32_t int32)
 	{
 		m_pHolder->_pushInt(int32);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (float f)
+	CGfxOutStream&  CGfxOutStream::operator<< (float f)
 	{
 		m_pHolder->_pushFloat(f);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const CoordI& c)
+	CGfxOutStream&  CGfxOutStream::operator<< (const CoordI& c)
 	{
 		m_pHolder->_pushShort(c.x);
 		m_pHolder->_pushShort(c.y);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const CoordF& c)
+	CGfxOutStream&  CGfxOutStream::operator<< (const CoordF& c)
 	{
 		m_pHolder->_pushFloat(c.x);
 		m_pHolder->_pushFloat(c.y);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const SizeI& sz)
+	CGfxOutStream&  CGfxOutStream::operator<< (const SizeI& sz)
 	{
 		m_pHolder->_pushShort(sz.w);
 		m_pHolder->_pushShort(sz.h);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const SizeF& sz)
+	CGfxOutStream&  CGfxOutStream::operator<< (const SizeF& sz)
 	{
 		m_pHolder->_pushFloat(sz.w);
 		m_pHolder->_pushFloat(sz.h);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const RectI& rect)
+	CGfxOutStream&  CGfxOutStream::operator<< (const RectI& rect)
 	{
 		m_pHolder->_pushShort(rect.x);
 		m_pHolder->_pushShort(rect.y);
@@ -109,7 +117,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (const RectF& rect)
+	CGfxOutStream&  CGfxOutStream::operator<< (const RectF& rect)
 	{
 		m_pHolder->_pushFloat(rect.x);
 		m_pHolder->_pushFloat(rect.y);
@@ -118,49 +126,49 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (Direction d)
+	CGfxOutStream&  CGfxOutStream::operator<< (Direction d)
 	{
 		m_pHolder->_pushShort((short)d);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (BlendMode b)
+	CGfxOutStream&  CGfxOutStream::operator<< (BlendMode b)
 	{
 		m_pHolder->_pushShort((short) b);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (Orientation o)
+	CGfxOutStream&  CGfxOutStream::operator<< (Orientation o)
 	{
 		m_pHolder->_pushShort((short)o);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (PixelFormat t)
+	CGfxOutStream&  CGfxOutStream::operator<< (PixelFormat t)
 	{
 		m_pHolder->_pushShort((short)t);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (ScaleMode m)
+	CGfxOutStream&  CGfxOutStream::operator<< (ScaleMode m)
 	{
 		m_pHolder->_pushShort((short)m);
 		return *this;
 	}
 
-	GfxOutStream&  GfxOutStream::operator<< (Color color)
+	CGfxOutStream&  CGfxOutStream::operator<< (Color color)
 	{
 		m_pHolder->_pushInt(color.argb);
 		return *this;
 	}
 
-	GfxOutStream& GfxOutStream::operator<< (const DataChunk& data)
+	CGfxOutStream& CGfxOutStream::operator<< (const DataChunk& data)
 	{
 		m_pHolder->_pushBytes(data.bytes, (char*)data.pBuffer);
 		return *this;
 	}
 
-	GfxOutStream& GfxOutStream::operator<< (const int mtx[2][2])
+	CGfxOutStream& CGfxOutStream::operator<< (const int mtx[2][2])
 	{
 		m_pHolder->_pushChar((char)(mtx[0][0]));
 		m_pHolder->_pushChar((char)(mtx[0][1]));
@@ -169,7 +177,7 @@ namespace wg
 		return *this;
 	}
 
-	GfxOutStream& GfxOutStream::operator<< (const float mtx[2][2])
+	CGfxOutStream& CGfxOutStream::operator<< (const float mtx[2][2])
 	{
 		m_pHolder->_pushFloat(mtx[0][0]);
 		m_pHolder->_pushFloat(mtx[0][1]);
@@ -181,7 +189,7 @@ namespace wg
 
 	//____ allocObjectId() ____________________________________________________
 
-	short GfxOutStream::allocObjectId()
+	short CGfxOutStream::allocObjectId()
 	{
 		if (m_freeIdStackSize > 0)
 			return m_pFreeIdStack[--m_freeIdStackSize];
@@ -191,7 +199,7 @@ namespace wg
 
 	//____ freeObjectId() _____________________________________________________
 
-	void GfxOutStream::freeObjectId(short id)
+	void CGfxOutStream::freeObjectId(short id)
 	{
 		if (m_freeIdStackSize == m_freeIdStackCapacity)
 		{

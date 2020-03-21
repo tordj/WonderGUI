@@ -24,7 +24,7 @@
 namespace wg
 {
 
-	const char Blob::CLASSNAME[] = {"Blob"};
+	const TypeInfo Blob::TYPEINFO = { "Blob", &Object::TYPEINFO };
 
 
 	//____ Create _________________________________________________________________
@@ -98,7 +98,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Blob::Blob( int size )
 	{
@@ -123,21 +123,11 @@ namespace wg
 			m_destructor();
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Blob::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Blob::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Blob::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 } // namespace wg

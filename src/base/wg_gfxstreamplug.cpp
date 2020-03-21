@@ -28,7 +28,7 @@
 namespace wg
 {
 
-	const char GfxStreamPlug::CLASSNAME[] = {"GfxStreamPlug"};
+	const TypeInfo GfxStreamPlug::TYPEINFO = { "GfxStreamPlug", &Object::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
@@ -37,7 +37,7 @@ namespace wg
 		return new GfxStreamPlug(capacity);
 	}
 
-	//____ Constructor ________________________________________________________
+	//____ constructor ________________________________________________________
 
 	GfxStreamPlug::GfxStreamPlug(int capacity) : input(this), output{ &m_outStream[0], &m_outStream[1], &m_outStream[2], &m_outStream[3] }
 	{
@@ -60,21 +60,11 @@ namespace wg
 		delete [] m_pBuffer;
 	}
 
-	//____ isInstanceOf() _____________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxStreamPlug::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GfxStreamPlug::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ________________________________________________________
-
-	const char * GfxStreamPlug::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ openOutput() _______________________________________________________

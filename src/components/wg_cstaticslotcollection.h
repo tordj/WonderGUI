@@ -44,6 +44,11 @@ namespace wg
 	public:
 		using		iterator = SlotIterator;
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _______________________________________________________
 
 		virtual int		size() const = 0;

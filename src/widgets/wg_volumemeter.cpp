@@ -33,11 +33,11 @@
 
 namespace wg
 {
-	const char	VolumeMeter::CLASSNAME[] = {"VolumeMeter"};
+	const TypeInfo VolumeMeter::TYPEINFO = { "VolumeMeter", &Widget::TYPEINFO };
 
 	static inline const float round(const float x) {return floorf(x+0.5f);}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	VolumeMeter::VolumeMeter()
 	{
@@ -82,21 +82,11 @@ namespace wg
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool VolumeMeter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& VolumeMeter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * VolumeMeter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setDirection() ________________________________________________________

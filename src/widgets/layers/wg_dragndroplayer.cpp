@@ -38,10 +38,10 @@
 namespace wg
 {
 	using namespace Util;
-	const char DragNDropLayer::CLASSNAME[] = {"DragNDropLayer"};
+	const TypeInfo DragNDropLayer::TYPEINFO = { "DragNDropLayer", &Layer::TYPEINFO };
 	const TypeInfo DragNDropLayer::Slot::TYPEINFO = { "DragNDropLayer::Slot", &Layer::Slot::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	DragNDropLayer::DragNDropLayer() : m_dragSlot(this)
 	{
@@ -55,31 +55,22 @@ namespace wg
 			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool DragNDropLayer::isInstanceOf( const char * pClassName ) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& DragNDropLayer::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Layer::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * DragNDropLayer::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	DragNDropLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	DragNDropLayer::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
-			return &DynamicSlot::TYPEINFO;
+			return DynamicSlot::TYPEINFO;
 
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//____ _findWidget() __________________________________________________________

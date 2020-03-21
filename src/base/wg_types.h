@@ -217,7 +217,10 @@ namespace wg
 	struct TypeInfo
 	{
 		const char * className;
-		const TypeInfo * pPrev;
+		const TypeInfo * pSuperClass;
+
+		inline bool operator==(const TypeInfo other) const { return (this == &other); }		// Same address is same structure.
+		inline bool operator!=(const TypeInfo other) const { return (this != &other); }		// Same address is same structure.
 	};
 
 	//____ ExtChar __________________________________________________________

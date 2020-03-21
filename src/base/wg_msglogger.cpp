@@ -31,9 +31,9 @@ namespace wg
 	using std::string;
 	using std::snprintf;
 
-	const char MsgLogger::CLASSNAME[] = {"MsgLogger"};
+	const TypeInfo MsgLogger::TYPEINFO = { "MsgLogger", &Receiver::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	MsgLogger::MsgLogger( std::ostream& stream ) : m_out(stream)
 	{
@@ -47,21 +47,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool MsgLogger::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& MsgLogger::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Receiver::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * MsgLogger::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ IgnoreMsg ____________________________________________________________
@@ -377,7 +367,7 @@ namespace wg
 		string	modkeys;
 		string	pointerPos;
 
-		if( _pMsg->isInstanceOf( InputMsg::CLASSNAME ) )
+		if( _pMsg->isInstanceOf( InputMsg::TYPEINFO ) )
 		{
 			InputMsg_p p = static_cast<InputMsg*>(_pMsg);
 			timestamp = _formatTimestamp( p->timestamp() );
@@ -385,7 +375,7 @@ namespace wg
 			pointerPos = _formatPointerPos( p );
 		}
 
-		m_out << " - " << _pMsg->className() << " - " << source << copyTo << pointerPos << modkeys << params;
+		m_out << " - " << _pMsg->typeInfo().className << " - " << source << copyTo << pointerPos << modkeys << params;
 		m_out << std::endl;
 	}
 
@@ -419,7 +409,7 @@ namespace wg
 			const char * pType = def_type;
 
 			if( pObject )
-				pType = pObject->className();
+				pType = pObject->typeInfo().className;
 
 			snprintf( temp, 64, " source=%p (%s)", pObject, pType );
 			out = temp;
@@ -439,7 +429,7 @@ namespace wg
 			char	temp[64];
 			Receiver * pCopyTo = _pMsg->getCopyTo().rawPtr();
 
-			const char * pType = pCopyTo->className();
+			const char * pType = pCopyTo->typeInfo().className;
 
 			snprintf( temp, 64, " copyTo=%p (%s)", pCopyTo, pType );
 			out = temp;

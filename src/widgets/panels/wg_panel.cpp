@@ -30,29 +30,19 @@
 
 namespace wg
 {
-	const char Panel::CLASSNAME[] = {"Panel"};
+	const TypeInfo Panel::TYPEINFO = { "Panel", &Container::TYPEINFO };
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	Panel::Panel() : m_bTooltipGroup(false), m_maskOp(MaskOp::Recurse)
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Panel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Panel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Container::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Panel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _isPanel() ______________________________________________________________

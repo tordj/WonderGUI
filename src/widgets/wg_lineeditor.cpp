@@ -30,7 +30,7 @@ namespace wg
 {
 	using namespace Util;
 
-	const char LineEditor::CLASSNAME[] = {"LineEditor"};
+	const TypeInfo LineEditor::TYPEINFO = { "LineEditor", &Widget::TYPEINFO };
 
 
 
@@ -48,22 +48,11 @@ namespace wg
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool LineEditor::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& LineEditor::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * LineEditor::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _preferredSize() _____________________________________________________________
@@ -262,7 +251,7 @@ namespace wg
 	void LineEditor::_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave)
 	{
 		int scrollOfs = m_textScrollOfs;
-		SizeI canvas = pComponent->_size();
+		SizeI canvas = _componentSize(pComponent);
 
 		SizeI window = m_size;
 		if( m_pSkin )

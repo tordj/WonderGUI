@@ -25,9 +25,9 @@
 namespace wg
 {
 
-	const char StandardFormatter::CLASSNAME[] = {"StandardFormatter"};
+	const TypeInfo StandardFormatter::TYPEINFO = { "StandardFormatter", &ValueFormatter::TYPEINFO };
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	StandardFormatter::StandardFormatter()
 	{
@@ -43,22 +43,11 @@ namespace wg
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool StandardFormatter::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StandardFormatter::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ValueFormatter::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StandardFormatter::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ format() _______________________________________________________________

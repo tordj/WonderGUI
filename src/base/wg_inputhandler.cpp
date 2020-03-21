@@ -28,9 +28,9 @@
 namespace wg
 {
 
-	const char InputHandler::CLASSNAME[] = {"InputHandler"};
+	const TypeInfo InputHandler::TYPEINFO = { "InputHandler", &Object::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	InputHandler::InputHandler()
 	{
@@ -66,21 +66,11 @@ namespace wg
 		Base::msgRouter()->deleteRoute(m_tickRoute);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool InputHandler::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& InputHandler::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * InputHandler::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setDoubleClickTresholds() _______________________________________________

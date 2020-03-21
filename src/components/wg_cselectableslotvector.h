@@ -42,6 +42,11 @@ namespace wg
 
 		CSelectableSlotVector(SlotHolder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Control _______________________________________________________
 
 		void	select(int index, int amount);

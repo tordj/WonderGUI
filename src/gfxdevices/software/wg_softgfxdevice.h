@@ -55,10 +55,10 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const override;
-		const char *			className(void) const override;
-		static const char		CLASSNAME[];
-		const char *			surfaceClassName(void) const override;
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		const TypeInfo&		surfaceType(void) const override;
 
 		//.____ Misc _______________________________________________________
 

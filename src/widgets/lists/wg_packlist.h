@@ -136,10 +136,9 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		virtual bool		isInstanceOf( const char * pClassName ) const override;
-		virtual const char *className( void ) const override;
-		static const char	CLASSNAME[];
-
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+	
 		//.____ Geometry ____________________________________________
 
 		void				setOrientation( Orientation orientation );
@@ -198,7 +197,7 @@ namespace wg
 
 		// Overloaded from Container
 
-		const TypeInfo*	_slotTypeInfo(const StaticSlot * pSlot) const override;
+		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
 		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void			_nextSlotWithGeo(SlotWithGeo& package) const override;

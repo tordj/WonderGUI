@@ -33,7 +33,7 @@ namespace wg
 
 	class CDynamicSlotCollection;
 	typedef	StrongComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_p;
-	typedef	WeakComponentPtr<CDynamicSlotCollection>		CDynamicSlotCollection_wp;
+	typedef	WeakComponentPtr<CDynamicSlotCollection>	CDynamicSlotCollection_wp;
 
 	class CDynamicSlotCollection : public CStaticSlotCollection
 	{
@@ -41,6 +41,11 @@ namespace wg
 	public:
 
 		using		iterator = SlotIterator;
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 

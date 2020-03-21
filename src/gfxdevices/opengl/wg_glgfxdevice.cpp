@@ -34,19 +34,19 @@ using namespace std;
 
 namespace wg
 {
-	const char GlGfxDevice::CLASSNAME[] = { "GlGfxDevice" };
+	const TypeInfo GlGfxDevice::TYPEINFO = { "GlGfxDevice", &GfxDevice::TYPEINFO };
 
 	GlGfxDevice *	GlGfxDevice::s_pActiveDevice = nullptr;
 
 
-#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); }
+#define LOG_GLERROR(check) { GLenum err = check; if(err != 0) onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
-#define LOG_INIT_GLERROR(check) { GLenum err = check; if(err != 0) { onGlError(err, this, CLASSNAME, __func__, __FILE__, __LINE__ ); m_bFullyInitialized = false; } }
+#define LOG_INIT_GLERROR(check) { GLenum err = check; if(err != 0) { onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); m_bFullyInitialized = false; } }
 
 
 	//____ onGlError() _______________________________________________________________
 
-	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const char * pClassName, const char * func, const char * file, int line)
+	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const TypeInfo& pClassType, const char * func, const char * file, int line)
 	{
 		char	buffer[1024];
 	
@@ -93,7 +93,7 @@ namespace wg
         
         
 		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
-		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassName, func, file, line);
+		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
 
 
@@ -118,7 +118,7 @@ namespace wg
 
 		return p;
 	}
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	GlGfxDevice::GlGfxDevice(GlSurface * pSurface, int uboBindingPoint) : GlGfxDevice(pSurface->size(), uboBindingPoint)
 	{
@@ -380,28 +380,18 @@ namespace wg
 		LOG_GLERROR(glGetError());
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GlGfxDevice::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GlGfxDevice::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return GfxDevice::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
 
-	//____ className() ____________________________________________________________
+	//____ surfaceType() _______________________________________________________
 
-	const char * GlGfxDevice::className( void ) const
+	const TypeInfo& GlGfxDevice::surfaceType( void ) const
 	{
-		return CLASSNAME;
-	}
-
-	//____ surfaceClassName() _______________________________________________________
-
-	const char * GlGfxDevice::surfaceClassName( void ) const
-	{
-		return GlSurface::CLASSNAME;
+		return GlSurface::TYPEINFO;
 	}
 
 	//____ surfaceFactory() ______________________________________________________
@@ -460,7 +450,7 @@ namespace wg
 		if( pSurface == nullptr )
 			return setCanvas( m_emptyCanvasSize, bResetClipRects );
 
-		if (!pSurface || pSurface->className() != GlSurface::CLASSNAME)
+		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
 		if (pSurface->pixelFormat() == PixelFormat::I8)
@@ -542,7 +532,7 @@ namespace wg
 
 	bool GlGfxDevice::setBlitSource(Surface * pSource)
 	{
-		if (!pSource || pSource->className() != GlSurface::CLASSNAME)
+		if (!pSource || pSource->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
 		m_pBlitSource = pSource;
@@ -2044,7 +2034,7 @@ namespace wg
 			char	buffer[4096*3+256];
 
 			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-			Base::handleError(ErrorCode::OpenGL, buffer, this, CLASSNAME, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);

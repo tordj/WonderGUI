@@ -27,7 +27,7 @@ namespace wg
 {
 
 
-	const char ValueDisplay::CLASSNAME[] = {"ValueDisplay"};
+	const TypeInfo ValueDisplay::TYPEINFO = { "ValueDisplay", &Widget::TYPEINFO };
 
 
 	//____ ValueDisplay() _________________________________________________________________
@@ -42,21 +42,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ValueDisplay::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ValueDisplay::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ValueDisplay::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _preferredSize() __________________________________________________________

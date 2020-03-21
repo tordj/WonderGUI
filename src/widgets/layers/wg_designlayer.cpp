@@ -41,11 +41,11 @@ namespace wg
 
 	template class CStaticSlotVector<DesignLayer::ToolboxSlot>;
 
-	const char DesignLayer::CLASSNAME[] = { "DesignLayer" };
+	const TypeInfo DesignLayer::TYPEINFO = { "DesignLayer", &Layer::TYPEINFO };
 	const TypeInfo DesignLayer::ToolboxSlot::TYPEINFO = { "DesignLayer::ToolboxSlot", &Layer::Slot::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	DesignLayer::DesignLayer() : palettes(this)
 	{
@@ -84,31 +84,12 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool DesignLayer::isInstanceOf(const char * pClassName) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& DesignLayer::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Layer::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * DesignLayer::className(void) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	DesignLayer_p DesignLayer::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return DesignLayer_p(static_cast<DesignLayer*>(pObject));
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setToolboxSkin() ___________________________________________________
@@ -378,12 +359,12 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	DesignLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	DesignLayer::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
-			return &DynamicSlot::TYPEINFO;
+			return DynamicSlot::TYPEINFO;
 
-		return &ToolboxSlot::TYPEINFO;
+		return ToolboxSlot::TYPEINFO;
 	}
 
 	//____ _childRequestResize() ______________________________________________
@@ -622,7 +603,7 @@ namespace wg
 			pNameLabel->text.set("className: ");
 
 			auto pName = TextDisplay::create();
-			pName->text.set(pWidget->className());
+			pName->text.set(pWidget->typeInfo().className);
 
 			pHeaderColumn->slots << pNameLabel;
 			pValueColumn->slots << pName;

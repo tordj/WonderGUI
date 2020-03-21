@@ -37,7 +37,7 @@ namespace wg
 	template class CSelectableSlotVector<PackList::Slot>;
 	template class CDynamicSlotVector<PackList::Slot>;
 
-	const char PackList::CLASSNAME[] = {"PackList"};
+	const TypeInfo PackList::TYPEINFO = { "PackList", &List::TYPEINFO };
 	const TypeInfo PackList::Slot::TYPEINFO = { "PackList::Slot", &List::Slot::TYPEINFO };
 
 
@@ -65,7 +65,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	PackList::PackList() : header(this), slots(this)
 	{
@@ -90,21 +90,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool PackList::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& PackList::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return List::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * PackList::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setOrientation() _______________________________________________________
@@ -1305,9 +1295,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	PackList::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	PackList::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//____ _firstSlotWithGeo() ____________________________________________________

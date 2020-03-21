@@ -29,10 +29,10 @@
 
 namespace wg
 {
-	const char SplitPanel::CLASSNAME[] = { "SplitPanel" };
+	const TypeInfo SplitPanel::TYPEINFO = { "SplitPanel", &Panel::TYPEINFO };
 	const TypeInfo SplitPanel::Slot::TYPEINFO = { "SplitPanel::Slot", &DynamicSlot::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SplitPanel::SplitPanel() : slots(this)
 	{
@@ -50,21 +50,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SplitPanel::isInstanceOf(const char * pClassName) const
+	const TypeInfo& SplitPanel::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SplitPanel::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setOrientation() _______________________________________________________
@@ -546,9 +536,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	SplitPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	SplitPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 	//_____ _firstChild() _____________________________________________________

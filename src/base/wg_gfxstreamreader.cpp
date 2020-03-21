@@ -28,7 +28,7 @@
 namespace wg
 {
 
-	const char GfxStreamReader::CLASSNAME[] = {"GfxStreamReader"};
+	const TypeInfo GfxStreamReader::TYPEINFO = { "GfxStreamReader", &Object::TYPEINFO };
 
 	const int GfxStreamReader::c_bufferMargin;
 
@@ -39,7 +39,7 @@ namespace wg
 		return new GfxStreamReader(dataFetcher);
 	}
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	GfxStreamReader::GfxStreamReader(std::function<int(int nBytes, void * pDest)> dataFeeder) : stream(this)
 	{
@@ -57,21 +57,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GfxStreamReader::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GfxStreamReader::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GfxStreamReader::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _hasChunk() ________________________________________________________

@@ -25,8 +25,8 @@
 #pragma once
 
 #include <wg_object.h>
-#include <wg_gfxinstream.h>
-#include <wg_gfxoutstream.h>
+#include <wg_cgfxinstream.h>
+#include <wg_cgfxoutstream.h>
 
 namespace wg
 {
@@ -34,7 +34,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlug>	GfxStreamPlug_p;
 	typedef	WeakPtr<GfxStreamPlug>		GfxStreamPlug_wp;
 
-	class GfxStreamPlug : public Object, protected GfxOutStreamHolder
+	class GfxStreamPlug : public Object, protected CGfxOutStreamHolder
 	{
 	public:
 
@@ -46,15 +46,14 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		GfxOutStream		input;
-		GfxInStream			output[c_maxOutputs];
+		CGfxOutStream		input;
+		CGfxInStream			output[c_maxOutputs];
 
 
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf(const char * pClassName) const override;
-		const char *			className(void) const override;
-		static const char		CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________
 
@@ -69,7 +68,7 @@ namespace wg
 		GfxStreamPlug( int capacity );
 		~GfxStreamPlug();
 
-		class OutStreamProxy : public GfxInStreamHolder
+		class OutStreamProxy : public CGfxInStreamHolder
 		{
 		public:
 			Object *	_object() override;

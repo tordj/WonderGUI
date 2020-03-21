@@ -31,23 +31,13 @@
 namespace wg
 {
 
-	const char GlSurfaceFactory::CLASSNAME[] = {"GlSurfaceFactory"};
+	const TypeInfo GlSurfaceFactory::TYPEINFO = { "GlSurfaceFactory", &SurfaceFactory::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool GlSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& GlSurfaceFactory::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return SurfaceFactory::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * GlSurfaceFactory::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ maxSize() ______________________________________________________________

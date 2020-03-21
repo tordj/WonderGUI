@@ -24,9 +24,9 @@
 namespace wg
 {
 
-	const char SizeBroker::CLASSNAME[] = {"SizeBroker"};
+	const TypeInfo SizeBroker::TYPEINFO = { "SizeBroker", &Object::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SizeBroker::SizeBroker()
 	{
@@ -38,21 +38,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SizeBroker::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SizeBroker::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SizeBroker::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	/*

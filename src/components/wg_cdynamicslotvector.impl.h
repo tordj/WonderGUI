@@ -33,6 +33,9 @@ namespace wg
 {
 	class Widget;
 
+	template<class SlotType> const TypeInfo CDynamicSlotVector<SlotType>::TYPEINFO = { "CDynamicSlotVector<Unknow>", &CDynamicSlotCollection::TYPEINFO };
+
+
 	//____ pushFront() _________________________________________________________________
 
 	template < class SlotType>
@@ -381,7 +384,7 @@ namespace wg
 	StaticSlot& CDynamicSlotVector<SlotType>::_at(int index)
 	{
 		if (index < 0 || index >= m_size)
-			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), "CDynamicSlotVector", __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 
 		return *_slot(index);
 	}

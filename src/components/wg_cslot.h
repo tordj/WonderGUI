@@ -38,6 +38,11 @@ namespace wg
 	{
 	public:
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _______________________________________________________
 
 		inline bool		isEmpty() const { return _slot()->rawWidgetPtr() == nullptr; }
@@ -81,6 +86,11 @@ namespace wg
 	{
 	public:
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _______________________________________________________
 
 		inline void		setWidget(Widget * pWidget) { static_cast<DynamicSlot*>(_slot())->setWidget(pWidget); }
@@ -114,6 +124,11 @@ namespace wg
 		/** @private */
 
 		CStaticSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
@@ -154,6 +169,11 @@ namespace wg
 
 		CDynamicSlotImpl(SlotHolder * pHolder) : SlotType(pHolder) {}
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Content _______________________________________________________
 
 		inline void		setWidget(Widget * pWidget) { SlotType::setWidget(pWidget); }
@@ -185,9 +205,10 @@ namespace wg
 		const StaticSlot * _slot() const override { return this; }
 		StaticSlot * _slot() override { return this; }
 
-
 	};
 
+	template<class Type> const TypeInfo CStaticSlotImpl<Type>::TYPEINFO = { "CStaticSlotImpl<Unknow>", &CStaticSlot::TYPEINFO };
+	template<class Type> const TypeInfo CDynamicSlotImpl<Type>::TYPEINFO = { "CDynamicSlotImpl<Unknow>", &CDynamicSlot::TYPEINFO };
 
 } // namespace wg
 #endif //WG_CSLOT_DOT_H

@@ -25,10 +25,10 @@
 namespace wg
 {
 
-	const char Caret::CLASSNAME[] = {"Caret"};
+	const TypeInfo Caret::TYPEINFO = { "Caret", &Object::TYPEINFO };
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	Caret::Caret()
 	{
@@ -38,21 +38,11 @@ namespace wg
 		m_bNeedToRender = false;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Caret::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Caret::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Caret::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setMode() _______________________________________________________________

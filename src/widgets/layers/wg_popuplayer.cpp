@@ -37,7 +37,7 @@ namespace wg
 	using namespace Util;
 	template class CStaticSlotVector<PopupLayer::Slot>;
 
-	const char PopupLayer::CLASSNAME[] = {"PopupLayer"};
+	const TypeInfo PopupLayer::TYPEINFO = { "PopupLayer", &Layer::TYPEINFO };
 	const TypeInfo PopupLayer::Slot::TYPEINFO = { "PopupLayer::Slot", &Layer::Slot::TYPEINFO };
 
 
@@ -82,7 +82,7 @@ namespace wg
 
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	PopupLayer::PopupLayer() : popupSlots(this)
 	{
@@ -94,21 +94,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool PopupLayer::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& PopupLayer::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Layer::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * PopupLayer::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ _updateGeo() __________________________________________________________
@@ -284,12 +274,12 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	PopupLayer::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	PopupLayer::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		if (pSlot == &mainSlot)
-			return &DynamicSlot::TYPEINFO;
+			return DynamicSlot::TYPEINFO;
 
-		return &Slot::TYPEINFO;
+		return Slot::TYPEINFO;
 	}
 
 

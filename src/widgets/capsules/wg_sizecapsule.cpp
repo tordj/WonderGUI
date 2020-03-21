@@ -29,9 +29,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char SizeCapsule::CLASSNAME[] = {"SizeCapsule"};
+	const TypeInfo SizeCapsule::TYPEINFO = { "SizeCapsule", &Capsule::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SizeCapsule::SizeCapsule()
 	{
@@ -43,21 +43,12 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool SizeCapsule::isInstanceOf( const char * pClassName ) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& SizeCapsule::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Capsule::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SizeCapsule::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setPreferredSize() _____________________________________________________

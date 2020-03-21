@@ -38,7 +38,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	MemStack::MemStack( int blockSize ) : m_blockSize(blockSize)
 	{

@@ -53,9 +53,8 @@ namespace wg
 
 			//.____ Identification __________________________________________
 
-			virtual bool			isInstanceOf( const char * pClassName ) const override;
-			virtual const char *	className( void ) const override;
-			static const char		CLASSNAME[];
+			const TypeInfo&		typeInfo(void) const override;
+			const static TypeInfo	TYPEINFO;
 
 			bool					isContainer() const override;
 

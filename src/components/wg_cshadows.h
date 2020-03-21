@@ -67,6 +67,12 @@ namespace wg
 		/** @private */
 		CShadows(ShadowHolder * pHolder, std::vector<Shadow> * pVector) : m_pHolder(pHolder), m_pShadows(pVector) {}
 
+
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Appearance ________________________________________________________
 
 		void		setTint(uint8_t alpha) { m_pHolder->_setShadowTint(alpha); }
@@ -104,8 +110,8 @@ namespace wg
 
 	private:
 
-		virtual const Object * 	_object() const override { return m_pHolder->_object(); }
-		virtual Object * 		_object() override { return m_pHolder->_object(); }
+		const Object * 	_object() const override { return m_pHolder->_object(); }
+		Object * 		_object() override { return m_pHolder->_object(); }
 
 		ShadowHolder *			m_pHolder;
 		std::vector<Shadow>*	m_pShadows;

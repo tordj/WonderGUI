@@ -31,9 +31,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char PopupOpener::CLASSNAME[] = { "PopupOpener" };
+	const TypeInfo PopupOpener::TYPEINFO = { "PopupOpener", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	PopupOpener::PopupOpener() : label(this), icon(this)
 	{
@@ -46,21 +46,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool PopupOpener::isInstanceOf(const char * pClassName) const
+	const TypeInfo& PopupOpener::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * PopupOpener::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setPopup() _________________________________________________________

@@ -32,9 +32,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char PianoKeyboard::CLASSNAME[] = { "PianoKeyboard" };
+	const TypeInfo PianoKeyboard::TYPEINFO = { "PianoKeyboard", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	PianoKeyboard::PianoKeyboard()
 	{
@@ -46,21 +46,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool PianoKeyboard::isInstanceOf(const char * pClassName) const
+	const TypeInfo& PianoKeyboard::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * PianoKeyboard::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setLayout() ________________________________________________________

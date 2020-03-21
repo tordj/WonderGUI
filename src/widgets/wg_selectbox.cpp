@@ -31,9 +31,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char SelectBox::CLASSNAME[] = {"SelectBox"};
+	const TypeInfo SelectBox::TYPEINFO = { "SelectBox", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	SelectBox::SelectBox() : text(this), entries(this)
 	{
@@ -46,21 +46,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SelectBox::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SelectBox::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ________________________________________________________
-
-	const char * SelectBox::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setEntrySkin() _____________________________________________________
@@ -117,7 +107,7 @@ namespace wg
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{
-			Base::handleError(ErrorCode::InvalidInterator, "Invalid iterator", _object(), CLASSNAME, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::InvalidInterator, "Invalid iterator", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -146,7 +136,7 @@ namespace wg
 	{
 		if (index < 0 || index >= entries.size())
 		{
-			Base::handleError(ErrorCode::OutOfRange, "Index out of range", _object(), CLASSNAME, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorCode::OutOfRange, "Index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

@@ -269,7 +269,7 @@ namespace wg
 
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 	//
 	/// @brief Creates a copy of the specified buffer.
 

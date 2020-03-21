@@ -29,12 +29,9 @@
 
 namespace wg
 {
+	const TypeInfo	BitmapFont::TYPEINFO = { "BitmapFont", &Font::TYPEINFO };
 
-
-	const char BitmapFont::CLASSNAME[] = {"BitmapFont"};
-
-
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	BitmapFont::BitmapFont( Surface * pSurf, char * pGlyphSpec )
 	{
@@ -97,21 +94,11 @@ namespace wg
 			delete [] m_pKerningTable;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool BitmapFont::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& BitmapFont::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Font::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * BitmapFont::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ hasGlyph() _________________________________________________

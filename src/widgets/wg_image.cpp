@@ -31,9 +31,9 @@ namespace wg
 {
 	using namespace Util;
 
-	const char Image::CLASSNAME[] = {"Image"};
+	const TypeInfo Image::TYPEINFO = { "Image", &Widget::TYPEINFO };
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	Image::Image()
 	{
@@ -45,21 +45,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Image::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Image::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Image::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setImage() _____________________________________________________________

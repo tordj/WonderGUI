@@ -268,9 +268,9 @@ namespace wg
 
 			//.____ Identification __________________________________________
 
-			bool				isInstanceOf( const char * pClassName ) const override;
-			const char *		className( void ) const override;
-			static const char	CLASSNAME[];
+			const TypeInfo&		typeInfo(void) const override;
+			const static TypeInfo	TYPEINFO;
+
 			MsgType				type() const { return m_type; }
 			bool				isMouseMsg() const;
 			bool				isMouseButtonMsg() const;
@@ -327,9 +327,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ____________________________________________________
 
@@ -360,9 +359,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ____________________________________________________
 
@@ -387,9 +385,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ____________________________________________________
 
@@ -413,9 +410,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		FocusGainedMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -429,9 +425,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		FocusLostMsg( char inputId, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp);
@@ -449,9 +444,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 	protected:
 		MouseEnterMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -468,9 +462,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 	protected:
 		MouseLeaveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -487,9 +480,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 	protected:
 		MouseMoveMsg( char inputId, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -506,9 +498,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 	protected:
 		MousePressMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
 	};
@@ -525,9 +516,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -547,9 +537,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		KeyPressMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -563,9 +552,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		KeyReleaseMsg( char inputId, int nativeKeyCode, Key translatedKeyCode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -579,9 +567,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -603,9 +590,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -628,9 +614,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -654,9 +639,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -677,9 +661,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -701,9 +684,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool                isInstanceOf( const char * pClassName ) const override;
-		const char *        className( void ) const override;
-		static const char   CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -711,6 +693,7 @@ namespace wg
 		CoordI				pointerPosRaw() const { return Util::qpixToRaw(m_pointerPos); }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 
+		bool				hasPayload() const;
 		BasicPayload_p		payload() const;
 		Widget_p 			pickedFrom() const { return m_pPickedFrom; }
 		int                 pickCategory() const { return m_pickCategory; }
@@ -734,14 +717,12 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool                isInstanceOf( const char * pClassName ) const override;
-		const char *        className( void ) const override;
-		static const char   CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
 		void				setPayload( BasicPayload * pPayload );
-		bool				hasPayload() const { return m_pPayload; }
 
 		Coord				pickOfs() const { return m_pickOfs; }
 		CoordI				pickOfsRaw() const { return Util::qpixToRaw(m_pickOfs); }
@@ -768,9 +749,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -792,9 +772,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -815,9 +794,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -838,9 +816,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -857,9 +834,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool                isInstanceOf( const char * pClassName ) const override;
-		const char *        className( void ) const override;
-		static const char   CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -882,9 +858,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool                isInstanceOf( const char * pClassName ) const override;
-		const char *        className( void ) const override;
-		static const char   CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -902,9 +877,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool                isInstanceOf( const char * pClassName ) const override;
-		const char *        className( void ) const override;
-		static const char   CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -932,9 +906,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		SelectMsg( Object * pSource );
@@ -951,9 +924,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _________________________________________________
 
@@ -976,9 +948,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1006,9 +977,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1039,9 +1009,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1081,9 +1050,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1103,9 +1071,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1124,9 +1091,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1145,9 +1111,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1173,9 +1138,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 			ItemsSelectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
@@ -1192,9 +1156,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		ItemsUnselectMsg( Object * pSource, int nbItems, ItemInfo * pItems );
@@ -1209,9 +1172,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		PopupClosedMsg( Widget * pPopup, const Widget_wp& pCaller );
@@ -1226,9 +1188,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		ModalMoveOutsideMsg( char inputId, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1240,9 +1201,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		ModalBlockedPressMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1254,9 +1214,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		ModalBlockedReleaseMsg( char inputId, MouseButton button, Widget * pModalWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1281,9 +1240,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1315,9 +1273,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf(const char * pClassName) const override;
-		const char *		className(void) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ________________________________________________________
 
@@ -1346,9 +1303,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Content ______________________________________________
 
@@ -1381,9 +1337,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		MouseRepeatMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1399,9 +1354,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		MouseClickMsg( char inputId, MouseButton button, Object * pSource, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1417,9 +1371,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		MouseDoubleClickMsg( char inputId, MouseButton button, Object * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );
@@ -1431,9 +1384,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		KeyRepeatMsg( char inputId, int native_keycode, Key translated_keycode, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );

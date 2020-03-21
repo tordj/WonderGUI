@@ -38,10 +38,10 @@ namespace wg
 {
 	using namespace Util;
 
-	const char RootPanel::CLASSNAME[] = {"RootPanel"};
+	const TypeInfo RootPanel::TYPEINFO = { "RootPanel", &Object::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	RootPanel::RootPanel() : slot(this)
 	{
@@ -71,21 +71,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool RootPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& RootPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * RootPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setGfxDevice() _________________________________________________________
@@ -398,9 +388,9 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	RootPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	RootPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
-		return &DynamicSlot::TYPEINFO;
+		return DynamicSlot::TYPEINFO;
 	}
 
 	//____ _container() __________________________________________________

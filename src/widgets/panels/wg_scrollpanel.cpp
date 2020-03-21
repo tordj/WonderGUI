@@ -34,7 +34,7 @@ namespace wg
 {
 	using namespace Util;
 
-	const char ScrollPanel::CLASSNAME[] = {"ScrollPanel"};
+	const TypeInfo ScrollPanel::TYPEINFO = { "ScrollPanel", &Panel::TYPEINFO };
 
 
 	float ScrollPanel::ViewSlot::_windowFractionX() const
@@ -451,7 +451,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	ScrollPanel::ScrollPanel() : viewSlot(this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
 	{
@@ -484,21 +484,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ScrollPanel::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ScrollPanel::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Panel::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ScrollPanel::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setStepFunc() ____________________________________________________
@@ -1533,12 +1523,12 @@ namespace wg
 
 	//____ _slotTypeInfo() ________________________________________________________
 
-	const TypeInfo*	ScrollPanel::_slotTypeInfo(const StaticSlot * pSlot) const
+	const TypeInfo&	ScrollPanel::_slotTypeInfo(const StaticSlot * pSlot) const
 	{
 		//The slots are technically not DynamicSlots, but none offer any extra functionality 
 		// so as far as the rest of the world is concerned...
 
-		return &DynamicSlot::TYPEINFO;
+		return DynamicSlot::TYPEINFO;
 	}
 
 

@@ -27,10 +27,21 @@ namespace wg
 {
 	using namespace Util;
 
+	const TypeInfo CCanvas::TYPEINFO = { "CCanvas", &GeoComponent::TYPEINFO };
+
+
+	//____ constructor ________________________________________________________
+
 	CCanvas::CCanvas(GeoComponent::Holder * pHolder) : GeoComponent(pHolder)
 	{
 	}
 
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CCanvas::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
 
 	//____ _render() __________________________________________________________
 

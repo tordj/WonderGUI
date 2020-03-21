@@ -5,10 +5,10 @@
 namespace wg
 {
 
-	const char RulerLabels::CLASSNAME[] = {"RulerLabels"};
+	const TypeInfo RulerLabels::TYPEINFO = { "RulerLabels", &Widget::TYPEINFO };
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	RulerLabels::RulerLabels()
 	{
@@ -21,21 +21,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool RulerLabels::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& RulerLabels::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * RulerLabels::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ addLabel() ____________________________________________________________

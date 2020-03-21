@@ -33,29 +33,19 @@ namespace wg
 {
 	using namespace Util;
 
-	const char Container::CLASSNAME[] = {"Container"};
+	const TypeInfo Container::TYPEINFO = { "Container", &Widget::TYPEINFO };
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	Container::Container() : m_bSiblingsOverlap(true)
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Container::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Container::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Widget::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Container::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ isContainer() ______________________________________________________________

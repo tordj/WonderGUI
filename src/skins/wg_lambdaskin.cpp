@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char LambdaSkin::CLASSNAME[] = { "LambdaSkin" };
+	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
@@ -45,7 +45,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ________________________________________________________
+	//____ constructor ________________________________________________________
 
 	LambdaSkin::LambdaSkin()
 	{
@@ -62,21 +62,11 @@ namespace wg
 		m_stateCompareFunc	= blueprint.stateCompareFunc;
 	}
 
-	//____ isInstanceOf() _____________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool LambdaSkin::isInstanceOf(const char * pClassName) const
+	const TypeInfo& LambdaSkin::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ________________________________________________________
-
-	const char * LambdaSkin::className(void) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setMinSize() _______________________________________________________

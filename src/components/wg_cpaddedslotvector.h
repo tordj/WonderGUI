@@ -38,6 +38,11 @@ namespace wg
 
 		CPaddedSlotVector(SlotHolder * pHolder) : CDynamicSlotVector<SlotType>(pHolder) {}
 
+		//.____ Identification _________________________________________________
+
+		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const static TypeInfo	TYPEINFO;
+
 		//.____ Geometry ______________________________________________________
 
 		bool		setPadding(int index, int amount, Border padding);

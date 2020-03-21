@@ -31,12 +31,12 @@ namespace wg
 {
 
 
-	const char List::CLASSNAME[] = {"List"};
+	const TypeInfo List::TYPEINFO = { "List", &Container::TYPEINFO };
 	const TypeInfo List::Slot::TYPEINFO = { "List::Slot", &SelectableSlot::TYPEINFO };
 
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	List::List() : m_selectMode(SelectMode::SingleEntry)
 	{
@@ -48,21 +48,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool List::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& List::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Container::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * List::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ setEntrySkin() _________________________________________________________

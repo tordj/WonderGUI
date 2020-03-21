@@ -25,23 +25,13 @@
 namespace wg
 {
 
-	const char Skin::CLASSNAME[] = {"Skin"};
+	const TypeInfo Skin::TYPEINFO = { "Skin", &Object::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Skin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Skin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Skin::className( void ) const
-	{
-		return CLASSNAME;
+		return TYPEINFO;
 	}
 
 	//____ minSize() __________________________________________________________
