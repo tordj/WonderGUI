@@ -86,11 +86,11 @@ namespace wg
 
 	//____ setHandleThickness() __________________________________________________
 
-	void SplitPanel::setHandleThickness(QPix _thickness)
+	void SplitPanel::setHandleThickness(MU _thickness)
 	{
 		//TODO: Assert on negative value.
 
-		int thickness = _thickness.rawAligned();
+		int thickness = _thickness.qpixAligned();
 
 		if (thickness != m_handleThickness)
 		{
@@ -112,7 +112,7 @@ namespace wg
 
 	//____ setBrokerFunction() ___________________________________________________
 
-	void SplitPanel::setBrokerFunction(std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float fraction, QPix handleMovement)> func)
+	void SplitPanel::setBrokerFunction(std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float fraction, MU handleMovement)> func)
 	{
 		m_brokerFunc = func;
 		_updateGeo();
@@ -211,16 +211,16 @@ namespace wg
 		int handleThickness = _handleThickness();
 
 		int totalLength = (m_bHorizontal ? contentGeo.w : contentGeo.h) - handleThickness;
-		QPix	length;
+		MU	length;
 		int firstChildLength;
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			length = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), MU::fromRaw(totalLength), m_splitFactor, MU::fromRaw(handleMovement));
 		else
-			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), QPix::fromRaw(totalLength), m_splitFactor, QPix::fromRaw(handleMovement));
+			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), MU::fromRaw(totalLength), m_splitFactor, MU::fromRaw(handleMovement));
 
-		firstChildLength = length.rawAligned();
+		firstChildLength = length.qpixAligned();
 
 		secondChildLength = totalLength - firstChildLength;
 
@@ -268,10 +268,10 @@ namespace wg
 
 	//____ _defaultBroker() ___________________________________________________
 
-	QPix SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, QPix _totalLength, float splitFactor, QPix _handleMovement)
+	MU SplitPanel::_defaultBroker(Widget * pFirst, Widget * pSecond, MU _totalLength, float splitFactor, MU _handleMovement)
 	{
-		int handleMovement = _handleMovement.raw;
-		int totalLength = _totalLength.raw;
+		int handleMovement = _handleMovement.qpix;
+		int totalLength = _totalLength.qpix;
 
 		int firstLength;
 
@@ -339,7 +339,7 @@ namespace wg
 		if (firstLength > maxLengthFirst)
 			firstLength = maxLengthFirst;
 
-		return QPix::fromRaw(firstLength);
+		return MU::fromRaw(firstLength);
 	}
 
 	//____ _refresh() ____________________________________________________________

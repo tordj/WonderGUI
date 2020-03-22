@@ -558,9 +558,9 @@ namespace wg
 		// Add 50 pixels in the scrollbars direction for best size.
 
 		if( m_bHorizontal )
-			sz.w += 50 * QPix::pixelQuartersPerPoint();
+			sz.w += 50 * MU::qpixPerPoint();
 		else
-			sz.h += 50 * QPix::pixelQuartersPerPoint();
+			sz.h += 50 * MU::qpixPerPoint();
 
 		return sz;
 	}

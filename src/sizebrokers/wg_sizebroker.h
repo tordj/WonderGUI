@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_pointers.h>
-#include <wg_qpix.h>
+#include <wg_mu.h>
 #include <wg_types.h>
 
 namespace wg
@@ -36,11 +36,11 @@ namespace wg
 
 		//.____ Properties _____________________________________________________
 
-		QPix	preferred;		// Preferred length for this item (input)
-		QPix	min;			// Min length for this item (input)
-		QPix	max;			// Max length for this item (input)
+		MU	preferred;		// Preferred length for this item (input)
+		MU	min;			// Min length for this item (input)
+		MU	max;			// Max length for this item (input)
 		float	weight;			// Weight for this item (input)
-		QPix	output;			// Length or preferred length for this item (output)
+		MU	output;			// Length or preferred length for this item (output)
 	};
 
 
@@ -58,8 +58,8 @@ namespace wg
 
 		//.____ Misc __________________________________________
 
-		virtual QPix setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const = 0;
-		virtual QPix setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
+		virtual MU setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const = 0;
+		virtual MU setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const = 0;
 		virtual bool mayAlterPreferredLengths() const = 0;
 
 	protected:

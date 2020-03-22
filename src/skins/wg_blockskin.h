@@ -76,10 +76,10 @@ namespace wg
 		Surface_p		surface() const { return m_pSurface; }
 
 		void			setBlockSize(SizeI size);
-		SizeI			blockSize() const { return m_dimensions*4/m_pSurface->pixelQuartersPerPoint(); }
+		SizeI			blockSize() const { return m_dimensions*4/m_pSurface->qpixPerPoint(); }
 
 		void			setFrame(BorderI frame);
-		BorderI			frame() const { return m_frame*4/m_pSurface->pixelQuartersPerPoint(); }
+		BorderI			frame() const { return m_frame*4/m_pSurface->qpixPerPoint(); }
 
 		//.____ Misc ____________________________________________________
 

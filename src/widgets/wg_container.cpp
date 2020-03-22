@@ -353,7 +353,7 @@ namespace wg
 
 		// Render children
 
-		RectI	dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+		RectI	dirtBounds = pixelsToQpix( pDevice->clipBounds() );
 
 		if( m_bSiblingsOverlap )
 		{
@@ -380,7 +380,7 @@ namespace wg
 			Patches patches( nClipRects );
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				patches.push(pixelsToRaw(pClipRects[i]));
+				patches.push(pixelsToQpix(pClipRects[i]));
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
@@ -414,7 +414,7 @@ namespace wg
 				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					ClipPopData popData = limitClipList(pDevice, rawToPixels(canvas) );
+					ClipPopData popData = limitClipList(pDevice, qpixToPixels(canvas) );
 
 					if( pDevice->clipListSize() > 0 )
 						OO(child.pSlot)->_widget()->_render(pDevice, canvas, canvas);

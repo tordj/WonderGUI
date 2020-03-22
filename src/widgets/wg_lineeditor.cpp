@@ -99,7 +99,7 @@ namespace wg
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
-		auto pop = limitClipList(pDevice, rawToPixels(canvas) );
+		auto pop = limitClipList(pDevice, qpixToPixels(canvas) );
 		_text()._render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}

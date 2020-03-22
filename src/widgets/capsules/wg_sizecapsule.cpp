@@ -55,7 +55,7 @@ namespace wg
 
 	void SizeCapsule::setPreferredSize( Size _size )
 	{
-		SizeI size = qpixToRawAligned(_size);
+		SizeI size = MUToQpixAligned(_size);
 		if( size != m_preferred )
 		{
 			m_preferred = size;
@@ -71,9 +71,9 @@ namespace wg
 			 (_preferred.h >= 0 && (_preferred.h > _max.h || _preferred.h < _min.h )) )
 			return false;
 
-		SizeI min = qpixToRawAligned(_min);
-		SizeI preferred = qpixToRawAligned(_preferred);
-		SizeI max = qpixToRawAligned(_max);
+		SizeI min = MUToQpixAligned(_min);
+		SizeI preferred = MUToQpixAligned(_preferred);
+		SizeI max = MUToQpixAligned(_max);
 
 		if (min != m_min || preferred != m_preferred || max != m_max)
 		{
@@ -91,7 +91,7 @@ namespace wg
 	{
 		//TODO: Add error handling.
 
-		SizeI size = qpixToRawAligned(_size);
+		SizeI size = MUToQpixAligned(_size);
 		if( size != m_min )
 		{
 			m_min = size;
@@ -105,7 +105,7 @@ namespace wg
 	{
 		//TODO: Add error handling.
 
-		SizeI size = qpixToRawAligned(_size);
+		SizeI size = MUToQpixAligned(_size);
 		if( size != m_max )
 		{
 			m_max = size;

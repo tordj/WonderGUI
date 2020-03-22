@@ -112,7 +112,7 @@ namespace wg
 
 		if (canvas != _canvas)
 		{
-			auto savedClipData = limitClipList(pDevice, rawToPixels(canvas) );
+			auto savedClipData = limitClipList(pDevice, qpixToPixels(canvas) );
 			OO(slot._widget())->_render(pDevice, canvas, canvas );
 			popClipList(pDevice, savedClipData);
 		}

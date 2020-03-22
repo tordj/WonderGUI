@@ -518,7 +518,7 @@ namespace wg
 
 	void CTextEditor::_render( GfxDevice * pDevice, const RectI& _canvas )
 	{
-		_textMapper()->render(this, pDevice, rawToPixels(_canvas) );
+		_textMapper()->render(this, pDevice, qpixToPixels(_canvas) );
 	}
 
 	//____ setEditMode() _______________________________________________________
@@ -926,7 +926,7 @@ namespace wg
 
 	bool CTextEditor::_caretToPos( CoordI pos)
 	{
-		int ofs = _textMapper()->caretToPos(this, rawToPixels(pos), m_editState.wantedOfs );
+		int ofs = _textMapper()->caretToPos(this, qpixToPixels(pos), m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
 	}
 
@@ -1001,8 +1001,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		RectI niceToHave = pixelsToRaw(_textMapper()->rectForRange(this, beg, end - beg));
-		RectI mustHave = pixelsToRaw(_textMapper()->rectForCaret(this));
+		RectI niceToHave = pixelsToQpix(_textMapper()->rectForRange(this, beg, end - beg));
+		RectI mustHave = pixelsToQpix(_textMapper()->rectForCaret(this));
 
 		_requestVisibility(mustHave, niceToHave);
 	}

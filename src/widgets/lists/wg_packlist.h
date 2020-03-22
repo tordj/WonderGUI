@@ -146,8 +146,8 @@ namespace wg
 
 		bool				setMinEntrySize(Size min);
 		bool				setMaxEntrySize(Size max);
-		Size				minEntrySize() const { return Util::rawToQpix(m_minEntrySize); }
-		Size				maxEntrySize() const { return Util::rawToQpix(m_maxEntrySize); }
+		Size				minEntrySize() const { return Util::qpixToMU(m_minEntrySize); }
+		Size				maxEntrySize() const { return Util::qpixToMU(m_maxEntrySize); }
 
 		//.____ Behavior ________________________________________________________
 

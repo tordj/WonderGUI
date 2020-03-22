@@ -36,19 +36,19 @@ namespace wg
 
 	//____ setItemLengths() _______________________________________________________
 
-	QPix ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const
+	MU ScalePreferredSizeBroker::setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const
 	{
 		return setPreferredLengths( pItems, nItems );
 	}
 
 	//____ setPreferredLengths() __________________________________________________
 
-	QPix ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
+	MU ScalePreferredSizeBroker::setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const
 	{
-		QPix total = 0;
+		MU total = 0;
 		for( int i = 0 ; i < nItems ; i++ )
 		{
-			QPix def = pItems[i].preferred * pItems[i].weight;
+			MU def = pItems[i].preferred * pItems[i].weight;
 			pItems[i].output = def;
 			total += def;
 		}

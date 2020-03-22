@@ -127,7 +127,7 @@ namespace wg
 		pointSize.h /= states.size();
 
 		m_preferredKeyboardSize	= pointsToRawAligned(pointSize);
-		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->pixelQuartersPerPoint();
+		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->qpixPerPoint();
 
 		m_blackKeyHeight		= m_pBlackKeys ? pointsToRawAligned(m_pBlackKeys->pointSize()).h / states.size() : 0;
 		m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h  * 4 / states.size() : 0;
@@ -420,11 +420,11 @@ namespace wg
 
 				if (pKey->isBlack)
 				{
-					RectI dst = rawToPixels(RectI(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight));
+					RectI dst = qpixToPixels(RectI(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight));
 
 					float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight/4);
 
-					pDevice->stretchBlit(dst + rawToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+					pDevice->stretchBlit(dst + qpixToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 					pKey++;
 				}
 			}
@@ -443,7 +443,7 @@ namespace wg
 
 			int i = pKey->keyPos;
 
-			RectI dst = rawToPixels(RectI(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h));
+			RectI dst = qpixToPixels(RectI(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h));
 
 			if (i % 2 == 0)
 				pDevice->setBlitSource(m_pOddWhiteKeys);
@@ -461,7 +461,7 @@ namespace wg
 
 			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h / 4);
 
-			pDevice->stretchBlit(dst + rawToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+			pDevice->stretchBlit(dst + qpixToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
 			if (bForward)
 			{

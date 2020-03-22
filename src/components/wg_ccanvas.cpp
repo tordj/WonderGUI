@@ -49,7 +49,7 @@ namespace wg
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 
-		RectI canvas = rawToPixels( _calcPresentationArea() + _canvas.pos() );
+		RectI canvas = qpixToPixels( _calcPresentationArea() + _canvas.pos() );
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->stretchBlit(canvas);
@@ -76,7 +76,7 @@ namespace wg
 		SizeI sz = m_fixedSize;
 
 		if (sz.w == 0 && sz.h == 0)
-			sz = rawToPixels(_size());
+			sz = qpixToPixels(_size());
 
 		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
@@ -93,7 +93,7 @@ namespace wg
 
 	RectI CCanvas::_calcPresentationArea() const
 	{
-		SizeI window = rawToPixels(_size());
+		SizeI window = qpixToPixels(_size());
 		SizeI bitmapSize = m_pSurface->size();
 
 		SizeI output;
@@ -112,7 +112,7 @@ namespace wg
 			break;
 		}
 
-		return pixelsToRaw(output);
+		return pixelsToQpix(output);
 	}
 
 
@@ -367,7 +367,7 @@ namespace wg
 
 	void CCanvas::present(RectI area)
 	{
-		RectI dest = rawToPixels(_calcPresentationArea());
+		RectI dest = qpixToPixels(_calcPresentationArea());
 		SizeI bitmapSize = m_pSurface->size();
 
 		int x1 = area.x * dest.w / bitmapSize.w;
@@ -377,7 +377,7 @@ namespace wg
 
 		RectI a2 = RectI::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
 
-		_requestRender(pixelsToRaw(a2));
+		_requestRender(pixelsToQpix(a2));
 	}
 
 	//____ _setComponentSize() ___________________________________________________
@@ -392,7 +392,7 @@ namespace wg
 
 	SizeI CCanvas::_preferredSize() const
 	{
-		// We use pointsToRaw here instead of pixelsToRaw since a pixel in our surface
+		// We use pointsToRaw here instead of pixelsToQpix since a pixel in our surface
 		// should be scaled to a point in UI.
 
 		return m_fixedSize.isEmpty()? SizeI(16*4,16*4) : pointsToRawAligned( m_fixedSize );

@@ -55,7 +55,7 @@ namespace wg
 
 	void Filler::setPreferredSize( const Size& _size )
 	{
-		SizeI size = qpixToRaw(_size);
+		SizeI size = MUToQpix(_size);
 
 		if( size != m_preferredSize )
 		{

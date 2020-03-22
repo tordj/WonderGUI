@@ -196,7 +196,7 @@ namespace wg
 				if (m_pToolboxSkin)
 					m_pToolboxSkin->_render(pDevice, geo + m_pToolboxSkin->_contentPadding(), StateEnum::Normal);
 
-				RectI rawPaletteGeo = rawToPixels(palette.m_geo);
+				RectI rawPaletteGeo = qpixToPixels(palette.m_geo);
 				if (pDevice->clipBounds().intersectsWith(rawPaletteGeo))
 				{
 					ClipPopData popData = limitClipList(pDevice, rawPaletteGeo);
@@ -215,7 +215,7 @@ namespace wg
 		if (!m_pSelectedWidget)
 			return RectI();
 
-		RectI selectedGeo = qpixToRaw(m_pSelectedWidget->globalGeo()) - _globalPos();
+		RectI selectedGeo = MUToQpix(m_pSelectedWidget->globalGeo()) - _globalPos();
 
 		if (m_pSelectionSkin)
 			selectedGeo += m_pSelectionSkin->_contentPadding();
@@ -235,7 +235,7 @@ namespace wg
 
 			SizeI wantedSize = pSlot->_preferredSize() + palettePadding;
 
-			RectI selectedGeo = qpixToRaw(m_pSelectedWidget->globalGeo()) - _globalPos();
+			RectI selectedGeo = MUToQpix(m_pSelectedWidget->globalGeo()) - _globalPos();
 			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->_contentPadding() : BorderI();
 			RectI surroundBox = selectedGeo + BorderI(wantedSize.h+4, wantedSize.w+4);
 

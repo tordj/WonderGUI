@@ -330,12 +330,12 @@ namespace wg
 
 	Rect ScrollPanel::CViewSlot::windowRect() const
 	{
-		return Rect( rawToQpix(m_viewPixOfs), rawToQpix(m_windowGeo.size()));
+		return Rect( qpixToMU(m_viewPixOfs), qpixToMU(m_windowGeo.size()));
 	}
 
 	Size ScrollPanel::CViewSlot::windowSize() const
 	{
-		return rawToQpix(m_windowGeo.size());
+		return qpixToMU(m_windowGeo.size());
 	}
 
 	RectF ScrollPanel::CViewSlot::windowSection() const
@@ -355,7 +355,7 @@ namespace wg
 
 	bool ScrollPanel::CViewSlot::setWindowPos(Coord pos)
 	{
-		return _holder()->_setWindowPos(qpixToRaw(pos));
+		return _holder()->_setWindowPos(MUToQpix(pos));
 	}
 
 	bool ScrollPanel::CViewSlot::setWindowOffset(CoordF ofs)
@@ -1122,7 +1122,7 @@ namespace wg
 
 	void ScrollPanel::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
 	{
-		RectI dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+		RectI dirtBounds = pixelsToQpix( pDevice->clipBounds() );
 
 		// Render Window background skin
 
@@ -1153,7 +1153,7 @@ namespace wg
 
 			if (window.intersectsWith(dirtBounds))
 			{
-				ClipPopData clipPop = limitClipList(pDevice,rawToPixels(window));
+				ClipPopData clipPop = limitClipList(pDevice,qpixToPixels(window));
 				OO(viewSlot._widget())->_render(pDevice, canvas, window);
 				popClipList(pDevice, clipPop);
 			}
@@ -1168,7 +1168,7 @@ namespace wg
 				RectI canvas = m_scrollbarSlots[i].geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					ClipPopData clipPop = limitClipList(pDevice,rawToPixels(canvas));
+					ClipPopData clipPop = limitClipList(pDevice,qpixToPixels(canvas));
 					OO(m_scrollbarSlots[i]._widget())->_render(pDevice, canvas, canvas);
 					popClipList(pDevice, clipPop);
 				}

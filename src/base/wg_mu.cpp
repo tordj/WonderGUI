@@ -20,12 +20,12 @@
 
 =========================================================================*/
 
-#include <wg_qpix.h>
+#include <wg_mu.h>
 
 namespace wg
 {
-	int		QPix::s_pixelQuartersPerPoint = 4;
-	float	QPix::s_scale = 1.f;
+	int		MU::s_qpixPerPoint = 4;
+	float	MU::s_scale = 1.f;
 
 };
 

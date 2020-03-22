@@ -134,7 +134,7 @@ namespace wg
 		bool			caretEraseNextWord();
 		bool			caretErasePrevWord();
 
-		inline bool		caretToPos(Coord pos) { return _caretToPos(Util::qpixToRaw(pos)); }			// Move caret as close as possible to the given position.
+		inline bool		caretToPos(Coord pos) { return _caretToPos(Util::MUToQpix(pos)); }			// Move caret as close as possible to the given position.
 		bool			caretSelectWord();
 		bool			caretSelectLine();				// Full line with hard line ending.
 

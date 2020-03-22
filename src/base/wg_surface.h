@@ -80,7 +80,7 @@ namespace wg
 		inline float        scale() const;
         
 		inline SizeI        pointSize() const;
-		inline int			pixelQuartersPerPoint() const;
+		inline int			qpixPerPoint() const;
         
 		//.____ Appearance ____________________________________________________
 
@@ -161,7 +161,7 @@ namespace wg
         BasicPayload_p      m_pPayload;
         
         // This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
-        int                 m_pixelQuartersPerPoint = 4;
+        int                 m_qpixPerPoint = 4;
 	};
 
 	//____ setId() ____________________________________________________________
@@ -193,21 +193,21 @@ namespace wg
 
 	float Surface::scale() const 
 	{ 
-		return m_pixelQuartersPerPoint / 4.f; 
+		return m_qpixPerPoint / 4.f; 
 	}
 
 	//____ pointSize() ________________________________________________________
 
 	SizeI Surface::pointSize() const 
 	{ 
-		return (m_size * 4) / m_pixelQuartersPerPoint;
+		return (m_size * 4) / m_qpixPerPoint;
 	}
 
-	//____ pixelQuartersPerPoint() ____________________________________________
+	//____ qpixPerPoint() ____________________________________________
 
-	int Surface::pixelQuartersPerPoint() const 
+	int Surface::qpixPerPoint() const 
 	{ 
-		return m_pixelQuartersPerPoint; 
+		return m_qpixPerPoint; 
 	}
 
 	//____ scaleMode() ________________________________________________________

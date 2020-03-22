@@ -42,7 +42,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, Util::qpixToRaw(padding));
+		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, Util::MUToQpix(padding));
 		return true;
 	}
 
@@ -53,7 +53,7 @@ namespace wg
 
 		auto pBeg = static_cast<SlotType*>(beg._slot());
 		auto pEnd = static_cast<SlotType*>(end._slot());
-		_holder()->_repadSlots(pBeg, int(pEnd - pBeg), Util::qpixToRaw(padding));
+		_holder()->_repadSlots(pBeg, int(pEnd - pBeg), Util::MUToQpix(padding));
 		return true;
 	}
 

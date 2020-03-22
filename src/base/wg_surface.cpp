@@ -76,7 +76,7 @@ namespace wg
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
         
         if( flags & SurfaceFlag::Scale2X )
-            m_pixelQuartersPerPoint = 8;            // TODO: Add error handling if size not divisable.
+            m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
     }
 
 	//____ ~Surface() ____________________________________________________________
@@ -127,7 +127,7 @@ namespace wg
     {
         //TODO: Error check, only allow certain factors.
         
-        m_pixelQuartersPerPoint = (int)(scale*4);
+        m_qpixPerPoint = (int)(scale*4);
         return true;
     }
 

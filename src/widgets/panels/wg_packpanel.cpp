@@ -254,7 +254,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						int itemWidth = pS->_paddedMatchingWidth( pI->output.raw );
+						int itemWidth = pS->_paddedMatchingWidth( pI->output.qpix );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -641,7 +641,7 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					int b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output.raw):pS->_paddedMatchingWidth(pI->output.raw);
+					int b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output.qpix):pS->_paddedMatchingWidth(pI->output.qpix);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -804,15 +804,15 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->output.raw;
+						geo.w = pI->output.qpix;
 						geo.h = sz.h;
-						pos.x += pI->output.raw;
+						pos.x += pI->output.qpix;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->output.raw;
-						pos.y += pI->output.raw;
+						geo.h = pI->output.qpix;
+						pos.y += pI->output.qpix;
 					}
 					geo -= p->m_padding;
 					geo += contentOfs;
@@ -879,9 +879,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->m_preferredSize.w);
-					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
-					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
+					pI->preferred = MU::fromRaw(pS->m_preferredSize.w);
+					pI->min = MU::fromRaw(pS->_paddedMinSize().w);
+					pI->max = MU::fromRaw(pS->_paddedMaxSize().w);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -893,9 +893,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->m_preferredSize.h);
-					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
-					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
+					pI->preferred = MU::fromRaw(pS->m_preferredSize.h);
+					pI->min = MU::fromRaw(pS->_paddedMinSize().h);
+					pI->max = MU::fromRaw(pS->_paddedMaxSize().h);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -915,9 +915,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
-					pI->min = QPix::fromRaw(pS->_paddedMinSize().w);
-					pI->max = QPix::fromRaw(pS->_paddedMaxSize().w);
+					pI->preferred = MU::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
+					pI->min = MU::fromRaw(pS->_paddedMinSize().w);
+					pI->max = MU::fromRaw(pS->_paddedMaxSize().w);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -929,9 +929,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = QPix::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
-					pI->min = QPix::fromRaw(pS->_paddedMinSize().h);
-					pI->max = QPix::fromRaw(pS->_paddedMaxSize().h);
+					pI->preferred = MU::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
+					pI->min = MU::fromRaw(pS->_paddedMinSize().h);
+					pI->max = MU::fromRaw(pS->_paddedMaxSize().h);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -945,38 +945,38 @@ namespace wg
 
 	int PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, int availableLength) const
 	{
-		QPix totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, QPix::fromRaw(availableLength) );
+		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, MU::fromRaw(availableLength) );
 
 		// Align outputs so we end up on pixel boundaries
 
 		int reminder = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			reminder += pItems->output.raw;
-			pItems->output.raw = reminder & 0xFFFFFFFC;
+			reminder += pItems->output.qpix;
+			pItems->output.qpix = reminder & 0xFFFFFFFC;
 			reminder &= 0x3;
 		}
 
-		return totalLength.raw & 0xFFFFFFFC;
+		return totalLength.qpix & 0xFFFFFFFC;
 	}
 
 	//____ _setPreferredLengths() _______________________________________________________
 
 	int PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
 	{
-		QPix totalLength = m_pSizeBroker->setPreferredLengths(pItems, nItems);
+		MU totalLength = m_pSizeBroker->setPreferredLengths(pItems, nItems);
 
 		// Align outputs so we end up on pixel boundaries
 
 		int reminder = 0;
 		for (int i = 0; i < nItems; i++)
 		{
-			reminder += pItems->output.raw;
-			pItems->output.raw = reminder & 0xFFFFFFFC;
+			reminder += pItems->output.qpix;
+			pItems->output.qpix = reminder & 0xFFFFFFFC;
 			reminder &= 0x3;
 		}
 
-		return totalLength.raw & 0xFFFFFFFC;
+		return totalLength.qpix & 0xFFFFFFFC;
 	}
 
 

@@ -140,7 +140,7 @@ namespace wg
 				dest = _canvas;
 
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( rawToPixels(dest), m_rect );
+			pDevice->stretchBlit( qpixToPixels(dest), m_rect );
 		}
 	}
 

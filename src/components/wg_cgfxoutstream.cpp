@@ -25,7 +25,6 @@
 
 namespace wg
 {
-
 	const TypeInfo CGfxOutStream::TYPEINFO = { "CGfxOutStream", &Component::TYPEINFO };
 
 	//____ constructor ________________________________________________________

@@ -1303,7 +1303,7 @@ bool process_system_events(const RootPanel_p& pRoot)
 			return false;
 
 		case SDL_MOUSEMOTION:
-			pInput->setPointer(pRoot, Coord(QPix::fromPixel(e.motion.x), QPix::fromPixel(e.motion.y)));
+			pInput->setPointer(pRoot, Coord(MU::fromPixel(e.motion.x), MU::fromPixel(e.motion.y)));
 			break;
 
 		case SDL_MOUSEBUTTONDOWN:

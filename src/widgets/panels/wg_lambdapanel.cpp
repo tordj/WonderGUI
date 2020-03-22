@@ -119,7 +119,7 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-		SizeI min = qpixToRaw(_min);
+		SizeI min = MUToQpix(_min);
 
 		if( m_minSize != min )
 		{
@@ -143,7 +143,7 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-		SizeI max = qpixToRaw(_max);
+		SizeI max = MUToQpix(_max);
 
  		if( m_maxSize != max )
 		{
@@ -170,8 +170,8 @@ namespace wg
 		if( min.w > max.w || min.h > max.h )
 			return false;
 
-		m_minSize = qpixToRaw(min);
-		m_maxSize = qpixToRaw(max);
+		m_minSize = MUToQpix(min);
+		m_maxSize = MUToQpix(max);
 		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
 		limit( m_preferredSize.h, m_minSize.h, m_maxSize.h );
 
@@ -185,7 +185,7 @@ namespace wg
 	{
 		//TODO: Assert >= 0.
 
-		SizeI pref = qpixToRaw(_pref);
+		SizeI pref = MUToQpix(_pref);
 
 		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
 			return false;
@@ -475,7 +475,7 @@ namespace wg
 		RectI geo;
 
 		if (pSlot->m_func)
-			geo = pixelAligned(qpixToRaw(pSlot->m_func(pSlot->_widget(), rawToQpix(m_size))));
+			geo = pixelAligned(MUToQpix(pSlot->m_func(pSlot->_widget(), qpixToMU(m_size))));
 		else
 			geo = { 0,0,pSlot->_preferredSize() };
 

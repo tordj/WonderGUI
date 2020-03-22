@@ -59,7 +59,7 @@ namespace wg
 	RootPanel::RootPanel( GfxDevice * pGfxDevice ) : RootPanel()
 	{
 		if( pGfxDevice )
-			m_geo = pixelsToRaw( pGfxDevice->canvasSize() );
+			m_geo = pixelsToQpix( pGfxDevice->canvasSize() );
 		m_pGfxDevice = pGfxDevice;
 	}
 
@@ -85,7 +85,7 @@ namespace wg
 		m_pGfxDevice = pDevice;
 
 		if( m_pGfxDevice && !m_bHasGeo && slot._widget() )
-			OO(slot._widget())->_resize( pixelsToRaw( m_pGfxDevice->canvasSize() ) );
+			OO(slot._widget())->_resize( pixelsToQpix( m_pGfxDevice->canvasSize() ) );
 
 		m_dirtyPatches.add( _geo() );
 		return true;
@@ -95,7 +95,7 @@ namespace wg
 
 	bool RootPanel::setGeo( const Rect& geo )
 	{
-		m_geo = qpixToRaw( pixelAligned(geo) );
+		m_geo = MUToQpix( pixelAligned(geo) );
 
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
@@ -112,7 +112,7 @@ namespace wg
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
-			return RectI( CoordI(0,0), pixelsToRaw( m_pGfxDevice->canvasSize() ) );
+			return RectI( CoordI(0,0), pixelsToQpix( m_pGfxDevice->canvasSize() ) );
 		else
 			return RectI(0,0,0,0);
 	}
@@ -262,7 +262,7 @@ namespace wg
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
 		RectI canvas = _geo();
-		RectI clip( qpixToRawAligned( _clip ), canvas );
+		RectI clip( MUToQpixAligned( _clip ), canvas );
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
@@ -290,7 +290,7 @@ namespace wg
 		{
 			// Set clipping rectangle.
 
-			RectI myClip = rawToPixels(clip);
+			RectI myClip = qpixToPixels(clip);
 
 			m_pGfxDevice->setClipList(1, &myClip);
 

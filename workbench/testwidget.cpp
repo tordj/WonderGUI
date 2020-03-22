@@ -59,7 +59,7 @@ namespace wg
 
 	SizeI TestWidget::_preferredSize() const
 	{
-		return SizeI(200,200) * QPix::pixelQuartersPerPoint();
+		return SizeI(200,200) * MU::qpixPerPoint();
 	}
 
 	//____ start() _________________________________________________________________

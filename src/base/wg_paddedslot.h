@@ -54,8 +54,8 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void			setPadding( const Border& padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, Util::qpixToRaw(padding)); }
-		inline Border	padding() const { return Util::rawToQpix(m_padding); }
+		void			setPadding( const Border& padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, Util::MUToQpix(padding)); }
+		inline Border	padding() const { return Util::qpixToMU(m_padding); }
 
 		//.____ Operators __________________________________________
 

@@ -66,9 +66,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
-			inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
-			inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
+			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
+			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
 
 			//.____ Operators __________________________________________
 

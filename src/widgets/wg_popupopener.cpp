@@ -265,7 +265,7 @@ namespace wg
 		auto pLayer = OO(_parent())->_getPopupLayer();
 		if (pLayer && m_pPopup)
 		{
-			pLayer->popupSlots.pushFront(m_pPopup, this, rawToQpix(_globalGeo()), m_attachPoint, m_bOpenOnHover );
+			pLayer->popupSlots.pushFront(m_pPopup, this, qpixToMU(_globalGeo()), m_attachPoint, m_bOpenOnHover );
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

@@ -46,7 +46,7 @@ namespace wg
 	void PopupLayer::CSlots::pushFront(const Widget_p& _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize )
 	{
 		_pPopup->releaseFromParent();
-		_holder()->_addSlot( _pPopup, _pOpener, qpixToRaw(_launcherGeo), _attachPoint, _bAutoClose, qpixToRaw(_maxSize));
+		_holder()->_addSlot( _pPopup, _pOpener, MUToQpix(_launcherGeo), _attachPoint, _bAutoClose, MUToQpix(_maxSize));
 	}
 
 	//____ pop() ________________________________________________
@@ -319,7 +319,7 @@ namespace wg
 					OWidget * pOpener = OO(pSlot->m_pOpener.rawPtr());
 
 					CoordI 	absPos 		= ofs + _globalPos();
-					RectI	openerGeo 	= Util::qpixToRaw(pOpener->globalGeo());
+					RectI	openerGeo 	= Util::MUToQpix(pOpener->globalGeo());
 
 					if( openerGeo.contains(absPos) && pOpener->_markTest( absPos - openerGeo.pos() ) )
 						pResult = pOpener;
@@ -402,7 +402,7 @@ namespace wg
 
 		// Render children
 
-		RectI	dirtBounds = pixelsToRaw( pDevice->clipBounds() );
+		RectI	dirtBounds = pixelsToQpix( pDevice->clipBounds() );
 
 		// Create WidgetRenderContext's for popups that might get dirty patches
 
@@ -423,7 +423,7 @@ namespace wg
 		Patches patches( nClipRects );
 
 		for( int i = 0 ; i < nClipRects ; i++ )
-			patches.push(pixelsToRaw(pClipRects[i]));
+			patches.push(pixelsToQpix(pClipRects[i]));
 
 		// Go through WidgetRenderContexts, push and mask dirt
 

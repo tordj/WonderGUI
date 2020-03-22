@@ -55,7 +55,7 @@ namespace wg
 
 	void ModalLayer::Slot::setGeo(const Rect& geometry)
 	{
-		m_placementGeo = qpixToRaw(geometry);
+		m_placementGeo = MUToQpix(geometry);
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -63,7 +63,7 @@ namespace wg
 
 	void ModalLayer::Slot::setOffset(const Coord& ofs)
 	{
-		m_placementGeo.setPos(qpixToRaw(ofs));
+		m_placementGeo.setPos(MUToQpix(ofs));
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -71,7 +71,7 @@ namespace wg
 
 	void ModalLayer::Slot::setSize(const Size& size)
 	{
-		m_placementGeo.setSize(qpixToRaw(size));
+		m_placementGeo.setSize(MUToQpix(size));
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -79,7 +79,7 @@ namespace wg
 
 	void ModalLayer::Slot::move(const Coord& ofs)
 	{
-		m_placementGeo += qpixToRaw(ofs);
+		m_placementGeo += MUToQpix(ofs);
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -93,7 +93,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushFrontEmpty();
-		pSlot->m_geo = qpixToRaw(geometry);
+		pSlot->m_geo = MUToQpix(geometry);
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
@@ -110,7 +110,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushBackEmpty();
-		pSlot->m_geo = qpixToRaw(geometry);
+		pSlot->m_geo = MUToQpix(geometry);
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);

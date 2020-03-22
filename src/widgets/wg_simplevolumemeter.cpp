@@ -135,7 +135,7 @@ namespace wg
 		RectI canvas = m_pSkin ? m_pSkin->_contentRect( m_size, m_state ) : RectI(m_size);
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
-		int  iPeak = alignRaw((int) (peak * length));
+		int  iPeak = alignQpix((int) (peak * length));
 
 		int iHold = _calcIHold(hold, canvas.size());
 
@@ -170,8 +170,8 @@ namespace wg
 
 		int length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
-		int	iPeakL = alignRaw(int(leftPeak * length));
-		int	iPeakR = alignRaw(int(rightPeak * length));
+		int	iPeakL = alignQpix(int(leftPeak * length));
+		int	iPeakR = alignQpix(int(rightPeak * length));
 		int iHoldL = _calcIHold(leftHold, canvas);
 		int iHoldR = _calcIHold(rightHold, canvas);
 
@@ -284,7 +284,7 @@ namespace wg
 		int height = m_iHoldHeight;
 
 		int canvasLength = m_direction == Direction::Up || m_direction == Direction::Down ? canvas.h : canvas.w;
-		int ofs = alignRaw((int)(holdValue * canvasLength));
+		int ofs = alignQpix((int)(holdValue * canvasLength));
 
 		if( ofs > m_iSectionHeight[0] )
 		{
@@ -304,7 +304,7 @@ namespace wg
 
 	SizeI SimpleVolumeMeter::_preferredSize() const
 	{
-		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * QPix::pixelQuartersPerPoint();
+		return (m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(9, 20) : SizeI(20, 9)) * MU::qpixPerPoint();
 	}
 
 	//____ _resize() ____________________________________________________________________
@@ -434,7 +434,7 @@ namespace wg
 					break;
 				}
 
-				pDevice->fill( rawToPixels(r), c );
+				pDevice->fill( qpixToPixels(r), c );
 			}
 			else if( holdOfs > peakHeight )
 				peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
@@ -478,7 +478,7 @@ namespace wg
 				break;
 			}
 
-			pDevice->fill( rawToPixels(r), m_sectionColors[i] );
+			pDevice->fill( qpixToPixels(r), m_sectionColors[i] );
 
 			ofs += sectionHeight;
 			peakHeight -= sectionHeight;
@@ -496,24 +496,24 @@ namespace wg
 		if (m_direction == Direction::Left || m_direction == Direction::Right)
 			std::swap(length, width);
 
-		m_iGap = alignRaw((int)(width * m_fGap));
+		m_iGap = alignQpix((int)(width * m_fGap));
 		if( m_iGap == 0 && m_fGap > 0.f )
 			m_iGap = 4;
 
-		m_iSidePadding = alignRaw((int) (width * m_fSidePadding));
+		m_iSidePadding = alignQpix((int) (width * m_fSidePadding));
 		if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
 			m_iSidePadding = 4;
 
-		m_iHoldHeight = alignRaw((int) m_fHoldHeight * length);
+		m_iHoldHeight = alignQpix((int) m_fHoldHeight * length);
 		if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
 			m_iHoldHeight = 4;
 
-		m_iSectionHeight[0] = alignRaw((int) (m_fSectionHeight[0] * length + 0.5f));
-		m_iSectionHeight[1] = alignRaw(((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * length + 0.5f))) - m_iSectionHeight[0];
+		m_iSectionHeight[0] = alignQpix((int) (m_fSectionHeight[0] * length + 0.5f));
+		m_iSectionHeight[1] = alignQpix(((int)((m_fSectionHeight[0] + m_fSectionHeight[1]) * length + 0.5f))) - m_iSectionHeight[0];
 		m_iSectionHeight[2] = length - m_iSectionHeight[1] - m_iSectionHeight[0];
 
-		m_iPeak[0] = alignRaw((int) m_fPeak[0] * length);
-		m_iPeak[1] = alignRaw((int) m_fPeak[1] * length);
+		m_iPeak[0] = alignQpix((int) m_fPeak[0] * length);
+		m_iPeak[1] = alignQpix((int) m_fPeak[1] * length);
 
 		m_iHold[0] = _calcIHold(m_fHold[0], sz);
 		m_iHold[1] = _calcIHold(m_fHold[1], sz);

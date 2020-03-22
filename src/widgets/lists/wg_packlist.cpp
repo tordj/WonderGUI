@@ -135,7 +135,7 @@ namespace wg
 
 	bool PackList::setMinEntrySize( Size _min )
 	{
-		SizeI min = qpixToRaw(_min);
+		SizeI min = MUToQpix(_min);
 
 		if( min == m_minEntrySize )
 			return true;
@@ -152,7 +152,7 @@ namespace wg
 
 	bool PackList::setMaxEntrySize( Size _max )
 	{
-		SizeI max = qpixToRaw(_max);
+		SizeI max = MUToQpix(_max);
 
 		if( max == m_maxEntrySize )
 			return true;
@@ -368,7 +368,7 @@ namespace wg
 
 		// Render children
 
-		RectI	dirtBounds = pixelsToRaw(pDevice->clipBounds());
+		RectI	dirtBounds = pixelsToQpix(pDevice->clipBounds());
 
 		{
 			SlotWithGeo child;
@@ -379,7 +379,7 @@ namespace wg
 				RectI canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
-					ClipPopData clipPop = limitClipList(pDevice, rawToPixels(canvas));
+					ClipPopData clipPop = limitClipList(pDevice, qpixToPixels(canvas));
 					if( pDevice->clipListSize() > 0 )
 						OO(static_cast<const Slot*>(child.pSlot)->_widget())->_render(pDevice, canvas, canvas);
 					popClipList(pDevice,clipPop);

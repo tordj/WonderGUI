@@ -60,9 +60,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::rawToQpix(m_geo.pos()); }
-			inline Size		size() const { return Util::rawToQpix(m_geo.size()); }
-			inline Rect		geo() const { return Util::rawToQpix(m_geo); }
+			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
+			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
+			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
 
 			//.____ Operators __________________________________________
 
@@ -119,8 +119,8 @@ namespace wg
 		void			setHandleSkin(Skin * pSkin);
 		Skin_p			handleSkin() const { return m_pHandleSkin; }
 
-		void			setHandleThickness(QPix thickness);
-		QPix			handleThickness() const { return QPix::fromRaw(m_handleThickness);  }
+		void			setHandleThickness(MU thickness);
+		MU			handleThickness() const { return MU::fromRaw(m_handleThickness);  }
 
 		//.____ Behavior _______________________________________________________
 
@@ -134,8 +134,8 @@ namespace wg
 		void			setScaleBehavior(ScaleBehavior behavior);
 		ScaleBehavior	scaleBehavior() const { return m_scaleBehavior; }
 
-		void			setBrokerFunction(std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)> func);
-		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)> brokerFunction() const { return m_brokerFunc;  }
+		void			setBrokerFunction(std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)> func);
+		std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)> brokerFunction() const { return m_brokerFunc;  }
 
 		//.____ Control ________________________________________________________
 
@@ -150,7 +150,7 @@ namespace wg
 		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
 		bool		_updateGeo(int handleMovement=0);
-		QPix		_defaultBroker(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement);
+		MU		_defaultBroker(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement);
 
 		// Overloaded from Widget
 
@@ -204,7 +204,7 @@ namespace wg
 		State			m_handleState;
 		int				m_handlePressOfs;
 
-		std::function<QPix(Widget * pFirst, Widget * pSecond, QPix totalLength, float splitFactor, QPix handleMovement)>	m_brokerFunc;
+		std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)>	m_brokerFunc;
 	};
 
 }

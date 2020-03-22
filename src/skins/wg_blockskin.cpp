@@ -42,7 +42,7 @@ namespace wg
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, BorderI frame )
 	{
-        BorderI pixelFrame = (frame*pSurface->pixelQuartersPerPoint()) / 4;
+        BorderI pixelFrame = (frame*pSurface->qpixPerPoint()) / 4;
         
 		if (pSurface == nullptr || pixelFrame.width() >= pSurface->size().w || pixelFrame.height() >= pSurface->size().h  )
 			return nullptr;
@@ -56,8 +56,8 @@ namespace wg
 			return nullptr;
 
 		SizeI surfSize = pSurface->size();
-        BorderI pixelFrame = frame*pSurface->pixelQuartersPerPoint() / 4;
-        RectI pixelBlock = block*pSurface->pixelQuartersPerPoint() / 4;
+        BorderI pixelFrame = frame*pSurface->qpixPerPoint() / 4;
+        RectI pixelBlock = block*pSurface->qpixPerPoint() / 4;
         
 		if( pixelFrame.width() >= surfSize.w || pixelFrame.height() >= surfSize.h ||
 			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
@@ -74,9 +74,9 @@ namespace wg
         // Get pixel values
         
 		SizeI surfSize = pSurface->size();
-        RectI firstBlock = _firstBlock*pSurface->pixelQuartersPerPoint() / 4;
-        BorderI frame = _frame*pSurface->pixelQuartersPerPoint() / 4;
-        int   spacing = _spacing*pSurface->pixelQuartersPerPoint() / 4;
+        RectI firstBlock = _firstBlock*pSurface->qpixPerPoint() / 4;
+        BorderI frame = _frame*pSurface->qpixPerPoint() / 4;
+        int   spacing = _spacing*pSurface->qpixPerPoint() / 4;
         
         // Check so all blocks fit
         
@@ -107,8 +107,8 @@ namespace wg
 
 		SizeI	surfSize = pSurface->size();
 		int		nBlocks = stateBlocks.size();
-		BorderI frame = _frame * pSurface->pixelQuartersPerPoint() / 4;
-		int   spacing = _spacing * pSurface->pixelQuartersPerPoint() / 4;
+		BorderI frame = _frame * pSurface->qpixPerPoint() / 4;
+		int   spacing = _spacing * pSurface->qpixPerPoint() / 4;
 
 		// Check so blocks fit evenly
 
@@ -200,7 +200,7 @@ namespace wg
 
 	void BlockSkin::setBlock(CoordI ofs)
 	{
-        ofs = ofs*m_pSurface->pixelQuartersPerPoint() / 4;
+        ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
 		m_stateBlocks[0] = ofs;
 		m_stateBlockMask = 1;
@@ -210,7 +210,7 @@ namespace wg
 
 	void BlockSkin::setBlock(State state, CoordI ofs)
 	{
-        ofs = ofs*m_pSurface->pixelQuartersPerPoint() / 4;
+        ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
         int i = _stateToIndex(state);
 
@@ -223,8 +223,8 @@ namespace wg
 
 	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation, int _spacing, CoordI _blockStartOfs )
 	{
-        CoordI blockStartOfs = _blockStartOfs*m_pSurface->pixelQuartersPerPoint() / 4;
-        int spacing = _spacing*m_pSurface->pixelQuartersPerPoint() / 4;
+        CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
+        int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
 
 		CoordI pitch = orientation == Orientation::Horizontal ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
 
@@ -243,7 +243,7 @@ namespace wg
 
 	RectI BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->pixelQuartersPerPoint() };
+		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
 	}
 
 	//____ setTint() __________________________________________________________
@@ -309,14 +309,14 @@ namespace wg
 
 	void BlockSkin::setBlockSize(SizeI size)
 	{
-		m_dimensions = size*m_pSurface->pixelQuartersPerPoint() / 4;
+		m_dimensions = size*m_pSurface->qpixPerPoint() / 4;
 	}
 
 	//____ setFrame() ____________________________________________________________
 
 	void BlockSkin::setFrame(BorderI frame)
 	{
-		m_frame = frame*m_pSurface->pixelQuartersPerPoint() / 4;
+		m_frame = frame*m_pSurface->qpixPerPoint() / 4;
 	}
 
 	//____ _render() _______________________________________________________________
@@ -335,7 +335,7 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( rawToPixels(_canvas), pointsToPixels(m_frame*4/m_pSurface->pixelQuartersPerPoint()), { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch( qpixToPixels(_canvas), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
@@ -346,7 +346,7 @@ namespace wg
 	SizeI BlockSkin::_minSize() const
 	{
 		SizeI content = pointsToRawAligned(m_contentPadding);
-		SizeI frame = pointsToRawAligned(m_frame*4/m_pSurface->pixelQuartersPerPoint());
+		SizeI frame = pointsToRawAligned(m_frame*4/m_pSurface->qpixPerPoint());
 		return SizeI::max( content, frame );
 	}
 
@@ -357,7 +357,7 @@ namespace wg
         //This takes the scale of the surface into account
         // Preferred size is to map each point of the surface to a pixel of the skinarea.
         
-        return ((m_dimensions*4)/m_pSurface->pixelQuartersPerPoint())*QPix::pixelQuartersPerPoint();
+        return ((m_dimensions*4)/m_pSurface->qpixPerPoint())*MU::qpixPerPoint();
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -365,7 +365,7 @@ namespace wg
 	SizeI BlockSkin::_sizeForContent( const SizeI contentSize ) const
 	{
 		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI min = pointsToRawAligned(m_frame*4/m_pSurface->pixelQuartersPerPoint());
+		SizeI min = pointsToRawAligned(m_frame*4/m_pSurface->qpixPerPoint());
 
 		return SizeI::max(sz, min);
 	}

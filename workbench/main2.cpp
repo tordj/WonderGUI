@@ -131,7 +131,7 @@ int main(int argc, char** argv)
 	float pixX = toPixel(float(a.x));
 	float pixY = toPixel(float(a.y));
 
-	CoordI d(QPix::fromPixel(pixX), QPix::fromPixel(pixY));
+	CoordI d(MU::fromPixel(pixX), MU::fromPixel(pixY));
 
 
 	CoordI cI1 = Coord(1.f, 2.f);
@@ -1311,7 +1311,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				pInput->setPointer(pRoot, { QPix::fromPixel(e.motion.x), QPix::fromPixel(e.motion.y) });
+				pInput->setPointer(pRoot, { MU::fromPixel(e.motion.x), MU::fromPixel(e.motion.y) });
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:
@@ -1394,10 +1394,10 @@ void updateWindowRects( const RootPanel_p& pRoot, SDL_Window * pWindow )
 
 	for( int i = 0 ; i < nRects ; i++ )
 	{
-		pSDLRects[i].x = pUpdatedRects[i].x.pixel;
-		pSDLRects[i].y = pUpdatedRects[i].y.pixel;
-		pSDLRects[i].w = pUpdatedRects[i].w.pixel;
-		pSDLRects[i].h = pUpdatedRects[i].h.pixel;
+		pSDLRects[i].x = pUpdatedRects[i].x.qpix/4;
+		pSDLRects[i].y = pUpdatedRects[i].y.qpix/4;
+		pSDLRects[i].w = pUpdatedRects[i].w.qpix/4;
+		pSDLRects[i].h = pUpdatedRects[i].h.qpix/4;
 	}
 
 	SDL_UpdateWindowSurfaceRects( pWindow, pSDLRects, nRects );

@@ -133,7 +133,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo = qpixToRaw(geometry);
+		m_placementGeo = MUToQpix(geometry);
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -145,7 +145,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo.setPos(qpixToRaw(ofs));
+		m_placementGeo.setPos(MUToQpix(ofs));
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -157,7 +157,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo.setSize(qpixToRaw(size));
+		m_placementGeo.setSize(MUToQpix(size));
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -169,7 +169,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo += qpixToRaw(ofs);
+		m_placementGeo += MUToQpix(ofs);
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -206,7 +206,7 @@ namespace wg
 		Slot * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_placementGeo = MUToQpix(geometry);
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 
@@ -242,7 +242,7 @@ namespace wg
 		Slot * pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_placementGeo = MUToQpix(geometry);
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 
@@ -279,7 +279,7 @@ namespace wg
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = qpixToRaw(geometry);
+		pSlot->m_placementGeo = MUToQpix(geometry);
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 

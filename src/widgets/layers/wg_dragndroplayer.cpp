@@ -192,7 +192,7 @@ namespace wg
 					case DragState::Picking:
 					{
 						CoordI total = pMsg->draggedTotalRaw();
-						if (abs(total.x) + abs(total.y) > m_dragStartTreshold*QPix::pixelQuartersPerPoint())
+						if (abs(total.x) + abs(total.y) > m_dragStartTreshold*MU::qpixPerPoint())
 						{
 							Coord pickOfs = pMsg->startPos() - m_pPicked->globalPos();
 							Base::msgRouter()->post(new DropPickMsg(m_pPicked, pickOfs, this, pMsg->modKeys(), pMsg->pointerPos()));
@@ -519,13 +519,13 @@ namespace wg
 
 		if( m_dragState == DragState::Dragging && !m_dragSlot._widget())
 		{
-			SizeI sz = qpixToRaw(m_pPicked->size());
+			SizeI sz = MUToQpix(m_pPicked->size());
 
 			auto pFactory = pDevice->surfaceFactory();
-			auto pCanvas = pFactory->createSurface(rawToPixels(sz),PixelFormat::BGRA_8);
+			auto pCanvas = pFactory->createSurface(qpixToPixels(sz),PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
-			RectI noClip(rawToPixels(sz));
+			RectI noClip(qpixToPixels(sz));
 
 			auto pOldClip   = pDevice->clipList();
 			int  nOldClip   = pDevice->clipListSize();

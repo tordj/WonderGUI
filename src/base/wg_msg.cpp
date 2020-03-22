@@ -561,7 +561,7 @@ namespace wg
 
 	CoordI DropPickMsg::dragWidgetPointerOfsRaw() const
 	{
-		return Util::qpixToRaw(m_dragWidgetPointerOfs);
+		return Util::MUToQpix(m_dragWidgetPointerOfs);
 	}
 
 	//____ DropProbeMsg ___________________________________________________
@@ -1124,27 +1124,27 @@ namespace wg
 
 	CoordI MouseDragMsg::draggedTotalRaw() const
 	{
-		return Util::qpixToRaw(m_pointerPos - m_startPos);
+		return Util::MUToQpix(m_pointerPos - m_startPos);
 	}
 
 	CoordI MouseDragMsg::draggedNowRaw() const
 	{
-		return Util::qpixToRaw( m_pointerPos - m_prevPos );
+		return Util::MUToQpix( m_pointerPos - m_prevPos );
 	}
 
 	CoordI MouseDragMsg::currPosRaw() const
 	{
-		return Util::qpixToRaw( m_pointerPos );
+		return Util::MUToQpix( m_pointerPos );
 	}
 
 	CoordI MouseDragMsg::startPosRaw() const
 	{
-		return Util::qpixToRaw(m_startPos);
+		return Util::MUToQpix(m_startPos);
 	}
 
 	CoordI MouseDragMsg::prevPosRaw() const
 	{
-		return Util::qpixToRaw(m_prevPos);
+		return Util::MUToQpix(m_prevPos);
 	}
 
 

@@ -66,7 +66,7 @@ namespace wg
 			void			setGeo(const Rect& geometry);
 
 			void			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
+			inline Coord	offset() const { return Util::qpixToMU(m_placementGeo.pos()); }
 
 			void			setSize(const Size& size);
 

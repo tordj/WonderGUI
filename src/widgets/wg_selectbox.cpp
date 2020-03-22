@@ -339,21 +339,21 @@ namespace wg
 
 			// Update entry height and listCanvas matchingHeight
 
-			int entryHeight = pixelsToRaw( pMapper->matchingHeight(pEntry, m_entryContentWidth) ) + entryPadding.h;
+			int entryHeight = pixelsToQpix( pMapper->matchingHeight(pEntry, m_entryContentWidth) ) + entryPadding.h;
 
 			pEntry->m_height = entryHeight;
 			m_listCanvasMatchingHeight += entryHeight;
 
 			// Update m_matchingHeight
 
-			int boxHeight = pixelsToRaw(pMapper->matchingHeight(pEntry, m_size.w - boxPadding.w)) + boxPadding.h;
+			int boxHeight = pixelsToQpix(pMapper->matchingHeight(pEntry, m_size.w - boxPadding.w)) + boxPadding.h;
 
 			if (boxHeight < m_matchingHeight)
 				m_matchingHeight = boxHeight;
 
 			// Update m_preferredSize and m_listCanvasPreferredSize
 
-			SizeI contentPreferred = pixelsToRaw(pMapper->preferredSize(pEntry));
+			SizeI contentPreferred = pixelsToQpix(pMapper->preferredSize(pEntry));
 			SizeI entryPreferred = contentPreferred + entryPadding;
 			SizeI boxPreferred = contentPreferred + boxPadding;
 
@@ -515,7 +515,7 @@ namespace wg
 
 	SizeI SelectBoxEntry::_textSize() const
 	{
-		return rawToPixels( SizeI( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPadding.height() ) );
+		return qpixToPixels( SizeI( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPadding.height() ) );
 	}
 
 	State SelectBoxEntry::_textState() const

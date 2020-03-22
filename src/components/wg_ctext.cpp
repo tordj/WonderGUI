@@ -107,35 +107,35 @@ namespace wg
 
 	SizeI CText::_preferredSize() const
 	{
-		return pixelsToRaw(_textMapper()->preferredSize(this));
+		return pixelsToQpix(_textMapper()->preferredSize(this));
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
 	int CText::_matchingWidth( int height ) const
 	{
-		return pixelsToRaw(_textMapper()->matchingWidth(this, rawToPixels(height)));
+		return pixelsToQpix(_textMapper()->matchingWidth(this, qpixToPixels(height)));
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
 	int CText::_matchingHeight( int width ) const
 	{
-		return pixelsToRaw(_textMapper()->matchingHeight(this, rawToPixels(width)));
+		return pixelsToQpix(_textMapper()->matchingHeight(this, qpixToPixels(width)));
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
 	int CText::_charAtPos( CoordI pos ) const
 	{
-		return _textMapper()->charAtPos(this,rawToPixels(pos));
+		return _textMapper()->charAtPos(this,qpixToPixels(pos));
 	}
 
 	//____ _charRect() ____________________________________________________________
 
 	RectI CText::_charRect( int charOfs ) const
 	{
-		return pixelsToRaw(_textMapper()->charRect(this, charOfs));
+		return pixelsToQpix(_textMapper()->charRect(this, charOfs));
 	}
 
 	//____ _charLine() ____________________________________________________________
@@ -162,21 +162,21 @@ namespace wg
 
 		SizeI oldSize = m_size;
 		m_size = size;
-		_textMapper()->onResized(this,rawToPixels(size), rawToPixels(oldSize));
+		_textMapper()->onResized(this,qpixToPixels(size), qpixToPixels(oldSize));
 	}
 
 	//_____ _render() _____________________________________________________________
 
 	void  CText::_render( GfxDevice * pDevice, const RectI& _canvas )
 	{
-		_textMapper()->render(this, pDevice, rawToPixels(_canvas));
+		_textMapper()->render(this, pDevice, qpixToPixels(_canvas));
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
 	RectI  CText::_rectForRange( int ofs, int length ) const
 	{
-		return rawToPixels(_textMapper()->rectForRange(this, ofs, length));
+		return qpixToPixels(_textMapper()->rectForRange(this, ofs, length));
 	}
 
 	//____ _tooltip() _______________________________________________________________
@@ -308,7 +308,7 @@ namespace wg
 
 	void CText::_mapperRequestRender(const RectI& rect)
 	{
-		_requestRender(pixelsToRaw(rect));
+		_requestRender(pixelsToQpix(rect));
 	}
 
 

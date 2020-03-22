@@ -47,17 +47,17 @@ namespace wg
 		inline FlexPos() {}
 
 		inline FlexPos( Origo _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
-		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(Util::qpixToRaw(_offset)) {}
+		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(Util::MUToQpix(_offset)) {}
 
 		inline FlexPos( CoordF _origo ) : origo(_origo) {}
-		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(Util::qpixToRaw(_offset)) {}
+		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(Util::MUToQpix(_offset)) {}
 
 		inline FlexPos( float _origoX, float _origoY ) : origo(_origoX, _origoY) {}
-		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(Util::qpixToRaw(_offset)) {}
+		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(Util::MUToQpix(_offset)) {}
 
 		//.____ Geometry _______________________________________________________
 
-		Coord	posX( Size canvas ) const { return Util::rawToQpix( rawPos( Util::qpixToRaw(canvas))); }
+		Coord	posX( Size canvas ) const { return Util::qpixToMU( rawPos( Util::MUToQpix(canvas))); }
 		CoordI	rawPos(SizeI canvas) const { return CoordI((((int)(origo.x*canvas.w + 0.5f)) + offset.x)&0xFFFFFFFC, (((int)(origo.y*canvas.h + 0.5f)) + offset.y)&0xFFFFFFFC); }
 
 		//.____ Properties _____________________________________________________
@@ -132,7 +132,7 @@ namespace wg
 			bool			setGeo(const Rect& geometry);
 
 			bool			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return Util::rawToQpix(m_placementGeo.pos()); }
+			inline Coord	offset() const { return Util::qpixToMU(m_placementGeo.pos()); }
 
 			bool			setSize(const Size& size);
 
@@ -145,9 +145,9 @@ namespace wg
 
 			//
 
-			inline Coord	pos() const { return Util::rawToQpix(m_realGeo.pos()); }
-			inline Size		size() const { return Util::rawToQpix(m_realGeo.size()); }
-			inline Rect		geo() const { return Util::rawToQpix(m_realGeo); }
+			inline Coord	pos() const { return Util::qpixToMU(m_realGeo.pos()); }
+			inline Size		size() const { return Util::qpixToMU(m_realGeo.size()); }
+			inline Rect		geo() const { return Util::qpixToMU(m_realGeo); }
 
 			//.____ Operators __________________________________________
 

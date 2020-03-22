@@ -49,7 +49,7 @@ namespace wg
 
 	Border ExtendedSkin::contentPaddingAdapted() const
 	{
-		return Util::rawToQpix(_contentPadding());
+		return Util::qpixToMU(_contentPadding());
 	}
 
 

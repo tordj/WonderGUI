@@ -62,13 +62,13 @@ namespace wg
 
 		inline bool			setScale(float scaleFactor) { return _setScale(scaleFactor); }
 		inline void			setOrigo(Origo origo) { _setOrigo(origo); }
-		inline void			setPadding(Border padding) { _setPadding(Util::qpixToRaw(padding)); }
+		inline void			setPadding(Border padding) { _setPadding(Util::MUToQpix(padding)); }
 		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
 		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
 
 		inline float		scale() const { return _scale(); }
 		inline Origo		origo() const { return _origo(); }
-		inline Border		padding() const { return Util::rawToQpix(_padding()); }
+		inline Border		padding() const { return Util::qpixToMU(_padding()); }
 		inline bool			overlap() const { return _overlap(); }
 		inline Skin_p		skin() const { return _skin(); }
 

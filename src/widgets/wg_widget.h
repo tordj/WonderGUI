@@ -100,8 +100,8 @@ namespace wg
 		inline Coord		toGlobal( const Coord& coord ) const;
 		inline Coord		toLocal( const Coord& coord ) const;
 
-		inline QPix			matchingHeight( QPix width ) const;
-		inline QPix			matchingWidth( QPix height ) const;
+		inline MU			matchingHeight( MU width ) const;
+		inline MU			matchingWidth( MU height ) const;
 
 		inline Size			preferredSize() const;
 		inline Size			minSize() const;
@@ -348,7 +348,7 @@ namespace wg
 	Coord Widget::pos() const
 	{
 		if( m_pHolder )
-			return Util::rawToQpix(m_pHolder->_childPos( m_pSlot ));
+			return Util::qpixToMU(m_pHolder->_childPos( m_pSlot ));
 		return Coord(0,0);
 	}
 
@@ -363,7 +363,7 @@ namespace wg
 	 */
 	Size Widget::size() const
 	{
-		return Util::rawToQpix(m_size);
+		return Util::qpixToMU(m_size);
 	}
 
 	//____ geo() __________________________
@@ -378,7 +378,7 @@ namespace wg
 	Rect Widget::geo() const
 	{
 		if( m_pHolder )
-			return Rect(Util::rawToQpix(m_pHolder->_childPos( m_pSlot )),Util::rawToQpix(m_size));
+			return Rect(Util::qpixToMU(m_pHolder->_childPos( m_pSlot )),Util::qpixToMU(m_size));
 		return Rect(0,0,m_size);
 	}
 
@@ -392,7 +392,7 @@ namespace wg
 	 */
 	Coord Widget::globalPos() const
 	{
-		return Util::rawToQpix(_globalPos());
+		return Util::qpixToMU(_globalPos());
 	}
 
 	//____ globalGeo() __________________________
@@ -406,7 +406,7 @@ namespace wg
 	 */
 	Rect Widget::globalGeo() const
 	{
-		return Util::rawToQpix(_globalGeo());
+		return Util::qpixToMU(_globalGeo());
 	}
 
 	//____ toGlobal() __________________________
@@ -427,7 +427,7 @@ namespace wg
 
 	Coord Widget::toGlobal(const Coord& coord) const
 	{
-		return Util::rawToQpix(_toGlobal(Util::qpixToRaw(coord)) );
+		return Util::qpixToMU(_toGlobal(Util::MUToQpix(coord)) );
 	}
 
 	//____ toLocal() ____________________________________________________________
@@ -448,7 +448,7 @@ namespace wg
 
 	Coord Widget::toLocal(const Coord& coord) const
 	{
-		return Util::rawToQpix(_toLocal(Util::qpixToRaw(coord)));
+		return Util::qpixToMU(_toLocal(Util::MUToQpix(coord)));
 	}
 
 
@@ -466,9 +466,9 @@ namespace wg
 	 * @return The preferred height for the given width.
 	 */
 
-	QPix Widget::matchingHeight(QPix width) const
+	MU Widget::matchingHeight(MU width) const
 	{
-		return QPix::fromRaw(_matchingHeight(width.raw));
+		return MU::fromRaw(_matchingHeight(width.qpix));
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -485,9 +485,9 @@ namespace wg
 	 * @return The preferred width for the given height.
 	 */
 
-	QPix Widget::matchingWidth(QPix height) const
+	MU Widget::matchingWidth(MU height) const
 	{
-		return QPix::fromRaw(_matchingWidth(height.raw));
+		return MU::fromRaw(_matchingWidth(height.qpix));
 	}
 
 	//____ preferredSize() ________________________________________________________
@@ -510,7 +510,7 @@ namespace wg
 
 	Size Widget::preferredSize() const
 	{
-		return Util::rawToQpix(_preferredSize());
+		return Util::qpixToMU(_preferredSize());
 	}
 
 
@@ -532,7 +532,7 @@ namespace wg
 
 	Size Widget::minSize() const
 	{
-		return Util::rawToQpix(_minSize());
+		return Util::qpixToMU(_minSize());
 	}
 
 	//____ maxSize() ______________________________________________________________
@@ -553,7 +553,7 @@ namespace wg
 
 	Size Widget::maxSize() const
 	{
-		return Util::rawToQpix(_maxSize());
+		return Util::qpixToMU(_maxSize());
 	}
 
 
@@ -581,7 +581,7 @@ namespace wg
 
 	bool Widget::markTest(const Coord& ofs)
 	{
-		return _markTest(Util::qpixToRaw(ofs));
+		return _markTest(Util::MUToQpix(ofs));
 	}
 
 

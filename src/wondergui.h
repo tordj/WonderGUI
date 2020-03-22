@@ -68,7 +68,7 @@
 #include <wg_textstyle.h>
 #include <wg_gfxstreamplug.h>
 #include <wg_inputhandler.h>
-#include <wg_qpix.h>
+#include <wg_mu.h>
 #include <wg_anim.h>
 #include <wg_color.h>
 #include <wg_bitmapfont.h>

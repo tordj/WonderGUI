@@ -166,7 +166,7 @@ namespace wg
 
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
-		RectI canvas = rawToPixels(_canvas);
+		RectI canvas = qpixToPixels(_canvas);
 
 		if (m_blendMode != oldBlendMode )
 			pDevice->setBlendMode(m_blendMode);

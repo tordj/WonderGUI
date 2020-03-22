@@ -24,7 +24,7 @@
    TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with Pen).
 */
 
-#include <wg_qpix.h>
+#include <wg_mu.h>
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
@@ -155,7 +155,7 @@ namespace wg
 			if( size == m_ftCharSize )
 				return true;
 
-			int ftSize = (size + m_sizeOffset)*QPix::pixelQuartersPerPoint()/4;
+			int ftSize = (size + m_sizeOffset)*MU::qpixPerPoint()/4;
 
 			// Sanity check
 

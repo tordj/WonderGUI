@@ -26,7 +26,7 @@
 //=============================================================================
 
 #include <wg_types.h>
-#include <wg_qpix.h>
+#include <wg_mu.h>
 
 #include <utility>
 #include <cstdlib>
@@ -40,19 +40,19 @@ namespace wg
 
 	typedef	CoordT<int>		CoordI;
 	typedef CoordT<float>	CoordF;
-	typedef CoordT<QPix>	Coord;
+	typedef CoordT<MU>		Coord;
 
 	typedef BorderT<int>	BorderI;
 	typedef BorderT<float>	BorderF;
-	typedef BorderT<QPix>	Border;
+	typedef BorderT<MU>		Border;
 
 	typedef	SizeT<int>		SizeI;
 	typedef SizeT<float>	SizeF;
-	typedef SizeT<QPix>		Size;
+	typedef SizeT<MU>		Size;
 
 	typedef	RectT<int>		RectI;
 	typedef RectT<float>	RectF;
-	typedef RectT<QPix>		Rect;
+	typedef RectT<MU>		Rect;
 
 
 	/**
@@ -62,11 +62,11 @@ namespace wg
 
 		Specializations include:
 
-		- __Coord__		- coordinate with QPix values
+		- __Coord__		- coordinate with MU values
 		- __CoordI__	- coordinate with integer values
 		- __CoordF__	- coordinate with float values
 
-		A Coord always holds a coordinate in WonderGUI's internal QPix format, allowing it to be converted to points
+		A Coord always holds a coordinate in WonderGUI's internal MU format, allowing it to be converted to points
 		or pixels without losing precision, while CoordI and CoordF just holds a coordinate value which could be either points or pixels.
 
 		Casting between Coord and any of the other two is done implicitly and as points. So if a CoordI is assigned the value
@@ -75,7 +75,7 @@ namespace wg
 
 		Casting between CoordI and CoordF can be done explicitly.
 
-		For a better explanation of the WonderGUI coordinate system and how QPix, points and pixels relate to each other, you should
+		For a better explanation of the WonderGUI coordinate system and how MU, points and pixels relate to each other, you should
 		read the coordinate system primer of the tutorial.
 
 	**/

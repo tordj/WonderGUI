@@ -46,15 +46,15 @@ namespace wg
 
 		//.____ Misc __________________________________________________
 
-		QPix setItemLengths( SizeBrokerItem * pItems, int nItems, QPix totalLength ) const override;
-		QPix setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
+		MU setItemLengths( SizeBrokerItem * pItems, int nItems, MU totalLength ) const override;
+		MU setPreferredLengths( SizeBrokerItem * pItems, int nItems ) const override;
 		bool mayAlterPreferredLengths() const override;
 
 	protected:
 		UniformSizeBroker() {};
 		virtual ~UniformSizeBroker() {};
 
-		QPix    _findLongestUnified( SizeBrokerItem * pItems, int nItems ) const;
+		MU    _findLongestUnified( SizeBrokerItem * pItems, int nItems ) const;
 	};
 
 
