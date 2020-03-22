@@ -41,37 +41,40 @@ namespace wg
 	typedef	WeakComponentPtr<CGfxInStream>		CGfxInStream_wp;
 
 
-	//____ CGfxInStreamHolder ___________________________________________________
-
-	class CGfxInStreamHolder /** @private */
-	{
-	public:
-
-		//TODO: Add const version?
-		virtual Object * _object() = 0;
-		virtual const Object * _object() const = 0;
-
-		virtual bool	_hasChunk() = 0;
-		virtual GfxStream::Header	_peekChunk() = 0;	// Is only called if _hasChunk() has returned true.
-
-		virtual char	_pullChar() = 0;
-		virtual short	_pullShort() = 0;
-		virtual int		_pullInt() = 0;
-		virtual float	_pullFloat() = 0;
-		virtual void	_pullBytes(int nBytes, char * pBytes) = 0;
-		virtual void	_skipBytes(int nBytes) = 0;
-
-		virtual bool	_isStreamOpen() = 0;
-		virtual void	_closeStream() = 0;
-		virtual bool	_reopenStream() = 0;
-	};
-
 	//____ CGfxInStream ________________________________________________________
 
 	class CGfxInStream : public Component, GfxStream
 	{
 	public:
-		CGfxInStream(CGfxInStreamHolder * pHolder) : m_pHolder(pHolder) {};
+
+		//____ Holder ___________________________________________________
+
+		class Holder /** @private */
+		{
+		public:
+
+			//TODO: Add const version?
+			virtual Object * _object() = 0;
+			virtual const Object * _object() const = 0;
+
+			virtual bool	_hasChunk() = 0;
+			virtual GfxStream::Header	_peekChunk() = 0;	// Is only called if _hasChunk() has returned true.
+
+			virtual char	_pullChar() = 0;
+			virtual short	_pullShort() = 0;
+			virtual int		_pullInt() = 0;
+			virtual float	_pullFloat() = 0;
+			virtual void	_pullBytes(int nBytes, char * pBytes) = 0;
+			virtual void	_skipBytes(int nBytes) = 0;
+
+			virtual bool	_isStreamOpen() = 0;
+			virtual void	_closeStream() = 0;
+			virtual bool	_reopenStream() = 0;
+		};
+
+
+
+		CGfxInStream(Holder * pHolder) : m_pHolder(pHolder) {};
 
 		//.____ Identification _________________________________________________
 
@@ -88,6 +91,12 @@ namespace wg
 
 		bool				isEmpty();
 		GfxStream::Header	peek();
+
+		//.____ Misc __________________________________________________
+
+		inline CGfxInStream_p	ptr() { return CGfxInStream_p(this); }
+
+		//.____ Operators _____________________________________________
 
 		CGfxInStream& operator>> (Header& header);
 
@@ -114,15 +123,12 @@ namespace wg
 		CGfxInStream& operator>> (int[2][2]);
 		CGfxInStream& operator>> (float[2][2]);
 
-		//.____ Misc __________________________________________________
-
-		inline CGfxInStream_p	ptr() { return CGfxInStream_p(this); }
 
 	protected:
-		Object *				_object() override { return m_pHolder->_object(); }
-		const Object *			_object() const override { return m_pHolder->_object(); }
+		Object *		_object() override { return m_pHolder->_object(); }
+		const Object *	_object() const override { return m_pHolder->_object(); }
 
-		CGfxInStreamHolder * 	m_pHolder;
+		Holder * 		m_pHolder;
 	};
 
 

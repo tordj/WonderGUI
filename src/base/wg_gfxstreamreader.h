@@ -38,7 +38,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamReader>	GfxStreamReader_p;
 	typedef	WeakPtr<GfxStreamReader>	GfxStreamReader_wp;
 
-	class GfxStreamReader : public Object, protected CGfxInStreamHolder
+	class GfxStreamReader : public Object, protected CGfxInStream::Holder
 	{
 	public:
 

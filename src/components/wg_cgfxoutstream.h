@@ -40,33 +40,35 @@ namespace wg
 	typedef	WeakComponentPtr<CGfxOutStream>		CGfxOutStream_wp;
 
 
-	//____ CGfxOutStreamHolder ___________________________________________________
-
-	class CGfxOutStreamHolder /** @private */
-	{
-	public:
-		virtual Object * _object() = 0;
-		virtual const Object * _object() const = 0;
-
-		virtual void	_flushStream() = 0;
-		virtual void	_reserveStream(int bytes) = 0;
-		virtual void	_closeStream() = 0;
-		virtual bool	_reopenStream() = 0;
-		virtual bool	_isStreamOpen() = 0;
-
-		virtual void	_pushChar(char c) = 0;
-		virtual void	_pushShort(short s) = 0;
-		virtual void	_pushInt(int i) = 0;
-		virtual void	_pushFloat(float f) = 0;
-		virtual void	_pushBytes(int nBytes, char * pBytes) = 0;
-	};
-
 	//____ CGfxOutStream __________________________________________________________
 
 	class CGfxOutStream : public Component, public GfxStream
 	{
 	public:
-		CGfxOutStream(CGfxOutStreamHolder * pHolder);
+
+		//____ Holder ___________________________________________________
+
+		class Holder /** @private */
+		{
+		public:
+			virtual Object * _object() = 0;
+			virtual const Object * _object() const = 0;
+
+			virtual void	_flushStream() = 0;
+			virtual void	_reserveStream(int bytes) = 0;
+			virtual void	_closeStream() = 0;
+			virtual bool	_reopenStream() = 0;
+			virtual bool	_isStreamOpen() = 0;
+
+			virtual void	_pushChar(char c) = 0;
+			virtual void	_pushShort(short s) = 0;
+			virtual void	_pushInt(int i) = 0;
+			virtual void	_pushFloat(float f) = 0;
+			virtual void	_pushBytes(int nBytes, char * pBytes) = 0;
+		};
+
+
+		CGfxOutStream(Holder * pHolder);
 
 		enum Command
 		{
@@ -85,6 +87,15 @@ namespace wg
 		inline void		close() { m_pHolder->_closeStream(); }
 		inline bool		isOpen() { return m_pHolder->_isStreamOpen(); }
 		inline bool		reopen() { return m_pHolder->_reopenStream(); }
+
+		//.____ Misc __________________________________________________
+
+		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
+
+		short			allocObjectId();
+		void			freeObjectId(short id);
+
+		//.____ Operators _____________________________________________________
 
 		CGfxOutStream&	operator<< (Header);
 		CGfxOutStream&	operator<< (int16_t);
@@ -111,14 +122,6 @@ namespace wg
 		CGfxOutStream&	operator<< (const float[2][2]);
 
 
-
-		//.____ Misc __________________________________________________
-
-		inline CGfxOutStream_p	ptr() { return CGfxOutStream_p(this); }
-
-		short			allocObjectId();
-		void			freeObjectId(short id);
-
 	protected:
 		Object *				_object() override { return m_pHolder->_object(); }
 		const Object *			_object() const  override { return m_pHolder->_object(); }
@@ -130,7 +133,7 @@ namespace wg
 		uint8_t					m_freeIdStackSize;
 
 
-		CGfxOutStreamHolder * 	m_pHolder;
+		Holder * 	m_pHolder;
 	};
 
 

@@ -35,7 +35,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamWriter>	GfxStreamWriter_p;
 	typedef	WeakPtr<GfxStreamWriter>	GfxStreamWriter_wp;
 
-	class GfxStreamWriter : public Object, protected CGfxOutStreamHolder
+	class GfxStreamWriter : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 

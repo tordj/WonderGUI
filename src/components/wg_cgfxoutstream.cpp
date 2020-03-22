@@ -30,7 +30,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________
 
-	CGfxOutStream::CGfxOutStream(CGfxOutStreamHolder * pHolder) :
+	CGfxOutStream::CGfxOutStream(CGfxOutStream::Holder * pHolder) :
 		m_pHolder(pHolder),
 		m_idCounter(1),
 		m_pFreeIdStack(nullptr),

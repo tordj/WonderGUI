@@ -34,7 +34,7 @@ namespace wg
 	typedef	StrongPtr<GfxStreamPlug>	GfxStreamPlug_p;
 	typedef	WeakPtr<GfxStreamPlug>		GfxStreamPlug_wp;
 
-	class GfxStreamPlug : public Object, protected CGfxOutStreamHolder
+	class GfxStreamPlug : public Object, protected CGfxOutStream::Holder
 	{
 	public:
 
@@ -68,7 +68,7 @@ namespace wg
 		GfxStreamPlug( int capacity );
 		~GfxStreamPlug();
 
-		class OutStreamProxy : public CGfxInStreamHolder
+		class OutStreamProxy : public CGfxInStream::Holder
 		{
 		public:
 			Object *	_object() override;
