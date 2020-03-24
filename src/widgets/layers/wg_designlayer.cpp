@@ -34,6 +34,7 @@
 
 #include <wg_cstaticslotvector.impl.h>
 
+#include <string>
 
 namespace wg
 {
@@ -612,13 +613,13 @@ namespace wg
 		// Id
 
 		{
-			char buffer[16];
+//			char buffer[16];
 
 			auto pIdLabel = TextDisplay::create();
 			pIdLabel->text.set("id: ");
 
 			auto pId = TextDisplay::create();
-			pId->text.set(itoa(pWidget->id(), buffer, 10));
+			pId->text.set(std::to_string(pWidget->id()));
 
 			pHeaderColumn->slots << pIdLabel;
 			pValueColumn->slots << pId;

@@ -16,6 +16,8 @@
 		17F41C0822536C6B008D1DE7 /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */; };
 		17F41C0A22536C6B008D1DE7 /* libgfxdevice_stream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */; };
 		17F41C0C22536C6B008D1DE7 /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */; };
+		B3B75A4C242A798700036988 /* libfont_freetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3B75A4B242A798700036988 /* libfont_freetype.a */; };
+		B3B75A4E242A7A5700036988 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3B75A4D242A7A2300036988 /* libfreetype.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -42,6 +44,8 @@
 		17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_stream.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17F41C0B22536C6B008D1DE7 /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3B75A4B242A798700036988 /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		B3B75A4D242A7A2300036988 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../../../usr/local/Cellar/freetype/2.10.1/lib/libfreetype.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,6 +55,8 @@
 			files = (
 				17F41C0622536C6B008D1DE7 /* libgfxdevice_opengl.a in Frameworks */,
 				17F41C0822536C6B008D1DE7 /* libgfxdevice_software.a in Frameworks */,
+				B3B75A4E242A7A5700036988 /* libfreetype.a in Frameworks */,
+				B3B75A4C242A798700036988 /* libfont_freetype.a in Frameworks */,
 				17F41C0A22536C6B008D1DE7 /* libgfxdevice_stream.a in Frameworks */,
 				17F41C0C22536C6B008D1DE7 /* libWonderGUI.a in Frameworks */,
 				17F41C03225369A5008D1DE7 /* SDL2.framework in Frameworks */,
@@ -86,6 +92,8 @@
 		17F41BFC225366DA008D1DE7 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3B75A4D242A7A2300036988 /* libfreetype.a */,
+				B3B75A4B242A798700036988 /* libfont_freetype.a */,
 				17F41C0522536C6B008D1DE7 /* libgfxdevice_opengl.a */,
 				17F41C0722536C6B008D1DE7 /* libgfxdevice_software.a */,
 				17F41C0922536C6B008D1DE7 /* libgfxdevice_stream.a */,
@@ -274,6 +282,10 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../../src/**";
 			};
@@ -289,6 +301,10 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = "";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.1/lib,
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				USER_HEADER_SEARCH_PATHS = "../../../src/**";
 			};
