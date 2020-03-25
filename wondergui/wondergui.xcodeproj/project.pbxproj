@@ -229,6 +229,8 @@
 		17E03D7D23D9F3AF00B0A3D8 /* wg3_extendedskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */; };
 		17E03D7E23D9F3AF00B0A3D8 /* wg3_extendedskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */; };
 		17E03D7F23D9F3AF00B0A3D8 /* wg3_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */; };
+		B3B75A53242A7AEC00036988 /* wg_pianokeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */; };
+		B3B75A54242A7AEC00036988 /* wg_pianokeyboard.h in Headers */ = {isa = PBXBuildFile; fileRef = B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -455,6 +457,8 @@
 		17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_extendedskin.h; path = ../framework/skins/wg3_extendedskin.h; sourceTree = "<group>"; };
 		17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_extendedskin.cpp; path = ../framework/skins/wg3_extendedskin.cpp; sourceTree = "<group>"; };
 		17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_colorskin.cpp; path = ../framework/skins/wg3_colorskin.cpp; sourceTree = "<group>"; };
+		B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_pianokeyboard.cpp; path = ../framework/wg_pianokeyboard.cpp; sourceTree = "<group>"; };
+		B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_pianokeyboard.h; path = ../framework/wg_pianokeyboard.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -488,6 +492,8 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
+				B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */,
+				B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */,
 				170768BA23FEB54100CAAAED /* fonts */,
 				17E03D6323D9F39C00B0A3D8 /* skins */,
 				17E03D2023D9F34900B0A3D8 /* base */,
@@ -781,6 +787,7 @@
 				170F7C5B2200773200B70B56 /* wg_widget.h in Headers */,
 				170F7C2B2200773200B70B56 /* wg_slider.h in Headers */,
 				170768E123FED09000CAAAED /* wg3_char.h in Headers */,
+				B3B75A54242A7AEC00036988 /* wg_pianokeyboard.h in Headers */,
 				170F7B752200773200B70B56 /* wg_container.h in Headers */,
 				170F7B7E2200773200B70B56 /* wg_colorset.h in Headers */,
 				170F7BCC2200773200B70B56 /* wg_hook.h in Headers */,
@@ -987,6 +994,7 @@
 				170F7C452200773200B70B56 /* wg_button.cpp in Sources */,
 				17E03D7E23D9F3AF00B0A3D8 /* wg3_extendedskin.cpp in Sources */,
 				170768EB23FED09000CAAAED /* wg3_string.cpp in Sources */,
+				B3B75A53242A7AEC00036988 /* wg_pianokeyboard.cpp in Sources */,
 				17E03D5C23D9F37D00B0A3D8 /* wg3_nullgfxdevice.cpp in Sources */,
 				170F7C3A2200773200B70B56 /* wg_gfxanim.cpp in Sources */,
 				170F7B902200773200B70B56 /* wg_text.cpp in Sources */,

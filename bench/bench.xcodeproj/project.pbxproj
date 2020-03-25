@@ -14,6 +14,7 @@
 		1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB52200829800B70B56 /* libwondergui.a */; };
 		17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316D23A0E33A006F2ED3 /* SDL2.framework */; };
 		17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316F23A0E379006F2ED3 /* SDL2_image.framework */; };
+		B3B75A50242A7AB100036988 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3B75A4F242A7A8F00036988 /* libfreetype.a */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		170F7CB52200829800B70B56 /* libwondergui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwondergui.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17BB316D23A0E33A006F2ED3 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		17BB316F23A0E379006F2ED3 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		B3B75A4F242A7A8F00036988 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../usr/local/Cellar/freetype/2.10.1/lib/libfreetype.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,6 +38,7 @@
 			files = (
 				1797BB1423D9F10900CDB5F2 /* libwg_software.a in Frameworks */,
 				1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */,
+				B3B75A50242A7AB100036988 /* libfreetype.a in Frameworks */,
 				17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */,
 				17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */,
 			);
@@ -76,6 +79,7 @@
 		170F7CB22200829800B70B56 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				B3B75A4F242A7A8F00036988 /* libfreetype.a */,
 				17BB316F23A0E379006F2ED3 /* SDL2_image.framework */,
 				17BB316D23A0E33A006F2ED3 /* SDL2.framework */,
 				170F7CB32200829800B70B56 /* libwg_software.a */,
@@ -284,21 +288,25 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
-					/Users/tord/Workspace/wg2/Framework,
-					/Users/tord/Workspace/wg2/Framework/wg_soft,
-					/Users/tord/Workspace/wg2,
-					/Users/tord/Workspace/wg2/Framework/opengl,
-					/Users/tord/Workspace/wg2/Framework/base,
-					/Users/tord/Workspace/wg2/Framework/skins,
-					/Users/tord/Workspace/wg2/Framework/components,
-					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
-					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
-					/Users/tord/Workspace/wg2/Framework/fonts/freetype,
+					../Framework,
+					../Framework/wg_soft,
+					../,
+					../Framework/opengl,
+					../Framework/base,
+					../Framework/skins,
+					../Framework/components,
+					../Framework/gfxdevices/opengl,
+					../Framework/gfxdevices/software,
+					../Framework/fonts/freetype,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.1/lib,
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -326,21 +334,25 @@
 					"$(LOCAL_LIBRARY_DIR)/Frameworks",
 				);
 				HEADER_SEARCH_PATHS = (
-					/Users/tord/Workspace/wg2/Framework,
-					/Users/tord/Workspace/wg2/Framework/wg_soft,
-					/Users/tord/Workspace/wg2,
-					/Users/tord/Workspace/wg2/Framework/opengl,
-					/Users/tord/Workspace/wg2/Framework/base,
-					/Users/tord/Workspace/wg2/Framework/skins,
-					/Users/tord/Workspace/wg2/Framework/components,
-					/Users/tord/Workspace/wg2/Framework/gfxdevices/opengl,
-					/Users/tord/Workspace/wg2/Framework/gfxdevices/software,
-					/Users/tord/Workspace/wg2/Framework/fonts/freetype,
+					../Framework,
+					../Framework/wg_soft,
+					../,
+					../Framework/opengl,
+					../Framework/base,
+					../Framework/skins,
+					../Framework/components,
+					../Framework/gfxdevices/opengl,
+					../Framework/gfxdevices/software,
+					../Framework/fonts/freetype,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.1/lib,
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
