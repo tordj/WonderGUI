@@ -26,7 +26,32 @@
 namespace wg
 {
 
-	//____ ptr() _______________________________________________________________
+	const TypeInfo	Component::TYPEINFO = { "Component", nullptr };
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& Component::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+
+	//____ isInstanceOf() _____________________________________________________
+
+	bool Component::isInstanceOf(const TypeInfo& _typeInfo) const
+	{
+		const TypeInfo* p = &typeInfo();
+
+		while (p != nullptr)
+		{
+			if (p == &_typeInfo)
+				return true;
+			p = _typeInfo.pSuperClass;
+		}
+		return false;
+	}
+
+	//____ ptr() ______________________________________________________________
 
 	/** @brief Get a pointer to this interface.
 	 *

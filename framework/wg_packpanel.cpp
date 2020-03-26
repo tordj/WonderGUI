@@ -1077,7 +1077,7 @@ void WgPackPanel::_refreshChildGeo()
                 // Todo adjust y,h so that it fits.
                 
                 int ascend = int(pGeo->h * p->m_baseline);
-                pGeo->y = baseLineOfs - ascend;
+                pGeo->y = contentRect.y + baseLineOfs - ascend;
                 p = p->Next();
                 pGeo++;
             }
@@ -1106,7 +1106,7 @@ void WgPackPanel::_refreshChildGeo()
                 // Todo adjust x,w so that it fits.
                 
                 int ascend = int(pGeo->w * p->m_baseline);
-                pGeo->x = baseLineOfs - ascend;
+                pGeo->x = contentRect.x + baseLineOfs - ascend;
                 p = p->Next();
                 pGeo++;
             }

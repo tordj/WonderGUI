@@ -179,8 +179,8 @@ WgKey WgBase::TranslateKey( int native_keycode )
 
 void WgBase::_setQuartersPerPoint( int quarterPixels )
 {
-    wg::QPix::s_pixelQuartersPerPoint = quarterPixels;
-    wg::QPix::s_scale = quarterPixels / 4.f;
+    wg::MU::s_qpixPerPoint = quarterPixels;
+    wg::MU::s_scale = quarterPixels / 4.f;
 }
 
 

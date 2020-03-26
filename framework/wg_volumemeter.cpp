@@ -215,8 +215,32 @@ void WgVolumeMeter::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			{
 				bool 	on = false;
 				
-				// NB: Hold is not implemented for Zero In Middle
-				if(m_bZeroInMiddle)
+                if(m_bTunerMode)
+                {
+                    // Tuner Mode: single dot is moving
+                    float id = d*(float)i;
+                    if(abs(m_fPeak - id) < d2)
+                        on = true;
+
+                    if(m_bTunerCorrect)
+                    {
+                        if((i == 0) || i == (m_nLEDs-1))
+                            on = true;
+                    }
+                    else if(i == 0 && m_fPeak < 0.5f)
+                    {
+                        on = true;
+                    }
+                    else if(i == (m_nLEDs-1) && m_fPeak > 0.5f)
+                    {
+                        on = true;
+                    }
+
+                    if(!m_bActive)
+                        on = false;
+                    
+                }
+                else if(m_bZeroInMiddle)    // NB: Hold is not implemented for Zero In Middle
 				{
 					float id = d*(float)i;
 
@@ -375,7 +399,13 @@ void WgVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
         else
             section = 2;
         
-        WgColor color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
+        WgColor color;
+        if(m_bTunerMode && (m_bTunerCorrect && ((i==0) || (i==(m_nLEDs-1)))))
+            color = m_TunerCorrectCol*m_LEDStates[i];
+        else if(m_bTunerMode && ((i==0) || (i==(m_nLEDs-1))))
+            color = m_TunerIndicatorCol*m_LEDStates[i];
+        else
+            color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
         pDevice->fill( ledRect, color);
 

@@ -236,13 +236,13 @@ wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
 {
     int pixelQuarters = (scale * 4) / 4096;
     
-    int globalPixelQuarters = wg::QPix::pixelQuartersPerPoint();
+    int globalPixelQuarters = wg::MU::qpixPerPoint();
     if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::rawToPixels(pSkin->_preferredSize());
+        return wg::Util::qpixToPixels(pSkin->_preferredSize());
     else
     {
         WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::rawToPixels(pSkin->_preferredSize());
+        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_preferredSize());
         WgBase::_setQuartersPerPoint(globalPixelQuarters);
         return ret;
     }

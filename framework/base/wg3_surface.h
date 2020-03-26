@@ -30,7 +30,6 @@
 #include <wg3_color.h>
 #include <wg3_pointers.h>
 #include <wg3_blob.h>
-#include <wg3_payload.h>
 
 namespace wg
 {
@@ -39,6 +38,10 @@ namespace wg
 	class Surface;
 	typedef	StrongPtr<Surface>	Surface_p;
 	typedef	WeakPtr<Surface>	Surface_wp;
+
+	class BasicPayload;
+	typedef	StrongPtr<BasicPayload>	BasicPayload_p;
+	typedef	WeakPtr<BasicPayload>	BasicPayload_wp;
 
 	//____ Surface ______________________________________________________________
 	/**
@@ -61,10 +64,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
-		static Surface_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		inline void         setId(int id);
 		inline int          id() const;
@@ -79,7 +80,7 @@ namespace wg
 		inline float        scale() const;
         
 		inline SizeI        pointSize() const;
-		inline int			pixelQuartersPerPoint() const;
+		inline int			qpixPerPoint() const;
         
 		//.____ Appearance ____________________________________________________
 
@@ -131,8 +132,8 @@ namespace wg
 
         //.____ Misc _________________________________________________________
         
-		inline void         setPayload(BasicPayload * pPayload);
-		inline BasicPayload_p payload() const;
+		void				setPayload(BasicPayload * pPayload);
+		BasicPayload_p		payload() const;
 
 	protected:
 		Surface( int flags );
@@ -160,7 +161,7 @@ namespace wg
         BasicPayload_p      m_pPayload;
         
         // This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
-        int                 m_pixelQuartersPerPoint = 4;
+        int                 m_qpixPerPoint = 4;
 	};
 
 	//____ setId() ____________________________________________________________
@@ -192,21 +193,21 @@ namespace wg
 
 	float Surface::scale() const 
 	{ 
-		return m_pixelQuartersPerPoint / 4.f; 
+		return m_qpixPerPoint / 4.f; 
 	}
 
 	//____ pointSize() ________________________________________________________
 
 	SizeI Surface::pointSize() const 
 	{ 
-		return (m_size * 4) / m_pixelQuartersPerPoint;
+		return (m_size * 4) / m_qpixPerPoint;
 	}
 
-	//____ pixelQuartersPerPoint() ____________________________________________
+	//____ qpixPerPoint() ____________________________________________
 
-	int Surface::pixelQuartersPerPoint() const 
+	int Surface::qpixPerPoint() const 
 	{ 
-		return m_pixelQuartersPerPoint; 
+		return m_qpixPerPoint; 
 	}
 
 	//____ scaleMode() ________________________________________________________
@@ -370,19 +371,6 @@ namespace wg
 			return m_lockRegion;
 	}
 
-	//____ setPayload() _______________________________________________________
-
-	void Surface::setPayload(BasicPayload * pPayload) 
-	{ 
-		m_pPayload = pPayload; 
-	}
-
-	//_____ payload() _________________________________________________________
-
-	BasicPayload_p Surface::payload() const
-	{
-		return m_pPayload; 
-	}
 
 	//==============================================================================
 

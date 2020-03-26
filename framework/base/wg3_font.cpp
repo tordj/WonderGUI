@@ -30,33 +30,13 @@
 namespace wg
 {
 
-	const char Font::CLASSNAME[] = {"Font"};
+	const TypeInfo Font::TYPEINFO = { "Font", &Object::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Font::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Font::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Font::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	Font_p Font::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Font_p( static_cast<Font*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ isMonochrome() ______________________________________________________

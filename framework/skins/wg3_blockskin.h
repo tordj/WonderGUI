@@ -53,10 +53,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
-		static BlockSkin_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 
 		//.____ Appearance _________________________________________________
@@ -78,10 +76,10 @@ namespace wg
 		Surface_p		surface() const { return m_pSurface; }
 
 		void			setBlockSize(SizeI size);
-		SizeI			blockSize() const { return m_dimensions*4/m_pSurface->pixelQuartersPerPoint(); }
+		SizeI			blockSize() const { return m_dimensions*4/m_pSurface->qpixPerPoint(); }
 
 		void			setFrame(BorderI frame);
-		BorderI			frame() const { return m_frame*4/m_pSurface->pixelQuartersPerPoint(); }
+		BorderI			frame() const { return m_frame*4/m_pSurface->qpixPerPoint(); }
 
 		//.____ Misc ____________________________________________________
 

@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char LambdaSkin::CLASSNAME[] = { "LambdaSkin" };
+	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
@@ -39,37 +39,34 @@ namespace wg
 		return LambdaSkin_p(new LambdaSkin());
 	}
 
-	//____ Constructor ________________________________________________________
+	LambdaSkin_p LambdaSkin::create(const Blueprint& blueprint)
+	{
+		return LambdaSkin_p(new LambdaSkin(blueprint));
+	}
+
+
+	//____ constructor ________________________________________________________
 
 	LambdaSkin::LambdaSkin()
 	{
 	}
 
-	//____ isInstanceOf() _____________________________________________________
-
-	bool LambdaSkin::isInstanceOf(const char * pClassName) const
+	LambdaSkin::LambdaSkin(const Blueprint& blueprint)
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
+		m_markTestFunc		= blueprint.markTestFunc;
+		m_minSize			= blueprint.minSize;
+		m_opacityTestFunc	= blueprint.opacityTestFunc;
+		m_bOpaque			= blueprint.opaque;
+		m_preferredSize		= blueprint.preferredSize;
+		m_renderFunc		= blueprint.renderFunc;
+		m_stateCompareFunc	= blueprint.stateCompareFunc;
 	}
 
-	//____ className() ________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	const char * LambdaSkin::className(void) const
+	const TypeInfo& LambdaSkin::typeInfo(void) const
 	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _____________________________________________________________
-
-	LambdaSkin_p LambdaSkin::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return LambdaSkin_p(static_cast<LambdaSkin*>(pObject));
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setMinSize() _______________________________________________________

@@ -37,9 +37,14 @@ public:
 	void			SetDirection( WgDirection direction );
     void            SetSidePadding( float padding ) { m_fSidePadding = padding; }
     void            SetZeroInMiddle(bool mb) { m_bZeroInMiddle = mb; }
+    void            SetTunerMode(bool mode) { m_bTunerMode = mode; }
     void            EnableFades(bool b) { m_bUseFades = b; }
 	WgSize			PreferredPixelSize() const;
-	
+    void            SetActive(bool b) { m_bActive = b; }
+
+    void            SetTunerColors(WgColor indicator, WgColor correct) { m_TunerIndicatorCol = indicator; m_TunerCorrectCol = correct; }
+    void            SetTunerCorrect(bool b) { if(b != m_bTunerCorrect) { _requestRender(); } m_bTunerCorrect = b; }
+
 protected:
 	
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -67,6 +72,12 @@ protected:
     float           d;
     float           d2;
     
+    bool            m_bTunerMode = false;
+    WgColor         m_TunerIndicatorCol;
+    WgColor         m_TunerCorrectCol;
+    bool            m_bTunerCorrect = false;
+    
+    bool            m_bActive = true;
     
     std::vector<float> m_LEDStates;
 

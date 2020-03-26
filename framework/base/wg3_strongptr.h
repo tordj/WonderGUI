@@ -26,6 +26,7 @@
 
 namespace wg
 {
+	struct TypeInfo;
 
 	template<class Cls> class StrongPtr		/** @private */
 	{
@@ -65,6 +66,13 @@ namespace wg
 				m_pObj->_decRefCount();
 		}
 
+		//.____ Misc ___________________________________________________________
+
+		inline Cls* rawPtr() const { return m_pObj; }
+
+		using raw_type = Cls*;
+		inline static const TypeInfo& typeInfo() { return Cls::TYPEINFO; }
+
 		//.____ Operators ______________________________________________________
 
 		StrongPtr<Cls>& operator=(Cls * const _p)
@@ -81,60 +89,60 @@ namespace wg
 			return *this;
 		}
 
-		StrongPtr<Cls>& operator=( const StrongPtr<Cls>& _p)
+		StrongPtr<Cls>& operator=(const StrongPtr<Cls>& _p)
 		{
-			if( m_pObj != _p.m_pObj )
+			if (m_pObj != _p.m_pObj)
 			{
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_decRefCount();
 
 				m_pObj = _p.m_pObj;
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_incRefCount();
 			}
 			return *this;
 		}
 
-		template<typename _Tp1> StrongPtr<Cls>& operator=( const StrongPtr<_Tp1>& _p)
+		template<typename _Tp1> StrongPtr<Cls>& operator=(const StrongPtr<_Tp1>& _p)
 		{
-			if( m_pObj != _p.m_pObj )
+			if (m_pObj != _p.m_pObj)
 			{
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_decRefCount();
 
 				m_pObj = _p.m_pObj;
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_incRefCount();
 			}
 			return *this;
 		}
 
-		template<typename _Tp1> StrongPtr<Cls>& operator=( _Tp1 * _p)
+		template<typename _Tp1> StrongPtr<Cls>& operator=(_Tp1 * _p)
 		{
-			if( m_pObj != _p )
+			if (m_pObj != _p)
 			{
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_decRefCount();
 
 				m_pObj = _p;
-				if( m_pObj )
+				if (m_pObj)
 					m_pObj->_incRefCount();
 			}
 			return *this;
 		}
 
 
-		operator  Cls*() const { return m_pObj; }
+		operator Cls*() const { return m_pObj; }
 
-		inline Cls & operator*() const { return * this->m_pObj; }
-		inline Cls * operator->() const{ return this->m_pObj; }
+		inline Cls & operator*() const { return *this->m_pObj; }
+		inline Cls * operator->() const { return this->m_pObj; }
 
-		template<typename _Tp1> bool operator==( const StrongPtr<_Tp1>& _p) const
+		template<typename _Tp1> bool operator==(const StrongPtr<_Tp1>& _p) const
 		{
 			return this->m_pObj == _p.m_pObj;
 		}
 
-		template<typename _Tp1> bool operator!=( const StrongPtr<_Tp1>& _p) const
+		template<typename _Tp1> bool operator!=(const StrongPtr<_Tp1>& _p) const
 		{
 			return this->m_pObj != _p.m_pObj;
 		}
@@ -145,10 +153,6 @@ namespace wg
 		template<typename _Tp1> bool operator>=(const StrongPtr<_Tp1>& other) const { return m_pObj >= other.m_pObj; }
 
 		inline operator bool() const { return m_pObj != 0; }
-
-		//.____ Misc ___________________________________________________________
-
-		inline Cls* rawPtr() const { return m_pObj; }
 
 
 protected:

@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -52,7 +52,7 @@ bool WgAnim::SetTimeScaler( float scale )
 {
 	if( scale <= 0.f )
 		return false;
-	
+
 	m_scale = scale;
 	return true;
 }
@@ -95,7 +95,7 @@ bool WgAnim::_insertKeyFrame( WgKeyFrame * pPos, WgKeyFrame * pFrame, int durati
 {
 	if( pFrame->m_duration == 0 || pPos->chain() != &m_keyframes || m_duration + pFrame->m_duration < m_duration )
 		return false;
-	
+
 	pFrame->moveBefore( pPos );
 	pFrame->m_timestamp = pPos->m_timestamp;
 	pFrame->m_duration = duration;
@@ -129,7 +129,7 @@ bool WgAnim::_addKeyFrame( WgKeyFrame * pFrame, int duration )
 WgAnimPlayPos WgAnim::_playPos( int64_t ticks, WgKeyFrame * pProximity ) const
 {
 	ticks = (int64_t)(ticks * ((double)m_scale));
-	
+
 	WgAnimPlayPos	pos;
 
 	switch( m_playMode )
@@ -179,7 +179,7 @@ WgAnimPlayPos WgAnim::_playPos( int64_t ticks, WgKeyFrame * pProximity ) const
 			}
 			break;
 		}
-	
+
 		case WgAnimMode::Looping:
 		{
 			ticks = ticks % m_duration;
@@ -239,7 +239,7 @@ WgAnimPlayPos WgAnim::_playPos( int64_t ticks, WgKeyFrame * pProximity ) const
 
 				if( pos.pKeyFrame1 == 0 )
 					pos.pKeyFrame1		= m_keyframes.last();
-			
+
 			}
 			break;
 		}
@@ -313,7 +313,7 @@ WgKeyFrame * WgAnim::_keyFrame( int64_t ticks, WgKeyFrame * pProximity ) const
 			pProximity = pProximity->next();
 		}
 	}
-	
+
 	return pProximity;
 }
 
@@ -324,7 +324,7 @@ WgKeyFrame * WgAnim::_keyFrame( int64_t ticks, WgKeyFrame * pProximity ) const
 int WgAnim::TimeToOfs( int64_t ticks )
 {
 	ticks = (int64_t)(ticks * ((double)m_scale));
-	
+
 	switch( m_playMode )
 	{
 		case WgAnimMode::Forward:
@@ -338,7 +338,7 @@ int WgAnim::TimeToOfs( int64_t ticks )
 				return 0;
 
 			return m_duration - (int)ticks;
-	
+
 		case WgAnimMode::Looping:
 			return (int) (ticks % m_duration);
 
@@ -358,7 +358,7 @@ int WgAnim::TimeToOfs( int64_t ticks )
 			else
 				return m_duration - (int)(ticks % m_duration);
 
-	
+
 		default:
 			return 0;
 	}
@@ -371,7 +371,7 @@ int WgAnim::TimeToOfs( int64_t ticks )
 
 bool WgKeyFrame::SetDuration( int ticks )
 {
-	
+
 	// Ugly hack to get a pointer to our WgAnim object.
 
 	wg::Chain<WgKeyFrame> * pChain = chain();
@@ -385,7 +385,7 @@ bool WgKeyFrame::SetDuration( int ticks )
 
 	if( pAnim->m_duration + change < pAnim->m_duration )
 		return false;
-	
+
 	pAnim->m_duration += change;
 
 	m_duration = ticks;

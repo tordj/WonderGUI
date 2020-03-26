@@ -36,7 +36,7 @@ cp wg_object.* \
    wg_patches.* \
    wg_payload.* \
    wg_pointers.* \
-   wg_qpix.* \
+   wg_mu.* \
    wg_string.* \
    wg_strongcomponentptr.* \
    wg_strongptr.* \

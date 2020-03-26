@@ -101,76 +101,76 @@ namespace wg
 
 		inline CoordI pointsToRawAligned(const CoordI points)
 		{
-			return { (points.x* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline SizeI pointsToRawAligned(const SizeI points)
 		{
-			return { (points.w* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline BorderI pointsToRawAligned(const BorderI& points)
 		{
-			return { (points.top* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.right* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
-					 (points.bottom* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.left* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.top* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.right* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.bottom* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.left* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
 		inline RectI pointsToRawAligned(const RectI& points)
 		{
-			return { (points.x* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.y* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC,
-					 (points.w* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC, (points.h* QPix::pixelQuartersPerPoint()) & (int) 0xFFFFFFFC };
+			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
+					 (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		//____ rawToPixels() __________________________________________________
+		//____ qpixToPixels() __________________________________________________
 
-		inline int rawToPixels(int quarterPixels)
+		inline int qpixToPixels(int quarterPixels)
 		{
 			return quarterPixels >> 2;
 		}
 
-		inline CoordI rawToPixels(const CoordI quarterPixels)
+		inline CoordI qpixToPixels(const CoordI quarterPixels)
 		{
 			return { quarterPixels.x >> 2, quarterPixels.y >> 2 };
 		}
 
-		inline SizeI rawToPixels(const SizeI quarterPixels)
+		inline SizeI qpixToPixels(const SizeI quarterPixels)
 		{
 			return { quarterPixels.w >> 2, quarterPixels.h >> 2 };
 		}
 
-		inline BorderI rawToPixels(const BorderI& quarterPixels)
+		inline BorderI qpixToPixels(const BorderI& quarterPixels)
 		{
 			return { quarterPixels.top >> 2, quarterPixels.right >> 2, quarterPixels.bottom >> 2, quarterPixels.left >> 2 };
 		}
 
-		inline RectI rawToPixels(const RectI& quarterPixels)
+		inline RectI qpixToPixels(const RectI& quarterPixels)
 		{
 			return { quarterPixels.x >> 2, quarterPixels.y >> 2, quarterPixels.w >> 2, quarterPixels.h >> 2 };
 		}
 
-		//____ pixelsToRaw() __________________________________________________
+		//____ pixelsToQpix() __________________________________________________
 
-		inline int pixelsToRaw(int pixels)
+		inline int pixelsToQpix(int pixels)
 		{
 			return pixels << 2;
 		}
 
-		inline CoordI pixelsToRaw(const CoordI pixels)
+		inline CoordI pixelsToQpix(const CoordI pixels)
 		{
 			return { pixels.x << 2, pixels.y << 2 };
 		}
 
-		inline SizeI pixelsToRaw(const SizeI pixels)
+		inline SizeI pixelsToQpix(const SizeI pixels)
 		{
 			return { pixels.w << 2, pixels.h << 2 };
 		}
 
-		inline BorderI pixelsToRaw(const BorderI& pixels)
+		inline BorderI pixelsToQpix(const BorderI& pixels)
 		{
 			return { pixels.top << 2, pixels.right << 2, pixels.bottom << 2, pixels.left << 2 };
 		}
 
-		inline RectI pixelsToRaw(const RectI& pixels)
+		inline RectI pixelsToQpix(const RectI& pixels)
 		{
 			return { pixels.x << 2, pixels.y << 2, pixels.w << 2, pixels.h << 2 };
 		}
@@ -180,148 +180,148 @@ namespace wg
 
 		inline CoordI pointsToPixels(const CoordI& points)
 		{
-			return { (points.x * QPix::pixelQuartersPerPoint()) >> 2, (points.y * QPix::pixelQuartersPerPoint()) >> 2 };
+			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2 };
 		}
 
 		inline SizeI pointsToPixels(const SizeI& points)
 		{
-			return { (points.w * QPix::pixelQuartersPerPoint()) >> 2, (points.h * QPix::pixelQuartersPerPoint()) >> 2 };
+			return { (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
 		}
 
 		inline BorderI pointsToPixels(const BorderI& points)
 		{
-			return { (points.top * QPix::pixelQuartersPerPoint()) >> 2, (points.right * QPix::pixelQuartersPerPoint()) >> 2,
-					 (points.bottom * QPix::pixelQuartersPerPoint()) >> 2, (points.left * QPix::pixelQuartersPerPoint()) >> 2 };
+			return { (points.top * MU::qpixPerPoint()) >> 2, (points.right * MU::qpixPerPoint()) >> 2,
+					 (points.bottom * MU::qpixPerPoint()) >> 2, (points.left * MU::qpixPerPoint()) >> 2 };
 		}
 
 		inline RectI pointsToPixels(const RectI& points)
 		{
-			return { (points.x * QPix::pixelQuartersPerPoint()) >> 2, (points.y * QPix::pixelQuartersPerPoint()) >> 2,
-					 (points.w * QPix::pixelQuartersPerPoint()) >> 2, (points.h * QPix::pixelQuartersPerPoint()) >> 2 };
+			return { (points.x * MU::qpixPerPoint()) >> 2, (points.y * MU::qpixPerPoint()) >> 2,
+					 (points.w * MU::qpixPerPoint()) >> 2, (points.h * MU::qpixPerPoint()) >> 2 };
 		}
 
 /*
 		inline Coord pixelsToQPix(CoordI pixels)
 		{
-			return Coord(QPix::fromPixel(pixels.x), QPix::fromPixel(pixels.y));
+			return Coord(MU::fromPixel(pixels.x), MU::fromPixel(pixels.y));
 		}
 
 		inline Size pixelsToQPix(SizeI pixels)
 		{
-			return Size(QPix::fromPixel(pixels.w), QPix::fromPixel(pixels.h));
+			return Size(MU::fromPixel(pixels.w), MU::fromPixel(pixels.h));
 		}
 
 		inline Rect pixelsToQPix(RectI pixels)
 		{
-			return Rect(QPix::fromPixel(pixels.x), QPix::fromPixel(pixels.y), QPix::fromPixel(pixels.w), QPix::fromPixel(pixels.h));
+			return Rect(MU::fromPixel(pixels.x), MU::fromPixel(pixels.y), MU::fromPixel(pixels.w), MU::fromPixel(pixels.h));
 		}
 */
-		//____ rawToQpix() ____________________________________________________
+		//____ qpixToMU() ____________________________________________________
 
-		inline Coord rawToQpix(const CoordI raw)
+		inline Coord qpixToMU(const CoordI raw)
 		{
 			Coord c;
-			c.x.raw = raw.x;
-			c.y.raw = raw.y;
+			c.x.qpix = raw.x;
+			c.y.qpix = raw.y;
 			return c;
 		}
 
-		inline Size rawToQpix(const SizeI raw)
+		inline Size qpixToMU(const SizeI raw)
 		{
 			Size sz;
-			sz.w.raw = raw.w;
-			sz.h.raw = raw.h;
+			sz.w.qpix = raw.w;
+			sz.h.qpix = raw.h;
 			return sz;
 		}
 
-		inline Border rawToQpix(const BorderI raw)
+		inline Border qpixToMU(const BorderI raw)
 		{
 			Border b;
-			b.top.raw = raw.top;
-			b.right.raw = raw.right;
-			b.bottom.raw = raw.bottom;
-			b.left.raw = raw.left;
+			b.top.qpix = raw.top;
+			b.right.qpix = raw.right;
+			b.bottom.qpix = raw.bottom;
+			b.left.qpix = raw.left;
 			return b;
 		}
 
-		inline Rect rawToQpix(const RectI& raw)
+		inline Rect qpixToMU(const RectI& raw)
 		{
 			Rect r;
-			r.x.raw = raw.x;
-			r.y.raw = raw.y;
-			r.w.raw = raw.w;
-			r.h.raw = raw.h;
+			r.x.qpix = raw.x;
+			r.y.qpix = raw.y;
+			r.w.qpix = raw.w;
+			r.h.qpix = raw.h;
 			return r;
 		}
 
-		//____ qpixToRaw() ____________________________________________________
+		//____ MUToQpix() ____________________________________________________
 
-		inline CoordI qpixToRaw(const Coord& c)
+		inline CoordI MUToQpix(const Coord& c)
 		{
-			return { c.x.raw, c.y.raw };
+			return { c.x.qpix, c.y.qpix };
 		}
 
-		inline SizeI qpixToRaw(const Size& sz)
+		inline SizeI MUToQpix(const Size& sz)
 		{
-			return { sz.w.raw, sz.h.raw };
+			return { sz.w.qpix, sz.h.qpix };
 		}
 
-		inline BorderI qpixToRaw(const Border& b)
+		inline BorderI MUToQpix(const Border& b)
 		{
-			return { b.top.raw, b.right.raw, b.bottom.raw, b.left.raw };
+			return { b.top.qpix, b.right.qpix, b.bottom.qpix, b.left.qpix };
 		}
 
-		inline RectI qpixToRaw(const Rect& r)
+		inline RectI MUToQpix(const Rect& r)
 		{
-			return { r.x.raw, r.y.raw, r.w.raw, r.h.raw };
+			return { r.x.qpix, r.y.qpix, r.w.qpix, r.h.qpix };
 		}
 
-		//____ qpixToRawAligned() ____________________________________________________
+		//____ MUToQpixAligned() ____________________________________________________
 
-		inline CoordI qpixToRawAligned(const Coord& c)
+		inline CoordI MUToQpixAligned(const Coord& c)
 		{
-			return { c.x.raw & (int) 0xFFFFFFFC, c.y.raw & (int) 0xFFFFFFFC };
+			return { c.x.qpix & (int) 0xFFFFFFFC, c.y.qpix & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI qpixToRawAligned(const Size& sz)
+		inline SizeI MUToQpixAligned(const Size& sz)
 		{
-			return { sz.w.raw & (int)0xFFFFFFFC, sz.h.raw & (int)0xFFFFFFFC };
+			return { sz.w.qpix & (int)0xFFFFFFFC, sz.h.qpix & (int)0xFFFFFFFC };
 		}
 
-		inline BorderI qpixToRawAligned(const Border& b)
+		inline BorderI MUToQpixAligned(const Border& b)
 		{
-			return { b.top.raw & (int) 0xFFFFFFFC, b.right.raw & (int)0xFFFFFFFC, b.bottom.raw & (int)0xFFFFFFFC, b.left.raw & (int)0xFFFFFFFC };
+			return { b.top.qpix & (int) 0xFFFFFFFC, b.right.qpix & (int)0xFFFFFFFC, b.bottom.qpix & (int)0xFFFFFFFC, b.left.qpix & (int)0xFFFFFFFC };
 		}
 
-		inline RectI qpixToRawAligned(const Rect& r)
+		inline RectI MUToQpixAligned(const Rect& r)
 		{
-			return { r.x.raw & (int)0xFFFFFFFC, r.y.raw & (int)0xFFFFFFFC, r.w.raw & (int)0xFFFFFFFC, r.h.raw & (int)0xFFFFFFFC };
+			return { r.x.qpix & (int)0xFFFFFFFC, r.y.qpix & (int)0xFFFFFFFC, r.w.qpix & (int)0xFFFFFFFC, r.h.qpix & (int)0xFFFFFFFC };
 		}
 
-		//____ alignRaw() ____________________________________________________
+		//____ alignQpix() ____________________________________________________
 
-		inline int alignRaw(const int c)
+		inline int alignQpix(const int c)
 		{
 			return c & (int)0xFFFFFFFC;
 		}
 
 
-		inline CoordI alignRaw(const CoordI& c)
+		inline CoordI alignQpix(const CoordI& c)
 		{
 			return { c.x & (int)0xFFFFFFFC, c.y & (int)0xFFFFFFFC };
 		}
 
-		inline SizeI alignRaw(const SizeI& sz)
+		inline SizeI alignQpix(const SizeI& sz)
 		{
 			return { sz.w & (int)0xFFFFFFFC, sz.h & (int)0xFFFFFFFC };
 		}
 
-		inline BorderI alignRaw(const BorderI& b)
+		inline BorderI alignQpix(const BorderI& b)
 		{
 			return { b.top & (int)0xFFFFFFFC, b.right & (int)0xFFFFFFFC, b.bottom & (int)0xFFFFFFFC, b.left & (int)0xFFFFFFFC };
 		}
 
-		inline RectI alignRaw(const RectI& r)
+		inline RectI alignQpix(const RectI& r)
 		{
 			return { r.x & (int)0xFFFFFFFC, r.y & (int)0xFFFFFFFC, r.w & (int)0xFFFFFFFC, r.h & (int)0xFFFFFFFC };
 		}

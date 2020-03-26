@@ -26,7 +26,7 @@
 
 namespace wg
 {
-	const char Context::CLASSNAME[] = { "Context" };
+	const TypeInfo Context::TYPEINFO = { "Context", &Object::TYPEINFO };
 
 	//____ Surface() ____________________________________________________________
 
@@ -41,31 +41,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Context::isInstanceOf(const char * pClassName) const
+	const TypeInfo& Context::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Context::className(void) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	Context_p Context::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return Context_p(static_cast<Context*>(pObject));
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setScale() _________________________________________________________

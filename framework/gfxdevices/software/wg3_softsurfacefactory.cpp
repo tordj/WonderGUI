@@ -27,33 +27,13 @@ namespace wg
 
 
 
-	const char SoftSurfaceFactory::CLASSNAME[] = {"SoftSurfaceFactory"};
+	const TypeInfo SoftSurfaceFactory::TYPEINFO = { "SoftSurfaceFactory", &SurfaceFactory::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SoftSurfaceFactory::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SoftSurfaceFactory::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return SurfaceFactory::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SoftSurfaceFactory::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	SoftSurfaceFactory_p SoftSurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurfaceFactory_p( static_cast<SoftSurfaceFactory*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ maxSize() ________________________________________________________________

@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char ColorSkin::CLASSNAME[] = {"ColorSkin"};
+	const TypeInfo ColorSkin::TYPEINFO = { "ColorSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -39,21 +39,23 @@ namespace wg
 		return ColorSkin_p(new ColorSkin());
 	}
 
-	ColorSkin_p ColorSkin::create(Color color)
+	ColorSkin_p ColorSkin::create(Color color, BorderI contentPadding )
 	{
-		return ColorSkin_p(new ColorSkin(color));
+		auto p = new ColorSkin(color);
+		p->setContentPadding(contentPadding);
+		return p;
 	}
 
-	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors )
+	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors, BorderI contentPadding )
 	{
-		ColorSkin_p p = new ColorSkin();
+		auto p = new ColorSkin();
 		p->setColor(stateColors);
-
+		p->setContentPadding(contentPadding);
 		return p;
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	ColorSkin::ColorSkin()
 	{
@@ -70,31 +72,11 @@ namespace wg
 		setColor(color);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ColorSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ColorSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ColorSkin::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	ColorSkin_p ColorSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ColorSkin_p( static_cast<ColorSkin*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setBlendMode() _____________________________________________________
@@ -190,7 +172,7 @@ namespace wg
 
 		int i = _stateToIndex(state);
 
-		pDevice->fill( rawToPixels(_canvas), m_color[i] );
+		pDevice->fill( qpixToPixels(_canvas), m_color[i] );
 
 		if (m_blendMode != oldBlendMode)
 			pDevice->setBlendMode(oldBlendMode);

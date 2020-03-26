@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace std;
 
-	const char SoftSurface::CLASSNAME[] = {"SoftSurface"};
+	const TypeInfo SoftSurface::TYPEINFO = { "SoftSurface", &Surface::TYPEINFO };
 
 	//____ maxSize() _______________________________________________________________
 
@@ -76,7 +76,7 @@ namespace wg
 
 
 
-	//____ Constructor ________________________________________________________________
+	//____ constructor ________________________________________________________________
 
     SoftSurface::SoftSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
@@ -171,31 +171,11 @@ namespace wg
 	{
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool SoftSurface::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& SoftSurface::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Surface::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SoftSurface::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	SoftSurface_p SoftSurface::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SoftSurface_p( static_cast<SoftSurface*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ pixel() _________________________________________________________________

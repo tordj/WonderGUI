@@ -28,36 +28,15 @@ namespace wg
 
 	using namespace Util;
 
-	const char ExtendedSkin::CLASSNAME[] = {"ExtendedSkin"};
+	const TypeInfo ExtendedSkin::TYPEINFO = { "ExtendedSkin", &Skin::TYPEINFO };
 
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool ExtendedSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& ExtendedSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Skin::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
-
-	//____ className() ____________________________________________________________
-
-	const char * ExtendedSkin::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	ExtendedSkin_p ExtendedSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return ExtendedSkin_p( static_cast<ExtendedSkin*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ setContentPadding() ____________________________________________________
 
@@ -70,7 +49,7 @@ namespace wg
 
 	Border ExtendedSkin::contentPaddingAdapted() const
 	{
-		return Util::rawToQpix(_contentPadding());
+		return Util::qpixToMU(_contentPadding());
 	}
 
 

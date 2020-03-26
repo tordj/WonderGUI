@@ -13,7 +13,7 @@
   version 2 of the License, or (at your option) any later version.
 
                             -----------
-	
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -55,7 +55,7 @@ WgColorsetPtr  WgColorset::Create( WgColor normal, WgColor over, WgColor selecte
 }
 
 void WgColorset::SetColor( WgColor color, WgMode mode )
-{ 
+{
 	if( mode == WG_MODE_ALL )
 	{
 		m_color[WG_MODE_NORMAL] = color;
@@ -65,6 +65,6 @@ void WgColorset::SetColor( WgColor color, WgMode mode )
 		m_color[WG_MODE_SPECIAL] = color;
 	}
 	else
-		m_color[mode] = color; 
+		m_color[mode] = color;
 }
 

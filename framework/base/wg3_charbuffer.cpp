@@ -34,7 +34,7 @@ namespace wg
 	CharBuffer::BufferHead * CharBuffer::g_pEmptyBuffer = 0;
 
 
-	//____ Constructor() ___________________________________________________________
+	//____ constructor _____________________________________________________________
 	//
 	/// @brief Creates a new buffer of the specified initial capacity.
 

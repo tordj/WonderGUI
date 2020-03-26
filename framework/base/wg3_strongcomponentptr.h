@@ -65,6 +65,11 @@ namespace wg
 				static_cast<Component*>(m_pComponent)->_object()->_decRefCount();
 		}
 
+		//.____ Misc ___________________________________________________________
+
+		inline Cls* rawPtr() const { return m_pComponent; }
+
+
 		//.____ Operators ______________________________________________________
 
 		StrongComponentPtr<Cls>& operator=(Cls * const _p)
@@ -136,11 +141,6 @@ namespace wg
 		template<typename _Tp1> bool operator>=(const StrongComponentPtr<_Tp1>& other) const { return m_pComponent >= other.m_pComponent; }
 
 		inline operator bool() const { return m_pComponent != 0; }
-
-		//.____ Misc ___________________________________________________________
-
-		inline Cls* rawPtr() const { return m_pComponent; }
-
 
 protected:
 		Cls *	m_pComponent;

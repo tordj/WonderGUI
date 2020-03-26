@@ -25,33 +25,14 @@
 namespace wg
 {
 
-	const char SurfaceFactory::CLASSNAME[] = {"SurfaceFactory"};
+	const TypeInfo SurfaceFactory::TYPEINFO = { "SurfaceFactory", &Object::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
 
-	bool SurfaceFactory::isInstanceOf( const char * pClassName ) const
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& SurfaceFactory::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * SurfaceFactory::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	SurfaceFactory_p SurfaceFactory::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return SurfaceFactory_p( static_cast<SurfaceFactory*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 

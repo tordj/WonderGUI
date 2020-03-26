@@ -25,54 +25,34 @@
 namespace wg
 {
 
-	const char Skin::CLASSNAME[] = {"Skin"};
+	const TypeInfo Skin::TYPEINFO = { "Skin", &Object::TYPEINFO };
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool Skin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& Skin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * Skin::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	Skin_p Skin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return Skin_p( static_cast<Skin*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ minSize() __________________________________________________________
 
 	Size Skin::minSize() const
 	{
-		return Util::rawToQpix(_minSize());
+		return Util::qpixToMU(_minSize());
 	}
 
 	//____ preferredSize() ____________________________________________________
 
 	Size Skin::preferredSize() const
 	{
-		return Util::rawToQpix(_preferredSize());
+		return Util::qpixToMU(_preferredSize());
 	}
 
 	//____ isOpaque() _________________________________________________________
 
 	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
-		return _isOpaque(Util::qpixToRaw(rect), Util::qpixToRaw(canvasSize), state);
+		return _isOpaque(Util::MUToQpix(rect), Util::MUToQpix(canvasSize), state);
 	}
 
 

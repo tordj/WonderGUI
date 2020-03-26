@@ -166,11 +166,38 @@ public:
 
 	float	SetSliderValue(int id, float value, float value2 = NAN);
 
+    void    SetSliderVisible( int id, bool bVisible );
+ 
     WgCoord HandlePointPos( int sliderId );
     WgCoord HandlePixelPos( int sliderId );
 
 	bool	MarkTest(const WgCoord& ofs) override;
 
+    wg::Skin_p GetHandleSkin(int sliderId)
+    {
+        Slider * s  = _findSlider(sliderId);
+
+        if(s)
+            return s->pHandleSkin;
+        else
+            return nullptr;
+
+    }
+
+    void SetHandleSkin(int sliderId, wg::Skin * pkHandleSkin)
+    {
+        Slider * s  = _findSlider(sliderId);
+        if( !s )
+            return;
+        
+        WgRect sliderGeo = _sliderGeo(*s, PixelSize());
+        
+        WgRect handleGeo1 = _sliderHandleGeo(*s, sliderGeo);
+        s->pHandleSkin = pkHandleSkin;
+        WgRect handleGeo2 = _sliderHandleGeo(*s, sliderGeo);
+
+        _requestRender(WgRect::getUnion(handleGeo1,handleGeo2));
+    }
 
 protected:
 
@@ -187,6 +214,7 @@ protected:
 		int				id;
 
 		bool			is2D;
+        bool            bVisible = true;
 
 		float			value[2];
 		Bounds			bounds[2];

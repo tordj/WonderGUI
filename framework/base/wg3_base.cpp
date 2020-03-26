@@ -73,8 +73,8 @@ namespace wg
 
 		TextTool::setDefaultBreakRules();
 
-		QPix::s_scale = 1.f;
-		QPix::s_pixelQuartersPerPoint = 4;
+		MU::s_scale = 1.f;
+		MU::s_qpixPerPoint = 4;
 
 	}
 
@@ -227,8 +227,8 @@ namespace wg
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
 
-		QPix::s_scale = pContext->scale();
-		QPix::s_pixelQuartersPerPoint = int(pContext->scale() * 4.f);
+		MU::s_scale = pContext->scale();
+		MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
 	}
 
 	//____ activeContext() ____________________________________________________

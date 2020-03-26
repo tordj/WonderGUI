@@ -235,6 +235,42 @@ float WgMultiSlider::SetSliderValue(int id, float value, float value2)
 	return _setValue(*p, value, value2, false);
 }
 
+//____ SetSliderVisible() ______________________________________________________
+
+void WgMultiSlider::SetSliderVisible( int id, bool bVisible )
+{
+    // Get slider
+
+    Slider * pSlider = _findSlider(id);
+    if( !pSlider || pSlider->bVisible == bVisible )
+        return;
+
+    // Set and request render
+
+    pSlider->bVisible = bVisible;
+
+    _requestRenderSlider(pSlider);
+
+    // reset selected if it was when it was made invisible (is this the right thing to do?)
+
+    if( !bVisible )
+    {
+        int idx = pSlider - &m_sliders[0];
+
+        if( idx == m_selectedSlider )
+        {
+            m_selectedSlider = -1;
+            _updateSliderStates();
+        }
+
+        if( idx == m_selectedSliderHandle )
+        {
+            m_selectedSliderHandle = -1;
+            _updateSliderStates();
+        }
+    }
+}
+
 //____ HandlePointPos() ________________________________________________________
 
 WgCoord WgMultiSlider::HandlePointPos( int sliderId )
@@ -325,6 +361,9 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSlider(WgCoord ofs, WgCoord * pOfs
 
 	for (auto& slider : m_sliders)
 	{
+        if( !slider.bVisible )
+            continue;
+        
 		WgRect sliderGeo = _sliderSkinGeo(slider,_sliderGeo(slider, PixelSize()));
 
 		WgRect sliderMarkGeo = sliderGeo + (slider.sliderMarkExtension.isEmpty() ? m_defaultSliderMarkExtension : slider.sliderMarkExtension);
@@ -361,6 +400,9 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
 	for (auto& slider : m_sliders)
 	{
+        if( !slider.bVisible )
+            continue;
+        
 		wg::Skin_p pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 		if (pHandleSkin )
 		{
@@ -1181,6 +1223,9 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	for (auto& slider : m_sliders)
 	{
+        if( !slider.bVisible )
+            continue;
+        
 		WgRect sliderGeo = _sliderGeo(slider, _canvas);
 
 		wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;

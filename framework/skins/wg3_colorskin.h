@@ -41,15 +41,13 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static ColorSkin_p	create();
-		static ColorSkin_p 	create(Color color );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors );
+		static ColorSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
-		static ColorSkin_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 
 		//.____ Appearance _________________________________________________

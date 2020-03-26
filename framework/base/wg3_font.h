@@ -101,10 +101,8 @@ namespace wg
 	public:
 		//.____ Identification __________________________________________
 
-		bool					isInstanceOf( const char * pClassName ) const override;
-		const char *			className( void ) const override;
-		static const char		CLASSNAME[];
-		static Font_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 		//.____ Rendering ____________________________________________
 

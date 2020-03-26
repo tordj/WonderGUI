@@ -36,7 +36,7 @@ namespace wg
 	typedef	StrongPtr<TextStyle>		TextStyle_p;
 	typedef	WeakPtr<TextStyle>		TextStyle_wp;
 
-	class TextAttr
+	struct TextAttr
 	{
 		public:
 
@@ -73,10 +73,8 @@ namespace wg
 
 		//.____ Identification __________________________________________
 
-		bool				isInstanceOf( const char * pClassName ) const override;
-		const char *		className( void ) const override;
-		static const char	CLASSNAME[];
-		static TextStyle_p	cast( Object * pObject );
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 
 		//.____ Hierarchy _____________________________________________

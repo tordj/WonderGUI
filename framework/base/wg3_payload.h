@@ -27,6 +27,8 @@
 #include <cstdint>
 #include <wg3_pointers.h>
 
+#include <functional>
+
 namespace wg
 {
   
@@ -46,10 +48,8 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		virtual bool		isInstanceOf(const char * pClassName) const override;
-		virtual const char * className(void) const override;
-		static const char	CLASSNAME[];
-		static BasicPayload_p	cast(Object * pObject);
+		const TypeInfo&		typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 		BasicPayload() {}
@@ -73,35 +73,19 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		bool isInstanceOf(const char * pClassName) const override
-		{
-			if (pClassName == CLASSNAME)
-				return true;
-
-			return BasicPayload::isInstanceOf(pClassName);
-		}
-
-		const char *			className(void) const override { return CLASSNAME; }
-		static const char *		CLASSNAME;
-
-		static Payload_p<Type>	cast(Object * pObject)
-		{
-			if (pObject && pObject->isInstanceOf(CLASSNAME))
-				return Payload_p<Type>(static_cast<Payload<Type>*>(pObject));
-
-			return 0;
-		}
+		const TypeInfo&			typeInfo(void) const override { return TYPEINFO; }
+		static TypeInfo	TYPEINFO;
 
 	protected:
 
-		static char m_className[64];
+		static char s_className[64];
 
 	};
 
     // Generating 
 
-	template<class Type> char Payload<Type>::m_className[64] = { "Payload type 0x" };
-	template<class Type> const char * Payload<Type>::CLASSNAME = [](char* p) 
+	template<class Type> char Payload<Type>::s_className[64] = { "Payload type 0x" };
+	template<class Type> TypeInfo Payload<Type>::TYPEINFO = [](char* p) 
 	{
 		uintptr_t x = reinterpret_cast<uintptr_t>(p);
 
@@ -114,8 +98,9 @@ namespace wg
 			x >>= 4;
 		}
 
-		return p; 
-	}(m_className);
+		TypeInfo ti = { p, &BasicPayload::TYPEINFO };
+		return ti;
+	}(s_className);
 
 } // namespace wg
 #endif //WG3_PAYLOAD_DOT_H

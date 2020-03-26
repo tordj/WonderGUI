@@ -26,11 +26,11 @@
 namespace wg
 {
 
-	const char TextStyle::CLASSNAME[] = {"TextStyle"};
+	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
 
 
 
-	//____ Constructor _____________________________________________________________
+	//____ constructor _____________________________________________________________
 
 	TextStyle::TextStyle()
 	{
@@ -58,31 +58,11 @@ namespace wg
 		TextStyleManager::_releaseHandle(m_handle);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool TextStyle::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& TextStyle::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * TextStyle::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	TextStyle_p TextStyle::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return TextStyle_p( static_cast<TextStyle*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setParent() _____________________________________________________________
@@ -463,7 +443,8 @@ namespace wg
             m_bStaticColor = _isColorStatic();
 		}
 		else
-		{			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		{
+			for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			{
 				m_specAttr.colorBlendMode[i] = BlendMode::Undefined;
 				m_specAttr.color[i] = Color::White;

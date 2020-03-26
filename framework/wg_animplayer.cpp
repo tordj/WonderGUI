@@ -45,7 +45,7 @@ WgAnimPlayer::WgAnimPlayer()
 
 	m_bPlaying		= false;
 	m_speed			= 1.f;
-    
+
     m_kTintColor    = WgColor( 0xff, 0xff, 0xff, 0xff );
 }
 
@@ -91,7 +91,7 @@ bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
 void WgAnimPlayer::SetSkin( wg::Skin * pSkin )
 {
     m_pSkin = pSkin;
-    
+
     if( !m_pAnim || !m_bEnabled )
     {
         _requestResize();
@@ -225,7 +225,7 @@ bool WgAnimPlayer::PlayToFractional(float fraction)
 		return false;
 
 	m_destinationPos = (int) (fraction * m_pAnim->Duration() + 0.5f);
-	
+
 	m_bPlaying = true;
 	_startReceiveTicks();
 	return true;
@@ -272,10 +272,10 @@ void WgAnimPlayer::SetTint(WgColor kColor)
 {
     if((kColor.r == m_kTintColor.r) && (kColor.g == m_kTintColor.g) && (kColor.b == m_kTintColor.b) && (kColor.a == m_kTintColor.a))
         return;
-    
-    
+
+
     m_kTintColor = kColor;
-    
+
     _requestRender();
 }
 void WgAnimPlayer::RemoveTint() { SetTint(WgColor(0,0,0,0)); }
@@ -365,7 +365,7 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
     {
         pDevice->setTintColor( m_kTintColor );
     }
-    
+
 	if( m_pAnim && m_bEnabled )
         WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
     else if( m_pSkin )
@@ -380,7 +380,7 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
         _renderSkin(m_pSkin, pDevice, state, _canvas, m_scale);
 	}
-    
+
     // Reset tint color
     pDevice->setTintColor( WgColor( 0xff, 0xff, 0xff, 0xff ) );
 }

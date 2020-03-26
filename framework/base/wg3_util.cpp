@@ -750,7 +750,7 @@ double Util::powerOfTen(int num){
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = rawToPixels( RectI(pRects[i], clip) );
+			pNewRects[nNewRects] = qpixToPixels( RectI(pRects[i], clip) );
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -772,7 +772,7 @@ double Util::powerOfTen(int num){
 		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
 
 		for( int i = 0 ; i < nRects ; i++ )
-			pNewRects[i] = rawToPixels( pRects[i] );
+			pNewRects[i] = qpixToPixels( pRects[i] );
 
 		pDevice->setClipList(nRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };

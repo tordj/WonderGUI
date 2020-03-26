@@ -24,33 +24,12 @@
 
 namespace wg
 {
-	const char BasicPayload::CLASSNAME[] = { "BasicPayload" };
+	const TypeInfo BasicPayload::TYPEINFO = { "BasicPayload", &Object::TYPEINFO };
 
+	//____ typeInfo() _________________________________________________________
 
-	//____ isInstanceOf() _________________________________________________________
-
-	bool BasicPayload::isInstanceOf(const char * pClassName) const
+	const TypeInfo& BasicPayload::typeInfo(void) const
 	{
-		if (pClassName == CLASSNAME)
-			return true;
-
-		return Object::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * BasicPayload::className(void) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	BasicPayload_p BasicPayload::cast(Object * pObject)
-	{
-		if (pObject && pObject->isInstanceOf(CLASSNAME))
-			return BasicPayload_p(static_cast<BasicPayload*>(pObject));
-
-		return 0;
+		return TYPEINFO;
 	}
 }

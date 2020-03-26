@@ -186,12 +186,10 @@
 		17E03D4323D9F37D00B0A3D8 /* wg3_surface.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2223D9F37900B0A3D8 /* wg3_surface.cpp */; };
 		17E03D4423D9F37D00B0A3D8 /* wg3_nullgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2323D9F37900B0A3D8 /* wg3_nullgfxdevice.h */; };
 		17E03D4523D9F37D00B0A3D8 /* wg3_blob.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2423D9F37900B0A3D8 /* wg3_blob.h */; };
-		17E03D4623D9F37D00B0A3D8 /* wg3_qpix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */; };
 		17E03D4723D9F37D00B0A3D8 /* wg3_geo.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2623D9F37900B0A3D8 /* wg3_geo.h */; };
 		17E03D4823D9F37D00B0A3D8 /* wg3_util.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2723D9F37900B0A3D8 /* wg3_util.h */; };
 		17E03D4923D9F37D00B0A3D8 /* wg3_enumextras.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2823D9F37900B0A3D8 /* wg3_enumextras.h */; };
 		17E03D4A23D9F37D00B0A3D8 /* wg3_object.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2923D9F37900B0A3D8 /* wg3_object.cpp */; };
-		17E03D4B23D9F37D00B0A3D8 /* wg3_qpix.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */; };
 		17E03D4C23D9F37D00B0A3D8 /* wg3_color.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2B23D9F37A00B0A3D8 /* wg3_color.h */; };
 		17E03D4D23D9F37D00B0A3D8 /* wg3_patches.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D2C23D9F37A00B0A3D8 /* wg3_patches.cpp */; };
 		17E03D4E23D9F37D00B0A3D8 /* wg3_payload.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */; };
@@ -229,6 +227,10 @@
 		17E03D7D23D9F3AF00B0A3D8 /* wg3_extendedskin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */; };
 		17E03D7E23D9F3AF00B0A3D8 /* wg3_extendedskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */; };
 		17E03D7F23D9F3AF00B0A3D8 /* wg3_colorskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */; };
+		B3A162E2242CA2DF00A0C6D8 /* wg3_mu.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A162E0242CA2DE00A0C6D8 /* wg3_mu.h */; };
+		B3A162E3242CA2DF00A0C6D8 /* wg3_mu.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3A162E1242CA2DE00A0C6D8 /* wg3_mu.cpp */; };
+		B3A162E6242CA30200A0C6D8 /* wg3_lambdaskin.h in Headers */ = {isa = PBXBuildFile; fileRef = B3A162E4242CA30100A0C6D8 /* wg3_lambdaskin.h */; };
+		B3A162E7242CA30200A0C6D8 /* wg3_lambdaskin.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3A162E5242CA30200A0C6D8 /* wg3_lambdaskin.cpp */; };
 		B3B75A53242A7AEC00036988 /* wg_pianokeyboard.cpp in Sources */ = {isa = PBXBuildFile; fileRef = B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */; };
 		B3B75A54242A7AEC00036988 /* wg_pianokeyboard.h in Headers */ = {isa = PBXBuildFile; fileRef = B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */; };
 /* End PBXBuildFile section */
@@ -414,12 +416,10 @@
 		17E03D2223D9F37900B0A3D8 /* wg3_surface.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_surface.cpp; path = ../framework/base/wg3_surface.cpp; sourceTree = "<group>"; };
 		17E03D2323D9F37900B0A3D8 /* wg3_nullgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_nullgfxdevice.h; path = ../framework/base/wg3_nullgfxdevice.h; sourceTree = "<group>"; };
 		17E03D2423D9F37900B0A3D8 /* wg3_blob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_blob.h; path = ../framework/base/wg3_blob.h; sourceTree = "<group>"; };
-		17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_qpix.cpp; path = ../framework/base/wg3_qpix.cpp; sourceTree = "<group>"; };
 		17E03D2623D9F37900B0A3D8 /* wg3_geo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_geo.h; path = ../framework/base/wg3_geo.h; sourceTree = "<group>"; };
 		17E03D2723D9F37900B0A3D8 /* wg3_util.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_util.h; path = ../framework/base/wg3_util.h; sourceTree = "<group>"; };
 		17E03D2823D9F37900B0A3D8 /* wg3_enumextras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_enumextras.h; path = ../framework/base/wg3_enumextras.h; sourceTree = "<group>"; };
 		17E03D2923D9F37900B0A3D8 /* wg3_object.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_object.cpp; path = ../framework/base/wg3_object.cpp; sourceTree = "<group>"; };
-		17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_qpix.h; path = ../framework/base/wg3_qpix.h; sourceTree = "<group>"; };
 		17E03D2B23D9F37A00B0A3D8 /* wg3_color.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_color.h; path = ../framework/base/wg3_color.h; sourceTree = "<group>"; };
 		17E03D2C23D9F37A00B0A3D8 /* wg3_patches.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_patches.cpp; path = ../framework/base/wg3_patches.cpp; sourceTree = "<group>"; };
 		17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_payload.h; path = ../framework/base/wg3_payload.h; sourceTree = "<group>"; };
@@ -457,6 +457,10 @@
 		17E03D6F23D9F3AF00B0A3D8 /* wg3_extendedskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_extendedskin.h; path = ../framework/skins/wg3_extendedskin.h; sourceTree = "<group>"; };
 		17E03D7023D9F3AF00B0A3D8 /* wg3_extendedskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_extendedskin.cpp; path = ../framework/skins/wg3_extendedskin.cpp; sourceTree = "<group>"; };
 		17E03D7123D9F3AF00B0A3D8 /* wg3_colorskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_colorskin.cpp; path = ../framework/skins/wg3_colorskin.cpp; sourceTree = "<group>"; };
+		B3A162E0242CA2DE00A0C6D8 /* wg3_mu.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_mu.h; path = ../framework/base/wg3_mu.h; sourceTree = "<group>"; };
+		B3A162E1242CA2DE00A0C6D8 /* wg3_mu.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_mu.cpp; path = ../framework/base/wg3_mu.cpp; sourceTree = "<group>"; };
+		B3A162E4242CA30100A0C6D8 /* wg3_lambdaskin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_lambdaskin.h; path = ../framework/skins/wg3_lambdaskin.h; sourceTree = "<group>"; };
+		B3A162E5242CA30200A0C6D8 /* wg3_lambdaskin.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_lambdaskin.cpp; path = ../framework/skins/wg3_lambdaskin.cpp; sourceTree = "<group>"; };
 		B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_pianokeyboard.cpp; path = ../framework/wg_pianokeyboard.cpp; sourceTree = "<group>"; };
 		B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_pianokeyboard.h; path = ../framework/wg_pianokeyboard.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -661,6 +665,10 @@
 		17E03D2023D9F34900B0A3D8 /* base */ = {
 			isa = PBXGroup;
 			children = (
+				B3A162E5242CA30200A0C6D8 /* wg3_lambdaskin.cpp */,
+				B3A162E4242CA30100A0C6D8 /* wg3_lambdaskin.h */,
+				B3A162E1242CA2DE00A0C6D8 /* wg3_mu.cpp */,
+				B3A162E0242CA2DE00A0C6D8 /* wg3_mu.h */,
 				17C483AE240D3F0D0030453B /* wg3_mempool.cpp */,
 				17C483AD240D3F0D0030453B /* wg3_mempool.h */,
 				17C483AB240D3A0B0030453B /* wg3_base.cpp */,
@@ -703,8 +711,6 @@
 				17E03D3423D9F37B00B0A3D8 /* wg3_payload.cpp */,
 				17E03D2D23D9F37A00B0A3D8 /* wg3_payload.h */,
 				17E03D3A23D9F37C00B0A3D8 /* wg3_pointers.h */,
-				17E03D2523D9F37900B0A3D8 /* wg3_qpix.cpp */,
-				17E03D2A23D9F37A00B0A3D8 /* wg3_qpix.h */,
 				170768DA23FED08F00CAAAED /* wg3_string.cpp */,
 				170768D723FED08E00CAAAED /* wg3_string.h */,
 				17E03D3023D9F37A00B0A3D8 /* wg3_strongcomponentptr.h */,
@@ -818,6 +824,7 @@
 				170F7C112200773200B70B56 /* wondergui.h in Headers */,
 				170F7C0B2200773200B70B56 /* wg_color.h in Headers */,
 				170F7BA62200773200B70B56 /* wg_gfxdevice.h in Headers */,
+				B3A162E6242CA30200A0C6D8 /* wg3_lambdaskin.h in Headers */,
 				17E03D5B23D9F37D00B0A3D8 /* wg3_pointers.h in Headers */,
 				170768F223FED11A00CAAAED /* wg3_textstylemanager.h in Headers */,
 				170F7C172200773200B70B56 /* wg_text.h in Headers */,
@@ -829,7 +836,6 @@
 				170F7C612200773200B70B56 /* wg_lineeditor.h in Headers */,
 				170F7C192200773200B70B56 /* wg_cursorinstance.h in Headers */,
 				170F7BFD2200773200B70B56 /* wg_iconholder.h in Headers */,
-				17E03D4B23D9F37D00B0A3D8 /* wg3_qpix.h in Headers */,
 				170F7B882200773200B70B56 /* wg_panel.h in Headers */,
 				170F7C282200773200B70B56 /* wg_simpleknob.h in Headers */,
 				17E03D7923D9F3AF00B0A3D8 /* wg3_skin.h in Headers */,
@@ -862,6 +868,7 @@
 				17E03D5123D9F37D00B0A3D8 /* wg3_strongcomponentptr.h in Headers */,
 				17E03D4C23D9F37D00B0A3D8 /* wg3_color.h in Headers */,
 				17E03D4723D9F37D00B0A3D8 /* wg3_geo.h in Headers */,
+				B3A162E2242CA2DF00A0C6D8 /* wg3_mu.h in Headers */,
 				170F7BE22200773200B70B56 /* wg_flexpanel.h in Headers */,
 				17E03D6223D9F37D00B0A3D8 /* wg3_surface.h in Headers */,
 				170F7C122200773200B70B56 /* wg_textdisplay.h in Headers */,
@@ -955,6 +962,7 @@
 				170768EE23FED09000CAAAED /* wg3_textstyle.cpp in Sources */,
 				170F7B842200773200B70B56 /* wg_iconholder.cpp in Sources */,
 				170F7C2D2200773200B70B56 /* wg_packpanel.cpp in Sources */,
+				B3A162E3242CA2DF00A0C6D8 /* wg3_mu.cpp in Sources */,
 				17C483AA240D196F0030453B /* wg3_context.cpp in Sources */,
 				170F7B9C2200773200B70B56 /* wg_radiobutton.cpp in Sources */,
 				170F7C202200773200B70B56 /* wg_shadercapsule.cpp in Sources */,
@@ -976,6 +984,7 @@
 				170F7C382200773200B70B56 /* wg_flowpanel.cpp in Sources */,
 				170F7C222200773200B70B56 /* wg_valueformat.cpp in Sources */,
 				170768F123FED11A00CAAAED /* wg3_textstylemanager.cpp in Sources */,
+				B3A162E7242CA30200A0C6D8 /* wg3_lambdaskin.cpp in Sources */,
 				170F7BF22200773200B70B56 /* wg_event.cpp in Sources */,
 				17E03D4D23D9F37D00B0A3D8 /* wg3_patches.cpp in Sources */,
 				170F7BB12200773200B70B56 /* wg_hook.cpp in Sources */,
@@ -1003,7 +1012,6 @@
 				170768DF23FED09000CAAAED /* wg3_texttool.cpp in Sources */,
 				170F7B782200773200B70B56 /* wg_capsule.cpp in Sources */,
 				17E03D7523D9F3AF00B0A3D8 /* wg3_staticcolorskin.cpp in Sources */,
-				17E03D4623D9F37D00B0A3D8 /* wg3_qpix.cpp in Sources */,
 				170F7B8D2200773200B70B56 /* wg_lineeditor.cpp in Sources */,
 				170F7C5E2200773200B70B56 /* wg_cursor.cpp in Sources */,
 				170768E523FED09000CAAAED /* wg3_codepages.cpp in Sources */,

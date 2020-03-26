@@ -24,7 +24,7 @@
    TODO: Separate glyph bitmap from glyph struct, not render or prio cache slot until bitmap is accessed (probably has more to do with Pen).
 */
 
-#include <wg3_qpix.h>
+#include <wg3_mu.h>
 #include <wg3_freetypefont.h>
 #include <wg3_surface.h>
 #include <wg3_surfacefactory.h>
@@ -37,7 +37,7 @@
 namespace wg
 {
 
-	const char FreeTypeFont::CLASSNAME[] = {"FreeTypeFont"};
+	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
 	bool				FreeTypeFont::s_bFreeTypeInitialized = false;
 	FT_Library			FreeTypeFont::s_freeTypeLibrary;
@@ -47,7 +47,7 @@ namespace wg
 	SurfaceFactory_p				FreeTypeFont::s_pSurfaceFactory = 0;
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
 	{
@@ -102,33 +102,12 @@ namespace wg
 		FT_Done_Face( m_ftFace );
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool FreeTypeFont::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& FreeTypeFont::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Font::isInstanceOf(pClassName);
+		return TYPEINFO;
 	}
-
-	//____ className() ____________________________________________________________
-
-	const char * FreeTypeFont::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	FreeTypeFont_p FreeTypeFont::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return FreeTypeFont_p( static_cast<FreeTypeFont*>(pObject) );
-
-		return 0;
-	}
-
 
 	//____ init() _________________________________________________________
 
@@ -176,7 +155,7 @@ namespace wg
 			if( size == m_ftCharSize )
 				return true;
 
-			int ftSize = (size + m_sizeOffset)*QPix::pixelQuartersPerPoint()/4;
+			int ftSize = (size + m_sizeOffset)*MU::qpixPerPoint()/4;
 
 			// Sanity check
 

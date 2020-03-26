@@ -28,7 +28,7 @@
 namespace wg
 {
 
-	const char StaticColorSkin::CLASSNAME[] = {"StaticColorSkin"};
+	const TypeInfo StaticColorSkin::TYPEINFO = { "StaticColorSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
@@ -39,38 +39,18 @@ namespace wg
 		return StaticColorSkin_p(new StaticColorSkin(col));
 	}
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	StaticColorSkin::StaticColorSkin( Color col )
 	{
 		m_color = col;
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool StaticColorSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& StaticColorSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return Skin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * StaticColorSkin::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	StaticColorSkin_p StaticColorSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return StaticColorSkin_p( static_cast<StaticColorSkin*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ isStateIdentical() _________________________________________________
@@ -103,7 +83,7 @@ namespace wg
 
 	void StaticColorSkin::_render(GfxDevice * pDevice, const RectI& canvas, State state) const
 	{
-		pDevice->fill(rawToPixels(canvas), m_color);
+		pDevice->fill(qpixToPixels(canvas), m_color);
 	}
 
 	//____ _minSize() ______________________________________________________________

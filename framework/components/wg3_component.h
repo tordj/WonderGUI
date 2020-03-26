@@ -37,6 +37,7 @@ namespace wg
 	template<class T> class StrongPtr;
 	typedef StrongPtr<Object>				Object_p;
 
+	struct TypeInfo;
 
 	/**
 	 * @brief Provides access to a component of a widget or object.
@@ -63,6 +64,13 @@ namespace wg
 		template<class T> friend class StrongComponentPtr;
 		template<class T> friend class WeakComponentPtr;
 	public:
+
+		//.____ Identification _________________________________________________
+
+		virtual const TypeInfo& typeInfo(void) const;
+		const static TypeInfo	TYPEINFO;
+
+		bool		isInstanceOf(const TypeInfo& typeInfo) const;
 
 		//.____ Misc __________________________________________________
 

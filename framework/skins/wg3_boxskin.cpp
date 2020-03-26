@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const char BoxSkin::CLASSNAME[] = {"BoxSkin"};
+	const TypeInfo BoxSkin::TYPEINFO = { "BoxSkin", &ExtendedSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -55,7 +55,7 @@ namespace wg
 	}
 
 
-	//____ Constructor ____________________________________________________________
+	//____ constructor ____________________________________________________________
 
 	BoxSkin::BoxSkin()
 	{
@@ -76,31 +76,11 @@ namespace wg
 		setColors(fillColor, frameColor);
 	}
 
-	//____ isInstanceOf() _________________________________________________________
+	//____ typeInfo() _________________________________________________________
 
-	bool BoxSkin::isInstanceOf( const char * pClassName ) const
+	const TypeInfo& BoxSkin::typeInfo(void) const
 	{
-		if( pClassName==CLASSNAME )
-			return true;
-
-		return ExtendedSkin::isInstanceOf(pClassName);
-	}
-
-	//____ className() ____________________________________________________________
-
-	const char * BoxSkin::className( void ) const
-	{
-		return CLASSNAME;
-	}
-
-	//____ cast() _________________________________________________________________
-
-	BoxSkin_p BoxSkin::cast( Object * pObject )
-	{
-		if( pObject && pObject->isInstanceOf(CLASSNAME) )
-			return BoxSkin_p( static_cast<BoxSkin*>(pObject) );
-
-		return 0;
+		return TYPEINFO;
 	}
 
 	//____ setBlendMode() _____________________________________________________
@@ -186,7 +166,7 @@ namespace wg
 
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
-		RectI canvas = rawToPixels(_canvas);
+		RectI canvas = qpixToPixels(_canvas);
 
 		if (m_blendMode != oldBlendMode )
 			pDevice->setBlendMode(m_blendMode);
