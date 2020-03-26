@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -46,7 +46,7 @@ WgAnimPlayer::WgAnimPlayer()
 	m_bPlaying		= false;
 	m_speed			= 1.f;
 
-    m_kTintColor    = WgColor( 0xff, 0xff, 0xff, 0xff );
+	m_kTintColor    = WgColor( 0xff, 0xff, 0xff, 0xff );
 }
 
 //____ ~WgAnimPlayer() _______________________________________________________
@@ -90,13 +90,13 @@ bool WgAnimPlayer::SetAnimation( WgGfxAnim * pAnim )
 
 void WgAnimPlayer::SetSkin( wg::Skin * pSkin )
 {
-    m_pSkin = pSkin;
+	m_pSkin = pSkin;
 
-    if( !m_pAnim || !m_bEnabled )
-    {
-        _requestResize();
-        _requestRender();
-    }
+	if( !m_pAnim || !m_bEnabled )
+	{
+		_requestResize();
+		_requestRender();
+	}
 }
 
 //____ PlayPos() ______________________________________________________________
@@ -262,21 +262,21 @@ WgSize WgAnimPlayer::PreferredPixelSize() const
 {
 	if( m_pAnim )
 		return m_pAnim->Size(m_scale);
-    else if( m_pSkin )
-        return _skinPreferredSize(m_pSkin, m_scale);
+	else if( m_pSkin )
+		return _skinPreferredSize(m_pSkin, m_scale);
 	else
 		return WgSize(0,0);
 }
 
 void WgAnimPlayer::SetTint(WgColor kColor)
 {
-    if((kColor.r == m_kTintColor.r) && (kColor.g == m_kTintColor.g) && (kColor.b == m_kTintColor.b) && (kColor.a == m_kTintColor.a))
-        return;
+	if((kColor.r == m_kTintColor.r) && (kColor.g == m_kTintColor.g) && (kColor.b == m_kTintColor.b) && (kColor.a == m_kTintColor.a))
+		return;
 
 
-    m_kTintColor = kColor;
+	m_kTintColor = kColor;
 
-    _requestRender();
+	_requestRender();
 }
 void WgAnimPlayer::RemoveTint() { SetTint(WgColor(0,0,0,0)); }
 
@@ -348,7 +348,7 @@ void WgAnimPlayer::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 		break;
 
 		default:
-            WgWidget::_onEvent(pEvent, pHandler);
+			WgWidget::_onEvent(pEvent, pHandler);
 		break;
 	}
 }
@@ -361,28 +361,28 @@ PACE_FUSION_NO_USER_CALLBACK
 #endif
 void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    if( m_kTintColor.argb != 0)
-    {
-        pDevice->setTintColor( m_kTintColor );
-    }
+	if( m_kTintColor.argb != 0)
+	{
+		pDevice->setTintColor( m_kTintColor );
+	}
 
 	if( m_pAnim && m_bEnabled )
-        WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
-    else if( m_pSkin )
-    {
-        _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale );
-    }
-    else if( m_pSkin )
+		WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
+	else if( m_pSkin )
 	{
-        WgState state;
+		_renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale );
+	}
+	else if( m_pSkin )
+	{
+		WgState state;
 		if( !m_bEnabled )
 			state.setEnabled(true);
 
-        _renderSkin(m_pSkin, pDevice, state, _canvas, m_scale);
+		_renderSkin(m_pSkin, pDevice, state, _canvas, m_scale);
 	}
 
-    // Reset tint color
-    pDevice->setTintColor( WgColor( 0xff, 0xff, 0xff, 0xff ) );
+	// Reset tint color
+	pDevice->setTintColor( WgColor( 0xff, 0xff, 0xff, 0xff ) );
 }
 
 //____ _onRefresh() _______________________________________________________
@@ -423,7 +423,7 @@ bool WgAnimPlayer::_onAlphaTest( const WgCoord& ofs )
 //		if( !m_bEnabled )
 //			mode = WG_MODE_DISABLED;
 
-        return _markTestSkin(m_pSkin, ofs, WgRect(0,0,sz), WgStateEnum::Normal, m_markOpacity, m_scale);
+		return _markTestSkin(m_pSkin, ofs, WgRect(0,0,sz), WgStateEnum::Normal, m_markOpacity, m_scale);
 	}
 	return false;
 }

@@ -38,7 +38,7 @@ namespace wg
 	friend class Char;
 	friend class CharBuffer;
 	friend class TextTool;
-    friend class ::WgBase;        // Needed by WG2
+	friend class ::WgBase;        // Needed by WG2
 	public:
 
 		static TextStyle_p 	getPointer( TextStyle_h handle );

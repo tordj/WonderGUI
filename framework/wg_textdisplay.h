@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -81,23 +81,23 @@ public:
 	bool	IsEditable() const { return m_text.IsEditable(); }
 	bool	IsSelectable() const { return m_text.IsSelectable(); }
 
-    void    SelectAll() { m_text.selectAll(); }
+	void    SelectAll() { m_text.selectAll(); }
 
-    /* Added by Niklas */
-    void    ChangeText( std::string str )
-    {
-        if(str.compare(m_str) != 0) {
-            SetText(str);
-            m_str.assign(str);
-        }
-    }
+	/* Added by Niklas */
+	void    ChangeText( std::string str )
+	{
+		if(str.compare(m_str) != 0) {
+			SetText(str);
+			m_str.assign(str);
+		}
+	}
 
-    std::string m_str;
+	std::string m_str;
 
 protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void	_onNewSize( const WgSize& size );
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
@@ -108,13 +108,13 @@ protected:
 	void	_onLostInputFocus();
 	void 	_setScale( int scale );
 
-    void    _bringCursorInView();
+	void    _bringCursorInView();
 
-    
-    WgText                m_text;
-    bool                  m_bHasFocus;
-    int                   m_maxLines;
-    bool                  m_bResetCursorOnFocus;
+
+	WgText                m_text;
+	bool                  m_bHasFocus;
+	int                   m_maxLines;
+	bool                  m_bResetCursorOnFocus;
 private:
 	void	_textModified();
 	bool	_insertCharAtCursor( Uint16 c );

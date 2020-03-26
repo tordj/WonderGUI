@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -41,29 +41,29 @@ class Wg_Interface_TextHolder : protected WgTextHolder
 public:
 	virtual WgTextEditMode GetEditMode() const  { return WgTextEditMode::Static; }
 
-    inline wg::TextStyle_p GetTextStyle() { return m_pText->getStyle(); }
+	inline wg::TextStyle_p GetTextStyle() { return m_pText->getStyle(); }
 
 	inline WgColor			GetTextColor() const { return m_pText->getColor(); }
-    inline WgColor			GetTextColor(wg::State state) const { return m_pText->getColor(state); }
-    inline wg::Font_p		GetFont() const { return m_pText->getFont(); }
-    inline wg::TextLink_p   GetLink() const { return m_pText->getLink(); }
+	inline WgColor			GetTextColor(wg::State state) const { return m_pText->getColor(state); }
+	inline wg::Font_p		GetFont() const { return m_pText->getFont(); }
+	inline wg::TextLink_p   GetLink() const { return m_pText->getLink(); }
 
 // -------------
 
-    inline void			SetTextStyle( wg::TextStyle* pStyle )		{ m_pText->setStyle(pStyle); _textModified(); }
+	inline void			SetTextStyle( wg::TextStyle* pStyle )		{ m_pText->setStyle(pStyle); _textModified(); }
 
 	inline void			SetTextColor( const WgColor color )					{ if( m_pText->setColor(color) ) _textModified(); }
-    inline void			SetTextColor( const WgColor color, wg::State state )		{ if( m_pText->setColor(color,state) )  _textModified(); }
+	inline void			SetTextColor( const WgColor color, wg::State state )		{ if( m_pText->setColor(color,state) )  _textModified(); }
 
-    inline void			SetFont( wg::Font * pFont )							{ m_pText->setFont(pFont); _textModified(); }
-    inline void			SetLink( wg::TextLink * pLink )						{ m_pText->setLink(pLink); _textModified(); }
+	inline void			SetFont( wg::Font * pFont )							{ m_pText->setFont(pFont); _textModified(); }
+	inline void			SetLink( wg::TextLink * pLink )						{ m_pText->setLink(pLink); _textModified(); }
 
 // -------------
 
 	inline void			ClearTextStyle()								{ m_pText->clearStyle(); _textModified(); }
 
 	inline void			ClearTextColor()										{ m_pText->clearColor(); _textModified(); }
-    inline void			ClearTextColor( wg::State state )						{ m_pText->clearColor(state); _textModified(); }
+	inline void			ClearTextColor( wg::State state )						{ m_pText->clearColor(state); _textModified(); }
 
 	inline void			ClearFont()											{ m_pText->clearFont(); _textModified(); }
 	inline void			ClearLink()											{ m_pText->clearLink(); _textModified(); }
@@ -87,14 +87,14 @@ public:
 //	inline void			SetSelectionColor( WgColor color )							{ m_pText->setSelectionBgColor(color); }
 //	inline WgColor		GetSelectionColor() const									{ return m_pText->getSelectionBgColor(); }
 
-    void				SetTextState( wg::State state );
+	void				SetTextState( wg::State state );
 	void				SetTextAlignment( const WgOrigo alignment );
 	void				SetTextTintMode( WgTintMode mode );
 
 	void				ClearText();
 
 	void		SetText( const wg::CharSeq& seq );
-    void		SetText( const wg::CharBuffer * buffer );
+	void		SetText( const wg::CharBuffer * buffer );
 	void		SetText( const wg::String& str );
 	void		SetText( const WgText * pText );
 
@@ -119,7 +119,7 @@ public:
 	inline bool			AutoEllipsis() const { return m_pText->IsAutoEllipsis(); }
 	virtual bool		IsAutoEllipsisDefault() const = 0;
 
-    inline wg::State	TextState() const { return m_pText->state(); }
+	inline wg::State	TextState() const { return m_pText->state(); }
 	inline WgTintMode	TextTintMode() const { return m_pText->tintMode(); }
 	inline WgOrigo TextAlignment() const;
 	inline WgText *		TextObj() const;

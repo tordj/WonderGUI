@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -86,7 +86,7 @@ public:
 
 
 	WgVectorHook * AddChild( WgWidget * pWidget );
-    WgVectorHook * AddChildren( WgWidget * pWidgets[], int nb );
+	WgVectorHook * AddChildren( WgWidget * pWidgets[], int nb );
 	WgVectorHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling );
 	WgVectorHook * InsertChildSorted( WgWidget * pWidget );
 
@@ -120,8 +120,8 @@ protected:
 	virtual void	_onRenderRequested( WgVectorHook * pHook ) = 0;
 	virtual void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect ) = 0;
 	virtual void	_onWidgetAppeared( WgVectorHook * pInserted ) = 0;				// so parent can update geometry and possibly request render.
-    virtual void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ) = 0;                // so parent can update geometry and possibly request
-    virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
+	virtual void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast ) = 0;                // so parent can update geometry and possibly request
+	virtual void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved ) = 0;		// so parent can update geometry and possibly request render.
 	virtual void	_onWidgetsReordered() = 0;
 	virtual void	_refreshAllWidgets() = 0;
 	virtual WgVectorHook * _newHook() = 0;

@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -64,7 +64,7 @@ public:
 		float	max;
 		int		steps;
 	};
-	
+
 	class Visitor
 	{
 	public:
@@ -121,13 +121,13 @@ public:
 
 		WgCoordF	handlePos(int sliderId);
 		WgRectF		geo(int sliderId);
-	}; 
+	};
 
 	typedef std::function<float(SetValueVisitor& visitor)>			SetValueFunc;
 	typedef std::function<WgCoordF(SetValueVisitor2D& visitor)>		SetValueFunc2D;
 
 	typedef std::function<WgRectF(SetGeoVisitor& visitor)>			SetGeoFunc;
-	
+
 
 	void	SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
@@ -152,52 +152,52 @@ public:
 	void	SetModifierKeys( WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys override = WG_MODKEY_NONE );
 
 	int		AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, float startValue = 0.f, float minValue = 0.f, float maxValue = 1.f, int steps = 0,
-						SetValueFunc pSetValueFunc = nullptr, wg::Skin * pBgSkin = nullptr, 
-						wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f,-1.f }, 
+						SetValueFunc pSetValueFunc = nullptr, wg::Skin * pBgSkin = nullptr,
+						wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f,-1.f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
-	int		AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, float startValueX = 0.f, float startValueY = 0.f, 
+	int		AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, float startValueX = 0.f, float startValueY = 0.f,
 						float minValueX = 0.f,  float maxValueX = 1.f, int stepsX = 0, float minValueY = 0.f, float maxValueY = 1.f, int stepsY = 0,
 						SetValueFunc2D pSetValueFunc = nullptr,
-						wg::Skin * pBgSkin = nullptr, wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f, -1.f }, 
+						wg::Skin * pBgSkin = nullptr, wg::Skin * pHandleSkin = nullptr, WgCoordF handleHotspot = { -1.f, -1.f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
-    void    RemoveAllSliders();
+	void    RemoveAllSliders();
 
 	float	SetSliderValue(int id, float value, float value2 = NAN);
 
-    void    SetSliderVisible( int id, bool bVisible );
- 
-    WgCoord HandlePointPos( int sliderId );
-    WgCoord HandlePixelPos( int sliderId );
+	void    SetSliderVisible( int id, bool bVisible );
+
+	WgCoord HandlePointPos( int sliderId );
+	WgCoord HandlePixelPos( int sliderId );
 
 	bool	MarkTest(const WgCoord& ofs) override;
 
-    wg::Skin_p GetHandleSkin(int sliderId)
-    {
-        Slider * s  = _findSlider(sliderId);
+	wg::Skin_p GetHandleSkin(int sliderId)
+	{
+		Slider * s  = _findSlider(sliderId);
 
-        if(s)
-            return s->pHandleSkin;
-        else
-            return nullptr;
+		if(s)
+			return s->pHandleSkin;
+		else
+			return nullptr;
 
-    }
+	}
 
-    void SetHandleSkin(int sliderId, wg::Skin * pkHandleSkin)
-    {
-        Slider * s  = _findSlider(sliderId);
-        if( !s )
-            return;
-        
-        WgRect sliderGeo = _sliderGeo(*s, PixelSize());
-        
-        WgRect handleGeo1 = _sliderHandleGeo(*s, sliderGeo);
-        s->pHandleSkin = pkHandleSkin;
-        WgRect handleGeo2 = _sliderHandleGeo(*s, sliderGeo);
+	void SetHandleSkin(int sliderId, wg::Skin * pkHandleSkin)
+	{
+		Slider * s  = _findSlider(sliderId);
+		if( !s )
+			return;
 
-        _requestRender(WgRect::getUnion(handleGeo1,handleGeo2));
-    }
+		WgRect sliderGeo = _sliderGeo(*s, PixelSize());
+
+		WgRect handleGeo1 = _sliderHandleGeo(*s, sliderGeo);
+		s->pHandleSkin = pkHandleSkin;
+		WgRect handleGeo2 = _sliderHandleGeo(*s, sliderGeo);
+
+		_requestRender(WgRect::getUnion(handleGeo1,handleGeo2));
+	}
 
 protected:
 
@@ -214,7 +214,7 @@ protected:
 		int				id;
 
 		bool			is2D;
-        bool            bVisible = true;
+		bool            bVisible = true;
 
 		float			value[2];
 		Bounds			bounds[2];
@@ -240,7 +240,7 @@ protected:
 
 	void	_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
 	void	_onCloneContent( const WgWidget * _pOrg ) override;
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window ) override;
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window ) override;
 	bool	_onAlphaTest( const WgCoord& ofs ) override;
 	void	_setScale(int scale) override;
 

@@ -1,18 +1,18 @@
  /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -106,11 +106,11 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
-    pDevice->setClipList(_pPatches->size(), _pPatches->begin());
-    
-    if( m_pSkin )
-        _renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
-    
+	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+
+	if( m_pSkin )
+		_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale );
+
 	// Set our tint color and blend mode.
 
 	WgBlendMode		oldBM;
@@ -133,14 +133,14 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 	// Render children recursively
 
 	if( m_hook.Widget() )
-    {
-        WgRect childCanvas = _canvas;
-        if( m_pSkin )
-            childCanvas = _skinContentRect( m_pSkin, _canvas, m_state, m_scale );
-        
+	{
+		WgRect childCanvas = _canvas;
+		if( m_pSkin )
+			childCanvas = _skinContentRect( m_pSkin, _canvas, m_state, m_scale );
+
 		m_hook.Widget()->_renderPatches( pDevice, childCanvas, childCanvas, _pPatches );
-    }
-    
+	}
+
 	// Reset old blend mode and tint color
 
 //	if( (_layer & m_layer) != 0 )
@@ -167,7 +167,7 @@ void WgShaderCapsule::_onMaskPatches(wg::Patches& patches, const WgRect& geo, co
 	//TODO: This causes trouble if another shader capsule further down the hierarchy undo the shading.
 
 	if (m_tintColor.a == 255 || m_blendMode == WgBlendMode::Replace)
-		WgCapsule::_onMaskPatches(patches, geo, clip, blendMode);		
+		WgCapsule::_onMaskPatches(patches, geo, clip, blendMode);
 }
 
 //____ _onCloneContent() _______________________________________________________

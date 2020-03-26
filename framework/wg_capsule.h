@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -62,7 +62,7 @@ protected:
 	class CapsuleHook : public WgHook
 	{
 		friend class WgCapsule;
-        friend class WgZoomOutCapsule;
+		friend class WgZoomOutCapsule;
 
 	public:
 
@@ -71,12 +71,12 @@ protected:
 
 		// Standard Hook methods
 
-        WgCoord			PixelPos() const;
-        WgSize			PixelSize() const;
-        WgRect			PixelGeo() const;
+		WgCoord			PixelPos() const;
+		WgSize			PixelSize() const;
+		WgRect			PixelGeo() const;
 
-        WgCoord			ScreenPixelPos() const;
-        WgRect			ScreenPixelGeo() const;
+		WgCoord			ScreenPixelPos() const;
+		WgRect			ScreenPixelGeo() const;
 
 		WgCapsule* 		Parent() const { return m_pParent; }
 
@@ -102,11 +102,11 @@ protected:
 
 	//
 
-    virtual WgCoord _childPos();
-    virtual WgSize  _childSize();
-    virtual WgRect  _childGeo();
-    
-    
+	virtual WgCoord _childPos();
+	virtual WgSize  _childSize();
+	virtual WgRect  _childGeo();
+
+
 	void			_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
 	void			_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	void			_onCloneContent( const WgWidget * _pOrg );

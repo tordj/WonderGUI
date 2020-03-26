@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -49,14 +49,14 @@ public:
 	bool			SetAnimation( WgGfxAnim * pAnim );
 	WgGfxAnim *		Animation() const { return m_pAnim; }
 
-    void			SetSource( wg::Skin * pSkin ) { SetSkin(pSkin); }
+	void			SetSource( wg::Skin * pSkin ) { SetSkin(pSkin); }
 
-    void            SetSkin(wg::Skin * pSkin);
-    
+	void            SetSkin(wg::Skin * pSkin);
+
 	int				PlayPos();										/// Returns play position in ticks.
 	bool			SetPlayPos( int ticks );						/// Position in ticks for next update.
 	bool			SetPlayPosFractional( float fraction );			/// Position in fractions of duration.
-	
+
 	bool			Rewind( int ticks );
 	bool			FastForward( int ticks );
 
@@ -76,13 +76,13 @@ public:
 
 	WgSize			PreferredPixelSize() const;
 
-    void SetTint(WgColor kColor);
-    const WgColor& GetTint() { return m_kTintColor; }
-    void RemoveTint();
+	void SetTint(WgColor kColor);
+	const WgColor& GetTint() { return m_kTintColor; }
+	void RemoveTint();
 
 protected:
 	void			_onCloneContent( const WgWidget * _pOrg );
-    void			_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void			_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void			_onRefresh();
 	void			_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool			_onAlphaTest( const WgCoord& ofs );
@@ -100,9 +100,9 @@ private:
 	double			m_playPos;
 	int				m_destinationPos;		// -1 = none.
 	float			m_speed;
-    float           m_playStateFraction = 0.0f;
+	float           m_playStateFraction = 0.0f;
 
-    WgColor         m_kTintColor;
+	WgColor         m_kTintColor;
 };
 
 

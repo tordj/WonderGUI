@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -187,7 +187,7 @@ void WgCursorInstance::gotoPrevWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-    const wg::Char* pText = m_pText->getLineText(line) + col - 1;
+	const wg::Char* pText = m_pText->getLineText(line) + col - 1;
 
 	while( !isspace(pText->code()) && !ispunct(pText->code()) )
 	{
@@ -226,7 +226,7 @@ void WgCursorInstance::gotoBeginningOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-    const wg::Char* pText = m_pText->getLineText(line) + col - 1;
+	const wg::Char* pText = m_pText->getLineText(line) + col - 1;
 
 	while( isspace(pText->code()) || ispunct(pText->code()) )
 	{
@@ -265,7 +265,7 @@ void WgCursorInstance::gotoNextWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-    const wg::Char* pText = m_pText->getLineText(line) + col;
+	const wg::Char* pText = m_pText->getLineText(line) + col;
 
 	while( !pText->isEndOfText() && (isspace(pText->code()) || ispunct(pText->code())) )
 	{
@@ -292,7 +292,7 @@ void WgCursorInstance::gotoEndOfWord()
 	if(col > m_pText->getLine(line)->nChars)
 		col = m_pText->getLine(line)->nChars;
 
-    const wg::Char* pText = m_pText->getLineText(line) + col;
+	const wg::Char* pText = m_pText->getLineText(line) + col;
 
 	while( !pText->isEndOfText() && !isspace(pText->code()) && !ispunct(pText->code()) )
 	{
@@ -446,22 +446,22 @@ void WgCursorInstance::delNextWord()
 //_____________________________________________________________________
 void WgCursorInstance::delToBOL()
 {
-    int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
-    goBOL();
-    int ofs2 = m_pText->LineColToOffset( m_line, m_column );
-    m_pText->deleteText( ofs2, ofs1-ofs2 );
+	int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
+	goBOL();
+	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+	m_pText->deleteText( ofs2, ofs1-ofs2 );
 }
 
 //_____________________________________________________________________
 void WgCursorInstance::delToEOL()
 {
-    int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
-    int line = m_line;
-    int column = m_column;
-    goEOL();
-    int ofs2 = m_pText->LineColToOffset( m_line, m_column );
-    m_pText->deleteText(ofs1, ofs2-ofs1);
-    _updateLocation(line, column);
+	int    ofs1 = m_pText->LineColToOffset( m_line, m_column );
+	int line = m_line;
+	int column = m_column;
+	goEOL();
+	int ofs2 = m_pText->LineColToOffset( m_line, m_column );
+	m_pText->deleteText(ofs1, ofs2-ofs1);
+	_updateLocation(line, column);
 }
 
 //____ delPrevChar() __________________________________________________________
@@ -520,11 +520,11 @@ int WgCursorInstance::ofsX() const
 
 int WgCursorInstance::ofsY() const
 {
-    int    ln = m_line;
-    int    col = m_column;
-    m_pText->posHard2Soft( ln, col );
+	int    ln = m_line;
+	int    col = m_column;
+	m_pText->posHard2Soft( ln, col );
 
-    int ofs = 0;
+	int ofs = 0;
 
 	for( int i = 0 ; i < (int) ln ; i++ )
 		ofs += m_pText->softLineSpacing(i);

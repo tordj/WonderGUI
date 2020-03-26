@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -59,7 +59,7 @@ WgEventHandler::~WgEventHandler()
 
 void WgEventHandler::SetModKeyMap( const WgModKeyMap& map )
 {
-    m_modKeyMap = map;
+	m_modKeyMap = map;
 }
 
 //____ SetFocusGroup() ________________________________________________________
@@ -591,46 +591,46 @@ bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent )
 {
 	if( !_pEvent )
 		return false;
-	
+
 	WgWidget * p = _pEvent->Widget();
 	if( p && p->Parent() )
 		return ForwardEvent( _pEvent, p->Parent() );
 	else
-		return false;				
+		return false;
 }
 
 bool WgEventHandler::ForwardEvent( const WgEvent::Event * _pEvent, WgWidget * pRecipient )
 {
 	if( !_pEvent)
 		return false;
-    
-    const_cast<WgEvent::Event *>(_pEvent)->m_pForwardTo = pRecipient;
-    return true;
+
+	const_cast<WgEvent::Event *>(_pEvent)->m_pForwardTo = pRecipient;
+	return true;
 }
 
 //____ _forwardEvent() __________________________________________________________
 
 bool WgEventHandler::_forwardEvent( const WgEvent::Event * _pEvent )
 {
-    WgWidget * pRecipient = _pEvent->m_pForwardTo.GetRealPtr();
+	WgWidget * pRecipient = _pEvent->m_pForwardTo.GetRealPtr();
 
-    
+
 	WgEvent::Event * pEvent = 0;
 
-	switch( _pEvent->Type() ) 
+	switch( _pEvent->Type() )
 	{
-        case WG_EVENT_MOUSE_ENTER:
-            pEvent = new WgEvent::MouseEnter(WgCoord());
-            pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseEnter*>(_pEvent) );
-            break;
-        case WG_EVENT_MOUSE_MOVE:
-            pEvent = new WgEvent::MouseMove(WgCoord());
-            pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseMove*>(_pEvent) );
-            break;
-        case WG_EVENT_MOUSE_LEAVE:
-            pEvent = new WgEvent::MouseLeave();
-            pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseLeave*>(_pEvent) );
-            break;
+		case WG_EVENT_MOUSE_ENTER:
+			pEvent = new WgEvent::MouseEnter(WgCoord());
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseEnter*>(_pEvent) );
+			break;
+		case WG_EVENT_MOUSE_MOVE:
+			pEvent = new WgEvent::MouseMove(WgCoord());
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseMove*>(_pEvent) );
+			break;
+		case WG_EVENT_MOUSE_LEAVE:
+			pEvent = new WgEvent::MouseLeave();
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseLeave*>(_pEvent) );
+			break;
 		case WG_EVENT_MOUSEBUTTON_PRESS:
 			pEvent = new WgEvent::MouseButtonPress(0);
 			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseButtonPress*>(_pEvent) );
@@ -661,21 +661,21 @@ bool WgEventHandler::_forwardEvent( const WgEvent::Event * _pEvent )
 			break;
 		case WG_EVENT_KEY_REPEAT:
 			pEvent =  new WgEvent::KeyRepeat(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRepeat*>(_pEvent) );		
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRepeat*>(_pEvent) );
 			break;
 		case WG_EVENT_KEY_RELEASE:
 			pEvent =  new WgEvent::KeyRelease(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRelease*>(_pEvent) );		
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::KeyRelease*>(_pEvent) );
 			break;
 		case WG_EVENT_CHARACTER:
 			pEvent =  new WgEvent::Character(0);
-			pEvent->_cloneContentFrom( static_cast<const WgEvent::Character*>(_pEvent) );		
+			pEvent->_cloneContentFrom( static_cast<const WgEvent::Character*>(_pEvent) );
 			break;
 		case WG_EVENT_MOUSEWHEEL_ROLL:
 			pEvent =  new WgEvent::MouseWheelRoll(0,0);
 			pEvent->_cloneContentFrom( static_cast<const WgEvent::MouseWheelRoll*>(_pEvent) );
 			break;
-		
+
 		default:
 			return false;
 	}
@@ -712,8 +712,8 @@ void WgEventHandler::ProcessEvents()
 
 	// Post Widget-specific tick events now we know how much time has passed
 
-    if( m_time > time )
-        _postTickEvents( (int) (m_time-time) );
+	if( m_time > time )
+		_postTickEvents( (int) (m_time-time) );
 
 	// Process Widget-specific tick events (and any events they might trigger)
 
@@ -728,8 +728,8 @@ void WgEventHandler::_processEventQueue()
 {
 	while( !m_eventQueue.empty() )
 	{
-        bool    bEavesdropped = false;
-        
+		bool    bEavesdropped = false;
+
 		WgEvent::Event * pEvent = m_eventQueue.front();
 
 		m_insertPos = m_eventQueue.begin()+1;	// Insert position set to right after current event.
@@ -740,14 +740,14 @@ void WgEventHandler::_processEventQueue()
 		{
 			WgWidget * pWidget = pEvent->Widget();
 			if( pWidget )
-            {
-                pWidget->_onEvent( pEvent, this );
+			{
+				pWidget->_onEvent( pEvent, this );
 
-                // Need to retrieve widget from weakptr again, in case callback deleted it.
-                pWidget = pEvent->Widget();
-                if(pWidget)
-                    bEavesdropped = _handleEavesdropping( pWidget, pEvent );
-            }
+				// Need to retrieve widget from weakptr again, in case callback deleted it.
+				pWidget = pEvent->Widget();
+				if(pWidget)
+					bEavesdropped = _handleEavesdropping( pWidget, pEvent );
+			}
 		}
 		else
 		{
@@ -755,12 +755,12 @@ void WgEventHandler::_processEventQueue()
 		}
 		_processEventCallbacks( pEvent );
 
-        if( pEvent->m_pForwardTo  != nullptr )
-            _forwardEvent( pEvent );
+		if( pEvent->m_pForwardTo  != nullptr )
+			_forwardEvent( pEvent );
 
-        if( pEvent->m_pFinalRecipient )
-            pEvent->m_pFinalRecipient->_onEvent( pEvent, this );
-        
+		if( pEvent->m_pFinalRecipient )
+			pEvent->m_pFinalRecipient->_onEvent( pEvent, this );
+
 		m_eventQueue.pop_front();
 		m_insertPos = m_eventQueue.begin();		// Insert position set right to start.
 
@@ -777,19 +777,19 @@ void WgEventHandler::_processEventQueue()
 
 bool WgEventHandler::_handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent )
 {
-    auto pWidget = pReceiver->Parent();
-    while( pWidget )
-    {
-        if( pWidget->IsEavesdropping() )
-        {
-            //NOTE: We only support one eavesdropper for each event in WG2, since we don't reference count the eavesdropped message.
-            QueueEvent( new WgEvent::Eavesdrop( pWidget, pEvent ) );
-            return true;
-        }
-        pWidget = pWidget->Parent();
-    }
-    
-    return false;
+	auto pWidget = pReceiver->Parent();
+	while( pWidget )
+	{
+		if( pWidget->IsEavesdropping() )
+		{
+			//NOTE: We only support one eavesdropper for each event in WG2, since we don't reference count the eavesdropped message.
+			QueueEvent( new WgEvent::Eavesdrop( pWidget, pEvent ) );
+			return true;
+		}
+		pWidget = pWidget->Parent();
+	}
+
+	return false;
 }
 
 
@@ -870,7 +870,7 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 
 	pEvent->m_timestamp	= m_time;
 	pEvent->m_modKeys	= m_modKeys;
-    pEvent->m_pointScale = m_pRoot->Scale();
+	pEvent->m_pointScale = m_pRoot->Scale();
 
 	// Only global POINTER_ENTER & POINTER_MOVE events have these members
 	// set, the rest needs to have them filled in.
@@ -897,19 +897,19 @@ void WgEventHandler::_finalizeEvent( WgEvent::Event * pEvent )
 		{
 			WgEvent::KeyEvent* p = static_cast<WgEvent::KeyEvent*>(pEvent);
 			p->m_translatedKeyCode = WgBase::TranslateKey(p->m_nativeKeyCode);
-            break;
+			break;
 		}
 
-        case WG_EVENT_MOUSEBUTTON_RELEASE:
-        {
-            auto p = static_cast<WgEvent::MouseButtonRelease*>(pEvent);
-            
-            int button = p->Button();
-            
-            if( m_pLatestPressEvents[button] )
-                p->m_pressModKeys = m_pLatestPressEvents[button]->ModKeys();
-            break;
-        }
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			auto p = static_cast<WgEvent::MouseButtonRelease*>(pEvent);
+
+			int button = p->Button();
+
+			if( m_pLatestPressEvents[button] )
+				p->m_pressModKeys = m_pLatestPressEvents[button]->ModKeys();
+			break;
+		}
 		default:
 			break;
 	}
@@ -1004,8 +1004,8 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 			assert(false);								// NOT ALLOWED!
 			break;
 
-                default:
-                        break;
+				default:
+						break;
 	}
 }
 
@@ -1013,18 +1013,18 @@ void WgEventHandler::_processGeneralEvent( WgEvent::Event * pEvent )
 
 void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 {
-    // Handle marked lock
-    
-    if( m_markedLockCountdown > 0 )
-    {
-        m_markedLockCountdown -= pEvent->Millisec();
-        if( m_markedLockCountdown <= 0 )
-        {
-            m_markedLockCountdown = 0;
-            _updateMarkedWidget(false);
-        }
-    }
-    
+	// Handle marked lock
+
+	if( m_markedLockCountdown > 0 )
+	{
+		m_markedLockCountdown -= pEvent->Millisec();
+		if( m_markedLockCountdown <= 0 )
+		{
+			m_markedLockCountdown = 0;
+			_updateMarkedWidget(false);
+		}
+	}
+
 	// Check if we need to post BUTTON_REPEAT
 
 	for( int button = 0 ; button <= WG_MAX_BUTTONS ; button++ )
@@ -1067,16 +1067,16 @@ void WgEventHandler::_processTick( WgEvent::Tick * pEvent )
 	for( unsigned int i = 0 ; i < m_keysDown.size() ; i++ )
 	{
 		KeyDownInfo * pInfo = m_keysDown[i];
-        
-        // Skip posting KEY_REPEAT for modifier keys
-        
-        int keyCode = pInfo->pEvent->TranslatedKeyCode();
-        if( keyCode == WG_KEY_SHIFT || keyCode == WG_KEY_CONTROL || keyCode == WG_KEY_ALT ||
-            keyCode == WG_KEY_SUPER || keyCode == WG_KEY_MAC_CONTROL || keyCode == WG_KEY_WIN_START )
-            continue;
-        
-        //
-        
+
+		// Skip posting KEY_REPEAT for modifier keys
+
+		int keyCode = pInfo->pEvent->TranslatedKeyCode();
+		if( keyCode == WG_KEY_SHIFT || keyCode == WG_KEY_CONTROL || keyCode == WG_KEY_ALT ||
+			keyCode == WG_KEY_SUPER || keyCode == WG_KEY_MAC_CONTROL || keyCode == WG_KEY_WIN_START )
+			continue;
+
+		//
+
 		int timePassed = (int) (pEvent->Timestamp() - pInfo->pEvent->Timestamp());
 
 		int fraction = timePassed - keyDelay;
@@ -1163,9 +1163,9 @@ void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
 
 void WgEventHandler::_processMouseMove( WgEvent::MouseMove * pEvent )
 {
-    if( pEvent->m_pointerScreenPixelPos == m_pointerPos )
-        return;                                              // No real pointer movement.
-        
+	if( pEvent->m_pointerScreenPixelPos == m_pointerPos )
+		return;                                              // No real pointer movement.
+
 	// Post events for button drag
 
 	for( int i = 0 ; i <= WG_MAX_BUTTONS ; i++ )
@@ -1195,11 +1195,11 @@ void WgEventHandler::_processMousePosition( WgEvent::MousePosition * pEvent )
 
 void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 {
-    if( m_markedLockCountdown > 0 )
-        return;
-    
-    WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
-    
+	if( m_markedLockCountdown > 0 )
+		return;
+
+	WgWidget * pWidgetTarget = m_pRoot->FindWidget( m_pointerPos, WgSearchMode::ActionTarget );
+
 	// Figure out which button of currently pressed has been pressed the longest.
 	// Mouse is only allowed to mark Widgets that were marked on press of that button.
 
@@ -1219,7 +1219,7 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 	else
 	{
 		// Checking widgets marked while the button was pressed recursively
-		//TODO: This check can fail if hierarchy has changed since button was pressed. 
+		//TODO: This check can fail if hierarchy has changed since button was pressed.
 		// We need to explicitly save all widgets receiving the press and check against that list.
 		// I believe we have the same problem inside _updateEnteredWidgets().
 
@@ -1244,16 +1244,16 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 	// and POINTER_MOVE event for first already marked (which can and should bubble down).
 
 	WgWidget * pFirstAlreadyMarked = _updateEnteredWidgets( pNowMarked );
-	
+
 	if( bMouseMoved && pFirstAlreadyMarked )
 		QueueEvent( new WgEvent::MouseMove( pFirstAlreadyMarked ) );
-		
+
 /*
 	if( pNowMarked != m_pMarkedWidget.GetRealPtr() )
 	{
 		if( m_pMarkedWidget )
 			QueueEvent( new WgEvent::MouseLeave( m_pMarkedWidget.GetRealPtr() ) );
-	
+
 		if( pNowMarked )
 			QueueEvent( new WgEvent::MouseEnter( pNowMarked ) );
 	}
@@ -1263,9 +1263,9 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 	// Copy content of pNowMarked to m_pMarkedWidget
 
 	m_pMarkedWidget = pNowMarked;
-	
+
 	// Update PointerStyle
-	
+
 	WgPointerStyle newStyle;
 
 	WgWidget * p = m_latestPressWidgets[button].GetRealPtr();
@@ -1274,15 +1274,15 @@ void WgEventHandler::_updateMarkedWidget(bool bMouseMoved)
 		newStyle = p->GetPointerStyle();
 	else if (pNowMarked && pNowMarked->IsEnabled())
 		newStyle = pNowMarked->GetPointerStyle();
-	else 
+	else
 		newStyle = WgPointerStyle::Default;
 
 	if( newStyle != m_pointerStyle )
 	{
 		QueueEvent( new WgEvent::PointerChange( newStyle ) );
 		m_pointerStyle = newStyle;
-	}	
-	
+	}
+
 }
 
 //____ _updateEnteredWidgets() _________________________________________________
@@ -1299,13 +1299,13 @@ WgWidget * WgEventHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 	{
 		int ofs = _widgetPosInList( pWidget, m_vEnteredWidgets );
 		if( ofs >= 0 )
-		{	
+		{
 			if( !pFirstAlreadyMarked )
 				pFirstAlreadyMarked = pWidget;
-			m_vEnteredWidgets[ofs] = 0;			
+			m_vEnteredWidgets[ofs] = 0;
 		}
 		else
-			QueueEvent( new WgEvent::MouseEnter( pWidget ) );		
+			QueueEvent( new WgEvent::MouseEnter( pWidget ) );
 	}
 
 	// Send MouseLeave to those that were left.
@@ -1313,9 +1313,9 @@ WgWidget * WgEventHandler::_updateEnteredWidgets( WgWidget * pMarkedWidget )
 	for( size_t i = 0 ; i < m_vEnteredWidgets.size() ; i++ )
 		if(m_vEnteredWidgets[i] )
 			QueueEvent( new WgEvent::MouseLeave( m_vEnteredWidgets[i].GetRealPtr()) );
-	
+
 	// Replace the old list with a new one.
-	
+
 	m_vEnteredWidgets.clear();
 	for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
 		m_vEnteredWidgets.push_back( pWidget );
@@ -1371,12 +1371,12 @@ void WgEventHandler::_processKeyPress( WgEvent::KeyPress * pEvent )
 		case WG_KEY_SUPER:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_SUPER);
 			break;
-        case WG_KEY_MAC_CONTROL:
+		case WG_KEY_MAC_CONTROL:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_MAC_CONTROL);
-            break;
-        case WG_KEY_WIN_START:
+			break;
+		case WG_KEY_WIN_START:
 			m_modKeys = (WgModifierKeys) (m_modKeys | WG_MODKEY_WIN_START);
-            break;
+			break;
 		default:
 			break;
 	}
@@ -1459,12 +1459,12 @@ void WgEventHandler::_processKeyRelease( WgEvent::KeyRelease * pEvent )
 		case WG_KEY_SUPER:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_SUPER);
 			break;
-        case WG_KEY_MAC_CONTROL:
+		case WG_KEY_MAC_CONTROL:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_MAC_CONTROL);
-            break;
-        case WG_KEY_WIN_START:
+			break;
+		case WG_KEY_WIN_START:
 			m_modKeys = (WgModifierKeys) (m_modKeys & ~WG_MODKEY_WIN_START);
-            break;
+			break;
 		default:
 			break;
 	}
@@ -1490,8 +1490,8 @@ void WgEventHandler::_processMouseWheelRoll( WgEvent::MouseWheelRoll * pEvent )
 
 	if( pWidget )
 		QueueEvent( new WgEvent::MouseWheelRoll( pEvent->Wheel(), pEvent->Distance(), pWidget ) );
-    
-    m_markedLockCountdown = 120;
+
+	m_markedLockCountdown = 120;
 }
 
 //____ _processMouseButtonPress() ___________________________________________________

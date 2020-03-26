@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -58,7 +58,7 @@ public:
 	bool	SetFloating( const WgRect& pointGeometry, WgOrigo origo = WgOrigo::NorthWest );
 	bool	SetFloating( const WgRect& pointGeometry, int anchor, WgOrigo hotspot );
 
-    bool    SetPadding( WgBorders padding );
+	bool    SetPadding( WgBorders padding );
 
 
 	void	Top();								// Put us ontop all our silbings.
@@ -73,7 +73,7 @@ public:
 	bool	IsAnchored() const { return !m_bFloating; }
 
 	// Methods for floating hooks
-    
+
 	bool	SetAnchor( int anchor );
 	bool	SetHotspot( WgOrigo hotspot );
 
@@ -107,7 +107,7 @@ public:
 	int				AnchorBottomRight() const { return m_anchorBottomRight; }
 
 	// Standard Hook methods
-    
+
 	WgCoord			PixelPos() const { return m_realGeo.pos(); }
 	WgSize			PixelSize() const { 	return m_realGeo.size(); }
 	WgRect			PixelGeo() const { return m_realGeo; }
@@ -174,7 +174,7 @@ public:
 	int		OffsetY() const { return m_pixelOfs.y; }
 	WgCoord	Offset() const { return m_pixelOfs; }
 
-	WgCoord	Position( const WgSize& parentSize, int scaleFactor ) const { return WgCoord( ((int)(m_xRelative*parentSize.w))+((m_pixelOfs.x*scaleFactor)>>WG_SCALE_BINALS), 
+	WgCoord	Position( const WgSize& parentSize, int scaleFactor ) const { return WgCoord( ((int)(m_xRelative*parentSize.w))+((m_pixelOfs.x*scaleFactor)>>WG_SCALE_BINALS),
 																						  ((int)(m_yRelative*parentSize.h)) +((m_pixelOfs.y*scaleFactor)>>WG_SCALE_BINALS) ); }
 
 private:
@@ -209,64 +209,64 @@ public:
 	WgFlexHook *	AddChild( WgWidget * pWidget );
 	WgFlexHook *	AddChild( WgWidget * pWidget, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
 
-    WgFlexHook *    AddChild( WgWidget * pWidget, WgOrigo anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
-    {
-        return AddChild(pWidget,static_cast<int>(anchorTopLeft),static_cast<int>(anchorBottomRight),padding);
-    }
-    WgFlexHook *    AddChild( WgWidget * pWidget, int anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
-    {
-        return AddChild(pWidget,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
-    }
-    WgFlexHook *    AddChild( WgWidget * pWidget, WgOrigo anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 )
-    {
-        return AddChild(pWidget,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
-    }
+	WgFlexHook *    AddChild( WgWidget * pWidget, WgOrigo anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
+	{
+		return AddChild(pWidget,static_cast<int>(anchorTopLeft),static_cast<int>(anchorBottomRight),padding);
+	}
+	WgFlexHook *    AddChild( WgWidget * pWidget, int anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
+	{
+		return AddChild(pWidget,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
+	}
+	WgFlexHook *    AddChild( WgWidget * pWidget, WgOrigo anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 )
+	{
+		return AddChild(pWidget,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
+	}
 
 
-    
-    WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0 );
+
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0 );
 	WgFlexHook *	AddChild( WgWidget * pWidget, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
-    WgFlexHook *    AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0 )
-    {
-        return AddChild(pWidget,pos,static_cast<int>(anchor), hotspot, padding);
-    }
+	WgFlexHook *    AddChild( WgWidget * pWidget, const WgCoord& pos, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0 )
+	{
+		return AddChild(pWidget,pos,static_cast<int>(anchor), hotspot, padding);
+	}
 
-    WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0 );
+	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0 );
 	WgFlexHook *	AddChild( WgWidget * pWidget, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0 );
-    WgFlexHook *    AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0 )
-    {
-        return AddChild(pWidget,geometry,static_cast<int>(anchor), hotspot, padding);
-    }
+	WgFlexHook *    AddChild( WgWidget * pWidget, const WgRect& geometry, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0 )
+	{
+		return AddChild(pWidget,geometry,static_cast<int>(anchor), hotspot, padding);
+	}
 
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling );
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 );
-    WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, WgOrigo anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
-    {
-        return InsertChild(pWidget,pSibling,static_cast<int>(anchorTopLeft), static_cast<int>(anchorBottomRight),padding);
-    }
-    WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
-    {
-        return InsertChild(pWidget,pSibling,anchorTopLeft,static_cast<int>(anchorBottomRight),padding);
-    }
-    WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, WgOrigo anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 )
-    {
-        return InsertChild(pWidget,pSibling,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
-    }
+	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, WgOrigo anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
+	{
+		return InsertChild(pWidget,pSibling,static_cast<int>(anchorTopLeft), static_cast<int>(anchorBottomRight),padding);
+	}
+	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, int anchorTopLeft, WgOrigo anchorBottomRight, WgBorders padding = 0 )
+	{
+		return InsertChild(pWidget,pSibling,anchorTopLeft,static_cast<int>(anchorBottomRight),padding);
+	}
+	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, WgOrigo anchorTopLeft, int anchorBottomRight, WgBorders padding = 0 )
+	{
+		return InsertChild(pWidget,pSibling,static_cast<int>(anchorTopLeft),anchorBottomRight,padding);
+	}
 
-    
-    WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0  );
+
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0  );
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
-    WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0  )
-    {
-        return InsertChild( pWidget, pSibling, pos, static_cast<int>(anchor), hotspot, padding);
-    }
+	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgCoord& pos, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0  )
+	{
+		return InsertChild( pWidget, pSibling, pos, static_cast<int>(anchor), hotspot, padding);
+	}
 
-    WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0  );
+	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo origo = WgOrigo::NorthWest, WgBorders padding = 0  );
 	WgFlexHook *	InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, int anchor, WgOrigo hotspot, WgBorders padding = 0  );
-    WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0  )
-    {
-        return InsertChild(pWidget, pSibling, geometry, static_cast<int>(anchor), hotspot, padding);
-    }
+	WgFlexHook *    InsertChild( WgWidget * pWidget, WgWidget * pSibling, const WgRect& geometry, WgOrigo anchor, WgOrigo hotspot, WgBorders padding = 0  )
+	{
+		return InsertChild(pWidget, pSibling, geometry, static_cast<int>(anchor), hotspot, padding);
+	}
 
 	bool			DeleteChild( WgWidget * pWidget );
 	WgWidget *		ReleaseChild( WgWidget * pWidget );
@@ -289,18 +289,18 @@ public:
 	// Overloaded from WgWidget
 
 	WgSize			PreferredPixelSize() const;
-    void            SetPreferredPointSize( WgSize size );
-    
+	void            SetPreferredPointSize( WgSize size );
+
 private:
 
 	void			_onCloneContent( const WgWidget * _pOrg );
 	void			_onNewSize( const WgSize& size );
 	void			_setScale( int scale );
 
-    WgSize          _scaledPreferredPixelSize( WgWidget * pWidget );
+	WgSize          _scaledPreferredPixelSize( WgWidget * pWidget );
 
 
-    void            _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
+	void            _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void			_onRequestRender( const WgRect& rect, const WgFlexHook * pHook );	// rect is in our coordinate system.
 
 	WgHook*			_firstHook() const { return FirstHook(); }
@@ -316,7 +316,7 @@ private:
 	std::vector<WgFlexAnchor>	m_anchors;
 
 	bool			m_bConfineChildren;
-    WgRect          m_preferredSize;
+	WgRect          m_preferredSize;
 
 	static WgFlexAnchor	g_baseAnchors[9];
 };

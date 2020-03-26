@@ -40,20 +40,20 @@ static const char    c_hookType[] = { "ShadowHook" };
 //_____________________________________________________________________________
 WgShadowLayer* WgShadowHook::Parent() const
 {
-    return m_pParent;
+	return m_pParent;
 }
 
 
 //_____________________________________________________________________________
 const char * WgShadowHook::Type(void) const
 {
-    return ClassType();
+	return ClassType();
 }
 
 //_____________________________________________________________________________
 const char * WgShadowHook::ClassType()
 {
-    return c_hookType;
+	return c_hookType;
 }
 
 //_____________________________________________________________________________
@@ -64,22 +64,22 @@ void WgShadowHook::_requestResize()
 //_____________________________________________________________________________
 WgHook * WgShadowHook::_prevHook() const
 {
-    if (m_pParent->m_baseHook.Widget())
-        return &m_pParent->m_baseHook;
-    else
-        return 0;
+	if (m_pParent->m_baseHook.Widget())
+		return &m_pParent->m_baseHook;
+	else
+		return 0;
 }
 
 //_____________________________________________________________________________
 WgHook * WgShadowHook::_nextHook() const
 {
-    return 0;
+	return 0;
 }
 
 //_____________________________________________________________________________
 WgContainer * WgShadowHook::_parent() const
 {
-    return m_pParent;
+	return m_pParent;
 }
 
 
@@ -89,28 +89,28 @@ WgContainer * WgShadowHook::_parent() const
 
 WgShadowLayer::WgShadowLayer() : m_frontHook(this)
 {
-    _startReceiveTicks();
+	_startReceiveTicks();
 }
 
 //____ Destructor _____________________________________________________________
 
 WgShadowLayer::~WgShadowLayer()
 {
-    _stopReceiveTicks();
+	_stopReceiveTicks();
 }
 
 //____ Type() _________________________________________________________________
 
 const char *WgShadowLayer::Type(void) const
 {
-    return GetClass();
+	return GetClass();
 }
 
 //____ GetClass() ____________________________________________________________
 
 const char * WgShadowLayer::GetClass()
 {
-    return c_widgetType;
+	return c_widgetType;
 }
 
 //____ SetFront() _____________________________________________________________
@@ -162,20 +162,20 @@ WgWidget * WgShadowLayer::ReleaseFront()
 
 //____ DeleteChild() __________________________________________________________
 
-bool WgShadowLayer::DeleteChild(WgWidget * pWidget) 
+bool WgShadowLayer::DeleteChild(WgWidget * pWidget)
 {
 	if (pWidget == m_baseHook.Widget())
 		return DeleteBase();
 	else if (pWidget == m_frontHook.Widget())
 		return DeleteFront();
 
-	return false; 
+	return false;
 }
 
 //____ ReleaseChild() _________________________________________________________
 
-WgWidget * WgShadowLayer::ReleaseChild(WgWidget * pWidget) 
-{ 
+WgWidget * WgShadowLayer::ReleaseChild(WgWidget * pWidget)
+{
 	if (pWidget == m_baseHook.Widget())
 		return ReleaseBase();
 	else if (pWidget == m_frontHook.Widget())
@@ -186,15 +186,15 @@ WgWidget * WgShadowLayer::ReleaseChild(WgWidget * pWidget)
 
 //____ DeleteAllChildren() ____________________________________________________
 
-bool WgShadowLayer::DeleteAllChildren() 
-{ 
+bool WgShadowLayer::DeleteAllChildren()
+{
 	return DeleteBase() || DeleteFront();
 }
 
 //____ ReleaseAllChildren() ___________________________________________________
 
-bool WgShadowLayer::ReleaseAllChildren() 
-{ 
+bool WgShadowLayer::ReleaseAllChildren()
+{
 	return ReleaseBase() || ReleaseFront();
 }
 
@@ -210,31 +210,31 @@ void WgShadowLayer::ClearShadows()
 
 bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
 {
-    if( !pWidget || !pShadow )
-        return false;
-   
-    int scale = pWidget->Scale();
-    
-    WgCoord pos;
-    _descendantPos(pWidget, pos);
-    
-    WgRect geo = { pos - _skinContentOfs( pShadow, WgStateEnum::Normal, scale), _skinSizeForContent( pShadow, pWidget->PixelSize(), scale) };
-    
-    m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
-    
-    wg::Patches patches;
-    patches.add(geo);
-    
-    // Remove portions of patches that are covered by opaque front widgets
-    
-    m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, _getBlendMode());
-    
-    // Make request render calls
-    
-    for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
-        _requestRender(*pRect);
-    
-    return true;
+	if( !pWidget || !pShadow )
+		return false;
+
+	int scale = pWidget->Scale();
+
+	WgCoord pos;
+	_descendantPos(pWidget, pos);
+
+	WgRect geo = { pos - _skinContentOfs( pShadow, WgStateEnum::Normal, scale), _skinSizeForContent( pShadow, pWidget->PixelSize(), scale) };
+
+	m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
+
+	wg::Patches patches;
+	patches.add(geo);
+
+	// Remove portions of patches that are covered by opaque front widgets
+
+	m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, _getBlendMode());
+
+	// Make request render calls
+
+	for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+		_requestRender(*pRect);
+
+	return true;
 }
 
 //____ RemoveShadow() _________________________________________________________
@@ -255,77 +255,77 @@ void WgShadowLayer::RemoveShadow(WgWidget * pWidget)
 			m_shadows.erase(it);
 			break;
 		}
-	}   
+	}
 }
 
 //____ SetShadowTint() __________________________________________________________
 
 void WgShadowLayer::SetShadowTint( uint8_t alpha )
 {
-    if( m_shadowTint != alpha )
-    {
-        m_shadowTint = alpha;
-        _requestRenderShadows( 0, (int) m_shadows.size() );
-    }
+	if( m_shadowTint != alpha )
+	{
+		m_shadowTint = alpha;
+		_requestRenderShadows( 0, (int) m_shadows.size() );
+	}
 }
 
 //____ MatchingPixelHeight() _________________________________________________________________
 
 int WgShadowLayer::MatchingPixelHeight( int width ) const
 {
-    int matchFront = 0;
-    int matchBase = 0;
-    
-    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
-    width -= padding.w;
-    
-    if (m_baseHook.Widget() )
-        matchBase = m_baseHook.Widget()->MatchingPixelHeight(width);
-    if (m_frontHook.Widget() )
-        matchFront = m_frontHook.Widget()->MatchingPixelHeight(width);
-    
-    return std::max(matchFront, matchBase) + padding.h;
+	int matchFront = 0;
+	int matchBase = 0;
+
+	WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
+	width -= padding.w;
+
+	if (m_baseHook.Widget() )
+		matchBase = m_baseHook.Widget()->MatchingPixelHeight(width);
+	if (m_frontHook.Widget() )
+		matchFront = m_frontHook.Widget()->MatchingPixelHeight(width);
+
+	return std::max(matchFront, matchBase) + padding.h;
 }
 
 //____ MatchingPixelWidth() _________________________________________________________________
 
 int WgShadowLayer::MatchingPixelWidth( int height ) const
 {
-    int matchFront = 0;
-    int matchBase = 0;
-    
-    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
-    height -= padding.h;
-    
-    if (m_baseHook.Widget() )
-        matchBase = m_baseHook.Widget()->MatchingPixelWidth(height);
-    if (m_frontHook.Widget() )
-        matchFront = m_frontHook.Widget()->MatchingPixelWidth(height);
-    
-    return std::max(matchFront, matchBase) + padding.w;
+	int matchFront = 0;
+	int matchBase = 0;
+
+	WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
+	height -= padding.h;
+
+	if (m_baseHook.Widget() )
+		matchBase = m_baseHook.Widget()->MatchingPixelWidth(height);
+	if (m_frontHook.Widget() )
+		matchFront = m_frontHook.Widget()->MatchingPixelWidth(height);
+
+	return std::max(matchFront, matchBase) + padding.w;
 }
 
 //____ PreferredPixelSize() _________________________________________________________________
 
 WgSize WgShadowLayer::PreferredPixelSize() const
 {
-    WgSize prefFront;
-    WgSize prefBase;
-    WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
-    
-    if (m_baseHook.Widget() )
-        prefBase = m_baseHook.Widget()->PreferredPixelSize();
-    if (m_frontHook.Widget() )
-        prefFront = m_frontHook.Widget()->PreferredPixelSize();
-    
-    return WgSize::max(prefFront, prefBase) + padding;
+	WgSize prefFront;
+	WgSize prefBase;
+	WgSize padding = m_pSkin ? _skinContentPadding( m_pSkin, m_scale) : WgSize(0,0);
+
+	if (m_baseHook.Widget() )
+		prefBase = m_baseHook.Widget()->PreferredPixelSize();
+	if (m_frontHook.Widget() )
+		prefFront = m_frontHook.Widget()->PreferredPixelSize();
+
+	return WgSize::max(prefFront, prefBase) + padding;
 }
 
 //____ _willRemoveShadows() ________________________________________________________________
 
 void WgShadowLayer::_willRemoveShadows(int ofs, int nb)
 {
-    _requestRenderShadows(ofs,nb);
+	_requestRenderShadows(ofs,nb);
 }
 
 //____ _requestRenderShadows() ________________________________________________________
@@ -447,7 +447,7 @@ WgHook * WgShadowLayer::_prevHookWithGeo(WgRect& geo, WgHook * pHook) const
 
 void WgShadowLayer::_onCloneContent(const WgWidget * _pOrg)
 {
-    
+
 }
 
 //____ _onEvent() _____________________________________________________________
@@ -458,7 +458,7 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		case WgEventType::WG_EVENT_TICK:
 		{
-            _requestPreRenderCall();
+			_requestPreRenderCall();
 			break;
 		}
 
@@ -472,91 +472,91 @@ void WgShadowLayer::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 void WgShadowLayer::_preRender()
 {
-    // Check for removed children and changes to geo that will affect shadows.
-    
-    wg::Patches patches;
-    
-    for (auto it = m_shadows.begin(); it < m_shadows.end();)
-    {
-        WgWidget * pWidget = it->widget();
-        WgShadow * pShadow = &(*it);
-        
-        // Remove shadow for deleted widget.
-        
-        if (pWidget == nullptr)
-        {
-            patches.add(pShadow->m_geo);
-            it = m_shadows.erase(it);
-            continue;
-        }
-        
-        //
-        
-        WgCoord pos;
-        WgRect oldGeo = pShadow->m_geo;
-        WgSize widgetSize = pWidget->PixelSize();
-        
-        if( widgetSize.w > 0 && widgetSize.h > 0 && _descendantPos(pWidget, pos))
-        {
-            // Widget is still our descendant and visible, check
-            // so its geo has not changed.
-            
-            int scale = pWidget->Scale();
-            
-            wg::Skin * pSkin = pShadow->shadow();
-            WgRect geo = { pos - _skinContentOfs( pSkin, WgStateEnum::Normal,scale), _skinSizeForContent( pSkin, widgetSize, scale) };
-            
-            if (geo != oldGeo)
-            {
-                patches.add(oldGeo);
-                patches.add(geo);
-                pShadow->m_geo = geo;
-            }
-        }
-        else
-        {
-            // Widget is currently hidden or not a descendant of us,
-            // hide the shadow.
-            
-            if (!oldGeo.isEmpty())
-            {
-                patches.add(oldGeo);
-                pShadow->m_geo = {0,0,0,0};
-            }
-        }
-        
-        it++;       // Only increase iterator if widget wasn't deleted.
-    }
-    
-    // Early out if there is nothing to update in shadow layer.
-    
-    if (patches.isEmpty())
-        return;
-    
-    // Mask foreground from shadow updates and request render on the remains.
-    
-    if (m_frontHook.Widget())
-        m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, WgBlendMode::Blend);
-    
-    for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
-        _requestRender(*pRect);
+	// Check for removed children and changes to geo that will affect shadows.
+
+	wg::Patches patches;
+
+	for (auto it = m_shadows.begin(); it < m_shadows.end();)
+	{
+		WgWidget * pWidget = it->widget();
+		WgShadow * pShadow = &(*it);
+
+		// Remove shadow for deleted widget.
+
+		if (pWidget == nullptr)
+		{
+			patches.add(pShadow->m_geo);
+			it = m_shadows.erase(it);
+			continue;
+		}
+
+		//
+
+		WgCoord pos;
+		WgRect oldGeo = pShadow->m_geo;
+		WgSize widgetSize = pWidget->PixelSize();
+
+		if( widgetSize.w > 0 && widgetSize.h > 0 && _descendantPos(pWidget, pos))
+		{
+			// Widget is still our descendant and visible, check
+			// so its geo has not changed.
+
+			int scale = pWidget->Scale();
+
+			wg::Skin * pSkin = pShadow->shadow();
+			WgRect geo = { pos - _skinContentOfs( pSkin, WgStateEnum::Normal,scale), _skinSizeForContent( pSkin, widgetSize, scale) };
+
+			if (geo != oldGeo)
+			{
+				patches.add(oldGeo);
+				patches.add(geo);
+				pShadow->m_geo = geo;
+			}
+		}
+		else
+		{
+			// Widget is currently hidden or not a descendant of us,
+			// hide the shadow.
+
+			if (!oldGeo.isEmpty())
+			{
+				patches.add(oldGeo);
+				pShadow->m_geo = {0,0,0,0};
+			}
+		}
+
+		it++;       // Only increase iterator if widget wasn't deleted.
+	}
+
+	// Early out if there is nothing to update in shadow layer.
+
+	if (patches.isEmpty())
+		return;
+
+	// Mask foreground from shadow updates and request render on the remains.
+
+	if (m_frontHook.Widget())
+		m_frontHook.Widget()->_onMaskPatches(patches, m_size, m_size, WgBlendMode::Blend);
+
+	for (const WgRect * pRect = patches.begin(); pRect < patches.end(); pRect++)
+		_requestRender(*pRect);
 }
 
 //____ _onNewSize() ___________________________________________________________
 
 void WgShadowLayer::_onNewSize(const WgSize& size)
 {
-    m_pShadowSurface = nullptr;
-    
-    if( m_pSkin )
-        m_frontHook.m_geo = _skinContentRect( m_pSkin, size, m_state, m_scale);
-    else
-        m_frontHook.m_geo = { 0,0,size };
+	m_pShadowSurface = nullptr;
 
-    if (m_frontHook.Widget())
-        m_frontHook.Widget()->_onNewSize(m_frontHook.m_geo);
+	if( m_pSkin )
+		m_frontHook.m_geo = _skinContentRect( m_pSkin, size, m_state, m_scale);
+	else
+		m_frontHook.m_geo = { 0,0,size };
 
-    WgLayer::_onNewSize(size);
+	if (m_frontHook.Widget())
+		m_frontHook.Widget()->_onNewSize(m_frontHook.m_geo);
+
+	WgLayer::_onNewSize(size);
 }
 
 //____ _renderPatches() _______________________________________________________
@@ -596,7 +596,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (!m_pShadowSurface)
 	{
-        auto pSurfaceFactory = wg::Base::activeContext()->surfaceFactory();
+		auto pSurfaceFactory = wg::Base::activeContext()->surfaceFactory();
 
 		if (pSurfaceFactory)
 			m_pShadowSurface = pSurfaceFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8);
@@ -632,8 +632,8 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			pDevice->setBlendMode(WgBlendMode::Max);
 
 			for (auto& shadow : m_shadows)
-                if( !shadow.m_geo.isEmpty() )
-                    _renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
+				if( !shadow.m_geo.isEmpty() )
+					_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
 
 
 			pDevice->setCanvas(oldCanvas);
@@ -643,15 +643,15 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 		// Render shadows
 
-        pDevice->setTintColor( { 255,255,255,m_shadowTint} );
+		pDevice->setTintColor( { 255,255,255,m_shadowTint} );
 		pDevice->setBlendMode(WgBlendMode::Blend);
 		pDevice->setBlitSource( m_pShadowSurface );
 		pDevice->blit( _canvas.pos() );
 
 //        for (auto& shadow : m_shadows)
 //            pDevice->blit( shadow.m_geo.pos() + _canvas.pos(), shadow.m_geo );
-        
-        pDevice->setTintColor(oldTint);
+
+		pDevice->setTintColor(oldTint);
 		pDevice->setBlendMode(oldBlendMode);
 
 	}

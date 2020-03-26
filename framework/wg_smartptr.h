@@ -9,20 +9,20 @@ class WgWeakPtrImpl;
 class WgWeakPtrHub
 {
 public:
-    int                    refCnt;
-    WgWeakPtrTarget *    pObj;
+	int                    refCnt;
+	WgWeakPtrTarget *    pObj;
 };
 
 class WgWeakPtrTarget
 {
-    friend class WgWeakPtrImpl;
+	friend class WgWeakPtrImpl;
 protected:
-    WgWeakPtrTarget() : m_pHub(0) {}
-    ~WgWeakPtrTarget() { if( m_pHub ) m_pHub->pObj = 0; }
-    
+	WgWeakPtrTarget() : m_pHub(0) {}
+	~WgWeakPtrTarget() { if( m_pHub ) m_pHub->pObj = 0; }
+
 private:
-    WgWeakPtrHub *    m_pHub;
-    
+	WgWeakPtrHub *    m_pHub;
+
 };
 
 
@@ -60,7 +60,7 @@ public:
 	~WgWeakPtr() {}
 
 
-    inline WgWeakPtr<T> & operator=( WgWeakPtr<T> const & r)
+	inline WgWeakPtr<T> & operator=( WgWeakPtr<T> const & r)
 	{
 		copy( r );
 		return *this;

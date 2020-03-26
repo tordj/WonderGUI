@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -45,7 +45,7 @@ public:
 
 	void			SetSizePolicy( SizePolicy policy );
 	SizePolicy		GetSizePolicy() const { return m_sizePolicy; }
-		
+
 	void			SetOrigo( WgOrigo origo );
 	WgOrigo	Origo() const { return m_origo; }
 
@@ -64,16 +64,16 @@ protected:
 	WgRect			_getGeo( const WgRect& parentGeo ) const;
 
 	WgStackPanel *	m_pParent;
-	
+
 	WgOrigo	m_origo;
 	SizePolicy		m_sizePolicy;
-	
+
 };
 
 class WgStackPanel : public WgVectorPanel
 {
-friend class WgStackHook;	
-	
+friend class WgStackHook;
+
 public:
 	WgStackPanel();
 	~WgStackPanel();
@@ -81,10 +81,10 @@ public:
 	const char * Type() const;
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgStackPanel(); };
-	
+
 
 	inline WgStackHook * AddChild( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChild(pWidget)); }
-    inline WgStackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
+	inline WgStackHook * AddChildren( WgWidget * pWidgets[], int nb ) { return static_cast<WgStackHook*>(WgVectorPanel::AddChildren(pWidgets, nb)); }
 	inline WgStackHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgStackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgStackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
@@ -120,7 +120,7 @@ protected:
 	void	_onRenderRequested( WgVectorHook * pHook );
 	void	_onRenderRequested( WgVectorHook * pHook, const WgRect& rect );
 	void	_onWidgetAppeared( WgVectorHook * pInserted );				// so parent can update geometry and possibly request render.
-    void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
+	void    _onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast );
 	void	_onWidgetDisappeared( WgVectorHook * pToBeRemoved );		// so parent can update geometry and possibly request render.
 	void	_onWidgetsReordered();
 	void	_refreshAllWidgets();

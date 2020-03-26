@@ -176,7 +176,7 @@ void WgScrollChart::SetScrollFromStart(bool bScrollOnStart)
 void WgScrollChart::SetCanvasPadding(WgBorders padding)
 {
 	m_pointPadding = padding;
-	WgBorders pixelPadding( (padding.top * m_scale) >> WG_SCALE_BINALS, (padding.right * m_scale) >> WG_SCALE_BINALS, 
+	WgBorders pixelPadding( (padding.top * m_scale) >> WG_SCALE_BINALS, (padding.right * m_scale) >> WG_SCALE_BINALS,
 							(padding.bottom * m_scale) >> WG_SCALE_BINALS, (padding.left * m_scale) >> WG_SCALE_BINALS );
 
 	if (pixelPadding != m_pixelPadding)
@@ -270,7 +270,7 @@ bool WgScrollChart::SetValueRange(float topValue, float bottomValue)
 	if (topValue == bottomValue)
 		return false;
 
-	if (topValue != m_setTopValue || bottomValue != m_setBottomValue)			
+	if (topValue != m_setTopValue || bottomValue != m_setBottomValue)
 	{
 		m_setTopValue = topValue;
 		m_setBottomValue = bottomValue;
@@ -498,7 +498,7 @@ int WgScrollChart::StartComplexWave(SamplePair startSample, float topLineThickne
 bool WgScrollChart::StopWave(int waveId)
 {
 	Wave * p = _getWave(waveId);
-	if (!p) 
+	if (!p)
 		return false;
 
 	p->bHidden = true;
@@ -700,8 +700,8 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 					waveCutAmount -= s.length;
 
-					
-//				if( s.top == wave.maxSample || s.top == wave.minSample || (wave.type == WaveType::Complex && (s.bottom == wave.maxSample ) 
+
+//				if( s.top == wave.maxSample || s.top == wave.minSample || (wave.type == WaveType::Complex && (s.bottom == wave.maxSample )
 
 					wave.samples.pop_front();
 				}
@@ -723,12 +723,12 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		// Calculate scroll amount and update scrollFraction.
 
 		m_scrollFraction += ticks;
-		
+
 		float samplesPerPixel = m_sampleTTL / (float) m_pCanvas->size().w;
 
 		int scrollAmount =  (int) ((m_scrollFraction-1) / samplesPerPixel);
 
-        m_scrollAmount += scrollAmount;
+		m_scrollAmount += scrollAmount;
 		m_scrollFraction -= scrollAmount * samplesPerPixel;
 
 		if (scrollAmount > 0)
@@ -746,7 +746,7 @@ void WgScrollChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		}
 	}
 	else
-        WgWidget::_onEvent(pEvent,pHandler);
+		WgWidget::_onEvent(pEvent,pHandler);
 
 }
 
@@ -773,7 +773,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		{
 			auto pOldCanvas = pDevice->canvas();
 			pDevice->setCanvas(m_pCanvas);
-            pDevice->clearClipList();
+			pDevice->clearClipList();
 
 			pDevice->fill(sz, m_chartColor);
 			_renderGridLines(pDevice, sz, sz );
@@ -822,7 +822,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				double windowEnd = m_windowEnd;
 
 				WgRect canvas(m_canvasOfs, 0, m_scrollAmount, sz.h);
-                pDevice->setClipList( 1, &canvas );
+				pDevice->setClipList( 1, &canvas );
 				pDevice->fill(canvas, m_chartColor);
 				_renderGridLines(pDevice, canvas, canvas);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
@@ -836,7 +836,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				double windowEnd = m_windowEnd - width2*timestampInc;
 
 				WgRect canvas(m_canvasOfs, 0, width1, sz.h);
-                pDevice->setClipList( 1, &canvas );
+				pDevice->setClipList( 1, &canvas );
 				pDevice->fill(canvas, m_chartColor);
 				_renderGridLines(pDevice, canvas, canvas);
 				_renderWaveSegment(pDevice, canvas, windowBegin, windowEnd, timestampInc);
@@ -845,7 +845,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 				windowEnd = m_windowEnd;
 
 				WgRect canvas2(0, 0, width2, sz.h);
-                pDevice->setClipList( 1, &canvas2 );
+				pDevice->setClipList( 1, &canvas2 );
 				pDevice->fill(canvas2, m_chartColor);
 				_renderGridLines(pDevice, canvas2, canvas2);
 				_renderWaveSegment(pDevice, canvas2, windowBegin, windowEnd, timestampInc);
@@ -943,11 +943,11 @@ void WgScrollChart::_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _c
 			case WaveType::Simple:
 				bottomLine.length = 0;
 				bottomLine.pWave = nullptr;
-                pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
+				pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
 //                pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			case WaveType::Complex:
-                pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
+				pDevice->drawWave({ _canvas.x - margin + waveSamplesOffset,_canvas.y, waveSamples-1,_canvas.h }, &topLine, &bottomLine, wave.frontFill, wave.backFill);
 //				pDevice->ClipDrawHorrWave(_canvas, { _canvas.x - margin + waveSamplesOffset,_canvas.y }, waveSamples-1, topLine, bottomLine, wave.frontFill, wave.backFill);
 				break;
 			}
@@ -1074,46 +1074,46 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	{
 		if (m_chartColor.a == 255)
 		{
-            canvas = _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale);
+			canvas = _skinContentRect( m_pSkin, _canvas, WgStateEnum::Normal, m_scale);
 
-            WgRect& coverage = canvas;
+			WgRect& coverage = canvas;
 
 			if ( !coverage.contains( pDevice->clipBounds() ) )
 			{
-                WgRect topSection(canvas.x, canvas.y, canvas.w, coverage.y - canvas.y);
+				WgRect topSection(canvas.x, canvas.y, canvas.w, coverage.y - canvas.y);
 				WgRect leftSection(canvas.x, coverage.y, coverage.x - canvas.x, coverage.h);
 				WgRect rightSection(coverage.x + coverage.w, coverage.y, canvas.x + canvas.w - (coverage.x + coverage.w), coverage.h);
 				WgRect bottomSection(canvas.x, coverage.y + coverage.h, canvas.w, canvas.y + canvas.h - (coverage.y + coverage.h));
 
-                
-                const WgRect * pOldClipList = pDevice->clipList();
-                int     oldClipListSize = pDevice->clipListSize();
-                
-                int allocSize = oldClipListSize*sizeof(WgRect)*4;
-                WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
-                int nRects = 0;
-                
-                for( int i = 0 ; i < oldClipListSize ; i++ )
-                {
-                    if( pOldClipList[i].intersectsWith(topSection) )
-                        pRects[nRects++] = WgRect(pOldClipList[i], topSection );
 
-                    if( pOldClipList[i].intersectsWith(leftSection) )
-                        pRects[nRects++] = WgRect(pOldClipList[i], leftSection );
+				const WgRect * pOldClipList = pDevice->clipList();
+				int     oldClipListSize = pDevice->clipListSize();
 
-                    if( pOldClipList[i].intersectsWith(bottomSection) )
-                        pRects[nRects++] = WgRect(pOldClipList[i], bottomSection );
+				int allocSize = oldClipListSize*sizeof(WgRect)*4;
+				WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
+				int nRects = 0;
 
-                    if( pOldClipList[i].intersectsWith(rightSection) )
-                        pRects[nRects++] = WgRect(pOldClipList[i], rightSection );
-                }
-                
-                pDevice->setClipList(nRects, pRects);
-                
-                _renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
+				for( int i = 0 ; i < oldClipListSize ; i++ )
+				{
+					if( pOldClipList[i].intersectsWith(topSection) )
+						pRects[nRects++] = WgRect(pOldClipList[i], topSection );
 
-                pDevice->setClipList(oldClipListSize, pOldClipList);
-                wg::Base::memStackRelease(allocSize);
+					if( pOldClipList[i].intersectsWith(leftSection) )
+						pRects[nRects++] = WgRect(pOldClipList[i], leftSection );
+
+					if( pOldClipList[i].intersectsWith(bottomSection) )
+						pRects[nRects++] = WgRect(pOldClipList[i], bottomSection );
+
+					if( pOldClipList[i].intersectsWith(rightSection) )
+						pRects[nRects++] = WgRect(pOldClipList[i], rightSection );
+				}
+
+				pDevice->setClipList(nRects, pRects);
+
+				_renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale);
+
+				pDevice->setClipList(oldClipListSize, pOldClipList);
+				wg::Base::memStackRelease(allocSize);
 			}
 		}
 		else
@@ -1138,8 +1138,8 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	if (m_pCanvas)
 	{
 		assert(m_pCanvas->size() == scrollCanvas.size());
-	
-        pDevice->setBlitSource(m_pCanvas);
+
+		pDevice->setBlitSource(m_pCanvas);
 		if( m_windowBegin == 0 )
 			pDevice->blit( WgCoord(scrollCanvas.x, scrollCanvas.y), { 0, 0, scrollCanvas.w, scrollCanvas.h });
 		else
@@ -1170,17 +1170,17 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 			if (!line.label.isEmpty())
 			{
 				WgPen	pen(pDevice, _canvas);
-                wg::TextAttr attr;
+				wg::TextAttr attr;
 
-                wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
-                if( m_valueLabelStyle.pTextStyle )
-                    m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
+				wg::Base::defaultStyle()->exportAttr(WgStateEnum::Normal, &attr);
+				if( m_valueLabelStyle.pTextStyle )
+					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 
 				attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
 				pen.SetAttributes(attr);
 
 				WgSize labelSize;
-                labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars());
+				labelSize.w = WgUtil::lineWidth(nullptr, attr, wg::StateEnum::Normal, line.label.chars());
 				labelSize.h = pen.GetLineHeight();
 
 				WgCoord textOfs;
@@ -1196,7 +1196,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 					_renderSkin(m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
 
 				pen.SetPos(labelPos + textOfs);
-                WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
+				WgGfxDevice::PrintLine(pDevice, pen, attr, line.label.chars());
 			}
 		}
 	}
@@ -1263,8 +1263,8 @@ bool WgScrollChart::_updateDynamics()
 
 	if (m_bDynamicValueRange)
 	{
-        float min = std::numeric_limits<float>::max();
-        float max = std::numeric_limits<float>::min();
+		float min = std::numeric_limits<float>::max();
+		float max = std::numeric_limits<float>::min();
 
 		for (auto& it : m_waves)
 		{

@@ -114,5 +114,3 @@ namespace wg
 
 } // namespace wg
 #endif //WG3_LAMDASKIN_DOT_H
-
-

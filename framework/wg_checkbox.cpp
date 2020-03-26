@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -73,7 +73,7 @@ void WgCheckBox::SetIcon( wg::Skin * pIconSkin,
 								const WgOrigo& origo, WgBorders borders, float scale,
 								bool bPushText )
 {
-	m_pIconSkin	        = pIconSkin;
+	m_pIconSkin			= pIconSkin;
 	m_iconOrigo	= origo;
 	m_iconScale			= scale;
 	m_bIconPushText		= bPushText;
@@ -85,7 +85,7 @@ void WgCheckBox::SetIcon( wg::Skin * pIconSkin,
 
 void WgCheckBox::SetIcon( wg::Skin * pIconSkin )
 {
-	m_pIconSkin	        = pIconSkin;
+	m_pIconSkin			= pIconSkin;
 	_onRefresh();
 }
 
@@ -216,8 +216,8 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 				}
 			}
 			else
-                WgWidget::_onEvent(pEvent,pHandler);
-            break;
+				WgWidget::_onEvent(pEvent,pHandler);
+			break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_CLICK:
@@ -227,8 +227,8 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-                WgWidget::_onEvent(pEvent,pHandler);
-            break;
+				WgWidget::_onEvent(pEvent,pHandler);
+			break;
 		}
 
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
@@ -245,13 +245,13 @@ void WgCheckBox::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHand
 				}
 			}
 			else
-                WgWidget::_onEvent(pEvent,pHandler);
-            break;
+				WgWidget::_onEvent(pEvent,pHandler);
+			break;
 		}
 
-        default:
-            WgWidget::_onEvent(pEvent,pHandler);
-            break;
+		default:
+			WgWidget::_onEvent(pEvent,pHandler);
+			break;
 	}
 }
 
@@ -273,35 +273,35 @@ Uint32 WgCheckBox::GetTextAreaWidth()
 //____ _onRender() ________________________________________________________
 
 void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
-{    
-    // Get correct state
-    
-    WgState state = m_state;
-    
-    if( m_bOver )
-    {
-        state.setHovered(true);
-        if( m_bPressed )
-            state.setPressed(true);
-    }
-    
-    if( m_bChecked )
-        state.setSelected(true);
-    
+{
+	// Get correct state
+
+	WgState state = m_state;
+
+	if( m_bOver )
+	{
+		state.setHovered(true);
+		if( m_bPressed )
+			state.setPressed(true);
+	}
+
+	if( m_bChecked )
+		state.setSelected(true);
+
 	// Blit background
 
-    if( m_pSkin )
-        _renderSkin(m_pSkin, pDevice, state, _canvas, m_scale );
-    
+	if( m_pSkin )
+		_renderSkin(m_pSkin, pDevice, state, _canvas, m_scale );
+
 	// Get the content rect and icon rect
 
-    WgRect contentRect	= m_pSkin ? _skinContentRect(m_pSkin, _canvas, state, m_scale) : _canvas;
+	WgRect contentRect	= m_pSkin ? _skinContentRect(m_pSkin, _canvas, state, m_scale) : _canvas;
 	WgRect iconRect		= _getIconRect( contentRect, m_pIconSkin, m_scale );
 
 	// Blit icon
 
 	if( iconRect.w > 0 && iconRect.h > 0 )
-        _renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
+		_renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
 
 	// Print text
 
@@ -310,7 +310,7 @@ void WgCheckBox::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 		WgRect	textRect = _getTextRect( contentRect, iconRect );
 		m_pText->setState( state );
 
-        WgGfxDevice::PrintText( pDevice, m_pText, textRect );
+		WgGfxDevice::PrintText( pDevice, m_pText, textRect );
 	}
 }
 
@@ -342,7 +342,7 @@ void WgCheckBox::_setScale( int scale )
 
 	m_text.SetScale(scale);
 
-        _requestResize();
+		_requestResize();
 }
 
 
@@ -445,7 +445,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 
 			//
 
-            if( (m_pSkin && _markTestSkin(m_pSkin, ofs, WgRect(0,0,bgSize), wg::StateEnum::Normal, m_markOpacity, m_scale)) ||
+			if( (m_pSkin && _markTestSkin(m_pSkin, ofs, WgRect(0,0,bgSize), wg::StateEnum::Normal, m_markOpacity, m_scale)) ||
 				_markTestTextArea( ofs.x, ofs.y ) ||
 				iconRect.contains( ofs ) )
 				return true;
@@ -455,7 +455,7 @@ bool WgCheckBox::_onAlphaTest( const WgCoord& ofs )
 		case ALPHA:			// Alpha test on background and icon.
 		{
 			if( (m_pSkin && _markTestSkin(m_pSkin, ofs, WgRect(0,0,bgSize), wg::StateEnum::Normal, m_markOpacity, m_scale)) ||
-               (m_pIconSkin && _markTestSkin( m_pIconSkin, ofs, iconRect, wg::StateEnum::Normal, m_markOpacity, m_scale )) )
+			   (m_pIconSkin && _markTestSkin( m_pIconSkin, ofs, iconRect, wg::StateEnum::Normal, m_markOpacity, m_scale )) )
 				return true;
 
 			return false;

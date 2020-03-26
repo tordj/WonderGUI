@@ -41,11 +41,11 @@ void WgRulerLabels::AddLabel( const wg::CharSeq& text, wg::TextStyle * pStyle, f
 	pLabel->text.setStyle(pStyle);
 	pLabel->text.setAlignment(origo);
 	pLabel->offset = offset;
-    pLabel->text.SetAutoEllipsis(false);
+	pLabel->text.SetAutoEllipsis(false);
 
-    if( m_labels.isEmpty() )
-        pLabel->text.setHolder(this);
-    
+	if( m_labels.isEmpty() )
+		pLabel->text.setHolder(this);
+
 	m_labels.pushBack(pLabel);
 	_requestResize();
 	_requestRender();
@@ -64,38 +64,38 @@ void WgRulerLabels::SetDirection( WgDirection direction )
 
 WgSize WgRulerLabels::PreferredPixelSize() const
 {
-    //TODO: calculation of length is not good.
-    
-    WgSize preferred;
- 
-    if( m_direction == WgDirection::Up || m_direction == WgDirection::Down )
-    {
+	//TODO: calculation of length is not good.
+
+	WgSize preferred;
+
+	if( m_direction == WgDirection::Up || m_direction == WgDirection::Down )
+	{
 		Label * pLabel = m_labels.first();
 		while( pLabel )
-        {
-            int w = pLabel->text.unwrappedWidth();
-            if( w > preferred.w )
-                preferred.w = w;
-  
-            preferred.h += pLabel->text.getLine(0)->lineSpacing;            
-            pLabel = pLabel->next();
-        }
-    }
-    else
-    {
+		{
+			int w = pLabel->text.unwrappedWidth();
+			if( w > preferred.w )
+				preferred.w = w;
+
+			preferred.h += pLabel->text.getLine(0)->lineSpacing;
+			pLabel = pLabel->next();
+		}
+	}
+	else
+	{
 		Label * pLabel = m_labels.first();
 		while( pLabel )
-        {
-            WgSize sz = pLabel->text.unwrappedSize();
-            preferred.w += sz.w;
-            
-            if( sz.h > preferred.h )
-                preferred.h = sz.h;
-            
-            pLabel = pLabel->next();
-        }
-    }
-    	
+		{
+			WgSize sz = pLabel->text.unwrappedSize();
+			preferred.w += sz.w;
+
+			if( sz.h > preferred.h )
+				preferred.h = sz.h;
+
+			pLabel = pLabel->next();
+		}
+	}
+
 	return preferred;
 }
 
@@ -113,12 +113,12 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 			int ofs = (int) (_canvas.h * pLabel->offset);
 			if( m_direction == WgDirection::Up )
 				ofs = _canvas.h - ofs;
-			
+
 			switch( pLabel->text.alignment() )
 			{
 				case WgOrigo::NorthWest:
 				case WgOrigo::North:
-				case WgOrigo::NorthEast:				
+				case WgOrigo::NorthEast:
 					break;
 				case WgOrigo::SouthEast:
 				case WgOrigo::South:
@@ -131,8 +131,8 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					ofs -= height/2;
 					break;
 			}
-			
-            WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );
+
+			WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x, _canvas.y + ofs, _canvas.w, height ) );
 			pLabel = pLabel->next();
 		}
 	}
@@ -145,7 +145,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 			int ofs = (int) (_canvas.w * pLabel->offset);
 			if( m_direction == WgDirection::Left )
 				ofs = _canvas.w - ofs;
-			
+
 			switch( pLabel->text.alignment() )
 			{
 				case WgOrigo::NorthWest:
@@ -153,7 +153,7 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 				case WgOrigo::West:
 					break;
 				case WgOrigo::SouthEast:
-				case WgOrigo::NorthEast:				
+				case WgOrigo::NorthEast:
 				case WgOrigo::East:
 					ofs -= width;
 					break;
@@ -163,15 +163,15 @@ void WgRulerLabels::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					ofs -= width/2;
 					break;
 			}
-			
-            WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );				
+
+			WgGfxDevice::PrintText( pDevice, &pLabel->text, WgRect( _canvas.x + ofs, _canvas.y, width, _canvas.h ) );
 			pLabel = pLabel->next();
 		}
 	}
-	
+
 }
 
-//____ _onCloneContent() _________________________________________________________________ 
+//____ _onCloneContent() _________________________________________________________________
 
 void WgRulerLabels::_onCloneContent( const WgWidget * _pOrg )
 {
@@ -205,7 +205,7 @@ void WgRulerLabels::_setScale( int scale )
 
 void WgRulerLabels::_textModified( WgText * pText )
 {
-    _requestResize();
-    _requestRender();
+	_requestResize();
+	_requestRender();
 }
 

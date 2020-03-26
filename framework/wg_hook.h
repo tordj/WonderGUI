@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -69,7 +69,7 @@ public:
 	WgEventHandler *	EventHandler() const;
 
 	virtual const char *Type( void ) const = 0;
-	
+
 protected:
 
 	WgHook() : m_pWidget(0) {}
@@ -88,10 +88,10 @@ protected:
 	virtual bool	_requestFocus();
 	virtual bool	_releaseFocus();
 
-    virtual void    _requestInView();
-    virtual void    _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+	virtual void    _requestInView();
+	virtual void    _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
 
-    
+
 	//
 
 	virtual WgHook *	_prevHook() const = 0;

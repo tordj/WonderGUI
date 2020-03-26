@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -245,8 +245,8 @@ void WgPopupOpener::_setScale( int scale )
 	WgWidget::_setScale(scale);
 
 	m_text.SetScale(scale);
-    
-    _requestResize();
+
+	_requestResize();
 }
 
 
@@ -259,19 +259,19 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 		useState.setPressed(true);
 
 	if (m_pSkin)
-    {
-        _renderSkin( m_pSkin, pDevice, useState, _canvas, m_scale);
-    }
+	{
+		_renderSkin( m_pSkin, pDevice, useState, _canvas, m_scale);
+	}
 
-    WgBlock    block;
+	WgBlock    block;
 
-    WgRect contentRect = _canvas;
+	WgRect contentRect = _canvas;
 
 
-    if (m_pSkin)
-    {
-        contentRect = _skinContentRect( m_pSkin, _canvas, useState, m_scale);
-    }
+	if (m_pSkin)
+	{
+		contentRect = _skinContentRect( m_pSkin, _canvas, useState, m_scale);
+	}
 
 	// Get icon and text rect from content rect
 
@@ -284,7 +284,7 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	// Render icon
 
 	if( m_pIconSkin )
-        _renderSkin(m_pIconSkin, pDevice, useState, iconRect, m_scale);
+		_renderSkin(m_pIconSkin, pDevice, useState, iconRect, m_scale);
 
 	// Print text
 
@@ -292,7 +292,7 @@ void WgPopupOpener::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	{
 		m_text.setState(useState);
 
-        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
+		WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}
 }
 
@@ -342,11 +342,11 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		{
 			if (m_bOpenOnHover && !m_bOpen)
 				_open();
-	
+
 			m_state.setHovered(true);
 			break;
 		}
-		
+
 		case	WG_EVENT_MOUSE_LEAVE:
 			m_state.setHovered(false);
 			break;
@@ -357,7 +357,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if (button == 1)
 				m_state.setPressed(true);
 			else
-                WgWidget::_onEvent(pEvent,pHandler);
+				WgWidget::_onEvent(pEvent,pHandler);
 
 			if (!m_bOpenOnHover && button == 1)
 			{
@@ -379,7 +379,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			if( button == 1 )
 				m_state.setPressed(false);
 			else
-                WgWidget::_onEvent(pEvent,pHandler);
+				WgWidget::_onEvent(pEvent,pHandler);
 			break;
 		}
 
@@ -387,7 +387,7 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-                WgWidget::_onEvent(pEvent,pHandler);
+				WgWidget::_onEvent(pEvent,pHandler);
 			break;
 		}
 
@@ -400,9 +400,9 @@ void WgPopupOpener::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			break;
 		}
 
-        default:
-            WgWidget::_onEvent(pEvent,pHandler);
-            break;
+		default:
+			WgWidget::_onEvent(pEvent,pHandler);
+			break;
 
 	}
 

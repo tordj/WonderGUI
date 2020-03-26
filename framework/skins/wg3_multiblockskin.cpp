@@ -66,7 +66,7 @@ namespace wg
 	{
 		// HACK!
 
-        m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
+		m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
 
 		//
 
@@ -97,7 +97,7 @@ namespace wg
 	{
 		// HACK!
 
-        m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
+		m_blockSize = (m_blockSizePoints*pSurf->qpixPerPoint()) / 4;
 
 		//
 
@@ -331,9 +331,9 @@ namespace wg
 
 	SizeI MultiBlockSkin::_preferredSize() const
 	{
-        // Preferred size is to map each point of the surface to a pixel of the skinarea.
-        
-        return m_blockSizePoints*MU::qpixPerPoint();
+		// Preferred size is to map each point of the surface to a pixel of the skinarea.
+
+		return m_blockSizePoints*MU::qpixPerPoint();
 	}
 
 	//____ _sizeForContent() _______________________________________________________
@@ -353,8 +353,8 @@ namespace wg
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
 
-        if( m_bIsOpaque )
-            return true;
+		if( m_bIsOpaque )
+			return true;
 
 		int stateIndex = _stateToIndex(state);
 

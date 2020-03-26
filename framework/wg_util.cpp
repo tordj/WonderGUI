@@ -101,7 +101,7 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 	int outputScale = block.OutputScale();
 	int surfaceScale = block.SurfaceScale();
 
-	WgSize dimensions = block.Size();	
+	WgSize dimensions = block.Size();
 
 	// Determine in which section the cordinate is (0-2 for x and y).
 
@@ -121,55 +121,55 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 
 	// Convert ofs.x to X-offset in bitmap, taking stretch/tile section into account.
 
-    if( xSection == 0 )
-    {
-        ofs.x = (ofs.x * surfaceScale) / outputScale;
-    }
+	if( xSection == 0 )
+	{
+		ofs.x = (ofs.x * surfaceScale) / outputScale;
+	}
 	else if( xSection == 2 )
 	{
-        ofs.x = ofs.x - (canvas.w - canvasFrame.right);           // Offset in right border of canvas
-        ofs.x = (ofs.x * surfaceScale) / outputScale;            // Scale from canvas to source coordinates
-        ofs.x += dimensions.w - sourceFrame.right;          // Add offset for right border
-        
+		ofs.x = ofs.x - (canvas.w - canvasFrame.right);           // Offset in right border of canvas
+		ofs.x = (ofs.x * surfaceScale) / outputScale;            // Scale from canvas to source coordinates
+		ofs.x += dimensions.w - sourceFrame.right;          // Add offset for right border
+
 //			ofs.x = dimensions.w - (canvas.w - ofs.x);
 	}
 	else if( xSection == 1 )
 	{
 		int tileAreaWidth = dimensions.w - sourceFrame.width();
 
-        int canvasStretchWidth = canvas.w - canvasFrame.width();	// Width of stretch-area on screen.
-        
-        ofs.x = ofs.x - canvasFrame.left;               // Offset in middle section of canvas
+		int canvasStretchWidth = canvas.w - canvasFrame.width();	// Width of stretch-area on screen.
+
+		ofs.x = ofs.x - canvasFrame.left;               // Offset in middle section of canvas
 //        ofs.x = (ofs.x * surfaceScale) / outputScale;        // Scale from canvas to source offset
-        ofs.x = (int)((ofs.x / (float)canvasStretchWidth)*tileAreaWidth) + sourceFrame.left;
-	}	
+		ofs.x = (int)((ofs.x / (float)canvasStretchWidth)*tileAreaWidth) + sourceFrame.left;
+	}
 
 	// Convert ofs.y to Y-offset in bitmap, taking stretch/tile section into account.
 
-    if( ySection == 0 )
-    {
-        ofs.y = (ofs.y * surfaceScale) / outputScale;
-    }
+	if( ySection == 0 )
+	{
+		ofs.y = (ofs.y * surfaceScale) / outputScale;
+	}
 	if( ySection == 2 )
 	{
-        ofs.y = ofs.y - (canvas.h - canvasFrame.bottom);           // Offset in bottom border of canvas
-        ofs.y = (ofs.y * surfaceScale) / outputScale;            // Scale from canvas to source coordinates
-        ofs.y += dimensions.h - sourceFrame.bottom;          // Add offset for bottom border
+		ofs.y = ofs.y - (canvas.h - canvasFrame.bottom);           // Offset in bottom border of canvas
+		ofs.y = (ofs.y * surfaceScale) / outputScale;            // Scale from canvas to source coordinates
+		ofs.y += dimensions.h - sourceFrame.bottom;          // Add offset for bottom border
 	}
 	else if( ySection == 1 )
 	{
-		int tileAreaHeight = dimensions.h - sourceFrame.height();	
-        int canvasStretchHeight = canvas.h - canvasFrame.height();	// Height of stretch-area on screen.
-        
-        ofs.y = ofs.y - canvasFrame.top;               // Offset in middle section of canvas
+		int tileAreaHeight = dimensions.h - sourceFrame.height();
+		int canvasStretchHeight = canvas.h - canvasFrame.height();	// Height of stretch-area on screen.
+
+		ofs.y = ofs.y - canvasFrame.top;               // Offset in middle section of canvas
   //      ofs.y = (ofs.y * surfaceScale) / outputScale;        // Scale from canvas to source offset
-        ofs.y = (int)((ofs.y / (float)canvasStretchHeight)*tileAreaHeight) + sourceFrame.top;
+		ofs.y = (int)((ofs.y / (float)canvasStretchHeight)*tileAreaHeight) + sourceFrame.top;
 	}
 
 	WgCoord srcOfs = block.Rect().pos();
 
-    alpha = block.Surface()->alpha( {srcOfs.x+ofs.x, srcOfs.y+ofs.y} );
-	
+	alpha = block.Surface()->alpha( {srcOfs.x+ofs.x, srcOfs.y+ofs.y} );
+
 	return ( alpha >= opacityTreshold);
 }
 
@@ -464,7 +464,7 @@ WgMode WgUtil::StateToMode(WgState state)
 	if (!state.isEnabled())
 		mode = WG_MODE_DISABLED;
 	else if (state.isHovered() && state.isSelected())
-		mode = WG_MODE_SPECIAL;	
+		mode = WG_MODE_SPECIAL;
 	else if (state.isPressed() || state.isSelected())
 		mode = WG_MODE_SELECTED;
 	else if (state.isHovered())
@@ -477,28 +477,28 @@ WgMode WgUtil::StateToMode(WgState state)
 
 WgState WgUtil::ModeToState(WgMode mode)
 {
-    WgState state = WgStateEnum::Normal;
-    
-    switch( mode )
-    {
-        case WG_MODE_NORMAL:
-            state = WgStateEnum::Normal;
-            break;
-        case WG_MODE_MARKED:
-            state = WgStateEnum::Hovered;
-            break;
-        case WG_MODE_SELECTED:
-            state = WgStateEnum::SelectedPressed;
-            break;
-        case WG_MODE_SPECIAL:
-            state = WgStateEnum::SelectedHovered;
-            break;
-        case WG_MODE_DISABLED:
-            state = WgStateEnum::Disabled;
-            break;
-    }
-    
-    return state;
+	WgState state = WgStateEnum::Normal;
+
+	switch( mode )
+	{
+		case WG_MODE_NORMAL:
+			state = WgStateEnum::Normal;
+			break;
+		case WG_MODE_MARKED:
+			state = WgStateEnum::Hovered;
+			break;
+		case WG_MODE_SELECTED:
+			state = WgStateEnum::SelectedPressed;
+			break;
+		case WG_MODE_SPECIAL:
+			state = WgStateEnum::SelectedHovered;
+			break;
+		case WG_MODE_DISABLED:
+			state = WgStateEnum::Disabled;
+			break;
+	}
+
+	return state;
 }
 
 
@@ -506,42 +506,42 @@ WgState WgUtil::ModeToState(WgMode mode)
 
 float WgUtil::ParametricBlendInOut(float t)
 {
-    float sqt = t*t;
-    return sqt / (2.0f * (sqt - t) + 1.0f);
+	float sqt = t*t;
+	return sqt / (2.0f * (sqt - t) + 1.0f);
 }
 
 //____ lineWidth() ____________________________________________________________________
 
 uint32_t WgUtil::lineWidth( void * pNode, const wg::TextAttr& attr, wg::State state, const wg::Char * pString )
 {
-    wg::TextAttr    attr2;
-    
-    WgPen pen;
-    Uint16 hStyle = 0xFFFF;
-    
-    while( !pString->isEndOfLine() )
-    {
-        if( pString->styleHandle() != hStyle )
-        {
-            attr2 = attr;
-            
-            auto pStyle = pString->stylePtr();
-            
-            if( pStyle )
-                pStyle->addToAttr( state, &attr2 );
-            pen.SetAttributes( attr2 );
-        }
-        pen.SetChar( pString->code() );
-        pen.ApplyKerning();
-        pen.AdvancePos();
-        pString++;
-    }
-    
-    // We include the terminator in case it is set to be visible.
-    
-    pen.SetChar( pString->code() );
-    pen.ApplyKerning();
-    pen.AdvancePos();
-    
-    return pen.GetPosX();
+	wg::TextAttr    attr2;
+
+	WgPen pen;
+	Uint16 hStyle = 0xFFFF;
+
+	while( !pString->isEndOfLine() )
+	{
+		if( pString->styleHandle() != hStyle )
+		{
+			attr2 = attr;
+
+			auto pStyle = pString->stylePtr();
+
+			if( pStyle )
+				pStyle->addToAttr( state, &attr2 );
+			pen.SetAttributes( attr2 );
+		}
+		pen.SetChar( pString->code() );
+		pen.ApplyKerning();
+		pen.AdvancePos();
+		pString++;
+	}
+
+	// We include the terminator in case it is set to be visible.
+
+	pen.SetChar( pString->code() );
+	pen.ApplyKerning();
+	pen.AdvancePos();
+
+	return pen.GetPosX();
 }

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -134,14 +134,14 @@ void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	//____
 
 	char	temp[40];
-    wg::Char	temp2[40];
+	wg::Char	temp2[40];
 	const char *	pTemp;
 
 	WgPen	pen( pDevice, _canvas);
-    wg::TextAttr attr;
+	wg::TextAttr attr;
 
-    if( m_pStyle )
-        m_pStyle->exportAttr( wg::StateEnum::Normal, &attr );
+	if( m_pStyle )
+		m_pStyle->exportAttr( wg::StateEnum::Normal, &attr );
 
 	pen.SetAttributes( attr );
 	pen.SetPos( WgCoord(_canvas.x, _canvas.y + pen.GetBaseline()) );
@@ -150,30 +150,30 @@ void WgFpsDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 
 	pTemp = temp;
 	sprintf( temp, "Now: %.2f", fpsCurrent );
-    wg::TextTool::readString( pTemp, temp2, 39 );
+	wg::TextTool::readString( pTemp, temp2, 39 );
 
-    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
+	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Min: %.2f", fpsMin );
-    wg::TextTool::readString( pTemp, temp2, 39 );
+	wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
+	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Avg: %.2f", fpsAvg );
-    wg::TextTool::readString( pTemp, temp2, 39 );
+	wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
+	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 
 	pTemp = temp;
 	sprintf( temp, "Max: %.2f", fpsMax );
-    wg::TextTool::readString( pTemp, temp2, 39 );
+	wg::TextTool::readString( pTemp, temp2, 39 );
 	pen.SetPosX( _canvas.x );
 	pen.MoveY( height );
-    WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
+	WgGfxDevice::PrintLine( pDevice, pen, attr, temp2 );
 }
 
 
@@ -195,7 +195,7 @@ void WgFpsDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 			_requestRender();
 		}
 		default:
-            WgWidget::_onEvent(pEvent,pHandler);
+			WgWidget::_onEvent(pEvent,pHandler);
 			break;
 	}
 }

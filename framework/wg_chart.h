@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -91,33 +91,33 @@ public:
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
 
-    bool    SetRenderSectionWidth( int nPoints );
-    int     RenderSectionWidth() const { return m_renderSectionWidth; }
+	bool    SetRenderSectionWidth( int nPoints );
+	int     RenderSectionWidth() const { return m_renderSectionWidth; }
 
 	bool	SetFixedSampleRange(float firstSample, float lastSample);
 	void	SetDynamicSampleRange();
 	bool	IsSampleRangeDynamic() const { return m_bDynamicSampleRange; }
-    int     NativeSampleRange() const;
-    
+	int     NativeSampleRange() const;
+
 	float	FirstSample() { return m_firstSample;  }
 	float	LastSample() { return m_lastSample;  }
 
 //	bool	SetResampleMethod();			// Nearest, Interpolate etc   We have two dimensions here...  Average, Maintain peaks...
 
-    void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
-    void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
 	void	SetSampleRangeResponder(std::function<void(WgChart * pWidget, float firstSample, float lastSample)> func);	// Called when widgets sample range has changed.
 	void	SetValueRangeResponder(std::function<void(WgChart * pWidget, float topValue, float bottomValue)> func);		// Called when widgets value range has changed.
 
-    bool    SetBitmapCaching( int beginWaveId, int endWaveId, wg::SurfaceFactory * pFactory );
-    void    ClearBitmapCaching();
+	bool    SetBitmapCaching( int beginWaveId, int endWaveId, wg::SurfaceFactory * pFactory );
+	void    ClearBitmapCaching();
 
-    
+
 	void	SetScale(int scale) { _setScale(scale); }
 
 
@@ -151,7 +151,7 @@ protected:
 
 		std::vector<int>	resampledTop;
 		std::vector<int>	resampledBottom;
-		int					resampledDefault;   
+		int					resampledDefault;
 		int					resampledFirst;
 	};
 
@@ -160,20 +160,20 @@ protected:
 		WgOrigo				alignment;
 		WgCoord				offset;
 		wg::Skin_p			pSkin;
-        wg::TextStyle_p		pTextStyle;
+		wg::TextStyle_p		pTextStyle;
 	};
 
-    void    _updateBitmapCache( wg::GfxDevice * pDevice );
-    void    _renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& waveCanvas );
+	void    _updateBitmapCache( wg::GfxDevice * pDevice );
+	void    _renderWave( Wave& wave, wg::GfxDevice * pDevice, const WgRect& waveCanvas );
 
-    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+	void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
 	void	_onCloneContent( const WgWidget * _pOrg );
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onNewSize( const WgSize& size );
 	void	_setScale( int scale );
 
-	
+
 	bool	_setWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample);
 	void	_resampleAllWaves();
 	void	_resampleWave( Wave * pWave, bool bRequestRenderOnChanges = false );
@@ -181,8 +181,8 @@ protected:
 	void	_requestRenderOnNewSamples(	int begOrgSamples, int nbOrgTopSamples, int * pOrgTopSamples, int nbOrgBottomSamples, int * pOrgBottomSamples,
 										int begNewSamples, int nbNewTopSamples, int * pNewTopSamples, int nbNewBottomSamples, int * pNewBottomSamples,
 										int orgDefaultSample, int newDefaultSample, float maxLineThickness, bool bInCache );
-    void    _requestRenderInCache();
-    void    _requestRenderInCache( const WgRect& rect );
+	void    _requestRenderInCache();
+	void    _requestRenderInCache( const WgRect& rect );
 
 	bool	_updateDynamics();
 	WgCoord	_placeLabel(WgCoord startPoint, WgOrigo alignment, WgCoord labelOffset, WgSize labelSize ) const;
@@ -201,8 +201,8 @@ private:
 	WgSize			m_defaultSize;
 	WgMode			m_mode;
 
-    int             m_renderSectionWidth;      // Number of render sections chart is split in horizontally.
-    
+	int             m_renderSectionWidth;      // Number of render sections chart is split in horizontally.
+
 	WgBorders		m_pointPadding;			// Padding for the canvas in points. To allow thick lines to fully stay inside widget. Grid is allowed outside.
 	WgBorders		m_pixelPadding;			// Same, but in pixels.
 
@@ -228,12 +228,12 @@ private:
 	std::function<void(WgChart * pWidget, float firstSample, float lastSample)> m_sampleRangeResponder;
 	std::function<void(WgChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
 
-    wg::SurfaceFactory_p  m_pSurfaceFactory;
-    wg::Surface_p         m_pCacheBitmap;
-    wg::Patches           m_cacheDirt;
-    
-    int                 m_cacheFirst = 0;
-    int                 m_cacheLast = 0;
+	wg::SurfaceFactory_p  m_pSurfaceFactory;
+	wg::Surface_p         m_pCacheBitmap;
+	wg::Patches           m_cacheDirt;
+
+	int                 m_cacheFirst = 0;
+	int                 m_cacheLast = 0;
 };
 
 

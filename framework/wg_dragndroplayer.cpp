@@ -36,50 +36,50 @@ static const char    c_hookType[] = { "DragNDropHook" };
 //_____________________________________________________________________________
 WgDragNDropLayer* WgDragNDropHook::Parent() const
 {
-    return m_pParent;
+	return m_pParent;
 }
 
 
 //_____________________________________________________________________________
 const char * WgDragNDropHook::Type(void) const
 {
-    return ClassType();
+	return ClassType();
 }
 
 //_____________________________________________________________________________
 const char * WgDragNDropHook::ClassType()
 {
-    return c_hookType;
+	return c_hookType;
 }
 
 //_____________________________________________________________________________
 void WgDragNDropHook::_requestResize()
 {
-    m_geo.setSize(m_pWidget->PreferredPixelSize());
-    m_pWidget->_onNewSize(m_geo);
+	m_geo.setSize(m_pWidget->PreferredPixelSize());
+	m_pWidget->_onNewSize(m_geo);
 
-    //TODO: Should we request render on old and new geometry here, or is that already taken care of?
+	//TODO: Should we request render on old and new geometry here, or is that already taken care of?
 }
 
 //_____________________________________________________________________________
 WgHook * WgDragNDropHook::_prevHook() const
 {
-    if (m_pParent->m_baseHook.Widget())
-        return &m_pParent->m_baseHook;
-    else
-        return 0;
+	if (m_pParent->m_baseHook.Widget())
+		return &m_pParent->m_baseHook;
+	else
+		return 0;
 }
 
 //_____________________________________________________________________________
 WgHook * WgDragNDropHook::_nextHook() const
 {
-    return 0;
+	return 0;
 }
 
 //_____________________________________________________________________________
 WgContainer * WgDragNDropHook::_parent() const
 {
-    return m_pParent;
+	return m_pParent;
 }
 
 
@@ -87,89 +87,89 @@ WgContainer * WgDragNDropHook::_parent() const
 
 WgDragNDropLayer::WgDragNDropLayer() : m_dragHook(this)
 {
-    _startReceiveTicks();
+	_startReceiveTicks();
 }
 
 //____ Destructor _____________________________________________________________
 
 WgDragNDropLayer::~WgDragNDropLayer()
 {
-    _stopReceiveTicks();
+	_stopReceiveTicks();
 }
 
 //____ Type() _________________________________________________________________
 
 const char *WgDragNDropLayer::Type(void) const
 {
-    return GetClass();
+	return GetClass();
 }
 
 //____ GetClass() ____________________________________________________________
 
 const char * WgDragNDropLayer::GetClass()
 {
-    return c_widgetType;
+	return c_widgetType;
 }
 
 //____ FindWidget() __________________________________________________________
 
 WgWidget * WgDragNDropLayer::FindWidget( const WgCoord& ofs, WgSearchMode mode )
 {
-    // Widget being dragged is totally transparent to the mouse, so we just
-    // forward to our child.
+	// Widget being dragged is totally transparent to the mouse, so we just
+	// forward to our child.
 
-    WgWidget * pWidget = m_baseHook.Widget();
-    if( pWidget )
-    {
-        if (pWidget->IsContainer())
-        {
-            WgWidget * pRes = static_cast<WgContainer*>(pWidget)->FindWidget(ofs, mode);
-            if (pRes)
-                return pRes;
-        }
-        else if (mode == wg::SearchMode::Geometry || pWidget->MarkTest(ofs))
-            return pWidget;
-    }
-    else if( mode == wg::SearchMode::Geometry )
-        return this;
+	WgWidget * pWidget = m_baseHook.Widget();
+	if( pWidget )
+	{
+		if (pWidget->IsContainer())
+		{
+			WgWidget * pRes = static_cast<WgContainer*>(pWidget)->FindWidget(ofs, mode);
+			if (pRes)
+				return pRes;
+		}
+		else if (mode == wg::SearchMode::Geometry || pWidget->MarkTest(ofs))
+			return pWidget;
+	}
+	else if( mode == wg::SearchMode::Geometry )
+		return this;
 
-    return nullptr;
+	return nullptr;
 }
 
 //____ Pick() _________________________________________________________________
 
 bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
 {
-    // Pick is not allowed if a widget already is picked.
-    
-    if( m_dragState != DragState::Idle && m_dragState != DragState::Picking )
-        return false;
+	// Pick is not allowed if a widget already is picked.
 
-    // Verify that widget is descendant of us
-    
-    WgWidget * p = pWidget;
-    while( p != this )
-    {
-        if( p == nullptr )
-            return false;                       // Not a descendant of ours.
+	if( m_dragState != DragState::Idle && m_dragState != DragState::Picking )
+		return false;
 
-        p = p->Parent();
-    }
-    
-    // Convert pickOfs from points to pixels.
-    
-    pickOfs.x = pickOfs.x * m_scale / WG_SCALE_BASE;
-    pickOfs.y = pickOfs.y * m_scale / WG_SCALE_BASE;
+	// Verify that widget is descendant of us
 
-    // Pick the widget.
-    
-    m_pPicked = pWidget;
-    m_pickCategory = pWidget->pickCategory();
-    
-    _eventHandler()->QueueEvent(new WgEvent::DropPick(pWidget, pickOfs, this));
-    m_dragState = DragState::Picked;
-    
-    return true;
+	WgWidget * p = pWidget;
+	while( p != this )
+	{
+		if( p == nullptr )
+			return false;                       // Not a descendant of ours.
+
+		p = p->Parent();
+	}
+
+	// Convert pickOfs from points to pixels.
+
+	pickOfs.x = pickOfs.x * m_scale / WG_SCALE_BASE;
+	pickOfs.y = pickOfs.y * m_scale / WG_SCALE_BASE;
+
+	// Pick the widget.
+
+	m_pPicked = pWidget;
+	m_pickCategory = pWidget->pickCategory();
+
+	_eventHandler()->QueueEvent(new WgEvent::DropPick(pWidget, pickOfs, this));
+	m_dragState = DragState::Picked;
+
+	return true;
 }
 
 
@@ -177,92 +177,92 @@ bool WgDragNDropLayer::Pick( WgWidget * pWidget, WgCoord pickOfs )
 
 void WgDragNDropLayer::_onRequestRender(const WgRect& rect, const WgLayerHook * pHook)
 {
-    // We don't mask against drag widget, it is assumed to be too small/transparent/irregular
-    // for that to make sense.
+	// We don't mask against drag widget, it is assumed to be too small/transparent/irregular
+	// for that to make sense.
 
-    // Clip our geometry and pass it on
+	// Clip our geometry and pass it on
 
-    _requestRender( WgRect( rect, WgRect(0,0,m_size) ));
+	_requestRender( WgRect( rect, WgRect(0,0,m_size) ));
 }
 
 //____ _firstLayerHook() ____________________________________________________________
 
 WgLayerHook * WgDragNDropLayer::_firstLayerHook() const
 {
-    if( m_dragHook.Widget() )
-        return const_cast<WgDragNDropHook*>(&m_dragHook);
-    return nullptr;
+	if( m_dragHook.Widget() )
+		return const_cast<WgDragNDropHook*>(&m_dragHook);
+	return nullptr;
 }
 
 //____ _firstHook() ____________________________________________________________
 
 WgHook * WgDragNDropLayer::_firstHook() const
 {
-    if (m_baseHook.Widget())
-        return const_cast<BaseHook*>(&m_baseHook);
-    else if( m_dragHook.Widget() )
-            return const_cast<WgDragNDropHook*>(&m_dragHook);
-    return nullptr;
+	if (m_baseHook.Widget())
+		return const_cast<BaseHook*>(&m_baseHook);
+	else if( m_dragHook.Widget() )
+			return const_cast<WgDragNDropHook*>(&m_dragHook);
+	return nullptr;
 }
 
 //____ _lastHook() ____________________________________________________________
 
 WgHook * WgDragNDropLayer::_lastHook() const
 {
-    if( m_dragHook.Widget() )
-        return const_cast<WgDragNDropHook*>(&m_dragHook);
-    else if (m_baseHook.Widget())
-        return const_cast<BaseHook*>(&m_baseHook);
-    return nullptr;
+	if( m_dragHook.Widget() )
+		return const_cast<WgDragNDropHook*>(&m_dragHook);
+	else if (m_baseHook.Widget())
+		return const_cast<BaseHook*>(&m_baseHook);
+	return nullptr;
 }
 
 //____ _firstHookWithGeo() ____________________________________________________________
 
 WgHook * WgDragNDropLayer::_firstHookWithGeo(WgRect& geo) const
 {
-    if (m_baseHook.Widget())
-    {
-        geo = WgRect(0, 0, m_size);
-        return const_cast<BaseHook*>(&m_baseHook);
-    }
-    else if( m_dragHook.Widget() )
-    {
-        geo = m_dragHook.m_geo;
-        return const_cast<WgDragNDropHook*>(&m_dragHook);
-    }
-    else
-        return nullptr;
+	if (m_baseHook.Widget())
+	{
+		geo = WgRect(0, 0, m_size);
+		return const_cast<BaseHook*>(&m_baseHook);
+	}
+	else if( m_dragHook.Widget() )
+	{
+		geo = m_dragHook.m_geo;
+		return const_cast<WgDragNDropHook*>(&m_dragHook);
+	}
+	else
+		return nullptr;
 }
 
 //____ _nextHookWithGeo() ____________________________________________________________
 
 WgHook * WgDragNDropLayer::_nextHookWithGeo(WgRect& geo, WgHook * pHook) const
 {
-    if( pHook == &m_baseHook && m_dragHook.Widget() )
-    {
-        geo = m_dragHook.m_geo;
-        return const_cast<WgDragNDropHook*>(&m_dragHook);
-    }
-    else
-        return nullptr;
+	if( pHook == &m_baseHook && m_dragHook.Widget() )
+	{
+		geo = m_dragHook.m_geo;
+		return const_cast<WgDragNDropHook*>(&m_dragHook);
+	}
+	else
+		return nullptr;
 }
 
 //____ _lastHookWithGeo() ____________________________________________________________
 
 WgHook * WgDragNDropLayer::_lastHookWithGeo(WgRect& geo) const
 {
-    if( m_dragHook.Widget() )
-    {
-        geo = m_dragHook.m_geo;
-        return const_cast<WgDragNDropHook*>(&m_dragHook);
-    }
-    else if (m_baseHook.Widget())
-    {
-        geo = WgRect(0, 0, m_size);
-        return const_cast<BaseHook*>(&m_baseHook);
-    }
-    else
-        return nullptr;
+	if( m_dragHook.Widget() )
+	{
+		geo = m_dragHook.m_geo;
+		return const_cast<WgDragNDropHook*>(&m_dragHook);
+	}
+	else if (m_baseHook.Widget())
+	{
+		geo = WgRect(0, 0, m_size);
+		return const_cast<BaseHook*>(&m_baseHook);
+	}
+	else
+		return nullptr;
 
 }
 
@@ -270,13 +270,13 @@ WgHook * WgDragNDropLayer::_lastHookWithGeo(WgRect& geo) const
 
 WgHook * WgDragNDropLayer::_prevHookWithGeo(WgRect& geo, WgHook * pHook) const
 {
-    if( pHook == &m_dragHook && m_baseHook.Widget() )
-    {
-        geo = WgRect(0,0, m_size);
-        return const_cast<BaseHook*>(&m_baseHook);
-    }
-    else
-        return nullptr;
+	if( pHook == &m_dragHook && m_baseHook.Widget() )
+	{
+		geo = WgRect(0,0, m_size);
+		return const_cast<BaseHook*>(&m_baseHook);
+	}
+	else
+		return nullptr;
 
 }
 
@@ -284,238 +284,238 @@ WgHook * WgDragNDropLayer::_prevHookWithGeo(WgRect& geo, WgHook * pHook) const
 
 void WgDragNDropLayer::_onCloneContent( const WgWidget * _pOrg )
 {
-    WgLayer::_onCloneContent( (WgContainer*) _pOrg );
+	WgLayer::_onCloneContent( (WgContainer*) _pOrg );
 }
 
 //____ _onNewSize() ___________________________________________________________
 
 void WgDragNDropLayer::_onNewSize( const WgSize& sz )
 {
-    WgLayer::_onNewSize(sz);
+	WgLayer::_onNewSize(sz);
 }
 
 //____ _onEvent() ____________________________________________________________
 
 void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler * pHandler)
 {
-    switch (_pEvent->Type())
-    {
-        case WG_EVENT_TICK:
-        {
-            switch( m_dragState )
-            {
-                case DragState::Dragging:
-                {
-                    // Check if we entered/left a (possible) target.
-                    
-                    WgCoord ofs = _pEvent->PointerPixelPos();
-                    
-                    WgWidget * pProbed = FindWidget(ofs, wg::SearchMode::ActionTarget );
-                    
-                    while (pProbed && pProbed != this && !pProbed->isDropTarget())
-                        pProbed = pProbed->Parent();
-                    
-                    if( pProbed && pProbed != this && pProbed != m_pProbed.GetRealPtr() )
-                    {
-                        m_pProbed = pProbed;
-                        pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this ));
-                    }
-                    break;
-                }
-                case DragState::Targeting:
-                {
-                    // Check if our target has changed
-                    
-                    WgCoord ofs = _pEvent->PointerPixelPos();
-                    
-                    WgWidget * pHovered = FindWidget(ofs, wg::SearchMode::ActionTarget );
-                    
-                    while (pHovered && pHovered != this && !pHovered->isDropTarget())
-                        pHovered = pHovered->Parent();
-                    
-                    if( pHovered != m_pTargeted.GetRealPtr() )
-                    {
-                        // Untarget previous target. Probing possibly new target we leave for next round.
-                        
-                        if( m_pTargeted )
-                            pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ));
-                        
-                        m_pTargeted = nullptr;
-                        m_dragState = DragState::Dragging;
-                    }
-                    
-                    // Send move messages to targeted widget
-                    
-                    if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
-                    {
-                        WgCoord targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
-                        if( targetOfs != m_targetOfs )
-                        {
-                            m_targetOfs = targetOfs;
-                            pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
-                        }
-                    }
-                    break;
-                }
-                default:
-                    break;
+	switch (_pEvent->Type())
+	{
+		case WG_EVENT_TICK:
+		{
+			switch( m_dragState )
+			{
+				case DragState::Dragging:
+				{
+					// Check if we entered/left a (possible) target.
 
-            }
-            
-            
-            break;
-        }
-            
-        case WG_EVENT_MOUSEBUTTON_DRAG:
-        {
-            auto pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
-            if (pEvent->Button() != 1)
-            {
-                WgLayer::_onEvent( _pEvent, pHandler );
-                break;
-            }
+					WgCoord ofs = _pEvent->PointerPixelPos();
 
-            switch (m_dragState)
-            {
-                case DragState::Picking:
-                {
-                    WgCoord total = pEvent->DraggedTotalPixels();
-                    if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
-                    {
-                        WgCoord pickOfs = pEvent->StartPixelPos();
-                        pHandler->QueueEvent(new WgEvent::DropPick(m_pPicked.GetRealPtr(), pickOfs, this));
-                        m_dragState = DragState::Picked;
-                    }
-                    break;
-                }
+					WgWidget * pProbed = FindWidget(ofs, wg::SearchMode::ActionTarget );
 
-                case DragState::Dragging:
-                {
-                    _updateDropHovered( pEvent->PointerPixelPos() );
-                    
-                    // Move the drag-widget onscreen.
+					while (pProbed && pProbed != this && !pProbed->isDropTarget())
+						pProbed = pProbed->Parent();
 
-                    _requestRender(m_dragHook.m_geo);
-                    m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
-                    _requestRender(m_dragHook.m_geo);
+					if( pProbed && pProbed != this && pProbed != m_pProbed.GetRealPtr() )
+					{
+						m_pProbed = pProbed;
+						pHandler->QueueEvent(new WgEvent::DropProbe(pProbed, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this ));
+					}
+					break;
+				}
+				case DragState::Targeting:
+				{
+					// Check if our target has changed
 
-                    break;
-                }
+					WgCoord ofs = _pEvent->PointerPixelPos();
 
-                case DragState::Targeting:
-                {
-                    _updateDropHovered( pEvent->PointerPixelPos() );
+					WgWidget * pHovered = FindWidget(ofs, wg::SearchMode::ActionTarget );
 
-                    // Move the drag-widget onscreen.
+					while (pHovered && pHovered != this && !pHovered->isDropTarget())
+						pHovered = pHovered->Parent();
 
-                    _requestRender(m_dragHook.m_geo);
-                    m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
-                    _requestRender(m_dragHook.m_geo);
+					if( pHovered != m_pTargeted.GetRealPtr() )
+					{
+						// Untarget previous target. Probing possibly new target we leave for next round.
 
-                    break;
-                }
+						if( m_pTargeted )
+							pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ));
 
-                default:
-                {
-                    WgLayer::_onEvent( _pEvent, pHandler );
-                    break;
-                }
-            }
+						m_pTargeted = nullptr;
+						m_dragState = DragState::Dragging;
+					}
 
-            break;
-        }
+					// Send move messages to targeted widget
 
-        case WG_EVENT_MOUSEBUTTON_PRESS:
-        {
-            auto pEvent = static_cast<const WgEvent::MouseButtonPress*>(_pEvent);
-            if (pEvent->Button() != 1 || m_dragState != DragState::Idle || pEvent->Widget() == nullptr )
-            {
-                WgLayer::_onEvent( _pEvent, pHandler );
-                break;
-            }
-            WgCoord ofs = pEvent->PointerPixelPos();
-            WgWidget * pSource = FindWidget(ofs, wg::SearchMode::ActionTarget);
+					if( m_pTargeted )                                   // Check our weak pointer just in case it has been deleted...
+					{
+						WgCoord targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
+						if( targetOfs != m_targetOfs )
+						{
+							m_targetOfs = targetOfs;
+							pHandler->QueueEvent(new WgEvent::DropMove(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget, this ));
+						}
+					}
+					break;
+				}
+				default:
+					break;
 
-            while (pSource && pSource != this && !pSource->isPickable())
-                pSource = pSource->Parent();
+			}
 
-            if (pSource && pSource != this && pSource->isPickable())
-            {
-                m_pPicked = pSource;
-                m_pickCategory = pSource->pickCategory();
-                m_dragState = DragState::Picking;
-            }
-            else
-                WgLayer::_onEvent( _pEvent, pHandler );
 
-            break;
-        }
+			break;
+		}
 
-        case WG_EVENT_MOUSEBUTTON_RELEASE:
-        {
-            auto pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
-            if( pEvent->Button() != 1)
-            {
-                WgLayer::_onEvent( _pEvent, pHandler );
-                break;
-            }
-            switch (m_dragState)
-            {
-                case Picking:
-                {
-                    m_pPicked = nullptr;
-                    m_dragState = DragState::Idle;
-                    break;
-                }
-                case Picked:
-                {
-                    assert(false);		// There should be no mouse release msg before our DropPickMsg is returned.
-                }
-                case Dragging:
-                {
-                    _cancel();
-                    break;
-                }
-                case Targeting:
-                {
-                    if( m_pTargeted )
-                    {
-                        pHandler->QueueEvent(new WgEvent::DropDeliver(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this));
-                        m_dragState = DragState::Delivering;
-                        pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
-                        m_pTargeted = nullptr;
-                    }
-                    else
-                        _cancel();
-                    break;
-                }
-                default:
-                    WgLayer::_onEvent( _pEvent, pHandler );
-                    break;
-            }
-            break;
-        }
+		case WG_EVENT_MOUSEBUTTON_DRAG:
+		{
+			auto pEvent = static_cast<const WgEvent::MouseButtonDrag*>(_pEvent);
+			if (pEvent->Button() != 1)
+			{
+				WgLayer::_onEvent( _pEvent, pHandler );
+				break;
+			}
 
-        case WG_EVENT_DROP_PICK:
-        {
-            auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
+			switch (m_dragState)
+			{
+				case DragState::Picking:
+				{
+					WgCoord total = pEvent->DraggedTotalPixels();
+					if (abs(total.x) + abs(total.y) > m_dragStartTreshold)
+					{
+						WgCoord pickOfs = pEvent->StartPixelPos();
+						pHandler->QueueEvent(new WgEvent::DropPick(m_pPicked.GetRealPtr(), pickOfs, this));
+						m_dragState = DragState::Picked;
+					}
+					break;
+				}
 
-            assert(m_dragState == DragState::Picked);
+				case DragState::Dragging:
+				{
+					_updateDropHovered( pEvent->PointerPixelPos() );
 
-            if (pEvent->hasPayload() && m_dragState == DragState::Picked )
-            {
-                // Set payload
+					// Move the drag-widget onscreen.
 
-                m_pPayload = pEvent->payload();
+					_requestRender(m_dragHook.m_geo);
+					m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
+					_requestRender(m_dragHook.m_geo);
 
-                // Set/generate drag widget (widget actually dragged across the screen)
+					break;
+				}
 
-                auto pDragWidget = pEvent->dragWidget();
-                WgSize    dragWidgetSize;
+				case DragState::Targeting:
+				{
+					_updateDropHovered( pEvent->PointerPixelPos() );
 
-                if (pDragWidget)
-                {
-                    _replaceWidgetInHook(pDragWidget);
+					// Move the drag-widget onscreen.
+
+					_requestRender(m_dragHook.m_geo);
+					m_dragHook.m_geo.setPos( pEvent->PointerPixelPos() + m_dragWidgetOfs );
+					_requestRender(m_dragHook.m_geo);
+
+					break;
+				}
+
+				default:
+				{
+					WgLayer::_onEvent( _pEvent, pHandler );
+					break;
+				}
+			}
+
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
+			auto pEvent = static_cast<const WgEvent::MouseButtonPress*>(_pEvent);
+			if (pEvent->Button() != 1 || m_dragState != DragState::Idle || pEvent->Widget() == nullptr )
+			{
+				WgLayer::_onEvent( _pEvent, pHandler );
+				break;
+			}
+			WgCoord ofs = pEvent->PointerPixelPos();
+			WgWidget * pSource = FindWidget(ofs, wg::SearchMode::ActionTarget);
+
+			while (pSource && pSource != this && !pSource->isPickable())
+				pSource = pSource->Parent();
+
+			if (pSource && pSource != this && pSource->isPickable())
+			{
+				m_pPicked = pSource;
+				m_pickCategory = pSource->pickCategory();
+				m_dragState = DragState::Picking;
+			}
+			else
+				WgLayer::_onEvent( _pEvent, pHandler );
+
+			break;
+		}
+
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
+			auto pEvent = static_cast<const WgEvent::MouseButtonRelease*>(_pEvent);
+			if( pEvent->Button() != 1)
+			{
+				WgLayer::_onEvent( _pEvent, pHandler );
+				break;
+			}
+			switch (m_dragState)
+			{
+				case Picking:
+				{
+					m_pPicked = nullptr;
+					m_dragState = DragState::Idle;
+					break;
+				}
+				case Picked:
+				{
+					assert(false);		// There should be no mouse release msg before our DropPickMsg is returned.
+				}
+				case Dragging:
+				{
+					_cancel();
+					break;
+				}
+				case Targeting:
+				{
+					if( m_pTargeted )
+					{
+						pHandler->QueueEvent(new WgEvent::DropDeliver(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), this));
+						m_dragState = DragState::Delivering;
+						pHandler->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
+						m_pTargeted = nullptr;
+					}
+					else
+						_cancel();
+					break;
+				}
+				default:
+					WgLayer::_onEvent( _pEvent, pHandler );
+					break;
+			}
+			break;
+		}
+
+		case WG_EVENT_DROP_PICK:
+		{
+			auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
+
+			assert(m_dragState == DragState::Picked);
+
+			if (pEvent->hasPayload() && m_dragState == DragState::Picked )
+			{
+				// Set payload
+
+				m_pPayload = pEvent->payload();
+
+				// Set/generate drag widget (widget actually dragged across the screen)
+
+				auto pDragWidget = pEvent->dragWidget();
+				WgSize    dragWidgetSize;
+
+				if (pDragWidget)
+				{
+					_replaceWidgetInHook(pDragWidget);
 
 					// Ugly hack needed for AmpRoom to force a refresh of DragWidget geometry.
 					// Apparently the background image has f-cked  up geometry and I haven't investigated why. /Tord
@@ -527,95 +527,95 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 					}
 
 					dragWidgetSize = pDragWidget->PreferredPixelSize();
-                    m_dragWidgetOfs = pEvent->dragWidgetPointerOfs();
-                    m_bDeleteDraggedWhenDone = pEvent->deleteDragWidgetWhenDone();
-                }
-                else
-                {
-                    m_dragWidgetOfs = WgCoord(0,0) - pEvent->pickOfs();
-                    dragWidgetSize = m_pPicked->PixelSize();                             //TODO: Possible source of error, if picked widget changes size before the render call.
-                    m_bDeleteDraggedWhenDone = true;
-                }
+					m_dragWidgetOfs = pEvent->dragWidgetPointerOfs();
+					m_bDeleteDraggedWhenDone = pEvent->deleteDragWidgetWhenDone();
+				}
+				else
+				{
+					m_dragWidgetOfs = WgCoord(0,0) - pEvent->pickOfs();
+					dragWidgetSize = m_pPicked->PixelSize();                             //TODO: Possible source of error, if picked widget changes size before the render call.
+					m_bDeleteDraggedWhenDone = true;
+				}
 
-                WgCoord mousePos = Abs2localPixel(pEvent->PointerScreenPixelPos());
-                m_dragHook.m_geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
-				 
+				WgCoord mousePos = Abs2localPixel(pEvent->PointerScreenPixelPos());
+				m_dragHook.m_geo = { mousePos + m_dragWidgetOfs, dragWidgetSize };
+
 				if (pDragWidget)
 				{
 //					pDragWidget->_onNewSize(dragWidgetSize);
 				}
 
-                _requestRender(m_dragHook.m_geo);
-                m_dragState = DragState::Dragging;
-            }
-            else
-                _cancel();
+				_requestRender(m_dragHook.m_geo);
+				m_dragState = DragState::Dragging;
+			}
+			else
+				_cancel();
 
-            break;
-        }
+			break;
+		}
 
-        case WG_EVENT_DROP_PROBE:
-        {
-            auto pEvent= static_cast<const WgEvent::DropProbe*>(_pEvent);
+		case WG_EVENT_DROP_PROBE:
+		{
+			auto pEvent= static_cast<const WgEvent::DropProbe*>(_pEvent);
 
-            // Check if our probe was acccepted and in that case start targeting.
+			// Check if our probe was acccepted and in that case start targeting.
 
-            if( pEvent->isAccepted() )
-            {
-                WgWidget * pTargeted = pEvent->Widget();
+			if( pEvent->isAccepted() )
+			{
+				WgWidget * pTargeted = pEvent->Widget();
 
-                pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget,  this));
+				pHandler->QueueEvent(new WgEvent::DropEnter(pTargeted, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr(), m_dragHook.m_pWidget,  this));
 
-                m_pProbed = nullptr;
-                m_pTargeted = pTargeted;
-                m_targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
-                m_dragState = DragState::Targeting;
-            }
+				m_pProbed = nullptr;
+				m_pTargeted = pTargeted;
+				m_targetOfs = _pEvent->PointerScreenPixelPos() - m_pTargeted->ScreenPixelPos();
+				m_dragState = DragState::Targeting;
+			}
 
-            break;
-        }
+			break;
+		}
 
-        case WG_EVENT_DROP_MOVE:
-        {
-            auto pEvent = static_cast<const WgEvent::DropMove*>(_pEvent);
+		case WG_EVENT_DROP_MOVE:
+		{
+			auto pEvent = static_cast<const WgEvent::DropMove*>(_pEvent);
 
-            // Check if we need to change drag widget
+			// Check if we need to change drag widget
 
-            if( pEvent->dragWidget() != m_dragHook.m_pWidget )
-                _replaceDragWidget(pEvent->dragWidget());
-            break;
-        }
+			if( pEvent->dragWidget() != m_dragHook.m_pWidget )
+				_replaceDragWidget(pEvent->dragWidget());
+			break;
+		}
 
-        case WG_EVENT_DROP_ENTER:
-        {
-            auto pEvent = static_cast<const WgEvent::DropEnter*>(_pEvent);
+		case WG_EVENT_DROP_ENTER:
+		{
+			auto pEvent = static_cast<const WgEvent::DropEnter*>(_pEvent);
 
-            // Check if we need to change drag widget
+			// Check if we need to change drag widget
 
-            if( pEvent->dragWidget() != m_dragHook.m_pWidget )
-                _replaceDragWidget(pEvent->dragWidget());
+			if( pEvent->dragWidget() != m_dragHook.m_pWidget )
+				_replaceDragWidget(pEvent->dragWidget());
 
-            break;
-        }
+			break;
+		}
 
-        case WG_EVENT_DROP_DELIVER:
-        {
-            auto pEvent = static_cast<const WgEvent::DropDeliver*>(_pEvent);
+		case WG_EVENT_DROP_DELIVER:
+		{
+			auto pEvent = static_cast<const WgEvent::DropDeliver*>(_pEvent);
 
-            // Check if our delivery was accepted and in that case complete, otherwise cancel.
+			// Check if our delivery was accepted and in that case complete, otherwise cancel.
 
-            if( pEvent->isAccepted() )
-                _complete( pEvent->deliveredTo() );
-            else
-                _cancel();
+			if( pEvent->isAccepted() )
+				_complete( pEvent->deliveredTo() );
+			else
+				_cancel();
 
-            break;
-        }
+			break;
+		}
 
-        default:
-            WgLayer::_onEvent( _pEvent, pHandler );
-            break;
-    }
+		default:
+			WgLayer::_onEvent( _pEvent, pHandler );
+			break;
+	}
 
 }
 
@@ -623,57 +623,57 @@ void WgDragNDropLayer::_onEvent(const WgEvent::Event * _pEvent, WgEventHandler *
 
 void WgDragNDropLayer::_cancel()
 {
-    _clearDropHovered();
+	_clearDropHovered();
 
-    if( m_dragHook.Widget() )
-    {
-        _requestRender(m_dragHook.m_geo);
-        _replaceWidgetInHook(nullptr);
-    }
+	if( m_dragHook.Widget() )
+	{
+		_requestRender(m_dragHook.m_geo);
+		_replaceWidgetInHook(nullptr);
+	}
 
-    if( m_pTargeted )
-    {
-        _eventHandler()->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
-        m_pTargeted = nullptr;
-    }
+	if( m_pTargeted )
+	{
+		_eventHandler()->QueueEvent(new WgEvent::DropLeave(m_pTargeted.GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr()));
+		m_pTargeted = nullptr;
+	}
 
-    _eventHandler()->QueueEvent(new WgEvent::DropCancel(m_pPicked.GetRealPtr(), m_pickCategory, nullptr));
-    m_pPicked = nullptr;
-    m_pPayload = nullptr;
-    m_dragState = DragState::Idle;
+	_eventHandler()->QueueEvent(new WgEvent::DropCancel(m_pPicked.GetRealPtr(), m_pickCategory, nullptr));
+	m_pPicked = nullptr;
+	m_pPayload = nullptr;
+	m_dragState = DragState::Idle;
 }
 
 //____ _complete() _______________________________________________________________
 
 void WgDragNDropLayer::_complete( WgWidget * pDeliveredTo )
 {
-    assert( !m_pTargeted );
+	assert( !m_pTargeted );
 
-    _clearDropHovered();
+	_clearDropHovered();
 
-    if( m_dragHook.m_pWidget )
-    {
-        _requestRender(m_dragHook.m_geo);
-        _replaceWidgetInHook(nullptr);
-    }
-    
-    _eventHandler()->QueueEvent(new WgEvent::DropComplete(m_pPicked.GetRealPtr(), pDeliveredTo, m_pickCategory, m_pPayload));
-    m_pPicked = nullptr;
-    m_pPayload = nullptr;
-    m_dragState = DragState::Idle;
+	if( m_dragHook.m_pWidget )
+	{
+		_requestRender(m_dragHook.m_geo);
+		_replaceWidgetInHook(nullptr);
+	}
+
+	_eventHandler()->QueueEvent(new WgEvent::DropComplete(m_pPicked.GetRealPtr(), pDeliveredTo, m_pickCategory, m_pPayload));
+	m_pPicked = nullptr;
+	m_pPayload = nullptr;
+	m_dragState = DragState::Idle;
 }
 
 //____ _replaceDragWidget() ______________________________________________________
 
 void WgDragNDropLayer::_replaceDragWidget( WgWidget * pNewWidget )
 {
-    WgSize newSize = pNewWidget->PreferredPixelSize();
-    WgSize maxSize = WgSize::max(m_dragHook.m_geo.size(),newSize);
+	WgSize newSize = pNewWidget->PreferredPixelSize();
+	WgSize maxSize = WgSize::max(m_dragHook.m_geo.size(),newSize);
 
-    _replaceWidgetInHook( pNewWidget );
-    m_dragHook.m_geo.setSize(newSize);
+	_replaceWidgetInHook( pNewWidget );
+	m_dragHook.m_geo.setSize(newSize);
 
-    _requestRender(maxSize);
+	_requestRender(maxSize);
 }
 
 
@@ -681,32 +681,32 @@ void WgDragNDropLayer::_replaceDragWidget( WgWidget * pNewWidget )
 
 void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
 {
-    // Generate drag widget as an image of picked widget if missing and needed.
+	// Generate drag widget as an image of picked widget if missing and needed.
 
-    if( m_dragState == DragState::Dragging && !m_dragHook.m_pWidget )
-    {
-        WgSize sz = m_pPicked->PixelSize();
+	if( m_dragState == DragState::Dragging && !m_dragHook.m_pWidget )
+	{
+		WgSize sz = m_pPicked->PixelSize();
 
-        auto pCanvas = m_pPicked->Screenshot();
-        auto pImage = new WgImage();
-        pImage->SetImage( pCanvas );
-        pImage->_onNewSize(sz);
+		auto pCanvas = m_pPicked->Screenshot();
+		auto pImage = new WgImage();
+		pImage->SetImage( pCanvas );
+		pImage->_onNewSize(sz);
 
-        _replaceWidgetInHook(pImage);
-    }
+		_replaceWidgetInHook(pImage);
+	}
 
-    WgLayer::_renderPatches(pDevice,_canvas,_window, _pPatches);
+	WgLayer::_renderPatches(pDevice,_canvas,_window, _pPatches);
 }
 
 //____ _replaceWidgetInHook() _________________________________________________
 
 void WgDragNDropLayer::_replaceWidgetInHook(WgWidget * pNewWidget)
 {
-    WgWidget * pOldWidget = m_dragHook._releaseWidget();
-    if( pOldWidget && m_bDeleteDraggedWhenDone )
-        delete pOldWidget;
-    if( pNewWidget )
-        m_dragHook._attachWidget(pNewWidget);
+	WgWidget * pOldWidget = m_dragHook._releaseWidget();
+	if( pOldWidget && m_bDeleteDraggedWhenDone )
+		delete pOldWidget;
+	if( pNewWidget )
+		m_dragHook._attachWidget(pNewWidget);
 //    _requestRender( m_dragHook.m_geo );
 }
 
@@ -714,55 +714,55 @@ void WgDragNDropLayer::_replaceWidgetInHook(WgWidget * pNewWidget)
 
 int WgDragNDropLayer::_widgetPosInList( const WgWidget * pWidget, const std::vector<WgWidgetWeakPtr>& list )
 {
-    for( size_t i = 0 ; i < list.size() ; i++ )
-        if( list[i].GetRealPtr() == pWidget )
-            return i;
-    
-    return -1;
+	for( size_t i = 0 ; i < list.size() ; i++ )
+		if( list[i].GetRealPtr() == pWidget )
+			return i;
+
+	return -1;
 }
 
 //____ _updateDropHovered() _____________________________________________________
 
 void WgDragNDropLayer::_updateDropHovered( WgCoord hoverPos )
 {
-    WgWidget * pMarkedWidget = FindWidget(hoverPos, wg::SearchMode::ActionTarget);
-    
-    // Loop through our new widgets and check if they already
-    // were entered. Send MouseEnter to all new widgets and notice the first
-    // common ancestor .
-    
-    for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
-    {
-        int ofs = _widgetPosInList( pWidget, m_vHoveredInside );
-        if( ofs >= 0 )
-        {
-            _queueEvent( new WgEvent::DropHoverMove( m_vHoveredInside[ofs].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
-            m_vHoveredInside[ofs] = 0;
-        }
-        else
-            _queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
-    }
-    
-    // Send MouseLeave to those that were left.
-    
-    for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
-        if(m_vHoveredInside[i] )
-            _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
-    
-    // Replace the old list with a new one.
-    
-    m_vHoveredInside.clear();
-    for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
-        m_vHoveredInside.push_back( pWidget );
+	WgWidget * pMarkedWidget = FindWidget(hoverPos, wg::SearchMode::ActionTarget);
+
+	// Loop through our new widgets and check if they already
+	// were entered. Send MouseEnter to all new widgets and notice the first
+	// common ancestor .
+
+	for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
+	{
+		int ofs = _widgetPosInList( pWidget, m_vHoveredInside );
+		if( ofs >= 0 )
+		{
+			_queueEvent( new WgEvent::DropHoverMove( m_vHoveredInside[ofs].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
+			m_vHoveredInside[ofs] = 0;
+		}
+		else
+			_queueEvent( new WgEvent::DropHoverEnter( pWidget, m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
+	}
+
+	// Send MouseLeave to those that were left.
+
+	for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
+		if(m_vHoveredInside[i] )
+			_queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
+
+	// Replace the old list with a new one.
+
+	m_vHoveredInside.clear();
+	for( WgWidget * pWidget = pMarkedWidget ; pWidget != 0 ; pWidget = pWidget->Parent() )
+		m_vHoveredInside.push_back( pWidget );
 }
 
 //____ _clearDropHovered() _____________________________________________________
 
 void WgDragNDropLayer::_clearDropHovered()
 {
-    for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
-        _queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
+	for( size_t i = 0 ; i < m_vHoveredInside.size() ; i++ )
+		_queueEvent( new WgEvent::DropHoverLeave( m_vHoveredInside[i].GetRealPtr(), m_pickCategory, m_pPayload, m_pPicked.GetRealPtr() ) );
 
-    m_vHoveredInside.clear();
+	m_vHoveredInside.clear();
 }
 

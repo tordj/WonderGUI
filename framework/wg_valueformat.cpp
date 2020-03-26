@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -70,16 +70,16 @@ wg::String WgValueFormatter::Suffix() const
 
 wg::String WgValueFormatter::Format( Sint64 value ) const
 {
-    wg::CharBuffer	buff;
+	wg::CharBuffer	buff;
 	buff.setUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
 	buff.pushFront( m_format.prefix );
 	buff.pushBack( m_format.suffix );
 
 	if( value < 0 )
-        buff.pushFront( wg::Char('-') );
+		buff.pushFront( wg::Char('-') );
 	else if( value >= 0 && m_format.bPlus )
-        buff.pushFront( wg::Char('+') );
+		buff.pushFront( wg::Char('+') );
 
 	return wg::String(&buff);
 }
@@ -88,14 +88,14 @@ wg::String WgValueFormatter::Format( Sint64 value ) const
 
 wg::String WgValueFormatter::FormatNoPreSuffix( Sint64 value ) const
 {
-    wg::CharBuffer	buff;
+	wg::CharBuffer	buff;
 	buff.setUnusedCapacity( 32,32 );
 	_formatValue( &buff, value );
 
 	if( value < 0 )
-        buff.pushFront( wg::Char('-') );
+		buff.pushFront( wg::Char('-') );
 	else if( value >= 0 && m_format.bPlus )
-        buff.pushFront( wg::Char('+') );
+		buff.pushFront( wg::Char('+') );
 
 	return wg::String(&buff);
 }
@@ -119,12 +119,12 @@ void WgValueFormatter::_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) co
 		{
 			if( f.bForceDecimals || decPart != 0 )
 			{
-                pBuffer->pushBack( wg::Char(f.period) );
+				pBuffer->pushBack( wg::Char(f.period) );
 
 				for( int i = f.decimals; i > 0 ; i-- )
 				{
 					decPart *= 10;
-                    pBuffer->pushBack( wg::Char( (Uint16)(decPart/m_format.scale) + 0x30 ));
+					pBuffer->pushBack( wg::Char( (Uint16)(decPart/m_format.scale) + 0x30 ));
 					decPart = decPart % m_format.scale;
 				}
 			}
@@ -148,16 +148,16 @@ void WgValueFormatter::_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) co
 	if( f.grouping == 0 )
 	{
 		for( int i = 0 ; i < n ; i++ )
-            pBuffer->pushFront( wg::Char(temp2[i]) );
+			pBuffer->pushFront( wg::Char(temp2[i]) );
 	}
 	else
 	{
 		for( int i = 0 ; i < n ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-                pBuffer->pushFront( wg::Char(f.separator) );
+				pBuffer->pushFront( wg::Char(f.separator) );
 
-            pBuffer->pushFront( wg::Char(temp2[i]) );
+			pBuffer->pushFront( wg::Char(temp2[i]) );
 		}
 	}
 
@@ -168,9 +168,9 @@ void WgValueFormatter::_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) co
 		for( int i = n ; i < f.integers ; i++ )
 		{
 			if( i != 0 && (i % f.grouping) == 0 )
-                pBuffer->pushFront( wg::Char(f.separator) );
+				pBuffer->pushFront( wg::Char(f.separator) );
 
-            pBuffer->pushFront( wg::Char(0x30) );
+			pBuffer->pushFront( wg::Char(0x30) );
 		}
 	}
 }
@@ -220,7 +220,7 @@ WgValueFormat::WgValueFormat( const WgValueFormat& in )
 	bPlus			= in.bPlus;
 	bZeroIsNegative = in.bZeroIsNegative;
 	bForcePeriod	= in.bForcePeriod;
-	pTextStyle	    = in.pTextStyle;
+	pTextStyle		= in.pTextStyle;
 	bSetTextStyle	= in.bSetTextStyle;
 	bForceDecimals	= in.bForceDecimals;
 	noDecimalThreshold = in.noDecimalThreshold;
@@ -265,21 +265,21 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 	noDecimalThreshold	= 0;
 	scale			= 1;
 
-    wg::CharSeq::CharBasket basket = format.getChars();
+	wg::CharSeq::CharBasket basket = format.getChars();
 
-    const wg::Char * pBeg = basket.ptr;
-    const wg::Char * pEnd = basket.ptr + basket.length;
+	const wg::Char * pBeg = basket.ptr;
+	const wg::Char * pEnd = basket.ptr + basket.length;
 
 	// Copy prefix
 
-    const wg::Char * p = pBeg;
+	const wg::Char * p = pBeg;
 	while(  p < pEnd && p->code() != '1' )
 	{
 		assert( p->code() < '0' || p->code() > '9' );		// No numerics allowed in prefix.
 		p++;
 	}
 
-    prefix = wg::CharSeq( pBeg, p - pBeg );
+	prefix = wg::CharSeq( pBeg, p - pBeg );
 
 	pBeg = p;
 
@@ -315,7 +315,7 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 		}
 	}
 
-	// 
+	//
 
 	if( pBeg == pEnd )
 		return;
@@ -333,7 +333,7 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 	if( bHasSeparator && nZeroes > 0 )
 		grouping = nZeroes;
 
-	// 
+	//
 
 	if( pBeg == pEnd )
 		return;
@@ -368,14 +368,14 @@ void WgValueFormat::setFormat( const wg::CharSeq& format )
 		}
 	}
 
-	// 
+	//
 
 	if( pBeg == pEnd )
 		return;
 
 	// Copy suffix
 
-    suffix = wg::CharSeq( pBeg, pEnd - pBeg );
+	suffix = wg::CharSeq( pBeg, pEnd - pBeg );
 }
 
 //____ setFormat() ____________________________________________________________

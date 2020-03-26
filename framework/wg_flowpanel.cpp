@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -51,9 +51,9 @@ const char * WgFlowHook::ClassType()
 
 //____ WgFlowHook::Parent() ___________________________________________________
 
-WgFlowPanel * WgFlowHook::Parent() const 
-{ 
-	return m_pParent; 
+WgFlowPanel * WgFlowHook::Parent() const
+{
+	return m_pParent;
 }
 
 //____ WgFlowHook::SetWeight() ________________________________________________
@@ -83,7 +83,7 @@ WgContainer * WgFlowHook::_parent() const
 WgFlowPanel::WgFlowPanel()
 {
 	m_bHorizontal = true;
-    m_pSizeBroker = 0;
+	m_pSizeBroker = 0;
 }
 
 //____ Destructor _____________________________________________________________
@@ -144,10 +144,10 @@ WgSize WgFlowPanel::PreferredPixelSize() const
 
 int WgFlowPanel::MatchingPixelHeight( int width ) const
 {
-    if( m_pSkin )
-        width -= _skinContentPadding( m_pSkin, m_scale).w;
+	if( m_pSkin )
+		width -= _skinContentPadding( m_pSkin, m_scale).w;
 
-    int height = 0;
+	int height = 0;
 
 	if( m_bHorizontal )
 	{
@@ -209,7 +209,7 @@ int WgFlowPanel::MatchingPixelWidth( int height ) const
 //____ _firstHookWithGeo() _____________________________________________________
 
 WgHook* WgFlowPanel::_firstHookWithGeo( WgRect& geo ) const
-{	
+{
 	WgFlowHook * p = FirstHook();
 	if( p )
 		geo = p->m_geo;
@@ -223,7 +223,7 @@ WgHook* WgFlowPanel::_nextHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	WgFlowHook * p = static_cast<WgFlowHook*>(pHook)->Next();
 	if( p )
 		geo = p->m_geo;
-	return p;	
+	return p;
 }
 
 //____ _lastHookWithGeo() _____________________________________________________
@@ -243,7 +243,7 @@ WgHook* WgFlowPanel::_prevHookWithGeo( WgRect& geo, WgHook * pHook ) const
 	WgFlowHook * p = static_cast<WgFlowHook*>(pHook)->Prev();
 	if( p )
 		geo = p->m_geo;
-	return p;	
+	return p;
 }
 
 //____ _hookGeo() _____________________________________________________________
@@ -272,12 +272,12 @@ void WgFlowPanel::_onRenderRequested( WgVectorHook * pHook, const WgRect& rect )
 void WgFlowPanel::_onResizeRequested( WgVectorHook * pHook )
 {
 	// Update cached preferred size of child
-	
+
 	WgFlowHook * p = static_cast<WgFlowHook*>(pHook);
 	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
 
 	//
-	
+
 	_refreshAllWidgets();
 }
 
@@ -286,12 +286,12 @@ void WgFlowPanel::_onResizeRequested( WgVectorHook * pHook )
 void WgFlowPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 {
 	// Update cached preferred size of child
-	
+
 	WgFlowHook * p = static_cast<WgFlowHook*>(pInserted);
 	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
-	
+
 	//
-	
+
 	_refreshAllWidgets();
 }
 
@@ -299,20 +299,20 @@ void WgFlowPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 
 void WgFlowPanel::_onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast )
 {
-    // Update cached preferred size of new children
-    
-    WgFlowHook * p = static_cast<WgFlowHook*>(pFirst);
+	// Update cached preferred size of new children
 
-    p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
-    while( p != pLast )
-    {
-        p = static_cast<WgFlowHook*>(p->Next());
-        p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
-    }
-    
-    //
-    
-    _refreshAllWidgets();
+	WgFlowHook * p = static_cast<WgFlowHook*>(pFirst);
+
+	p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+	while( p != pLast )
+	{
+		p = static_cast<WgFlowHook*>(p->Next());
+		p->m_preferredSize = p->_paddedPreferredPixelSize(m_scale);
+	}
+
+	//
+
+	_refreshAllWidgets();
 }
 
 
@@ -350,7 +350,7 @@ WgVectorHook * WgFlowPanel::_newHook()
 
 void WgFlowPanel::_onNewSize( const WgSize& size )
 {
-    _refreshChildGeo();
+	_refreshChildGeo();
 }
 
 //____ _updatePreferredPixelSize() ______________________________________________________
@@ -365,39 +365,39 @@ void WgFlowPanel::_updatePreferredPixelSize()
 
 		if( m_bHorizontal )
 		{
-            while( p )
-            {
+			while( p )
+			{
 				if( p->IsVisible() )
 				{
 					length += p->m_preferredSize.w;
-	                if( p->m_preferredSize.h > breadth )
-	                    breadth = p->m_preferredSize.h;
+					if( p->m_preferredSize.h > breadth )
+						breadth = p->m_preferredSize.h;
 				}
 				p = p->Next();
-            }
+			}
 		}
 		else
 		{
-            while( p )
-            {
+			while( p )
+			{
 				if( p->IsVisible() )
 				{
 					length += p->m_preferredSize.h;
 					if( p->m_preferredSize.w > breadth )
-					    breadth = p->m_preferredSize.w;
+						breadth = p->m_preferredSize.w;
 				}
-                p = p->Next();
-            }
+				p = p->Next();
+			}
 		}
 	}
 
 	//
-	
+
 	WgSize size = m_bHorizontal?WgSize(length,breadth):WgSize(breadth,length);
-    
-    if( m_pSkin )
-        size += _skinContentPadding( m_pSkin, m_scale);
-    
+
+	if( m_pSkin )
+		size += _skinContentPadding( m_pSkin, m_scale);
+
 	if( size != m_preferredSize )
 	{
 		m_preferredSize = size;
@@ -409,13 +409,13 @@ void WgFlowPanel::_updatePreferredPixelSize()
 
 void WgFlowPanel::_refreshChildGeo()
 {
-    if( m_hooks.isEmpty() )
-        return;
-    
+	if( m_hooks.isEmpty() )
+		return;
+
 	WgRect canvas = PixelSize();
-    if( m_pSkin )
-        canvas = _skinContentRect( m_pSkin, canvas, m_state, m_scale);
-	
+	if( m_pSkin )
+		canvas = _skinContentRect( m_pSkin, canvas, m_state, m_scale);
+
 	WgFlowHook * pH = FirstHook();
 
 	WgRect	row( canvas.x, canvas.y, 0,0 );
@@ -425,7 +425,7 @@ void WgFlowPanel::_refreshChildGeo()
 		if (pH->IsVisible())
 		{
 			WgSize sz = pH->_paddedPreferredPixelSize(m_scale);
-            WgBorders padding = pH->m_padding.scale(m_scale);
+			WgBorders padding = pH->m_padding.scale(m_scale);
 
 			if (sz.w > canvas.w)
 			{
@@ -437,7 +437,7 @@ void WgFlowPanel::_refreshChildGeo()
 				int paddedHeight = pH->_paddedMatchingPixelHeight(canvas.w, m_scale);
 
 				newGeo = {	row.x+padding.left,
-                            row.y+padding.top,
+							row.y+padding.top,
 							canvas.w-padding.width(),
 							paddedHeight-padding.height() };
 
@@ -454,7 +454,7 @@ void WgFlowPanel::_refreshChildGeo()
 				}
 
 				newGeo = {	row.x + row.w + padding.left,
-                            row.y + padding.top,
+							row.y + padding.top,
 							sz - padding.size() };
 
 				row.w += sz.w;
@@ -462,7 +462,7 @@ void WgFlowPanel::_refreshChildGeo()
 				if (sz.h > row.h)
 					row.h = sz.h;
 			}
-            
+
 			if (newGeo != pH->m_geo)
 			{
 				_requestRender(newGeo);
@@ -497,7 +497,7 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 {
 	WgFlowHook * pH = FirstHook();
 	WgSizeBrokerItem * pI = pArray;
-	
+
 	if( m_bHorizontal )
 	{
 		while( pH )
@@ -507,13 +507,13 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->preferred = pH->m_preferredSize.w;
 				pI->min = pH->_paddedMinPixelSize(m_scale).w;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).w;
-				pI->weight = pH->m_weight;			
+				pI->weight = pH->m_weight;
 				pI++;
 			}
 			pH = pH->Next();
 		}
 	}
-	else 
+	else
 	{
 		while( pH )
 		{
@@ -522,13 +522,13 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray ) const
 				pI->preferred = pH->m_preferredSize.h;
 				pI->min = pH->_paddedMinPixelSize(m_scale).h;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).h;
-				pI->weight = pH->m_weight;			
+				pI->weight = pH->m_weight;
 				pI++;
 			}
 			pH = pH->Next();
-		}			
+		}
 	}
-	
+
 	return pI - pArray;
 }
 
@@ -536,7 +536,7 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 {
 	WgFlowHook * pH = FirstHook();
 	WgSizeBrokerItem * pI = pArray;
-	
+
 	if( m_bHorizontal )
 	{
 		while( pH )
@@ -546,13 +546,13 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->preferred = pH->_paddedMatchingPixelWidth(forcedBreadth, m_scale);
 				pI->min = pH->_paddedMinPixelSize(m_scale).w;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).w;
-				pI->weight = pH->m_weight;			
+				pI->weight = pH->m_weight;
 				pI++;
 			}
 			pH = pH->Next();
 		}
 	}
-	else 
+	else
 	{
 		while( pH )
 		{
@@ -561,12 +561,12 @@ int WgFlowPanel::_populateSizeBrokerArray( WgSizeBrokerItem * pArray, int forced
 				pI->preferred = pH->_paddedMatchingPixelHeight(forcedBreadth, m_scale);
 				pI->min = pH->_paddedMinPixelSize(m_scale).h;
 				pI->max = pH->_paddedMaxPixelSize(m_scale).h;
-				pI->weight = pH->m_weight;			
+				pI->weight = pH->m_weight;
 				pI++;
 			}
 			pH = pH->Next();
-		}			
+		}
 	}
-	
+
 	return pI - pArray;
 }

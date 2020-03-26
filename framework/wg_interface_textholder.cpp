@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -102,27 +102,27 @@ void Wg_Interface_TextHolder::SetText( const wg::CharSeq& seq )
 {
 //    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 1 called: %s", seq.GetUTF8().ptr) );
 
-    m_pText->setText( seq );
+	m_pText->setText( seq );
 	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const wg::CharBuffer * pBuffer )
 {
-    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 2 called") );
+	DBGM(DBG_GUI_APP, ("GUI_APP: SetText 2 called") );
 	m_pText->setText( pBuffer );
 	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const wg::String& str )
 {
-    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 3 called") );
+	DBGM(DBG_GUI_APP, ("GUI_APP: SetText 3 called") );
 	m_pText->setText( str );
 	_textModified();
 }
 
 void Wg_Interface_TextHolder::SetText( const WgText * pText )
 {
-    DBGM(DBG_GUI_APP, ("GUI_APP: SetText 4 called") );
+	DBGM(DBG_GUI_APP, ("GUI_APP: SetText 4 called") );
 	m_pText->setText( pText );
 	_textModified();
 }

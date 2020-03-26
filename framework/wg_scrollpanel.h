@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -126,10 +126,10 @@ public:
 	int			ContentPixelHeight() { return m_contentSize.h; };
 	WgSize		ContentPixelSize() { return m_contentSize; };
 
-    int			ContentPointWidth() { return (m_contentSize.w << WG_SCALE_BINALS) / m_scale; };
-    int			ContentPointHeight() { return (m_contentSize.h << WG_SCALE_BINALS) / m_scale; };
-    WgSize		ContentPointSize() { return (m_contentSize*WG_SCALE_BASE)/ m_scale; };
-    
+	int			ContentPointWidth() { return (m_contentSize.w << WG_SCALE_BINALS) / m_scale; };
+	int			ContentPointHeight() { return (m_contentSize.h << WG_SCALE_BINALS) / m_scale; };
+	WgSize		ContentPointSize() { return (m_contentSize*WG_SCALE_BASE)/ m_scale; };
+
 	void		SetBgColor( WgColor color );
 	WgColor		BgColor() const { return m_bgColor; }
 
@@ -145,16 +145,16 @@ public:
 	Uint32		ViewPixelOfsY() { return m_viewPixOfs.y; };
 	WgCoord		ViewPixelOfs() { return m_viewPixOfs; };
 
-    Uint32		ViewPointOfsX() { return (m_viewPixOfs.x << WG_SCALE_BINALS) / m_scale; };
-    Uint32		ViewPointOfsY() { return (m_viewPixOfs.y << WG_SCALE_BINALS) / m_scale; };
-    WgCoord		ViewPointOfs() { return (m_viewPixOfs * WG_SCALE_BASE) / m_scale; };
-    
+	Uint32		ViewPointOfsX() { return (m_viewPixOfs.x << WG_SCALE_BINALS) / m_scale; };
+	Uint32		ViewPointOfsY() { return (m_viewPixOfs.y << WG_SCALE_BINALS) / m_scale; };
+	WgCoord		ViewPointOfs() { return (m_viewPixOfs * WG_SCALE_BASE) / m_scale; };
+
 	Uint32		ViewPixelLenX();
 	Uint32		ViewPixelLenY();
 
-    Uint32		ViewPointLenX();
-    Uint32		ViewPointLenY();
-    
+	Uint32		ViewPointLenX();
+	Uint32		ViewPointLenY();
+
 	float		ViewOfsX();
 	float		ViewOfsY();
 	float		ViewLenX();
@@ -164,11 +164,11 @@ public:
 	bool		SetViewPixelOfsX( int x );
 	bool		SetViewPixelOfsY( int y );
 
-    bool		SetViewPointOfs( int x, int y );
-    bool		SetViewPointOfsX( int x );
-    bool		SetViewPointOfsY( int y );
+	bool		SetViewPointOfs( int x, int y );
+	bool		SetViewPointOfsX( int x );
+	bool		SetViewPointOfsY( int y );
 
-    
+
 	bool		SetViewOfs( float x, float y );
 	bool		SetViewOfsX( float x );
 	bool		SetViewOfsY( float y );
@@ -187,8 +187,8 @@ public:
 	int			ScrollWheelX() const { return m_wheelForScrollX; }
 	int			ScrollWheelY() const { return m_wheelForScrollY; }
 
-    void        SetOverlayScrollbars(bool bOverlay);
-    bool        OverlayScrollbars() const { return m_bOverlayScrollbars; }
+	void        SetOverlayScrollbars(bool bOverlay);
+	bool        OverlayScrollbars() const { return m_bOverlayScrollbars; }
 
 	bool		SetAutoscroll( bool bAutoX, bool bAutoY	);
 	bool		AutoScrollX() const { return m_bAutoScrollX; }
@@ -226,24 +226,24 @@ public:
 	bool				IsVSliderVisible();
 	bool				IsHSliderVisible();
 
-    void				SetFillerBlocks( wg::Skin * pFillerSkin );
-    wg::Skin_p          FillerBlocks() const { return m_pFillerBlocks; }
+	void				SetFillerBlocks( wg::Skin * pFillerSkin );
+	wg::Skin_p          FillerBlocks() const { return m_pFillerBlocks; }
 
 
-    WgRect              ViewGeoPixels() const;                // Geometry of View window within WgScrollPanel widget.
-    WgRect              ContentInViewPixels() const;          // Section of content displayed in the view.
-    bool                PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo = WgOrigo::Center, WgCoord viewPosOffset = {0,0} );
+	WgRect              ViewGeoPixels() const;                // Geometry of View window within WgScrollPanel widget.
+	WgRect              ContentInViewPixels() const;          // Section of content displayed in the view.
+	bool                PositionContentInViewPixels( WgCoord posInContent, WgOrigo viewPosOrigo = WgOrigo::Center, WgCoord viewPosOffset = {0,0} );
 
-    void                ScrollIntoView( WgWidget * pWidget, const WgBorders& margin = 0, const WgRect& viewSection = WgRect() );
+	void                ScrollIntoView( WgWidget * pWidget, const WgBorders& margin = 0, const WgRect& viewSection = WgRect() );
 
-    
-    void                SetRubberBorder( const WgBorders& border );
-    void                EnableRubberBorder( bool bEnabled );
-    void                RubberBorderSnapToPos();
 
-    bool                SetHoverScrollBorder( const WgBorders& border );
-    bool                SetHoverScrollSpeed( int maxPointsPerSecond );
-    
+	void                SetRubberBorder( const WgBorders& border );
+	void                EnableRubberBorder( bool bEnabled );
+	void                RubberBorderSnapToPos();
+
+	bool                SetHoverScrollBorder( const WgBorders& border );
+	bool                SetHoverScrollSpeed( int maxPointsPerSecond );
+
 	// Overloaded from WgPanel
 
 	WgWidget * FindWidget( const WgCoord& pos, WgSearchMode mode );
@@ -302,10 +302,10 @@ protected:
 
 	//
 
-    WgCoord     _calcDesiredWindowPos( const WgRect& keepInView );
+	WgCoord     _calcDesiredWindowPos( const WgRect& keepInView );
 
 	void		_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-    void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+	void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
 	void		_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
 	void		_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
@@ -324,13 +324,13 @@ protected:
 
 	WgRect		_genContentCanvasGeo( const WgRect& window, WgSize contentSize, WgOrigo origo, WgCoord viewOfs );
 
-    void        _inViewRequested( WgHook * pChild );
-    void        _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+	void        _inViewRequested( WgHook * pChild );
+	void        _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
 
 	bool		_wheelRollX(int distance);
 	bool		_wheelRollY(int distance);
 
-    WgSize		m_contentSize;
+	WgSize		m_contentSize;
 
 	int			m_stepSizeX;
 	int			m_stepSizeY;
@@ -350,8 +350,8 @@ protected:
 
 	int			m_wheelForScrollX;		// What wheel should be used for horizontal scrolling. (0=none)
 	int			m_wheelForScrollY;		// What wheel should be used for vertical scrolling. (0=none)
-	
-    bool        m_bOverlayScrollbars;
+
+	bool        m_bOverlayScrollbars;
 
 	WgScrollHook		m_elements[MAX_ELEMENTS];	// Content, xDrag and yDrag widgets in that order.
 
@@ -360,34 +360,34 @@ protected:
 	WgSizePolicy	m_heightPolicy;
 	WgOrigo	m_contentOrigo;		// Origo when content is smaller than window
 
-	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal                                              
-                                              
+	SliderTarget	m_sliderTargets[2];			// Order: Vertical, horizontal
+
 private:
 
 	WgHook*	_firstHook() const;
 	WgHook*	_lastHook() const;
 
 
-    wg::Skin_p	    m_pFillerBlocks;
+	wg::Skin_p		m_pFillerBlocks;
 	WgRect			m_geoFiller;
 
-    WgWidgetWeakPtr m_pScrollIntoViewChild;                 // Child that should be scrolled into viewSection of view.
-    WgRect          m_scrollIntoViewSection;                // Section of view child should be scrolled into (default is whole view).
-    WgBorders       m_scrollIntoViewMargin;                 // Margin around child that should be visible.
-    
-    WgBorders       m_rubberBorder;
-    bool            m_bRubberBorder = false;
-    bool            m_bRubberBorderHold = false;            // When set, rubber border is temporary disabled.
-    int             m_rubberBorderPause = 0;                // Millisec left for the rubber border to pause
-    
-    WgBorders       m_hoverScrollBorder;
-    int             m_hoverScrollSpeed = 500;               // Max hover scroll speed in points/sec.
-    int             m_hoverScrollX = 0;                     // X-scroll (positive or negative) in pixels/sec.
-    int             m_hoverScrollY = 0;                     // Y-scroll (positive or negative) in pixels/sec.
-    int             m_hoverScrollRemainsX = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
-    int             m_hoverScrollRemainsY = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
+	WgWidgetWeakPtr m_pScrollIntoViewChild;                 // Child that should be scrolled into viewSection of view.
+	WgRect          m_scrollIntoViewSection;                // Section of view child should be scrolled into (default is whole view).
+	WgBorders       m_scrollIntoViewMargin;                 // Margin around child that should be visible.
 
-    std::vector<uint8_t>    m_hoverScrollCategories;        // DropPick-categories for which we activate scrollHover (none-set = all).
+	WgBorders       m_rubberBorder;
+	bool            m_bRubberBorder = false;
+	bool            m_bRubberBorderHold = false;            // When set, rubber border is temporary disabled.
+	int             m_rubberBorderPause = 0;                // Millisec left for the rubber border to pause
+
+	WgBorders       m_hoverScrollBorder;
+	int             m_hoverScrollSpeed = 500;               // Max hover scroll speed in points/sec.
+	int             m_hoverScrollX = 0;                     // X-scroll (positive or negative) in pixels/sec.
+	int             m_hoverScrollY = 0;                     // Y-scroll (positive or negative) in pixels/sec.
+	int             m_hoverScrollRemainsX = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
+	int             m_hoverScrollRemainsY = 0;              // Saved remains from hover scroll calculations. 1/1000th of a pixel.
+
+	std::vector<uint8_t>    m_hoverScrollCategories;        // DropPick-categories for which we activate scrollHover (none-set = all).
 };
 
 #endif //WG_SCROLLPANEL_DOT_H

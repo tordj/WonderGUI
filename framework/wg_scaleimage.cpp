@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -104,7 +104,7 @@ void WgScaleImage::SetImageMaxSize( WgSize max )
 
 void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 {
-    int w = m_pOrgSurface->size().w;
+	int w = m_pOrgSurface->size().w;
 	int h = m_pOrgSurface->size().h;
 
 	if( w > 0 && h > 0 )
@@ -132,8 +132,8 @@ void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 			}
 		}
 
-		// 
-		
+		//
+
 		WgRect imgRect = WgUtil::OrigoToRect( m_imgOrigo, widgetSize, WgSize(w,h) );
 
 		if( imgRect.size() != m_imgRect.size() )
@@ -151,7 +151,7 @@ void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 	else
 	{
 		m_imgRect.clear();
-        m_pGenSurface = 0;
+		m_pGenSurface = 0;
 	}
 }
 
@@ -161,7 +161,7 @@ void WgScaleImage::_recalcImageRect( WgSize widgetSize )
 void WgScaleImage::_regenerateSurface()
 {
 	// Check/set opacity
-	
+
 	if( m_pOrgSurface && m_pOrgSurface->isOpaque() && !m_bScale )
 		m_bOpaque = true;
 	else
@@ -174,8 +174,8 @@ void WgScaleImage::_regenerateSurface()
 		m_pGenSurface = m_pSurfaceFactory->createSurface( m_imgRect.size(), WgPixelType::BGRA_8 );
 
 		// Insert code here to stretch-copy content from m_pOrgSurface to m_pGenSurface
-        resample(m_pOrgSurface, m_pGenSurface);
-        
+		resample(m_pOrgSurface, m_pGenSurface);
+
 //		m_pGenSurface->Fill( WgColor::rosybrown );
 	}
 	else
@@ -257,8 +257,8 @@ void WgScaleImage::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	if( !m_pGenSurface )
 		return;
 
-    pDevice->setBlitSource(m_pGenSurface);
-    pDevice->blit( { _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y } );
+	pDevice->setBlitSource(m_pGenSurface);
+	pDevice->blit( { _canvas.x + m_imgRect.x, _canvas.y + m_imgRect.y } );
 }
 
 //____ _onAlphaTest() ___________________________________________________________

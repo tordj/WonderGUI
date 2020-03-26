@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -51,10 +51,10 @@ typedef	bool(*WgFilterFuncPtr)(const WgEvent::Event *, const WgEventFilter& );
 class WgEventFilter
 {
 	friend class WgEventHandler;
-	
+
 public:
 	WgEventFilter() : m_eventType(WG_EVENT_DUMMY), m_pFilterFunc(_filterDummy) {}	//Not meant to be public, but has to for compatibility with older compilers.
-	
+
 	static WgEventFilter	Type(int type);
 	static WgEventFilter	Source(WgWidget * pWidget);
 	static WgEventFilter	WidgetId(int id);

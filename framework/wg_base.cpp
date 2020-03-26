@@ -1,19 +1,19 @@
 
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -41,15 +41,15 @@ int WgBase::s_iSoftubeNumberOfInstances = 0;
 
 void WgBase::Init()
 {
-    s_iSoftubeNumberOfInstances++;
-    if(s_iSoftubeNumberOfInstances != 1)
-        return;
-    
-    wg::Base::init();
+	s_iSoftubeNumberOfInstances++;
+	if(s_iSoftubeNumberOfInstances != 1)
+		return;
+
+	wg::Base::init();
 
 	assert( s_pData == 0 );
 	s_pData = new Data;
-    
+
 	s_pData->pDefaultCursor = 0;
 
 	s_pData->doubleClickTimeTreshold 		= 250;
@@ -61,23 +61,23 @@ void WgBase::Init()
 	s_pData->keyRepeatDelay 	= 300;
 	s_pData->keyRepeatRate 		= 150;
 
-    wg::TextTool::setDefaultBreakRules();
+	wg::TextTool::setDefaultBreakRules();
 }
 
 //____ Exit() __________________________________________________________________
 
 void WgBase::Exit()
 {
-    s_iSoftubeNumberOfInstances--;
-    if(s_iSoftubeNumberOfInstances != 0)
-        return;
-    
+	s_iSoftubeNumberOfInstances--;
+	if(s_iSoftubeNumberOfInstances != 0)
+		return;
+
 	assert( s_pData != 0 );
 
 	delete s_pData;
 	s_pData = 0;
 
-    wg::Base::exit();
+	wg::Base::exit();
 }
 
 //____ SetDefaultCursor() ___________________________________________________
@@ -179,8 +179,8 @@ WgKey WgBase::TranslateKey( int native_keycode )
 
 void WgBase::_setQuartersPerPoint( int quarterPixels )
 {
-    wg::MU::s_qpixPerPoint = quarterPixels;
-    wg::MU::s_scale = quarterPixels / 4.f;
+	wg::MU::s_qpixPerPoint = quarterPixels;
+	wg::MU::s_scale = quarterPixels / 4.f;
 }
 
 

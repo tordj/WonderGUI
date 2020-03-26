@@ -16,8 +16,8 @@ class WgPanelHook;
 
 namespace wg
 {
-    class TextAttr;
-    class Char;
+	class TextAttr;
+	class Char;
 }
 
 
@@ -25,9 +25,9 @@ namespace wg
 
 namespace WgUtil
 {
-    float       ParametricBlendInOut(float t);
+	float       ParametricBlendInOut(float t);
 
-    
+
 	bool		AdjustScaledArea(const WgBlock& block, WgRect& area);
 
 	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold );
@@ -39,20 +39,20 @@ namespace WgUtil
 
 	int 		SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy policy );
 
-    inline WgOrientation DirToOrient( WgDirection dir ) { return (dir == WgDirection::Up || dir == WgDirection::Down) ? WgOrientation::Vertical : WgOrientation::Horizontal; }
-    
+	inline WgOrientation DirToOrient( WgDirection dir ) { return (dir == WgDirection::Up || dir == WgDirection::Down) ? WgOrientation::Vertical : WgOrientation::Horizontal; }
+
 	template <class T> inline T Max (T a, T b) {return (a>b?a:b); }
 	template <class T> inline T Min (T a, T b) {return (a<b?a:b); }
 
 	WgMode		StateToMode(WgState state);
-    WgState     ModeToState(WgMode mode);
+	WgState     ModeToState(WgMode mode);
 
 
 	inline int _stateToIndex(WgStateEnum state)
 	{
-        static int	s_stateToIndexTable[WG_MAX_STATE_VALUE + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11,
-            0, 0, 0, 0, 12, 13, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0,
-            16, 0, 0, 0, 0, 0, 0, 0, 17 };
+		static int	s_stateToIndexTable[WG_MAX_STATE_VALUE + 1] = { 0, 1, 0, 0, 2, 3, 4, 5, 6, 7, 0, 0, 8, 9, 10, 11,
+			0, 0, 0, 0, 12, 13, 0, 0, 0, 0, 0, 0, 14, 15, 0, 0,
+			16, 0, 0, 0, 0, 0, 0, 0, 17 };
 		return s_stateToIndexTable[(uint8_t)state];
 	}
 
@@ -61,13 +61,13 @@ namespace WgUtil
 		static WgStateEnum	s_indexToStateTable[WG_NB_STATES] = { WgStateEnum::Normal, WgStateEnum::Focused, WgStateEnum::Hovered, WgStateEnum::HoveredFocused, WgStateEnum::Pressed,
 			WgStateEnum::PressedFocused, WgStateEnum::Selected, WgStateEnum::SelectedFocused, WgStateEnum::SelectedHovered, WgStateEnum::SelectedHoveredFocused,
 			WgStateEnum::SelectedPressed, WgStateEnum::SelectedPressedFocused, WgStateEnum::Targeted,
-            WgStateEnum::TargetedFocused, WgStateEnum::TargetedSelected, WgStateEnum::TargetedSelectedFocused,
+			WgStateEnum::TargetedFocused, WgStateEnum::TargetedSelected, WgStateEnum::TargetedSelectedFocused,
 			WgStateEnum::Disabled, WgStateEnum::DisabledSelected };
 
 		return s_indexToStateTable[index];
 	}
 
-    uint32_t lineWidth( void * pNode, const wg::TextAttr& attr, wg::State mode, const wg::Char * pString );
+	uint32_t lineWidth( void * pNode, const wg::TextAttr& attr, wg::State mode, const wg::Char * pString );
 
 
 	// A simple checksum algorithm that just performs a long division

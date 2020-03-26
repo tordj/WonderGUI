@@ -1,18 +1,18 @@
  /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -71,10 +71,10 @@ void WgSizeCapsule::SetSizes( WgSize _min, WgSize _preferred, WgSize _max )
 	m_pointsPreferred = _preferred;
 	m_pointsMax = _max;
 
-    m_pixelsMin = WgSize(_min.w*m_scale>>WG_SCALE_BINALS, _min.h*m_scale>>WG_SCALE_BINALS);
-    m_pixelsPreferred = WgSize(_preferred.w*m_scale>>WG_SCALE_BINALS, _preferred.h*m_scale>>WG_SCALE_BINALS);
-    m_pixelsMax = WgSize(_max.w*m_scale>>WG_SCALE_BINALS, _max.h*m_scale>>WG_SCALE_BINALS);
-    _requestResize();
+	m_pixelsMin = WgSize(_min.w*m_scale>>WG_SCALE_BINALS, _min.h*m_scale>>WG_SCALE_BINALS);
+	m_pixelsPreferred = WgSize(_preferred.w*m_scale>>WG_SCALE_BINALS, _preferred.h*m_scale>>WG_SCALE_BINALS);
+	m_pixelsMax = WgSize(_max.w*m_scale>>WG_SCALE_BINALS, _max.h*m_scale>>WG_SCALE_BINALS);
+	_requestResize();
 }
 
 //____ SetMinSize() ___________________________________________________________
@@ -82,10 +82,10 @@ void WgSizeCapsule::SetSizes( WgSize _min, WgSize _preferred, WgSize _max )
 void WgSizeCapsule::SetMinSize( WgSize _size )
 {
 
-    if( _size != m_pixelsMin )
+	if( _size != m_pixelsMin )
 	{
 		m_pointsMin = _size;
-        m_pixelsMin = WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
+		m_pixelsMin = WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
 		_requestResize();
 	}
 }
@@ -95,10 +95,10 @@ void WgSizeCapsule::SetMinSize( WgSize _size )
 void WgSizeCapsule::SetMaxSize( WgSize _size )
 {
 
-    if( _size != m_pixelsMax )
+	if( _size != m_pixelsMax )
 	{
 		m_pointsMax = _size;
-        m_pixelsMax =  WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
+		m_pixelsMax =  WgSize(_size.w*m_scale>>WG_SCALE_BINALS, _size.h*m_scale>>WG_SCALE_BINALS);
 		_requestResize();
 	}
 }
@@ -117,7 +117,7 @@ void WgSizeCapsule::SetKeepAspectRatio(bool bKeepAspect)
 
 //____ PreferredPixelSize() ________________________________________________________
 
-WgSize WgSizeCapsule::PreferredPixelSize() const 
+WgSize WgSizeCapsule::PreferredPixelSize() const
 {
 
 	if( m_hook.Widget() )
@@ -127,14 +127,14 @@ WgSize WgSizeCapsule::PreferredPixelSize() const
 		if( m_pixelsPreferred.w >= 0 )
 		{
 			pref.w = m_pixelsPreferred.w;
-            if( m_pixelsPreferred.h < 0 )
-                pref.h = m_hook.Widget()->MatchingPixelHeight(pref.w);
+			if( m_pixelsPreferred.h < 0 )
+				pref.h = m_hook.Widget()->MatchingPixelHeight(pref.w);
 		}
 		if( m_pixelsPreferred.h >= 0 )
 		{
 			pref.h = m_pixelsPreferred.h;
-            if( m_pixelsPreferred.w < 0 )
-                pref.w = m_hook.Widget()->MatchingPixelWidth(pref.h);
+			if( m_pixelsPreferred.w < 0 )
+				pref.w = m_hook.Widget()->MatchingPixelWidth(pref.h);
 		}
 
 		// Constrain against min/max, taking MatchingPixelWidth/MatchingPixelHeight into account.
@@ -196,7 +196,7 @@ WgSize WgSizeCapsule::PreferredPixelSize() const
 
 //____ MinPixelSize() ______________________________________________________________
 
-WgSize WgSizeCapsule::MinPixelSize() const 
+WgSize WgSizeCapsule::MinPixelSize() const
 {
 
 	if( m_hook.Widget() )
@@ -282,20 +282,20 @@ int WgSizeCapsule::MatchingPixelWidth( int height ) const
 
 void WgSizeCapsule::_setScale( int scale )
 {
-    WgCapsule::_setScale(scale);
-    
-    m_pixelsMin = WgSize(m_pointsMin.w*m_scale>>WG_SCALE_BINALS, m_pointsMin.h*m_scale>>WG_SCALE_BINALS);
-    m_pixelsPreferred = WgSize(m_pointsPreferred.w*m_scale>>WG_SCALE_BINALS, m_pointsPreferred.h*m_scale>>WG_SCALE_BINALS);
+	WgCapsule::_setScale(scale);
 
-    if( m_pointsMax.w == INT_MAX )
-        m_pixelsMax.w = INT_MAX;
-    else
-        m_pixelsMax.w = m_pointsMax.w*m_scale>>WG_SCALE_BINALS;
-    
-    if( m_pointsMax.h == INT_MAX )
-        m_pixelsMax.h = INT_MAX;
-    else
-        m_pixelsMax.h = m_pointsMax.h*m_scale>>WG_SCALE_BINALS;
+	m_pixelsMin = WgSize(m_pointsMin.w*m_scale>>WG_SCALE_BINALS, m_pointsMin.h*m_scale>>WG_SCALE_BINALS);
+	m_pixelsPreferred = WgSize(m_pointsPreferred.w*m_scale>>WG_SCALE_BINALS, m_pointsPreferred.h*m_scale>>WG_SCALE_BINALS);
 
-    _requestResize();
+	if( m_pointsMax.w == INT_MAX )
+		m_pixelsMax.w = INT_MAX;
+	else
+		m_pixelsMax.w = m_pointsMax.w*m_scale>>WG_SCALE_BINALS;
+
+	if( m_pointsMax.h == INT_MAX )
+		m_pixelsMax.h = INT_MAX;
+	else
+		m_pixelsMax.h = m_pointsMax.h*m_scale>>WG_SCALE_BINALS;
+
+	_requestResize();
 }

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -41,88 +41,88 @@ public:
 	virtual const char *Type( void ) const;
 	static const char * GetClass();
 	virtual WgWidget * NewOfMyType() const { return new WgZoomOutCapsule(); };
-	
-    void            SetOutlineSkin(wg::Skin * pSkin);
-    
-    void            SetButtonSkin(wg::Skin * pSkin);
-    wg::Skin_p       ButtonSkin() const { return m_pButtonSkin; };
-    
+
+	void            SetOutlineSkin(wg::Skin * pSkin);
+
+	void            SetButtonSkin(wg::Skin * pSkin);
+	wg::Skin_p       ButtonSkin() const { return m_pButtonSkin; };
+
 	int				MatchingPixelHeight(int pixelWidth) const;
 	int				MatchingPixelWidth(int pixelHeight) const;
 
-    WgSize          MinPixelSize() const;
-    void            SetMinPointSize( WgSize min );
-    
-    
-    WgSize          PreferredPixelSize() const;
+	WgSize          MinPixelSize() const;
+	void            SetMinPointSize( WgSize min );
 
-    WgSize          UnzoomedPreferredPixelSize() const;
 
-    
-    void            SetInnerTransition(float scale);                                            // Zoom out level of the contained widget.
-    float           InnerTransition() const { return m_innerTransitionFactor; }
-    
-    void            SetInOutTransition(float factor );                                        // 0.0 -> 1.0. From non-existent (size 0,0) to full size and fully faded in.
-    float           InOutTransition() const { return m_transitionFactor; }
+	WgSize          PreferredPixelSize() const;
 
-    void            SetOutlineMode(bool bOutline);
-    bool            IsOutlineMode() const { return m_bOutlineMode; }
-    
-    void            SetTint( WgColor tint );
-    WgColor         Tint() const { return m_tint; }
+	WgSize          UnzoomedPreferredPixelSize() const;
 
-    
-    WgRect          ContentAreaPixels() const;
-    WgRect          ContentAreaPoints() const;
 
-    WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode );
+	void            SetInnerTransition(float scale);                                            // Zoom out level of the contained widget.
+	float           InnerTransition() const { return m_innerTransitionFactor; }
 
-    void            SetStaticScreenshot( wg::Surface *  pSurface );
-    
+	void            SetInOutTransition(float factor );                                        // 0.0 -> 1.0. From non-existent (size 0,0) to full size and fully faded in.
+	float           InOutTransition() const { return m_transitionFactor; }
+
+	void            SetOutlineMode(bool bOutline);
+	bool            IsOutlineMode() const { return m_bOutlineMode; }
+
+	void            SetTint( WgColor tint );
+	WgColor         Tint() const { return m_tint; }
+
+
+	WgRect          ContentAreaPixels() const;
+	WgRect          ContentAreaPoints() const;
+
+	WgWidget *      FindWidget( const WgCoord& ofs, WgSearchMode mode );
+
+	void            SetStaticScreenshot( wg::Surface *  pSurface );
+
 protected:
-   
-    WgCoord _childPos();
-    WgSize  _childSize();
-    WgRect  _childGeo();
-    
-    void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
-    void    _onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
-    void    _onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+
+	WgCoord _childPos();
+	WgSize  _childSize();
+	WgRect  _childGeo();
+
+	void    _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+	void    _onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
+	void    _onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
-    void    _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-    
-    void    _setScale( int scale );
+	void    _onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 
-    WgRect  _screenshotArea( WgRect canvas ) const;
-    WgRect  _buttonArea( WgRect canvas ) const;
-    void    _regenScreenshot();
+	void    _setScale( int scale );
 
-    void    _updateButtonState( WgSize gizmoCanvas, WgCoord pointerPos );
-    
+	WgRect  _screenshotArea( WgRect canvas ) const;
+	WgRect  _buttonArea( WgRect canvas ) const;
+	void    _regenScreenshot();
+
+	void    _updateButtonState( WgSize gizmoCanvas, WgCoord pointerPos );
+
 private:
-    bool        m_bTakingScreenshot = false;
-    bool        m_bStaticScreenshot = false;
-    wg::Surface_p m_pScreenshot;
-    wg::Skin_p   m_pButtonSkin;
-    wg::Skin_p   m_pOutlineSkin;
-    
-    float       m_innerTransitionFactor = 1.f;
-    float       m_minInnerZoom = 0.5f;
-    float       m_innerZoom = 1.f;
+	bool        m_bTakingScreenshot = false;
+	bool        m_bStaticScreenshot = false;
+	wg::Surface_p m_pScreenshot;
+	wg::Skin_p   m_pButtonSkin;
+	wg::Skin_p   m_pOutlineSkin;
 
-    float       m_transitionFactor = 1.f;
-    float       m_outerZoom = 1.f;
-    WgColor     m_tint = WgColor::White;
+	float       m_innerTransitionFactor = 1.f;
+	float       m_minInnerZoom = 0.5f;
+	float       m_innerZoom = 1.f;
 
-    WgState     m_buttonState = WgStateEnum::Normal;
-    bool        m_bButtonPressed = false;
-    
-    bool        m_bOutlineMode = false;
-    
-    WgSize      m_minPointSize;
+	float       m_transitionFactor = 1.f;
+	float       m_outerZoom = 1.f;
+	WgColor     m_tint = WgColor::White;
+
+	WgState     m_buttonState = WgStateEnum::Normal;
+	bool        m_bButtonPressed = false;
+
+	bool        m_bOutlineMode = false;
+
+	WgSize      m_minPointSize;
 };
 
 

@@ -72,7 +72,7 @@ namespace wg
 		virtual SizeI	_contentPaddingSize() const = 0;
 		virtual CoordI	_contentOfs(State state) const = 0;
 		virtual RectI	_contentRect(const RectI& canvas, State state) const = 0;
-		 
+
 
 		virtual void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
 

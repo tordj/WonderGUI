@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -130,7 +130,7 @@ WgRect WgIconHolder::_getIconRect( const WgRect& contentRect, const WgSize& icon
 			}
 		}
 
-		// 
+		//
 
 		w += iconBorders.width();
 		h += iconBorders.height();
@@ -234,18 +234,18 @@ void WgIconHolder::_onCloneContent( const WgIconHolder * _pOrg )
 
 wg::SizeI WgIconHolder::_skinPrefSize( wg::Skin * pSkin, int scale ) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_preferredSize());
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_preferredSize());
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_preferredSize());
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_preferredSize());
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -55,13 +55,13 @@ void WgPen::_init()
 
 	m_pGlyph = &m_dummyGlyph;
 	m_pPrevGlyph = &m_dummyGlyph;
-    m_color = 0xFFFFFFFF;
+	m_color = 0xFFFFFFFF;
 
 	m_bShowSpace = false;
 	m_bShowCRLF = false;
 
 	m_tabWidth = 80;
-	
+
 	m_scale = WG_SCALE_BASE;
 }
 
@@ -85,7 +85,7 @@ void WgPen::_onAttrChanged()
 	}
 
 	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
-    m_pFont->setSize(m_size);
+	m_pFont->setSize(m_size);
 }
 
 //____ SetAttributes() ________________________________________________________
@@ -95,10 +95,10 @@ bool WgPen::SetAttributes( const wg::TextAttr& attr )
 	if( attr.size < 0 && attr.size > WG_MAX_FONTSIZE )
 		return false;
 
-    if( attr.pFont != m_pFont || attr.size != m_wantedSize )
-        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+	if( attr.pFont != m_pFont || attr.size != m_wantedSize )
+		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
 
-    m_pFont			= attr.pFont;
+	m_pFont			= attr.pFont;
 	m_wantedSize	= attr.size;
 	m_color			= attr.color;
 	_onAttrChanged();
@@ -112,12 +112,12 @@ bool WgPen::SetSize( int size )
 	if( size < 0 && size > WG_MAX_FONTSIZE )
 		return false;
 
-    if( size != m_wantedSize )
-    {
-        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
-        m_wantedSize = size;
-        _onAttrChanged();
-    }
+	if( size != m_wantedSize )
+	{
+		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+		m_wantedSize = size;
+		_onAttrChanged();
+	}
 	return true;
 }
 
@@ -125,12 +125,12 @@ bool WgPen::SetSize( int size )
 
 void WgPen::SetFont( wg::Font * pFont )
 {
-    if( pFont != m_pFont )
-    {
-        m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
-        m_pFont = pFont;
-        _onAttrChanged();
-    }
+	if( pFont != m_pFont )
+	{
+		m_pPrevGlyph = &m_dummyGlyph;                           // Can't do kerning with character of different font or size.
+		m_pFont = pFont;
+		_onAttrChanged();
+	}
 }
 
 //____ SetColor() _____________________________________________________________
@@ -202,28 +202,28 @@ bool WgPen::SetChar( Uint32 chr )
 
 	// First we try to get the glyph from our Glyphset.
 
-    wg::Glyph_p p = m_pFont->getGlyph( chr );
+	wg::Glyph_p p = m_pFont->getGlyph( chr );
 	if( !p )
 	{
-        // The glyph doesn't exist in this font, try to get the unicode
-        // WHITE_BOX as a replacement glyph.
+		// The glyph doesn't exist in this font, try to get the unicode
+		// WHITE_BOX as a replacement glyph.
 
-        p = m_pFont->getGlyph( 0xFFFD );
-        if( !p )
-        {
-            // We don't have the white box, try with the most suitable
-            // common ascii character instead...
+		p = m_pFont->getGlyph( 0xFFFD );
+		if( !p )
+		{
+			// We don't have the white box, try with the most suitable
+			// common ascii character instead...
 
-            p = m_pFont->getGlyph( '*' );
-            if( !p )
-            {
-                // Total failure, nothing to render...
+			p = m_pFont->getGlyph( '*' );
+			if( !p )
+			{
+				// Total failure, nothing to render...
 
-                m_pGlyph = &m_dummyGlyph;
-                m_dummyGlyph.SetAdvance(0);
-                return false;
-            }
-        }
+				m_pGlyph = &m_dummyGlyph;
+				m_dummyGlyph.SetAdvance(0);
+				return false;
+			}
+		}
 	}
 
 	m_pGlyph = p;
@@ -234,16 +234,16 @@ bool WgPen::SetChar( Uint32 chr )
 
 void WgPen::BlitChar() const
 {
-    const wg::GlyphBitmap * pSrc = m_pGlyph->getBitmap();
+	const wg::GlyphBitmap * pSrc = m_pGlyph->getBitmap();
 
 	if( pSrc )
 	{
 		int x = m_pos.x + pSrc->bearingX;
 		int y = m_pos.y + pSrc->bearingY;
 
-        m_pDevice->setBlitSource(pSrc->pSurface);            //TODO: Optimize!!!!
-        
-        m_pDevice->blit( WgCoord(x,y), pSrc->rect);
+		m_pDevice->setBlitSource(pSrc->pSurface);            //TODO: Optimize!!!!
+
+		m_pDevice->blit( WgCoord(x,y), pSrc->rect);
 	}
 }
 
@@ -300,7 +300,7 @@ bool WgPen::BlitCursor( const WgCursorInstance& instance ) const
 
 	//
 
-    WgGfxDevice::BlitBlock(m_pDevice, block, WgRect(m_pos + bearing, size));
+	WgGfxDevice::BlitBlock(m_pDevice, block, WgRect(m_pos + bearing, size));
 
 	// Restore tintcolor/blendmode.
 
@@ -350,9 +350,9 @@ void WgPen::AdvancePosCursor( const WgCursorInstance& instance )
 
 WgCursor * WgPen::_getCursor(const WgText * pText) const
 {
-    WgCursor * p = pText->getCursorStyle();
-    if(p)
-        return p;
-    return WgBase::GetDefaultCursor();
+	WgCursor * p = pText->getCursorStyle();
+	if(p)
+		return p;
+	return WgBase::GetDefaultCursor();
 }
 

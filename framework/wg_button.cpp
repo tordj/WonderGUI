@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -100,7 +100,7 @@ Uint32 WgButton::GetTextAreaWidth()
 	WgRect	contentRect(0,0, PixelSize());
 
 	if( m_pSkin )
-        contentRect = _skinContentRect(m_pSkin, {0,0,PixelSize()}, wg::StateEnum::Normal, m_scale);
+		contentRect = _skinContentRect(m_pSkin, {0,0,PixelSize()}, wg::StateEnum::Normal, m_scale);
 
 	WgRect textRect = _getTextRect( contentRect, _getIconRect( contentRect, m_pIconSkin, m_scale ) );
 
@@ -200,8 +200,8 @@ void WgButton::_setScale( int scale )
 	WgWidget::_setScale(scale);
 
 	m_text.SetScale(scale);
-    
-    _requestResize();
+
+	_requestResize();
 }
 
 
@@ -209,21 +209,21 @@ void WgButton::_setScale( int scale )
 
 void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    WgBlock    block;
-    WgRect contentRect = _canvas;
+	WgBlock    block;
+	WgRect contentRect = _canvas;
 
-    WgState    state;
-    state.setFocused(m_bFocused);
-    state.setSelected(m_bSelected);
-    state.setHovered(m_bPointerInside);
-    state.setPressed(m_bPressed);
-    state.setEnabled(m_bEnabled);
+	WgState    state;
+	state.setFocused(m_bFocused);
+	state.setSelected(m_bSelected);
+	state.setHovered(m_bPointerInside);
+	state.setPressed(m_bPressed);
+	state.setEnabled(m_bEnabled);
 
-    if (m_pSkin)
-    {
-        _renderSkin( m_pSkin, pDevice, state, _canvas, m_scale);
-        contentRect = _skinContentRect( m_pSkin, _canvas, state, m_scale);
-    }
+	if (m_pSkin)
+	{
+		_renderSkin( m_pSkin, pDevice, state, _canvas, m_scale);
+		contentRect = _skinContentRect( m_pSkin, _canvas, state, m_scale);
+	}
 
 	// Get icon and text rect from content rect
 
@@ -233,15 +233,15 @@ void WgButton::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 	// Render icon
 
 	if( m_pIconSkin )
-        _renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
+		_renderSkin( m_pIconSkin, pDevice, state, iconRect, m_scale );
 
 	// Print text
 
  	if( !m_text.IsEmpty() )
-	{        
+	{
 		m_text.setState(state);
 
-        WgGfxDevice::PrintText( pDevice, &m_text, textRect );
+		WgGfxDevice::PrintText( pDevice, &m_text, textRect );
 	}
 }
 
@@ -256,7 +256,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( static_cast<const WgEvent::KeyPress*>(pEvent)->TranslatedKeyCode() == WG_KEY_RETURN )
 				m_bReturnPressed = true;
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -266,7 +266,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			{
 			}
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -279,7 +279,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			}
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -297,7 +297,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				m_bPressed = true;
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 		case WG_EVENT_MOUSEBUTTON_RELEASE:
@@ -306,7 +306,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				m_bPressed = false;
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -316,7 +316,7 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 			if( button == 1 )
 				pHandler->QueueEvent( new WgEvent::ButtonPress(this) );
 			else
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
@@ -326,14 +326,14 @@ void WgButton::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandle
 		{
 			int button = static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button();
 			if( button != 1 )
-                WgWidget::_onEvent(pEvent, pHandler);
+				WgWidget::_onEvent(pEvent, pHandler);
 			break;
 		}
 
 
-        default:
-            WgWidget::_onEvent(pEvent, pHandler);
-            break;
+		default:
+			WgWidget::_onEvent(pEvent, pHandler);
+			break;
 
 	}
 
@@ -407,12 +407,12 @@ void WgButton::_onCloneContent( const WgWidget * _pOrg )
 
 bool WgButton::_onAlphaTest( const WgCoord& ofs )
 {
-    //TODO: Take icon into account.
+	//TODO: Take icon into account.
 
-    if (m_pSkin)
+	if (m_pSkin)
 		return WgWidget::_onAlphaTest(ofs);
-    
-    return false;
+
+	return false;
 }
 
 //____ _onGotInputFocus() ______________________________________________________

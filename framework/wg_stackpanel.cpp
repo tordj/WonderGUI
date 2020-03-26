@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -308,45 +308,45 @@ void WgStackPanel::_onWidgetAppeared( WgVectorHook * pInserted )
 
 void WgStackPanel::_onWidgetsAppeared( WgVectorHook * pFirst, WgVectorHook * pLast )
 {
-    bool    bRequestResize = false;
-    
-    WgVectorHook * p = pFirst;
-    
-    do {
-        // Check if we need to resize to fit Widget in current width
-        
-        int height = p->Widget()->MatchingPixelHeight(m_size.w);
-        if( height > m_size.h )
-            bRequestResize = true;
-        
-        // Update bestSize
-        
-        WgSize preferred = p->Widget()->PreferredPixelSize();
-        
-        if (preferred.w > m_preferredSize.w || preferred.h > m_preferredSize.h)
-        {
-            m_preferredSize = preferred;
-            bRequestResize = true;
-        }
-        
-        
-        p = static_cast<WgVectorHook*>(p->Next());
+	bool    bRequestResize = false;
 
-    } while (p != pLast );
-    
-    
-    if( bRequestResize )
-        _requestResize();
-    
-    // Adapt inserted Widgets to our size and force render
+	WgVectorHook * p = pFirst;
 
-    p = pFirst;
-    do {
-        p->Widget()->_onNewSize(m_size);
-        _onRenderRequested( p );
-        p->Next();
-    } while (p != pLast);
-    
+	do {
+		// Check if we need to resize to fit Widget in current width
+
+		int height = p->Widget()->MatchingPixelHeight(m_size.w);
+		if( height > m_size.h )
+			bRequestResize = true;
+
+		// Update bestSize
+
+		WgSize preferred = p->Widget()->PreferredPixelSize();
+
+		if (preferred.w > m_preferredSize.w || preferred.h > m_preferredSize.h)
+		{
+			m_preferredSize = preferred;
+			bRequestResize = true;
+		}
+
+
+		p = static_cast<WgVectorHook*>(p->Next());
+
+	} while (p != pLast );
+
+
+	if( bRequestResize )
+		_requestResize();
+
+	// Adapt inserted Widgets to our size and force render
+
+	p = pFirst;
+	do {
+		p->Widget()->_onNewSize(m_size);
+		_onRenderRequested( p );
+		p->Next();
+	} while (p != pLast);
+
 }
 
 
@@ -356,8 +356,8 @@ void WgStackPanel::_onWidgetDisappeared( WgVectorHook * pToBeRemoved )
 {
 	bool	bRequestResize = false;
 
-    // Get dirty rectangles for all visible sections of pToBeRemoved.
-    _requestRender(static_cast<WgStackHook*>(pToBeRemoved)->_getGeo(WgRect(0, 0, m_size)));
+	// Get dirty rectangles for all visible sections of pToBeRemoved.
+	_requestRender(static_cast<WgStackHook*>(pToBeRemoved)->_getGeo(WgRect(0, 0, m_size)));
 
 //	_onRenderRequested( pToBeRemoved );
 

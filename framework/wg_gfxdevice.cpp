@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -43,26 +43,26 @@ using namespace wg::Util;
 
 void WgGfxDevice::BlitBlock( wg::GfxDevice * pDevice, const WgBlock& _block, const WgRect& _canvas, bool bTriLinear, float mipmapbias)
 {
-    if( !_block.Surface() )
-        return;
-    
-    if( _block.IsSkipable() )
-        return;
-    
-    const WgBorders&    sourceBorders = _block.SourceFrame();
-    const WgBorders     canvasBorders = _block.CanvasFrame();
-    
-    // Shortcuts & optimizations for common special cases.
-    
-    WgRect canvas = _canvas;
-    WgUtil::AdjustScaledArea(_block, canvas);
-    
-    const WgRect& src = _block.Rect();
-    wg::Surface * pSurf = _block.Surface();
+	if( !_block.Surface() )
+		return;
 
-    pDevice->setBlitSource(pSurf);
-    pDevice->blitNinePatch(canvas, canvasBorders, src, sourceBorders);
-    
+	if( _block.IsSkipable() )
+		return;
+
+	const WgBorders&    sourceBorders = _block.SourceFrame();
+	const WgBorders     canvasBorders = _block.CanvasFrame();
+
+	// Shortcuts & optimizations for common special cases.
+
+	WgRect canvas = _canvas;
+	WgUtil::AdjustScaledArea(_block, canvas);
+
+	const WgRect& src = _block.Rect();
+	wg::Surface * pSurf = _block.Surface();
+
+	pDevice->setBlitSource(pSurf);
+	pDevice->blitNinePatch(canvas, canvasBorders, src, sourceBorders);
+
 }
 
 
@@ -79,7 +79,7 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 	pen.SetDevice( pDevice );
 	pen.SetScale( pText->Scale() );
 
-    wg::TextAttr	attr;
+	wg::TextAttr	attr;
 	pText->GetBaseAttr(attr);
 
 	if( attr.pFont == 0 )
@@ -89,13 +89,13 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 
 	WgSize	textSize( pText->width(), pText->height() );
 
-    // Limit cliplist if we might print outside our dest
-    
-    ClipPopData pop;
-    
-    if( textSize.w > dest.w || textSize.h > dest.h )
-       pop = limitClipList( pDevice, dest );
-    
+	// Limit cliplist if we might print outside our dest
+
+	ClipPopData pop;
+
+	if( textSize.w > dest.w || textSize.h > dest.h )
+	   pop = limitClipList( pDevice, dest );
+
 //	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 
 	const WgCursorInstance* pCursor = 0;
@@ -158,7 +158,7 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 		pos.y += pLines[i].lineSpacing;
 	}
 
-    popClipList( pDevice, pop );
+	popClipList( pDevice, pop );
 
 	if( dest.w >= textSize.w && (dest.h >= textSize.h || nLines == 1) )
 		return true;
@@ -173,9 +173,9 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 	WgColor baseCol	= pDevice->tintColor();
 	WgColor	color	= baseCol;
 
-    const wg::Char * pChars = pText->getText();
+	const wg::Char * pChars = pText->getText();
 	Uint16	hStyle	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-    wg::TextAttr		attr;
+	wg::TextAttr		attr;
 
 	WgRange	selection = pText->getSelection();
 
@@ -187,7 +187,7 @@ void WgGfxDevice::_printTextSpan( wg::GfxDevice * pDevice, WgPen& pen, const WgT
 
 		if( pChars[i].styleHandle() != hStyle || i == selection.Begin() || i == selection.End() )
 		{
-            bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
+			bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
 
 			hStyle = pChars[i].styleHandle();
 
@@ -269,10 +269,10 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 	WgColor baseCol	= pDevice->tintColor();
 	WgColor	color	= baseCol;
 
-    const wg::Char * pChars = pText->getText();
+	const wg::Char * pChars = pText->getText();
 	Uint16	hStyle	= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-    wg::TextAttr		attr;
-    wg::TextAttr		baseAttr;
+	wg::TextAttr		attr;
+	wg::TextAttr		baseAttr;
 
 	WgRange	selection = pText->getSelection();
 	int		ellipsisWidth = 0;
@@ -285,7 +285,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 	Uint16	ellipsisChar = int(WgExtChar::Ellipsis);
 	ellipsisWidth = 0;
-    wg::Glyph_p pEllipsis = pen.GetFont()->getGlyph( int(WgExtChar::Ellipsis) );
+	wg::Glyph_p pEllipsis = pen.GetFont()->getGlyph( int(WgExtChar::Ellipsis) );
 
 	if( !pEllipsis )
 	{
@@ -295,7 +295,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 	if( pEllipsis )
 	{
-        const wg::GlyphBitmap * pBitmap = pEllipsis->getBitmap();
+		const wg::GlyphBitmap * pBitmap = pEllipsis->getBitmap();
 		if( pBitmap )
 		{
 			if( ellipsisChar == int(WgExtChar::Ellipsis) )
@@ -313,7 +313,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 		if( pChars[i].styleHandle() != hStyle || i == selection.Begin() || i == selection.End() )
 		{
-            bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
+			bool bWasUnderlined = attr.decoration == wg::TextDecoration::Underline;
 
 			hStyle = pChars[i].styleHandle();
 
@@ -346,7 +346,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 		WgCoord savedPos = pen.GetPos();
 		pen.ApplyKerning();
-        wg::Glyph_p pGlyph = pen.GetGlyph();
+		wg::Glyph_p pGlyph = pen.GetGlyph();
 		if( pen.GetPosX() +  pGlyph->advance() + ellipsisWidth > endX )
 		{
 			pen.SetPos( savedPos );
@@ -398,7 +398,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 
 void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, const WgRect& dest )
 {
-    wg::State state = pText->state();
+	wg::State state = pText->state();
 
 	// Take care of selection background color (if we have any)
 
@@ -409,9 +409,9 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	selStart = pText->LineColToOffset(startLine, startCol);
 	selEnd = pText->LineColToOffset(endLine,endCol);
 
-    wg::TextStyle * pStyle = pText->getStyle();
-    if( !pStyle )
-        pStyle = wg::Base::defaultStyle();
+	wg::TextStyle * pStyle = pText->getStyle();
+	if( !pStyle )
+		pStyle = wg::Base::defaultStyle();
 
 	if( selStart != selEnd && pStyle->combBgColor(state).a != 0 )
 	{
@@ -430,7 +430,7 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	WgColor	color;
 	int		startOfs = 0;
 
-    const wg::Char * pChars = pText->getText();
+	const wg::Char * pChars = pText->getText();
 	int nChars = pText->nbChars();
 
 	for( int ofs = 0 ; ofs < nChars ; ofs++ )
@@ -536,7 +536,7 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::Text
 	WgColor	color	= baseCol;
 
 	Uint16	hStyle		= 0xFFFF;		// Setting to impossible value forces setting of properties in first loop.
-    wg::TextAttr	attr;
+	wg::TextAttr	attr;
 
 	pen.FlushChar();
 
@@ -551,9 +551,9 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::Text
 		{
 
 			attr = baseAttr;
-            
-            if(_pLine[i].styleHandle())
-                _pLine[i].stylePtr()->addToAttr(state, &attr);
+
+			if(_pLine[i].styleHandle())
+				_pLine[i].stylePtr()->addToAttr(state, &attr);
 
 			hStyle = _pLine[i].styleHandle();
 
@@ -613,18 +613,18 @@ void WgGfxDevice::PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::Text
 
 void WgGfxDevice::_drawUnderline( wg::GfxDevice * pDevice, const WgText * pText, int _x, int _y, int ofs, int maxChars )
 {
-    
-    Uint32 hStyle = 0xFFFF;
+
+	Uint32 hStyle = 0xFFFF;
 
 	WgPen pen;
-    const wg::Char * pChars = pText->getText();
+	const wg::Char * pChars = pText->getText();
 	pen.SetScale( pText->Scale() );
 
 	for( int i = ofs ; i < ofs + maxChars && !pChars[i].isEndOfLine() ; i++ )
 	{
 		if( pChars[i].styleHandle() != hStyle )
 		{
-            wg::TextAttr attr;
+			wg::TextAttr attr;
 			pText->GetCharAttr( attr, i );
 
 			if( attr.decoration == wg::TextDecoration::Underline )
@@ -641,13 +641,13 @@ void WgGfxDevice::_drawUnderline( wg::GfxDevice * pDevice, const WgText * pText,
 		pen.AdvancePos();
 	}
 
-    // Niklas is almost certain we don't use underline anywhere so I'll skip migrating this.
+	// Niklas is almost certain we don't use underline anywhere so I'll skip migrating this.
 /*
 	const WgUnderline * pUnderline = pen.GetFont()->GetUnderline( pen.GetSize() );
 
-    auto p = pDevice->blitSource();
-    pDevice->setBlitSource(pUnderline->pSurf);
-    pDevice->blitHorrBar(pUnderline->rect, WgBorders( 0, pUnderline->rightBorder, 0, pUnderline->leftBorder ), false, WgCoord(_x + pUnderline->bearingX, _y + pUnderline->bearingY), pen.GetPosX());
-    pDevice->setBlitSource(p);
+	auto p = pDevice->blitSource();
+	pDevice->setBlitSource(pUnderline->pSurf);
+	pDevice->blitHorrBar(pUnderline->rect, WgBorders( 0, pUnderline->rightBorder, 0, pUnderline->leftBorder ), false, WgCoord(_x + pUnderline->bearingX, _y + pUnderline->bearingY), pen.GetPosX());
+	pDevice->setBlitSource(p);
 */
 }

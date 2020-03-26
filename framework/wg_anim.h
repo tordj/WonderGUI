@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -75,7 +75,7 @@ public:
 
 protected:
 
-	// Meant to be overloaded with methods by the same name that builds up their 
+	// Meant to be overloaded with methods by the same name that builds up their
 	// WgKeyFrame-derived class.
 
 	bool				_insertKeyFrame( int pos, WgKeyFrame * pFrame, int duration );
@@ -84,8 +84,8 @@ protected:
 
 	// Meant to be overloaded with public methods returning right type.
 
-    const WgKeyFrame *	_firstKeyFrame( void ) const {return m_keyframes.first();};
-    const WgKeyFrame *	_lastKeyFrame( void ) const {return m_keyframes.last();};
+	const WgKeyFrame *	_firstKeyFrame( void ) const {return m_keyframes.first();};
+	const WgKeyFrame *	_lastKeyFrame( void ) const {return m_keyframes.last();};
 
 	WgKeyFrame *		_firstKeyFrame( void ) {return m_keyframes.first();};
 	WgKeyFrame *		_lastKeyFrame( void ) {return m_keyframes.last();};
@@ -97,10 +97,10 @@ protected:
 	WgKeyFrame *		_keyFrame( int64_t ticks, WgKeyFrame * pProximity = 0 ) const;
 
 protected:
-	
+
 	float				m_scale;			// Only used for getKeyFrame
 	int					m_duration;
-	WgAnimMode			m_playMode;	
+	WgAnimMode			m_playMode;
 	wg::Chain<WgKeyFrame>	m_keyframes;
 };
 

@@ -17,11 +17,11 @@ WgSimpleVolumeMeter::WgSimpleVolumeMeter()
 	m_sectionColors[0] = WgColor::Green;
 	m_sectionColors[1] = WgColor::Yellow;
 	m_sectionColors[2] = WgColor::Red;
-	
+
 	m_fSectionHeight[0] = 0.75f;
 	m_fSectionHeight[1] = 0.18f;
 	m_fSectionHeight[2] = 0.07f;
-	
+
 	m_fHoldHeight = 0.10f;
 	m_bStereo = false;
 	m_fPeak[0] = 0.f;
@@ -29,9 +29,9 @@ WgSimpleVolumeMeter::WgSimpleVolumeMeter()
 	m_fHold[0] = 0.f;
 	m_fHold[1] = 0.f;
 
-    m_fGap = 0.1f;
-    m_fSidePadding = 0.1f;
-    
+	m_fGap = 0.1f;
+	m_fSidePadding = 0.1f;
+
 	_updateIValues( WgSize(0,0) );
 }
 
@@ -74,9 +74,9 @@ void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
 {
 	wg::limit( bottomFraction, 0.f, 1.f );
 	wg::limit( topFraction, 0.f, 1.f - bottomFraction );
-		
+
 	float middleFraction = 1.f - bottomFraction - topFraction;
-	
+
 	if( bottomFraction != m_fSectionHeight[0] || topFraction != m_fSectionHeight[2] )
 	{
 		m_fSectionHeight[0] = bottomFraction;
@@ -92,11 +92,11 @@ void WgSimpleVolumeMeter::SetSections( float bottomFraction, float topFraction )
 void WgSimpleVolumeMeter::SetHoldHeight( float fraction )
 {
 	wg::limit( fraction, 0.f, 0.25f );
-	
+
 	if( m_fHoldHeight != fraction )
 	{
 		m_fHoldHeight = fraction;
-        _updateIValues( PixelSize() );
+		_updateIValues( PixelSize() );
 		_requestRender();
 	}
 }
@@ -140,11 +140,11 @@ void WgSimpleVolumeMeter::SetValue( float peak, float hold )
 
 	WgSize sz = PixelSize();
 
-    int length = (m_direction == WgDirection::Left || m_direction == WgDirection::Right) ? sz.w : sz.h;
+	int length = (m_direction == WgDirection::Left || m_direction == WgDirection::Right) ? sz.w : sz.h;
 
 	int	iPeak = (int) (peak * length);
 	int iHold = _calcIHold(hold, sz);
-	
+
 	if( m_bStereo )
 	{
 		m_bStereo = false;
@@ -173,7 +173,7 @@ void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightP
 
 	WgSize sz = PixelSize();
 
-    int length = (m_direction == WgDirection::Left || m_direction == WgDirection::Right) ? sz.w : sz.h;
+	int length = (m_direction == WgDirection::Left || m_direction == WgDirection::Right) ? sz.w : sz.h;
 
 	int	iPeakL = (int) (leftPeak * length);
 	int	iPeakR = (int) (rightPeak * length);
@@ -183,7 +183,7 @@ void WgSimpleVolumeMeter::SetValue( float leftPeak, float leftHold, float rightP
 	if( !m_bStereo )
 	{
 		m_bStereo = true;
-		_requestRender();		
+		_requestRender();
 	}
 	else if( m_iPeak[0] != iPeakL || m_iHold[0] != iHoldL || m_iPeak[1] != iPeakR || m_iHold[1] != iHoldR )
 	{
@@ -245,7 +245,7 @@ void WgSimpleVolumeMeter::_requestRenderPartial( WgSize sz, int newLeftPeak, int
 			if(end<e)
 				end = e;
 		}
-		
+
 		if( m_bStereo && newRightHold != m_iHold[1] )
 		{
 			int b = std::min(newRightHold,m_iHold[1]) - m_iHoldHeight;
@@ -267,7 +267,7 @@ void WgSimpleVolumeMeter::_requestRenderPartial( WgSize sz, int newLeftPeak, int
 	//
 
 	switch( m_direction )
-	{ 
+	{
 		case WgDirection::Up:
 			_requestRender(WgRect(0, sz.h - end, sz.w, end - beg));
 			break;
@@ -292,7 +292,7 @@ int WgSimpleVolumeMeter::_calcIHold( float holdValue, WgSize canvas )
 		return 0;					// Should not be visible.
 
 	int height = m_iHoldHeight;
-	
+
 	int canvasLength = m_direction == WgDirection::Up || m_direction == WgDirection::Down ? canvas.h : canvas.w;
 
 	int ofs = (int) (holdValue * canvasLength);
@@ -334,7 +334,7 @@ void WgSimpleVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _can
 	if( !m_bEnabled )
 		return;
 
-    if( m_bStereo )
+	if( m_bStereo )
 	{
 		WgRect r = _canvas;
 
@@ -357,11 +357,11 @@ void WgSimpleVolumeMeter::_onRender( wg::GfxDevice * pDevice, const WgRect& _can
 			r.y += r.h + m_iGap;
 
 		_renderBar( pDevice, 1, r );
-		
+
 	}
-	else 
+	else
 	{
-        WgRect r = _canvas;
+		WgRect r = _canvas;
 
 		if (m_direction == WgDirection::Up || m_direction == WgDirection::Down)
 		{
@@ -383,20 +383,20 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 {
 	int peakHeight 	= m_iPeak[nb];
 	int holdOfs 	= m_iHold[nb];
-	
+
 	// Possibly render Hold
-	
+
 	if( m_iHoldHeight > 0 )
 	{
 		if( holdOfs - m_iHoldHeight > peakHeight )				// Render Hold separately if separated from Peak
 		{
 			WgColor c;
-			
+
 			if( holdOfs <= m_iSectionHeight[0] )
 				c = m_sectionColors[0];
 			else if( holdOfs > m_iSectionHeight[0] + m_iSectionHeight[1] )
 				c = m_sectionColors[2];
-			else 
+			else
 				c = m_sectionColors[1];
 
 			WgRect r = _rect;
@@ -428,7 +428,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 		else if( holdOfs > peakHeight )
 			peakHeight = m_iHold[nb];							// Hold and Peak are connected, so we let Hold extend the peakHeight.
 	}
-	
+
 	// Render Peak
 
 	if (peakHeight < 1)
@@ -498,7 +498,7 @@ void WgSimpleVolumeMeter::_renderBar( wg::GfxDevice * pDevice, int nb, const WgR
 		}
 	}
 
-		
+
 }
 
 //____ _updateIValues() ______________________________________________________
@@ -511,14 +511,14 @@ void WgSimpleVolumeMeter::_updateIValues( WgSize sz )
 	if (m_direction == WgDirection::Left || m_direction == WgDirection::Right)
 		std::swap(length, width);
 
-    m_iGap = (int) (width * m_fGap);
-    if( m_iGap == 0 && m_fGap > 0.f )
-        m_iGap = 1;
+	m_iGap = (int) (width * m_fGap);
+	if( m_iGap == 0 && m_fGap > 0.f )
+		m_iGap = 1;
 
-    m_iSidePadding = (int) (width * m_fSidePadding);
-    if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
-        m_iSidePadding = 1;
-				
+	m_iSidePadding = (int) (width * m_fSidePadding);
+	if( m_iSidePadding == 0 && m_fSidePadding > 0.f )
+		m_iSidePadding = 1;
+
 	m_iHoldHeight = (int) (m_fHoldHeight * length);
 	if( m_iHoldHeight == 0 && m_fHoldHeight > 0.f )
 		m_iHoldHeight = 1;
@@ -530,11 +530,11 @@ void WgSimpleVolumeMeter::_updateIValues( WgSize sz )
 	m_iPeak[0] = (int)(m_fPeak[0] * length);
 	m_iPeak[1] = (int)(m_fPeak[1] * length);
 
-    m_iHold[0] = _calcIHold( m_fHold[0], sz );
+	m_iHold[0] = _calcIHold( m_fHold[0], sz );
 	m_iHold[1] = _calcIHold( m_fHold[1], sz );
 }
 
-//____ _onCloneContent() _________________________________________________________________ 
+//____ _onCloneContent() _________________________________________________________________
 
 void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 {
@@ -545,7 +545,7 @@ void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 		m_sectionColors[i] 	= pOrg->m_sectionColors[i];
 		m_fSectionHeight[i] = pOrg->m_fSectionHeight[i];
 	}
-	
+
 	m_direction = pOrg->m_direction;
 	m_fHoldHeight = pOrg->m_fHoldHeight;
 	m_fGap = pOrg->m_fGap;
@@ -558,7 +558,7 @@ void WgSimpleVolumeMeter::_onCloneContent( const WgWidget * _pOrg )
 
 	m_pPeakSkin = pOrg->m_pPeakSkin;
 	m_pHoldSkin = pOrg->m_pHoldSkin;
-	
+
 	_updateIValues( PixelSize() );
 }
 

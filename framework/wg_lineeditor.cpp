@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -219,7 +219,7 @@ void WgLineEditor::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	else
 		pText->hideCursor();
 
-    WgGfxDevice::PrintText( pDevice, pText, r );
+	WgGfxDevice::PrintText( pDevice, pText, r );
 
 	if( pText != &m_text )
 		delete pText;
@@ -262,7 +262,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			if( m_bPasswordMode )
 			{
-                wg::TextAttr	attr;
+				wg::TextAttr	attr;
 				m_pText->GetBaseAttr( attr );
 
 				WgPen	pen;
@@ -300,7 +300,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	{
 		if( m_bFocused && static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() == 1 )
 			m_pText->setSelectionMode(false);
-	}		
+	}
 
 	if( event == WG_EVENT_CHARACTER )
 	{
@@ -331,7 +331,7 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 	if( (event == WG_EVENT_KEY_PRESS || event == WG_EVENT_KEY_REPEAT) && _isEditable() && m_bFocused )
 	{
-        const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
+		const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
 
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		switch( key )
@@ -347,10 +347,10 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 					else
 						m_pText->gotoPrevWord();
 				}
-                else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
-                {
-                    m_pText->goBOL();
-                }
+				else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
+				{
+					m_pText->goBOL();
+				}
 				else
 				{
 					m_pText->goLeft();
@@ -367,10 +367,10 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 					else
 						m_pText->gotoNextWord();
 				}
-                else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
-                {
-                        m_pText->goEOL();
-                }
+				else if( pEvent->ModKeys() & modKeyMap.beginEndLine )
+				{
+						m_pText->goEOL();
+				}
 				else
 				{
 					m_pText->goRight();
@@ -383,8 +383,8 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 					m_pText->delSelection();
 				else if( (pEvent->ModKeys() & modKeyMap.stepWord) && !m_bPasswordMode)
 					m_pText->delPrevWord();
-                else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
-                    m_pText->delToBOL();
+				else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
+					m_pText->delToBOL();
 				else
 					m_pText->delPrevChar();
 				break;
@@ -396,8 +396,8 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 					m_pText->delSelection();
 				else if( (pEvent->ModKeys() & modKeyMap.stepWord) && !m_bPasswordMode)
 					m_pText->delNextWord();
-                else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
-                    m_pText->delToEOL();
+				else if( (pEvent->ModKeys() & modKeyMap.beginEndLine) && !m_bPasswordMode)
+					m_pText->delToEOL();
 				else
 					m_pText->delNextChar();
 				break;
@@ -458,19 +458,19 @@ void WgLineEditor::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHa
 	if( pEvent->IsMouseButtonEvent() )
 	{
 		if( static_cast<const WgEvent::MouseButtonEvent*>(pEvent)->Button() != 1 )
-            WgWidget::_onEvent(pEvent,pHandler);
+			WgWidget::_onEvent(pEvent,pHandler);
 	}
 	else if( pEvent->IsKeyEvent() )
 	{
 		int key = static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode();
 		if( static_cast<const WgEvent::KeyEvent*>(pEvent)->IsMovementKey() == false &&
 			key != WG_KEY_DELETE && key != WG_KEY_BACKSPACE )
-            WgWidget::_onEvent(pEvent,pHandler);
+			WgWidget::_onEvent(pEvent,pHandler);
 
 		//TODO: Would be good if we didn't forward any character-creating keys either...
 	}
 	else if( event != WG_EVENT_CHARACTER )
-        WgWidget::_onEvent(pEvent,pHandler);
+		WgWidget::_onEvent(pEvent,pHandler);
 }
 
 
@@ -485,16 +485,16 @@ void WgLineEditor::_adjustViewOfs()
 
 	if( m_bFocused && m_pText->getFont() )
 	{
-        WgCursor * pCursor = m_pText->getCursorStyle();
-        if( !pCursor )
-            pCursor = WgBase::GetDefaultCursor();
-        
+		WgCursor * pCursor = m_pText->getCursorStyle();
+		if( !pCursor )
+			pCursor = WgBase::GetDefaultCursor();
+
 		if( !pCursor )
 			return;
 
 		int cursCol	= m_pText->column();
 
-        wg::TextAttr	attr;
+		wg::TextAttr	attr;
 		m_pText->GetBaseAttr( attr );
 
 		WgPen	pen;
@@ -569,7 +569,7 @@ void WgLineEditor::_adjustViewOfs()
 
 void WgLineEditor::_onEnable()
 {
-    m_text.setState(wg::StateEnum::Normal);
+	m_text.setState(wg::StateEnum::Normal);
 	_requestRender();
 }
 
@@ -577,7 +577,7 @@ void WgLineEditor::_onEnable()
 
 void WgLineEditor::_onDisable()
 {
-    m_text.setState(wg::StateEnum::Disabled);
+	m_text.setState(wg::StateEnum::Disabled);
 	_requestRender();
 }
 

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -51,21 +51,21 @@ class WgCursor;
 
 namespace wg
 {
-    class Object;
-    class MemStack;
+	class Object;
+	class MemStack;
 };
 
 
 class WgError
 {
 public:
-    wg::ErrorCode   code;
-    std::string     message;
-    const wg::Object *  pObject;
-    const char *    classname;
-    const char *    function;
-    const char *    file;
-    int             line;
+	wg::ErrorCode   code;
+	std::string     message;
+	const wg::Object *  pObject;
+	const char *    classname;
+	const char *    function;
+	const char *    file;
+	int             line;
 };
 
 class WgBase
@@ -73,7 +73,7 @@ class WgBase
 public:
 	static void Init();
 	static void Exit();
-    
+
 	static void 	SetDefaultCursor( WgCursor * pCursor );
 	static WgCursor * GetDefaultCursor() { assert(s_pData!=0); return s_pData->pDefaultCursor; }
 
@@ -95,13 +95,13 @@ public:
 	static int		DoubleClickTimeTreshold() { assert(s_pData!=0); return s_pData->doubleClickTimeTreshold; }
 	static int		DoubleClickDistanceTreshold() { assert(s_pData!=0); return s_pData->doubleClickDistanceTreshold; }
 
-    static void     _setQuartersPerPoint( int quarterPixels );   
+	static void     _setQuartersPerPoint( int quarterPixels );
 
-    
+
 private:
 
 	struct Data
-	{        
+	{
 		WgCursor *			pDefaultCursor;
 
 		// Settings for keyboard/pointer input
@@ -121,8 +121,8 @@ private:
 
 	};
 
-    static int                              s_iSoftubeNumberOfInstances;
-	static Data *	                        s_pData;
+	static int                              s_iSoftubeNumberOfInstances;
+	static Data *							s_pData;
 };
 
 #endif //WG_BASE_DOT_H

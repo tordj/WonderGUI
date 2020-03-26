@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -311,49 +311,49 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-        case WG_EVENT_DROP_PICK:
-            id = "DropPick";
-            break;
-        case WG_EVENT_DROP_PROBE:
-            id = "DropProbe";
-            break;
-        case WG_EVENT_DROP_ENTER:
-            id = "DropEnter";
-            break;
-        case WG_EVENT_DROP_MOVE:
-            id = "DropMove";
-            break;
-        case WG_EVENT_DROP_LEAVE:
-            id = "DropLeave";
-            break;
-        case WG_EVENT_DROP_DELIVER:
-            id = "DropDeliver";
-            break;
-        case WG_EVENT_DROP_CANCEL:
-            id = "DropCancel";
-            break;
-        case WG_EVENT_DROP_COMPLETE:
-            id = "DropComplete";
-            break;
+		case WG_EVENT_DROP_PICK:
+			id = "DropPick";
+			break;
+		case WG_EVENT_DROP_PROBE:
+			id = "DropProbe";
+			break;
+		case WG_EVENT_DROP_ENTER:
+			id = "DropEnter";
+			break;
+		case WG_EVENT_DROP_MOVE:
+			id = "DropMove";
+			break;
+		case WG_EVENT_DROP_LEAVE:
+			id = "DropLeave";
+			break;
+		case WG_EVENT_DROP_DELIVER:
+			id = "DropDeliver";
+			break;
+		case WG_EVENT_DROP_CANCEL:
+			id = "DropCancel";
+			break;
+		case WG_EVENT_DROP_COMPLETE:
+			id = "DropComplete";
+			break;
 
-        case WG_EVENT_DROPHOVER_ENTER:
-            id = "DropHoverEnter";
-            break;
-        case WG_EVENT_DROPHOVER_MOVE:
-            id = "DropHoverMove";
-            break;
-        case WG_EVENT_DROPHOVER_LEAVE:
-            id = "DropHoverLeave";
-            break;
+		case WG_EVENT_DROPHOVER_ENTER:
+			id = "DropHoverEnter";
+			break;
+		case WG_EVENT_DROPHOVER_MOVE:
+			id = "DropHoverMove";
+			break;
+		case WG_EVENT_DROPHOVER_LEAVE:
+			id = "DropHoverLeave";
+			break;
 
-            
+
 		case WG_EVENT_LANES_DROP:
 			id = "LanesDrop";
 			break;
 
-        case WG_EVENT_SELECTED:
-            id = "Selected";
-            break;
+		case WG_EVENT_SELECTED:
+			id = "Selected";
+			break;
 
 		case WG_EVENT_BUTTON_PRESS:
 			id = "ButtonPress";
@@ -455,7 +455,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-                /*
+				/*
 		case WG_EVENT_MENUITEM_SELECT:
 		{
 			id = "MenuitemSelect";
@@ -487,7 +487,7 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, "menu=%ld", (long int)pEvent->Menu() );
 			break;
 		}
-                */
+				*/
 
 		case WG_EVENT_MODAL_MOVE_OUTSIDE:
 			id = "ModalMoveOutside";
@@ -501,20 +501,20 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			sprintf( params, " button=%d", ((const WgEvent::ModalBlockedRelease*)_pEvent)->Button() );
 			break;
 
-        case WG_EVENT_EAVESDROP:
-        {
-            id = "Eavesdrop";
-            WgEvent::Event * pOrgEvent = ((const WgEvent::Eavesdrop*)_pEvent)->Event();
-            string orgWidget = _formatWidget(pOrgEvent);
-            
-            sprintf( params, " org event=%d for %s", pOrgEvent->Type(), orgWidget.c_str() );
-            break;
-        }
-            
-        default:
-            id = "Unknown Event";
-            sprintf( params, " type enum=%d", (_pEvent)->Type() );
-            break;
+		case WG_EVENT_EAVESDROP:
+		{
+			id = "Eavesdrop";
+			WgEvent::Event * pOrgEvent = ((const WgEvent::Eavesdrop*)_pEvent)->Event();
+			string orgWidget = _formatWidget(pOrgEvent);
+
+			sprintf( params, " org event=%d for %s", pOrgEvent->Type(), orgWidget.c_str() );
+			break;
+		}
+
+		default:
+			id = "Unknown Event";
+			sprintf( params, " type enum=%d", (_pEvent)->Type() );
+			break;
 	};
 
 	widget = _formatWidget( _pEvent );

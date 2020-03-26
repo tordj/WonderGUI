@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -77,7 +77,7 @@ protected:
 		Opening,				// Popup is opening (fading in).
 		PeekOpen,				// Popup is open until pointer leaves launcherGeo (mode only allowed if bAutoClose is set).
 		WeakOpen,				// Popup is open, but closed if other entry of ancestors is peeked (mode only allowed if bAutoClose is set).
-		FixedOpen,				// Popup is open until it is closed by a pop() call. 
+		FixedOpen,				// Popup is open until it is closed by a pop() call.
 		ClosingDelay,			// Popup is in countdown to closing mode (mode only allowed if bAutoClose is set).
 		Closing,				// Popup is closing (fading out).
 	};
@@ -86,7 +86,7 @@ protected:
 	WgOrigo		attachPoint;
 	WgCoord		attachOfs;			// Offset in points from attachPoint.
 	bool		bAutoClose;			// Has been opened in auto-close mode.
-    bool        bOpened;            // Set once the popup has passed state OpeningDelay.
+	bool        bOpened;            // Set once the popup has passed state OpeningDelay.
 	State		state;
 	int			stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
 	WgSize		maxSize;
@@ -95,9 +95,9 @@ protected:
 };
 
 
-	
+
 //____ WgPopupLayer ____________________________________________________________
-	
+
 class WgPopupLayer : public WgLayer
 {
 	friend class WgPopupHook;
@@ -131,7 +131,7 @@ public:
 protected:
 
 	WgPopupLayer *	_getPopupLayer() const override { return const_cast<WgPopupLayer*>(this); }
-	 
+
 	void			_stealKeyboardFocus();
 	void			_restoreKeyboardFocus();
 	bool			_updateGeo(WgPopupHook * pSlot, bool bInitialUpdate = false );
@@ -142,12 +142,12 @@ protected:
 	void			_addSlot(WgWidget * pPopup, WgWidget * pOpener, const WgRect& launcherGeo, WgOrigo attachPoint, WgCoord attachOfs, bool bAutoClose, bool bDelay, WgSize maxSize);
 
 	void			_closeAutoOpenedUntil(WgWidget * pStayOpen, bool bCloseImmediately );
-    void            _closeAllOpenUntil(WgWidget * pStayOpen, bool bCloseImmediately);
-    void            _beginClosing( WgPopupHook * p, bool bCloseImmediately );
+	void            _closeAllOpenUntil(WgWidget * pStayOpen, bool bCloseImmediately);
+	void            _beginClosing( WgPopupHook * p, bool bCloseImmediately );
 
 	// Overloaded from Panel
 
-	
+
 	void			_childRequestResize(WgPopupHook * pSlot);
 	void			_onRequestRender(const WgRect& rect, const WgPopupHook * pHook);	// rect is in our coordinate system.
 
@@ -169,13 +169,13 @@ protected:
 
 	// Overloaded from container
 
-    void			_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches) override;
+	void			_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches) override;
 //		void			_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode);
 //		void			_collectPatches(Patches& container, const Rect& geo, const Rect& clip);
 
 
 	// Overloaded from Widget
-	
+
 	void			_onCloneContent(const WgWidget * _pOrg) override;
 	void			_onNewSize(const WgSize& size) override;
 	void			_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
@@ -190,6 +190,6 @@ protected:
 	int				m_closingDelayMs = 100;
 	int				m_closingFadeMs = 100;
 };
-	
+
 
 #endif //WG_POPUPLAYER_DOT_H

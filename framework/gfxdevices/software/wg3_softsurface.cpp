@@ -78,7 +78,7 @@ namespace wg
 
 	//____ constructor ________________________________________________________________
 
-    SoftSurface::SoftSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
+	SoftSurface::SoftSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
 		assert( format != PixelFormat::Unknown && format != PixelFormat::Custom );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
@@ -97,7 +97,7 @@ namespace wg
 			m_pClut = nullptr;
 	}
 
-    SoftSurface::SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
+	SoftSurface::SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
 	{
 		assert(format != PixelFormat::Unknown && format != PixelFormat::Custom && pBlob );
 		Util::pixelFormatToDescription(format, m_pixelDescription);
@@ -109,9 +109,9 @@ namespace wg
 		m_pClut = const_cast<Color*>(pClut);
 	}
 
-    SoftSurface::SoftSurface(SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
-                             const PixelDescription * pPixelDescription, int flags, const Color * pClut)
-    : Surface(flags)
+	SoftSurface::SoftSurface(SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
+							 const PixelDescription * pPixelDescription, int flags, const Color * pClut)
+	: Surface(flags)
 	{
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -134,7 +134,7 @@ namespace wg
 	}
 
 
-    SoftSurface::SoftSurface( Surface * pOther, int flags ) : Surface(flags)
+	SoftSurface::SoftSurface( Surface * pOther, int flags ) : Surface(flags)
 	{
 		assert( pOther );
 

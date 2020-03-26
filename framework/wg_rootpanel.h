@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -41,15 +41,15 @@ class WgWidget;
 
 class WgRootPanel : public WgWidgetHolder
 {
-    friend class WgWidget;
-    
+	friend class WgWidget;
+
 public:
 	WgRootPanel();
-    WgRootPanel( wg::GfxDevice * pGfxDevice );
+	WgRootPanel( wg::GfxDevice * pGfxDevice );
 	~WgRootPanel();
 
-    bool					SetGfxDevice( wg::GfxDevice * pDevice );
-    inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
+	bool					SetGfxDevice( wg::GfxDevice * pDevice );
+	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
 
 	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
@@ -134,7 +134,7 @@ protected:
 		WgRootPanel *		m_pRoot;
 	};
 
-    inline void         _addPreRenderCall(WgWidget * pWidget) { m_preRenderCalls.push_back(pWidget); }
+	inline void         _addPreRenderCall(WgWidget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
 	WgHook*				_firstHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
 	WgHook*				_lastHook() const { return m_hook.Widget()? const_cast<Hook*>(&m_hook):0; }
@@ -142,21 +142,21 @@ protected:
 	bool 				_focusRequested( WgHook * pBranch, WgWidget * pWidgetRequesting );
 	bool 				_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing );
 
-    void                _inViewRequested( WgHook * pChild );
-    void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
-    
+	void                _inViewRequested( WgHook * pChild );
+	void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
+
 	wg::Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
 	wg::Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
-    std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
-    
+	std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
+
 	wg::Skin_p			m_pUpdatedRectOverlay;
 	int					m_afterglowFrames;
 
 	std::deque<wg::Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
-	
 
-    wg::GfxDevice_p		m_pGfxDevice;
+
+	wg::GfxDevice_p		m_pGfxDevice;
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;

@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -48,14 +48,14 @@ class WgCursor
 public:
 	WgCursor();
 	WgCursor( WgCursor& in );
-	
+
 	enum Mode
 	{
 		EOL = 0,
 		INS,
 		OVR
 	};
-	
+
 	enum BlitMode
 	{
 		NORMAL,
@@ -83,7 +83,7 @@ public:
 	WgGfxAnim * 		Anim( Mode m ) const { return m_pAnim[m]; };
 	float				SizeRatio(Mode m ) const { return m_sizeRatio[m]; }
 
-	
+
 
 private:
 	enum { N_MODES = 3 };

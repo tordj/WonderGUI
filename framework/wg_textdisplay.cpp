@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -36,13 +36,13 @@ WgTextDisplay::WgTextDisplay()
 {
 	m_pText			= &m_text;
 	m_maxLines		= 0;
-    m_text.setHolder( this );
+	m_text.setHolder( this );
 
 	m_text.setLineWidth( PixelSize().w );
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WgTextEditMode::Static );
 	m_bResetCursorOnFocus = true;
-    m_str.assign("");
+	m_str.assign("");
 }
 
 
@@ -134,7 +134,7 @@ WgSize WgTextDisplay::PreferredPixelSize() const
 		bestSize = _skinPreferredSize( m_pSkin, m_scale);
 
 
-    if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
+	if (m_text.nbChars() != 0 || m_text.GetEditMode() == WgTextEditMode::Editable )
 	{
 		WgSize textSize = m_text.unwrappedSize();
 
@@ -181,7 +181,7 @@ wg::String WgTextDisplay::GetTooltipString() const
 
 void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window )
 {
-    WgWidget::_onRender(pDevice,_canvas,_window);
+	WgWidget::_onRender(pDevice,_canvas,_window);
 
 	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
@@ -195,7 +195,7 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 	else
 		m_text.hideCursor();
 
-    WgGfxDevice::PrintText( pDevice, pText, canvas );
+	WgGfxDevice::PrintText( pDevice, pText, canvas );
 
 	if( pText != &m_text )
 		delete pText;
@@ -261,12 +261,12 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			m_pText->setSelectionMode(true);
 		}
 
-        WgRect textCanvas = PixelSize();
-        if( m_pSkin )
-            textCanvas = _skinContentRect( m_pSkin, textCanvas, WgStateEnum::Normal, m_scale );
+		WgRect textCanvas = PixelSize();
+		if( m_pSkin )
+			textCanvas = _skinContentRect( m_pSkin, textCanvas, WgStateEnum::Normal, m_scale );
 
 		m_pText->CursorGotoCoord( pEvent->PointerPixelPos(), textCanvas );
-        _bringCursorInView();
+		_bringCursorInView();
 
 		if(IsSelectable() && type == WG_EVENT_MOUSEBUTTON_PRESS && !(modKeys & WG_MODKEY_SHIFT))
 		{
@@ -287,7 +287,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 	else if( !m_bFocused && IsEditable() && type == WG_EVENT_MOUSEBUTTON_PRESS && ((const WgEvent::MouseButtonEvent*)(pEvent))->Button() == 1 )
 	{
 		GrabFocus();
-        _bringCursorInView();
+		_bringCursorInView();
 		bSwallowed = true;
 	}
 
@@ -310,8 +310,8 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 			{
 				_insertCharAtCursor( '\t' );
 			}
-            
-            _bringCursorInView();
+
+			_bringCursorInView();
 			bSwallowed = true;
 		}
 	}
@@ -330,9 +330,9 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if( (type == WG_EVENT_KEY_PRESS || type == WG_EVENT_KEY_REPEAT) && IsEditable() && m_bFocused )
 	{
-        const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
+		const WgModKeyMap& modKeyMap = pHandler->GetModKeyMap();
 
-        switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
+		switch( static_cast<const WgEvent::KeyEvent*>(pEvent)->TranslatedKeyCode() )
 		{
 			case WG_KEY_LEFT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -340,12 +340,12 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				if( modKeys & modKeyMap.stepWord )
 					m_pText->gotoPrevWord();
-                else if( modKeys & modKeyMap.beginEndLine )
-                    m_pText->goBOL();
-                else
+				else if( modKeys & modKeyMap.beginEndLine )
+					m_pText->goBOL();
+				else
 					m_pText->goLeft();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 			case WG_KEY_RIGHT:
 				if( modKeys & WG_MODKEY_SHIFT )
@@ -353,36 +353,36 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 				if( modKeys & modKeyMap.stepWord )
 					m_pText->gotoNextWord();
-                else if( modKeys & modKeyMap.beginEndLine )
-                    m_pText->goEOL();
-                else
+				else if( modKeys & modKeyMap.beginEndLine )
+					m_pText->goEOL();
+				else
 					m_pText->goRight();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_UP:
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-                if( modKeys & modKeyMap.beginEndText )
-                    m_pText->goBOF();
-                else
-                    m_pText->CursorGoUp( 1, ScreenPixelGeo() );
+				if( modKeys & modKeyMap.beginEndText )
+					m_pText->goBOF();
+				else
+					m_pText->CursorGoUp( 1, ScreenPixelGeo() );
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_DOWN:
 				if( modKeys & WG_MODKEY_SHIFT )
 					m_pText->setSelectionMode(true);
 
-                if( modKeys & modKeyMap.beginEndText )
-                    m_pText->goEOF();
-                else
-                    m_pText->CursorGoDown( 1, ScreenPixelGeo() );
+				if( modKeys & modKeyMap.beginEndText )
+					m_pText->goEOF();
+				else
+					m_pText->CursorGoDown( 1, ScreenPixelGeo() );
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_BACKSPACE:
@@ -390,12 +390,12 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					m_pText->delSelection();
 				else if( modKeys & modKeyMap.stepWord )
 					m_pText->delPrevWord();
-                else if( modKeys & modKeyMap.beginEndLine )
-                    m_pText->delToBOL();
+				else if( modKeys & modKeyMap.beginEndLine )
+					m_pText->delToBOL();
 				else
 					m_pText->delPrevChar();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_DELETE:
@@ -403,12 +403,12 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 					m_pText->delSelection();
 				else if( modKeys & modKeyMap.stepWord )
 					m_pText->delNextWord();
-                else if( modKeys & modKeyMap.beginEndLine )
-                    m_pText->delToEOL();
+				else if( modKeys & modKeyMap.beginEndLine )
+					m_pText->delToEOL();
 				else
 					m_pText->delNextChar();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_HOME:
@@ -420,7 +420,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goBOL();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			case WG_KEY_END:
@@ -432,7 +432,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 				else
 					m_pText->goEOL();
 				bSwallowed = true;
-                _bringCursorInView();
+				_bringCursorInView();
 				break;
 
 			default:
@@ -462,7 +462,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (!bSwallowed)
 	{
-        WgWidget::_onEvent( pEvent, pHandler );
+		WgWidget::_onEvent( pEvent, pHandler );
 	}
 }
 
@@ -470,27 +470,27 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 void WgTextDisplay::_bringCursorInView()
 {
-    WgCursorInstance * pCursor = m_pText->GetCursor();
+	WgCursorInstance * pCursor = m_pText->GetCursor();
 
-    WgCoord cursorPos = { pCursor->ofsX(), pCursor->ofsY() };
+	WgCoord cursorPos = { pCursor->ofsX(), pCursor->ofsY() };
 
-    wg::TextAttr attr;
-    m_pText->GetBaseAttr(attr);
-    
-    int size = attr.size * m_scale >> WG_SCALE_BINALS;
+	wg::TextAttr attr;
+	m_pText->GetBaseAttr(attr);
 
-    attr.pFont->setSize(size);
-    int glyphHeight = attr.pFont->maxAdvance() + attr.pFont->maxDescend();
-    int glyphWidth = attr.pFont->whitespaceAdvance();
+	int size = attr.size * m_scale >> WG_SCALE_BINALS;
 
-    if(m_pSkin)
-        cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);
+	attr.pFont->setSize(size);
+	int glyphHeight = attr.pFont->maxAdvance() + attr.pFont->maxDescend();
+	int glyphWidth = attr.pFont->whitespaceAdvance();
 
-    WgRect mustHaveArea = { cursorPos.x - glyphWidth, cursorPos.y, glyphWidth*2, glyphHeight };
-    WgRect niceToHaveArea = { mustHaveArea.x, mustHaveArea.y - glyphHeight/2, mustHaveArea.w, mustHaveArea.h + glyphHeight };
+	if(m_pSkin)
+		cursorPos += _skinContentOfs( m_pSkin, m_state, m_scale);
 
-    WgRect canvas = WgRect( 0,0, PixelSize() );
-    _requestInView( WgRect(mustHaveArea,canvas), WgRect(niceToHaveArea, canvas) );
+	WgRect mustHaveArea = { cursorPos.x - glyphWidth, cursorPos.y, glyphWidth*2, glyphHeight };
+	WgRect niceToHaveArea = { mustHaveArea.x, mustHaveArea.y - glyphHeight/2, mustHaveArea.w, mustHaveArea.h + glyphHeight };
+
+	WgRect canvas = WgRect( 0,0, PixelSize() );
+	_requestInView( WgRect(mustHaveArea,canvas), WgRect(niceToHaveArea, canvas) );
 }
 
 //____ _onCloneContent() _______________________________________________________
@@ -511,7 +511,7 @@ bool WgTextDisplay::_onAlphaTest( const WgCoord& ofs )
 
 void WgTextDisplay::_onEnable( void )
 {
-    m_text.setState(wg::StateEnum::Normal);
+	m_text.setState(wg::StateEnum::Normal);
 	_requestRender();
 }
 
@@ -519,7 +519,7 @@ void WgTextDisplay::_onEnable( void )
 
 void WgTextDisplay::_onDisable( void )
 {
-    m_text.setState(wg::StateEnum::Disabled);
+	m_text.setState(wg::StateEnum::Disabled);
 	_requestRender();
 }
 
@@ -563,7 +563,7 @@ void WgTextDisplay::_onLostInputFocus()
 		_queueEvent(new WgEvent::TextSet(this, m_pText));
 		_stopReceiveTicks();
 		_requestRender();
-        _queueEvent(new WgEvent::TextSet(this, m_pText));
+		_queueEvent(new WgEvent::TextSet(this, m_pText));
 	}
 }
 
@@ -575,13 +575,13 @@ void WgTextDisplay::_setScale( int scale )
 
 	m_text.SetScale(scale);
 
-    WgRect    contentRect(0, 0, PixelSize());
-    
-    if (m_pSkin)
-        contentRect = _skinContentRect(m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
-    
-    m_text.setLineWidth( contentRect.w );
-    
+	WgRect    contentRect(0, 0, PixelSize());
+
+	if (m_pSkin)
+		contentRect = _skinContentRect(m_pSkin, contentRect, WgStateEnum::Normal, m_scale);
+
+	m_text.setLineWidth( contentRect.w );
+
 	_requestResize();
 }
 
@@ -592,9 +592,9 @@ void WgTextDisplay::_setScale( int scale )
 void WgTextDisplay::_textModified()
 {
 	m_bResetCursorOnFocus = true;
-    _requestResize();
+	_requestResize();
 	_requestRender();
-    _queueEvent(new WgEvent::TextModify(this, m_pText));
+	_queueEvent(new WgEvent::TextModify(this, m_pText));
 }
 
 //____ InsertTextAtCursor() ___________________________________________________

@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef WG3_QPIX_DOT_H
-#define	WG3_QPIX_DOT_H
+#ifndef WG3_MU_DOT_H
+#define	WG3_MU_DOT_H
 #pragma once
 
 #include <cstdint>
@@ -33,7 +33,7 @@ namespace wg
 	class MU
 	{
 		friend class Base;
-        friend class ::WgBase;
+		friend class ::WgBase;
 
 	public:
 		//.____ Creation __________________________________________
@@ -188,4 +188,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG3_QPIX_DOT_H
+#endif //WG3_MU_DOT_H

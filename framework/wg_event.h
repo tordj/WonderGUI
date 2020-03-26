@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -67,7 +67,7 @@ namespace WgEvent
 	{
 		friend class ::WgEventHandler;
 		friend class ::WgWidget;
-        friend class Eavesdrop;
+		friend class Eavesdrop;
 
 		public:
 			WgEventType		Type() const { return m_type; }
@@ -80,8 +80,8 @@ namespace WgEvent
 			WgCoord			PointerPixelPos() const { return m_pointerLocalPixelPos; }
 			WgCoord			PointerScreenPixelPos() const { return m_pointerScreenPixelPos; }
 
-            WgCoord			PointerPointPos() const { return (m_pointerLocalPixelPos * WG_SCALE_BASE) / m_pointScale; }
-            WgCoord			PointerScreenPointPos() const { return (m_pointerScreenPixelPos * WG_SCALE_BASE) / m_pointScale; }
+			WgCoord			PointerPointPos() const { return (m_pointerLocalPixelPos * WG_SCALE_BASE) / m_pointScale; }
+			WgCoord			PointerScreenPointPos() const { return (m_pointerScreenPixelPos * WG_SCALE_BASE) / m_pointScale; }
 
 			bool			IsMouseEvent() const;
 			bool			IsMouseButtonEvent() const;
@@ -92,7 +92,7 @@ namespace WgEvent
 			virtual ~Event() {}
 
 			virtual void 	_cloneContentFrom( const Event * pOrg );			// Only subclassed for the standard event types.
-			
+
 			WgEventType		m_type;				// Type of event
 			WgModifierKeys	m_modKeys;			// Modifier keys pressed when event posted.
 			int64_t			m_timestamp;		// Timestamp of posting this event
@@ -101,10 +101,10 @@ namespace WgEvent
 			WgWidgetWeakPtr	m_pForwardedFrom;	// Widget this event was forwarded from.
 			WgCoord			m_pointerLocalPixelPos;	// Widget-relative position of pointer. Same as m_pointerScreenPixelPos if Widget not set.
 			WgCoord			m_pointerScreenPixelPos;	// Screen position of pointer.
-            int             m_pointScale;
-            WgWidgetWeakPtr m_pFinalRecipient;
-        
-            WgWidgetWeakPtr m_pForwardTo;
+			int             m_pointScale;
+			WgWidgetWeakPtr m_pFinalRecipient;
+
+			WgWidgetWeakPtr m_pForwardTo;
 	};
 
 	class MouseButtonEvent : public Event
@@ -201,7 +201,7 @@ namespace WgEvent
 		bool			PressInside() const;
 		bool			ReleaseInside() const;
 
-        WgModifierKeys  PressModKeys() const { return m_pressModKeys; }
+		WgModifierKeys  PressModKeys() const { return m_pressModKeys; }
 
 	protected:
 		MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside );
@@ -209,7 +209,7 @@ namespace WgEvent
 
 		bool			m_bPressInside;
 		bool			m_bReleaseInside;
-        WgModifierKeys  m_pressModKeys;     // ModKeys pressed when the button was pressed. Set by _finalizeEvent().
+		WgModifierKeys  m_pressModKeys;     // ModKeys pressed when the button was pressed. Set by _finalizeEvent().
 	};
 
 	class KeyPress : public KeyEvent
@@ -279,194 +279,194 @@ namespace WgEvent
 		friend class ::WgEventHandler;
 	public:
 		WgPointerStyle	Style() const;
-		
+
 	protected:
 		PointerChange( WgPointerStyle style );
 		virtual void 	_cloneContentFrom( const Event * pOrg );
-		
+
 		WgPointerStyle	m_style;
 	};
 
-    
-    class Eavesdrop : public Event
-    {
-        friend class ::WgEventHandler;
-    public:
-        
-        WgEvent::Event *    Event() const;
-    protected:
-        Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent );
-        ~Eavesdrop();
-        virtual void     _cloneContentFrom( const WgEvent::Event * pOrg );
-        
-        WgEvent::Event *   m_pEvent;
-        
-        
-    };
-    
-    //____ DragNDrop events _____________________________________________________
-    
-    class DragNDrop : public Event
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        wg::BasicPayload_p  payload() const { return m_pPayload; }
-        WgWidgetWeakPtr     pickedFrom() const { return m_pPickedFrom; }
-        int                 pickCategory() const { return m_pickCategory; }
-        
-    protected:
-        DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
-        virtual void     _cloneContentFrom( const Event * pOrg );
 
-        wg::BasicPayload_p  m_pPayload;
-        WgWidgetWeakPtr     m_pPickedFrom;
-        int                 m_pickCategory;
-    };
-    
-    class DropPick : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        void                setPayload( wg::BasicPayload * pPayload );
-        bool                hasPayload() const { return m_pPayload; }
-        
-        WgCoord               pickOfs() const { return m_pickOfs; }
-        bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
-        
-        void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
-        bool                hasDragWidget() const { return m_pDragWidget; }
-        WgWidget *          dragWidget() const { return m_pDragWidget; }
-        WgCoord               dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
-        
-    protected:
-        DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver );
-        
-        WgWidget *            m_pDragWidget;
-        WgCoord               m_dragWidgetPointerOfs;
-        WgCoord               m_pickOfs;
-        bool                  m_bDeleteWhenDone;
-    };
-    
-    class DropProbe : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
-        bool            isAccepted() const { return m_bAccepted; }
-        
-    protected:
-        DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
-        
-        bool        m_bAccepted;
-    };
-    
-    class DropEnter : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        void                setDragWidget( WgWidget * pWidget );
-        WgWidget *          dragWidget() const { return m_pDragWidget; }
-        
-    protected:
-        DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
-        
-        WgWidget *          m_pDragWidget;
-    };
-    
-    class DropMove : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        void                setDragWidget( WgWidget * pWidget );
-        WgWidget *          dragWidget() const { return m_pDragWidget; }
-        
-    protected:
-        DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
-        
-        WgWidget *          m_pDragWidget;
-    };
-    
-    class DropLeave : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-        
-    protected:
-        DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
-    };
-    
-    class DropDeliver : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        WgWidget *      deliveredTo() const;
-        void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
-        bool            isAccepted() const { return m_bAccepted; }
-        
-    protected:
-        DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
-        
-        bool        m_bAccepted;
-    };
-    
-    class DropCancel : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-        
-    protected:
-        DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload );
-        
-    };
-    
-    class DropComplete : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-        WgWidget *      deliveredTo() const { return m_pDeliveree; }
-        
-    protected:
-        DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload );
-        
-        WgWidget *     m_pDeliveree;
-    };
+	class Eavesdrop : public Event
+	{
+		friend class ::WgEventHandler;
+	public:
 
-    
-    class DropHoverEnter : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-    protected:
-        DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
-    };
-    
-    class DropHoverMove : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-    public:
-        
-    protected:
-        DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
-    };
-    
-    class DropHoverLeave : public DragNDrop
-    {
-        friend class ::WgDragNDropLayer;
-        
-    protected:
-        DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
-    };
+		WgEvent::Event *    Event() const;
+	protected:
+		Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent );
+		~Eavesdrop();
+		virtual void     _cloneContentFrom( const WgEvent::Event * pOrg );
 
-    
-    
-    
-    
+		WgEvent::Event *   m_pEvent;
+
+
+	};
+
+	//____ DragNDrop events _____________________________________________________
+
+	class DragNDrop : public Event
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		wg::BasicPayload_p  payload() const { return m_pPayload; }
+		WgWidgetWeakPtr     pickedFrom() const { return m_pPickedFrom; }
+		int                 pickCategory() const { return m_pickCategory; }
+
+	protected:
+		DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+		virtual void     _cloneContentFrom( const Event * pOrg );
+
+		wg::BasicPayload_p  m_pPayload;
+		WgWidgetWeakPtr     m_pPickedFrom;
+		int                 m_pickCategory;
+	};
+
+	class DropPick : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		void                setPayload( wg::BasicPayload * pPayload );
+		bool                hasPayload() const { return m_pPayload; }
+
+		WgCoord               pickOfs() const { return m_pickOfs; }
+		bool                deleteDragWidgetWhenDone() const { return m_bDeleteWhenDone; }
+
+		void                setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone = true );
+		bool                hasDragWidget() const { return m_pDragWidget; }
+		WgWidget *          dragWidget() const { return m_pDragWidget; }
+		WgCoord               dragWidgetPointerOfs() const { return m_dragWidgetPointerOfs; }
+
+	protected:
+		DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver );
+
+		WgWidget *            m_pDragWidget;
+		WgCoord               m_dragWidgetPointerOfs;
+		WgCoord               m_pickOfs;
+		bool                  m_bDeleteWhenDone;
+	};
+
+	class DropProbe : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
+		bool            isAccepted() const { return m_bAccepted; }
+
+	protected:
+		DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+
+		bool        m_bAccepted;
+	};
+
+	class DropEnter : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		void                setDragWidget( WgWidget * pWidget );
+		WgWidget *          dragWidget() const { return m_pDragWidget; }
+
+	protected:
+		DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+
+		WgWidget *          m_pDragWidget;
+	};
+
+	class DropMove : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		void                setDragWidget( WgWidget * pWidget );
+		WgWidget *          dragWidget() const { return m_pDragWidget; }
+
+	protected:
+		DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver );
+
+		WgWidget *          m_pDragWidget;
+	};
+
+	class DropLeave : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+
+	protected:
+		DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
+	};
+
+	class DropDeliver : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		WgWidget *      deliveredTo() const;
+		void            accept( bool bAccept = true ) { m_bAccepted = bAccept; }
+		bool            isAccepted() const { return m_bAccepted; }
+
+	protected:
+		DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
+
+		bool        m_bAccepted;
+	};
+
+	class DropCancel : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+
+	protected:
+		DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload );
+
+	};
+
+	class DropComplete : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+		WgWidget *      deliveredTo() const { return m_pDeliveree; }
+
+	protected:
+		DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload );
+
+		WgWidget *     m_pDeliveree;
+	};
+
+
+	class DropHoverEnter : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+	protected:
+		DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
+	};
+
+	class DropHoverMove : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+	public:
+
+	protected:
+		DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
+	};
+
+	class DropHoverLeave : public DragNDrop
+	{
+		friend class ::WgDragNDropLayer;
+
+	protected:
+		DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
+	};
+
+
+
+
+
 	//____ WgButton events _______________________________________________
 
 	class ButtonPress : public Event
@@ -820,70 +820,70 @@ namespace WgEvent
 
 	//____ WgMultiSlider events _______________________________________________
 
-    class SliderEnter : public Event
-    {
-        friend class ::WgMultiSlider;
-    public:
-        int id() const { return m_id; }
-        
-    protected:
-        SliderEnter(WgMultiSlider * pSlider, int sliderId );
-        
-        int        m_id;
-    };
+	class SliderEnter : public Event
+	{
+		friend class ::WgMultiSlider;
+	public:
+		int id() const { return m_id; }
 
-    class SliderLeave : public Event
-    {
-        friend class ::WgMultiSlider;
-    public:
-        int id() const { return m_id; }
-        
-    protected:
-        SliderLeave(WgMultiSlider * pSlider, int sliderId );
-        
-        int        m_id;
-    };
+	protected:
+		SliderEnter(WgMultiSlider * pSlider, int sliderId );
 
-    class SliderHandleEnter : public Event
-    {
-        friend class ::WgMultiSlider;
-    public:
-        int id() const { return m_id; }
-        
-    protected:
-        SliderHandleEnter(WgMultiSlider * pSlider, int sliderId );
-        
-        int        m_id;
-    };
-    
-    class SliderHandleLeave : public Event
-    {
-        friend class ::WgMultiSlider;
-    public:
-        int id() const { return m_id; }
-        
-    protected:
-        SliderHandleLeave(WgMultiSlider * pSlider, int sliderId );
-        
-        int        m_id;
-    };
-    
-    class SliderPressed : public Event
-    {
-        friend class ::WgMultiSlider;
-    public:
-        int id() const { return m_id; }
-        
-        int        button() const { return m_button; }
-        WgOrigo    sideOfHandle() const { return m_offsetFromHandle; }
-        
-    protected:
-        SliderPressed(WgMultiSlider * pSlider, int sliderId, int button, WgOrigo offsetFromHandle );
-        
-        int        m_id;
-        int        m_button;
-        WgOrigo    m_offsetFromHandle;
-    };
+		int        m_id;
+	};
+
+	class SliderLeave : public Event
+	{
+		friend class ::WgMultiSlider;
+	public:
+		int id() const { return m_id; }
+
+	protected:
+		SliderLeave(WgMultiSlider * pSlider, int sliderId );
+
+		int        m_id;
+	};
+
+	class SliderHandleEnter : public Event
+	{
+		friend class ::WgMultiSlider;
+	public:
+		int id() const { return m_id; }
+
+	protected:
+		SliderHandleEnter(WgMultiSlider * pSlider, int sliderId );
+
+		int        m_id;
+	};
+
+	class SliderHandleLeave : public Event
+	{
+		friend class ::WgMultiSlider;
+	public:
+		int id() const { return m_id; }
+
+	protected:
+		SliderHandleLeave(WgMultiSlider * pSlider, int sliderId );
+
+		int        m_id;
+	};
+
+	class SliderPressed : public Event
+	{
+		friend class ::WgMultiSlider;
+	public:
+		int id() const { return m_id; }
+
+		int        button() const { return m_button; }
+		WgOrigo    sideOfHandle() const { return m_offsetFromHandle; }
+
+	protected:
+		SliderPressed(WgMultiSlider * pSlider, int sliderId, int button, WgOrigo offsetFromHandle );
+
+		int        m_id;
+		int        m_button;
+		WgOrigo    m_offsetFromHandle;
+	};
 
 	class SliderMoved : public Event
 	{
@@ -1006,7 +1006,7 @@ namespace WgEvent
 	{
 		friend class ::WgPianoKeyboard;
 	public:
-	
+
 		int					key() { return m_keyIdx; }
 		int64_t				timestamp() const { return m_timestamp; }
 
@@ -1042,12 +1042,12 @@ namespace WgEvent
 		WgCoord			PrevPixelPos() const;
 		WgCoord			CurrPixelPos() const;
 
-        WgCoord			DraggedTotalPoints() const;
-        WgCoord			DraggedNowPoints() const;
-        WgCoord			StartPointPos() const;
-        WgCoord			PrevPointPos() const;
-        WgCoord			CurrPointPos() const;
-    protected:
+		WgCoord			DraggedTotalPoints() const;
+		WgCoord			DraggedNowPoints() const;
+		WgCoord			StartPointPos() const;
+		WgCoord			PrevPointPos() const;
+		WgCoord			CurrPointPos() const;
+	protected:
 		WgCoord			m_startPos;
 		WgCoord			m_prevPos;
 		WgCoord			m_currPos;

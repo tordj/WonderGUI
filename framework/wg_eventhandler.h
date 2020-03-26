@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -55,9 +55,9 @@ public:
 
 struct WgModKeyMap
 {
-    WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
-    WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
-    WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
+	WgModifierKeys       stepWord        = WG_MODKEY_CTRL;
+	WgModifierKeys       beginEndLine    = WG_MODKEY_NONE;
+	WgModifierKeys       beginEndText    = WG_MODKEY_NONE;
 //    WgModifierKeys       pageUpDown      = WG_MODKEY_NONE;
 };
 
@@ -91,12 +91,12 @@ public:
 	bool	IsKeyPressed( int native_keycode );
 	WgModifierKeys ModKeys() const { return m_modKeys; }
 
-    void                SetModKeyMap( const WgModKeyMap& key );
-    const WgModKeyMap&  GetModKeyMap() const { return m_modKeyMap; }
+	void                SetModKeyMap( const WgModKeyMap& key );
+	const WgModKeyMap&  GetModKeyMap() const { return m_modKeyMap; }
 
 	bool	IsWindowFocused() const { return m_bWindowFocus; }
 
-    WgCoord PointerPixelPos() const { return m_pointerPos; }
+	WgCoord PointerPixelPos() const { return m_pointerPos; }
 
 	//----
 
@@ -139,7 +139,7 @@ private:
 	void 	_postTickEvents( int ticks );
 	void 	_processEventQueue();
 
-    bool    _forwardEvent( const WgEvent::Event * _pEvent );
+	bool    _forwardEvent( const WgEvent::Event * _pEvent );
 
 	void	_finalizeEvent( WgEvent::Event * pEvent );
 	void	_processGeneralEvent( WgEvent::Event * pEvent );
@@ -175,15 +175,15 @@ private:
 
 	void	_addCallback( const WgEventFilter& filter, Callback * pCallback );
 	int		_deleteCallbacksTo( const void * pReceiver );
-    int		_deleteCallbacksOnType( WgEventType type, wg::Chain<Callback> * pChain );
+	int		_deleteCallbacksOnType( WgEventType type, wg::Chain<Callback> * pChain );
 	int		_deleteCallback( const WgEventFilter& filter, const void * pReceiver );
 
 	void 	_updateMarkedWidget(bool bMouseMoved);
 	WgWidget * _updateEnteredWidgets( WgWidget * pMarkedWidget );
-	
+
 	void	_addTickReceiver( WgWidget * pWidget );
-    bool    _handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent );
-    
+	bool    _handleEavesdropping( WgWidget * pReceiver, WgEvent::Event * pEvent );
+
 	//
 
 	WgRootPanel *		m_pRoot;
@@ -198,8 +198,8 @@ private:
 	WgPointerStyle	m_pointerStyle;
 	WgModifierKeys	m_modKeys;
 
-    WgModKeyMap     m_modKeyMap;
-    
+	WgModKeyMap     m_modKeyMap;
+
 	std::vector<WgWidgetWeakPtr>	m_vTickWidgets;		// Widgets that have requested periodic tick-events (i.e. on every processEvents() ).
 
 	// Current mouse state
@@ -207,8 +207,8 @@ private:
 	WgWidgetWeakPtr				m_pMarkedWidget;		// Widget the pointer currently is "inside". Empty if outside a modal widget.
 
 	std::vector<WgWidgetWeakPtr>	m_vEnteredWidgets;	// All widgets that pointer is considered to be inside (= markedWidget + its ancestors).
-    
-    int                         m_markedLockCountdown = 0;      // Millisec left for which the mouse is locked to the marked widget.
+
+	int                         m_markedLockCountdown = 0;      // Millisec left for which the mouse is locked to the marked widget.
 
 	// Current button states
 
@@ -240,7 +240,7 @@ private:
 
 	// Callbacks
 
-    class Callback : public wg::Link
+	class Callback : public wg::Link
 	{
 	public:
 		virtual ~Callback() {};

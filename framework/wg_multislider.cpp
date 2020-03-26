@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -215,10 +215,10 @@ int WgMultiSlider::AddSlider2D( int id, WgOrigo origo, SetGeoFunc pSetGeoFunc, f
 
 void WgMultiSlider::RemoveAllSliders()
 {
-    m_sliders.clear();
-    m_selectedSliderHandle = -1;
+	m_sliders.clear();
+	m_selectedSliderHandle = -1;
 
-    _requestRender();
+	_requestRender();
 }
 
 
@@ -239,72 +239,72 @@ float WgMultiSlider::SetSliderValue(int id, float value, float value2)
 
 void WgMultiSlider::SetSliderVisible( int id, bool bVisible )
 {
-    // Get slider
+	// Get slider
 
-    Slider * pSlider = _findSlider(id);
-    if( !pSlider || pSlider->bVisible == bVisible )
-        return;
+	Slider * pSlider = _findSlider(id);
+	if( !pSlider || pSlider->bVisible == bVisible )
+		return;
 
-    // Set and request render
+	// Set and request render
 
-    pSlider->bVisible = bVisible;
+	pSlider->bVisible = bVisible;
 
-    _requestRenderSlider(pSlider);
+	_requestRenderSlider(pSlider);
 
-    // reset selected if it was when it was made invisible (is this the right thing to do?)
+	// reset selected if it was when it was made invisible (is this the right thing to do?)
 
-    if( !bVisible )
-    {
-        int idx = pSlider - &m_sliders[0];
+	if( !bVisible )
+	{
+		int idx = pSlider - &m_sliders[0];
 
-        if( idx == m_selectedSlider )
-        {
-            m_selectedSlider = -1;
-            _updateSliderStates();
-        }
+		if( idx == m_selectedSlider )
+		{
+			m_selectedSlider = -1;
+			_updateSliderStates();
+		}
 
-        if( idx == m_selectedSliderHandle )
-        {
-            m_selectedSliderHandle = -1;
-            _updateSliderStates();
-        }
-    }
+		if( idx == m_selectedSliderHandle )
+		{
+			m_selectedSliderHandle = -1;
+			_updateSliderStates();
+		}
+	}
 }
 
 //____ HandlePointPos() ________________________________________________________
 
 WgCoord WgMultiSlider::HandlePointPos( int sliderId )
 {
-    WgCoord pixelPos = HandlePixelPos(sliderId);
+	WgCoord pixelPos = HandlePixelPos(sliderId);
 
-    if(pixelPos.x == -1 && pixelPos.y == -1 )
-        return pixelPos;
+	if(pixelPos.x == -1 && pixelPos.y == -1 )
+		return pixelPos;
 
-    return pixelPos*WG_SCALE_BASE / m_scale;
+	return pixelPos*WG_SCALE_BASE / m_scale;
 }
 
 //____ HandlePixelPos() ________________________________________________________
 
 WgCoord WgMultiSlider::HandlePixelPos( int sliderId )
 {
-    WgCoord pos(-1,-1);
+	WgCoord pos(-1,-1);
 
-    Slider * p = _findSlider(sliderId);
-    if( p )
-    {
-        WgRect sliderGeo = _sliderGeo(*p, PixelSize());
+	Slider * p = _findSlider(sliderId);
+	if( p )
+	{
+		WgRect sliderGeo = _sliderGeo(*p, PixelSize());
 
-        pos.x = sliderGeo.x + (int)(sliderGeo.w * p->handlePos.x);
-        pos.y = sliderGeo.y + (int)(sliderGeo.h * p->handlePos.y);
-    }
-    return pos;
+		pos.x = sliderGeo.x + (int)(sliderGeo.w * p->handlePos.x);
+		pos.y = sliderGeo.y + (int)(sliderGeo.h * p->handlePos.y);
+	}
+	return pos;
 }
 
 //____ MarkTest() _____________________________________________________________
 
 bool WgMultiSlider::MarkTest(const WgCoord& ofs)
 {
-	// First do the normal transparency based test. This will call _onAlphaTest() and 
+	// First do the normal transparency based test. This will call _onAlphaTest() and
 	// take markOpacity into account.
 
 	if (WgWidget::MarkTest(ofs))
@@ -361,9 +361,9 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSlider(WgCoord ofs, WgCoord * pOfs
 
 	for (auto& slider : m_sliders)
 	{
-        if( !slider.bVisible )
-            continue;
-        
+		if( !slider.bVisible )
+			continue;
+
 		WgRect sliderGeo = _sliderSkinGeo(slider,_sliderGeo(slider, PixelSize()));
 
 		WgRect sliderMarkGeo = sliderGeo + (slider.sliderMarkExtension.isEmpty() ? m_defaultSliderMarkExtension : slider.sliderMarkExtension);
@@ -390,8 +390,8 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
 	Slider *	pSlightlyMarked = nullptr;
 	WgCoord		slightlyMarkedOfs;
-    WgCoord     slightlyMarkedDistance;
-    
+	WgCoord     slightlyMarkedDistance;
+
 	Slider *	pFullyMarked = nullptr;
 	WgCoord		fullyMarkedOfs;
 
@@ -400,18 +400,18 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
 	for (auto& slider : m_sliders)
 	{
-        if( !slider.bVisible )
-            continue;
-        
+		if( !slider.bVisible )
+			continue;
+
 		wg::Skin_p pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 		if (pHandleSkin )
 		{
 			WgRect sliderGeo = _sliderGeo(slider, PixelSize());
 			WgRect handleGeo = _sliderHandleGeo(slider, sliderGeo);
 
-            // We are using WgStateEnum::Normal on purpose here, so that hover hightlights are not included. Not perfect, but the lesser of two evils...
-            
-            if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Normal, m_markOpacity, m_scale))
+			// We are using WgStateEnum::Normal on purpose here, so that hover hightlights are not included. Not perfect, but the lesser of two evils...
+
+			if (handleGeo.contains(ofs) && _markTestSkin( pHandleSkin, ofs - handleGeo.pos(), handleGeo.size(), WgStateEnum::Normal, m_markOpacity, m_scale))
 			{
 				fullyMarkedOfs = ofs - handleGeo.pos();
 				pFullyMarked = &slider;
@@ -425,17 +425,17 @@ WgMultiSlider::Slider * WgMultiSlider::_markedSliderHandle(WgCoord ofs, WgCoord 
 
 				if (extendedGeo.contains(ofs))
 				{
-                    WgCoord distance = ofs - handleGeo.center();
+					WgCoord distance = ofs - handleGeo.center();
 
-                    // This is our new slightly marked if ofs is closer to handleGeo than any previous slightly marked.
-                    
-                    if( !pSlightlyMarked || (distance.x*distance.x + distance.y*distance.y) < (slightlyMarkedDistance.x*slightlyMarkedDistance.x + slightlyMarkedDistance.y*slightlyMarkedDistance.y) )
-                    {
-                        slightlyMarkedOfs = ofs - handleGeo.pos();
-                        pSlightlyMarked = &slider;
-                        slightlyMarkedDistance = distance;
-                    }
-                    
+					// This is our new slightly marked if ofs is closer to handleGeo than any previous slightly marked.
+
+					if( !pSlightlyMarked || (distance.x*distance.x + distance.y*distance.y) < (slightlyMarkedDistance.x*slightlyMarkedDistance.x + slightlyMarkedDistance.y*slightlyMarkedDistance.y) )
+					{
+						slightlyMarkedOfs = ofs - handleGeo.pos();
+						pSlightlyMarked = &slider;
+						slightlyMarkedDistance = distance;
+					}
+
 				}
 			}
 		}
@@ -495,36 +495,36 @@ void WgMultiSlider::_selectSliderHandle(Slider * pSlider)
 
 void WgMultiSlider::_setSliderStates(Slider& slider, WgState newSliderState, WgState newHandleState)
 {
-    // Request render where needed
-    
-    wg::Skin * pSliderSkin = slider.pBgSkin ? slider.pBgSkin.rawPtr() : m_pDefaultBgSkin.rawPtr();
-    wg::Skin * pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin.rawPtr() : m_pDefaultHandleSkin.rawPtr();
+	// Request render where needed
+
+	wg::Skin * pSliderSkin = slider.pBgSkin ? slider.pBgSkin.rawPtr() : m_pDefaultBgSkin.rawPtr();
+	wg::Skin * pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin.rawPtr() : m_pDefaultHandleSkin.rawPtr();
 
 	if (pSliderSkin && !pSliderSkin->isStateIdentical(slider.sliderState, newSliderState))
 		_requestRenderSlider(&slider);
 	else if (pHandleSkin && !pHandleSkin->isStateIdentical(slider.handleState, newHandleState))
 		_requestRenderHandle(&slider);
 
-    // Possibly send messages
-    
-    WgEventHandler * pHandler = _eventHandler();
-    if (pHandler)
-    {
-        if( !slider.sliderState.isHovered() && newSliderState.isHovered() )
-            pHandler->QueueEvent(new WgEvent::SliderEnter(this, slider.id));
-        
-        if( slider.sliderState.isHovered() && !newSliderState.isHovered() )
-            pHandler->QueueEvent(new WgEvent::SliderLeave(this, slider.id));
+	// Possibly send messages
 
-        if( !slider.handleState.isHovered() && newHandleState.isHovered() )
-            pHandler->QueueEvent(new WgEvent::SliderHandleEnter(this, slider.id));
-        
-        if( slider.handleState.isHovered() && !newHandleState.isHovered() )
-            pHandler->QueueEvent(new WgEvent::SliderHandleLeave(this, slider.id));
-    }
-    
-    // Set the states
-    
+	WgEventHandler * pHandler = _eventHandler();
+	if (pHandler)
+	{
+		if( !slider.sliderState.isHovered() && newSliderState.isHovered() )
+			pHandler->QueueEvent(new WgEvent::SliderEnter(this, slider.id));
+
+		if( slider.sliderState.isHovered() && !newSliderState.isHovered() )
+			pHandler->QueueEvent(new WgEvent::SliderLeave(this, slider.id));
+
+		if( !slider.handleState.isHovered() && newHandleState.isHovered() )
+			pHandler->QueueEvent(new WgEvent::SliderHandleEnter(this, slider.id));
+
+		if( slider.handleState.isHovered() && !newHandleState.isHovered() )
+			pHandler->QueueEvent(new WgEvent::SliderHandleLeave(this, slider.id));
+	}
+
+	// Set the states
+
 	slider.sliderState = newSliderState;
 	slider.handleState = newHandleState;
 }
@@ -845,7 +845,7 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 			if (m_selectedSliderHandle == -1)
 			{
 				Slider * p = _markedSliderHandle(pEvent->PointerPixelPos() );
-				
+
 				if(p)
 					_markSliderHandle(p);
 				else
@@ -969,23 +969,23 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 					}
 
 					if (m_pressMode == PressMode::SetValue)
-                    {
+					{
 						_selectSliderHandle(pMarked);				// In SetValue mode we actually select the handle
 
-                        // HACK:
-                        // In passive mode we need to set dragStartFraction directly since
-                        // slider.handlePos is out of date (waiting to be set externally).
+						// HACK:
+						// In passive mode we need to set dragStartFraction directly since
+						// slider.handlePos is out of date (waiting to be set externally).
 
-                        if( m_bPassive )
-                        {
-                            relPos = _alignPosToStep(*pMarked, relPos);
+						if( m_bPassive )
+						{
+							relPos = _alignPosToStep(*pMarked, relPos);
 
-                            wg::limit(relPos.x, 0.f, 1.f);
-                            wg::limit(relPos.y, 0.f, 1.f);
+							wg::limit(relPos.x, 0.f, 1.f);
+							wg::limit(relPos.y, 0.f, 1.f);
 
-                            m_dragStartFraction = relPos;
-                        }
-                    }
+							m_dragStartFraction = relPos;
+						}
+					}
 					else
 					{
 						m_selectedSlider = -1;
@@ -1045,20 +1045,20 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 				{
 					Slider& slider = m_sliders[m_selectedSliderHandle];
 
-                    //
+					//
 
 					WgRect sliderGeo = _sliderGeo(slider, PixelSize());
 
 					WgCoord dragNow = pEv->DraggedNowPixels();
 
 					WgCoordF movement;
-					
+
 
 					if (modKeys & m_finetuneModifier)
 					{
 						int pixelStepSize = m_finetuneStepSize == 0 ? m_scale / WG_SCALE_BASE : m_finetuneStepSize * m_scale / WG_SCALE_BASE;
 						WgCoordF stepIncrement;
-						
+
 						if (m_finetuneStepIncrement == 0.f)
 						{
 							stepIncrement.x = 1 / (sliderGeo.w - 0.0001f);
@@ -1202,8 +1202,8 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			break;
 		}
-        default:
-            break;
+		default:
+			break;
 	}
 }
 
@@ -1223,9 +1223,9 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	for (auto& slider : m_sliders)
 	{
-        if( !slider.bVisible )
-            continue;
-        
+		if( !slider.bVisible )
+			continue;
+
 		WgRect sliderGeo = _sliderGeo(slider, _canvas);
 
 		wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
@@ -1233,7 +1233,7 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 		{
 			WgRect bgGeo = _sliderSkinGeo(slider, sliderGeo);
 
-            if( bgGeo.intersectsWith(pDevice->clipBounds()) )
+			if( bgGeo.intersectsWith(pDevice->clipBounds()) )
 			{
 				WgState	emptyPartState = slider.sliderState;
 				WgState filledPartState = slider.sliderState;
@@ -1244,15 +1244,15 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 					_renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
 				else
 				{
-                    // Different parts of background should be rendered in different states.
-                    // We need to split the background into one "filled" part and one or two "empty" parts.
-                    
+					// Different parts of background should be rendered in different states.
+					// We need to split the background into one "filled" part and one or two "empty" parts.
+
 					WgCoord divider = { sliderGeo.x + (int)(slider.handlePos.x*sliderGeo.w), sliderGeo.y + (int)(slider.handlePos.y*sliderGeo.h) };
-                    
-                    WgRect filledPart;
-                    WgRect emptyPart1;
-                    WgRect emptyPart2;
-                    
+
+					WgRect filledPart;
+					WgRect emptyPart1;
+					WgRect emptyPart2;
+
 					switch (slider.origo)
 					{
 					case WgOrigo::NorthWest:
@@ -1296,64 +1296,64 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 						assert(0);
 					}
 
-                    // Prepare for custom cliplists
-                    
-                    const WgRect * pOldClipList = pDevice->clipList();
-                    int     oldClipListSize = pDevice->clipListSize();
-                    
-                    int allocSize = oldClipListSize*sizeof(WgRect)*2;
-                    WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
+					// Prepare for custom cliplists
 
-                    // Generate cliplist for filledPart
+					const WgRect * pOldClipList = pDevice->clipList();
+					int     oldClipListSize = pDevice->clipListSize();
 
-                    int nRects = 0;
-                    for( int i = 0 ; i < oldClipListSize ; i++ )
-                    {
-                        pRects[nRects] = WgRect(pOldClipList[i], filledPart );
-                        if( !pRects[nRects].isEmpty() )
-                            nRects++;
-                    }
-                    
-                    // Render filled part
-                    
-                    if( nRects > 0 )
-                    {
-                        pDevice->setClipList(nRects, pRects);
-                        _renderSkin( pBgSkin, pDevice, filledPartState, bgGeo, m_scale);
-                    }
-                    
-                    // Generate cliplist for emptyPart1
-                    
-                    nRects = 0;
-                    for( int i = 0 ; i < oldClipListSize ; i++ )
-                    {
-                        pRects[nRects] = WgRect(pOldClipList[i], emptyPart1 );
-                        if( !pRects[nRects].isEmpty() )
-                            nRects++;
-                    }
+					int allocSize = oldClipListSize*sizeof(WgRect)*2;
+					WgRect * pRects = (WgRect*) wg::Base::memStackAlloc( allocSize );
 
-                    // Add cliplist for emptyPart2
-                    
-                    for( int i = 0 ; i < oldClipListSize ; i++ )
-                    {
-                        pRects[nRects] = WgRect(pOldClipList[i], emptyPart2 );
-                        if( !pRects[nRects].isEmpty() )
-                            nRects++;
-                    }
+					// Generate cliplist for filledPart
 
-                    // Render empty part
-                    
-                    if( nRects > 0 )
-                    {
-                        pDevice->setClipList(nRects, pRects);
-                        _renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
-                    }
+					int nRects = 0;
+					for( int i = 0 ; i < oldClipListSize ; i++ )
+					{
+						pRects[nRects] = WgRect(pOldClipList[i], filledPart );
+						if( !pRects[nRects].isEmpty() )
+							nRects++;
+					}
 
-                    // Clean up
+					// Render filled part
 
-                    pDevice->setClipList(oldClipListSize, pOldClipList);
-                    wg::Base::memStackRelease(allocSize);
-                    
+					if( nRects > 0 )
+					{
+						pDevice->setClipList(nRects, pRects);
+						_renderSkin( pBgSkin, pDevice, filledPartState, bgGeo, m_scale);
+					}
+
+					// Generate cliplist for emptyPart1
+
+					nRects = 0;
+					for( int i = 0 ; i < oldClipListSize ; i++ )
+					{
+						pRects[nRects] = WgRect(pOldClipList[i], emptyPart1 );
+						if( !pRects[nRects].isEmpty() )
+							nRects++;
+					}
+
+					// Add cliplist for emptyPart2
+
+					for( int i = 0 ; i < oldClipListSize ; i++ )
+					{
+						pRects[nRects] = WgRect(pOldClipList[i], emptyPart2 );
+						if( !pRects[nRects].isEmpty() )
+							nRects++;
+					}
+
+					// Render empty part
+
+					if( nRects > 0 )
+					{
+						pDevice->setClipList(nRects, pRects);
+						_renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
+					}
+
+					// Clean up
+
+					pDevice->setClipList(oldClipListSize, pOldClipList);
+					wg::Base::memStackRelease(allocSize);
+
 				}
 
 			}
@@ -1441,14 +1441,14 @@ void WgMultiSlider::_updateHandlePos(Slider& slider)
 			handlePos.x = values.x;
 			handlePos.y = 1.f - values.y;
 			break;
-        default:
-            assert(false);   // Should never get here!
+		default:
+			assert(false);   // Should never get here!
 		}
 	}
 	else
 	{
 		float value;
-			
+
 		value = (slider.value[0] - slider.bounds[0].min) / (slider.bounds[0].max - slider.bounds[0].min);
 
 		switch (slider.origo)
@@ -1465,8 +1465,8 @@ void WgMultiSlider::_updateHandlePos(Slider& slider)
 		case WgOrigo::South:
 			handlePos.y = 1.f - value;
 			break;
-        default:
-            assert(false);   // Should never get here!
+		default:
+			assert(false);   // Should never get here!
 		}
 	}
 
@@ -1503,7 +1503,7 @@ void WgMultiSlider::_updateHandlePos(Slider& slider)
 
 	wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 	if (pBgSkin && !pBgSkin->isStateIdentical(slider.handleState, slider.handleState + WgStateEnum::Selected))
-	{	
+	{
 		WgRect sliderSkinGeo = _sliderSkinGeo(slider, sliderGeo);
 		_requestRender(sliderSkinGeo);
 	}
@@ -1563,7 +1563,7 @@ void WgMultiSlider::_updateGeo(Slider& slider)
 
 WgRect  WgMultiSlider::_sliderGeo(Slider& slider, const WgRect& _canvas )
 {
-    WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale ) : _canvas;
+	WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale ) : _canvas;
 
 	return { canvas.x + (int)(slider.geo.x * canvas.w + 0.5f), canvas.y + (int)(slider.geo.y * canvas.h + 0.5f), (int)(canvas.w * slider.geo.w), (int)(canvas.h * slider.geo.h) };
 }
@@ -1574,18 +1574,18 @@ WgRect  WgMultiSlider::_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo)
 {
 	wg::Skin_p pSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 
-    if(pSkin)
-    {
-        WgRect bgGeo = sliderGeo;
-        bgGeo -= _skinContentOfs( pSkin, m_state, m_scale);
-        bgGeo += _skinContentPadding( pSkin, m_scale);
+	if(pSkin)
+	{
+		WgRect bgGeo = sliderGeo;
+		bgGeo -= _skinContentOfs( pSkin, m_state, m_scale);
+		bgGeo += _skinContentPadding( pSkin, m_scale);
 
-        WgSize min = _skinPreferredSize( pSkin, m_scale);
+		WgSize min = _skinPreferredSize( pSkin, m_scale);
 
-        return { bgGeo.pos(),std::max(bgGeo.w,min.w), std::max(bgGeo.h,min.h) };
-    }
-    else
-        return sliderGeo;
+		return { bgGeo.pos(),std::max(bgGeo.w,min.w), std::max(bgGeo.h,min.h) };
+	}
+	else
+		return sliderGeo;
 
 }
 
@@ -1636,39 +1636,39 @@ float WgMultiSlider::_setValue(Slider& slider, float value, float value2, bool b
 
 	bool bUpdate = false;
 
-    if(value != slider.value[0] )
-    {
-        slider.value[0] = value;
-        bUpdate = true;
-    }
+	if(value != slider.value[0] )
+	{
+		slider.value[0] = value;
+		bUpdate = true;
+	}
 
 	if ( !isnan(value2) )
 	{
 		wg::limit(value2, slider.bounds[1].min, slider.bounds[1].max);
 
-        if(value2 != slider.value[1] )
-        {
-            slider.value[1] = value2;
-            bUpdate = true;
-        }
+		if(value2 != slider.value[1] )
+		{
+			slider.value[1] = value2;
+			bUpdate = true;
+		}
 	}
 
-    if( bUpdate )
-    {
-        // Update handle position
+	if( bUpdate )
+	{
+		// Update handle position
 
-        _updateHandlePos(slider);
+		_updateHandlePos(slider);
 
-        // Update geo in case some sliders geo is affected
+		// Update geo in case some sliders geo is affected
 
-        _refreshSliderGeo();
+		_refreshSliderGeo();
 
 		// Send values
 
 		if( bSendOnUpdate )
 			_sendValue(slider, value, value2);
- 
-    }
+
+	}
 	return value;
 }
 
@@ -1885,8 +1885,8 @@ WgCoordF WgMultiSlider::_convertFactorPos(WgCoordF in, WgOrigo origo)
 	case WgOrigo::SouthWest:
 		pos.y = 1.f - pos.y;
 		break;
-    default:
-        assert(false);   // Should never get here!
+	default:
+		assert(false);   // Should never get here!
 	}
 
 	return pos;
@@ -1993,7 +1993,7 @@ WgCoordF WgMultiSlider::SetValueVisitorBase::setValue2D(int sliderId, WgCoordF v
 
 //____ SetValueVisitor::Constructor ___________________________________________
 
-WgMultiSlider::SetValueVisitor::SetValueVisitor(WgMultiSlider * pWidget, WgMultiSlider::Slider * pSlider, float value) : SetValueVisitorBase(pWidget,pSlider) 
+WgMultiSlider::SetValueVisitor::SetValueVisitor(WgMultiSlider * pWidget, WgMultiSlider::Slider * pSlider, float value) : SetValueVisitorBase(pWidget,pSlider)
 {
 	m_value = value;
 }

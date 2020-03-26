@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -210,25 +210,25 @@ WgVectorHook * WgVectorPanel::AddChild( WgWidget * pWidget )
 
 WgVectorHook * WgVectorPanel::AddChildren( WgWidget * pWidgets[], int nb )
 {
-    WgVectorHook * pFirst = nullptr;
-    WgVectorHook * pLast = nullptr;
+	WgVectorHook * pFirst = nullptr;
+	WgVectorHook * pLast = nullptr;
 
-    if( nb == 0 )
-        return nullptr;
-    
-    for( int i = 0 ; i < nb ; i++ )
-    {
-        WgVectorHook * pHook = _newHook();
-        m_hooks.pushBack(pHook);
-        pHook->_attachWidget( pWidgets[i] );
-        
-        if( !pFirst )
-            pFirst = pHook;
-        pLast = pHook;
-    }
-    
-    _onWidgetsAppeared(pFirst, pLast);
-    return pFirst;
+	if( nb == 0 )
+		return nullptr;
+
+	for( int i = 0 ; i < nb ; i++ )
+	{
+		WgVectorHook * pHook = _newHook();
+		m_hooks.pushBack(pHook);
+		pHook->_attachWidget( pWidgets[i] );
+
+		if( !pFirst )
+			pFirst = pHook;
+		pLast = pHook;
+	}
+
+	_onWidgetsAppeared(pFirst, pLast);
+	return pFirst;
 }
 
 
@@ -243,7 +243,7 @@ WgVectorHook * WgVectorPanel::InsertChild( WgWidget * pWidget, WgWidget * pSibli
 	pHook->_moveBefore(static_cast<WgVectorHook*>(pSibling->Hook()));
 
 	pHook->_attachWidget( pWidget );
-	
+
 	_onWidgetAppeared(pHook);
 	return pHook;
 }

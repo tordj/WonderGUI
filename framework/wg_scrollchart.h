@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -56,8 +56,8 @@ public:
 	void	SetPreferredChartSize(const WgSize& size);			// Preferred size of the wave area (widget minus all padding) set in POINTS, not pixels!
 	WgSize	PreferredPixelSize() const;
 
-    void		SetSurfaceFactory(wg::SurfaceFactory * pFactory);
-    wg::SurfaceFactory_p SurfaceFactory() const {return m_pFactory;}
+	void		SetSurfaceFactory(wg::SurfaceFactory * pFactory);
+	wg::SurfaceFactory_p SurfaceFactory() const {return m_pFactory;}
 
 	void		SetCanvasPadding(WgBorders);
 	WgBorders	CanvasPadding() const { return m_pointPadding; }
@@ -105,7 +105,7 @@ public:
 
 	int		StartLineWave( float startSample, float thickness = 1.f, WgColor color = WgColor::Black, std::function<float(uint64_t timeCode)> sampleFeeder = nullptr );
 
-	int		StartSimpleWave( float startSample, float floor, float topLineThickness, WgColor topLineColor, 
+	int		StartSimpleWave( float startSample, float floor, float topLineThickness, WgColor topLineColor,
 							float floorLineThickness, WgColor floorLineColor, WgColor aboveFloorFill, WgColor belowFloorFill, std::function<float(uint64_t timeCode)> sampleFeeder = nullptr );
 
 	int		StartComplexWave( SamplePair startSample, float topLineThickness, WgColor topLineColor,
@@ -124,7 +124,7 @@ public:
 	bool	FeedSample(int waveId, SamplePair sample);
 
 
-    void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
 	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
@@ -192,29 +192,29 @@ protected:
 		WgOrigo				alignment;
 		WgCoord				offset;
 		wg::Skin_p			pSkin;
-        wg::TextStyle_p		pTextStyle;
+		wg::TextStyle_p		pTextStyle;
 	};
 
-    void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches);
+	void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches);
 
 	void	_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 	void	_onCloneContent( const WgWidget * _pOrg );
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onNewSize( const WgSize& size );
 	void	_setScale( int scale );
 
-	
+
 	void	_regenCanvas();
 	bool	_updateDynamics();
 	WgCoord	_placeLabel(WgCoord startPoint, WgOrigo alignment, WgCoord labelOffset, WgSize labelSize ) const;
 	Wave *	_getWave(int waveId);
 	const Wave *	_getWave(int waveId) const;
 
-    void	_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
+	void	_renderWaveSegment(wg::GfxDevice * pDevice, const WgRect& _canvas, double startTimeStamp, double endTimeStamp, float timestampInc );
 
 	void		_resampleWavePortion(int& ofs, int& nSamples, int * pOutTop, int * pOutBottom, const WgScrollChart::Wave& wave, double startTimeStamp, double endTimeStamp, float timestampInc);
-    void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
+	void		_renderGridLines(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window);
 
 	float			_thickestLine() const;
 
@@ -232,7 +232,7 @@ private:
 	WgBorders		m_pointPadding;			// Padding for the canvas in points. To allow thick lines to fully stay inside widget. Grid is allowed outside.
 	WgBorders		m_pixelPadding;			// Same, but in pixels.
 
-	bool			m_bScrollFromStart;		// If set, first data is scrolled in from right. If not set, data is filled from left to right before the chart starts to scroll. 
+	bool			m_bScrollFromStart;		// If set, first data is scrolled in from right. If not set, data is filled from left to right before the chart starts to scroll.
 	bool			m_bStarted;
 	bool			m_bPaused;
 
@@ -260,8 +260,8 @@ private:
 	uint64_t	m_sampleBeginTimestamp;		// Timestamp of first samples in store
 	uint64_t	m_sampleEndTimestamp;		// Timestamp of last samples in store
 
-    wg::SurfaceFactory_p	m_pFactory;
-    wg::Surface_p	    m_pCanvas;
+	wg::SurfaceFactory_p	m_pFactory;
+	wg::Surface_p		m_pCanvas;
 	int					m_canvasOfs;		// offset in pixels for left edge of widget.
 	bool				m_bRefreshCanvas;	// Totally redraw everything on our canvas.
 

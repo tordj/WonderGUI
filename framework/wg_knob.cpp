@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -42,23 +42,23 @@ static const char	c_widgetType[] = {"Knob"};
 
 WgKnob::WgKnob()
 {
-    m_pSurf = nullptr;
-    m_bOpaque = false;
-    m_fValue = 0.0f;
-    m_preferredSize = WgSize(45,45);
+	m_pSurf = nullptr;
+	m_bOpaque = false;
+	m_fValue = 0.0f;
+	m_preferredSize = WgSize(45,45);
 
 }
 
 WgKnob::WgKnob(wg::SurfaceFactory * pFactory)
 {
-    WgKnob();
+	WgKnob();
 
-    m_pSurfaceFactory = pFactory;
+	m_pSurfaceFactory = pFactory;
 
-    m_size = PixelSize();
+	m_size = PixelSize();
 
-    // Initialize arrays
-    SetNumSteps(m_iNumSteps);
+	// Initialize arrays
+	SetNumSteps(m_iNumSteps);
 
 }
 
@@ -66,21 +66,21 @@ WgKnob::WgKnob(wg::SurfaceFactory * pFactory)
 //____ Destructor _____________________________________________________________
 
 WgKnob::~WgKnob()
-{ 
+{
 }
 
 //____ Type() _________________________________________________________________
 
 const char * WgKnob::Type( void ) const
 {
-    return GetClass();
+	return GetClass();
 }
 
 //____ GetClass() ____________________________________________________________
 
 const char * WgKnob::GetClass()
 {
-    return c_widgetType;
+	return c_widgetType;
 }
 
 //____ SetOrigo() _____________________________________________________________
@@ -97,12 +97,12 @@ void WgKnob::SetOrigo(WgOrigo origo)
 
 void WgKnob::SetValue( float fValue )
 {
-    if(m_fValue == fValue)
-        return;
+	if(m_fValue == fValue)
+		return;
 
 	_requestRenderBackBuffer(_calcUdateRect(m_fAngleStart, m_fAngleEnd, fValue));
 
-    m_fValue = fValue;
+	m_fValue = fValue;
 }
 
 
@@ -119,33 +119,33 @@ void WgKnob::SetPreferredPixelSize(WgSize size)
 
 WgSize WgKnob::PreferredPixelSize() const
 {
-    return m_pSkin ? m_preferredSize + _skinContentPadding( m_pSkin, m_scale): m_preferredSize;
+	return m_pSkin ? m_preferredSize + _skinContentPadding( m_pSkin, m_scale): m_preferredSize;
 }
 
 //____ MatchingPixelHeight() __________________________________________________
 
-int WgKnob::MatchingPixelHeight(int pixelWidth) const 
-{ 
+int WgKnob::MatchingPixelHeight(int pixelWidth) const
+{
 	if (m_pSkin)
 	{
 		WgSize padding = _skinContentPadding( m_pSkin, m_scale);
 		pixelWidth = pixelWidth - padding.w + padding.h;
 	}
 
-	return pixelWidth; 
+	return pixelWidth;
 }
 
 //____ MatchingPixelWidth() __________________________________________________
 
-int WgKnob::MatchingPixelWidth(int pixelHeight) const 
-{ 
+int WgKnob::MatchingPixelWidth(int pixelHeight) const
+{
 	if (m_pSkin)
 	{
 		WgSize padding = _skinContentPadding( m_pSkin, m_scale);
 		pixelHeight = pixelHeight - padding.h + padding.w;
 	}
 
-	return pixelHeight; 
+	return pixelHeight;
 }
 
 
@@ -160,44 +160,44 @@ void WgKnob::SetMouseControl(bool bMouseControl)
 
 void WgKnob::SetNumSteps(int steps)
 {
-    if(m_iNumSteps == steps)
-        return;
+	if(m_iNumSteps == steps)
+		return;
 
-    int maxNumSteps = 11;
-    int minNumSteps = 2;
-    m_iNumSteps = steps;
-    if(steps < minNumSteps || steps > maxNumSteps)
-        return;
+	int maxNumSteps = 11;
+	int minNumSteps = 2;
+	m_iNumSteps = steps;
+	if(steps < minNumSteps || steps > maxNumSteps)
+		return;
 
-    // Idea:
-    // 2 steps: two large segments  ([0.3 0.45], [0.55 0.7])
-    // 3 steps: [
-    m_AngleStart.resize(steps);
-    m_AngleEnd.resize(steps);
+	// Idea:
+	// 2 steps: two large segments  ([0.3 0.45], [0.55 0.7])
+	// 3 steps: [
+	m_AngleStart.resize(steps);
+	m_AngleEnd.resize(steps);
 
-    float divs = (float)(m_iNumSteps * 2 - 1);
-    //float length = (m_fAngleEnd - m_fAngleStart)*steps/maxNumSteps;
+	float divs = (float)(m_iNumSteps * 2 - 1);
+	//float length = (m_fAngleEnd - m_fAngleStart)*steps/maxNumSteps;
 
-    float weight = float(steps - minNumSteps)/float(maxNumSteps - minNumSteps);
-    float length = (m_fAngleEnd - m_fAngleStart)*weight + 0.25f*(1.0f-weight);
-    float start = 0.5f - length/2.0f; // start the sections
+	float weight = float(steps - minNumSteps)/float(maxNumSteps - minNumSteps);
+	float length = (m_fAngleEnd - m_fAngleStart)*weight + 0.25f*(1.0f-weight);
+	float start = 0.5f - length/2.0f; // start the sections
 
-    for(int i=0;i<steps;i++)
-    {
-        m_AngleStart[i] = start + 2*i*length/divs;
-        m_AngleEnd[i]   = start + (2*i+1)*length/divs;
-        m_AngleStart[i] *= 2*PI;
-        m_AngleEnd[i] *= 2*PI;
-    }
+	for(int i=0;i<steps;i++)
+	{
+		m_AngleStart[i] = start + 2*i*length/divs;
+		m_AngleEnd[i]   = start + (2*i+1)*length/divs;
+		m_AngleStart[i] *= 2*PI;
+		m_AngleEnd[i] *= 2*PI;
+	}
 }
 
 //____ SetAngleOffset() _______________________________________________________
 
-void WgKnob::SetAngleOffset(float offset) 
-{ 
+void WgKnob::SetAngleOffset(float offset)
+{
 	if (offset != m_fAngleOffset)
 	{
-		m_fAngleOffset = offset; 
+		m_fAngleOffset = offset;
 		_requestRenderBackBuffer();
 	}
 }
@@ -279,37 +279,37 @@ WgRect WgKnob::_calcUdateRect(float newAngleStart, float newAngleEnd, float newV
 //____ SetAngles() __________________________________________________________
 void WgKnob::SetAngles(float angleStart, float angleEnd)
 {
-    if((m_fAngleStart == angleStart) && (m_fAngleEnd == angleEnd))
-        return;
+	if((m_fAngleStart == angleStart) && (m_fAngleEnd == angleEnd))
+		return;
 
 	_requestRenderBackBuffer( _calcUdateRect( angleStart, angleEnd, m_fValue ));
 
-    m_fAngleStart = angleStart;
-    m_fAngleEnd = angleEnd;
+	m_fAngleStart = angleStart;
+	m_fAngleEnd = angleEnd;
 }
 
 void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler )
 {
-    switch( pEvent->Type() )
-    {
-        case    WG_EVENT_MOUSE_ENTER:
+	switch( pEvent->Type() )
+	{
+		case    WG_EVENT_MOUSE_ENTER:
 			if (m_bMouseControl)
 			{
 				m_bPointerInside = true;
 				_requestRenderBackBuffer();
 			}
-            break;
+			break;
 
-        case    WG_EVENT_MOUSE_LEAVE:
+		case    WG_EVENT_MOUSE_LEAVE:
 			if (m_bMouseControl)
 			{
 				m_bPointerInside = false;
 				_requestRenderBackBuffer();
 			}
-            break;
+			break;
 
-        case WG_EVENT_MOUSEBUTTON_PRESS:
-        {
+		case WG_EVENT_MOUSEBUTTON_PRESS:
+		{
 			if (m_bMouseControl)
 			{
 
@@ -319,10 +319,10 @@ void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 
 				_requestRenderBackBuffer();
 			}
-            break;
-        }
-        case WG_EVENT_MOUSEBUTTON_RELEASE:
-        {
+			break;
+		}
+		case WG_EVENT_MOUSEBUTTON_RELEASE:
+		{
 			if (m_bMouseControl)
 			{
 				int button = static_cast<const WgEvent::MouseButtonRelease*>(pEvent)->Button();
@@ -331,13 +331,13 @@ void WgKnob::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler 
 
 				_requestRenderBackBuffer();
 			}
-            break;
-        }
-        default:
-            break;
+			break;
+		}
+		default:
+			break;
 
-    }
-    WgWidget::_onEvent(pEvent,pHandler);
+	}
+	WgWidget::_onEvent(pEvent,pHandler);
 
 }
 
@@ -348,7 +348,7 @@ void WgKnob::SetKnobScale(float scale)
 	wg::limit(scale, 0.f, 1.f);
 	m_knobScale = scale;
 	_onNewSize(PixelSize());					// Force a refresh of size and backbuffer.
-	_requestRender();					
+	_requestRender();
 }
 
 
@@ -356,7 +356,7 @@ void WgKnob::SetKnobScale(float scale)
 
 void WgKnob::_onCloneContent( const WgWidget * _pOrg )
 {
-    const WgKnob * pOrg = static_cast<const WgKnob*>(_pOrg);
+	const WgKnob * pOrg = static_cast<const WgKnob*>(_pOrg);
 }
 
 //____ _onNewSize() ___________________________________________________________
@@ -372,7 +372,7 @@ void WgKnob::_onNewSize(const WgSize& size)
 
 	if (m_size != newSize )
 	{
-        m_pSurf = nullptr;
+		m_pSurf = nullptr;
 		m_size = newSize;
 	}
 	_requestRenderBackBuffer();
@@ -383,11 +383,11 @@ void WgKnob::_onNewSize(const WgSize& size)
 void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
 {
 	if (!m_pSurf)
-    {
-        if( !m_pSurfaceFactory )
-            return;
-        m_pSurf = m_pSurfaceFactory->createSurface(m_size*m_iOversampleX, WgPixelType::BGRA_8);
-    }
+	{
+		if( !m_pSurfaceFactory )
+			return;
+		m_pSurf = m_pSurfaceFactory->createSurface(m_size*m_iOversampleX, WgPixelType::BGRA_8);
+	}
 
 	if( !m_backBufferDirtyRect.isEmpty() )
 	{
@@ -399,8 +399,8 @@ void WgKnob::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, cons
 
 	pDevice->setTintColor(m_kColor * orgTintColor);
 
-    pDevice->setClipList(_pPatches->size(), _pPatches->begin());
-    _onRender(pDevice, _canvas, _window);
+	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+	_onRender(pDevice, _canvas, _window);
 
 	pDevice->setTintColor(orgTintColor);
 
@@ -414,8 +414,8 @@ void WgKnob::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const Wg
 	WgRect surfRect = m_size;
 	WgRect contentRect = WgUtil::OrigoToRect(m_origo, canvas.size(), surfRect) + canvas.pos();
 
-    pDevice->setBlitSource(m_pSurf);
-    pDevice->blit(WgCoord(contentRect.x,contentRect.y),{0,0,m_size});
+	pDevice->setBlitSource(m_pSurf);
+	pDevice->blit(WgCoord(contentRect.x,contentRect.y),{0,0,m_size});
 }
 
 //____ _redrawBackBuffer() ____________________________________________________
@@ -472,7 +472,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 	float y_inv = 0.0f;
 	int color = 0;
 	float r, in, out, weight, R, a;
-    const bool bDrawFromMiddle = DrawFromMiddle();
+	const bool bDrawFromMiddle = DrawFromMiddle();
 	for (int yc = region.y; yc< region.y + region.h*oversampling; yc++)
 	{
 		// [-1, 1] coordinates
@@ -500,8 +500,8 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 			a = 0.0f;
 
 			const bool USE_ANGLE_AA = true;
-            const float ANGLE_AA_WIDTH = 3.0f / (float)(w * oversampling); //0.05f;
-            
+			const float ANGLE_AA_WIDTH = 3.0f / (float)(w * oversampling); //0.05f;
+
 			if ((in > -rd) && (out > -rd))
 			{
 				// Calculate anti-aliasing on the inner and outer circle diameters ("CIRCLE AA")
@@ -541,25 +541,25 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 					// const float mid_line_width = 0.1f;
 					const float mid_line_width = 0.07f;
 
-                    if(bDrawFromMiddle)
-                    {
-                        // Regular case.
-                        a_start = a_start_const;
-                        a_end = a_end_const;
-                        a_value = a_value_const;
+					if(bDrawFromMiddle)
+					{
+						// Regular case.
+						a_start = a_start_const;
+						a_end = a_end_const;
+						a_value = a_value_const;
 
-                        
 
-                        // a: current angle we're drawing
-                        // a_value: parameter value (angle)
-                        // a_start/a_end: circle segment start/end (angle)
 
-                        float a_mid = (a_end-a_start) * 0.5f + a_start;
+						// a: current angle we're drawing
+						// a_value: parameter value (angle)
+						// a_start/a_end: circle segment start/end (angle)
 
-						
+						float a_mid = (a_end-a_start) * 0.5f + a_start;
+
+
 
 						if (a_value < a_mid) //Before midpoint
-                        {
+						{
 							// DBGM(DBG_GUI, ("fabs(a_value - PI) = %f, before mid", fabs(a_value - PI)));
 							if(a < a_start)
 							{
@@ -570,13 +570,13 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 							{
 								CurrentDrawState = DrawState::eDrawBackgroundAABegin;
 							}
-							else if(a >= a_start && a < a_value) 
+							else if(a >= a_start && a < a_value)
 							{
 								CurrentDrawState = DrawState::eDrawBackground;
-							}							
+							}
 
 
-							
+
 
 
 							else if(a >= a_value && a < a_value + ANGLE_AA_WIDTH) //om a_mid - a_value < mid_line_width, rita foreground
@@ -596,7 +596,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 								CurrentDrawState = DrawState::eDrawForeground;
 							}
 
-							
+
 							else if(a >= a_end - ANGLE_AA_WIDTH && a < a_end) //OK. Right edge of background
 							{
 								CurrentDrawState = DrawState::eDrawBackgroundAAEnd;
@@ -605,9 +605,9 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 							{
 								CurrentDrawState = DrawState::eDrawBackground;
 							}
-							
 
-							else if(a > a_end)								
+
+							else if(a > a_end)
 								CurrentDrawState = DrawState::eDrawNothing;
 
 
@@ -619,18 +619,18 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 								// if(a < a_mid - mid_line_width + ANGLE_AA_WIDTH)// && a_value < a_mid - mid_line_width + ANGLE_AA_WIDTH)
 								// 	CurrentDrawState = DrawState::eDrawForegroundAALeftEdge;
 								// else
-									CurrentDrawState = DrawState::eDrawForeground;	
+									CurrentDrawState = DrawState::eDrawForeground;
 							}
 
 
-                        }
-                        else //After midpoint
-                        {
+						}
+						else //After midpoint
+						{
 //							DBGM(DBG_GUI, ("fabs(a_value - PI) = %f, after mid", fabs(a_value - PI)));
 							if(a < a_start)
 								CurrentDrawState = DrawState::eDrawNothing;
 							else if(a >= a_start && a < a_start + ANGLE_AA_WIDTH)
-							{								
+							{
 								CurrentDrawState = DrawState::eDrawBackgroundAABegin;
 							}
 							else if(a >= a_start && a < a_mid )
@@ -638,7 +638,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 								CurrentDrawState = DrawState::eDrawBackground;
 							}
 
-							
+
 							else if(a >= a_mid - mid_line_width && a < a_mid)
 							{
 								CurrentDrawState = DrawState::eDrawForeground;
@@ -675,13 +675,13 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 								// if(a > a_mid + mid_line_width - ANGLE_AA_WIDTH && a_value > a_mid + mid_line_width - ANGLE_AA_WIDTH)
 								// 	CurrentDrawState = DrawState::eDrawForegroundAARightEdge;
-								// else 
-									CurrentDrawState = DrawState::eDrawForeground;	
+								// else
+									CurrentDrawState = DrawState::eDrawForeground;
 							}
 
-                        }
-                    } //end case draw from middle
-                    else if (a_end_const > 2 * PI)
+						}
+					} //end case draw from middle
+					else if (a_end_const > 2 * PI)
 					{
 						// Special case: end angle larger than 2π.
 						a_start = a_start_const;
@@ -830,7 +830,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 							col = WgColor(255, 255, 255, 255);
 						else
 							col = kForeground;
-						
+
 						col = Blend(col, kBackground, ww);
 
 						col = Blend(col, kBackTransp, weight); // CIRCLE AA
@@ -886,7 +886,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 					}
 					case DrawState::eDrawForegroundAARightEdge:
 					{
-						float a_mid = (a_end - a_start) * 0.5f + a_start; 
+						float a_mid = (a_end - a_start) * 0.5f + a_start;
 
 						//Draw anti-alias of right edge of foreground, by the middle of the circle.
 
@@ -973,72 +973,72 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 WgColor WgKnob::Blend( const WgColor& start, const WgColor& dest, float grade )
 {
-    WgColor col;
+	WgColor col;
 
-    const unsigned int g = (unsigned int)(grade * 255.0f);
-    const unsigned int ig = 255 - g;
-    
-    // Yes, it's backwards. Sue me.
-    /*
-    col.r = (Uint8)( (float)start.r * grade + (1.0f-grade) * (float)dest.r );
-    col.g = (Uint8)( (float)start.g * grade + (1.0f-grade) * (float)dest.g );
-    col.b = (Uint8)( (float)start.b * grade + (1.0f-grade) * (float)dest.b );
-    col.a = (Uint8)( (float)start.a * grade + (1.0f-grade) * (float)dest.a );
-    */
+	const unsigned int g = (unsigned int)(grade * 255.0f);
+	const unsigned int ig = 255 - g;
 
-    col.r = (start.r * g + ig * dest.r) >> 8;
-    col.g = (start.g * g + ig * dest.g) >> 8;
-    col.b = (start.b * g + ig * dest.b) >> 8;
-    col.a = (start.a * g + ig * dest.a) >> 8;
-    
-    return col;
+	// Yes, it's backwards. Sue me.
+	/*
+	col.r = (Uint8)( (float)start.r * grade + (1.0f-grade) * (float)dest.r );
+	col.g = (Uint8)( (float)start.g * grade + (1.0f-grade) * (float)dest.g );
+	col.b = (Uint8)( (float)start.b * grade + (1.0f-grade) * (float)dest.b );
+	col.a = (Uint8)( (float)start.a * grade + (1.0f-grade) * (float)dest.a );
+	*/
+
+	col.r = (start.r * g + ig * dest.r) >> 8;
+	col.g = (start.g * g + ig * dest.g) >> 8;
+	col.b = (start.b * g + ig * dest.b) >> 8;
+	col.a = (start.a * g + ig * dest.a) >> 8;
+
+	return col;
 }
 
 void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
 {
-    if(oversample == 1)
-        return;
+	if(oversample == 1)
+		return;
 
-    int w = pSurf->size().w; //Width();
-    int h = pSurf->size().h; //Height();
-    unsigned int col = (255) | (2<<8) | (1<<16) | (192<<24);
+	int w = pSurf->size().w; //Width();
+	int h = pSurf->size().h; //Height();
+	unsigned int col = (255) | (2<<8) | (1<<16) | (192<<24);
 
-    unsigned int* data = (unsigned int*)pSurf->lock(WgAccessMode::ReadWrite);
-    int i=0, j=0;
+	unsigned int* data = (unsigned int*)pSurf->lock(WgAccessMode::ReadWrite);
+	int i=0, j=0;
 
-    // Loop over small size
-    for(int y=0; y<h/oversample; y++)
-    {
-        for(int x=0; x<w/oversample; x++)
-        {
-            i = y*w+x; // every pixel
-            j = y*oversample*w + x*oversample; // every other pixel
+	// Loop over small size
+	for(int y=0; y<h/oversample; y++)
+	{
+		for(int x=0; x<w/oversample; x++)
+		{
+			i = y*w+x; // every pixel
+			j = y*oversample*w + x*oversample; // every other pixel
 
-            data[i] = 0; // clear pixel. Wrong for (0,0).
-            uint8_t* qd = (uint8_t*)(&(data[i]));
+			data[i] = 0; // clear pixel. Wrong for (0,0).
+			uint8_t* qd = (uint8_t*)(&(data[i]));
 
-            for(int ys=0; ys<oversample;ys++)
-            {
-                for(int xs=0; xs<oversample;xs++)
-                {
-                    uint8_t* qs = (uint8_t*)(&(data[j + xs + ys*w]));
-                    qd[0] += qs[0]>>oversample;
-                    qd[1] += qs[1]>>oversample;
-                    qd[2] += qs[2]>>oversample;
-                    qd[3] += qs[3]>>oversample;
-                }
-            }
-        }
-    }
+			for(int ys=0; ys<oversample;ys++)
+			{
+				for(int xs=0; xs<oversample;xs++)
+				{
+					uint8_t* qs = (uint8_t*)(&(data[j + xs + ys*w]));
+					qd[0] += qs[0]>>oversample;
+					qd[1] += qs[1]>>oversample;
+					qd[2] += qs[2]>>oversample;
+					qd[3] += qs[3]>>oversample;
+				}
+			}
+		}
+	}
 
-    pSurf->unlock();
+	pSurf->unlock();
 }
 
 //____ _onAlphaTest() ___________________________________________________________
 
 bool WgKnob::_onAlphaTest( const WgCoord& ofs )
 {
-    return true;
+	return true;
 }
 
 
@@ -1046,14 +1046,14 @@ bool WgKnob::_onAlphaTest( const WgCoord& ofs )
 
 void WgKnob::_onEnable()
 {
-    _requestRenderBackBuffer();
+	_requestRenderBackBuffer();
 }
 
 //____ _onDisable() ____________________________________________________________
 
 void WgKnob::_onDisable()
 {
-    _requestRenderBackBuffer();
+	_requestRenderBackBuffer();
 }
 
 //____ _requestRenderBackBuffer() _____________________________________________________

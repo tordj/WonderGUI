@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -87,7 +87,7 @@ friend class WgShadowLayer;
 friend class WgTableRow;
 
 friend class WgZoomOutCapsule;
-    
+
 public:
 	WgWidget();
 	virtual ~WgWidget();
@@ -97,7 +97,7 @@ public:
 	inline int			Id() const { return m_id; }
 	inline void			SetId( int id ) { m_id = id; }
 
-    virtual void		SetSkin(wg::Skin * pSkin);
+	virtual void		SetSkin(wg::Skin * pSkin);
 	wg::Skin_p			Skin() const { return m_pSkin; }
 
 	virtual wg::String	GetTooltipString() const { return m_tooltip; }
@@ -132,10 +132,10 @@ public:
 	WgCoord			ScreenPointPos() const { if (m_pHook) return m_pHook->ScreenPointPos(); return WgCoord(0, 0); }
 	WgRect			ScreenPointGeo() const { if (m_pHook) return m_pHook->ScreenPointGeo(); return WgRect(0, 0, 256, 256); }
 
-    WgSize          PreferredPointSize() const;
-    WgSize          MinPointSize() const;
-    WgSize          MaxPointSize() const;
-   
+	WgSize          PreferredPointSize() const;
+	WgSize          MinPointSize() const;
+	WgSize          MaxPointSize() const;
+
 	WgCoord			PixelPos() const { if( m_pHook ) return m_pHook->PixelPos(); return WgCoord(0,0); }
 	WgSize			PixelSize() const { if( m_pHook ) return m_pHook->PixelSize(); return WgSize(256,256); }
 	WgRect			PixelGeo() const { if( m_pHook ) return m_pHook->PixelGeo(); return WgRect(0,0,256,256); }
@@ -154,13 +154,13 @@ public:
 	WgCoord			Local2absPixel( const WgCoord& cord ) const;		// Cordinate from local cordsys to global (in pixels)
 	WgCoord			Abs2localPixel( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys (in pixels)
 
-    WgCoord			Local2absPoint( const WgCoord& cord ) const;		// Cordinate from local cordsys to global (in pixels)
-    WgCoord			Abs2localPoint( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys (in pixels)
-    
-    wg::Surface_p     Screenshot( int surfaceFlags = 0 );
-    
-    int Scale() const { return m_scale; }
-    
+	WgCoord			Local2absPoint( const WgCoord& cord ) const;		// Cordinate from local cordsys to global (in pixels)
+	WgCoord			Abs2localPoint( const WgCoord& cord ) const; 		// Cordinate from global to local cordsys (in pixels)
+
+	wg::Surface_p     Screenshot( int surfaceFlags = 0 );
+
+	int Scale() const { return m_scale; }
+
 	// To be overloaded by Widget
 
 	virtual int		MatchingPixelHeight( int pixelWidth ) const;
@@ -196,12 +196,12 @@ public:
 
 	virtual WgMode	Mode() const;
 
-    virtual void        setPickable( bool bPickable, int category = 0 );
-    bool                isPickable() const { return m_bPickable; }
-    int                 pickCategory() const { return m_pickCategory; }
-    
-    void                setDropTarget( bool bDropTarget );
-    bool                isDropTarget() const { return m_bDropTarget; }
+	virtual void        setPickable( bool bPickable, int category = 0 );
+	bool                isPickable() const { return m_bPickable; }
+	int                 pickCategory() const { return m_pickCategory; }
+
+	void                setDropTarget( bool bDropTarget );
+	bool                isDropTarget() const { return m_bDropTarget; }
 
 protected:
 
@@ -215,7 +215,7 @@ protected:
 	WgEventHandler* _eventHandler() const;
 	void			_queueEvent( WgEvent::Event * pEvent );
 
-    bool            _requestPreRenderCall();
+	bool            _requestPreRenderCall();
 
 	// Convenient calls to hook
 
@@ -223,19 +223,19 @@ protected:
 	void			_requestRender( const WgRect& rect ) { if( m_pHook ) m_pHook->_requestRender( rect ); }
 	void			_requestResize() { if( m_pHook ) m_pHook->_requestResize(); }
 
-    inline void        _requestInView() { if( m_pHook ) m_pHook->_requestInView(); }
-    inline void        _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) { if( m_pHook ) m_pHook->_requestInView( mustHaveArea, niceToHaveArea ); }
+	inline void        _requestInView() { if( m_pHook ) m_pHook->_requestInView(); }
+	inline void        _requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea ) { if( m_pHook ) m_pHook->_requestInView( mustHaveArea, niceToHaveArea ); }
 
-    
+
 	// To be overloaded by Widget
 
-    virtual void    _preRender();
+	virtual void    _preRender();
 
-    virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+	virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
 	virtual void	_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
 	virtual void	_onCloneContent( const WgWidget * _pOrg ) = 0;
-    virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	virtual void	_onNewSize( const WgSize& size );
 	virtual void	_setScale( int scale );
 	virtual void	_onRefresh();
@@ -251,16 +251,16 @@ protected:
 	virtual bool	TempIsInputField() const;
 	virtual Wg_Interface_TextHolder*	TempGetText();
 
-    // Skin wrapping methods
-        
-    void            _renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale );
-    bool            _markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale ) const;
-    wg::SizeI       _skinMinSize( wg::Skin * pSkin, int scale ) const;
-    wg::SizeI       _skinPreferredSize( wg::Skin * pSkin, int scale ) const;
-    wg::SizeI       _skinSizeForContent( wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const;
-    wg::SizeI       _skinContentPadding(wg::Skin * pSkin, int scale) const;
-    wg::CoordI      _skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const;
-    wg::RectI       _skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const;
+	// Skin wrapping methods
+
+	void            _renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale );
+	bool            _markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale ) const;
+	wg::SizeI       _skinMinSize( wg::Skin * pSkin, int scale ) const;
+	wg::SizeI       _skinPreferredSize( wg::Skin * pSkin, int scale ) const;
+	wg::SizeI       _skinSizeForContent( wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const;
+	wg::SizeI       _skinContentPadding(wg::Skin * pSkin, int scale) const;
+	wg::CoordI      _skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const;
+	wg::RectI       _skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const;
 
 	//
 
@@ -281,16 +281,16 @@ protected:
 
 	bool			m_bEnabled;		// Set when object is not disabled
 	bool			m_bFocused;		// Set when object is enabled and has keyboard focus
-	bool			m_bSelected;	
+	bool			m_bSelected;
 
 	bool			m_bSelectable = true;	// Set if widget is allowed to be selected.
 
-    WgState         m_state;
+	WgState         m_state;
 
-    bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
-    uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
-    
-    bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
+	bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
+	uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
+
+	bool            m_bDropTarget;      // Set if this widget accepts to be the target of drag-n-drop operations.
 };
 
 typedef class WgWeakPtr<WgWidget> WgWidgetWeakPtr;

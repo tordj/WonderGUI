@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -80,10 +80,10 @@ class	WgWidgetSlider : public WgWidget
 
 		float			GetSliderPos() const { return m_sliderPos; }
 		float			GetSliderSize() const { return m_sliderSize; }
-        wg::Skin_p      GetBgSkin() const { return m_pBgSkin; }
-        wg::Skin_p 	    GetBarSkin() const { return m_pBarSkin; }
-        wg::Skin_p      GetBwdSkin() const { return m_pBtnBwdSkin; }
-        wg::Skin_p      GetFwdSkin() const { return m_pBtnFwdSkin; }
+		wg::Skin_p      GetBgSkin() const { return m_pBgSkin; }
+		wg::Skin_p 		GetBarSkin() const { return m_pBarSkin; }
+		wg::Skin_p      GetBwdSkin() const { return m_pBtnBwdSkin; }
+		wg::Skin_p      GetFwdSkin() const { return m_pBtnFwdSkin; }
 		ButtonLayout	GetButtonLayout() const { return m_btnLayout; }
 
 		void	SetBgPressMode( BgPressMode mode );
@@ -94,12 +94,12 @@ class	WgWidgetSlider : public WgWidget
 		bool	SetSliderPosPxlOfs( int x );
 		bool	SetSliderSize( float size );
 
-        bool    SetSkins( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin );
-    
-        // DEPRECATED!!!
-        bool    SetSource( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin )
-                            { return SetSkins( pBgSkin, pBarSkin, pBtnBwdSkin, pBtnFwdSkin ); }
-        bool	SetButtonLayout(  ButtonLayout layout );
+		bool    SetSkins( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin );
+
+		// DEPRECATED!!!
+		bool    SetSource( wg::Skin * pBgSkin, wg::Skin * pBarSkin, wg::Skin * pBtnBwdSkin, wg::Skin * pBtnFwdSkin )
+							{ return SetSkins( pBgSkin, pBarSkin, pBtnBwdSkin, pBtnFwdSkin ); }
+		bool	SetButtonLayout(  ButtonLayout layout );
 
 		bool	SetSliderTarget( WgSliderTarget * pTarget );
 
@@ -107,7 +107,7 @@ class	WgWidgetSlider : public WgWidget
 
 	protected:
 		void	_onCloneContent( const WgWidget * _pOrg );
-        void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+		void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 		void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 		void	_onRefresh();
 		bool	_onAlphaTest( const WgCoord& ofs );
@@ -131,10 +131,10 @@ class	WgWidgetSlider : public WgWidget
 
 		};
 
-        wg::Skin_p       m_pBgSkin;
-        wg::Skin_p       m_pBarSkin;
-        wg::Skin_p       m_pBtnFwdSkin;
-        wg::Skin_p       m_pBtnBwdSkin;
+		wg::Skin_p       m_pBgSkin;
+		wg::Skin_p       m_pBarSkin;
+		wg::Skin_p       m_pBtnFwdSkin;
+		wg::Skin_p       m_pBtnBwdSkin;
 
 
 		float			m_sliderPos;
@@ -167,8 +167,8 @@ class	WgWidgetSlider : public WgWidget
 
 
 		Component	_findMarkedComponent( WgCoord ofs );								// -1 = None.
-        void        _renderButton( wg::GfxDevice * pDevice, WgRect& _dest, wg::Skin * pSkin, WgState state );
-        bool        _markTestButton( WgCoord ofs, WgRect& _dest, wg::Skin * pSkin, WgState state );
+		void        _renderButton( wg::GfxDevice * pDevice, WgRect& _dest, wg::Skin * pSkin, WgState state );
+		bool        _markTestButton( WgCoord ofs, WgRect& _dest, wg::Skin * pSkin, WgState state );
 		bool		_markTestSlider( WgCoord ofs );
 		void		_headerFooterChanged();
 		void		_unmarkReqRender();

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -59,9 +59,9 @@ class WgValueFormat
 		void setSuffix( const wg::CharSeq& seq );
 		inline const wg::String& getSuffix() const { return suffix; }
 
-        inline void setTextStyle( wg::TextStyle * _pStyle ) { pTextStyle = _pStyle; bSetTextStyle = true; }
+		inline void setTextStyle( wg::TextStyle * _pStyle ) { pTextStyle = _pStyle; bSetTextStyle = true; }
 		inline void clearTextStyle() { bSetTextStyle = false; }
-        inline wg::TextStyle_p getTextStyle() const { return pTextStyle; }
+		inline wg::TextStyle_p getTextStyle() const { return pTextStyle; }
 
 		inline void setNoDecimalThreshold( int maxValue ) { noDecimalThreshold = maxValue; }
 		inline void clearNoDecimalThreshold() { noDecimalThreshold = 0; }
@@ -105,7 +105,7 @@ class WgValueFormat
 		bool		bPlus;				/// Set if a plus sign should be preceding positive value.
 		bool		bZeroIsNegative;	/// Set if zero value should be deemed negative and be preceeded by minus.
 		bool		bForcePeriod;		/// Display period even if there are no decimals?
-    wg::TextStyle_p pTextStyle;	/// Text properties for generated text.
+	wg::TextStyle_p pTextStyle;	/// Text properties for generated text.
 		bool		bSetTextStyle;		/// Set if properties should be set for text.
 		bool		bForceDecimals;		/// Display decimals even if they are 0
 		int			noDecimalThreshold;	/// If the value is >= this, no decimals will be displayed.
@@ -121,7 +121,7 @@ class WgValueFormat
 						(props for minus determines props for negative values,
 						(props for leading '1' determines props for positive values,
 						 props for first decimal determines props for decimals.
-						 
+
 						 Prop override order for number portion:
 							base from '1'.
 							override with decimalprops (if decimals).
@@ -132,7 +132,7 @@ class WgValueFormat
 							override with minusprop (if negative value).
 						 )
 
-		    * Position of minus-sign (before or after prefix).
+			* Position of minus-sign (before or after prefix).
 			* Support hex-values (choose upper/lower).
 			* Setting for round off or truncate decimals.
 
@@ -159,7 +159,7 @@ public:
 
 private:
 
-    void	_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) const;
+	void	_formatValue( wg::CharBuffer * pBuffer, Sint64 value ) const;
 
 	WgValueFormat	m_format;
 };

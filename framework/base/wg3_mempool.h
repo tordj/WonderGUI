@@ -95,4 +95,3 @@ namespace wg
 
 } // namespace wg
 #endif //WG3_MEMPOOL_DOT_H
-

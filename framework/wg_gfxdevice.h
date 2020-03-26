@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -62,15 +62,15 @@ public:
 
 	// High-level print methods
 
-    static bool		PrintText( wg::GfxDevice * pDevice, const WgText * pText, const WgRect& dest );
+	static bool		PrintText( wg::GfxDevice * pDevice, const WgText * pText, const WgRect& dest );
 
 	// Low-level print methods
 
-    static void		PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::TextAttr& baseAttr, const wg::Char * _pLine, int maxChars = INT_MAX, wg::State statem = wg::StateEnum::Normal );
+	static void		PrintLine( wg::GfxDevice * pDevice, WgPen& pen, const wg::TextAttr& baseAttr, const wg::Char * _pLine, int maxChars = INT_MAX, wg::State statem = wg::StateEnum::Normal );
 
-    static void     BlitBlock( wg::GfxDevice * pDevice, const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
+	static void     BlitBlock( wg::GfxDevice * pDevice, const WgBlock& block, const WgRect& dest, bool bTriLinear = false, float mipmapbias = 0.f );
 
-	
+
 protected:
 
 	static void _printTextSpan(wg::GfxDevice * pDevice, WgPen& pen, const WgText * pText, int ofs, int len, bool bLineEnding);

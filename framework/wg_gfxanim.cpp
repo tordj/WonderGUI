@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -37,7 +37,7 @@ WgGfxAnim::WgGfxAnim( WgSize size, WgBorders gfxBorders, Uint32 blockFlags )
 	m_size[0] = size;
 	m_borders[0] = gfxBorders;
 	m_blockFlags = blockFlags;
-	
+
 	m_activationScale[0] = 0;
 	for( int i = 1 ; i < MAX_ANIM_ALT ; i++ )
 	{
@@ -53,9 +53,9 @@ WgGfxAnim::WgGfxAnim( WgSize size, WgBorders gfxBorders, Uint32 blockFlags )
 
 WgSize WgGfxAnim::Size(int scale) const
 {
-    WgGfxFrame * pFrame = (WgGfxFrame *) WgAnim::_firstKeyFrame();
-    int factor = pFrame ? pFrame->pSurf[0]->scale()*4096 : WG_SCALE_BASE;
-    
+	WgGfxFrame * pFrame = (WgGfxFrame *) WgAnim::_firstKeyFrame();
+	int factor = pFrame ? pFrame->pSurf[0]->scale()*4096 : WG_SCALE_BASE;
+
 	return m_size[0]*scale/factor;
 }
 
@@ -73,7 +73,7 @@ void WgGfxAnim::SetAlternative( int alt, int activationScale, WgSize size, WgBor
 {
 	if( alt < 1 || alt >= MAX_ANIM_ALT )
 		return;
-		
+
 	m_activationScale[alt] = activationScale;
 	m_size[alt] = size;
 	m_borders[alt] = gfxBorders;
@@ -149,7 +149,7 @@ bool WgGfxAnim::AddFrame( wg::Surface * pSurf, WgCoord ofs, int duration )
 	if( !bOk )
 		delete pFrame;
 
-	return bOk;	
+	return bOk;
 }
 
 //____ SetAltFrame() ___________________________________________________________
@@ -158,7 +158,7 @@ bool WgGfxAnim::SetAltFrame( int pos, int alt, wg::Surface * pSurf, WgCoord ofs 
 {
 	if( pos < 0 || pos >= m_keyframes.size() || alt <= 0 || alt >= MAX_ANIM_ALT )
 		return false;
-		
+
 	WgGfxFrame * p = static_cast<WgGfxFrame*> (m_keyframes.get(pos));
 
 	p->pSurf[alt] = pSurf;
@@ -210,7 +210,7 @@ int WgGfxAnim::AddFrames( wg::Surface * pSurf, WgCoord arrayOfs, WgSize arraySiz
 			pFrame->ofs[0].y = arrayOfs.y + y*(m_size[0].h+spacing.h);
 
 			bool bOk = WgAnim::_addKeyFrame( pFrame, duration );
-				
+
 			if( !bOk )
 			{
 				delete pFrame;
@@ -246,7 +246,7 @@ WgBlock WgGfxAnim::GetBlock( int64_t ticks, int scale, WgGfxFrame * pProximity )
 		if( m_activationScale[i] <= scale && pFrame->pSurf[i] != 0 )
 			alt = i;
 	}
-		
+
 	return WgBlock( pFrame->pSurf[alt], WgRect( pFrame->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags );
 }
 

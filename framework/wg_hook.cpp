@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -42,27 +42,27 @@ WgHook::~WgHook()
 
 void WgHook::_attachWidget( WgWidget * pWidget )
 {
-    assert( pWidget != nullptr );
+	assert( pWidget != nullptr );
 	assert( pWidget->Parent() == nullptr );
 
 	if( m_pWidget )
 		m_pWidget->_onNewHook(0);
 
-    // Update scale while we don't have any parent and won't cause a flood of _requestResize().
-    
-    int scale;
-    WgContainer * p =  _parent();
-    if( p )
-        scale = p->m_scale;
-    else
-        scale = Root()->Scale();
-    
-    if( scale != pWidget->m_scale )
-        pWidget->_setScale( scale );
+	// Update scale while we don't have any parent and won't cause a flood of _requestResize().
 
-    //
-    
-    m_pWidget = pWidget;
+	int scale;
+	WgContainer * p =  _parent();
+	if( p )
+		scale = p->m_scale;
+	else
+		scale = Root()->Scale();
+
+	if( scale != pWidget->m_scale )
+		pWidget->_setScale( scale );
+
+	//
+
+	m_pWidget = pWidget;
 	if( pWidget )
 		pWidget->_onNewHook(this);
 }
@@ -106,12 +106,12 @@ bool WgHook::_releaseFocus()
 
 void WgHook::_requestInView()
 {
-    Parent()->_inViewRequested(this);
+	Parent()->_inViewRequested(this);
 }
 
 void WgHook::_requestInView( const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
 {
-    Parent()->_inViewRequested( this, mustHaveArea, niceToHaveArea );
+	Parent()->_inViewRequested( this, mustHaveArea, niceToHaveArea );
 }
 
 
@@ -119,7 +119,7 @@ void WgHook::_requestInView( const WgRect& mustHaveArea, const WgRect& niceToHav
 
 WgCoord WgHook::PointPos() const
 {
-    return (PixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
+	return (PixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
 }
 
 WgSize WgHook::PointSize() const
@@ -133,16 +133,16 @@ WgRect WgHook::PointGeo() const
 	int scale = Parent()->Scale();
 
 	geo.x = (geo.x << WG_SCALE_BINALS) / scale;
-    geo.y = (geo.y << WG_SCALE_BINALS) / scale;
-    geo.w = (geo.w << WG_SCALE_BINALS) / scale;
-    geo.h = (geo.h << WG_SCALE_BINALS) / scale;
+	geo.y = (geo.y << WG_SCALE_BINALS) / scale;
+	geo.w = (geo.w << WG_SCALE_BINALS) / scale;
+	geo.h = (geo.h << WG_SCALE_BINALS) / scale;
 
 	return geo;
 }
 
 WgCoord WgHook::ScreenPointPos() const
 {
-    return (ScreenPixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
+	return (ScreenPixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
 
 }
 

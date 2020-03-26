@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -54,16 +54,16 @@ namespace WgEvent
 	{
 		if( m_type == WG_EVENT_MOUSEWHEEL_ROLL ||
 			m_type == WG_EVENT_MOUSE_ENTER ||
-			m_type == WG_EVENT_MOUSE_LEAVE ||	
-			m_type == WG_EVENT_MOUSE_MOVE ||	
+			m_type == WG_EVENT_MOUSE_LEAVE ||
+			m_type == WG_EVENT_MOUSE_MOVE ||
 			m_type == WG_EVENT_MOUSE_POSITION ||
 			IsMouseButtonEvent() )
 			return true;
 		else
 			return false;
-			
+
 	}
-	
+
 	bool Event::IsMouseButtonEvent() const
 	{
 		if( m_type == WG_EVENT_MOUSEBUTTON_CLICK ||
@@ -76,7 +76,7 @@ namespace WgEvent
 		else
 			return false;
 	}
-	
+
 	bool Event::IsKeyEvent() const
 	{
 		if( m_type == WG_EVENT_KEY_PRESS ||
@@ -96,7 +96,7 @@ namespace WgEvent
 		m_pWidget			= pOrg->m_pWidget;
 		m_pointerLocalPixelPos	= pOrg->m_pointerLocalPixelPos;
 		m_pointerScreenPixelPos	= pOrg->m_pointerScreenPixelPos;
-        m_pointScale        = pOrg->m_pointScale;
+		m_pointScale        = pOrg->m_pointScale;
 	}
 
 	//____ MouseButtonEvent ____________________________________________________
@@ -104,7 +104,7 @@ namespace WgEvent
 	void MouseButtonEvent::_cloneContentFrom( const Event * _pOrg )
 	{
 		const MouseButtonEvent * pOrg = static_cast<const MouseButtonEvent*>(_pOrg);
-		
+
 		m_button = pOrg->m_button;
 		Event::_cloneContentFrom( pOrg );
 	}
@@ -119,7 +119,7 @@ namespace WgEvent
 		else
 			return false;
 	}
-	
+
 	bool KeyEvent::IsMovementKey() const
 	{
 		if( m_translatedKeyCode == WG_KEY_PAGE_UP || m_translatedKeyCode == WG_KEY_PAGE_DOWN ||
@@ -138,7 +138,7 @@ namespace WgEvent
 		m_translatedKeyCode	= pOrg->m_translatedKeyCode;
 		Event::_cloneContentFrom( pOrg );
 	}
-	
+
 	//____ FocusGained ________________________________________________________
 
 	FocusGained::FocusGained()
@@ -251,7 +251,7 @@ namespace WgEvent
 
 		m_bPressInside = true;			// Always assumed to have had the press inside our window.
 		m_bReleaseInside = true;		// Always assumed to be inside our window now.
-        m_pressModKeys = WG_MODKEY_NONE;
+		m_pressModKeys = WG_MODKEY_NONE;
 	}
 
 	MouseButtonRelease::MouseButtonRelease( int button, WgWidget * pWidget, bool bPressInside, bool bReleaseInside ) : MouseButtonEvent(button)
@@ -267,10 +267,10 @@ namespace WgEvent
 	void MouseButtonRelease::_cloneContentFrom( const Event * _pOrg )
 	{
 		const MouseButtonRelease * pOrg = static_cast<const MouseButtonRelease*>(_pOrg);
-		
+
 		m_bPressInside		= pOrg->m_bPressInside;
 		m_bReleaseInside	= pOrg->m_bReleaseInside;
-        m_pressModKeys      = pOrg->m_pressModKeys;
+		m_pressModKeys      = pOrg->m_pressModKeys;
 		MouseButtonEvent::_cloneContentFrom( pOrg );
 	}
 
@@ -377,7 +377,7 @@ namespace WgEvent
 	void Character::_cloneContentFrom( const Event * _pOrg )
 	{
 		const Character * pOrg = static_cast<const Character*>(_pOrg);
-		
+
 		m_char			= pOrg->m_char;
 		Event::_cloneContentFrom( pOrg );
 	}
@@ -444,11 +444,11 @@ namespace WgEvent
 	void Tick::_cloneContentFrom( const Event * _pOrg )
 	{
 		const Tick * pOrg = static_cast<const Tick*>(_pOrg);
-				
+
 		m_millisec = pOrg->m_millisec;
 		Event::_cloneContentFrom( pOrg );
 	}
-	
+
 	int Tick::Millisec() const
 	{
 		return m_millisec;
@@ -469,159 +469,159 @@ namespace WgEvent
 		m_style = pOrg->m_style;
 		Event::_cloneContentFrom( pOrg );
 	}
-	
+
 	WgPointerStyle PointerChange::Style() const
 	{
 		return m_style;
 	}
 
-    //____ Eavesdrop _______________________________________________________________
-    
-    Eavesdrop::Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent )
-    {
-        m_type             = WG_EVENT_EAVESDROP;
-        m_pEvent           = pEvent;
-        m_bIsForWidget    = true;
-        m_pWidget         = pEavesdropper;
-    }
-    
-    Eavesdrop::~Eavesdrop()
-    {
-        delete m_pEvent;
-    }
-    
-    WgEvent::Event * Eavesdrop::Event() const
-    {
-        return m_pEvent;
-    }
-    
-    void Eavesdrop::_cloneContentFrom( const WgEvent::Event * _pOrg )
-    {
-        assert(false);              // Not allowed to clone! Needs a deep cloning of pointed to widget.
+	//____ Eavesdrop _______________________________________________________________
 
-        const Tick * pOrg = static_cast<const Tick*>(_pOrg);
-        
-        Event::_cloneContentFrom( pOrg );
-    }
-    
-    
-    //____ DragNDrop _______________________________________________________________
-    
-    DragNDrop::DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
-    {
-        m_type = type;
-        m_pWidget = pSource;
-        m_bIsForWidget = true;
-        m_pickCategory = pickCategory;
-        m_pPayload = pPayload;
-        m_pPickedFrom = pPickedFrom;
-        m_pFinalRecipient = pFinalReceiver;
-    }
+	Eavesdrop::Eavesdrop( WgWidget * pEavesdropper, WgEvent::Event * pEvent )
+	{
+		m_type             = WG_EVENT_EAVESDROP;
+		m_pEvent           = pEvent;
+		m_bIsForWidget    = true;
+		m_pWidget         = pEavesdropper;
+	}
 
-    void DragNDrop::_cloneContentFrom( const Event * _pOrg )
-    {
-        const DragNDrop * pOrg = static_cast<const DragNDrop*>(_pOrg);
+	Eavesdrop::~Eavesdrop()
+	{
+		delete m_pEvent;
+	}
 
-        m_pPayload = pOrg->m_pPayload;
-        m_pPickedFrom = pOrg->m_pPickedFrom;
-        m_pickCategory = pOrg->m_pickCategory;
-    }
+	WgEvent::Event * Eavesdrop::Event() const
+	{
+		return m_pEvent;
+	}
 
-    DropPick::DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver )
-    : DragNDrop( WG_EVENT_DROP_PICK, pSource, 0, nullptr, pSource, pFinalReceiver ),
-    m_dragWidgetPointerOfs(WgCoord()-pickOfs),
-    m_pickOfs(pickOfs),
-    m_bDeleteWhenDone(true),
-    m_pDragWidget(nullptr)
-    {
-    }
+	void Eavesdrop::_cloneContentFrom( const WgEvent::Event * _pOrg )
+	{
+		assert(false);              // Not allowed to clone! Needs a deep cloning of pointed to widget.
 
-    void DropPick::setPayload( wg::BasicPayload * pPayload )
-    {
-        m_pPayload = pPayload;
-    }
-    
-    void DropPick::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
-    {
-        m_pDragWidget = pWidget;
-        m_dragWidgetPointerOfs = pixelPointerOfs;
-        m_bDeleteWhenDone = bDeleteWhenDone;
-    }
+		const Tick * pOrg = static_cast<const Tick*>(_pOrg);
 
-    DropProbe::DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
-    : DragNDrop( WG_EVENT_DROP_PROBE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-    m_bAccepted(false)
-    {
-    }
+		Event::_cloneContentFrom( pOrg );
+	}
 
-    DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
-    : DragNDrop( WG_EVENT_DROP_ENTER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-    m_pDragWidget(pDragWidget)
-    {
-    }
 
-    void DropEnter::setDragWidget( WgWidget * pWidget )
-    {
-        m_pDragWidget = pWidget;
-    }
+	//____ DragNDrop _______________________________________________________________
 
-    DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
-    : DragNDrop( WG_EVENT_DROP_MOVE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-    m_pDragWidget(pDragWidget)
-    {
-    }
+	DragNDrop::DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	{
+		m_type = type;
+		m_pWidget = pSource;
+		m_bIsForWidget = true;
+		m_pickCategory = pickCategory;
+		m_pPayload = pPayload;
+		m_pPickedFrom = pPickedFrom;
+		m_pFinalRecipient = pFinalReceiver;
+	}
 
-    void DropMove::setDragWidget( WgWidget * pWidget )
-    {
-        m_pDragWidget = pWidget;
-    }
+	void DragNDrop::_cloneContentFrom( const Event * _pOrg )
+	{
+		const DragNDrop * pOrg = static_cast<const DragNDrop*>(_pOrg);
 
-    
-    DropLeave::DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
-    : DragNDrop( WG_EVENT_DROP_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
-    {
-    }
-    
-    DropDeliver::DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
-    : DragNDrop( WG_EVENT_DROP_DELIVER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
-    m_bAccepted(false)
-    {
-    }
+		m_pPayload = pOrg->m_pPayload;
+		m_pPickedFrom = pOrg->m_pPickedFrom;
+		m_pickCategory = pOrg->m_pickCategory;
+	}
 
-    WgWidget * DropDeliver::deliveredTo() const
-    {
-        return m_pWidget.GetRealPtr();
-    }
+	DropPick::DropPick( WgWidget * pSource, WgCoord pickOfs, WgWidget * pFinalReceiver )
+	: DragNDrop( WG_EVENT_DROP_PICK, pSource, 0, nullptr, pSource, pFinalReceiver ),
+	m_dragWidgetPointerOfs(WgCoord()-pickOfs),
+	m_pickOfs(pickOfs),
+	m_bDeleteWhenDone(true),
+	m_pDragWidget(nullptr)
+	{
+	}
 
-    DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload )
-    : DragNDrop( WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr )
-    {
-    }
+	void DropPick::setPayload( wg::BasicPayload * pPayload )
+	{
+		m_pPayload = pPayload;
+	}
 
-    DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload )
-    : DragNDrop( WG_EVENT_DROP_COMPLETE, pPicked, pickCategory, pPayload, pPicked, nullptr ),
-    m_pDeliveree(pDeliveree)
-    {
-    }
-    
-    
-    DropHoverEnter::DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
-    : DragNDrop( WG_EVENT_DROPHOVER_ENTER, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
-    {
-    }
-    
-    DropHoverMove::DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
-    : DragNDrop( WG_EVENT_DROPHOVER_MOVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
-    {
-    }
-    
-    DropHoverLeave::DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
-    : DragNDrop( WG_EVENT_DROPHOVER_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
-    {
-    }
-    
-    
-    
+	void DropPick::setDragWidget( WgWidget * pWidget, WgCoord pixelPointerOfs, bool bDeleteWhenDone )
+	{
+		m_pDragWidget = pWidget;
+		m_dragWidgetPointerOfs = pixelPointerOfs;
+		m_bDeleteWhenDone = bDeleteWhenDone;
+	}
+
+	DropProbe::DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	: DragNDrop( WG_EVENT_DROP_PROBE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+	m_bAccepted(false)
+	{
+	}
+
+	DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	: DragNDrop( WG_EVENT_DROP_ENTER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+	m_pDragWidget(pDragWidget)
+	{
+	}
+
+	void DropEnter::setDragWidget( WgWidget * pWidget )
+	{
+		m_pDragWidget = pWidget;
+	}
+
+	DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	: DragNDrop( WG_EVENT_DROP_MOVE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+	m_pDragWidget(pDragWidget)
+	{
+	}
+
+	void DropMove::setDragWidget( WgWidget * pWidget )
+	{
+		m_pDragWidget = pWidget;
+	}
+
+
+	DropLeave::DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	: DragNDrop( WG_EVENT_DROP_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+	{
+	}
+
+	DropDeliver::DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	: DragNDrop( WG_EVENT_DROP_DELIVER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
+	m_bAccepted(false)
+	{
+	}
+
+	WgWidget * DropDeliver::deliveredTo() const
+	{
+		return m_pWidget.GetRealPtr();
+	}
+
+	DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload )
+	: DragNDrop( WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr )
+	{
+	}
+
+	DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload )
+	: DragNDrop( WG_EVENT_DROP_COMPLETE, pPicked, pickCategory, pPayload, pPicked, nullptr ),
+	m_pDeliveree(pDeliveree)
+	{
+	}
+
+
+	DropHoverEnter::DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	: DragNDrop( WG_EVENT_DROPHOVER_ENTER, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+	{
+	}
+
+	DropHoverMove::DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	: DragNDrop( WG_EVENT_DROPHOVER_MOVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+	{
+	}
+
+	DropHoverLeave::DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	: DragNDrop( WG_EVENT_DROPHOVER_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
+	{
+	}
+
+
+
 	//____ ButtonPress _________________________________________________________
 
 	ButtonPress::ButtonPress( WgButton * pWidget )
@@ -816,7 +816,7 @@ namespace WgEvent
 		m_type = WG_EVENT_SLIDER_WHEEL_ROLL;
 		m_distance = distance;
 	}
-	
+
 	int SliderWheelRolled::Distance() const
 	{
 		return m_distance;
@@ -862,7 +862,7 @@ namespace WgEvent
 
 	//____ Menu event methods __________________________________________________
   // Menu is not used by Softube. Remove this code to avoid having to bring in a lot of source files just related to menus
-  /* 
+  /*
 	WgMenu *	MenuitemEvent::Menu() const
 	{
 		WgWidget * pWidget = m_pWidget.GetRealPtr();
@@ -918,7 +918,7 @@ namespace WgEvent
 	{
 		return m_pWidget.GetRealPtr();
 	}
-  
+
 	//____ Modal event methods ___________________________________________________
 
 	ModalMoveOutside::ModalMoveOutside( WgWidget * pWidget )
@@ -944,42 +944,42 @@ namespace WgEvent
 
 	//____ MultiSlider event methods __________________________________________
 
-    SliderEnter::SliderEnter(WgMultiSlider * pSlider, int sliderId)
-    {
-        m_type        = WG_EVENT_SLIDER_ENTER;
-        m_pWidget    = pSlider;
-        m_id        = sliderId;
-    }
+	SliderEnter::SliderEnter(WgMultiSlider * pSlider, int sliderId)
+	{
+		m_type        = WG_EVENT_SLIDER_ENTER;
+		m_pWidget    = pSlider;
+		m_id        = sliderId;
+	}
 
-    SliderLeave::SliderLeave(WgMultiSlider * pSlider, int sliderId)
-    {
-        m_type        = WG_EVENT_SLIDER_LEAVE;
-        m_pWidget    = pSlider;
-        m_id        = sliderId;
-    }
+	SliderLeave::SliderLeave(WgMultiSlider * pSlider, int sliderId)
+	{
+		m_type        = WG_EVENT_SLIDER_LEAVE;
+		m_pWidget    = pSlider;
+		m_id        = sliderId;
+	}
 
-    SliderHandleEnter::SliderHandleEnter(WgMultiSlider * pSlider, int sliderId)
-    {
-        m_type        = WG_EVENT_SLIDER_HANDLE_ENTER;
-        m_pWidget    = pSlider;
-        m_id        = sliderId;
-    }
-    
-    SliderHandleLeave::SliderHandleLeave(WgMultiSlider * pSlider, int sliderId)
-    {
-        m_type        = WG_EVENT_SLIDER_HANDLE_LEAVE;
-        m_pWidget    = pSlider;
-        m_id        = sliderId;
-    }
+	SliderHandleEnter::SliderHandleEnter(WgMultiSlider * pSlider, int sliderId)
+	{
+		m_type        = WG_EVENT_SLIDER_HANDLE_ENTER;
+		m_pWidget    = pSlider;
+		m_id        = sliderId;
+	}
 
-    SliderPressed::SliderPressed(WgMultiSlider * pSlider, int sliderId, int button, WgOrigo offsetFromHandle)
-    {
-        m_type        = WG_EVENT_SLIDER_PRESS;
-        m_pWidget    = pSlider;
-        m_id        = sliderId;
-        m_button    = button;
-        m_offsetFromHandle = offsetFromHandle;
-    }
+	SliderHandleLeave::SliderHandleLeave(WgMultiSlider * pSlider, int sliderId)
+	{
+		m_type        = WG_EVENT_SLIDER_HANDLE_LEAVE;
+		m_pWidget    = pSlider;
+		m_id        = sliderId;
+	}
+
+	SliderPressed::SliderPressed(WgMultiSlider * pSlider, int sliderId, int button, WgOrigo offsetFromHandle)
+	{
+		m_type        = WG_EVENT_SLIDER_PRESS;
+		m_pWidget    = pSlider;
+		m_id        = sliderId;
+		m_button    = button;
+		m_offsetFromHandle = offsetFromHandle;
+	}
 
 	SliderMoved::SliderMoved(WgMultiSlider * pSlider, int sliderId, float value, float value2)
 	{
@@ -1132,7 +1132,7 @@ namespace WgEvent
 	void MouseButtonDrag::_cloneContentFrom( const Event * _pOrg )
 	{
 		const MouseButtonDrag * pOrg = static_cast<const MouseButtonDrag*>(_pOrg);
-		
+
 		m_startPos = pOrg->m_startPos;
 		m_prevPos = pOrg->m_prevPos;
 		m_currPos = pOrg->m_currPos;
@@ -1165,31 +1165,31 @@ namespace WgEvent
 		return m_prevPos;
 	}
 
-    
-    WgCoord MouseButtonDrag::DraggedTotalPoints() const
-    {
-        return CurrPointPos() - StartPointPos();
-    }
-    
-    WgCoord MouseButtonDrag::DraggedNowPoints() const
-    {
-        return CurrPointPos() - PrevPointPos();
-    }
-    
-    WgCoord MouseButtonDrag::CurrPointPos() const
-    {
-        return (m_currPos*WG_SCALE_BASE)/m_pointScale;
-    }
-    
-    WgCoord MouseButtonDrag::StartPointPos() const
-    {
-        return (m_startPos*WG_SCALE_BASE)/m_pointScale;
-    }
-    
-    WgCoord MouseButtonDrag::PrevPointPos() const
-    {
-        return (m_prevPos*WG_SCALE_BASE)/m_pointScale;
-    }
-    
-    
+
+	WgCoord MouseButtonDrag::DraggedTotalPoints() const
+	{
+		return CurrPointPos() - StartPointPos();
+	}
+
+	WgCoord MouseButtonDrag::DraggedNowPoints() const
+	{
+		return CurrPointPos() - PrevPointPos();
+	}
+
+	WgCoord MouseButtonDrag::CurrPointPos() const
+	{
+		return (m_currPos*WG_SCALE_BASE)/m_pointScale;
+	}
+
+	WgCoord MouseButtonDrag::StartPointPos() const
+	{
+		return (m_startPos*WG_SCALE_BASE)/m_pointScale;
+	}
+
+	WgCoord MouseButtonDrag::PrevPointPos() const
+	{
+		return (m_prevPos*WG_SCALE_BASE)/m_pointScale;
+	}
+
+
 };

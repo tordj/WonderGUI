@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -184,7 +184,7 @@ void WgContainer::SetScale( int scale )
 
 void WgContainer::SetEavesdropping( bool bEavesdropping )
 {
-    m_bEavesdropping = bEavesdropping;
+	m_bEavesdropping = bEavesdropping;
 }
 
 
@@ -198,10 +198,10 @@ bool WgContainer::_descendantPos(WgWidget * pDescendant, WgCoord& pos)
 	while (p != this && p!= nullptr )
 	{
 		auto pHook = p->Hook();
-        if( pHook == nullptr )
-            return false;
+		if( pHook == nullptr )
+			return false;
 
-        pos += pHook->PixelPos();
+		pos += pHook->PixelPos();
 		p = pHook->Parent();
 	}
 
@@ -245,22 +245,22 @@ bool WgContainer::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 
 void WgContainer::_inViewRequested( WgHook * pChild )
 {
-    WgHook * p = Hook();
-    if( p )
-    {
-        WgRect geo = pChild->PixelGeo();
-        p->Holder()->_inViewRequested( p, geo, geo );
-    }
+	WgHook * p = Hook();
+	if( p )
+	{
+		WgRect geo = pChild->PixelGeo();
+		p->Holder()->_inViewRequested( p, geo, geo );
+	}
 }
 
 void WgContainer::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
 {
-    WgHook * p = Hook();
-    if( p )
-    {
-        WgCoord ofs = pChild->PixelPos();
-        p->Holder()->_inViewRequested( p, mustHaveArea+ofs, niceToHaveArea+ofs );
-    }
+	WgHook * p = Hook();
+	if( p )
+	{
+		WgCoord ofs = pChild->PixelPos();
+		p->Holder()->_inViewRequested( p, mustHaveArea+ofs, niceToHaveArea+ofs );
+	}
 }
 
 
@@ -275,7 +275,7 @@ WgModalLayer *  WgContainer::_getModalLayer() const
 		return p->_getModalLayer();
 	else
 		return 0;
-} 
+}
 
 //____ _getPopupLayer() _______________________________________________________
 
@@ -359,8 +359,8 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 	// Render container itself
 
-    pDevice->setClipList(patches.size(), patches.begin());
-    _onRender(pDevice, _canvas, _window );
+	pDevice->setClipList(patches.size(), patches.begin());
+	_onRender(pDevice, _canvas, _window );
 
 
 	// Render children

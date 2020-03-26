@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -86,7 +86,7 @@ friend class WgTextNode;
 public:
 	WgText();
 	WgText( const wg::CharSeq& seq );
-    WgText( const wg::CharBuffer * pBuffer );
+	WgText( const wg::CharBuffer * pBuffer );
 	WgText( const wg::String& str );
 
 	void	Init();
@@ -98,7 +98,7 @@ public:
 	inline void operator=( const WgText& t) { setText(&t); }; // Fastest order to do this in.
 
 	void		setText( const wg::CharSeq& seq );
-    void		setText( const wg::CharBuffer * buffer );
+	void		setText( const wg::CharBuffer * buffer );
 	void		setText( const wg::String& str );
 	void		setText( const WgText * pText );
 
@@ -108,9 +108,9 @@ public:
 	int			deleteText( int ofs, int len );
 	void		deleteSelectedText();
 
-    int			addChar( const wg::Char& character );
-    int			insertChar( int ofs, const wg::Char& character );
-    int			replaceChar( int ofs, const wg::Char& character );
+	int			addChar( const wg::Char& character );
+	int			insertChar( int ofs, const wg::Char& character );
+	int			replaceChar( int ofs, const wg::Char& character );
 	int			deleteChar( int ofs );
 
 
@@ -119,19 +119,19 @@ public:
 
 	inline bool	IsEmpty() const { return nbChars()==0?true:false; }
 
-    inline const wg::Char * getText() const { return m_buffer.chars(); }
-    inline wg::CharBuffer * getBuffer() { return &m_buffer; }
-    inline const wg::CharBuffer * getBuffer() const { return &m_buffer; }
+	inline const wg::Char * getText() const { return m_buffer.chars(); }
+	inline wg::CharBuffer * getBuffer() { return &m_buffer; }
+	inline const wg::CharBuffer * getBuffer() const { return &m_buffer; }
 
 	const WgTextLine *	getLines() const;
 	WgTextLine *		getLine( int line ) const;
-    const wg::Char * 	getLineText( int line ) const;
+	const wg::Char * 	getLineText( int line ) const;
 	int					getLineWidth( int line ) const;
 	int					getLineOfsY( int line ) const;
 
 	const WgTextLine *	getSoftLines() const;
 	WgTextLine *		getSoftLine( int line ) const;
-    const wg::Char * 	getSoftLineText( int line ) const;
+	const wg::Char * 	getSoftLineText( int line ) const;
 	int					getSoftLineWidth( int line ) const;
 	int					getSoftLineWidthPart( int line, int startCol, int nCol = INT_MAX ) const;
 	int					nbSoftLines() const;
@@ -158,21 +158,21 @@ public:
 
 //  --------------
 
-    inline wg::TextStyle_p      getStyle() const { return m_pBaseStyle; }
-    inline WgColor				getColor() const { return m_pBaseStyle->color(wg::StateEnum::Normal); }
+	inline wg::TextStyle_p      getStyle() const { return m_pBaseStyle; }
+	inline WgColor				getColor() const { return m_pBaseStyle->color(wg::StateEnum::Normal); }
 	inline WgColor				getColor(WgState state) const { return m_pBaseStyle->color(state); }
-    inline wg::Font_p			getFont() const { return m_pBaseStyle->font(); }
-    inline wg::TextLink_p		getLink() const { return m_pBaseStyle->link(); }
+	inline wg::Font_p			getFont() const { return m_pBaseStyle->font(); }
+	inline wg::TextLink_p		getLink() const { return m_pBaseStyle->link(); }
 
 //	--------------
 
-    void				setStyle( wg::TextStyle * pStyle );
+	void				setStyle( wg::TextStyle * pStyle );
 
 	bool				setColor( const WgColor color );
-    bool				setColor( const WgColor color, wg::State state );
+	bool				setColor( const WgColor color, wg::State state );
 
-    void				setFont( wg::Font * pFont );
-    void				setLink( wg::TextLink * pLink );
+	void				setFont( wg::Font * pFont );
+	void				setLink( wg::TextLink * pLink );
 
 // -------------
 
@@ -206,16 +206,16 @@ public:
 
 // -------------
 
-    void				GetBaseAttr( wg::TextAttr& attr ) const;
-    bool				GetCharAttr( wg::TextAttr& attr, int charOfs ) const;
+	void				GetBaseAttr( wg::TextAttr& attr ) const;
+	bool				GetCharAttr( wg::TextAttr& attr, int charOfs ) const;
 	bool				IsCharUnderlined(	int charOfs ) const;
 	WgColor				GetCharColor(		int charOfs ) const;
 	WgColor				GetCharBgColor(		int charOfs ) const;
 	int					GetCharSize(		int charOfs ) const;
-    wg::Font_p			GetCharFont(		int charOfs ) const;
+	wg::Font_p			GetCharFont(		int charOfs ) const;
 //	WgGlyphset *		GetCharGlyphset(	int charOfs ) const;
 //	bool				GetCharVisibility(	int charOfs ) const;
-    wg::TextLink_p		GetCharLink(		int charOfs ) const;
+	wg::TextLink_p		GetCharLink(		int charOfs ) const;
 	bool				IsCharLink(			int charOfs ) const;
 
 // -------------
@@ -249,7 +249,7 @@ public:
 
 	void				SetScale( int scale );
 	int					Scale() const { return m_scale; }
-	
+
 
 	void					SetEditMode(WgTextEditMode mode);							// Maybe should be protected with Widgets/Items as friends?
 	inline WgTextEditMode	GetEditMode() const { return m_editMode; }
@@ -258,13 +258,13 @@ public:
 
 
 
-    inline void			setState( wg::State state ) { m_state = state; }
+	inline void			setState( wg::State state ) { m_state = state; }
 	inline void			setAlignment( const WgOrigo alignment ) { m_alignment = alignment; }
 	inline void			setTintMode( WgTintMode mode ) { m_tintMode = mode; }
 	inline void			setLineSpaceAdjustment( float adjustment ) { m_lineSpaceAdj = adjustment; }
 
 
-    inline wg::State	state() const { return m_state; }
+	inline wg::State	state() const { return m_state; }
 	inline const WgOrigo alignment() const { return m_alignment; }
 	inline WgTintMode	tintMode() const { return m_tintMode; }
 	inline float		lineSpaceAdjustment() const { return m_lineSpaceAdj; }
@@ -321,8 +321,8 @@ public:
 	void			unputText( int nChar ){if(m_pCursor) m_pCursor->unputText( nChar );}
 	void 			delPrevWord(){if(m_pCursor) m_pCursor->delPrevWord();}
 	void 			delNextWord(){if(m_pCursor) m_pCursor->delNextWord();}
-    void            delToBOL(){if(m_pCursor) m_pCursor->delToBOL();}
-    void            delToEOL(){if(m_pCursor) m_pCursor->delToEOL();}
+	void            delToBOL(){if(m_pCursor) m_pCursor->delToBOL();}
+	void            delToEOL(){if(m_pCursor) m_pCursor->delToEOL();}
 	bool			delPrevChar(){return m_pCursor ? m_pCursor->delPrevChar():false;}
 	bool			delNextChar(){return m_pCursor ? m_pCursor->delNextChar():false;}
 
@@ -355,7 +355,7 @@ public:
 	int				CoordToColumn( int line, const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	WgTextPos		CoordToPos( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
 	int				CoordToOfs( const WgCoord& coord, const WgRect& container, bool bCursorMode = false ) const;
-    wg::TextLink_p	CoordToLink( const WgCoord& coord, const WgRect& container ) const;
+	wg::TextLink_p	CoordToLink( const WgCoord& coord, const WgRect& container ) const;
 
 	// WgTextPos is automatically clamped for all PosTo...-methods.
 
@@ -378,7 +378,7 @@ public:
 	bool 			OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHandler, const WgRect& container );
 //	bool			OnAction( WgInput::UserAction action, int button_key, const WgRect& textRect, const WgCoord& pointerOfs );
 
-    wg::TextLink_p	GetMarkedLink() const { return m_pMarkedLink; }
+	wg::TextLink_p	GetMarkedLink() const { return m_pMarkedLink; }
 
 	inline void		SetBaseColors( const WgColorsetPtr& pColors ) { m_pBaseColors = pColors; }
 	inline WgColorsetPtr BaseColors() const { return m_pBaseColors; }
@@ -391,14 +391,14 @@ protected:
 
 
 	static const int	s_parseBufLen = 9+16+1+16+8;
-    wg::Char *		_parseValue( double value, const WgValueFormat& form, wg::Char[s_parseBufLen] );
-    wg::Char *		_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, wg::Char[s_parseBufLen] );
+	wg::Char *		_parseValue( double value, const WgValueFormat& form, wg::Char[s_parseBufLen] );
+	wg::Char *		_parseScaledValue( Sint64 value, Uint32 scale, const WgValueFormat& form, wg::Char[s_parseBufLen] );
 
-    void            _textModified();
+	void            _textModified();
 
 	void			_regenHardLines();		// regenerate the softlines-array (if necessary).
 	void			_regenSoftLines();		// regenerate the softlines-array (if necessary).
-    int 			_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
+	int 			_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextLine * pWriteLines, int maxWrite ) const; // Central algorithm of regenSoftLines().
 
 	void			_refreshAllLines();
 	void			_refreshLineInfo( WgTextLine * pLine ) const;
@@ -407,19 +407,19 @@ protected:
 
 
 
-    wg::CharBuffer	m_buffer;
+	wg::CharBuffer	m_buffer;
 	WgCursor*		m_pCursorStyle;
 	WgCursorInstance*	m_pCursor;
 
-    WgTextEditMode	m_editMode;
+	WgTextEditMode	m_editMode;
 
 
 	WgTintMode		m_tintMode;
 	WgOrigo	m_alignment;
-    wg::State		m_state;
+	wg::State		m_state;
 
-    wg::TextLink_p	m_pMarkedLink;
-    wg::State		m_markedLinkState;
+	wg::TextLink_p	m_pMarkedLink;
+	wg::State		m_markedLinkState;
 
 //	int				m_markedLinkOfs;	// Offset in buffer for first character of link currently marked or -1 if none.
 
@@ -432,7 +432,7 @@ protected:
 	WgColorsetPtr	m_pBgBlockColors;	// Textcolors as defined by background blockset (lowest prio).
 
 	WgColorsetPtr	m_pBaseColors;		// Default colors for this text (prio between m_pBgBlockColors and m_pBaseProp).
-    wg::TextStyle_p	m_pBaseStyle;		// Default style for this text. Used for all characters who have
+	wg::TextStyle_p	m_pBaseStyle;		// Default style for this text. Used for all characters who have
 										// properties set to 0.
 
 	WgTextLine*		m_pHardLines;

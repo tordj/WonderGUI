@@ -1,19 +1,19 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
-	
+							-----------
+
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
@@ -49,13 +49,13 @@ WgOscilloscope::WgOscilloscope()
 
 	m_nLinePoints = 0;
 	m_pLinePoints = 0;
-	
+
 	m_nDisplayPoints = 0;
 	m_pDisplayPoints = 0;
 
 	m_nMarkers = 0;
 	m_pMarkers = 0;
-	
+
 	m_nRenderSegments = 1;
 }
 
@@ -197,9 +197,9 @@ void WgOscilloscope::SetRenderSegments( int nSegments )
 void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 {
 	// Handle special case of no points (no line will be displayed)
-	
-    if( nPoints == 0 )
-    {
+
+	if( nPoints == 0 )
+	{
 		if( m_nLinePoints != 0 )
 		{
 			delete [] m_pLinePoints;
@@ -208,8 +208,8 @@ void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 			_resampleLinePoints( PixelSize() );
 			_requestRender();
 		}
-        return;
-    }
+		return;
+	}
 
 	WgSize sz = PixelSize();
 
@@ -259,11 +259,11 @@ void WgOscilloscope::SetLinePoints( int nPoints, float pPointValues[] )
 	_resampleLinePoints( sz );
 	_updateRenderSegments( nSegments, pSegments );			// Expand dirty rects to include current line
 
-	for( int i = 0 ; i < nSegments ; i++ )			
+	for( int i = 0 ; i < nSegments ; i++ )
 		_requestRender( pSegments[i] );
-	
+
 	// Return memory allocated for render segments
-	
+
 	wg::Base::memStackRelease(allocSize);
 }
 
@@ -273,7 +273,7 @@ void WgOscilloscope::_updateRenderSegments( int nSegments, WgRect * pSegments )
 {
 
 	WgRect * pSeg = pSegments;
-	
+
 	for( int seg = 0 ; seg < nSegments ; seg++ )
 	{
 		int point = pSeg->x;
@@ -290,7 +290,7 @@ void WgOscilloscope::_updateRenderSegments( int nSegments, WgRect * pSegments )
 
 		int yBeg = ((int)min) - 2;		// Two pixels margin for the line drawing
 		int yEnd = ((int)max) + 3;		// Two pixels margin for the line drawing (+1 for cropping)
-		
+
 		if( pSeg->h == 0 )
 		{
 			pSeg->y = yBeg;
@@ -304,7 +304,7 @@ void WgOscilloscope::_updateRenderSegments( int nSegments, WgRect * pSegments )
 				pSeg->y = yBeg;
 			}
 			if( yEnd > pSeg->y + pSeg->h )
-				pSeg->h = yEnd - pSeg->y;			
+				pSeg->h = yEnd - pSeg->y;
 		}
 
 		pSeg++;
@@ -315,7 +315,7 @@ void WgOscilloscope::_updateRenderSegments( int nSegments, WgRect * pSegments )
 //____ _resampleLinePoints()____________________________________________________
 
 void WgOscilloscope::_resampleLinePoints( WgSize sz )
-{	
+{
 	if( m_nLinePoints == 0 || sz.w == 0 )
 	{
 		if( m_nDisplayPoints != 0 )
@@ -326,51 +326,51 @@ void WgOscilloscope::_resampleLinePoints( WgSize sz )
 		}
 		return;
 	}
-	
+
 	if( m_nDisplayPoints != sz.w )
 	{
 		delete [] m_pDisplayPoints;
-        m_pDisplayPoints = new float[sz.w+2]; // Need two extra points for anti-aliasing
-        m_nDisplayPoints = sz.w;
+		m_pDisplayPoints = new float[sz.w+2]; // Need two extra points for anti-aliasing
+		m_nDisplayPoints = sz.w;
 	}
 
 	// Recalculate values for our display, possibly resample if display width != m_nLinePoints
-	
+
 	float centerY = sz.h/2.f;
 	float scaleY = (sz.h-1)/2.f;
 
-    
-    if (m_nLinePoints != sz.w )
-    {
+
+	if (m_nLinePoints != sz.w )
+	{
 		int ip = 0;
 		float lam = 0;
 		float point = 0;
-        float ratio = m_nLinePoints/(float)sz.w;
-        
-        for( int i=0 ; i < sz.w ; i++ )
-        {			
-            point = i * ratio;
-            ip = (int)point;
-            lam = point - (float)ip;
-            
-            if(ip+1 < m_nLinePoints)
-                m_pDisplayPoints[i] = centerY + (m_pLinePoints[ip] * (1-lam) + m_pLinePoints[ip+1] * lam) * scaleY;
-            else
-                m_pDisplayPoints[i] = centerY + m_pLinePoints[m_nLinePoints-1] * scaleY;
-        }
-    }
-    else
-    {
-        // Straight copy
+		float ratio = m_nLinePoints/(float)sz.w;
 
-        for( int i = 0 ; i < m_nLinePoints ; i++ )
-            m_pDisplayPoints[i] = centerY + m_pLinePoints[i] * scaleY;
-    }
+		for( int i=0 ; i < sz.w ; i++ )
+		{
+			point = i * ratio;
+			ip = (int)point;
+			lam = point - (float)ip;
+
+			if(ip+1 < m_nLinePoints)
+				m_pDisplayPoints[i] = centerY + (m_pLinePoints[ip] * (1-lam) + m_pLinePoints[ip+1] * lam) * scaleY;
+			else
+				m_pDisplayPoints[i] = centerY + m_pLinePoints[m_nLinePoints-1] * scaleY;
+		}
+	}
+	else
+	{
+		// Straight copy
+
+		for( int i = 0 ; i < m_nLinePoints ; i++ )
+			m_pDisplayPoints[i] = centerY + m_pLinePoints[i] * scaleY;
+	}
 
 	// Just fill out our extras
 
 	m_pDisplayPoints[m_nDisplayPoints] = centerY + m_pLinePoints[m_nLinePoints-1] * scaleY;
-    m_pDisplayPoints[m_nDisplayPoints+1] = centerY + m_pLinePoints[m_nLinePoints-1] * scaleY;
+	m_pDisplayPoints[m_nDisplayPoints+1] = centerY + m_pLinePoints[m_nLinePoints-1] * scaleY;
 
 }
 
@@ -444,14 +444,14 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		pDevice->drawLine( WgCoord(ofsX,_canvas.y), WgDirection::Down, _canvas.h, m_gridColor );
 	}
 
-    // Nothing to draw (yet)
-    if(m_nDisplayPoints == 0)
-        return;
+	// Nothing to draw (yet)
+	if(m_nDisplayPoints == 0)
+		return;
 
 	// Draw the oscilloscope line
 
 	m_iNextPixel = 0;
-		
+
 //	antiAlias(_clip.w, _clip.x, m_pDisplayPoints + _clip.x - _canvas.x);
 
 /*
@@ -460,8 +460,8 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	else
 		_antiAlias(_clip.w, m_pDisplayPoints + _clip.x - _canvas.x, WgCoord( _clip.x, _canvas.y ) );
 */
-    
-    _antiAlias(_canvas.w, m_pDisplayPoints, _canvas.pos() );
+
+	_antiAlias(_canvas.w, m_pDisplayPoints, _canvas.pos() );
 	pDevice->plotPixels(m_iNextPixel, m_pAAPix, m_pAACol);
 
 	// Blit markers
@@ -477,7 +477,7 @@ void WgOscilloscope::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		dest.x = x - dest.w / 2;
 		dest.y = y - dest.h / 2;
 
-        _renderSkin(m_pMarkerSkin, pDevice, wg::StateEnum::Normal, dest, m_scale);
+		_renderSkin(m_pMarkerSkin, pDevice, wg::StateEnum::Normal, dest, m_scale);
 	}
 
 }
@@ -486,17 +486,17 @@ void WgOscilloscope::plot(const int x, const int y, const float alpha)
 {
   if(m_iNextPixel < WG_OSC_PIXEL_BUFFER_SIZE-1)
   {
-      m_pAAPix[m_iNextPixel] = WgCoord(x, y);
-      m_pAACol[m_iNextPixel] = m_lineColor;
-      m_pAACol[m_iNextPixel].a = (Uint8)(255*alpha);
-      
-      ++m_iNextPixel;
+	  m_pAAPix[m_iNextPixel] = WgCoord(x, y);
+	  m_pAACol[m_iNextPixel] = m_lineColor;
+	  m_pAACol[m_iNextPixel].a = (Uint8)(255*alpha);
+
+	  ++m_iNextPixel;
   }
   else
   {
-      //DBGM(DBG_FFT, ("-----WARNING!------- m_iNextPixel=%i", m_iNextPixel));
+	  //DBGM(DBG_FFT, ("-----WARNING!------- m_iNextPixel=%i", m_iNextPixel));
   }
-    
+
   //DBG_ASSERT(m_iNextPixel < WG_OSC_PIXEL_BUFFER_SIZE);
 }
 
@@ -504,95 +504,95 @@ void WgOscilloscope::plot(const int x, const int y, const float alpha)
 // Xiaolin Wu's line algorithm
 void WgOscilloscope::_antiAlias(const int nPoints, const float *pYval, WgCoord ofs )
 {
-    int   x0i,x1i;
+	int   x0i,x1i;
 	float x0,x1,y0,y1,yprev;
 	float dx;
 	float dy;
-    float intery, gradient;
-    int xpxl1, xpxl2;
-    int ypxl1, ypxl2;
-    float xgap;
-    float xend;
-    float yend;
-    
+	float intery, gradient;
+	int xpxl1, xpxl2;
+	int ypxl1, ypxl2;
+	float xgap;
+	float xend;
+	float yend;
+
 	yprev = pYval[0];
-    
+
 	for(x0i = 0; x0i < nPoints; x0i++)
 	{
 		x1i = x0i + 1;
 		y0 = yprev;
 		DBG_ASSERT(x1i <= (nPoints+1));
 		y1 = pYval[x1i];
-        yprev = y1;
-        
-        x0 = float(x0i);
-        x1 = float(x1i);
-        
+		yprev = y1;
+
+		x0 = float(x0i);
+		x1 = float(x1i);
+
 		DBG_ASSERT( y1 > 0.0f || y1 <= 0.0f );
 
 		// Check for NaN
-        if(!( y1 > 0.0f || y1 <= 0.0f ))
-            y1 = 0.0f;
-        
-        
-        bool steep = fabsf(y1 - y0) > std::abs(x1 - x0);
-        
-        if(steep) {
-            std::swap(x0,y0);
-            std::swap(x1,y1);
-        }
-        
-        if (x0>x1) {
-            std::swap(x0,x1);
-            std::swap(y0,y1);
-        }
-        
-        dx = (float)x1 - (float)x0;
+		if(!( y1 > 0.0f || y1 <= 0.0f ))
+			y1 = 0.0f;
+
+
+		bool steep = fabsf(y1 - y0) > std::abs(x1 - x0);
+
+		if(steep) {
+			std::swap(x0,y0);
+			std::swap(x1,y1);
+		}
+
+		if (x0>x1) {
+			std::swap(x0,x1);
+			std::swap(y0,y1);
+		}
+
+		dx = (float)x1 - (float)x0;
 		dy = (float)y1 - (float)y0;
 		gradient = dy/dx;
-   
-        xend = round(x0);
-        yend = y0 + gradient * (xend - x0);
-        xgap =  rfpart(x0 + 0.5f);
-        xpxl1 = (int) xend;
-        ypxl1 = ipart(yend);
-        
-        if (steep) {
-            plot(ypxl1 +     ofs.x, xpxl1+ ofs.y, rfpart(yend) * xgap);
-            plot(ypxl1 + 1 + ofs.x, xpxl1+ ofs.y,  fpart(yend) * xgap);
-        } else {
-            plot(xpxl1 +     ofs.x, ypxl1 + ofs.y,     rfpart(yend) * xgap);
-            plot(xpxl1 +     ofs.x, ypxl1 + 1 + ofs.y,  fpart(yend) * xgap);
-        }
-        intery = yend + gradient;
-        
-        // Second end point
-        xend = round(x1);
-        yend = y1 + gradient * (xend - x1);
-        xgap = fpart(x1 + 0.5f);
-        xpxl2 = (int) xend;
-        ypxl2 = ipart(yend);
-        
-        if (steep) {
-            plot(ypxl2 +     ofs.x, xpxl2 + ofs.y, rfpart(yend) * xgap);
-            plot(ypxl2 + 1 + ofs.x, xpxl2 + ofs.y,  fpart(yend) * xgap);
-        } else {
-            plot(xpxl2 +     ofs.x, ypxl2 + ofs.y,     rfpart(yend) * xgap);
-            plot(xpxl2 +     ofs.x, ypxl2 + 1 + ofs.y,  fpart(yend) * xgap);
-        }
-        
-        for (int x=xpxl1+1; x<xpxl2; x++) {
-            if (steep) {
-                plot(ipart(intery) +     ofs.x, x + ofs.y, rfpart(intery));
-                plot(ipart(intery) + 1 + ofs.x, x + ofs.y,  fpart(intery));
-            } else {
-                plot(x + ofs.x, ipart (intery) + ofs.y,  rfpart(intery));
-                plot(x + ofs.x, ipart (intery)+1 + ofs.y, fpart(intery));
-            }
-            intery = intery + gradient;
-        }
+
+		xend = round(x0);
+		yend = y0 + gradient * (xend - x0);
+		xgap =  rfpart(x0 + 0.5f);
+		xpxl1 = (int) xend;
+		ypxl1 = ipart(yend);
+
+		if (steep) {
+			plot(ypxl1 +     ofs.x, xpxl1+ ofs.y, rfpart(yend) * xgap);
+			plot(ypxl1 + 1 + ofs.x, xpxl1+ ofs.y,  fpart(yend) * xgap);
+		} else {
+			plot(xpxl1 +     ofs.x, ypxl1 + ofs.y,     rfpart(yend) * xgap);
+			plot(xpxl1 +     ofs.x, ypxl1 + 1 + ofs.y,  fpart(yend) * xgap);
+		}
+		intery = yend + gradient;
+
+		// Second end point
+		xend = round(x1);
+		yend = y1 + gradient * (xend - x1);
+		xgap = fpart(x1 + 0.5f);
+		xpxl2 = (int) xend;
+		ypxl2 = ipart(yend);
+
+		if (steep) {
+			plot(ypxl2 +     ofs.x, xpxl2 + ofs.y, rfpart(yend) * xgap);
+			plot(ypxl2 + 1 + ofs.x, xpxl2 + ofs.y,  fpart(yend) * xgap);
+		} else {
+			plot(xpxl2 +     ofs.x, ypxl2 + ofs.y,     rfpart(yend) * xgap);
+			plot(xpxl2 +     ofs.x, ypxl2 + 1 + ofs.y,  fpart(yend) * xgap);
+		}
+
+		for (int x=xpxl1+1; x<xpxl2; x++) {
+			if (steep) {
+				plot(ipart(intery) +     ofs.x, x + ofs.y, rfpart(intery));
+				plot(ipart(intery) + 1 + ofs.x, x + ofs.y,  fpart(intery));
+			} else {
+				plot(x + ofs.x, ipart (intery) + ofs.y,  rfpart(intery));
+				plot(x + ofs.x, ipart (intery)+1 + ofs.y, fpart(intery));
+			}
+			intery = intery + gradient;
+		}
 	}
-    
+
 	return;
 }
 

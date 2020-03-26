@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -199,16 +199,16 @@ bool WgRootPanel::Render()
 
 bool WgRootPanel::Render( const WgRect& clip )
 {
-    // This early out hopefully solves the problem with Console1 taking GPU - time on some machines when not visible.
-    // It should prevent us from doing anything with the GPU
-    if (!m_bVisible)
-    {
-        m_updatedPatches.clear(); // Probably not necessary, but wanna make sure they don't fill up...
-        m_dirtyPatches.clear();   // Probably not necessary, but wanna make sure they don't fill up...
-        return true;              // Not an error, just hidden.
-    }
+	// This early out hopefully solves the problem with Console1 taking GPU - time on some machines when not visible.
+	// It should prevent us from doing anything with the GPU
+	if (!m_bVisible)
+	{
+		m_updatedPatches.clear(); // Probably not necessary, but wanna make sure they don't fill up...
+		m_dirtyPatches.clear();   // Probably not necessary, but wanna make sure they don't fill up...
+		return true;              // Not an error, just hidden.
+	}
 
-    if( !BeginRender() )
+	if( !BeginRender() )
 		return false;
 
 	if( !RenderSection(clip) )
@@ -230,14 +230,14 @@ bool WgRootPanel::BeginRender()
 	if( !m_pGfxDevice || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
-    //
-    
-    for( auto& pWidget : m_preRenderCalls )
-        pWidget->_preRender();
-    
-    m_preRenderCalls.clear();
-    
-    //
+	//
+
+	for( auto& pWidget : m_preRenderCalls )
+		pWidget->_preRender();
+
+	m_preRenderCalls.clear();
+
+	//
 
 	if( m_pUpdatedRectOverlay )
 	{
@@ -307,16 +307,16 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Render the dirty patches recursively
 
-    if( m_dirtyPatches.size() > 0 )
-        m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
+	if( m_dirtyPatches.size() > 0 )
+		m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
 
 	// Handle updated rect overlays
 
 	if( m_pUpdatedRectOverlay )
 	{
-        // Reset cliplist, we don't need it anyway.
+		// Reset cliplist, we don't need it anyway.
 
-        m_pGfxDevice->clearClipList();
+		m_pGfxDevice->clearClipList();
 
 		// Render our new overlays
 
@@ -408,12 +408,12 @@ bool WgRootPanel::_focusReleased( WgHook * pBranch, WgWidget * pWidgetReleasing 
 
 void WgRootPanel::_inViewRequested( WgHook * pChild )
 {
-    // Do nothing.
+	// Do nothing.
 }
 
 void WgRootPanel::_inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea )
 {
-    // Do nothing.
+	// Do nothing.
 }
 
 

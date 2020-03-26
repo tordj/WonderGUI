@@ -119,7 +119,7 @@ void WgPianoKeyboard::setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::
 	if (pOddWhiteKeys->size() != pEvenWhiteKeys->size() || (pBlackKeys && pBlackKeys->size().w != pOddWhiteKeys->size().w) )
 	{
 		//TODO: Error handling!
-			
+
 		return;
 	}
 
@@ -230,7 +230,7 @@ void WgPianoKeyboard::setPressedKeys(std::initializer_list<int> pressedKeys)
 				}
 
 			if (!bRemainPressed)
-				_setAPIPressed(i,false);					
+				_setAPIPressed(i,false);
 		}
 	}
 
@@ -514,7 +514,7 @@ void WgPianoKeyboard::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * p
 				if (m_bFlipOnPress)
 				{
 					_setAPIPressed(m_hoveredKey, !m_keyInfo[m_hoveredKey].isSetToPressed);
-					
+
 					if(m_keyInfo[m_hoveredKey].isSetToPressed)
 						_eventHandler()->QueueEvent(new WgEvent::PianoKeyPress(this, m_hoveredKey, pEvent->Timestamp()));
 					else
@@ -713,7 +713,7 @@ wg::RectI WgPianoKeyboard::_keyRect(int keyIdx)
 	int blackKeyHeight = canvas.h * m_blackKeySourceHeight / m_keyboardSourceSize.h;
 
 	wg::RectI dst;
-		
+
 	if( m_keyInfo[keyIdx].isBlack )
 		dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, blackKeyHeight };
 	else
@@ -730,4 +730,3 @@ wg::RectI WgPianoKeyboard::_keyRect(int keyIdx)
 
 	return dst + canvas.pos();
 }
-

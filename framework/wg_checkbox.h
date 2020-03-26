@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -65,8 +65,8 @@ public:
 	void			SetClickArea( ClickArea clickArea );
 	ClickArea		GetClickArea() const { return m_clickArea; }
 
-    void			SetIcon( wg::Skin * pIconSkin, const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
-    void			SetIcon( wg::Skin * pIconSkin );
+	void			SetIcon( wg::Skin * pIconSkin, const WgOrigo& origo, WgBorders borders = WgBorders(0), float scale = 0.f, bool bPushText = true );
+	void			SetIcon( wg::Skin * pIconSkin );
 
 	inline bool		IsChecked() { return m_bChecked; };
 
@@ -87,7 +87,7 @@ public:
 protected:
 
 	void	_onCloneContent( const WgWidget * _pOrg );
-    void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	void	_onRefresh();
 	void	_onNewSize( const WgSize& size );
@@ -115,7 +115,7 @@ private:
 	bool			m_bPressed;						// Set when mouse is pressed and over.
 	bool			m_bFlipOnRelease;				// Set if we want to flip checkbox on press (default), not click.
 
-    wg::Skin_p        m_pIconSkin;
+	wg::Skin_p        m_pIconSkin;
 	WgText			m_text;
 
 	ClickArea		m_clickArea;

@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -40,7 +40,7 @@
 WgWidget::WgWidget():m_id(0), m_pHook(0), m_pointerStyle(WgPointerStyle::Default),
 					m_markOpacity( 1 ), m_bEnabled(true), m_bOpaque(false),
 					m_bFocused(false), m_bSelected(false), m_bTabLock(false), m_bReceiveTick(false), m_scale(WG_SCALE_BASE),
-                    m_bPickable(false), m_bDropTarget(false)
+					m_bPickable(false), m_bDropTarget(false)
 {
 
 }
@@ -67,12 +67,12 @@ WgPointerStyle WgWidget::GetPointerStyle() const
 
 void WgWidget::SetSkin(wg::Skin * pSkin)
 {
-    if (pSkin != m_pSkin)
-    {
-        m_pSkin = pSkin;
-        _requestResize();
-        _requestRender();
-    }
+	if (pSkin != m_pSkin)
+	{
+		m_pSkin = pSkin;
+		_requestResize();
+		_requestRender();
+	}
 }
 
 //____ SetEnabled() _______________________________________________________________
@@ -82,7 +82,7 @@ void WgWidget::SetEnabled( bool bEnabled )
 	if( m_bEnabled != bEnabled || IsContainer() )
 	{
 		m_bEnabled = bEnabled;
-        m_state.setEnabled(bEnabled);
+		m_state.setEnabled(bEnabled);
 		if( bEnabled )
 			_onEnable();
 		else
@@ -113,28 +113,28 @@ bool WgWidget::CloneContent( const WgWidget * _pOrg )
 		return false;
 
 	m_id			= _pOrg->m_id;
-    m_pSkin         = _pOrg->m_pSkin;
-    m_scale         = _pOrg->m_scale;
+	m_pSkin         = _pOrg->m_pSkin;
+	m_scale         = _pOrg->m_scale;
 	m_pointerStyle 	= _pOrg->m_pointerStyle;
 
 	m_tooltip		= _pOrg->m_tooltip;
 	m_markOpacity	= _pOrg->m_markOpacity;
 
-    m_bOpaque        = _pOrg->m_bOpaque;
-    m_bTabLock        = _pOrg->m_bTabLock;
+	m_bOpaque        = _pOrg->m_bOpaque;
+	m_bTabLock        = _pOrg->m_bTabLock;
 
-    m_bReceiveTick  = _pOrg->m_bReceiveTick;    // Set if Widget should reveive periodic Tick() events.
+	m_bReceiveTick  = _pOrg->m_bReceiveTick;    // Set if Widget should reveive periodic Tick() events.
 
-    m_bEnabled        = _pOrg->m_bEnabled;
-    m_bSelectable     = _pOrg->m_bSelectable;
+	m_bEnabled        = _pOrg->m_bEnabled;
+	m_bSelectable     = _pOrg->m_bSelectable;
 
-    m_state           = _pOrg->m_state;
+	m_state           = _pOrg->m_state;
 
-    m_bPickable         = _pOrg->m_bPickable;
-    m_pickCategory     = _pOrg->m_pickCategory;
-    m_bDropTarget    = _pOrg->m_bDropTarget;
+	m_bPickable         = _pOrg->m_bPickable;
+	m_pickCategory     = _pOrg->m_pickCategory;
+	m_bDropTarget    = _pOrg->m_bDropTarget;
 
-    
+
 
 	_onCloneContent( _pOrg );
 	return true;
@@ -146,7 +146,7 @@ void WgWidget::_onNewHook( WgHook * pHook )
 {
 	if( pHook )
 	{
-		WgRootPanel * pNewRoot = pHook->Root(); 
+		WgRootPanel * pNewRoot = pHook->Root();
 		WgRootPanel * pOldRoot = m_pHook ? m_pHook->Root() : 0;
 
 
@@ -154,7 +154,7 @@ void WgWidget::_onNewHook( WgHook * pHook )
 			_onNewRoot( pNewRoot );
 	}
 
-    m_pHook = pHook;
+	m_pHook = pHook;
 
 }
 
@@ -212,78 +212,78 @@ WgCoord WgWidget::Abs2localPixel( const WgCoord& cord ) const
 
 WgCoord WgWidget::Local2absPoint( const WgCoord& cord ) const
 {
-    return (Local2absPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
+	return (Local2absPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
 }
 
 //____ Abs2localPoint() ____________________________________________________________
 
 WgCoord WgWidget::Abs2localPoint( const WgCoord& cord ) const
 {
-    return (Abs2localPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
+	return (Abs2localPixel(cord*m_scale/WG_SCALE_BASE)*WG_SCALE_BASE) / m_scale;
 }
 
 //____ Screenshot() ___________________________________________________________
 
 wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 {
-    auto pDevice = wg::Base::activeContext()->gfxDevice();
-    auto pFactory =  wg::Base::activeContext()->surfaceFactory();
-    
-    if( !pDevice || !pFactory )
-        return nullptr;
-    
-    WgSize sz = PixelSize();
-    
-    auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
-    pCanvas->setScale(m_scale/4096.f);
-    
-    wg::Patches patches;
-    patches.add( sz );
-    
-  
-    auto pOldCanvas = pDevice->canvas();
-    WgColor oldTint = pDevice->tintColor();
-    WgBlendMode oldBlendMode = pDevice->blendMode();
-    pDevice->setCanvas(pCanvas);
-    pDevice->setTintColor( WgColor::White);
+	auto pDevice = wg::Base::activeContext()->gfxDevice();
+	auto pFactory =  wg::Base::activeContext()->surfaceFactory();
 
-    if( pDevice->isRendering() )
-    {
-        pDevice->setBlendMode(wg::BlendMode::Replace);
-        pDevice->fill( WgColor::Transparent );
-        pDevice->setBlendMode(wg::BlendMode::Blend);
-        _renderPatches(pDevice, sz, sz, &patches);
-    }
-    else
-    {
-        pDevice->beginRender();
-        pDevice->setBlendMode(wg::BlendMode::Replace);
-        pDevice->fill( WgColor::Transparent );
-        pDevice->setBlendMode(wg::BlendMode::Blend);
-        _renderPatches(pDevice, sz, sz, &patches);
-        pDevice->endRender();
-    }
-    
-    pDevice->setCanvas(pOldCanvas);
-    pDevice->setTintColor(oldTint);
-    pDevice->setBlendMode(oldBlendMode);
-    
-    return pCanvas;
+	if( !pDevice || !pFactory )
+		return nullptr;
+
+	WgSize sz = PixelSize();
+
+	auto pCanvas = pFactory->createSurface(sz,wg::PixelFormat::BGRA_8, surfaceFlags );
+	pCanvas->setScale(m_scale/4096.f);
+
+	wg::Patches patches;
+	patches.add( sz );
+
+
+	auto pOldCanvas = pDevice->canvas();
+	WgColor oldTint = pDevice->tintColor();
+	WgBlendMode oldBlendMode = pDevice->blendMode();
+	pDevice->setCanvas(pCanvas);
+	pDevice->setTintColor( WgColor::White);
+
+	if( pDevice->isRendering() )
+	{
+		pDevice->setBlendMode(wg::BlendMode::Replace);
+		pDevice->fill( WgColor::Transparent );
+		pDevice->setBlendMode(wg::BlendMode::Blend);
+		_renderPatches(pDevice, sz, sz, &patches);
+	}
+	else
+	{
+		pDevice->beginRender();
+		pDevice->setBlendMode(wg::BlendMode::Replace);
+		pDevice->fill( WgColor::Transparent );
+		pDevice->setBlendMode(wg::BlendMode::Blend);
+		_renderPatches(pDevice, sz, sz, &patches);
+		pDevice->endRender();
+	}
+
+	pDevice->setCanvas(pOldCanvas);
+	pDevice->setTintColor(oldTint);
+	pDevice->setBlendMode(oldBlendMode);
+
+	return pCanvas;
 }
 
 //____ setDropTarget() ____________________________________________________
 
 void WgWidget::setDropTarget(bool bDropTarget)
 {
-    m_bDropTarget = bDropTarget;
+	m_bDropTarget = bDropTarget;
 }
 
 //____ setPickable() ____________________________________________________________
 
 void WgWidget::setPickable( bool bPickable, int category )
 {
-    m_bPickable = bPickable;
-    m_pickCategory = category;
+	m_bPickable = bPickable;
+	m_pickCategory = category;
 }
 
 
@@ -384,7 +384,7 @@ void WgWidget::SetSelectable(bool bSelectable)
 
 WgMode WgWidget::Mode() const
 {
-    return WgUtil::StateToMode(m_state);
+	return WgUtil::StateToMode(m_state);
 
 //	if (m_bSelected)
 //		return WG_MODE_SELECTED;
@@ -396,35 +396,35 @@ WgMode WgWidget::Mode() const
 
 //____ PreferredPointSize() ___________________________________________________
 
-WgSize WgWidget::PreferredPointSize() const 
-{ 
-	WgSize sz = PreferredPixelSize()*WG_SCALE_BASE; 
+WgSize WgWidget::PreferredPointSize() const
+{
+	WgSize sz = PreferredPixelSize()*WG_SCALE_BASE;
 
 	sz.w += m_scale - 1;		// Preferred size should be rounded up.
 	sz.h += m_scale - 1;
 
-	return sz / m_scale; 
+	return sz / m_scale;
 };
 
 //____ MinPointSize() ___________________________________________________
 
 WgSize WgWidget::MinPointSize() const
-{ 
+{
 	WgSize sz = MinPixelSize()*WG_SCALE_BASE;
 
 	sz.w += m_scale - 1;		// Min size should be rounded up.
 	sz.h += m_scale - 1;
 
-	return sz / m_scale; 
+	return sz / m_scale;
 };
 
 
 //____ MaxPointSize() ___________________________________________________
 
-WgSize WgWidget::MaxPointSize() const 
-{ 
-	WgSize sz = MaxPixelSize(); 
-	return sz*WG_SCALE_BASE / m_scale; 
+WgSize WgWidget::MaxPointSize() const
+{
+	WgSize sz = MaxPixelSize();
+	return sz*WG_SCALE_BASE / m_scale;
 };
 
 
@@ -461,17 +461,17 @@ void WgWidget::_queueEvent( WgEvent::Event * pEvent )
 
 bool WgWidget::_requestPreRenderCall()
 {
-    if( m_pHook )
-    {
-        WgRootPanel * pRoot = m_pHook->Root();
-        if( pRoot )
-        {
-            pRoot->_addPreRenderCall(this);
-            return true;
-        }
-    }
-    
-    return false;
+	if( m_pHook )
+	{
+		WgRootPanel * pRoot = m_pHook->Root();
+		if( pRoot )
+		{
+			pRoot->_addPreRenderCall(this);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 
@@ -479,15 +479,15 @@ bool WgWidget::_requestPreRenderCall()
 
 void WgWidget::_preRender()
 {
-    // By default we do nothing.
+	// By default we do nothing.
 }
 
 //____ _renderPatches() ________________________________________________________
 
 void WgWidget::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
 {
-    pDevice->setClipList(_pPatches->size(), _pPatches->begin());
-    _onRender( pDevice, _canvas, _window );
+	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
+	_onRender( pDevice, _canvas, _window );
 }
 
 //____ Fillers _______________________________________________________________
@@ -530,44 +530,44 @@ void WgWidget::_onRefresh()
 
 void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandler )
 {
-    WgState state = m_state;
-    bool    bForward = true;
-    
-    switch( _pEvent->Type() )
-    {
-        case WG_EVENT_DROP_PICK:
-        {
-            auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
-            if (!pEvent->hasPayload())
-            {
-                const_cast<WgEvent::DropPick*>(pEvent)->setPayload(wg::Payload<WgWidgetWeakPtr>::create(this));
-            }
-            bForward = false;
-            break;
-        }
-        case WG_EVENT_DROP_ENTER:
-            state.setTargeted(true);
-            bForward = false;
-            break;
-        case WG_EVENT_DROP_LEAVE:
-            state.setTargeted(false);
-            bForward = false;
-            break;
-            
-        default:
-            break;
-    }
-    
-    if( state != m_state )
-    {
-        //TODO: We should have a virtual method for setting state, just like WG3.
-        
-        m_state = state;
-        _requestRender();
-    }
-    
-    if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent() || _pEvent->Type() == WG_EVENT_MOUSEWHEEL_ROLL) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
-        pHandler->ForwardEvent( _pEvent );
+	WgState state = m_state;
+	bool    bForward = true;
+
+	switch( _pEvent->Type() )
+	{
+		case WG_EVENT_DROP_PICK:
+		{
+			auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
+			if (!pEvent->hasPayload())
+			{
+				const_cast<WgEvent::DropPick*>(pEvent)->setPayload(wg::Payload<WgWidgetWeakPtr>::create(this));
+			}
+			bForward = false;
+			break;
+		}
+		case WG_EVENT_DROP_ENTER:
+			state.setTargeted(true);
+			bForward = false;
+			break;
+		case WG_EVENT_DROP_LEAVE:
+			state.setTargeted(false);
+			bForward = false;
+			break;
+
+		default:
+			break;
+	}
+
+	if( state != m_state )
+	{
+		//TODO: We should have a virtual method for setting state, just like WG3.
+
+		m_state = state;
+		_requestRender();
+	}
+
+	if( bForward && (_pEvent->IsKeyEvent() || _pEvent->IsMouseEvent() || _pEvent->Type() == WG_EVENT_MOUSEWHEEL_ROLL) && _pEvent->Type() != WG_EVENT_MOUSE_ENTER && _pEvent->Type() != WG_EVENT_MOUSE_LEAVE )
+		pHandler->ForwardEvent( _pEvent );
 }
 
 bool WgWidget::_onAlphaTest( const WgCoord& ofs )
@@ -591,14 +591,14 @@ void WgWidget::_onDisable()
 void WgWidget::_onGotInputFocus()
 {
 	m_bFocused = true;
-    m_state.setFocused(true);
+	m_state.setFocused(true);
 	_queueEvent(new WgEvent::FocusGained(this));
 }
 
 void WgWidget::_onLostInputFocus()
 {
 	m_bFocused = false;
-    m_state.setFocused(false);
+	m_state.setFocused(false);
 	_queueEvent(new WgEvent::FocusLost(this));
 }
 
@@ -616,143 +616,143 @@ Wg_Interface_TextHolder* WgWidget::TempGetText()
 
 void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale )
 {
-    int pixelQuarters = (scale * 4) / 4096;
+	int pixelQuarters = (scale * 4) / 4096;
 
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        pSkin->_render( pDevice, wg::Util::pixelsToQpix(rect), state );
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        pSkin->_render( pDevice, wg::Util::pixelsToQpix(rect), state );
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-    }
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		pSkin->_render( pDevice, wg::Util::pixelsToQpix(rect), state );
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		pSkin->_render( pDevice, wg::Util::pixelsToQpix(rect), state );
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+	}
 }
 
 //____ _markTestSkin() ______________________________________________________________
 
 bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return pSkin->_markTest( wg::Util::pixelsToQpix(ofs), wg::Util::pixelsToQpix(canvas), state, opacityTreshold );
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        bool ret = pSkin->_markTest( wg::Util::pixelsToQpix(ofs), wg::Util::pixelsToQpix(canvas), state, opacityTreshold );
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return pSkin->_markTest( wg::Util::pixelsToQpix(ofs), wg::Util::pixelsToQpix(canvas), state, opacityTreshold );
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		bool ret = pSkin->_markTest( wg::Util::pixelsToQpix(ofs), wg::Util::pixelsToQpix(canvas), state, opacityTreshold );
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 //____ _skinMinSize() __________________________________________________________
 
 wg::SizeI WgWidget::_skinMinSize( wg::Skin * pSkin, int scale ) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_minSize());
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_minSize());
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
-    
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_minSize());
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_minSize());
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
+
 }
 
 //____ _skinPreferredSize() __________________________________________________________
 
 wg::SizeI WgWidget::_skinPreferredSize( wg::Skin * pSkin, int scale ) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_preferredSize());
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_preferredSize());
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_preferredSize());
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_preferredSize());
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 //____ _skinSizeForContent() __________________________________________________________
 
 wg::SizeI WgWidget::_skinSizeForContent(wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_sizeForContent(wg::Util::pixelsToQpix(contentSize)));
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_sizeForContent(wg::Util::pixelsToQpix(contentSize)));
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_sizeForContent(wg::Util::pixelsToQpix(contentSize)));
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_sizeForContent(wg::Util::pixelsToQpix(contentSize)));
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 //____ _skinContentPadding() __________________________________________________________
 
 wg::SizeI WgWidget::_skinContentPadding(wg::Skin * pSkin, int scale) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_contentPadding());
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_contentPadding());
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_contentPadding());
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::SizeI ret = wg::Util::qpixToPixels(pSkin->_contentPadding());
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 //____ _skinContentOfs() __________________________________________________________
 
 wg::CoordI WgWidget::_skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_contentOfs(state));
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::CoordI ret = wg::Util::qpixToPixels(pSkin->_contentOfs(state));
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_contentOfs(state));
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::CoordI ret = wg::Util::qpixToPixels(pSkin->_contentOfs(state));
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 
 //____ _skinContentRect() __________________________________________________________
 
 wg::RectI WgWidget::_skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const
 {
-    int pixelQuarters = (scale * 4) / 4096;
-    
-    int globalPixelQuarters = wg::MU::qpixPerPoint();
-    if( pixelQuarters == globalPixelQuarters )
-        return wg::Util::qpixToPixels(pSkin->_contentRect(wg::Util::pixelsToQpix(canvas),state));
-    else
-    {
-        WgBase::_setQuartersPerPoint(pixelQuarters);
-        wg::RectI ret = wg::Util::qpixToPixels(pSkin->_contentRect(wg::Util::pixelsToQpix(canvas),state));
-        WgBase::_setQuartersPerPoint(globalPixelQuarters);
-        return ret;
-    }
+	int pixelQuarters = (scale * 4) / 4096;
+
+	int globalPixelQuarters = wg::MU::qpixPerPoint();
+	if( pixelQuarters == globalPixelQuarters )
+		return wg::Util::qpixToPixels(pSkin->_contentRect(wg::Util::pixelsToQpix(canvas),state));
+	else
+	{
+		WgBase::_setQuartersPerPoint(pixelQuarters);
+		wg::RectI ret = wg::Util::qpixToPixels(pSkin->_contentRect(wg::Util::pixelsToQpix(canvas),state));
+		WgBase::_setQuartersPerPoint(globalPixelQuarters);
+		return ret;
+	}
 }
 

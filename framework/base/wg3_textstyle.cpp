@@ -177,7 +177,7 @@ namespace wg
 				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
 					m_combAttr.colorBlendMode[i] = operation;
 			}
-            m_bStaticColor = _isColorStatic();
+			m_bStaticColor = _isColorStatic();
 		}
 		else
 		{
@@ -190,7 +190,7 @@ namespace wg
 				m_combAttr.color[i] = Color::blend( Color::White, color, operation );
 				m_combAttr.colorBlendMode[i] = operation;
 			}
-            m_bStaticColor = true;
+			m_bStaticColor = true;
 		}
 	}
 
@@ -214,7 +214,7 @@ namespace wg
 			m_combAttr.color[i] = Color::blend( Color::White, color, operation );
 			m_combAttr.colorBlendMode[i] = operation;
 		}
-        m_bStaticColor = _isColorStatic();
+		m_bStaticColor = _isColorStatic();
 	}
 
 	//____ setBgColor() ______________________________________________________________
@@ -242,7 +242,7 @@ namespace wg
 				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
 					m_combAttr.bgColorBlendMode[i] = operation;
 			}
-            m_bStaticBgColor = _isBgColorStatic();
+			m_bStaticBgColor = _isBgColorStatic();
 		}
 		else
 		{
@@ -254,7 +254,7 @@ namespace wg
 				m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
 				m_combAttr.bgColorBlendMode[i] = operation;
 			}
-            m_bStaticBgColor = true;
+			m_bStaticBgColor = true;
 		}
 	}
 
@@ -278,7 +278,7 @@ namespace wg
 			m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
 			m_combAttr.bgColorBlendMode[i] = operation;
 		}
-        m_bStaticBgColor = _isBgColorStatic();
+		m_bStaticBgColor = _isBgColorStatic();
 	}
 
 
@@ -295,7 +295,7 @@ namespace wg
 				m_specAttr.size[i] = size;
 				m_combAttr.size[i] = size;
 			}
-            m_bStaticSize = true;
+			m_bStaticSize = true;
 		}
 	}
 
@@ -308,7 +308,7 @@ namespace wg
 			int idx = Util::_stateToIndex(state);
 			m_specAttr.size[idx] = size;
 			m_combAttr.size[idx] = size;
-            m_bStaticSize = _isSizeStatic();
+			m_bStaticSize = _isSizeStatic();
 		}
 	}
 
@@ -326,7 +326,7 @@ namespace wg
 				m_specAttr.decoration[i] = decoration;
 				m_combAttr.decoration[i] = decoration;
 			}
-            m_bStaticDecoration = true;
+			m_bStaticDecoration = true;
 		}
 	}
 
@@ -339,7 +339,7 @@ namespace wg
 			int idx = Util::_stateToIndex(state);
 			m_specAttr.decoration[idx] = decoration;
 			m_combAttr.decoration[idx] = decoration;
-            m_bStaticDecoration = _isDecorationStatic();
+			m_bStaticDecoration = _isDecorationStatic();
 		}
 	}
 
@@ -356,7 +356,7 @@ namespace wg
 				m_specAttr.renderMode[i] = mode;
 				m_combAttr.renderMode[i] = mode;
 			}
-            m_bStaticRenderMode = true;
+			m_bStaticRenderMode = true;
 		}
 	}
 
@@ -369,7 +369,7 @@ namespace wg
 			int idx = Util::_stateToIndex(state);
 			m_specAttr.renderMode[idx] = mode;
 			m_combAttr.renderMode[idx] = mode;
-            m_bStaticRenderMode = _isRenderModeStatic();
+			m_bStaticRenderMode = _isRenderModeStatic();
 		}
 	}
 
@@ -386,8 +386,8 @@ namespace wg
 				m_specAttr.bgRenderMode[i] = mode;
 				m_combAttr.bgRenderMode[i] = mode;
 			}
-            m_bStaticBgRenderMode = true;
-        }
+			m_bStaticBgRenderMode = true;
+		}
 	}
 
 	void TextStyle::setBgRenderMode( BlendMode mode, State state )
@@ -399,7 +399,7 @@ namespace wg
 			int idx = Util::_stateToIndex(state);
 			m_specAttr.bgRenderMode[idx] = mode;
 			m_combAttr.bgRenderMode[idx] = mode;
-            m_bStaticBgRenderMode = _isBgRenderModeStatic();
+			m_bStaticBgRenderMode = _isBgRenderModeStatic();
 		}
 	}
 
@@ -440,7 +440,7 @@ namespace wg
 				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
 				m_combAttr.colorBlendMode[i] = m_pParent->m_combAttr.colorBlendMode[i];
 			}
-            m_bStaticColor = _isColorStatic();
+			m_bStaticColor = _isColorStatic();
 		}
 		else
 		{
@@ -451,7 +451,7 @@ namespace wg
 				m_combAttr.color[i] = Color::White;
 				m_combAttr.colorBlendMode[i] = BlendMode::Undefined;
 			}
-            m_bStaticColor = true;
+			m_bStaticColor = true;
 		}
 	}
 
@@ -472,7 +472,7 @@ namespace wg
 			m_combAttr.color[idx] = Color::White;
 			m_combAttr.colorBlendMode[idx] = BlendMode::Undefined;
 		}
-        m_bStaticColor = _isColorStatic();
+		m_bStaticColor = _isColorStatic();
 	}
 
 
@@ -489,7 +489,7 @@ namespace wg
 				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
 				m_combAttr.bgColorBlendMode[i] = m_pParent->m_combAttr.bgColorBlendMode[i];
 			}
-            m_bStaticBgColor = _isBgColorStatic();
+			m_bStaticBgColor = _isBgColorStatic();
 		}
 		else
 		{
@@ -500,7 +500,7 @@ namespace wg
 				m_combAttr.bgColor[i] = Color::White;
 				m_combAttr.bgColorBlendMode[i] = BlendMode::Undefined;
 			}
-            m_bStaticBgColor = true;
+			m_bStaticBgColor = true;
 		}
 	}
 
@@ -521,7 +521,7 @@ namespace wg
 			m_combAttr.bgColor[idx] = Color::White;
 			m_combAttr.bgColorBlendMode[idx] = BlendMode::Undefined;
 		}
-        m_bStaticBgColor = _isBgColorStatic();
+		m_bStaticBgColor = _isBgColorStatic();
 	}
 
 	//____ clearSize() ____________________________________________________________
@@ -535,7 +535,7 @@ namespace wg
 				m_specAttr.size[i] = 0;
 				m_combAttr.size[i] = m_pParent->m_combAttr.size[i];
 			}
-            m_bStaticSize = _isSizeStatic();
+			m_bStaticSize = _isSizeStatic();
 		}
 		else
 		{
@@ -544,7 +544,7 @@ namespace wg
 				m_specAttr.size[i] = 0;
 				m_combAttr.size[i] = 0;
 			}
-            m_bStaticSize = true;
+			m_bStaticSize = true;
 		}
 	}
 
@@ -555,7 +555,7 @@ namespace wg
 		m_specAttr.size[idx] = 0;
 		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : 0;
 
-        m_bStaticSize = _isSizeStatic();
+		m_bStaticSize = _isSizeStatic();
  }
 
 	//____ clearDecoration() ____________________________________________________________
@@ -569,7 +569,7 @@ namespace wg
 				m_specAttr.decoration[i] = TextDecoration::Undefined;
 				m_combAttr.decoration[i] = m_pParent->m_combAttr.decoration[i];
 			}
-            m_bStaticDecoration = _isDecorationStatic();
+			m_bStaticDecoration = _isDecorationStatic();
 		}
 		else
 		{
@@ -578,7 +578,7 @@ namespace wg
 				m_specAttr.decoration[i] = TextDecoration::Undefined;
 				m_combAttr.decoration[i] = TextDecoration::Undefined;
 			}
-            m_bStaticDecoration = true;
+			m_bStaticDecoration = true;
 		}
 	}
 
@@ -588,8 +588,8 @@ namespace wg
 
 		m_specAttr.decoration[idx] = TextDecoration::Undefined;
 		m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : TextDecoration::Undefined;
-        
-        m_bStaticDecoration = _isDecorationStatic();
+
+		m_bStaticDecoration = _isDecorationStatic();
 	}
 
 	//____ clearRenderMode() ____________________________________________________________
@@ -603,8 +603,8 @@ namespace wg
 				m_specAttr.renderMode[i] = BlendMode::Undefined;
 				m_combAttr.renderMode[i] = m_pParent->m_combAttr.renderMode[i];
 			}
-            m_bStaticRenderMode = _isRenderModeStatic();
-        }
+			m_bStaticRenderMode = _isRenderModeStatic();
+		}
 		else
 		{
 			for( int i = 0 ; i < StateEnum_Nb ; i++ )
@@ -612,7 +612,7 @@ namespace wg
 				m_specAttr.renderMode[i] = BlendMode::Undefined;
 				m_combAttr.renderMode[i] = BlendMode::Undefined;
 			}
-            m_bStaticRenderMode = true;
+			m_bStaticRenderMode = true;
 		}
 	}
 
@@ -622,8 +622,8 @@ namespace wg
 
 		m_specAttr.renderMode[idx] = BlendMode::Undefined;
 		m_combAttr.renderMode[idx] = m_pParent ? m_pParent->m_combAttr.renderMode[idx] : BlendMode::Undefined;
-        
-        m_bStaticRenderMode = _isRenderModeStatic();
+
+		m_bStaticRenderMode = _isRenderModeStatic();
 	}
 
 
@@ -638,7 +638,7 @@ namespace wg
 				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
 				m_combAttr.bgRenderMode[i] = m_pParent->m_combAttr.bgRenderMode[i];
 			}
-            m_bStaticBgRenderMode = _isBgRenderModeStatic();
+			m_bStaticBgRenderMode = _isBgRenderModeStatic();
 		}
 		else
 		{
@@ -647,7 +647,7 @@ namespace wg
 				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
 				m_combAttr.bgRenderMode[i] = BlendMode::Undefined;
 			}
-            m_bStaticBgRenderMode = true;
+			m_bStaticBgRenderMode = true;
 		}
 	}
 
@@ -657,8 +657,8 @@ namespace wg
 
 		m_specAttr.bgRenderMode[idx] = BlendMode::Undefined;
 		m_combAttr.bgRenderMode[idx] = m_pParent ? m_pParent->m_combAttr.bgRenderMode[idx] : BlendMode::Undefined;
-        
-        m_bStaticBgRenderMode = _isBgRenderModeStatic();
+
+		m_bStaticBgRenderMode = _isBgRenderModeStatic();
 	}
 
 
@@ -721,26 +721,26 @@ namespace wg
 		return _compareSetsForState( &m_combAttr, &(pOther->m_combAttr), state );
 	}
 
-    //____ clone() ____________________________________________________________
+	//____ clone() ____________________________________________________________
 
-    TextStyle_p TextStyle::clone() const
-    {
-        auto p = create();
-        
-        p->setParent(m_pParent);
-        
-        p->m_specAttr = m_specAttr;
-        p->m_combAttr = m_combAttr;
-        
-        p->m_bStaticColor = m_bStaticColor;
-        p->m_bStaticBgColor = m_bStaticBgColor;
-        p->m_bStaticSize = m_bStaticSize;
-        p->m_bStaticDecoration = m_bStaticDecoration;
-        p->m_bStaticRenderMode = m_bStaticRenderMode;
-        p->m_bStaticBgRenderMode = m_bStaticBgRenderMode;
-        
-        return p;
-    }
+	TextStyle_p TextStyle::clone() const
+	{
+		auto p = create();
+
+		p->setParent(m_pParent);
+
+		p->m_specAttr = m_specAttr;
+		p->m_combAttr = m_combAttr;
+
+		p->m_bStaticColor = m_bStaticColor;
+		p->m_bStaticBgColor = m_bStaticBgColor;
+		p->m_bStaticSize = m_bStaticSize;
+		p->m_bStaticDecoration = m_bStaticDecoration;
+		p->m_bStaticRenderMode = m_bStaticRenderMode;
+		p->m_bStaticBgRenderMode = m_bStaticBgRenderMode;
+
+		return p;
+	}
 
 	//____ refreshComb() ___________________________________________________________
 
@@ -776,14 +776,14 @@ namespace wg
 			{
 				m_combAttr = newComb;
 
-                m_bStaticColor = _isColorStatic();
-                m_bStaticBgColor = _isBgColorStatic();
-                m_bStaticSize = _isSizeStatic();
-                m_bStaticDecoration = _isDecorationStatic();
-                m_bStaticRenderMode = _isRenderModeStatic();
-                m_bStaticBgRenderMode = _isBgRenderModeStatic();
+				m_bStaticColor = _isColorStatic();
+				m_bStaticBgColor = _isBgColorStatic();
+				m_bStaticSize = _isSizeStatic();
+				m_bStaticDecoration = _isDecorationStatic();
+				m_bStaticRenderMode = _isRenderModeStatic();
+				m_bStaticBgRenderMode = _isBgRenderModeStatic();
 
-                return true;
+				return true;
 			}
 			return false;
 		}
@@ -791,18 +791,18 @@ namespace wg
 		{
 			bool bChanged = !_compareSets( &m_specAttr, &m_combAttr );
 
-            if( bChanged )
-            {
-                m_combAttr = m_specAttr;
-                
-                m_bStaticColor = _isColorStatic();
-                m_bStaticBgColor = _isBgColorStatic();
-                m_bStaticSize = _isSizeStatic();
-                m_bStaticDecoration = _isDecorationStatic();
-                m_bStaticRenderMode = _isRenderModeStatic();
-                m_bStaticBgRenderMode = _isBgRenderModeStatic();
-            }
-            
+			if( bChanged )
+			{
+				m_combAttr = m_specAttr;
+
+				m_bStaticColor = _isColorStatic();
+				m_bStaticBgColor = _isBgColorStatic();
+				m_bStaticSize = _isSizeStatic();
+				m_bStaticDecoration = _isDecorationStatic();
+				m_bStaticRenderMode = _isRenderModeStatic();
+				m_bStaticBgRenderMode = _isBgRenderModeStatic();
+			}
+
 			return bChanged;
 		}
 	}
@@ -872,84 +872,84 @@ namespace wg
 		return true;
 	}
 
-    //____ _isColorStatic() ____________________________________________________________________
-    
-    bool TextStyle::_isColorStatic() const
-    {
-        auto x = m_combAttr.color[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.color[i] != x )
-                return false;
+	//____ _isColorStatic() ____________________________________________________________________
 
-        return true;
-    }
-    
-    //____ _isBgColorStatic() ____________________________________________________________________
+	bool TextStyle::_isColorStatic() const
+	{
+		auto x = m_combAttr.color[0];
 
-    bool TextStyle::_isBgColorStatic() const
-    {
-        auto x = m_combAttr.bgColor[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.bgColor[i] != x )
-                return false;
-        
-        return true;
-    }
-    
-    //____ _isSizeStatic() ____________________________________________________________________
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.color[i] != x )
+				return false;
 
-    bool TextStyle::_isSizeStatic() const
-    {
-        auto x = m_combAttr.size[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.size[i] != x )
-                return false;
-        
-        return true;
-    }
+		return true;
+	}
 
-    //____ _isDecorationStatic() ____________________________________________________________________
+	//____ _isBgColorStatic() ____________________________________________________________________
 
-    bool TextStyle::_isDecorationStatic() const
-    {
-        auto x = m_combAttr.decoration[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.decoration[i] != x )
-                return false;
-        
-        return true;
-    }
+	bool TextStyle::_isBgColorStatic() const
+	{
+		auto x = m_combAttr.bgColor[0];
 
-    //____ _isRenderModeStatic() ____________________________________________________________________
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.bgColor[i] != x )
+				return false;
 
-    bool TextStyle::_isRenderModeStatic() const
-    {
-        auto x = m_combAttr.renderMode[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.renderMode[i] != x )
-                return false;
-        
-        return true;
-    }
+		return true;
+	}
 
-    //____ _isBgRenderModeStatic() ____________________________________________________________________
+	//____ _isSizeStatic() ____________________________________________________________________
 
-    bool TextStyle::_isBgRenderModeStatic() const
-    {
-        auto x = m_combAttr.bgRenderMode[0];
-        
-        for( int i = 1 ; i < StateEnum_Nb ; i++ )
-            if( m_combAttr.bgRenderMode[i] != x )
-                return false;
-        
-        return true;
-    }
+	bool TextStyle::_isSizeStatic() const
+	{
+		auto x = m_combAttr.size[0];
 
-    
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.size[i] != x )
+				return false;
+
+		return true;
+	}
+
+	//____ _isDecorationStatic() ____________________________________________________________________
+
+	bool TextStyle::_isDecorationStatic() const
+	{
+		auto x = m_combAttr.decoration[0];
+
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.decoration[i] != x )
+				return false;
+
+		return true;
+	}
+
+	//____ _isRenderModeStatic() ____________________________________________________________________
+
+	bool TextStyle::_isRenderModeStatic() const
+	{
+		auto x = m_combAttr.renderMode[0];
+
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.renderMode[i] != x )
+				return false;
+
+		return true;
+	}
+
+	//____ _isBgRenderModeStatic() ____________________________________________________________________
+
+	bool TextStyle::_isBgRenderModeStatic() const
+	{
+		auto x = m_combAttr.bgRenderMode[0];
+
+		for( int i = 1 ; i < StateEnum_Nb ; i++ )
+			if( m_combAttr.bgRenderMode[i] != x )
+				return false;
+
+		return true;
+	}
+
+
 
 } // namespace wg

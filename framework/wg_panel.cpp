@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -94,41 +94,41 @@ void WgPanel::_onCollectPatches( wg::Patches& container, const WgRect& geo, cons
 
 void WgPanel::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
-    if( m_pSkin && m_pSkin->isOpaque() )
-    {
-        patches.sub( WgRect(geo,clip) );
-        return;
-    }
+	if( m_pSkin && m_pSkin->isOpaque() )
+	{
+		patches.sub( WgRect(geo,clip) );
+		return;
+	}
 
-    switch( m_maskOp )
-    {
-        case WgMaskOp::Recurse:
-        {
-            WgRect childGeo;
-            WgPanelHook * p = static_cast<WgPanelHook*>(_firstHookWithGeo( childGeo ));
-            WgRect myClip(geo, clip);
+	switch( m_maskOp )
+	{
+		case WgMaskOp::Recurse:
+		{
+			WgRect childGeo;
+			WgPanelHook * p = static_cast<WgPanelHook*>(_firstHookWithGeo( childGeo ));
+			WgRect myClip(geo, clip);
 
-            while(p)
-            {
-                if( p->IsVisible() )
-                    p->Widget()->_onMaskPatches( patches, childGeo + geo.pos(), myClip, blendMode );
-                p = static_cast<WgPanelHook*>(_nextHookWithGeo( childGeo, p ));
-            }
-            break;
-        }
-        case WgMaskOp::Skip:
-            break;
-        case WgMaskOp::Mask:
-            patches.sub( WgRect(geo,clip) );
-            break;
-    }
+			while(p)
+			{
+				if( p->IsVisible() )
+					p->Widget()->_onMaskPatches( patches, childGeo + geo.pos(), myClip, blendMode );
+				p = static_cast<WgPanelHook*>(_nextHookWithGeo( childGeo, p ));
+			}
+			break;
+		}
+		case WgMaskOp::Skip:
+			break;
+		case WgMaskOp::Mask:
+			patches.sub( WgRect(geo,clip) );
+			break;
+	}
 }
 
 //____ WgPanelHook::Parent() __________________________________________________
 
-WgPanel* WgPanelHook::Parent() const 
-{ 
-	return static_cast<WgPanel*>(_parent()); 
+WgPanel* WgPanelHook::Parent() const
+{
+	return static_cast<WgPanel*>(_parent());
 }
 
 
@@ -147,7 +147,7 @@ bool WgPanelHook::SetVisible( bool bVisible )
 		{
 			_requestRender();
 			m_bVisible = false;
-		}		
+		}
 	}
 	return true;
 }
@@ -219,29 +219,29 @@ WgSize WgPanelHook::_sizeFromPolicy( WgSize specifiedSize, WgSizePolicy widthPol
 
 WgSize WgPanelHook::_paddedPreferredPixelSize(int scale) const
 {
-    return m_pWidget->PreferredPixelSize() + m_padding.scale(scale);
+	return m_pWidget->PreferredPixelSize() + m_padding.scale(scale);
 }
 
 WgSize WgPanelHook::_paddedMinPixelSize(int scale) const
 {
-    return m_pWidget->MinPixelSize() + m_padding.scale(scale);
+	return m_pWidget->MinPixelSize() + m_padding.scale(scale);
 }
 
 WgSize WgPanelHook::_paddedMaxPixelSize(int scale) const
 {
-        return m_pWidget->MaxPixelSize() + m_padding.scale(scale);
+		return m_pWidget->MaxPixelSize() + m_padding.scale(scale);
 }
 
 int WgPanelHook::_paddedMatchingPixelWidth( int paddedHeight, int scale ) const
 {
-    WgBorders padding = m_padding.scale(scale);
+	WgBorders padding = m_padding.scale(scale);
 
-    return m_pWidget->MatchingPixelWidth( paddedHeight - padding.height() ) + padding.width();
+	return m_pWidget->MatchingPixelWidth( paddedHeight - padding.height() ) + padding.width();
 }
 
 int WgPanelHook::_paddedMatchingPixelHeight( int paddedWidth, int scale ) const
 {
-    WgBorders padding = m_padding.scale(scale);
+	WgBorders padding = m_padding.scale(scale);
 
-    return m_pWidget->MatchingPixelHeight( paddedWidth - padding.width() ) + padding.height();
+	return m_pWidget->MatchingPixelHeight( paddedWidth - padding.width() ) + padding.height();
 }

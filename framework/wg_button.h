@@ -1,18 +1,18 @@
 /*=========================================================================
 
-                         >>> WonderGUI <<<
+						 >>> WonderGUI <<<
 
   This file is part of Tord Jansson's WonderGUI Graphics Toolkit
   and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is free software; you can redistribute
   this file and/or modify it under the terms of the GNU General Public
   License as published by the Free Software Foundation; either
   version 2 of the License, or (at your option) any later version.
 
-                            -----------
+							-----------
 
   The WonderGUI Graphics Toolkit is also available for use in commercial
   closed-source projects under a separate license. Interested parties
@@ -61,10 +61,10 @@ public:
 
 	bool			SetIcon( wg::Skin * pIconSkin, WgOrigo origo, WgBorders borders = WgBorders(0), float _scale = 0.f, bool _bPushText = true );
 	void			SetIcon( wg::Skin * pIconSkin );
-    wg::Skin_p	    GetIconSource() const { return m_pIconSkin; }
+	wg::Skin_p		GetIconSource() const { return m_pIconSkin; }
 
-    // DEPRECATED!!!
-    void            SetSource(wg::Skin * pSkin) { SetSkin(pSkin); }
+	// DEPRECATED!!!
+	void            SetSource(wg::Skin * pSkin) { SetSkin(pSkin); }
 
 	Uint32			GetTextAreaWidth();
 
@@ -79,7 +79,7 @@ public:
 protected:
 
 	virtual void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
-    virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
+	virtual void	_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window );
 	void			_onRefresh();
 	virtual void	_onCloneContent( const WgWidget * _pOrg );
 	bool			_onAlphaTest( const WgCoord& ofs );
@@ -100,7 +100,7 @@ protected:
 
 	WgText			m_text;
 
-    wg::Skin_p	    m_pIconSkin;
+	wg::Skin_p		m_pIconSkin;
 
 	WgMode			m_mode;
 
@@ -109,7 +109,7 @@ protected:
 	bool			m_bPressed;				// Set when left mousebutton was pressed inside.
 	bool			m_bReturnPressed;
 	bool			m_bPointerInside;
-    
+
 };
 
 #endif //WG_BUTTON_DOT_H
