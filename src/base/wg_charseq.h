@@ -175,7 +175,7 @@ namespace wg
 			Codepage8,
 			Utf8,
 			Utf16,
- 			EscapedUtf8,
+			EscapedUtf8,
 			EscapedUtf16
 
 		};
@@ -222,4 +222,3 @@ namespace wg
 
 } // namespace wg
 #endif //WG_CHARSEQ_DOT_H
-

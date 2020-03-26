@@ -581,7 +581,7 @@ namespace wg
 		const int Dynamic = 1;		// Expect content to be accessed and/or modified
 		const int WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
-        const int Scale2X = 8;
+		const int Scale2X = 8;
 	};
 
 

@@ -176,4 +176,3 @@ namespace wg
 
 } // namespace wg
 #endif //WG_CHAR_DOT_H
-

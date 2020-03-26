@@ -74,10 +74,10 @@ namespace wg
 	Surface::Surface( int flags )
 	{
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
-        
-        if( flags & SurfaceFlag::Scale2X )
-            m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
-    }
+
+		if( flags & SurfaceFlag::Scale2X )
+			m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
+	}
 
 	//____ ~Surface() ____________________________________________________________
 
@@ -121,17 +121,17 @@ namespace wg
 		return size().h;
 	}
 
-    //____ setScale() _______________________________________________________________
+	//____ setScale() _______________________________________________________________
 
-    bool Surface::setScale( float scale )
-    {
-        //TODO: Error check, only allow certain factors.
-        
-        m_qpixPerPoint = (int)(scale*4);
-        return true;
-    }
+	bool Surface::setScale( float scale )
+	{
+		//TODO: Error check, only allow certain factors.
 
-    
+		m_qpixPerPoint = (int)(scale*4);
+		return true;
+	}
+
+
 	//____ colorToPixel() ____________________________________________________________
 	/**
 	 * Convert specified color to a pixel in surface's native format.
@@ -906,12 +906,12 @@ namespace wg
 	 * The coordinate must be within the surface boundaries. A coordinate outside
 	 * the surface will result in undefined behavior.
 	 *
-	 * If pixel is less than 32 bits in size, it is packed into the lower 
+	 * If pixel is less than 32 bits in size, it is packed into the lower
 	 * bits of the return value with the rest of the bits cleared.
 	 *
 	 * @return Pixel value in surface's native format.
 	 *
-	 */ 
+	 */
 
 
 	/**

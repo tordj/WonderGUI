@@ -28,4 +28,3 @@ namespace wg
 	float	MU::s_scale = 1.f;
 
 };
-

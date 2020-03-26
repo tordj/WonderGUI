@@ -42,8 +42,8 @@ namespace wg
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, BorderI frame )
 	{
-        BorderI pixelFrame = (frame*pSurface->qpixPerPoint()) / 4;
-        
+		BorderI pixelFrame = (frame*pSurface->qpixPerPoint()) / 4;
+
 		if (pSurface == nullptr || pixelFrame.width() >= pSurface->size().w || pixelFrame.height() >= pSurface->size().h  )
 			return nullptr;
 
@@ -52,13 +52,13 @@ namespace wg
 
 	BlockSkin_p BlockSkin::create(Surface * pSurface, RectI block, BorderI frame)
 	{
-        if (pSurface == nullptr)
+		if (pSurface == nullptr)
 			return nullptr;
 
 		SizeI surfSize = pSurface->size();
-        BorderI pixelFrame = frame*pSurface->qpixPerPoint() / 4;
-        RectI pixelBlock = block*pSurface->qpixPerPoint() / 4;
-        
+		BorderI pixelFrame = frame*pSurface->qpixPerPoint() / 4;
+		RectI pixelBlock = block*pSurface->qpixPerPoint() / 4;
+
 		if( pixelFrame.width() >= surfSize.w || pixelFrame.height() >= surfSize.h ||
 			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
 			return nullptr;
@@ -71,15 +71,15 @@ namespace wg
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
 
-        // Get pixel values
-        
+		// Get pixel values
+
 		SizeI surfSize = pSurface->size();
-        RectI firstBlock = _firstBlock*pSurface->qpixPerPoint() / 4;
-        BorderI frame = _frame*pSurface->qpixPerPoint() / 4;
-        int   spacing = _spacing*pSurface->qpixPerPoint() / 4;
-        
-        // Check so all blocks fit
-        
+		RectI firstBlock = _firstBlock*pSurface->qpixPerPoint() / 4;
+		BorderI frame = _frame*pSurface->qpixPerPoint() / 4;
+		int   spacing = _spacing*pSurface->qpixPerPoint() / 4;
+
+		// Check so all blocks fit
+
 		int nBlocks = (int) stateBlocks.size();
 		RectI blockArea = firstBlock;
 		if (orientation == Orientation::Horizontal)
@@ -91,8 +91,8 @@ namespace wg
 			blockArea.x < 0 || blockArea.y < 0 || blockArea.right() > surfSize.w || blockArea.bottom() > surfSize.h)
 			return nullptr;
 
-        // Create the skin
-        
+		// Create the skin
+
 		BlockSkin * p = new BlockSkin(pSurface, firstBlock, frame);
 
 		p->setBlocks(stateBlocks, orientation, _spacing, _firstBlock.pos());
@@ -200,7 +200,7 @@ namespace wg
 
 	void BlockSkin::setBlock(CoordI ofs)
 	{
-        ofs = ofs*m_pSurface->qpixPerPoint() / 4;
+		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
 		m_stateBlocks[0] = ofs;
 		m_stateBlockMask = 1;
@@ -210,9 +210,9 @@ namespace wg
 
 	void BlockSkin::setBlock(State state, CoordI ofs)
 	{
-        ofs = ofs*m_pSurface->qpixPerPoint() / 4;
+		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
-        int i = _stateToIndex(state);
+		int i = _stateToIndex(state);
 
 		m_stateBlocks[i] = ofs;
 		m_stateBlockMask.setBit(i);
@@ -223,8 +223,8 @@ namespace wg
 
 	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation, int _spacing, CoordI _blockStartOfs )
 	{
-        CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
-        int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
+		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
+		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
 
 		CoordI pitch = orientation == Orientation::Horizontal ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
 
@@ -354,10 +354,10 @@ namespace wg
 
 	SizeI BlockSkin::_preferredSize() const
 	{
-        //This takes the scale of the surface into account
-        // Preferred size is to map each point of the surface to a pixel of the skinarea.
-        
-        return ((m_dimensions*4)/m_pSurface->qpixPerPoint())*MU::qpixPerPoint();
+		//This takes the scale of the surface into account
+		// Preferred size is to map each point of the surface to a pixel of the skinarea.
+
+		return ((m_dimensions*4)/m_pSurface->qpixPerPoint())*MU::qpixPerPoint();
 	}
 
 	//____ _sizeForContent() _______________________________________________________

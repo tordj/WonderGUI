@@ -31,9 +31,9 @@
 
 namespace wg
 {
-  
+
 	//____ BasicPayload _______________________________________________________
-	
+
 	class BasicPayload;
 	typedef StrongPtr<BasicPayload>   BasicPayload_p;
 	typedef WeakPtr<BasicPayload>   BasicPayload_wp;
@@ -69,7 +69,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static Payload_p<Type> create() { return Payload_p<Type>(new Payload<Type>()); }
-        static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); * static_cast<Type*>(p) = load; return Payload_p<Type>(p); }
+		static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); * static_cast<Type*>(p) = load; return Payload_p<Type>(p); }
 
 		//.____ Identification _________________________________________________
 
@@ -82,10 +82,10 @@ namespace wg
 
 	};
 
-    // Generating 
+	// Generating
 
 	template<class Type> char Payload<Type>::s_className[64] = { "Payload type 0x" };
-	template<class Type> TypeInfo Payload<Type>::TYPEINFO = [](char* p) 
+	template<class Type> TypeInfo Payload<Type>::TYPEINFO = [](char* p)
 	{
 		uintptr_t x = reinterpret_cast<uintptr_t>(p);
 
