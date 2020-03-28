@@ -879,9 +879,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromRaw(pS->m_preferredSize.w);
-					pI->min = MU::fromRaw(pS->_paddedMinSize().w);
-					pI->max = MU::fromRaw(pS->_paddedMaxSize().w);
+					pI->preferred = MU::fromQpix(pS->m_preferredSize.w);
+					pI->min = MU::fromQpix(pS->_paddedMinSize().w);
+					pI->max = MU::fromQpix(pS->_paddedMaxSize().w);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -893,9 +893,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromRaw(pS->m_preferredSize.h);
-					pI->min = MU::fromRaw(pS->_paddedMinSize().h);
-					pI->max = MU::fromRaw(pS->_paddedMaxSize().h);
+					pI->preferred = MU::fromQpix(pS->m_preferredSize.h);
+					pI->min = MU::fromQpix(pS->_paddedMinSize().h);
+					pI->max = MU::fromQpix(pS->_paddedMaxSize().h);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -915,9 +915,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromRaw(pS->_paddedMatchingWidth(forcedBreadth));
-					pI->min = MU::fromRaw(pS->_paddedMinSize().w);
-					pI->max = MU::fromRaw(pS->_paddedMaxSize().w);
+					pI->preferred = MU::fromQpix(pS->_paddedMatchingWidth(forcedBreadth));
+					pI->min = MU::fromQpix(pS->_paddedMinSize().w);
+					pI->max = MU::fromQpix(pS->_paddedMaxSize().w);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -929,9 +929,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromRaw(pS->_paddedMatchingHeight(forcedBreadth));
-					pI->min = MU::fromRaw(pS->_paddedMinSize().h);
-					pI->max = MU::fromRaw(pS->_paddedMaxSize().h);
+					pI->preferred = MU::fromQpix(pS->_paddedMatchingHeight(forcedBreadth));
+					pI->min = MU::fromQpix(pS->_paddedMinSize().h);
+					pI->max = MU::fromQpix(pS->_paddedMaxSize().h);
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -945,7 +945,7 @@ namespace wg
 
 	int PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, int availableLength) const
 	{
-		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, MU::fromRaw(availableLength) );
+		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, MU::fromQpix(availableLength) );
 
 		// Align outputs so we end up on pixel boundaries
 

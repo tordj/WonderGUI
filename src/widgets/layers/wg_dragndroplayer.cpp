@@ -371,7 +371,7 @@ namespace wg
 					}
 
 					CoordI mousePos = _toLocal(pMsg->pointerPosRaw());
-					m_dragSlot.m_geo = { pixelAligned( CoordI(mousePos + m_dragWidgetOfs)), dragWidgetSize };
+					m_dragSlot.m_geo = { aligned( CoordI(mousePos + m_dragWidgetOfs)), dragWidgetSize };
 					_requestRender(m_dragSlot.m_geo);
 					m_dragState = DragState::Dragging;
 				}

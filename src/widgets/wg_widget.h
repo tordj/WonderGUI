@@ -468,7 +468,7 @@ namespace wg
 
 	MU Widget::matchingHeight(MU width) const
 	{
-		return MU::fromRaw(_matchingHeight(width.qpix));
+		return MU::fromQpix(_matchingHeight(width.qpix));
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -487,7 +487,7 @@ namespace wg
 
 	MU Widget::matchingWidth(MU height) const
 	{
-		return MU::fromRaw(_matchingWidth(height.qpix));
+		return MU::fromQpix(_matchingWidth(height.qpix));
 	}
 
 	//____ preferredSize() ________________________________________________________

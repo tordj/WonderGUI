@@ -176,13 +176,13 @@ namespace wg
 
 	SizeI LambdaSkin::_minSize() const
 	{
-		return pointsToRawAligned(m_minSize);
+		return pointsToAlignedQpix(m_minSize);
 	}
 
 	//____ _preferredSize() ___________________________________________________
 
 	SizeI LambdaSkin::_preferredSize() const
 	{
-		return pointsToRawAligned(m_preferredSize);
+		return pointsToAlignedQpix(m_preferredSize);
 	}
 }

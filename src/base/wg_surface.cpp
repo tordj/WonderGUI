@@ -75,7 +75,7 @@ namespace wg
 	{
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
         
-        if( flags & SurfaceFlag::Scale2X )
+        if( flags & SurfaceFlag::Scale200 )
             m_qpixPerPoint = 8;            // TODO: Add error handling if size not divisable.
     }
 

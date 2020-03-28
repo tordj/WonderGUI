@@ -95,7 +95,7 @@ namespace wg
 
 	bool RootPanel::setGeo( const Rect& geo )
 	{
-		m_geo = MUToQpix( pixelAligned(geo) );
+		m_geo = MUToQpix( aligned(geo) );
 
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;

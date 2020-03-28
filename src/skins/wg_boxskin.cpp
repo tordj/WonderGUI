@@ -204,7 +204,7 @@ namespace wg
 	SizeI BoxSkin::_minSize() const
 	{
 		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = pixelAligned(m_frame);
+		SizeI frame = aligned(m_frame);
 
 		return SizeI::max(content,frame);
 	}
@@ -214,7 +214,7 @@ namespace wg
 	SizeI BoxSkin::_preferredSize() const
 	{
 		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = pointsToRawAligned(m_frame);
+		SizeI frame = pointsToAlignedQpix(m_frame);
 
 		return SizeI::max(content, frame);
 	}
@@ -224,7 +224,7 @@ namespace wg
 	SizeI BoxSkin::_sizeForContent( const SizeI contentSize ) const
 	{
 		SizeI content = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI frame = pointsToRawAligned(m_frame);
+		SizeI frame = pointsToAlignedQpix(m_frame);
 
 		return SizeI::max(content, frame);
 	}
@@ -244,7 +244,7 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			RectI center = canvas - pointsToRawAligned(m_frame);
+			RectI center = canvas - pointsToAlignedQpix(m_frame);
 			if( center.contains(ofs) )
 				opacity = m_fillColor[i].a;
 			else
@@ -275,7 +275,7 @@ namespace wg
 		if( m_bOpaque )
 			return true;
 
-		RectI center = RectI(canvasSize) - pointsToRawAligned(m_frame);
+		RectI center = RectI(canvasSize) - pointsToAlignedQpix(m_frame);
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 255;

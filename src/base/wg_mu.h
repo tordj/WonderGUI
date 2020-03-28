@@ -26,7 +26,6 @@
 
 #include <cstdint>
 
-
 namespace wg
 {
 	class MU
@@ -48,11 +47,10 @@ namespace wg
 		static inline MU fromPixel(int pixel) { MU p; p.qpix = pixel << 2; return p; }
 		static inline MU fromPixel(float pixel) { MU p; p.qpix = (int)(pixel * 4); return p; }
 		static inline MU fromPixel(double pixel) { MU p; p.qpix = (int)(pixel * 4); return p; }
-
-		static inline MU fromRaw(int qpixValue) { MU p; p.qpix = qpixValue; return p; }
+		static inline MU fromQpix(int qpixValue) { MU p; p.qpix = qpixValue; return p; }
 
 		inline int roundToPixel() { return (qpix * MU::qpixPerPoint() + 2) >> 2; }
-		inline void	pixelAlign() { qpix = (qpix + 2) & 0xFFFFFFFC; }
+		inline void	align() { qpix = (qpix + 2) & 0xFFFFFFFC; }
 		inline int qpixAligned() { return (qpix + 2) & 0xFFFFFFFC; }
 
 
@@ -65,33 +63,14 @@ namespace wg
 		operator float() const { return qpix / (float)MU::qpixPerPoint(); }
 		operator double() const { return qpix / (double)MU::qpixPerPoint(); }
 
+		inline MU operator-() { MU res; res.qpix = -qpix; return res; }
+
 		inline bool operator== (const MU& k) const { return (qpix == k.qpix); }
 		inline bool operator!= (const MU& k) const { return (qpix != k.qpix); }
 		inline bool operator< (const MU& k) const { return (qpix < k.qpix); }
 		inline bool operator> (const MU& k) const { return (qpix > k.qpix); }
 		inline bool operator<= (const MU& k) const { return (qpix <= k.qpix); }
 		inline bool operator>= (const MU& k) const { return (qpix >= k.qpix); }
-
-		inline bool operator== (int k) const { return (qpix == k * MU::qpixPerPoint()); }
-		inline bool operator!= (int k) const { return (qpix != k * MU::qpixPerPoint()); }
-		inline bool operator< (int k) const { return (qpix < k * MU::qpixPerPoint()); }
-		inline bool operator> (int k) const { return (qpix > k * MU::qpixPerPoint()); }
-		inline bool operator<= (int k) const { return (qpix <= k * MU::qpixPerPoint()); }
-		inline bool operator>= (int k) const { return (qpix >= k * MU::qpixPerPoint()); }
-
-		inline bool operator== (float k) const { return (qpix == int(k * MU::qpixPerPoint())); }
-		inline bool operator!= (float k) const { return (qpix != int(k * MU::qpixPerPoint())); }
-		inline bool operator< (float k) const { return (qpix < int(k * MU::qpixPerPoint())); }
-		inline bool operator> (float k) const { return (qpix > int(k * MU::qpixPerPoint())); }
-		inline bool operator<= (float k) const { return (qpix <= int(k * MU::qpixPerPoint())); }
-		inline bool operator>= (float k) const { return (qpix >= int(k * MU::qpixPerPoint())); }
-
-		inline bool operator== (double k) const { return (qpix == int(k * MU::qpixPerPoint())); }
-		inline bool operator!= (double k) const { return (qpix != int(k * MU::qpixPerPoint())); }
-		inline bool operator< (double k) const { return (qpix < int(k * MU::qpixPerPoint())); }
-		inline bool operator> (double k) const { return (qpix > int(k * MU::qpixPerPoint())); }
-		inline bool operator<= (double k) const { return (qpix <= int(k * MU::qpixPerPoint())); }
-		inline bool operator>= (double k) const { return (qpix >= int(k * MU::qpixPerPoint())); }
 
 		inline MU& operator++ () { qpix += MU::qpixPerPoint(); return *this; }
 		inline MU& operator-- () { qpix -= MU::qpixPerPoint(); return *this; }
@@ -101,76 +80,37 @@ namespace wg
 		inline MU& operator*= (const MU& k) { qpix = (qpix * k.qpix) >> 2; return *this; }
 		inline MU& operator/= (const MU& k) { qpix = (qpix << 2) / k.qpix; return *this; }
 
-		inline MU& operator+= (int k) { qpix += k * MU::qpixPerPoint(); return *this; }
-		inline MU& operator-= (int k) { qpix -= k * MU::qpixPerPoint(); return *this; }
-		inline MU& operator*= (int x) { qpix *= x; return *this; }
-		inline MU& operator/= (int x) { qpix /= x; return *this; }
 
-		inline MU& operator+= (float k) { qpix += (int)(k * MU::qpixPerPoint()); return *this; }
-		inline MU& operator-= (float k) { qpix -= (int)(k * MU::qpixPerPoint()); return *this; }
-		inline MU& operator*= (float x) { qpix = int(qpix * x); return *this; }
-		inline MU& operator/= (float x) { qpix = int(qpix / x); return *this; }
+		template<typename Type>
+		inline bool operator== (Type k) const { return (qpix == k * MU::qpixPerPoint()); }
 
-		inline MU& operator+= (double k) { qpix += (int)(k * MU::qpixPerPoint()); return *this; }
-		inline MU& operator-= (double k) { qpix -= (int)(k * MU::qpixPerPoint()); return *this; }
-		inline MU& operator*= (double x) { qpix = int(qpix * x); return *this; }
-		inline MU& operator/= (double x) { qpix = int(qpix / x); return *this; }
+		template<typename Type>
+		inline bool operator!= (Type k) const { return (qpix != k * MU::qpixPerPoint()); }
 
+		template<typename Type>
+		inline bool operator< (Type k) const { return (qpix < k * MU::qpixPerPoint()); }
 
-		friend int& operator+= (int& num, const MU& point) { num += point.qpix / MU::qpixPerPoint(); return num; }
-		friend int& operator-= (int& num, const MU& point) { num -= point.qpix / MU::qpixPerPoint(); return num; }
-		friend int& operator*= (int& num, const MU& point) { num = (num * point.qpix) / MU::qpixPerPoint(); return num; }
-		friend int& operator/= (int& num, const MU& point) { num = num * MU::qpixPerPoint() / point.qpix; return num; }
+		template<typename Type>
+		inline bool operator> (Type k) const { return (qpix > k * MU::qpixPerPoint()); }
 
-		friend float& operator+= (float& num, const MU& point) { num += float(point.qpix) / MU::qpixPerPoint(); return num; }
-		friend float& operator-= (float& num, const MU& point) { num -= float(point.qpix) / MU::qpixPerPoint(); return num; }
-		friend float& operator*= (float& num, const MU& point) { num = (num * point.qpix) / MU::qpixPerPoint(); return num; }
-		friend float& operator/= (float& num, const MU& point) { num = num * MU::qpixPerPoint() / point.qpix; return num; }
+		template<typename Type>
+		inline bool operator<= (Type k) const { return (qpix <= k * MU::qpixPerPoint()); }
 
-		friend double& operator+= (double& num, const MU& point) { num += double(point.qpix) / MU::qpixPerPoint(); return num; }
-		friend double& operator-= (double& num, const MU& point) { num -= double(point.qpix) / MU::qpixPerPoint(); return num; }
-		friend double& operator*= (double& num, const MU& point) { num = (num * point.qpix) / MU::qpixPerPoint(); return num; }
-		friend double& operator/= (double& num, const MU& point) { num = num * MU::qpixPerPoint() / point.qpix; return num; }
+		template<typename Type>
+		inline bool operator>= (Type k) const { return (qpix >= k * MU::qpixPerPoint()); }
 
+		template<typename Type>
+		inline MU& operator+= (Type k) { qpix += k * MU::qpixPerPoint(); return *this; }
 
+		template<typename Type>
+		inline MU& operator-= (Type k) { qpix -= k * MU::qpixPerPoint(); return *this; }
 
-		friend MU operator+ (const MU& first, const MU& second) { MU res; res.qpix = first.qpix + second.qpix; return res; }
-		friend MU operator- (const MU& first, const MU& second) { MU res; res.qpix = first.qpix - second.qpix; return res; }
-		friend MU operator* (const MU& first, const MU& second) { MU res; res.qpix = (first.qpix * second.qpix) >> 2; return res; }
-		friend MU operator/ (const MU& first, const MU& second) { MU res; res.qpix = (first.qpix << 2) / second.qpix; return res; }
+		template<typename Type>
+		inline MU& operator*= (Type x) { qpix *= x; return *this; }
 
-		friend MU operator+ (int num, const MU& point) { MU res; res.qpix = num * MU::qpixPerPoint() + point.qpix; return res; }
-		friend MU operator- (int num, const MU& point) { MU res; res.qpix = num * MU::qpixPerPoint() - point.qpix; return res; }
-		friend MU operator* (int num, const MU& point) { MU res; res.qpix = num * point.qpix; return res; }
-		friend MU operator/ (int num, const MU& point) { MU res; res.qpix = (num * MU::qpixPerPoint() << 2) / point.qpix; return res; }
+		template<typename Type>
+		inline MU& operator/= (Type x) { qpix /= x; return *this; }
 
-		friend MU operator+ (float num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint()) + point.qpix; return res; }
-		friend MU operator- (float num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint()) - point.qpix; return res; }
-		friend MU operator* (float num, const MU& point) { MU res; res.qpix = int(num * point.qpix); return res; }
-		friend MU operator/ (float num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint() * 4) / point.qpix; return res; }
-
-		friend MU operator+ (double num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint()) + point.qpix; return res; }
-		friend MU operator- (double num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint()) - point.qpix; return res; }
-		friend MU operator* (double num, const MU& point) { MU res; res.qpix = int(num * point.qpix); return res; }
-		friend MU operator/ (double num, const MU& point) { MU res; res.qpix = int(num * MU::qpixPerPoint() * 4) / point.qpix; return res; }
-
-		friend MU operator+ (const MU& point, int num) { MU res; res.qpix = point.qpix + num * MU::qpixPerPoint(); return res; }
-		friend MU operator- (const MU& point, int num) { MU res; res.qpix = point.qpix - num * MU::qpixPerPoint(); return res; }
-		friend MU operator* (const MU& point, int num) { MU res; res.qpix = point.qpix * num; return res; }
-		friend MU operator/ (const MU& point, int num) { MU res; res.qpix = point.qpix / num; return res; }
-
-		friend MU operator+ (const MU& point, float num) { MU res; res.qpix = point.qpix + int(num * MU::qpixPerPoint()); return res; }
-		friend MU operator- (const MU& point, float num) { MU res; res.qpix = point.qpix - int(num * MU::qpixPerPoint()); return res; }
-		friend MU operator* (const MU& point, float num) { MU res; res.qpix = int(point.qpix * num); return res; }
-		friend MU operator/ (const MU& point, float num) { MU res; res.qpix = int(point.qpix / num); return res; }
-
-		friend MU operator+ (const MU& point, double num) { MU res; res.qpix = point.qpix + int(num * MU::qpixPerPoint()); return res; }
-		friend MU operator- (const MU& point, double num) { MU res; res.qpix = point.qpix - int(num * MU::qpixPerPoint()); return res; }
-		friend MU operator* (const MU& point, double num) { MU res; res.qpix = int(point.qpix * num); return res; }
-		friend MU operator/ (const MU& point, double num) { MU res; res.qpix = int(point.qpix / num); return res; }
-
-
-		friend float operator/(MU& first, const MU& second) { return first.qpix / float(second.qpix); }
 
 		//		friend int operator+= (MU& first, int second) { return second + (first.qpix >> 2); }
 
@@ -184,6 +124,50 @@ namespace wg
 		static float	s_scale;						// Valid values are 1.0, 1.25, 1.5, 1.75, 2, 2.25, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 6.0, 7.0, 8.0
 	};
 
+	MU abs(MU in);
+
+	inline MU operator+ (const MU& first, const MU& second) { MU res; res.qpix = first.qpix + second.qpix; return res; }
+	inline MU operator- (const MU& first, const MU& second) { MU res; res.qpix = first.qpix - second.qpix; return res; }
+	inline MU operator* (const MU& first, const MU& second) { MU res; res.qpix = (first.qpix * second.qpix) >> 2; return res; }
+	inline MU operator/ (const MU& first, const MU& second) { MU res; res.qpix = (first.qpix << 2) / second.qpix; return res; }
+
+	inline float operator/(MU& first, const MU& second) { return first.qpix / float(second.qpix); }
+
+	template<typename T>
+	T& operator+= (T& num, const MU& point) { num += T(point.qpix) / MU::qpixPerPoint(); return num; }
+
+	template<typename T>
+	T& operator-= (T& num, const MU& point) { num -= T(point.qpix) / MU::qpixPerPoint(); return num; }
+
+	template<typename T>
+	T& operator*= (T& num, const MU& point) { num = (num * point.qpix) / MU::qpixPerPoint(); return num; }
+
+	template<typename T>
+	T& operator/= (float& num, const MU& point) { num = num * MU::qpixPerPoint() / point.qpix; return num; }
+
+	template<typename T>
+	MU operator+ (T num, const MU& point) { MU res; res.qpix = num * MU::qpixPerPoint() + point.qpix; return res; }
+
+	template<typename T>
+	MU operator- (T num, const MU& point) { MU res; res.qpix = num * MU::qpixPerPoint() - point.qpix; return res; }
+
+	template<typename T>
+	MU operator* (T num, const MU& point) { MU res; res.qpix = num * point.qpix; return res; }
+
+	template<typename T>
+	MU operator/ (T num, const MU& point) { MU res; res.qpix = (num * MU::qpixPerPoint() << 2) / point.qpix; return res; }
+
+	template<typename T>
+	MU operator+ (const MU& point, T num) { MU res; res.qpix = point.qpix + num * MU::qpixPerPoint(); return res; }
+
+	template<typename T>
+	MU operator- (const MU& point, T num) { MU res; res.qpix = point.qpix - num * MU::qpixPerPoint(); return res; }
+
+	template<typename T>
+	MU operator* (const MU& point, T num) { MU res; res.qpix = point.qpix * num; return res; }
+
+	template<typename T>
+	MU operator/ (const MU& point, T num) { MU res; res.qpix = point.qpix / num; return res; }
 
 } // namespace wg
 #endif //WG_QPIX_DOT_H

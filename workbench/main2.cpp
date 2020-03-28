@@ -87,6 +87,12 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot);
 int main(int argc, char** argv)
 {
 
+	Coord muC;
+	CoordI iC;
+	CoordF fC;
+
+
+
 	printf("SizeOf Filler: %d\n", (int) sizeof(Filler));
 	printf("SizeOf Object: %d\n", (int) sizeof(Object));
 	printf("SizeOf Receiver: %d\n", (int) sizeof(Receiver));
@@ -94,7 +100,6 @@ int main(int argc, char** argv)
 //	printf("Slot is safe to relocate: %d\n", StaticSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
-
 
 	auto pPackPanel = PackPanel::create();
 

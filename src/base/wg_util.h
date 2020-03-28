@@ -39,83 +39,83 @@ namespace wg
 	namespace Util		/** @private */
 	{
 
-		//____ pixelAligned() _________________________________________________________
+		//____ aligned() _________________________________________________________
 
-		inline BorderI pixelAligned(const BorderI& input)
+		inline BorderI aligned(const BorderI& input)
 		{
 			return { input.top & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI pixelAligned(const SizeI input)
+		inline SizeI aligned(const SizeI input)
 		{
 			return { input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
 		}
 
-		inline CoordI pixelAligned(const CoordI input)
+		inline CoordI aligned(const CoordI input)
 		{
 			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC };
 		}
 
-		inline RectI pixelAligned(const RectI& input)
+		inline RectI aligned(const RectI& input)
 		{
 			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC, input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
 		}
 
-		inline Coord pixelAligned(const Coord input)
+		inline Coord aligned(const Coord input)
 		{
 			Coord p = input;
-			p.x.pixelAlign();
-			p.y.pixelAlign();
+			p.x.align();
+			p.y.align();
 			return p;
 		}
 
-		inline Border pixelAligned(const Border& input)
+		inline Border aligned(const Border& input)
 		{
 			Border b = input;
-			b.top.pixelAlign();
-			b.left.pixelAlign();
-			b.bottom.pixelAlign();
-			b.right.pixelAlign();
+			b.top.align();
+			b.left.align();
+			b.bottom.align();
+			b.right.align();
 			return b;
 		}
 
-		inline Size pixelAligned(const Size input)
+		inline Size aligned(const Size input)
 		{
 			Size sz = input;
-			sz.w.pixelAlign();
-			sz.h.pixelAlign();
+			sz.w.align();
+			sz.h.align();
 			return sz;
 		}
 
-		inline Rect pixelAligned(const Rect& input)
+		inline Rect aligned(const Rect& input)
 		{
 			Rect r = input;
-			r.x.pixelAlign();
-			r.y.pixelAlign();
-			r.w.pixelAlign();
-			r.h.pixelAlign();
+			r.x.align();
+			r.y.align();
+			r.w.align();
+			r.h.align();
 			return r;
 		}
 
-		//____ pointsToRawAligned() _________________________________________________________
+		//____ pointsToAlignedQpix() _________________________________________________________
 
-		inline CoordI pointsToRawAligned(const CoordI points)
+		inline CoordI pointsToAlignedQpix(const CoordI points)
 		{
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI pointsToRawAligned(const SizeI points)
+		inline SizeI pointsToAlignedQpix(const SizeI points)
 		{
 			return { (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline BorderI pointsToRawAligned(const BorderI& points)
+		inline BorderI pointsToAlignedQpix(const BorderI& points)
 		{
 			return { (points.top* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.right* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
 					 (points.bottom* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.left* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline RectI pointsToRawAligned(const RectI& points)
+		inline RectI pointsToAlignedQpix(const RectI& points)
 		{
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
 					 (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };

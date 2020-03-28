@@ -216,9 +216,9 @@ namespace wg
 		int secondChildLength;
 
 		if (m_brokerFunc)
-			length = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), MU::fromRaw(totalLength), m_splitFactor, MU::fromRaw(handleMovement));
+			length = m_brokerFunc(slots[0]._widget(), slots[1]._widget(), MU::fromQpix(totalLength), m_splitFactor, MU::fromQpix(handleMovement));
 		else
-			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), MU::fromRaw(totalLength), m_splitFactor, MU::fromRaw(handleMovement));
+			length = _defaultBroker(slots[0]._widget(), slots[1]._widget(), MU::fromQpix(totalLength), m_splitFactor, MU::fromQpix(handleMovement));
 
 		firstChildLength = length.qpixAligned();
 
@@ -339,7 +339,7 @@ namespace wg
 		if (firstLength > maxLengthFirst)
 			firstLength = maxLengthFirst;
 
-		return MU::fromRaw(firstLength);
+		return MU::fromQpix(firstLength);
 	}
 
 	//____ _refresh() ____________________________________________________________

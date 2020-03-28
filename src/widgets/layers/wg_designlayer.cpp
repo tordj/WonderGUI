@@ -242,7 +242,7 @@ namespace wg
 			CoordI ofs = origoToOfs(origo, surroundBox.size()) - origoToOfs(origo, wantedSize) + surroundBox.pos();
 			ofs += pSlot->m_placementPos;
 
-			RectI geo = pixelAligned( RectI( ofs,wantedSize ) );
+			RectI geo = aligned( RectI( ofs,wantedSize ) );
 
 			if (geo.x < 0)
 			{

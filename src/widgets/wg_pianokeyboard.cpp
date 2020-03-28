@@ -126,10 +126,10 @@ namespace wg
 		SizeI pointSize = pOddWhiteKeys->pointSize();
 		pointSize.h /= states.size();
 
-		m_preferredKeyboardSize	= pointsToRawAligned(pointSize);
+		m_preferredKeyboardSize	= pointsToAlignedQpix(pointSize);
 		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->qpixPerPoint();
 
-		m_blackKeyHeight		= m_pBlackKeys ? pointsToRawAligned(m_pBlackKeys->pointSize()).h / states.size() : 0;
+		m_blackKeyHeight		= m_pBlackKeys ? pointsToAlignedQpix(m_pBlackKeys->pointSize()).h / states.size() : 0;
 		m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h  * 4 / states.size() : 0;
 
 		// Fill in state offsets
@@ -721,7 +721,7 @@ namespace wg
 		if (dst.x + dst.w > canvas.w )
 			dst.w = canvas.w - dst.x;
 
-		return pixelAligned(dst) + canvas.pos();
+		return aligned(dst) + canvas.pos();
 	}
 
 

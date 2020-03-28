@@ -230,7 +230,7 @@ namespace wg
 
 	void InputHandler::setPointer( RootPanel * pRoot, Coord pos, int64_t timestamp )
 	{
-		CoordI	prevPointerPos = m_pointerPos;
+		Coord	prevPointerPos = m_pointerPos;
 		if( timestamp == 0 )
 			timestamp = m_timeStamp;
 

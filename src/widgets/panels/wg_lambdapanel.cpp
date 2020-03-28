@@ -475,7 +475,7 @@ namespace wg
 		RectI geo;
 
 		if (pSlot->m_func)
-			geo = pixelAligned(MUToQpix(pSlot->m_func(pSlot->_widget(), qpixToMU(m_size))));
+			geo = aligned(MUToQpix(pSlot->m_func(pSlot->_widget(), qpixToMU(m_size))));
 		else
 			geo = { 0,0,pSlot->_preferredSize() };
 

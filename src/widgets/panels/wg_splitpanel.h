@@ -120,7 +120,7 @@ namespace wg
 		Skin_p			handleSkin() const { return m_pHandleSkin; }
 
 		void			setHandleThickness(MU thickness);
-		MU			handleThickness() const { return MU::fromRaw(m_handleThickness);  }
+		MU			handleThickness() const { return MU::fromQpix(m_handleThickness);  }
 
 		//.____ Behavior _______________________________________________________
 

@@ -27,5 +27,14 @@ namespace wg
 	int		MU::s_qpixPerPoint = 4;
 	float	MU::s_scale = 1.f;
 
+
+	MU abs(MU in) 
+	{ 
+		MU res; 
+		res.qpix = in.qpix < 0 ? -in.qpix : in.qpix; 
+		return res; 
+	}
+
+
 };
 

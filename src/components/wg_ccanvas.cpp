@@ -395,7 +395,7 @@ namespace wg
 		// We use pointsToRaw here instead of pixelsToQpix since a pixel in our surface
 		// should be scaled to a point in UI.
 
-		return m_fixedSize.isEmpty()? SizeI(16*4,16*4) : pointsToRawAligned( m_fixedSize );
+		return m_fixedSize.isEmpty()? SizeI(16*4,16*4) : pointsToAlignedQpix( m_fixedSize );
 	}
 
 } //namespace wg
