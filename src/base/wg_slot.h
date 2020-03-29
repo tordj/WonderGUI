@@ -221,19 +221,6 @@ namespace wg
 
 			return *this;
 		}
-
-
-		// IMPORTANT! SlotVector assumes that Slot destructor doesn't need to be called
-		// if content has been moved to another slot!
-
-		~DynamicSlot()
-		{
-			if (m_pWidget != nullptr)
-			{
-				m_pWidget->_setSlot(nullptr);
-				m_pWidget->_decRefCount();
-			}
-		}
 	};
 
 
