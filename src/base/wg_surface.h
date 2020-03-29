@@ -76,12 +76,12 @@ namespace wg
 		virtual	int			width() const;						///< @brief Get the width of the surface.
 		virtual	int			height() const;						///< @brief Get the height of the surface.
 
-        bool                setScale( float scale );
+		bool                setScale( float scale );
 		inline float        scale() const;
-        
+
 		inline SizeI        pointSize() const;
 		inline int			qpixPerPoint() const;
-        
+
 		//.____ Appearance ____________________________________________________
 
 		virtual void		setScaleMode( ScaleMode mode );
@@ -130,8 +130,8 @@ namespace wg
 		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );		///< @brief Copy other surface as a block
 
-        //.____ Misc _________________________________________________________
-        
+		//.____ Misc _________________________________________________________
+
 		void				setPayload(BasicPayload * pPayload);
 		BasicPayload_p		payload() const;
 
@@ -144,112 +144,112 @@ namespace wg
 		RectI				_lockAndAdjustRegion( AccessMode modeNeeded, const RectI& region );
 		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT = nullptr );
 
-        int                 m_id = 0;
+		int                 m_id = 0;
 
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
 		SizeI				m_size;				// Width and height in pixels.
 
-        ScaleMode			m_scaleMode = ScaleMode::Nearest;
+		ScaleMode			m_scaleMode = ScaleMode::Nearest;
 		bool				m_bMipmapped = false;
 
-        AccessMode			m_accessMode = AccessMode::None;
-		Color *				m_pClut = nullptr;			        // Pointer at color lookup table. Always 256 entries long.
-		uint8_t *			m_pPixels = nullptr;			    // Pointer at pixels when surface locked.
-		RectI				m_lockRegion;		                // Region of surface that is locked. Width/Height should be set to 0 when not locked.
+		AccessMode			m_accessMode = AccessMode::None;
+		Color *				m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
+		uint8_t *			m_pPixels = nullptr;				// Pointer at pixels when surface locked.
+		RectI				m_lockRegion;						// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
-        BasicPayload_p      m_pPayload;
-        
-        // This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
-        int                 m_qpixPerPoint = 4;
+		BasicPayload_p      m_pPayload;
+
+		// This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
+		int                 m_qpixPerPoint = 4;
 	};
 
 	//____ setId() ____________________________________________________________
-    
-	void Surface::setId(int id) 
-	{ 
-		m_id = id; 
+
+	void Surface::setId(int id)
+	{
+		m_id = id;
 	}
 
 	//____ id() _______________________________________________________________
 
-	int Surface::id() const 
-	{ 
-		return m_id; 
+	int Surface::id() const
+	{
+		return m_id;
 	}
 
 	//____ size() _____________________________________________________________
-	/** 
+	/**
 	 * Get the width and height of the surface in a SizeI structure.
 	 *
 	 * @return Size of the suface measured in pixels.
 	 */
-	SizeI Surface::size() const 
-	{ 
-		return m_size; 
+	SizeI Surface::size() const
+	{
+		return m_size;
 	}
 
 	//____ scale() ____________________________________________________________
 
-	float Surface::scale() const 
-	{ 
-		return m_qpixPerPoint / 4.f; 
+	float Surface::scale() const
+	{
+		return m_qpixPerPoint / 4.f;
 	}
 
 	//____ pointSize() ________________________________________________________
 
-	SizeI Surface::pointSize() const 
-	{ 
+	SizeI Surface::pointSize() const
+	{
 		return (m_size * 4) / m_qpixPerPoint;
 	}
 
 	//____ qpixPerPoint() ____________________________________________
 
-	int Surface::qpixPerPoint() const 
-	{ 
-		return m_qpixPerPoint; 
+	int Surface::qpixPerPoint() const
+	{
+		return m_qpixPerPoint;
 	}
 
 	//____ scaleMode() ________________________________________________________
 
-	ScaleMode Surface::scaleMode() const 
-	{ 
-		return m_scaleMode; 
+	ScaleMode Surface::scaleMode() const
+	{
+		return m_scaleMode;
 	}
 
 	//____ isMipmapped() ______________________________________________________
 
-	bool Surface::isMipmapped() const 
-	{ 
-		return m_bMipmapped; 
+	bool Surface::isMipmapped() const
+	{
+		return m_bMipmapped;
 	}
 
 	//____ clut() _____________________________________________________________
 
 	const Color* Surface::clut() const
-	{ 
-		return m_pClut; 
+	{
+		return m_pClut;
 	}
 
 	//____ pixelDescription() _________________________________________________
 
 	const PixelDescription*	Surface::pixelDescription() const
-	{ 
-		return &m_pixelDescription; 
+	{
+		return &m_pixelDescription;
 	}
 
 	//____ pixelFormat() ______________________________________________________
 
-	PixelFormat Surface::pixelFormat() const 
-	{ 
-		return m_pixelDescription.format; 
+	PixelFormat Surface::pixelFormat() const
+	{
+		return m_pixelDescription.format;
 	}
 
 	//____ pixelBytes() _______________________________________________________
 
-	int Surface::pixelBytes() const 
-	{ 
-		return m_pixelDescription.bits / 8; 
+	int Surface::pixelBytes() const
+	{
+		return m_pixelDescription.bits / 8;
 	}
 
 	//____ isLocked() _________________________________________________________
@@ -259,9 +259,9 @@ namespace wg
 	 * @return True if surface is locked, otherwise false.
 	 */
 
-	bool Surface::isLocked() const 
-	{ 
-		return (m_accessMode != AccessMode::None); 
+	bool Surface::isLocked() const
+	{
+		return (m_accessMode != AccessMode::None);
 	}
 
 	///____ lockStatus() ______________________________________________________
@@ -271,9 +271,9 @@ namespace wg
 	 * @return	ReadOnly, WriteOnly or ReadWrite if the surface is locked, otherwise None.
 	 */
 
-	AccessMode Surface::lockStatus() const 
-	{ 
-		return m_accessMode; 
+	AccessMode Surface::lockStatus() const
+	{
+		return m_accessMode;
 	}
 
 	//____ pixels() __________________________________________________________
@@ -286,9 +286,9 @@ namespace wg
 	 * @return Pointer to the raw pixels of the locked region or null if surface is not locked.
 	 */
 
-	uint8_t * Surface::pixels() const 
-	{ 
-		return m_pPixels; 
+	uint8_t * Surface::pixels() const
+	{
+		return m_pPixels;
 	}
 
 	//____ Surface::pitch() _______________________________________________

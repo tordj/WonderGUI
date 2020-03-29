@@ -92,8 +92,8 @@ namespace wg
 		//.____ Deprecated ____________________________________________________
 
 		static BlockSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
-        static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-        static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
+		static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
+		static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
 
 		//.____ Internal _______________________________________
 

@@ -112,21 +112,21 @@ namespace wg
 	//____ constructor _____________________________________________________________
 
 
-    GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
-        HANDLE_GLERROR(glGetError());
+		HANDLE_GLERROR(glGetError());
 /*
-        // @TODO: TMP workaround for annoying error (MAIN-16725).
-        auto glError = glGetError();
+		// @TODO: TMP workaround for annoying error (MAIN-16725).
+		auto glError = glGetError();
 
-        if(glError == 1281)
-        {
-            glGetError();
-        }
-        else
-        {
+		if(glError == 1281)
+		{
+			glGetError();
+		}
+		else
+		{
 			HANDLE_GLERROR(glError);
-        }
+		}
 */
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
@@ -148,7 +148,7 @@ namespace wg
 	}
 
 
-    GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
 	{
 		// Set general information
 
@@ -162,7 +162,7 @@ namespace wg
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
-    GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
 	{
 	   _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
@@ -186,7 +186,7 @@ namespace wg
 	}
 
 
-    GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
+	GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
 	{
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;

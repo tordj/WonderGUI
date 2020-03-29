@@ -20,17 +20,20 @@
 
 =========================================================================*/
 
-#ifndef WG_QPIX_DOT_H
-#define	WG_QPIX_DOT_H
+#ifndef WG_MU_DOT_H
+#define	WG_MU_DOT_H
 #pragma once
 
 #include <cstdint>
+
+class WgBase;
 
 namespace wg
 {
 	class MU
 	{
 		friend class Base;
+		friend class ::WgBase;
 
 	public:
 		//.____ Creation __________________________________________
@@ -170,4 +173,4 @@ namespace wg
 	MU operator/ (const MU& point, T num) { MU res; res.qpix = point.qpix / num; return res; }
 
 } // namespace wg
-#endif //WG_QPIX_DOT_H
+#endif //WG_MU_DOT_H

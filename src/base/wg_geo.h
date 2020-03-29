@@ -973,7 +973,7 @@ namespace wg
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline BorderT<Type>& operator*=(Type2 v) { top = (Type)(top*v); right = (Type)(right*v); bottom = (Type)(bottom*v); left = (Type)(left*v); return *this; }
-        
+
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline BorderT<Type>& operator/=(Type2 v) { top = (Type)(top/v); right = (Type)(right/v); bottom = (Type)(bottom/v); left = (Type)(left/v); return *this; }
 
@@ -982,8 +982,8 @@ namespace wg
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline BorderT<Type> operator/(Type2 v) const { return { (Type)(top/v), (Type)(right/v), (Type)(bottom/v), (Type)(left/v) }; }
-       
-        
+
+
 		bool			operator==(const BorderT<Type>& borders) const { return left == borders.left &&
 																			right == borders.right &&
 																			top == borders.top &&

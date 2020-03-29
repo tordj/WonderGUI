@@ -49,49 +49,49 @@ namespace wg
 	void GlGfxDevice::onGlError(GLenum errorCode, const Object * pObject, const TypeInfo& pClassType, const char * func, const char * file, int line)
 	{
 		char	buffer[1024];
-	
-        const char * pErrorName;
-        
-        switch( errorCode )
-        {
-            case GL_NO_ERROR:
-                pErrorName = "GL_NO_ERROR";
-                break;
-                
-            case GL_INVALID_ENUM:
-                pErrorName = "GL_INVALID_ENUM";
-                break;
 
-            case GL_INVALID_VALUE:
-                pErrorName = "GL_INVALID_VALUE";
-                break;
-                
-            case GL_INVALID_OPERATION:
-                pErrorName = "GL_INVALID_OPERATION";
-                break;
+		const char * pErrorName;
 
-            case GL_INVALID_FRAMEBUFFER_OPERATION:
-                pErrorName = "GL_INVALID_FRAMEBUFFER_OPERATION";
-                break;
+		switch( errorCode )
+		{
+			case GL_NO_ERROR:
+				pErrorName = "GL_NO_ERROR";
+				break;
 
-            case GL_OUT_OF_MEMORY:
-                pErrorName = "GL_OUT_OF_MEMORY";
-                break;
+			case GL_INVALID_ENUM:
+				pErrorName = "GL_INVALID_ENUM";
+				break;
+
+			case GL_INVALID_VALUE:
+				pErrorName = "GL_INVALID_VALUE";
+				break;
+
+			case GL_INVALID_OPERATION:
+				pErrorName = "GL_INVALID_OPERATION";
+				break;
+
+			case GL_INVALID_FRAMEBUFFER_OPERATION:
+				pErrorName = "GL_INVALID_FRAMEBUFFER_OPERATION";
+				break;
+
+			case GL_OUT_OF_MEMORY:
+				pErrorName = "GL_OUT_OF_MEMORY";
+				break;
 /*
-            case GL_STACK_UNDERFLOW:
-                pErrorName = "GL_STACK_UNDERFLOW";
-                break;
+			case GL_STACK_UNDERFLOW:
+				pErrorName = "GL_STACK_UNDERFLOW";
+				break;
 
-            case GL_STACK_OVERFLOW:
-                pErrorName = "GL_STACK_OVERFLOW";
-                break;
+			case GL_STACK_OVERFLOW:
+				pErrorName = "GL_STACK_OVERFLOW";
+				break;
 */
-            default:
-                pErrorName = "UNKNOWN GL ERROR! (should not happen)";
-                break;
-        }
-        
-        
+			default:
+				pErrorName = "UNKNOWN GL ERROR! (should not happen)";
+				break;
+		}
+
+
 		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
 		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
@@ -253,9 +253,9 @@ namespace wg
 		//HACK! Some graphics cards can't handle more than 16 varying (of which 2 are used for other data). Maybe use unifieds in shader instead?
 		// To be on the really safe side and since we don't use more than 5 anyway (single color wave + top/bottom borders and transparency above/below), we stop at 6.
 
-        // IMPORTANT! Change in destructor as well when you change it back!!!!!
-        
-		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)		
+		// IMPORTANT! Change in destructor as well when you change it back!!!!!
+
+		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
 			m_segmentsProg[i] = prog;
