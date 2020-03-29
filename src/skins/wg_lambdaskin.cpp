@@ -113,7 +113,7 @@ namespace wg
 
 	//____ setRenderFunc() ____________________________________________________
 
-	void LambdaSkin::setRenderFunc(const std::function<void(GfxDevice * pDevice, const Rect& _canvas, State state)>& function)
+	void LambdaSkin::setRenderFunc(const std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>& function)
 	{
 		m_renderFunc = function;
 	}
@@ -142,47 +142,47 @@ namespace wg
 			return false;
 	}
 
-	//____ _markTest() ________________________________________________________
+	//____ markTest() ________________________________________________________
 
-	bool LambdaSkin::_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const
+	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const
 	{
 		if (m_markTestFunc)
-			return m_markTestFunc(reinterpret_cast<const Coord&>(ofs), reinterpret_cast<const Rect&>(canvas), state, opacityTreshold);
+			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
 		else
 			return (opacityTreshold <= 0 || (m_bOpaque && opacityTreshold < 256));
 	}
 
 	//____ _isOpaque() ________________________________________________________
 
-	bool LambdaSkin::_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const
+	bool LambdaSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
 		if (m_bOpaque)
 			return true;
 		else if (m_opacityTestFunc)
-			return m_opacityTestFunc(reinterpret_cast<const Rect&>(rect), reinterpret_cast<const Size&>(canvasSize), state);
+			return m_opacityTestFunc(rect, canvasSize, state);
 		else
 			return false;
 	}
 
-	//____ _render() __________________________________________________________
+	//____ render() __________________________________________________________
 
-	void LambdaSkin::_render(GfxDevice * pDevice, const RectI& canvas, State state) const
+	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state) const
 	{
 		if (m_renderFunc)
-			m_renderFunc(pDevice, reinterpret_cast<const Rect&>(canvas), state);
+			m_renderFunc(pDevice, canvas, state);
 	}
 
-	//____ _minSize() _________________________________________________________
+	//____ minSize() _________________________________________________________
 
-	SizeI LambdaSkin::_minSize() const
+	Size LambdaSkin::minSize() const
 	{
-		return pointsToAlignedQpix(m_minSize);
+		return m_minSize;
 	}
 
-	//____ _preferredSize() ___________________________________________________
+	//____ preferredSize() ___________________________________________________
 
-	SizeI LambdaSkin::_preferredSize() const
+	Size LambdaSkin::preferredSize() const
 	{
-		return pointsToAlignedQpix(m_preferredSize);
+		return m_preferredSize;
 	}
 }

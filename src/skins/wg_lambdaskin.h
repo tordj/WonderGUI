@@ -68,6 +68,9 @@ namespace wg
 		void			setMinSize( SizeI pointSize );
 		void			setPreferredSize( SizeI pointSize );
 
+		Size			minSize() const override;
+		Size			preferredSize() const override;
+
 		//.____ Control _________________________________________________
 
 		void		setOpaque(bool bOpaque);
@@ -81,19 +84,14 @@ namespace wg
 
 		bool		isOpaque() const override;
 		bool		isOpaque(State state) const override;
+		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
 		bool		isStateIdentical(State state, State comparedTo) const override;
 
-		//.____ Internal ______________________________________________________
+		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const override;
 
-		bool		_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const override;
+		void		render(GfxDevice * pDevice, const Rect& canvas, State state) const override;
 
-		bool		_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const override;
-
-		void		_render(GfxDevice * pDevice, const RectI& _canvas, State state) const override;
-
-		SizeI		_minSize() const override;
-		SizeI		_preferredSize() const override;
 
 
 	private:
@@ -108,7 +106,7 @@ namespace wg
 		std::function<bool(State state, State comparedTo)>											m_stateCompareFunc = nullptr;
 		std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>	m_markTestFunc = nullptr;
 		std::function<bool(const Rect& rect, const Size& canvasSize, State state)>					m_opacityTestFunc = nullptr;
-		std::function<void(GfxDevice * pDevice, const Rect& _canvas, State state)>					m_renderFunc = nullptr;
+		std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>					m_renderFunc = nullptr;
 	};
 
 

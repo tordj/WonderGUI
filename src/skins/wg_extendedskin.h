@@ -45,9 +45,16 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 
-		void			setContentPadding( BorderI padding );
-		inline BorderI	contentPadding() const { return m_contentPadding; }
-		Border			contentPaddingAdapted() const;
+		void			setContentPadding( const BorderI& padding );
+		Border			contentPadding() const override;
+
+		Size			minSize() const override;
+		Size			preferredSize() const override;
+		Size			sizeForContent(const Size& contentSize) const override;
+		Size			contentPaddingSize() const override;
+		Coord			contentOfs(State state) const override;
+		Rect			contentRect(const Rect& canvas, State state) const override;
+
 
 		//.____ Behavior _______________________________________________________
 
@@ -61,20 +68,13 @@ namespace wg
 
 		virtual	bool	isStateIdentical( State state, State comparedTo ) const override;
 
-		virtual SizeI	_minSize() const override;
-		virtual SizeI	_preferredSize() const override;
-		virtual SizeI	_sizeForContent(const SizeI contentSize) const override;
-		virtual BorderI	_contentPadding() const override;
-		virtual SizeI	_contentPaddingSize() const override;
-		virtual CoordI	_contentOfs(State state) const override;
-		virtual RectI	_contentRect(const RectI& canvas, State state) const override;
 
 
 	protected:
 		void _refreshUnsetStates();
 
-		BorderI				m_contentPadding;                   // Unit: Points
-		CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
+        BorderI				m_contentPadding;					// Unit: Points
+        CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 

@@ -72,73 +72,73 @@ namespace wg
 		return m_color.a == 255 ? true : false;
 	}
 
-	//____ _isOpaque() ______________________________________________________________
+	//____ isOpaque() ______________________________________________________________
 
-	bool StaticColorSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	bool StaticColorSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		return m_color.a == 255 ? true : false;
 	}
 
-	//____ _render() ______________________________________________________________
+	//____ render() ______________________________________________________________
 
-	void StaticColorSkin::_render(GfxDevice * pDevice, const RectI& canvas, State state) const
+	void StaticColorSkin::render(GfxDevice * pDevice, const Rect& canvas, State state) const
 	{
-		pDevice->fill(qpixToPixels(canvas), m_color);
+		pDevice->fill(canvas.pixels(), m_color);
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI StaticColorSkin::_minSize() const
+	Size StaticColorSkin::minSize() const
 	{
-		return SizeI();
+		return Size();
 	}
 
-	//____ _preferredSize() ______________________________________________________________
+	//____ preferredSize() ______________________________________________________________
 
-	SizeI StaticColorSkin::_preferredSize() const
+	Size StaticColorSkin::preferredSize() const
 	{
-		return SizeI();
+		return Size();
 	}
 
-	//____ _contentPadding() ______________________________________________________________
+	//____ contentPadding() ______________________________________________________________
 
-	BorderI StaticColorSkin::_contentPadding() const
+	Border StaticColorSkin::contentPadding() const
 	{
-		return BorderI();
+		return Border();
 	}
 
 
-	//____ _contentPaddingSize() ______________________________________________________________
+	//____ contentPaddingSize() ______________________________________________________________
 
-	SizeI StaticColorSkin::_contentPaddingSize() const
+	Size StaticColorSkin::contentPaddingSize() const
 	{
-		return SizeI();
+		return Size();
 	}
 
 	//____ _contentOfs() ______________________________________________________________
 
-	CoordI StaticColorSkin::_contentOfs( State state ) const
+	Coord StaticColorSkin::contentOfs( State state ) const
 	{
-		return CoordI();
+		return Coord();
 	}
 
 	//____ _sizeForContent() ___________________________________________________
 
-	SizeI StaticColorSkin::_sizeForContent( const SizeI contentSize ) const
+	Size StaticColorSkin::sizeForContent( const Size& contentSize ) const
 	{
 		return contentSize;
 	}
 
-	//____ _contentRect() ______________________________________________________
+	//____ contentRect() ______________________________________________________
 
-	RectI StaticColorSkin::_contentRect( const RectI& canvas, State state ) const
+	Rect StaticColorSkin::contentRect( const Rect& canvas, State state ) const
 	{
 		return canvas;
 	}
 
-	//____ _markTest() _________________________________________________________
+	//____ markTest() _________________________________________________________
 
-	bool StaticColorSkin::_markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
 	}

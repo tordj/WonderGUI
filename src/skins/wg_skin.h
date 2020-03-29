@@ -26,6 +26,7 @@
 #include <wg_pointers.h>
 #include <wg_geo.h>
 #include <wg_types.h>
+#include <wg_util.h>
 
 namespace wg
 {
@@ -48,34 +49,77 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size			minSize() const;
-		Size			preferredSize() const;
+		virtual Size	minSize() const = 0;
+		virtual Size	preferredSize() const = 0;
+
+		virtual Size	sizeForContent(const Size& contentSize) const = 0;
+		virtual Border	contentPadding() const = 0;
+		virtual Size	contentPaddingSize() const = 0;
+		virtual Coord	contentOfs(State state) const = 0;
+		virtual Rect	contentRect(const Rect& canvas, State state) const = 0;
 
 		//.____ Misc ____________________________________________________
 
 		virtual bool	isOpaque() const = 0;
 		virtual bool	isOpaque( State state ) const = 0;
-		bool			isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
+		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const = 0;
 
 		virtual bool	isStateIdentical( State state, State comparedTo ) const = 0;
 
+		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const = 0;
+		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const = 0;
+
 		//.____ Internal ______________________________________________________
 
-		virtual bool	_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const = 0;
-		virtual bool	_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const = 0;
+		inline bool		_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const
+		{
+			return markTest(reinterpret_cast<const Coord&>(ofs), reinterpret_cast<const Rect&>(canvas), state, opacityTreshold);
+		}
 
-		virtual SizeI	_minSize() const = 0;
-		virtual SizeI	_preferredSize() const = 0;
-		virtual SizeI	_sizeForContent(const SizeI contentSize) const = 0;
+		inline bool		_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const
+		{
+			return isOpaque(reinterpret_cast<const Rect&>(rect), reinterpret_cast<const Size&>(canvasSize), state);
+		}
 
-		virtual BorderI	_contentPadding() const = 0;
-		virtual SizeI	_contentPaddingSize() const = 0;
-		virtual CoordI	_contentOfs(State state) const = 0;
-		virtual RectI	_contentRect(const RectI& canvas, State state) const = 0;
+		inline SizeI	_minSize() const
+		{
+			return minSize().qpix();
+		}
 
+		inline SizeI	_preferredSize() const
+		{
+			return preferredSize().qpix();
+		}
 
-		virtual void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const = 0;
+		inline SizeI	_sizeForContent(const SizeI contentSize) const
+		{
+			return sizeForContent(Util::qpixToMU(contentSize)).qpix();
+		}
 
+		inline BorderI	_contentPadding() const
+		{
+			return contentPadding().qpix();
+		}
+
+		inline SizeI	_contentPaddingSize() const
+		{
+			return contentPaddingSize().qpix();
+		}
+
+		inline CoordI	_contentOfs(State state) const
+		{
+			return contentOfs(state).qpix();
+		}
+
+		inline RectI	_contentRect(const RectI& canvas, State state) const
+		{
+			return contentRect(Util::qpixToMU(canvas), state).qpix();
+		}
+
+		inline void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const
+		{
+			render(pDevice, Util::qpixToMU(canvas), state);
+		}
 
 	protected:
 		Skin() {};

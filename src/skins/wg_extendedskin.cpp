@@ -40,18 +40,10 @@ namespace wg
 
 	//____ setContentPadding() ____________________________________________________
 
-	void ExtendedSkin::setContentPadding( BorderI padding )
+	void ExtendedSkin::setContentPadding( const BorderI& padding )
 	{
 		m_contentPadding = padding;
 	}
-
-	//____ contentPaddingAdapted() _______________________________________________
-
-	Border ExtendedSkin::contentPaddingAdapted() const
-	{
-		return Util::qpixToMU(_contentPadding());
-	}
-
 
 	//____ clearContentShift() ________________________________________________
 
@@ -114,54 +106,53 @@ namespace wg
 		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI ExtendedSkin::_minSize() const
+	Size ExtendedSkin::minSize() const
 	{
-		return pointsToAlignedQpix(m_contentPadding);
+		return Size(Border(m_contentPadding).align());
 	}
 
 	//____ _preferredSize() ______________________________________________________________
 
-	SizeI ExtendedSkin::_preferredSize() const
+	Size ExtendedSkin::preferredSize() const
 	{
-		return pointsToAlignedQpix(m_contentPadding);
+		return Size(Border(m_contentPadding).align());
 	}
 
-	//____ _sizeForContent() _______________________________________________________
+	//____ sizeForContent() _______________________________________________________
 
-	SizeI ExtendedSkin::_sizeForContent( const SizeI contentSize ) const
+	Size ExtendedSkin::sizeForContent( const Size& contentSize ) const
 	{
-		return contentSize + pointsToAlignedQpix(m_contentPadding);
+		return contentSize + Size(Border(m_contentPadding).align());
 	}
 
-	//____ _contentPadding() _______________________________________________________
+	//____ contentPadding() _______________________________________________________
 
-	BorderI ExtendedSkin::_contentPadding() const
+	Border ExtendedSkin::contentPadding() const
 	{
-		return pointsToAlignedQpix(m_contentPadding);
+		return Border(m_contentPadding).align();
 	}
 
-	//____ _contentPaddingSize() _______________________________________________________
+	//____ contentPaddingSize() _______________________________________________________
 
-	SizeI ExtendedSkin::_contentPaddingSize() const
+	Size ExtendedSkin::contentPaddingSize() const
 	{
-		return pointsToAlignedQpix(m_contentPadding);
+		return Size(Border(m_contentPadding).align());
 	}
 
+	//____ contentRect() __________________________________________________________
 
-	//____ _contentRect() __________________________________________________________
-
-	RectI ExtendedSkin::_contentRect( const RectI& canvas, State state ) const
+	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
 	{
-		return (canvas - pointsToAlignedQpix(m_contentPadding)) + pointsToAlignedQpix(m_contentShift[_stateToIndex(state)]);
+		return (canvas - Border(m_contentPadding).align()) + Coord(m_contentShift[_stateToIndex(state)]).align();
 	}
 
-	//____ _contentofs() __________________________________________________________
+	//____ contentofs() __________________________________________________________
 
-	CoordI ExtendedSkin::_contentOfs( State state ) const
+	Coord ExtendedSkin::contentOfs( State state ) const
 	{
-		return pointsToAlignedQpix(CoordI( m_contentPadding.left, m_contentPadding.top)) + pointsToAlignedQpix(m_contentShift[_stateToIndex(state)]);
+		return Coord( m_contentPadding.left, m_contentPadding.top).align() + Coord(m_contentShift[_stateToIndex(state)]).align();
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

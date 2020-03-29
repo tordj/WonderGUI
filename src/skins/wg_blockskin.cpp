@@ -319,9 +319,9 @@ namespace wg
 		m_frame = frame*m_pSurface->qpixPerPoint() / 4;
 	}
 
-	//____ _render() _______________________________________________________________
+	//____ render() _______________________________________________________________
 
-	void BlockSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -335,47 +335,47 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( qpixToPixels(_canvas), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch( canvas.pixels(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI BlockSkin::_minSize() const
+	Size BlockSkin::minSize() const
 	{
-		SizeI content = pointsToAlignedQpix(m_contentPadding);
-		SizeI frame = pointsToAlignedQpix(m_frame*4/m_pSurface->qpixPerPoint());
-		return SizeI::max( content, frame );
+		Size content = Border(m_contentPadding).align();
+		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).align();
+		return Size::max( content, frame );
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ preferredSize() ________________________________________________________
 
-	SizeI BlockSkin::_preferredSize() const
+	Size BlockSkin::preferredSize() const
 	{
-		//This takes the scale of the surface into account
-		// Preferred size is to map each point of the surface to a pixel of the skinarea.
-
-		return ((m_dimensions*4)/m_pSurface->qpixPerPoint())*MU::qpixPerPoint();
+        //This takes the scale of the surface into account
+        // Preferred size is to map each point of the surface to a point of the skinarea.
+        
+        return Size((m_dimensions*4)/m_pSurface->qpixPerPoint());
 	}
 
-	//____ _sizeForContent() _______________________________________________________
+	//____ sizeForContent() _______________________________________________________
 
-	SizeI BlockSkin::_sizeForContent( const SizeI contentSize ) const
+	Size BlockSkin::sizeForContent( const Size& contentSize ) const
 	{
-		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI min = pointsToAlignedQpix(m_frame*4/m_pSurface->qpixPerPoint());
+		Size sz = ExtendedSkin::sizeForContent(contentSize);
+		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).align();
 
-		return SizeI::max(sz, min);
+		return Size::max(sz, min);
 	}
 
-	//____ _markTest() _____________________________________________________________
+	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::_markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
+		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
 	}
 
 	//____ isOpaque() _____________________________________________________________
@@ -390,9 +390,7 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ _isOpaque() _____________________________________________________________
-
-	bool BlockSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	bool BlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}

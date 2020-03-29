@@ -160,13 +160,13 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
-		RectI canvas = qpixToPixels(_canvas);
+		RectI canvas = _canvas.pixels();
 
 		if (m_blendMode != oldBlendMode )
 			pDevice->setBlendMode(m_blendMode);
@@ -199,39 +199,39 @@ namespace wg
 			pDevice->setBlendMode(oldBlendMode);
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI BoxSkin::_minSize() const
+	Size BoxSkin::minSize() const
 	{
-		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = aligned(m_frame);
+		Size content = ExtendedSkin::minSize();
+		Size frame = Border(m_frame).align();
 
-		return SizeI::max(content,frame);
+		return Size::max(content,frame);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ preferredSize() ________________________________________________________
 
-	SizeI BoxSkin::_preferredSize() const
+	Size BoxSkin::preferredSize() const
 	{
-		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = pointsToAlignedQpix(m_frame);
+		Size content = ExtendedSkin::minSize();
+		Size frame = Border(m_frame).align();
 
-		return SizeI::max(content, frame);
+		return Size::max(content, frame);
 	}
 
-	//____ _sizeForContent() _______________________________________________________
+	//____ sizeForContent() _______________________________________________________
 
-	SizeI BoxSkin::_sizeForContent( const SizeI contentSize ) const
+	Size BoxSkin::sizeForContent( const Size& contentSize ) const
 	{
-		SizeI content = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI frame = pointsToAlignedQpix(m_frame);
+		Size content = ExtendedSkin::sizeForContent(contentSize);
+		Size frame = Border(m_frame).align();
 
-		return SizeI::max(content, frame);
+		return Size::max(content, frame);
 	}
 
-	//____ _markTest() _____________________________________________________________
+	//____ markTest() _____________________________________________________________
 
-	bool BoxSkin::_markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -244,7 +244,7 @@ namespace wg
 		{
 			int i = _stateToIndex(state);
 
-			RectI center = canvas - pointsToAlignedQpix(m_frame);
+			Rect center = canvas - Border(m_frame).align();
 			if( center.contains(ofs) )
 				opacity = m_fillColor[i].a;
 			else
@@ -270,12 +270,12 @@ namespace wg
 		return false;
 	}
 
-	bool BoxSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	bool BoxSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		if( m_bOpaque )
 			return true;
 
-		RectI center = RectI(canvasSize) - pointsToAlignedQpix(m_frame);
+		Rect center = Rect(canvasSize) - Border(m_frame).align();
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
 			return m_fillColor[i].a == 255;

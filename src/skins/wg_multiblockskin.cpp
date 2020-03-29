@@ -267,21 +267,21 @@ namespace wg
 	}
 
 
-	//____ _render() _______________________________________________________________
+	//____ render() _______________________________________________________________
 
-	void MultiBlockSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
 
-		RectI canvas = qpixToPixels(_canvas);
+		RectI canvas = _canvas.pixels();
 
 		int stateIndex = _stateToIndex(state);
 
-		BlendMode orgBlendMode = pDevice->blendMode();
+		BlendMode	orgBlendMode = pDevice->blendMode();
 		Color		orgTintColor = pDevice->tintColor();
 
-		BlendMode blendMode = orgBlendMode;
+		BlendMode	blendMode = orgBlendMode;
 		Color		tintColor = orgTintColor;
 		Color		mixedTint = orgTintColor;
 
@@ -318,37 +318,37 @@ namespace wg
 	}
 
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI MultiBlockSkin::_minSize() const
+	Size MultiBlockSkin::minSize() const
 	{
-		SizeI content = ExtendedSkin::_minSize();
-		SizeI frame = pointsToAlignedQpix(m_frame);
-		return SizeI::max(content, frame);
+		Size content = ExtendedSkin::minSize();
+		Size frame = Border(m_frame).align();
+		return Size::max(content, frame);
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ preferredSize() ________________________________________________________
 
-	SizeI MultiBlockSkin::_preferredSize() const
+	Size MultiBlockSkin::preferredSize() const
 	{
-		// Preferred size is to map each point of the surface to a pixel of the skinarea.
-
-		return m_blockSizePoints*MU::qpixPerPoint();
+        // Preferred size is to map each point of the surface to a pixel of the skinarea.
+        
+        return m_blockSizePoints;
 	}
 
-	//____ _sizeForContent() _______________________________________________________
+	//____ sizeForContent() _______________________________________________________
 
-	SizeI MultiBlockSkin::_sizeForContent( const SizeI contentSize ) const
+	Size MultiBlockSkin::sizeForContent( const Size& contentSize ) const
 	{
-		SizeI sz = ExtendedSkin::_sizeForContent(contentSize);
-		SizeI min = pointsToAlignedQpix(m_frame);
+		Size sz = ExtendedSkin::sizeForContent(contentSize);
+		Size min = Border(m_frame).align();
 
 		return SizeI::max(sz, min);
 	}
 
-	//____ _markTest() _____________________________________________________________
+	//____ markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::_markTest( const CoordI& _ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
@@ -361,7 +361,7 @@ namespace wg
 		for (auto& layer : m_layers)
 		{
 			CoordI srcOfs = layer.blockOfs[stateIndex];
-			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, { srcOfs,m_blockSize }, canvas, opacityTreshold, m_frame);
+			bool bMarked = markTestNinePatch(_ofs.qpix(), layer.pSurface, { srcOfs,m_blockSize }, canvas.qpix(), opacityTreshold, m_frame);
 			if (bMarked)
 				return true;
 		}
@@ -381,9 +381,9 @@ namespace wg
 		return m_bIsOpaque;
 	}
 
-	//____ _isOpaque() _____________________________________________________________
+	//____ isOpaque() _____________________________________________________________
 
-	bool MultiBlockSkin::_isOpaque( const RectI& rect, const SizeI& canvasSize, State state ) const
+	bool MultiBlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		return m_bIsOpaque;
 	}

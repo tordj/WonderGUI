@@ -154,16 +154,14 @@ namespace wg
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	//____ _isOpaque() _____________________________________________________________
-
-	bool ColorSkin::_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const
+	bool ColorSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	//____ _render() _______________________________________________________________
+	//____ render() _______________________________________________________________
 
-	void ColorSkin::_render( GfxDevice * pDevice, const RectI& _canvas, State state ) const
+	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -172,15 +170,15 @@ namespace wg
 
 		int i = _stateToIndex(state);
 
-		pDevice->fill( qpixToPixels(_canvas), m_color[i] );
+		pDevice->fill( canvas.pixels(), m_color[i] );
 
 		if (m_blendMode != oldBlendMode)
 			pDevice->setBlendMode(oldBlendMode);
 	}
 
-	//____ _markTest() _____________________________________________________________
+	//____ markTest() _____________________________________________________________
 
-	bool ColorSkin::_markTest( const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold ) const
+	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;

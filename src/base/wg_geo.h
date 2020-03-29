@@ -79,6 +79,11 @@ namespace wg
 		inline const Size& toSize() const;
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
+		inline const CoordI&	qpix() const {	return reinterpret_cast<const CoordI&>(*this); }
+		inline const CoordI		pixels() const;
+
+		inline Coord& align() { x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+
 		//.____ Operators ___________________________________________
 
 		// Coord can be IMPLICITLY cast to all CoordT<>
@@ -147,6 +152,11 @@ namespace wg
 		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
 
 		inline Border	scale(int scale) const { return Border(top*scale / 4096, right*scale / 4096, bottom*scale / 4096, left*scale / 4096); } // Only for WG2 compatibility!
+
+		inline const BorderI&	qpix() const { return reinterpret_cast<const BorderI&>(*this); }
+		inline const BorderI	pixels() const;
+
+		inline Border& align() { top.qpix &= 0xFFFFFFFC; right.qpix &= 0xFFFFFFFC; bottom.qpix &= 0xFFFFFFFC; left.qpix &= 0xFFFFFFFC; return *this; }
 
 		//.____ Operators ___________________________________________
 
@@ -221,11 +231,15 @@ namespace wg
 
 		//.____ Misc ______________________________________________
 
-		inline void limit(const Size& min, const Size& max);
-		inline void clear() { w = 0; h = 0; }
-		inline bool	isEmpty() const { return (w == 0 && h == 0); }
+		inline void			limit(const Size& min, const Size& max);
+		inline void			clear() { w = 0; h = 0; }
+		inline bool			isEmpty() const { return (w == 0 && h == 0); }
 
 		inline const Coord& toCoord() const { return reinterpret_cast<const Coord&>(*this); }
+
+		inline const SizeI&	qpix() const { return reinterpret_cast<const SizeI&>(*this); }
+		inline const SizeI	pixels() const;
+		inline Size&		align() { w.qpix &= 0xFFFFFFFC; h.qpix &= 0xFFFFFFFC; return *this; }
 
 		//.____ Operators ___________________________________________
 
@@ -381,6 +395,11 @@ namespace wg
 
 		inline Coord distance(Coord coord) const;				////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
 
+		inline const RectI&	qpix() const { return reinterpret_cast<const RectI&>(*this); }
+		inline const RectI	pixels() const;
+
+		inline Rect&		align() { w.qpix = (w.qpix + (x.qpix & 0x3)) & 0xFFFFFFFC; h.qpix = (h.qpix + (y.qpix & 0x3)) & 0xFFFFFFFC; x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+
 		//.____ Operators ___________________________________________
 
 		// Rect can be IMPLICITLY cast to all RectT<>, CoordT<> and SizeT<>
@@ -396,7 +415,7 @@ namespace wg
 
 		//
 
-		inline Rect& operator=(const Rect& rect);					///< @brief Normal assignment operator.
+		inline Rect& operator=(const Rect& rect);				///< @brief Normal assignment operator.
 		inline bool operator==(const Rect& rect) const;
 		inline bool operator!=(const Rect& rect) const;
 
@@ -435,374 +454,6 @@ namespace wg
 		MU		w;		///< Width, i.e. length of rectangle along the X axis.
 		MU		h;		///< Height, i.e. length of rectangle along the Y axis.
 	};
-
-
-
-	//_____________________________________________________________________________
-
-	inline Size::Size(const Rect& rect) : w(rect.w), h(rect.h)
-	{
-	}
-
-
-	//_____________________________________________________________________________
-
-	inline Size Border::size() const
-	{ 
-		return Size(left + right, top + bottom); 
-	}
-
-	inline Border::operator Size() const
-	{ 
-		return Size(left + right, top + bottom); 
-	}
-
-
-	//_____________________________________________________________________________
-
-	inline void Size::limit(const Size& min, const Size& max)
-	{
-		if (w < min.w)
-			w = min.w;
-		if (h < min.h)
-			h = min.h;
-
-		if (w > max.w)
-			w = max.w;
-		if (h > max.h)
-			h = max.h;
-	}
-
-
-	//_____________________________________________________________________________
-	inline Coord::Coord(const Rect& rect)
-	{
-		x = rect.x;
-		y = rect.y;
-	}
-
-	//_____________________________________________________________________________
-	inline const Size& Coord::toSize() const
-	{
-		return reinterpret_cast<const Size&>(*this);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Normal assignment operator.
-	 **/
-	inline Rect& Rect::operator=(const Rect& r2)
-	{
-		x = r2.x;
-		y = r2.y;
-		w = r2.w;
-		h = r2.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool Rect::operator==(const Rect& rect) const
-	{
-		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Standard comparison operator
-	 **/
-	inline bool Rect::operator!=(const Rect& rect) const
-	{
-		return !(*this == rect);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Increase size of rectangle.
-	 **/
-	inline Rect& Rect::operator+=(const Size& k)
-	{
-		w += k.w;
-		h += k.h;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Decrease size of rectangle.
-	 **/
-	inline Rect& Rect::operator-=(const Size& k)
-	{
-		w -= k.w;
-		h -= k.h;
-		return *this;
-	}
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with size increased by Size.
-	 **/
-
-	inline Rect Rect::operator+(const Size& k) const
-	{
-		Rect res;
-		res.x = x;
-		res.y = y;
-		res.w = w + k.w;
-		res.h = h + k.h;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with size decreased with Size.
-	 **/
-
-	inline Rect Rect::operator-(const Size& k) const
-	{
-		Rect res;
-		res.x = x;
-		res.y = y;
-		res.w = w - k.w;
-		res.h = h - k.h;
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Increase position of rectangle.
-	 **/
-
-	inline Rect& Rect::operator+=(const Coord& k)
-	{
-		x += k.x;
-		y += k.y;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Decrease position of rectangle.
-	 **/
-
-	inline Rect& Rect::operator-=(const Coord& k)
-	{
-		x -= k.x;
-		y -= k.y;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with position increased by Coord.
-	 **/
-
-	inline Rect Rect::operator+(const Coord& k) const
-	{
-		Rect res;
-		res.x = x + k.x;
-		res.y = y + k.y;
-		res.w = w;
-		res.h = h;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get rectangle with position decreased by Coord.
-	 **/
-	inline Rect Rect::operator-(const Coord& k) const
-	{
-		Rect res;
-		res.x = x - k.x;
-		res.y = y - k.y;
-		res.w = w;
-		res.h = h;
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Grow rectangle by the specified border.
-	 *
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect& Rect::operator+=(const Border& k)
-	{
-		x -= k.left;
-		y -= k.top;
-		w += k.left + k.right;
-		h += k.top + k.bottom;
-		return *this;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Shrink rectangle by the specified border.
-	 *
-	 * Shrink rectangle by the specified border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect& Rect::operator-=(const Border& k)
-	{
-		x += k.left;
-		y += k.top;
-		w -= k.left + k.right;
-		h -= k.top + k.bottom;
-		return *this;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Returns a rectangle grown by the border.
-	 *
-	 * Returns a rectangle grown by the border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect Rect::operator+(const Border& k) const
-	{
-		Rect res;
-		res.x = x - k.left;
-		res.y = y - k.top;
-		res.w = w + k.left + k.right;
-		res.h = h + k.top + k.bottom;
-		return res;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * @brief Returns a rectangle shrunk by the border.
-	 *
-	 * Returns a rectangle shrunk by the border.
-	 * The position of the rectangle is affected by the top and left borders.
-	 **/
-	inline Rect Rect::operator-(const Border& k) const
-	{
-		Rect	res;
-		res.x = x + k.left;
-		res.y = y + k.top;
-		res.w = w - (k.left + k.right);
-		res.h = h - (k.top + k.bottom);
-		return res;
-	}
-
-
-	//_____________________________________________________________________________
-	/**
-	 * Set position (members x and y) of the rectangle.
-	 **/
-	inline void Rect::setPos(const Coord& p)
-	{
-		x = p.x;
-		y = p.y;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Set the size (members w and h) of the rectangle.
-	 **/
-	inline void Rect::setSize(const Size& sz)
-	{
-		w = sz.w;
-		h = sz.h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get width of the rectangle (member variable w).
-	 **/
-	inline MU Rect::width() const
-	{
-		return w;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get height of the rectangle (member variable h).
-	 **/
-	inline MU Rect::height() const
-	{
-		return h;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get size (width and height) of the rectangle.
-	 **/
-	inline Size Rect::size() const
-	{
-		return Size(w, h);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get position (members x and y) of the rectangle.
-	 **/
-	inline Coord Rect::pos() const
-	{
-		return Coord(x, y);
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get X coordinate of left edge. This is equal to member variable x.
-	 **/
-	inline MU Rect::left() const
-	{
-		return x;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get Y coordinate of top edge. This is equal to member variable y.
-	 **/
-	inline MU Rect::top() const
-	{
-		return y;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get X coordinate of right edge. This is equal to member variables x + w.
-	 **/
-	inline MU Rect::right() const
-	{
-		return x + w;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Get Y coordinate of bottom edge. This is equal to member variables y + h.
-	 **/
-	inline MU Rect::bottom() const
-	{
-		return y + h;
-	}
-	//_____________________________________________________________________________
-	/**
-	 * 	Check if rectangle has no area (width or height is zero).
-	 **/
-	inline bool	Rect::isEmpty() const
-	{
-		return (w == 0 || h == 0) ? true : false;
-	}
-
-	//_____________________________________________________________________________
-	/**
-	 * Sets all values to zero.
-	 **/
-	inline void Rect::clear()
-	{
-		x = 0;
-		y = 0;
-		w = 0;
-		h = 0;
-	}
-
 
 	//____ CoordT<> ___________________________________________________________
 	/**
@@ -1297,6 +948,401 @@ namespace wg
 		Type	w;		///< Width, i.e. length of rectangle along the X axis.
 		Type	h;		///< Height, i.e. length of rectangle along the Y axis.
 	};
+
+
+	//_____________________________________________________________________________
+	inline Coord::Coord(const Rect& rect)
+	{
+		x = rect.x;
+		y = rect.y;
+	}
+
+	//_____________________________________________________________________________
+	inline const Size& Coord::toSize() const
+	{
+		return reinterpret_cast<const Size&>(*this);
+	}
+
+	//_____________________________________________________________________________
+
+	inline const CoordI	Coord::pixels() const
+	{
+		return { x.qpix >> 2, y.qpix >> 2 };
+	}
+
+
+	//_____________________________________________________________________________
+
+	inline Size::Size(const Rect& rect) : w(rect.w), h(rect.h)
+	{
+	}
+
+
+	//_____________________________________________________________________________
+
+	inline Size Border::size() const
+	{
+		return Size(left + right, top + bottom);
+	}
+
+	//_____________________________________________________________________________
+
+	const BorderI Border::pixels() const 
+	{ 
+		return { top.qpix >> 2, right.qpix >> 2, bottom.qpix >> 2, left.qpix >> 2 }; 
+	}
+
+	//_____________________________________________________________________________
+
+	inline Border::operator Size() const
+	{
+		return Size(left + right, top + bottom);
+	}
+
+	//_____________________________________________________________________________
+
+	inline void Size::limit(const Size& min, const Size& max)
+	{
+		if (w < min.w)
+			w = min.w;
+		if (h < min.h)
+			h = min.h;
+
+		if (w > max.w)
+			w = max.w;
+		if (h > max.h)
+			h = max.h;
+	}
+
+	//_____________________________________________________________________________
+
+	const SizeI Size::pixels() const 
+	{ 
+		return { w.qpix >> 2, h.qpix >> 2 }; 
+	}
+
+	//_____________________________________________________________________________
+
+	const RectI Rect::pixels() const 
+	{ 
+		return { x.qpix >> 2, y.qpix >> 2, w.qpix >> 2, h.qpix >> 2 }; 
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Normal assignment operator.
+	 **/
+	inline Rect& Rect::operator=(const Rect& r2)
+	{
+		x = r2.x;
+		y = r2.y;
+		w = r2.w;
+		h = r2.h;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Standard comparison operator
+	 **/
+	inline bool Rect::operator==(const Rect& rect) const
+	{
+		return x == rect.x && y == rect.y && w == rect.w && h == rect.h;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Standard comparison operator
+	 **/
+	inline bool Rect::operator!=(const Rect& rect) const
+	{
+		return !(*this == rect);
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Increase size of rectangle.
+	 **/
+	inline Rect& Rect::operator+=(const Size& k)
+	{
+		w += k.w;
+		h += k.h;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Decrease size of rectangle.
+	 **/
+	inline Rect& Rect::operator-=(const Size& k)
+	{
+		w -= k.w;
+		h -= k.h;
+		return *this;
+	}
+	//_____________________________________________________________________________
+	/**
+	 * Get rectangle with size increased by Size.
+	 **/
+
+	inline Rect Rect::operator+(const Size& k) const
+	{
+		Rect res;
+		res.x = x;
+		res.y = y;
+		res.w = w + k.w;
+		res.h = h + k.h;
+		return res;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get rectangle with size decreased with Size.
+	 **/
+
+	inline Rect Rect::operator-(const Size& k) const
+	{
+		Rect res;
+		res.x = x;
+		res.y = y;
+		res.w = w - k.w;
+		res.h = h - k.h;
+		return res;
+	}
+
+
+	//_____________________________________________________________________________
+	/**
+	 * Increase position of rectangle.
+	 **/
+
+	inline Rect& Rect::operator+=(const Coord& k)
+	{
+		x += k.x;
+		y += k.y;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Decrease position of rectangle.
+	 **/
+
+	inline Rect& Rect::operator-=(const Coord& k)
+	{
+		x -= k.x;
+		y -= k.y;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get rectangle with position increased by Coord.
+	 **/
+
+	inline Rect Rect::operator+(const Coord& k) const
+	{
+		Rect res;
+		res.x = x + k.x;
+		res.y = y + k.y;
+		res.w = w;
+		res.h = h;
+		return res;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get rectangle with position decreased by Coord.
+	 **/
+	inline Rect Rect::operator-(const Coord& k) const
+	{
+		Rect res;
+		res.x = x - k.x;
+		res.y = y - k.y;
+		res.w = w;
+		res.h = h;
+		return res;
+	}
+
+
+	//_____________________________________________________________________________
+	/**
+	 * Grow rectangle by the specified border.
+	 *
+	 * The position of the rectangle is affected by the top and left borders.
+	 **/
+	inline Rect& Rect::operator+=(const Border& k)
+	{
+		x -= k.left;
+		y -= k.top;
+		w += k.left + k.right;
+		h += k.top + k.bottom;
+		return *this;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * @brief Shrink rectangle by the specified border.
+	 *
+	 * Shrink rectangle by the specified border.
+	 * The position of the rectangle is affected by the top and left borders.
+	 **/
+	inline Rect& Rect::operator-=(const Border& k)
+	{
+		x += k.left;
+		y += k.top;
+		w -= k.left + k.right;
+		h -= k.top + k.bottom;
+		return *this;
+	}
+
+
+	//_____________________________________________________________________________
+	/**
+	 * @brief Returns a rectangle grown by the border.
+	 *
+	 * Returns a rectangle grown by the border.
+	 * The position of the rectangle is affected by the top and left borders.
+	 **/
+	inline Rect Rect::operator+(const Border& k) const
+	{
+		Rect res;
+		res.x = x - k.left;
+		res.y = y - k.top;
+		res.w = w + k.left + k.right;
+		res.h = h + k.top + k.bottom;
+		return res;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * @brief Returns a rectangle shrunk by the border.
+	 *
+	 * Returns a rectangle shrunk by the border.
+	 * The position of the rectangle is affected by the top and left borders.
+	 **/
+	inline Rect Rect::operator-(const Border& k) const
+	{
+		Rect	res;
+		res.x = x + k.left;
+		res.y = y + k.top;
+		res.w = w - (k.left + k.right);
+		res.h = h - (k.top + k.bottom);
+		return res;
+	}
+
+
+	//_____________________________________________________________________________
+	/**
+	 * Set position (members x and y) of the rectangle.
+	 **/
+	inline void Rect::setPos(const Coord& p)
+	{
+		x = p.x;
+		y = p.y;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Set the size (members w and h) of the rectangle.
+	 **/
+	inline void Rect::setSize(const Size& sz)
+	{
+		w = sz.w;
+		h = sz.h;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get width of the rectangle (member variable w).
+	 **/
+	inline MU Rect::width() const
+	{
+		return w;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get height of the rectangle (member variable h).
+	 **/
+	inline MU Rect::height() const
+	{
+		return h;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get size (width and height) of the rectangle.
+	 **/
+	inline Size Rect::size() const
+	{
+		return Size(w, h);
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get position (members x and y) of the rectangle.
+	 **/
+	inline Coord Rect::pos() const
+	{
+		return Coord(x, y);
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get X coordinate of left edge. This is equal to member variable x.
+	 **/
+	inline MU Rect::left() const
+	{
+		return x;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get Y coordinate of top edge. This is equal to member variable y.
+	 **/
+	inline MU Rect::top() const
+	{
+		return y;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get X coordinate of right edge. This is equal to member variables x + w.
+	 **/
+	inline MU Rect::right() const
+	{
+		return x + w;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Get Y coordinate of bottom edge. This is equal to member variables y + h.
+	 **/
+	inline MU Rect::bottom() const
+	{
+		return y + h;
+	}
+	//_____________________________________________________________________________
+	/**
+	 * 	Check if rectangle has no area (width or height is zero).
+	 **/
+	inline bool	Rect::isEmpty() const
+	{
+		return (w == 0 || h == 0) ? true : false;
+	}
+
+	//_____________________________________________________________________________
+	/**
+	 * Sets all values to zero.
+	 **/
+	inline void Rect::clear()
+	{
+		x = 0;
+		y = 0;
+		w = 0;
+		h = 0;
+	}
 
 
 	//____ RectT() _______________________________________________________________
