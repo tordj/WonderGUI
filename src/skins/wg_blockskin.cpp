@@ -335,7 +335,7 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( canvas.pixels(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
+		pDevice->blitNinePatch( canvas.px(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
 
 		if (m_blendMode != BlendMode::Undefined)
 			pDevice->setBlendMode(savedBlendMode);

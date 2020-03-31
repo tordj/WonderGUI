@@ -100,7 +100,7 @@ namespace wg
 
 	//____ _setPadding() _______________________________________________________
 
-	void CIconDisplay::_setPadding( BorderI borders )
+	void CIconDisplay::_setPadding( Border borders )
 	{
 		if( borders != m_padding )
 		{
@@ -138,37 +138,37 @@ namespace wg
 
 	*/
 
-	RectI CIconDisplay::_getIconRect( const RectI& contentRect ) const
+	Rect CIconDisplay::_getIconRect( const Rect& contentRect ) const
 	{
 		if( m_pSkin )
-			return _getIconRect(contentRect, m_pSkin->_preferredSize());
+			return _getIconRect(contentRect, m_pSkin->preferredSize());
 		else
 			return RectI();
 	}
 
-	RectI CIconDisplay::_getIconRect( const RectI& contentRect, const SizeI& iconSize ) const
+	Rect CIconDisplay::_getIconRect( const Rect& contentRect, const Size& iconSize ) const
 	{
-		RectI rect;
+		Rect rect;
 
-		int w = iconSize.w;
-		int h = iconSize.h;
+		MU w = iconSize.w;
+		MU h = iconSize.h;
 
-		if( w > 0 && h > 0 )
+		if( w.qpix > 0 && h.qpix > 0 )
 		{
-			int bgW = contentRect.w - m_padding.width();
-			int bgH = contentRect.h - m_padding.height();
+			MU bgW = contentRect.w - m_padding.width();
+			MU bgH = contentRect.h - m_padding.height();
 
 			if( m_scale != 0.f )
 			{
-				if( (w / (float) bgW) > (h / (float) bgH) )
+				if( (w.qpix / (float) bgW.qpix) > (h.qpix / (float) bgH.qpix) )
 				{
-					h = (int) ((h * bgW * m_scale) / w);
-					w = (int) (bgW * m_scale);
+					h = (MU) ((h * bgW * m_scale) / w);
+					w = (MU) (bgW * m_scale);
 				}
 				else
 				{
-					w = (int) ((w * bgH * m_scale) / h);
-					h = (int) (bgH * m_scale);
+					w = (MU) ((w * bgH * m_scale) / h);
+					h = (MU) (bgH * m_scale);
 				}
 			}
 
@@ -177,7 +177,7 @@ namespace wg
 			w += m_padding.width();
 			h += m_padding.height();
 
-			rect = Util::origoToRect( m_origo, contentRect.size(), SizeI(w,h) );
+			rect = Util::origoToRect( m_origo, contentRect.size(), Size(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}
@@ -189,11 +189,11 @@ namespace wg
 
 	//____ _getTextRect() _____________________________________________________
 
-	RectI CIconDisplay::_getTextRect( const RectI& contentRect, const RectI& iconRect ) const
+	Rect CIconDisplay::_getTextRect( const Rect& contentRect, const Rect& iconRect ) const
 	{
-		RectI textRect = contentRect;
+		Rect textRect = contentRect;
 
-		if( !m_bOverlap && iconRect.w > 0 && iconRect.h > 0 )
+		if( !m_bOverlap && iconRect.w.qpix > 0 && iconRect.h.qpix > 0 )
 		{
 			switch( m_origo )
 			{
@@ -201,11 +201,11 @@ namespace wg
 				case Origo::SouthWest:
 				case Origo::West:
 				{
-					int diff = iconRect.x - contentRect.x + iconRect.w + m_padding.right;
+					MU diff = iconRect.x - contentRect.x + iconRect.w + m_padding.right;
 					textRect.x += diff;
 					textRect.w -= diff;
-					if( textRect.w < 0 )
-						textRect.w = 0;
+					if( textRect.w.qpix < 0 )
+						textRect.w.qpix = 0;
 					break;
 				}
 				case Origo::NorthEast:
@@ -213,8 +213,8 @@ namespace wg
 				case Origo::SouthEast:
 				{
 					textRect.w = iconRect.x - contentRect.x - m_padding.left;
-					if( textRect.w < 0 )
-						textRect.w = 0;
+					if( textRect.w.qpix < 0 )
+						textRect.w.qpix = 0;
 					break;
 				}
 
@@ -224,15 +224,15 @@ namespace wg
 					int diff = iconRect.y - contentRect.y + iconRect.h + m_padding.bottom;
 					textRect.y += diff;
 					textRect.h -= diff;
-					if( textRect.h < 0 )
-						textRect.h = 0;
+					if( textRect.h.qpix < 0 )
+						textRect.h.qpix = 0;
 					break;
 				}
 				case Origo::South:
 				{
 					textRect.h = iconRect.y - contentRect.y - m_padding.top;
-					if( textRect.h < 0 )
-						textRect.h = 0;
+					if( textRect.h.qpix < 0 )
+						textRect.h.qpix = 0;
 					break;
 				}
 			}
@@ -254,12 +254,12 @@ namespace wg
 
 	//____ _preferredSize() ________________________________________________________
 
-	SizeI CIconDisplay::_preferredSize() const
+	Size CIconDisplay::_preferredSize() const
 	{
 		if( m_pSkin )
-			return m_pSkin->_preferredSize() + m_padding;
+			return m_pSkin->preferredSize() + m_padding;
 
-		return SizeI();
+		return Size();
 	}
 
 

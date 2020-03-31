@@ -83,7 +83,7 @@ namespace wg
 
 	void StaticColorSkin::render(GfxDevice * pDevice, const Rect& canvas, State state) const
 	{
-		pDevice->fill(canvas.pixels(), m_color);
+		pDevice->fill(canvas.px(), m_color);
 	}
 
 	//____ minSize() ______________________________________________________________

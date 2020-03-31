@@ -92,7 +92,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		inline Coord		pos() const;
-		inline Size			size() const;
+		inline const Size&	size() const;
 		inline Rect			geo() const;
 		inline Coord		globalPos() const;
 		inline Rect			globalGeo() const;
@@ -100,12 +100,12 @@ namespace wg
 		inline Coord		toGlobal( const Coord& coord ) const;
 		inline Coord		toLocal( const Coord& coord ) const;
 
-		inline MU			matchingHeight( MU width ) const;
-		inline MU			matchingWidth( MU height ) const;
+		virtual MU			matchingHeight( MU width ) const;
+		virtual MU			matchingWidth( MU height ) const;
 
-		inline Size			preferredSize() const;
-		inline Size			minSize() const;
-		inline Size			maxSize() const;
+		virtual Size		preferredSize() const;
+		virtual Size		minSize() const;
+		virtual Size		maxSize() const;
 
 
 		//.____ Hierarchy _________________________________________________
@@ -161,7 +161,7 @@ namespace wg
 
 		//.____ Misc _________________________________________________________________
 
-		inline bool			markTest( const Coord& ofs );
+		virtual bool		markTest( const Coord& ofs );
 		void 				receive( Msg * pMsg ) override;
 
 		inline void			refresh();
@@ -188,63 +188,46 @@ namespace wg
 
 		virtual Widget* 	_newOfMyType() const = 0;
 
-		virtual bool		_markTest(const CoordI& ofs);
-
 		bool            	_requestPreRenderCall();
 
-		// Methods for geometry in quarterpixels
-
-		inline CoordI		_globalPos() const { return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI(); }
-		inline RectI		_globalGeo() const { return  m_pHolder ? RectI(m_pHolder->_childGlobalPos(m_pSlot), m_size) : RectI(0, 0, m_size); }
-
-		CoordI				_toGlobal(const CoordI& coord) const;
-		CoordI				_toLocal(const CoordI& coord) const;
-
-		virtual int			_matchingHeight(int width) const;
-		virtual int			_matchingWidth(int height) const;
-
-		virtual SizeI		_preferredSize() const;
-		virtual SizeI		_minSize() const;
-		virtual SizeI		_maxSize() const;
-
-		inline RectI		_contentRect() const { return m_pSkin ? m_pSkin->_contentRect(m_size, m_state) : RectI( m_size ); }
-		inline RectI		_contentRect(const RectI& canvas) const { return m_pSkin ? m_pSkin->_contentRect(canvas, m_state) : canvas; }
-		inline SizeI		_contentPaddingSize() const { return m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI(); }
+		inline Rect			_contentRect() const { return m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect( m_size ); }
+		inline Rect			_contentRect(const Rect& canvas) const { return m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas; }
+		inline Size			_contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
 
 		// Convenient calls to holder
 
 
 
 		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
-		inline void			_requestRender( const RectI& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
+		inline void			_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
 		inline void			_requestResize() { if( m_pHolder ) m_pHolder->_childRequestResize( m_pSlot ); }
 		inline void			_requestInView() const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot ); }
-		inline void			_requestInView( const RectI& mustHaveArea, const RectI& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
+		inline void			_requestInView( const Rect& mustHaveArea, const Rect& niceToHaveArea ) const { if( m_pHolder ) m_pHolder->_childRequestInView( m_pSlot, mustHaveArea, niceToHaveArea ); }
 
 		inline Widget *		_nextSibling() const { if( m_pHolder ) return m_pHolder->_nextChild( m_pSlot ); else return nullptr; }
 		inline Widget *		_prevSibling() const { if( m_pHolder ) return m_pHolder->_prevChild( m_pSlot ); else return nullptr; }
 		inline Container *	_parent() const { if( m_pHolder ) return m_pHolder->_container(); else return nullptr; }
 
-		inline RectI		_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return RectI(); }
+		inline Rect			_windowSection() const { if( m_pHolder ) return m_pHolder->_childWindowSection( m_pSlot ); return Rect(); }
 
 		// To be overloaded by Widget
 
-		virtual void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip );
-		virtual void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
+		virtual void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip );
+		virtual void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 
 		Widget *			_clone() const;
 		virtual void		_cloneContent( const Widget * _pOrg );
 
 		virtual void    	_preRender();
-		virtual void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window );
+		virtual void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window );
 
 		virtual void		_refresh();
-		virtual void		_resize( const SizeI& size );
+		virtual void		_resize( const Size& size );
 		virtual void		_setSkin( Skin * pSkin );
 		virtual void		_setState( State state );
 
 		virtual void		_receive( Msg * pMsg );
-		virtual	bool		_alphaTest( const CoordI& ofs );
+		virtual	bool		_alphaTest( const Coord& ofs );
 
 		virtual SizeI		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
@@ -253,19 +236,19 @@ namespace wg
 		virtual Object * 	_object() override;
 		virtual const Object * _object() const override;
 
-		virtual CoordI		_componentPos( const GeoComponent * pComponent ) const override;
-		virtual SizeI		_componentSize( const GeoComponent * pComponent ) const override;
-		virtual RectI		_componentGeo( const GeoComponent * pComponent ) const override;
-		virtual CoordI		_globalComponentPos( const GeoComponent * pComponent ) const override;
-		virtual RectI		_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		virtual Coord		_componentPos( const GeoComponent * pComponent ) const override;
+		virtual Size		_componentSize( const GeoComponent * pComponent ) const override;
+		virtual Rect		_componentGeo( const GeoComponent * pComponent ) const override;
+		virtual Coord		_globalComponentPos( const GeoComponent * pComponent ) const override;
+		virtual Rect		_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
 		virtual void		_componentRequestRender( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		virtual void		_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
 		virtual void		_componentRequestResize( const GeoComponent * pComponent ) override;
 
  		virtual void		_componentRequestFocus( const GeoComponent * pComponent ) override;
 		virtual void		_componentRequestInView( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
+		virtual void		_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
 
 		virtual void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
@@ -288,7 +271,7 @@ namespace wg
 		bool			m_bSelectable;		// Set if widget is allowed to be selected.
 
 		State			m_state;			// Current state of widget.
-		SizeI			m_size;				// Current size of widget.
+		Size			m_size;				// Current size of widget.
 
 		bool            m_bPickable;        // Set if this widget accepts to be the source of drag-n-drop operations.
 		uint8_t         m_pickCategory;     // Category of drag-n-drop operations. User defined.
@@ -361,9 +344,9 @@ namespace wg
 	 *
 	 * @return Size of widget.
 	 */
-	Size Widget::size() const
+	const Size& Widget::size() const
 	{
-		return Util::qpixToMU(m_size);
+		return m_size;
 	}
 
 	//____ geo() __________________________
@@ -378,8 +361,8 @@ namespace wg
 	Rect Widget::geo() const
 	{
 		if( m_pHolder )
-			return Rect(Util::qpixToMU(m_pHolder->_childPos( m_pSlot )),Util::qpixToMU(m_size));
-		return Rect(0,0,m_size);
+			return Rect(m_pHolder->_childPos( m_pSlot ), m_size);
+		return Rect(m_size);
 	}
 
 	//____ globalPos() __________________________
@@ -392,7 +375,7 @@ namespace wg
 	 */
 	Coord Widget::globalPos() const
 	{
-		return Util::qpixToMU(_globalPos());
+		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI();
 	}
 
 	//____ globalGeo() __________________________
@@ -406,7 +389,7 @@ namespace wg
 	 */
 	Rect Widget::globalGeo() const
 	{
-		return Util::qpixToMU(_globalGeo());
+		return  m_pHolder ? Rect(m_pHolder->_childGlobalPos(m_pSlot), m_size) : Rect(m_size);
 	}
 
 	//____ toGlobal() __________________________
@@ -427,7 +410,7 @@ namespace wg
 
 	Coord Widget::toGlobal(const Coord& coord) const
 	{
-		return Util::qpixToMU(_toGlobal(Util::MUToQpix(coord)) );
+		return globalPos() + coord;
 	}
 
 	//____ toLocal() ____________________________________________________________
@@ -448,142 +431,8 @@ namespace wg
 
 	Coord Widget::toLocal(const Coord& coord) const
 	{
-		return Util::qpixToMU(_toLocal(Util::MUToQpix(coord)));
+		return coord - globalPos();
 	}
-
-
-	//____ matchingHeight() _______________________________________________________
-	/**
-	 * @brief Get the widgets preferred height for the specified width.
-	 *
-	 * Get the widgets preferred height for the specified width.
-	 *
-	 * @param width		Width in pixels.
-	 *
-	 * This method is used by containers to get the preferred height of a widget for which
-	 * it has already decided the width.
-	 *
-	 * @return The preferred height for the given width.
-	 */
-
-	MU Widget::matchingHeight(MU width) const
-	{
-		return MU::fromQpix(_matchingHeight(width.qpix));
-	}
-
-	//____ matchingWidth() _______________________________________________________
-	/**
-	 * @brief Get the widgets preferred width for the specified height.
-	 *
-	 * Get the widgets preferred width for the specified height.
-	 *
-	 * @param height	Height in pixels.
-	 *
-	 * This method is used by containers to get the preferred width of a widget for which
-	 * it has already decided the height.
-	 *
-	 * @return The preferred width for the given height.
-	 */
-
-	MU Widget::matchingWidth(MU height) const
-	{
-		return MU::fromQpix(_matchingWidth(height.qpix));
-	}
-
-	//____ preferredSize() ________________________________________________________
-	/**
-	 * @brief Get the widgets preferred size.
-	 *
-	 * Get the widgets preferred size.
-	 *
-	 * Each widget has its own preferred size, which is depending on things such as
-	 * skinning, content and (in the case of containers) size and layout of children.
-	 *
-	 * A container holding a widget will strive to provide the widget its preferred size, given
-	 * the constraints and limitations the container needs to work with. If a container can't
-	 * provide a widget its preferred size, it is likely to decide the closest width or height
-	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
-	 * after which it will decide the size of the child.
-	 *
-	 * @return The preferred size of the widget.
-	 */
-
-	Size Widget::preferredSize() const
-	{
-		return Util::qpixToMU(_preferredSize());
-	}
-
-
-	//____ minSize() ______________________________________________________________
-	/**
-	 * @brief Get the widgets recommended minimum size.
-	 *
-	 * Get the widgets recommended minimum size.
-	 *
-	 * Each widget has its own minimum size, which is depending on things such as
-	 * skinning, content and (in the case of containers) size and layout of children.
-	 *
-	 * The minimum size is only a hint for the container, which should strive to not
-	 * make a child smaller than its minimum size, but is allowed to set the child to
-	 * any size it decides, including 0.0.
-	 *
-	 * @return The minimum size of the widget.
-	 */
-
-	Size Widget::minSize() const
-	{
-		return Util::qpixToMU(_minSize());
-	}
-
-	//____ maxSize() ______________________________________________________________
-	/**
-	 * @brief Get the widgets recommended maximum size.
-	 *
-	 * Get the widgets recommended maximum size.
-	 *
-	 * Each widget has its own maximum size, which is depending on things such as
-	 * skinning, content and (in the case of containers) size and layout of children.
-	 *
-	 * The maximum size is only a hint for the container, which should strive to not
-	 * make a child larger than its maximum size, but is allowed to set the child to
-	 * any reasonable size it decides.
-	 *
-	 * @return The maximum size of the widget.
-	 */
-
-	Size Widget::maxSize() const
-	{
-		return Util::qpixToMU(_maxSize());
-	}
-
-
-	//____ markTest() _____________________________________________________________
-	/**
-	 * @brief Check if specified coordinate is inside or outside of widget.
-	 *
-	 * Check if specified coordinate is inside or outside of widget.
-	 *
-	 * @param ofs	Coordinate to check in widgets own coordinate system.
-	 *
-	 * This method first checks if the specified coordinate is inside the widgets
-	 * box geometry. If it is, a second check is performed against the widgets
-	 * alpha value (transparency) at the specified coordinate.
-	 * If the alpha value is equal to or higher than the widgets MarkOpacity value, the
-	 * test succeeds and MarkTest returns true.
-	 *
-	 * MarkOpacity is by default set to 1, which means that all but totally transparent pixels
-	 * will be marked. See setMarkOpacity() for more info.
-	 *
-	 * This method is mainly used to determine if the pointer hovers over the widget or not.
-	 *
-	 * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
-	 */
-
-	bool Widget::markTest(const Coord& ofs)
-	{
-		return _markTest(Util::MUToQpix(ofs));
-	}
-
 
 	//____ state() ____________________________________________________________
 	/**

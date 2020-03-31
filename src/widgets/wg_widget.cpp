@@ -235,9 +235,29 @@ namespace wg
 	}
 
 
-	//____ _markTest()_____________________________________________________________
+	//____ markTest() _____________________________________________________________
+	/**
+	 * @brief Check if specified coordinate is inside or outside of widget.
+	 *
+	 * Check if specified coordinate is inside or outside of widget.
+	 *
+	 * @param ofs	Coordinate to check in widgets own coordinate system.
+	 *
+	 * This method first checks if the specified coordinate is inside the widgets
+	 * box geometry. If it is, a second check is performed against the widgets
+	 * alpha value (transparency) at the specified coordinate.
+	 * If the alpha value is equal to or higher than the widgets MarkOpacity value, the
+	 * test succeeds and MarkTest returns true.
+	 *
+	 * MarkOpacity is by default set to 1, which means that all but totally transparent pixels
+	 * will be marked. See setMarkOpacity() for more info.
+	 *
+	 * This method is mainly used to determine if the pointer hovers over the widget or not.
+	 *
+	 * @return True if alpha value of coordinate is equal to or higher than widgets MarkOpaciy.
+	 */
 
-	bool Widget::_markTest(const CoordI& ofs)
+	bool Widget::markTest(const Coord& ofs)
 	{
 		if (m_markOpacity >= 256 || ofs.x < 0 || ofs.y < 0 || ofs.x >= m_size.w || ofs.y >= m_size.h)
 			return false;
@@ -278,60 +298,115 @@ namespace wg
 
 	}
 
+	//____ matchingHeight() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred height for the specified width.
+	 *
+	 * Get the widgets preferred height for the specified width.
+	 *
+	 * @param width		Width in pixels.
+	 *
+	 * This method is used by containers to get the preferred height of a widget for which
+	 * it has already decided the width.
+	 *
+	 * @return The preferred height for the given width.
+	 */
 
-	//____ _toGlobal() __________________________
-
-	 CoordI Widget::_toGlobal( const CoordI& coord ) const
+	MU Widget::matchingHeight( MU width ) const
 	{
-		 return _globalPos() + coord;
+		return preferredSize().h;		// Default is to stick with preferred height no matter what width.
 	}
 
-	//____ _toLocal() ____________________________________________________________
-
-	CoordI Widget::_toLocal( const CoordI& coord ) const
+	//____ matchingWidth() _______________________________________________________
+	/**
+	 * @brief Get the widgets preferred width for the specified height.
+	 *
+	 * Get the widgets preferred width for the specified height.
+	 *
+	 * @param height	Height in pixels.
+	 *
+	 * This method is used by containers to get the preferred width of a widget for which
+	 * it has already decided the height.
+	 *
+	 * @return The preferred width for the given height.
+	 */
+	 
+	MU Widget::matchingWidth( MU height ) const
 	{
-		return coord - _globalPos();
+		return preferredSize().w;		// Default is to stick with preferred width no matter what height.
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ preferredSize() ________________________________________________________
+	/**
+	 * @brief Get the widgets preferred size.
+	 *
+	 * Get the widgets preferred size.
+	 *
+	 * Each widget has its own preferred size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * A container holding a widget will strive to provide the widget its preferred size, given
+	 * the constraints and limitations the container needs to work with. If a container can't
+	 * provide a widget its preferred size, it is likely to decide the closest width or height
+	 * that it can provide and then make a second call to either matchingWidth() or matchingHeight()
+	 * after which it will decide the size of the child.
+	 *
+	 * @return The preferred size of the widget.
+	 */
 
-	int Widget::_matchingHeight( int width ) const
-	{
-		return _preferredSize().h;		// Default is to stick with preferred height no matter what width.
-	}
-
-	//____ _matchingWidth() _______________________________________________________
-
-	int Widget::_matchingWidth( int height ) const
-	{
-		return _preferredSize().w;		// Default is to stick with preferred width no matter what height.
-	}
-
-	//____ _preferredSize() ________________________________________________________
-
-	SizeI Widget::_preferredSize() const
+	Size Widget::preferredSize() const
 	{
 		if( m_pSkin )
-			return m_pSkin->_preferredSize();
+			return m_pSkin->preferredSize();
 		else
-			return SizeI(0,0);
+			return Size(0,0);
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended minimum size.
+	 *
+	 * Get the widgets recommended minimum size.
+	 *
+	 * Each widget has its own minimum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The minimum size is only a hint for the container, which should strive to not
+	 * make a child smaller than its minimum size, but is allowed to set the child to
+	 * any size it decides, including 0.0.
+	 *
+	 * @return The minimum size of the widget.
+	 */
 
-	SizeI Widget::_minSize() const
+	Size Widget::minSize() const
 	{
 		if( m_pSkin )
-			return m_pSkin->_minSize();
+			return m_pSkin->minSize();
 		else
-			return SizeI(0,0);
+			return Size(0,0);
 	}
 
-	//____ _maxSize() ______________________________________________________________
+	//____ maxSize() ______________________________________________________________
+	/**
+	 * @brief Get the widgets recommended maximum size.
+	 *
+	 * Get the widgets recommended maximum size.
+	 *
+	 * Each widget has its own maximum size, which is depending on things such as
+	 * skinning, content and (in the case of containers) size and layout of children.
+	 *
+	 * The maximum size is only a hint for the container, which should strive to not
+	 * make a child larger than its maximum size, but is allowed to set the child to
+	 * any reasonable size it decides.
+	 *
+	 * @return The maximum size of the widget.
+	 */
 
-	SizeI Widget::_maxSize() const
+	//____ maxSize() ______________________________________________________________
+
+	Size Widget::maxSize() const
 	{
-		return SizeI(1 << 28, 1 << 28);
+		return Size(1 << 24, 1 << 24);
 	}
 
 	//____ receive() _______________________________________________________________
@@ -394,18 +469,18 @@ namespace wg
 
 	//____ _collectPatches()  ____________________________________________________
 
-	void Widget::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
+	void Widget::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-			container.add( RectI( geo, clip ) );
+			container.add( Rect( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
 
-	void Widget::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
+	void Widget::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		if( (m_bOpaque && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
-			patches.sub( RectI( geo, clip ) );
+			patches.sub( Rect( geo, clip ) );
 		}
 	}
 
@@ -435,15 +510,15 @@ namespace wg
 
 	//____ _render() ____________________________________________________________
 
-	void Widget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		if( m_pSkin )
-			m_pSkin->_render( pDevice, _canvas, m_state );
+			m_pSkin->render( pDevice, _canvas, m_state );
 	}
 
 	//____ _resize() ___________________________________________________________
 
-	void Widget::_resize( const SizeI& size )
+	void Widget::_resize( const Size& size )
 	{
 		m_size = size;
 //		_requestRender();		Do NOT request render here, it is the responsibility of ancestor initiating the series of events.
@@ -466,8 +541,8 @@ namespace wg
 
 	void Widget::_setSkin( Skin * pSkin )
 	{
-		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->_contentPaddingSize() != pSkin->_contentPaddingSize() ||
-								m_pSkin->_preferredSize() != pSkin->_preferredSize() || m_pSkin->_minSize() != pSkin->_minSize() );
+		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->contentPaddingSize() != pSkin->contentPaddingSize() ||
+								m_pSkin->preferredSize() != pSkin->preferredSize() || m_pSkin->minSize() != pSkin->minSize() );
 
 		if( pSkin && pSkin->isOpaque(m_state) )
 			m_bOpaque = true;
@@ -566,10 +641,10 @@ namespace wg
 
 	//____ _alphaTest() _________________________________________________________
 
-	bool Widget::_alphaTest( const CoordI& ofs )
+	bool Widget::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSkin )
-			return m_pSkin->_markTest( ofs, RectI(0,0,m_size), m_state, m_markOpacity );
+			return m_pSkin->_markTest( ofs, Rect(m_size), m_state, m_markOpacity );
 
 		return false;
 	}
@@ -616,55 +691,55 @@ namespace wg
 		_requestInView( r, r );
 	}
 
-	void Widget::_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave )
+	void Widget::_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave )
 	{
-		CoordI ofs = _componentPos( pComponent );
+		Coord ofs = _componentPos( pComponent );
 		_requestInView(mustHave + ofs, niceToHave + ofs );
 	}
 
 
 	//____ _componentPos() ______________________________________________________________
 
-	CoordI Widget::_componentPos( const GeoComponent * pComponent ) const
+	Coord Widget::_componentPos( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return m_pSkin->_contentOfs( m_state );
+			return m_pSkin->contentOfs( m_state );
 		else
-			return CoordI();
+			return Coord();
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
-	SizeI Widget::_componentSize( const GeoComponent * pComponent ) const
+	Size Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return m_size - m_pSkin->_contentPaddingSize();
+			return m_size - m_pSkin->contentPaddingSize();
 		else
 			return m_size;
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
-	RectI Widget::_componentGeo( const GeoComponent * pComponent ) const
+	Rect Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return m_pSkin->_contentRect( m_size, m_state );
+			return m_pSkin->contentRect( m_size, m_state );
 		else
-			return RectI( 0,0,m_size );
+			return Rect( 0,0,m_size );
 	}
 
 	//____ _globalComponentPos() ________________________________________________________
 
-	CoordI Widget::_globalComponentPos( const GeoComponent * pComponent ) const
+	Coord Widget::_globalComponentPos( const GeoComponent * pComponent ) const
 	{
-		return _componentPos( pComponent ) + _globalPos();
+		return _componentPos( pComponent ) + globalPos();
 	}
 
 	//____ _globalComponentGeo() ______________________________________________________________
 
-	RectI Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
+	Rect Widget::_globalComponentGeo( const GeoComponent * pComponent ) const
 	{
-		return _componentGeo( pComponent ) + _globalPos();
+		return _componentGeo( pComponent ) + globalPos();
 	}
 
 	//____ _object() ______________________________________________________

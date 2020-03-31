@@ -227,7 +227,7 @@ namespace wg
 				{
 					if( m_state.isFocused() )
 					{
-						_caretToPos(p->pointerPosRaw() - _globalPos());
+						caretToPos(p->pointerPos() - _globalPos());
 						m_editState.bButtonDown = true;
 					}
 					else
@@ -241,7 +241,7 @@ namespace wg
 				auto p = static_cast<MouseDragMsg*>(pMsg);
 				if( p->button() == MouseButton::Left && m_editMode != TextEditMode::Static )
 					if( m_state.isFocused() )
-						_caretToPos(p->pointerPosRaw() - _globalPos());
+						caretToPos(p->pointerPos() - _globalPos());
 				break;
 			}
 
@@ -922,11 +922,11 @@ namespace wg
 	}
 
 
-	//____ _caretToPos() __________________________________________________________
+	//____ caretToPos() __________________________________________________________
 
-	bool CTextEditor::_caretToPos( CoordI pos)
+	bool CTextEditor::caretToPos( Coord pos)
 	{
-		int ofs = _textMapper()->caretToPos(this, qpixToPixels(pos), m_editState.wantedOfs );
+		int ofs = _textMapper()->caretToPos(this, pos.px(), m_editState.wantedOfs );
 		return _moveCaret( ofs, MoveMethod::Mouse );
 	}
 

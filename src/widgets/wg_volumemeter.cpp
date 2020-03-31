@@ -183,23 +183,21 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() ________________________________________________________________
+	//____ preferredSize() ________________________________________________________________
 
-	SizeI VolumeMeter::_preferredSize() const
+	Size VolumeMeter::preferredSize() const
 	{
-		SizeI	sz = m_direction == Direction::Up || m_direction == Direction::Down ? SizeI(10,5*m_nLEDs) : SizeI( 5*m_nLEDs,10);
-
-		sz *= MU::qpixPerPoint();
+		Size	sz = m_direction == Direction::Up || m_direction == Direction::Down ? Size(10,5*m_nLEDs) : Size( 5*m_nLEDs,10);
 
 		if( m_pSkin )
-			return m_pSkin->_sizeForContent( sz );
+			return m_pSkin->sizeForContent( sz );
 		else
 			return sz;
 	}
 
 	//____ _resize() ____________________________________________________________________
 
-	void VolumeMeter::_resize( const SizeI& size )
+	void VolumeMeter::_resize( const Size& size )
 	{
 		Widget::_resize( size );
 
@@ -207,12 +205,12 @@ namespace wg
 		{
 			case Direction::Left:
 			case Direction::Right:
-				m_iSidePadding = (int) ((float)size.h * m_fSidePadding);
+				m_iSidePadding = size.h * m_fSidePadding;
 				break;
 			case Direction::Up:
 			case Direction::Down:
 			default:
-				m_iSidePadding = (int) ((float)size.w * m_fSidePadding);
+				m_iSidePadding = size.w * m_fSidePadding;
 				break;
 		}
 
@@ -296,13 +294,13 @@ namespace wg
 
 				if( firstRenderLED != -1 )
 				{
-					SizeI sz = m_size;
-					RectI rect;
+					Size sz = m_size;
+					Rect rect;
 
-					int meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
+					MU meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
 
-					int dirtBeg = firstRenderLED*meterLen/m_nLEDs;
-					int dirtLen = (lastRenderLED+1)*meterLen/m_nLEDs + 1 - dirtBeg;	// One pixels margin, due to subpixel precision one LED can end on same that the next start
+					MU dirtBeg = firstRenderLED*meterLen/m_nLEDs;
+					MU dirtLen = (lastRenderLED+1)*meterLen/m_nLEDs + 1 - dirtBeg;	// One pixels margin, due to subpixel precision one LED can end on same that the next start
 
 					switch( m_direction )
 					{
@@ -350,17 +348,17 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void VolumeMeter::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void VolumeMeter::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
 		RectI canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->_contentRect(_canvas, m_state);
+			canvas = m_pSkin->contentRect(_canvas, m_state).px();
 		else
-			canvas = _canvas;
+			canvas = _canvas.px();
 
-		int p = m_iSidePadding;
+		int p = m_iSidePadding.qpix >> 2;
 
 		float ledSize = ((m_direction == Direction::Up || m_direction == Direction::Down)?canvas.h:canvas.w) / (float)(m_nLEDs + (m_nLEDs-1)*m_LEDSpacing);
 		float stepSize = ledSize * (1.f+m_LEDSpacing);
@@ -441,7 +439,7 @@ namespace wg
 
 	//____ _alphaTest() ____________________________________________________________________
 
-	bool VolumeMeter::_alphaTest( const CoordI& ofs )
+	bool VolumeMeter::_alphaTest( const Coord& ofs )
 	{
 		return Widget::_alphaTest(ofs);
 	}

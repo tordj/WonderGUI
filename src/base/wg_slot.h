@@ -53,9 +53,9 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		inline Coord	pos() const { return Util::qpixToMU(m_pHolder->_childPos(this)); }
-		inline Size		size() const { return Util::qpixToMU(_size()); }
-		inline Rect		geo() const { return Util::qpixToMU( RectI(m_pHolder->_childPos(this),_size())); }
+		inline Coord	pos() const { return m_pHolder->_childPos(this); }
+		inline Size		size() const { return m_pWidget->m_size; }
+		inline Rect		geo() const { return Rect(m_pHolder->_childPos(this), m_pWidget->m_size); }
 
 		//.____ Operators __________________________________________
 
@@ -146,17 +146,7 @@ namespace wg
 		inline SlotHolder * _holder() { return m_pHolder; }
 		inline const SlotHolder * _holder() const { return m_pHolder; }
 
-		inline SizeI	_size() const { return m_pWidget->m_size; }
-		inline void		_setSize( SizeI size ) const { m_pWidget->_resize(size); }
-
-		inline int		_matchingHeight(int width) const { return m_pWidget->_matchingHeight(width); }
-		inline int		_matchingWidth(int height) const { return m_pWidget->_matchingWidth(height); }
-
-		inline SizeI	_preferredSize() const { return m_pWidget->_preferredSize(); }
-		inline SizeI	_minSize() const { return m_pWidget->_minSize(); }
-		inline SizeI	_maxSize() const { return m_pWidget->_maxSize(); }
-
-		inline bool		_markTest(const CoordI& ofs) const { return m_pWidget->_markTest(ofs); };
+		inline void		_setSize( Size size ) const { m_pWidget->_resize(size); }
 
 		Widget *		m_pWidget = nullptr;
 		SlotHolder *	m_pHolder;

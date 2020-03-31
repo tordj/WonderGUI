@@ -136,7 +136,7 @@ int main(int argc, char** argv)
 	float pixX = toPixel(float(a.x));
 	float pixY = toPixel(float(a.y));
 
-	CoordI d(MU::fromPixel(pixX), MU::fromPixel(pixY));
+	CoordI d(MU::fromPX(pixX), MU::fromPX(pixY));
 
 
 	CoordI cI1 = Coord(1.f, 2.f);
@@ -1316,7 +1316,7 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 				break;
 
 			case SDL_MOUSEMOTION:
-				pInput->setPointer(pRoot, { MU::fromPixel(e.motion.x), MU::fromPixel(e.motion.y) });
+				pInput->setPointer(pRoot, { MU::fromPX(e.motion.x), MU::fromPX(e.motion.y) });
 				break;
 
 			case SDL_MOUSEBUTTONDOWN:

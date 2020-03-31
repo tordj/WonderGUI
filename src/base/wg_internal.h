@@ -35,18 +35,11 @@ namespace wg
 		using Widget::_collectPatches;
 		using Widget::_maskPatches;
 		using Widget::_render;
-		using Widget::_markTest;
 		using Widget::_parent;
-		using Widget::_globalGeo;
 		using Widget::_slot;
 		using Widget::_windowPadding;
 		using Widget::_preRender;
 		using Widget::_setState;
-		using Widget::_minSize;
-		using Widget::_maxSize;
-		using Widget::_matchingHeight;
-		using Widget::_matchingWidth;
-		using Widget::_preferredSize;
 	};
 
 	class OContainer : public Container
@@ -56,18 +49,11 @@ namespace wg
 		using Widget::_collectPatches;
 		using Widget::_maskPatches;
 		using Widget::_render;
-		using Widget::_markTest;
 		using Widget::_parent;
-		using Widget::_globalGeo;
 		using Widget::_slot;
 		using Widget::_windowPadding;
 		using Widget::_preRender;
 		using Widget::_setState;
-		using Widget::_minSize;
-		using Widget::_maxSize;
-		using Widget::_matchingHeight;
-		using Widget::_matchingWidth;
-		using Widget::_preferredSize;
 
 
 		using Container::_findWidget;

@@ -80,9 +80,13 @@ namespace wg
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
 		inline const CoordI&	qpix() const {	return reinterpret_cast<const CoordI&>(*this); }
-		inline const CoordI		pixels() const;
+		inline const CoordI		px() const;
+		inline const CoordF		fpx() const;
 
 		inline Coord& align() { x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+
+		template<typename Type>
+		inline static Coord fromPX(const CoordT<Type>& c) { Rect c2; c2.x.qpix = int(c.x*4); c2.y.qpix = int(c.y*4); return c2; }
 
 		//.____ Operators ___________________________________________
 
@@ -154,9 +158,14 @@ namespace wg
 		inline Border	scale(int scale) const { return Border(top*scale / 4096, right*scale / 4096, bottom*scale / 4096, left*scale / 4096); } // Only for WG2 compatibility!
 
 		inline const BorderI&	qpix() const { return reinterpret_cast<const BorderI&>(*this); }
-		inline const BorderI	pixels() const;
+		inline const BorderI	px() const;
+		inline const BorderF	fpx() const;
 
 		inline Border& align() { top.qpix &= 0xFFFFFFFC; right.qpix &= 0xFFFFFFFC; bottom.qpix &= 0xFFFFFFFC; left.qpix &= 0xFFFFFFFC; return *this; }
+
+		template<typename Type>
+		inline static Border fromPX(const BorderT<Type>& b) { Border b2; b2.top.qpix = int(b.top*4); b2.right.qpix = int(b.right*4); b2.bottom.qpix = int(b.bottom*4); b2.left.qpix = int(b.left*4); return b2; }
+
 
 		//.____ Operators ___________________________________________
 
@@ -238,9 +247,17 @@ namespace wg
 		inline const Coord& toCoord() const { return reinterpret_cast<const Coord&>(*this); }
 
 		inline const SizeI&	qpix() const { return reinterpret_cast<const SizeI&>(*this); }
-		inline const SizeI	pixels() const;
+		inline const SizeI	px() const;
+		inline const SizeF	fpx() const;
 		inline Size&		align() { w.qpix &= 0xFFFFFFFC; h.qpix &= 0xFFFFFFFC; return *this; }
 
+		template<typename Type>
+		inline static Size fromPX(const SizeT<Type>& sz) { Size sz2; sz2.w.qpix = int(sz.w*4); sz2.h.qpix = int(sz.h*4); return sz2; }
+
+		static inline Size min(Size sz1, Size sz2) { return Size(sz1.w < sz2.w ? sz1.w : sz2.w, sz1.h < sz2.h ? sz1.h : sz2.h); }
+		static inline Size max(Size sz1, Size sz2) { return Size(sz1.w > sz2.w ? sz1.w : sz2.w, sz1.h > sz2.h ? sz1.h : sz2.h); }
+
+	
 		//.____ Operators ___________________________________________
 
 		// Size can be IMPLICITLY cast to all SizeT<> and RectT<>
@@ -280,10 +297,6 @@ namespace wg
 
 		template<typename Type2, class = typename std::enable_if<std::is_arithmetic<Type2>::value>::type>
 		inline Size operator/(Type2 x) const { return { (MU)(w / x), (MU)(h / x) }; }
-
-
-		static inline Size min(Size sz1, Size sz2) { return Size(sz1.w < sz2.w ? sz1.w : sz2.w, sz1.h < sz2.h ? sz1.h : sz2.h); }
-		static inline Size max(Size sz1, Size sz2) { return Size(sz1.w > sz2.w ? sz1.w : sz2.w, sz1.h > sz2.h ? sz1.h : sz2.h); }
 
 		//.____ Properties __________________________________________
 
@@ -396,9 +409,13 @@ namespace wg
 		inline Coord distance(Coord coord) const;				////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
 
 		inline const RectI&	qpix() const { return reinterpret_cast<const RectI&>(*this); }
-		inline const RectI	pixels() const;
+		inline const RectI	px() const;
+		inline const RectF	fpx() const;
 
 		inline Rect&		align() { w.qpix = (w.qpix + (x.qpix & 0x3)) & 0xFFFFFFFC; h.qpix = (h.qpix + (y.qpix & 0x3)) & 0xFFFFFFFC; x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+
+		template<typename Type>
+		inline static Rect fromPX(const RectT<Type>& r) { Rect r2; r2.x.qpix = int(r.x*4); r2.y.qpix = int(r.y*4); r2.w.qpix = int(r.w*4); r2.h.qpix = int(r.h*4); return r2; }
 
 		//.____ Operators ___________________________________________
 
@@ -965,18 +982,17 @@ namespace wg
 
 	//_____________________________________________________________________________
 
-	inline const CoordI	Coord::pixels() const
+	inline const CoordI	Coord::px() const
 	{
 		return { x.qpix >> 2, y.qpix >> 2 };
 	}
 
-
 	//_____________________________________________________________________________
 
-	inline Size::Size(const Rect& rect) : w(rect.w), h(rect.h)
+	inline const CoordF	Coord::fpx() const
 	{
+		return { float(x.qpix)/4, float(y.qpix)/4 };
 	}
-
 
 	//_____________________________________________________________________________
 
@@ -987,9 +1003,16 @@ namespace wg
 
 	//_____________________________________________________________________________
 
-	const BorderI Border::pixels() const 
+	const BorderI Border::px() const 
 	{ 
 		return { top.qpix >> 2, right.qpix >> 2, bottom.qpix >> 2, left.qpix >> 2 }; 
+	}
+
+	//_____________________________________________________________________________
+
+	const BorderF Border::fpx() const
+	{
+		return { float(top.qpix)/4, float(right.qpix)/4, float(bottom.qpix)/4, float(left.qpix)/4 };
 	}
 
 	//_____________________________________________________________________________
@@ -997,6 +1020,12 @@ namespace wg
 	inline Border::operator Size() const
 	{
 		return Size(left + right, top + bottom);
+	}
+
+	//_____________________________________________________________________________
+
+	inline Size::Size(const Rect& rect) : w(rect.w), h(rect.h)
+	{
 	}
 
 	//_____________________________________________________________________________
@@ -1016,16 +1045,30 @@ namespace wg
 
 	//_____________________________________________________________________________
 
-	const SizeI Size::pixels() const 
+	const SizeI Size::px() const 
 	{ 
 		return { w.qpix >> 2, h.qpix >> 2 }; 
 	}
 
 	//_____________________________________________________________________________
 
-	const RectI Rect::pixels() const 
+	const SizeF Size::fpx() const
+	{
+		return { float(w.qpix)/4, float(h.qpix)/4 };
+	}
+
+	//_____________________________________________________________________________
+
+	const RectI Rect::px() const 
 	{ 
 		return { x.qpix >> 2, y.qpix >> 2, w.qpix >> 2, h.qpix >> 2 }; 
+	}
+
+	//_____________________________________________________________________________
+
+	const RectF Rect::fpx() const
+	{
+		return { float(x.qpix)/4, float(y.qpix)/4, float(w.qpix)/4, float(h.qpix)/4 };
 	}
 
 	//_____________________________________________________________________________

@@ -170,7 +170,7 @@ namespace wg
 
 		int i = _stateToIndex(state);
 
-		pDevice->fill( canvas.pixels(), m_color[i] );
+		pDevice->fill( canvas.px(), m_color[i] );
 
 		if (m_blendMode != oldBlendMode)
 			pDevice->setBlendMode(oldBlendMode);

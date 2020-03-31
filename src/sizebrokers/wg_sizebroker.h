@@ -39,7 +39,7 @@ namespace wg
 		MU	preferred;		// Preferred length for this item (input)
 		MU	min;			// Min length for this item (input)
 		MU	max;			// Max length for this item (input)
-		float	weight;			// Weight for this item (input)
+		float	weight;		// Weight for this item (input)
 		MU	output;			// Length or preferred length for this item (output)
 	};
 

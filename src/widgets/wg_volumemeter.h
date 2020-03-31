@@ -64,6 +64,10 @@ namespace wg
 		void			setDirection( Direction direction );
 		void            setZeroInMiddle(bool mb) { m_bZeroInMiddle = mb; }
 
+		//.____ Geometry _________________________________________________
+
+		Size			preferredSize() const override;
+
 		//.____ Control ____________________________________________
 
 		void			setValue( float peak, float hold );
@@ -78,12 +82,11 @@ namespace wg
 		virtual ~VolumeMeter();
 		virtual Widget* _newOfMyType() const override { return new VolumeMeter(); };
 
-		SizeI			_preferredSize() const override;
 		void			_receive( Msg * pMsg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		bool			_alphaTest( const CoordI& ofs ) override;
-		void			_resize( const SizeI& size ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
+		void			_resize( const Size& size ) override;
 
 		RouteId			m_tickRouteId;
 
@@ -99,7 +102,7 @@ namespace wg
 		float           m_fPeak;
 
 		float           m_fSidePadding;
-		int             m_iSidePadding;
+		MU				m_iSidePadding;
 
 		bool            m_bZeroInMiddle;
 

@@ -54,8 +54,8 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void			setPadding( const Border& padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, Util::MUToQpix(padding)); }
-		inline Border	padding() const { return Util::qpixToMU(m_padding); }
+		void			setPadding( Border padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, padding.align()); }
+		inline Border	padding() const { return m_padding; }
 
 		//.____ Operators __________________________________________
 
@@ -68,13 +68,13 @@ namespace wg
 		inline SlotHolder * _holder() { return static_cast<SlotHolder*>(m_pHolder); }
 		inline const SlotHolder * _holder() const { return static_cast<SlotHolder*>(m_pHolder); }
 
-		SizeI		_paddedPreferredSize() const { return _preferredSize() + m_padding; }
-		SizeI		_paddedMinSize() const { return _minSize() + m_padding; }
-		SizeI		_paddedMaxSize() const { return _maxSize() + m_padding; }
-		int			_paddedMatchingWidth(int paddedHeight) const { return _matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
-		int			_paddedMatchingHeight(int paddedWidth) const { return _matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
+		Size		_paddedPreferredSize() const { return m_pWidget->preferredSize() + m_padding; }
+		Size		_paddedMinSize() const { return m_pWidget->minSize() + m_padding; }
+		Size		_paddedMaxSize() const { return m_pWidget->maxSize() + m_padding; }
+		MU			_paddedMatchingWidth(MU paddedHeight) const { return m_pWidget->matchingWidth(paddedHeight - m_padding.height()) + m_padding.width(); }
+		MU			_paddedMatchingHeight(MU paddedWidth) const { return m_pWidget->matchingHeight(paddedWidth - m_padding.width()) + m_padding.height(); }
 
-		BorderI		m_padding;
+		Border		m_padding;
 		bool		m_bVisible;
 	};
 }

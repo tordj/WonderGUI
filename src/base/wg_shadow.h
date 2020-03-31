@@ -43,7 +43,7 @@ namespace wg
 	private:
 		Widget_wp	m_pWidget;
 		Skin_p		m_pSkin;
-		RectI		m_geo;
+		Rect		m_geo;
 	};
 }
 #endif //WG_SHADOW_DOT_H

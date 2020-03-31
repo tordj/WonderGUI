@@ -46,19 +46,19 @@ namespace wg
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
-			virtual CoordI	_componentPos(const GeoComponent * pComponent) const = 0;
-			virtual SizeI	_componentSize(const GeoComponent * pComponent) const = 0;
-			virtual RectI	_componentGeo(const GeoComponent * pComponent) const = 0;
-			virtual CoordI	_globalComponentPos(const GeoComponent * pComponent) const = 0;
-			virtual RectI	_globalComponentGeo(const GeoComponent * pComponent) const = 0;
+			virtual Coord	_componentPos(const GeoComponent * pComponent) const = 0;
+			virtual Size	_componentSize(const GeoComponent * pComponent) const = 0;
+			virtual Rect	_componentGeo(const GeoComponent * pComponent) const = 0;
+			virtual Coord	_globalComponentPos(const GeoComponent * pComponent) const = 0;
+			virtual Rect	_globalComponentGeo(const GeoComponent * pComponent) const = 0;
 
 			virtual void	_componentRequestRender(const GeoComponent * pComponent) = 0;
-			virtual void	_componentRequestRender(const GeoComponent * pComponent, const RectI& rect) = 0;
+			virtual void	_componentRequestRender(const GeoComponent * pComponent, const Rect& rect) = 0;
 			virtual void	_componentRequestResize(const GeoComponent * pComponent) = 0;
 
 			virtual void	_componentRequestFocus(const GeoComponent * pComponent) = 0;
 			virtual void	_componentRequestInView(const GeoComponent * pComponent) = 0;
-			virtual void	_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave) = 0;
+			virtual void	_componentRequestInView(const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave) = 0;
 
 			virtual void	_receiveComponentNotif(GeoComponent * pComponent, ComponentNotif notification, int value, void * pData) = 0;
 		};
@@ -71,18 +71,18 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		inline CoordI	_pos() const { return m_pHolder->_componentPos(this); }
-		inline SizeI	_size() const { return m_pHolder->_componentSize(this); }
-		inline RectI	_geo() const { return m_pHolder->_componentGeo(this); }
-		inline CoordI	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
-		inline RectI	_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
+		inline Coord	_pos() const { return m_pHolder->_componentPos(this); }
+		inline Size		_size() const { return m_pHolder->_componentSize(this); }
+		inline Rect		_geo() const { return m_pHolder->_componentGeo(this); }
+		inline Coord	_globalPos() const { return m_pHolder->_globalComponentPos(this); }
+		inline Rect		_globalGeo() const { return m_pHolder->_globalComponentGeo(this); }
 
 
 		inline void		_requestRender() const { m_pHolder->_componentRequestRender(this); }
-		inline void		_requestRender(const RectI& rect) const { m_pHolder->_componentRequestRender(this, rect); }
+		inline void		_requestRender(const Rect& rect) const { m_pHolder->_componentRequestRender(this, rect); }
 		inline void		_requestResize() const { m_pHolder->_componentRequestResize(this); }
 		inline void		_requestVisibility() const { m_pHolder->_componentRequestInView(this); }
-		inline void		_requestVisibility(const RectI& mustHave, const RectI& niceToHave) const { m_pHolder->_componentRequestInView(this, mustHave, niceToHave); }
+		inline void		_requestVisibility(const Rect& mustHave, const Rect& niceToHave) const { m_pHolder->_componentRequestInView(this, mustHave, niceToHave); }
 		inline void		_requestFocus() const { m_pHolder->_componentRequestFocus(this); }
 
 		inline void		_notify(ComponentNotif notification, int value, void * pData) { m_pHolder->_receiveComponentNotif(this, notification, value, pData); }

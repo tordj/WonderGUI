@@ -68,34 +68,34 @@ namespace wg
 		void			_setState(State state);
 		inline State	_state() const { return m_state; }
 
-		void			_setSize(SizeI size);
-		inline SizeI	_size() const { return m_size; }
+		void			_setSize(Size size);
+		inline Size		_size() const { return m_size; }
 
-		SizeI			_preferredSize() const;
-		int				_matchingWidth(int height) const;
-		int				_matchingHeight(int width) const;
+		Size			_preferredSize() const;
+		MU				_matchingWidth(MU height) const;
+		MU				_matchingHeight(MU width) const;
 
 		bool			_receive(Msg * pMsg);
 
-		void			_render(GfxDevice * pDevice, const RectI& _canvas);
+		void			_render(GfxDevice * pDevice, const Rect& _canvas);
 
 		inline Object *			_object() override { return GeoComponent::_object(); }
 		inline const Object *	_object() const override { return GeoComponent::_object(); }
 
 
-		CoordI	_componentPos( const GeoComponent * pComponent ) const override;
-		SizeI	_componentSize( const GeoComponent * pComponent ) const override;
-		RectI	_componentGeo( const GeoComponent * pComponent ) const override;
-		CoordI	_globalComponentPos( const GeoComponent * pComponent ) const override;
-		RectI	_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		Coord	_componentPos( const GeoComponent * pComponent ) const override;
+		Size	_componentSize( const GeoComponent * pComponent ) const override;
+		Rect	_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord	_globalComponentPos( const GeoComponent * pComponent ) const override;
+		Rect	_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
 		void	_componentRequestRender( const GeoComponent * pComponent ) override;
-		void	_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		void	_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
 		void	_componentRequestResize( const GeoComponent * pComponent ) override;
 
 		void	_componentRequestFocus( const GeoComponent * pComponent ) override;
 		void	_componentRequestInView( const GeoComponent * pComponent ) override;
-		void	_componentRequestInView( const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave ) override;
+		void	_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
 
 		void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
@@ -113,7 +113,7 @@ namespace wg
 		Skin_p			m_pSkin;
 
 		State			m_state;
-		SizeI			m_size;
+		Size			m_size;
 
 		bool			m_bPressed;
 		SortOrder		m_sortOrder;

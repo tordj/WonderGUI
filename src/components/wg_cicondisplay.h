@@ -62,13 +62,13 @@ namespace wg
 
 		inline bool			setScale(float scaleFactor) { return _setScale(scaleFactor); }
 		inline void			setOrigo(Origo origo) { _setOrigo(origo); }
-		inline void			setPadding(Border padding) { _setPadding(Util::MUToQpix(padding)); }
+		inline void			setPadding(Border padding) { _setPadding(padding); }
 		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
 		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
 
 		inline float		scale() const { return _scale(); }
 		inline Origo		origo() const { return _origo(); }
-		inline Border		padding() const { return Util::qpixToMU(_padding()); }
+		inline Border		padding() const { return _padding(); }
 		inline bool			overlap() const { return _overlap(); }
 		inline Skin_p		skin() const { return _skin(); }
 
@@ -82,28 +82,28 @@ namespace wg
 
 		bool			_setScale( float scaleFactor );
 		void			_setOrigo( Origo origo );
-		void			_setPadding( BorderI borders );
+		void			_setPadding( Border borders );
 		void			_setOverlap( bool bOverlap );
 		void			_setSkin( Skin * pSkin );
 
 		float			_scale() const { return m_scale; }
 		Origo			_origo() const { return m_origo; }
-		BorderI			_padding() const { return m_padding; }
+		Border			_padding() const { return m_padding; }
 		bool			_overlap() const { return m_bOverlap; }
 		Skin_p			_skin() const { return  m_pSkin; }
 
 
-		RectI			_getIconRect( const RectI& contentRect ) const;
-		RectI			_getIconRect( const RectI& contentRect, const SizeI& iconSize ) const;
-		RectI			_getTextRect( const RectI& contentRect, const RectI& iconRect ) const;
+		Rect			_getIconRect( const Rect& contentRect ) const;
+		Rect			_getIconRect( const Rect& contentRect, const Size& iconSize ) const;
+		Rect			_getTextRect( const Rect& contentRect, const Rect& iconRect ) const;
 		void			_onCloneContent( const CIconDisplay * _pOrg );
-		SizeI			_preferredSize() const;
+		Size			_preferredSize() const;
 
 	private:
 		Origo			m_origo;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
-		BorderI			m_padding;
+		Border			m_padding;
 		Skin_p			m_pSkin;
 
 	};

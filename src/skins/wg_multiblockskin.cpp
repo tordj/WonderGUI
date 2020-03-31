@@ -274,7 +274,7 @@ namespace wg
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
 
-		RectI canvas = _canvas.pixels();
+		RectI canvas = _canvas.px();
 
 		int stateIndex = _stateToIndex(state);
 

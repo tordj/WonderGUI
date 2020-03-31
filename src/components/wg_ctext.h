@@ -95,24 +95,24 @@ namespace wg
 		inline State		_state() const { return m_state; }
 		virtual void		_setState( State state );
 
-		virtual void		_setSize( SizeI size );
-		inline SizeI		_size() const { return m_size; }
+		virtual void		_setSize( Size size );
+		inline Size			_size() const { return m_size; }
 
-		virtual SizeI		_preferredSize() const;
-		virtual int			_matchingWidth( int height ) const;
-		virtual int			_matchingHeight( int width ) const;
+		virtual Size		_preferredSize() const;
+		virtual MU			_matchingWidth( MU height ) const;
+		virtual MU			_matchingHeight( MU width ) const;
 
-		virtual int			_charAtPos( CoordI pos ) const;
-		virtual RectI		_charRect( int charOfs ) const;
+		virtual int			_charAtPos( Coord pos ) const;
+		virtual Rect		_charRect( int charOfs ) const;
 		virtual int			_charLine( int charOfs ) const;
 
 		virtual void		_refresh();
 
 		virtual String		_tooltip() const;
 
-		virtual void		_render( GfxDevice * pDevice, const RectI& _canvas );
+		virtual void		_render( GfxDevice * pDevice, const Rect& _canvas );
 
-		virtual RectI		_rectForRange( int ofs, int length ) const;
+		virtual Rect		_rectForRange( int ofs, int length ) const;
 
 		TextMapper *		_textMapper() const { return m_pTextMapper ? m_pTextMapper.rawPtr() : Base::defaultTextMapper().rawPtr(); }
 		TextStyle *			_style() const { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
@@ -123,7 +123,7 @@ namespace wg
 		void				_mapperRequestRender(const RectI& rect) override;
 		inline void			_mapperRequestResize() override { _requestResize(); }
 
-		virtual SizeI		_textSize() const override { return m_size; }
+		virtual Size		_textSize() const override { return m_size; }
 		virtual State		_textState() const override { return m_state; }
 		virtual TextStyle * _textStyle() const override { if( m_pStyle ) return m_pStyle.rawPtr(); return Base::defaultStyle().rawPtr(); }
 		
@@ -138,7 +138,7 @@ namespace wg
 
 	protected:
 
-		SizeI				m_size;
+		Size				m_size;
 
 		State				m_state;
 		TextStyle_p			m_pStyle;

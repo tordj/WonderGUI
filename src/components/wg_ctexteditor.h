@@ -117,7 +117,7 @@ namespace wg
 
 
 		void			_setState( State state ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas ) override;
 
 		//
 
@@ -134,7 +134,7 @@ namespace wg
 		bool			caretEraseNextWord();
 		bool			caretErasePrevWord();
 
-		inline bool		caretToPos(Coord pos) { return _caretToPos(Util::MUToQpix(pos)); }			// Move caret as close as possible to the given position.
+		bool			caretToPos(Coord pos);			// Move caret as close as possible to the given position.
 		bool			caretSelectWord();
 		bool			caretSelectLine();				// Full line with hard line ending.
 
@@ -166,7 +166,6 @@ namespace wg
 
 
 		void			_caretToEnd();
-		bool			_caretToPos(CoordI pos);
 
 		TextEditMode	m_editMode;
 		EditState		m_editState;

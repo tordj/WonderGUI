@@ -276,6 +276,44 @@ namespace wg
 			return { r.x.qpix, r.y.qpix, r.w.qpix, r.h.qpix };
 		}
 
+		//____ pixelsToMU() ____________________________________________________
+
+		inline Coord pixelsToMU(const CoordI raw)
+		{
+			Coord c;
+			c.x.qpix = raw.x << 2;
+			c.y.qpix = raw.y << 2;
+			return c;
+		}
+
+		inline Size pixelsToMU(const SizeI raw)
+		{
+			Size sz;
+			sz.w.qpix = raw.w << 2;
+			sz.h.qpix = raw.h << 2;
+			return sz;
+		}
+
+		inline Border pixelsToMU(const BorderI raw)
+		{
+			Border b;
+			b.top.qpix = raw.top << 2;
+			b.right.qpix = raw.right << 2;
+			b.bottom.qpix = raw.bottom << 2;
+			b.left.qpix = raw.left << 2;
+			return b;
+		}
+
+		inline Rect pixelsToMU(const RectI& raw)
+		{
+			Rect r;
+			r.x.qpix = raw.x << 2;
+			r.y.qpix = raw.y << 2;
+			r.w.qpix = raw.w << 2;
+			r.h.qpix = raw.h << 2;
+			return r;
+		}
+
 		//____ MUToQpixAligned() ____________________________________________________
 
 		inline CoordI MUToQpixAligned(const Coord& c)
@@ -331,19 +369,19 @@ namespace wg
 		double squareRoot(double a);
 		double powerOfTen(int num);
 
-		bool		markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold );
+		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
 
-		bool		markTestNinePatch( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& dest, int opacityTreshold, BorderI sourceFrame);
+		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const RectI& source, const Rect& dest, int opacityTreshold, const BorderI& sourceFrame);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat );
 
-		CoordI 		origoToOfs( Origo origo, SizeI base );
-		RectI		origoToRect( Origo origo, SizeI base, SizeI rect );
+		Coord 		origoToOfs( Origo origo, Size base );
+		Rect		origoToRect( Origo origo, Size base, Size rect );
 
-		SizeI		scaleToFit(SizeI object, SizeI boundaries);
+		Size		scaleToFit(Size object, Size boundaries);
 
-		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
+		MU 			sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy );
 
 		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 
@@ -381,9 +419,9 @@ namespace wg
 			bool bInitialized;
 		};
 
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches );
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
-		ClipPopData limitClipList( GfxDevice * pDevice, const RectI& clip );
+		ClipPopData limitClipList( GfxDevice * pDevice, const Rect& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
 

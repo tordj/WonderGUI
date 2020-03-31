@@ -44,7 +44,7 @@ namespace wg
 		friend class TextMapper;
 
 	private:
-		virtual SizeI		_textSize() const = 0;
+		virtual Size		_textSize() const = 0;
 		virtual State		_textState() const = 0;
 		virtual TextStyle * _textStyle() const = 0;
 		

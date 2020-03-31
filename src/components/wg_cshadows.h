@@ -51,8 +51,8 @@ namespace wg
 		virtual uint8_t _shadowTint() const = 0;
 
 
-		inline void		_setShadowGeo( Shadow * pShadow, const RectI& geo ) { pShadow->m_geo = geo; }
-		inline RectI	_shadowGeo( Shadow * pShadow ) { return pShadow->m_geo; }
+		inline void		_setShadowGeo( Shadow * pShadow, const Rect& geo ) { pShadow->m_geo = geo; }
+		inline Rect		_shadowGeo( Shadow * pShadow ) { return pShadow->m_geo; }
 	};
 
 	//____ CShadows ______________________________________________________________

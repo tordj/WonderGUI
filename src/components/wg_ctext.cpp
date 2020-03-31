@@ -105,37 +105,37 @@ namespace wg
 
 	//____ _preferredSize() _________________________________________________________
 
-	SizeI CText::_preferredSize() const
+	Size CText::_preferredSize() const
 	{
-		return pixelsToQpix(_textMapper()->preferredSize(this));
+		return Size::fromPX(_textMapper()->preferredSize(this));
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
-	int CText::_matchingWidth( int height ) const
+	MU CText::_matchingWidth( MU height ) const
 	{
-		return pixelsToQpix(_textMapper()->matchingWidth(this, qpixToPixels(height)));
+		return MU::fromPX(_textMapper()->matchingWidth(this, height.px()));
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
-	int CText::_matchingHeight( int width ) const
+	MU CText::_matchingHeight( MU width ) const
 	{
-		return pixelsToQpix(_textMapper()->matchingHeight(this, qpixToPixels(width)));
+		return MU::fromPX(_textMapper()->matchingHeight(this, width.px()));
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
-	int CText::_charAtPos( CoordI pos ) const
+	int CText::_charAtPos( Coord pos ) const
 	{
-		return _textMapper()->charAtPos(this,qpixToPixels(pos));
+		return _textMapper()->charAtPos(this,pos.px());
 	}
 
 	//____ _charRect() ____________________________________________________________
 
-	RectI CText::_charRect( int charOfs ) const
+	Rect CText::_charRect( int charOfs ) const
 	{
-		return pixelsToQpix(_textMapper()->charRect(this, charOfs));
+		return Rect::fromPX(_textMapper()->charRect(this, charOfs));
 	}
 
 	//____ _charLine() ____________________________________________________________
@@ -155,28 +155,28 @@ namespace wg
 
 	//____ _setSize() _____________________________________________________________
 
-	void CText::_setSize( SizeI size )
+	void CText::_setSize( Size size )
 	{
 		if( size == m_size )
 			return;
 
-		SizeI oldSize = m_size;
+		Size oldSize = m_size;
 		m_size = size;
-		_textMapper()->onResized(this,qpixToPixels(size), qpixToPixels(oldSize));
+		_textMapper()->onResized(this,size.px(), oldSize.px());
 	}
 
 	//_____ _render() _____________________________________________________________
 
-	void  CText::_render( GfxDevice * pDevice, const RectI& _canvas )
+	void  CText::_render( GfxDevice * pDevice, const Rect& _canvas )
 	{
-		_textMapper()->render(this, pDevice, qpixToPixels(_canvas));
+		_textMapper()->render(this, pDevice, _canvas.px() );
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
-	RectI  CText::_rectForRange( int ofs, int length ) const
+	Rect  CText::_rectForRange( int ofs, int length ) const
 	{
-		return qpixToPixels(_textMapper()->rectForRange(this, ofs, length));
+		return Rect::fromPX(_textMapper()->rectForRange(this, ofs, length));
 	}
 
 	//____ _tooltip() _______________________________________________________________
@@ -308,7 +308,7 @@ namespace wg
 
 	void CText::_mapperRequestRender(const RectI& rect)
 	{
-		_requestRender(pixelsToQpix(rect));
+		_requestRender(Rect::fromPX(rect));
 	}
 
 
