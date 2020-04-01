@@ -105,6 +105,21 @@ void WgPianoKeyboard::setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyP
 	m_nbKeys = pInfo - m_keyInfo;
 }
 
+//____ setGeoTweak() ______________________________________________________
+
+void WgPianoKeyboard::setGeoTweak( int keyIdx, const WgRect& geoTweak )
+{
+    if( keyIdx >= m_nbKeys )
+    {
+        //TODO: Error handling!
+
+        return;
+    }
+
+    m_keyInfo[keyIdx].geoTweak = geoTweak;
+}
+
+
 //____ setSurfaces() ______________________________________________________
 
 void WgPianoKeyboard::setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::Surface_p& pEvenWhiteKeys, const wg::Surface_p& pBlackKeys, std::initializer_list<wg::State> states)
@@ -405,38 +420,44 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 	wg::RectI canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
 	int whiteKeySpacing = canvas.w / m_nbWhiteKeys;
-	int whiteKeyMargin = whiteKeySpacing/2;
 	int blackKeyHeight = canvas.h * m_blackKeySourceHeight / m_keyboardSourceSize.h;
 
 	float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
 	float yScaleFactor = m_keyboardSourceSize.h / float(canvas.h);
 
-	//
+	// First we render all the black keys, we render from left to right since there won't be any perspective induced overlap
 
 	if (m_pBlackKeys)
 	{
 		KeyInfo * pKey = m_keyInfo;
+        KeyInfo * pEnd = &m_keyInfo[m_nbKeys];
 
 		pDevice->setBlitSource(m_pBlackKeys);
 
-		for (int i = 0; i < m_nbWhiteKeys-1; i++)
+		while( pKey < pEnd )
 		{
-			pKey++;
-
 			if (pKey->isBlack)
 			{
+                int i = pKey->keyPos;
 				wg::RectI dst = wg::RectI(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, blackKeyHeight);
+
+                // Apply tweaked geo. We only tweak X here to not distured srcOfsY. Should be fine that way.
+
+                float scaleX = canvas.w / (float) m_preferredKeyboardSize.w;
+                dst.x += int( pKey->geoTweak.x * scaleX);
+                dst.w += int( pKey->geoTweak.w * scaleX);
 
 				float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
 
 				pDevice->stretchBlit(dst + canvas.pos(), wg::RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
-				pKey++;
 			}
+
+            pKey++;
 		}
 	}
 
-	//
-
+    // Now we render the white keys, alternating form left to right in order to render the outmost keys first and center last
+    // This in order to handle any perspective induced overlap
 
 	KeyInfo * pFirst = &m_keyInfo[0];
 	KeyInfo * pLast = &m_keyInfo[m_nbKeys-1];
@@ -448,13 +469,18 @@ void WgPianoKeyboard::_onRender(wg::GfxDevice * pDevice, const wg::RectI& _canva
 		KeyInfo * pKey = bForward ? pFirst : pLast;
 
 		int i = pKey->keyPos;
+        if (i % 2 == 0)
+            pDevice->setBlitSource(m_pOddWhiteKeys);
+        else
+            pDevice->setBlitSource(m_pEvenWhiteKeys);
 
 		wg::RectI dst = wg::RectI(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h);
 
-		if (i % 2 == 0)
-			pDevice->setBlitSource(m_pOddWhiteKeys);
-		else
-			pDevice->setBlitSource(m_pEvenWhiteKeys);
+        // Apply tweaked geo. We only tweak X here to not distured srcOfsY. Should be fine that way.
+
+        float scaleX = canvas.w / (float) m_preferredKeyboardSize.w;
+        dst.x += int( pKey->geoTweak.x * scaleX);
+        dst.w += int( pKey->geoTweak.w * scaleX);
 
 		if (dst.x < 0)
 		{
@@ -718,6 +744,17 @@ wg::RectI WgPianoKeyboard::_keyRect(int keyIdx)
 		dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, blackKeyHeight };
 	else
 		dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h };
+
+    // Apply tweaked geo
+
+    float scaleX = canvas.w / (float) m_preferredKeyboardSize.w;
+    float scaleY = canvas.h / (float) m_preferredKeyboardSize.h;
+    dst.x += int( m_keyInfo[keyIdx].geoTweak.x * scaleX);
+    dst.y += int( m_keyInfo[keyIdx].geoTweak.y * scaleY);
+    dst.w += int( m_keyInfo[keyIdx].geoTweak.w * scaleX);
+    dst.h += int( m_keyInfo[keyIdx].geoTweak.h * scaleY);
+
+    //
 
 	if (dst.x < 0)
 	{

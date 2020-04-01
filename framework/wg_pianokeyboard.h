@@ -46,13 +46,14 @@ public:
 
 	//.____ Identification __________________________________________
 
-	const char *Type(void) const;
+	const char * Type(void) const override;
 	static const char * GetClass();
 	virtual WgWidget* NewOfMyType() const override { return new WgPianoKeyboard(); };
 
 	//.____ Appearance ____________________________________________________
 
 	void		setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyPositions );
+    void        setGeoTweak( int keyIdx, const WgRect& geoTweak );
 
 	void		setSurfaces(const wg::Surface_p& pOddWhiteKeys, const wg::Surface_p& pEvenWhiteKeys, const wg::Surface_p& pBlackKeys, std::initializer_list<wg::State> states);
 
@@ -122,6 +123,7 @@ private:
 		int			keyPos;				// 0+, the key position from left to right, counting only white keys.
 		bool		isBlack;			// key is the black key following the white key of keyPos.
 		bool		isSetToPressed;		// Set when key has been pressed through API-call and should remain pressed after mouse release.
+        WgRect      geoTweak;           // Relative tweak in position and size to the automatically generated geometry.
 	};
 
 	KeyInfo			m_keyInfo[c_maxKeys];

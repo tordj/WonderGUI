@@ -1074,6 +1074,16 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
 		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { wg::StateEnum::Normal, wg::StateEnum::Pressed });
 
+        pNisPiano->setGeoTweak(3, {16,0,0,0});
+        pNisPiano->setGeoTweak(5, {16,0,0,0});
+        pNisPiano->setGeoTweak(10, {16,0,0,0});
+        pNisPiano->setGeoTweak(17, {16,0,0,0});
+
+        pNisPiano->setGeoTweak(25, {-16,0,0,0});
+        pNisPiano->setGeoTweak(29, {16,0,0,0});
+        pNisPiano->setGeoTweak(32, {-16,0,0,0});
+        pNisPiano->setGeoTweak(37,{-16,0,0,0});
+
 		pBaseLayer->AddChild(pNisPiano, { 20,220 });
 
 //		pNisPiano->setFlipKeyOnPress(true);

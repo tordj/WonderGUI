@@ -313,7 +313,7 @@ namespace WgEvent
 
 		wg::BasicPayload_p  payload() const { return m_pPayload; }
 		WgWidgetWeakPtr     pickedFrom() const { return m_pPickedFrom; }
-		int                 pickCategory() const { return m_pickCategory; }
+		int                pickCategory() const { return m_pickCategory; }
 
 	protected:
 		DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver );
@@ -462,10 +462,6 @@ namespace WgEvent
 	protected:
 		DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom );
 	};
-
-
-
-
 
 	//____ WgButton events _______________________________________________
 

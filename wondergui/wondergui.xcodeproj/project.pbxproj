@@ -496,14 +496,12 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
-				B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */,
-				B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */,
-				170768BA23FEB54100CAAAED /* fonts */,
-				17E03D6323D9F39C00B0A3D8 /* skins */,
 				17E03D2023D9F34900B0A3D8 /* base */,
 				1717918422CB48DD00B10F51 /* Components */,
 				170F7CA72200782100B70B56 /* Debug.h */,
+				170768BA23FEB54100CAAAED /* fonts */,
 				170F7A75220076C000B70B56 /* Products */,
+				17E03D6323D9F39C00B0A3D8 /* skins */,
 				170F7B0A2200772200B70B56 /* wg_anim.cpp */,
 				170F7AE12200771B00B70B56 /* wg_anim.h */,
 				170F7ADC2200771A00B70B56 /* wg_animplayer.cpp */,
@@ -583,6 +581,8 @@
 				170F7A912200770F00B70B56 /* wg_panel.h */,
 				170F7AD72200771A00B70B56 /* wg_pen.cpp */,
 				170F7B172200772400B70B56 /* wg_pen.h */,
+				B3B75A51242A7AEC00036988 /* wg_pianokeyboard.cpp */,
+				B3B75A52242A7AEC00036988 /* wg_pianokeyboard.h */,
 				170F7ABB2200771500B70B56 /* wg_popuplayer.cpp */,
 				170F7AA42200771200B70B56 /* wg_popuplayer.h */,
 				170F7AA72200771200B70B56 /* wg_popupopener.cpp */,
