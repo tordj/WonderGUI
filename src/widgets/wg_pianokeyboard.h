@@ -117,7 +117,7 @@ namespace wg
 		int				m_nbWhiteKeys = 0;
 		std::bitset<7>	m_blackKeyPositions;
 		int				m_nbKeys = 0;
-		SizeI			m_keyboardSourceSize;		
+		SizeI			m_keyboardSourceSize;			// In pixels	
 		Size			m_preferredKeyboardSize;
 		MU				m_blackKeyHeight = 0;
 		int				m_blackKeySourceHeight = 0;		// In pixels

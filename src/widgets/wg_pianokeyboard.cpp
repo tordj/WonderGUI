@@ -127,7 +127,7 @@ namespace wg
 		pointSize.h /= states.size();
 
 		m_preferredKeyboardSize	= pointSize;
-		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->qpixPerPoint();
+		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->qpixPerPoint()/4;
 
 		m_blackKeyHeight		= m_pBlackKeys ? (MU(m_pBlackKeys->pointSize().h) / states.size()).aligned() : MU(0);
 		m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h / states.size() : 0;
@@ -459,7 +459,7 @@ namespace wg
 			if (dst.x + dst.w > canvas.w.px() )
 				dst.w = canvas.w.px() - dst.x;
 
-			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h / 4);
+			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h);
 
 			pDevice->stretchBlit(dst + canvas.pos().px(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
@@ -674,11 +674,11 @@ namespace wg
 
 		// alpha test on keys
 
-		if (m_pOddWhiteKeys->alpha(srcPos / 4))
+		if (m_pOddWhiteKeys->alpha(srcPos))
 			keyPos = int((srcPos.x + whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2;
-		else if (m_pEvenWhiteKeys->alpha(srcPos / 4))
+		else if (m_pEvenWhiteKeys->alpha(srcPos))
 			keyPos = int((srcPos.x - whiteKeySpacing / 2) / (whiteKeySpacing * 2)) * 2 + 1;
-		else if (m_pBlackKeys && (srcPos.y / 4 < m_pBlackKeys->size().h) && m_pBlackKeys->alpha(srcPos / 4))
+		else if (m_pBlackKeys && (srcPos.y < m_pBlackKeys->size().h) && m_pBlackKeys->alpha(srcPos))
 		{
 			keyPos = int((srcPos.x - whiteKeySpacing / 2) / whiteKeySpacing);
 			isBlack = true;
