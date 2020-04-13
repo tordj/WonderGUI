@@ -54,17 +54,21 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+
+		MU				matchingHeight(MU width) const override;
+		Size			preferredSize() const override;
+
+
 	protected:
 		TextEditor();
 		virtual ~TextEditor();
 		virtual Widget* _newOfMyType() const override { return new TextEditor(); };
 
-		int				_matchingHeight(int width) const override;
-		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		void			_resize( const SizeI& size ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_resize( const Size& size ) override;
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;

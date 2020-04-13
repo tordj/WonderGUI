@@ -66,7 +66,7 @@ namespace wg
 			void			setGeo(const Rect& geometry);
 
 			void			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return Util::qpixToMU(m_placementGeo.pos()); }
+			inline Coord	offset() const { return m_placementGeo.pos(); }
 
 			void			setSize(const Size& size);
 
@@ -83,7 +83,7 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Origo		m_origo = Origo::NorthWest;
-			RectI		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
+			Rect		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 												// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 			Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
 
@@ -136,6 +136,13 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+		virtual MU		matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
 	protected:
 		ModalLayer();
 		virtual ~ModalLayer();
@@ -152,20 +159,15 @@ namespace wg
 
 		// Overloaded from Widget
 
-		int				_matchingHeight(int width) const override;
-		int				_matchingWidth(int height) const override;
-
-		SizeI			_preferredSize() const override;
-
 		void			_cloneContent(const Widget * _pOrg) override;
-		void			_resize(const SizeI& size) override;
+		void			_resize(const Size& size) override;
 		void			_receive(Msg * pMsg) override;
 
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
+		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
 
 		//TODO: We should allow replacement of modal slots.
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }

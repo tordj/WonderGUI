@@ -323,7 +323,7 @@ namespace wg
 	Size MultiBlockSkin::minSize() const
 	{
 		Size content = ExtendedSkin::minSize();
-		Size frame = Border(m_frame).align();
+		Size frame = Border(m_frame).aligned();
 		return Size::max(content, frame);
 	}
 
@@ -341,7 +341,7 @@ namespace wg
 	Size MultiBlockSkin::sizeForContent( const Size& contentSize ) const
 	{
 		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = Border(m_frame).align();
+		Size min = Border(m_frame).aligned();
 
 		return SizeI::max(sz, min);
 	}

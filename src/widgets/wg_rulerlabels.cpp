@@ -63,20 +63,20 @@ namespace wg
 
 
 
-	//____ _preferredSize() ________________________________________________________________
+	//____ preferredSize() ________________________________________________________________
 
-	SizeI RulerLabels::_preferredSize() const
+	Size RulerLabels::preferredSize() const
 	{
 		//TODO: calculation of length is not good.
 
-		SizeI preferred;
+		Size preferred;
 
 		if( m_direction == Direction::Up || m_direction == Direction::Down )
 		{
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->_text()._preferredSize();
+				Size sz = pLabel->_text()._preferredSize();
 				if( sz.w > preferred.w )
 					preferred.w = sz.w;
 
@@ -89,7 +89,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				SizeI sz = pLabel->_text()._preferredSize();
+				Size sz = pLabel->_text()._preferredSize();
 				preferred.w += sz.w;
 
 				if( sz.h > preferred.h )
@@ -100,7 +100,7 @@ namespace wg
 		}
 
 		if( m_pSkin )
-			return m_pSkin->_sizeForContent(preferred);
+			return m_pSkin->sizeForContent(preferred);
 		else
 			return preferred;
 	}
@@ -108,13 +108,13 @@ namespace wg
 
 	//____ _render() _____________________________________________________________________
 
-	void RulerLabels::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void RulerLabels::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectI canvas;
+		Rect canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->_contentRect(_canvas,m_state);
+			canvas = m_pSkin->contentRect(_canvas,m_state);
 		else
 			canvas = _canvas;
 
@@ -123,10 +123,11 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int height = pLabel->_text()._size().h;
-				int ofs = (int) (canvas.h * pLabel->offset);
+				MU height = pLabel->_text()._size().h;
+				MU ofs = canvas.h * pLabel->offset;
 				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
+
 	/*
 	TODO: Reinstate!!!
 
@@ -148,7 +149,8 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->_text()._render(pDevice, RectI( canvas.x, canvas.y + ofs, canvas.w, height ) );
+				ofs = ofs.aligned();
+				pLabel->_text()._render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -157,8 +159,8 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				int width = pLabel->_text()._size().w;
-				int ofs = (int) (canvas.w * pLabel->offset);
+				MU width = pLabel->_text()._size().w;
+				MU ofs = (canvas.w * pLabel->offset).aligned();
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
 	/*
@@ -182,7 +184,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->_text()._render( pDevice, RectI( canvas.x + ofs, canvas.y, width, canvas.h ) );
+				pLabel->_text()._render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -198,7 +200,7 @@ namespace wg
 
 	//____ _alphaTest() ____________________________________________________________________
 
-	bool RulerLabels::_alphaTest( const CoordI& ofs )
+	bool RulerLabels::_alphaTest( const Coord& ofs )
 	{
 		return Widget::_alphaTest(ofs);
 	}
@@ -221,26 +223,26 @@ namespace wg
 
 	//____ _componentPos() __________________________________________________________
 
-	CoordI RulerLabels::_componentPos( const GeoComponent * pComponent ) const
+	Coord RulerLabels::_componentPos( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return CoordI();
+		return Coord();
 	}
 
 	//____ _componentSize() _________________________________________________________
 
-	SizeI RulerLabels::_componentSize( const GeoComponent * pComponent ) const
+	Size RulerLabels::_componentSize( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return SizeI();
+		return Size();
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
-	RectI RulerLabels::_componentGeo( const GeoComponent * pComponent ) const
+	Rect RulerLabels::_componentGeo( const GeoComponent * pComponent ) const
 	{
 		//TODO: Implement!!!
-		return RectI();
+		return Rect();
 	}
 
 	//____ _componentRequestResize() __________________________________________________

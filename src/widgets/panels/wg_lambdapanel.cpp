@@ -95,7 +95,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512*4,512*4), m_maxSize(INT_MAX,INT_MAX)
+	LambdaPanel::LambdaPanel() : slots(this), m_minSize(0,0), m_preferredSize(512,512), m_maxSize(MU::Max,MU::Max)
 	{
 		m_bSiblingsOverlap = true;
 	}
@@ -115,11 +115,9 @@ namespace wg
 
 	//____ setMinSize() _________________________________________________________________
 
-	bool LambdaPanel::setMinSize(Size _min)
+	bool LambdaPanel::setMinSize(Size min)
 	{
 		//TODO: Assert >= 0.
-
-		SizeI min = MUToQpix(_min);
 
 		if( m_minSize != min )
 		{
@@ -139,11 +137,10 @@ namespace wg
 
 	//____ setMaxSize() ________________________________________________________
 
-	bool LambdaPanel::setMaxSize(Size _max)
+	bool LambdaPanel::setMaxSize(Size max)
 	{
 		//TODO: Assert >= 0.
 
-		SizeI max = MUToQpix(_max);
 
  		if( m_maxSize != max )
 		{
@@ -170,8 +167,8 @@ namespace wg
 		if( min.w > max.w || min.h > max.h )
 			return false;
 
-		m_minSize = MUToQpix(min);
-		m_maxSize = MUToQpix(max);
+		m_minSize = min;
+		m_maxSize = max;
 		limit( m_preferredSize.w, m_minSize.w, m_maxSize.w );
 		limit( m_preferredSize.h, m_minSize.h, m_maxSize.h );
 
@@ -181,11 +178,9 @@ namespace wg
 
 	//____ setPreferredSize() __________________________________________________
 
-	bool LambdaPanel::setPreferredSize(Size _pref)
+	bool LambdaPanel::setPreferredSize(Size pref)
 	{
 		//TODO: Assert >= 0.
-
-		SizeI pref = MUToQpix(_pref);
 
 		if( pref.w > m_maxSize.w || pref.h > m_maxSize.h || pref.w < m_minSize.w || pref.h < m_minSize.h )
 			return false;
@@ -195,9 +190,9 @@ namespace wg
 		return true;
 	}
 
-	//____ _preferredSize() _____________________________________________________
+	//____ preferredSize() _____________________________________________________
 
-	SizeI LambdaPanel::_preferredSize() const
+	Size LambdaPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -347,7 +342,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectI cover(pTo->m_geo, p->m_geo);
+					Rect cover(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -361,7 +356,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					RectI cover(pTo->m_geo, p->m_geo);
+					Rect cover(pTo->m_geo, p->m_geo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -374,7 +369,7 @@ namespace wg
 
 	//____ _childPos() __________________________________________________________
 
-	CoordI LambdaPanel::_childPos( const StaticSlot * pSlot ) const
+	Coord LambdaPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return ((Slot*)pSlot)->m_geo.pos();
 	}
@@ -387,7 +382,7 @@ namespace wg
 		_onRequestRender( pSlot->m_geo, pSlot );
 	}
 
-	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
+	void LambdaPanel::_childRequestRender( StaticSlot * _pSlot, const Rect& rect )
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_onRequestRender( rect + pSlot->m_geo.pos(), pSlot );
@@ -458,7 +453,7 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void LambdaPanel::_resize( const SizeI& size )
+	void LambdaPanel::_resize( const Size& size )
 	{
 		Panel::_resize( size );
 
@@ -472,12 +467,12 @@ namespace wg
 	{
 		//TODO: Don't requestRender if slot is hidden.
 
-		RectI geo;
+		Rect geo;
 
 		if (pSlot->m_func)
-			geo = aligned(MUToQpix(pSlot->m_func(pSlot->_widget(), qpixToMU(m_size))));
+			geo = pSlot->m_func(pSlot->_widget(), m_size).aligned();
 		else
-			geo = { 0,0,pSlot->_preferredSize() };
+			geo = { 0,0,pSlot->_widget()->preferredSize() };
 
 		if (geo != pSlot->m_geo)
 		{
@@ -486,8 +481,8 @@ namespace wg
 				// Clip our geometry and put it in a dirtyrect-list
 
 				Patches patches;
-				patches.add(RectI(pSlot->m_geo, RectI(0, 0, m_size)));
-				patches.add(RectI(geo, RectI(0, 0, m_size)));
+				patches.add(Rect(pSlot->m_geo, Rect(0, 0, m_size)));
+				patches.add(Rect(geo, Rect(0, 0, m_size)));
 
 				// Remove portions of patches that are covered by opaque upper siblings
 
@@ -495,14 +490,14 @@ namespace wg
 				while (pCover < slots._end())
 				{
 					if (pCover->m_bVisible && (pCover->m_geo.intersectsWith(pSlot->m_geo) || pCover->m_geo.intersectsWith(geo)) )
-						OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+						OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, Rect(0, 0, 65536, 65536), _getBlendMode());
 
 					pCover++;
 				}
 
 				// Make request render calls
 
-				for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+				for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
 					_requestRender(*pRect);
 
 			}
@@ -510,13 +505,13 @@ namespace wg
 
 		pSlot->m_geo = geo;
 
-		if (bForceResize || pSlot->_size() != geo.size())
+		if (bForceResize || pSlot->_widget()->size() != geo.size())
 			pSlot->_setSize(geo);
 	}
 
 	//____ _onRequestRender() ____________________________________________________
 
-	void LambdaPanel::_onRequestRender( const RectI& rect, const Slot * pSlot )
+	void LambdaPanel::_onRequestRender( const Rect& rect, const Slot * pSlot )
 	{
 		if (!pSlot->m_bVisible)
 			return;
@@ -524,19 +519,19 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add(RectI(rect, RectI(0, 0, m_size)));
+		patches.add(Rect(rect, Rect(0, 0, m_size)));
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for (Slot * pCover = slots._begin(); pCover < pSlot ; pCover++)
 		{
 			if (pCover->m_bVisible && pCover->m_geo.intersectsWith(rect))
-				OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, RectI(0, 0, 65536, 65536), _getBlendMode());
+				OO(pCover->_widget())->_maskPatches(patches, pCover->m_geo, Rect(0, 0, 65536, 65536), _getBlendMode());
 		}
 
 		// Make request render calls
 
-		for (const RectI * pRect = patches.begin(); pRect < patches.end(); pRect++)
+		for (const Rect * pRect = patches.begin(); pRect < patches.end(); pRect++)
 			_requestRender(*pRect);
 
 	}

@@ -57,18 +57,18 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ matchingHeight() _______________________________________________________
 
-	int StackPanel::_matchingHeight( int width ) const
+	MU StackPanel::matchingHeight( MU width ) const
 	{
-		int height = 0;
+		MU height = 0;
 
 		Slot * pSlot = slots._begin();
 		Slot * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{
-			int h = pSlot->_matchingHeight(width);
+			MU h = pSlot->_widget()->matchingHeight(width);
 			if( h > height )
 				height = h;
 			pSlot++;
@@ -77,20 +77,20 @@ namespace wg
 		return height;
 	}
 
-	//____ _matchingWidth() _______________________________________________________
+	//____ matchingWidth() _______________________________________________________
 
-	int StackPanel::_matchingWidth( int height ) const
+	MU StackPanel::matchingWidth( MU height ) const
 	{
-		int width = 0;
+		MU width = 0;
 
 		Slot * pSlot = slots._begin();
 		Slot * pEnd = slots._end();
 
 		while( pSlot != pEnd )
 		{
-			int h = pSlot->_matchingWidth(height);
-			if( h > height )
-				height = h;
+			MU w = pSlot->_widget()->matchingWidth(height);
+			if( w > width )
+				width = w;
 			pSlot++;
 		}
 
@@ -98,9 +98,9 @@ namespace wg
 	}
 
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ preferredSize() _____________________________________________________________
 
-	SizeI StackPanel::_preferredSize() const
+	Size StackPanel::preferredSize() const
 	{
 		return m_preferredSize;
 	}
@@ -116,7 +116,7 @@ namespace wg
 
 	//____ _resize() ___________________________________________________________
 
-	void StackPanel::_resize( const SizeI& size )
+	void StackPanel::_resize( const Size& size )
 	{
 		//TODO: Optimize. If size is same then we only need to update those that have requested resize.
 
@@ -213,7 +213,7 @@ namespace wg
 
 	//____ _repadSlots() _________________________________________________________
 
-	void StackPanel::_repadSlots( StaticSlot * pSlot, int nb, BorderI padding )
+	void StackPanel::_repadSlots( StaticSlot * pSlot, int nb, Border padding )
 	{
 		for( int i = 0 ; i < nb ; i++ )
 			((Slot*)pSlot)[i].m_padding = padding;
@@ -221,12 +221,12 @@ namespace wg
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
 
-		SizeI newPreferred =_calcPreferredSize();
+		Size newPreferred =_calcPreferredSize();
 		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
 			_requestResize();
 	}
 
-	void StackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
+	void StackPanel::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((Slot*)pSlot)[i].m_padding = * pPaddings++;
@@ -234,7 +234,7 @@ namespace wg
 		_requestRender();				// This is needed here since children might have repositioned.
 										//TODO: Optimize! Only render what really is needed due to changes.
 
-		SizeI newPreferred = _calcPreferredSize();
+		Size newPreferred = _calcPreferredSize();
 		if (newPreferred != m_preferredSize || m_preferredSize != m_size)
 			_requestResize();
 	}
@@ -245,9 +245,9 @@ namespace wg
 	{
 		if (policy != pSlot->m_sizePolicy)
 		{
-			RectI oldGeo = _childGeo(pSlot);
+			Rect oldGeo = _childGeo(pSlot);
 			pSlot->m_sizePolicy = policy;
-			RectI newGeo = _childGeo(pSlot);
+			Rect newGeo = _childGeo(pSlot);
 
 			if (newGeo.size() != oldGeo.size())
 			{
@@ -279,7 +279,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI StackPanel::_childPos( const StaticSlot * pSlot ) const
+	Coord StackPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return _childGeo((const Slot *)pSlot).pos();
 	}
@@ -291,7 +291,7 @@ namespace wg
 		_childRequestRender( pSlot, _childGeo((Slot*) pSlot) );
 	}
 
-	void StackPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& _rect )
+	void StackPanel::_childRequestRender( StaticSlot * _pSlot, const Rect& _rect )
 	{
 		Slot * pSlot = (Slot *) _pSlot;
 
@@ -300,7 +300,7 @@ namespace wg
 
 		// Put our rectangle into patches
 
-		RectI rect = _rect + _childPos(pSlot);
+		Rect rect = _rect + _childPos(pSlot);
 
 
 		Patches patches;
@@ -310,14 +310,14 @@ namespace wg
 
 		for( auto pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
-			RectI geo = _childGeo(pCover);
+			Rect geo = _childGeo(pCover);
 			if( pCover->m_bVisible && geo.intersectsWith( rect ) )
-				OO(pCover->_widget())->_maskPatches( patches, geo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, geo, Rect(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
 
-		for( const RectI * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 
@@ -327,7 +327,7 @@ namespace wg
 	{
 		auto pSlot = static_cast<Slot*>(_pSlot);
 
-		SizeI newPreferred = _calcPreferredSize();
+		Size newPreferred = _calcPreferredSize();
 
 		if( newPreferred != m_preferredSize || m_preferredSize != m_size )
 		{
@@ -395,7 +395,7 @@ namespace wg
 		{
 			if( !pSlot[i].m_bVisible )
 			{
-				SizeI preferred = pSlot[i]._paddedPreferredSize();
+				Size preferred = pSlot[i]._paddedPreferredSize();
 
 				if( preferred.w > m_preferredSize.w )
 				{
@@ -444,14 +444,14 @@ namespace wg
 		}
 		// Update m_preferredSize
 
-		SizeI	preferredSize;
+		Size	preferredSize;
 		Slot * p = slots._begin();
 
 		while( p != slots._end() )
 		{
 			if( p->m_bVisible )
 			{
-				SizeI sz = p->_paddedPreferredSize();
+				Size sz = p->_paddedPreferredSize();
 				if( sz.w > preferredSize.w )
 					preferredSize.w = sz.w;
 				if( sz.h > preferredSize.h )
@@ -490,9 +490,9 @@ namespace wg
 
 	//____ _calcPreferredSize() _____________________________________________________
 
-	SizeI StackPanel::_calcPreferredSize()
+	Size StackPanel::_calcPreferredSize()
 	{
-		SizeI	preferredSize;
+		Size	preferredSize;
 
 		auto * pSlot = slots._begin();
 		auto * pEnd = slots._end();
@@ -501,7 +501,7 @@ namespace wg
 		{
 			if( pSlot->m_bVisible )
 			{
-				SizeI sz = pSlot->_paddedPreferredSize();
+				Size sz = pSlot->_paddedPreferredSize();
 				if( sz.w > preferredSize.w )
 					preferredSize.w = sz.w;
 				if( sz.h > preferredSize.h )
@@ -530,20 +530,20 @@ namespace wg
 
 	//____ _childGeo() ___________________________________________________________
 
-	RectI StackPanel::_childGeo( const Slot * pSlot ) const
+	Rect StackPanel::_childGeo( const Slot * pSlot ) const
 	{
-		RectI base = RectI( m_size ) - pSlot->m_padding;
+		Rect base = Rect( m_size ) - pSlot->m_padding;
 
 		if( base.w <= 0 || base.h <= 0 )
-			return RectI(0,0,0,0);
+			return Rect();
 
 		switch( pSlot->m_sizePolicy )
 		{
 			default:
 		case SizePolicy2D::Original:
 			{
-				SizeI	size = pSlot->_preferredSize();
-				RectI geo = Util::origoToRect( pSlot->m_origo, base, size );
+				Size	size = pSlot->_widget()->preferredSize();
+				Rect geo = Util::origoToRect( pSlot->m_origo, base, size );
 
 				if( geo.w > base.w )
 				{
@@ -564,8 +564,8 @@ namespace wg
 			}
 			case SizePolicy2D::Scale:
 			{
-				SizeI	orgSize = pSlot->_preferredSize();
-				SizeI	size;
+				Size	orgSize = pSlot->_widget()->preferredSize();
+				Size	size;
 
 				float	fracX = orgSize.w / (float) base.w;
 				float	fracY = orgSize.h / (float) base.h;

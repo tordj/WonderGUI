@@ -75,17 +75,17 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
-			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
-			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
+			inline Coord	pos() const { return m_geo.pos(); }
+			inline Size		size() const { return m_geo.size(); }
+			inline Rect		geo() const { return m_geo; }
 
 		protected:
 			Slot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
 
-			inline void _setSize(SizeI size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
-			inline void _setGeo(RectI geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
+			inline void _setSize(Size size) { m_geo.setSize(size); StaticSlot::_setSize(size); }
+			inline void _setGeo(Rect geo) { m_geo = geo; StaticSlot::_setSize(geo.size()); }
 
-			RectI	m_geo;
+			Rect	m_geo;
 		};
 
 
@@ -99,6 +99,13 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+		virtual MU		matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
 	protected:
 		Layer();
 
@@ -110,10 +117,10 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		CoordI		_childPos( const StaticSlot * pSlot ) const override;
+		Coord		_childPos( const StaticSlot * pSlot ) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 //		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -124,18 +131,14 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void		_resize(const SizeI& size) override;
+		void		_resize(const Size& size) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
-		int			_matchingHeight(int width) const override;
-		int			_matchingWidth(int height) const override;
-
-		SizeI		_preferredSize() const override;
 
 
 		//
 
-		virtual	void	_onRequestRender( const RectI& rect, const Slot * pSlot );	// rect is in our coordinate system.
+		virtual	void	_onRequestRender( const Rect& rect, const Slot * pSlot );	// rect is in our coordinate system.
 
 		virtual const Slot * _beginLayerSlots() const = 0;
 		virtual const Slot * _endLayerSlots() const = 0;

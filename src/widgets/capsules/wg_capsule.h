@@ -61,22 +61,25 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-	
+
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+		virtual MU		matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
+
 	protected:
 		Capsule();
 		virtual ~Capsule();
 
 		// Overloaded from Widget
 
-		int			_matchingHeight(int width) const override;
-		int			_matchingWidth(int height) const override;
-
-		SizeI		_preferredSize() const override;
-
-		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip) override;
-		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode) override;
+		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip) override;
+		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode) override;
 		void		_cloneContent(const Widget * _pOrg) override;
-		void		_resize(const SizeI& size) override;
+		void		_resize(const Size& size) override;
 
 		// Overloaded from Container
 
@@ -87,10 +90,10 @@ namespace wg
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
 		Widget *	_nextChild(const StaticSlot * pSlot) const override;
 
-		CoordI		_childPos( const StaticSlot * pSlot ) const override;
+		Coord		_childPos( const StaticSlot * pSlot ) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		void		_releaseChild( StaticSlot * pSlot ) override;

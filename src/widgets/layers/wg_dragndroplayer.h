@@ -79,13 +79,13 @@ namespace wg
 
 		void            _cloneContent(const Widget * _pOrg) override;
 		void            _receive(Msg * pMsg) override;
-		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void            _render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 
 		// Overloaded from Container
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *        _findWidget( const CoordI& ofs, SearchMode mode ) override;
+		Widget *        _findWidget( const Coord& ofs, SearchMode mode ) override;
 
 		void            _childRequestResize(StaticSlot * pSlot) override;
 		void			_releaseChild(StaticSlot * pSlot) override;
@@ -96,7 +96,7 @@ namespace wg
 		const Layer::Slot *	_endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const RectI& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
+		void				_onRequestRender(const Rect& rect, const Layer::Slot * pSlot) override;    // rect is in our coordinate system.
 
 		// Internal
 
@@ -116,17 +116,17 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		RouteId        m_tickRouteId;
+		RouteId			m_tickRouteId;
 
 		DragState		m_dragState = DragState::Idle;
 
-		Slot    m_dragSlot;            // Slot for widget being dragged, when it is dragged.
+		Slot			m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
 		BasicPayload_p	m_pPayload;
 
-		int				m_dragStartTreshold = 3;
-		CoordI           m_dragWidgetOfs;                // Drag widgets offset from pointer.
+		MU				m_dragStartTreshold;
+		Coord			m_dragWidgetOfs;                // Drag widgets offset from pointer.
 
 		Widget_wp       m_pProbed;                     // Last widget we sent a DropProbeMsg to. To avoid sending multiple messages in a row to same while hovering.
 		Widget_wp       m_pTargeted;                   // Widget targeted while in state Targeting.

@@ -336,7 +336,6 @@ namespace wg
 		int64_t				timestamp() const { return m_timestamp; }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 		Coord				pointerPos() const { return m_pointerPos; }
-		CoordI				pointerPosRaw() const { return Util::MUToQpix(m_pointerPos); }
 
 	protected:
 		InputMsg(char inputId, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp) : m_inputId(inputId), m_modKeys(modKeys), m_pointerPos(pointerPos), m_timestamp(timestamp) {}
@@ -690,7 +689,6 @@ namespace wg
 		//.____ Content ________________________________________________________
 
 		Coord				pointerPos() const { return m_pointerPos; }
-		CoordI				pointerPosRaw() const { return Util::MUToQpix(m_pointerPos); }
 		ModifierKeys		modKeys() const { return m_modKeys; }
 
 		bool				hasPayload() const;
@@ -725,13 +723,11 @@ namespace wg
 		void				setPayload( BasicPayload * pPayload );
 
 		Coord				pickOfs() const { return m_pickOfs; }
-		CoordI				pickOfsRaw() const { return Util::MUToQpix(m_pickOfs); }
 
 		void				setDragWidget( Widget * pWidget, Coord pointerOfs );
 		bool				hasDragWidget() const { return m_pDragWidget; }
 		Widget_p            dragWidget() const;
 		Coord				dragWidgetPointerOfs() const;
-		CoordI				dragWidgetPointerOfsRaw() const;
 
 	protected:
 		DropPickMsg( Widget * pSource, Coord pickOfs, Widget * pFinalReceiver, ModifierKeys modKeys, Coord pointerPos );
@@ -1313,12 +1309,6 @@ namespace wg
 		Coord			startPos() const;
 		Coord			prevPos() const;
 		Coord			currPos() const;
-
-		CoordI			draggedTotalRaw() const;
-		CoordI			draggedNowRaw() const;
-		CoordI			startPosRaw() const;
-		CoordI			prevPosRaw() const;
-		CoordI			currPosRaw() const;
 
 	protected:
 		MouseDragMsg( char inputId, MouseButton button, Object * pSource, const Coord& orgPos, const Coord& prevPos, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp );

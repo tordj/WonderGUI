@@ -68,35 +68,39 @@ namespace wg
 
 	public:
 
-		//.____ Creation __________________________________________
+		//.____ Creation ______________________________________________________
 
 		static Canvas_p	create() { return Canvas_p(new Canvas()); }
 
-		//.____ Components _______________________________________
+		//.____ Components ____________________________________________________
 
 		CCanvas		canvas;
 
 
-		//.____ Identification __________________________________________
+		//.____ Identification ________________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+		virtual MU		matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
 
 	protected:
 		Canvas();
 		virtual ~Canvas();
 		virtual Widget* _newOfMyType() const override { return new Canvas(); };
 
-		virtual int		_matchingHeight(int width) const override;
-		virtual int		_matchingWidth(int height) const override;
-
-		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize(const SizeI& size) override;
+		void			_resize(const Size& size) override;
 		virtual void	_setSkin(Skin * pSkin) override;
-		virtual void	_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
-		virtual	bool	_alphaTest(const CoordI& ofs) override;
+		virtual void	_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		virtual	bool	_alphaTest(const Coord& ofs) override;
 
 		class CanvasAccess : public CCanvas { friend class Canvas; };
 		const CanvasAccess& _canvas() const { return static_cast<const CanvasAccess&>(canvas); }

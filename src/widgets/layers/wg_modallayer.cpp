@@ -55,7 +55,7 @@ namespace wg
 
 	void ModalLayer::Slot::setGeo(const Rect& geometry)
 	{
-		m_placementGeo = MUToQpix(geometry);
+		m_placementGeo = geometry;
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -63,7 +63,7 @@ namespace wg
 
 	void ModalLayer::Slot::setOffset(const Coord& ofs)
 	{
-		m_placementGeo.setPos(MUToQpix(ofs));
+		m_placementGeo.setPos(ofs);
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -71,7 +71,7 @@ namespace wg
 
 	void ModalLayer::Slot::setSize(const Size& size)
 	{
-		m_placementGeo.setSize(MUToQpix(size));
+		m_placementGeo.setSize(size);
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -79,7 +79,7 @@ namespace wg
 
 	void ModalLayer::Slot::move(const Coord& ofs)
 	{
-		m_placementGeo += MUToQpix(ofs);
+		m_placementGeo += ofs;
 		_holder()->_refreshRealGeo(this);
 	}
 
@@ -93,7 +93,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushFrontEmpty();
-		pSlot->m_geo = MUToQpix(geometry);
+		pSlot->m_geo = geometry;
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
@@ -110,7 +110,7 @@ namespace wg
 		pWidget->releaseFromParent();								// Always release first, in case widget already was in our array.
 
 		Slot * pSlot = _pushBackEmpty();
-		pSlot->m_geo = MUToQpix(geometry);
+		pSlot->m_geo = geometry;
 		pSlot->m_origo = origo;
 
 		pSlot->_setWidget(pWidget);
@@ -122,24 +122,24 @@ namespace wg
 
 	void ModalLayer::_refreshRealGeo( Slot * pSlot, bool bForceResize )	// Return false if we couldn't get exactly the requested (floating) geometry.
 	{
-		SizeI sz = pSlot->m_placementGeo.size();
+		Size sz = pSlot->m_placementGeo.size();
 
 		if( sz.w == 0 && sz.h == 0 )
-			sz = pSlot->_preferredSize();
+			sz = pSlot->_widget()->preferredSize();
 		else if( sz.w == 0 )
-			sz.w = pSlot->_matchingWidth(sz.h);
+			sz.w = pSlot->_widget()->matchingWidth(sz.h);
 		else if( sz.h == 0 )
-			sz.h = pSlot->_matchingHeight(sz.w);
+			sz.h = pSlot->_widget()->matchingHeight(sz.w);
 
 		if( sz.w <= 0 )
 			sz.w = 1;
 		if( sz.h <= 0 )
 			sz.h = 1;
 
-		CoordI ofs = Util::origoToOfs( pSlot->m_origo, m_size ) - Util::origoToOfs( pSlot->m_origo, sz );
+		Coord ofs = Util::origoToOfs( pSlot->m_origo, m_size ) - Util::origoToOfs( pSlot->m_origo, sz );
 		ofs += pSlot->m_placementGeo.pos();
 
-		RectI geo( ofs, sz );
+		Rect geo( ofs, sz );
 
 		if (geo != pSlot->m_geo)
 		{
@@ -148,7 +148,7 @@ namespace wg
 			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->_size() != geo.size())
+		if (bForceResize || pSlot->size() != geo.size())
 			pSlot->_setSize(geo);
 	}
 
@@ -198,34 +198,34 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ matchingHeight() _______________________________________________________
 
-	int ModalLayer::_matchingHeight( int width ) const
+	MU ModalLayer::matchingHeight( MU width ) const
 	{
 		if( mainSlot._widget() )
-			return OO(mainSlot)._matchingHeight( width );
+			return mainSlot._widget()->matchingHeight( width );
 		else
-			return Widget::_matchingHeight(width);
+			return Widget::matchingHeight(width);
 	}
 
-	//____ _matchingWidth() _______________________________________________________
+	//____ matchingWidth() _______________________________________________________
 
-	int ModalLayer::_matchingWidth( int height ) const
+	MU ModalLayer::matchingWidth( MU height ) const
 	{
 		if( mainSlot._widget() )
-			return OO(mainSlot)._matchingWidth( height );
+			return mainSlot._widget()->matchingWidth( height );
 		else
-			return Widget::_matchingWidth(height);
+			return Widget::matchingWidth(height);
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ preferredSize() _____________________________________________________________
 
-	SizeI ModalLayer::_preferredSize() const
+	Size ModalLayer::preferredSize() const
 	{
 		if( mainSlot._widget() )
-			return OO(mainSlot)._preferredSize();
+			return mainSlot._widget()->preferredSize();
 		else
-			return SizeI(1,1);
+			return Size(1,1);
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -240,7 +240,7 @@ namespace wg
 
 	//____ _findWidget() ____________________________________________________________
 
-	Widget *  ModalLayer::_findWidget( const CoordI& ofs, SearchMode mode )
+	Widget *  ModalLayer::_findWidget( const Coord& ofs, SearchMode mode )
 	{
 		// In search mode ACTION_TARGET we always return either the topmost non-hidden modal Widget (or its children),
 		// or us.
@@ -259,7 +259,7 @@ namespace wg
 				}
 				else
 				{
-					if( pSlot->_markTest(ofs - pSlot->m_geo.pos()) )
+					if( pSlot->_widget()->markTest(ofs - pSlot->m_geo.pos()) )
 						return pSlot->_widget();
 					else
 						return this;
@@ -395,7 +395,7 @@ namespace wg
 			Slot * p = pTo+1;
 			while (p <= pFrom)
 			{
-				RectI cover(pTo->m_geo, p->m_geo);
+				Rect cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, pTo);
@@ -409,7 +409,7 @@ namespace wg
 			Slot * p = pFrom;
 			while (p < pTo)
 			{
-				RectI cover(pTo->m_geo, p->m_geo);
+				Rect cover(pTo->m_geo, p->m_geo);
 
 				if (!cover.isEmpty())
 					_onRequestRender(cover, p);
@@ -427,7 +427,7 @@ namespace wg
 		for( int i = 0 ; i < nb ; i++ )
 		{
 			_childRequestRender(pSlot+i);
-			pSlot[i].m_geo = { 0,0,0,0 };
+			pSlot[i].m_geo.clear();
 		}
 
 		_updateKeyboardFocus();
@@ -470,9 +470,9 @@ namespace wg
 	}
 
 
-	//____ _setSize() ___________________________________________________________
+	//____ _resize() ___________________________________________________________
 
-	void ModalLayer::_resize( const SizeI& sz )
+	void ModalLayer::_resize( const Size& sz )
 	{
 		Layer::_resize(sz);
 
@@ -499,7 +499,7 @@ namespace wg
 		{
 			InputMsg * pMsg = static_cast<InputMsg*>(_pMsg);
 
-			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerPosRaw(), SearchMode::ActionTarget ) == this )
+			if( !modalSlots.isEmpty() && _findWidget( pMsg->pointerPos(), SearchMode::ActionTarget ) == this )
 			{
 				switch( pMsg->type() )
 				{

@@ -27,6 +27,9 @@ namespace wg
 	int		MU::s_qpixPerPoint = 4;
 	float	MU::s_scale = 1.f;
 
+	const MU	MU::Max = MU::fromQpix(0xFFFFFF*4);
+	const MU	MU::Min = MU::fromQpix(-0xFFFFFF*4);
+
 
 	MU abs(MU in) 
 	{ 

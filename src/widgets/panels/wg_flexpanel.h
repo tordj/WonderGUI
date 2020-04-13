@@ -47,23 +47,26 @@ namespace wg
 		inline FlexPos() {}
 
 		inline FlexPos( Origo _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
-		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(Util::MUToQpix(_offset)) {}
+		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_offset) {}
 
 		inline FlexPos( CoordF _origo ) : origo(_origo) {}
-		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(Util::MUToQpix(_offset)) {}
+		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(_offset) {}
 
 		inline FlexPos( float _origoX, float _origoY ) : origo(_origoX, _origoY) {}
-		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(Util::MUToQpix(_offset)) {}
+		inline FlexPos( float _origoX, float _origoY, Coord _offset ) : origo(_origoX, _origoY), offset(_offset) {}
 
 		//.____ Geometry _______________________________________________________
 
-		Coord	posX( Size canvas ) const { return Util::qpixToMU( rawPos( Util::MUToQpix(canvas))); }
-		CoordI	rawPos(SizeI canvas) const { return CoordI((((int)(origo.x*canvas.w + 0.5f)) + offset.x)&0xFFFFFFFC, (((int)(origo.y*canvas.h + 0.5f)) + offset.y)&0xFFFFFFFC); }
+		Coord	pos(Size canvas) const 
+		{ 
+			Coord c( origo.x*canvas.w + offset.x, origo.y*canvas.h + offset.y);
+			return c.aligned();
+		}
 
 		//.____ Properties _____________________________________________________
 
 		CoordF	origo;
-		CoordI	offset;
+		Coord	offset;
 
 		//.____ Operators ______________________________________________________
 
@@ -132,7 +135,7 @@ namespace wg
 			bool			setGeo(const Rect& geometry);
 
 			bool			setOffset(const Coord& ofs);
-			inline Coord	offset() const { return Util::qpixToMU(m_placementGeo.pos()); }
+			inline Coord	offset() const { return m_placementGeo.pos(); }
 
 			bool			setSize(const Size& size);
 
@@ -145,9 +148,9 @@ namespace wg
 
 			//
 
-			inline Coord	pos() const { return Util::qpixToMU(m_realGeo.pos()); }
-			inline Size		size() const { return Util::qpixToMU(m_realGeo.size()); }
-			inline Rect		geo() const { return Util::qpixToMU(m_realGeo); }
+			inline Coord	pos() const { return m_realGeo.pos(); }
+			inline Size		size() const { return m_realGeo.size(); }
+			inline Rect		geo() const { return m_realGeo; }
 
 			//.____ Operators __________________________________________
 
@@ -167,13 +170,13 @@ namespace wg
 
 			bool			m_bPinned;
 			bool			m_bVisible;
-			RectI			m_realGeo;			// Widgets geo relative parent, pixel aligned.
+			Rect			m_realGeo;			// Widgets geo relative parent, pixel aligned.
 
 			// Positioned children
 
 			FlexPos			m_origo;
 			FlexPos			m_hotspot;
-			RectI			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
+			Rect			m_placementGeo;		// Widgets geo relative anchor and hotspot, not pixel aligned.
 
 			//	Stretched children
 
@@ -232,17 +235,21 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSlots		slots;
+		CSlots			slots;
 
 		//.____ Identification __________________________________________
 
-		const TypeInfo&		typeInfo(void) const override;
+		const TypeInfo&	typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry ______________________________________________________
+
+		Size			preferredSize() const override;
 
 		//.____ Behavior ________________________________________________________
 
-		void				setConfineWidgets( bool bConfineWidgets );
-		bool				isConfiningWidgets() const { return m_bConfineWidgets; }
+		void			setConfineWidgets( bool bConfineWidgets );
+		bool			isConfiningWidgets() const { return m_bConfineWidgets; }
 
 
 	protected:
@@ -263,10 +270,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		Coord		_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		void		_releaseChild(StaticSlot * pSlot) override;
@@ -280,16 +287,14 @@ namespace wg
 
 	private:
 		void		_refreshRealGeo(Slot * pSlot, bool bForceRefresh = false);
-		SizeI		_size() const { return m_size; }
-
-		SizeI		_preferredSize() const override;
+		Size		_size() const { return m_size; }
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const SizeI& size ) override;
+		void		_resize( const Size& size ) override;
 
-		void		_onRequestRender( const RectI& rect, const Slot * pSlot );
+		void		_onRequestRender( const Rect& rect, const Slot * pSlot );
 
-		SizeI		_sizeNeededForGeo( Slot * pSlot ) const;
+		Size		_sizeNeededForGeo( Slot * pSlot ) const;
 
 		bool		m_bConfineWidgets = false;
 //		int			m_qpixPerPoint;

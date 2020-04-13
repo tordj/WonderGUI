@@ -50,21 +50,21 @@ namespace wg
 
 		virtual const TypeInfo& _slotTypeInfo(const StaticSlot * pSlot) const = 0;
 
-		virtual CoordI		_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of the widget.
-		virtual CoordI		_childGlobalPos( const StaticSlot * pSlot ) const = 0;
+		virtual Coord		_childPos( const StaticSlot * pSlot ) const = 0;				///< Get the local position of the widget.
+		virtual Coord		_childGlobalPos( const StaticSlot * pSlot ) const = 0;
 
 		virtual bool		_isChildVisible( const StaticSlot * pSlot ) const = 0;
-		virtual RectI		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
+		virtual Rect		_childWindowSection( const StaticSlot * pSlot ) const = 0;			// Returns the window section within the childs canvas.
 
 		virtual void		_childRequestRender( StaticSlot * pSlot ) = 0;
-		virtual void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) = 0;
+		virtual void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) = 0;
 		virtual void		_childRequestResize( StaticSlot * pSlot ) = 0;
 
 		virtual bool		_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;					// Request focus on behalf of me, child or grandchild.
 		virtual bool		_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) = 0;
 
 		virtual void		_childRequestInView( StaticSlot * pSlot ) = 0;
-		virtual void		_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) = 0;
+		virtual void		_childRequestInView( StaticSlot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea ) = 0;
 
 		virtual Widget *	_prevChild( const StaticSlot * pSlot ) const = 0;
 		virtual Widget *	_nextChild( const StaticSlot * pSlot ) const = 0;
@@ -75,8 +75,8 @@ namespace wg
 		virtual void		_selectSlots(StaticSlot * pSlot, int nb) = 0;
 		virtual void		_unselectSlots(StaticSlot * pSlot, int nb) = 0;
 
-		virtual void		_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) = 0;
-		virtual void		_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) = 0;
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, Border padding) = 0;
+		virtual void		_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) = 0;
 
 		virtual void		_didAddSlots(StaticSlot * pSlot, int nb) = 0;
 		virtual void		_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) = 0;

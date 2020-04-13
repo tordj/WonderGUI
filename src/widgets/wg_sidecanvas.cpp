@@ -47,58 +47,58 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _matchingHeight() _________________________________________________________________
+	//____ matchingHeight() _________________________________________________________________
 	
-	int SideCanvas::_matchingHeight(int width) const
+	MU SideCanvas::matchingHeight(MU width) const
 	{
 		return m_pHolder->_sideCanvasMatchingHeight(this,width);
 	}
 	
-	//____ _matchingWidth() _________________________________________________________________
+	//____ matchingWidth() _________________________________________________________________
 
-	int SideCanvas::_matchingWidth(int height) const
+	MU SideCanvas::matchingWidth(MU height) const
 	{
 		return m_pHolder->_sideCanvasMatchingWidth(this,height);
 	}
 
-	//____ _preferredSize() _________________________________________________________________
+	//____ preferredSize() _________________________________________________________________
 
-	SizeI SideCanvas::_preferredSize() const
+	Size SideCanvas::preferredSize() const
 	{
 		return m_pHolder->_sideCanvasPreferredSize(this);
 	}
 	
-	//____ _minSize() _________________________________________________________________
+	//____ minSize() _________________________________________________________________
 	
-	SizeI SideCanvas::_minSize() const
+	Size SideCanvas::minSize() const
 	{
 		return m_pHolder->_sideCanvasMinSize(this);
 	}
 	
-	//____ _maxSize() _________________________________________________________________
+	//____ maxSize() _________________________________________________________________
 	
-	SizeI SideCanvas::_maxSize() const
+	Size SideCanvas::maxSize() const
 	{
 		return m_pHolder->_sideCanvasMaxSize(this);
 	}
 
 	//____ _collectPatches() _________________________________________________________________
 
-	void SideCanvas::_collectPatches( Patches& container, const RectI& geo, const RectI& clip )
+	void SideCanvas::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
 		m_pHolder->_sideCanvasCollectPatches(this,container, geo, clip);
 	}
 
 	//____ _maskPatches() _________________________________________________________________
 
-	void SideCanvas::_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
+	void SideCanvas::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		m_pHolder->_sideCanvasMaskPatches(this,patches,geo,clip,blendMode);
 	}
 
 	//____ _render() _________________________________________________________________
 
-	void SideCanvas::_render( GfxDevice * pDevice, const RectI& canvas, const RectI& window )
+	void SideCanvas::_render( GfxDevice * pDevice, const Rect& canvas, const Rect& window )
 	{
 		m_pHolder->_sideCanvasRender(this,pDevice,canvas,window);
 	}
@@ -112,7 +112,7 @@ namespace wg
 	
 	//____ _resize() _________________________________________________________________
 	
-	void SideCanvas::_resize( const SizeI& size )
+	void SideCanvas::_resize( const Size& size )
 	{
 		m_pHolder->_sideCanvasResize(this,size);
 	}
@@ -140,49 +140,49 @@ namespace wg
 
 	//____ _alphaTest() _________________________________________________________________
 	
-	bool SideCanvas::_alphaTest( const CoordI& ofs )
+	bool SideCanvas::_alphaTest( const Coord& ofs )
 	{
 		return m_pHolder->_sideCanvasAlphaTest(this,ofs);		
 	}
 	
 	//____ _Holder::_sideCanvasMatchingHeight() ____________________________________________
 	
-	int SideCanvas::Holder::_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const
+	MU SideCanvas::Holder::_sideCanvasMatchingHeight( const SideCanvas * pCanvas, MU width ) const
 	{
 		return _sideCanvasPreferredSize(pCanvas).h;
 	}
 	
 	//____ _Holder::_sideCanvasMatchingWidth() ____________________________________________
 
-	int SideCanvas::Holder::_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const
+	MU SideCanvas::Holder::_sideCanvasMatchingWidth( const SideCanvas * pCanvas, MU height ) const
 	{
 		return _sideCanvasPreferredSize(pCanvas).w;		
 	}
 
 	//____ _Holder::_sideCanvasMinSize() ____________________________________________
 
-	SizeI SideCanvas::Holder::_sideCanvasMinSize( const SideCanvas * pCanvas ) const
+	Size SideCanvas::Holder::_sideCanvasMinSize( const SideCanvas * pCanvas ) const
 	{
-		return pCanvas->Widget::_minSize();
+		return pCanvas->Widget::minSize();
 	}
 	
 	//____ _Holder::_sideCanvasMaxSize() ____________________________________________
 
-	SizeI SideCanvas::Holder::_sideCanvasMaxSize( const SideCanvas * pCanvas ) const
+	Size SideCanvas::Holder::_sideCanvasMaxSize( const SideCanvas * pCanvas ) const
 	{
-		return pCanvas->Widget::_maxSize();
+		return pCanvas->Widget::maxSize();
 	}
 
 	//____ _Holder::_sideCanvasCollectPatches() ____________________________________________
 
-	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectI& geo, const RectI& clip )
+	void SideCanvas::Holder::_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const Rect& geo, const Rect& clip )
 	{
 		return pCanvas->Widget::_collectPatches(container, geo, clip);
 	}
 
 	//____ _Holder::_sideCanvasMaskPatches() ____________________________________________
 
-	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode )
+	void SideCanvas::Holder::_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		return pCanvas->Widget::_maskPatches(patches,geo,clip,blendMode);
 	}

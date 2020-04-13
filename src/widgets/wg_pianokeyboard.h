@@ -56,6 +56,13 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		Size		preferredSize() const override;
+		Size		minSize() const override;
+		Size		maxSize() const override;
+
+
 		//.____ Appearance ____________________________________________________
 
 		void		setLayout(int nbWhiteKeys, const std::bitset<7>& blackKeyPositions );
@@ -90,19 +97,15 @@ namespace wg
 		virtual ~PianoKeyboard();
 		virtual Widget* _newOfMyType() const override { return new PianoKeyboard(); };
 
-		SizeI		_preferredSize() const override;
-		SizeI		_minSize() const override;
-		SizeI		_maxSize() const override;
-
 		void		_cloneContent(const Widget * _pOrg) override;
-		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void		_receive(Msg * pMsg) override;
-		bool		_alphaTest(const CoordI& ofs) override;
+		bool		_alphaTest(const Coord& ofs) override;
 //		void		_setState(State state) override;
 
 		void		_requestRenderKey(int keyIdx);
-		int			_markTestKey(const CoordI& pos);
-		RectI		_keyRect(int keyIdx);
+		int			_markTestKey(const Coord& pos);
+		Rect		_keyRect(int keyIdx);
 		void		_setHoveredKey(int keyIdx, uint64_t timestamp);
 		void		_setAPIPressed(int keyIdx, bool bPressed);
 		void		_setHoverPress(bool bPressed, uint64_t timestamp);
@@ -115,9 +118,9 @@ namespace wg
 		std::bitset<7>	m_blackKeyPositions;
 		int				m_nbKeys = 0;
 		SizeI			m_keyboardSourceSize;		
-		SizeI			m_preferredKeyboardSize;		// In quarterpixels
-		int				m_blackKeyHeight = 0;			// In quarterpixels
-		int				m_blackKeySourceHeight = 0;		// In quarterpixels
+		Size			m_preferredKeyboardSize;
+		MU				m_blackKeyHeight = 0;
+		int				m_blackKeySourceHeight = 0;		// In pixels
 
 		Surface_p		m_pOddWhiteKeys;
 		Surface_p		m_pEvenWhiteKeys;

@@ -54,7 +54,7 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		void			setPadding( Border padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, padding.align()); }
+		void			setPadding( Border padding) { static_cast<SlotHolder*>(_holder())->_repadSlots(this, 1, padding.aligned()); }
 		inline Border	padding() const { return m_padding; }
 
 		//.____ Operators __________________________________________

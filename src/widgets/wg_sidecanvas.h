@@ -47,31 +47,40 @@ namespace wg
 			friend class SideCanvas;
 		protected:
 
-			virtual int			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const;
-			virtual int			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const;
+			virtual MU			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, MU width ) const;
+			virtual MU			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, MU height ) const;
 
-			virtual SizeI		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const = 0;
-			virtual SizeI		_sideCanvasMinSize( const SideCanvas * pCanvas ) const;
-			virtual SizeI		_sideCanvasMaxSize( const SideCanvas * pCanvas ) const;
+			virtual Size		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const = 0;
+			virtual Size		_sideCanvasMinSize( const SideCanvas * pCanvas ) const;
+			virtual Size		_sideCanvasMaxSize( const SideCanvas * pCanvas ) const;
 
-			virtual void		_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const RectI& geo, const RectI& clip );
-			virtual void		_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode );
+			virtual void		_sideCanvasCollectPatches( SideCanvas * pCanvas, Patches& container, const Rect& geo, const Rect& clip );
+			virtual void		_sideCanvasMaskPatches( SideCanvas * pCanvas, Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode );
 
-			virtual void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) = 0;
+			virtual void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) = 0;
 
 			virtual void		_sideCanvasRefresh( SideCanvas * pCanvas);
-			virtual void		_sideCanvasResize( SideCanvas * pCanvas, const SizeI& size ) = 0;
+			virtual void		_sideCanvasResize( SideCanvas * pCanvas, const Size& size ) = 0;
 			virtual void		_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) ;
 			virtual void		_sideCanvasSetState( SideCanvas * pCanvas,  State state );
 
 			virtual void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg );
-			virtual	bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordI& ofs ) = 0;			
+			virtual	bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const Coord& ofs ) = 0;			
 		};
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry _________________________________________________
+
+		MU			matchingHeight(MU width) const override;
+		MU			matchingWidth(MU height) const override;
+
+		Size		preferredSize() const override;
+		Size		minSize() const override;
+		Size		maxSize() const override;
 
 
 	protected:
@@ -80,25 +89,18 @@ namespace wg
 		virtual ~SideCanvas();
 		virtual Widget* _newOfMyType() const override { return nullptr; };
 
-		int			_matchingHeight(int width) const override;
-		int			_matchingWidth(int height) const override;
+		void		_collectPatches( Patches& container, const Rect& geo, const Rect& clip ) override;
+		void		_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode ) override;
 
-		SizeI		_preferredSize() const override;
-		SizeI		_minSize() const override;
-		SizeI		_maxSize() const override;
-
-		void		_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
-		void		_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
-
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 
 		void		_refresh() override;
-		void		_resize( const SizeI& size ) override;
+		void		_resize( const Size& size ) override;
 		void		_setSkin( Skin * pSkin ) override;
 		void		_setState( State state ) override;
 
 		void		_receive( Msg * pMsg ) override;
-		bool		_alphaTest( const CoordI& ofs ) override;
+		bool		_alphaTest( const Coord& ofs ) override;
 
 		Holder * 	m_pHolder;
 	};

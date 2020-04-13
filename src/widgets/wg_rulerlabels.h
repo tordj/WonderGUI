@@ -33,6 +33,8 @@ namespace wg
 		void			setDirection( Direction direction );
 		inline Direction direction() const { return m_direction; }
 
+		Size			preferredSize() const override;
+
 		//.____ Control ____________________________________________
 
 		void		addLabel( const CharSeq& text, TextStyle * pStyle, float offset );
@@ -44,16 +46,14 @@ namespace wg
 		virtual ~RulerLabels();
 		virtual Widget* _newOfMyType() const override { return new RulerLabels(); };
 
-		SizeI			_preferredSize() const override;
-
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_setState( State state ) override;
-		bool			_alphaTest( const CoordI& ofs ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
 
-		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
-		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
-		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_componentPos( const GeoComponent * pComponent ) const override;
+		Size			_componentSize( const GeoComponent * pComponent ) const override;
+		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
 
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 

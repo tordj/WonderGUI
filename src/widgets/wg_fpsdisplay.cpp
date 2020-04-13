@@ -83,9 +83,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ preferredSize() __________________________________________________________
 
-	SizeI FpsDisplay::_preferredSize() const
+	Size FpsDisplay::preferredSize() const
 	{
 		SizeI contentSize = _labels()._preferredSize();
 
@@ -102,7 +102,7 @@ namespace wg
 			contentSize.h = valueHeight;
 
 		if( m_pSkin )
-			return m_pSkin->_sizeForContent(contentSize);
+			return m_pSkin->sizeForContent(contentSize);
 		else
 			return contentSize;
 	}
@@ -110,13 +110,13 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void FpsDisplay::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void FpsDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectI content;
+		Rect content;
 		if( m_pSkin )
-			content = m_pSkin->_contentRect( _canvas, m_state );
+			content = m_pSkin->contentRect( _canvas, m_state );
 		else
 			content = _canvas;
 

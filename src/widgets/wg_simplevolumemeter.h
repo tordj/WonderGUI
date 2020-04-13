@@ -50,6 +50,10 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		Size			preferredSize() const override;
+
 		//.____ Appearance _________________________________________________
 
 		void			setColors( Color bottom, Color middle, Color top );
@@ -72,17 +76,16 @@ namespace wg
 		virtual ~SimpleVolumeMeter();
 		virtual Widget* _newOfMyType() const override { return new SimpleVolumeMeter(); };
 
-		SizeI			_preferredSize() const override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		bool			_alphaTest( const CoordI& ofs ) override;
-		void			_resize( const SizeI& size ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
+		void			_resize( const Size& size ) override;
 		void			_setSkin( Skin * pSkin ) override;
 
-		void			_renderBar( GfxDevice * pDevice, int nb, const RectI& _rect );
-		void 			_requestRenderPartial( const RectI& canvas, int newLeftPeak, int newLeftHold, int newRightPeak, int newRightHold );
-		void			_updateValueDisplays( SizeI sz );
-		int 			_calcIHold( float holdValue, SizeI canvas );
+		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect );
+		void 			_requestRenderPartial( const Rect& canvas, MU newLeftPeak, MU newLeftHold, MU newRightPeak, MU newRightHold );
+		void			_updateValueDisplays( Size sz );
+		MU 				_calcIHold( float holdValue, Size canvas );
 
 
 		Direction		m_direction;
@@ -95,14 +98,14 @@ namespace wg
 		float			m_fPeak[2];
 		float			m_fHold[2];
 
-		// Pixel values calculated from relative values above
+		// Point values calculated from relative values above
 
-		int 			m_iGap;
-		int 			m_iSidePadding;
-		int				m_iHoldHeight;
-		int				m_iPeak[2];
-		int 			m_iHold[2];
-		int				m_iSectionHeight[3];
+		MU 				m_iGap;
+		MU 				m_iSidePadding;
+		MU				m_iHoldHeight;
+		MU				m_iPeak[2];
+		MU 				m_iHold[2];
+		MU				m_iSectionHeight[3];
 	};
 
 

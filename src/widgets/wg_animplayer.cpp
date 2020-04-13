@@ -206,17 +206,17 @@ namespace wg
 		return true;
 	}
 
-	//____ _preferredSize() ___________________________________________________________
+	//____ preferredSize() ___________________________________________________________
 
-	SizeI AnimPlayer::_preferredSize() const
+	Size AnimPlayer::preferredSize() const
 	{
-		SizeI	sz;
+		Size	sz;
 
 		if( m_pAnim )
 			sz = m_pAnim->size();
 
 		if( m_pSkin )
-			sz = m_pSkin->_sizeForContent(sz);
+			sz = m_pSkin->sizeForContent(sz);
 
 		return sz;
 	}
@@ -267,7 +267,7 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void AnimPlayer::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void AnimPlayer::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render( pDevice, _canvas, _window );
 
@@ -304,9 +304,9 @@ namespace wg
 
 	//____ _alphaTest() ______________________________________________________
 
-	bool AnimPlayer::_alphaTest( const CoordI& ofs )
+	bool AnimPlayer::_alphaTest( const Coord& ofs )
 	{
-		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, RectI(0,0,m_size), m_markOpacity ) )
+		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,m_size), m_markOpacity ) )
 			return true;
 
 		return Widget::_alphaTest(ofs);

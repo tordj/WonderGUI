@@ -54,16 +54,19 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+
+		Size			preferredSize() const override;
+
 
 	protected:
 		ValueDisplay();
 		virtual ~ValueDisplay();
 		virtual Widget* _newOfMyType() const override { return new ValueDisplay(); };
 
-		SizeI	_preferredSize() const override;
 		void	_refresh() override;
 		void	_cloneContent( const Widget * _pOrg ) override;
-		void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void	_setState( State state ) override;
 		void	_setSkin( Skin * pSkin ) override;
 

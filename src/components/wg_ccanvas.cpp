@@ -45,11 +45,11 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void CCanvas::_render(GfxDevice * pDevice, const RectI& _canvas)
+	void CCanvas::_render(GfxDevice * pDevice, const Rect& _canvas)
 	{
 		//TODO: Support bitmap being of different surface kind than destination (Like GL/Software).
 
-		RectI canvas = qpixToPixels( _calcPresentationArea() + _canvas.pos() );
+		RectI canvas = ( _calcPresentationArea() + _canvas.pos() ).px();
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->stretchBlit(canvas);
@@ -57,9 +57,9 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool CCanvas::_alphaTest(const CoordI& ofs, int markOpacity)
+	bool CCanvas::_alphaTest(const Coord& ofs, int markOpacity)
 	{
-		RectI canvas = _calcPresentationArea();
+		Rect canvas = _calcPresentationArea();
 		SizeI bmpSize = m_pSurface->size();
 
 		return Util::markTestStretchRect(ofs, m_pSurface, bmpSize, canvas, markOpacity);
@@ -76,7 +76,7 @@ namespace wg
 		SizeI sz = m_fixedSize;
 
 		if (sz.w == 0 && sz.h == 0)
-			sz = qpixToPixels(_size());
+			sz = _size().px();
 
 		SurfaceFactory * pFactory = m_pFactory ? m_pFactory : m_pDevice->surfaceFactory();
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
@@ -91,12 +91,12 @@ namespace wg
 
 	//____ _calcPresentationArea() _______________________________________________
 
-	RectI CCanvas::_calcPresentationArea() const
+	Rect CCanvas::_calcPresentationArea() const
 	{
-		SizeI window = qpixToPixels(_size());
-		SizeI bitmapSize = m_pSurface->size();
+		Size window = _size();
+		Size bitmapSize = m_pSurface->size();
 
-		SizeI output;
+		Size output;
 
 		switch (m_presentationScaling)
 		{
@@ -107,12 +107,11 @@ namespace wg
 			output = RectI(0,0,window);
 			break;
 		default:
-			SizeI scaledBitmapSize = pointsToPixels(bitmapSize);
-			output = Util::origoToRect(m_origo, window, scaledBitmapSize);
+			output = Util::origoToRect(m_origo, window, bitmapSize);
 			break;
 		}
 
-		return pixelsToQpix(output);
+		return output;
 	}
 
 
@@ -367,22 +366,22 @@ namespace wg
 
 	void CCanvas::present(RectI area)
 	{
-		RectI dest = qpixToPixels(_calcPresentationArea());
-		SizeI bitmapSize = m_pSurface->size();
+		Rect dest = _calcPresentationArea();
+		Size bitmapSize = m_pSurface->size();
 
-		int x1 = area.x * dest.w / bitmapSize.w;
-		int x2 = (area.x + area.w) * dest.w / bitmapSize.w + 1;
-		int y1 = area.y * dest.h / bitmapSize.h;
-		int y2 = (area.y + area.h) * dest.h / bitmapSize.h + 1;
+		MU x1 = area.x * dest.w / bitmapSize.w;
+		MU x2 = (area.x + area.w) * dest.w / bitmapSize.w + 1;
+		MU y1 = area.y * dest.h / bitmapSize.h;
+		MU y2 = (area.y + area.h) * dest.h / bitmapSize.h + 1;
 
-		RectI a2 = RectI::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
+		Rect a2 = Rect::getUnion(dest, { x1,y1,x2 - x1,y2 - y1 });
 
-		_requestRender(pixelsToQpix(a2));
+		_requestRender(a2);
 	}
 
 	//____ _setComponentSize() ___________________________________________________
 
-	void CCanvas::_setComponentSize(SizeI sz)
+	void CCanvas::_setComponentSize(Size sz)
 	{
 		if (m_fixedSize.w == 0 && m_fixedSize.h == 0)
 			_regenSurface();
@@ -390,12 +389,11 @@ namespace wg
 
 	//____ _preferredSize() ____________________________________________________
 
-	SizeI CCanvas::_preferredSize() const
+	Size CCanvas::_preferredSize() const
 	{
-		// We use pointsToRaw here instead of pixelsToQpix since a pixel in our surface
-		// should be scaled to a point in UI.
+		// A pixel in our surface should be scaled to a point in UI.
 
-		return m_fixedSize.isEmpty()? SizeI(16*4,16*4) : pointsToAlignedQpix( m_fixedSize );
+		return m_fixedSize.isEmpty()? Size(16,16) : Size(m_fixedSize);
 	}
 
 } //namespace wg

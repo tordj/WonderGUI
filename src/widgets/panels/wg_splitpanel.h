@@ -60,9 +60,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
-			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
-			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
+			inline Coord	pos() const { return m_geo.pos(); }
+			inline Size		size() const { return m_geo.size(); }
+			inline Rect		geo() const { return m_geo; }
 
 			//.____ Operators __________________________________________
 
@@ -71,7 +71,7 @@ namespace wg
 		protected:
 			Slot() : DynamicSlot(nullptr) {}
 
-			RectI	m_geo;
+			Rect	m_geo;
 		};
 
 
@@ -114,13 +114,15 @@ namespace wg
 		void			setOrientation(Orientation orientaiton);
 		Orientation		orientation() const { return m_bHorizontal ? Orientation::Horizontal : Orientation::Vertical; }
 
+		Size			preferredSize() const override;
+
 		//.____ Appearance _________________________________________________
 
 		void			setHandleSkin(Skin * pSkin);
 		Skin_p			handleSkin() const { return m_pHandleSkin; }
 
 		void			setHandleThickness(MU thickness);
-		MU			handleThickness() const { return MU::fromQpix(m_handleThickness);  }
+		MU				handleThickness() const { return m_handleThickness;  }
 
 		//.____ Behavior _______________________________________________________
 
@@ -147,26 +149,24 @@ namespace wg
 		virtual ~SplitPanel();
 		virtual Widget* _newOfMyType() const override { return new SplitPanel(); };
 
-		int			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
+		MU			_handleThickness();					// Takes both m_handleThickness and m_pHandleSkin into account.
 		void		_updatePreferredSize();
-		bool		_updateGeo(int handleMovement=0);
+		bool		_updateGeo(MU handleMovement=0);
 		MU		_defaultBroker(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement);
 
 		// Overloaded from Widget
 
-		SizeI		_preferredSize() const override;
-
-		void		_resize(const SizeI& size) override;
+		void		_resize(const Size& size) override;
 		void		_setState(State state) override;
 		void		_refresh() override;
 		void		_receive(Msg * pMsg) override;
 
-		void		_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 
-		void		_collectPatches(Patches& container, const RectI& geo, const RectI& clip) override;
-		void		_maskPatches(Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode) override;
+		void		_collectPatches(Patches& container, const Rect& geo, const Rect& clip) override;
+		void		_maskPatches(Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode) override;
 
-		bool		_alphaTest(const CoordI& ofs) override;
+		bool		_alphaTest(const Coord& ofs) override;
 		void		_cloneContent(const Widget * _pOrg) override;
 
 		// Overloaded from Container
@@ -179,10 +179,10 @@ namespace wg
 		void		_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void		_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		CoordI		_childPos( const StaticSlot * pSlot) const override;
+		Coord		_childPos( const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
-		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void		_childRequestRender(StaticSlot * pSlot, const Rect& rect) override;
 		void		_childRequestResize(StaticSlot * pSlot) override;
 
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
@@ -194,15 +194,15 @@ namespace wg
 		//
 
 		bool			m_bHorizontal;
-		SizeI			m_preferredSize;
+		Size			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
 		Skin_p			m_pHandleSkin;
-		int				m_handleThickness;			// Set to 0 to use default from handleSkin.
-		RectI			m_handleGeo;
+		MU				m_handleThickness;			// Set to 0 to use default from handleSkin.
+		Rect			m_handleGeo;
 		State			m_handleState;
-		int				m_handlePressOfs;
+		MU				m_handlePressOfs;
 
 		std::function<MU(Widget * pFirst, Widget * pSecond, MU totalLength, float splitFactor, MU handleMovement)>	m_brokerFunc;
 	};

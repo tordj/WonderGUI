@@ -63,11 +63,17 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
+		MU		matchingHeight(MU width) const override;
+		MU		matchingWidth(MU height) const override;
+
 		bool	setSizes( Size min, Size preferred, Size max );
 
 		void	setPreferredSize( Size size );
+		Size	preferredSize() const override;
 		void	setMinSize( Size size );
+		Size	minSize() const override;
 		void	setMaxSize( Size size );
+		Size	maxSize() const override;
 
 
 	protected:
@@ -75,18 +81,12 @@ namespace wg
 		virtual ~SizeCapsule();
 		virtual Widget* _newOfMyType() const override { return new SizeCapsule(); };
 
-		SizeI	_preferredSize() const override;
-		SizeI	_minSize() const override;
-		SizeI	_maxSize() const override;
-
-		int		_matchingHeight(int width) const override;
-		int		_matchingWidth(int height) const override;
 
 	private:
 
-		SizeI			m_min;
-		SizeI			m_max = { INT_MAX,INT_MAX };
-		SizeI			m_preferred = { -1, -1 };
+		Size			m_min;
+		Size			m_max = { MU::Max, MU::Max };
+		Size			m_preferred = { -1, -1 };
 	};
 
 

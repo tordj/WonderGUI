@@ -68,7 +68,7 @@ namespace wg
 
 			bool		m_bVisible = true;
 			Origo		m_placement = Origo::NorthWest;
-			CoordI		m_placementPos;			// Widgets pos relative selected widget and origo.
+			Coord		m_placementPos;			// Widgets pos relative selected widget and origo.
 		};
 
 
@@ -95,6 +95,13 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+		virtual MU		matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
 		//.____ Appearance _________________________________________________
 
 		void				setToolboxSkin(Skin * pSkin);
@@ -119,8 +126,8 @@ namespace wg
 
 		// Overloaded from Container
 
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
-		void			_render(GfxDevice * pDevice, const RectI& canvas, const RectI& window) override;
+		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
+		void			_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window) override;
 
 		// Overloaded from SlotHolder
 
@@ -140,13 +147,8 @@ namespace wg
 
 		// Overloaded from Widget
 
-		int				_matchingHeight(int width) const override;
-		int				_matchingWidth(int height) const override;
-
-		SizeI			_preferredSize() const override;
-
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize( const SizeI& size ) override;
+		void			_resize( const Size& size ) override;
 		void			_receive( Msg * pMsg ) override;
 
 		// Toolbox creators
@@ -156,7 +158,7 @@ namespace wg
 
 		//
 
-		RectI			_selectionGeo() const;
+		Rect			_selectionGeo() const;
 		void			_refreshRealGeo(ToolboxSlot * pSlot);
 		void			_selectWidget(Widget * pWidget);
 		//
@@ -171,7 +173,7 @@ namespace wg
 		PackPanel_p	m_pWidgetToolbox;
 
 		int			m_pressedToolbox = -1;			// Index for palette that is pressed.
-		CoordI		m_pressedToolboxStartOfs;
+		Coord		m_pressedToolboxStartOfs;
 	};
 
 	//____ paletteSkin() ______________________________________________________

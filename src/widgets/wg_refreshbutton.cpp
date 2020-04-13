@@ -160,9 +160,9 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void RefreshButton::_resize( const SizeI& size )
+	void RefreshButton::_resize( const Size& size )
 	{
-		SizeI contentSize = m_pSkin ? size - m_pSkin->_contentPaddingSize() : size;
+		Size contentSize = m_pSkin ? size - m_pSkin->contentPaddingSize() : size;
 		_refreshText()._setSize(contentSize);
 
 		Button::_resize( size );
@@ -237,7 +237,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void RefreshButton::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void RefreshButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		// Render background or animation
 
@@ -245,12 +245,14 @@ namespace wg
 		{
 			GfxFrame * pAnimFrame = m_pRefreshAnim->getFrame( m_animTimer );
 
+			RectI canvas = _canvas.px();
+
 			switch( m_animTarget )
 			{
 				case BUTTON_CENTERED:
 				{
-					RectI dest = {	_canvas.x + (_canvas.w - pAnimFrame->rect.w)/2,
-									_canvas.y + (_canvas.h - pAnimFrame->rect.h)/2,
+					RectI dest = {	canvas.x + (canvas.w - pAnimFrame->rect.w)/2,
+									canvas.y + (canvas.h - pAnimFrame->rect.h)/2,
 									pAnimFrame->rect.size() };
 
 					pDevice->setBlitSource(pAnimFrame->pSurf);
@@ -261,7 +263,7 @@ namespace wg
 				case BUTTON_STRETCHED:
 				{
 					pDevice->setBlitSource(pAnimFrame->pSurf);
-					pDevice->stretchBlit( _canvas, pAnimFrame->rect );
+					pDevice->stretchBlit( canvas, pAnimFrame->rect );
 				}
 				break;
 
@@ -271,25 +273,25 @@ namespace wg
 		}
 		else if( m_pSkin )
 		{
-			m_pSkin->_render( pDevice, _canvas, m_state );
+			m_pSkin->render( pDevice, _canvas, m_state );
 		}
 
 		// Get content rect with displacement.
 
-		RectI contentRect = _canvas;
+		Rect contentRect = _canvas;
 		if( m_pSkin )
-			contentRect = m_pSkin->_contentRect( _canvas, m_state );
+			contentRect = m_pSkin->contentRect( _canvas, m_state );
 
 		// Get icon and text rect from content rect
 
-		SizeI iconSize;
+		Size iconSize;
 		if( !_icon().isEmpty() )
-			iconSize = _icon().skin()->_preferredSize();
+			iconSize = _icon().skin()->preferredSize();
 		else if( m_animTarget == ICON && m_pRefreshAnim )
 			iconSize = m_pRefreshAnim->size();
 
-		RectI iconRect = _icon()._getIconRect( contentRect, iconSize );
-		RectI textRect = _icon()._getTextRect( contentRect, iconRect );
+		Rect iconRect = _icon()._getIconRect( contentRect, iconSize );
+		Rect textRect = _icon()._getTextRect( contentRect, iconRect );
 
 
 		// Render icon or animation
@@ -303,7 +305,7 @@ namespace wg
 			pDevice->stretchBlit( iconRect, pAnimFrame->rect );
 		}
 		else if( !_icon().isEmpty() )
-			_icon().skin()->_render( pDevice, iconRect, m_state );
+			_icon().skin()->render( pDevice, iconRect, m_state );
 
 		// Print text
 

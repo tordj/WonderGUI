@@ -96,7 +96,7 @@ namespace wg
 	Coord ExtendedSkin::contentShiftAdapted(State state) const
 	{
 		int index = _stateToIndex(state);
-		return aligned(Coord(m_contentShift[index]));
+		return Coord(m_contentShift[index]).aligned();
 	}
 
 	//____ isStateIdentical() ______________________________________________________
@@ -110,49 +110,49 @@ namespace wg
 
 	Size ExtendedSkin::minSize() const
 	{
-		return Size(Border(m_contentPadding).align());
+		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ _preferredSize() ______________________________________________________________
 
 	Size ExtendedSkin::preferredSize() const
 	{
-		return Size(Border(m_contentPadding).align());
+		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
 	Size ExtendedSkin::sizeForContent( const Size& contentSize ) const
 	{
-		return contentSize + Size(Border(m_contentPadding).align());
+		return contentSize + Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ contentPadding() _______________________________________________________
 
 	Border ExtendedSkin::contentPadding() const
 	{
-		return Border(m_contentPadding).align();
+		return Border(m_contentPadding).aligned();
 	}
 
 	//____ contentPaddingSize() _______________________________________________________
 
 	Size ExtendedSkin::contentPaddingSize() const
 	{
-		return Size(Border(m_contentPadding).align());
+		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ contentRect() __________________________________________________________
 
 	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
 	{
-		return (canvas - Border(m_contentPadding).align()) + Coord(m_contentShift[_stateToIndex(state)]).align();
+		return (canvas - Border(m_contentPadding).aligned()) + Coord(m_contentShift[_stateToIndex(state)]).aligned();
 	}
 
 	//____ contentofs() __________________________________________________________
 
 	Coord ExtendedSkin::contentOfs( State state ) const
 	{
-		return Coord( m_contentPadding.left, m_contentPadding.top).align() + Coord(m_contentShift[_stateToIndex(state)]).align();
+		return Coord( m_contentPadding.left, m_contentPadding.top).aligned() + Coord(m_contentShift[_stateToIndex(state)]).aligned();
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

@@ -42,7 +42,7 @@ namespace wg
 	{
 		//TODO: Assert
 
-		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, Util::MUToQpix(padding));
+		_holder()->_repadSlots(CDynamicSlotVector<SlotType>::_slot(index), amount, padding);
 		return true;
 	}
 

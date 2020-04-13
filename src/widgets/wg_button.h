@@ -59,29 +59,34 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+
+		Size			preferredSize() const override;
+
+
 	protected:
 		Button();
 		virtual ~Button();
 		virtual Widget* _newOfMyType() const override { return new Button(); };
 
-		virtual int		_matchingHeight(int width) const override;
 		//	virtual int		_matchingWidth( int height ) const override;
 
-		SizeI			_preferredSize() const override;
 
 
 		virtual void	_receive( Msg * pMsg ) override;
-		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void			_refresh() override;
 		virtual void	_cloneContent( const Widget * _pOrg ) override;
-		bool			_alphaTest( const CoordI& ofs ) override;
-		virtual void	_resize( const SizeI& size ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
+		virtual void	_resize( const Size& size ) override;
 		void			_setState( State state ) override;
 
 
-		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
-		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
-		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_componentPos( const GeoComponent * pComponent ) const override;
+		Size			_componentSize( const GeoComponent * pComponent ) const override;
+		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
 
 		class TextAccess : public CTextDisplay { friend class Button; };
 		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }

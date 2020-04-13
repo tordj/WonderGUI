@@ -59,10 +59,10 @@ namespace wg
 		{
 			m_bPinned = true;
 
-			SizeI sz = _holder()->_size();
+			Size sz = _holder()->_size();
 
-			m_topLeftPin = FlexPos(m_realGeo.x / (float)sz.w, m_realGeo.y / (float)sz.h);
-			m_bottomRightPin = FlexPos(m_realGeo.right() / (float)sz.w, m_realGeo.bottom() / (float)sz.h);
+			m_topLeftPin = FlexPos(m_realGeo.x.qpix / (float)sz.w.qpix, m_realGeo.y.qpix / (float)sz.h.qpix);
+			m_bottomRightPin = FlexPos(m_realGeo.right().qpix / (float)sz.w.qpix, m_realGeo.bottom().qpix / (float)sz.h.qpix);
 
 			_holder()->_refreshRealGeo(this);
 		}
@@ -86,7 +86,7 @@ namespace wg
 			m_bPinned = false;
 			m_origo = origo;
 			m_hotspot = hotspot;
-			m_placementGeo = m_realGeo - origo.rawPos(_holder()->_size()) + hotspot.rawPos(m_realGeo);
+			m_placementGeo = m_realGeo - origo.pos(_holder()->_size()) + hotspot.pos(m_realGeo);
 
 			_holder()->_refreshRealGeo(this);
 		}
@@ -133,7 +133,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo = MUToQpix(geometry);
+		m_placementGeo = geometry;
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -145,7 +145,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo.setPos(MUToQpix(ofs));
+		m_placementGeo.setPos(ofs);
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -157,7 +157,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo.setSize(MUToQpix(size));
+		m_placementGeo.setSize(size);
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -169,7 +169,7 @@ namespace wg
 		if (m_bPinned)
 			return false;
 
-		m_placementGeo += MUToQpix(ofs);
+		m_placementGeo += ofs;
 		_holder()->_refreshRealGeo(this);
 		return true;
 	}
@@ -206,7 +206,7 @@ namespace wg
 		Slot * pSlot = _pushFrontEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = MUToQpix(geometry);
+		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 
@@ -242,7 +242,7 @@ namespace wg
 		Slot * pSlot = _pushBackEmpty();
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = MUToQpix(geometry);
+		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 
@@ -279,7 +279,7 @@ namespace wg
 		_releaseGuardPointer(pWidget, &pSlot);
 		pSlot->_setWidget(pWidget);
 
-		pSlot->m_placementGeo = MUToQpix(geometry);
+		pSlot->m_placementGeo = geometry;
 		pSlot->m_origo = origo;
 		pSlot->m_hotspot = hotspot;
 
@@ -325,16 +325,16 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ preferredSize() _____________________________________________________________
 
-	SizeI FlexPanel::_preferredSize() const
+	Size FlexPanel::preferredSize() const
 	{
-		SizeI minSize;
+		Size minSize;
 
 		Slot * p = slots._begin();
 		while( p < slots._end() )
 		{
-			minSize = SizeI::max(minSize,_sizeNeededForGeo(p));
+			minSize = Size::max(minSize,_sizeNeededForGeo(p));
 			p++;
 		}
 		return minSize;
@@ -363,7 +363,7 @@ namespace wg
 				Slot * p = pTo+1;
 				while (p <= pFrom)
 				{
-					RectI cover(pTo->m_realGeo, p->m_realGeo);
+					Rect cover(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, pTo);
@@ -377,7 +377,7 @@ namespace wg
 				Slot * p = pFrom;
 				while (p < pTo)
 				{
-					RectI cover(pTo->m_realGeo, p->m_realGeo);
+					Rect cover(pTo->m_realGeo, p->m_realGeo);
 
 					if (p->m_bVisible && !cover.isEmpty())
 						_onRequestRender(cover, p);
@@ -440,7 +440,7 @@ namespace wg
 
 	//____ _onRequestRender() ______________________________________________________
 
-	void FlexPanel::_onRequestRender( const RectI& rect, const Slot * pSlot )
+	void FlexPanel::_onRequestRender( const Rect& rect, const Slot * pSlot )
 	{
 		if( !pSlot->m_bVisible )
 			return;
@@ -448,19 +448,19 @@ namespace wg
 		// Clip our geometry and put it in a dirtyrect-list
 
 		Patches patches;
-		patches.add( RectI( rect, RectI(0,0,m_size)) );
+		patches.add( Rect( rect, Rect(0,0,m_size)) );
 
 		// Remove portions of patches that are covered by opaque upper siblings
 
 		for(Slot * pCover = slots._begin() ; pCover < pSlot ; pCover++ )
 		{
 			if( pCover->m_bVisible && pCover->m_realGeo.intersectsWith( rect ) )
-				OO(pCover->_widget())->_maskPatches( patches, pCover->m_realGeo, RectI(0,0,65536,65536 ), _getBlendMode() );
+				OO(pCover->_widget())->_maskPatches( patches, pCover->m_realGeo, Rect(0,0,65536,65536 ), _getBlendMode() );
 		}
 
 		// Make request render calls
 
-		for( const RectI * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
+		for( const Rect * pRect = patches.begin() ; pRect < patches.end() ; pRect++ )
 			_requestRender( * pRect );
 	}
 
@@ -475,7 +475,7 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void FlexPanel::_resize( const SizeI& size )
+	void FlexPanel::_resize( const Size& size )
 	{
 		Panel::_resize(size);
 
@@ -489,7 +489,7 @@ namespace wg
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI FlexPanel::_childPos( const StaticSlot * pSlot ) const
+	Coord FlexPanel::_childPos( const StaticSlot * pSlot ) const
 	{
 		return ((Slot*)pSlot)->m_realGeo.pos();
 	}
@@ -502,7 +502,7 @@ namespace wg
 		_onRequestRender( pSlot->m_realGeo, pSlot );
 	}
 
-	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const RectI& rect )
+	void FlexPanel::_childRequestRender( StaticSlot * _pSlot, const Rect& rect )
 	{
 		Slot * pSlot = static_cast<Slot*>(_pSlot);
 		_onRequestRender( rect + pSlot->m_realGeo.pos(), pSlot );
@@ -629,19 +629,19 @@ namespace wg
 
 	void FlexPanel::_refreshRealGeo( Slot * pSlot, bool bForceResize )
 	{
-		RectI	geo;
+		Rect	geo;
 
 		if( pSlot->m_bPinned )
 		{
-			CoordI topLeft = pSlot->m_topLeftPin.rawPos( m_size );
-			CoordI bottomRight = pSlot->m_bottomRightPin.rawPos( m_size );
+			Coord topLeft = pSlot->m_topLeftPin.pos( m_size );
+			Coord bottomRight = pSlot->m_bottomRightPin.pos( m_size );
 
-			geo = RectI(topLeft,bottomRight);
+			geo = Rect(topLeft,bottomRight);
 
 			// Respect widgets limits, apply in such a way that rectangle centers in specified rectangle
 
-			SizeI sz = geo.size();
-			sz.limit( pSlot->_minSize(), pSlot->_maxSize() );
+			Size sz = geo.size();
+			sz.limit( pSlot->_widget()->minSize(), pSlot->_widget()->maxSize() );
 			if( sz != geo.size() )
 			{
 				geo.x += geo.w - sz.w / 2;
@@ -654,13 +654,13 @@ namespace wg
 		{
 			// Calculate size
 
-			SizeI sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_preferredSize() : pSlot->m_placementGeo.size();
-			sz.limit( pSlot->_minSize(), pSlot->_maxSize() );		// Respect widgets limits.
+			Size sz = pSlot->m_placementGeo.isEmpty() ? pSlot->_widget()->preferredSize() : pSlot->m_placementGeo.size();
+			sz.limit( pSlot->_widget()->minSize(), pSlot->_widget()->maxSize() );		// Respect widgets limits.
 
 			// Calculate position
 
-			CoordI pos = pSlot->m_origo.rawPos( m_size );			// Origo,
-			pos -= pSlot->m_hotspot.rawPos(sz);					// hotspot
+			Coord pos = pSlot->m_origo.pos( m_size );		// Origo,
+			pos -= pSlot->m_hotspot.pos(sz);				// hotspot
 			pos += pSlot->m_placementGeo.pos();				// and Offset.
 
 			// Limit size/pos according to parent
@@ -678,7 +678,7 @@ namespace wg
 					pos.y = m_size.h - sz.h;
 			}
 
-			geo = RectI( pos, sz );
+			geo = Rect( pos, sz );
 		}
 
 		// Request render and update positions.
@@ -690,54 +690,54 @@ namespace wg
 			_onRequestRender(pSlot->m_realGeo, pSlot);
 		}
 
-		if (bForceResize || pSlot->_size() != geo.size())
+		if (bForceResize || pSlot->_widget()->size() != geo.size())
 			pSlot->_setSize(geo);
 	}
 
 	//____ _sizeNeededForGeo() ________________________________________
 
-	SizeI FlexPanel::_sizeNeededForGeo( Slot * pSlot ) const
+	Size FlexPanel::_sizeNeededForGeo( Slot * pSlot ) const
 	{
-		SizeI sz;
+		Size sz;
 
 		if( pSlot->m_bPinned )
 		{
-			sz = pSlot->_preferredSize();
+			sz = pSlot->_widget()->preferredSize();
 
-			sz += SizeI( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
-			sz -= SizeI( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );
+			sz += Size( pSlot->m_topLeftPin.offset.x, pSlot->m_topLeftPin.offset.y );
+			sz -= Size( pSlot->m_bottomRightPin.offset.x, pSlot->m_bottomRightPin.offset.y );
 
-			sz.w = (int) (sz.w / (float) (pSlot->m_bottomRightPin.origo.x - pSlot->m_topLeftPin.origo.x));
-			sz.h = (int) (sz.w / (float) (pSlot->m_bottomRightPin.origo.y - pSlot->m_topLeftPin.origo.y));
+			sz.w /= (pSlot->m_bottomRightPin.origo.x - pSlot->m_topLeftPin.origo.x);
+			sz.h /= (pSlot->m_bottomRightPin.origo.y - pSlot->m_topLeftPin.origo.y);
 		}
 		else
 		{
-			RectI geo = pSlot->m_placementGeo;
+			Rect geo = pSlot->m_placementGeo;
 
-			CoordI hotspot = pSlot->m_hotspot.rawPos(geo.size());
-			CoordI offset = geo.pos() + pSlot->m_origo.offset - hotspot;
+			Coord hotspot = pSlot->m_hotspot.pos(geo.size());
+			Coord offset = geo.pos() + pSlot->m_origo.offset - hotspot;
 
-			int leftOfOrigo = 0 - offset.x;
-			int rightOfOrigo = offset.x + geo.w;
-			int aboveOrigo = 0 - offset.y;
-			int belowOrigo = offset.y + geo.h;
+			MU leftOfOrigo = 0 - offset.x;
+			MU rightOfOrigo = offset.x + geo.w;
+			MU aboveOrigo = 0 - offset.y;
+			MU belowOrigo = offset.y + geo.h;
 
 			if( leftOfOrigo > 0 )
-				sz.w = (int) (leftOfOrigo / pSlot->m_origo.origo.x);
+				sz.w = leftOfOrigo / pSlot->m_origo.origo.x;
 
 			if( rightOfOrigo > 0 )
 			{
-				int w = (int) (rightOfOrigo / (1.f - pSlot->m_origo.origo.x) );
+				int w = rightOfOrigo / (1.f - pSlot->m_origo.origo.x);
 				if( sz.w < w )
 					sz.w = w;
 			}
 
 			if( aboveOrigo > 0 )
-				sz.h = (int) (aboveOrigo / pSlot->m_origo.origo.y);
+				sz.h = aboveOrigo / pSlot->m_origo.origo.y;
 
 			if( belowOrigo > 0 )
 			{
-				int h = (int) (belowOrigo / (1.f - pSlot->m_origo.origo.y) );
+				int h = belowOrigo / (1.f - pSlot->m_origo.origo.y);
 				if( sz.h < h )
 					sz.h = h;
 			}

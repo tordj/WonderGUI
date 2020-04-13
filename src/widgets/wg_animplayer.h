@@ -54,6 +54,10 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		Size			preferredSize() const override;
+
 		//.____ Control __________________________________________
 
 		bool			setAnimation( GfxAnim * pAnim );
@@ -81,13 +85,11 @@ namespace wg
 		virtual ~AnimPlayer();
 		virtual Widget* _newOfMyType() const override { return new AnimPlayer(); };
 
-		SizeI			_preferredSize() const override;
-
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
-		bool			_alphaTest( const CoordI& ofs ) override;
+		bool			_alphaTest( const Coord& ofs ) override;
 		void			_setState( State state ) override;
 
 		void			_playPosUpdated();

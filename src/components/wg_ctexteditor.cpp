@@ -516,9 +516,9 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void CTextEditor::_render( GfxDevice * pDevice, const RectI& _canvas )
+	void CTextEditor::_render( GfxDevice * pDevice, const Rect& canvas )
 	{
-		_textMapper()->render(this, pDevice, qpixToPixels(_canvas) );
+		_textMapper()->render(this, pDevice, canvas.px() );
 	}
 
 	//____ setEditMode() _______________________________________________________
@@ -1001,8 +1001,8 @@ namespace wg
 		if (end < beg)
 			std::swap(beg, end);
 
-		RectI niceToHave = pixelsToQpix(_textMapper()->rectForRange(this, beg, end - beg));
-		RectI mustHave = pixelsToQpix(_textMapper()->rectForCaret(this));
+		Rect niceToHave = Rect::fromPX(_textMapper()->rectForRange(this, beg, end - beg));
+		Rect mustHave = Rect::fromPX(_textMapper()->rectForCaret(this));
 
 		_requestVisibility(mustHave, niceToHave);
 	}

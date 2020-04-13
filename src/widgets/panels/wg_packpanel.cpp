@@ -134,22 +134,22 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() _______________________________________________________
+	//____ preferredSize() _______________________________________________________
 
-	SizeI PackPanel::_preferredSize() const
+	Size PackPanel::preferredSize() const
 	{
-		SizeI size = m_preferredContentSize;
+		Size size = m_preferredContentSize;
 		if (m_pSkin)
-			size += m_pSkin->_contentPaddingSize();
+			size += m_pSkin->contentPaddingSize();
 
 		return size;
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ matchingHeight() _______________________________________________________
 
-	int PackPanel::_matchingHeight( int width ) const
+	MU PackPanel::matchingHeight( MU width ) const
 	{
-		int height = 0;
+		MU height = 0;
 
 		if( m_bHorizontal )
 		{
@@ -172,7 +172,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						int itemHeight = pS->_paddedMatchingHeight( pI->output );
+						MU itemHeight = pS->_paddedMatchingHeight( pI->output );
 						if( itemHeight > height )
 							height = itemHeight;
 						pI++;
@@ -222,16 +222,16 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			height += m_pSkin->_contentPaddingSize().h;
+			height += m_pSkin->contentPaddingSize().h;
 
 		return height;
 	}
 
-	//____ _matchingWidth() _______________________________________________________
+	//____ matchingWidth() _______________________________________________________
 
-	int PackPanel::_matchingWidth( int height ) const
+	MU PackPanel::matchingWidth( MU height ) const
 	{
-		int width = 0;
+		MU width = 0;
 
 		if( !m_bHorizontal )
 		{
@@ -254,7 +254,7 @@ namespace wg
 				{
 					if( pS->m_bVisible )
 					{
-						int itemWidth = pS->_paddedMatchingWidth( pI->output.qpix );
+						MU itemWidth = pS->_paddedMatchingWidth( pI->output.qpix );
 						if( itemWidth > width )
 							width = itemWidth;
 						pI++;
@@ -304,7 +304,7 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			width += m_pSkin->_contentPaddingSize().w;
+			width += m_pSkin->contentPaddingSize().w;
 
 		return width;
 	}
@@ -408,7 +408,7 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, BorderI padding)
+	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
 	{
 		for (int i = 0; i < nb; i++)
 			((Slot*)pSlot)[i].m_padding = padding;
@@ -416,7 +416,7 @@ namespace wg
 		_refreshGeometries();
 	}
 
-	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPaddings)
+	void PackPanel::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPaddings)
 	{
 		for (int i = 0; i < nb; i++)
 			((Slot*)pSlot)[i].m_padding = * pPaddings++;
@@ -472,7 +472,7 @@ namespace wg
 
 	//____ _childPos() _______________________________________________________
 
-	CoordI PackPanel::_childPos(const StaticSlot * pSlot) const
+	Coord PackPanel::_childPos(const StaticSlot * pSlot) const
 	{
 		return ((Slot*)pSlot)->m_geo;
 	}
@@ -485,7 +485,7 @@ namespace wg
 
 	}
 
-	void PackPanel::_childRequestRender(StaticSlot * pSlot, const RectI& rect)
+	void PackPanel::_childRequestRender(StaticSlot * pSlot, const Rect& rect)
 	{
 		_requestRender(rect + ((Slot*)pSlot)->m_geo.pos());
 	}
@@ -539,6 +539,8 @@ namespace wg
 
 	void PackPanel::_replaceChild(StaticSlot * _pSlot, Widget * pNewChild)
 	{
+		//TODO: Looks like we need to refresh geometry here or something...
+
 		auto pSlot = static_cast<Slot* > (_pSlot);
 		slots._releaseGuardPointer(pNewChild, &pSlot);
 
@@ -593,8 +595,8 @@ namespace wg
 	{
 		// Recalculate preferred sizes for widget and content.
 
-		SizeI newPreferredContentSize = _calcPreferredSize();
-		SizeI newPreferredSize = m_pSkin ? newPreferredContentSize + m_pSkin->_contentPaddingSize() : newPreferredContentSize;
+		Size newPreferredContentSize = _calcPreferredSize();
+		Size newPreferredSize = m_pSkin ? newPreferredContentSize + m_pSkin->contentPaddingSize() : newPreferredContentSize;
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -610,7 +612,7 @@ namespace wg
 
 	//____ _resize() ____________________________________________________________
 
-	void PackPanel::_resize( const SizeI& size )
+	void PackPanel::_resize( const Size& size )
 	{
 		Panel::_resize(size);
 		_refreshChildGeo(false);
@@ -618,10 +620,10 @@ namespace wg
 
 	//____ _calcPreferredSize() ______________________________________________________
 
-	SizeI PackPanel::_calcPreferredSize()
+	Size PackPanel::_calcPreferredSize()
 	{
-		int length = 0;
-		int breadth = 0;
+		MU length = 0;
+		MU breadth = 0;
 
 		if( m_pSizeBroker && m_pSizeBroker->mayAlterPreferredLengths() )
 		{
@@ -641,7 +643,7 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					int b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output.qpix):pS->_paddedMatchingWidth(pI->output.qpix);
+					MU b = m_bHorizontal?pS->_paddedMatchingHeight(pI->output):pS->_paddedMatchingWidth(pI->output);
 					if( b > breadth )
 						breadth = b;
 					pI++;
@@ -683,7 +685,7 @@ namespace wg
 
 		//
 
-		return m_bHorizontal?SizeI(length,breadth):SizeI(breadth,length);
+		return m_bHorizontal?Size(length,breadth):Size(breadth,length);
 	}
 
 	//____ _refreshChildGeo() _________________________________________________________
@@ -693,26 +695,26 @@ namespace wg
 		if( slots.isEmpty() )
 			return;
 
-		SizeI sz = m_size;
-		CoordI contentOfs;
+		Size sz = m_size;
+		Coord contentOfs;
 
 		if (m_pSkin)
 		{
-			sz -= m_pSkin->_contentPaddingSize();
-			contentOfs = m_pSkin->_contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
+			sz -= m_pSkin->contentPaddingSize();
+			contentOfs = m_pSkin->contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
 		}
 
-		int wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
-		int givenLength = m_bHorizontal?sz.w:sz.h;
-		int givenBreadth = m_bHorizontal?sz.h:sz.w;
+		MU wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
+		MU givenLength = m_bHorizontal?sz.w:sz.h;
+		MU givenBreadth = m_bHorizontal?sz.h:sz.w;
 
 		// Optimized special case, just copy preferred to length.
 		//TODO: We probably need to use matchingWidth()/matchingHeight() here anyway... prefered length might change with given breadth
 
 		if( !m_pSizeBroker || (wantedLength == givenLength && !m_pSizeBroker->mayAlterPreferredLengths()) )
 		{
-			CoordI pos;
-			RectI geo;
+			Coord pos;
+			Rect geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->m_bVisible )
@@ -742,8 +744,8 @@ namespace wg
 							_requestRender(p->m_geo);
 						}
 
-						int oldW = p->m_geo.w;
-						int oldH = p->m_geo.h;
+						MU oldW = p->m_geo.w;
+						MU oldH = p->m_geo.h;
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
@@ -794,8 +796,8 @@ namespace wg
 
 			SizeBrokerItem * pI = pItemArea;
 
-			CoordI pos;
-			RectI geo;
+			Coord pos;
+			Rect geo;
 			for (auto p = slots._begin(); p != slots._end(); p++)
 			{
 				if( p->m_bVisible )
@@ -804,15 +806,15 @@ namespace wg
 					geo.y = pos.y;
 					if( m_bHorizontal )
 					{
-						geo.w = pI->output.qpix;
+						geo.w = pI->output;
 						geo.h = sz.h;
-						pos.x += pI->output.qpix;
+						pos.x += pI->output;
 					}
 					else
 					{
 						geo.w = sz.w;
-						geo.h = pI->output.qpix;
-						pos.y += pI->output.qpix;
+						geo.h = pI->output;
+						pos.y += pI->output;
 					}
 					geo -= p->m_padding;
 					geo += contentOfs;
@@ -824,8 +826,8 @@ namespace wg
 							_requestRender(geo);
 							_requestRender(p->m_geo);
 						}
-						int oldW = p->m_geo.w;
-						int oldH = p->m_geo.h;
+						MU oldW = p->m_geo.w;
+						MU oldH = p->m_geo.h;
 						p->m_geo = geo;
 						if( geo.w != oldW || geo.h != oldH )
 						{
@@ -879,9 +881,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromQpix(pS->m_preferredSize.w);
-					pI->min = MU::fromQpix(pS->_paddedMinSize().w);
-					pI->max = MU::fromQpix(pS->_paddedMaxSize().w);
+					pI->preferred = pS->m_preferredSize.w;
+					pI->min = pS->_paddedMinSize().w;
+					pI->max = pS->_paddedMaxSize().w;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -893,9 +895,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromQpix(pS->m_preferredSize.h);
-					pI->min = MU::fromQpix(pS->_paddedMinSize().h);
-					pI->max = MU::fromQpix(pS->_paddedMaxSize().h);
+					pI->preferred = pS->m_preferredSize.h;
+					pI->min = pS->_paddedMinSize().h;
+					pI->max = pS->_paddedMaxSize().h;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -905,7 +907,7 @@ namespace wg
 		return int(pI - pArray);
 	}
 
-	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const
+	int PackPanel::_populateSizeBrokerArray( SizeBrokerItem * pArray, MU forcedBreadth ) const
 	{
 		SizeBrokerItem * pI = pArray;
 
@@ -915,9 +917,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromQpix(pS->_paddedMatchingWidth(forcedBreadth));
-					pI->min = MU::fromQpix(pS->_paddedMinSize().w);
-					pI->max = MU::fromQpix(pS->_paddedMaxSize().w);
+					pI->preferred = pS->_paddedMatchingWidth(forcedBreadth);
+					pI->min = pS->_paddedMinSize().w;
+					pI->max = pS->_paddedMaxSize().w;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -929,9 +931,9 @@ namespace wg
 			{
 				if( pS->m_bVisible )
 				{
-					pI->preferred = MU::fromQpix(pS->_paddedMatchingHeight(forcedBreadth));
-					pI->min = MU::fromQpix(pS->_paddedMinSize().h);
-					pI->max = MU::fromQpix(pS->_paddedMaxSize().h);
+					pI->preferred = pS->_paddedMatchingHeight(forcedBreadth);
+					pI->min = pS->_paddedMinSize().h;
+					pI->max = pS->_paddedMaxSize().h;
 					pI->weight = pS->m_weight;
 					pI++;
 				}
@@ -943,9 +945,9 @@ namespace wg
 
 	//____ _setItemLengths() ___________________________________________________________
 
-	int PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, int availableLength) const
+	MU PackPanel::_setItemLengths(SizeBrokerItem * pItems, int nItems, MU availableLength) const
 	{
-		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, MU::fromQpix(availableLength) );
+		MU totalLength = m_pSizeBroker->setItemLengths(pItems, nItems, availableLength );
 
 		// Align outputs so we end up on pixel boundaries
 
@@ -957,12 +959,12 @@ namespace wg
 			reminder &= 0x3;
 		}
 
-		return totalLength.qpix & 0xFFFFFFFC;
+		return totalLength.aligned();
 	}
 
 	//____ _setPreferredLengths() _______________________________________________________
 
-	int PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
+	MU PackPanel::_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const
 	{
 		MU totalLength = m_pSizeBroker->setPreferredLengths(pItems, nItems);
 
@@ -976,7 +978,7 @@ namespace wg
 			reminder &= 0x3;
 		}
 
-		return totalLength.qpix & 0xFFFFFFFC;
+		return totalLength.aligned();
 	}
 
 

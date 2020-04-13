@@ -83,12 +83,12 @@ namespace wg
 
 	//____ _render() ________________________________________________________
 
-	void ShaderCapsule::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void ShaderCapsule::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		// Render our skin
 
 		if( m_pSkin )
-			m_pSkin->_render( pDevice, _canvas, m_state );
+			m_pSkin->render( pDevice, _canvas, m_state );
 
 		if (!slot._widget())
 			return;
@@ -108,11 +108,11 @@ namespace wg
 
 		// Render children recursively
 
-		RectI canvas = m_pSkin ? m_pSkin->_contentRect(_canvas, m_state) : _canvas;
+		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
 		if (canvas != _canvas)
 		{
-			auto savedClipData = limitClipList(pDevice, qpixToPixels(canvas) );
+			auto savedClipData = limitClipList(pDevice, canvas );
 			OO(slot._widget())->_render(pDevice, canvas, canvas );
 			popClipList(pDevice, savedClipData);
 		}

@@ -99,16 +99,16 @@ struct TestEntry
 };
 
 const SizeI	g_canvasSize(512, 512);
-const SizeI	g_windowSize(1400, 900);
+const Size	g_windowSize(1400, 900);
 
 
 
-bool		init_system( RectI windowGeo );
+bool		init_system( Rect windowGeo );
 void		exit_system();
 
 bool		process_system_events(const RootPanel_p& pRoot);
 int64_t		getSystemTicks();
-void		update_window_rects( const RectI * pRects, int nRects );
+void		update_window_rects( const Rect * pRects, int nRects );
 
 bool		init_wondergui();
 void		exit_wondergui();
@@ -714,7 +714,7 @@ void destroy_tests()
 
 //____ update_window_rects() __________________________________________________
 
-void update_window_rects(const RectI * pRects, int nRects)
+void update_window_rects(const Rect * pRects, int nRects)
 {
 	if (nRects == 0)
 		return;
@@ -723,7 +723,7 @@ void update_window_rects(const RectI * pRects, int nRects)
 
 	for (int i = 0; i < nRects; i++)
 	{
-		SDL_Rect r = { pRects[i].x, pRects[i].y, pRects[i].w, pRects[i].h };
+		SDL_Rect r = { pRects[i].x.px(), pRects[i].y.px(), pRects[i].w.px(), pRects[i].h.px() };
 		rects.push_back(r);
 	}
 
@@ -1123,7 +1123,7 @@ bool init_wondergui()
 {
 	Base::init();
 
-    g_pBaseGfxDevice = GlGfxDevice::create(g_windowSize, 0);
+    g_pBaseGfxDevice = GlGfxDevice::create(g_windowSize.px(), 0);
     g_pBaseSurfaceFactory = GlSurfaceFactory::create();
 
     // g_pBaseSurfaceFactory = SoftSurfaceFactory::create();
@@ -1190,7 +1190,7 @@ void exit_wondergui()
 
 //____ init_system() _______________________________________________________
 
-bool init_system( RectI windowGeo )
+bool init_system( Rect windowGeo )
 {
 	// initialize SDL video
 	if (SDL_Init(SDL_INIT_VIDEO) < 0)
@@ -1209,7 +1209,7 @@ bool init_system( RectI windowGeo )
     SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 0);
 
     
-	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x, windowGeo.y, windowGeo.w, windowGeo.h, SDL_WINDOW_OPENGL /*| SDL_WINDOW_ALLOW_HIGHDPI*/);
+	SDL_Window * pWin = SDL_CreateWindow("GfxDevice TestApp", windowGeo.x.px(), windowGeo.y.px(), windowGeo.w.px(), windowGeo.h.px(), SDL_WINDOW_OPENGL /*| SDL_WINDOW_ALLOW_HIGHDPI*/);
 	if( pWin == nullptr )
 	{
 		printf("Unable to create SDL window: %s\n", SDL_GetError());

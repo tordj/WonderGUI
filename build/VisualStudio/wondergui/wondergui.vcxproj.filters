@@ -625,9 +625,6 @@
     <ClCompile Include="..\..\..\src\valueformatters\wg_valueformatter.cpp">
       <Filter>valueformatters</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_button.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -849,6 +846,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_mu.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
+      <Filter>widgets\panels</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

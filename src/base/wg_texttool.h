@@ -110,9 +110,6 @@ namespace wg
 		static uint32_t	getTextSizeUTF8( const uint16_t * pSrc, uint32_t maxChars = INT_MAX );
 		static uint32_t	getTextSizeUTF8( const char * pSrc, CodePage codepage, int maxChars = INT_MAX );
 
-		static uint32_t	getTextFormatted( const Char * pSrc, uint16_t * pDest, uint32_t maxChars, const ResDB * pResDB = 0 );
-		static uint32_t	getTextSizeFormatted( const Char * pSrc, uint32_t maxChars = INT_MAX, const ResDB * pResDB = 0 );
-
 		static uint32_t	strlen( const uint16_t * pSrc );
 		static uint32_t	strlen( const Char * pSrc );
 		static int		strcmp( const uint16_t * pStr1, const uint16_t * pStr2 );
@@ -121,8 +118,6 @@ namespace wg
 		static int		charcodecmpIgnoreCase( const Char * pStr1, const Char * pStr2 );
 
 		static void		forwardCharacters( const char *& pChar, int nChars );
-		static void		forwardEscapedCharacters( const char *& pChar, uint32_t nChars );
-		static void		forwardEscapedCharacters( const uint16_t *& pChar, uint32_t nChars );
 
 		static void			setCharCode( uint16_t glyph, Char * pChar, int nb );
 		static void			setChars( const Char& ch, Char * pChar, int nb );

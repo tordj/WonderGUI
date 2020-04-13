@@ -53,9 +53,9 @@ namespace wg
 
 	//____ setPreferredSize() _____________________________________________________
 
-	void SizeCapsule::setPreferredSize( Size _size )
+	void SizeCapsule::setPreferredSize( Size size )
 	{
-		SizeI size = MUToQpixAligned(_size);
+		size = size.aligned();
 		if( size != m_preferred )
 		{
 			m_preferred = size;
@@ -67,13 +67,14 @@ namespace wg
 
 	bool SizeCapsule::setSizes( Size _min, Size _preferred, Size _max )
 	{
+
 		if ( (_preferred.w >= 0 && (_preferred.w > _max.w || _preferred.w < _min.w )) ||
 			 (_preferred.h >= 0 && (_preferred.h > _max.h || _preferred.h < _min.h )) )
 			return false;
 
-		SizeI min = MUToQpixAligned(_min);
-		SizeI preferred = MUToQpixAligned(_preferred);
-		SizeI max = MUToQpixAligned(_max);
+		Size min = _min.aligned();
+		Size preferred = _preferred.aligned();
+		Size max = _max.aligned();
 
 		if (min != m_min || preferred != m_preferred || max != m_max)
 		{
@@ -87,11 +88,10 @@ namespace wg
 
 	//____ setMinSize() ___________________________________________________________
 
-	void SizeCapsule::setMinSize( Size _size )
+	void SizeCapsule::setMinSize( Size size )
 	{
 		//TODO: Add error handling.
 
-		SizeI size = MUToQpixAligned(_size);
 		if( size != m_min )
 		{
 			m_min = size;
@@ -101,11 +101,10 @@ namespace wg
 
 	//____ setMaxSize() ___________________________________________________________
 
-	void SizeCapsule::setMaxSize( Size _size )
+	void SizeCapsule::setMaxSize( Size size )
 	{
 		//TODO: Add error handling.
 
-		SizeI size = MUToQpixAligned(_size);
 		if( size != m_max )
 		{
 			m_max = size;
@@ -113,22 +112,22 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() ________________________________________________________
+	//____ preferredSize() ________________________________________________________
 
-	SizeI SizeCapsule::_preferredSize() const
+	Size SizeCapsule::preferredSize() const
 	{
 		if (!slot._widget())
 		{
-			SizeI size = { std::max(0, m_preferred.w), std::max(0, m_preferred.h) };
+			Size size = { std::max(MU(), m_preferred.w), std::max(MU(), m_preferred.h) };
 			if (m_pSkin)
-				size += m_pSkin->_contentPaddingSize();
+				size += m_pSkin->contentPaddingSize();
 
 			return size;
 		}
 
 		//
 
-		SizeI pref;
+		Size pref;
 
 		if (m_preferred.w >= 0)
 		{
@@ -139,7 +138,7 @@ namespace wg
 				pref.h = m_preferred.h;
 			else
 			{
-				pref.h = _matchingHeight(pref.w);
+				pref.h = matchingHeight(pref.w);
 
 				if (pref.h > m_max.h)
 					pref.h = m_max.h;
@@ -152,7 +151,7 @@ namespace wg
 			// Preferred height is forced, we only need to adapt width.
 
 			pref.h = m_preferred.w;
-			pref.w = _matchingWidth(pref.h);
+			pref.w = matchingWidth(pref.h);
 
 			if (pref.w > m_max.w)
 				pref.w = m_max.w;
@@ -164,14 +163,14 @@ namespace wg
 			// Preferred size not set in size capsule.
 			// We take preferred from child and check against our min/max.
 
-			pref = OO(slot)._preferredSize();
+			pref = slot._widget()->preferredSize();
 
 			if (pref.w > m_max.w && pref.h > m_max.h)
 			{
 				// Both width and height surpasses our max, get matching values for both and limit them to our min.
 
-				int matchW = _matchingWidth(m_max.h);
-				int matchH = _matchingHeight(m_max.w);
+				MU matchW = matchingWidth(m_max.h);
+				MU matchH = matchingHeight(m_max.w);
 
 				matchW = std::max(matchW, m_min.w);
 				matchH = std::max(matchH, m_min.h);
@@ -218,7 +217,7 @@ namespace wg
 				// Only width surpasses our max.
 
 				pref.w = m_max.w;
-				pref.h = _matchingHeight(pref.w);
+				pref.h = matchingHeight(pref.w);
 
 				if (pref.h > m_max.h)
 					pref.h = m_max.h;
@@ -230,7 +229,7 @@ namespace wg
 				// Only height surpasses our max
 
 				pref.h = m_max.h;
-				pref.w = _matchingWidth(pref.h);
+				pref.w = matchingWidth(pref.h);
 
 				if (pref.w > m_max.w)
 					pref.w = m_max.w;
@@ -245,7 +244,7 @@ namespace wg
 				if (pref.w < m_min.w)
 				{
 					pref.w = m_min.w;
-					pref.h = _matchingHeight(pref.w);
+					pref.h = matchingHeight(pref.w);
 
 					if (pref.h > m_max.h)
 						pref.h = m_max.h;
@@ -255,7 +254,7 @@ namespace wg
 				else if (pref.h < m_min.h)
 				{
 					pref.h = m_min.h;
-					pref.w = _matchingWidth(pref.h);
+					pref.w = matchingWidth(pref.h);
 
 					if (pref.w > m_max.w)
 						pref.w = m_max.w;
@@ -266,50 +265,50 @@ namespace wg
 		}
 
 		if (m_pSkin)
-			pref += m_pSkin->_contentPaddingSize();
+			pref += m_pSkin->contentPaddingSize();
 
 		return pref;
 	}
 
-	//____ _minSize() ______________________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	SizeI SizeCapsule::_minSize() const
+	Size SizeCapsule::minSize() const
 	{
 		if( slot._widget() )
-			return SizeI::max(m_min,OO(slot)._minSize());
+			return Size::max(m_min,slot._widget()->minSize());
 		else
 			return m_min;
 	}
 
-	//____ _maxSize() ______________________________________________________________
+	//____ maxSize() ______________________________________________________________
 
-	SizeI SizeCapsule::_maxSize() const
+	Size SizeCapsule::maxSize() const
 	{
 		if( slot._widget() )
-			return SizeI::min(m_max,OO(slot)._maxSize());
+			return Size::min(m_max,slot._widget()->maxSize());
 		else
 			return m_max;
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ matchingHeight() _______________________________________________________
 
-	int SizeCapsule::_matchingHeight( int width ) const
+	MU SizeCapsule::matchingHeight( MU width ) const
 	{
 		if( m_preferred.h >= 0 )
 		{
-			int h = m_preferred.h;
+			MU h = m_preferred.h;
 
 			if( slot._widget() )
 			{
-				int max = OO(slot)._maxSize().h;
-				int min = OO(slot)._minSize().h;
+				MU max = slot._widget()->maxSize().h;
+				MU min = slot._widget()->minSize().h;
 				limit( h, min, max );
 			}
 			return h;
 		}
 		else if( slot._widget() )
 		{
-			int h = OO(slot)._matchingHeight(width);
+			MU h = slot._widget()->matchingHeight(width);
 			limit( h, m_min.h, m_max.h );
 			return h;
 		}
@@ -317,25 +316,25 @@ namespace wg
 			return m_min.h;
 	}
 
-	//____ _matchingWidth() _______________________________________________________
+	//____ matchingWidth() _______________________________________________________
 
-	int SizeCapsule::_matchingWidth( int height ) const
+	MU SizeCapsule::matchingWidth( MU height ) const
 	{
 		if( m_preferred.w >= 0 )
 		{
-			int w = m_preferred.w;
+			MU w = m_preferred.w;
 
 			if( slot._widget() )
 			{
-				int max = OO(slot)._maxSize().w;
-				int min = OO(slot)._minSize().w;
+				MU max = slot._widget()->maxSize().w;
+				MU min = slot._widget()->minSize().w;
 				limit( w, min, max );
 			}
 			return w;
 		}
 		else if( slot._widget() )
 		{
-			int w = OO(slot)._matchingWidth(height);
+			MU w = slot._widget()->matchingWidth(height);
 			limit( w, m_min.w, m_max.w );
 			return w;
 		}

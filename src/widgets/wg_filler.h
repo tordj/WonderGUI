@@ -63,13 +63,13 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		void	setPreferredSize( const Size& size );
+		Size	preferredSize() const override;
 
 	protected:
 		Filler();
 		virtual ~Filler();
 		virtual Widget* _newOfMyType() const override { return new Filler(); };
 
-		SizeI	_preferredSize() const override;
 		void	_cloneContent( const Widget * _pOrg ) override;
 
 	private:

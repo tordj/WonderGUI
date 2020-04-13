@@ -559,11 +559,6 @@ namespace wg
 		return m_dragWidgetPointerOfs;
 	}
 
-	CoordI DropPickMsg::dragWidgetPointerOfsRaw() const
-	{
-		return Util::MUToQpix(m_dragWidgetPointerOfs);
-	}
-
 	//____ DropProbeMsg ___________________________________________________
 
 	const TypeInfo DropProbeMsg::TYPEINFO = { "DropProbeMsg", &DragNDropMsg::TYPEINFO };
@@ -1121,31 +1116,5 @@ namespace wg
 	{
 		return m_prevPos;
 	}
-
-	CoordI MouseDragMsg::draggedTotalRaw() const
-	{
-		return Util::MUToQpix(m_pointerPos - m_startPos);
-	}
-
-	CoordI MouseDragMsg::draggedNowRaw() const
-	{
-		return Util::MUToQpix( m_pointerPos - m_prevPos );
-	}
-
-	CoordI MouseDragMsg::currPosRaw() const
-	{
-		return Util::MUToQpix( m_pointerPos );
-	}
-
-	CoordI MouseDragMsg::startPosRaw() const
-	{
-		return Util::MUToQpix(m_startPos);
-	}
-
-	CoordI MouseDragMsg::prevPosRaw() const
-	{
-		return Util::MUToQpix(m_prevPos);
-	}
-
 
 } // namespace wg

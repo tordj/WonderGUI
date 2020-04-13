@@ -76,12 +76,12 @@ namespace wg
 				Closing,				// Popup is closing (fading out).
 			};
 
-			RectI		m_launcherGeo;		// Launcher geo relative sibling or parent.
+			Rect		m_launcherGeo;		// Launcher geo relative sibling or parent.
 			Origo		m_attachPoint = Origo::NorthWest;
 			bool		m_bAutoClose;		// Has been opened in auto-close mode.
 			State		m_state;
 			int			m_stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
-			SizeI		m_maxSize = { INT_MAX, INT_MAX };
+			Size		m_maxSize = { MU::Max, MU::Max };
 			Widget_wp	m_pOpener;			// Widget that opened this popup.
 			Widget_wp	m_pKeyFocus;		// Pointer at widget that held focus when this popup was ontop.
 		};
@@ -105,7 +105,7 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(INT_MAX >> 8, INT_MAX >> 8));
+			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(MU::Max, MU::Max));
 			void	pop(int nb = 1);
 			void	pop(Widget * pPopup);
 			void	clear();
@@ -147,7 +147,7 @@ namespace wg
 
 		const TypeInfo&	_slotTypeInfo(const StaticSlot * pSlot) const override;
 
-		Widget *		_findWidget( const CoordI& ofs, SearchMode mode ) override;
+		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
 
 
 		// Only base slot can have child replaced, we should throw something later...
@@ -162,7 +162,7 @@ namespace wg
 		const Layer::Slot * _endLayerSlots() const override;
 		int					_sizeOfLayerSlot() const override;
 
-		void				_onRequestRender(const RectI& rect, const Layer::Slot * pSlot) override;	// rect is in our coordinate system.
+		void				_onRequestRender(const Rect& rect, const Layer::Slot * pSlot) override;	// rect is in our coordinate system.
 
 		// Overloaded from container
 
@@ -172,15 +172,15 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void            _render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
+		void            _render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_resize( const SizeI& size ) override;
+		void			_resize( const Size& size ) override;
 		void			_receive( Msg * pMsg ) override;
 
 		// Needed by CSlots
 
 		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const RectI& launcherGeo, Origo attachPoint, bool bAutoClose, SizeI maxSize);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 

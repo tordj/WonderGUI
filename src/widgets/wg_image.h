@@ -54,6 +54,11 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ____________________________________________
+
+		Size	preferredSize() const override;
+
+
 		//.____ Appearance ________________________________________________________
 
 		void				setImage( Surface * pSurface, const RectI& rect );	///< @brief Set image to display.
@@ -67,10 +72,9 @@ namespace wg
 		virtual ~Image();
 		virtual Widget* _newOfMyType() const override { return new Image(); };
 
-		SizeI		_preferredSize() const override;
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		bool		_alphaTest( const CoordI& ofs ) override;
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		bool		_alphaTest( const Coord& ofs ) override;
 
 	private:
 

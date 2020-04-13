@@ -50,16 +50,16 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _matchingHeight() ___________________________________________________
+	//____ matchingHeight() ___________________________________________________
 
-	int Canvas::_matchingHeight(int width) const
+	MU Canvas::matchingHeight(MU width) const
 	{
 		//TODO: Take skin padding into account
 
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		SizeI sz = _canvas()._preferredSize();
+		Size sz = _canvas()._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -67,16 +67,16 @@ namespace wg
 		return width * sz.h / sz.w;
 	}
 
-	//____ _matchingWidth() ____________________________________________________
+	//____ matchingWidth() ____________________________________________________
 
-	int Canvas::_matchingWidth(int height) const
+	MU Canvas::matchingWidth(MU height) const
 	{
 		//TODO: Take skin padding into account
 
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		SizeI sz = _canvas()._preferredSize();
+		Size sz = _canvas()._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -84,16 +84,16 @@ namespace wg
 		return height * sz.w / sz.h;
 	}
 
-	//____ _preferredSize() ____________________________________________________
+	//____ preferredSize() ____________________________________________________
 
-	SizeI Canvas::_preferredSize() const
+	Size Canvas::preferredSize() const
 	{
-		SizeI sz = _canvas()._preferredSize();
+		Size sz = _canvas()._preferredSize();
 		if (sz.w == sz.h == 0)
 			sz = { 16*4,16*4 };
 
 		if (m_pSkin)
-			sz += m_pSkin->_contentPaddingSize();
+			sz += m_pSkin->contentPaddingSize();
 
 		return sz;
 	}
@@ -107,7 +107,7 @@ namespace wg
 
 	//____ _resize() _________________________________________________________
 
-	void Canvas::_resize(const SizeI& size)
+	void Canvas::_resize(const Size& size)
 	{
 		Widget::_resize(size);
 		_canvas()._setComponentSize(size);
@@ -117,38 +117,38 @@ namespace wg
 
 	void Canvas::_setSkin(Skin * pSkin)
 	{
-		SizeI oldPadding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
+		Size oldPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
 
 		Widget::_setSkin(pSkin);
 
-		SizeI newPadding = m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI();
+		Size newPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
 		if (newPadding != oldPadding)
 			_canvas()._setComponentSize(m_size - newPadding);
 	}
 
 	//____ _render() __________________________________________________________
 
-	void Canvas::_render(GfxDevice * pDevice, const RectI& canvas, const RectI& window)
+	void Canvas::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
 	{
 		//TODO: Support bitmap being of different surface kind than destination.
 
 		Widget::_render(pDevice, canvas, window);
 
-		RectI componentCanvas = m_pSkin ? m_pSkin->_contentRect(canvas, m_state) : canvas;
+		Rect componentCanvas = m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas;
 
 		_canvas()._render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool Canvas::_alphaTest(const CoordI& _ofs)
+	bool Canvas::_alphaTest(const Coord& _ofs)
 	{
 		if (Widget::_alphaTest(_ofs))
 			return true;
 
-		CoordI ofs;
+		Coord ofs;
 		if( m_pSkin )
-			ofs -= m_pSkin->_contentOfs(m_state);
+			ofs -= m_pSkin->contentOfs(m_state);
 
 		return _canvas()._alphaTest(ofs, m_markOpacity);
 	}

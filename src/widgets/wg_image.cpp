@@ -98,19 +98,19 @@ namespace wg
 
 
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ preferredSize() _____________________________________________________________
 
-	SizeI Image::_preferredSize() const
+	Size Image::preferredSize() const
 	{
 		if( m_pSurface )
 		{
 			if( m_pSkin )
-				return m_pSkin->_sizeForContent( m_rect.size() );
+				return m_pSkin->sizeForContent( m_rect.size() );
 			else
 				return m_rect.size();
 		}
 
-		return Widget::_preferredSize();
+		return Widget::preferredSize();
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -127,32 +127,32 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void Image::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void Image::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectI dest;
+			Rect dest;
 			if( m_pSkin )
-				dest = m_pSkin->_contentRect( _canvas, state() );
+				dest = m_pSkin->contentRect( _canvas, state() );
 			else
 				dest = _canvas;
 
 			pDevice->setBlitSource(m_pSurface);
-			pDevice->stretchBlit( qpixToPixels(dest), m_rect );
+			pDevice->stretchBlit( dest.px(), m_rect );
 		}
 	}
 
 	//____ _alphaTest() ___________________________________________________________
 
-	bool Image::_alphaTest( const CoordI& ofs )
+	bool Image::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			RectI dest;
+			Rect dest;
 			if( m_pSkin )
-				dest = m_pSkin->_contentRect( m_size, state() );
+				dest = m_pSkin->contentRect( m_size, state() );
 			else
 				dest = m_size;
 

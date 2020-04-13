@@ -40,7 +40,7 @@ namespace wg
 	{
 
 		//____ aligned() _________________________________________________________
-
+/*
 		inline BorderI aligned(const BorderI& input)
 		{
 			return { input.top & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC };
@@ -96,9 +96,9 @@ namespace wg
 			r.h.align();
 			return r;
 		}
-
+*/
 		//____ pointsToAlignedQpix() _________________________________________________________
-
+/*
 		inline CoordI pointsToAlignedQpix(const CoordI points)
 		{
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
@@ -120,9 +120,9 @@ namespace wg
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
 					 (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
-
+*/
 		//____ qpixToPixels() __________________________________________________
-
+/*
 		inline int qpixToPixels(int quarterPixels)
 		{
 			return quarterPixels >> 2;
@@ -147,9 +147,9 @@ namespace wg
 		{
 			return { quarterPixels.x >> 2, quarterPixels.y >> 2, quarterPixels.w >> 2, quarterPixels.h >> 2 };
 		}
-
+*/
 		//____ pixelsToQpix() __________________________________________________
-
+/*
 		inline int pixelsToQpix(int pixels)
 		{
 			return pixels << 2;
@@ -175,7 +175,7 @@ namespace wg
 			return { pixels.x << 2, pixels.y << 2, pixels.w << 2, pixels.h << 2 };
 		}
 
-
+*/
 		//____ pointsToPixels() _______________________________________________
 
 		inline CoordI pointsToPixels(const CoordI& points)
@@ -217,7 +217,7 @@ namespace wg
 		}
 */
 		//____ qpixToMU() ____________________________________________________
-
+/*
 		inline Coord qpixToMU(const CoordI raw)
 		{
 			Coord c;
@@ -253,9 +253,9 @@ namespace wg
 			r.h.qpix = raw.h;
 			return r;
 		}
-
+*/
 		//____ MUToQpix() ____________________________________________________
-
+/*
 		inline CoordI MUToQpix(const Coord& c)
 		{
 			return { c.x.qpix, c.y.qpix };
@@ -275,9 +275,9 @@ namespace wg
 		{
 			return { r.x.qpix, r.y.qpix, r.w.qpix, r.h.qpix };
 		}
-
+*/
 		//____ pixelsToMU() ____________________________________________________
-
+/*
 		inline Coord pixelsToMU(const CoordI raw)
 		{
 			Coord c;
@@ -313,9 +313,9 @@ namespace wg
 			r.h.qpix = raw.h << 2;
 			return r;
 		}
-
+*/
 		//____ MUToQpixAligned() ____________________________________________________
-
+/*
 		inline CoordI MUToQpixAligned(const Coord& c)
 		{
 			return { c.x.qpix & (int) 0xFFFFFFFC, c.y.qpix & (int) 0xFFFFFFFC };
@@ -335,9 +335,9 @@ namespace wg
 		{
 			return { r.x.qpix & (int)0xFFFFFFFC, r.y.qpix & (int)0xFFFFFFFC, r.w.qpix & (int)0xFFFFFFFC, r.h.qpix & (int)0xFFFFFFFC };
 		}
-
+*/
 		//____ alignQpix() ____________________________________________________
-
+/*
 		inline int alignQpix(const int c)
 		{
 			return c & (int)0xFFFFFFFC;
@@ -364,7 +364,7 @@ namespace wg
 			return { r.x & (int)0xFFFFFFFC, r.y & (int)0xFFFFFFFC, r.w & (int)0xFFFFFFFC, r.h & (int)0xFFFFFFFC };
 		}
 
-
+*/
 
 		double squareRoot(double a);
 		double powerOfTen(int num);

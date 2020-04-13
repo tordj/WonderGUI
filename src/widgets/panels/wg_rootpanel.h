@@ -78,7 +78,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		bool				setGeo( const Rect& geo );
-		inline Rect			geo() const { return Util::qpixToMU(_geo()); };
+		inline Rect			geo() const;
 
 		//.____ State _________________________________________________
 
@@ -113,7 +113,7 @@ namespace wg
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
 
-		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( Util::MUToQpix(ofs)-m_geo.pos(),mode)); }
+		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( ofs-m_geo.pos(),mode)); }
 
 		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
 		inline const Rect*	firstDirtyRect() const { return m_dirtyPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_dirtyPatches.begin()); }
@@ -121,15 +121,13 @@ namespace wg
 		inline int			nbUpdatedRects() const { return m_updatedPatches.size(); }
 		inline const Rect*	firstUpdatedRect() const { return m_updatedPatches.isEmpty() ? nullptr : reinterpret_cast<const Rect*>(m_updatedPatches.begin()); }
 
-		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( Util::MUToQpixAligned(rect) ); }
+		inline void			addDirtyPatch( const Rect& rect ) { m_dirtyPatches.add( rect ); }
 
 
 	protected:
 		RootPanel();
 		RootPanel( GfxDevice * pGfxDevice );
 		~RootPanel();
-
-		RectI			_geo() const;
 
 		// SlotHolder methods
 
@@ -140,21 +138,21 @@ namespace wg
 		Object *		_object() override;
 		const Object *	_object() const override;
 
-		CoordI			_childPos( const StaticSlot * pSlot ) const override;
-		CoordI			_childGlobalPos( const StaticSlot * pSlot ) const override;
+		Coord			_childPos( const StaticSlot * pSlot ) const override;
+		Coord			_childGlobalPos( const StaticSlot * pSlot ) const override;
 
 		bool			_isChildVisible( const StaticSlot * pSlot ) const override;
-		RectI			_childWindowSection( const StaticSlot * pSlot ) const override;
+		Rect			_childWindowSection( const StaticSlot * pSlot ) const override;
 
 		void			_childRequestRender( StaticSlot * pSlot ) override;
-		void			_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void			_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 		void			_childRequestResize( StaticSlot * pSlot ) override;
 
 		bool			_childRequestFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 		bool			_childReleaseFocus( StaticSlot * pSlot, Widget * pWidget ) override;
 
 		void			_childRequestInView( StaticSlot * pSlot ) override;
-		void			_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea ) override;
+		void			_childRequestInView( StaticSlot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea ) override;
 
 		Widget *		_prevChild( const StaticSlot * pSlot ) const override;
 		Widget *		_nextChild( const StaticSlot * pSlot ) const override;
@@ -165,8 +163,8 @@ namespace wg
 		void			_selectSlots(StaticSlot * pSlot, int nb) override;
 		void			_unselectSlots(StaticSlot * pSlot, int nb) override;
 
-		void			_repadSlots(StaticSlot * pSlot, int nb, BorderI padding) override;
-		void			_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, Border padding) override;
+		void			_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding) override;
 
 		void			_didAddSlots(StaticSlot * pSlot, int nb) override;
 		void			_didMoveSlots(StaticSlot * pFrom, StaticSlot * pTo, int nb) override;
@@ -179,7 +177,7 @@ namespace wg
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
-		Widget *			_findWidget( const CoordI& ofs, SearchMode mode );
+		Widget *			_findWidget( const Coord& ofs, SearchMode mode );
 
 //		void				_setFocusedChild( Widget * pWidget );
 		Widget *			_focusedChild() const;
@@ -195,7 +193,7 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
-		RectI				m_geo;
+		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;
 

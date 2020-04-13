@@ -57,17 +57,19 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+
+		Size		preferredSize() const override;
+
 
 	protected:
 		FpsDisplay();
 		virtual ~FpsDisplay();
 		virtual Widget* _newOfMyType() const override { return new FpsDisplay(); };
 
-		SizeI		_preferredSize() const override;
-
 		void		_receive( Msg * pMsg ) override;
 		void		_setState( State state ) override;
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
 		class TextAccess : public CTextDisplay { friend class FpsDisplay; };

@@ -83,7 +83,7 @@ namespace wg
 		inline const CoordI		px() const;
 		inline const CoordF		fpx() const;
 
-		inline Coord& align() { x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+		inline Coord aligned() const { Coord c; c.x.qpix = x.qpix & 0xFFFFFFFC; c.y.qpix = y.qpix & 0xFFFFFFFC; return c; }
 
 		template<typename Type>
 		inline static Coord fromPX(const CoordT<Type>& c) { Rect c2; c2.x.qpix = int(c.x*4); c2.y.qpix = int(c.y*4); return c2; }
@@ -152,8 +152,8 @@ namespace wg
 		inline Size		size() const;
 		inline MU		width() const { return left + right; }
 		inline MU		height() const { return top + bottom; }
-		inline void		clear() { left = 0; right = 0; top = 0; bottom = 0; }		///< @brief Sets the thickness of all sides to 0.
-		inline bool		isEmpty() const { return (left | top | right | bottom) == 0; }
+		inline void		clear() { left.qpix = 0; right.qpix = 0; top.qpix = 0; bottom.qpix = 0; }		///< @brief Sets the thickness of all sides to 0.
+		inline bool		isEmpty() const { return (left.qpix | top.qpix | right.qpix | bottom.qpix) == 0; }
 
 		inline Border	scale(int scale) const { return Border(top*scale / 4096, right*scale / 4096, bottom*scale / 4096, left*scale / 4096); } // Only for WG2 compatibility!
 
@@ -161,7 +161,7 @@ namespace wg
 		inline const BorderI	px() const;
 		inline const BorderF	fpx() const;
 
-		inline Border& align() { top.qpix &= 0xFFFFFFFC; right.qpix &= 0xFFFFFFFC; bottom.qpix &= 0xFFFFFFFC; left.qpix &= 0xFFFFFFFC; return *this; }
+		inline Border aligned() const { Border b;  b.top.qpix = top.qpix & 0xFFFFFFFC; b.right.qpix = right.qpix & 0xFFFFFFFC; b.bottom.qpix = bottom.qpix & 0xFFFFFFFC; b.left.qpix = left.qpix & 0xFFFFFFFC; return b; }
 
 		template<typename Type>
 		inline static Border fromPX(const BorderT<Type>& b) { Border b2; b2.top.qpix = int(b.top*4); b2.right.qpix = int(b.right*4); b2.bottom.qpix = int(b.bottom*4); b2.left.qpix = int(b.left*4); return b2; }
@@ -209,13 +209,14 @@ namespace wg
 	};
 
 
-	//____ SizeT<T> ________________________________________________________
+	//____ Size ________________________________________________________
 
 	/**
-		@brief Specifies the size of a rectangular area, measured in pixels.
+		@brief Specifies the size of a rectangular area.
 
-		Specifies the size of a rectangular area, measured in pixels.
-		Members are integer precision and can be negative.
+		Specifies the size of a rectangular area.
+
+		Internal resolution is quarterpixels.
 	**/
 
 	class Size
@@ -249,7 +250,7 @@ namespace wg
 		inline const SizeI&	qpix() const { return reinterpret_cast<const SizeI&>(*this); }
 		inline const SizeI	px() const;
 		inline const SizeF	fpx() const;
-		inline Size&		align() { w.qpix &= 0xFFFFFFFC; h.qpix &= 0xFFFFFFFC; return *this; }
+		inline Size	aligned() const { Size sz2;  sz2.w.qpix = w.qpix & 0xFFFFFFFC; sz2.h.qpix = h.qpix & 0xFFFFFFFC; return sz2; }
 
 		template<typename Type>
 		inline static Size fromPX(const SizeT<Type>& sz) { Size sz2; sz2.w.qpix = int(sz.w*4); sz2.h.qpix = int(sz.h*4); return sz2; }
@@ -412,7 +413,7 @@ namespace wg
 		inline const RectI	px() const;
 		inline const RectF	fpx() const;
 
-		inline Rect&		align() { w.qpix = (w.qpix + (x.qpix & 0x3)) & 0xFFFFFFFC; h.qpix = (h.qpix + (y.qpix & 0x3)) & 0xFFFFFFFC; x.qpix &= 0xFFFFFFFC; y.qpix &= 0xFFFFFFFC; return *this; }
+		inline Rect		aligned() const { Rect r2;  r2.x.qpix = x.qpix & 0xFFFFFFFC; r2.y.qpix = y.qpix & 0xFFFFFFFC; r2.w.qpix = (w.qpix + (x.qpix & 0x3)) & 0xFFFFFFFC; r2.h.qpix = (h.qpix + (y.qpix & 0x3)) & 0xFFFFFFFC; return r2; }
 
 		template<typename Type>
 		inline static Rect fromPX(const RectT<Type>& r) { Rect r2; r2.x.qpix = int(r.x*4); r2.y.qpix = int(r.y*4); r2.w.qpix = int(r.w*4); r2.h.qpix = int(r.h*4); return r2; }

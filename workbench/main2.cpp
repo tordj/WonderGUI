@@ -568,8 +568,8 @@ int main(int argc, char** argv)
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
-//	splitPanelTest(&pRoot->slot);
-	designLayerTest(&pRoot->slot);
+	splitPanelTest(&pRoot->slot);
+//	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 
 	
@@ -917,6 +917,7 @@ int main(int argc, char** argv)
 		pSplit->setHandleSkin(pPressablePlateSkin);
 //		pSplit->setHandleThickness(10);
 //		pSplit->setOrientation(Orientation::Horizontal);
+
 
 
 		auto pMapper = StdTextMapper::create();

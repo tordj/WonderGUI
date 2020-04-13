@@ -82,9 +82,9 @@ namespace wg
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
 
-			int				m_ofs;				// Offset in pixels for start of this list item.
-			int				m_length;			// Length in pixels of this list item. Includes widget padding.
-			int				m_prefBreadth;		// Prefereed breadth of this widget.
+			MU				m_ofs;				// Offset for start of this list item.
+			MU				m_length;			// Length of this list item. Includes widget padding.
+			MU				m_prefBreadth;		// Prefereed breadth of this widget.
 		};
 
 
@@ -144,10 +144,15 @@ namespace wg
 		void				setOrientation( Orientation orientation );
 		Orientation			orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 
+		Size				preferredSize() const override;
+		MU					matchingHeight(MU width) const override;
+		MU					matchingWidth(MU height) const override;
+
+
 		bool				setMinEntrySize(Size min);
 		bool				setMaxEntrySize(Size max);
-		Size				minEntrySize() const { return Util::qpixToMU(m_minEntrySize); }
-		Size				maxEntrySize() const { return Util::qpixToMU(m_maxEntrySize); }
+		Size				minEntrySize() const { return m_minEntrySize; }
+		Size				maxEntrySize() const { return m_maxEntrySize; }
 
 		//.____ Behavior ________________________________________________________
 
@@ -165,31 +170,27 @@ namespace wg
 
 		// Overloaded from Widget
 
-		SizeI			_preferredSize() const override;
-		int				_matchingHeight(int width) const override;
-		int				_matchingWidth(int height) const override;
-
-		void			_collectPatches( Patches& container, const RectI& geo, const RectI& clip ) override;
-		void			_maskPatches( Patches& patches, const RectI& geo, const RectI& clip, BlendMode blendMode ) override;
+		void			_collectPatches( Patches& container, const Rect& geo, const Rect& clip ) override;
+		void			_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		void			_resize( const SizeI& size ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_resize( const Size& size ) override;
 		void			_refresh() override;
 
 		void			_receive( Msg * pMsg ) override;
-		SizeI			_windowPadding() const override;
+		Size			_windowPadding() const override;
 
 		// Overloaded from List
 
-		List::Slot *	_findEntry(const CoordI& ofs) override;
-		void			_getEntryGeo(RectI& geo, const List::Slot * pSlot) const override;
+		List::Slot *	_findEntry(const Coord& ofs) override;
+		void			_getEntryGeo(Rect& geo, const List::Slot * pSlot) const override;
 
-		RectI			_listArea() const override;
-		RectI			_listWindow() const override;
-		RectI			_listCanvas() const override;
+		Rect			_listArea() const override;
+		Rect			_listWindow() const override;
+		Rect			_listCanvas() const override;
 
-		void			_onEntrySkinChanged(SizeI oldPadding, SizeI newPadding) override;
-		void			_onLassoUpdated(const RectI& oldLasso, const RectI& newLasso) override;
+		void			_onEntrySkinChanged(Size oldPadding, Size newPadding) override;
+		void			_onLassoUpdated(const Rect& oldLasso, const Rect& newLasso) override;
 
 		List::Slot *	_beginSlots() const override;
 		List::Slot *	_endSlots() const override;
@@ -202,12 +203,12 @@ namespace wg
 		void			_firstSlotWithGeo(SlotWithGeo& package) const override;
 		void			_nextSlotWithGeo(SlotWithGeo& package) const override;
 
-		Widget * 		_findWidget(const CoordI& ofs, SearchMode mode) override;
+		Widget * 		_findWidget(const Coord& ofs, SearchMode mode) override;
 
-		CoordI			_childPos(const StaticSlot * pSlot) const override;
+		Coord			_childPos(const StaticSlot * pSlot) const override;
 
 		void			_childRequestRender(StaticSlot * pSlot) override;
-		void			_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void			_childRequestRender(StaticSlot * pSlot, const Rect& rect) override;
 		void			_childRequestResize(StaticSlot * pSlot) override;
 
 		Widget *		_prevChild(const StaticSlot * pSlot) const override;
@@ -229,9 +230,9 @@ namespace wg
 
 		// Overloaded from GeoComponent::Holder
 
-		CoordI	_componentPos(const GeoComponent * pComponent) const override;
-		SizeI	_componentSize(const GeoComponent * pComponent) const override;
-		RectI	_componentGeo(const GeoComponent * pComponent) const override;
+		Coord	_componentPos(const GeoComponent * pComponent) const override;
+		Size	_componentSize(const GeoComponent * pComponent) const override;
+		Rect	_componentGeo(const GeoComponent * pComponent) const override;
 
 		void	_receiveComponentNotif(GeoComponent * pComponent, ComponentNotif notification, int value, void * pData) override;
 
@@ -248,19 +249,19 @@ namespace wg
 		void			_updateChildOfsFrom( Slot* pSlot );
 
 
-		void			_getChildGeo( RectI& geo, const Slot * pSlot ) const;
-		int				_getEntryAt( int pixelofs ) const;
-		RectI			_headerGeo() const;
+		void			_getChildGeo( Rect& geo, const Slot * pSlot ) const;
+		int				_getEntryAt( MU ofs ) const;
+		Rect			_headerGeo() const;
 
 		void			_refreshHeader();
 		void			_refreshList();
 
-		SizeI			_paddedLimitedPreferredSize( StaticSlot * pSlot );
-		int				_paddedLimitedMatchingHeight( StaticSlot * pSlot, int paddedWidth );
-		int				_paddedLimitedMatchingWidth( StaticSlot * pSlot, int paddedHeight );
+		Size			_paddedLimitedPreferredSize( StaticSlot * pSlot );
+		MU				_paddedLimitedMatchingHeight( StaticSlot * pSlot, MU paddedWidth );
+		MU				_paddedLimitedMatchingWidth( StaticSlot * pSlot, MU paddedHeight );
 
-		void			_addToContentPreferredSize(int length, int breadth);
-		void			_subFromContentPreferredSize(int length, int breadth);
+		void			_addToContentPreferredSize(MU length, MU breadth);
+		void			_subFromContentPreferredSize(MU length, MU breadth);
 
 		class ColumnHeaderAccess : public CColumnHeader { friend class PackList; };
 		const ColumnHeaderAccess& _header() const { return static_cast<const ColumnHeaderAccess&>(header); }
@@ -272,17 +273,17 @@ namespace wg
 		SortOrder			m_sortOrder;
 		std::function<int(const Widget *,const Widget *)> m_sortFunc;
 
-		int					m_contentBreadth;
-		int					m_contentLength;
+		MU					m_contentBreadth;
+		MU					m_contentLength;
 
-		SizeI				m_entryPadding;
-		SizeI				m_minEntrySize;
-		SizeI				m_maxEntrySize;
+		Size				m_entryPadding;
+		Size				m_minEntrySize;
+		Size				m_maxEntrySize;
 
 		//----
 
-		int				m_contentPreferredLength;
-		int				m_contentPreferredBreadth;
+		MU				m_contentPreferredLength;
+		MU				m_contentPreferredBreadth;
 		int				m_nbPreferredBreadthEntries;			// Number of entries whose preferred breadth are the same as m_preferredSize.
 	};
 

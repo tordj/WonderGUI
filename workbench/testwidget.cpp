@@ -55,11 +55,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ preferredSize() __________________________________________________________
 
-	SizeI TestWidget::_preferredSize() const
+	Size TestWidget::preferredSize() const
 	{
-		return SizeI(200,200) * MU::qpixPerPoint();
+		return Size(200,200);
 	}
 
 	//____ start() _________________________________________________________________
@@ -89,7 +89,7 @@ namespace wg
 
 	//____ _render() _____________________________________________________________
 
-	void TestWidget::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void TestWidget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
  //       pDevice->setBlendMode(BlendMode::Invert);
         
@@ -98,7 +98,7 @@ namespace wg
 		if( m_bPointsInitialized )
 		{
 		
-			pDevice->drawLine( CoordI(_canvas.x, _canvas.y), CoordI(_canvas.x + _canvas.w, _canvas.y + _canvas.h ), Color(255,000,000), 10.f );
+			pDevice->drawLine( _canvas.pos().px(), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ).px(), Color(255,000,000), 10.f );
 
 			for( int i = 0 ; i < 2 ; i+=2 )
 			{

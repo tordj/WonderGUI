@@ -68,9 +68,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
-			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
-			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
+			inline Coord	pos() const { return m_geo.pos(); }
+			inline Size		size() const { return m_geo.size(); }
+			inline Rect		geo() const { return m_geo; }
 
 			//.____ Operators __________________________________________
 
@@ -84,8 +84,8 @@ namespace wg
 
 			bool			m_bResizeRequired = false;
 			float			m_weight = 1.f;				// Weight for space allocation.
-			RectI			m_geo;						// Real geo of child (no padding included).
-			SizeI			m_preferredSize;				// Cached padded preferred size from the child.
+			Rect			m_geo;						// Real geo of child (no padding included).
+			Size			m_preferredSize;				// Cached padded preferred size from the child.
 		};
 
 
@@ -137,6 +137,12 @@ namespace wg
 		void			setOrientation( Orientation orientaiton );
 		Orientation		orientation() const { return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical; }
 
+		MU				matchingHeight(MU width) const override;
+		MU				matchingWidth(MU height) const override;
+
+		Size			preferredSize() const override;
+
+
 		//.____ Behavior ________________________________________________________
 
 		void			setSizeBroker( SizeBroker * pBroker );
@@ -149,12 +155,7 @@ namespace wg
 
 		// Overloaded from Widget
 
-		void			_resize( const SizeI& size ) override;
-
-		int				_matchingHeight(int width) const override;
-		int				_matchingWidth(int height) const override;
-
-		SizeI			_preferredSize() const override;
+		void			_resize( const Size& size ) override;
 
 
 		// Overloaded from Container
@@ -167,10 +168,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		Coord		_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender(StaticSlot * pSlot) override;
-		void		_childRequestRender(StaticSlot * pSlot, const RectI& rect) override;
+		void		_childRequestRender(StaticSlot * pSlot, const Rect& rect) override;
 		void		_childRequestResize(StaticSlot * pSlot) override;
 
 		Widget *	_prevChild(const StaticSlot * pSlot) const override;
@@ -184,8 +185,8 @@ namespace wg
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
 		void		_hideSlots(StaticSlot *, int nb) override;
 		void		_unhideSlots(StaticSlot *, int nb) override;
-		void		_repadSlots(StaticSlot *, int nb, BorderI padding) override;
-		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
+		void		_repadSlots(StaticSlot *, int nb, Border padding) override;
+		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings) override;
 
 		// Needed by CSlots
 
@@ -201,16 +202,16 @@ namespace wg
 		void		_unhideChildren(Slot * pSlot, int nb);
 
 		void		_refreshGeometries();
-		SizeI		_calcPreferredSize();
+		Size		_calcPreferredSize();
 		int			_populateSizeBrokerArray( SizeBrokerItem * pArray ) const;
-		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, int forcedBreadth ) const;
+		int			_populateSizeBrokerArray( SizeBrokerItem * pArray, MU forcedBreadth ) const;
 
-		int			_setItemLengths(SizeBrokerItem * pItems, int nItems, int totalLength) const;
-		int			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
+		MU			_setItemLengths(SizeBrokerItem * pItems, int nItems, MU totalLength) const;
+		MU			_setPreferredLengths(SizeBrokerItem * pItems, int nItems) const;
 
 		bool			m_bHorizontal;
 		SizeBroker_p	m_pSizeBroker;
-		SizeI			m_preferredContentSize;
+		Size			m_preferredContentSize;
 
 	};
 

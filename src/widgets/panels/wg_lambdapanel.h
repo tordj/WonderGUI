@@ -66,9 +66,9 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			inline Coord	pos() const { return Util::qpixToMU(m_geo.pos()); }
-			inline Size		size() const { return Util::qpixToMU(m_geo.size()); }
-			inline Rect		geo() const { return Util::qpixToMU(m_geo); }
+			inline Coord	pos() const { return m_geo.pos(); }
+			inline Size		size() const { return m_geo.size(); }
+			inline Rect		geo() const { return m_geo; }
 
 			//.____ Operators __________________________________________
 
@@ -85,7 +85,7 @@ namespace wg
 
 			std::function<Rect(Widget * pWidget, Size parentSize)>	m_func = nullptr;
 			bool			m_bVisible = false;
-			RectI			m_geo;				// Widgets geo relative parent
+			Rect			m_geo;				// Widgets geo relative parent
 		};
 
 
@@ -141,6 +141,7 @@ namespace wg
 		bool				setMaxSize(Size max);
 		bool				setSizeLimits( Size min, Size max );
 		bool				setPreferredSize(Size pref);
+		Size				preferredSize() const override;
 
 	protected:
 		LambdaPanel();
@@ -157,10 +158,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		Coord		_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -178,17 +179,16 @@ namespace wg
 	private:
 		void		_updateSlotGeo(StaticSlot * pSlot, int nb);
 
-		SizeI		_preferredSize() const override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const SizeI& size ) override;
+		void		_resize( const Size& size ) override;
 		void		_updateGeo(Slot * pSlot, bool bForceResize = false);
 
-		void		_onRequestRender( const RectI& rect, const Slot * pSlot );
+		void		_onRequestRender( const Rect& rect, const Slot * pSlot );
 
-		SizeI		m_minSize;
-		SizeI		m_maxSize;
-		SizeI		m_preferredSize;
+		Size		m_minSize;
+		Size		m_maxSize;
+		Size		m_preferredSize;
 	};
 
 

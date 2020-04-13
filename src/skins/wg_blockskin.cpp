@@ -345,8 +345,8 @@ namespace wg
 
 	Size BlockSkin::minSize() const
 	{
-		Size content = Border(m_contentPadding).align();
-		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).align();
+		Size content = Border(m_contentPadding).aligned();
+		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
 		return Size::max( content, frame );
 	}
 
@@ -365,7 +365,7 @@ namespace wg
 	Size BlockSkin::sizeForContent( const Size& contentSize ) const
 	{
 		Size sz = ExtendedSkin::sizeForContent(contentSize);
-		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).align();
+		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
 
 		return Size::max(sz, min);
 	}

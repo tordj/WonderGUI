@@ -229,7 +229,7 @@ namespace wg
 		virtual void		_receive( Msg * pMsg );
 		virtual	bool		_alphaTest( const Coord& ofs );
 
-		virtual SizeI		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
+		virtual Size		_windowPadding() const;	// Padding of window before we get to (scrollable) content.
 
 		// Methods for components to access
 
@@ -331,7 +331,7 @@ namespace wg
 	Coord Widget::pos() const
 	{
 		if( m_pHolder )
-			return Util::qpixToMU(m_pHolder->_childPos( m_pSlot ));
+			return m_pHolder->_childPos( m_pSlot );
 		return Coord(0,0);
 	}
 
@@ -375,7 +375,7 @@ namespace wg
 	 */
 	Coord Widget::globalPos() const
 	{
-		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : CoordI();
+		return m_pHolder ? m_pHolder->_childGlobalPos(m_pSlot) : Coord();
 	}
 
 	//____ globalGeo() __________________________

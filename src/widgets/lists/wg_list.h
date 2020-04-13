@@ -109,15 +109,15 @@ namespace wg
 
 		virtual int		_flipSelection( Slot * pBegin, Slot * pEnd, bool bPostMsg );
 
-		virtual Slot * _findEntry( const CoordI& ofs ) = 0;
-		virtual void	_getEntryGeo( RectI& geo, const Slot * pSlot ) const = 0;
+		virtual Slot * _findEntry( const Coord& ofs ) = 0;
+		virtual void	_getEntryGeo( Rect& geo, const Slot * pSlot ) const = 0;
 
-		virtual RectI	_listArea() const = 0;										// Area for the entries (contentRect minus header).
-		virtual RectI	_listWindow() const = 0;
-		virtual RectI	_listCanvas() const = 0;
+		virtual Rect	_listArea() const = 0;										// Area for the entries (contentRect minus header).
+		virtual Rect	_listWindow() const = 0;
+		virtual Rect	_listCanvas() const = 0;
 
-		virtual void	_onEntrySkinChanged( SizeI oldPadding, SizeI newPadding ) = 0;
-		virtual void	_onLassoUpdated( const RectI& oldLasso, const RectI& newLasso ) = 0;
+		virtual void	_onEntrySkinChanged( Size oldPadding, Size newPadding ) = 0;
+		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
 
 		virtual Slot * _beginSlots() const = 0;
@@ -136,8 +136,8 @@ namespace wg
 		Skin_p			m_pLassoSkin;
 		bool			m_bOpaqueEntries;
 
-		CoordI			m_lassoBegin;
-		CoordI			m_lassoEnd;
+		Coord			m_lassoBegin;
+		Coord			m_lassoEnd;
 
 		Widget_wp		m_pFocusedChild;
 		Widget_wp		m_pHoveredChild;

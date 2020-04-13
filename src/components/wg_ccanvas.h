@@ -121,14 +121,14 @@ namespace wg
 
 	protected:
 
-		void			_render(GfxDevice * pDevice, const RectI& _canvas);
-		bool			_alphaTest(const CoordI& ofs, int markOpacity);
+		void			_render(GfxDevice * pDevice, const Rect& _canvas);
+		bool			_alphaTest(const Coord& ofs, int markOpacity);
 
 		void			_regenSurface();
-		RectI			_calcPresentationArea() const;
+		Rect			_calcPresentationArea() const;
 
-		void			_setComponentSize(SizeI sz);
-		SizeI			_preferredSize() const;
+		void			_setComponentSize(Size sz);
+		Size			_preferredSize() const;
 
 
 		GfxDevice_p		m_pDevice;

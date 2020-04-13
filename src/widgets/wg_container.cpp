@@ -111,7 +111,7 @@ namespace wg
 
 	Rect Container::_childWindowSection( const StaticSlot * pSlot ) const
 	{
-		return Rect( 0,0, OO(pSlot)->_size() );
+		return Rect( 0,0, pSlot->size() );
 	}
 
 	//____ _container() _____________________________________________________________
@@ -160,7 +160,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			RectI area( _childPos( pSlot ), OO(pSlot)->_size() );
+			Rect area( _childPos( pSlot ), pSlot->size() );
 			m_pHolder->_childRequestInView( m_pSlot, area, area );
 		}
 	}
@@ -169,7 +169,7 @@ namespace wg
 	{
 		if( m_pHolder )
 		{
-			CoordI pos( _childPos( pSlot ) );
+			Coord pos( _childPos( pSlot ) );
 			m_pHolder->_childRequestInView( m_pSlot, mustHaveArea + pos, niceToHaveArea + pos );
 		}
 	}
@@ -261,7 +261,7 @@ namespace wg
 					if (pRes)
 						return pRes;
 				}
-				else if( mode == SearchMode::Geometry || OO(child.pSlot)->_markTest( ofs - child.geo.pos() ) )
+				else if( mode == SearchMode::Geometry || child.pSlot->_widget()->markTest( ofs - child.geo.pos() ) )
 					return pWidget;
 			}
 			_nextSlotWithGeo( child );
@@ -349,11 +349,11 @@ namespace wg
 		// Render container itself
 
 		if( m_pSkin )
-			m_pSkin->_render(pDevice, _canvas, m_state );
+			m_pSkin->render(pDevice, _canvas, m_state );
 
 		// Render children
 
-		RectI	dirtBounds = pixelsToMU( pDevice->clipBounds() );
+		Rect	dirtBounds = Rect::fromPX( pDevice->clipBounds() );
 
 		if( m_bSiblingsOverlap )
 		{
@@ -380,7 +380,7 @@ namespace wg
 			Patches patches( nClipRects );
 
 			for( int i = 0 ; i < nClipRects ; i++ )
-				patches.push(pixelsToMU(pClipRects[i]));
+				patches.push(Rect::fromPX(pClipRects[i]));
 
 			// Go through WidgetRenderContexts, push and mask dirt
 
@@ -411,7 +411,7 @@ namespace wg
 
 			while(child.pSlot)
 			{
-				RectI canvas = child.geo + _canvas.pos();
+				Rect canvas = child.geo + _canvas.pos();
 				if (canvas.intersectsWith(dirtBounds))
 				{
 					ClipPopData popData = limitClipList(pDevice, canvas );

@@ -49,7 +49,7 @@ namespace wg
 
 		// Overloaded from Text
 
-		SizeI		_textSize() const override;
+		Size		_textSize() const override;
 		State		_textState() const override;
 		TextStyle * _textStyle() const override;
 
@@ -65,7 +65,7 @@ namespace wg
 		void		_mapperRequestResize() override;
 
 		int			m_id;
-		int			m_height = 0;
+		MU			m_height;
 		String 		m_string;
 		SelectBox * m_pParent = nullptr;
 	};
@@ -95,6 +95,11 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Geometry ______________________________________________________
+
+		Size		preferredSize() const override;
+		MU			matchingHeight(MU width) const override;
 
 		//.____ Appearance ________________________________________________________
 
@@ -129,11 +134,9 @@ namespace wg
 		virtual ~SelectBox();
 		virtual Widget* _newOfMyType() const override { return new SelectBox(); };
 
-		SizeI		_preferredSize() const override;
-		int			_matchingHeight(int width) const override;
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		void		_resize(const SizeI& size) override;
+		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void		_resize(const Size& size) override;
 
 
 		class TextAccess : public CTextDisplay { friend class SelectBox; };
@@ -152,7 +155,7 @@ namespace wg
 		void		_requestRenderEntry(SelectBoxEntry* pEntry);
 		void		_selectEntry(int idx);
 		State		_entryState(int idx);
-		int			_findEntry(const CoordI& ofsInListPanel, CoordI * pOfsOut = 0);
+		int			_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut = 0);
 
 		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper(); }
 		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper();  }
@@ -167,17 +170,17 @@ namespace wg
 
 		//
 		
-		int			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, int width ) const override;
-		int			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, int height ) const override;
+		MU			_sideCanvasMatchingHeight( const SideCanvas * pCanvas, MU width ) const override;
+		MU			_sideCanvasMatchingWidth( const SideCanvas * pCanvas, MU height ) const override;
 
-		SizeI		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const  override;
-		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		Size		_sideCanvasPreferredSize( const SideCanvas * pCanvas ) const  override;
+		void		_sideCanvasRender( SideCanvas * pCanvas, GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 
 		void		_sideCanvasRefresh( SideCanvas * pCanvas) override;
-		void		_sideCanvasResize( SideCanvas * pCanvas, const SizeI& size ) override;
+		void		_sideCanvasResize( SideCanvas * pCanvas, const Size& size ) override;
 
 		void		_sideCanvasReceive( SideCanvas * pCanvas,  Msg * pMsg ) override;
-		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const CoordI& ofs ) override;			
+		bool		_sideCanvasAlphaTest( SideCanvas * pCanvas,  const Coord& ofs ) override;			
 	
 		void		_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin) override;
 		void		_sideCanvasSetState(SideCanvas * pCanvas, State state) override;
@@ -194,14 +197,14 @@ namespace wg
 		Skin_p			m_pEntrySkin;
 		TextStyle_p		m_pEntryStyle;
 
-		int				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
-		BorderI			m_entryContentPadding;			// Padding of content of an entry in the list, in quarterpixels.
+		MU				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
+		Border			m_entryContentPadding;			// Padding of content of an entry in the list, in quarterpixels.
 
-		SizeI			m_preferredSize;
-		int				m_matchingHeight = 0;			// Matching height for current width.
+		Size			m_preferredSize;
+		MU				m_matchingHeight = 0;			// Matching height for current width.
 
-		int				m_listCanvasMatchingHeight = 0;
-		SizeI			m_listCanvasPreferredSize;
+		MU				m_listCanvasMatchingHeight = 0;
+		Size			m_listCanvasPreferredSize;
 
 
 	};

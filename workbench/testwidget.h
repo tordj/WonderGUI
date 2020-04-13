@@ -45,6 +45,8 @@ namespace wg
 		void	start();
 		void	stop();
 
+		Size			preferredSize() const override;
+
 
 	protected:
 		TestWidget();
@@ -52,10 +54,9 @@ namespace wg
 
 		virtual Widget* _newOfMyType() const { return new TestWidget(); };
 	
-		SizeI			_preferredSize() const override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		virtual void	_receive( Msg * pMsg ) override;
-		virtual void	_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 
 	private:
 

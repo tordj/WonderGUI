@@ -53,41 +53,41 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _matchingHeight() _______________________________________________________
+	//____ matchingHeight() _______________________________________________________
 
-	int TextEditor::_matchingHeight( int width ) const
+	MU TextEditor::matchingHeight( MU width ) const
 	{
 		//TODO: Remove skin contentPadding before calculations.
 
-		int textHeight = _text()._matchingHeight( width );
+		MU textHeight = _text()._matchingHeight( width );
 
 		if( m_pSkin )
-			textHeight += m_pSkin->_contentPaddingSize().h;
+			textHeight += m_pSkin->contentPaddingSize().h;
 
 		return textHeight;
 	}
 
-	//____ _preferredSize() _____________________________________________________________
+	//____ preferredSize() _____________________________________________________________
 
-	SizeI TextEditor::_preferredSize() const
+	Size TextEditor::preferredSize() const
 	{
-		SizeI contentSize = _text()._preferredSize();
+		Size contentSize = _text()._preferredSize();
 
 		if( m_pSkin )
-			return m_pSkin->_sizeForContent(contentSize);
+			return m_pSkin->sizeForContent(contentSize);
 		else
 			return contentSize;
 	}
 
 	//____ _render() ________________________________________________________
 
-	void TextEditor::_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window )
+	void TextEditor::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		RectI canvas;
+		Rect canvas;
 		if( m_pSkin )
-			canvas = m_pSkin->_contentRect(_canvas, m_state);
+			canvas = m_pSkin->contentRect(_canvas, m_state);
 		else
 			canvas = _canvas;
 
@@ -136,19 +136,23 @@ namespace wg
 
 	void TextEditor::_setSkin( Skin * pSkin )
 	{
-		//TODO: Possibly notify text about new canvas size.
-
+		Size oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
 		Widget::_setSkin(pSkin);
+
+		Size newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
+
+		if (newTextCanvas != oldTextCanvas)
+			_text()._setSize(newTextCanvas);
 	}
 
 	//____ _resize() ________________________________________________
 
-	void TextEditor::_resize( const SizeI& size )
+	void TextEditor::_resize( const Size& size )
 	{
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text()._setSize(size - m_pSkin->_contentPaddingSize());
+			_text()._setSize(size - m_pSkin->contentPaddingSize());
 		else
 			_text()._setSize(size);
 	}

@@ -126,11 +126,11 @@ namespace wg
 		SizeI pointSize = pOddWhiteKeys->pointSize();
 		pointSize.h /= states.size();
 
-		m_preferredKeyboardSize	= pointsToAlignedQpix(pointSize);
+		m_preferredKeyboardSize	= pointSize;
 		m_keyboardSourceSize	= pointSize * pOddWhiteKeys->qpixPerPoint();
 
-		m_blackKeyHeight		= m_pBlackKeys ? pointsToAlignedQpix(m_pBlackKeys->pointSize()).h / states.size() : 0;
-		m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h  * 4 / states.size() : 0;
+		m_blackKeyHeight		= m_pBlackKeys ? (MU(m_pBlackKeys->pointSize().h) / states.size()).aligned() : MU(0);
+		m_blackKeySourceHeight	= m_pBlackKeys ? m_pBlackKeys->size().h / states.size() : 0;
 
 		// Fill in state offsets
 
@@ -357,25 +357,25 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ preferredSize() __________________________________________________________
 
-	SizeI PianoKeyboard::_preferredSize() const
+	Size PianoKeyboard::preferredSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI());
+		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
 	}
 
-	//____ _minSize() __________________________________________________________
+	//____ minSize() __________________________________________________________
 
-	SizeI PianoKeyboard::_minSize() const
+	Size PianoKeyboard::minSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI());
+		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
 	}
 
-	//____ _maxSize() __________________________________________________________
+	//____ maxSize() __________________________________________________________
 
-	SizeI PianoKeyboard::_maxSize() const
+	Size PianoKeyboard::maxSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->_contentPaddingSize() : SizeI());
+		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : SizeI());
 	}
 
 
@@ -391,17 +391,17 @@ namespace wg
 
 	//____ _render() __________________________________________________________
 
-	void PianoKeyboard::_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window)
+	void PianoKeyboard::_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window)
 	{
 		//TODO: This could use _keyRect() to simplify and secure consistency.
 
 		Widget::_render(pDevice, _canvas, _window);
 
-		RectI canvas = m_pSkin ? m_pSkin->_contentRect(_canvas, m_state) : _canvas;
+		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
 
 
-		int whiteKeySpacing = canvas.w / m_nbWhiteKeys;
-		int whiteKeyMargin = whiteKeySpacing/2;
+		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+		MU whiteKeyMargin = whiteKeySpacing/2;
 
 		float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
 		float yScaleFactor = m_keyboardSourceSize.h / float(canvas.h);
@@ -420,11 +420,11 @@ namespace wg
 
 				if (pKey->isBlack)
 				{
-					RectI dst = qpixToPixels(RectI(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight));
+					RectI dst = (Rect(i*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight)).px();
 
-					float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight/4);
+					float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_blackKeySourceHeight);
 
-					pDevice->stretchBlit(dst + qpixToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+					pDevice->stretchBlit(dst + canvas.pos().px(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 					pKey++;
 				}
 			}
@@ -443,7 +443,7 @@ namespace wg
 
 			int i = pKey->keyPos;
 
-			RectI dst = qpixToPixels(RectI(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h));
+			RectI dst = (Rect(i*whiteKeySpacing - whiteKeySpacing / 2, 0, whiteKeySpacing * 2, canvas.h)).px();
 
 			if (i % 2 == 0)
 				pDevice->setBlitSource(m_pOddWhiteKeys);
@@ -456,12 +456,12 @@ namespace wg
 				dst.x = 0;
 			}
 
-			if (dst.x + dst.w > (canvas.w / 4))
-				dst.w = (canvas.w / 4) - dst.x;
+			if (dst.x + dst.w > canvas.w.px() )
+				dst.w = canvas.w.px() - dst.x;
 
 			float srcOfsY = float(m_stateOfsY[_stateToIndex(pKey->state)] * m_keyboardSourceSize.h / 4);
 
-			pDevice->stretchBlit(dst + qpixToPixels(canvas.pos()), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
+			pDevice->stretchBlit(dst + canvas.pos().px(), RectF(dst.x*xScaleFactor, srcOfsY, dst.w*xScaleFactor, dst.h*yScaleFactor));
 
 			if (bForward)
 			{
@@ -489,7 +489,7 @@ namespace wg
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{
-				CoordI pos = static_cast<InputMsg*>(pMsg)->pointerPosRaw() - _globalPos();
+				Coord pos = static_cast<InputMsg*>(pMsg)->pointerPos() - globalPos();
 				int keyIdx = _markTestKey(pos);
 				_setHoveredKey(keyIdx, static_cast<InputMsg*>(pMsg)->timestamp());
 				break;
@@ -636,7 +636,7 @@ namespace wg
 
 	//____ _alphaTest() _______________________________________________________
 
-	bool PianoKeyboard::_alphaTest(const CoordI& ofs)
+	bool PianoKeyboard::_alphaTest(const Coord& ofs)
 	{
 		if (Widget::_alphaTest(ofs) || _markTestKey(ofs) >= 0)
 			return true;
@@ -653,11 +653,11 @@ namespace wg
 
 	//____ _markTestKey() _____________________________________________________
 
-	int PianoKeyboard::_markTestKey(const CoordI& pos)
+	int PianoKeyboard::_markTestKey(const Coord& pos)
 	{
 		// Convert coordinate from canvas to source
 
-		RectI canvas = m_pSkin ? m_pSkin->_contentRect(m_size, m_state) : RectI(0, 0, m_size);
+		Rect canvas = m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect(0, 0, m_size);
 
 		if (!canvas.contains(pos))
 			return -1;
@@ -699,13 +699,13 @@ namespace wg
 
 	//____ _keyRect() _________________________________________________________
 
-	RectI PianoKeyboard::_keyRect(int keyIdx)
+	Rect PianoKeyboard::_keyRect(int keyIdx)
 	{
-		RectI canvas = m_pSkin ? m_pSkin->_contentRect(m_size, m_state) : RectI(0, 0, m_size);
+		Rect canvas = m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect(0, 0, m_size);
 
-		int whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
 
-		RectI dst;
+		Rect dst;
 		
 		if( m_keyInfo[keyIdx].isBlack )
 			dst = { m_keyInfo[keyIdx].keyPos*whiteKeySpacing + whiteKeySpacing / 2, 0, whiteKeySpacing, m_blackKeyHeight };
@@ -721,7 +721,7 @@ namespace wg
 		if (dst.x + dst.w > canvas.w )
 			dst.w = canvas.w - dst.x;
 
-		return aligned(dst) + canvas.pos();
+		return dst.aligned() + canvas.pos();
 	}
 
 

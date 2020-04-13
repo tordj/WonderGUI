@@ -102,9 +102,9 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new RefreshButton(); };
 
 		void			_receive( Msg * pMsg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
-		virtual void 	_resize( const SizeI& size ) override;
+		virtual void 	_resize( const Size& size ) override;
 
 		class TextAccess : public CTextDisplay { friend class RefreshButton; };
 

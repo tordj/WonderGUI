@@ -69,8 +69,8 @@ namespace wg
 		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const = 0;
 		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const = 0;
 
-		//.____ Internal ______________________________________________________
-
+		//.____ Deprecated ______________________________________________________
+/*
 		inline bool		_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const
 		{
 			return markTest(reinterpret_cast<const Coord&>(ofs), reinterpret_cast<const Rect&>(canvas), state, opacityTreshold);
@@ -120,7 +120,7 @@ namespace wg
 		{
 			render(pDevice, Util::qpixToMU(canvas), state);
 		}
-
+*/
 	protected:
 		Skin() {};
 	};

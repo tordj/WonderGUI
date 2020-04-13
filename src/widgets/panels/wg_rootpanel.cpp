@@ -59,7 +59,7 @@ namespace wg
 	RootPanel::RootPanel( GfxDevice * pGfxDevice ) : RootPanel()
 	{
 		if( pGfxDevice )
-			m_geo = pixelsToQpix( pGfxDevice->canvasSize() );
+			m_geo = Size::fromPX( pGfxDevice->canvasSize() );
 		m_pGfxDevice = pGfxDevice;
 	}
 
@@ -85,9 +85,9 @@ namespace wg
 		m_pGfxDevice = pDevice;
 
 		if( m_pGfxDevice && !m_bHasGeo && slot._widget() )
-			OO(slot._widget())->_resize( pixelsToQpix( m_pGfxDevice->canvasSize() ) );
+			OO(slot._widget())->_resize( Size::fromPX( m_pGfxDevice->canvasSize() ) );
 
-		m_dirtyPatches.add( _geo() );
+		m_dirtyPatches.add( geo() );
 		return true;
 	}
 
@@ -95,7 +95,7 @@ namespace wg
 
 	bool RootPanel::setGeo( const Rect& geo )
 	{
-		m_geo = MUToQpix( aligned(geo) );
+		m_geo = geo.aligned();
 
 		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
 			m_bHasGeo = false;
@@ -105,16 +105,16 @@ namespace wg
 		return true;
 	}
 
-	//____ _geo() __________________________________________________________________
+	//____ geo() __________________________________________________________________
 
-	RectI RootPanel::_geo() const
+	Rect RootPanel::geo() const
 	{
 		if( m_bHasGeo )
 			return m_geo;
 		else if( m_pGfxDevice )
-			return RectI( CoordI(0,0), pixelsToQpix( m_pGfxDevice->canvasSize() ) );
+			return Rect( Coord(0,0), Size::fromPX( m_pGfxDevice->canvasSize() ) );
 		else
-			return RectI(0,0,0,0);
+			return Rect();
 	}
 
 	//____ _object() ____________________________________________________________
@@ -136,7 +136,7 @@ namespace wg
 		if( bVisible != m_bVisible )
 		{
 			m_bVisible = bVisible;
-			m_dirtyPatches.add( _geo() );
+			m_dirtyPatches.add( geo() );
 		}
 		return true;
 	}
@@ -179,7 +179,7 @@ namespace wg
 
 	bool RootPanel::render()
 	{
-		return render( _geo() );
+		return render( geo() );
 	}
 
 	bool RootPanel::render( const Rect& clip )
@@ -226,7 +226,6 @@ namespace wg
 
 			// Add our new dirty patches to the top of the afterglow queue.
 
-
 			m_afterglowRects.push_front(Patches());
 			m_afterglowRects.front().add(&m_dirtyPatches);
 
@@ -261,8 +260,8 @@ namespace wg
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-		RectI canvas = _geo();
-		RectI clip( MUToQpixAligned( _clip ), canvas );
+		Rect canvas = geo();
+		Rect clip = Rect(_clip, canvas).aligned();
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
@@ -280,7 +279,7 @@ namespace wg
 		if( dirtyPatches.size() > 0 )
 		{
 			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
-			OO(slot._widget())->_render( m_pGfxDevice.rawPtr(), canvas, canvas );
+			OO(slot._widget())->_render( m_pGfxDevice, canvas, canvas );
 			popClipList(m_pGfxDevice, clipPop);
 		}
 
@@ -290,24 +289,24 @@ namespace wg
 		{
 			// Set clipping rectangle.
 
-			RectI myClip = qpixToPixels(clip);
+			RectI myClip = clip.px();
 
 			m_pGfxDevice->setClipList(1, &myClip);
 
 			// Render our new overlays
 
-			for( const RectI * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
+			for( const Rect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 			{
-				m_pDebugOverlay->_render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Focused );
+				m_pDebugOverlay->render( m_pGfxDevice, *pRect, StateEnum::Focused );
 			}
 
 			// Render overlays that have turned into afterglow
 
 			if( m_afterglowRects.size() > 1 )
 			{
-				for( const RectI * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
+				for( const Rect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 				{
-					m_pDebugOverlay->_render( m_pGfxDevice.rawPtr(), *pRect, StateEnum::Normal );
+					m_pDebugOverlay->render( m_pGfxDevice, *pRect, StateEnum::Normal );
 				}
 			}
 		}
@@ -335,9 +334,9 @@ namespace wg
 
 	//____ _findWidget() _____________________________________________________________
 
-	Widget * RootPanel::_findWidget( const CoordI& ofs, SearchMode mode )
+	Widget * RootPanel::_findWidget( const Coord& ofs, SearchMode mode )
 	{
-		if( !_geo().contains(ofs) || !slot._widget() )
+		if( !geo().contains(ofs) || !slot._widget() )
 			return 0;
 
 		if(slot._widget() && slot._widget()->isContainer() )
@@ -354,22 +353,22 @@ namespace wg
 		if( !m_pFocusedChild )
 			return slot._widget();
 
-		return m_pFocusedChild.rawPtr();
+		return m_pFocusedChild;
 	}
 
 
 	//____ _childPos() ________________________________________________________
 
-	CoordI RootPanel::_childPos( const StaticSlot * pSlot ) const
+	Coord RootPanel::_childPos( const StaticSlot * pSlot ) const
 	{
-		return _geo().pos();
+		return geo().pos();
 	}
 
 	//____ _childGlobalPos() __________________________________________________
 
-	CoordI RootPanel::_childGlobalPos( const StaticSlot * pSlot ) const
+	Coord RootPanel::_childGlobalPos( const StaticSlot * pSlot ) const
 	{
-		return _geo().pos();
+		return geo().pos();
 	}
 
 	//____ _isChildVisible() __________________________________________________
@@ -381,9 +380,9 @@ namespace wg
 
 	//____ _childWindowSection() __________________________________________________
 
-	RectI RootPanel::_childWindowSection( const StaticSlot * pSlot ) const
+	Rect RootPanel::_childWindowSection( const StaticSlot * pSlot ) const
 	{
-		return _geo();
+		return geo();
 	}
 
 	//____ _slotTypeInfo() ________________________________________________________
@@ -412,13 +411,13 @@ namespace wg
 	void RootPanel::_childRequestRender( StaticSlot * pSlot )
 	{
 		if( m_bVisible )
-			m_dirtyPatches.add( _geo() );
+			m_dirtyPatches.add( geo() );
 	}
 
-	void RootPanel::_childRequestRender( StaticSlot * pSlot, const RectI& rect )
+	void RootPanel::_childRequestRender( StaticSlot * pSlot, const Rect& rect )
 	{
 		if( m_bVisible )
-			m_dirtyPatches.add( RectI( _geo().pos() + rect.pos(), rect.size() ) );
+			m_dirtyPatches.add( Rect( geo().pos() + rect.pos(), rect.size() ) );
 	}
 
 	//____ _childRequestResize() __________________________________________________
@@ -450,7 +449,7 @@ namespace wg
 		if( pWidget == slot._widget() )
 			return false;
 
-		Widget * pOldFocus = m_pFocusedChild.rawPtr();
+		Widget * pOldFocus = m_pFocusedChild;
 		m_pFocusedChild = slot._widget();
 		return Base::inputHandler()->_focusChanged( this, pOldFocus, slot._widget());
 	}
@@ -461,7 +460,7 @@ namespace wg
 	{
 		// Do nothing, root ignores inView requests.
 	}
-	void RootPanel::_childRequestInView( StaticSlot * pSlot, const RectI& mustHaveArea, const RectI& niceToHaveArea )
+	void RootPanel::_childRequestInView( StaticSlot * pSlot, const Rect& mustHaveArea, const Rect& niceToHaveArea )
 	{
 		// Do nothing, root ignores inView requests.
 	}
@@ -491,15 +490,17 @@ namespace wg
 
 	void RootPanel::_replaceChild(StaticSlot * pSlot, Widget * pNewWidget)
 	{
+		Rect myGeo = geo();
+
 		if( slot._widget())
-			OO(slot._widget())->_collectPatches(m_dirtyPatches, _geo(), _geo());
+			OO(slot._widget())->_collectPatches(m_dirtyPatches, myGeo, myGeo);
 
 		OO(slot)._setWidget(pNewWidget);
 
 		if (pNewWidget)
 		{
-			OO(pNewWidget)->_resize(m_geo.size());
-			OO(pNewWidget)->_collectPatches(m_dirtyPatches, _geo(), _geo());
+			OO(pNewWidget)->_resize(myGeo.size());
+			OO(pNewWidget)->_collectPatches(m_dirtyPatches, myGeo, myGeo);
 		}
 	}
 
@@ -519,12 +520,12 @@ namespace wg
 
 	//____ _repadSlots() ______________________________________________________
 
-	void RootPanel::_repadSlots(StaticSlot * pSlot, int nb, BorderI padding)
+	void RootPanel::_repadSlots(StaticSlot * pSlot, int nb, Border padding)
 	{
 		return;				// RootPanel doesn't support padding
 	}
 
-	void RootPanel::_repadSlots(StaticSlot * pSlot, int nb, const BorderI * pPadding)
+	void RootPanel::_repadSlots(StaticSlot * pSlot, int nb, const Border * pPadding)
 	{
 		return;				// RootPanel doesn't support padding
 	}

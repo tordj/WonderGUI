@@ -51,30 +51,32 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+
+		Size			preferredSize() const override;
 
 	protected:
 		LineEditor();
 		virtual ~LineEditor();
 		virtual Widget* _newOfMyType() const override { return new LineEditor(); }
 
-		SizeI			_preferredSize() const override;
 
 		void			_cloneContent( const Widget * _pOrg ) override;
-		void			_render( GfxDevice * pDevice, const RectI& _canvas, const RectI& _window ) override;
-		void			_resize( const SizeI& size ) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_resize( const Size& size ) override;
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
 		void			_setSkin( Skin * pSkin ) override;
 
-		CoordI			_componentPos( const GeoComponent * pComponent ) const override;
-		SizeI			_componentSize( const GeoComponent * pComponent ) const override;
-		RectI			_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_componentPos( const GeoComponent * pComponent ) const override;
+		Size			_componentSize( const GeoComponent * pComponent ) const override;
+		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
 
 		void			_componentRequestRender(const GeoComponent * pComponent) override;
-		void			_componentRequestRender( const GeoComponent * pComponent, const RectI& rect ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
-		void			_componentRequestInView(const GeoComponent * pComponent, const RectI& mustHave, const RectI& niceToHave) override;
+		void			_componentRequestInView(const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave) override;
 
 		class TextAccess : public CTextEditor { friend class LineEditor; };
 		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
@@ -83,7 +85,7 @@ namespace wg
 
 	private:
 
-		int				m_textScrollOfs;
+		MU				m_textScrollOfs;
 	};
 
 

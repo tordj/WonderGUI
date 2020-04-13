@@ -53,6 +53,13 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry ______________________________________________________
+
+		virtual MU		matchingHeight(MU width) const override;
+
+		Size			preferredSize() const override;
+
+
 		//.____ Behavior ____________________________________________
 
 		void		setPopup(Widget * pPopup);
@@ -69,14 +76,9 @@ namespace wg
 		virtual ~PopupOpener();
 		virtual Widget* _newOfMyType() const override { return new PopupOpener(); };
 
-		virtual int		_matchingHeight(int width) const override;
-		//	virtual int		_matchingWidth( int height ) const override;
-
-		SizeI			_preferredSize() const override;
-
 		void			_cloneContent(const Widget * _pOrg) override;
-		void			_render(GfxDevice * pDevice, const RectI& _canvas, const RectI& _window) override;
-		void			_resize(const SizeI& size) override;
+		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void			_resize(const Size& size) override;
 		void			_refresh() override;
 		void			_receive(Msg * pMsg) override;
 		void			_setState(State state) override;
@@ -86,9 +88,9 @@ namespace wg
 		void			_open();
 		void			_close();
 
-		CoordI			_componentPos(const GeoComponent * pComponent) const override;
-		SizeI			_componentSize(const GeoComponent * pComponent) const override;
-		RectI			_componentGeo(const GeoComponent * pComponent) const override;
+		Coord			_componentPos(const GeoComponent * pComponent) const override;
+		Size			_componentSize(const GeoComponent * pComponent) const override;
+		Rect			_componentGeo(const GeoComponent * pComponent) const override;
 
 
 		class TextAccess : public CTextDisplay { friend class PopupOpener; };

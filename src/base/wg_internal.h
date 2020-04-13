@@ -65,14 +65,7 @@ namespace wg
 	{
 	public:
 		using StaticSlot::_widget;
-		using StaticSlot::_size;
-		using StaticSlot::_markTest;
 		using StaticSlot::_setWidget;
-		using StaticSlot::_matchingHeight;
-		using StaticSlot::_matchingWidth;
-		using StaticSlot::_preferredSize;
-		using StaticSlot::_maxSize;
-		using StaticSlot::_minSize;
 		using StaticSlot::_setSize;
 
 	};

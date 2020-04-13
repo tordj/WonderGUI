@@ -124,6 +124,14 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Geometry _________________________________________________
+
+		virtual MU			matchingHeight(MU width) const;
+		virtual MU			matchingWidth(MU height) const;
+
+		virtual Size		preferredSize() const;
+
+
 	protected:
 		StackPanel();
 		virtual ~StackPanel();
@@ -131,13 +139,8 @@ namespace wg
 
 		// Overloaded from Widget
 
-		int			_matchingHeight(int width) const override;
-		int			_matchingWidth(int height) const override;
-
-		SizeI		_preferredSize() const override;
-
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_resize( const SizeI& size ) override;
+		void		_resize( const Size& size ) override;
 
 		// Overloaded from Container
 
@@ -149,10 +152,10 @@ namespace wg
 		void		_firstSlotWithGeo( SlotWithGeo& package ) const override;
 		void		_nextSlotWithGeo( SlotWithGeo& package ) const override;
 
-		CoordI		_childPos(const StaticSlot * pSlot) const override;
+		Coord		_childPos(const StaticSlot * pSlot) const override;
 
 		void		_childRequestRender( StaticSlot * pSlot ) override;
-		void		_childRequestRender( StaticSlot * pSlot, const RectI& rect ) override;
+		void		_childRequestRender( StaticSlot * pSlot, const Rect& rect ) override;
 		void		_childRequestResize( StaticSlot * pSlot ) override;
 
 		Widget *	_prevChild( const StaticSlot * pSlot ) const override;
@@ -166,8 +169,8 @@ namespace wg
 		void		_willEraseSlots(StaticSlot * pSlot, int nb) override;
 		void		_hideSlots(StaticSlot *, int nb) override;
 		void		_unhideSlots(StaticSlot *, int nb) override;
-		void		_repadSlots(StaticSlot *, int nb, BorderI padding) override;
-		void		_repadSlots(StaticSlot *, int nb, const BorderI * pPaddings) override;
+		void		_repadSlots(StaticSlot *, int nb, Border padding) override;
+		void		_repadSlots(StaticSlot *, int nb, const Border * pPaddings) override;
 
 		//
 
@@ -177,16 +180,16 @@ namespace wg
 
 		// Internal to StackPanel
 
-		SizeI 	_calcPreferredSize();
+		Size 	_calcPreferredSize();
 		void	_adaptChildrenToSize();
 
 		void	_hideChildren( Slot * pSlot, int nb );
 		void	_unhideChildren( Slot * pSlot, int nb );
 
 
-		RectI	_childGeo( const Slot * pSlot ) const;
+		Rect	_childGeo( const Slot * pSlot ) const;
 
-		SizeI	m_preferredSize;
+		Size	m_preferredSize;
 	};
 
 

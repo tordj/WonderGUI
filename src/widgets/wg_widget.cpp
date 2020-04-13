@@ -644,16 +644,16 @@ namespace wg
 	bool Widget::_alphaTest( const Coord& ofs )
 	{
 		if( m_pSkin )
-			return m_pSkin->_markTest( ofs, Rect(m_size), m_state, m_markOpacity );
+			return m_pSkin->markTest( ofs, Rect(m_size), m_state, m_markOpacity );
 
 		return false;
 	}
 
 	//____ _windowPadding() _______________________________________________________
 
-	SizeI Widget::_windowPadding() const
+	Size Widget::_windowPadding() const
 	{
-		return SizeI(0,0);
+		return Size();
 	}
 
 	//____ _componentRequestRender() _________________________________________________________
@@ -663,7 +663,7 @@ namespace wg
 		_requestRender( _componentGeo( pComponent ) );
 	}
 
-	void Widget::_componentRequestRender( const GeoComponent * pComponent, const RectI& rect )
+	void Widget::_componentRequestRender( const GeoComponent * pComponent, const Rect& rect )
 	{
 		_requestRender( rect + _componentPos( pComponent ) );
 	}
@@ -687,7 +687,7 @@ namespace wg
 
 	void Widget::_componentRequestInView( const GeoComponent * pComponent )
 	{
-		RectI r = _componentGeo( pComponent );
+		Rect r = _componentGeo( pComponent );
 		_requestInView( r, r );
 	}
 

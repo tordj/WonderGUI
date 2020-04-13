@@ -53,10 +53,8 @@ namespace wg
 
 	//____ setPreferredSize() _______________________________________________________
 
-	void Filler::setPreferredSize( const Size& _size )
+	void Filler::setPreferredSize( const Size& size )
 	{
-		SizeI size = MUToQpix(_size);
-
 		if( size != m_preferredSize )
 		{
 			m_preferredSize = size;
@@ -64,14 +62,14 @@ namespace wg
 		}
 	}
 
-	//____ _preferredSize() __________________________________________________________
+	//____ preferredSize() __________________________________________________________
 
-	SizeI Filler::_preferredSize() const
+	Size Filler::preferredSize() const
 	{
 		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
 			return m_preferredSize;
 		else
-			return Widget::_preferredSize();
+			return Widget::preferredSize();
 	}
 
 

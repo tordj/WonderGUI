@@ -59,25 +59,25 @@ namespace wg
 
 	void List::setEntrySkin( Skin * pSkin )
 	{
-		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize() : SizeI();
+		Size oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->contentPaddingSize() : Size();
 
 		m_pEntrySkin[0] = pSkin;
 		m_pEntrySkin[1] = pSkin;
 		m_bOpaqueEntries = pSkin ? pSkin->isOpaque() : false;
 
-		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->_contentPaddingSize() : SizeI() );
+		_onEntrySkinChanged( oldPadding, pSkin ? pSkin->contentPaddingSize() : Size() );
 	}
 
 	bool List::setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin )
 	{
 //		SizeI oldPadding = m_pEntrySkin[0] ? m_pEntrySkin[0]->_contentPaddingSize() : SizeI();
-		SizeI padding[2];
+		Size padding[2];
 
 		if( pOddEntrySkin )
-			padding[0] = pOddEntrySkin->_contentPaddingSize();
+			padding[0] = pOddEntrySkin->contentPaddingSize();
 
 		if( pEvenEntrySkin )
-			padding[1] = pEvenEntrySkin->_contentPaddingSize();
+			padding[1] = pEvenEntrySkin->contentPaddingSize();
 
 		if( (padding[0].w != padding[1].w) || (padding[0].h != padding[1].h) )
 			return false;
@@ -86,7 +86,7 @@ namespace wg
 		m_pEntrySkin[1] = pEvenEntrySkin;
 		m_bOpaqueEntries = (pOddEntrySkin->isOpaque() && pEvenEntrySkin->isOpaque());
 
-		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->_contentPaddingSize() : SizeI() );
+		_onEntrySkinChanged( padding[0], pOddEntrySkin ? pOddEntrySkin->contentPaddingSize() : Size() );
 		return true;
 	}
 
@@ -132,10 +132,10 @@ namespace wg
 			case MsgType::MouseMove:
 			{
 				MouseMoveMsg * pMsg = static_cast<MouseMoveMsg*>(_pMsg);
-				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
+				Slot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( pEntry && pEntry->_widget() != m_pHoveredChild.rawPtr() )
 				{
-					RectI geo;
+					Rect geo;
 					if( m_pHoveredChild )
 					{
 						_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
@@ -151,10 +151,10 @@ namespace wg
 			case MsgType::MouseLeave:
 			{
 				MouseLeaveMsg_p pMsg = static_cast<MouseLeaveMsg*>(_pMsg);
-				Slot * pEntry = _findEntry(_toLocal(pMsg->pointerPosRaw()));
+				Slot * pEntry = _findEntry(toLocal(pMsg->pointerPos()));
 				if( m_pHoveredChild && !pEntry )
 				{
-					RectI geo;
+					Rect geo;
 					_getEntryGeo( geo, (Slot*) OO(m_pHoveredChild)->_slot() );
 					_requestRender(geo);
 					m_pHoveredChild = nullptr;
@@ -168,11 +168,11 @@ namespace wg
 				MouseButtonMsg_p pMsg = static_cast<MouseButtonMsg*>(_pMsg);
 				if( m_selectMode != SelectMode::Unselectable && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = _toLocal(pMsg->pointerPosRaw());
+					Coord ofs = toLocal(pMsg->pointerPos());
 					if( !_listWindow().contains(ofs) )
 						break;								// Click on header or somewhere else outside the real list.
 
-					RectI listArea = _listArea();
+					Rect listArea = _listArea();
 					Slot * pEntry = _findEntry(ofs);
 
 					ofs = listArea.limit(ofs);
@@ -250,7 +250,7 @@ namespace wg
 			case MsgType::MouseRelease:
 				if( m_selectMode != SelectMode::Unselectable &&  static_cast<MouseReleaseMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
-					RectI dirtyRect( m_lassoBegin, m_lassoEnd );
+					Rect dirtyRect( m_lassoBegin, m_lassoEnd );
 					_requestRender(dirtyRect);
 
 					m_lassoBegin = m_lassoEnd;
@@ -271,15 +271,15 @@ namespace wg
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 				if( (m_selectMode == SelectMode::FlipOnSelect || m_selectMode == SelectMode::MultiEntries) && pMsg->button() == MouseButton::Left )
 				{
-					CoordI ofs = _listArea().limit(_toLocal(pMsg->pointerPosRaw()));
+					Coord ofs = _listArea().limit(toLocal(pMsg->pointerPos()));
 					ofs = _listWindow().limit(ofs);
 
-					RectI oldLasso( m_lassoBegin, m_lassoEnd );
-					RectI newLasso( m_lassoBegin, ofs );
+					Rect oldLasso( m_lassoBegin, m_lassoEnd );
+					Rect newLasso( m_lassoBegin, ofs );
 
 					_onLassoUpdated( oldLasso, newLasso );
 
-					RectI dirtyRect = oldLasso;
+					Rect dirtyRect = oldLasso;
 					dirtyRect.growToContain( ofs );
 					_requestRender( dirtyRect );
 					m_lassoEnd = ofs;
@@ -388,11 +388,11 @@ namespace wg
 
 		// Request render for the range
 
-		RectI geoFirst;
-		RectI geoLast;
+		Rect geoFirst;
+		Rect geoLast;
 		_getEntryGeo( geoFirst, pBegin );
 		_getEntryGeo( geoLast, pLast );
-		_requestRender( RectI::getUnion(geoFirst,geoLast) );
+		_requestRender( Rect::getUnion(geoFirst,geoLast) );
 
 		// Reserve ItemInfo array of right size if we are going to post message
 
