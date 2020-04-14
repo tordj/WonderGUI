@@ -24,7 +24,7 @@
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
 #include <wg3_surfacefactory.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg_image.h>
 #include <wg_eventhandler.h>
 
@@ -679,7 +679,7 @@ void WgDragNDropLayer::_replaceDragWidget( WgWidget * pNewWidget )
 
 //____ _renderPatches() __________________________________________________________
 
-void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
+void WgDragNDropLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 	// Generate drag widget as an image of picked widget if missing and needed.
 

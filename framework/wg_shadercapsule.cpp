@@ -22,7 +22,7 @@
 
 #include <wg_shadercapsule.h>
 #include <wg_gfxdevice.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 
 static const char	c_widgetType[] = {"ShaderCapsule"};
 
@@ -104,7 +104,7 @@ WgBlendMode WgShaderCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	pDevice->setClipList(_pPatches->size(), _pPatches->begin());
 
@@ -152,7 +152,7 @@ void WgShaderCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 //____ _onCollectPatches() _____________________________________________________
 
-void WgShaderCapsule::_onCollectPatches(wg::Patches& container, const WgRect& geo, const WgRect& clip)
+void WgShaderCapsule::_onCollectPatches(WgPatches& container, const WgRect& geo, const WgRect& clip)
 {
 	//TODO: This causes trouble if another shader capsule further down the hierarchy undo the shading.
 
@@ -162,7 +162,7 @@ void WgShaderCapsule::_onCollectPatches(wg::Patches& container, const WgRect& ge
 
 //____ _onMaskPatches() ________________________________________________________
 
-void WgShaderCapsule::_onMaskPatches(wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode)
+void WgShaderCapsule::_onMaskPatches(WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode)
 {
 	//TODO: This causes trouble if another shader capsule further down the hierarchy undo the shading.
 

@@ -95,8 +95,8 @@ protected:
 	WgPanel();
 	virtual ~WgPanel() {};
 
-	virtual void	_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-	virtual void	_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
+	virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+	virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 	virtual void	_onCloneContent( const WgPanel * _pOrg );
 
 

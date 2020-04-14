@@ -162,7 +162,7 @@ double Util::powerOfTen(int num){
 
 	//____ markTestStretchRect() __________________________________________________
 
-	bool Util::markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold )
+	bool Util::markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold )
 	{
 		// Sanity check & shortcuts.
 		if( !pSurface || !area.contains(ofs) || source.isEmpty() || area.isEmpty() || opacityTreshold > 255 )
@@ -178,19 +178,21 @@ double Util::powerOfTen(int num){
 
 		// Convert offset in area to offset in bitmap.
 
-		ofs.x = (int) (ofs.x/((double)area.w) * source.w);
-		ofs.y = (int) (ofs.y/((double)area.h) * source.h);
+		CoordI sourceOfs;
+
+		sourceOfs.x = (int) (ofs.x.qpix/((double)area.w.qpix) * source.w);
+		sourceOfs.y = (int) (ofs.y.qpix/((double)area.h.qpix) * source.h);
 
 		// Do alpha test
 
-		int alpha = pSurface->alpha(source.x+ofs.x, source.y+ofs.y);
+		int alpha = pSurface->alpha(source.x+sourceOfs.x, source.y+sourceOfs.y);
 
 		return (alpha >= opacityTreshold);
 	}
 
 	//____ markTestNinePatch() ________________________________________________
 
-	bool Util::markTestNinePatch(CoordI ofs, Surface * pSurface, const RectI& _source, const RectI& _dest, int opacityTreshold, BorderI sourceFrame)
+	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const RectI& _source, const Rect& _dest, int opacityTreshold, const BorderI& sourceFrame)
 	{
 		// Sanity check & shortcuts.
 
@@ -208,7 +210,7 @@ double Util::powerOfTen(int num){
 		BorderI destFrame = pointsToPixels(sourceFrame);
 
 		RectI source;
-		RectI dest;
+		Rect dest;
 
 		if (ofs.x < _dest.x + destFrame.left)
 		{
@@ -267,12 +269,13 @@ double Util::powerOfTen(int num){
 
 		// Convert offset in area to offset in bitmap.
 
-		ofs.x = (int)(ofs.x / ((double)dest.w) * source.w);
-		ofs.y = (int)(ofs.y / ((double)dest.h) * source.h);
+		RectI sourceOfs;
+		sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
+		sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
 
 		// Do alpha test
 
-		int alpha = pSurface->alpha(source.x + ofs.x, source.y + ofs.y);
+		int alpha = pSurface->alpha(source.x + sourceOfs.x, source.y + sourceOfs.y);
 
 		return (alpha >= opacityTreshold);
 	}
@@ -564,7 +567,7 @@ double Util::powerOfTen(int num){
 
 	//____ sizeFromPolicy() __________________________________________________________
 
-	int Util::sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy )
+	MU Util::sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy )
 	{
 		switch( policy )
 		{
@@ -630,82 +633,82 @@ double Util::powerOfTen(int num){
 
 	//____ origoToOfs() ________________________________________________________
 
-	CoordI Util::origoToOfs( Origo origo, SizeI base )
+	Coord Util::origoToOfs( Origo origo, Size base )
 	{
 		switch( origo )
 		{
 			default:
 			case Origo::NorthWest:
-				return CoordI(0,0);
+				return Coord();
 
 			case Origo::North:
-				return CoordI( base.w/2,0 );
+				return Coord( base.w/2,0 );
 
 			case Origo::NorthEast:
-				return CoordI( base.w,0 );
+				return Coord( base.w,0 );
 
 			case Origo::East:
-				return CoordI( base.w, base.h/2 );
+				return Coord( base.w, base.h/2 );
 
 			case Origo::SouthEast:
-				return CoordI( base.w, base.h );
+				return Coord( base.w, base.h );
 
 			case Origo::South:
-				return CoordI( base.w/2, base.h );
+				return Coord( base.w/2, base.h );
 
 			case Origo::SouthWest:
-				return CoordI( 0, base.h );
+				return Coord( 0, base.h );
 
 			case Origo::West:
-				return CoordI( 0, base.h/2 );
+				return Coord( 0, base.h/2 );
 
 			case Origo::Center:
-				return CoordI( base.w/2, base.h/2 );
+				return Coord( base.w/2, base.h/2 );
 		}
 	}
 
 	//____ origoToRect() ________________________________________________________
 
-	RectI Util::origoToRect( Origo origo, SizeI base, SizeI rect )
+	Rect Util::origoToRect( Origo origo, Size base, Size rect )
 	{
 		switch( origo )
 		{
 			default:
 			case Origo::NorthWest:
-				return RectI(0,0, rect);
+				return Rect(0,0, rect);
 
 			case Origo::North:
-				return RectI( base.w/2 - rect.w/2, 0, rect );
+				return Rect( base.w/2 - rect.w/2, 0, rect );
 
 			case Origo::NorthEast:
-				return RectI( base.w - rect.w, 0, rect );
+				return Rect( base.w - rect.w, 0, rect );
 
 			case Origo::East:
-				return RectI( base.w - rect.w, base.h/2 - rect.h/2, rect );
+				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
 
 			case Origo::SouthEast:
-				return RectI( base.w - rect.w, base.h - rect.h, rect );
+				return Rect( base.w - rect.w, base.h - rect.h, rect );
 
 			case Origo::South:
-				return RectI( base.w/2 - rect.w/2, base.h - rect.h, rect );
+				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
 
 			case Origo::SouthWest:
-				return RectI( 0, base.h - rect.h, rect );
+				return Rect( 0, base.h - rect.h, rect );
 
 			case Origo::West:
-				return RectI( 0, base.h/2 - rect.h/2, rect );
+				return Rect( 0, base.h/2 - rect.h/2, rect );
 
 			case Origo::Center:
-				return RectI( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
+				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}
 	}
 
 	//____ scaleToFit() _______________________________________________________
 
-	SizeI Util::scaleToFit(SizeI object, SizeI boundaries)
+	Size Util::scaleToFit(Size object, Size boundaries)
 	{
-		float wScale = object.w / (float)boundaries.w;
-		float hScale = object.h / (float)boundaries.h;
+		float wScale = object.w.qpix / (float)boundaries.w.qpix;
+		float hScale = object.h.qpix / (float)boundaries.h.qpix;
 
 		float useScale = max(wScale, hScale);
 
@@ -735,13 +738,13 @@ double Util::powerOfTen(int num){
 
 	//____ patchesToClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches )
+	Util::ClipPopData Util::patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches )
 	{
 		int nOldRects 				= pDevice->clipListSize();
 		const RectI * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const RectI * pRects = patches.begin();
+		const Rect * pRects = patches.begin();
 
 		int allocSize = nRects * sizeof(RectI);
 
@@ -750,7 +753,7 @@ double Util::powerOfTen(int num){
 
 		for( int i = 0 ; i < nRects ; i++ )
 		{
-			pNewRects[nNewRects] = qpixToPixels( RectI(pRects[i], clip) );
+			pNewRects[nNewRects] = Rect(pRects[i], clip).px();
 			if( !pNewRects[nNewRects].isEmpty() )
 				nNewRects++;
 		}
@@ -765,14 +768,14 @@ double Util::powerOfTen(int num){
 		const RectI * pOldRects 	= pDevice->clipList();
 
 		int nRects = patches.size();
-		const RectI * pRects = patches.begin();
+		const Rect * pRects = patches.begin();
 
 		int allocSize = nRects * sizeof(RectI);
 
 		RectI * pNewRects = (RectI*) Base::memStackAlloc(allocSize);
 
 		for( int i = 0 ; i < nRects ; i++ )
-			pNewRects[i] = qpixToPixels( pRects[i] );
+			pNewRects[i] = pRects[i].px();
 
 		pDevice->setClipList(nRects, pNewRects);
 		return { nOldRects, pOldRects, allocSize };
@@ -780,8 +783,10 @@ double Util::powerOfTen(int num){
 
 	//____ limitClipList() ____________________________________________________________________
 
-	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const RectI& clip )
+	Util::ClipPopData Util::limitClipList( GfxDevice * pDevice, const Rect& _clip )
 	{
+		RectI clip = _clip.px();
+
 		if( clip.contains(pDevice->clipBounds()))
 			return { 0, nullptr, 0 };
 

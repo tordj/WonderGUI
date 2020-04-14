@@ -118,7 +118,7 @@ protected:
 	void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler) override;
 	void            _onNewSize(const WgSize& size) override;
 
-	void            _renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches) override;
+	void            _renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches) override;
 
 	void            _replaceWidgetInHook(WgWidget * pNewWidget);
 

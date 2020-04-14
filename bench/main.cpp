@@ -236,8 +236,6 @@ int main ( int argc, char** argv )
 
 	// Load TTF-font
 
-	wg::FreeTypeFont::init(g_pSurfaceFactory);
-
 	char	ttfname[] = { "../resources/DroidSans.ttf" };
 
 	int size = sdl_wglib::FileSize( ttfname );

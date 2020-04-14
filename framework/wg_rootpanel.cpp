@@ -243,13 +243,13 @@ bool WgRootPanel::BeginRender()
 	{
 		// Remove from afterglow queue patches that are overlapped by our new dirty patches.
 
-		for( std::deque<wg::Patches>::iterator it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; ++it )
+		for( std::deque<WgPatches>::iterator it = m_afterglowRects.begin() ; it != m_afterglowRects.end() ; ++it )
 			it->sub(&m_dirtyPatches);
 
 		// Add our new dirty patches to the top of the afterglow queue.
 
 
-		m_afterglowRects.push_front(wg::Patches());
+		m_afterglowRects.push_front(WgPatches());
 		m_afterglowRects.front().add(&m_dirtyPatches);
 
 		// Possibly remove overlays from the back, put them into dirty rects for re-render
@@ -296,7 +296,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 	// Copy and clip our dirty patches
 	// TODO: Optimize when clip rectangle equals canvas
 
-	wg::Patches dirtyPatches( m_dirtyPatches.size() );
+	WgPatches dirtyPatches( m_dirtyPatches.size() );
 
 	WgRect clipped;
 	for( const WgRect * pRect = m_dirtyPatches.begin() ; pRect != m_dirtyPatches.end() ; pRect++ )
@@ -322,7 +322,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 		for( const WgRect * pRect = m_afterglowRects[0].begin() ; pRect != m_afterglowRects[0].end() ; pRect++ )
 		{
-			m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect*4, WgStateEnum::Focused );
+			m_pUpdatedRectOverlay->render( m_pGfxDevice, wg::Rect::fromPX(*pRect), WgStateEnum::Focused );
 		}
 
 		// Render overlays that have turned into afterglow
@@ -331,7 +331,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 		{
 			for( const WgRect * pRect = m_afterglowRects[1].begin() ; pRect != m_afterglowRects[1].end() ; pRect++ )
 			{
-				m_pUpdatedRectOverlay->_render( m_pGfxDevice, *pRect*4, WgStateEnum::Normal );
+				m_pUpdatedRectOverlay->render( m_pGfxDevice, wg::Rect::fromPX(*pRect), WgStateEnum::Normal );
 			}
 		}
 	}

@@ -24,7 +24,7 @@
 #include <wg_container.h>
 #include <wg_panel.h>
 
-#include <wg3_patches.h>
+#include <wg_patches.h>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -340,15 +340,15 @@ public:
 
 	WgWidget *	pWidget;
 	WgRect		geo;
-	wg::Patches	patches;
+	WgPatches	patches;
 };
 
-void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	wg::Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
+	WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
@@ -437,7 +437,7 @@ void WgContainer::_onCloneContent( const WgContainer * _pOrg )
 
 //____ _onCollectPatches() _______________________________________________________
 
-void WgContainer::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgContainer::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	WgRect childGeo;
 	WgHook * p = _firstHookWithGeo( childGeo );
@@ -453,7 +453,7 @@ void WgContainer::_onCollectPatches( wg::Patches& container, const WgRect& geo, 
 
 //____ _onMaskPatches() __________________________________________________________
 
-void WgContainer::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgContainer::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	// Default implementation, should probably be made redundant over time...
 

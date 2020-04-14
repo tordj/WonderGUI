@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_layer.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 
 static const char    c_basehookType[] = {"LayerBasehook"};
 
@@ -136,7 +136,7 @@ void WgLayer::_onRequestRender( const WgRect& rect, const WgLayerHook * pHook )
 {
 	// Clip our geometry and put it in a dirtyrect-list
 
-	wg::Patches patches;
+	WgPatches patches;
 	patches.add( WgRect( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,

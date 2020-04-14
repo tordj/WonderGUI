@@ -33,7 +33,7 @@
 #	include <wg_geo.h>
 #endif
 
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg3_skin.h>
 #include <wg3_gfxdevice.h>
 
@@ -145,15 +145,15 @@ protected:
 	void                _inViewRequested( WgHook * pChild );
 	void                _inViewRequested( WgHook * pChild, const WgRect& mustHaveArea, const WgRect& niceToHaveArea );
 
-	wg::Patches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
-	wg::Patches			m_updatedPatches;	// Patches that were updated in last rendering session.
+	WgPatches			m_dirtyPatches;		// Dirty patches that needs to be rendered.
+	WgPatches			m_updatedPatches;	// Patches that were updated in last rendering session.
 
 	std::vector<WgWidgetWeakPtr>   m_preRenderCalls;
 
 	wg::Skin_p			m_pUpdatedRectOverlay;
 	int					m_afterglowFrames;
 
-	std::deque<wg::Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
+	std::deque<WgPatches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 
 	wg::GfxDevice_p		m_pGfxDevice;

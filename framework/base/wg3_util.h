@@ -39,90 +39,90 @@ namespace wg
 	namespace Util		/** @private */
 	{
 
-		//____ pixelAligned() _________________________________________________________
-
-		inline BorderI pixelAligned(const BorderI& input)
+		//____ aligned() _________________________________________________________
+/*
+		inline BorderI aligned(const BorderI& input)
 		{
 			return { input.top & (int) 0xFFFFFFFC, input.right & (int) 0xFFFFFFFC, input.bottom & (int) 0xFFFFFFFC, input.left & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI pixelAligned(const SizeI input)
+		inline SizeI aligned(const SizeI input)
 		{
 			return { input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
 		}
 
-		inline CoordI pixelAligned(const CoordI input)
+		inline CoordI aligned(const CoordI input)
 		{
 			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC };
 		}
 
-		inline RectI pixelAligned(const RectI& input)
+		inline RectI aligned(const RectI& input)
 		{
 			return { input.x & (int) 0xFFFFFFFC, input.y & (int) 0xFFFFFFFC, input.w & (int) 0xFFFFFFFC, input.h & (int) 0xFFFFFFFC };
 		}
 
-		inline Coord pixelAligned(const Coord input)
+		inline Coord aligned(const Coord input)
 		{
 			Coord p = input;
-			p.x.pixelAlign();
-			p.y.pixelAlign();
+			p.x.align();
+			p.y.align();
 			return p;
 		}
 
-		inline Border pixelAligned(const Border& input)
+		inline Border aligned(const Border& input)
 		{
 			Border b = input;
-			b.top.pixelAlign();
-			b.left.pixelAlign();
-			b.bottom.pixelAlign();
-			b.right.pixelAlign();
+			b.top.align();
+			b.left.align();
+			b.bottom.align();
+			b.right.align();
 			return b;
 		}
 
-		inline Size pixelAligned(const Size input)
+		inline Size aligned(const Size input)
 		{
 			Size sz = input;
-			sz.w.pixelAlign();
-			sz.h.pixelAlign();
+			sz.w.align();
+			sz.h.align();
 			return sz;
 		}
 
-		inline Rect pixelAligned(const Rect& input)
+		inline Rect aligned(const Rect& input)
 		{
 			Rect r = input;
-			r.x.pixelAlign();
-			r.y.pixelAlign();
-			r.w.pixelAlign();
-			r.h.pixelAlign();
+			r.x.align();
+			r.y.align();
+			r.w.align();
+			r.h.align();
 			return r;
 		}
-
-		//____ pointsToRawAligned() _________________________________________________________
-
-		inline CoordI pointsToRawAligned(const CoordI points)
+*/
+		//____ pointsToAlignedQpix() _________________________________________________________
+/*
+		inline CoordI pointsToAlignedQpix(const CoordI points)
 		{
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline SizeI pointsToRawAligned(const SizeI points)
+		inline SizeI pointsToAlignedQpix(const SizeI points)
 		{
 			return { (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline BorderI pointsToRawAligned(const BorderI& points)
+		inline BorderI pointsToAlignedQpix(const BorderI& points)
 		{
 			return { (points.top* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.right* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
 					 (points.bottom* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.left* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
 
-		inline RectI pointsToRawAligned(const RectI& points)
+		inline RectI pointsToAlignedQpix(const RectI& points)
 		{
 			return { (points.x* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.y* MU::qpixPerPoint()) & (int) 0xFFFFFFFC,
 					 (points.w* MU::qpixPerPoint()) & (int) 0xFFFFFFFC, (points.h* MU::qpixPerPoint()) & (int) 0xFFFFFFFC };
 		}
-
+*/
 		//____ qpixToPixels() __________________________________________________
-
+/*
 		inline int qpixToPixels(int quarterPixels)
 		{
 			return quarterPixels >> 2;
@@ -147,9 +147,9 @@ namespace wg
 		{
 			return { quarterPixels.x >> 2, quarterPixels.y >> 2, quarterPixels.w >> 2, quarterPixels.h >> 2 };
 		}
-
+*/
 		//____ pixelsToQpix() __________________________________________________
-
+/*
 		inline int pixelsToQpix(int pixels)
 		{
 			return pixels << 2;
@@ -175,7 +175,7 @@ namespace wg
 			return { pixels.x << 2, pixels.y << 2, pixels.w << 2, pixels.h << 2 };
 		}
 
-
+*/
 		//____ pointsToPixels() _______________________________________________
 
 		inline CoordI pointsToPixels(const CoordI& points)
@@ -217,7 +217,7 @@ namespace wg
 		}
 */
 		//____ qpixToMU() ____________________________________________________
-
+/*
 		inline Coord qpixToMU(const CoordI raw)
 		{
 			Coord c;
@@ -253,9 +253,9 @@ namespace wg
 			r.h.qpix = raw.h;
 			return r;
 		}
-
+*/
 		//____ MUToQpix() ____________________________________________________
-
+/*
 		inline CoordI MUToQpix(const Coord& c)
 		{
 			return { c.x.qpix, c.y.qpix };
@@ -275,9 +275,47 @@ namespace wg
 		{
 			return { r.x.qpix, r.y.qpix, r.w.qpix, r.h.qpix };
 		}
+*/
+		//____ pixelsToMU() ____________________________________________________
+/*
+		inline Coord pixelsToMU(const CoordI raw)
+		{
+			Coord c;
+			c.x.qpix = raw.x << 2;
+			c.y.qpix = raw.y << 2;
+			return c;
+		}
 
+		inline Size pixelsToMU(const SizeI raw)
+		{
+			Size sz;
+			sz.w.qpix = raw.w << 2;
+			sz.h.qpix = raw.h << 2;
+			return sz;
+		}
+
+		inline Border pixelsToMU(const BorderI raw)
+		{
+			Border b;
+			b.top.qpix = raw.top << 2;
+			b.right.qpix = raw.right << 2;
+			b.bottom.qpix = raw.bottom << 2;
+			b.left.qpix = raw.left << 2;
+			return b;
+		}
+
+		inline Rect pixelsToMU(const RectI& raw)
+		{
+			Rect r;
+			r.x.qpix = raw.x << 2;
+			r.y.qpix = raw.y << 2;
+			r.w.qpix = raw.w << 2;
+			r.h.qpix = raw.h << 2;
+			return r;
+		}
+*/
 		//____ MUToQpixAligned() ____________________________________________________
-
+/*
 		inline CoordI MUToQpixAligned(const Coord& c)
 		{
 			return { c.x.qpix & (int) 0xFFFFFFFC, c.y.qpix & (int) 0xFFFFFFFC };
@@ -297,9 +335,9 @@ namespace wg
 		{
 			return { r.x.qpix & (int)0xFFFFFFFC, r.y.qpix & (int)0xFFFFFFFC, r.w.qpix & (int)0xFFFFFFFC, r.h.qpix & (int)0xFFFFFFFC };
 		}
-
+*/
 		//____ alignQpix() ____________________________________________________
-
+/*
 		inline int alignQpix(const int c)
 		{
 			return c & (int)0xFFFFFFFC;
@@ -326,24 +364,24 @@ namespace wg
 			return { r.x & (int)0xFFFFFFFC, r.y & (int)0xFFFFFFFC, r.w & (int)0xFFFFFFFC, r.h & (int)0xFFFFFFFC };
 		}
 
-
+*/
 
 		double squareRoot(double a);
 		double powerOfTen(int num);
 
-		bool		markTestStretchRect( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& area, int opacityTreshold );
+		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
 
-		bool		markTestNinePatch( CoordI ofs, Surface * pSurface, const RectI& source, const RectI& dest, int opacityTreshold, BorderI sourceFrame);
+		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const RectI& source, const Rect& dest, int opacityTreshold, const BorderI& sourceFrame);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat );
 
-		CoordI 		origoToOfs( Origo origo, SizeI base );
-		RectI		origoToRect( Origo origo, SizeI base, SizeI rect );
+		Coord 		origoToOfs( Origo origo, Size base );
+		Rect		origoToRect( Origo origo, Size base, Size rect );
 
-		SizeI		scaleToFit(SizeI object, SizeI boundaries);
+		Size		scaleToFit(Size object, Size boundaries);
 
-		int 		sizeFromPolicy( int defaultSize, int specifiedSize, SizePolicy policy );
+		MU 			sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy );
 
 		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
 
@@ -381,9 +419,9 @@ namespace wg
 			bool bInitialized;
 		};
 
-		ClipPopData	patchesToClipList( GfxDevice * pDevice, const RectI& clip, const Patches& patches );
+		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Rect& clip, const Patches& patches );
 		ClipPopData	patchesToClipList( GfxDevice * pDevice, const Patches& patches );
-		ClipPopData limitClipList( GfxDevice * pDevice, const RectI& clip );
+		ClipPopData limitClipList( GfxDevice * pDevice, const Rect& clip );
 		ClipPopData pushClipList(GfxDevice * pDevice);
 		void 		popClipList( GfxDevice * pDevice, const ClipPopData& popData );
 

@@ -23,7 +23,7 @@
 #include <wg_scrollpanel.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg_event.h>
 #include <wg_eventhandler.h>
 
@@ -1528,12 +1528,12 @@ void WgScrollPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * p
 
 //____ _renderPatches() ________________________________________________________
 
-void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	wg::Patches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
+	WgPatches 	patches( _pPatches->size() );								// TODO: Optimize by pre-allocating?
 
 	for( const WgRect * pRect = _pPatches->begin() ; pRect != _pPatches->end() ; pRect++ )
 	{
@@ -1573,7 +1573,7 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 		{
 			// We need to eliminate dirt outside our view window
 
-			wg::Patches     winPatches( patches.size() );
+			WgPatches     winPatches( patches.size() );
 
 			for( const WgRect * pRect = patches.begin() ; pRect != patches.end() ; pRect++ )
 			{
@@ -1610,14 +1610,14 @@ void WgScrollPanel::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canv
 
 //____ _onCollectPatches() _______________________________________________________
 
-void WgScrollPanel::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgScrollPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	container.add( WgRect(geo,clip) );
 }
 
 //____ _onMaskPatches() __________________________________________________________
 
-void WgScrollPanel::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgScrollPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	switch( m_maskOp )
 	{

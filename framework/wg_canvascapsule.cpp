@@ -202,7 +202,7 @@ WgBlendMode WgCanvasCapsule::_getBlendMode() const
 
 //____ _renderPatches() ________________________________________________________
 
-void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	// Make sure we have children
 
@@ -227,7 +227,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	// Go through dirty patches from screen canvas and update our back canvas where they overlap with our own
 
-	wg::Patches renderStack;
+	WgPatches renderStack;
 
 	for (const WgRect * pScreenRect = _pPatches->begin(); pScreenRect != _pPatches->end(); pScreenRect++)
 	{
@@ -355,7 +355,7 @@ void WgCanvasCapsule::_onRenderRequested(const WgRect& rect)
 
 //____ _onCollectPatches() ____________________________________________________
 
-void WgCanvasCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgCanvasCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if (m_tintColor.a > 0 || m_blendMode == WgBlendMode::Replace)
 		container.add( WgRect( geo, clip ) );
@@ -363,7 +363,7 @@ void WgCanvasCapsule::_onCollectPatches( wg::Patches& container, const WgRect& g
 
 //____ _onMaskPatches() _______________________________________________________
 
-void WgCanvasCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgCanvasCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	//TODO: Support recursive masking.
 

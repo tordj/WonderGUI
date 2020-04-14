@@ -101,7 +101,7 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 
 		virtual void	_setScale( int scale );
 
-		virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches );
+		virtual void	_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 		virtual WgHook* _firstHookWithGeo( WgRect& geo ) const = 0;
 		virtual WgHook* _nextHookWithGeo( WgRect& geo, WgHook * pHook ) const = 0;
 
@@ -117,8 +117,8 @@ class WgContainer : public WgWidgetHolder, public WgWidget
 		virtual WgModalLayer *	_getModalLayer() const;
 		virtual WgPopupLayer*	_getPopupLayer() const;
 
-		virtual void	_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
-		virtual void	_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip );
+		virtual void	_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode );
+		virtual void	_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip );
 
 		virtual void	_onCloneContent( const WgContainer * _pOrg );
 

@@ -24,7 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_eventhandler.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg3_surfacefactory.h>
 #include <wg_image.h>
 #include <wg_base.h>
@@ -485,7 +485,7 @@ void WgZoomOutCapsule::_regenScreenshot()
 
 //____ _onCollectPatches() ______________________________________________________
 
-void WgZoomOutCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgZoomOutCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	// Do the simple thing here
 
@@ -494,7 +494,7 @@ void WgZoomOutCapsule::_onCollectPatches( wg::Patches& container, const WgRect& 
 
 //____ _onMaskPatches() _________________________________________________________
 
-void WgZoomOutCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgZoomOutCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( m_innerZoom == 1.f )
 		WgCapsule::_onMaskPatches( patches, geo, clip, blendMode );
@@ -507,7 +507,7 @@ void WgZoomOutCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, 
 
 //____ _renderPatches() __________________________________________________________
 
-void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgZoomOutCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	if( m_innerZoom == 1.f && m_outerZoom == 1.f )
 	{

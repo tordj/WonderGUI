@@ -761,7 +761,7 @@ void WgScrollChart::_onCloneContent(const WgWidget * _pOrg)
 
 //____ _renderPatches() _______________________________________________________
 
-void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
+void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 
 	if (m_pCanvas)

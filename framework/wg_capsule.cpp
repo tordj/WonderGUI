@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_capsule.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 
 static const char	c_hookType[] = {"Capsule"};
 
@@ -261,7 +261,7 @@ WgRect WgCapsule::_childGeo()
 
 //____ _onCollectPatches() _____________________________________________________
 
-void WgCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgCapsule::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_pSkin )
 		container.add( WgRect( geo, clip ) );
@@ -271,7 +271,7 @@ void WgCapsule::_onCollectPatches( wg::Patches& container, const WgRect& geo, co
 
 //____ _onMaskPatches() ________________________________________________________
 
-void WgCapsule::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgCapsule::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( m_pSkin && m_pSkin->isOpaque(m_state) )
 		patches.sub( WgRect( geo, clip ) );

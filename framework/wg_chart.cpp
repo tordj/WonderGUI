@@ -580,7 +580,7 @@ void WgChart::_onCloneContent( const WgWidget * _pOrg )
 
 //____ _renderPatches() ________________________________________________________
 
-void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches )
+void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches )
 {
 	if( m_cacheFirst > 0 )
 	{

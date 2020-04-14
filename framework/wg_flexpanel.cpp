@@ -21,7 +21,7 @@
 =========================================================================*/
 
 #include <wg_flexpanel.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg_util.h>
 
 static const char	c_widgetType[] = {"FlexPanel"};
@@ -981,7 +981,7 @@ WgWidget * WgFlexPanel::ReleaseChild( WgWidget * pWidget )
 
 bool WgFlexPanel::DeleteAllChildren()
 {
-	wg::Patches	dirt;
+	WgPatches	dirt;
 
 	// Collect dirty areas and delete hooks, taking any connected widgets with them.
 
@@ -1254,7 +1254,7 @@ void WgFlexPanel::_onRequestRender( const WgRect& rect, const WgFlexHook * pHook
 
 	// Clip our geometry and put it in a dirtyrect-list
 
-	wg::Patches patches;
+	WgPatches patches;
 	patches.add( WgRect( rect, WgRect(0,0,PixelSize())) );
 
 	// Remove portions of patches that are covered by opaque upper siblings

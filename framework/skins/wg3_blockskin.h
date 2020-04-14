@@ -81,31 +81,29 @@ namespace wg
 		void			setFrame(BorderI frame);
 		BorderI			frame() const { return m_frame*4/m_pSurface->qpixPerPoint(); }
 
-		//.____ Misc ____________________________________________________
+		//.____ Geometry _________________________________________________
 
+		Size	minSize() const override;
+		Size	preferredSize() const override;
+
+		Size	sizeForContent(const Size& contentSize) const override;
+
+		//.____ Misc ____________________________________________________
 
 		bool	isOpaque() const override;
 		bool	isOpaque( State state ) const override;
+		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
 		bool	isStateIdentical( State state, State comparedTo ) const override;
+		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const override;
+
+		void	render(GfxDevice * pDevice, const Rect& canvas, State state) const override;
 
 		//.____ Deprecated ____________________________________________________
 
 		static BlockSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
 		static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
 		static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
-
-		//.____ Internal _______________________________________
-
-		void	_render(GfxDevice * pDevice, const RectI& _canvas, State state) const override;
-
-		SizeI	_minSize() const override;
-		SizeI	_preferredSize() const override;
-
-		SizeI	_sizeForContent(const SizeI contentSize) const override;
-
-		bool	_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const override;
-		bool	_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const override;
 
 
 	private:

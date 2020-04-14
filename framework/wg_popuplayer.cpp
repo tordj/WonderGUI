@@ -22,7 +22,7 @@
 
 #include <wg_popuplayer.h>
 #include <wg_util.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg_panel.h>
 #include <wg_base.h>
 #include <wg_gfxdevice.h>
@@ -474,7 +474,7 @@ void WgPopupLayer::_onRequestRender( const WgRect& rect, const WgPopupHook * pSl
 
 	// Clip our geometry and put it in a dirtyrect-list
 
-	wg::Patches patches;
+	WgPatches patches;
 	patches.add( WgRect( rect, WgRect(0,0,m_size)) );
 
 	// Remove portions of dirty rect that are covered by opaque upper siblings,
@@ -513,15 +513,15 @@ public:
 
 	WgPopupHook *	pSlot;
 	WgRect			geo;
-	wg::Patches		patches;
+	WgPatches		patches;
 };
 
-void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
+void WgPopupLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 
 	// We start by eliminating dirt outside our geometry
 
-	wg::Patches 	patches(_pPatches->size());								// TODO: Optimize by pre-allocating?
+	WgPatches 	patches(_pPatches->size());								// TODO: Optimize by pre-allocating?
 
 	for (const WgRect * pRect = _pPatches->begin(); pRect != _pPatches->end(); pRect++)
 	{

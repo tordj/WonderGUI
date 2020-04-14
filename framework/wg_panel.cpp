@@ -24,7 +24,7 @@
 #include <wg_panel.h>
 #include <wg_util.h>
 
-#include <wg3_patches.h>
+#include <wg_patches.h>
 
 #ifndef WG_GFXDEVICE_DOT_H
 #	include <wg_gfxdevice.h>
@@ -80,7 +80,7 @@ void WgPanel::_onCloneContent( const WgPanel * _pOrg )
 
 //____ _onCollectPatches() _______________________________________________________
 
-void WgPanel::_onCollectPatches( wg::Patches& container, const WgRect& geo, const WgRect& clip )
+void WgPanel::_onCollectPatches( WgPatches& container, const WgRect& geo, const WgRect& clip )
 {
 	if( m_pSkin )
 		container.add( WgRect( geo, clip ) );
@@ -92,7 +92,7 @@ void WgPanel::_onCollectPatches( wg::Patches& container, const WgRect& geo, cons
 
 //____ _onMaskPatches() __________________________________________________________
 
-void WgPanel::_onMaskPatches( wg::Patches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
+void WgPanel::_onMaskPatches( WgPatches& patches, const WgRect& geo, const WgRect& clip, WgBlendMode blendMode )
 {
 	if( m_pSkin && m_pSkin->isOpaque() )
 	{

@@ -175,7 +175,7 @@ namespace wg
 			Codepage8,
 			Utf8,
 			Utf16,
-            EscapedUtf8,
+			EscapedUtf8,
 			EscapedUtf16
 
 		};

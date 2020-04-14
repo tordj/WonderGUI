@@ -25,7 +25,7 @@
 #include <wg_event.h>
 #include <wg_gfxdevice.h>
 #include <wg3_surfacefactory.h>
-#include <wg3_patches.h>
+#include <wg_patches.h>
 #include <wg_base.h>
 #include <wg3_context.h>
 #include <wg_util.h>
@@ -222,7 +222,7 @@ bool WgShadowLayer::AddShadow(WgWidget * pWidget, wg::Skin * pShadow)
 
 	m_shadows.push_back( WgShadow(pWidget,pShadow,geo));
 
-	wg::Patches patches;
+	WgPatches patches;
 	patches.add(geo);
 
 	// Remove portions of patches that are covered by opaque front widgets
@@ -334,7 +334,7 @@ void WgShadowLayer::_requestRenderShadows(int ofs, int nb)
 {
 	for (auto p = &m_shadows[ofs]; p != &m_shadows[ofs + nb]; p++)
 	{
-		wg::Patches patches;
+		WgPatches patches;
 		patches.add(p->m_geo);
 
 		// Remove portions of patches that are covered by opaque front widgets
@@ -474,7 +474,7 @@ void WgShadowLayer::_preRender()
 {
 	// Check for removed children and changes to geo that will affect shadows.
 
-	wg::Patches patches;
+	WgPatches patches;
 
 	for (auto it = m_shadows.begin(); it < m_shadows.end();)
 	{
@@ -561,11 +561,11 @@ void WgShadowLayer::_onNewSize(const WgSize& size)
 
 //____ _renderPatches() _______________________________________________________
 
-void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, wg::Patches * _pPatches)
+void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches)
 {
 	WgRect contentGeo = m_frontHook.m_geo + _canvas.pos();
 
-	wg::Patches patches;
+	WgPatches patches;
 	patches.push(_pPatches);
 
 	// Generate masked patches for our skin, baseSlot widget, and shadow.
@@ -604,7 +604,7 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 	if (m_pShadowSurface)
 	{
-		wg::Patches   shadowPatches;
+		WgPatches   shadowPatches;
 
 		if (bFullSurfaceUpdate)
 			shadowPatches.push({ 0,0, _canvas.size() });

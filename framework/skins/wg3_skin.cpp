@@ -34,26 +34,5 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ minSize() __________________________________________________________
-
-	Size Skin::minSize() const
-	{
-		return Util::qpixToMU(_minSize());
-	}
-
-	//____ preferredSize() ____________________________________________________
-
-	Size Skin::preferredSize() const
-	{
-		return Util::qpixToMU(_preferredSize());
-	}
-
-	//____ isOpaque() _________________________________________________________
-
-	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		return _isOpaque(Util::MUToQpix(rect), Util::MUToQpix(canvasSize), state);
-	}
-
 
 } // namespace wg

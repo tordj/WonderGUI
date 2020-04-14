@@ -125,8 +125,8 @@ namespace wg
 			bool	isInitialized() { return m_pFont?true:false; }
 
 			CacheSlot * m_pSlot;
-			uint16_t	m_size;			// size of character in points.
-			uint16_t	m_character;	// Unicode for character.
+			uint16_t		m_size;			// size of character in points.
+			uint16_t		m_character;	// Unicode for character.
 		};
 
 		class CacheSurf : public Link
