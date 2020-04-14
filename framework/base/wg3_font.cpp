@@ -46,6 +46,16 @@ namespace wg
 		return true;
 	}
 
+    //____ setBackupFont() ______________________________________________________
+
+    bool Font::setBackupFont(Font * pFont)
+    {
+        //TODO: Error handling, make sure we don't get circular recursion.
+
+        m_pBackupFont = pFont;
+        return true;
+    }
+
 	//____ Glyph::Glyph() _______________________________________________________
 
 	Glyph::Glyph()

@@ -48,7 +48,6 @@
 #endif
 
 class	WgValueFormat;
-class	WgFont;
 
 //____ WgTextHolder ___________________________________________________________
 
@@ -405,7 +404,7 @@ protected:
 
 	int				_cursorMaxWidth() const;
 
-
+    wg::TextStyle_p     _cloneBaseStyle() const;
 
 	wg::CharBuffer	m_buffer;
 	WgCursor*		m_pCursorStyle;

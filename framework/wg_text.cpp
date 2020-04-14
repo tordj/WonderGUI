@@ -541,27 +541,27 @@ void WgText::setStyle( wg::TextStyle * pStyle )
 
 bool WgText::setColor( const WgColor color )
 {
-	if( m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
+	if( m_pBaseStyle && m_pBaseStyle->isColorStatic() && m_pBaseStyle->color(wg::StateEnum::Normal) == color )
 		return false;
 
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->setColor(color);
 	return true;
 }
 
 bool WgText::setColor( const WgColor color, wg::State state )
 {
-	if( m_pBaseStyle->colorBlendMode(state) != wg::BlendMode::Undefined && m_pBaseStyle->color(state) == color )
+	if( m_pBaseStyle && m_pBaseStyle->colorBlendMode(state) != wg::BlendMode::Undefined && m_pBaseStyle->color(state) == color )
 		return false;
 
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->setColor(color,state);
 	return true;
 }
 
 void WgText::setFont( wg::Font * pFont )
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->setFont(pFont);
 	_regenSoftLines();
 	_refreshAllLines();
@@ -569,7 +569,7 @@ void WgText::setFont( wg::Font * pFont )
 
 void WgText::setLink( wg::TextLink * pLink )
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->setLink(pLink);
 
 	_regenSoftLines();
@@ -588,19 +588,19 @@ void WgText::clearStyle()
 
 void WgText::clearColor()
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->clearColor();
 }
 
 void WgText::clearColor( wg::State state )
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->clearColor(state);
 }
 
 void WgText::clearFont()
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->clearFont();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -608,7 +608,7 @@ void WgText::clearFont()
 
 void WgText::clearLink()
 {
-	m_pBaseStyle = m_pBaseStyle->clone();
+	m_pBaseStyle = _cloneBaseStyle();
 	m_pBaseStyle->clearLink();
 	_regenSoftLines();
 	_refreshAllLines();
@@ -1404,7 +1404,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 {
 	const wg::Char *	p = pStart;
 	int			nSoftLines = 0;
-	Uint16		hStyle = 0xFFFF;					// Force immediate update of textprop.
+	Uint16		hStyle = 0xFFFF;					// Force immediate update of textstyle.
 	bool		bEndOfText = false;
 
 	WgPen		pen;
@@ -1425,7 +1425,7 @@ int WgText::_countWriteSoftLines( int maxWidth, const wg::Char * pStart, WgTextL
 		while( true )
 		{
 
-			// Update if textproperties have changed.
+			// Update if textstyle has changed.
 
 			if( p->styleHandle() != hStyle )
 			{
@@ -2358,6 +2358,19 @@ bool WgText::OnEvent( const WgEvent::Event * pEvent, WgEventHandler * pEventHand
 		refresh();
 
 	return bRefresh;
+}
+
+//____ _cloneBaseStyle() _____________________________________________________
+
+wg::TextStyle_p WgText::_cloneBaseStyle() const
+{
+    if( m_pBaseStyle )
+        return m_pBaseStyle->clone();
+
+    if( wg::Base::defaultStyle() )
+        return wg::Base::defaultStyle()->clone();
+
+    return wg::TextStyle::create();
 }
 
 

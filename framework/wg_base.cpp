@@ -30,6 +30,7 @@
 #include <wg3_memstack.h>
 #include <wg3_gfxdevice.h>
 #include <wg3_surface.h>
+#include <wg3_freetypefont.h>
 
 #include <wg_smartptr.h>
 

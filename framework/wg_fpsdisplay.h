@@ -29,8 +29,6 @@
 
 #include	<wg3_textstyle.h>
 
-class WgFont;
-
 
 class WgFpsDisplay:public WgWidget
 {

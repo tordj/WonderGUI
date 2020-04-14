@@ -496,6 +496,9 @@ WgState WgUtil::ModeToState(WgMode mode)
 		case WG_MODE_DISABLED:
 			state = WgStateEnum::Disabled;
 			break;
+
+        case WG_MODE_ALL:
+            assert(false);
 	}
 
 	return state;

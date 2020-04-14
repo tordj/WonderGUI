@@ -48,8 +48,6 @@ class WgCursor;
 
 class WgPen
 {
-friend class WgFont;
-
 public:
 	WgPen();
 	WgPen( wg::GfxDevice * pDevice, const WgCoord& origo );

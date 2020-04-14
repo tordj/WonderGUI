@@ -62,16 +62,20 @@ namespace wg
 	template<class Type> using Payload_p = StrongPtr<Payload<Type>>;
 	template<class Type> using Payload_wp = WeakPtr<Payload<Type>>;
 
-	template<class Type> class Payload : public BasicPayload, public Type
+	template<class Type> class Payload : public BasicPayload
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
 		static Payload_p<Type> create() { return Payload_p<Type>(new Payload<Type>()); }
-		static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); * static_cast<Type*>(p) = load; return Payload_p<Type>(p); }
+		static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); p->content = load; return Payload_p<Type>(p); }
 
-		//.____ Identification _________________________________________________
+        //.____ Content _______________________________________________________
+
+        Type    content;
+
+        //.____ Identification _________________________________________________
 
 		const TypeInfo&			typeInfo(void) const override { return TYPEINFO; }
 		static TypeInfo	TYPEINFO;

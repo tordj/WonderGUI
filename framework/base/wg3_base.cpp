@@ -108,7 +108,7 @@ namespace wg
 
 	//____ handleError() _________________________________________________________
 
-	void Base::handleError(ErrorCode code, const char * msg, const Object * pObject, const char * classname, const char * function, const char * file, int line)
+    void Base::handleError(ErrorCode code, const char * msg, const Object * pObject, const TypeInfo& classType, const char * function, const char * file, int line)
 	{
 		if (s_pErrorHandler)
 		{
@@ -117,7 +117,7 @@ namespace wg
 			error.code = code;
 			error.message = msg;
 			error.pObject = pObject;
-			error.classname = classname;
+			error.classname = classType.className;
 			error.function = function;
 			error.file = file;
 			error.line = line;
@@ -227,8 +227,17 @@ namespace wg
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
 
-		MU::s_scale = pContext->scale();
-		MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
+        if( pContext )
+        {
+            MU::s_scale = pContext->scale();
+            MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
+        }
+        else
+        {
+            MU::s_scale = 1.f;
+            MU::s_qpixPerPoint = 4;
+        }
+
 	}
 
 	//____ activeContext() ____________________________________________________
