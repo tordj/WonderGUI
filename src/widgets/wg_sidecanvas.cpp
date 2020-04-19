@@ -117,9 +117,9 @@ namespace wg
 		m_pHolder->_sideCanvasResize(this,size);
 	}
 	
-	//____ _setSkin() _________________________________________________________________
+	//____ setSkin() _________________________________________________________________
 	
-	void SideCanvas::_setSkin( Skin * pSkin )
+	void SideCanvas::setSkin( Skin * pSkin )
 	{
 		m_pHolder->_sideCanvasSetSkin(this,pSkin);		
 	}
@@ -198,7 +198,7 @@ namespace wg
 
 	void SideCanvas::Holder::_sideCanvasSetSkin( SideCanvas * pCanvas,  Skin * pSkin ) 
 	{
-		return pCanvas->Widget::_setSkin(pSkin);
+		return pCanvas->Widget::setSkin(pSkin);
 	}
 
 	//____ _Holder::_sideCanvasSetState() ____________________________________________

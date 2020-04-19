@@ -25,6 +25,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -38,7 +39,7 @@ namespace wg
 
 	LineEditor::LineEditor() : text(this), m_textScrollOfs(0)
 	{
-		_text().setMaxLines(1);
+		text.setMaxLines(1);
 	}
 
 
@@ -63,7 +64,7 @@ namespace wg
 
 		Size	contentSize;
 
-		TextStyle * pStyle = _text()._style();
+		TextStyle * pStyle = OO(text)._style();
 
 		Font_p pFont = pStyle->font();
 
@@ -95,12 +96,12 @@ namespace wg
 
 		//
 
-		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, _text()._preferredSize());
+		Rect textCanvas(canvas.x - m_textScrollOfs, canvas.y, OO(text)._preferredSize());
 
 		// We need to clip to canvas since textCanvas can go outside our canvas.
 
 		auto pop = limitClipList(pDevice, canvas );
-		_text()._render(pDevice, textCanvas );
+		OO(text)._render(pDevice, textCanvas );
 		popClipList(pDevice, pop);
 	}
 
@@ -108,7 +109,7 @@ namespace wg
 
 	void LineEditor::_refresh( void )
 	{
-		_text()._refresh();
+		OO(text)._refresh();
 		Widget::_refresh();
 	}
 
@@ -118,7 +119,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		_text()._setState(state);
+		OO(text)._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -128,7 +129,7 @@ namespace wg
 	void LineEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		_text()._receive( pMsg );
+		OO(text)._receive( pMsg );
 	}
 
 
@@ -142,13 +143,13 @@ namespace wg
 
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() _______________________________________________________
 
-	void LineEditor::_setSkin( Skin * pSkin )
+	void LineEditor::setSkin( Skin * pSkin )
 	{
 		//TODO: Possibly notify text about new canvas size.
 
-		Widget::_setSkin(pSkin);
+		Widget::setSkin(pSkin);
 	}
 
 	//____ _resize() ________________________________________________
@@ -158,9 +159,9 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text()._setSize( Size(_text()._preferredSize().w, size.h - m_pSkin->contentPaddingSize().h ) );
+			OO(text)._setSize( Size( OO(text)._preferredSize().w, size.h - m_pSkin->contentPaddingSize().h ) );
 		else
-			_text()._setSize( Size( _text()._preferredSize().w, size.h ) );
+			OO(text)._setSize( Size( OO(text)._preferredSize().w, size.h ) );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -180,9 +181,9 @@ namespace wg
 	Size LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
 		if( m_pSkin )
-			return Size( _text()._preferredSize().w, m_size.h - m_pSkin->contentPaddingSize().h );
+			return Size( OO(text)._preferredSize().w, m_size.h - m_pSkin->contentPaddingSize().h );
 		else
-			return Size( _text()._preferredSize().w, m_size.h );
+			return Size( OO(text)._preferredSize().w, m_size.h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
@@ -193,11 +194,11 @@ namespace wg
 		{
 			Rect r = m_pSkin->contentRect( m_size, m_state );
 			r.x -= m_textScrollOfs;
-			r.w = _text()._preferredSize().w;
+			r.w = OO(text)._preferredSize().w;
 			return r;
 		}
 		else
-			return Rect( -m_textScrollOfs, 0, _text()._preferredSize().w, m_size.h );
+			return Rect( -m_textScrollOfs, 0, OO(text)._preferredSize().w, m_size.h );
 	}
 
 	//____ _componentRequestRender() ______________________________________________
@@ -234,7 +235,7 @@ namespace wg
 
 	void LineEditor::_componentRequestResize( const GeoComponent * pComponent )
 	{
-		Size preferred = _text()._preferredSize();
+		Size preferred = OO(text)._preferredSize();
 
 		MU height = m_size.h;
 		if( m_pSkin )
@@ -243,7 +244,7 @@ namespace wg
 		if( preferred.h != height )
 			_requestResize();
 
-		_text()._setSize( Size(preferred.w, height ));	// Component gets the preferred width right away.
+		OO(text)._setSize( Size(preferred.w, height ));	// Component gets the preferred width right away.
 	}
 
 	//____ _componentRequestInView() ____________________________________________

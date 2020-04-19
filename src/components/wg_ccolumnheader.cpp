@@ -23,6 +23,7 @@
 #include <wg_ccolumnheader.h>
 #include <wg_msg.h>
 #include <wg_inputhandler.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -31,7 +32,7 @@ namespace wg
 
 	//____ constructor ___________________________________________________________
 
-	CColumnHeader::CColumnHeader(GeoComponent::Holder * pHolder) : GeoComponent(pHolder), icon(this), arrow(this), label(this)
+	CColumnHeader::CColumnHeader(GeoComponent::Holder * pHolder) : GeoComponent(pHolder), icon(this), arrow(this), text(this)
 	{
 		m_bPressed = false;
 		m_sortOrder = SortOrder::None;
@@ -72,7 +73,7 @@ namespace wg
 
 		//TODO: Set state for icon and arrow when they allow for it.
 
-		_text()._setState(state);
+		OO(text)._setState(state);
 
 		_requestRender();			//TODO: Only request render if state change requires it.
 	}
@@ -94,7 +95,7 @@ namespace wg
 	{
 		Size iconSize = _icon()._preferredSize();
 		Size arrowSize = _arrow()._preferredSize();
-		Size textSize = _text()._preferredSize();
+		Size textSize = OO(text)._preferredSize();
 
 		Size size;
 
@@ -260,8 +261,8 @@ namespace wg
 		if( !icon.isEmpty() )
 			icon.skin()->render( pDevice, iconRect, m_state );
 
-		if( !label.isEmpty() )
-			_text()._render( pDevice, labelRect );
+		if( !text.isEmpty() )
+			OO(text)._render( pDevice, labelRect );
 	}
 
 

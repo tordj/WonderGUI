@@ -27,6 +27,8 @@
 #include <wg_rootpanel.h>
 #include <wg_msgrouter.h>
 #include <wg_togglegroup.h>
+#include <wg_internal.h>
+
 #include <assert.h>
 
 namespace wg
@@ -38,7 +40,7 @@ namespace wg
 
 	//____ ToggleButton() _________________________________________________________________
 
-	ToggleButton::ToggleButton() : label(this), icon(this)
+	ToggleButton::ToggleButton() : text(this), icon(this)
 	{
 		m_bPressed			= false;
 		m_bReturnPressed	= false;
@@ -90,8 +92,8 @@ namespace wg
 		Size iconPreferredSize;
 		Size textPreferredSize;
 
-		if( !_text().isEmpty() )
-			textPreferredSize = _text()._preferredSize();
+		if( !OO(text).isEmpty() )
+			textPreferredSize = OO(text)._preferredSize();
 
 		if( !_icon().isEmpty() )
 		{
@@ -225,7 +227,7 @@ namespace wg
 		State oldState = state;
 		Widget::_setState(state);
 
-		_text()._setState( state );
+		OO(text)._setState( state );
 
 		if( !_icon().isEmpty() && !_icon().skin()->isStateIdentical(state, m_state) )
 			_requestRender();		//TODO: Just request render on icon?
@@ -239,11 +241,13 @@ namespace wg
 		}
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() _______________________________________________________
 
-	void ToggleButton::_setSkin( Skin * pSkin )
+	void ToggleButton::setSkin( Skin * pSkin )
 	{
-		Widget::_setSkin(pSkin);
+		//TODO: Set canvas size for the components
+
+		Widget::setSkin(pSkin);
 	}
 
 
@@ -268,10 +272,10 @@ namespace wg
 
 		// Print text
 
-	 	if( !_text().isEmpty() )
+	 	if( !OO(text).isEmpty() )
 		{
 			Rect	textRect = _icon()._getTextRect( contentRect, iconRect );
-			_text()._render( pDevice, textRect );
+			OO(text)._render( pDevice, textRect );
 		}
 	}
 
@@ -294,7 +298,7 @@ namespace wg
 		if( m_pSkin )
 			contentRect = m_pSkin->contentRect(contentRect, m_state );
 
-		_text()._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
+		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
 	}
 
 
@@ -322,7 +326,7 @@ namespace wg
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
-		if( _text()._charAtPos( pos - contentRect.pos() ) != -1 )
+		if( OO(text)._charAtPos( pos - contentRect.pos() ) != -1 )
 			return true;
 
 		return false;

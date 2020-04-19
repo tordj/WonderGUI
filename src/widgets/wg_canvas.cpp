@@ -20,10 +20,9 @@
 
 =========================================================================*/
 
-
-
 #include <wg_canvas.h>
 #include <wg_gfxdevice.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -59,7 +58,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		Size sz = _canvas()._preferredSize();
+		Size sz = OO(canvas)._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -76,7 +75,7 @@ namespace wg
 		// Try to maintain aspect ratio of preferred size. If we can't get an aspect
 		// ratio we simply stick to 16 pixels.
 
-		Size sz = _canvas()._preferredSize();
+		Size sz = OO(canvas)._preferredSize();
 
 		if (sz.h == 0 || sz.w == 0)
 			return 16*4;
@@ -88,7 +87,7 @@ namespace wg
 
 	Size Canvas::preferredSize() const
 	{
-		Size sz = _canvas()._preferredSize();
+		Size sz = OO(canvas)._preferredSize();
 		if (sz.w == sz.h == 0)
 			sz = { 16*4,16*4 };
 
@@ -110,20 +109,20 @@ namespace wg
 	void Canvas::_resize(const Size& size)
 	{
 		Widget::_resize(size);
-		_canvas()._setComponentSize(size);
+		OO(canvas)._setComponentSize(size);
 	}
 
-	//____ _setSkin() ____________________________________________________________
+	//____ setSkin() ____________________________________________________________
 
-	void Canvas::_setSkin(Skin * pSkin)
+	void Canvas::setSkin(Skin * pSkin)
 	{
 		Size oldPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
 
-		Widget::_setSkin(pSkin);
+		Widget::setSkin(pSkin);
 
 		Size newPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
 		if (newPadding != oldPadding)
-			_canvas()._setComponentSize(m_size - newPadding);
+			OO(canvas)._setComponentSize(m_size - newPadding);
 	}
 
 	//____ _render() __________________________________________________________
@@ -136,7 +135,7 @@ namespace wg
 
 		Rect componentCanvas = m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas;
 
-		_canvas()._render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
+		OO(Canvas::canvas)._render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
 
 	//____ _alphaTest() _______________________________________________________
@@ -150,7 +149,7 @@ namespace wg
 		if( m_pSkin )
 			ofs -= m_pSkin->contentOfs(m_state);
 
-		return _canvas()._alphaTest(ofs, m_markOpacity);
+		return OO(canvas)._alphaTest(ofs, m_markOpacity);
 	}
 
 

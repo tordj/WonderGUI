@@ -139,10 +139,6 @@ namespace wg
 		void		_resize(const Size& size) override;
 
 
-		class TextAccess : public CTextDisplay { friend class SelectBox; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
-		TextAccess& _text() { return static_cast<TextAccess&>(text); }
-
 		class MySideCanvas : public SideCanvas 
 		{ 
 			friend class SelectBox; 

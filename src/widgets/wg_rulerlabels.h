@@ -64,10 +64,6 @@ namespace wg
 			LINK_METHODS(Label);
 			CTextDisplay	text;
 			float			offset;
-
-			class TextAccess : public CTextDisplay { friend class RulerLabels; };
-			const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
-			TextAccess& _text() { return static_cast<TextAccess&>(text); }
 		};
 
 		Chain<Label>	m_labels;

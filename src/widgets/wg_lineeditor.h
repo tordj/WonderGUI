@@ -55,6 +55,11 @@ namespace wg
 
 		Size			preferredSize() const override;
 
+		//.____ Appearance ____________________________________________________
+
+		void			setSkin(Skin * pSkin) override;
+
+
 	protected:
 		LineEditor();
 		virtual ~LineEditor();
@@ -67,7 +72,6 @@ namespace wg
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
-		void			_setSkin( Skin * pSkin ) override;
 
 		Coord			_componentPos( const GeoComponent * pComponent ) const override;
 		Size			_componentSize( const GeoComponent * pComponent ) const override;
@@ -77,11 +81,6 @@ namespace wg
 		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
 		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 		void			_componentRequestInView(const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave) override;
-
-		class TextAccess : public CTextEditor { friend class LineEditor; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
-		TextAccess& _text() { return static_cast<TextAccess&>(text); }
-
 
 	private:
 

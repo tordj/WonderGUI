@@ -106,14 +106,6 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		virtual void 	_resize( const Size& size ) override;
 
-		class TextAccess : public CTextDisplay { friend class RefreshButton; };
-
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
-		TextAccess&	_text() { return static_cast<TextAccess&>(label); }
-
-		const TextAccess& _refreshText() const { return static_cast<const TextAccess&>(refreshText); }
-		TextAccess& _refreshText() { return static_cast<TextAccess&>(refreshText); }
-
 		class IconAccess : public CIconDisplay { friend class RefreshButton; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
 		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }

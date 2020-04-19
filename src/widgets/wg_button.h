@@ -51,7 +51,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CTextDisplay		label;
+		CTextDisplay		text;
 		CIconDisplay		icon;
 
 		//.____ Identification __________________________________________
@@ -87,10 +87,6 @@ namespace wg
 		Coord			_componentPos( const GeoComponent * pComponent ) const override;
 		Size			_componentSize( const GeoComponent * pComponent ) const override;
 		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
-
-		class TextAccess : public CTextDisplay { friend class Button; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
-		TextAccess& _text() { return static_cast<TextAccess&>(label); }
 
 		class IconAccess : public CIconDisplay { friend class Button; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }

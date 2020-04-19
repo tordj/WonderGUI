@@ -28,6 +28,7 @@
 #include	<wg_base.h>
 #include	<wg_stdtextmapper.h>
 #include	<wg_msgrouter.h>
+#include	<wg_internal.h>
 
 namespace wg
 {
@@ -87,17 +88,17 @@ namespace wg
 
 	Size FpsDisplay::preferredSize() const
 	{
-		SizeI contentSize = _labels()._preferredSize();
+		SizeI contentSize = OO(labels)._preferredSize();
 
 		TextAttr attr;
-		_values()._style()->exportAttr( State(StateEnum::Normal), &attr );
+		OO(values)._style()->exportAttr( State(StateEnum::Normal), &attr );
 
 		int prevSize = attr.pFont->size();
 		attr.pFont->setSize(attr.size);
 		contentSize.w += attr.pFont->maxAdvance() * 7;			// Reserve space for: ' 999.99' after longest label.
 		attr.pFont->setSize(prevSize);
 
-		int valueHeight = _values()._preferredSize().h;
+		int valueHeight = OO(values)._preferredSize().h;
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
@@ -120,8 +121,8 @@ namespace wg
 		else
 			content = _canvas;
 
-		_labels()._render( pDevice, content );
-		_values()._render( pDevice, content );
+		OO(labels)._render( pDevice, content );
+		OO(values)._render( pDevice, content );
 	}
 
 
@@ -187,7 +188,7 @@ namespace wg
 
 				char	temp[100];
 				snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-				_values()._set(temp);
+				OO(values)._set(temp);
 
 				_requestRender();
 			}
@@ -201,8 +202,8 @@ namespace wg
 	void FpsDisplay::_setState( State state )
 	{
 
-		_labels()._setState(state);
-		_values()._setState(state);
+		OO(labels)._setState(state);
+		OO(values)._setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
 		if( state.isEnabled() && !m_state.isEnabled() )
@@ -225,8 +226,8 @@ namespace wg
 
 		FpsDisplay * pOrg		= (FpsDisplay *) _pOrg;
 
-//		_labels().clone( &pOrg->m_labelsText );
-//		_values().clone( &pOrg->m_valuesText );
+//		OO(labels).clone( &pOrg->m_labelsText );
+//		OO(values).clone( &pOrg->m_valuesText );
 
 		m_tickBufferOfs	= pOrg->m_tickBufferOfs;
 

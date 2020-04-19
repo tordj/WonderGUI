@@ -24,6 +24,8 @@
 #pragma once
 
 #include <wg_container.h>
+#include <wg_ctexteditor.h>
+#include <wg_ccanvas.h>
 
 namespace wg
 {
@@ -75,6 +77,133 @@ namespace wg
 	public:
 	};
 
+	class OCCanvas : public CCanvas
+	{
+	public:
+		using CCanvas::_render;
+		using CCanvas::_alphaTest;
+
+		using CCanvas::_regenSurface;
+		using CCanvas::_calcPresentationArea;
+
+		using CCanvas::_setComponentSize;
+		using CCanvas::_preferredSize;
+	};
+
+	class OCStaticTextDisplay : public CStaticTextDisplay
+	{
+	public:
+		using CStaticTextDisplay::_clear;
+
+		using CStaticTextDisplay::_set;
+
+		using CStaticTextDisplay::_append;
+		using CStaticTextDisplay::_insert;
+		using CStaticTextDisplay::_replace;
+		using CStaticTextDisplay::_erase;
+
+		using CStaticTextDisplay::_setCharStyle;
+		using CStaticTextDisplay::_clearCharStyle;
+
+		using CStaticTextDisplay::_getString;
+
+		using CStaticTextDisplay::_state;
+		using CStaticTextDisplay::_setState;
+
+		using CStaticTextDisplay::_setSize;
+		using CStaticTextDisplay::_size;
+
+		using CStaticTextDisplay::_preferredSize;
+		using CStaticTextDisplay::_matchingWidth;
+		using CStaticTextDisplay::_matchingHeight;
+
+		using CStaticTextDisplay::_charAtPos;
+		using CStaticTextDisplay::_charRect;
+		using CStaticTextDisplay::_charLine;
+
+		using CStaticTextDisplay::_refresh;
+
+		using CStaticTextDisplay::_tooltip;
+
+		using CStaticTextDisplay::_render;
+
+		using CStaticTextDisplay::_rectForRange;
+
+		using CStaticTextDisplay::_textMapper;
+		using CStaticTextDisplay::_style;
+
+		using CStaticTextDisplay::_receive;
+	};
+
+
+	class OCTextDisplay : public CTextDisplay
+	{
+	public:
+		using CTextDisplay::_clear;
+
+		using CTextDisplay::_set;
+
+		using CTextDisplay::_append;
+		using CTextDisplay::_insert;
+		using CTextDisplay::_replace;
+		using CTextDisplay::_erase;
+
+		using CTextDisplay::_setCharStyle;
+		using CTextDisplay::_clearCharStyle;
+
+		using CTextDisplay::_getString;
+
+		using CTextDisplay::_state;
+		using CTextDisplay::_setState;
+
+		using CTextDisplay::_setSize;
+		using CTextDisplay::_size;
+
+		using CTextDisplay::_preferredSize;
+		using CTextDisplay::_matchingWidth;
+		using CTextDisplay::_matchingHeight;
+
+		using CTextDisplay::_charAtPos;
+		using CTextDisplay::_charRect;
+		using CTextDisplay::_charLine;
+
+		using CTextDisplay::_refresh;
+
+		using CTextDisplay::_tooltip;
+
+		using CTextDisplay::_render;
+
+		using CTextDisplay::_rectForRange;
+
+		using CTextDisplay::_textMapper;
+		using CTextDisplay::_style;
+
+		using CTextDisplay::_receive;
+	};
+
+	class OCTextEditor : public CTextEditor
+	{
+	public:
+		using CTextEditor::_style;
+		using CTextEditor::_preferredSize;
+		using CTextEditor::_matchingHeight;
+		using CTextEditor::_matchingWidth;
+		using CTextEditor::_render;
+		using CTextEditor::_refresh;
+		using CTextEditor::_setSize;
+
+		using CTextEditor::_receive;
+		using CTextEditor::_clear;
+		using CTextEditor::_set;
+
+		using CTextEditor::_append;
+		using CTextEditor::_insert;
+		using CTextEditor::_replace;
+		using CTextEditor::_erase;
+
+		using CTextEditor::_setState;
+	};
+
 
 	inline OWidget *			OO(Widget* pWidget) { return reinterpret_cast<OWidget*>(pWidget); }
 	inline const OWidget *		OO(const Widget* pWidget) { return reinterpret_cast<const OWidget*>(pWidget); }
@@ -88,9 +217,20 @@ namespace wg
 	inline OSlot&				OO(StaticSlot& slot) { return reinterpret_cast<OSlot&>(slot); }
 	inline const OSlot&			OO(const StaticSlot& slot) { return reinterpret_cast<const OSlot&>(slot); }
 
-	inline OGeoComponent&		OO(GeoComponent& slot) { return reinterpret_cast<OGeoComponent&>(slot); }
-	inline const OGeoComponent&	OO(const GeoComponent& slot) { return reinterpret_cast<const OGeoComponent&>(slot); }
+	inline OGeoComponent&		OO(GeoComponent& component) { return reinterpret_cast<OGeoComponent&>(component); }
+	inline const OGeoComponent&	OO(const GeoComponent& component) { return reinterpret_cast<const OGeoComponent&>(component); }
 
+	inline OCCanvas&			OO(CCanvas& component) { return reinterpret_cast<OCCanvas&>(component); }
+	inline const OCCanvas&		OO(const CCanvas& component) { return reinterpret_cast<const OCCanvas&>(component); }
+
+	inline OCStaticTextDisplay&	OO(CStaticTextDisplay& component) { return reinterpret_cast<OCStaticTextDisplay&>(component); }
+	inline const OCStaticTextDisplay&	OO(const CStaticTextDisplay& component) { return reinterpret_cast<const OCStaticTextDisplay&>(component); }
+
+	inline OCTextDisplay&		OO(CTextDisplay& component) { return reinterpret_cast<OCTextDisplay&>(component); }
+	inline const OCTextDisplay&	OO(const CTextDisplay& component) { return reinterpret_cast<const OCTextDisplay&>(component); }
+
+	inline OCTextEditor&		OO(CTextEditor& component) { return reinterpret_cast<OCTextEditor&>(component); }
+	inline const OCTextEditor&	OO(const CTextEditor& component) { return reinterpret_cast<const OCTextEditor&>(component); }
 
 }
 

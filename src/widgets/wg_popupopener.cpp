@@ -35,7 +35,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	PopupOpener::PopupOpener() : label(this), icon(this)
+	PopupOpener::PopupOpener() : text(this), icon(this)
 	{
 		m_bSelectable = false;
 	}
@@ -104,8 +104,8 @@ namespace wg
 
 		// Print text
 
-		if (!_label().isEmpty())
-			_label()._render(pDevice, textRect);
+		if (!OO(text).isEmpty())
+			OO(text)._render(pDevice, textRect);
 	}
 
 
@@ -122,7 +122,7 @@ namespace wg
 
 		Rect textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect));
 
-		_label()._setSize(textRect);
+		OO(text)._setSize(textRect);
 	}
 
 	//____ _refresh() _________________________________________________________
@@ -130,7 +130,7 @@ namespace wg
 	void PopupOpener::_refresh()
 	{
 		Widget::_refresh();
-		_label()._refresh();
+		OO(text)._refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -202,14 +202,14 @@ namespace wg
 		if (m_pSkin)
 			height = m_pSkin->preferredSize().h;
 
-		if (!_label().isEmpty())
+		if (!OO(text).isEmpty())
 		{
 			Size padding;
 
 			if (m_pSkin)
 				padding = m_pSkin->contentPaddingSize();
 
-			MU heightForText = _label()._matchingHeight(width - padding.w) + padding.h;
+			MU heightForText = OO(text)._matchingHeight(width - padding.w) + padding.h;
 			if (heightForText > height)
 				height = heightForText;
 		}
@@ -226,8 +226,8 @@ namespace wg
 	{
 		Size preferred;
 
-		if (!_label().isEmpty())
-			preferred = _label()._preferredSize();
+		if (!OO(text).isEmpty())
+			preferred = OO(text)._preferredSize();
 
 		if (m_pSkin)
 			preferred = m_pSkin->sizeForContent(preferred);
@@ -247,15 +247,17 @@ namespace wg
 			state.setPressed(true);			// Force pressed state when popup is open.
 		}
 		Widget::_setState(state);
-		_label()._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let _label().setState() return if rendering is needed)
+		OO(text)._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
 	}
 
-	//____ _setSkin() _________________________________________________________
+	//____ setSkin() _________________________________________________________
 
-	void PopupOpener::_setSkin(Skin * pSkin)
+	void PopupOpener::setSkin(Skin * pSkin)
 	{
-		Widget::_setSkin(pSkin);
+		//TODO: Set canvas size for components.
+
+		Widget::setSkin(pSkin);
 	}
 
 	//____ _open() ____________________________________________________________

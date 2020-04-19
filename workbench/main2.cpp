@@ -1767,7 +1767,7 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 	auto  pOpener = PopupOpener::create();
 	pOpener->setSkin(pButtonSkin);
-	pOpener->label.set("OPEN POPUP");
+	pOpener->text.set("OPEN POPUP");
 	pFlex->slots.pushBackMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();

@@ -76,7 +76,7 @@ namespace wg
 
 		//.____ Components ____________________________________
 
-		CTextDisplay		label;
+		CTextDisplay		text;
 		CIconDisplay		icon;
 
 		//.____ Identification __________________________________________
@@ -87,6 +87,11 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		Size			preferredSize() const override;
+
+		//.____ Appearance ____________________________________________________
+
+		void			setSkin(Skin * pSkin) override;
+
 
 		//.____ State _________________________________________________
 
@@ -117,7 +122,6 @@ namespace wg
 		void	_resize( const Size& size ) override;
 		bool	_alphaTest( const Coord& ofs ) override;
 		void	_setState( State state ) override;
-		void	_setSkin( Skin * pSkin ) override;
 
 		void	_setToggleGroup( ToggleGroup * pGroup );
 		ToggleGroup * _toggleGroup() const { return m_pToggleGroup.rawPtr(); }
@@ -129,10 +133,6 @@ namespace wg
 
 
 	private:
-		class TextAccess : public CTextDisplay { friend class ToggleButton; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
-		TextAccess& _text() { return static_cast<TextAccess&>(label); }
-
 		class IconAccess : public CIconDisplay { friend class ToggleButton; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }
 		IconAccess& _icon() { return static_cast<IconAccess&>(icon); }

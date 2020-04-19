@@ -93,11 +93,13 @@ namespace wg
 		_value()._setState(state);
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() _______________________________________________________
 
-	void ValueDisplay::_setSkin( Skin * pSkin )
+	void ValueDisplay::setSkin( Skin * pSkin )
 	{
-		Widget::_setSkin(pSkin);
+		//TODO: Refresh size for the CValueDisplay
+
+		Widget::setSkin(pSkin);
 	}
 
 } // namespace wg

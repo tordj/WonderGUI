@@ -62,6 +62,8 @@ namespace wg
 
 		void            setGaps(float fSides, float fGap) {m_fSidePadding = fSides; m_fGap = fGap; }
 
+		void			setSkin(Skin * pSkin) override;
+
 		void				setDirection(Direction direction);
 		inline Direction	direction() const { return m_direction; }
 
@@ -80,7 +82,6 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const Coord& ofs ) override;
 		void			_resize( const Size& size ) override;
-		void			_setSkin( Skin * pSkin ) override;
 
 		void			_renderBar( GfxDevice * pDevice, int nb, const Rect& _rect );
 		void 			_requestRenderPartial( const Rect& canvas, MU newLeftPeak, MU newLeftHold, MU newRightPeak, MU newRightHold );

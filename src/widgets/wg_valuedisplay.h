@@ -58,6 +58,10 @@ namespace wg
 
 		Size			preferredSize() const override;
 
+		//.____ Appearance _______________________________________________
+
+		void			setSkin(Skin * pSkin) override;
+
 
 	protected:
 		ValueDisplay();
@@ -68,7 +72,6 @@ namespace wg
 		void	_cloneContent( const Widget * _pOrg ) override;
 		void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void	_setState( State state ) override;
-		void	_setSkin( Skin * pSkin ) override;
 
 	private:
 

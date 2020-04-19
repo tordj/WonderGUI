@@ -25,6 +25,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -59,7 +60,7 @@ namespace wg
 	{
 		//TODO: Remove skin contentPadding before calculations.
 
-		MU textHeight = _text()._matchingHeight( width );
+		MU textHeight = OO(text)._matchingHeight( width );
 
 		if( m_pSkin )
 			textHeight += m_pSkin->contentPaddingSize().h;
@@ -71,7 +72,7 @@ namespace wg
 
 	Size TextEditor::preferredSize() const
 	{
-		Size contentSize = _text()._preferredSize();
+		Size contentSize = OO(text)._preferredSize();
 
 		if( m_pSkin )
 			return m_pSkin->sizeForContent(contentSize);
@@ -91,7 +92,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		_text()._render( pDevice, canvas );
+		OO(text)._render( pDevice, canvas );
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -109,7 +110,7 @@ namespace wg
 	{
 		Widget::_setState(state);
 
-		_text()._setState(state);
+		OO(text)._setState(state);
 		_requestRender(); //TODO: Only requestRender if skin or text appearance has changed.
 	}
 
@@ -119,7 +120,7 @@ namespace wg
 	void TextEditor::_receive( Msg * pMsg )
 	{
 		Widget::_receive( pMsg );
-		_text()._receive( pMsg );
+		OO(text)._receive( pMsg );
 	}
 
 
@@ -132,17 +133,17 @@ namespace wg
 //		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() _______________________________________________________
 
-	void TextEditor::_setSkin( Skin * pSkin )
+	void TextEditor::setSkin( Skin * pSkin )
 	{
 		Size oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
-		Widget::_setSkin(pSkin);
+		Widget::setSkin(pSkin);
 
 		Size newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
-			_text()._setSize(newTextCanvas);
+			OO(text)._setSize(newTextCanvas);
 	}
 
 	//____ _resize() ________________________________________________
@@ -152,9 +153,9 @@ namespace wg
 		Widget::_resize( size );
 
 		if( m_pSkin )
-			_text()._setSize(size - m_pSkin->contentPaddingSize());
+			OO(text)._setSize(size - m_pSkin->contentPaddingSize());
 		else
-			_text()._setSize(size);
+			OO(text)._setSize(size);
 	}
 
 } // namespace wg

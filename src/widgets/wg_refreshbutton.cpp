@@ -28,6 +28,7 @@
 #include <wg_key.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -163,7 +164,7 @@ namespace wg
 	void RefreshButton::_resize( const Size& size )
 	{
 		Size contentSize = m_pSkin ? size - m_pSkin->contentPaddingSize() : size;
-		_refreshText()._setSize(contentSize);
+		OO(refreshText)._setSize(contentSize);
 
 		Button::_resize( size );
 	}
@@ -311,18 +312,18 @@ namespace wg
 
 		if (m_bRefreshing )
 		{
-			if( !_refreshText().isEmpty() )
+			if( !OO(refreshText).isEmpty() )
 			{
-				_refreshText()._setState(m_state);		//TODO: Should be done when state actually is set.
-				_refreshText()._render(pDevice, textRect);
+				OO(refreshText)._setState(m_state);		//TODO: Should be done when state actually is set.
+				OO(refreshText)._render(pDevice, textRect);
 			}
 		}
 		else
 		{
-			if (!_text().isEmpty())
+			if (!OO(text).isEmpty())
 			{
-				_text()._setState(m_state);		//TODO: Should be done when state actually is set.
-				_text()._render(pDevice, textRect);
+				OO(text)._setState(m_state);		//TODO: Should be done when state actually is set.
+				OO(text)._render(pDevice, textRect);
 			}
 		}
 	}

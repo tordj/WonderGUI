@@ -84,11 +84,14 @@ namespace wg
 
 		//.____ Geometry ______________________________________________________
 
-		virtual MU		matchingHeight(MU width) const override;
-		virtual MU		matchingWidth(MU height) const override;
+		MU				matchingHeight(MU width) const override;
+		MU				matchingWidth(MU height) const override;
 
 		Size			preferredSize() const override;
 
+		//.____ Appearance ____________________________________________________
+
+		void			setSkin(Skin * pSkin) override;
 
 	protected:
 		Canvas();
@@ -98,14 +101,8 @@ namespace wg
 
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize(const Size& size) override;
-		virtual void	_setSkin(Skin * pSkin) override;
-		virtual void	_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
-		virtual	bool	_alphaTest(const Coord& ofs) override;
-
-		class CanvasAccess : public CCanvas { friend class Canvas; };
-		const CanvasAccess& _canvas() const { return static_cast<const CanvasAccess&>(canvas); }
-		CanvasAccess& _canvas() { return static_cast<CanvasAccess&>(canvas); }
-
+		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		bool			_alphaTest(const Coord& ofs) override;
 
 	};
 

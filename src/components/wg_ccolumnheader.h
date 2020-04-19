@@ -48,7 +48,7 @@ namespace wg
 
 		CIconDisplay		icon;
 		CIconDisplay		arrow;
-		CTextDisplay		label;
+		CTextDisplay		text;
 
 		//.____ Appearance ____________________________________________
 
@@ -98,10 +98,6 @@ namespace wg
 		void	_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
 
 		void	_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
-
-		class TextAccess : public CTextDisplay { friend class CColumnHeader; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(label); }
-		TextAccess& _text() { return static_cast<TextAccess&>(label); }
 
 		class IconAccess : public CIconDisplay { friend class CColumnHeader; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }

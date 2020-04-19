@@ -189,30 +189,6 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
-
-	//____ setSkin() ______________________________________________________________
-	/**
-	 * @brief Sets the skin of this widget.
-	 *
-	 * @param pSkin 	Pointer to the skin to be used.
-	 *
-	 * Specifies the skin to be used by this widget. The skin will cover the
-	 * whole widget and provide the background for any components placed
-	 * on the widget (if any).
-	 *
-	 * A skin typically has different looks depending on the widgets state (normal,
-	 * disabled, mouse inside, pressed, selected etc) and can also include padding.
-	 *
-	 * Some widgets have more than one skin, but this is always the background skin for
-	 * the whole widget.
-	 *
-	 */
-
-	void Widget::setSkin( Skin * pSkin )
-	{
-		_setSkin( pSkin );
-	}
-
 	//____ setPayload() _______________________________________________________
 
 	void Widget::setPayload(BasicPayload * pPayload)
@@ -537,9 +513,25 @@ namespace wg
 		_requestRender();
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() ______________________________________________________________
+	/**
+	 * @brief Sets the skin of this widget.
+	 *
+	 * @param pSkin 	Pointer to the skin to be used.
+	 *
+	 * Specifies the skin to be used by this widget. The skin will cover the
+	 * whole widget and provide the background for any components placed
+	 * on the widget (if any).
+	 *
+	 * A skin typically has different looks depending on the widgets state (normal,
+	 * disabled, mouse inside, pressed, selected etc) and can also include padding.
+	 *
+	 * Some widgets have more than one skin, but this is always the background skin for
+	 * the whole widget.
+	 *
+	 */
 
-	void Widget::_setSkin( Skin * pSkin )
+	void Widget::setSkin( Skin * pSkin )
 	{
 		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->contentPaddingSize() != pSkin->contentPaddingSize() ||
 								m_pSkin->preferredSize() != pSkin->preferredSize() || m_pSkin->minSize() != pSkin->minSize() );

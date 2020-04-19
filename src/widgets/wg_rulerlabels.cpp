@@ -1,6 +1,28 @@
+/*=========================================================================
+
+						 >>> WonderGUI <<<
+
+  This file is part of Tord Jansson's WonderGUI Graphics Toolkit
+  and copyright (c) Tord Jansson, Sweden [tord.jansson@gmail.com].
+
+							-----------
+
+  The WonderGUI Graphics Toolkit is free software; you can redistribute
+  this file and/or modify it under the terms of the GNU General Public
+  License as published by the Free Software Foundation; either
+  version 2 of the License, or (at your option) any later version.
+
+							-----------
+
+  The WonderGUI Graphics Toolkit is also available for use in commercial
+  closed-source projects under a separate license. Interested parties
+  should contact Tord Jansson [tord.jansson@gmail.com] for details.
+
+=========================================================================*/
 
 #include <wg_rulerlabels.h>
 #include <wg_gfxdevice.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -33,8 +55,8 @@ namespace wg
 	void RulerLabels::addLabel( const CharSeq& text, TextStyle * pStyle, float offset )
 	{
 		Label * pLabel = new Label(this);
-		pLabel->_text().set(text);
-		pLabel->_text().setStyle(pStyle);
+		OO(pLabel->text).set(text);
+		OO(pLabel->text).setStyle(pStyle);
 		pLabel->offset = offset;
 
 		m_labels.pushBack(pLabel);
@@ -76,7 +98,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				Size sz = pLabel->_text()._preferredSize();
+				Size sz = OO(pLabel->text)._preferredSize();
 				if( sz.w > preferred.w )
 					preferred.w = sz.w;
 
@@ -89,7 +111,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				Size sz = pLabel->_text()._preferredSize();
+				Size sz = OO(pLabel->text)._preferredSize();
 				preferred.w += sz.w;
 
 				if( sz.h > preferred.h )
@@ -123,7 +145,7 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				MU height = pLabel->_text()._size().h;
+				MU height = OO(pLabel->text)._size().h;
 				MU ofs = canvas.h * pLabel->offset;
 				if( m_direction == Direction::Up )
 					ofs = canvas.h - ofs;
@@ -131,7 +153,7 @@ namespace wg
 	/*
 	TODO: Reinstate!!!
 
-				switch( pLabel->_text().alignment() )
+				switch( OO(pLabel->text).alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::North:
@@ -150,7 +172,7 @@ namespace wg
 				}
 	*/
 				ofs = ofs.aligned();
-				pLabel->_text()._render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
+				OO(pLabel->text)._render(pDevice, Rect( canvas.x, canvas.y + ofs, canvas.w, height ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -159,14 +181,14 @@ namespace wg
 			Label * pLabel = m_labels.first();
 			while( pLabel )
 			{
-				MU width = pLabel->_text()._size().w;
+				MU width = OO(pLabel->text)._size().w;
 				MU ofs = (canvas.w * pLabel->offset).aligned();
 				if( m_direction == Direction::Left )
 					ofs = canvas.w - ofs;
 	/*
 	TODO: Reinstate!
 
-				switch( pLabel->_text().alignment() )
+				switch( OO(pLabel->text).alignment() )
 				{
 					case Origo::NorthWest:
 					case Origo::SouthWest:
@@ -184,7 +206,7 @@ namespace wg
 						break;
 				}
 	*/
-				pLabel->_text()._render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ) );
+				OO(pLabel->text)._render( pDevice, Rect( canvas.x + ofs, canvas.y, width, canvas.h ) );
 				pLabel = pLabel->next();
 			}
 		}
@@ -215,7 +237,7 @@ namespace wg
 		Label * p = m_labels.first();
 		while( p )
 		{
-			p->_text()._setState(state);
+			OO(p->text)._setState(state);
 			p = p->next();
 		}
 	}

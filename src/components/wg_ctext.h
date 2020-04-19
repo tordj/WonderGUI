@@ -60,11 +60,11 @@ namespace wg
 
 		virtual void		setStyle(TextStyle * pStyle);
 		virtual void		clearStyle();
-		TextStyle *			style() const { return m_pStyle.rawPtr(); }
+		TextStyle_p			style() const { return m_pStyle; }
 
 		virtual void		setTextMapper(TextMapper * pTextMapper);
 		virtual void		clearTextMapper();
-		TextMapper *		textMapper() const { return m_pTextMapper.rawPtr(); }
+		TextMapper_p		textMapper() const { return m_pTextMapper; }
 
 		//.____ Misc __________________________________________________
 

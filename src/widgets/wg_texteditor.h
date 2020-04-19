@@ -59,6 +59,10 @@ namespace wg
 		MU				matchingHeight(MU width) const override;
 		Size			preferredSize() const override;
 
+		//.____ Appearance ____________________________________________________
+
+		void			setSkin(Skin * pSkin) override;
+
 
 	protected:
 		TextEditor();
@@ -72,11 +76,6 @@ namespace wg
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
-		void			_setSkin( Skin * pSkin ) override;
-
-		class TextAccess : public CTextEditor { friend class TextEditor; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
-		TextAccess& _text() { return static_cast<TextAccess&>(text); }
 
 	};
 

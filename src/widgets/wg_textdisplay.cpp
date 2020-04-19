@@ -25,6 +25,7 @@
 #include <wg_font.h>
 #include <wg_gfxdevice.h>
 #include <wg_msgrouter.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -57,7 +58,7 @@ namespace wg
 
 	PointerStyle TextDisplay::pointerStyle() const
 	{
-		if( _text().markedLink() )
+		if( text.markedLink() )
 			return PointerStyle::Hand;
 
 		return m_pointerStyle;
@@ -70,7 +71,7 @@ namespace wg
 		if( !m_tooltip.isEmpty() )
 			return m_tooltip;
 		else
-			return _text()._tooltip();
+			return OO(text)._tooltip();
 	}
 
 	//____ matchingWidth() _______________________________________________________
@@ -79,7 +80,7 @@ namespace wg
 	{
 		//TODO: Need to remove padding before calculations as well.
 
-		MU textWidth = _text()._matchingWidth(height);
+		MU textWidth = OO(text)._matchingWidth(height);
 
 		if (m_pSkin)
 			textWidth += m_pSkin->contentPaddingSize().w;
@@ -93,7 +94,7 @@ namespace wg
 	{
 		//TODO: Need to remove padding before calculations as well.
 
-		MU textHeight = _text()._matchingHeight(width);
+		MU textHeight = OO(text)._matchingHeight(width);
 
 		if (m_pSkin)
 			textHeight += m_pSkin->contentPaddingSize().h;
@@ -105,7 +106,7 @@ namespace wg
 
 	Size TextDisplay::preferredSize() const
 	{
-		Size contentSize = _text()._preferredSize();
+		Size contentSize = OO(text)._preferredSize();
 
 		if (m_pSkin)
 			return m_pSkin->sizeForContent(contentSize);
@@ -125,7 +126,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		_text()._render(pDevice, canvas);
+		OO(text)._render(pDevice, canvas);
 	}
 
 	//____ _refresh() _______________________________________________________
@@ -142,8 +143,8 @@ namespace wg
 	void TextDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		_text()._setState(state);
-		_requestRender(); //TODO: Only requestRender if text appearance has changed (let _text().setState() return if rendering is needed)
+		OO(text)._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
 	}
 
 
@@ -157,7 +158,7 @@ namespace wg
 		if( m_pSkin )
 			canvas = m_pSkin->_contentRect(canvas, m_state);
 
-		_text().receive( pMsg, pHandler, canvas );
+		OO(text).receive( pMsg, pHandler, canvas );
 	*/
 	}
 
@@ -173,17 +174,17 @@ namespace wg
 //		m_text = pOrg->m_text;
 	}
 
-	//____ _setSkin() _______________________________________________________
+	//____ setSkin() _______________________________________________________
 
-	void TextDisplay::_setSkin( Skin * pSkin )
+	void TextDisplay::setSkin( Skin * pSkin )
 	{
 		Size oldTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
-		Widget::_setSkin(pSkin);
+		Widget::setSkin(pSkin);
 
 		Size newTextCanvas = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
 
 		if (newTextCanvas != oldTextCanvas)
-			_text()._setSize(newTextCanvas);
+			OO(text)._setSize(newTextCanvas);
 	}
 
 	//____ _resize() ________________________________________________
@@ -196,7 +197,7 @@ namespace wg
 		if( m_pSkin )
 			textSize -= m_pSkin->contentPaddingSize();
 
-		_text()._setSize( textSize );
+		OO(text)._setSize( textSize );
 	}
 
 

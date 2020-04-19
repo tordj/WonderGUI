@@ -63,6 +63,8 @@ namespace wg
 		PointerStyle	pointerStyle() const override;
 		String			tooltip() const override;
 
+		void			setSkin(Skin * pSkin) override;
+
 
 	protected:
 		TextDisplay();
@@ -76,11 +78,6 @@ namespace wg
 		void			_refresh() override;
 		void			_receive( Msg * pMsg ) override;
 		void			_setState( State state ) override;
-		void			_setSkin( Skin * pSkin ) override;
-
-		class TextAccess : public CTextDisplay { friend class TextDisplay; };
-		const TextAccess& _text() const { return static_cast<const TextAccess&>(text); }
-		TextAccess& _text() { return static_cast<TextAccess&>(text); }
 
 	};
 

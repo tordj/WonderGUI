@@ -98,7 +98,9 @@ namespace wg
 		inline Rect			globalGeo() const;
 
 		inline Coord		toGlobal( const Coord& coord ) const;
+		inline Rect			toGlobal(const Rect& rect) const;
 		inline Coord		toLocal( const Coord& coord ) const;
+		inline Rect			toLocal(const Rect& rect) const;
 
 		virtual MU			matchingHeight( MU width ) const;
 		virtual MU			matchingWidth( MU height ) const;
@@ -223,7 +225,6 @@ namespace wg
 
 		virtual void		_refresh();
 		virtual void		_resize( const Size& size );
-		virtual void		_setSkin( Skin * pSkin );
 		virtual void		_setState( State state );
 
 		virtual void		_receive( Msg * pMsg );
@@ -413,6 +414,27 @@ namespace wg
 		return globalPos() + coord;
 	}
 
+	//____ toGlobal() __________________________
+	/**
+	 * @brief Convert rectangle from local to global space
+	 *
+	 * Convert rectangle from widgets local coordinate space to the global coordinate space.
+	 *
+	 * @param rect		Rectangle in widgets local coordinate system.
+	 *
+	 * Please note that the widgets local coordinate space originates from the top-left
+	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
+	 * space in which it lives.
+	 * The coordinate (0,0) is always the top-left corner of the widget.
+	 *
+	 * @return Rectangle in gobal coordinate space.
+	 */
+
+	Rect Widget::toGlobal(const Rect& rect) const
+	{
+		return rect + globalPos();
+	}
+
 	//____ toLocal() ____________________________________________________________
 	/**
 	 * @brief Convert coordinate from global to local space
@@ -433,6 +455,28 @@ namespace wg
 	{
 		return coord - globalPos();
 	}
+
+	//____ toLocal() ____________________________________________________________
+	/**
+	 * @brief Convert rectangle from global to local space
+	 *
+	 * Convert rectangle from the global coordinate space to widgets local coordinate space.
+	 *
+	 * @param rect		Rectangle in widgets local coordinate system.
+	 *
+	 * Please note that the widgets local coordinate space originates from the top-left
+	 * corner of its geometry box and is NOT the same as the (parents) local coordinate
+	 * space in which it lives.
+	 * The coordinate (0,0) is always the top-left corner of the widget.
+	 *
+	 * @return Rectangle in local coordinate space.
+	 */
+
+	Rect Widget::toLocal(const Rect& rect) const
+	{
+		return rect - globalPos();
+	}
+
 
 	//____ state() ____________________________________________________________
 	/**

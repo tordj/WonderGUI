@@ -45,7 +45,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CTextDisplay			label;
+		CTextDisplay			text;
 		CIconDisplay			icon;
 
 		//.____ Identification __________________________________________
@@ -58,6 +58,11 @@ namespace wg
 		virtual MU		matchingHeight(MU width) const override;
 
 		Size			preferredSize() const override;
+
+		//.____ Appearance ____________________________________________________
+
+		void			setSkin(Skin * pSkin) override;
+
 
 
 		//.____ Behavior ____________________________________________
@@ -82,7 +87,6 @@ namespace wg
 		void			_refresh() override;
 		void			_receive(Msg * pMsg) override;
 		void			_setState(State state) override;
-		void			_setSkin(Skin * pSkin) override;
 
 
 		void			_open();
@@ -91,11 +95,6 @@ namespace wg
 		Coord			_componentPos(const GeoComponent * pComponent) const override;
 		Size			_componentSize(const GeoComponent * pComponent) const override;
 		Rect			_componentGeo(const GeoComponent * pComponent) const override;
-
-
-		class TextAccess : public CTextDisplay { friend class PopupOpener; };
-		const TextAccess& _label() const { return static_cast<const TextAccess&>(label); }
-		TextAccess& _label() { return static_cast<TextAccess&>(label); }
 
 		class IconAccess : public CIconDisplay { friend class PopupOpener; };
 		const IconAccess& _icon() const { return static_cast<const IconAccess&>(icon); }

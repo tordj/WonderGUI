@@ -28,6 +28,7 @@
 #include <wg_key.h>
 #include <wg_msg.h>
 #include <wg_msgrouter.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -36,7 +37,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Button::Button() : icon(this), label(this)
+	Button::Button() : icon(this), text(this)
 	{
 		m_bPressed 		 = false;
 		m_bReturnPressed = false;
@@ -64,14 +65,14 @@ namespace wg
 		if( m_pSkin )
 			height = m_pSkin->preferredSize().h;
 
-		if( !_text().isEmpty() )
+		if( !OO(text).isEmpty() )
 		{
 			Size padding;
 
 			if( m_pSkin )
 				padding = m_pSkin->contentPaddingSize();
 
-			MU heightForText = _text()._matchingHeight(width-padding.w) + padding.h;
+			MU heightForText = OO(text)._matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
 				height = heightForText;
 		}
@@ -88,8 +89,8 @@ namespace wg
 	{
 		Size preferred;
 
-		if( !_text().isEmpty() )
-			preferred = _text()._preferredSize();
+		if( !OO(text).isEmpty() )
+			preferred = OO(text)._preferredSize();
 
 		if( m_pSkin )
 			preferred = m_pSkin->sizeForContent(preferred);
@@ -106,7 +107,7 @@ namespace wg
 		if(_icon().skin() && !_icon().skin()->isStateIdentical(state,m_state))
 				_requestRender();
 
-		_text()._setState(state);
+		OO(text)._setState(state);
 		Widget::_setState(state);
 	}
 
@@ -123,7 +124,7 @@ namespace wg
 
 		Rect textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
-		_text()._setSize( textRect );
+		OO(text)._setSize( textRect );
 	}
 
 
@@ -150,8 +151,8 @@ namespace wg
 
 		// Print text
 
-	 	if( !_text().isEmpty() )
-			_text()._render( pDevice, textRect );
+	 	if( !OO(text).isEmpty() )
+			OO(text)._render( pDevice, textRect );
 	}
 
 	//____ _receive() ______________________________________________________________
@@ -245,7 +246,7 @@ namespace wg
 	void Button::_refresh( void )
 	{
 		Widget::_refresh();
-		_text()._refresh();
+		OO(text)._refresh();
 
 		//TODO: Handling of icon and text.
 	}
@@ -262,7 +263,7 @@ namespace wg
 //		_icon().onCloneContent( &pOrg->m_icon );
 
 		//TODO: Support cloning for text components.
-	//	_text().clone(&pOrg->m_text);
+	//	OO(text).clone(&pOrg->m_text);
 
 	}
 

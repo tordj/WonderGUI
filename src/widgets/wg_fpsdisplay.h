@@ -72,15 +72,6 @@ namespace wg
 		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
-		class TextAccess : public CTextDisplay { friend class FpsDisplay; };
-		const TextAccess& _labels() const { return static_cast<const TextAccess&>(labels); }
-		TextAccess& _labels() { return static_cast<TextAccess&>(labels); }
-
-		class StaticTextAccess : public CStaticTextDisplay { friend class FpsDisplay; };
-		const StaticTextAccess& _values() const { return static_cast<const StaticTextAccess&>(values); }
-		StaticTextAccess& _values() { return static_cast<StaticTextAccess&>(values); }
-
-
 	private:
 
 	const static int c_tickBuffer = 64;

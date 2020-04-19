@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_msgrouter.h>
+#include <wg_internal.h>
 
 #include <algorithm>
 
@@ -211,7 +212,7 @@ namespace wg
 		else
 			canvas = _canvas;
 
-		_text()._render(pDevice, canvas);
+		OO(text)._render(pDevice, canvas);
 	}
 
 	//____ _resize() _______________________________________________________________
@@ -500,7 +501,7 @@ namespace wg
 
 	void SelectBox::_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin)
 	{
-		m_pListCanvas->Widget::_setSkin(pSkin);
+		m_pListCanvas->Widget::setSkin(pSkin);
 		_updateListCanvasOpacity();
 	}
 

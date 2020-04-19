@@ -319,16 +319,16 @@ namespace wg
 		_updateValueDisplays( canvasSize );
 	}
 
-	//____ _setSkin() ________________________________________________________________
+	//____ setSkin() ________________________________________________________________
 
-	void SimpleVolumeMeter::_setSkin( Skin * pSkin )
+	void SimpleVolumeMeter::setSkin( Skin * pSkin )
 	{
 		Size sz;
 
 		Rect oldCanvas = m_pSkin ? m_pSkin->contentRect(sz,m_state) : Rect(sz);
 		Rect newCanvas = pSkin ? pSkin->contentRect(sz,m_state) : Rect(sz);
 
-		Widget::_setSkin( pSkin );
+		Widget::setSkin( pSkin );
 
 		if( oldCanvas != newCanvas )
 			_updateValueDisplays( newCanvas );

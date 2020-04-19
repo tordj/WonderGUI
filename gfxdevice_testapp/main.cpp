@@ -836,21 +836,21 @@ bool setup_chrome()
 
 	auto pNoClipButton = Button::create();
 	pNoClipButton->setSkin(pSimpleButtonSkin);
-	pNoClipButton->label.set("One");
-	pNoClipButton->label.setStyle(g_pButtonLabelStyle);
-	pNoClipButton->label.setTextMapper(g_pButtonLabelMapper);
+	pNoClipButton->text.set("One");
+	pNoClipButton->text.setStyle(g_pButtonLabelStyle);
+	pNoClipButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pFewButton = Button::create();
 	pFewButton->setSkin(pSimpleButtonSkin);
-	pFewButton->label.set("Few");
-	pFewButton->label.setStyle(g_pButtonLabelStyle);
-	pFewButton->label.setTextMapper(g_pButtonLabelMapper);
+	pFewButton->text.set("Few");
+	pFewButton->text.setStyle(g_pButtonLabelStyle);
+	pFewButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pManyButton = Button::create();
 	pManyButton->setSkin(pSimpleButtonSkin);
-	pManyButton->label.set("Many");
-	pManyButton->label.setStyle(g_pButtonLabelStyle);
-	pManyButton->label.setTextMapper(g_pButtonLabelMapper);
+	pManyButton->text.set("Many");
+	pManyButton->text.setStyle(g_pButtonLabelStyle);
+	pManyButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	pClipSection->slots << pClipLabel;
 	pClipSection->slots << pNoClipButton;
@@ -869,33 +869,33 @@ bool setup_chrome()
 
 	auto pTesteeButton = Button::create();
 	pTesteeButton->setSkin(pSimpleButtonSkin);
-	pTesteeButton->label.set("Testee");
-	pTesteeButton->label.setStyle(g_pButtonLabelStyle);
-	pTesteeButton->label.setTextMapper(g_pButtonLabelMapper);
+	pTesteeButton->text.set("Testee");
+	pTesteeButton->text.setStyle(g_pButtonLabelStyle);
+	pTesteeButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pRefButton = Button::create();
 	pRefButton->setSkin(pSimpleButtonSkin);
-	pRefButton->label.set("Reference");
-	pRefButton->label.setStyle(g_pButtonLabelStyle);
-	pRefButton->label.setTextMapper(g_pButtonLabelMapper);
+	pRefButton->text.set("Reference");
+	pRefButton->text.setStyle(g_pButtonLabelStyle);
+	pRefButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pBothButton = Button::create();
 	pBothButton->setSkin(pSimpleButtonSkin);
-	pBothButton->label.set("Both");
-	pBothButton->label.setStyle(g_pButtonLabelStyle);
-	pBothButton->label.setTextMapper(g_pButtonLabelMapper);
+	pBothButton->text.set("Both");
+	pBothButton->text.setStyle(g_pButtonLabelStyle);
+	pBothButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pDiffButton = Button::create();
 	pDiffButton->setSkin(pSimpleButtonSkin);
-	pDiffButton->label.set("Diff");
-	pDiffButton->label.setStyle(g_pButtonLabelStyle);
-	pDiffButton->label.setTextMapper(g_pButtonLabelMapper);
+	pDiffButton->text.set("Diff");
+	pDiffButton->text.setStyle(g_pButtonLabelStyle);
+	pDiffButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pTimeButton = Button::create();
 	pTimeButton->setSkin(pSimpleButtonSkin);
-	pTimeButton->label.set("Time");
-	pTimeButton->label.setStyle(g_pButtonLabelStyle);
-	pTimeButton->label.setTextMapper(g_pButtonLabelMapper);
+	pTimeButton->text.set("Time");
+	pTimeButton->text.setStyle(g_pButtonLabelStyle);
+	pTimeButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	pDispModeSection->slots	<< pTesteeButton;
 	pDispModeSection->slots	<< pRefButton;
@@ -935,27 +935,27 @@ bool setup_chrome()
 
 	auto pX1Button = Button::create();
 	pX1Button->setSkin(pSimpleButtonSkin);
-	pX1Button->label.set(" X1 ");
-	pX1Button->label.setStyle(g_pButtonLabelStyle);
-	pX1Button->label.setTextMapper(g_pButtonLabelMapper);
+	pX1Button->text.set(" X1 ");
+	pX1Button->text.setStyle(g_pButtonLabelStyle);
+	pX1Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX2Button = Button::create();
 	pX2Button->setSkin(pSimpleButtonSkin);
-	pX2Button->label.set(" X2 ");
-	pX2Button->label.setStyle(g_pButtonLabelStyle);
-	pX2Button->label.setTextMapper(g_pButtonLabelMapper);
+	pX2Button->text.set(" X2 ");
+	pX2Button->text.setStyle(g_pButtonLabelStyle);
+	pX2Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX4Button = Button::create();
 	pX4Button->setSkin(pSimpleButtonSkin);
-	pX4Button->label.set(" X4 ");
-	pX4Button->label.setStyle(g_pButtonLabelStyle);
-	pX4Button->label.setTextMapper(g_pButtonLabelMapper);
+	pX4Button->text.set(" X4 ");
+	pX4Button->text.setStyle(g_pButtonLabelStyle);
+	pX4Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX8Button = Button::create();
 	pX8Button->setSkin(pSimpleButtonSkin);
-	pX8Button->label.set(" X8 ");
-	pX8Button->label.setStyle(g_pButtonLabelStyle);
-	pX8Button->label.setTextMapper(g_pButtonLabelMapper);
+	pX8Button->text.set(" X8 ");
+	pX8Button->text.setStyle(g_pButtonLabelStyle);
+	pX8Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	pDispZoomSection->slots << pX1Button;
 	pDispZoomSection->slots << pX2Button;
@@ -1084,9 +1084,9 @@ bool setup_chrome()
 
 		auto pRefresh = Button::create();
 		pRefresh->setSkin(pSimpleButtonSkin);
-		pRefresh->label.set("REFRESH");
-		pRefresh->label.setStyle(g_pButtonLabelStyle);
-		pRefresh->label.setTextMapper(g_pButtonLabelMapper);
+		pRefresh->text.set("REFRESH");
+		pRefresh->text.setStyle(g_pButtonLabelStyle);
+		pRefresh->text.setTextMapper(g_pButtonLabelMapper);
 
 		Base::msgRouter()->addRoute(pRefresh, MsgType::Select, [](Msg * pMsg) {
 			g_bRefreshPerformance = true;

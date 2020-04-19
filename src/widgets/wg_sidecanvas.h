@@ -82,6 +82,10 @@ namespace wg
 		Size		minSize() const override;
 		Size		maxSize() const override;
 
+		//.____ Appearance ____________________________________________________
+
+		void		setSkin(Skin * pSkin) override;
+
 
 	protected:
 	
@@ -96,7 +100,6 @@ namespace wg
 
 		void		_refresh() override;
 		void		_resize( const Size& size ) override;
-		void		_setSkin( Skin * pSkin ) override;
 		void		_setState( State state ) override;
 
 		void		_receive( Msg * pMsg ) override;
