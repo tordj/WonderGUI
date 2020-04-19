@@ -20,15 +20,15 @@
 
 =========================================================================*/
 
-#include <wg_payload.h>
+#include <wg_dataset.h>
 
 namespace wg
 {
-	const TypeInfo BasicPayload::TYPEINFO = { "BasicPayload", &Object::TYPEINFO };
+	const TypeInfo BasicDataset::TYPEINFO = { "BasicDataset", &Object::TYPEINFO };
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& BasicPayload::typeInfo(void) const
+	const TypeInfo& BasicDataset::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}

@@ -108,7 +108,7 @@
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_internal.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
-    <ClInclude Include="..\..\..\src\base\wg_payload.h" />
+    <ClInclude Include="..\..\..\src\base\wg_dataset.h" />
     <ClInclude Include="..\..\..\src\base\wg_mu.h" />
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
@@ -265,7 +265,7 @@
     <ClCompile Include="..\..\..\src\base\wg_nullgfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_object.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_patches.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_payload.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_dataset.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mu.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />

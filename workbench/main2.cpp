@@ -245,16 +245,16 @@ int main(int argc, char** argv)
 	};
 
 
-	const char * p = Payload<StructX>::CLASSNAME;
-	const char * q = Payload<StructY>::CLASSNAME;
+	const char * p = Dataset<StructX>::CLASSNAME;
+	const char * q = Dataset<StructY>::CLASSNAME;
 
-	Payload_p<StructX> pX = Payload<StructX>::create();
+	Dataset_p<StructX> pX = Dataset<StructX>::create();
 
-	Payload_p<StructX> pX2 = pX;
+	Dataset_p<StructX> pX2 = pX;
 
-	Payload_p<StructX> pX3 = Payload<StructX>::create();
+	Dataset_p<StructX> pX3 = Dataset<StructX>::create();
 
-	Payload_p<StructY> pY = Payload<StructY>::create();
+	Dataset_p<StructY> pY = Dataset<StructY>::create();
 
 	if (pY->className() != pX->className())
 	{
@@ -367,13 +367,13 @@ int main(int argc, char** argv)
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
 
 
-	auto pPayload = Payload<Rect>::create();
+	auto pDataset = Dataset<Rect>::create();
 
-	const TypeInfo& typeInfo1 = pPayload->typeInfo();
+	const TypeInfo& typeInfo1 = pDataset->typeInfo();
 
-	const TypeInfo& typeInfo2 = Payload<Rect>::TYPEINFO;
+	const TypeInfo& typeInfo2 = Dataset<Rect>::TYPEINFO;
 
-	if (pPayload->isInstanceOf(Payload<Rect>::TYPEINFO))
+	if (pDataset->isInstanceOf(Dataset<Rect>::TYPEINFO))
 	{
 		int x = 0;
 	}
@@ -640,7 +640,7 @@ int main(int argc, char** argv)
 			s_pickOfs = pMsg->pickOfs();
 			pMsg->setDragWidget(s_pPicked, Coord() - s_pickOfs );
 
-			pMsg->setPayload(Payload::create());
+			pMsg->setDataset(Dataset::create());
 		});
 
 		Base::msgRouter()->addRoute(pBasePanel, MsgType::DropProbe, [](Msg * _pMsg) {

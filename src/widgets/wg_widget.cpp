@@ -25,7 +25,7 @@
 #include <wg_rootpanel.h>
 #include <wg_msgrouter.h>
 #include <wg_base.h>
-#include <wg_payload.h>
+#include <wg_dataset.h>
 
 namespace wg
 {
@@ -189,25 +189,25 @@ namespace wg
 		m_bSelectable = bSelectable;
 	}
 
-	//____ setPayload() _______________________________________________________
+	//____ setBaggage() _______________________________________________________
 
-	void Widget::setPayload(BasicPayload * pPayload)
+	void Widget::setBaggage(Object * pBaggage)
 	{
-		m_pPayload = pPayload;
+		m_pBaggage = pBaggage;
 	}
 
-	//____ hasPayload() _______________________________________________________
+	//____ hasBaggage() _______________________________________________________
 
-	bool Widget::hasPayload() const
+	bool Widget::hasBaggage() const
 	{
-		return m_pPayload;
+		return m_pBaggage;
 	}
 
-	//____ payload() __________________________________________________________
+	//____ baggage() __________________________________________________________
 
-	BasicPayload_p Widget::payload() const
+	Object_p Widget::baggage() const
 	{
-		return m_pPayload;
+		return m_pBaggage;
 	}
 
 
@@ -611,9 +611,9 @@ namespace wg
 			case MsgType::DropPick:
 			{
 				auto pMsg = static_cast<DropPickMsg*>(_pMsg);
-				if (!pMsg->hasPayload())
+				if (!pMsg->hasDataset())
 				{
-					pMsg->setPayload(BasicPayload::create());
+					pMsg->setDataset(BasicDataset::create());
 				}
 				break;
 			}

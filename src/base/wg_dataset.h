@@ -32,19 +32,19 @@
 namespace wg
 {
 
-	//____ BasicPayload _______________________________________________________
+	//____ BasicDataset _______________________________________________________
 
-	class BasicPayload;
-	typedef StrongPtr<BasicPayload>   BasicPayload_p;
-	typedef WeakPtr<BasicPayload>   BasicPayload_wp;
+	class BasicDataset;
+	typedef StrongPtr<BasicDataset>   BasicDataset_p;
+	typedef WeakPtr<BasicDataset>   BasicDataset_wp;
 
-	class BasicPayload : public Object
+	class BasicDataset : public Object
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static BasicPayload_p	create() { return BasicPayload_p(new BasicPayload()); }
+		static BasicDataset_p	create() { return BasicDataset_p(new BasicDataset()); }
 
 		//.____ Identification _________________________________________________
 
@@ -52,24 +52,24 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 	protected:
-		BasicPayload() {}
+		BasicDataset() {}
 	};
 
-	//____ Payload<> _________________________________________________________________
+	//____ Dataset<> _________________________________________________________________
 
-	template<class Type> class Payload;
+	template<class Type> class Dataset;
 
-	template<class Type> using Payload_p = StrongPtr<Payload<Type>>;
-	template<class Type> using Payload_wp = WeakPtr<Payload<Type>>;
+	template<class Type> using Dataset_p = StrongPtr<Dataset<Type>>;
+	template<class Type> using Dataset_wp = WeakPtr<Dataset<Type>>;
 
-	template<class Type> class Payload : public BasicPayload, public Type
+	template<class Type> class Dataset : public BasicDataset, public Type
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static Payload_p<Type> create() { return Payload_p<Type>(new Payload<Type>()); }
-		static Payload_p<Type> create( const Type& load) { auto p = new Payload<Type>(); * static_cast<Type*>(p) = load; return Payload_p<Type>(p); }
+		static Dataset_p<Type> create() { return Dataset_p<Type>(new Dataset<Type>()); }
+		static Dataset_p<Type> create( const Type& load) { auto p = new Dataset<Type>(); * static_cast<Type*>(p) = load; return Dataset_p<Type>(p); }
 
 		//.____ Identification _________________________________________________
 
@@ -84,8 +84,8 @@ namespace wg
 
 	// Generating
 
-	template<class Type> char Payload<Type>::s_className[64] = { "Payload type 0x" };
-	template<class Type> TypeInfo Payload<Type>::TYPEINFO = [](char* p)
+	template<class Type> char Dataset<Type>::s_className[64] = { "Dataset type 0x" };
+	template<class Type> TypeInfo Dataset<Type>::TYPEINFO = [](char* p)
 	{
 		uintptr_t x = reinterpret_cast<uintptr_t>(p);
 
@@ -98,7 +98,7 @@ namespace wg
 			x >>= 4;
 		}
 
-		TypeInfo ti = { p, &BasicPayload::TYPEINFO };
+		TypeInfo ti = { p, &BasicDataset::TYPEINFO };
 		return ti;
 	}(s_className);
 

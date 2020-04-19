@@ -55,10 +55,6 @@ namespace wg
 	typedef	StrongPtr<Msg>			Msg_p;
 	typedef	WeakPtr<Msg>			Msg_wp;
 
-	class BasicPayload;
-	typedef	StrongPtr<BasicPayload>	BasicPayload_p;
-	typedef	WeakPtr<BasicPayload>	BasicPayload_wp;
-
 
 	/**
 	 * @brief Base class for widgets.
@@ -173,9 +169,9 @@ namespace wg
 
 		inline bool			isOpaque() const;
 
-		void				setPayload(BasicPayload * pPayload);
-		bool				hasPayload() const;
-		BasicPayload_p		payload() const;
+		void				setBaggage(Object * pBaggage);
+		bool				hasBaggage() const;
+		Object_p			baggage() const;
 
 	protected:
 		Widget();
@@ -256,7 +252,7 @@ namespace wg
 		//
 
 		int				m_id;
-		BasicPayload_p	m_pPayload;
+		Object_p		m_pBaggage;
 
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;

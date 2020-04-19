@@ -38,7 +38,7 @@
 #include <wg_string.h>
 #include <wg_nullgfxdevice.h>
 #include <wg_cgfxoutstream.h>
-#include <wg_payload.h>
+#include <wg_dataset.h>
 #include <wg_slot.h>
 #include <wg_surface.h>
 #include <wg_strongcomponentptr.h>

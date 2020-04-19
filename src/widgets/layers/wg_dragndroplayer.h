@@ -25,7 +25,7 @@
 #pragma once
 
 #include <wg_layer.h>
-#include <wg_payload.h>
+#include <wg_dataset.h>
 #include <wg_key.h>
 
 namespace wg
@@ -111,7 +111,7 @@ namespace wg
 			Idle,
 			Picking,		// Mouse button pressed, awaiting drag to pass treshold
 			Picked,			// Drag passed treshold, DropPickMsg sent.
-			Dragging,		// We have a payload, a drag-widget and are dragging.
+			Dragging,		// We have a dataset, a drag-widget and are dragging.
 			Targeting,      // We are hovering a widget that has accepted our target probing.
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
@@ -123,7 +123,7 @@ namespace wg
 		Slot			m_dragSlot;            // Slot for widget being dragged, when it is dragged.
 
 		Widget_p		m_pPicked;
-		BasicPayload_p	m_pPayload;
+		BasicDataset_p	m_pDataset;
 
 		MU				m_dragStartTreshold;
 		Coord			m_dragWidgetOfs;                // Drag widgets offset from pointer.

@@ -250,6 +250,9 @@ namespace wg
 
 				return { canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h };
 			}
+
+			default:
+				return Rect();			// Just to avoid compiler warnings.
 		}
 	}
 
@@ -297,6 +300,9 @@ namespace wg
 				else
 					return { canvas.x, canvas.y, ofs, canvas.h };
 			}
+
+			default:
+				return Rect();			// Just to avoid compiler warnings.
 		}
 	}
 	 

@@ -23,7 +23,7 @@
 #include <limits>
 #include <memory.h>
 #include <wg_surface.h>
-#include <wg_payload.h>
+#include <wg_dataset.h>
 
 namespace wg
 {
@@ -416,21 +416,19 @@ namespace wg
 		return retVal;
 	}
 
-	//____ setPayload() _______________________________________________________
+	//____ setBaggage() _______________________________________________________
 
-	void Surface::setPayload(BasicPayload * pPayload)
+	void Surface::setBaggage(Object * pBaggage)
 	{
-		m_pPayload = pPayload;
+		m_pBaggage = pBaggage;
 	}
 
-	//_____ payload() _________________________________________________________
+	//_____ baggage() _________________________________________________________
 
-	BasicPayload_p Surface::payload() const
+	Object_p Surface::baggage() const
 	{
-		return m_pPayload;
+		return m_pBaggage;
 	}
-
-
 
 	//____ _copyFrom() _________________________________________________________
 
