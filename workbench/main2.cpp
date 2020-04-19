@@ -79,6 +79,7 @@ bool modalLayerTest(CStandardSlot_p pSlot);
 bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
 bool pianoKeyboardTest(CStandardSlot_p pSlot);
+bool sliderTest(CStandardSlot_p pSlot);
 
 
 
@@ -568,9 +569,10 @@ int main(int argc, char** argv)
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
-	splitPanelTest(&pRoot->slot);
+//	splitPanelTest(&pRoot->slot);
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
+	sliderTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1234,28 +1236,6 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 	// Program Main Loop
 	//------------------------------------------------------
-
-	pSDLSurf = IMG_Load("../resources/flipping.png");
-	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pFlippingSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
-	SDL_FreeSurface(pSDLSurf);
-	pFlippingSurface->setScaleMode(ScaleMode::Interpolate);
-
-	pSDLSurf = IMG_Load("../resources/clockface_2500.png");
-	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pClockSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
-	SDL_FreeSurface(pSDLSurf);
-	pClockSurface->setScaleMode(ScaleMode::Interpolate);
-
-	pSDLSurf = IMG_Load("../resources/frog.jpg");
-	convertSDLFormat(&pixelDesc, pSDLSurf->format);
-	Surface_p pFrogSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
-	SDL_FreeSurface(pSDLSurf);
-	pFrogSurface->setScaleMode(ScaleMode::Interpolate);
-
-	float rot = 0.1f;
-	float scale = 0.00101f;
-	float scaleInc = 0.00001f;
 
 	while( !bQuit )
 	{
@@ -1969,6 +1949,43 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 */
 
 
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
+//____ sliderTest() ____________________________________________________
+
+bool sliderTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	pHandleSkin->setContentPadding(10);
+
+	auto pSliderX = Slider::create();
+	{
+		auto pBgSkin = FillBarSkin::create(Direction::Right, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
+
+		pSliderX->setAxis(Axis::X);
+		pSliderX->setSkin(pBgSkin);
+		pSliderX->setHandleSkin(pHandleSkin);
+		pSliderX->setPreferredSlideLength(100);
+	}
+
+	auto pSliderY = Slider::create();
+	{
+		auto pBgSkin = FillBarSkin::create(Direction::Up, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+
+		pSliderY->setAxis(Axis::Y);
+		pSliderY->setSkin(pBgSkin);
+		pSliderY->setHandleSkin(pHandleSkin);
+		pSliderY->setPreferredSlideLength(100);
+	}
+
+	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
+	pBaseLayer->slots.pushBackMovable(pSliderX, Coord(40, 10));
 	*pSlot = pBaseLayer;
 	return true;
 }
