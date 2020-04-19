@@ -66,7 +66,7 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		virtual	bool	isStateIdentical( State state, State comparedTo ) const override;
+		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
 
 
 

@@ -55,7 +55,7 @@ namespace wg
 
 	//____ isStateIdentical() _________________________________________________
 
-	bool StaticColorSkin::isStateIdentical(State state, State comparedTo) const
+	bool StaticColorSkin::isStateIdentical( State state, State comparedTo, float fraction ) const
 	{
 		return true;
 	}
@@ -81,7 +81,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void StaticColorSkin::render(GfxDevice * pDevice, const Rect& canvas, State state) const
+	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
 		pDevice->fill(canvas.px(), m_color);
 	}
@@ -138,7 +138,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
 	{
 		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
 	}

@@ -386,6 +386,15 @@ namespace wg
 		Vertical
 	};
 
+	//____ Axis __________________________________________________________
+
+	enum class Axis : uint8_t	//. autoExtras
+	{
+		X,
+		Y
+	};
+
+
 	//____ SizePolicy ___________________________________________________________
 	/**
 		SizePolicy is used by certain containers, including FlexPanel and ScrollPanel,

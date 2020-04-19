@@ -321,7 +321,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -372,7 +372,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
 		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
@@ -397,7 +397,7 @@ namespace wg
 
 	//____ isStateIdentical() _____________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo ) const
+	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);

@@ -179,6 +179,7 @@
     <ClInclude Include="..\..\..\src\skins\wg_blockskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_boxskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_colorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_fillbarskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_staticcolorskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h" />
@@ -224,6 +225,7 @@
     <ClInclude Include="..\..\..\src\widgets\wg_selectbox.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_sidecanvas.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_simplevolumemeter.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_slider.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_texteditor.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_togglebutton.h" />
@@ -304,6 +306,7 @@
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_fillbarskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_lambdaskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_staticcolorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp" />
@@ -348,6 +351,7 @@
     <ClCompile Include="..\..\..\src\widgets\wg_selectbox.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_sidecanvas.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_simplevolumemeter.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_slider.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_texteditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_togglebutton.cpp" />

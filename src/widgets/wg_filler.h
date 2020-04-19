@@ -73,7 +73,7 @@ namespace wg
 		void	_cloneContent( const Widget * _pOrg ) override;
 
 	private:
-		SizeI			m_preferredSize;
+		Size			m_preferredSize;
 	};
 
 

@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_STATICCOLORSKIN_DOT_H
-#define WG_STATICCOLORSKIN_DOT_H
+#ifndef WG_FILLBARSKIN_DOT_H
+#define WG_FILLBARSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
@@ -29,17 +29,17 @@
 namespace wg
 {
 
-	class StaticColorSkin;
+	class FillBarSkin;
 
-	typedef	StrongPtr<StaticColorSkin>	StaticColorSkin_p;
+	typedef	StrongPtr<FillBarSkin>	FillBarSkin_p;
 
 
-	class StaticColorSkin : public Skin
+	class FillBarSkin : public Skin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticColorSkin_p create( Color col );
+		static FillBarSkin_p create(Direction direction, Color barColor, Color backColor, const BorderI& barPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bBarStartOutside = false );
 
 		//.____ Identification __________________________________________
 
@@ -68,12 +68,22 @@ namespace wg
 		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
+		bool	ignoresFraction() const override;
+		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
+
 	private:
-		StaticColorSkin( Color col );
-		~StaticColorSkin() {};
+		FillBarSkin(Direction direction, Color barColor, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
+		~FillBarSkin() {};
 
-		Color		m_color;
+		Rect		_barFillArea(const Rect& canvas, float fraction) const;
 
+
+		Direction	m_direction;
+		BorderI		m_contentPadding;
+		BorderI		m_barPadding;
+		bool		m_bBarStartOutside = false;
+		Color		m_barColor;
+		Color		m_backColor;
 	};
 
 

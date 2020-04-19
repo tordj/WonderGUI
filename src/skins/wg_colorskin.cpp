@@ -134,7 +134,7 @@ namespace wg
 
 	//____ isStateIdentical() ____________________________________________________
 
-	bool ColorSkin::isStateIdentical(State state, State comparedTo) const
+	bool ColorSkin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
@@ -161,7 +161,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
+	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -178,7 +178,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;

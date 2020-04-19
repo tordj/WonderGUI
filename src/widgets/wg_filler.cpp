@@ -35,7 +35,7 @@ namespace wg
 
 	Filler::Filler()
 	{
-		m_preferredSize = SizeI(-1,-1);
+		m_preferredSize = Size(-1,-1);
 	}
 
 	//____ Destructor _____________________________________________________________
