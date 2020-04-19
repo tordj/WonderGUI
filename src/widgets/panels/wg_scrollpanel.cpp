@@ -1502,14 +1502,14 @@ namespace wg
 			{
 				if (pSlot == &m_scrollbarSlots[0])
 				{
-					pScrollbar->setOrientation(Orientation::Horizontal);
+					pScrollbar->setAxis(Axis::X);
 					pScrollbar->setScrollbarTarget(&m_scrollbarTargets[1]);
 					pScrollbar->setHandle(viewSlot._windowOffsetX(), viewSlot._windowFractionX());
 				}
 				else
 				{
 					pScrollbar->setScrollbarTarget(&m_scrollbarTargets[0]);
-					pScrollbar->setOrientation(Orientation::Vertical);
+					pScrollbar->setAxis(Axis::Y);
 					pScrollbar->setHandle(viewSlot._windowOffsetY(), viewSlot._windowFractionY());
 				}
 			}

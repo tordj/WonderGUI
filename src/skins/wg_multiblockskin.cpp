@@ -155,11 +155,11 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Orientation orientation, int spacing, CoordI blockStartOfs )
+	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
 	{
 		SizeI blockPitch;
 
-		if (orientation == Orientation::Horizontal)
+		if (axis == Axis::X)
 			blockPitch.w = m_blockSizePoints.w + spacing;
 		else
 			blockPitch.h = m_blockSizePoints.h + spacing;

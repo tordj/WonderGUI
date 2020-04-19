@@ -46,8 +46,8 @@ namespace wg
 		static BlockSkin_p	create();
 		static BlockSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
-		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 
 
 
@@ -61,7 +61,7 @@ namespace wg
 
 		virtual void	setBlock(CoordI ofs);
 		virtual void	setBlock(State state, CoordI ofs);
-		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, CoordI blockStartOfs = { 0,0 });
+		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
 		virtual RectI	block(State state) const;
 
 		virtual void	setTint(Color tint);

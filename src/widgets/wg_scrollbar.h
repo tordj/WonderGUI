@@ -51,7 +51,7 @@ namespace wg
 	 * are optional and can be enabled individually. They consists of a forward and backward button on each side
 	 * of the slider.
 	 *
-	 * The same scrollbar class is used for vertical and horizontal scrollbars with the orientation
+	 * The same scrollbar class is used for vertical and horizontal scrollbars with the axis
 	 * setting deciding if scrollbar is displayed vertically or horizontally.
 	 *
 	 * Skinning a scrollbar is a little more complex than a normal widget since it consists of five individual skins. The first skin
@@ -105,8 +105,8 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void				setOrientation( Orientation orientation );	///< @brief Set scrollbar to vertical or horizontal.
-		inline Orientation	orientation() const; 					///< @brief Check if scrollbar is vertical or horizontal.
+		void				setAxis( Axis axis );	///< @brief Set scrollbar to vertical or horizontal.
+		inline Axis	axis() const; 					///< @brief Check if scrollbar is vertical or horizontal.
 
 		Size				preferredSize() const override;
 
@@ -227,7 +227,7 @@ namespace wg
 	 * Get the relative position of the scrollbar handle.
 	 *
 	 * The relative position is a value in the range 0.0-1.0 where 0.0
-	 * is depending on the orientation of the scrollbar is either the
+	 * is depending on the axis of the scrollbar is either the
 	 * leftmost or topmost position and 1.0 is the bottom/right positon.
 	 *
 	 * The size of the handle doesn't affect range of the position, 0.5 always
@@ -345,13 +345,13 @@ namespace wg
 	 *
 	 *
 	 *
-	 * @return 	Orientation::Horizontal if scrollbar is horizontal,
-	 * 		   	Orientation::Vertical if scrollbar is vertical.
+	 * @return 	Axis::X if scrollbar is horizontal,
+	 * 		   	Axis::Y if scrollbar is vertical.
 	 **/
 
-	Orientation Scrollbar::orientation() const
+	Axis Scrollbar::axis() const
 	{
-		return m_bHorizontal?Orientation::Horizontal:Orientation::Vertical;
+		return m_bHorizontal?Axis::X:Axis::Y;
 	}
 
 	//______________________________________________________________________________

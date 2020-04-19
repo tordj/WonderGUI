@@ -111,8 +111,8 @@ namespace wg
 
 		//.____ Geometry ____________________________________________
 
-		void			setOrientation(Orientation orientaiton);
-		Orientation		orientation() const { return m_bHorizontal ? Orientation::Horizontal : Orientation::Vertical; }
+		void			setAxis(Axis orientaiton);
+		Axis		axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
 
 		Size			preferredSize() const override;
 

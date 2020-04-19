@@ -46,7 +46,7 @@ namespace wg
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
 	const static Origo           Origo_min           = Origo::NorthWest;
 	const static Direction       Direction_min       = Direction::Up;
-	const static Orientation     Orientation_min     = Orientation::Horizontal;
+	const static Axis            Axis_min            = Axis::X;
 	const static SizePolicy      SizePolicy_min      = SizePolicy::Default;
 	const static SizePolicy2D    SizePolicy2D_min    = SizePolicy2D::Original;
 	const static MsgType         MsgType_min         = MsgType::Dummy;
@@ -68,7 +68,7 @@ namespace wg
 	const static SearchMode      SearchMode_max      = SearchMode::ActionTarget;
 	const static Origo           Origo_max           = Origo::Center;
 	const static Direction       Direction_max       = Direction::Left;
-	const static Orientation     Orientation_max     = Orientation::Vertical;
+	const static Axis            Axis_max            = Axis::Y;
 	const static SizePolicy      SizePolicy_max      = SizePolicy::Expanded;
 	const static SizePolicy2D    SizePolicy2D_max    = SizePolicy2D::Scale;
 	const static MsgType         MsgType_max         = MsgType::ModalBlockedRelease;
@@ -90,7 +90,7 @@ namespace wg
 	const static int             SearchMode_size     = (int)SearchMode::ActionTarget + 1;
 	const static int             Origo_size          = (int)Origo::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
-	const static int             Orientation_size    = (int)Orientation::Vertical + 1;
+	const static int             Axis_size    = (int)Axis::Y + 1;
 	const static int             SizePolicy_size     = (int)SizePolicy::Expanded + 1;
 	const static int             SizePolicy2D_size   = (int)SizePolicy2D::Scale + 1;
 	const static int             MsgType_size        = (int)MsgType::ModalBlockedRelease + 1;
@@ -112,7 +112,7 @@ namespace wg
 	const char * toString(SearchMode);
 	const char * toString(Origo);
 	const char * toString(Direction);
-	const char * toString(Orientation);
+	const char * toString(Axis);
 	const char * toString(SizePolicy);
 	const char * toString(SizePolicy2D);
 	const char * toString(MsgType);

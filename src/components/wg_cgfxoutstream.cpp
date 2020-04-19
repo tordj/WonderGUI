@@ -137,7 +137,7 @@ namespace wg
 		return *this;
 	}
 
-	CGfxOutStream&  CGfxOutStream::operator<< (Orientation o)
+	CGfxOutStream&  CGfxOutStream::operator<< (Axis o)
 	{
 		m_pHolder->_pushShort((short)o);
 		return *this;

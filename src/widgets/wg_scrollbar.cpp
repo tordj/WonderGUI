@@ -73,19 +73,19 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setOrientation() _______________________________________________________
+	//____ setAxis() _______________________________________________________
 	/**
 	 * Set if scrollbar should be horizontal or vertical.
 	 *
-	 * @param orientation	Set to Orientation::Horizontal to make widget horizontal or
-	 * 						Orientation::Vertical to make widget vertical.
+	 * @param axis	Set to Axis::X to make widget horizontal or
+	 * 						Axis::Y to make widget vertical.
 	 *
 	 * By default a scrollbar is vertical.
 	 **/
 
-	void Scrollbar::setOrientation( Orientation orientation )
+	void Scrollbar::setAxis( Axis axis )
 	{
-		bool bHorizontal = (orientation == Orientation::Horizontal);
+		bool bHorizontal = (axis == Axis::X);
 
 		if( m_bHorizontal != bHorizontal )
 		{

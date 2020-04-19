@@ -383,7 +383,7 @@ namespace wg
 
 		MU 			sizeFromPolicy( MU defaultSize, MU specifiedSize, SizePolicy policy );
 
-		inline Orientation dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Orientation::Vertical : Orientation::Horizontal; }
+		inline Axis dirToOrient( Direction dir ) { return (dir == Direction::Up || dir == Direction::Down) ? Axis::Y : Axis::X; }
 
 		int			bestStateIndexMatch(int wantedStateIndex, Bitmask<uint32_t> availableStateIndices);
 

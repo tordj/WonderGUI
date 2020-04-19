@@ -378,13 +378,6 @@ namespace wg
 		Left
 	};
 
-	//____ Orientation __________________________________________________________
-
-	enum class Orientation : uint8_t	//. autoExtras
-	{
-		Horizontal,
-		Vertical
-	};
 
 	//____ Axis __________________________________________________________
 

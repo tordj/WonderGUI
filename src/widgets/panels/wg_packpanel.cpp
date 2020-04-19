@@ -108,11 +108,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setOrientation() ______________________________________________________
+	//____ setAxis() ______________________________________________________
 
-	void PackPanel::setOrientation( Orientation orientation )
+	void PackPanel::setAxis( Axis axis )
 	{
-		bool bHorizontal = orientation==Orientation::Horizontal?true:false;
+		bool bHorizontal = axis==Axis::X?true:false;
 		if( m_bHorizontal != bHorizontal )
 		{
 			m_bHorizontal = bHorizontal;

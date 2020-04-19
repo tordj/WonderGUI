@@ -115,7 +115,7 @@ namespace wg
 		CGfxInStream& operator>> (Color&);
 		CGfxInStream& operator>> (Direction&);
 		CGfxInStream& operator>> (BlendMode&);
-		CGfxInStream& operator>> (Orientation&);
+		CGfxInStream& operator>> (Axis&);
 		CGfxInStream& operator>> (PixelFormat&);
 		CGfxInStream& operator>> (ScaleMode&);
 		CGfxInStream& operator>> (const DataChunk&);

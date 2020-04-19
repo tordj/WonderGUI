@@ -113,7 +113,7 @@ namespace wg
 		CGfxOutStream&	operator<< (Color);
 		CGfxOutStream&	operator<< (Direction);
 		CGfxOutStream&	operator<< (BlendMode);
-		CGfxOutStream&	operator<< (Orientation);
+		CGfxOutStream&	operator<< (Axis);
 		CGfxOutStream&	operator<< (PixelFormat);
 		CGfxOutStream&	operator<< (ScaleMode);
 		CGfxOutStream&	operator<< (const DataChunk&);

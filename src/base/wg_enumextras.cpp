@@ -154,7 +154,7 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(Orientation i)
+	const char * toString(Axis i)
 	{
 		static const char * names[] = {
 			"Horizontal",

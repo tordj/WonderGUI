@@ -131,7 +131,7 @@ int main ( int argc, char** argv )
 		// with the button graphics. First we specify the Surface and a rectangle
 		// for the first image. Then follows the states that we have images for,
 		// the border that creates the nine stretch-zones of the image
-		// (NinePatch style) and the orientation in which the images are lined up.
+		// (NinePatch style) and the axis in which the images are lined up.
 		// When adding it to the FlexPanel we specify its geometry in
 		// pixels and that it should be centered.
 
@@ -140,7 +140,7 @@ int main ( int argc, char** argv )
 		// For best performance you should add widgets from front to back and avoid insert.
 
 		Button_p pButton = Button::create();
-		pButton->setSkin(BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Orientation::Horizontal ));
+		pButton->setSkin(BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Axis::X ));
 		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
 		// Finally we add a callback to the click-event of the button.

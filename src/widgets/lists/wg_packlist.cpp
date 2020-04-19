@@ -97,11 +97,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setOrientation() _______________________________________________________
+	//____ setAxis() _______________________________________________________
 
-	void PackList::setOrientation( Orientation orientation )
+	void PackList::setAxis( Axis axis )
 	{
-		bool bHorizontal = (orientation == Orientation::Horizontal);
+		bool bHorizontal = (axis == Axis::X);
 
 		if( bHorizontal != m_bHorizontal )
 		{

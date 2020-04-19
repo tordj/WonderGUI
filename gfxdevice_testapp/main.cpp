@@ -284,7 +284,7 @@ void update_displaymode()
 			g_pReferenceCanvas = create_canvas();
 
 			auto pPack = PackPanel::create();
-			pPack->setOrientation(Orientation::Horizontal);
+			pPack->setAxis(Axis::X);
 			pPack->slots << g_pTesteeCanvas;
 			pPack->slots << g_pReferenceCanvas;
 			viewChild = pPack;
@@ -336,7 +336,7 @@ void refresh_performance_display()
 		if (t.bActive)
 		{
 			auto pEntry = PackPanel::create();
-			pEntry->setOrientation(Orientation::Horizontal);
+			pEntry->setAxis(Axis::X);
 			pEntry->setSizeBroker(g_pPerformanceEntryBroker);
 
 			auto pLabel = TextDisplay::create();
@@ -346,7 +346,7 @@ void refresh_performance_display()
 //			pValue->value.set(t.devices[TESTEE].render_time*1000);
 
 			auto pValuePacker = PackPanel::create();
-			pValuePacker->setOrientation(Orientation::Vertical);
+			pValuePacker->setAxis(Axis::Y);
 
 			char value[128];
 
@@ -744,12 +744,12 @@ bool setup_chrome()
 
 	auto pPressablePlateSurface = FileUtil::loadSurface("../resources/grey_pressable_plate.bmp", g_pBaseSurfaceFactory );
 	assert(pPressablePlateSurface);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	auto pButtonSurface = FileUtil::loadSurface("../resources/simple_button.bmp", g_pBaseSurfaceFactory );
 	assert(pButtonSurface);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 
@@ -767,22 +767,22 @@ bool setup_chrome()
 	// Divid screen into sidebar and canvaspanel with top section
 
 	auto pMidSection = PackPanel::create();
-	pMidSection->setOrientation(Orientation::Horizontal);
+	pMidSection->setAxis(Axis::X);
 	pMidSection->setSizeBroker(UniformSizeBroker::create());
 	auto it = pLayerStack->slots << pMidSection;
 	(*it).setSizePolicy(SizePolicy2D::Stretch);
 
 	auto pSidebar = PackPanel::create();
-	pSidebar->setOrientation(Orientation::Vertical);
+	pSidebar->setAxis(Axis::Y);
 	pSidebar->setSkin(pPlateSkin);
 	pSidebar->setSizeBroker(UniformSizeBroker::create());
 
 	auto pCanvasPanel = PackPanel::create();
-	pCanvasPanel->setOrientation(Orientation::Vertical);
+	pCanvasPanel->setAxis(Axis::Y);
 	pCanvasPanel->setSizeBroker(UniformSizeBroker::create());
 
 	auto pViewNav = PackPanel::create();
-	pViewNav->setOrientation(Orientation::Horizontal);
+	pViewNav->setAxis(Axis::X);
 	pViewNav->setSizeBroker(UniformSizeBroker::create());
 	pViewNav->setSkin( pPlateSkin );
 
@@ -826,7 +826,7 @@ bool setup_chrome()
 
 	// Setup clip mode section
 
-	pClipSection->setOrientation(Orientation::Horizontal);
+	pClipSection->setAxis(Axis::X);
 	pClipSection->setSizeBroker(UniformSizeBroker::create());
 
 	auto pClipLabel = TextDisplay::create();
@@ -863,7 +863,7 @@ bool setup_chrome()
 
 	// Setup display mode section
 
-	pDispModeSection->setOrientation(Orientation::Horizontal);
+	pDispModeSection->setAxis(Axis::X);
 	pDispModeSection->setSizeBroker(UniformSizeBroker::create());
 
 
@@ -930,7 +930,7 @@ bool setup_chrome()
 
 	// Setup display zoom section
 
-	pDispModeSection->setOrientation(Orientation::Horizontal);
+	pDispModeSection->setAxis(Axis::X);
 	pDispModeSection->setSizeBroker(UniformSizeBroker::create());
 
 	auto pX1Button = Button::create();
@@ -1061,7 +1061,7 @@ bool setup_chrome()
 
 
 		auto pBase = PackPanel::create();
-		pBase->setOrientation(Orientation::Vertical);
+		pBase->setAxis(Axis::Y);
 
 		auto pList = PackList::create();
 		pList->setSkin(StaticColorSkin::create(Color::White));
@@ -1079,7 +1079,7 @@ bool setup_chrome()
 
 		auto pBottom = PackPanel::create();
 		pBottom->setSkin(pPlateSkin);
-		pBottom->setOrientation(Orientation::Horizontal);
+		pBottom->setAxis(Axis::X);
 		pBottom->setSizeBroker(UniformSizeBroker::create());
 
 		auto pRefresh = Button::create();

@@ -159,9 +159,9 @@ namespace wg
 		return *this;
 	}
 
-	CGfxInStream& CGfxInStream::operator>> (Orientation& o)
+	CGfxInStream& CGfxInStream::operator>> (Axis& o)
 	{
-		o = (Orientation)m_pHolder->_pullShort();
+		o = (Axis)m_pHolder->_pullShort();
 		return *this;
 	}
 

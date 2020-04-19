@@ -63,10 +63,10 @@ namespace wg
 		// Add two default palettes
 
 		m_pSlotToolbox = PackPanel::create();
-		m_pSlotToolbox->setOrientation(Orientation::Vertical);
+		m_pSlotToolbox->setAxis(Axis::Y);
 
 		m_pWidgetToolbox = PackPanel::create();
-		m_pWidgetToolbox->setOrientation(Orientation::Vertical);
+		m_pWidgetToolbox->setAxis(Axis::Y);
 
 		palettes._pushBackEmpty(2);
 
@@ -529,13 +529,13 @@ namespace wg
 	Widget_p DesignLayer::_createGenericSlotTool(const StaticSlot& slot)
 	{
 		auto pColumns = PackPanel::create();
-		pColumns->setOrientation(Orientation::Horizontal);
+		pColumns->setAxis(Axis::X);
 
 		auto pHeaderColumn = PackPanel::create();
-		pHeaderColumn->setOrientation(Orientation::Vertical);
+		pHeaderColumn->setAxis(Axis::Y);
 
 		auto pValueColumn = PackPanel::create();
-		pValueColumn->setOrientation(Orientation::Vertical);
+		pValueColumn->setAxis(Axis::Y);
 
 		pColumns->slots << pHeaderColumn;
 		pColumns->slots << pValueColumn;
@@ -586,13 +586,13 @@ namespace wg
 	Widget_p DesignLayer::_createGenericWidgetTool( Widget * pWidget )
 	{
 		auto pColumns = PackPanel::create();
-		pColumns->setOrientation(Orientation::Horizontal);
+		pColumns->setAxis(Axis::X);
 
 		auto pHeaderColumn = PackPanel::create();
-		pHeaderColumn->setOrientation(Orientation::Vertical);
+		pHeaderColumn->setAxis(Axis::Y);
 
 		auto pValueColumn = PackPanel::create();
-		pValueColumn->setOrientation(Orientation::Vertical);
+		pValueColumn->setAxis(Axis::Y);
 
 		pColumns->slots << pHeaderColumn;
 		pColumns->slots << pValueColumn;

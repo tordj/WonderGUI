@@ -2038,7 +2038,7 @@ namespace wg
 					{
 						uint8_t * pBegin = m_pCanvasPixels + beginY * m_canvasPitch + begin.x * pixelBytes;
 						pEdgeOp(pBegin, pixelBytes, 0, 1, length, edgeColor, colTrans);
-						//					_drawStraightLine({ begin.x, beginY }, Orientation::Horizontal, length, edgeColor);
+						//					_drawStraightLine({ begin.x, beginY }, Axis::X, length, edgeColor);
 					}
 
 					if (endY > clip.y + clip.h)

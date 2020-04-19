@@ -57,11 +57,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setOrientation() _______________________________________________________
+	//____ setAxis() _______________________________________________________
 
-	void SplitPanel::setOrientation(Orientation orientation)
+	void SplitPanel::setAxis(Axis axis)
 	{
-		bool bHorizontal = (orientation == Orientation::Horizontal);
+		bool bHorizontal = (axis == Axis::X);
 
 		if (bHorizontal != m_bHorizontal)
 		{

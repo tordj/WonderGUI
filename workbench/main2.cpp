@@ -455,7 +455,7 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
+	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/simple_icon.png");
@@ -476,21 +476,21 @@ int main(int argc, char** argv)
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pStateButtonSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
+	BlockSkin_p pStateButtonSkin = BlockSkin::create(pStateButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pStateButtonSkin->setContentPadding(BorderI(5));
 
 	pSDLSurf = IMG_Load("../resources/grey_pressable_plate.bmp");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pPressablePlateSurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGR_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Orientation::Horizontal);
+	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	pSDLSurf = IMG_Load("../resources/list_entry.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
 	Surface_p pListEntrySurface = pSurfaceFactory->createSurface(SizeI(pSDLSurf->w, pSDLSurf->h), PixelFormat::BGRA_8, (unsigned char*)pSDLSurf->pixels, pSDLSurf->pitch, &pixelDesc);
 	SDL_FreeSurface(pSDLSurf);
-	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(2), Orientation::Horizontal);
+	Skin_p pListEntrySkin = BlockSkin::create(pListEntrySurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Selected, StateEnum::SelectedHovered, StateEnum::Disabled }, BorderI(2), Axis::X);
 
 	pSDLSurf = IMG_Load("../resources/splash.png");
 	convertSDLFormat(&pixelDesc, pSDLSurf->format);
@@ -538,7 +538,7 @@ int main(int argc, char** argv)
 
 	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
-	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 	//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
@@ -609,7 +609,7 @@ int main(int argc, char** argv)
 
 		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
-		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 
@@ -668,7 +668,7 @@ int main(int argc, char** argv)
 	{
 		auto pDropTargetSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
-		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Orientation::Horizontal);
+		int layer1 = pDropTargetSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Targeted, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
 		pDropTargetSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 
@@ -765,7 +765,7 @@ int main(int argc, char** argv)
 		Filler_p pFillerSouth = Filler::create();
 		pFillerSouth->setSkin( pPressablePlateSkin );
 
-		pVert->setOrientation( Orientation::Vertical );
+		pVert->setAxis( Axis::Y );
 
 		PackPanel_p pHorr2 = PackPanel::create();
 
@@ -844,7 +844,7 @@ int main(int argc, char** argv)
 
 
 		auto pMenu = PackPanel::create();
-		pMenu->setOrientation(Orientation::Vertical);
+		pMenu->setAxis(Axis::Y);
 //		pMenu->setSelectable(false);
 
 		auto pSkin = BoxSkin::create(Color::Red, BorderI(0), Color::Red );
@@ -873,7 +873,7 @@ int main(int argc, char** argv)
 		pMenu->children << pSubMenuOpener;
 
 		auto pSubMenu = PackPanel::create();
-		pSubMenu->setOrientation(Orientation::Vertical);
+		pSubMenu->setAxis(Axis::Y);
 		pSubMenu->setSkin(pSkin);
 
 		auto pSubEntry1 = TextDisplay::create();
@@ -918,7 +918,7 @@ int main(int argc, char** argv)
 		pSplit->setSplitFactor(0.5f);
 		pSplit->setHandleSkin(pPressablePlateSkin);
 //		pSplit->setHandleThickness(10);
-//		pSplit->setOrientation(Orientation::Horizontal);
+//		pSplit->setAxis(Axis::X);
 
 
 

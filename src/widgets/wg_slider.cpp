@@ -285,7 +285,7 @@ namespace wg
 	{
 		if (m_nbSteps > 0)
 		{
-			int val = value * m_nbSteps + 0.5f;
+			int val = int(value * m_nbSteps + 0.5f);
 			value = 1.f / val;
 		}
 
@@ -312,7 +312,7 @@ namespace wg
 	{
 		if (m_pHandleSkin)
 		{
-			if (!m_pHandleSkin->isStateIdentical(state, m_handleState, m_value));
+			if (!m_pHandleSkin->isStateIdentical(state, m_handleState, m_value))
 			{
 				_requestRender(_handleGeo(m_size));
 			}
