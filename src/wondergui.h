@@ -162,5 +162,6 @@
 #include <wg_pianokeyboard.h>
 #include <wg_slider.h>
 #include <wg_fillbarskin.h>
+#include <wg_canvasstack.h>
 
 #endif //WONDERGUI_DOT_H

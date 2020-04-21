@@ -19,9 +19,6 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
-#include <vector>
-
 #ifndef WG_SIZECAPSULE_DOT_H
 #define WG_SIZECAPSULE_DOT_H
 #pragma once
@@ -37,6 +34,7 @@ namespace wg
 	typedef	StrongPtr<SizeCapsule>		SizeCapsule_p;
 	typedef	WeakPtr<SizeCapsule>		SizeCapsule_wp;
 
+	//____ SizeCapsule ________________________________________________________
 	/**
 	* @brief	A widget that controls the size of a single child.
 	*

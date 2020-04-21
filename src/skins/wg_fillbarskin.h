@@ -39,7 +39,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static FillBarSkin_p create(Direction direction, Color barColor, Color backColor, const BorderI& barPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bBarStartOutside = false );
+		static FillBarSkin_p create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor = Color::Transparent, const BorderI& barPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bBarStartOutside = false);
 
 		//.____ Identification __________________________________________
 
@@ -72,7 +72,7 @@ namespace wg
 		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
 
 	private:
-		FillBarSkin(Direction direction, Color barColor, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
+		FillBarSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
 		~FillBarSkin() {};
 
 		Rect		_barFillArea(const Rect& canvas, float fraction) const;
@@ -82,7 +82,8 @@ namespace wg
 		BorderI		m_contentPadding;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside = false;
-		Color		m_barColor;
+		Color		m_barColorEmpty;
+		Color		m_barColorFull;
 		Color		m_backColor;
 	};
 

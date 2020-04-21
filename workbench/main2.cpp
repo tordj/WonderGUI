@@ -80,6 +80,7 @@ bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
 bool pianoKeyboardTest(CStandardSlot_p pSlot);
 bool sliderTest(CStandardSlot_p pSlot);
+bool canvasStackTest(CStandardSlot_p pSlot);
 
 
 
@@ -195,7 +196,7 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1300, height = 768;
+	int posX = 100, posY = 100, width = 1300, height = 1620;
 
 
 #ifdef USE_OPEN_GL
@@ -572,7 +573,8 @@ int main(int argc, char** argv)
 //	splitPanelTest(&pRoot->slot);
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
-	sliderTest(&pRoot->slot);
+//	sliderTest(&pRoot->slot);
+	canvasStackTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1966,7 +1968,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = Slider::create();
 	{
-		auto pBgSkin = FillBarSkin::create(Direction::Right, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
+		auto pBgSkin = FillBarSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin(pBgSkin);
@@ -1976,7 +1978,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = Slider::create();
 	{
-		auto pBgSkin = FillBarSkin::create(Direction::Up, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillBarSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin(pBgSkin);
@@ -1989,3 +1991,90 @@ bool sliderTest(CStandardSlot_p pSlot)
 	*pSlot = pBaseLayer;
 	return true;
 }
+
+//____ canvasStackTest() ____________________________________________________
+
+bool canvasStackTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pCanvasStack = CanvasStack::create();
+
+	pCanvasStack->setPreferredSize({ 1280, 1600 });
+	pCanvasStack->setCanvases(2);
+
+	Surface_p pBgSurf = loadSurface("../resources/parallels/background0001.png", PixelFormat::BGR_8);
+	Surface_p pFgSurf = loadSurface("../resources/parallels/panel0001.png", PixelFormat::BGRA_8);
+	Surface_p pLedMaskSurf = loadSurface("../resources/parallels/led_mask0001.png", PixelFormat::BGRA_8);
+
+	Surface_p pLedMixTempSurf = Base::activeContext()->surfaceFactory()->createSurface(pLedMaskSurf->size());
+	pLedMixTempSurf->fill(Color::Transparent);
+
+	pCanvasStack->setCombineFunc([=](GfxDevice* pDevice, Surface* pEndCanvas, std::vector<Surface_p>& canvases)
+	{
+		pDevice->setBlendMode(BlendMode::Replace);
+		pDevice->setBlitSource(pBgSurf);
+		pDevice->blit({ 0,0 });
+
+		//
+
+		pDevice->setCanvas(pLedMixTempSurf,false);
+		pDevice->fill(Color::Transparent);
+		pDevice->setBlendMode(BlendMode::Blend);
+		pDevice->setBlitSource(canvases[1]);
+		pDevice->blit({ 0,0 });
+//		pDevice->fill(Color(144,196,235));
+
+		pDevice->setBlendMode(BlendMode::Multiply);
+		pDevice->setBlitSource(pLedMaskSurf);
+		pDevice->blit({ 0,0 });
+
+		pDevice->setCanvas(pEndCanvas,false);
+		pDevice->setBlendMode(BlendMode::Blend);
+		pDevice->setBlitSource(pLedMixTempSurf);
+		pDevice->blit({ 0,0 });
+
+		//
+
+		pDevice->setBlitSource(pFgSurf);
+		pDevice->blit({ 0,0 });
+
+		pDevice->setBlitSource(canvases[0]);
+		pDevice->blit({ 0,0 });
+
+	}
+	);
+
+
+	auto pContent = FlexPanel::create();
+	pCanvasStack->slot.setWidget(pContent);
+
+
+	Surface_p pHandleSurf = loadSurface("../resources/parallels/fader0001.png", PixelFormat::BGRA_8);
+	auto pHandleSkin = BlockSkin::create(pHandleSurf);
+
+	auto pSliderBgSkin = FillBarSkin::create(Direction::Up, Color(144/2, 196/2, 235/2), Color(144, 196, 235),Color::Transparent, BorderI(36,0,40,0), BorderI(),true);
+
+	auto pRedirectedSliderBgSkin = pCanvasStack->redirectSkin(pSliderBgSkin,1);
+
+	auto pSlider = Slider::create();
+	pSlider->setAxis(Axis::Y);
+	pSlider->setHandleSkin(pHandleSkin);
+	pSlider->setSkin(pRedirectedSliderBgSkin);
+
+	pContent->slots.pushFrontMovable(pSlider, { 92,854,72,333 });
+
+
+	auto pFiller = Filler::create();
+	pFiller->setSkin(ColorSkin::create(Color(144, 196, 235)));
+
+	auto pRedirectedFiller = pCanvasStack->redirectWidget(pFiller, 1);
+	pContent->slots.pushFrontMovable(pRedirectedFiller, { 625,270,330,330 });
+
+
+	pBaseLayer->slots.pushBackMovable(pCanvasStack, Coord(10, 10));
+	*pSlot = pBaseLayer;
+	return true;
+}
+

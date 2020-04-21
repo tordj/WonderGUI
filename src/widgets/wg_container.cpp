@@ -357,6 +357,8 @@ namespace wg
 
 		if( m_bSiblingsOverlap )
 		{
+
+
 			// Create WidgetRenderContext's for siblings that might get dirty patches
 
 			std::vector<WidgetRenderContext> renderList;

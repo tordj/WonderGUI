@@ -96,8 +96,8 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new Slider(); };
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-
-		void			_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
+		bool		_alphaTest(const Coord& ofs) override;
 
 		void		_updatePreferredSize();
 

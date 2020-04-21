@@ -19,7 +19,6 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-
 #ifndef WG_SHADERCAPSULE_DOT_H
 #define WG_SHADERCAPSULE_DOT_H
 #pragma once
@@ -33,6 +32,8 @@ namespace wg
 	typedef	StrongPtr<ShaderCapsule>		ShaderCapsule_p;
 	typedef	WeakPtr<ShaderCapsule>	ShaderCapsule_wp;
 
+
+	//____ ShaderCapsule ______________________________________________________
 	/**
 	* @brief	A widget that sets the tint color and blend mode of a single child.
 	*

@@ -214,8 +214,15 @@ namespace wg
 
 	void Capsule::_firstSlotWithGeo( SlotWithGeo& package ) const
 	{
-		package.pSlot = &slot;
-		package.geo = m_pSkin ? m_pSkin->contentRect(Rect(0,0,m_size),m_state) : Rect(0, 0, m_size);
+		if (slot.isEmpty())
+		{
+			package.pSlot = nullptr;
+		}
+		else
+		{
+			package.pSlot = &slot;
+			package.geo = m_pSkin ? m_pSkin->contentRect(Rect(0,0,m_size),m_state) : Rect(0, 0, m_size);
+		}
 	}
 
 	//____ _nextSlotWithGeo() ______________________________________________________

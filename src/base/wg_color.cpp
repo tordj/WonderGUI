@@ -255,10 +255,10 @@ namespace wg
 	{
 		Color col;
 
-		col.r = color1.r + (uint8_t) (((int)color2.r) - ((int)color1.r)*balance)/255;
-		col.g = color1.g + (uint8_t) (((int)color2.g) - ((int)color1.g)*balance)/255;
-		col.b = color1.b + (uint8_t) (((int)color2.b) - ((int)color1.b)*balance)/255;
-		col.a = color1.a + (uint8_t) (((int)color2.a) - ((int)color1.a)*balance)/255;
+		col.r = color1.r + uint8_t( (int(color2.r) - int(color1.r))*balance/255);
+		col.g = color1.g + uint8_t( (int(color2.g) - int(color1.g))*balance/255);
+		col.b = color1.b + uint8_t( (int(color2.b) - int(color1.b))*balance/255);
+		col.a = color1.a + uint8_t( (int(color2.a) - int(color1.a))*balance/255);
 
 		return col;
 	}

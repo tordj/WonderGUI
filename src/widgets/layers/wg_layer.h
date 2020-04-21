@@ -35,6 +35,7 @@ namespace wg
 	typedef	WeakPtr<Layer>		Layer_wp;
 
 
+	//____ Layer ______________________________________________________________
 	/**
 	 * @brief	Base class for containers that provides layers of different kinds.
 	 *

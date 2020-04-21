@@ -491,6 +491,9 @@
     <ClInclude Include="..\..\..\src\base\wg_dataset.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -861,6 +864,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_dataset.cpp">
       <Filter>base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvasstack.cpp">
+      <Filter>widgets\capsules</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

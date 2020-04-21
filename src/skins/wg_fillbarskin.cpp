@@ -34,17 +34,18 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	FillBarSkin_p FillBarSkin::create(Direction direction, Color barColor, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillBarSkin_p FillBarSkin::create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
 	{
-		return FillBarSkin_p(new FillBarSkin(direction, barColor, backColor, barPadding, contentPadding, bBarStartOutside ));
+		return FillBarSkin_p(new FillBarSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	FillBarSkin::FillBarSkin(Direction direction, Color barColor, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillBarSkin::FillBarSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
 	{
 		m_direction = direction;
-		m_barColor = barColor;
+		m_barColorEmpty = barColorEmpty;
+		m_barColorFull = barColorFull;
 		m_backColor = backColor;
 		m_barPadding = barPadding;
 		m_contentPadding = contentPadding;
@@ -72,7 +73,7 @@ namespace wg
 		if (!m_barPadding.isEmpty())
 			return false;
 
-		return int(m_barColor.a) + m_backColor.a == 255*2 ? true : false;
+		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255*3 ? true : false;
 	}
 
 	bool FillBarSkin::isOpaque(State state) const
@@ -80,7 +81,7 @@ namespace wg
 		if (!m_barPadding.isEmpty())
 			return false;
 
-		return int(m_barColor.a) + m_backColor.a == 255 * 2 ? true : false;
+		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
 	}
 
 	//____ isOpaque() ______________________________________________________________
@@ -90,7 +91,7 @@ namespace wg
 		if (!m_barPadding.isEmpty())
 			return false;
 
-		return int(m_barColor.a) + m_backColor.a == 255 * 2 ? true : false;
+		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
 	}
 
 	//____ render() ______________________________________________________________
@@ -129,7 +130,9 @@ namespace wg
 			}
 		}
 
-		pDevice->fill(barCanvas, m_barColor);
+		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * fraction));
+
+		pDevice->fill(barCanvas, barColor);
 		pDevice->fill(backCanvas, m_backColor);
 	}
 
@@ -191,7 +194,7 @@ namespace wg
 			return false;
 
 		if( _barFillArea(canvas, fraction).contains(ofs) )
-			return (((int)m_barColor.a) >= opacityTreshold);
+			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*fraction)).a) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
 	}

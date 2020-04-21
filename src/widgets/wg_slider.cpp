@@ -255,6 +255,22 @@ namespace wg
 			m_pHandleSkin->render(pDevice, _handleGeo(canvas), m_handleState, m_value);
 	}
 
+	//____ _alphaTest() ________________________________________________________
+
+	bool Slider::_alphaTest(const Coord& ofs)
+	{
+		bool bMarked = false;
+
+		if (m_pSkin)
+			bMarked = m_pSkin->markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_value);
+
+		if (!bMarked && m_pHandleSkin)
+			bMarked = m_pHandleSkin->markTest(ofs, _handleGeo(m_size), m_handleState, m_markOpacity, m_value);
+
+		return bMarked;
+	}
+
+
 	//____ _updatePreferredSize() ________________________________________________
 
 	void Slider::_updatePreferredSize()
