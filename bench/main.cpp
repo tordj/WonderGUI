@@ -672,7 +672,7 @@ void packPanelStressTest( WgRootPanel * pRoot )
     pVPackSkin->setContentPadding(11);
     
     auto pVPack = new WgPackPanel();
-    pVPack->SetOrientation(WgOrientation::Vertical);
+    pVPack->SetOrientation(wg::Axis::Y);
     pVPack->SetSkin( pVPackSkin );
 
     
@@ -747,7 +747,7 @@ void packPanelTextWrapTest( WgRootPanel * pRoot )
     
     
     auto pPackPanel = new WgPackPanel();
-    pPackPanel->SetOrientation( wg::Orientation::Vertical);
+    pPackPanel->SetOrientation( wg::Axis::Y);
     pPackPanel->SetSkin(pPanelSkin);
     
     auto pSizeConstrainer = new WgSizeCapsule();
@@ -834,7 +834,7 @@ void cursorInViewTest( WgRootPanel * pRoot )
     pText->SetEditMode(WgTextEditMode::Editable);
     
     auto pPackX = new WgPackPanel();
-    pPackX->SetOrientation(WgOrientation::Horizontal);
+    pPackX->SetOrientation(wg::Axis::X);
     pPackX->AddChild(pText);
     pPackX->SetSizeBroker(new WgUniformSizeBroker() );
     
@@ -847,7 +847,7 @@ void cursorInViewTest( WgRootPanel * pRoot )
     pPackX->SetSkin(pPackSkin);
 
     auto pPackY = new WgPackPanel();
-    pPackY->SetOrientation(WgOrientation::Horizontal);
+    pPackY->SetOrientation(wg::Axis::X);
     pPackY->AddChild(pPackX);
     pPackY->SetSizeBroker(new WgUniformSizeBroker() );
     pPackY->SetSkin(pPackSkin);
@@ -874,7 +874,7 @@ void baselineTest( WgRootPanel * pRoot )
     pJoiner->SetPreferredPointSize({80,200});
 
     auto pLanes = new WgPackPanel();
-    pLanes->SetOrientation(WgOrientation::Vertical);
+    pLanes->SetOrientation(wg::Axis::Y);
 
     auto pUpperLane = new WgPackPanel();
     pUpperLane->SetBaselineMode(true);
@@ -1143,7 +1143,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 	auto pPlateImg_x2 = sdl_wglib::LoadSurface("../resources/grey_pressable_plate_x2.bmp", g_pSurfaceFactory);
 	pPlateImg_x2->setScale(2.f);
 
-    auto pPressablePlateSkin = wg::BlockSkin::create(pPlateImg, {0,0,pPlateImg->pointSize().w/3,pPlateImg->pointSize().h}, {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed} , WgBorders(3), wg::Orientation::Horizontal );
+    auto pPressablePlateSkin = wg::BlockSkin::create(pPlateImg, {0,0,pPlateImg->pointSize().w/3,pPlateImg->pointSize().h}, {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed} , WgBorders(3), wg::Axis::X );
 
 //	WgSurface * pInjectWidget = sdl_wglib::LoadSurface("../resources/IDR_MOD_INJECT_WIDGET_CHROME.2x.png", *g_pSurfaceFactory);
 //	pInjectWidget->SetScaleFactor(4096 * 2);
@@ -1322,7 +1322,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 		auto pPack = new WgPackPanel();
 		pPack->SetSkin(WgColorSkin::Create(WgColor::blue));
 		pFlex->AddChild(pPack, { 0,0,300,100 });
-		pPack->SetOrientation(WgOrientation::Vertical);
+		pPack->SetOrientation(wg::Axis::Y);
 
 		for (int i = 0; i < 3; i++)
 		{
@@ -1418,7 +1418,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 
 		auto pMenu = new WgPackPanel();
-		pMenu->SetOrientation(WgOrientation::Vertical);
+		pMenu->SetOrientation(wg::Axis::Y);
 //		pMenu->setSelectable(false);
 
 		auto pSkin = WgBoxSkin::Create(WgColor::Red, WgBorders(0), WgColor::Red );
@@ -1452,7 +1452,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 
 		auto pSubMenu = new WgPackPanel();
-		pSubMenu->SetOrientation(WgOrientation::Vertical);
+		pSubMenu->SetOrientation(wg::Axis::Y);
 		pSubMenu->SetSkin(pSkin);
 
 		auto pSubEntry1 = new WgTextDisplay();
@@ -1483,7 +1483,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 
 		auto pSubMenu2 = new WgPackPanel();
-		pSubMenu2->SetOrientation(WgOrientation::Vertical);
+		pSubMenu2->SetOrientation(wg::Axis::Y);
 		pSubMenu2->SetSkin(pSkin);
 
 		auto pSubEntry21 = new WgTextDisplay();
@@ -1811,7 +1811,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 
 	auto pWindowContent = new WgPackPanel();
-	pWindowContent->SetOrientation(WgOrientation::Vertical);
+	pWindowContent->SetOrientation(wg::Axis::Y);
 	pWindowContent->SetSizeBroker(new WgUniformSizeBroker());
 
 	pWindowContent->AddChild(m_pScrollChart)->SetWeight(2);
@@ -1964,7 +1964,7 @@ WgRootPanel * setupGUI(wg::GfxDevice * pDevice)
 
 
 	auto pWindow = new WgPackPanel();
-	pWindow->SetOrientation(WgOrientation::Vertical);
+	pWindow->SetOrientation(wg::Axis::Y);
 	pWindow->SetSizeBroker(new WgUniformSizeBroker());
 
 	pWindow->AddChild(pChart)->SetWeight(2);

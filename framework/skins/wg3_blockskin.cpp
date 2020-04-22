@@ -66,7 +66,7 @@ namespace wg
 		return BlockSkin_p(new BlockSkin(pSurface, pixelBlock, pixelFrame));
 	}
 
-	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Orientation orientation, int _spacing)
+	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
@@ -82,7 +82,7 @@ namespace wg
 
 		int nBlocks = (int) stateBlocks.size();
 		RectI blockArea = firstBlock;
-		if (orientation == Orientation::Horizontal)
+		if (axis == Axis::X)
 			blockArea.w += (nBlocks-1) * (firstBlock.w + spacing);
 		else
 			blockArea.h += (nBlocks - 1) * (firstBlock.h + spacing);
@@ -95,11 +95,11 @@ namespace wg
 
 		BlockSkin * p = new BlockSkin(pSurface, firstBlock, frame);
 
-		p->setBlocks(stateBlocks, orientation, _spacing, _firstBlock.pos());
+		p->setBlocks(stateBlocks, axis, _spacing, _firstBlock.pos());
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Orientation orientation, int _spacing)
+	BlockSkin_p BlockSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1)
 			return nullptr;
@@ -112,7 +112,7 @@ namespace wg
 
 		// Check so blocks fit evenly
 
-		int		length = orientation == Orientation::Horizontal ? surfSize.w : surfSize.h;
+		int		length = axis == Axis::X ? surfSize.w : surfSize.h;
 
 		if ((length - (nBlocks - 1) * spacing) % nBlocks != 0)
 			return nullptr;
@@ -121,10 +121,10 @@ namespace wg
 
 		int blockLen = (length - (nBlocks - 1) * spacing) / nBlocks;
 
-		SizeI blockSize = orientation == Orientation::Horizontal ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
+		SizeI blockSize = axis == Axis::X ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
 
 		BlockSkin * p = new BlockSkin(pSurface, blockSize, frame);
-		p->setBlocks(stateBlocks, orientation, spacing, CoordI(0, 0));
+		p->setBlocks(stateBlocks, axis, spacing, CoordI(0, 0));
 		return BlockSkin_p(p);
 	}
 
@@ -139,16 +139,16 @@ namespace wg
 		auto p = create(pSurface, blockGeo, blockFrame);
 		if (p)
 		{
-			Orientation o;
+			Axis o;
 			int spacing;
 			if (blockPitch.w > 0)
 			{
-				o = Orientation::Horizontal;
+				o = Axis::X;
 				spacing = blockPitch.w - blockGeo.w;
 			}
 			else
 			{
-				o = Orientation::Vertical;
+				o = Axis::Y;
 				spacing = blockPitch.h - blockGeo.h;
 			}
 
@@ -221,12 +221,12 @@ namespace wg
 
 	//____ setBlocks() ________________________________________________________
 
-	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation, int _spacing, CoordI _blockStartOfs )
+	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
 	{
 		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
 		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
 
-		CoordI pitch = orientation == Orientation::Horizontal ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
+		CoordI pitch = axis == Axis::X ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
 
 		int ofs = 0;
 		for (StateEnum state : stateBlocks)
@@ -321,7 +321,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state ) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -372,7 +372,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
 		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
@@ -397,7 +397,7 @@ namespace wg
 
 	//____ isStateIdentical() _____________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo ) const
+	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);

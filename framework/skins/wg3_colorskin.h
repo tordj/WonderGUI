@@ -69,11 +69,11 @@ namespace wg
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo ) const override;
+		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const override;
+		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const override;
 
-		void		render(GfxDevice * pDevice, const Rect& _canvas, State state) const override;
+		void		render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction = 1.f ) const override;
 
 
 	private:

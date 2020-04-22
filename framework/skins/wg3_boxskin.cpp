@@ -160,7 +160,7 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state ) const
+	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
@@ -231,7 +231,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold ) const
+	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -287,7 +287,7 @@ namespace wg
 
 	//____ isStateIdentical() ____________________________________________________
 
-	bool BoxSkin::isStateIdentical( State state, State comparedTo ) const
+	bool BoxSkin::isStateIdentical( State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);

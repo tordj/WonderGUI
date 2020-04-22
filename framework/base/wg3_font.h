@@ -91,7 +91,7 @@ namespace wg
 	//____ Font _____________________________________________________________
 	/**
 	 * @class Font
-	 * @file wg3_font.h
+	 * @file wg_font.h
 	 * @brief Base class for various types of fonts.
 	 *
 	 * The Font class is the base class from which all fonts are subclassed,

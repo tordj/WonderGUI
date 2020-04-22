@@ -31,7 +31,7 @@
 #include <wg_textdisplay.h>
 #include <wg_lineeditor.h>
 #include <wg_multislider.h>
-#include <wg3_payload.h>
+#include <wg3_dataset.h>
 
 #include <cassert>
 
@@ -507,7 +507,7 @@ namespace WgEvent
 
 	//____ DragNDrop _______________________________________________________________
 
-	DragNDrop::DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	DragNDrop::DragNDrop( WgEventType type, WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
 	{
 		m_type = type;
 		m_pWidget = pSource;
@@ -536,7 +536,7 @@ namespace WgEvent
 	{
 	}
 
-	void DropPick::setPayload( wg::BasicPayload * pPayload )
+	void DropPick::setPayload( wg::BasicDataset * pPayload )
 	{
 		m_pPayload = pPayload;
 	}
@@ -548,13 +548,13 @@ namespace WgEvent
 		m_bDeleteWhenDone = bDeleteWhenDone;
 	}
 
-	DropProbe::DropProbe( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	DropProbe::DropProbe( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_PROBE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
 	m_bAccepted(false)
 	{
 	}
 
-	DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	DropEnter::DropEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_ENTER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
 	m_pDragWidget(pDragWidget)
 	{
@@ -565,7 +565,7 @@ namespace WgEvent
 		m_pDragWidget = pWidget;
 	}
 
-	DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
+	DropMove::DropMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pDragWidget, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_MOVE, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
 	m_pDragWidget(pDragWidget)
 	{
@@ -577,12 +577,12 @@ namespace WgEvent
 	}
 
 
-	DropLeave::DropLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	DropLeave::DropLeave( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom )
 	: DragNDrop( WG_EVENT_DROP_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
 	{
 	}
 
-	DropDeliver::DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
+	DropDeliver::DropDeliver( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom, WgWidget * pFinalReceiver )
 	: DragNDrop( WG_EVENT_DROP_DELIVER, pSource, pickCategory, pPayload, pPickedFrom, pFinalReceiver ),
 	m_bAccepted(false)
 	{
@@ -593,29 +593,29 @@ namespace WgEvent
 		return m_pWidget.GetRealPtr();
 	}
 
-	DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicPayload * pPayload )
+	DropCancel::DropCancel( WgWidget * pPickedFrom, int pickCategory, wg::BasicDataset * pPayload )
 	: DragNDrop( WG_EVENT_DROP_CANCEL, pPickedFrom, pickCategory, pPayload, pPickedFrom, nullptr )
 	{
 	}
 
-	DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicPayload * pPayload )
+	DropComplete::DropComplete( WgWidget * pPicked, WgWidget * pDeliveree, int pickCategory, wg::BasicDataset * pPayload )
 	: DragNDrop( WG_EVENT_DROP_COMPLETE, pPicked, pickCategory, pPayload, pPicked, nullptr ),
 	m_pDeliveree(pDeliveree)
 	{
 	}
 
 
-	DropHoverEnter::DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	DropHoverEnter::DropHoverEnter( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom )
 	: DragNDrop( WG_EVENT_DROPHOVER_ENTER, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
 	{
 	}
 
-	DropHoverMove::DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	DropHoverMove::DropHoverMove( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom )
 	: DragNDrop( WG_EVENT_DROPHOVER_MOVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
 	{
 	}
 
-	DropHoverLeave::DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicPayload * pPayload, WgWidget * pPickedFrom )
+	DropHoverLeave::DropHoverLeave( WgWidget * pSource, int pickCategory, wg::BasicDataset * pPayload, WgWidget * pPickedFrom )
 	: DragNDrop( WG_EVENT_DROPHOVER_LEAVE, pSource, pickCategory, pPayload, pPickedFrom, nullptr )
 	{
 	}

@@ -64,10 +64,13 @@ namespace wg
 		virtual bool	isOpaque( State state ) const = 0;
 		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const = 0;
 
-		virtual bool	isStateIdentical( State state, State comparedTo ) const = 0;
+		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const = 0;
 
-		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const = 0;
-		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state) const = 0;
+		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const = 0;
+		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f ) const = 0;
+
+		virtual bool	ignoresFraction() const;
+		virtual Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
 		//.____ Deprecated ______________________________________________________
 /*

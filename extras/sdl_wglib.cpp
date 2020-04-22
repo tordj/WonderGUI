@@ -264,10 +264,10 @@ namespace sdl_wglib
 		auto pResizeButtonBlocks = WgBlockset::CreateFromRow(pSurface, WgRect(1,RESIZE_BUTTON_OFS,86,20), 4, 2, WG_OPAQUE);
 		pResizeButtonBlocks->setFrame(WgBorders(3));
 
-        auto pCheckboxIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,CHECKBOX_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Orientation::Horizontal, 2 );
+        auto pCheckboxIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,CHECKBOX_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Axis::X, 2 );
 		pCheckboxIconSkin->setContentPadding(WgBorders(3));
 
-        auto pRadiobuttonIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,RADIOBUTTON_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Orientation::Horizontal, 2 );
+        auto pRadiobuttonIconSkin = wg::BlockSkin::create( pSurface, WgRect(1,RADIOBUTTON_OFS,11,11), {wg::StateEnum::Normal, wg::StateEnum::Hovered, wg::StateEnum::Pressed, wg::StateEnum::Disabled, wg::StateEnum::Selected, wg::StateEnum::SelectedHovered, wg::StateEnum::SelectedPressed, wg::StateEnum::DisabledSelected }, WgBorders(2), wg::Axis::X, 2 );
         pRadiobuttonIconSkin->setContentPadding(WgBorders(3));
 
 

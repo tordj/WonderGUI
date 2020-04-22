@@ -101,7 +101,7 @@ namespace wg
 
 	//____ isStateIdentical() ______________________________________________________
 
-	bool ExtendedSkin::isStateIdentical(State state, State comparedTo) const
+	bool ExtendedSkin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
 		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
 	}

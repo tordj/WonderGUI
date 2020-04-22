@@ -25,7 +25,7 @@
 
 #include <wg3_types.h>
 
-typedef wg::Orientation         WgOrientation;
+typedef wg::Axis         WgOrientation;
 
 typedef wg::StateEnum           WgStateEnum;
 

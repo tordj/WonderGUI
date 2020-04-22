@@ -39,9 +39,9 @@ namespace wg
 	typedef	StrongPtr<Surface>	Surface_p;
 	typedef	WeakPtr<Surface>	Surface_wp;
 
-	class BasicPayload;
-	typedef	StrongPtr<BasicPayload>	BasicPayload_p;
-	typedef	WeakPtr<BasicPayload>	BasicPayload_wp;
+	class BasicDataset;
+	typedef	StrongPtr<BasicDataset>	BasicDataset_p;
+	typedef	WeakPtr<BasicDataset>	BasicDataset_wp;
 
 	//____ Surface ______________________________________________________________
 	/**
@@ -132,8 +132,8 @@ namespace wg
 
 		//.____ Misc _________________________________________________________
 
-		void				setPayload(BasicPayload * pPayload);
-		BasicPayload_p		payload() const;
+		void				setBaggage(Object * pBaggage);
+		Object_p			baggage() const;
 
 	protected:
 		Surface( int flags );
@@ -158,7 +158,7 @@ namespace wg
 		uint8_t *			m_pPixels = nullptr;				// Pointer at pixels when surface locked.
 		RectI				m_lockRegion;						// Region of surface that is locked. Width/Height should be set to 0 when not locked.
 
-		BasicPayload_p      m_pPayload;
+		Object_p			m_pBaggage;
 
 		// This is currently here just as metadata for WG2 compatibility, but needs to be factored in correctly in the future
 		int                 m_qpixPerPoint = 4;

@@ -378,7 +378,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
 			if( screenshotArea.contains(pickOfs) || m_innerZoom > 0.95f )
 			{
-				pEv->setPayload(wg::Payload<WgWidgetWeakPtr>::create(m_hook.Widget()));
+				pEv->setPayload(wg::Dataset<WgWidgetWeakPtr>::create(m_hook.Widget()));
 
 				// Generate a screenshot
 

@@ -46,8 +46,8 @@ namespace wg
 		static BlockSkin_p	create();
 		static BlockSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
-		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Orientation orientation = Orientation::Vertical, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 
 
 
@@ -61,7 +61,7 @@ namespace wg
 
 		virtual void	setBlock(CoordI ofs);
 		virtual void	setBlock(State state, CoordI ofs);
-		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Orientation orientation = Orientation::Vertical, int spacing = 0, CoordI blockStartOfs = { 0,0 });
+		virtual void	setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
 		virtual RectI	block(State state) const;
 
 		virtual void	setTint(Color tint);
@@ -94,10 +94,10 @@ namespace wg
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool	isStateIdentical( State state, State comparedTo ) const override;
-		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold) const override;
+		bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 
-		void	render(GfxDevice * pDevice, const Rect& canvas, State state) const override;
+		void	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
 		//.____ Deprecated ____________________________________________________
 

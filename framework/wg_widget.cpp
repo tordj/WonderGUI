@@ -26,7 +26,7 @@
 #include <wg_types.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
-#include <wg3_payload.h>
+#include <wg3_dataset.h>
 #include <wg3_base.h>
 #include <wg3_surfacefactory.h>
 #include <wg3_util.h>
@@ -540,7 +540,7 @@ void WgWidget::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHandl
 			auto pEvent = static_cast<const WgEvent::DropPick*>(_pEvent);
 			if (!pEvent->hasPayload())
 			{
-				const_cast<WgEvent::DropPick*>(pEvent)->setPayload(wg::Payload<WgWidgetWeakPtr>::create(this));
+				const_cast<WgEvent::DropPick*>(pEvent)->setPayload(wg::Dataset<WgWidgetWeakPtr>::create(this));
 			}
 			bForward = false;
 			break;

@@ -89,7 +89,7 @@ public:
 	inline WgPackHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgPackHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
 	void			SetOrientation( WgOrientation orientaiton );
-	WgOrientation	Orientation() const { return m_bHorizontal?WgOrientation::Horizontal:WgOrientation::Vertical; }
+	WgOrientation	Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
 
 	WgPackHook *	FirstHook() const { return static_cast<WgPackHook*>(_firstHook()); }
 	WgPackHook *	LastHook() const { return static_cast<WgPackHook*>(_lastHook()); }

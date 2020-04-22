@@ -82,7 +82,7 @@ public:
 
 
 //	void			SetOrientation( WgOrientation orientaiton );
-//	WgOrientation	Orientation() const { return m_bHorizontal?WgOrientation::Horizontal:WgOrientation::Vertical; }
+//	WgOrientation	Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
 
 	WgFlowHook *	FirstHook() const { return static_cast<WgFlowHook*>(_firstHook()); }
 	WgFlowHook *	LastHook() const { return static_cast<WgFlowHook*>(_lastHook()); }

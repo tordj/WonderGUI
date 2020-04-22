@@ -25,6 +25,7 @@ cp wg_object.* \
    wg_codepages.* \
    wg_color.* \
    wg_context.* \
+   wg_dataset.* \
    wg_dummyfont.* \
    wg_enumextras.* \
    wg_font.* \
@@ -34,7 +35,6 @@ cp wg_object.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
-   wg_payload.* \
    wg_pointers.* \
    wg_mu.* \
    wg_string.* \
