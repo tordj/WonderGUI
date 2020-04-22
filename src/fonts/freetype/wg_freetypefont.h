@@ -60,7 +60,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex)); }
+		static FreeTypeFont_p	create( Blob_p pFontFile, int faceIndex = 0 ) { return FreeTypeFont_p(new FreeTypeFont(pFontFile,faceIndex)); }
 
 		//.____ Identification __________________________________________
 
@@ -88,14 +88,7 @@ namespace wg
 		bool		hasGlyph( uint16_t chr );
 		bool		isMonospace();
 
-
-		static bool init(SurfaceFactory * pFactory );
-		static bool exit();
-
-		static void	setSurfaceFactory( SurfaceFactory * pFactory );
 		static void	clearCache();
-
-
 
 		//.____ Appearance ___________________________________________
 
@@ -204,7 +197,7 @@ namespace wg
 		static int			maxSlotsInSurface( const SizeI& surf, const SizeI& slot );
 		static SizeI			calcTextureSize( const SizeI& slotSize, int nSlots );
 
-		static bool			s_bFreeTypeInitialized;
+		static int			s_instanceCounter;
 		static FT_Library	s_freeTypeLibrary;
 
 		static Chain<CacheSlot>	s_cacheSlots[c_glyphSlotSizes];

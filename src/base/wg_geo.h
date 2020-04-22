@@ -86,7 +86,7 @@ namespace wg
 		inline Coord aligned() const { Coord c; c.x.qpix = x.qpix & 0xFFFFFFFC; c.y.qpix = y.qpix & 0xFFFFFFFC; return c; }
 
 		template<typename Type>
-		inline static Coord fromPX(const CoordT<Type>& c) { Rect c2; c2.x.qpix = int(c.x*4); c2.y.qpix = int(c.y*4); return c2; }
+		inline static Coord fromPX(const CoordT<Type>& c) { Coord c2; c2.x.qpix = int(c.x*4); c2.y.qpix = int(c.y*4); return c2; }
 
 		//.____ Operators ___________________________________________
 
@@ -199,7 +199,7 @@ namespace wg
 
 
 		bool			operator==(const Border& borders) const {
-			return ((left - borders.left) | (right - borders.right) | (top - borders.top) | (bottom - borders.bottom)) == 0;
+			return ((left.qpix - borders.left.qpix) | (right.qpix - borders.right.qpix) | (top.qpix - borders.top.qpix) | (bottom.qpix - borders.bottom.qpix)) == 0;
 		}
 		bool			operator!=(const Border& borders) const { return !(*this == borders); }
 

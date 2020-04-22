@@ -79,7 +79,7 @@ namespace wg
 			for( int i = 0 ; i < s_capacity ; i++ )
 				pNewTable[i] = s_pLookupTable[i];
 
-			for( int i = s_capacity ; s_capacity < newCapacity-1 ; i++ )
+			for( int i = s_capacity ; i < newCapacity-1 ; i++ )
 				* (int*)(&pNewTable[i]) = i+1;
 
 			* (int*)(&pNewTable[newCapacity-1]) = -1;
@@ -104,6 +104,12 @@ namespace wg
 
 	void TextStyleManager::_releaseHandle( TextStyle_h handle )
 	{
+        if( s_pLookupTable == nullptr )
+        {
+            //TODO: Error handling! Should log a warning.
+            return;                         // Destroying a TextStyle after we have exited TextStyleManager. We let this pass.
+        }
+
 		int idx = handle - 1;
 
 		* (int*)(&s_pLookupTable[idx]) = s_nextAvailable;

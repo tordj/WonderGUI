@@ -68,6 +68,10 @@ namespace wg
 		inline int		advance() { return m_advance; }
 		inline int		kerningIndex() { return m_kerningIndex; }
 
+        //.____ Internal _______________________________________________________
+
+        inline Font *   _font() { return m_pFont; }
+
 	protected:
 		Glyph();
 		Glyph( int advance, int _kerningIndex, Font * pFont );
@@ -125,18 +129,24 @@ namespace wg
 		virtual bool			isMonospace() = 0;				///@brief Check if font is monospaced.
 		virtual bool			isMonochrome();					///@brief Check if font is monochrome or multi-colored.
 
-
-
-
+        bool                    setBackupFont(Font * pFont);    ///@brief Font used when glyph can't be found in our font.
+        inline Font_p           backupFont() const;             ///@brief Font used when glyph can't be found in our font.
 
 
 	protected:
 		Font() {}
 		virtual ~Font() {}
+
+        Font_p         m_pBackupFont;
 	};
 
 
+    //____ backupFont() _____________________________________________________
 
+    inline Font_p Font::backupFont() const
+    {
+        return  m_pBackupFont;
+    }
 
 
 } // namespace wg

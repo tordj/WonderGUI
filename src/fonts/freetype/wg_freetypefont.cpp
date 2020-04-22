@@ -28,6 +28,8 @@
 #include <wg_freetypefont.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
+#include <wg_base.h>
+#include <wg_context.h>
 #include <assert.h>
 
 
@@ -39,18 +41,28 @@ namespace wg
 
 	const TypeInfo FreeTypeFont::TYPEINFO = { "FreeTypeFont", &Font::TYPEINFO };
 
-	bool				FreeTypeFont::s_bFreeTypeInitialized = false;
+	int 				FreeTypeFont::s_instanceCounter = 0;
 	FT_Library			FreeTypeFont::s_freeTypeLibrary;
 
 	Chain<FreeTypeFont::CacheSlot>	FreeTypeFont::s_cacheSlots[c_glyphSlotSizes];
 	Chain<FreeTypeFont::CacheSurf>	FreeTypeFont::s_cacheSurfaces;
-	SurfaceFactory_p				FreeTypeFont::s_pSurfaceFactory = 0;
 
 
 	//____ constructor ____________________________________________________________
 
 	FreeTypeFont::FreeTypeFont( Blob_p pFontFile, int faceIndex )
 	{
+        if( s_instanceCounter == 0 )
+        {
+            FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
+            if (err != 0)
+            {
+                int x = 0;
+                //TODO: Error handling!
+            }
+        }
+        s_instanceCounter++;
+
 		m_pFontFile = pFontFile;
 		m_ftCharSize	= 0;
 		m_accessCounter = 0;
@@ -63,19 +75,16 @@ namespace wg
 			m_whitespaceAdvance[i] = 0;
 		}
 
-
 		FT_Error err = FT_New_Memory_Face(	s_freeTypeLibrary,
 											(const FT_Byte *)pFontFile->data(),
 											pFontFile->size(),
-											0,
+											faceIndex,
 											&m_ftFace );
-
 		if( err )
 		{
-	//		int x = 0;
+			int x = 0;
 			//TODO: Error handling...
 		}
-
 
 		setRenderMode( RenderMode::BestShapes );
 		setSize( 10 );
@@ -100,6 +109,14 @@ namespace wg
 		}
 
 		FT_Done_Face( m_ftFace );
+
+        s_instanceCounter--;
+        if( s_instanceCounter == 0 )
+        {
+            clearCache();
+            FT_Done_FreeType(s_freeTypeLibrary);
+        }
+
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -109,50 +126,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ init() _________________________________________________________
-
-	bool FreeTypeFont::init( SurfaceFactory * pFactory )
-	{
-		if (!pFactory)
-			return false;
-
-		s_pSurfaceFactory = pFactory;
-
-		if (s_bFreeTypeInitialized)
-			return true;
-
-		FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
-		if (err == 0)
-		{
-			s_bFreeTypeInitialized = true;
-			return true;
-		}
-
-		return false;
-	}
-
-	//____ exit() __________________________________________________________________
-
-	bool FreeTypeFont::exit()
-	{
-		if (!s_bFreeTypeInitialized)
-			return true;				// Was never initialized, this is not an error.
-
-		//TODO: Should check so we don't have any still existing FreeTypeFonts...
-
-		setSurfaceFactory(0);
-		clearCache();
-
-		FT_Done_FreeType(s_freeTypeLibrary);
-		return true;
-	}
-
-
 	//____ setSize() __________________________________________________________
 
 	bool FreeTypeFont::setSize( int size )
 	{
-			if( size == m_ftCharSize )
+			if( size == m_size )
 				return true;
 
 			int ftSize = (size + m_sizeOffset)*MU::qpixPerPoint()/4;
@@ -227,7 +205,7 @@ namespace wg
 
 	int FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
-		if( !pLeftGlyph || !pRightGlyph )
+		if( !pLeftGlyph || !pRightGlyph || pLeftGlyph->_font() != this || pRightGlyph->_font() != this )
 			return 0;
 
 		// Get kerning info
@@ -337,7 +315,25 @@ namespace wg
 
 			FT_UInt char_index = FT_Get_Char_Index( m_ftFace, ch );
 			if( char_index == 0 )
-				return 0;			// We got index for missing glyph.
+            {
+                // Glyph is missing, try to find it in backup font.
+
+                if( m_pBackupFont )
+                {
+                    if( m_pBackupFont->size() == m_size )
+                        return m_pBackupFont->getGlyph(ch);
+                    else
+                    {
+                        int sz = m_pBackupFont->size();
+                        m_pBackupFont->setSize(m_size);
+                        Glyph_p pGlyph = m_pBackupFont->getGlyph(ch);
+                        m_pBackupFont->setSize(sz);
+                        return pGlyph;
+                    }
+                }
+
+                return 0;            // We got index for missing glyph.
+            }
 
 			err = FT_Load_Glyph( m_ftFace, char_index, m_renderFlags );
 			if( err )
@@ -354,7 +350,6 @@ namespace wg
 
 		return pGlyph;
 	}
-
 
 
 	/*
@@ -608,15 +603,6 @@ namespace wg
 		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
 	}
 
-
-	//____ setSurfaceFactory() ____________________________________________________
-
-	void FreeTypeFont::setSurfaceFactory( SurfaceFactory * pFactory )
-	{
-		s_pSurfaceFactory = pFactory;
-	}
-
-
 	//____ clearCache() ___________________________________________________________
 
 	void FreeTypeFont::clearCache()
@@ -679,7 +665,7 @@ namespace wg
 
 		SizeI texSize = calcTextureSize( slotSize, 16 );
 
-		Surface_p pSurf = s_pSurfaceFactory->createSurface( texSize );
+		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize );
 		pSurf->fill( Color( 255,255,255,0 ) );
 
 		CacheSurf * pCache = new CacheSurf( pSurf );

@@ -125,20 +125,20 @@ namespace wg
 
 		//.____ State __________________________________________________________
 
-		bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
-		bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
-		bool	setFocused(bool bFocused) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
-		bool	setHovered(bool bHovered) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~(uint8_t(StateEnum::Pressed)|uint8_t(StateEnum::Targeted)); return true; }
-		bool	setPressed(bool bPressed) { if( m_state == ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
-		bool	setTargeted(bool bTargeted) { if (m_state == ((uint8_t)StateEnum::Disabled)) return false; if (bTargeted) m_state |= ((uint8_t)StateEnum::Targeted); else m_state &= ~((uint8_t)StateEnum::Targeted); return true; }
+		inline bool	setEnabled(bool bEnabled) { if(bEnabled) m_state &= ~ ((uint8_t)StateEnum::Disabled); else m_state = (m_state & ((uint8_t)StateEnum::Selected)) | ((uint8_t)StateEnum::Disabled); return true; }
+		inline bool	setSelected(bool bSelected) { if(bSelected) m_state |= ((uint8_t)StateEnum::Selected); else m_state &= ~((uint8_t)StateEnum::Selected); return true; }
+		inline bool	setFocused(bool bFocused) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bFocused) m_state |= ((uint8_t)StateEnum::Focused); else m_state &= ~((uint8_t)StateEnum::Focused); return true; }
+		inline bool	setHovered(bool bHovered) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bHovered) m_state |= ((uint8_t)StateEnum::Hovered); else m_state &= ~(uint8_t(StateEnum::Pressed)|uint8_t(StateEnum::Targeted)); return true; }
+		inline bool	setPressed(bool bPressed) { if( m_state & ((uint8_t)StateEnum::Disabled) ) return false; if(bPressed) m_state |= ((uint8_t)StateEnum::Pressed); else m_state &= ~(((uint8_t)StateEnum::Pressed) - ((uint8_t)StateEnum::Hovered)); return true; }
+		inline bool	setTargeted(bool bTargeted) { if (m_state & ((uint8_t)StateEnum::Disabled)) return false; if (bTargeted) m_state |= ((uint8_t)StateEnum::Targeted); else m_state &= ~((uint8_t)StateEnum::Targeted); return true; }
 
 
-		bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
-		bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
-		bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
-		bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
-		bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
-		bool	isTargeted() const { return (m_state & ((uint8_t)StateEnum::Targeted)) == ((uint8_t)StateEnum::Targeted); }
+		inline bool	isEnabled() const { return (m_state & ((uint8_t)StateEnum::Disabled)) == ((uint8_t)StateEnum::Normal); }
+		inline bool	isSelected() const { return (m_state & ((uint8_t)StateEnum::Selected)) == ((uint8_t)StateEnum::Selected); }
+		inline bool	isFocused() const { return (m_state & ((uint8_t)StateEnum::Focused)) == ((uint8_t)StateEnum::Focused); }
+		inline bool	isHovered() const { return (m_state & ((uint8_t)StateEnum::Hovered)) == ((uint8_t)StateEnum::Hovered); }
+		inline bool	isPressed() const { return (m_state & ((uint8_t)StateEnum::Pressed)) == ((uint8_t)StateEnum::Pressed); }
+		inline bool	isTargeted() const { return (m_state & ((uint8_t)StateEnum::Targeted)) == ((uint8_t)StateEnum::Targeted); }
 
 		//._____ Operators _____________________________________________________
 
@@ -386,7 +386,6 @@ namespace wg
 		X,
 		Y
 	};
-
 
 	//____ SizePolicy ___________________________________________________________
 	/**

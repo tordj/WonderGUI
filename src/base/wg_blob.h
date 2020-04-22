@@ -62,7 +62,7 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Misc ___________________________________________________________
+		//.____ Content ___________________________________________________________
 
 		inline int		size() const { return m_size; }			///< @brief Get the size of the blobs data.
 																///<

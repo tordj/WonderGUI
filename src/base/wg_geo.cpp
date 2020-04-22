@@ -391,16 +391,16 @@ namespace wg
 
 		// Calculate angles now before we destroy any values
 
-		MU angleX = ((p2.y - p1.y) << precision) / (1 + p2.x - p1.x);		// Change in Y for each increase of X.
+		int angleX = ((p2.y.qpix - p1.y.qpix) << precision) / (1 + p2.x.qpix - p1.x.qpix);		// Change in Y for each increase of X.
 
 
 		 // Clip line so no coord is outside rectangles x-dimensions
 
 		if (p1.x < x1)
-			p1.y = p1.y + ((x1 - p1.x)*angleX >> precision);
+			p1.y.qpix = p1.y.qpix + ((x1.qpix - p1.x.qpix)*angleX >> precision);
 
 		if (p2.x > x2)
-			p2.y = p2.y - ((p2.x - x2)*angleX >> precision);
+			p2.y.qpix = p2.y.qpix - ((p2.x.qpix - x2.qpix)*angleX >> precision);
 
 		// We go from top to bottom when working with the Y coordinates
 
@@ -438,20 +438,20 @@ namespace wg
 
 		// Calculate both angles now before we destroy precision
 
-		MU angleX = ((p2->y - p1->y) << precision) / (1 + p2->x - p1->x);		// Change in Y for each increase of X.
-		MU angleY = ((p2->x - p1->x) << precision) / (1 + abs(p2->y - p1->y));		// Change in X for each increase of Y.
+		int angleX = ((p2->y.qpix - p1->y.qpix) << precision) / (1 + p2->x.qpix - p1->x.qpix);		// Change in Y for each increase of X.
+		int angleY = ((p2->x.qpix - p1->x.qpix) << precision) / (1 + abs(p2->y.qpix - p1->y.qpix));		// Change in X for each increase of Y.
 
 		// Clip line so no coord is outside rectangles x-dimensions
 
 		if (p1->x < x1)
 		{
-			p1->y = p1->y + ((x1 - p1->x)*angleX >> precision);
+			p1->y.qpix = p1->y.qpix + ((x1.qpix - p1->x.qpix)*angleX >> precision);
 			p1->x = x2;
 		}
 
 		if (p2->x > x2)
 		{
-			p2->y = p2->y - ((p2->x - x2)*angleX >> precision);
+			p2->y.qpix = p2->y.qpix - ((p2->x.qpix - x2.qpix)*angleX >> precision);
 			p2->x = x2;
 		}
 
@@ -472,13 +472,13 @@ namespace wg
 
 		if (p1->y < y1)
 		{
-			p1->x = p1->x + ((y1 - p1->y)*angleY >> precision);
+			p1->x.qpix = p1->x.qpix + ((y1.qpix - p1->y.qpix)*angleY >> precision);
 			p1->y = y1;
 		}
 
 		if (p2->y > y2)
 		{
-			p2->x = p2->x - ((p2->y - y2)*angleY >> precision);
+			p2->x.qpix = p2->x.qpix - ((p2->y.qpix - y2.qpix)*angleY >> precision);
 			p2->y = y2;
 		}
 
