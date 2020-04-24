@@ -49,8 +49,8 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		bool			setSize( int size ) override;
-		int				size() override;
+		bool			setSize( MU size ) override;
+		MU				size() override;
 
 		int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p			getGlyph( uint16_t chr ) override;

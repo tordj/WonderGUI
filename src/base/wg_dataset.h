@@ -62,19 +62,23 @@ namespace wg
 	template<class Type> using Dataset_p = StrongPtr<Dataset<Type>>;
 	template<class Type> using Dataset_wp = WeakPtr<Dataset<Type>>;
 
-	template<class Type> class Dataset : public BasicDataset, public Type
+	template<class Type> class Dataset : public BasicDataset
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
 		static Dataset_p<Type> create() { return Dataset_p<Type>(new Dataset<Type>()); }
-		static Dataset_p<Type> create( const Type& load) { auto p = new Dataset<Type>(); * static_cast<Type*>(p) = load; return Dataset_p<Type>(p); }
+		static Dataset_p<Type> create( const Type& load) { auto p = new Dataset<Type>(); p->data = load; return Dataset_p<Type>(p); }
 
 		//.____ Identification _________________________________________________
 
 		const TypeInfo&			typeInfo(void) const override { return TYPEINFO; }
 		static TypeInfo	TYPEINFO;
+
+        //.____ Content _______________________________________________________
+
+        Type    data;
 
 	protected:
 

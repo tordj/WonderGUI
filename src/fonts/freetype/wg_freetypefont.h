@@ -69,23 +69,23 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		bool		setSize( int size );
-		inline int	size() { return m_size; }
+		bool		setSize( MU size ) override;
+		inline MU	size() override { return m_size; }
 
-		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph );
-		Glyph_p		getGlyph( uint16_t chr );
+		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		Glyph_p		getGlyph( uint16_t chr ) override;
 
-		int			lineGap();
-		int			whitespaceAdvance();
-		int			maxAdvance();
-		int			maxAscend();
-		int			maxDescend();
+		int			lineGap() override;
+		int			whitespaceAdvance() override;
+		int			maxAdvance() override;
+		int			maxAscend() override;
+		int			maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
-		int			nbGlyphs();
-		bool		hasGlyphs();
-		bool		hasGlyph( uint16_t chr );
+		int			nbGlyphs() override;
+		bool		hasGlyphs() override;
+		bool		hasGlyph( uint16_t chr ) override;
 		bool		isMonospace();
 
 		static void	clearCache();
@@ -185,7 +185,7 @@ namespace wg
 		RenderMode			m_renderMode[c_maxFontSize+1];
 		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
 		int					m_whitespaceAdvance[c_maxFontSize+1];
-		int					m_size;
+		MU					m_size;
 
 		//____ Static stuff __________________________________________________________
 

@@ -110,8 +110,8 @@ namespace wg
 
 		//.____ Rendering ____________________________________________
 
-		virtual bool			setSize( int size ) = 0;		///@brief Set the font size for subsequent calls.
-		virtual int				size() = 0;
+		virtual bool			setSize( MU size ) = 0;		    ///@brief Set the font size for subsequent calls.
+		virtual MU				size() = 0;
 		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
 		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
 

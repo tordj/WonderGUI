@@ -128,19 +128,17 @@ namespace wg
 
 	//____ setSize() __________________________________________________________
 
-	bool FreeTypeFont::setSize( int size )
+	bool FreeTypeFont::setSize( MU size )
 	{
 			if( size == m_size )
 				return true;
 
-			int ftSize = (size + m_sizeOffset)*MU::qpixPerPoint()/4;
+			int ftSize = size + m_sizeOffset;
 
 			// Sanity check
 
 			if( ftSize > c_maxFontSize || ftSize < 0 )
 				return 0;
-
-
 
 			FT_Error err = FT_Set_Char_Size( m_ftFace, ftSize*64, 0, 0,0 );
 	//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
@@ -324,7 +322,7 @@ namespace wg
                         return m_pBackupFont->getGlyph(ch);
                     else
                     {
-                        int sz = m_pBackupFont->size();
+                        MU sz = m_pBackupFont->size();
                         m_pBackupFont->setSize(m_size);
                         Glyph_p pGlyph = m_pBackupFont->getGlyph(ch);
                         m_pBackupFont->setSize(sz);
@@ -434,11 +432,22 @@ namespace wg
 	{
 		FT_Error err;
 
+        //
+
+        bool bDifferentSize = pGlyph->m_size != m_ftCharSize;
+
+        if( bDifferentSize )
+             FT_Set_Char_Size( m_ftFace, pGlyph->m_size*64, 0, 0,0 );
+
 		// Load MyGlyph
 
 		err = FT_Load_Glyph( m_ftFace, pGlyph->kerningIndex(), FT_LOAD_RENDER | m_renderFlags );
 		if( err )
-			return 0;
+        {
+            if( bDifferentSize )
+                FT_Set_Char_Size( m_ftFace, m_ftCharSize*64, 0, 0,0 );
+            return 0;
+        }
 
 		// Get some details about the glyph
 
@@ -462,6 +471,10 @@ namespace wg
 
 			_copyBitmap( &m_ftFace->glyph->bitmap, pSlot );	// Copy our glyph bitmap to the slot
 		}
+
+        if( bDifferentSize )
+            FT_Set_Char_Size( m_ftFace, m_ftCharSize*64, 0, 0,0 );
+
 
 		return pSlot;
 	}

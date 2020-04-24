@@ -177,9 +177,11 @@ namespace wg
 		// Only interpret header stuff for the first font
 		if(firstInsert)
 		{
-			nRead = sscanf( pGlyphSpec, "size: %d linegap: %d space: %d monochrome: %d", &m_size, &m_lineGap, &m_spaceAdvance, &monochrome );
+            int size;
+			nRead = sscanf( pGlyphSpec, "size: %d linegap: %d space: %d monochrome: %d", &size, &m_lineGap, &m_spaceAdvance, &monochrome );
 
 			m_bMonochrome = (monochrome>0);
+            m_size = size;                  // Implicit conversion to MU-format.
 
 		}
 		else
