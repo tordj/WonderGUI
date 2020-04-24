@@ -614,7 +614,7 @@ Wg_Interface_TextHolder* WgWidget::TempGetText()
 
 //____ _renderSkin() ____________________________________________________________
 
-void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale )
+void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale, float value )
 {
 	int pixelQuarters = (scale * 4) / 4096;
 

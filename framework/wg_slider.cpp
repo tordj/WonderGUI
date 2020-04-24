@@ -500,8 +500,8 @@ void WgWidgetSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 	else
 		dest.h = PixelSize().h - m_headerLen - m_footerLen;
 
-	if( m_pBgSkin )
-		_renderSkin( m_pBgSkin, pDevice, WgUtil::ModeToState(m_mode[C_BG]), dest, m_scale );
+    if( m_pBgSkin )
+        _renderSkin( m_pBgSkin, pDevice, WgUtil::ModeToState(m_mode[C_BG]), dest, m_scale, m_sliderPos );
 
 	// Render the bar
 
@@ -517,7 +517,7 @@ void WgWidgetSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, 
 		else
 			barDest = WgRect( dest.x, dest.y + barPos, dest.w, barLen );
 
-		_renderSkin( m_pBarSkin, pDevice, WgUtil::ModeToState(m_mode[C_BAR]), barDest, m_scale );
+        _renderSkin( m_pBarSkin, pDevice, WgUtil::ModeToState(m_mode[C_BAR]), barDest, m_scale, m_sliderPos );
 	}
 
 	// Render footer buttons

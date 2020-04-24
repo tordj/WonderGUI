@@ -185,13 +185,13 @@ public:
 
 // -------------
 
-//	void				setLinkProperties( const WgTextpropPtr& pProp );
+//	void				setLinkProperties( const wg::TextStyle_p& pProp );
 //	void				clearLinkProperties();
-//	WgTextpropPtr		getLinkProperties() const { return m_pLinkProp; }
+//	wg::TextStyle_p		getLinkProperties() const { return m_pLinkProp; }
 
-//	void				setSelectionProperties( const WgTextpropPtr& pProp );
+//	void				setSelectionProperties( const wg::TextStyle_p& pProp );
 //	void				clearSelectionProperties();
-//	WgTextpropPtr		getSelectionProperties() const { return m_pSelectionProp; }
+//	wg::TextStyle_p		getSelectionProperties() const { return m_pSelectionProp; }
 
 // -------------
 

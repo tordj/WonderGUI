@@ -81,6 +81,13 @@ void WgMultiSlider::SetCallback(const std::function<void(int sliderId, float val
 	m_callback = callback;
 }
 
+//____ SetStaticCallback() __________________________________________________________
+
+void WgMultiSlider::SetStaticCallback(const std::function<void(int sliderId, float value, float value2 )>& callback)
+{
+    m_staticCallback = callback;
+}
+
 //____ SetPassive() ___________________________________________________________
 
 void WgMultiSlider::SetPassive(bool bPassive)
@@ -323,6 +330,19 @@ bool WgMultiSlider::MarkTest(const WgCoord& ofs)
 	return false;
 }
 
+//____ SliderHandleGeo() __________________________________________________________
+
+WgRect WgMultiSlider::SliderHandleGeo(int sliderId) const
+{
+   auto pSlider = _findSlider(sliderId);
+
+    if( !pSlider )
+        return WgRect();
+
+    WgRect geo = _sliderHandleGeo(*pSlider, _sliderGeo(*pSlider, PixelSize()));
+    return geo * WG_SCALE_BASE / m_scale;
+}
+
 
 //____ SetPressMode() _________________________________________________________
 
@@ -341,11 +361,12 @@ void WgMultiSlider::SetFinetune(int stepSize, float stepIncrement)
 
 //____ SetModifierKeys() ______________________________________________________
 
-void WgMultiSlider::SetModifierKeys(WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys override )
+void WgMultiSlider::SetModifierKeys(WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys overrideMode, WgModifierKeys staticMode )
 {
 	m_finetuneModifier = finetune;
 	m_axisLockModifier = axisLock;
-	m_overrideModifier = override;
+	m_overrideModifier = overrideMode;
+	m_staticModifier = staticMode;
 }
 
 
@@ -933,65 +954,70 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 
 			// Do everyting else
 
-			if (pEv->Button() == 1)
-				m_state.setPressed(true);
+            if (pEv->Button() != 1)
+                break;
 
-			if (pEv->Button() == 1 && (m_overrideModifier == WG_MODKEY_NONE || (pEv->ModKeys() != m_overrideModifier)) )
-			{
-				GrabFocus();
+			m_state.setPressed(true);
 
-				if (bHandlePressed)
-				{
-					_selectSliderHandle(pMarked);
-				}
-				else if (pMarked)
-				{
-					WgSize widgetContentSize = m_pSkin ? PixelSize() - _skinContentPadding( m_pSkin, m_scale) : PixelSize();
+            if(m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier))
+                break;
 
-					m_selectedSlider = pMarked - &m_sliders.front();
-					m_selectedSliderHandle = -1;
+            GrabFocus();
 
-					// Convert the press offset to fraction.
+            bool bStaticMode = (m_staticModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier));
 
-					WgCoordF relPos = { markOfs.x / (pMarked->geo.w*widgetContentSize.w), markOfs.y / (pMarked->geo.h*widgetContentSize.h) };
 
-					// In PressMode SetValue and MultiSetValue we set the value directly.
+			if (bHandlePressed)
+            {
+                _selectSliderHandle(pMarked);
+            }
+            else if (pMarked)
+            {
+                WgSize widgetContentSize = m_pSkin ? PixelSize() - _skinContentPadding( m_pSkin, m_scale) : PixelSize();
 
-					if (m_pressMode == PressMode::SetValue || m_pressMode == PressMode::MultiSetValue)
-					{
-						if (m_bPassive)
-							_calcSendValue(*pMarked, relPos);
-						else
-							_setHandlePosition(*pMarked, relPos);
+                m_selectedSlider = pMarked - &m_sliders.front();
+                m_selectedSliderHandle = -1;
 
-						m_hoveredSliderHandle = pMarked - &m_sliders.front();
-						m_hoveredSlider = -1;
-					}
+                // Convert the press offset to fraction.
 
-					if (m_pressMode == PressMode::SetValue)
-					{
-						_selectSliderHandle(pMarked);				// In SetValue mode we actually select the handle
+                WgCoordF relPos = { markOfs.x / (pMarked->geo.w*widgetContentSize.w), markOfs.y / (pMarked->geo.h*widgetContentSize.h) };
 
-						// HACK:
-						// In passive mode we need to set dragStartFraction directly since
-						// slider.handlePos is out of date (waiting to be set externally).
+                // In PressMode SetValue and MultiSetValue we set the value directly.
 
-						if( m_bPassive )
-						{
-							relPos = _alignPosToStep(*pMarked, relPos);
+                if (!bStaticMode && (m_pressMode == PressMode::SetValue || m_pressMode == PressMode::MultiSetValue))
+                {
+                    if (m_bPassive)
+                        _calcSendValue(*pMarked, relPos);
+                    else
+                        _setHandlePosition(*pMarked, relPos);
 
-							wg::limit(relPos.x, 0.f, 1.f);
-							wg::limit(relPos.y, 0.f, 1.f);
+                    m_hoveredSliderHandle = pMarked - &m_sliders.front();
+                    m_hoveredSlider = -1;
+                }
 
-							m_dragStartFraction = relPos;
-						}
-					}
-					else
-					{
-						m_selectedSlider = -1;
-						_updateSliderStates();
-					}
-				}
+                if (!bStaticMode && m_pressMode == PressMode::SetValue)
+                {
+                    _selectSliderHandle(pMarked);				// In SetValue mode we actually select the handle
+
+                    // HACK:
+                    // In passive mode we need to set dragStartFraction directly since
+                    // slider.handlePos is out of date (waiting to be set externally).
+
+                    if( m_bPassive )
+                    {
+                        relPos = _alignPosToStep(*pMarked, relPos);
+
+                        wg::limit(relPos.x, 0.f, 1.f);
+                        wg::limit(relPos.y, 0.f, 1.f);
+
+                        m_dragStartFraction = relPos;
+                    }
+                }
+                else
+                {
+                    m_selectedSlider = -1;
+                    _updateSliderStates();
+                }
 			}
 
 			break;
@@ -1030,14 +1056,42 @@ void WgMultiSlider::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHa
 		{
 			const WgEvent::MouseButtonDrag * pEv = static_cast<const WgEvent::MouseButtonDrag*>(pEvent);
 
+            if( pEv->Button() != 1 || !m_state.isEnabled() || (m_overrideModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_overrideModifier) ) )
+                break;
+
 			// If a modKey that we don't support is pressed, we ignore all modkeys.
 
 			int modKeys = pEv->ModKeys();
 			if (modKeys != (modKeys & (m_finetuneModifier | m_axisLockModifier)))
 				modKeys = 0;
 
+            // StaticMode is handled separately. Don't update anything, but call the callback if present.
+            // Currently no support for axis-lock, finetune or sending message.
 
-			if (m_state.isEnabled() && pEv->Button() == 1 && (m_overrideModifier == WG_MODKEY_NONE || (pEv->ModKeys() != m_overrideModifier)) )
+            if (m_staticModifier != WG_MODKEY_NONE && (pEv->ModKeys() == m_staticModifier) )
+            {
+                if (m_selectedSliderHandle >= 0)
+                {
+                    Slider& slider = m_sliders[m_selectedSliderHandle];
+
+                    //
+
+                    WgRect sliderGeo = _sliderGeo(slider, PixelSize());
+
+                    WgCoord dragNow = pEv->DraggedNowPixels();
+
+                    WgCoordF movement;
+
+                    movement.x = sliderGeo.w == 0 ? 0 : ((float) dragNow.x) / (sliderGeo.w-0.0001);
+                    movement.y = sliderGeo.h == 0 ? 0 : ((float) dragNow.y) / (sliderGeo.h-0.0001);
+
+                    if (m_staticCallback)
+                        m_staticCallback(slider.id, movement.x, movement.y);
+
+                }
+
+            }
+			else
 			{
 				WgCoordF	fraction;
 
@@ -1561,7 +1615,7 @@ void WgMultiSlider::_updateGeo(Slider& slider)
 
 //____ _sliderGeo() ___________________________________________________________
 
-WgRect  WgMultiSlider::_sliderGeo(Slider& slider, const WgRect& _canvas )
+WgRect  WgMultiSlider::_sliderGeo(const Slider& slider, const WgRect& _canvas ) const
 {
 	WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale ) : _canvas;
 
@@ -1570,7 +1624,7 @@ WgRect  WgMultiSlider::_sliderGeo(Slider& slider, const WgRect& _canvas )
 
 //____ _sliderSkinGeo() _______________________________________________________
 
-WgRect  WgMultiSlider::_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo)
+WgRect  WgMultiSlider::_sliderSkinGeo(const Slider& slider, const WgRect& sliderGeo) const
 {
 	wg::Skin_p pSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
 
@@ -1591,7 +1645,7 @@ WgRect  WgMultiSlider::_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo)
 
 //____ _sliderHandleGeo() _____________________________________________________
 
-WgRect  WgMultiSlider::_sliderHandleGeo(Slider& slider, const WgRect& sliderGeo)
+WgRect  WgMultiSlider::_sliderHandleGeo(const Slider& slider, const WgRect& sliderGeo) const
 {
 	wg::Skin_p pSkin = slider.pHandleSkin ? slider.pHandleSkin : m_pDefaultHandleSkin;
 
@@ -1935,6 +1989,16 @@ WgMultiSlider::Slider * WgMultiSlider::_findSlider(int sliderId)
 
 	return nullptr;
 }
+
+const WgMultiSlider::Slider * WgMultiSlider::_findSlider(int sliderId) const
+{
+    for (auto& slider : m_sliders)
+        if (slider.id == sliderId)
+            return &slider;
+
+    return nullptr;
+}
+
 
 //____ SetValueVisitorBase::Constructor _______________________________________
 

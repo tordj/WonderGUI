@@ -72,7 +72,7 @@ public:
 	void	ClearWaves();
 	int		AddWave();
 
-	bool	SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, float topLineThickness = 0.f, WgColor topLineColor = WgColor::Black, float bottomLineThickness = 0.f, WgColor bottomLineColor = WgColor::Black);
+    bool	SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, float topLineThickness = 0.f, WgColor topLineColor = WgColor::Black, float bottomLineThickness = 0.f, WgColor bottomLineColor = WgColor::Black, int transitionMs = 0);
 
 	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples);
 	bool	SetWaveSamples(int waveId, int firstSample, int nSamples, float * pSamples, float floor = 0.f);
@@ -87,6 +87,9 @@ public:
 	bool	SetFixedValueRange(float topValue, float bottomValue );
 	void	SetDynamicValueRange();
 	bool	IsValueRangeDynamic() const { return m_bDynamicValueRange;  }
+    void    SetDynamicStepSize(float step) { m_fDynamicStepSize = step; m_bForceSymmetricAndQuantized = true;}
+    void    SetDynamicMinSize(float minsize) { m_fDynamicMinSize = minsize; }
+    void    IgnoreDynamicScaling(int waveId, bool ignore = true);
 
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
@@ -137,6 +140,18 @@ protected:
 		float	bottomLineThickness = 0.f;
 		WgColor	bottomLineColor = WgColor::Black;
 
+        // Transitions
+        WgColor frontFillStart = WgColor::DarkGrey;
+        WgColor frontFillEnd = WgColor::DarkGrey;
+        WgColor backFillStart = WgColor::DarkGrey;
+        WgColor backFillEnd = WgColor::DarkGrey;
+        WgColor topLineColorStart = WgColor::Black;
+        WgColor topLineColorEnd = WgColor::Black;
+        WgColor bottomLineColorStart = WgColor::Black;
+        WgColor bottomLineColorEnd = WgColor::Black;
+        int     fadeTimeCounter = 0;
+        int     fadeTime = 0;
+
 		int		firstSample = 0;
 		int		nSamples = 0;
 		float	defaultSample = 0.f;
@@ -153,6 +168,8 @@ protected:
 		std::vector<int>	resampledBottom;
 		int					resampledDefault;
 		int					resampledFirst;
+
+        bool                ignoreDynamicScaling = false;
 	};
 
 	struct LabelStyle
@@ -172,6 +189,7 @@ protected:
 	bool	_onAlphaTest( const WgCoord& ofs );
 	void	_onNewSize( const WgSize& size );
 	void	_setScale( int scale );
+    void    _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 
 
 	bool	_setWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample);
@@ -214,6 +232,10 @@ private:
 
 	bool		m_bDynamicValueRange;
 	bool		m_bDynamicSampleRange;
+    bool        m_bForceSymmetricAndQuantized = false;
+    float       m_fDynamicStepSize = 1.0f;
+    float       m_fDynamicMinSize = 1.0f;
+
 
 	float		m_topValue;
 	float		m_bottomValue;

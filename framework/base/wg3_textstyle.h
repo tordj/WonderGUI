@@ -155,6 +155,7 @@ namespace wg
 		void			exportAttr( State state, TextAttr * pDest ) const;
 		void			addToAttr( State state, TextAttr * pDest ) const;
 
+        bool            isStateIdentical( State state1, State state2 ) const;
 		bool			isIdentical( TextStyle * pOther );
 		bool			isIdenticalForState( TextStyle * pOther, State state );
 

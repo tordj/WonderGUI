@@ -85,14 +85,14 @@ namespace wg
 
 	//____ setSize() _________________________________________________________
 
-	bool DummyFont::setSize( int size )
+	bool DummyFont::setSize( MU size )
 	{
 		return false;
 	}
 
 	//____ size() _____________________________________________________________
 
-	int DummyFont::size()
+	MU DummyFont::size()
 	{
 		return 1;
 	}

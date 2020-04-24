@@ -128,7 +128,7 @@ const char * WgPackPanel::GetClass()
 
 //____ SetOrientation() ______________________________________________________
 
-void WgPackPanel::SetOrientation( WgOrientation orientation )
+void WgPackPanel::SetOrientation( wg::Axis orientation )
 {
 	bool bHorizontal = orientation==wg::Axis::X?true:false;
 	if( m_bHorizontal != bHorizontal )

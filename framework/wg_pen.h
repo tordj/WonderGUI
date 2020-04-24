@@ -51,7 +51,7 @@ class WgPen
 public:
 	WgPen();
 	WgPen( wg::GfxDevice * pDevice, const WgCoord& origo );
-//	WgPen( const WgTextpropPtr& pTextprop, const WgTextpropPtr& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( pTextprop, pCharProp, mode ); }
+//	WgPen( const wg::TextStyle_p& pTextprop, const wg::TextStyle_p& pCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( pTextprop, pCharProp, mode ); }
 //	WgPen( Uint16 hTextprop, Uint16 hCharProp = 0, WgMode mode = WG_MODE_NORMAL ) { SetTextprop( hTextprop, hCharProp, mode ); }
 	~WgPen() {}
 
@@ -97,7 +97,7 @@ public:
 	inline int				GetSize() const { return m_size; }
 	inline WgColor			GetColor() const { return m_color; }
 
-	inline int				GetLineSpacing() const { return m_pFont->lineGap(); }
+	inline int				GetLineSpacing() const { return m_pFont->maxAscend() + m_pFont->maxDescend() + m_pFont->lineGap(); }
 	inline int				GetLineHeight() const { return m_pFont->maxAscend() + m_pFont->maxDescend(); }
 	inline int				GetBaseline() const { return m_pFont->maxAscend(); }
 

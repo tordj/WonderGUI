@@ -279,7 +279,7 @@ int main ( int argc, char** argv )
     
     pTextStyle->setFont(pFont);
     pTextStyle->setColor(wg::Color::White);
-    pTextStyle->setSize(8);
+    pTextStyle->setSize(10);
     
     
 
@@ -289,7 +289,7 @@ int main ( int argc, char** argv )
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
 //    packPanelPaddingTest( pRoot );
-//    packPanelTextWrapTest( pRoot );
+    packPanelTextWrapTest( pRoot );
 //    flexHookGrowthTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
@@ -299,7 +299,7 @@ int main ( int argc, char** argv )
 
 
 //    cursorInViewTest( pRoot );
-	pianoKeyboardTest(pRoot);
+//	pianoKeyboardTest(pRoot);
 
 
 	// Setup debug overlays
@@ -760,14 +760,14 @@ void packPanelTextWrapTest( WgRootPanel * pRoot )
     pTextSkin->setContentPadding( 5 );
     
     auto pText = new WgTextDisplay();
-    pText->SetText("TEXT  1.");
+    pText->SetText("\nTEXT  1.");
     pText->SetSkin( pTextSkin );
     //    pText->SetTextWrap(true);
     // pText->SetEditMode(WgTextEditMode::Editable);
     pPackPanel->AddChild(pText);
 
     auto pText2 = new WgTextDisplay();
-    pText2->SetText("TEXT 2.");
+    pText2->SetText("\nTEXT 2.");
     pText2->SetSkin( pTextSkin );
     //    pText2->SetTextWrap(true);
     pText2->SetEditMode(WgTextEditMode::Editable);

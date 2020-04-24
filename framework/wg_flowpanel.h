@@ -81,8 +81,8 @@ public:
 	inline WgFlowHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgFlowHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
 
-//	void			SetOrientation( WgOrientation orientaiton );
-//	WgOrientation	Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
+//	void			SetOrientation( wg::Axis orientaiton );
+//	wg::Axis		Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
 
 	WgFlowHook *	FirstHook() const { return static_cast<WgFlowHook*>(_firstHook()); }
 	WgFlowHook *	LastHook() const { return static_cast<WgFlowHook*>(_lastHook()); }

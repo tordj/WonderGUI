@@ -51,8 +51,8 @@ namespace wg
 
 		//.____ Rendering ______________________________________________________
 
-		inline bool			setSize( int size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
-		inline int			size() override { return m_size; }
+		inline bool			setSize( MU size ) override { return (size == m_size);};						// SizeI is just a dummy for BitmapFont...
+		inline MU			size() override { return m_size; }
 
 		Glyph_p				getGlyph( uint16_t chr ) override;
 		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
@@ -105,7 +105,7 @@ namespace wg
 		int			m_maxAdvance;
 		int			m_maxAscend;
 		int			m_maxDescend;
-		int			m_size;						// Fontsize for this font.
+		MU			m_size;						// Fontsize for this font.
 	};
 
 

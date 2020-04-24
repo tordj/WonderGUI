@@ -707,6 +707,23 @@ namespace wg
 		pDest->bgColor = Color::blend( pDest->bgColor, m_combAttr.bgColor[idx], m_combAttr.bgColorBlendMode[idx] );
 	}
 
+    //____ isStateIdentical() ________________________________________________
+
+    bool TextStyle::isStateIdentical( State state1, State state2 ) const
+    {
+        //NOTE: This is ignoring colorBlendMode and bgColorBlendMode. Is that really safe?
+
+        int idx1 = Util::_stateToIndex(state1);
+        int idx2 = Util::_stateToIndex(state2);
+
+        return ((m_combAttr.size[idx1] == m_combAttr.size[idx2]) &&
+                 (m_combAttr.color[idx1] == m_combAttr.color[idx2]) &&
+                 (m_combAttr.bgColor[idx1] == m_combAttr.bgColor[idx2]) &&
+                 (m_combAttr.decoration[idx1] == m_combAttr.decoration[idx2]) &&
+                 (m_combAttr.renderMode[idx1] == m_combAttr.renderMode[idx2]) &&
+                 (m_combAttr.bgRenderMode[idx1] == m_combAttr.bgRenderMode[idx2]) );
+    }
+
 	//____ isIdentical() _____________________________________________________
 
 	bool TextStyle::isIdentical( TextStyle * pOther )

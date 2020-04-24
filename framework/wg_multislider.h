@@ -129,16 +129,16 @@ public:
 	typedef std::function<WgRectF(SetGeoVisitor& visitor)>			SetGeoFunc;
 
 
-	void	SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
+	void		SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
-	void	SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
+	void		SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
 
-	void	SetPassive(bool bPassive);							// No slider repositioning on its own, relies callback/event-listener to call SetSliderValue().
-	bool	IsPassive() const { return m_bPassive; }
+	void		SetPassive(bool bPassive);							// No slider repositioning on its own, relies callback/event-listener to call SetSliderValue().
+	bool		IsPassive() const { return m_bPassive; }
 
-	void	SetDeltaDrag(bool bDelta);							// Use relative movements, instead of the new position, for slider placement.
-	bool	IsDeltaDrag() const { return m_bDeltaDrag;  }
+	void		SetDeltaDrag(bool bDelta);							// Use relative movements, instead of the new position, for slider placement.
+	bool		IsDeltaDrag() const { return m_bDeltaDrag;  }
 
 	void	SetGhostHandle(bool bGhost);						// Handle is not pressable, only background. Can be useful in some press-modes.
 																// In ghost-mode, handle will also get hover and press states when slider is hovered/pressed.
@@ -149,7 +149,7 @@ public:
 
 	void	SetFinetune( int stepSize, float stepIncrement = 0.f);
 
-	void	SetModifierKeys( WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys override = WG_MODKEY_NONE );
+	void	SetModifierKeys( WgModifierKeys finetune, WgModifierKeys axisLock, WgModifierKeys overrideMode = WG_MODKEY_NONE, WgModifierKeys staticMode = WG_MODKEY_NONE );
 
 	int		AddSlider(	int id, WgDirection dir, SetGeoFunc pSetGeoFunc, float startValue = 0.f, float minValue = 0.f, float maxValue = 1.f, int steps = 0,
 						SetValueFunc pSetValueFunc = nullptr, wg::Skin * pBgSkin = nullptr,
@@ -267,7 +267,7 @@ protected:
 
 	void		_invokeSetValueCallback(Slider& slider, float& value, float& value2);
 
-	float		_setValue(Slider& slider, float valueX, float valueY, bool bSendOnUpdate );			// Set value(s) and update handlePos.
+	float	_setValue(Slider& slider, float valueX, float valueY, bool bSendOnUpdate );			// Set value(s) and update handlePos.
 	void		_sendValue(Slider& slider, float value, float value2);
 
 	WgCoordF	_convertFactorPos(WgCoordF in, WgOrigo origo);						// Convert between sliderFactor and sliderPosition.
@@ -279,6 +279,7 @@ protected:
 	void		_updateSliderStates();
 
 	Slider *	_findSlider(int sliderId);
+	const Slider *	_findSlider(int sliderId) const;
 
 private:
 
@@ -302,6 +303,7 @@ private:
 	WgModifierKeys		m_axisLockModifier = WG_MODKEY_ALT;
 	WgModifierKeys		m_finetuneModifier = WG_MODKEY_CTRL;
 	WgModifierKeys		m_overrideModifier = WG_MODKEY_NONE;			// If pressed, we only do callback and send event, we don't grab or move slider.
+	WgModifierKeys		m_staticModifier = WG_MODKEY_NONE;
 
 	int					m_finetuneStepSize = 5;							// 0 = increment on every pixel, otherwise points to move pointer before value incremented.
 	float				m_finetuneStepIncrement = 0.f;					// 0 = increment with value of one pixels movement, otherwise by specified value.
@@ -323,9 +325,8 @@ private:
 	WgCoord				m_axisLockPosition;
 	WgCoordF			m_axisLockFraction;
 
-
-
 	std::function<void(int sliderId, float value, float value2 )>	m_callback = nullptr;
+	std::function<void(int sliderId, float value, float value2 )>	m_staticCallback = nullptr;
 
 };
 

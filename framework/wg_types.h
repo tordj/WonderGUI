@@ -25,8 +25,6 @@
 
 #include <wg3_types.h>
 
-typedef wg::Axis         WgOrientation;
-
 typedef wg::StateEnum           WgStateEnum;
 
 static const int    WG_NB_STATES = wg::StateEnum_Nb;

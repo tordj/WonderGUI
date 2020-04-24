@@ -451,7 +451,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (oldState != m_state)
 	{
-		if (m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState))
+		if ((m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState))||(m_text.getStyle() && !m_text.getStyle()->isStateIdentical(m_state,m_text.state()) ))
 			_requestRender();
 
 		m_text.setState(m_state);

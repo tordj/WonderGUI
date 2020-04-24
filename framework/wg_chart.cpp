@@ -29,6 +29,7 @@
 #include <wg3_surfacefactory.h>
 
 #include <algorithm>
+#include <cmath>
 
 static const char	c_widgetType[] = {"Chart"};
 
@@ -237,27 +238,56 @@ void WgChart::UnhideAllWaves()
 
 //____ SetWaveStyle() _________________________________________________________
 
-bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, float topLineThickness, WgColor topLineColor, float bottomLineThickness, WgColor bottomLineColor)
+bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, float topLineThickness, WgColor topLineColor, float bottomLineThickness, WgColor bottomLineColor, int transitionMs)
 {
 	Wave * p = _getWave(waveId);
 	if (!p)
 		return false;
 
-	// HACK!
-	// This avoids the problem of top/bottom lines switching color when passing each other in all currently used cases.
+    // HACK!
+    // This avoids the problem of top/bottom lines switching color when passing each other in all currently used cases.
+    
+    if( bottomLineThickness == 0.f )
+        bottomLineColor = topLineColor;
 
-	if( bottomLineThickness == 0.f )
-		bottomLineColor = topLineColor;
+    bool startTransition = false;
+    if(frontFill != p->frontFill)
+    {
+        p->frontFillEnd = frontFill;
+        p->frontFillStart = p->frontFill;
+        startTransition = true;
+    }
 
+    if(backFill != p->backFill)
+    {
+        p->backFillEnd = backFill;
+        p->backFillStart = p->backFill;
+        startTransition = true;
+    }
 
-	p->frontFill = frontFill;
-	p->backFill = backFill;
+    if(topLineColor != p->topLineColor)
+    {
+        p->topLineColorEnd = topLineColor;
+        p->topLineColorStart = p->topLineColor;
+        startTransition = true;
+    }
+
+    if(bottomLineColor != p->bottomLineColor)
+    {
+        p->bottomLineColorEnd = bottomLineColor;
+        p->bottomLineColorStart = p->bottomLineColor;
+        startTransition = true;
+    }
+
+    if(startTransition)
+    {
+        p->fadeTimeCounter = 0;
+        _startReceiveTicks();
+    }
 
 	p->topLineThickness = topLineThickness;
-	p->topLineColor = topLineColor;
-
 	p->bottomLineThickness = bottomLineThickness;
-	p->bottomLineColor = bottomLineColor;
+    p->fadeTime = transitionMs;
 
 	if( waveId >= m_cacheFirst && waveId <= m_cacheLast )
 		_requestRenderInCache();
@@ -284,6 +314,31 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 	Wave * pWave = _getWave(waveId);
 	if (!pWave)
 		return false;
+
+    // Check if waves are the same as already stored so that we don't trigger a re-render.
+    bool earlyOut = false;
+    if(pWave->nSamples == nSamples)
+    {
+        float sum = 0.0f;
+        if (pTopBorderSamples) {
+            for(int i=0; i<nSamples; i++)
+            {
+                sum += std::abs(pWave->orgTopSamples[i] - pTopBorderSamples[i]);
+            }
+        }
+        if (pBottomBorderSamples) {
+            for(int i=0; i<nSamples; i++)
+            {
+                sum += std::abs(pWave->orgBottomSamples[i] - pBottomBorderSamples[i]);
+            }
+        }
+        if(std::abs(sum) < 0.001f)
+            earlyOut = true;
+    }
+
+    if(earlyOut)
+        return true;
+
 
 	pWave->firstSample = firstSample;
 	pWave->nSamples = nSamples;
@@ -378,6 +433,16 @@ void WgChart::SetDynamicValueRange()
 //		if (m_valueRangeResponder)
 //			m_valueRangeResponder(this, m_topValue, m_bottomValue);
 	}
+}
+
+
+void WgChart::IgnoreDynamicScaling(int waveId, bool ignore)
+{
+    Wave * pWave = _getWave(waveId);
+    if (!pWave)
+        return;
+
+    pWave->ignoreDynamicScaling = ignore;
 }
 
 //____ SetRenderSectionWidth() _________________________________________________________
@@ -568,7 +633,78 @@ void WgChart::ClearBitmapCaching()
 	m_cacheDirt.clear();
 }
 
+//____ _onEvent() _____________________________________________________________
 
+void WgChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
+{
+    switch( pEvent->Type() )
+    {
+        case WG_EVENT_TICK:
+        {
+            const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
+
+            int ms = pTick->Millisec();
+
+            bool isDirty = false;
+            for( int i = 0 ; i < m_waves.size() ; i++ )
+            {
+                Wave * p = &m_waves[i];
+                if(!p)
+                    break;
+
+                p->fadeTimeCounter += pTick->Millisec();
+                if(p->fadeTimeCounter < p->fadeTime)
+                {
+                    float progress = p->fadeTimeCounter / (float) p->fadeTime;
+
+                    p->frontFill.r = p->frontFillStart.r + (int)((((int)p->frontFillEnd.r) - p->frontFillStart.r) * progress);
+                    p->frontFill.g = p->frontFillStart.g + (int)((((int)p->frontFillEnd.g) - p->frontFillStart.g) * progress);
+                    p->frontFill.b = p->frontFillStart.b + (int)((((int)p->frontFillEnd.b) - p->frontFillStart.b) * progress);
+                    p->frontFill.a = p->frontFillStart.a + (int)((((int)p->frontFillEnd.a) - p->frontFillStart.a) * progress);
+
+                    p->backFill.r = p->backFillStart.r + (int)((((int)p->backFillEnd.r) - p->backFillStart.r) * progress);
+                    p->backFill.g = p->backFillStart.g + (int)((((int)p->backFillEnd.g) - p->backFillStart.g) * progress);
+                    p->backFill.b = p->backFillStart.b + (int)((((int)p->backFillEnd.b) - p->backFillStart.b) * progress);
+                    p->backFill.a = p->backFillStart.a + (int)((((int)p->backFillEnd.a) - p->backFillStart.a) * progress);
+
+                    p->topLineColor.r = p->topLineColorStart.r + (int)((((int)p->topLineColorEnd.r) - p->topLineColorStart.r) * progress);
+                    p->topLineColor.g = p->topLineColorStart.g + (int)((((int)p->topLineColorEnd.g) - p->topLineColorStart.g) * progress);
+                    p->topLineColor.b = p->topLineColorStart.b + (int)((((int)p->topLineColorEnd.b) - p->topLineColorStart.b) * progress);
+                    p->topLineColor.a = p->topLineColorStart.a + (int)((((int)p->topLineColorEnd.a) - p->topLineColorStart.a) * progress);
+
+                    p->bottomLineColor.r = p->bottomLineColorStart.r + (int)((((int)p->bottomLineColorEnd.r) - p->bottomLineColorStart.r) * progress);
+                    p->bottomLineColor.g = p->bottomLineColorStart.g + (int)((((int)p->bottomLineColorEnd.g) - p->bottomLineColorStart.g) * progress);
+                    p->bottomLineColor.b = p->bottomLineColorStart.b + (int)((((int)p->bottomLineColorEnd.b) - p->bottomLineColorStart.b) * progress);
+                    p->bottomLineColor.a = p->bottomLineColorStart.a + (int)((((int)p->bottomLineColorEnd.a) - p->bottomLineColorStart.a) * progress);
+
+                    isDirty = true;
+                }
+                else
+                {
+                    p->frontFill = p->frontFillEnd;
+                    p->backFill = p->backFillEnd;
+                    p->topLineColor = p->topLineColorEnd;
+                    p->bottomLineColor = p->bottomLineColorEnd;
+                }
+            }
+
+            if(isDirty)
+            {
+                _requestRender();
+            }
+            else
+            {
+                _requestRender();
+                _stopReceiveTicks();
+            }
+
+            break;
+        }
+        default:
+            WgWidget::_onEvent(pEvent,pHandler);
+            break;
+    }
+}
 //____ _onCloneContent() _______________________________________________________
 
 void WgChart::_onCloneContent( const WgWidget * _pOrg )
@@ -904,27 +1040,62 @@ bool WgChart::_updateDynamics()
 		}
 	}
 
-	if (m_bDynamicValueRange)
+    float min = std::numeric_limits<float>::max();
+    float max = std::numeric_limits<float>::min();
+
+    if (m_bDynamicValueRange)
 	{
-		float min = std::numeric_limits<float>::max();
-		float max = std::numeric_limits<float>::min();
-
-		for (auto& it : m_waves)
+        for (auto& it : m_waves)
 		{
-			if (min > it.minSample)
-				min = it.minSample;
+            // Need to be able to set this per curve
+            if(it.ignoreDynamicScaling)
+            {
+            }
+            else
+            {
+                if (min > it.minSample)
+                    min = it.minSample;
 
-			if (max < it.maxSample)
-				max = it.maxSample;
+                if (max < it.maxSample)
+                    max = it.maxSample;
+            }
 		}
 
-		if ( max != m_topValue || min != m_bottomValue)
+		if (!m_bForceSymmetricAndQuantized && ( max != m_topValue || min != m_bottomValue))
 		{
 			m_topValue = max;
 			m_bottomValue = min;
 			bNeedRefresh = true;
 		}
 	}
+
+    // This assumes that the range has 0 in the middle.
+    if (m_bDynamicValueRange && m_bForceSymmetricAndQuantized)
+    {
+        // Quantize
+//        m_fDynamicMinSize = 0.1f;
+        float top = std::ceil(max/m_fDynamicStepSize) * m_fDynamicStepSize;
+        float bot = std::floor(min/m_fDynamicStepSize) * m_fDynamicStepSize;
+
+        // Make symmetric around 0
+        float max = std::max(top, -bot);
+//        max += 3; m_fDynamicStepSize*2; // Start to increase when at the step size.
+        max+= m_fDynamicMinSize/2; // Start to increase when at minSize/2
+        max = std::max(m_fDynamicMinSize, max);
+
+        if ( max != m_topValue )
+        {
+            m_topValue = max;
+            bNeedRefresh = true;
+        }
+        else
+        {
+            bNeedRefresh = false;
+        }
+
+        m_topValue = max;
+        m_bottomValue = -max;
+    }
 
 	return bNeedRefresh;
 }

@@ -116,6 +116,8 @@ void WgFiller::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const 
 {
 	if( m_pColors )
 		pDevice->fill( _canvas, m_pColors->Color(m_mode) );
+    else if( m_pSkin )
+        _renderSkin(m_pSkin, pDevice, m_state, _canvas, m_scale);
 }
 
 //____ _onAlphaTest() ___________________________________________________________
