@@ -107,35 +107,35 @@ namespace wg
 
 	Size CText::_preferredSize() const
 	{
-		return Size::fromPX(_textMapper()->preferredSize(this));
+		return _textMapper()->preferredSize(this);
 	}
 
 	//____ _matchingWidth() _________________________________________________________
 
 	MU CText::_matchingWidth( MU height ) const
 	{
-		return MU::fromPX(_textMapper()->matchingWidth(this, height.px()));
+		return _textMapper()->matchingWidth(this, height);
 	}
 
 	//____ _matchingHeight() ________________________________________________________
 
 	MU CText::_matchingHeight( MU width ) const
 	{
-		return MU::fromPX(_textMapper()->matchingHeight(this, width.px()));
+		return _textMapper()->matchingHeight(this, width);
 	}
 
 	//____ _charAtPos() ___________________________________________________________
 
 	int CText::_charAtPos( Coord pos ) const
 	{
-		return _textMapper()->charAtPos(this,pos.px());
+		return _textMapper()->charAtPos(this,pos);
 	}
 
 	//____ _charRect() ____________________________________________________________
 
 	Rect CText::_charRect( int charOfs ) const
 	{
-		return Rect::fromPX(_textMapper()->charRect(this, charOfs));
+		return _textMapper()->charRect(this, charOfs);
 	}
 
 	//____ _charLine() ____________________________________________________________
@@ -162,21 +162,21 @@ namespace wg
 
 		Size oldSize = m_size;
 		m_size = size;
-		_textMapper()->onResized(this,size.px(), oldSize.px());
+		_textMapper()->onResized(this,size, oldSize);
 	}
 
 	//_____ _render() _____________________________________________________________
 
 	void  CText::_render( GfxDevice * pDevice, const Rect& _canvas )
 	{
-		_textMapper()->render(this, pDevice, _canvas.px() );
+		_textMapper()->render(this, pDevice, _canvas );
 	}
 
 	//____ _rectForRange() __________________________________________________________
 
 	Rect  CText::_rectForRange( int ofs, int length ) const
 	{
-		return Rect::fromPX(_textMapper()->rectForRange(this, ofs, length));
+		return _textMapper()->rectForRange(this, ofs, length);
 	}
 
 	//____ _tooltip() _______________________________________________________________
@@ -306,9 +306,9 @@ namespace wg
 
 	//____ _mapperRequestRender() _______________________________________________
 
-	void CText::_mapperRequestRender(const RectI& rect)
+	void CText::_mapperRequestRender(const Rect& rect)
 	{
-		_requestRender(Rect::fromPX(rect));
+		_requestRender(rect);
 	}
 
 

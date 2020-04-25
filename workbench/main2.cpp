@@ -72,6 +72,7 @@ bool shadowLayerTest(CStandardSlot_p pSlot);
 bool stretchBlitTest(CStandardSlot_p pSlot);
 bool scrollIntoViewTest(CStandardSlot_p pSlot);
 bool textClipTest(CStandardSlot_p pSlot);
+bool textEditorTest(CStandardSlot_p pSlot);
 bool lineEditorTest(CStandardSlot_p pSlot);
 bool popupOpenerTest(CStandardSlot_p pSlot);
 bool scrollbarTest(CStandardSlot_p pSlot);
@@ -517,6 +518,7 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
+	pRoot->setSkin(ColorSkin::create(Color::Black));
 	pRoot->slot = pDnDLayer;
 
 	PopupLayer_p pPopupLayer = PopupLayer::create();
@@ -564,7 +566,8 @@ int main(int argc, char** argv)
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
 //	textClipTest(&pRoot->slot);
-//	lineEditorTest&pRoot->slot);
+	textEditorTest(&pRoot->slot);
+//	lineEditorTest(&pRoot->slot);
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
 //	modalLayerTest(&pRoot->slot);
@@ -572,7 +575,7 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
-	canvasStackTest(&pRoot->slot);
+//	canvasStackTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1718,15 +1721,36 @@ bool textClipTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
-	pEditor->setSkin( pSkin );
+	pEditor->setSkin(pSkin);
 
 	auto pFlex = FlexPanel::create();
 	pFlex->slots.pushBackMovable(pEditor, { 10,10,50,30 });
 
-	* pEntry = pFlex;
+	*pEntry = pFlex;
 
 	return true;
 }
+
+//____ textEditorTest() ______________________________________________________
+
+bool textEditorTest(CStandardSlot_p pEntry)
+{
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
+	pSkin->setContentPadding(2);
+
+	auto pEditor = TextEditor::create();
+
+	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
+	pEditor->setSkin(pSkin);
+
+	auto pFlex = FlexPanel::create();
+	pFlex->slots.pushBackMovable(pEditor, { 10,10,150,0 });
+
+	*pEntry = pFlex;
+
+	return true;
+}
+
 
 //____ lineEditorTest() ______________________________________________________
 
@@ -1741,7 +1765,7 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 	pEditor->setSkin(pSkin);
 
 	auto pFlex = FlexPanel::create();
-	pFlex->slots.pushBackMovable(pEditor, { 10,100,50,30 });
+	pFlex->slots.pushBackMovable(pEditor, { 10,100,80,40 });
 
 	* pEntry = pFlex;
 

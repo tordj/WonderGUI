@@ -56,7 +56,7 @@ namespace wg
 		virtual std::tuple<int,int>	_selectedText() const = 0;		// Begin/end of selection
 
 		virtual void		_mapperRequestRender() = 0;
-		virtual void		_mapperRequestRender(const RectI& rect) = 0;
+		virtual void		_mapperRequestRender(const Rect& rect) = 0;
 		virtual void		_mapperRequestResize() = 0;
 		
 		union
@@ -87,9 +87,9 @@ namespace wg
 		virtual void	addText( Text * pText ) = 0;
 		virtual void	removeText( Text * pText ) = 0;
 
-		virtual int		charAtPos( const Text * pText, CoordI pos ) const = 0;
-		virtual CoordI	charPos( const Text * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
-		virtual RectI	charRect( const Text * pText, int charOfs ) const = 0;
+		virtual int		charAtPos( const Text * pText, Coord pos ) const = 0;
+		virtual Coord	charPos( const Text * pText, int charOfs ) const = 0;		// Note: characters position on the baseline, not upper left corner of rectangle!
+		virtual Rect	charRect( const Text * pText, int charOfs ) const = 0;
 		virtual int		charLine( const Text * pText, int charOfs ) const = 0;
 		virtual int		lineBegin( const Text * pText, int lineNb ) const = 0;
 		virtual int		lineEnd( const Text * pText, int lineNb ) const = 0;
@@ -98,7 +98,7 @@ namespace wg
 		virtual int		wordEnd( const Text * pText, int charOfs ) const = 0;
 
 
-		virtual void 	render( Text * pText, GfxDevice * pDevice, const RectI& canvas ) = 0;
+		virtual void 	render( Text * pText, GfxDevice * pDevice, const Rect& canvas ) = 0;
 
 		// Caret/selection update notification methods, only one of these needs to be called.
 		// A selection change implies a caret move.
@@ -109,19 +109,19 @@ namespace wg
 		//
 
 		virtual void	onTextModified( Text * pText, int ofs, int charsRemoved, int charsAdded ) = 0;
-		virtual void	onResized( Text * pText, SizeI newSize, SizeI oldSize ) = 0;
+		virtual void	onResized( Text * pText, Size newSize, Size oldSize ) = 0;
 		virtual void	onStateChanged( Text * pText, State newState, State oldState ) = 0;
 		virtual void	onStyleChanged( Text * pText, TextStyle * pNewStyle, TextStyle * pOldStyle ) = 0;
 		virtual void	onCharStyleChanged( Text * pText, int ofs = 0, int len = INT_MAX ) = 0;
 		virtual void	onRefresh( Text * pText ) = 0;
 
 
-		virtual SizeI	preferredSize( const Text * pText ) const = 0;
-		virtual int		matchingWidth( const Text * pText, int height ) const = 0;
-		virtual int		matchingHeight( const Text * pText, int width ) const = 0;
+		virtual Size	preferredSize( const Text * pText ) const = 0;
+		virtual MU		matchingWidth( const Text * pText, MU height ) const = 0;
+		virtual MU		matchingHeight( const Text * pText, MU width ) const = 0;
 
-		virtual RectI	rectForRange( const Text * pText, int ofs, int length ) const = 0;
-		virtual RectI	rectForCaret( const Text * pText ) const = 0;
+		virtual Rect	rectForRange( const Text * pText, int ofs, int length ) const = 0;
+		virtual Rect	rectForCaret( const Text * pText ) const = 0;
 
 		virtual String	tooltip( const Text * pText ) const;
 
@@ -129,13 +129,13 @@ namespace wg
 		// Methods for supporting a caret
 
 		virtual Direction 	textDirection( Text * pText, int charOfs ) const = 0;
-		virtual int			caretToPos( Text * pText, CoordI pos, int& wantedLineOfs ) const = 0;
-		virtual int			caretUp( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretDown( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretLeft( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretRight( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretHome( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
-		virtual int			caretEnd( Text * pText, int charOfs, int& wantedLineOfs ) const = 0;
+		virtual int			caretToPos( Text * pText, Coord pos, MU& wantedLineOfs ) const = 0;
+		virtual int			caretUp( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
+		virtual int			caretDown( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
+		virtual int			caretLeft( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
+		virtual int			caretRight( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
+		virtual int			caretHome( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
+		virtual int			caretEnd( Text * pText, int charOfs, MU& wantedLineOfs ) const = 0;
 
 		virtual int			caretPrevWord( Text * pText, int charOfs ) const = 0;
 		virtual int			caretNextWord( Text * pText, int charOfs ) const = 0;
@@ -145,7 +145,7 @@ namespace wg
 		TextMapper() {}
 		virtual ~TextMapper() {};
 
-		SizeI				_size( const Text * pText ) const;
+		Size				_size( const Text * pText ) const;
 		int					_length( const Text * pText ) const;
 
 		bool				_caretVisible( const Text * pText ) const;
@@ -165,7 +165,7 @@ namespace wg
 		void			_setTextDataInt( Text * pText, int data );
 
 		void			_setTextDirty( Text * pText );
-		void			_setTextDirty( Text * pText, const RectI& rect );
+		void			_setTextDirty( Text * pText, const Rect& rect );
 		void			_requestTextResize( Text * pText );
 
 	};

@@ -52,14 +52,14 @@ namespace wg
 		bool			setSize( MU size ) override;
 		MU				size() override;
 
-		int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		MU				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p			getGlyph( uint16_t chr ) override;
 
-		int				lineGap() override;
-		int				whitespaceAdvance() override;
-		int				maxAdvance() override;
-		int				maxAscend() override;
-		int				maxDescend() override;
+		MU				lineGap() override;
+		MU				whitespaceAdvance() override;
+		MU				maxAdvance() override;
+		MU				maxAscend() override;
+		MU				maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 

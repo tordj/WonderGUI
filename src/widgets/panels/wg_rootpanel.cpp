@@ -174,6 +174,15 @@ namespace wg
 		m_afterglowFrames = frames;
 	}
 
+	//____ setSkin() _____________________________________________________________
+
+	void RootPanel::setSkin(Skin * pSkin)
+	{
+		m_pSkin = pSkin;
+		m_dirtyPatches.clear();
+		m_dirtyPatches.push(m_geo);
+	}
+
 
 	//____ render() _______________________________________________________________
 
@@ -265,7 +274,7 @@ namespace wg
 		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
-		// Nothing to render if our only child is hidden
+		// Nothing to render if we are hidden
 
 		if( !m_bVisible )
 			return true;						// Not an error, just hidden.
@@ -279,6 +288,9 @@ namespace wg
 		if( dirtyPatches.size() > 0 )
 		{
 			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
+			if (m_pSkin)
+				m_pSkin->render(m_pGfxDevice, canvas, StateEnum::Normal);
+
 			OO(slot._widget())->_render( m_pGfxDevice, canvas, canvas );
 			popClipList(m_pGfxDevice, clipPop);
 		}

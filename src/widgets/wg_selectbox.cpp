@@ -184,7 +184,7 @@ namespace wg
 			auto pMapper = _listTextMapper();
 			for (auto& entry : entries)
 			{
-				contentHeight = std::max(contentHeight, MU::fromPX(pMapper->matchingHeight(&entry, contentWidth.px())) );
+				contentHeight = std::max(contentHeight, pMapper->matchingHeight(&entry, contentWidth) );
 			}
 			return contentHeight + contentPadding.h;
 		}
@@ -340,21 +340,21 @@ namespace wg
 
 			// Update entry height and listCanvas matchingHeight
 
-			MU entryHeight = MU::fromPX( pMapper->matchingHeight(pEntry, m_entryContentWidth.px()) ) + entryPadding.h;
+			MU entryHeight = pMapper->matchingHeight(pEntry, m_entryContentWidth) + entryPadding.h;
 
 			pEntry->m_height = entryHeight;
 			m_listCanvasMatchingHeight += entryHeight;
 
 			// Update m_matchingHeight
 
-			MU boxHeight = MU::fromPX(pMapper->matchingHeight(pEntry, (m_size.w - boxPadding.w).px() )) + boxPadding.h;
+			MU boxHeight = pMapper->matchingHeight(pEntry, (m_size.w - boxPadding.w) ) + boxPadding.h;
 
 			if (boxHeight < m_matchingHeight)
 				m_matchingHeight = boxHeight;
 
 			// Update m_preferredSize and m_listCanvasPreferredSize
 
-			Size contentPreferred = Size::fromPX(pMapper->preferredSize(pEntry));
+			Size contentPreferred = pMapper->preferredSize(pEntry);
 			Size entryPreferred = contentPreferred + entryPadding;
 			Size boxPreferred = contentPreferred + boxPadding;
 
@@ -413,7 +413,7 @@ namespace wg
 			auto pMapper = _listTextMapper();
 			for (auto& entry : entries)
 			{
-				height += MU::fromPX(pMapper->matchingHeight(&entry, contentWidth.px()) );
+				height += pMapper->matchingHeight(&entry, contentWidth);
 			}
 			return height;
 		}
@@ -567,7 +567,7 @@ namespace wg
 		m_pParent->_requestRenderEntry(this);
 	}
 
-	void SelectBoxEntry::_mapperRequestRender(const RectI& rect)
+	void SelectBoxEntry::_mapperRequestRender(const Rect& rect)
 	{
 		m_pParent->_requestRenderEntry(this);			// Make it easy, entry is small anyway.
 	}

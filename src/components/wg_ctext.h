@@ -120,7 +120,7 @@ namespace wg
 		// Needed by Text
 
 		inline void			_mapperRequestRender() override { _requestRender(); }
-		void				_mapperRequestRender(const RectI& rect) override;
+		void				_mapperRequestRender(const Rect& rect) override;
 		inline void			_mapperRequestResize() override { _requestResize(); }
 
 		virtual Size		_textSize() const override { return m_size; }
@@ -157,7 +157,7 @@ namespace wg
 			bool			bButtonDown;	// Set when mouse button was pressed inside component and still is down.
 			int 			selectOfs;		// Selection is between selectOfs and caretOfs.
 			int				caretOfs;		// End of selection and caret offset (if displaying)
-			int				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.
+			MU				wantedOfs;		// Carets wanted offset in pixels when skipping between lines. -1 = none set.
 			TextStyle_p		pCharStyle;		// Style of characters to be inserted by caret.
 		};
 	};

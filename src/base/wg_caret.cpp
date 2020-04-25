@@ -120,9 +120,9 @@ namespace wg
 	 * @return Number of extra pixels needed to fit the caret after the line.
 	 */
 
-	int Caret::eolWidth( const SizeI& eolCell ) const
+	MU Caret::eolWidth( const Size& eolCell ) const
 	{
-		return wg::max( 1, eolCell.h / 16);
+		return wg::max( MU(1), eolCell.h / 16);
 	}
 
 	//____ tick() __________________________________________________________________
@@ -153,16 +153,16 @@ namespace wg
 	 * @return The position and size of the caret.
 	 */
 
-	RectI Caret::dirtyRect( RectI cell ) const
+	Rect Caret::dirtyRect( Rect cell ) const
 	{
 		switch( m_mode )
 		{
 			case CaretMode::Overwrite:
 				return cell;
 			case CaretMode::Eol:
-				return RectI( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
+				return Rect( cell.x, cell.y, wg::max(MU(1), cell.h/ 16), cell.h );
 			default: // CaretMode::Insert:
-				return RectI( cell.x, cell.y, wg::max(1, cell.h/ 16), cell.h );
+				return Rect( cell.x, cell.y, wg::max(MU(1), cell.h/ 16), cell.h );
 		}
 	}
 
@@ -180,14 +180,14 @@ namespace wg
 	 * @return Void.
 	 */
 
-	void Caret::render( GfxDevice * pDevice, RectI cell )
+	void Caret::render( GfxDevice * pDevice, Rect cell )
 	{
 		if( m_ticks < m_cycleLength / 2 )
 		{
-			RectI r = dirtyRect(cell);
+			Rect r = dirtyRect(cell);
 			BlendMode oldMode = pDevice->blendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
-			pDevice->fill( r, Color::White );
+			pDevice->fill( r.px(), Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
 

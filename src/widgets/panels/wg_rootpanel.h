@@ -87,6 +87,11 @@ namespace wg
 
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
 
+		//.____ Appearance _________________________________________________
+
+		void				setSkin(Skin * pSkin);
+		inline Skin_p		skin() const;
+
 		//.____ Rendering ________________________________________________
 
 
@@ -187,6 +192,8 @@ namespace wg
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
+		Skin_p				m_pSkin;				//TODO: Padding is not respected yet.
+
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;
 		int					m_afterglowFrames;
@@ -201,7 +208,19 @@ namespace wg
 	};
 
 
+	//____ skin() _____________________________________________________________
+	/**
+	 * @brief Get the skin used as background.
+	 *
+	 * Get the skin used as background for the whole RootPanel.
+	 *
+	 * @return Pointer to the skin.
+	 */
 
+	Skin_p RootPanel::skin() const
+	{
+		return m_pSkin;
+	}
 
 } // namespace wg
 #endif //WG_ROOTPANEL_DOT_H

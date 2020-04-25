@@ -61,7 +61,7 @@ namespace wg
 		std::tuple<int, int>	_selectedText() const override;
 
 		void		_mapperRequestRender() override;
-		void		_mapperRequestRender(const RectI& rect) override;
+		void		_mapperRequestRender(const Rect& rect) override;
 		void		_mapperRequestResize() override;
 
 		int			m_id;

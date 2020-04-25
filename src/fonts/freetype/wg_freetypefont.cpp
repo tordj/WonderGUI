@@ -64,9 +64,7 @@ namespace wg
         s_instanceCounter++;
 
 		m_pFontFile = pFontFile;
-		m_ftCharSize	= 0;
 		m_accessCounter = 0;
-		m_sizeOffset	= 0;
 		m_size 			= 0;
 
 		for( int i = 0 ; i <= c_maxFontSize ; i++ )
@@ -133,25 +131,21 @@ namespace wg
 			if( size == m_size )
 				return true;
 
-			int ftSize = size + m_sizeOffset;
-
 			// Sanity check
 
-			if( ftSize > c_maxFontSize || ftSize < 0 )
+			if( size > c_maxFontSize || size < 0 )
 				return 0;
 
-			FT_Error err = FT_Set_Char_Size( m_ftFace, ftSize*64, 0, 0,0 );
+			FT_Error err = FT_Set_Char_Size( m_ftFace, size.px()*64, 0, 0,0 );
 	//		FT_Error err = FT_Set_Pixel_Sizes( m_ftFace, 0, size );
 			if( err )
 			{
 				m_size = 0;
-				m_ftCharSize = 0;
 				return false;
 			}
 
 
 			m_size = size;
-			m_ftCharSize = ftSize;
 			_refreshRenderFlags();
 			return true;
 	}
@@ -161,7 +155,7 @@ namespace wg
 
 	void FreeTypeFont::_refreshRenderFlags()
 	{
-		switch( m_renderMode[m_ftCharSize] )
+		switch( m_renderMode[m_size.px()] )
 		{
 			case RenderMode::Monochrome:
 				m_renderFlags = FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO;
@@ -201,7 +195,7 @@ namespace wg
 
 	//____ kerning() ___________________________________________________________
 
-	int FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	MU FreeTypeFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !pLeftGlyph || !pRightGlyph || pLeftGlyph->_font() != this || pRightGlyph->_font() != this )
 			return 0;
@@ -211,14 +205,14 @@ namespace wg
 		FT_Vector	delta;
 		FT_Get_Kerning( m_ftFace, pLeftGlyph->kerningIndex(), pRightGlyph->kerningIndex(), FT_KERNING_DEFAULT, &delta );
 
-		return int(delta.x >> 6);
+		return MU::fromPX(delta.x >> 6);
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
 
-	int FreeTypeFont::whitespaceAdvance()
+	MU FreeTypeFont::whitespaceAdvance()
 	{
-		if( !m_whitespaceAdvance[m_ftCharSize] )
+		if( !m_whitespaceAdvance[m_size.px()].qpix )
 		{
 			FT_Error err;
 
@@ -229,32 +223,32 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_whitespaceAdvance[m_ftCharSize] = int(m_ftFace->glyph->advance.x >> 6);
+			m_whitespaceAdvance[m_size.px()] = MU::fromPX(m_ftFace->glyph->advance.x >> 6);
 		}
 
-		return m_whitespaceAdvance[m_ftCharSize];
+		return m_whitespaceAdvance[m_size.px()];
 	}
 
 	//____ lineGap() ____________________________________________________________
 
-	int FreeTypeFont::lineGap()
+	MU FreeTypeFont::lineGap()
 	{
-		return int(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6;
+		return MU::fromPX(int(m_ftFace->size->metrics.height - m_ftFace->size->metrics.ascender + m_ftFace->size->metrics.descender) >> 6);
 	}
 
 
 	//____ maxAscend() ____________________________________________________________
 
-	int FreeTypeFont::maxAscend()
+	MU FreeTypeFont::maxAscend()
 	{
-		return int(m_ftFace->size->metrics.ascender) >> 6;
+		return MU::fromPX(int(m_ftFace->size->metrics.ascender) >> 6);
 	}
 
 	//____ maxDescend() ____________________________________________________________
 
-	int FreeTypeFont::maxDescend()
+	MU FreeTypeFont::maxDescend()
 	{
-		return -int(m_ftFace->size->metrics.descender) >> 6;
+		return MU::fromPX(-int(m_ftFace->size->metrics.descender) >> 6);
 	}
 
 
@@ -281,9 +275,9 @@ namespace wg
 
 	//____ maxAdvance() ___________________________________________________
 
-	int FreeTypeFont::maxAdvance()
+	MU FreeTypeFont::maxAdvance()
 	{
-		return (int) m_ftFace->size->metrics.max_advance >> 6;
+		return MU::fromPX(m_ftFace->size->metrics.max_advance >> 6);
 	}
 
 
@@ -304,7 +298,7 @@ namespace wg
 	{
 		// Get cached glyph if we have one
 
-		MyGlyph * pGlyph = _findGlyph( ch, m_ftCharSize );
+		MyGlyph * pGlyph = _findGlyph( ch, m_size );
 		if( pGlyph == 0 )
 		{
 			FT_Error err;
@@ -339,11 +333,11 @@ namespace wg
 
 			// Get some details about the glyph
 
-			int advance = (int) m_ftFace->glyph->advance.x >> 6;
+			MU advance = MU::fromPX(m_ftFace->glyph->advance.x >> 6);
 
 			// Get a MyGlyph object and fill in details
 
-			pGlyph = _addGlyph( ch, m_ftCharSize, advance, char_index );
+			pGlyph = _addGlyph( ch, m_size, advance, char_index );
 		}
 
 		return pGlyph;
@@ -434,10 +428,10 @@ namespace wg
 
         //
 
-        bool bDifferentSize = pGlyph->m_size != m_ftCharSize;
+        bool bDifferentSize = pGlyph->m_size != m_size;
 
         if( bDifferentSize )
-             FT_Set_Char_Size( m_ftFace, pGlyph->m_size*64, 0, 0,0 );
+             FT_Set_Char_Size( m_ftFace, pGlyph->m_size.px()*64, 0, 0,0 );
 
 		// Load MyGlyph
 
@@ -445,7 +439,7 @@ namespace wg
 		if( err )
         {
             if( bDifferentSize )
-                FT_Set_Char_Size( m_ftFace, m_ftCharSize*64, 0, 0,0 );
+                FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
             return 0;
         }
 
@@ -464,8 +458,8 @@ namespace wg
 
 			pSlot->pGlyph = pGlyph;
 			pSlot->bitmap.rect = RectI(pSlot->rect.x, pSlot->rect.y, width, height);
-			pSlot->bitmap.bearingX = m_ftFace->glyph->bitmap_left;
-			pSlot->bitmap.bearingY = -m_ftFace->glyph->bitmap_top;
+			pSlot->bitmap.bearingX = MU::fromPX(m_ftFace->glyph->bitmap_left);
+			pSlot->bitmap.bearingY = MU::fromPX(-m_ftFace->glyph->bitmap_top);
 
 			//
 
@@ -473,7 +467,7 @@ namespace wg
 		}
 
         if( bDifferentSize )
-            FT_Set_Char_Size( m_ftFace, m_ftCharSize*64, 0, 0,0 );
+            FT_Set_Char_Size( m_ftFace, m_size.px()*64, 0, 0,0 );
 
 
 		return pSlot;
@@ -592,28 +586,30 @@ namespace wg
 
 	//___ _addGlyph() ________________________________________________________
 
-	FreeTypeFont::MyGlyph * FreeTypeFont::_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex )
+	FreeTypeFont::MyGlyph * FreeTypeFont::_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex )
 	{
-		if( m_cachedGlyphsIndex[size] == 0 )
+		int szOfs = size.px();
+
+		if( m_cachedGlyphsIndex[szOfs] == 0 )
 		{
 			MyGlyph ** p = new MyGlyph*[256];
 			memset( p, 0, 256*sizeof(MyGlyph*) );
 
-			m_cachedGlyphsIndex[size] = p;
+			m_cachedGlyphsIndex[szOfs] = p;
 		}
 
-		if( m_cachedGlyphsIndex[size][ch>>8] == 0 )
+		if( m_cachedGlyphsIndex[szOfs][ch>>8] == 0 )
 		{
 			MyGlyph * p = new MyGlyph[256];
 
-			m_cachedGlyphsIndex[size][ch>>8] = p;
+			m_cachedGlyphsIndex[szOfs][ch>>8] = p;
 		}
 
-		assert( !m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() );
+		assert( !m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF].isInitialized() );
 
-		m_cachedGlyphsIndex[size][ch>>8][ch&0xFF] = MyGlyph( ch, size, advance, kerningIndex, this );
+		m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF] = MyGlyph( ch, size, advance, kerningIndex, this );
 
-		return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
+		return &m_cachedGlyphsIndex[szOfs][ch>>8][ch&0xFF];
 	}
 
 	//____ clearCache() ___________________________________________________________
@@ -756,7 +752,7 @@ namespace wg
 	}
 
 
-	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Font * pFont )
+	FreeTypeFont::MyGlyph::MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont )
 	: Glyph( advance, kerningIndex, pFont )
 	{
 		m_pSlot = 0;
