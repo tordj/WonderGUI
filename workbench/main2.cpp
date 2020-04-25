@@ -309,8 +309,6 @@ int main(int argc, char** argv)
 #endif
 	Base::setActiveContext(pContext);
 
-	FreeTypeFont::init(Base::activeContext()->surfaceFactory());
-
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -434,7 +432,7 @@ int main(int argc, char** argv)
 
 	Blob_p pFontFile = loadBlob("../resources/DroidSans.ttf");
 
-	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
@@ -1253,7 +1251,6 @@ int main(int argc, char** argv)
 
 	// Exit WonderGUI
 
-	FreeTypeFont::exit();
 	Base::exit();
 
 	// Exit SDL

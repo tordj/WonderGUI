@@ -1141,8 +1141,6 @@ bool init_wondergui()
 
 //	g_pRoot->setDebugMode(true);
 
-	FreeTypeFont::init(g_pBaseSurfaceFactory);
-
 	// Init textmappers
 
 	auto pMapper = StdTextMapper::create();
@@ -1152,7 +1150,7 @@ bool init_wondergui()
 	// Init fonts
 
 	Blob_p pFontFile = FileUtil::loadBlob("../resources/DroidSans.ttf");
-	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 1);
+	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
@@ -1183,7 +1181,6 @@ void exit_wondergui()
 	g_pTesteeCanvas = nullptr;
 	g_pReferenceCanvas = nullptr;
 
-	FreeTypeFont::exit();
 	Base::exit();
 }
 
