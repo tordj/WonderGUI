@@ -102,7 +102,7 @@ namespace wg
 
 	//____ contentPadding() ______________________________________________________________
 
-	Border StaticColorSkin::contentPadding() const
+	Border StaticColorSkin::contentPadding(State state) const
 	{
 		return Border();
 	}

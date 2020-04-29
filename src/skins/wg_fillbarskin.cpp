@@ -152,7 +152,7 @@ namespace wg
 
 	//____ contentPadding() ______________________________________________________________
 
-	Border FillBarSkin::contentPadding() const
+	Border FillBarSkin::contentPadding(State state) const
 	{
 		return Border(m_contentPadding).aligned();
 	}

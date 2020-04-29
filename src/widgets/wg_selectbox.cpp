@@ -64,7 +64,7 @@ namespace wg
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
 		{
-			m_entryContentPadding = pSkin ? pSkin->contentPadding() : Border(0, 0);
+			m_entryContentPadding = pSkin ? pSkin->contentPadding(StateEnum::Normal) : Border(0, 0);		//TODO: This is wrong! Content padding can shift with state.
 			m_pListCanvas->_requestResize();
 		}
 

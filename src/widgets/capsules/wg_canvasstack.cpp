@@ -348,9 +348,9 @@ namespace wg
 		return m_pSkin->sizeForContent(contentSize);
 	}
 
-	Border CanvasStack::CustomSkin::contentPadding() const
+	Border CanvasStack::CustomSkin::contentPadding(State state) const
 	{
-		return m_pSkin->contentPadding();
+		return m_pSkin->contentPadding(state);
 	}
 
 	Size CanvasStack::CustomSkin::contentPaddingSize() const

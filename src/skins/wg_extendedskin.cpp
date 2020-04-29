@@ -129,9 +129,15 @@ namespace wg
 
 	//____ contentPadding() _______________________________________________________
 
-	Border ExtendedSkin::contentPadding() const
+	Border ExtendedSkin::contentPadding(State state) const
 	{
-		return Border(m_contentPadding).aligned();
+		Border b = Border(m_contentPadding).aligned();
+		Coord ofs = Coord(m_contentShift[_stateToIndex(state)]).aligned();
+
+		b.left += ofs.x;
+		b.top += ofs.y;
+
+		return b;
 	}
 
 	//____ contentPaddingSize() _______________________________________________________

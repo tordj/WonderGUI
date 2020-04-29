@@ -46,7 +46,7 @@ namespace wg
 
 
 		void			setContentPadding( const BorderI& padding );
-		Border			contentPadding() const override;
+		Border			contentPadding(State state) const override;
 
 		Size			minSize() const override;
 		Size			preferredSize() const override;

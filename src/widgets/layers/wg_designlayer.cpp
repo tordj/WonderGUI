@@ -195,7 +195,7 @@ namespace wg
 				Rect geo = palette.m_geo + _canvas.pos();
 
 				if (m_pToolboxSkin)
-					m_pToolboxSkin->render(pDevice, geo + m_pToolboxSkin->contentPadding(), StateEnum::Normal);
+					m_pToolboxSkin->render(pDevice, geo + m_pToolboxSkin->contentPadding(StateEnum::Normal), StateEnum::Normal);
 
 				RectI pxPaletteGeo = palette.m_geo.px();
 				if (pDevice->clipBounds().intersectsWith(pxPaletteGeo))
@@ -219,7 +219,7 @@ namespace wg
 		Rect selectedGeo = m_pSelectedWidget->globalGeo() - globalPos();
 
 		if (m_pSelectionSkin)
-			selectedGeo += m_pSelectionSkin->contentPadding();
+			selectedGeo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
 
 		return selectedGeo;
 	}
@@ -232,12 +232,12 @@ namespace wg
 		if (m_pSelectedWidget)
 		{
 			Origo origo = pSlot->m_placement;
-			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding() : Border();
+			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding(StateEnum::Normal) : Border();
 
 			Size wantedSize = pSlot->_widget()->preferredSize() + palettePadding;
 
 			Rect selectedGeo = m_pSelectedWidget->globalGeo() - globalPos();
-			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->contentPadding() : Border();
+			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->contentPadding(StateEnum::Normal) : Border();
 			Rect surroundBox = selectedGeo + Border(wantedSize.h+4, wantedSize.w+4);
 
 			Coord ofs = origoToOfs(origo, surroundBox.size()) - origoToOfs(origo, wantedSize) + surroundBox.pos();
@@ -310,7 +310,7 @@ namespace wg
 			if (m_pSelectedWidget)
 			{
 				Rect geo = m_pSelectedWidget->globalGeo() - globalPos();
-				geo += m_pSelectionSkin->contentPadding();
+				geo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
 				_requestRender(geo);
 			}
 
@@ -319,7 +319,7 @@ namespace wg
 			if (m_pSelectedWidget)
 			{
 				Rect geo = m_pSelectedWidget->globalGeo() - globalPos();
-				geo += m_pSelectionSkin->contentPadding();
+				geo += m_pSelectionSkin->contentPadding(StateEnum::Normal);
 				_requestRender(geo);
 			}
 		}
@@ -342,7 +342,7 @@ namespace wg
 		}
 		else
 		{
-			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding() : Border();
+			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding(StateEnum::Normal) : Border();
 			for (auto& palette : palettes)
 			{
 				if (palette.m_bVisible)
@@ -462,7 +462,7 @@ namespace wg
 
 						if (m_pToolboxSkin)
 						{
-							Border	contentPadding = m_pToolboxSkin->contentPadding();
+							Border	contentPadding = m_pToolboxSkin->contentPadding(StateEnum::Normal);
 
 							for (int i = 0; i < palettes.size(); i++)
 							{
