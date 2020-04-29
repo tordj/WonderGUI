@@ -45,6 +45,7 @@
 #include <testsuites/clutblittests.h>
 #include <testsuites/mipmaptests.h>
 #include <testsuites/blitconsistencytest.h>
+#include <testsuites/piecharttests.h>
 
 using namespace wg;
 using namespace std;
@@ -642,7 +643,7 @@ void setup_tests()
 	add_testsuite(new WaveTests(), new WaveTests());
 	add_testsuite(new ClutBlitTests(), new ClutBlitTests());
 	add_testsuite(new MipmapTests(), new MipmapTests());
-
+	add_testsuite(new PieChartTests(), new PieChartTests());
 
 	regen_testentries();
 }

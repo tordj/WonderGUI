@@ -853,9 +853,6 @@
     <ClCompile Include="..\..\..\src\base\wg_mu.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
-      <Filter>widgets\panels</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\skins\wg_fillbarskin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
@@ -867,6 +864,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvasstack.cpp">
       <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

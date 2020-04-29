@@ -1029,6 +1029,379 @@ namespace wg
 
 	}
 
+	//____ drawPieChart() _____________________________________________________
+
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float ringThickness, bool bRounded)
+	{
+		static const int c_maxSlices = c_maxSegments - 2;
+
+		if (nSlices <= 0 || nSlices > c_maxSlices)
+		{
+			//TODO: Error handling;
+			return;
+		}
+
+		RectI canvas = _canvas;
+		canvas.w = canvas.w + 1 & 0xFFFFFFFC;
+		canvas.h = canvas.h + 1 & 0xFFFFFFFC;
+
+		if (canvas.w <= 0 || canvas.h <= 0 || (ringThickness == 0.f && bRounded))
+			return;
+
+
+
+
+		// Setup our slices
+
+		struct Slice
+		{
+			float ofs;
+			float size;
+			Color color;
+		};
+
+		float sliceSizes[c_maxSlices];			// We need to copy sizes-array in order to be able to crop last slice.
+
+		Slice slices[c_maxSlices+2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
+
+		float totalSize = 0.f;
+		int		firstSlice, lastSlice;
+		float	firstSliceOfs = 1.f;
+
+		// Calc total size and find first/last slices and crop slices if needed.
+
+		float ofs = start;
+
+		for (int i = 0; i < nSlices; i++)
+		{
+			if (ofs >= 1.f)
+				ofs = fmod(ofs, 1.f);
+
+			if (ofs < firstSliceOfs)
+			{
+				firstSlice = i;
+				firstSliceOfs = ofs;
+			}
+
+			float sliceSize = _pSliceSizes[i];
+
+			if (totalSize + sliceSize >= 1.f)
+			{
+
+				sliceSizes[i] = 1.f - totalSize;
+				totalSize = 1.f;
+				nSlices = i + 1;
+				break;
+			}
+
+			sliceSizes[i] = sliceSize;
+			totalSize += sliceSize;
+			ofs += sliceSize;
+		}
+
+		if (firstSlice == 0)
+			lastSlice = nSlices - 1;
+		else
+			lastSlice = firstSlice - 1;
+
+
+		// Take care of possible rounding errors on inparameters
+
+		if (firstSliceOfs < 0.0001f)
+			firstSliceOfs = 0.f;
+
+		if (totalSize > 0.9999f)
+			totalSize = 1.f;
+
+
+
+		// Fill in our slices
+
+		int sliceIdx = 0;
+
+		if (nSlices == 1)
+		{
+			// Special case when we just have one slice
+
+			if (totalSize == 1.f)
+				slices[sliceIdx++] = { 0.f, 1.f, pSliceColors[0] };
+			else if(firstSliceOfs + totalSize > 1.f)
+			{
+				float overlap = firstSliceOfs + totalSize - 1.f;
+
+				slices[sliceIdx++] = { 0.f, overlap, pSliceColors[0] };
+				slices[sliceIdx++] = { overlap, firstSliceOfs - overlap, Color::Transparent };
+				slices[sliceIdx++] = { firstSliceOfs, 1.f - firstSliceOfs, Color::Transparent };
+			}
+			else
+			{
+				if (firstSliceOfs > 0.f )
+					slices[sliceIdx++] = { 0.f, firstSliceOfs, Color::Transparent };
+
+				slices[sliceIdx++] = { firstSliceOfs, totalSize, pSliceColors[0] };
+
+				float end = firstSliceOfs + totalSize;
+
+				if (end < 1.f)
+					slices[sliceIdx++] = { end, 1.f-end, Color::Transparent };
+			}
+		}
+		else
+		{
+			// Fill in rollover from last slice (or transparent gap) due to rotation
+
+			if (firstSliceOfs > 0.f )
+			{
+				if (totalSize == 1.f)
+					slices[sliceIdx++] = { 0.f, firstSliceOfs, pSliceColors[lastSlice] };
+				else
+					slices[sliceIdx++] = { 0.f, firstSliceOfs, Color::Transparent };
+			}
+
+			// Our buffer is circular, take care of slices from first slice to end of buffer.
+
+			float ofs = firstSliceOfs;
+			for (int i = firstSlice; i < nSlices; i++)
+			{
+				slices[sliceIdx++] = { ofs, sliceSizes[i], pSliceColors[i] };
+				ofs += sliceSizes[i];
+			}
+
+			// Fill up with transparent dummy slice if piechart has a missing piece
+
+			if (totalSize < 1.f)
+			{
+				float size = 1.f - totalSize;
+				slices[sliceIdx++] = { ofs, size, Color::Transparent };
+				ofs += size;
+				totalSize = 1.f;
+			}
+
+			// Take care of slices from beginning of buffer to last slice.
+
+			if (lastSlice < firstSlice)
+			{
+				for (int i = 0; i <= lastSlice; i++)
+				{
+					slices[sliceIdx++] = { ofs, sliceSizes[i], pSliceColors[i] };
+					ofs += sliceSizes[i];
+				}
+			}
+
+			// Correct for any rollover or inprecision for last slice
+
+			slices[sliceIdx - 1].size = 1.f - slices[sliceIdx - 1].ofs;
+		}
+
+		nSlices = sliceIdx;			// Repurpose this variable 
+
+		// Slices now in order, lets render the quadrants
+
+		int quadW = canvas.w / 2, quadH = canvas.h / 2;
+
+		RectI quadCanvas[4] = { {canvas.x + quadW, canvas.y, quadW, quadH },
+								{canvas.x + quadW, canvas.y + quadH, quadW, quadH},
+								{canvas.x, canvas.y + quadH, quadW, quadH},
+								{canvas.x, canvas.y, quadW, quadH} };
+
+		GfxFlip quadFlip[4] = { GfxFlip::Normal, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
+
+		Color colors[c_maxSegments];
+
+		int maxSegments = nSlices - 1 + 2;
+		int edgePitch = maxSegments - 1;
+		int bufferSize = (quadW + 1) * edgePitch * sizeof(int);
+
+		int * pBuffer = (int*) Base::memStackAlloc(bufferSize);
+
+
+		// Setting the outer edge (same for all quads)
+
+		if (bRounded)
+		{
+			int * pEdge = pBuffer;
+
+			int curveTabInc = ((c_nCurveTabEntries << 16)-1) / (quadW);
+
+			int curveTabOfs = 0;
+			for (int i = 0; i <= quadW; i++)
+			{
+				*pEdge = (quadH<<8) - ((s_pCurveTab[(c_nCurveTabEntries-1)-(curveTabOfs >> 16)] * quadH) >> 8);
+				pEdge += edgePitch;
+				curveTabOfs += curveTabInc;
+			}
+		}
+		else
+		{
+			int * pEdge = pBuffer;
+			for (int i = 0; i <= quadW; i++)
+			{
+				*pEdge = 0;
+				pEdge += edgePitch;
+			}
+		}
+
+		// Generating an inner edge if we have one.
+		// Storing it separately, used for all 4 quads. Copied into right place later.
+
+		int * pInnerRingBuffer = nullptr;
+		int innerRingBufferSize = 0;
+		if (ringThickness < 1.f)
+		{
+			innerRingBufferSize = (quadW + 1) * sizeof(int);
+			pInnerRingBuffer = (int*)Base::memStackAlloc(innerRingBufferSize);
+
+			int * p = pInnerRingBuffer;
+
+			int ringW = (1.f-ringThickness) * (quadW);
+			int ringH = (1.f-ringThickness) * (quadH);
+
+			int inc = ((c_nCurveTabEntries << 16)-1) / (ringW);
+			int ofs = 0;
+
+			for (int i = 0; i <= ringW; i++)
+			{
+				*p++ = (quadH << 8) - ((s_pCurveTab[(c_nCurveTabEntries - 1) - (ofs >> 16)] * ringH) >> 8);
+				ofs += inc;
+			}
+
+			int maxVal = quadH << 8;
+			for (int i = ringW + 1; i <= quadW; i++)
+				*p++ = maxVal;
+		}
+
+		//
+
+		for (int quad = 0; quad < 4; quad++)
+		{
+			int nSegments = 0;
+			Slice * pSlice = slices;
+			Slice * pSliceEnd = slices + nSlices;
+
+			float quadStartOfs = 0.25f * quad;
+
+			// Add background as first segment
+
+			colors[nSegments] = Color::Transparent;
+			nSegments++;
+
+			// Find first slice to include
+
+			while (pSlice != pSliceEnd && pSlice->ofs + pSlice->size < quadStartOfs )
+				pSlice++;
+
+			colors[nSegments] = pSlice->color;
+			nSegments++;
+			pSlice++;
+
+			// Generate edges for all following slices included
+
+			while (pSlice != pSliceEnd && pSlice->ofs < quadStartOfs + 0.25f)
+			{
+				int * pEdge = pBuffer + nSegments-1;
+
+				// Set startvalue and decrease per strip.
+
+				int value = quadH << 8;
+				int dec;
+
+				float rot = (pSlice->ofs - quadStartOfs);
+
+				if (rot == 0.f)
+				{
+					value = 0;
+					dec = 0;
+				}
+				else
+				{
+					rot *= 3.14159265358979f * 2;
+					float s = sin(rot);
+					float c = cos(rot);
+
+					float decF = (c/s) * (quadH << 12) / float(quadW);
+
+					if (decF > 400000*4096)
+						decF = 400000*4096;
+
+					dec = int(decF);
+				}
+
+				// Fill in the edge
+
+				int strip;
+				int precisionValue = value << 4;
+				for (strip = 0; strip <= quadW && value >= pEdge[-1] ; strip++)
+				{
+					* pEdge = value;
+					pEdge += edgePitch;
+					precisionValue -= dec;
+					value = precisionValue >> 4;
+				}
+
+				while (strip <= quadW)
+				{
+					*pEdge = pEdge[-1];
+					pEdge += edgePitch;
+					strip++;
+				}
+
+				colors[nSegments] = pSlice->color;
+				nSegments++;
+				pSlice++;
+			}
+
+			// Add edge for inner ring if present
+
+			if (pInnerRingBuffer)
+			{
+				int * pEdge = pBuffer + nSegments - 1;
+
+				for (int i = 0; i <= quadW; i++)
+				{
+					int value = pInnerRingBuffer[i];
+					*pEdge = value;
+
+					int * pPrev = pEdge - 1;
+					while (*pPrev > value)
+						* pPrev-- = value;
+
+					pEdge += edgePitch;
+				}
+
+				colors[nSegments] = Color::Transparent;
+				nSegments++;
+			}
+
+			// Draw
+
+			int * pEdges = pBuffer;
+			Color * pColors = colors;
+			if (!bRounded)
+			{
+				pEdges++;
+				pColors++;
+				nSegments--;
+			}
+
+			uint8_t		alphaCheck = 0;
+			for (int i = 0; i < nSegments; i++)
+				alphaCheck |= pColors[i].a;
+
+			if (alphaCheck == 0)
+				continue;
+
+			if (nSegments == 1)
+				fill(quadCanvas[quad], pColors[0]);
+			else
+				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, blitFlipTransforms[(int)quadFlip[quad]]);
+		}
+
+		if( innerRingBufferSize != 0 )
+			Base::memStackRelease(innerRingBufferSize);
+
+		Base::memStackRelease(bufferSize);
+	}
+
 	//____ drawSegments() ______________________________________________________
 
 	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )

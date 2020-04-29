@@ -144,6 +144,8 @@ namespace wg
 
 		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
 
+		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const Color * pSliceColors, float ringThickness = 1.f, bool bRounded = true );
+
 		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch);
 		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip);
 
