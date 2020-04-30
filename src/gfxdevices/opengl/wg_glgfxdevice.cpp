@@ -1457,12 +1457,12 @@ namespace wg
 		int vTopLeft = 0;
 
 		if (uIncX + uIncY < 0)
-			uTopLeft = maxCol - 1;
+			uTopLeft = maxCol;
 
 		if (vIncX < 0)
-			vTopLeft = dest.w - 1;
+			vTopLeft = dest.w;
 		else if (vIncY < 0)
-			vTopLeft = dest.h - 1;
+			vTopLeft = dest.h;
 
 		// Setup vertices
 
