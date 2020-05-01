@@ -1031,7 +1031,7 @@ namespace wg
 
 	//____ drawPieChart() _____________________________________________________
 
-	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float ringThickness, bool bRounded)
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float ringThickness, bool bRounded, Color hubColor, Color backColor)
 	{
 		static const int c_maxSlices = c_maxSegments - 2;
 
@@ -1049,8 +1049,6 @@ namespace wg
 			return;
 
 
-
-
 		// Setup our slices
 
 		struct Slice
@@ -1060,132 +1058,99 @@ namespace wg
 			Color color;
 		};
 
-		float sliceSizes[c_maxSlices];			// We need to copy sizes-array in order to be able to crop last slice.
-
 		Slice slices[c_maxSlices+2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
 
 		float totalSize = 0.f;
-		int		firstSlice, lastSlice;
-		float	firstSliceOfs = 1.f;
 
-		// Calc total size and find first/last slices and crop slices if needed.
+		// Trim our slices, so we have a length of most 1.0.
+
+		Slice trimmedSlices[c_maxSlices+1];
 
 		float ofs = start;
-
 		for (int i = 0; i < nSlices; i++)
 		{
 			if (ofs >= 1.f)
 				ofs = fmod(ofs, 1.f);
 
-			if (ofs < firstSliceOfs)
-			{
-				firstSlice = i;
-				firstSliceOfs = ofs;
-			}
-
 			float sliceSize = _pSliceSizes[i];
 
 			if (totalSize + sliceSize >= 1.f)
 			{
-
-				sliceSizes[i] = 1.f - totalSize;
+				trimmedSlices[i] = { ofs, 1.f - totalSize, pSliceColors[i] };
 				totalSize = 1.f;
 				nSlices = i + 1;
 				break;
 			}
 
-			sliceSizes[i] = sliceSize;
+
+			trimmedSlices[i] = { ofs,sliceSize, pSliceColors[i] };
 			totalSize += sliceSize;
 			ofs += sliceSize;
 		}
+
+		// Adding an empty slice at end if totalSize < 1.0
+
+		if (totalSize < 0.9999f)
+		{
+			if (ofs >= 1.f)
+				ofs = fmod(ofs, 1.f);
+
+			trimmedSlices[nSlices++] = { ofs,1.f-totalSize, backColor };
+		}
+
+		// Find first slice (one with smallest offset)
+
+		int		firstSlice, lastSlice;
+		float	firstSliceOfs = 1.f;
+
+		for (int i = 0; i < nSlices; i++)
+		{
+			if (trimmedSlices[i].ofs < firstSliceOfs)
+			{
+				firstSlice = i;
+				firstSliceOfs = trimmedSlices[i].ofs;
+			}
+
+		}
+
+		// Find last slice
 
 		if (firstSlice == 0)
 			lastSlice = nSlices - 1;
 		else
 			lastSlice = firstSlice - 1;
 
-
 		// Take care of possible rounding errors on inparameters
 
 		if (firstSliceOfs < 0.0001f)
-			firstSliceOfs = 0.f;
+			trimmedSlices[firstSlice].ofs = firstSliceOfs = 0.f;
 
-		if (totalSize > 0.9999f)
-			totalSize = 1.f;
-
-
-
-		// Fill in our slices
+		// Rearrange our slices so we start from offset 0. Possibly adding one more slice in the beginning.
 
 		int sliceIdx = 0;
 
 		if (nSlices == 1)
 		{
-			// Special case when we just have one slice
-
-			if (totalSize == 1.f)
-				slices[sliceIdx++] = { 0.f, 1.f, pSliceColors[0] };
-			else if(firstSliceOfs + totalSize > 1.f)
-			{
-				float overlap = firstSliceOfs + totalSize - 1.f;
-
-				slices[sliceIdx++] = { 0.f, overlap, pSliceColors[0] };
-				slices[sliceIdx++] = { overlap, firstSliceOfs - overlap, Color::Transparent };
-				slices[sliceIdx++] = { firstSliceOfs, 1.f - firstSliceOfs, Color::Transparent };
-			}
-			else
-			{
-				if (firstSliceOfs > 0.f )
-					slices[sliceIdx++] = { 0.f, firstSliceOfs, Color::Transparent };
-
-				slices[sliceIdx++] = { firstSliceOfs, totalSize, pSliceColors[0] };
-
-				float end = firstSliceOfs + totalSize;
-
-				if (end < 1.f)
-					slices[sliceIdx++] = { end, 1.f-end, Color::Transparent };
-			}
+			slices[sliceIdx++] = { 0.f, 1.f, trimmedSlices[0].color };
 		}
 		else
 		{
 			// Fill in rollover from last slice (or transparent gap) due to rotation
 
 			if (firstSliceOfs > 0.f )
-			{
-				if (totalSize == 1.f)
-					slices[sliceIdx++] = { 0.f, firstSliceOfs, pSliceColors[lastSlice] };
-				else
-					slices[sliceIdx++] = { 0.f, firstSliceOfs, Color::Transparent };
-			}
+				slices[sliceIdx++] = { 0.f, firstSliceOfs, trimmedSlices[lastSlice].color };
 
 			// Our buffer is circular, take care of slices from first slice to end of buffer.
 
-			float ofs = firstSliceOfs;
 			for (int i = firstSlice; i < nSlices; i++)
-			{
-				slices[sliceIdx++] = { ofs, sliceSizes[i], pSliceColors[i] };
-				ofs += sliceSizes[i];
-			}
-
-			// Fill up with transparent dummy slice if piechart has a missing piece
-
-			if (totalSize < 1.f)
-			{
-				float size = 1.f - totalSize;
-				slices[sliceIdx++] = { ofs, size, Color::Transparent };
-				ofs += size;
-				totalSize = 1.f;
-			}
+				slices[sliceIdx++] = trimmedSlices[i];
 
 			// Take care of slices from beginning of buffer to last slice.
 
 			if (lastSlice < firstSlice)
 			{
 				for (int i = 0; i <= lastSlice; i++)
-				{
-					slices[sliceIdx++] = { ofs, sliceSizes[i], pSliceColors[i] };
-					ofs += sliceSizes[i];
-				}
+					slices[sliceIdx++] = trimmedSlices[i];
 			}
 
 			// Correct for any rollover or inprecision for last slice
@@ -1208,7 +1173,7 @@ namespace wg
 
 		Color colors[c_maxSegments];
 
-		int maxSegments = nSlices - 1 + 2;
+		int maxSegments = nSlices + 2;
 		int edgePitch = maxSegments - 1;
 		int bufferSize = (quadW + 1) * edgePitch * sizeof(int);
 
@@ -1253,8 +1218,8 @@ namespace wg
 
 			int * p = pInnerRingBuffer;
 
-			int ringW = (1.f-ringThickness) * (quadW);
-			int ringH = (1.f-ringThickness) * (quadH);
+			int ringW = int((1.f-ringThickness) * (quadW));
+			int ringH = int((1.f-ringThickness) * (quadH));
 
 			int inc = ((c_nCurveTabEntries << 16)-1) / (ringW);
 			int ofs = 0;
@@ -1282,7 +1247,7 @@ namespace wg
 
 			// Add background as first segment
 
-			colors[nSegments] = Color::Transparent;
+			colors[nSegments] = backColor;
 			nSegments++;
 
 			// Find first slice to include
@@ -1363,12 +1328,15 @@ namespace wg
 
 					int * pPrev = pEdge - 1;
 					while (*pPrev > value)
-						* pPrev-- = value;
+					{
+						* pPrev = value;
+						pPrev--;
+					}
 
 					pEdge += edgePitch;
 				}
 
-				colors[nSegments] = Color::Transparent;
+				colors[nSegments] = hubColor;
 				nSegments++;
 			}
 

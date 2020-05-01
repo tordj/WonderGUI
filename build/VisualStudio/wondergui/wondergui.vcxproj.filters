@@ -482,9 +482,6 @@
     <ClInclude Include="..\..\..\src\base\wg_mu.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_fillbarskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_slider.h">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -493,6 +490,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h">
       <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_fillmeterskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_knob.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_piemeterskin.h">
+      <Filter>skins</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -853,9 +859,6 @@
     <ClCompile Include="..\..\..\src\base\wg_mu.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_fillbarskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_slider.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -867,6 +870,15 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
       <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_fillmeterskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_knob.cpp">
+      <Filter>widgets</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_piemeterskin.cpp">
+      <Filter>skins</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

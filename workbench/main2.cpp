@@ -81,6 +81,7 @@ bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
 bool pianoKeyboardTest(CStandardSlot_p pSlot);
 bool sliderTest(CStandardSlot_p pSlot);
+bool knobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 
 
@@ -566,7 +567,7 @@ int main(int argc, char** argv)
 //	stretchBlitTest(pRoot->child.ptr());
 //	scrollIntoViewTest(pRoot->child.ptr());
 //	textClipTest(&pRoot->slot);
-	textEditorTest(&pRoot->slot);
+//	textEditorTest(&pRoot->slot);
 //	lineEditorTest(&pRoot->slot);
 //	popupOpenerTest(&pRoot->slot);
 //	scrollbarTest(&pRoot->slot);
@@ -575,6 +576,7 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
+	knobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 
 	
@@ -1976,6 +1978,50 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ knobTest() ____________________________________________________
+
+bool knobTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black );
+	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black);
+
+	auto pBgSkin3 = PieMeterSkin::create( 10.f/12.f, 0.05f, 4.f/12.f, 0.25f, Color::Green, Color::Red, Color::Yellow, Color::Black );
+
+	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, 0.25f, Color::Green, Color::Red, Color::Yellow, Color::Black);
+	pBgSkin4->setSlices({ {0.2,Color::Red,Color::Red},{0.2,Color::Yellow,Color::Yellow},{0.6,Color::Blue,Color::Green} });
+
+	auto pKnob1 = Knob::create();
+	pKnob1->setSkin(pBgSkin1);
+	pKnob1->setValue(0.5f);
+
+	auto pKnob2 = Knob::create();
+	pKnob2->setSkin(pBgSkin2);
+	pKnob2->setValue(0.5f);
+	pKnob2->setDragAxis(Axis::X);
+
+	auto pKnob3 = Knob::create();
+	pKnob3->setSkin(pBgSkin3);
+	pKnob3->setValue(0.5f);
+	pKnob3->setDragAxis(Axis::Y);
+
+	auto pKnob4 = Knob::create();
+	pKnob4->setSkin(pBgSkin4);
+	pKnob4->setValue(0.5f);
+	pKnob4->setDragAxis(Axis::Y);
+
+
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob3, Rect(230, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob4, Rect(340, 10, 100, 100));
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
 
 //____ sliderTest() ____________________________________________________
 
@@ -1989,7 +2035,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderX = Slider::create();
 	{
-		auto pBgSkin = FillBarSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->setSkin(pBgSkin);
@@ -1999,7 +2045,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = Slider::create();
 	{
-		auto pBgSkin = FillBarSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->setSkin(pBgSkin);
@@ -2075,7 +2121,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	Surface_p pHandleSurf = loadSurface("../resources/parallels/fader0001.png", PixelFormat::BGRA_8);
 	auto pHandleSkin = BlockSkin::create(pHandleSurf);
 
-	auto pSliderBgSkin = FillBarSkin::create(Direction::Up, Color(144/2, 196/2, 235/2), Color(144, 196, 235),Color::Transparent, BorderI(36,0,40,0), BorderI(),true);
+	auto pSliderBgSkin = FillMeterSkin::create(Direction::Up, Color(144/2, 196/2, 235/2), Color(144, 196, 235),Color::Transparent, BorderI(36,0,40,0), BorderI(),true);
 
 	auto pRedirectedSliderBgSkin = pCanvasStack->redirectSkin(pSliderBgSkin,1);
 

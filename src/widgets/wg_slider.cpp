@@ -307,18 +307,16 @@ namespace wg
 
 		if (value != m_value)
 		{
-			if (!m_pSkin || m_pSkin->ignoresFraction())
-			{
-				Rect oldGeo = _handleGeo(m_size);
-				m_value = value;
-				Rect newGeo = _handleGeo(m_size);
-				_requestRender(Rect::getUnion(oldGeo, newGeo));
-			}
-			else
-			{
-				m_value = value;
-				_requestRender();
-			}
+			Rect oldGeo = _handleGeo(m_size);
+			m_value = value;
+			Rect newGeo = _handleGeo(m_size);
+
+			Rect changeRect = Rect::getUnion(oldGeo, newGeo);
+
+			if( m_pSkin )
+				changeRect.growToContain( m_pSkin->fractionChangeRect(m_size, m_state, m_value, value) );
+
+			_requestRender( changeRect );
 		}
 	}
 

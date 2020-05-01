@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_FILLBARSKIN_DOT_H
-#define WG_FILLBARSKIN_DOT_H
+#ifndef WG_FILLMETERSKIN_DOT_H
+#define WG_FILLMETERSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
@@ -29,17 +29,17 @@
 namespace wg
 {
 
-	class FillBarSkin;
+	class FillMeterSkin;
 
-	typedef	StrongPtr<FillBarSkin>	FillBarSkin_p;
+	typedef	StrongPtr<FillMeterSkin>	FillMeterSkin_p;
 
 
-	class FillBarSkin : public Skin
+	class FillMeterSkin : public Skin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static FillBarSkin_p create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor = Color::Transparent, const BorderI& barPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bBarStartOutside = false);
+		static FillMeterSkin_p create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor = Color::Transparent, const BorderI& barPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bBarStartOutside = false);
 
 		//.____ Identification __________________________________________
 
@@ -72,8 +72,8 @@ namespace wg
 		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
 
 	private:
-		FillBarSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
-		~FillBarSkin() {};
+		FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
+		~FillMeterSkin() {};
 
 		Rect		_barFillArea(const Rect& canvas, float fraction) const;
 
@@ -89,4 +89,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_STATICCOLORSKIN_DOT_H
+#endif //WG_FILLMETERSKIN_DOT_H

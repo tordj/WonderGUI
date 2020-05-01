@@ -161,7 +161,9 @@
 #include <wg_animplayer.h>
 #include <wg_pianokeyboard.h>
 #include <wg_slider.h>
-#include <wg_fillbarskin.h>
+#include <wg_knob.h>
+#include <wg_fillmeterskin.h>
+#include <wg_piemeterskin.h>
 #include <wg_canvasstack.h>
 
 #endif //WONDERGUI_DOT_H
