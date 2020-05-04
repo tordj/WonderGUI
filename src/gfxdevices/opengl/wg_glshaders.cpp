@@ -546,7 +546,6 @@ static const char segmentsFragmentShader2[] =
 
 "   float totalAlpha = factor1 + factor2 + factor3;"
 
-
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3)/totalAlpha;"
 "   color *= fragColor;"

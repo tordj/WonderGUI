@@ -47,12 +47,49 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static PieMeterSkin_p create(float start, float min, float max, float thickness, Color minColor, Color maxColor, Color hubColor = Color::Transparent, Color backColor = Color::Transparent, const BorderI& piePadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFixedSections = true, bool bRounded = true);
+		static PieMeterSkin_p create();
+		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, Color minColor, Color maxColor, Color emptyColor = Color::Transparent,
+										float hubSize = 0.f, Color hubColor = Color::Transparent, 
+										Color backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
+										const BorderI& contentPadding = BorderI(), bool bStaticSections = true, bool bRectangular = false);
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Appearance ____________________________________________________
+
+		bool	setSlices(std::initializer_list<Slice> slices);
+
+		void	setRange(float min, float max);
+		void	setStartAngle(float start);
+		float	startAngle() const { return m_rangeStart; }
+		void	setMinLength(float min);
+		float	minLength() const { return m_minRange;  }
+		void	setMaxLength(float max);
+		float	maxLength() const { return m_maxRange; }
+
+		void	setRectangular(bool bRectangular);
+		bool	isRectangular() const { return m_bRectangular;  }
+
+		void	setStaticSections(bool bStatic);
+		bool	isStaticSections() const { return m_bStaticSections; }
+
+		void	setGfxPadding(BorderI padding);
+		Border	gfxPadding() const { return m_gfxPadding; }
+
+		void	setEmptyColor(Color empty);
+		Color	emptyColor() const { return m_emptyColor; }
+
+		void	setHub(float size, Color color);
+		void	setHubSize(float hubSize);
+		float	hubSize() const { return m_hubSize; }
+		void	setHubColor(Color hubColor);
+		Color	hubColor() const { return m_hubColor; }
+
+		void	setBackColor(Color back);
+		Color	backColor() const { return m_backColor; }
 
 		//.____ Geometry _________________________________________________
 
@@ -69,10 +106,6 @@ namespace wg
 		Coord	contentOfs(State state) const override;
 		Rect	contentRect(const Rect& canvas, State state) const override;
 
-		//.____ Control __________________________________________________
-
-		bool	setSlices(std::initializer_list<Slice> slices);
-
 		//.____ Misc ____________________________________________________
 
 		bool	isOpaque() const override;
@@ -88,24 +121,28 @@ namespace wg
 		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
 
 	private:
-		PieMeterSkin(float start, float min, float max, float thickness, Color minColor, Color maxColor, Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding, bool bFixedSections, bool bRounded);
+		PieMeterSkin();
+		PieMeterSkin(float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize, Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding, bool bStaticSections, bool bSquare);
 		~PieMeterSkin() {};
+
+		void		_updateOpacity();
 
 		SizeI		m_preferredSize;
 
-		float		m_rangeStart = 0.f;
+		float		m_rangeStart = 0.55f;
 		float		m_minRange = 0.01f;
-		float		m_maxRange = 1.f;
-		float		m_thickness = 1.f;
-		bool		m_bRounded = true;
-		bool		m_bFixedSections = true;
+		float		m_maxRange = 0.9f;
+		float		m_hubSize = 0.75f;
+		bool		m_bRectangular = false;
+		bool		m_bStaticSections = true;
 		bool		m_bOpaque;
 
 		BorderI		m_contentPadding;
-		BorderI		m_piePadding;
+		BorderI		m_gfxPadding;
 
-		Color		m_hubColor;
-		Color		m_backColor;
+		Color		m_hubColor = Color::Transparent;
+		Color		m_backColor = Color::Transparent;
+		Color		m_emptyColor = Color::DarkBlue;
 
 		const static int c_maxSlices = 6;
 		Slice		m_slices[c_maxSlices];

@@ -500,6 +500,9 @@
     <ClInclude Include="..\..\..\src\skins\wg_piemeterskin.h">
       <Filter>skins</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_spinmeterskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
@@ -878,6 +881,9 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\wg_piemeterskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_spinmeterskin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
   </ItemGroup>

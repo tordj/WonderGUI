@@ -182,6 +182,7 @@
     <ClInclude Include="..\..\..\src\skins\wg_fillmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_piemeterskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_spinmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_staticcolorskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_multiblockskin.h" />
@@ -312,6 +313,7 @@
     <ClCompile Include="..\..\..\src\skins\wg_fillmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_lambdaskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_piemeterskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_spinmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_staticcolorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_multiblockskin.cpp" />

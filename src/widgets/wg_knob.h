@@ -36,7 +36,7 @@ namespace wg
 
 	//____ Knob ____________________________________________________________
 	/**
-	 * @brief A simple slider widget.
+	 * @brief A simple knob widget.
 	 *
 	 *
 	 **/
@@ -82,8 +82,6 @@ namespace wg
 		///____ Misc __________________________________________________________
 
 		void 			receive(Msg * pMsg) override;
-
-
 
 
 	protected:

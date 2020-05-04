@@ -100,6 +100,10 @@ namespace wg
 		virtual bool		setBlitSource(Surface * pSource);
 		inline Surface_p 	blitSource() const { return m_pBlitSource; }
 
+//		virtual bool		setTintOverlay(TintOverlay * pMap, CoordI pos);
+//		inline TintOverlay_p tintOverlay() const { return m_pTintOverlay; }
+
+
 
 		//.____ Rendering ________________________________________________
 
@@ -135,7 +139,7 @@ namespace wg
 		virtual void	stretchFlipBlit(const RectI& dest, const RectI& src, GfxFlip flip);
 		virtual void	stretchFlipBlit(const RectI& dest, const RectF& src, GfxFlip flip);
 
-		virtual void	rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale);
+		virtual void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
 		// Draw segments methods
 
@@ -144,7 +148,7 @@ namespace wg
 
 		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
 
-		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const Color * pSliceColors, float ringThickness = 1.f, bool bRounded = true, Color hubColor = Color::Transparent, Color backColor = Color::Transparent );
+		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const Color * pSliceColors, float hubSize = 0.f, Color hubColor = Color::Transparent, Color backColor = Color::Transparent, bool bRectangular = false);
 
 		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch);
 		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip);

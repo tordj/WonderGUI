@@ -97,8 +97,7 @@ public:
 
 	bool	rotScaleBlit(GfxDevice * pDevice, const RectI& canvas)
 	{
-		CoordF center = { m_pClockFace->size().w / 2.f, m_pClockFace->size().h / 2.f };
-		pDevice->rotScaleBlit(canvas, center, rot, scale);
+		pDevice->rotScaleBlit(canvas, rot, scale);
 		return true;
 	}
 

@@ -81,7 +81,8 @@ bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
 bool pianoKeyboardTest(CStandardSlot_p pSlot);
 bool sliderTest(CStandardSlot_p pSlot);
-bool knobTest(CStandardSlot_p pSlot);
+bool pieKnobTest(CStandardSlot_p pSlot);
+bool spinKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 
 
@@ -576,7 +577,8 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
-	knobTest(&pRoot->slot);
+	pieKnobTest(&pRoot->slot);
+//	spinKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 
 	
@@ -1978,20 +1980,25 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 	return true;
 }
 
-//____ knobTest() ____________________________________________________
 
-bool knobTest(CStandardSlot_p pSlot)
+//____ pieKnobTest() ____________________________________________________
+
+bool pieKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
 
-	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black );
+	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black);
 	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black);
 
-	auto pBgSkin3 = PieMeterSkin::create( 10.f/12.f, 0.05f, 4.f/12.f, 0.25f, Color::Green, Color::Red, Color::Yellow, Color::Black );
+	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
 
-	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, 0.25f, Color::Green, Color::Red, Color::Yellow, Color::Black);
-	pBgSkin4->setSlices({ {0.2,Color::Red,Color::Red},{0.2,Color::Yellow,Color::Yellow},{0.6,Color::Blue,Color::Green} });
+	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 1 / 24.f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.25f, Color::Yellow, Color::Black);
+	pBgSkin4->setSlices({ {0.2,Color::Red,Color::Red},{0.2,Color::Orange,Color::Orange},{0.6,Color::Blue,Color::Green} });
+
+	auto pBgSkin5 = PieMeterSkin::create(10.f / 12.f, 0 / 24.f, 4.f / 12.f, Color::Blue, Color::Blue, Color::DarkGray, 0.25f, Color::Yellow, Color::Black );
+	pBgSkin5->setSlices({ {0.7,Color::DarkBlue,Color::DarkBlue},{0.2,Color::Blue,Color::Blue},{0.1,Color::LightBlue,Color::LightBlue} });
+	pBgSkin5->setStaticSections(false);
 
 	auto pKnob1 = Knob::create();
 	pKnob1->setSkin(pBgSkin1);
@@ -2012,14 +2019,67 @@ bool knobTest(CStandardSlot_p pSlot)
 	pKnob4->setValue(0.5f);
 	pKnob4->setDragAxis(Axis::Y);
 
+	auto pKnob5 = Knob::create();
+	pKnob5->setSkin(pBgSkin5);
+	pKnob5->setValue(0.5f);
+	pKnob5->setDragAxis(Axis::Y);
+
 
 	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 100, 100));
 	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
 	pBaseLayer->slots.pushBackMovable(pKnob3, Rect(230, 10, 100, 100));
 	pBaseLayer->slots.pushBackMovable(pKnob4, Rect(340, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pKnob5, Rect(450, 10, 200, 100));
 	*pSlot = pBaseLayer;
 	return true;
 }
+
+//____ spinKnobTest() ____________________________________________________
+
+bool spinKnobTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
+
+	Surface_p pSurfArrow = loadSurface("../resources/dialarrow_small.png", PixelFormat::BGRA_8);
+	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+
+	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
+
+	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, {0.5f,0.5f}, -135, 135 );
+
+	auto pKnob1 = Knob::create();
+	pKnob1->setSkin(pArrowSkin);
+	pKnob1->setValue(0.5f);
+	pKnob1->setDragRange(500);
+	/*
+		auto pKnob2 = Knob::create();
+		pKnob2->setSkin(pBgSkin2);
+		pKnob2->setValue(0.5f);
+		pKnob2->setDragAxis(Axis::X);
+
+		auto pKnob3 = Knob::create();
+		pKnob3->setSkin(pBgSkin3);
+		pKnob3->setValue(0.5f);
+		pKnob3->setDragAxis(Axis::Y);
+
+		auto pKnob4 = Knob::create();
+		pKnob4->setSkin(pBgSkin4);
+		pKnob4->setValue(0.5f);
+		pKnob4->setDragAxis(Axis::Y);
+	*/
+
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 400, 100));
+	//	pBaseLayer->slots.pushBackMovable(pKnob2, Rect(120, 10, 100, 100));
+	//	pBaseLayer->slots.pushBackMovable(pKnob3, Rect(230, 10, 100, 100));
+	//	pBaseLayer->slots.pushBackMovable(pKnob4, Rect(340, 10, 100, 100));
+	*pSlot = pBaseLayer;
+	return true;
+}
+
 
 
 

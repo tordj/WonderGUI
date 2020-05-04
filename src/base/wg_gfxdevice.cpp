@@ -499,7 +499,7 @@ namespace wg
 
 	//____ rotScaleBlit() _____________________________________________________
 
-	void GfxDevice::rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale)
+	void GfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
 	{
 		assert(m_pBlitSource != nullptr);
 
@@ -522,8 +522,11 @@ namespace wg
 
 		src = srcCenter;
 
-		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
-		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+//		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
+//		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+
+		src.x -= dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0];
+		src.y -= dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1];
 
 		_transformBlit(dest, { src.x,src.y }, mtx);
 	}
@@ -1031,21 +1034,24 @@ namespace wg
 
 	//____ drawPieChart() _____________________________________________________
 
-	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float ringThickness, bool bRounded, Color hubColor, Color backColor)
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float hubSize, Color hubColor, Color backColor, bool bRectangular)
 	{
 		static const int c_maxSlices = c_maxSegments - 2;
 
-		if (nSlices <= 0 || nSlices > c_maxSlices)
+		if (nSlices < 0 || nSlices > c_maxSlices)
 		{
 			//TODO: Error handling;
 			return;
 		}
 
+		//TODO: Early out if no slices, no hud and no background
+		//TODO: Replace with fill if no hub, no slices.
+
 		RectI canvas = _canvas;
 		canvas.w = canvas.w + 1 & 0xFFFFFFFC;
 		canvas.h = canvas.h + 1 & 0xFFFFFFFC;
 
-		if (canvas.w <= 0 || canvas.h <= 0 || (ringThickness == 0.f && bRounded))
+		if (canvas.w <= 0 || canvas.h <= 0 || (hubSize == 1.f && !bRectangular))
 			return;
 
 
@@ -1182,7 +1188,16 @@ namespace wg
 
 		// Setting the outer edge (same for all quads)
 
-		if (bRounded)
+		if (bRectangular)
+		{
+			int * pEdge = pBuffer;
+			for (int i = 0; i <= quadW; i++)
+			{
+				*pEdge = 0;
+				pEdge += edgePitch;
+			}
+		}
+		else
 		{
 			int * pEdge = pBuffer;
 
@@ -1196,30 +1211,21 @@ namespace wg
 				curveTabOfs += curveTabInc;
 			}
 		}
-		else
-		{
-			int * pEdge = pBuffer;
-			for (int i = 0; i <= quadW; i++)
-			{
-				*pEdge = 0;
-				pEdge += edgePitch;
-			}
-		}
 
 		// Generating an inner edge if we have one.
 		// Storing it separately, used for all 4 quads. Copied into right place later.
 
-		int * pInnerRingBuffer = nullptr;
-		int innerRingBufferSize = 0;
-		if (ringThickness < 1.f)
+		int * pHubBuffer = nullptr;
+		int hubBufferSize = 0;
+		if (hubSize > 0.f)
 		{
-			innerRingBufferSize = (quadW + 1) * sizeof(int);
-			pInnerRingBuffer = (int*)Base::memStackAlloc(innerRingBufferSize);
+			hubBufferSize = (quadW + 1) * sizeof(int);
+			pHubBuffer = (int*)Base::memStackAlloc(hubBufferSize);
 
-			int * p = pInnerRingBuffer;
+			int * p = pHubBuffer;
 
-			int ringW = int((1.f-ringThickness) * (quadW));
-			int ringH = int((1.f-ringThickness) * (quadH));
+			int ringW = int(hubSize * quadW);
+			int ringH = int(hubSize * quadH);
 
 			int inc = ((c_nCurveTabEntries << 16)-1) / (ringW);
 			int ofs = 0;
@@ -1315,15 +1321,15 @@ namespace wg
 				pSlice++;
 			}
 
-			// Add edge for inner ring if present
+			// Add edge for hub if present
 
-			if (pInnerRingBuffer)
+			if (pHubBuffer)
 			{
 				int * pEdge = pBuffer + nSegments - 1;
 
 				for (int i = 0; i <= quadW; i++)
 				{
-					int value = pInnerRingBuffer[i];
+					int value = pHubBuffer[i];
 					*pEdge = value;
 
 					int * pPrev = pEdge - 1;
@@ -1344,7 +1350,7 @@ namespace wg
 
 			int * pEdges = pBuffer;
 			Color * pColors = colors;
-			if (!bRounded)
+			if (bRectangular)
 			{
 				pEdges++;
 				pColors++;
@@ -1364,8 +1370,8 @@ namespace wg
 				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, blitFlipTransforms[(int)quadFlip[quad]]);
 		}
 
-		if( innerRingBufferSize != 0 )
-			Base::memStackRelease(innerRingBufferSize);
+		if( hubBufferSize != 0 )
+			Base::memStackRelease(hubBufferSize);
 
 		Base::memStackRelease(bufferSize);
 	}

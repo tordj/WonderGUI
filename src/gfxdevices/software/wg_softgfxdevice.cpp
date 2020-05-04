@@ -1276,7 +1276,7 @@ namespace wg
 				}
 				else
 				{
-					if (SRCCLIP && ((ofsX | ofsY | (srcMax.w - ofsX) | (srcMax.h - ofsY)) < 0))
+					if (SRCCLIP && ((ofsX | ofsY | (srcMax.w - 1- ofsX) | (srcMax.h - 1 - ofsY)) < 0))
 					{
 						ofsX += pixelIncX;
 						ofsY += pixelIncY;
@@ -1285,7 +1285,7 @@ namespace wg
 					}
 					else
 					{
-						assert((ofsX | ofsY | (srcMax.w - ofsX) | (srcMax.h - ofsY)) >= 0);
+						assert((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) >= 0);
 
 						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, srcB, srcG, srcR, srcA);
 					}
@@ -2618,10 +2618,10 @@ namespace wg
 
 	//____ _rotScaleBlit() ____________________________________________________
 
-	void SoftGfxDevice::rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale)
+	void SoftGfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter )
 	{
 		m_bClipSource = true;
-		GfxDevice::rotScaleBlit(dest, srcCenter, rotationDegrees, scale);
+		GfxDevice::rotScaleBlit(dest, rotationDegrees, scale, srcCenter, destCenter);
 		m_bClipSource = false;
 	}
 
