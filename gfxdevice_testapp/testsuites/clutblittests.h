@@ -26,6 +26,7 @@ public:
 			return false;
 
 		m_pLeavesInterpolated->setScaleMode(ScaleMode::Interpolate);
+		m_pLeaves->setScaleMode(ScaleMode::Nearest);
 
 		return true;
 	}

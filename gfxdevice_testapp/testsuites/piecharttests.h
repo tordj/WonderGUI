@@ -30,7 +30,7 @@ public:
 
 	bool squarePieChart(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.f, Color::Transparent, Color::Transparent, false);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 
@@ -74,7 +74,7 @@ public:
 
 	bool squarePieChartWithHole(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 0.6f, Color::Transparent, Color::Transparent, false);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 0.6f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 
@@ -92,7 +92,7 @@ public:
 
 	bool squarePieChartWith100PctHole(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.0f, Color::Transparent, Color::Transparent, false);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.0f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 

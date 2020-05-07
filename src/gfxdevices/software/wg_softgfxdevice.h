@@ -71,6 +71,10 @@ namespace wg
 		//.____ State _________________________________________________
 
 		void		setTintColor(Color color) override;
+
+		void		setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void		clearTintGradient() override;
+
 		bool		setBlendMode(BlendMode blendMode) override;
 
 		//.____ Rendering ________________________________________________
@@ -94,15 +98,6 @@ namespace wg
 
 		void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch) override;
 
-
-		struct ColTrans
-		{
-			Color	baseTint;
-			Color * pTintX;
-			Color * pTintY;
-		};
-
-
 	protected:
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
@@ -117,15 +112,48 @@ namespace wg
 		enum class TintMode
 		{
 			None = 0,
-			Color,
-			MapX,
-			MapY,
-			MapXY
+			Flat,
+			GradientX,
+			GradientY,
+			GradientXY
 		};
 
 		const static TintMode      TintMode_min = TintMode::None;
-		const static TintMode      TintMode_max = TintMode::MapXY;
-		const static int           TintMode_size = (int)TintMode::MapXY + 1;
+		const static TintMode      TintMode_max = TintMode::GradientXY;
+		const static int           TintMode_size = (int)TintMode::GradientXY + 1;
+
+
+		struct ColTrans
+		{
+			TintMode mode;
+
+			Color	flatTintColor;				// Used in TintMode::Color.
+
+			// Following used in TintMode GradientX, GradientY and GradientXY.
+
+			RectI		tintRect;
+
+			uint32_t	topLeftR;		// Scale: 0 -> (1<<24)
+			uint32_t	topLeftG;
+			uint32_t	topLeftB;
+			uint32_t	topLeftA;
+
+			uint32_t	leftIncR;
+			uint32_t	leftIncG;
+			uint32_t	leftIncB;
+			uint32_t	leftIncA;
+
+			uint32_t	topRightR;
+			uint32_t	topRightG;
+			uint32_t	topRightB;
+			uint32_t	topRightA;
+
+			uint32_t	rightIncR;
+			uint32_t	rightIncG;
+			uint32_t	rightIncB;
+			uint32_t	rightIncA;
+		};
+
 
 		struct Pitches
 		{
@@ -142,6 +170,47 @@ namespace wg
 											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
+		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
+												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
+												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA, 
+												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
+												uint32_t& rightIncB, uint32_t& rightIncG, uint32_t& rightIncR, uint32_t& rightIncA,
+												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA, CoordI patchOfs);
+			
+		inline static void _color_tint_line(	TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
+												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
+												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
+												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
+												uint32_t& rightIncB, uint32_t& rightIncG, uint32_t& rightIncR, uint32_t& rightIncA,
+												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
+												uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA, CoordI patchOfs);
+
+		inline static void _color_tint_pixel(TintMode tintMode,
+											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
+											uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA);
+
+		inline static void _texel_tint_init(TintMode tintMode, const ColTrans& tint, 
+											uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
+											uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
+											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
+											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA, CoordI patchOfs);
+
+		inline static void _texel_tint_line(TintMode tintMode, const ColTrans& tint, 
+											uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
+											uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
+											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
+											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA, CoordI patchOfs);
+
+		inline static void _texel_tint_pixel(TintMode tintMode, uint8_t& pixelB, uint8_t& pixelG, uint8_t& pixelR, uint8_t& pixelA,
+											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
+											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA);
+
+
+
+/*
 		inline static void _init_tint_color(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
 
@@ -160,34 +229,33 @@ namespace wg
 		inline static void _tint_texel(int columnNb, TintMode tintMode, const ColTrans& tint, uint8_t texB, uint8_t texG, uint8_t texR, uint8_t texA,
 											uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
 											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA );
+*/
 
+		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
+		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchOfs);
 
-
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint);
-
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
+		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
+		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
 
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
-		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
+		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
+		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
 
-		template<BlendMode BLEND, TintMode TINTMODE, PixelFormat DSTFORMAT>
-		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
+		template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
 
-		template<PixelFormat SRCFORMAT, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
+		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, int TINTFLAGS, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
-		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint);
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
+		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
-		template<BlendMode BLEND, int TINTFLAGS, PixelFormat DSTFORMAT>
+		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
@@ -199,30 +267,32 @@ namespace wg
 		void	_updateBlitFunctions();
 		int 	_scaleLineThickness(float thickness, int slope);
 
+		void	_updateTintSettings();
+
 		//
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint);
+		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
-		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
-		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint);
-		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint);
-		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint);
-		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint);
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors);
 
 
-		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2]);
-		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
+		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos);
+		typedef void(SoftGfxDevice::*ComplexBlitProxy_Op)(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, bool bClipSource);
 
 
-		void	_onePassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
-		void	_twoPassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
+		void	_onePassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2], CoordI patchPos);
+		void	_twoPassSimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2], CoordI patchPos);
 
-		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
-		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
+		void	_onePassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, bool bClipSource);
+		void	_twoPassComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, bool bClipSource);
 
-		void	_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2]);
-		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], bool bClipSource);
+		void	_dummySimpleBlit(const RectI& dest, CoordI pos, const int simpleTransform[2][2], CoordI patchPos);
+		void	_dummyComplexBlit(const RectI& dest, CoordF pos, const float matrix[2][2], CoordI patchPos, bool bClipSource);
 
 		//
 
@@ -230,23 +300,23 @@ namespace wg
 		static PlotOp_p			s_plotOpTab[BlendMode_size][PixelFormat_size];
 		static LineOp_p			s_LineOpTab[BlendMode_size][PixelFormat_size];
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
-		static FillOp_p			s_fillOpTab[BlendMode_size][TintMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
+		static FillOp_p			s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
 		static SegmentOp_p		s_segmentOpTab[BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p	s_pass2OpTab[BlendMode_size][PixelFormat_size];
+		static SimpleBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p	s_moveTo_BGRA_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
-		static SimpleBlitOp_p	s_moveTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_OpTab[PixelFormat_size];								// [SourceFormat]
 
-		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size][2];			// [SourceFormat][TintMode]
-		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size][2];				// [SourceFormat][TintMode]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size];							// [SourceFormat]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2][2];		// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2][2];	// [SourceFormat][ScaleMode][TintMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
 
 
 		static int			s_mulTab[256];
@@ -256,7 +326,9 @@ namespace wg
 
 		// Members controlling render states
 
-		ColTrans			m_colTrans = { Color::White, nullptr, nullptr };	// Color transformation data
+		ColTrans			m_colTrans = { TintMode::None, Color::White, {0,0,0,0} };		// Color transformation data
+
+		bool				m_bTintOpaque = true;						// Set if tint alpha is 255 after combining tintColor and gradient.
 
 		SoftSurface_p		m_pBlitSource				= nullptr;		// Source surface for blits.
 		bool				m_bClipSource				= false;		// Set if complex transformBlit might need to do clipping.

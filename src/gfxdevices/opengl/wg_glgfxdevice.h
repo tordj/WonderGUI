@@ -207,7 +207,6 @@ namespace wg
 		GLuint	m_segmentsProg[c_maxSegments];
 
 
-
 		//
 
 		struct canvasUBO			// Uniform buffer object for canvas information.
@@ -218,9 +217,37 @@ namespace wg
 			int		yMul;
 		};
 
-
 		GLuint	m_canvasUBOId;
 		canvasUBO	m_canvasUBOBuffer;
+
+		//
+
+		struct tintUBO
+		{
+			CoordI	coord;
+			GLfloat	startB1;
+			GLfloat	startG1;
+			GLfloat	startR1;
+			GLfloat	startA1;
+
+			GLfloat	startB2;
+			GLfloat	startG2;
+			GLfloat	startR2;
+			GLfloat	startA2;
+
+			GLfloat	incB1;
+			GLfloat	incG1;
+			GLfloat	incR1;
+			GLfloat	incA1;
+
+			GLfloat	incB2;
+			GLfloat	incG2;
+			GLfloat	incR2;
+			GLfloat	incA2;
+
+
+		};
+
 
 		//
 

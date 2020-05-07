@@ -69,5 +69,8 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\piecharttests.h">
       <Filter>testsuites</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\tintblittests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

@@ -94,16 +94,14 @@ namespace wg
 		virtual void		setTintColor( Color color );
 		inline const Color&	tintColor() const { return m_tintColor; }
 
+		virtual void		setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft);
+		virtual void		clearTintGradient();
+
 		virtual bool		setBlendMode( BlendMode blendMode );
 		inline BlendMode 	blendMode() const { return m_blendMode; }
 
 		virtual bool		setBlitSource(Surface * pSource);
 		inline Surface_p 	blitSource() const { return m_pBlitSource; }
-
-//		virtual bool		setTintOverlay(TintOverlay * pMap, CoordI pos);
-//		inline TintOverlay_p tintOverlay() const { return m_pTintOverlay; }
-
-
 
 		//.____ Rendering ________________________________________________
 
@@ -213,6 +211,10 @@ namespace wg
 		Color		m_tintColor;		// Current Tint color.
 		BlendMode	m_blendMode;		// Current BlendMode.
 		uint32_t	m_renderFlags;		// Current flags.
+
+		Color		m_tintGradient[4];
+		RectI		m_tintGradientRect;
+		bool		m_bTintGradient = false;
 
 		SizeI		m_canvasSize;
 		bool        m_bRendering = false;

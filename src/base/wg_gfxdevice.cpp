@@ -167,6 +167,25 @@ namespace wg
 		m_tintColor = color;
 	}
 
+	//____ setTintGradient() __________________________________________________
+
+	void GfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	{
+		m_tintGradientRect = rect;
+		m_tintGradient[0] = topLeft;
+		m_tintGradient[1] = topRight;
+		m_tintGradient[2] = bottomRight;
+		m_tintGradient[3] = bottomLeft;
+		m_bTintGradient = true;
+	}
+
+	//____ clearTintGradient() ________________________________________________
+
+	void GfxDevice::clearTintGradient()
+	{
+		m_bTintGradient = false;
+	}
+
 	//____ setBlendMode() __________________________________________________________
 
 	bool GfxDevice::setBlendMode( BlendMode blendMode )
@@ -520,8 +539,8 @@ namespace wg
 		mtx[1][0] = -sz * scale;
 		mtx[1][1] = cz * scale;
 
-		src = srcCenter;
-
+		src = { srcCenter.x * m_pBlitSource->m_size.w, srcCenter.y * m_pBlitSource->m_size.h };
+		 
 //		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
 //		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 

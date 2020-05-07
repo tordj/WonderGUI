@@ -1223,12 +1223,18 @@ namespace wg
 			RectI patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
-				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
-
 				int		dx1 = patch.x;
 				int		dx2 = patch.x + patch.w;
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
+
+				Color	tint1, tint2, tint3, tint4;
+
+				tint1 = tint2 = tint3 = tint4 = m_tintColor;
+
+
+				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
+
 /*
 				float	sx1 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]) / sw;
 				float	sy1 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]) / sh;
@@ -1245,37 +1251,37 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint1;
 				pVertex->extrasOfs = m_extrasOfs/4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint3;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint3;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
+				pVertex->color = tint4;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 

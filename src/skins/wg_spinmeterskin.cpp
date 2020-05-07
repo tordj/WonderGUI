@@ -135,12 +135,9 @@ namespace wg
 
 
 		SizeI srcSize = m_pSurface->size();
-		CoordF srcCenter = { m_srcCenter.x*srcSize.w, m_srcCenter.y*srcSize.h };
-
-		CoordF destCenter = { _canvas.w.qpix*m_dstCenter.x, _canvas.h.qpix*m_dstCenter.y };
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, srcCenter, m_dstCenter);
+		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
 	}
 
 	//____ minSize() ______________________________________________________________
