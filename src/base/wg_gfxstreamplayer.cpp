@@ -321,6 +321,8 @@ namespace wg
 
 		case GfxChunkId::EdgeSamples:
 		{
+			//TODO: Properly support TintMode
+
 			int nSamples = header.size/2;
 
 			assert(nSamples <= m_seg.nTotalSamples - m_seg.nLoadedSamples);
@@ -340,7 +342,7 @@ namespace wg
 			m_seg.nLoadedSamples += nSamples;
 			if (m_seg.nLoadedSamples == m_seg.nTotalSamples)
 			{
-				m_pDevice->_transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), m_seg.transform);
+				m_pDevice->_transformDrawSegments(m_seg.dest, m_seg.nSegments, m_seg.colors, m_seg.nEdgeStrips, m_seg.pEdgeStrips, (m_seg.nSegments - 1), TintMode::Flat, m_seg.transform);
 				delete [] m_seg.pEdgeStrips;
 			}
 			break;

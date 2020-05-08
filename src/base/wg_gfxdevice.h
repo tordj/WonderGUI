@@ -148,8 +148,8 @@ namespace wg
 
 		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const Color * pSliceColors, float hubSize = 0.f, Color hubColor = Color::Transparent, Color backColor = Color::Transparent, bool bRectangular = false);
 
-		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch);
-		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip);
+		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat );
+		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat);
 
 
 		// Special draw/blit methods
@@ -183,7 +183,7 @@ namespace wg
 		virtual void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) = 0;
 
 		virtual void	_transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]);
-		virtual void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) = 0;
+		virtual void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
 
 
 		// Static, shared data

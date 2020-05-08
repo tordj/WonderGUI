@@ -336,8 +336,10 @@ namespace wg
 
 	//____ _transformDrawSegments() ______________________________________
 
-	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2])
+	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
+		//TODO: TintMode not accounted for.
+
 		//NOTE: Precision of edge data is scaled down to 4 binals and there is a limitation of 4095 pixels height of the segment waveform to keep data compact.
 
 		// Generate the TransformDrawSegmentPatches chunk.

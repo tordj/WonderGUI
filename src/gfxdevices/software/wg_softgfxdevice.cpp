@@ -742,7 +742,7 @@ namespace wg
 
 	//____ _plot() ____________________________________________________________
 
-	template<BlendMode BLEND, SoftGfxDevice::TintMode TINT, PixelFormat DSTFORMAT>
+	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_plot(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos)
 	{
 		// Step 1: Read source pixels
@@ -789,7 +789,7 @@ namespace wg
 
 	//____ plot_list() ________________________________________________________
 
-	template<BlendMode BLEND, SoftGfxDevice::TintMode TINT, PixelFormat DSTFORMAT>
+	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
 	{
 		int tintB, tintG, tintR, tintA;
@@ -850,7 +850,7 @@ namespace wg
 
 	//____ _draw_line() _______________________________________________________
 
-	template<BlendMode BLEND, SoftGfxDevice::TintMode TINT, PixelFormat DSTFORMAT>
+	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
 	{
 		const BlendMode EdgeBlendMode = BLEND == BlendMode::Replace ? BlendMode::Blend : BLEND;
@@ -966,7 +966,7 @@ namespace wg
 
 	//____ _clip_draw_line() __________________________________________________
 
-	template<BlendMode BLEND, SoftGfxDevice::TintMode TINT, PixelFormat DSTFORMAT>
+	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
 	{
 		const BlendMode EdgeBlendMode = (BLEND == BlendMode::Replace) ? BlendMode::Blend : BLEND;
@@ -1102,7 +1102,7 @@ namespace wg
 
 	//____ _fill() ____________________________________________________________
 
-	template<SoftGfxDevice::TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+	template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos)
 	{
 		// Step 1: Read source pixels and prepare tint
@@ -1163,10 +1163,10 @@ namespace wg
 	}
 
 
-	//____ _clipDrawSegmentStrip() _______________________________________________
+	//____ _draw_segment_strip() _______________________________________________
 
-	template<BlendMode BLEND, SoftGfxDevice::TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors)
+	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
+	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColorsStatic, const Color * pSegmentColorsX, const Color * pSegmentColorsY )
 	{
 		// Render the column
 
@@ -1180,7 +1180,7 @@ namespace wg
 				// We are fully inside a segment, no need to take any edge into account.
 
 				int end = nEdges == 0 ? colEnd : pEdges[0].begin;
-				Color segmentColor = *pSegmentColors;
+				Color segmentColor = *pSegmentColorsStatic;
 
 				if (segmentColor.a == 0)
 				{
@@ -1206,7 +1206,7 @@ namespace wg
 			}
 			else
 			{
-				const Color	* pCol = pSegmentColors;
+				const Color	* pCol = pSegmentColorsStatic;
 
 				{
 					int edge = 0;
@@ -1376,7 +1376,7 @@ namespace wg
 			{
 				pEdges++;
 				nEdges--;
-				pSegmentColors++;
+				pSegmentColorsStatic++;
 			}
 
 		}
@@ -1385,7 +1385,7 @@ namespace wg
 
 	//_____ _simple_blit() ____________________________________________________________
 
-	template<PixelFormat SRCFORMAT, SoftGfxDevice::TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+	template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos)
 	{
 		// Step 1: Prepare any tint gradient
@@ -1446,7 +1446,7 @@ namespace wg
 
 	//____ _complex_blit __________________________________________
 
-	template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, SoftGfxDevice::TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP >
+	template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP >
 	void SoftGfxDevice::_complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 	{
 		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits / 8;
@@ -1459,6 +1459,7 @@ namespace wg
 		int lineIncX = (int)(matrix[1][0] * 32768);
 		int lineIncY = (int)(matrix[1][1] * 32768);
 
+		/*
 		int tintB, tintG, tintR, tintA;
 
 		if (TINT != TintMode::None)
@@ -1468,7 +1469,7 @@ namespace wg
 			tintR = s_mulTab[tint.flatTintColor.r];
 			tintA = s_mulTab[tint.flatTintColor.a];
 		}
-
+*/
 		for (int y = 0; y < nLines; y++)
 		{
 			int ofsX = (int)(pos.x * 32768 + lineIncX * y);
@@ -1578,7 +1579,7 @@ namespace wg
 
 
 				// Step 3.5: Apply any tinting
-
+/*
 				if (TINT != TintMode::None)
 				{
 					srcB = (srcB*tintB) >> 16;
@@ -1586,7 +1587,7 @@ namespace wg
 					srcR = (srcR*tintR) >> 16;
 					srcA = (srcA*tintA) >> 16;
 				}
-
+*/
 				// Step 3: Get color components of background pixel blending into backX
 
 				uint8_t backB, backG, backR, backA;
@@ -1614,7 +1615,7 @@ namespace wg
 
 	//____ _stretch_blit __________________________________________
 
-	template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, SoftGfxDevice::TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
+	template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
 	void SoftGfxDevice::_stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos)
 	{
 		int srcPixelBytes = pSrcSurf->m_pixelDescription.bits / 8;
@@ -2543,7 +2544,7 @@ namespace wg
 
 	//____ _transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, const int _simpleTransform[2][2])
+	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
 		RectI dest = _dest;
 
@@ -2679,7 +2680,7 @@ namespace wg
 			for (int x = 0; x < columns; x++)
 			{
 				int nEdges = 0;
-				const Color * pColors = pSegmentColors;
+				int colOfs = 0;
 
 				for (int y = 0; y < nSegments - 1; y++)
 				{
@@ -2715,12 +2716,12 @@ namespace wg
 						nEdges++;
 					}
 					else
-						pColors++;
+						colOfs++;
 				}
 
+				const Color * pColors = pSegmentColors + colOfs;
 
-
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors);
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr, nullptr);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 			}
@@ -2731,7 +2732,7 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch)
+	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
 		RectI dest = _dest;
 
@@ -2742,16 +2743,100 @@ namespace wg
 			if (dest.w > nEdgeStrips - 1)
 				dest.w = nEdgeStrips - 1;
 
-		// Apply simple tinting
+		// Apply tinting
 
 		Color colors[c_maxSegments];
+		Color * pTintMapX = nullptr;
+		Color * pTintMapY = nullptr;
+		int		sizeTintMapX = 0;
+		int		sizeTintMapY = 0;
 
-		if (m_tintColor != Color::White)
+		// If we just use flat tinting, we just tint our segment colors
+
+		if (m_tintColor != Color::White && tintMode == TintMode::Flat )
 		{
 			for (int i = 0; i < nSegments; i++)
 				colors[i] = pSegmentColors[i] * m_tintColor;
 			pSegmentColors = colors;
 		}
+
+		// If we use horizontal tinting, we create a horizontal tintmap and include base tint.
+
+		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientXY)
+		{
+			sizeTintMapX = dest.w * sizeof(Color)*nSegments;
+			pTintMapX = (Color*) Base::memStackAlloc(sizeTintMapX);
+
+			int colorPitch = tintMode == TintMode::GradientXY ? 4 : 2;
+
+			for (int c = 0; c < nSegments; c++)
+			{
+				Color * wp = pTintMapX + c;
+
+				Color left = pSegmentColors[c*colorPitch] * m_tintColor;
+				Color right = pSegmentColors[c*colorPitch+1] * m_tintColor;
+
+				int valR = left.r << 16;
+				int valG = left.g << 16;
+				int valB = left.b << 16;
+				int valA = left.a << 16;
+
+				int incR = ((right.r << 16) - valR) / dest.w;
+				int incG = ((right.g << 16) - valG) / dest.w;
+				int incB = ((right.b << 16) - valB) / dest.w;
+				int incA = ((right.a << 16) - valA) / dest.w;
+
+				for (int x = 0; x < dest.w; x++)
+				{
+					*wp = { uint8_t(valR >> 16), uint8_t(valG >> 16), uint8_t(valB >> 16), uint8_t(valA >> 16) };
+					wp += nSegments;
+
+					valR += incR; valG += incG; valB += incB; valA += incA;
+				}
+			}
+		}
+
+		// If we use vertical tinting, we create a vertical tintmap. We include base tint only if we 
+		// don't already have a horizontal tintmap.
+
+		if (tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
+		{
+			sizeTintMapY = dest.h * sizeof(Color)*nSegments;
+			pTintMapY = (Color*)Base::memStackAlloc(sizeTintMapY);
+
+			int colorPitch = tintMode == TintMode::GradientXY ? 4 : 2;
+			int colorOfs = tintMode == TintMode::GradientXY ? 2 : 0;
+
+			Color baseTint = (tintMode == TintMode::GradientXY) ? m_tintColor : Color::White;
+
+			for (int c = 0; c < nSegments; c++)
+			{
+				Color * wp = pTintMapX + c;
+
+				Color top = pSegmentColors[c*colorPitch+colorOfs] * baseTint;
+				Color bottom = pSegmentColors[c*colorPitch+colorOfs + 1] * baseTint;
+
+				int valR = top.r << 16;
+				int valG = top.g << 16;
+				int valB = top.b << 16;
+				int valA = top.a << 16;
+
+				int incR = ((bottom.r << 16) - valR) / dest.h;
+				int incG = ((bottom.g << 16) - valG) / dest.h;
+				int incB = ((bottom.b << 16) - valB) / dest.h;
+				int incA = ((bottom.a << 16) - valA) / dest.h;
+
+				for (int y = 0; y < dest.h; y++)
+				{
+					*wp = { uint8_t(valR >> 16), uint8_t(valG >> 16), uint8_t(valB >> 16), uint8_t(valA >> 16) };
+					wp += nSegments;
+
+					valR += incR; valG += incG; valB += incB; valA += incA;
+				}
+			}
+		}
+
+
 
 		// Set start position and clip dest
 
@@ -2829,12 +2914,18 @@ namespace wg
 
 
 
-				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors);
+				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pTintMapX, pTintMapY);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += (m_canvasPixelBits / 8);
 			}
 		}
 
+		// Free what we have reserved on the memStack.
+
+		if (sizeTintMapX > 0)
+			Base::memStackRelease(sizeTintMapX);
+		if (sizeTintMapY > 0)
+			Base::memStackRelease(sizeTintMapY);
 	}
 
 	//____ _lineToEdges() __________________________________________________________

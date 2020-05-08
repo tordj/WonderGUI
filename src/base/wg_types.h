@@ -263,6 +263,17 @@ namespace wg
 		BreakAfter	= 64
 	};
 
+	//____ TintMode ___________________________________________________________
+
+	enum class TintMode
+	{
+		None = 0,
+		Flat,
+		GradientX,
+		GradientY,
+		GradientXY
+	};
+
 	//____ BlendMode ____________________________________________________________
 
 	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.

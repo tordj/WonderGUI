@@ -770,7 +770,7 @@ namespace wg
 			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
-			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
+			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
 		}
 		else
@@ -816,7 +816,7 @@ namespace wg
 			col[4] = pBottomBorder->color;
 			col[5] = Color::Transparent;
 
-			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform);
+			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
 
 
@@ -1386,7 +1386,7 @@ namespace wg
 			if (nSegments == 1)
 				fill(quadCanvas[quad], pColors[0]);
 			else
-				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, blitFlipTransforms[(int)quadFlip[quad]]);
+				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, blitFlipTransforms[(int)quadFlip[quad]]);
 		}
 
 		if( hubBufferSize != 0 )
@@ -1397,16 +1397,16 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )
+	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
-		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip )
+	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
-		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)flip] );
+		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
 	}
 
 
