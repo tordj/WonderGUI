@@ -231,6 +231,10 @@ namespace wg
 
 		if (m_pClut)
 		{
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
 			uint8_t clut[1024];
 
 			for (int i = 0; i < 256; i++)
