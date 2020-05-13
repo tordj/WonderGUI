@@ -45,7 +45,7 @@ namespace wg
 	SoftGfxDevice::LineOp_p		SoftGfxDevice::s_LineOpTab[BlendMode_size][PixelFormat_size];
 	SoftGfxDevice::ClipLineOp_p SoftGfxDevice::s_clipLineOpTab[BlendMode_size][PixelFormat_size];
 	SoftGfxDevice::PlotListOp_p SoftGfxDevice::s_plotListOpTab[BlendMode_size][PixelFormat_size];
-	SoftGfxDevice::SegmentOp_p	SoftGfxDevice::s_segmentOpTab[BlendMode_size][PixelFormat_size];
+	SoftGfxDevice::SegmentOp_p	SoftGfxDevice::s_segmentOpTab[2][BlendMode_size][PixelFormat_size];		// bVerticalTint, BlendMode, PixelFormat
 
 	SoftGfxDevice::SimpleBlitOp_p		SoftGfxDevice::s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
 
@@ -1162,11 +1162,41 @@ namespace wg
 
 	}
 
+	//____ _add_segment_color() _______________________________________________
+
+	inline void SoftGfxDevice::_add_segment_color(bool GRADIENT, int blendFraction, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
+	{
+		if (GRADIENT)
+		{
+			accB += blendFraction * ((pSegmentGradient->begB + pSegmentGradient->incB * offset) >> 16);
+			accG += blendFraction * ((pSegmentGradient->begG + pSegmentGradient->incG * offset) >> 16);
+			accR += blendFraction * ((pSegmentGradient->begR + pSegmentGradient->incR * offset) >> 16);
+			accA += blendFraction * ((pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 16);
+		}
+		else
+		{
+			accB += blendFraction * pSegmentColor->b;
+			accG += blendFraction * pSegmentColor->g;
+			accR += blendFraction * pSegmentColor->r;
+			accA += blendFraction * pSegmentColor->a;
+		}
+	}
+
+	//____ _segment_alpha() _______________________________________________
+
+	inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient)
+	{
+		if (GRADIENT)
+			return (pSegmentGradient->begA + pSegmentGradient->incA * (offset >> 8)) >> 16;
+		else
+			return pSegmentColor->a;
+	}
+
 
 	//____ _draw_segment_strip() _______________________________________________
 
-	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColorsStatic, const Color * pSegmentColorsX, const Color * pSegmentColorsY )
+	template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
+	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients )
 	{
 		// Render the column
 
@@ -1180,22 +1210,40 @@ namespace wg
 				// We are fully inside a segment, no need to take any edge into account.
 
 				int end = nEdges == 0 ? colEnd : pEdges[0].begin;
-				Color segmentColor = *pSegmentColorsStatic;
+				Color segmentColor = *pSegmentColors;
 
-				if (segmentColor.a == 0)
+				if (pSegmentColors->a == 0)							// This test is still valid in GRADIENT mode.
 				{
 					pDst = pStripStart + (end >> 8) * pixelPitch;
 					offset = end & 0xFFFFFF00;												// Just skip segment since it is transparent
-				}
+				} 
 				else
 				{
+					uint8_t inB, inG, inR, inA;
+
+					if (GRADIENT == false)
+					{
+						inB = pSegmentColors->b;
+						inG = pSegmentColors->g;
+						inR = pSegmentColors->r;
+						inA = pSegmentColors->a;
+					}
+
 					while (offset + 255 < end)
 					{
+						if (GRADIENT)
+						{
+							inB = uint8_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 16);
+							inG = uint8_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 16);
+							inR = uint8_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 16);
+							inA = uint8_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 16);
+						}
+
 						uint8_t backB, backG, backR, backA;
 						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 						uint8_t outB, outG, outR, outA;
-						_blend_pixels(BLEND, segmentColor.b, segmentColor.g, segmentColor.r, segmentColor.a, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 
@@ -1206,8 +1254,6 @@ namespace wg
 			}
 			else
 			{
-				const Color	* pCol = pSegmentColorsStatic;
-
 				{
 					int edge = 0;
 
@@ -1261,11 +1307,7 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
-							accA += pCol[i].a * blendFraction;			// This might be the wrong way to handle alpha here...
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						outB = accB >> 16;
@@ -1280,12 +1322,10 @@ namespace wg
 
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 255);
 							backFraction -= blendFraction;
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						outB = (accB + backB * backFraction) >> 16;
@@ -1298,11 +1338,9 @@ namespace wg
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 255);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						outB = limitUint8(backB + (accB >> 16));
@@ -1315,11 +1353,9 @@ namespace wg
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int blendFraction = ((segmentFractions[i] * pCol[i].a) / 255);
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 255);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						outB = limitUint8(backB - (accB >> 16));
@@ -1333,10 +1369,7 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						outB = (s_mulTab[backB] * (accB >> 16) ) >> 16;
@@ -1350,10 +1383,7 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-
-							accB += pCol[i].b * blendFraction;
-							accG += pCol[i].g * blendFraction;
-							accR += pCol[i].r * blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
 						int srcB2 = s_mulTab[accB>>16];
@@ -1376,7 +1406,10 @@ namespace wg
 			{
 				pEdges++;
 				nEdges--;
-				pSegmentColorsStatic++;
+
+				pSegmentColors++;				// Need to increment even in GRADIENT mode for alpha check.
+				if (GRADIENT)
+					pSegmentGradients++;
 			}
 
 		}
@@ -2631,7 +2664,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		SegmentOp_p	pOp = s_segmentOpTab[0][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -2721,7 +2754,7 @@ namespace wg
 
 				const Color * pColors = pSegmentColors + colOfs;
 
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr, nullptr);
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 			}
@@ -2730,9 +2763,196 @@ namespace wg
 	}
 
 
+
+
+	//____ _colTransRect() _____________________________________________________
+
+	void SoftGfxDevice::_colTransRect( int outB[4], int outG[4], int outR[4], int outA[], const RectI& dest)
+	{
+		// Then we tint with our out tint
+
+		if (m_colTrans.mode == TintMode::None)
+		{
+			for (int i = 0; i < 4; i++)
+			{
+				outB[i] = 0x10000;
+				outG[i] = 0x10000;
+				outR[i] = 0x10000;
+				outA[i] = 0x10000;
+			}
+		}
+		else if (m_colTrans.mode == TintMode::Flat)
+		{
+			int b = s_mulTab[m_colTrans.flatTintColor.b];
+			int g = s_mulTab[m_colTrans.flatTintColor.g];
+			int r = s_mulTab[m_colTrans.flatTintColor.r];
+			int a = s_mulTab[m_colTrans.flatTintColor.a];
+
+			for (int i = 0; i < 4; i++)
+			{
+				outB[i] = b;
+				outG[i] = g;
+				outR[i] = r;
+				outA[i] = a;
+			}
+		}
+		else if (m_colTrans.mode == TintMode::GradientX)
+		{
+			int ofsX = dest.x - m_colTrans.tintRect.x;
+			int xIncB = int(m_colTrans.topRightB - m_colTrans.topLeftB) / m_colTrans.tintRect.w;
+
+			int leftB = (m_colTrans.topLeftB + xIncB * ofsX) >> 8;
+			int rightB = (m_colTrans.topLeftB + xIncB * (ofsX + dest.w)) >> 8;
+
+			outB[0] = leftB;
+			outB[1] = rightB;
+			outB[2] = rightB;
+			outB[3] = leftB;
+
+			//
+
+			int xIncG = int(m_colTrans.topRightG - m_colTrans.topLeftG) / m_colTrans.tintRect.w;
+
+			int leftG = (m_colTrans.topLeftG + xIncG * ofsX) >> 8;
+			int rightG = (m_colTrans.topLeftG + xIncG * (ofsX + dest.w)) >> 8;
+
+			outG[0] = leftG;
+			outG[1] = rightG;
+			outG[2] = rightG;
+			outG[3] = leftG;
+
+			//
+
+			int xIncR = int(m_colTrans.topRightR - m_colTrans.topLeftR) / m_colTrans.tintRect.w;
+
+			int leftR = (m_colTrans.topLeftR + xIncR * ofsX) >> 8;
+			int rightR = (m_colTrans.topLeftR + xIncR * (ofsX + dest.w)) >> 8;
+
+			outR[0] = leftR;
+			outR[1] = rightR;
+			outR[2] = rightR;
+			outR[3] = leftR;
+
+			//
+
+			int xIncA = int(m_colTrans.topRightA - m_colTrans.topLeftA) / m_colTrans.tintRect.w;
+
+			int leftA = (m_colTrans.topLeftA + xIncA * ofsX) >> 8;
+			int rightA = (m_colTrans.topLeftA + xIncA * (ofsX + dest.w)) >> 8;
+
+			outA[0] = leftA;
+			outA[1] = rightA;
+			outA[2] = rightA;
+			outA[3] = leftA;
+
+		}
+		else if (m_colTrans.mode == TintMode::GradientY)
+		{
+			int ofsY = dest.y - m_colTrans.tintRect.y;
+
+			int topB = (m_colTrans.topLeftB + m_colTrans.leftIncB * ofsY) >> 8;
+			int bottomB = (m_colTrans.topLeftB + m_colTrans.leftIncB * (ofsY + dest.h)) >> 8;
+
+			outB[0] = topB;
+			outB[1] = topB;
+			outB[2] = bottomB;
+			outB[3] = bottomB;
+
+			//
+
+			int topG = (m_colTrans.topLeftG + m_colTrans.leftIncG * ofsY) >> 8;
+			int bottomG = (m_colTrans.topLeftG + m_colTrans.leftIncG * (ofsY + dest.h)) >> 8;
+
+			outG[0] = topG;
+			outG[1] = topG;
+			outG[2] = bottomG;
+			outG[3] = bottomG;
+
+			//
+
+			int topR = (m_colTrans.topLeftR + m_colTrans.leftIncR * ofsY) >> 8;
+			int bottomR = (m_colTrans.topLeftR + m_colTrans.leftIncR * (ofsY + dest.h)) >> 8;
+
+			outR[0] = topR;
+			outR[1] = topR;
+			outR[2] = bottomR;
+			outR[3] = bottomR;
+
+			//
+
+			int topA = (m_colTrans.topLeftA + m_colTrans.leftIncA * ofsY) >> 8;
+			int bottomA = (m_colTrans.topLeftA + m_colTrans.leftIncA * (ofsY + dest.h)) >> 8;
+
+			outA[0] = topA;
+			outA[1] = topA;
+			outA[2] = bottomA;
+			outA[3] = bottomA;
+		}
+		else if (m_colTrans.mode == TintMode::GradientXY)
+		{
+			CoordI ofs = dest.pos() - m_colTrans.tintRect.pos();
+
+			int begB = m_colTrans.topLeftB + m_colTrans.leftIncB * ofs.y;
+			int xIncB = (m_colTrans.topRightB + m_colTrans.rightIncB * ofs.y - begB) / m_colTrans.tintRect.w;
+
+			outB[0] = (begB + xIncB * ofs.x) >> 8;
+			outB[1] = (begB + xIncB * (ofs.x + dest.w)) >> 8;
+
+			begB = m_colTrans.topLeftB + m_colTrans.leftIncB * (ofs.y + dest.h);
+			xIncB = (m_colTrans.topRightB + m_colTrans.rightIncB * (ofs.y + dest.h) - begB) / m_colTrans.tintRect.w;
+
+			outB[2] = (begB + xIncB * (ofs.x + dest.w)) >> 8;
+			outB[3] = (begB + xIncB * ofs.x) >> 8;
+
+			//
+
+			int begG = m_colTrans.topLeftG + m_colTrans.leftIncG * ofs.y;
+			int xIncG = (m_colTrans.topRightG + m_colTrans.rightIncG * ofs.y - begG) / m_colTrans.tintRect.w;
+
+			outG[0] = (begG + xIncG * ofs.x) >> 8;
+			outG[1] = (begG + xIncG * (ofs.x + dest.w)) >> 8;
+
+			begG = m_colTrans.topLeftG + m_colTrans.leftIncG * (ofs.y + dest.h);
+			xIncG = (m_colTrans.topRightG + m_colTrans.rightIncG * (ofs.y + dest.h) - begG) / m_colTrans.tintRect.w;
+
+			outG[2] = (begG + xIncG * (ofs.x + dest.w)) >> 8;
+			outG[3] = (begG + xIncG * ofs.x) >> 8;
+
+			//
+
+			int begR = m_colTrans.topLeftR + m_colTrans.leftIncR * ofs.y;
+			int xIncR = (m_colTrans.topRightR + m_colTrans.rightIncR * ofs.y - begR) / m_colTrans.tintRect.w;
+
+			outR[0] = (begR + xIncR * ofs.x) >> 8;
+			outR[1] = (begR + xIncR * (ofs.x + dest.w)) >> 8;
+
+			begR = m_colTrans.topLeftR + m_colTrans.leftIncR * (ofs.y + dest.h);
+			xIncR = (m_colTrans.topRightR + m_colTrans.rightIncR * (ofs.y + dest.h) - begR) / m_colTrans.tintRect.w;
+
+			outR[2] = (begR + xIncR * (ofs.x + dest.w)) >> 8;
+			outR[3] = (begR + xIncR * ofs.x) >> 8;
+
+			//
+
+			int begA = m_colTrans.topLeftA + m_colTrans.leftIncA * ofs.y;
+			int xIncA = (m_colTrans.topRightA + m_colTrans.rightIncA * ofs.y - begA) / m_colTrans.tintRect.w;
+
+			outA[0] = (begA + xIncA * ofs.x) >> 8;
+			outA[1] = (begA + xIncA * (ofs.x + dest.w)) >> 8;
+
+			begA = m_colTrans.topLeftA + m_colTrans.leftIncA * (ofs.y + dest.h);
+			xIncA = (m_colTrans.topRightA + m_colTrans.rightIncA * (ofs.y + dest.h) - begA) / m_colTrans.tintRect.w;
+
+			outA[2] = (begA + xIncA * (ofs.x + dest.w)) >> 8;
+			outA[3] = (begA + xIncA * ofs.x) >> 8;
+		}
+	}
+
+
+
 	//____ drawSegments() ______________________________________________________
 
-	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode)
 	{
 		RectI dest = _dest;
 
@@ -2740,103 +2960,185 @@ namespace wg
 
 		// Limit size of destination rect by number of edgestrips.
 
-			if (dest.w > nEdgeStrips - 1)
-				dest.w = nEdgeStrips - 1;
+		if (dest.w > nEdgeStrips - 1)
+			dest.w = nEdgeStrips - 1;
 
 		// Apply tinting
 
 		Color colors[c_maxSegments];
-		Color * pTintMapX = nullptr;
-		Color * pTintMapY = nullptr;
-		int		sizeTintMapX = 0;
-		int		sizeTintMapY = 0;
+
+		SegmentGradient * pGradientsY = nullptr;
+		SegmentGradient * pGradientsX = nullptr;
+		int		gradientsYBufferSize = 0;
+		int		gradientsXBufferSize = 0;
+
+		// Determine combined tint-mode
+
+		bool	bTintFlat = false;			// Set if we tint in any way, flat, x, y, or xy.
+		bool	bTintX = false;
+		bool	bTintY = false;
+
+		if (tintMode != TintMode::None)
+		{
+			bTintFlat = m_tintColor != Color::White;
+
+			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
+			{
+				bTintX = bTintY = true;
+			}
+			else
+			{
+				if (tintMode == TintMode::GradientY || m_colTrans.mode == TintMode::GradientY)
+					bTintY = true;
+				if (tintMode == TintMode::GradientX || m_colTrans.mode == TintMode::GradientX)
+					bTintX = true;
+			}
+		}
 
 		// If we just use flat tinting, we just tint our segment colors
 
-		if (m_tintColor != Color::White && tintMode == TintMode::Flat )
+		if (bTintFlat && !bTintX && !bTintY)
 		{
 			for (int i = 0; i < nSegments; i++)
 				colors[i] = pSegmentColors[i] * m_tintColor;
 			pSegmentColors = colors;
 		}
 
-		// If we use horizontal tinting, we create a horizontal tintmap and include base tint.
+		// If we instead have a gradient we have way more to do...
 
-		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientXY)
+		else if (bTintX || bTintY)
 		{
-			sizeTintMapX = dest.w * sizeof(Color)*nSegments;
-			pTintMapX = (Color*) Base::memStackAlloc(sizeTintMapX);
+			// Generate the buffers that we will need
 
-			int colorPitch = tintMode == TintMode::GradientXY ? 4 : 2;
-
-			for (int c = 0; c < nSegments; c++)
+			if (bTintY)
 			{
-				Color * wp = pTintMapX + c;
+				gradientsYBufferSize = sizeof(SegmentGradient) * nSegments;
+				pGradientsY = (SegmentGradient*)Base::memStackAlloc(gradientsYBufferSize);
+			}
 
-				Color left = pSegmentColors[c*colorPitch] * m_tintColor;
-				Color right = pSegmentColors[c*colorPitch+1] * m_tintColor;
+			if (bTintX)
+			{
+				// We use two gradients per segment in X, one for top and bottom of rectangle each.
 
-				int valR = left.r << 16;
-				int valG = left.g << 16;
-				int valB = left.b << 16;
-				int valA = left.a << 16;
+				gradientsXBufferSize = sizeof(SegmentGradient) * nSegments * 2;
+				pGradientsX = (SegmentGradient*)Base::memStackAlloc(gradientsXBufferSize);
+			}
 
-				int incR = ((right.r << 16) - valR) / dest.w;
-				int incG = ((right.g << 16) - valG) / dest.w;
-				int incB = ((right.b << 16) - valB) / dest.w;
-				int incA = ((right.a << 16) - valA) / dest.w;
 
-				for (int x = 0; x < dest.w; x++)
+			// Calculate RGBA values from m_colTrans for our four corners.
+
+			int		baseB[4], baseG[4], baseR[4], baseA[4];
+
+			_colTransRect(baseB, baseG, baseR, baseA, _dest);
+
+			// Lets process each segment
+
+			for (int seg = 0; seg < nSegments; seg++)
+			{
+
+				int		segB[4], segG[4], segR[4], segA[4];
+
+				// Calculate RGBA values for our four corners
+
+				if (tintMode == TintMode::Flat)
 				{
-					*wp = { uint8_t(valR >> 16), uint8_t(valG >> 16), uint8_t(valB >> 16), uint8_t(valA >> 16) };
-					wp += nSegments;
+					Color col = pSegmentColors[seg];
 
-					valR += incR; valG += incG; valB += incB; valA += incA;
+					for (int i = 0; i < 4; i++)
+					{
+						segB[i] = baseB[i] * col.b;
+						segG[i] = baseG[i] * col.g;
+						segR[i] = baseR[i] * col.r;
+						segA[i] = baseA[i] * col.a;
+					}
+				}
+				else
+				{
+					Color col[4];
+
+					if (tintMode == TintMode::GradientX)
+					{
+						col[0] = col[3] = pSegmentColors[seg * 2];
+						col[1] = col[2] = pSegmentColors[seg * 2 + 1];
+					}
+					else if (tintMode == TintMode::GradientY)
+					{
+						col[0] = col[1] = pSegmentColors[seg * 2];
+						col[2] = col[3] = pSegmentColors[seg * 2 + 1];
+					}
+					else
+					{
+						col[0] = pSegmentColors[seg * 4];
+						col[1] = pSegmentColors[seg * 4 + 1];
+						col[2] = pSegmentColors[seg * 4 + 2];
+						col[3] = pSegmentColors[seg * 4 + 3];
+					}
+
+					for (int i = 0; i < 4; i++)
+					{
+						segB[i] = baseB[i] * col[i].b;
+						segG[i] = baseG[i] * col[i].g;
+						segR[i] = baseR[i] * col[i].r;
+						segA[i] = baseA[i] * col[i].a;
+					}
+				}
+
+				// We now have the segments corner colors. Let's save
+				// that information in the correct format for future
+				// processing depending on tint mode.
+
+				// Filling in the x-gradient if we have one. Two SegmentGradient structs for
+				// each segment, one for gradient along top and of dest rectangle and one along the bottom.
+
+				if (bTintX)
+				{
+					// Fill in top gradient
+
+					auto p = &pGradientsX[seg * 2];
+
+					p->begB = segB[0];
+					p->begG = segG[0];
+					p->begR = segR[0];
+					p->begA = segA[0];
+
+					p->incB = (segB[1] - segB[0]) / dest.w;
+					p->incG = (segG[1] - segG[0]) / dest.w;
+					p->incR = (segR[1] - segR[0]) / dest.w;
+					p->incA = (segA[1] - segA[0]) / dest.w;
+
+					// Fill in bottom gradient
+
+					p++;
+
+					p->begB = segB[3];
+					p->begG = segG[3];
+					p->begR = segR[3];
+					p->begA = segA[3];
+
+					p->incB = (segB[2] - segB[3]) / dest.w;
+					p->incG = (segG[2] - segG[3]) / dest.w;
+					p->incR = (segR[2] - segR[3]) / dest.w;
+					p->incA = (segA[2] - segA[3]) / dest.w;
+				}
+
+				// If we don't have any x-gradient we can fill in y-gradient once and for all
+
+				if (bTintY && !bTintX)
+				{
+					auto p = &pGradientsY[seg];
+
+					p->begB = segB[0];
+					p->begG = segG[0];
+					p->begR = segR[0];
+					p->begA = segA[0];
+
+					p->incB = (segB[3] - segB[0]) / dest.h;
+					p->incG = (segG[3] - segG[0]) / dest.h;
+					p->incR = (segR[3] - segR[0]) / dest.h;
+					p->incA = (segA[3] - segA[0]) / dest.h;
 				}
 			}
 		}
-
-		// If we use vertical tinting, we create a vertical tintmap. We include base tint only if we 
-		// don't already have a horizontal tintmap.
-
-		if (tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
-		{
-			sizeTintMapY = dest.h * sizeof(Color)*nSegments;
-			pTintMapY = (Color*)Base::memStackAlloc(sizeTintMapY);
-
-			int colorPitch = tintMode == TintMode::GradientXY ? 4 : 2;
-			int colorOfs = tintMode == TintMode::GradientXY ? 2 : 0;
-
-			Color baseTint = (tintMode == TintMode::GradientXY) ? m_tintColor : Color::White;
-
-			for (int c = 0; c < nSegments; c++)
-			{
-				Color * wp = pTintMapX + c;
-
-				Color top = pSegmentColors[c*colorPitch+colorOfs] * baseTint;
-				Color bottom = pSegmentColors[c*colorPitch+colorOfs + 1] * baseTint;
-
-				int valR = top.r << 16;
-				int valG = top.g << 16;
-				int valB = top.b << 16;
-				int valA = top.a << 16;
-
-				int incR = ((bottom.r << 16) - valR) / dest.h;
-				int incG = ((bottom.g << 16) - valG) / dest.h;
-				int incB = ((bottom.b << 16) - valB) / dest.h;
-				int incA = ((bottom.a << 16) - valA) / dest.h;
-
-				for (int y = 0; y < dest.h; y++)
-				{
-					*wp = { uint8_t(valR >> 16), uint8_t(valG >> 16), uint8_t(valB >> 16), uint8_t(valA >> 16) };
-					wp += nSegments;
-
-					valR += incR; valG += incG; valB += incB; valA += incA;
-				}
-			}
-		}
-
-
 
 		// Set start position and clip dest
 
@@ -2845,7 +3147,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -2873,7 +3175,7 @@ namespace wg
 			for (int x = 0; x < patch.w; x++)
 			{
 				int nEdges = 0;
-				const Color * pColors = pSegmentColors;
+				int skippedSegments = 0;
 
 				for (int y = 0; y < nSegments - 1; y++)
 				{
@@ -2909,23 +3211,80 @@ namespace wg
 						nEdges++;
 					}
 					else
-						pColors++;
+						skippedSegments++;
 				}
 
+				// Update tinting if we have X-gradient
 
+				const Color * pColors = pSegmentColors + skippedSegments;
 
-				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pTintMapX, pTintMapY);
+				if (bTintX)
+				{
+					if (bTintY)
+					{
+						auto pOut = pGradientsY + skippedSegments;
+						auto pIn = pGradientsX + skippedSegments * 2;
+
+						for (int i = 0; i < nEdges + 1; i++)
+						{
+							int beg = pIn[0].begB + pIn[0].incB * columnOfs;
+							int inc = (pIn[1].begB + pIn[1].incB * columnOfs - beg) / dest.h;
+							pOut[i].begB = beg;
+							pOut[i].incB = inc;
+
+							beg = pIn[0].begG + pIn[0].incG * columnOfs;
+							inc = (pIn[1].begG + pIn[1].incG * columnOfs - beg) / dest.h;
+							pOut[i].begG = beg;
+							pOut[i].incG = inc;
+
+							beg = pIn[0].begR + pIn[0].incR * columnOfs;
+							inc = (pIn[1].begR + pIn[1].incR * columnOfs - beg) / dest.h;
+							pOut[i].begR = beg;
+							pOut[i].incR = inc;
+
+							beg = pIn[0].begA + pIn[0].incA * columnOfs;
+							inc = (pIn[1].begA + pIn[1].incA * columnOfs - beg) / dest.h;
+							pOut[i].begA = beg;
+							pOut[i].incA = inc;
+
+							pIn += 2;
+						}
+					}
+					else
+					{
+						// We just use the color array and fill in correct color values for this column.
+
+						auto pGrad = pGradientsX + skippedSegments * 2;
+
+						for (int i = 0; i < nEdges + 1; i++ )
+						{
+							colors[i].b = (pGrad->begB + pGrad->incB * columnOfs) >> 16;
+							colors[i].g = (pGrad->begG + pGrad->incG * columnOfs) >> 16;
+							colors[i].r = (pGrad->begR + pGrad->incR * columnOfs) >> 16;
+							colors[i].a = (pGrad->begA + pGrad->incA * columnOfs) >> 16;
+							pGrad += 2;												// Skipping bottom gradient data since we don't need it.
+						}
+
+						pColors = colors;
+					}
+				}
+
+				//
+
+				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pGradientsY+skippedSegments);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += (m_canvasPixelBits / 8);
+				columnOfs++;
 			}
 		}
 
 		// Free what we have reserved on the memStack.
 
-		if (sizeTintMapX > 0)
-			Base::memStackRelease(sizeTintMapX);
-		if (sizeTintMapY > 0)
-			Base::memStackRelease(sizeTintMapY);
+		if (gradientsXBufferSize > 0)
+			Base::memStackRelease(gradientsXBufferSize);
+
+		if (gradientsYBufferSize > 0)
+			Base::memStackRelease(gradientsYBufferSize);
 	}
 
 	//____ _lineToEdges() __________________________________________________________
@@ -2948,7 +3307,7 @@ namespace wg
 			for (int i = 1; i < brushSteps; i++)
 			{
 				brush[i] = (scaledThickness * s_pCurveTab[c_nCurveTabEntries - (i*c_nCurveTabEntries) / brushSteps - 1]) >> 16;
-				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
+				//				printf( "%d - %d - %d\n", i, brush[i], m_pCurveTab[0][(c_nCurveTabEntries - 1) - (i * c_nCurveTabEntries) / brushSteps]);
 			}
 			prevThickness = thickness;
 		}
@@ -3588,7 +3947,8 @@ namespace wg
 				s_LineOpTab[i][j] = nullptr;
 				s_clipLineOpTab[i][j] = nullptr;
 				s_plotListOpTab[i][j] = nullptr;
-				s_segmentOpTab[i][j] = nullptr;
+				s_segmentOpTab[0][i][j] = nullptr;
+				s_segmentOpTab[1][i][j] = nullptr;
 			}
 		}
 
@@ -4666,61 +5026,121 @@ namespace wg
 
 		// Init Segments Operation Table
 
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Replace][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Replace, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Blend][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Blend, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Blend][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Blend, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Add][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Add, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Add][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Add, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Subtract][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Subtract, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Subtract][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Subtract, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Multiply][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Multiply, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Multiply][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Multiply, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Min][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Min, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Min][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Min, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Max][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Max, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Max][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Max, PixelFormat::A8>;
 
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_8>;
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8>;
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_565] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::BGR_565>;
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_4>;
-		s_segmentOpTab[(int)BlendMode::Invert][(int)PixelFormat::A8] = _draw_segment_strip <BlendMode::Invert, TintMode::None, PixelFormat::A8>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGRA_8>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGR_565] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGR_565>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGRA_4>;
+		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::A8] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::A8>;
+
+		// Versions with vertical tint
+
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Blend][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Blend, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Add][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Add, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Subtract][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Subtract, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Multiply][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Multiply, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Min][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Min, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Max][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Max, PixelFormat::A8>;
+
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGRA_8>;
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGR_8] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGR_8>;
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGR_565] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGR_565>;
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGRA_4>;
+		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::A8] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::A8>;
+
+
 	}
 
 	//____ _scaleLineThickness() ___________________________________________________

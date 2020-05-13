@@ -144,6 +144,19 @@ namespace wg
 			uint32_t	rightIncA;
 		};
 
+		struct SegmentGradient
+		{
+			int			begR;		// Blue value at top of segment column. 0-255 << 16;
+			int			begG;
+			int			begB;
+			int			begA;
+
+			int			incR;		// Increment of begR for each row.
+			int			incG;
+			int			incB;
+			int			incA;
+		};
+
 
 		struct Pitches
 		{
@@ -198,6 +211,8 @@ namespace wg
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA);
 
+		inline static int _segment_alpha(bool GRADIENT, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient);
+		inline static void _add_segment_color(bool GRADIENT, int blendFraction, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient, int& accB, int& accG, int& accR, int& accA);
 
 
 /*
@@ -245,8 +260,8 @@ namespace wg
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
-		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColorsStatic, const Color * pSegmentColorsX, const Color * pSegmentColorsY);
+		template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
+		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SegmentGradient * pSegmentGradients);
 
 
 
@@ -259,6 +274,8 @@ namespace wg
 
 		void	_updateTintSettings();
 
+		void	_colTransRect(int baseB[4], int baseG[4], int baseR[4], int baseA[], const RectI& _dest);
+
 		//
 
 		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos);
@@ -268,7 +285,7 @@ namespace wg
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
-		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColorsStatic, const Color * pSegmentColorsX, const Color * pSegmentColorsY );
+		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SegmentGradient * pSegmentGradients);
 
 
 		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos);
@@ -292,7 +309,7 @@ namespace wg
 		static ClipLineOp_p		s_clipLineOpTab[BlendMode_size][PixelFormat_size];
 		static FillOp_p			s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];		//[BlendMode][TintMode][DestFormat]
 		static PlotListOp_p		s_plotListOpTab[BlendMode_size][PixelFormat_size];
-		static SegmentOp_p		s_segmentOpTab[BlendMode_size][PixelFormat_size];
+		static SegmentOp_p		s_segmentOpTab[2][BlendMode_size][PixelFormat_size];				//[bVerticalTint][BlendMode][DestFormat]
 
 		static SimpleBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
 
