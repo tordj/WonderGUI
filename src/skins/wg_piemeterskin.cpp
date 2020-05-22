@@ -59,6 +59,7 @@ namespace wg
 		_updateOpacity();
 
 		m_preferredSize = { 64,64 };
+		m_bIgnoresFraction = false;
 	}
 
 	PieMeterSkin::PieMeterSkin(	float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize,
@@ -87,6 +88,7 @@ namespace wg
 		_updateOpacity();
 		
 		m_preferredSize = minSize() + SizeI(64, 64);
+		m_bIgnoresFraction = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -453,13 +455,6 @@ namespace wg
 		//TODO: Implement!
 
 		return true;
-	}
-
-	//____ ignoresFraction() __________________________________________________
-
-	bool PieMeterSkin::ignoresFraction() const
-	{
-		return false;
 	}
 
 	//____ fractionChangeRect() ______________________________________

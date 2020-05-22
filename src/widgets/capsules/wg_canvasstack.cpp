@@ -326,6 +326,7 @@ namespace wg
 	CanvasStack::CustomSkin::CustomSkin(CanvasStack * pHolder, Skin * pSkin, int canvasIdx)
 		: m_pStack(pHolder), m_pSkin(pSkin), m_canvasIdx(canvasIdx)
 	{
+		m_bIgnoresFraction = pSkin->ignoresFraction();
 	}
 
 	const TypeInfo& CanvasStack::CustomSkin::typeInfo(void) const
@@ -414,10 +415,6 @@ namespace wg
 		pDevice->setCanvas(oldCanvas,false);
 	}
 
-	bool CanvasStack::CustomSkin::ignoresFraction() const
-	{
-		return m_pSkin->ignoresFraction();
-	}
 
 	Rect CanvasStack::CustomSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const
 	{

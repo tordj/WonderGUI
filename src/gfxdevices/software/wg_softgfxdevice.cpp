@@ -654,92 +654,6 @@ namespace wg
 
 	}
 
-
-	//____ _init_tint_texel() _________________________________________________
-/*
-	inline void SoftGfxDevice::_init_tint_texel(TintMode tintMode, const ColTrans& tint, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
-	{
-		if (tintMode == TintMode::Flat)
-		{
-			outB = s_mulTab[tint.flatTintColor.b];
-			outG = s_mulTab[tint.flatTintColor.g];
-			outR = s_mulTab[tint.flatTintColor.r];
-			outA = s_mulTab[tint.flatTintColor.a];
-		}
-		else
-		{
-			outB = 255;
-			outG = 255;
-			outR = 255;
-			outA = 255;
-		}
-	}
-
-	//____ _init_tint_texel_line() _________________________________________________
-
-	inline void SoftGfxDevice::_init_tint_texel_line(int lineNb, TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
-	{
-		if (tintMode == TintMode::GradientY || tintMode ==  TintMode::GradientXY )						// We are tinting lines individually
-		{
-			outB = tint.pTintY[lineNb].b;
-			outG = tint.pTintY[lineNb].g;
-			outR = tint.pTintY[lineNb].r;
-			outA = tint.pTintY[lineNb].a;
-		}
-		else
-		{
-			outB = inB;
-			outG = inG;
-			outR = inR;
-			outA = inA;
-		}
-	}
-
-	//____ _tint_texel() ______________________________________________________
-
-	inline void SoftGfxDevice::_tint_texel(int columnNb, TintMode tintMode, const ColTrans& tint, uint8_t texB, uint8_t texG, uint8_t texR, uint8_t texA, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
-	{
-		if (tintMode == TintMode::None)
-		{
-			outB = texB;
-			outG = texG;
-			outR = texR;
-			outA = texA;
-		}
-
-		if( tintMode == TintMode::Flat || tintMode == TintMode::GradientY )
-		{
-			outB = (texB * s_mulTab[inB]) >> 16;
-			outG = (texG * s_mulTab[inG]) >> 16;
-			outR = (texR * s_mulTab[inR]) >> 16;
-			outA = (texA * s_mulTab[inA]) >> 16;
-		}
-
-		if( tintMode == TintMode::GradientX )
-		{
-			outB = (texB * s_mulTab[tint.pTintX[columnNb].b]) >> 16;
-			outG = (texG * s_mulTab[tint.pTintX[columnNb].g]) >> 16;
-			outR = (texR * s_mulTab[tint.pTintX[columnNb].r]) >> 16;
-			outA = (texA * s_mulTab[tint.pTintX[columnNb].a]) >> 16;
-		}
-
-
-		if( tintMode == TintMode::GradientXY )
-		{
-			uint8_t	tintB = (inB * s_mulTab[tint.pTintX[columnNb].b]) >> 16;
-			uint8_t	tintG = (inG * s_mulTab[tint.pTintX[columnNb].g]) >> 16;
-			uint8_t	tintR = (inR * s_mulTab[tint.pTintX[columnNb].r]) >> 16;
-			uint8_t	tintA = (inA * s_mulTab[tint.pTintX[columnNb].a]) >> 16;
-
-			outB = (texB * s_mulTab[tintB]) >> 16;
-			outG = (texG * s_mulTab[tintG]) >> 16;
-			outR = (texR * s_mulTab[tintR]) >> 16;
-			outA = (texA * s_mulTab[tintA]) >> 16;
-		}
-	}
-*/
-
-
 	//____ _plot() ____________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
@@ -1187,7 +1101,7 @@ namespace wg
 	inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient)
 	{
 		if (GRADIENT)
-			return (pSegmentGradient->begA + pSegmentGradient->incA * (offset >> 8)) >> 16;
+			return (pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 16;
 		else
 			return pSegmentColor->a;
 	}
@@ -1196,7 +1110,7 @@ namespace wg
 	//____ _draw_segment_strip() _______________________________________________
 
 	template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients )
+	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients, const bool * pTransparentSegments)
 	{
 		// Render the column
 
@@ -1212,7 +1126,7 @@ namespace wg
 				int end = nEdges == 0 ? colEnd : pEdges[0].begin;
 				Color segmentColor = *pSegmentColors;
 
-				if (pSegmentColors->a == 0)							// This test is still valid in GRADIENT mode.
+				if (*pTransparentSegments)									// This test is still valid in GRADIENT mode.
 				{
 					pDst = pStripStart + (end >> 8) * pixelPitch;
 					offset = end & 0xFFFFFF00;												// Just skip segment since it is transparent
@@ -1407,9 +1321,12 @@ namespace wg
 				pEdges++;
 				nEdges--;
 
-				pSegmentColors++;				// Need to increment even in GRADIENT mode for alpha check.
+				pTransparentSegments++;
 				if (GRADIENT)
 					pSegmentGradients++;
+				else
+					pSegmentColors++;
+
 			}
 
 		}
@@ -2648,12 +2565,17 @@ namespace wg
 
 		// Apply simple tinting
 
-		Color colors[c_maxSegments];
+		Color	colors[c_maxSegments];
+		bool	transparentSegments[c_maxSegments];
 
 		if (m_tintColor != Color::White)
 		{
 			for (int i = 0; i < nSegments; i++)
-				colors[i] = pSegmentColors[i] * m_tintColor;
+			{
+				Color col = pSegmentColors[i] * m_tintColor;
+				colors[i] = col;
+				transparentSegments[i] = (col.a == 0);
+			}
 			pSegmentColors = colors;
 		}
 
@@ -2754,7 +2676,7 @@ namespace wg
 
 				const Color * pColors = pSegmentColors + colOfs;
 
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr);
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr,nullptr);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 			}
@@ -2966,6 +2888,7 @@ namespace wg
 		// Apply tinting
 
 		Color colors[c_maxSegments];
+		bool	transparentSegments[c_maxSegments];
 
 		SegmentGradient * pGradientsY = nullptr;
 		SegmentGradient * pGradientsX = nullptr;
@@ -2995,12 +2918,25 @@ namespace wg
 			}
 		}
 
+		// If we have no tinting at all we still need to fill in transparentSegments
+
+		if (!bTintFlat && !bTintX && !bTintY)
+		{
+			for (int i = 0; i < nSegments; i++)
+				transparentSegments[i] = pSegmentColors[i].a == 0;
+		}
+
+
 		// If we just use flat tinting, we just tint our segment colors
 
 		if (bTintFlat && !bTintX && !bTintY)
 		{
 			for (int i = 0; i < nSegments; i++)
-				colors[i] = pSegmentColors[i] * m_tintColor;
+			{
+				Color col = pSegmentColors[i] * m_tintColor;
+				colors[i] = col;
+				transparentSegments[i] = (col.a == 0);
+			}
 			pSegmentColors = colors;
 		}
 
@@ -3137,6 +3073,10 @@ namespace wg
 					p->incR = (segR[3] - segR[0]) / dest.h;
 					p->incA = (segA[3] - segA[0]) / dest.h;
 				}
+
+				// Possibly mark this segment as transparent
+
+				transparentSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 0);
 			}
 		}
 
@@ -3271,7 +3211,7 @@ namespace wg
 
 				//
 
-				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pGradientsY+skippedSegments);
+				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pGradientsY+skippedSegments, transparentSegments+skippedSegments);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += (m_canvasPixelBits / 8);
 				columnOfs++;

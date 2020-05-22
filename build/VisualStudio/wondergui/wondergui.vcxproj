@@ -14,19 +14,19 @@
     <ProjectGuid>{61381138-0C8C-4E62-A557-6ACC3D4D35BF}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>wondergui</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>true</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
     <ConfigurationType>StaticLibrary</ConfigurationType>
     <UseDebugLibraries>false</UseDebugLibraries>
-    <PlatformToolset>v141</PlatformToolset>
+    <PlatformToolset>v142</PlatformToolset>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
@@ -179,6 +179,7 @@
     <ClInclude Include="..\..\..\src\skins\wg_blockskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_boxskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_colorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_doubleskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_fillmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_piemeterskin.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_doubleskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_fillmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_lambdaskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_piemeterskin.cpp" />

@@ -47,6 +47,7 @@ void 			myButtonClickCallback( const Msg_p& pMsg );
 void * 			loadFile( const char * pPath );
 Blob_p 			loadBlob( const char * pPath );
 Surface_p		loadSurface(const std::string& path, PixelFormat pixFormat = PixelFormat::BGRA_8 );
+bool			savePNG(Surface * pSurface, const char * path);
 
 void			convertSDLFormat( PixelDescription * pWGFormat, const SDL_PixelFormat * pSDLFormat );
 
@@ -85,6 +86,7 @@ bool pieKnobTest(CStandardSlot_p pSlot);
 bool spinKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 
+void nisBlendTest();
 
 
 //____ main() _________________________________________________________________
@@ -312,6 +314,7 @@ int main(int argc, char** argv)
 #endif
 	Base::setActiveContext(pContext);
 
+	nisBlendTest();
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -1598,6 +1601,41 @@ Surface_p loadSurface(const std::string& path, PixelFormat pixFormat)
 	return pImgSurface;
 }
 
+//____ savePNG() ________________________________________________________
+
+bool savePNG(Surface * pSurface, const char * path)
+{
+	SizeI size = pSurface->size();
+	const PixelDescription* pFmt = pSurface->pixelDescription();
+
+	SDL_Surface * pOutput = SDL_CreateRGBSurface(0, size.w, size.h, pFmt->bits, pFmt->R_mask, pFmt->G_mask, pFmt->B_mask, pFmt->A_mask);
+
+
+	int err = SDL_LockSurface(pOutput);
+	if (err != 0)
+		return false;
+
+	char * pSrcPixels = (char *)pSurface->lock(AccessMode::ReadOnly);
+
+	for (int y = 0; y < size.h; y++)
+	{
+		char * pDest = ((char *)pOutput->pixels) + pOutput->pitch * y;
+		char * pSource = pSrcPixels + pSurface->pitch() * y;
+		memcpy(pDest, pSource, size.w * pFmt->bits / 8);
+	}
+
+	pSurface->unlock();
+
+	SDL_UnlockSurface(pOutput);
+
+
+	int err2 = IMG_SavePNG(pOutput, path);
+	SDL_FreeSurface(pOutput);
+
+	return true;
+}
+
+
 
 //____ shadowLayerTest() ______________________________________________________
 
@@ -2205,3 +2243,20 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+void nisBlendTest()
+{
+	SoftSurface_p pCanvas = SoftSurface::create({ 256,256 }, PixelFormat::BGR_8);
+	SurfaceFactory_p pFactory = SoftSurfaceFactory::create();
+	Surface_p pBackImg = loadSurface("../alpha_blending_example_files/knob_background.png", PixelFormat::BGRA_8);
+	Surface_p pFrontImg = loadSurface("../alpha_blending_example_files/knob_foreground_linear.png", PixelFormat::BGRA_8);
+	GfxDevice_p pDevice = SoftGfxDevice::create(pCanvas);
+	pDevice->setBlendMode(BlendMode::Replace);
+	pDevice->beginRender();
+	pDevice->setBlitSource(pBackImg);
+	pDevice->blit({ 0,0 });
+	pDevice->setBlendMode(BlendMode::Blend);
+	pDevice->setBlitSource(pFrontImg);
+	pDevice->blit({ 0,0 });
+	pDevice->endRender();
+	savePNG(pCanvas, "knob_wg_software.png");
+}

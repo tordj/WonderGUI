@@ -54,6 +54,7 @@ namespace wg
 		m_backColor(Color::Transparent)
 	{
 		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
+		m_bIgnoresFraction = false;
 	}
 
 	FillMeterSkin::FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
@@ -67,6 +68,7 @@ namespace wg
 	{
 		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
 		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
+		m_bIgnoresFraction = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -280,13 +282,6 @@ namespace wg
 			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*fraction)).a) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
-	}
-
-	//____ ignoresFraction() __________________________________________________
-
-	bool FillMeterSkin::ignoresFraction() const
-	{
-		return false;
 	}
 
 	//____ fractionChangeRect() ______________________________________

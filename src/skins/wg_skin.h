@@ -69,8 +69,10 @@ namespace wg
 		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const = 0;
 		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f ) const = 0;
 
-		virtual bool	ignoresFraction() const;
+		inline bool		ignoresFraction() const { return m_bIgnoresFraction; }
 		virtual Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+
+		inline bool		isContentShifting() { return m_bContentShifting; }
 
 		//.____ Deprecated ______________________________________________________
 /*
@@ -126,6 +128,10 @@ namespace wg
 */
 	protected:
 		Skin() {};
+
+		bool m_bContentShifting = false;
+		bool m_bIgnoresFraction = true;
+
 	};
 
 

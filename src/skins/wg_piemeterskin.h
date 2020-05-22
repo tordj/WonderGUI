@@ -117,7 +117,6 @@ namespace wg
 		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
-		bool	ignoresFraction() const override;
 		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
 
 	private:

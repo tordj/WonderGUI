@@ -53,6 +53,8 @@ namespace wg
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 			m_contentShift[i] = { 0,0 };
+
+		m_bContentShifting = false;
 	}
 
 	//____ setContentShift() ______________________________________________________
@@ -62,6 +64,8 @@ namespace wg
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
 		m_contentShiftStateMask.setBit(index);
+
+		m_bContentShifting = true;				// Making it easy for us, just assume something will be shifting when this method is called.
 
 		_refreshUnsetStates();
 	}
@@ -77,6 +81,8 @@ namespace wg
 			m_contentShiftStateMask.setBit(index);
 		}
 
+		m_bContentShifting = true;				// Making it easy for us, just assume something will be shifting when this method is called.
+
 		_refreshUnsetStates();
 	}
 
@@ -89,14 +95,6 @@ namespace wg
 			return m_contentShift[index];
 
 		return CoordI();
-	}
-
-	//____ contentShiftAdapted() ________________________________________________________
-
-	Coord ExtendedSkin::contentShiftAdapted(State state) const
-	{
-		int index = _stateToIndex(state);
-		return Coord(m_contentShift[index]).aligned();
 	}
 
 	//____ isStateIdentical() ______________________________________________________

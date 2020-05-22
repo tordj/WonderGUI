@@ -34,13 +34,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ ignoresFraction() _____________________________________________________
-
-	bool Skin::ignoresFraction() const
-	{
-		return true;
-	}
-
 	//____ fractionChangeRect() ______________________________________
 
 	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const

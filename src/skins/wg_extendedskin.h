@@ -62,7 +62,6 @@ namespace wg
 		void			setContentShift(State state, CoordI shift);
 		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
 		CoordI			contentShift(State state) const;
-		Coord			contentShiftAdapted(State state) const;
 
 		//.____ Misc ____________________________________________________
 

@@ -61,6 +61,7 @@ namespace wg
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = pSurface->isOpaque();
+		m_bIgnoresFraction = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -210,13 +211,6 @@ namespace wg
 		//TODO: Implement!
 
 		return true;
-	}
-
-	//____ ignoresFraction() __________________________________________________
-
-	bool SpinMeterSkin::ignoresFraction() const
-	{
-		return false;
 	}
 
 	//____ fractionChangeRect() ______________________________________
