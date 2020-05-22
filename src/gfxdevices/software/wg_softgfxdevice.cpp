@@ -2498,7 +2498,7 @@ namespace wg
 	{
 		RectI dest = _dest;
 
-		SegmentEdge edges[c_maxSegments-1];
+		SegmentEdge edges[c_maxSegments - 1];
 
 		int xPitch = m_canvasPixelBits / 8;
 		int yPitch = m_canvasPitch;
@@ -2542,7 +2542,7 @@ namespace wg
 
 		// Limit size of destination rect by number of edgestrips.
 
-		if ( bHorizontalColumns )
+		if (bHorizontalColumns)
 		{
 			if (dest.w > nEdgeStrips - 1)
 			{
@@ -2563,12 +2563,51 @@ namespace wg
 			}
 		}
 
-		// Apply simple tinting
+		// Apply tinting
 
-		Color	colors[c_maxSegments];
+		Color colors[c_maxSegments];
 		bool	transparentSegments[c_maxSegments];
 
-		if (m_tintColor != Color::White)
+		SegmentGradient* pGradientsY = nullptr;
+		SegmentGradient* pGradientsX = nullptr;
+		int		gradientsYBufferSize = 0;
+		int		gradientsXBufferSize = 0;
+
+		// Determine combined tint-mode
+
+		bool	bTintFlat = false;			// Set if we tint in any way, flat, x, y, or xy.
+		bool	bTintX = false;
+		bool	bTintY = false;
+
+		if (tintMode != TintMode::None)
+		{
+			bTintFlat = m_tintColor != Color::White;
+
+			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
+			{
+				bTintX = bTintY = true;
+			}
+			else
+			{
+				if (tintMode == TintMode::GradientY || m_colTrans.mode == TintMode::GradientY)
+					bTintY = true;
+				if (tintMode == TintMode::GradientX || m_colTrans.mode == TintMode::GradientX)
+					bTintX = true;
+			}
+		}
+
+		// If we have no tinting at all we still need to fill in transparentSegments
+
+		if (!bTintFlat && !bTintX && !bTintY)
+		{
+			for (int i = 0; i < nSegments; i++)
+				transparentSegments[i] = pSegmentColors[i].a == 0;
+		}
+
+
+		// If we just use flat tinting, we just tint our segment colors
+
+		if (bTintFlat && !bTintX && !bTintY)
 		{
 			for (int i = 0; i < nSegments; i++)
 			{
@@ -2579,14 +2618,154 @@ namespace wg
 			pSegmentColors = colors;
 		}
 
+		// If we instead have a gradient we have way more to do...
+
+		else if (bTintX || bTintY)
+		{
+			// Generate the buffers that we will need
+
+			if (bTintY)
+			{
+				gradientsYBufferSize = sizeof(SegmentGradient) * nSegments;
+				pGradientsY = (SegmentGradient*)Base::memStackAlloc(gradientsYBufferSize);
+			}
+
+			if (bTintX)
+			{
+				// We use two gradients per segment in X, one for top and bottom of rectangle each.
+
+				gradientsXBufferSize = sizeof(SegmentGradient) * nSegments * 2;
+				pGradientsX = (SegmentGradient*)Base::memStackAlloc(gradientsXBufferSize);
+			}
+
+
+			// Calculate RGBA values from m_colTrans for our four corners.
+
+			int		baseB[4], baseG[4], baseR[4], baseA[4];
+
+			_colTransRect(baseB, baseG, baseR, baseA, _dest);
+
+			// Lets process each segment
+
+			for (int seg = 0; seg < nSegments; seg++)
+			{
+
+				int		segB[4], segG[4], segR[4], segA[4];
+
+				// Calculate RGBA values for our four corners
+
+				if (tintMode == TintMode::Flat)
+				{
+					Color col = pSegmentColors[seg];
+
+					for (int i = 0; i < 4; i++)
+					{
+						segB[i] = baseB[i] * col.b;
+						segG[i] = baseG[i] * col.g;
+						segR[i] = baseR[i] * col.r;
+						segA[i] = baseA[i] * col.a;
+					}
+				}
+				else
+				{
+					Color col[4];
+
+					if (tintMode == TintMode::GradientX)
+					{
+						col[0] = col[3] = pSegmentColors[seg * 2];
+						col[1] = col[2] = pSegmentColors[seg * 2 + 1];
+					}
+					else if (tintMode == TintMode::GradientY)
+					{
+						col[0] = col[1] = pSegmentColors[seg * 2];
+						col[2] = col[3] = pSegmentColors[seg * 2 + 1];
+					}
+					else
+					{
+						col[0] = pSegmentColors[seg * 4];
+						col[1] = pSegmentColors[seg * 4 + 1];
+						col[2] = pSegmentColors[seg * 4 + 2];
+						col[3] = pSegmentColors[seg * 4 + 3];
+					}
+
+					for (int i = 0; i < 4; i++)
+					{
+						segB[i] = baseB[i] * col[i].b;
+						segG[i] = baseG[i] * col[i].g;
+						segR[i] = baseR[i] * col[i].r;
+						segA[i] = baseA[i] * col[i].a;
+					}
+				}
+
+				// We now have the segments corner colors. Let's save
+				// that information in the correct format for future
+				// processing depending on tint mode.
+
+				// Filling in the x-gradient if we have one. Two SegmentGradient structs for
+				// each segment, one for gradient along top and of dest rectangle and one along the bottom.
+
+				if (bTintX)
+				{
+					// Fill in top gradient
+
+					auto p = &pGradientsX[seg * 2];
+
+					p->begB = segB[0];
+					p->begG = segG[0];
+					p->begR = segR[0];
+					p->begA = segA[0];
+
+					p->incB = (segB[1] - segB[0]) / dest.w;
+					p->incG = (segG[1] - segG[0]) / dest.w;
+					p->incR = (segR[1] - segR[0]) / dest.w;
+					p->incA = (segA[1] - segA[0]) / dest.w;
+
+					// Fill in bottom gradient
+
+					p++;
+
+					p->begB = segB[3];
+					p->begG = segG[3];
+					p->begR = segR[3];
+					p->begA = segA[3];
+
+					p->incB = (segB[2] - segB[3]) / dest.w;
+					p->incG = (segG[2] - segG[3]) / dest.w;
+					p->incR = (segR[2] - segR[3]) / dest.w;
+					p->incA = (segA[2] - segA[3]) / dest.w;
+				}
+
+				// If we don't have any x-gradient we can fill in y-gradient once and for all
+
+				if (bTintY && !bTintX)
+				{
+					auto p = &pGradientsY[seg];
+
+					p->begB = segB[0];
+					p->begG = segG[0];
+					p->begR = segR[0];
+					p->begA = segA[0];
+
+					p->incB = (segB[3] - segB[0]) / dest.h;
+					p->incG = (segG[3] - segG[0]) / dest.h;
+					p->incR = (segR[3] - segR[0]) / dest.h;
+					p->incA = (segA[3] - segA[0]) / dest.h;
+				}
+
+				// Possibly mark this segment as transparent
+
+				transparentSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 0);
+			}
+		}
+
 		// Set start position and clip dest
 
-		uint8_t * pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
+		uint8_t* pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
 
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[0][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -2596,12 +2775,11 @@ namespace wg
 		{
 			// Clip patch
 
-			RectI patch(dest, m_pClipRects[patchIdx] );
+			RectI patch(dest, m_pClipRects[patchIdx]);
 			if (patch.w == 0 || patch.h == 0)
 				continue;
 
 			// Calculate stripstart, clipBeg/clipEnd and first edge for patch
-
 
 			int columnOfs;
 			int rowOfs;
@@ -2626,16 +2804,16 @@ namespace wg
 				rows = patch.w;
 			}
 
-			const int *		pEdgeStrips		= _pEdgeStrips + columnOfs * edgeStripPitch;
-			uint8_t *	pStripStart = pOrigo + columnOfs * colPitch;
+			const int* pEdgeStrips = _pEdgeStrips + columnOfs * edgeStripPitch;
+			uint8_t* pStripStart = pOrigo + columnOfs * colPitch;
 
 			int clipBeg = rowOfs * 256;
-			int clipEnd  = clipBeg + (rows * 256);
+			int clipEnd = clipBeg + (rows * 256);
 
 			for (int x = 0; x < columns; x++)
 			{
 				int nEdges = 0;
-				int colOfs = 0;
+				int skippedSegments = 0;
 
 				for (int y = 0; y < nSegments - 1; y++)
 				{
@@ -2657,7 +2835,7 @@ namespace wg
 						{
 							int cut = clipBeg - beg;
 							beg = clipBeg;
-							coverage += (coverageInc*cut) >> 8;
+							coverage += (coverageInc * cut) >> 8;
 						}
 
 						if (end > clipEnd)
@@ -2671,16 +2849,80 @@ namespace wg
 						nEdges++;
 					}
 					else
-						colOfs++;
+						skippedSegments++;
 				}
 
-				const Color * pColors = pSegmentColors + colOfs;
+				// Update tinting if we have X-gradient
 
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, nullptr,nullptr);
+				const Color* pColors = pSegmentColors + skippedSegments;
+
+				if (bTintX)
+				{
+					if (bTintY)
+					{
+						auto pOut = pGradientsY + skippedSegments;
+						auto pIn = pGradientsX + skippedSegments * 2;
+
+						for (int i = 0; i < nEdges + 1; i++)
+						{
+							int beg = pIn[0].begB + pIn[0].incB * columnOfs;
+							int inc = (pIn[1].begB + pIn[1].incB * columnOfs - beg) / dest.h;
+							pOut[i].begB = beg;
+							pOut[i].incB = inc;
+
+							beg = pIn[0].begG + pIn[0].incG * columnOfs;
+							inc = (pIn[1].begG + pIn[1].incG * columnOfs - beg) / dest.h;
+							pOut[i].begG = beg;
+							pOut[i].incG = inc;
+
+							beg = pIn[0].begR + pIn[0].incR * columnOfs;
+							inc = (pIn[1].begR + pIn[1].incR * columnOfs - beg) / dest.h;
+							pOut[i].begR = beg;
+							pOut[i].incR = inc;
+
+							beg = pIn[0].begA + pIn[0].incA * columnOfs;
+							inc = (pIn[1].begA + pIn[1].incA * columnOfs - beg) / dest.h;
+							pOut[i].begA = beg;
+							pOut[i].incA = inc;
+
+							pIn += 2;
+						}
+					}
+					else
+					{
+						// We just use the color array and fill in correct color values for this column.
+
+						auto pGrad = pGradientsX + skippedSegments * 2;
+
+						for (int i = 0; i < nEdges + 1; i++)
+						{
+							colors[i].b = (pGrad->begB + pGrad->incB * columnOfs) >> 16;
+							colors[i].g = (pGrad->begG + pGrad->incG * columnOfs) >> 16;
+							colors[i].r = (pGrad->begR + pGrad->incR * columnOfs) >> 16;
+							colors[i].a = (pGrad->begA + pGrad->incA * columnOfs) >> 16;
+							pGrad += 2;												// Skipping bottom gradient data since we don't need it.
+						}
+
+						pColors = colors;
+					}
+				}
+
+				//
+
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, pGradientsY + skippedSegments, transparentSegments + skippedSegments);
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
+				columnOfs++;
 			}
 		}
+
+		// Free what we have reserved on the memStack.
+
+		if (gradientsXBufferSize > 0)
+			Base::memStackRelease(gradientsXBufferSize);
+
+		if (gradientsYBufferSize > 0)
+			Base::memStackRelease(gradientsYBufferSize);
 
 	}
 
@@ -2872,360 +3114,6 @@ namespace wg
 
 
 
-	//____ drawSegments() ______________________________________________________
-
-	void SoftGfxDevice::drawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode)
-	{
-		RectI dest = _dest;
-
-		SegmentEdge edges[c_maxSegments - 1];
-
-		// Limit size of destination rect by number of edgestrips.
-
-		if (dest.w > nEdgeStrips - 1)
-			dest.w = nEdgeStrips - 1;
-
-		// Apply tinting
-
-		Color colors[c_maxSegments];
-		bool	transparentSegments[c_maxSegments];
-
-		SegmentGradient * pGradientsY = nullptr;
-		SegmentGradient * pGradientsX = nullptr;
-		int		gradientsYBufferSize = 0;
-		int		gradientsXBufferSize = 0;
-
-		// Determine combined tint-mode
-
-		bool	bTintFlat = false;			// Set if we tint in any way, flat, x, y, or xy.
-		bool	bTintX = false;
-		bool	bTintY = false;
-
-		if (tintMode != TintMode::None)
-		{
-			bTintFlat = m_tintColor != Color::White;
-
-			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
-			{
-				bTintX = bTintY = true;
-			}
-			else
-			{
-				if (tintMode == TintMode::GradientY || m_colTrans.mode == TintMode::GradientY)
-					bTintY = true;
-				if (tintMode == TintMode::GradientX || m_colTrans.mode == TintMode::GradientX)
-					bTintX = true;
-			}
-		}
-
-		// If we have no tinting at all we still need to fill in transparentSegments
-
-		if (!bTintFlat && !bTintX && !bTintY)
-		{
-			for (int i = 0; i < nSegments; i++)
-				transparentSegments[i] = pSegmentColors[i].a == 0;
-		}
-
-
-		// If we just use flat tinting, we just tint our segment colors
-
-		if (bTintFlat && !bTintX && !bTintY)
-		{
-			for (int i = 0; i < nSegments; i++)
-			{
-				Color col = pSegmentColors[i] * m_tintColor;
-				colors[i] = col;
-				transparentSegments[i] = (col.a == 0);
-			}
-			pSegmentColors = colors;
-		}
-
-		// If we instead have a gradient we have way more to do...
-
-		else if (bTintX || bTintY)
-		{
-			// Generate the buffers that we will need
-
-			if (bTintY)
-			{
-				gradientsYBufferSize = sizeof(SegmentGradient) * nSegments;
-				pGradientsY = (SegmentGradient*)Base::memStackAlloc(gradientsYBufferSize);
-			}
-
-			if (bTintX)
-			{
-				// We use two gradients per segment in X, one for top and bottom of rectangle each.
-
-				gradientsXBufferSize = sizeof(SegmentGradient) * nSegments * 2;
-				pGradientsX = (SegmentGradient*)Base::memStackAlloc(gradientsXBufferSize);
-			}
-
-
-			// Calculate RGBA values from m_colTrans for our four corners.
-
-			int		baseB[4], baseG[4], baseR[4], baseA[4];
-
-			_colTransRect(baseB, baseG, baseR, baseA, _dest);
-
-			// Lets process each segment
-
-			for (int seg = 0; seg < nSegments; seg++)
-			{
-
-				int		segB[4], segG[4], segR[4], segA[4];
-
-				// Calculate RGBA values for our four corners
-
-				if (tintMode == TintMode::Flat)
-				{
-					Color col = pSegmentColors[seg];
-
-					for (int i = 0; i < 4; i++)
-					{
-						segB[i] = baseB[i] * col.b;
-						segG[i] = baseG[i] * col.g;
-						segR[i] = baseR[i] * col.r;
-						segA[i] = baseA[i] * col.a;
-					}
-				}
-				else
-				{
-					Color col[4];
-
-					if (tintMode == TintMode::GradientX)
-					{
-						col[0] = col[3] = pSegmentColors[seg * 2];
-						col[1] = col[2] = pSegmentColors[seg * 2 + 1];
-					}
-					else if (tintMode == TintMode::GradientY)
-					{
-						col[0] = col[1] = pSegmentColors[seg * 2];
-						col[2] = col[3] = pSegmentColors[seg * 2 + 1];
-					}
-					else
-					{
-						col[0] = pSegmentColors[seg * 4];
-						col[1] = pSegmentColors[seg * 4 + 1];
-						col[2] = pSegmentColors[seg * 4 + 2];
-						col[3] = pSegmentColors[seg * 4 + 3];
-					}
-
-					for (int i = 0; i < 4; i++)
-					{
-						segB[i] = baseB[i] * col[i].b;
-						segG[i] = baseG[i] * col[i].g;
-						segR[i] = baseR[i] * col[i].r;
-						segA[i] = baseA[i] * col[i].a;
-					}
-				}
-
-				// We now have the segments corner colors. Let's save
-				// that information in the correct format for future
-				// processing depending on tint mode.
-
-				// Filling in the x-gradient if we have one. Two SegmentGradient structs for
-				// each segment, one for gradient along top and of dest rectangle and one along the bottom.
-
-				if (bTintX)
-				{
-					// Fill in top gradient
-
-					auto p = &pGradientsX[seg * 2];
-
-					p->begB = segB[0];
-					p->begG = segG[0];
-					p->begR = segR[0];
-					p->begA = segA[0];
-
-					p->incB = (segB[1] - segB[0]) / dest.w;
-					p->incG = (segG[1] - segG[0]) / dest.w;
-					p->incR = (segR[1] - segR[0]) / dest.w;
-					p->incA = (segA[1] - segA[0]) / dest.w;
-
-					// Fill in bottom gradient
-
-					p++;
-
-					p->begB = segB[3];
-					p->begG = segG[3];
-					p->begR = segR[3];
-					p->begA = segA[3];
-
-					p->incB = (segB[2] - segB[3]) / dest.w;
-					p->incG = (segG[2] - segG[3]) / dest.w;
-					p->incR = (segR[2] - segR[3]) / dest.w;
-					p->incA = (segA[2] - segA[3]) / dest.w;
-				}
-
-				// If we don't have any x-gradient we can fill in y-gradient once and for all
-
-				if (bTintY && !bTintX)
-				{
-					auto p = &pGradientsY[seg];
-
-					p->begB = segB[0];
-					p->begG = segG[0];
-					p->begR = segR[0];
-					p->begA = segA[0];
-
-					p->incB = (segB[3] - segB[0]) / dest.h;
-					p->incG = (segG[3] - segG[0]) / dest.h;
-					p->incR = (segR[3] - segR[0]) / dest.h;
-					p->incA = (segA[3] - segA[0]) / dest.h;
-				}
-
-				// Possibly mark this segment as transparent
-
-				transparentSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 0);
-			}
-		}
-
-		// Set start position and clip dest
-
-		uint8_t * pOrigo = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * (m_canvasPixelBits / 8);
-
-		if (!dest.intersectsWith(m_clipBounds))
-			return;
-
-		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-		if (pOp == nullptr)
-			return;
-
-		// Loop through patches
-
-		for (int patchIdx = 0; patchIdx < m_nClipRects; patchIdx++)
-		{
-			// Clip patch
-
-			RectI patch(dest, m_pClipRects[patchIdx]);
-			if (patch.w == 0 || patch.h == 0)
-				continue;
-
-			// Calculate stripstart, clipBeg/clipEnd and first edge for patch
-
-			int columnOfs = patch.x - dest.x;
-			int rowOfs = patch.y - dest.y;
-
-			const int *		pEdgeStrips = _pEdgeStrips + columnOfs * edgeStripPitch;
-			uint8_t *		pStripStart = pOrigo + columnOfs * (m_canvasPixelBits / 8);
-
-			int clipBeg = rowOfs * 256;
-			int clipEnd = clipBeg + (patch.h * 256);
-
-			for (int x = 0; x < patch.w; x++)
-			{
-				int nEdges = 0;
-				int skippedSegments = 0;
-
-				for (int y = 0; y < nSegments - 1; y++)
-				{
-					int beg = pEdgeStrips[y];
-					int end = pEdgeStrips[y + edgeStripPitch];
-
-					if (beg > end)
-						swap(beg, end);
-
-					if (beg >= clipEnd)
-						break;
-
-					if (end > clipBeg)
-					{
-						int coverageInc = (end == beg) ? 0 : (65536 * 256) / (end - beg);
-						int coverage = 0;
-
-						if (beg < clipBeg)
-						{
-							int cut = clipBeg - beg;
-							beg = clipBeg;
-							coverage += (coverageInc*cut) >> 8;
-						}
-
-						if (end > clipEnd)
-							end = clipEnd;
-
-
-						edges[nEdges].begin = beg;
-						edges[nEdges].end = end;
-						edges[nEdges].coverage = coverage;
-						edges[nEdges].coverageInc = coverageInc;
-						nEdges++;
-					}
-					else
-						skippedSegments++;
-				}
-
-				// Update tinting if we have X-gradient
-
-				const Color * pColors = pSegmentColors + skippedSegments;
-
-				if (bTintX)
-				{
-					if (bTintY)
-					{
-						auto pOut = pGradientsY + skippedSegments;
-						auto pIn = pGradientsX + skippedSegments * 2;
-
-						for (int i = 0; i < nEdges + 1; i++)
-						{
-							int beg = pIn[0].begB + pIn[0].incB * columnOfs;
-							int inc = (pIn[1].begB + pIn[1].incB * columnOfs - beg) / dest.h;
-							pOut[i].begB = beg;
-							pOut[i].incB = inc;
-
-							beg = pIn[0].begG + pIn[0].incG * columnOfs;
-							inc = (pIn[1].begG + pIn[1].incG * columnOfs - beg) / dest.h;
-							pOut[i].begG = beg;
-							pOut[i].incG = inc;
-
-							beg = pIn[0].begR + pIn[0].incR * columnOfs;
-							inc = (pIn[1].begR + pIn[1].incR * columnOfs - beg) / dest.h;
-							pOut[i].begR = beg;
-							pOut[i].incR = inc;
-
-							beg = pIn[0].begA + pIn[0].incA * columnOfs;
-							inc = (pIn[1].begA + pIn[1].incA * columnOfs - beg) / dest.h;
-							pOut[i].begA = beg;
-							pOut[i].incA = inc;
-
-							pIn += 2;
-						}
-					}
-					else
-					{
-						// We just use the color array and fill in correct color values for this column.
-
-						auto pGrad = pGradientsX + skippedSegments * 2;
-
-						for (int i = 0; i < nEdges + 1; i++ )
-						{
-							colors[i].b = (pGrad->begB + pGrad->incB * columnOfs) >> 16;
-							colors[i].g = (pGrad->begG + pGrad->incG * columnOfs) >> 16;
-							colors[i].r = (pGrad->begR + pGrad->incR * columnOfs) >> 16;
-							colors[i].a = (pGrad->begA + pGrad->incA * columnOfs) >> 16;
-							pGrad += 2;												// Skipping bottom gradient data since we don't need it.
-						}
-
-						pColors = colors;
-					}
-				}
-
-				//
-
-				pOp(clipBeg, clipEnd, pStripStart, m_canvasPitch, nEdges, edges, pColors, pGradientsY+skippedSegments, transparentSegments+skippedSegments);
-				pEdgeStrips += edgeStripPitch;
-				pStripStart += (m_canvasPixelBits / 8);
-				columnOfs++;
-			}
-		}
-
-		// Free what we have reserved on the memStack.
-
-		if (gradientsXBufferSize > 0)
-			Base::memStackRelease(gradientsXBufferSize);
-
-		if (gradientsYBufferSize > 0)
-			Base::memStackRelease(gradientsYBufferSize);
-	}
 
 	//____ _lineToEdges() __________________________________________________________
 

@@ -2032,10 +2032,10 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
 
 	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 1 / 24.f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.25f, Color::Yellow, Color::Black);
-	pBgSkin4->setSlices({ {0.2,Color::Red,Color::Red},{0.2,Color::Orange,Color::Orange},{0.6,Color::Blue,Color::Green} });
+	pBgSkin4->setSlices({ {0.2f,Color::Red,Color::Red},{0.2f,Color::Orange,Color::Orange},{0.6f,Color::Blue,Color::Green} });
 
 	auto pBgSkin5 = PieMeterSkin::create(10.f / 12.f, 0 / 24.f, 4.f / 12.f, Color::Blue, Color::Blue, Color::DarkGray, 0.25f, Color::Yellow, Color::Black );
-	pBgSkin5->setSlices({ {0.7,Color::DarkBlue,Color::DarkBlue},{0.2,Color::Blue,Color::Blue},{0.1,Color::LightBlue,Color::LightBlue} });
+	pBgSkin5->setSlices({ {0.7f,Color::DarkBlue,Color::DarkBlue},{0.2f,Color::Blue,Color::Blue},{0.1f,Color::LightBlue,Color::LightBlue} });
 	pBgSkin5->setStaticSections(false);
 
 	auto pKnob1 = Knob::create();

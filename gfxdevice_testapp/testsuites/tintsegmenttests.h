@@ -17,6 +17,26 @@ public:
 		addTest("SegmentsTintXY", &TintSegmentTests::segmentsTintXY);
 		addTest("SegmentsTintYBaseTintX", &TintSegmentTests::setBaseGradientX, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetTint);
 
+		addTest("SegmentsTintXRot90", &TintSegmentTests::rot90, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintYRot90", &TintSegmentTests::rot90, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintXYRot90", &TintSegmentTests::rot90, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
+
+		addTest("SegmentsTintXRot180", &TintSegmentTests::rot180, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintYRot180", &TintSegmentTests::rot180, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintXYRot180", &TintSegmentTests::rot180, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
+
+		addTest("SegmentsTintXRot270", &TintSegmentTests::rot270, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintYRot270", &TintSegmentTests::rot270, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintXYRot270", &TintSegmentTests::rot270, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
+
+		addTest("SegmentsTintXFlipX", &TintSegmentTests::flipX, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintYFlipX", &TintSegmentTests::flipX, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintXYFlipX", &TintSegmentTests::flipX, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
+
+		addTest("SegmentsTintXFlipY", &TintSegmentTests::flipY, &TintSegmentTests::segmentsTintX, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintYFlipY", &TintSegmentTests::flipY, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
+		addTest("SegmentsTintXYFlipY", &TintSegmentTests::flipY, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
+
 	}
 
 
@@ -88,10 +108,48 @@ public:
 		return true;
 	}
 
+	bool	rot90(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::Rot90;
+		return true;
+	}
+
+	bool	rot180(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::Rot180;
+		return true;
+	}
+
+	bool	rot270(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::Rot270;
+		return true;
+	}
+
+
+	bool	flipX(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::FlipX;
+		return true;
+	}
+
+	bool	flipY(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::FlipY;
+		return true;
+	}
+
+
+	bool	resetFlip(GfxDevice* pDevice, const RectI& canvas)
+	{
+		m_flip = GfxFlip::Normal;
+		return true;
+	}
+
 
 	bool tintedSegments(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawSegments(canvas, 4, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7);
+		pDevice->flipDrawSegments(canvas, 4, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, m_flip);
 		return true;
 	}
 
@@ -99,7 +157,7 @@ public:
 	{
 		Color colors[] = { Color::Red, Color::Orange, Color::Green };
 
-		pDevice->drawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7);
+		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip);
 		return true;
 	}
 
@@ -107,7 +165,7 @@ public:
 	{
 		Color colors[] = { Color::White, Color::Red, Color::Orange, Color::Orange, Color::Black, Color::Green };
 
-		pDevice->drawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, TintMode::GradientX);
+		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientX);
 		return true;
 	}
 
@@ -116,7 +174,7 @@ public:
 	{
 		Color colors[] = { {0,0,0,255}, {255,0,0,255}, Color::Orange, Color::Orange, Color::Blue, Color::Green };
 
-		pDevice->drawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, TintMode::GradientY);
+		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientY);
 		return true;
 	}
 
@@ -124,32 +182,14 @@ public:
 	{
 		Color colors[] = { Color::DeepPink, Color::HotPink, Color::Black, Color::White, Color::Orange, Color::Orange, Color::Orange, Color::Orange, Color::LightBlue, Color::Blue, Color::Green, Color::LightGreen };
 
-		pDevice->drawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, TintMode::GradientXY );
-		return true;
-	}
-
-
-
-	bool flip90Rainbow(GfxDevice * pDevice, const RectI& canvas)
-	{
-		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot90);
-		return true;
-	}
-
-	bool flip180Rainbow(GfxDevice * pDevice, const RectI& canvas)
-	{
-		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot180);
-		return true;
-	}
-
-	bool flip270Rainbow(GfxDevice * pDevice, const RectI& canvas)
-	{
-		pDevice->flipDrawSegments(canvas, 8, m_rainbowColors, m_nRainbowEdges, (int*)m_rainbowEdges, 7, GfxFlip::Rot270);
+		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientXY );
 		return true;
 	}
 
 
 private:
+
+	GfxFlip	m_flip = GfxFlip::Normal;
 
 	Color	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
 

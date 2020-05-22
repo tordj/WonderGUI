@@ -92,11 +92,8 @@ namespace wg
 		void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
 		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
 
-
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
-
-		void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat) override;
 
 	protected:
 		SoftGfxDevice();
