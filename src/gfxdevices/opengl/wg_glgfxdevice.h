@@ -160,6 +160,7 @@ namespace wg
 		float	m_lineThicknessTable[17];
 
 		float	m_sRGBtoLinearTable[256];
+		float	m_linearToLinearTable[256];
 
 		//
 
@@ -186,8 +187,6 @@ namespace wg
 		GLsync          m_idleSync = 0;
 
 		bool			m_bFullyInitialized = false;
-
-		float			m_linearTint[4];
 
 		// Device programs
 

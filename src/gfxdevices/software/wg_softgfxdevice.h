@@ -310,17 +310,29 @@ namespace wg
 
 		static SimpleBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p	s_moveTo_BGRA_8_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_moveTo_BGR_8_OpTab[PixelFormat_size];								// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_internal_OpTab[PixelFormat_size];							// [SourceFormat]
 
-		static SimpleBlitOp_p	s_blendTo_BGRA_8_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_blendTo_BGR_8_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_linear_OpTab[PixelFormat_size];								// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_sRGB_OpTab[PixelFormat_size];								// [SourceFormat]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
+
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
 
 
 		static int			s_mulTab[256];

@@ -506,11 +506,6 @@ namespace wg
 
 	void GlGfxDevice::setTintColor(Color color)
 	{
-		m_linearTint[0] = m_sRGBtoLinearTable[color.r];
-		m_linearTint[1] = m_sRGBtoLinearTable[color.g];
-		m_linearTint[2] = m_sRGBtoLinearTable[color.b];
-		m_linearTint[3] = color.a/255.f;
-
 		GfxDevice::setTintColor(color);
 	}
 
@@ -812,9 +807,11 @@ namespace wg
 			}
 		}
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.r] * m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.g] * m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.r] * pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.g] * pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.b] * pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f * m_tintColor.a / 255.f;
 	}
 
@@ -894,9 +891,11 @@ namespace wg
 
 		// Provide color	
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.r] * m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.g] * m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.r] * pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.g] * pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.b] * pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f * m_tintColor.a / 255.f;
 
 		// Provide rectangle center and radius
@@ -929,6 +928,8 @@ namespace wg
 			_beginDrawCommand(Command::Plot);
 		}
 
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
 		for (int i = 0; i < m_nClipRects; i++)
 		{
 			const RectI& clip = m_pClipRects[i];
@@ -942,9 +943,9 @@ namespace wg
 
 					Color color = pColors[pixel];
 
-					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
-					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
-					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.r] * pConv[m_tintColor.r];
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.g] * pConv[m_tintColor.g];
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.b] * pConv[m_tintColor.b];
 					m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
 
 					if (m_vertexOfs == c_vertexBufferSize || m_extrasOfs == c_extrasBufferSize)
@@ -1071,9 +1072,11 @@ namespace wg
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.r] * pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.g] * pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.b] * pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
 
 		m_extrasBufferData[m_extrasOfs++] = s;
@@ -1197,9 +1200,11 @@ namespace wg
 
 		// Provide color
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.r] * pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.g] * pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.b] * pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
 
 		// Provide rectangle center and raidus.
@@ -1305,9 +1310,10 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][1];
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.b];
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = m_tintColor.a / 255.f;
 	}
 
@@ -1401,9 +1407,11 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
 
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.r];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.g];
-		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.b];
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[m_tintColor.b];
 		m_extrasBufferData[m_extrasOfs++] = m_tintColor.a / 255.f;
 	}
 
@@ -1574,9 +1582,11 @@ namespace wg
 		{
 			Color segCol = pSegmentColors[i];
 
-			*pExtras++ = m_sRGBtoLinearTable[segCol.r] * m_sRGBtoLinearTable[m_tintColor.r];
-			*pExtras++ = m_sRGBtoLinearTable[segCol.g] * m_sRGBtoLinearTable[m_tintColor.g];
-			*pExtras++ = m_sRGBtoLinearTable[segCol.b] * m_sRGBtoLinearTable[m_tintColor.b];
+			float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+			*pExtras++ = pConv[segCol.r] * pConv[m_tintColor.r];
+			*pExtras++ = pConv[segCol.g] * pConv[m_tintColor.g];
+			*pExtras++ = pConv[segCol.b] * pConv[m_tintColor.b];
 			*pExtras++ = (segCol.a * m_tintColor.a) / 65025.f;
 		}
 
@@ -2082,6 +2092,7 @@ namespace wg
 		for (int i = 0; i < 256; i++)
 		{
 			m_sRGBtoLinearTable[i] = powf(i, 2.2f)/max;
+			m_linearToLinearTable[i] = i / 255.f;
 		}
 	}
 
