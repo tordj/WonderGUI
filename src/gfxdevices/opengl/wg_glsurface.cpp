@@ -26,6 +26,8 @@
 #include <wg_glgfxdevice.h>
 #include <wg_util.h>
 #include <wg_blob.h>
+#include <wg_base.h>
+#include <wg_context.h>
 #include <assert.h>
 
 
@@ -63,7 +65,7 @@ namespace wg
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(size,format,flags,pClut));
@@ -75,7 +77,7 @@ namespace wg
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
@@ -88,7 +90,7 @@ namespace wg
 			return GlSurface_p();
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
+			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return GlSurface_p();
 
 		return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
@@ -256,7 +258,7 @@ namespace wg
 			glGenTextures(1, &m_clutTexture);
 //			glActiveTexture(GL_TEXTURE2);
 			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
-			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, m_clutBufferId);
+			glTexBuffer(GL_TEXTURE_BUFFER, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, m_clutBufferId);
 
 			HANDLE_GLERROR(glGetError());
 		}
@@ -281,53 +283,99 @@ namespace wg
 		switch (format)
 		{
 			case PixelFormat::BGR_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
+				m_accessFormat = GL_BGR;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 3;
+				break;
+
+			case PixelFormat::BGR_8_sRGB:
+				m_internalFormat = GL_SRGB8;
+				m_accessFormat = GL_BGR;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 3;
+				break;
+
+			case PixelFormat::BGR_8_linear:
 				m_internalFormat = GL_RGB8;
 				m_accessFormat = GL_BGR;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 3;
 				break;
 
-			case PixelFormat::BGRA_8:
-				m_internalFormat = GL_RGBA8;
+			case PixelFormat::BGRX_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;
 				break;
 
-			case PixelFormat::BGRX_8:
+			case PixelFormat::BGRX_8_sRGB:
+				m_internalFormat = GL_SRGB8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRX_8_linear:
 				m_internalFormat = GL_RGB8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;
 				break;
 
-			case PixelFormat::BGR_565:
+			case PixelFormat::BGRA_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRA_8_sRGB:
+				m_internalFormat = GL_SRGB8_ALPHA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRA_8_linear:
+				m_internalFormat = GL_RGBA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+
+			case PixelFormat::BGR_565_linear:
 				m_internalFormat = GL_RGB565;					// NOTE: We lose one bit of precision on green here...
 				m_accessFormat = GL_RGB;
 				m_pixelDataType = GL_UNSIGNED_SHORT_5_6_5_REV;		// or should we use GL_UNSIGNED_SHORT_5_6_5_REV?
 				m_pixelSize = 2;
 				break;
 
-			case PixelFormat::BGRA_4:
+			case PixelFormat::BGRA_4_linear:
 				m_internalFormat = GL_RGBA4;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_SHORT_4_4_4_4;	// or should we use GL_UNSIGNED_SHORT_4_4_4_4_REV?
 				m_pixelSize = 2;
 				break;
 
-			case PixelFormat::A8:
+			case PixelFormat::CLUT_8:
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
 
-			case PixelFormat::I8:
+			case PixelFormat::A_8:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
+
 			default:
 				assert(false);           // Should never get here, just avoiding compiler warnings.
 				break;
@@ -609,22 +657,30 @@ namespace wg
 		switch (m_pixelDescription.format)
 		{
 		case PixelFormat::BGR_8:
+		case PixelFormat::BGR_8_sRGB:
+		case PixelFormat::BGR_8_linear:
 			type = GL_UNSIGNED_BYTE;
 			break;
 		case PixelFormat::BGRA_8:
+		case PixelFormat::BGRA_8_sRGB:
+		case PixelFormat::BGRA_8_linear:
 		case PixelFormat::BGRX_8:
+		case PixelFormat::BGRX_8_sRGB:
+		case PixelFormat::BGRX_8_linear:
 			type = GL_UNSIGNED_INT_8_8_8_8_REV;
 			break;
-		case PixelFormat::BGRA_4:
+		case PixelFormat::BGRA_4_linear:
 			type = GL_UNSIGNED_SHORT_4_4_4_4_REV;
 			break;
-		case PixelFormat::BGR_565:
+		case PixelFormat::BGR_565_linear:
 			type = GL_UNSIGNED_SHORT_5_6_5_REV;
 			break;
-		case PixelFormat::A8:
+		case PixelFormat::A_8:
 			type = GL_UNSIGNED_BYTE;
 			break;
-		case PixelFormat::I8:
+		case PixelFormat::CLUT_8:
+		case PixelFormat::CLUT_8_sRGB:
+		case PixelFormat::CLUT_8_linear:
 			type = GL_UNSIGNED_BYTE;
 			break;
 		default:

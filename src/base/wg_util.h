@@ -374,7 +374,7 @@ namespace wg
 		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const RectI& source, const Rect& dest, int opacityTreshold, const BorderI& sourceFrame);
 
 
-		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat );
+		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
 
 		Coord 		origoToOfs( Origo origo, Size base );
 		Rect		origoToRect( Origo origo, Size base, Size rect );

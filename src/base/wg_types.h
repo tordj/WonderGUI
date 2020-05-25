@@ -604,12 +604,25 @@ namespace wg
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
 		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
+		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
+		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.
+
 		BGRX_8,				///< One byte of blue, green, red and padding in exactly that order in memory.
+		BGRX_8_sRGB,		///< One byte of blue, green, red and padding in exactly that order in memory.
+		BGRX_8_linear,		///< One byte of blue, green, red and padding in exactly that order in memory.
+
 		BGRA_8,				///< One byte of blue, green, red and alpha in exactly that order in memory.
-		BGRA_4,				///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
-		BGR_565,			///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
-		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).
-		A8					///< 8 bits of alpha only.
+		BGRA_8_sRGB,		///< One byte of blue, green, red and alpha in exactly that order in memory.
+		BGRA_8_linear,		///< One byte of blue, green, red and alpha in exactly that order in memory.
+
+		BGRA_4_linear,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
+		BGR_565_linear,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
+
+		CLUT_8,				///< 8 bits of index into the CLUT (Color Lookup Table).
+		CLUT_8_sRGB,		///< 8 bits of index into the CLUT (Color Lookup Table).
+		CLUT_8_linear,		///< 8 bits of index into the CLUT (Color Lookup Table).
+
+		A_8,				///< 8 bits of alpha only.
 	};
 
 	//____ PixelDescription __________________________________________________________
@@ -671,6 +684,7 @@ namespace wg
 		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+		bool		bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
 
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel

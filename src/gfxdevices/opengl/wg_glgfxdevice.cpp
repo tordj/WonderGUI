@@ -28,6 +28,7 @@
 #include <wg_glsurface.h>
 #include <wg_glsurfacefactory.h>
 #include <wg_base.h>
+#include <wg_context.h>
 #include <wg_util.h>
 
 using namespace std;
@@ -103,7 +104,7 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
 
-		if( !p->m_bFullyInitialized != 0 )
+		if( !p->m_bFullyInitialized )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -113,7 +114,7 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice(pSurface, uboBindingPoint ));
 
-		if ( !p->m_bFullyInitialized != 0)
+		if ( !p->m_bFullyInitialized )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -147,6 +148,10 @@ namespace wg
 
 		unsigned int canvasIndex = glGetUniformBlockIndex(m_fillProg, "Canvas");
 		glUniformBlockBinding(m_fillProg, canvasIndex, uboBindingPoint);
+
+		extrasIdLoc = glGetUniformLocation(m_fillProg, "extrasId");
+		glUseProgram(m_fillProg);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
 
 		LOG_INIT_GLERROR(glGetError());
 
@@ -234,6 +239,10 @@ namespace wg
 		canvasIndex			= glGetUniformBlockIndex(m_plotProg, "Canvas");
 		glUniformBlockBinding(m_plotProg, canvasIndex, uboBindingPoint);
 
+		extrasIdLoc = glGetUniformLocation(m_plotProg, "extrasId");
+		glUseProgram(m_plotProg);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
 		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init Line shader
@@ -303,32 +312,23 @@ namespace wg
 			(void*)0				// array buffer offset
 		);
 
-		glVertexAttribPointer(
-			1,						// attribute number, must match the layout in the shader.
-			GL_BGRA,				// size
-			GL_UNSIGNED_BYTE,		// type
-			GL_TRUE,				// normalized?
-			sizeof(Vertex),			// stride
-			(void*)sizeof(CoordI)	// array buffer offset
-		);
-
 		LOG_INIT_GLERROR(glGetError());
 
 		glVertexAttribIPointer(
-			2,                  // attribute number, must match the layout in the shader.
+			1,                  // attribute number, must match the layout in the shader.
 			1,                  // size
 			GL_INT,           // type
 			sizeof(Vertex),		// stride
-			(void*)(sizeof(CoordI)+sizeof(Color))  // array buffer offset
+			(void*)(sizeof(CoordI))  // array buffer offset
 		);
 
 		glVertexAttribPointer(
-			3,						// attribute number, must match the layout in the shader.
+			2,						// attribute number, must match the layout in the shader.
 			2,						// size
 			GL_FLOAT,				// type
 			GL_TRUE,				// normalized?
 			sizeof(Vertex),			// stride
-			(void*)(sizeof(CoordI) + sizeof(Color) + sizeof(int) )  // array buffer offset
+			(void*)(sizeof(CoordI) + sizeof(int) )  // array buffer offset
 		);
 
 
@@ -453,7 +453,7 @@ namespace wg
 		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
-		if (pSurface->pixelFormat() == PixelFormat::I8)
+		if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
 			return false;
 
 		m_pCanvas = pSurface;
@@ -506,6 +506,11 @@ namespace wg
 
 	void GlGfxDevice::setTintColor(Color color)
 	{
+		m_linearTint[0] = m_sRGBtoLinearTable[color.r];
+		m_linearTint[1] = m_sRGBtoLinearTable[color.g];
+		m_linearTint[2] = m_sRGBtoLinearTable[color.b];
+		m_linearTint[3] = color.a/255.f;
+
 		GfxDevice::setTintColor(color);
 	}
 
@@ -571,6 +576,7 @@ namespace wg
 		m_glDepthTest 		= glIsEnabled(GL_DEPTH_TEST);
 		m_glScissorTest 	= glIsEnabled(GL_SCISSOR_TEST);
 		m_glBlendEnabled  	= glIsEnabled(GL_BLEND);
+		m_glSRGBEnabled		= glIsEnabled(GL_FRAMEBUFFER_SRGB);
 		glGetIntegerv(GL_BLEND_SRC, &m_glBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &m_glBlendDst);
 		glGetIntegerv(GL_VIEWPORT, m_glViewport);
@@ -583,7 +589,6 @@ namespace wg
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-
 
 		// If there already is an active device, that needs to be flushed before we
 		// take over the role as the active device.
@@ -660,6 +665,12 @@ namespace wg
 			glEnable(GL_BLEND);
 		else
 			glDisable(GL_BLEND);
+
+		if( m_glSRGBEnabled )
+			glEnable(GL_FRAMEBUFFER_SRGB);
+		else
+			glDisable(GL_FRAMEBUFFER_SRGB);
+
 
 		glBlendFunc( m_glBlendSrc, m_glBlendDst );
 		glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
@@ -747,9 +758,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -773,35 +782,40 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.r] * m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.g] * m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f * m_tintColor.a / 255.f;
 	}
 
 	//____ fill() ____ [subpixel] __________________________________________________
@@ -824,8 +838,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -849,41 +862,42 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		// Provide color	
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.r] * m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.g] * m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[col.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f * m_tintColor.a / 255.f;
 
 		// Provide rectangle center and radius
 
@@ -903,7 +917,7 @@ namespace wg
 		if (nPixels == 0)
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 1 )
+		if (m_vertexOfs > c_vertexBufferSize - 1 || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -923,10 +937,17 @@ namespace wg
 				if (clip.contains(pCoords[pixel]))
 				{
 					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
-					m_vertexBufferData[m_vertexOfs].color = pColors[pixel] * m_tintColor;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 					m_vertexOfs++;
 
-					if (m_vertexOfs == c_vertexBufferSize)
+					Color color = pColors[pixel];
+
+					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
+					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
+					m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+					m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
+
+					if (m_vertexOfs == c_vertexBufferSize || m_extrasOfs == c_extrasBufferSize)
 					{
 						_endCommand();
 						_executeBuffer();
@@ -941,7 +962,7 @@ namespace wg
 
 	void GlGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
-		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 4 || m_clipCurrOfs == -1 )
+		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 8 || m_clipCurrOfs == -1 )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -959,8 +980,6 @@ namespace wg
 		float	slope;
 		float	s, w;
 		bool	bSteep;
-
-		Color fillColor = color * m_tintColor;
 
 		CoordI	c1, c2, c3, c4;
 
@@ -1029,34 +1048,33 @@ namespace wg
 		}
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c2;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c4;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
 
 		m_extrasBufferData[m_extrasOfs++] = s;
 		m_extrasBufferData[m_extrasOfs++] = w;
@@ -1066,11 +1084,11 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
 	{
 		// Skip calls that won't affect destination
 
-		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+		if (color.a == 0 && (m_blendMode == BlendMode::Blend))
 			return;
 
 		// Create a rectangle from the line
@@ -1120,9 +1138,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1149,41 +1165,42 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		// Provide color
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.r] * m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.g] * m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[color.b] * m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f * m_tintColor.a / 255.f;
 
 		// Provide rectangle center and raidus.
 
@@ -1206,7 +1223,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8 )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 12 )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1228,11 +1245,6 @@ namespace wg
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
 
-				Color	tint1, tint2, tint3, tint4;
-
-				tint1 = tint2 = tint3 = tint4 = m_tintColor;
-
-
 				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
 
 /*
@@ -1251,37 +1263,31 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = tint1;
 				pVertex->extrasOfs = m_extrasOfs/4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = tint2;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = tint3;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = tint1;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = tint3;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = tint4;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
@@ -1298,6 +1304,11 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[0][1];
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = (GLfloat) simpleTransform[1][1];
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = m_tintColor.a / 255.f;
 	}
 
 	//____ _transformBlit() ____ [complex] __________________________________________________
@@ -1310,7 +1321,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 12)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1338,37 +1349,31 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
@@ -1395,6 +1400,11 @@ namespace wg
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[0][1];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][0];
 		m_extrasBufferData[m_extrasOfs++] = complexTransform[1][1];
+
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.r];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.g];
+		m_extrasBufferData[m_extrasOfs++] = m_sRGBtoLinearTable[m_tintColor.b];
+		m_extrasBufferData[m_extrasOfs++] = m_tintColor.a / 255.f;
 	}
 
 	//____ _transformDrawSegments() ______________________________________________________
@@ -1508,42 +1518,36 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv2;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv4;
 				pVertex++;
@@ -1568,10 +1572,12 @@ namespace wg
 
 		for (int i = 0; i < nSegments; i++)
 		{
-			*pExtras++ = pSegmentColors[i].r/256.f;
-			*pExtras++ = pSegmentColors[i].g/256.f;
-			*pExtras++ = pSegmentColors[i].b/256.f;
-			*pExtras++ = pSegmentColors[i].a/256.f;
+			Color segCol = pSegmentColors[i];
+
+			*pExtras++ = m_sRGBtoLinearTable[segCol.r] * m_sRGBtoLinearTable[m_tintColor.r];
+			*pExtras++ = m_sRGBtoLinearTable[segCol.g] * m_sRGBtoLinearTable[m_tintColor.g];
+			*pExtras++ = m_sRGBtoLinearTable[segCol.b] * m_sRGBtoLinearTable[m_tintColor.b];
+			*pExtras++ = (segCol.a * m_tintColor.a) / 65025.f;
 		}
 
 		// Add edgestrips to extras
@@ -1698,7 +1704,6 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_cmdBlitProgram);
-						glEnableVertexAttribArray(2);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1714,7 +1719,6 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_fillProg);
-						glDisableVertexAttribArray(2);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1730,7 +1734,6 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_aaFillProg);
-						glEnableVertexAttribArray(2);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1748,7 +1751,6 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_lineFromToProg);
-						glEnableVertexAttribArray(2);
 
 						for (int i = 0; i < clipListLen; i++)
 						{
@@ -1771,7 +1773,6 @@ namespace wg
 					if( nVertices > 0 )
 					{
 						glUseProgram(m_plotProg);
-						glDisableVertexAttribArray(2);
 
 						glDrawArrays(GL_POINTS, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1789,12 +1790,11 @@ namespace wg
 					{
 						glUseProgram(m_segmentsProg[nEdges]);
 						glEnableVertexAttribArray(2);
-						glEnableVertexAttribArray(3);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
 
-						glDisableVertexAttribArray(3);
+						glDisableVertexAttribArray(2);
 
 						if( m_bMipmappedActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = true;
@@ -1825,6 +1825,8 @@ namespace wg
 
 		if (pCanvas)
 		{
+			glEnable(GL_FRAMEBUFFER_SRGB);		// Always use SRGB on Canvas that is SRGB.
+
 			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
 
@@ -1843,7 +1845,14 @@ namespace wg
 			}
 		}
 		else
+		{
+			if( Base::activeContext()->gammaCorrection() )
+				glEnable(GL_FRAMEBUFFER_SRGB);
+			else
+				glDisable(GL_FRAMEBUFFER_SRGB);
+
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		}
 
 		int canvasYstart	= pCanvas ? 0 : height;
 		int canvasYmul		= pCanvas ? 1 : -1;
@@ -1981,7 +1990,7 @@ namespace wg
 
 				assert(glGetError() == 0);
 			}
-			else if (pSurf->m_pixelDescription.format == PixelFormat::A8)
+			else if (pSurf->m_pixelDescription.format == PixelFormat::A_8)
 			{
 				glUseProgram(m_alphaBlitProg);
 				glUniform2i(m_alphaBlitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
@@ -2064,6 +2073,15 @@ namespace wg
 		{
 			double b = i / 16.0;
 			m_lineThicknessTable[i] = (float)Util::squareRoot(1.0 + b * b);
+		}
+
+		// Init sRGBtoLinearTable
+
+		float max = powf(255, 2.2f);
+
+		for (int i = 0; i < 256; i++)
+		{
+			m_sRGBtoLinearTable[i] = powf(i, 2.2f)/max;
 		}
 	}
 

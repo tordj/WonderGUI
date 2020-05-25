@@ -77,7 +77,7 @@ namespace wg
 	const static TextEditMode    TextEditMode_max    = TextEditMode::Editable;
 	const static AccessMode      AccessMode_max      = AccessMode::ReadWrite;
 	const static ScaleMode       ScaleMode_max       = ScaleMode::Interpolate;
-	const static PixelFormat     PixelFormat_max     = PixelFormat::A8;
+	const static PixelFormat     PixelFormat_max     = PixelFormat::A_8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::DeleteSurface;
 	const static GfxFlip         GfxFlip_max         = GfxFlip::Rot270FlipY;
@@ -99,7 +99,7 @@ namespace wg
 	const static int             TextEditMode_size   = (int)TextEditMode::Editable + 1;
 	const static int             AccessMode_size     = (int)AccessMode::ReadWrite + 1;
 	const static int             ScaleMode_size      = (int)ScaleMode::Interpolate + 1;
-	const static int             PixelFormat_size    = (int)PixelFormat::A8 + 1;
+	const static int             PixelFormat_size    = (int)PixelFormat::A_8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::DeleteSurface + 1;
 	const static int             GfxFlip_size        = (int)GfxFlip::Rot270FlipY + 1;

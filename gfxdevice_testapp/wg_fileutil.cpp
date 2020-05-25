@@ -112,7 +112,7 @@ namespace wg
 
 		if (format.bIndexed)
 		{
-			px = PixelFormat::I8;
+			px = PixelFormat::CLUT_8;
 
 			for (int i = 0; i < 256; i++)
 			{

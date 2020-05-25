@@ -39,8 +39,9 @@ const char GlGfxDevice::fillVertexShader[] =
 "	int yMul;"
 "};"
 
+"uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
-"layout(location = 1) in vec4 color;                       "
+"layout(location = 1) in int extrasOfs;                    "
 "out vec4 fragColor;                                       "
 "void main()                                               "
 "{                                                         "
@@ -48,7 +49,7 @@ const char GlGfxDevice::fillVertexShader[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;    "
 "   gl_Position.z = 0.0;                                   "
 "   gl_Position.w = 1.0;                                   "
-"   fragColor = color;						"
+"   fragColor = texelFetch(extrasId, extrasOfs);		   "
 "}                                                         ";
 
 
@@ -76,8 +77,7 @@ const char GlGfxDevice::blitVertexShader[] =
 "uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
-"layout(location = 1) in vec4 color;                       "
-"layout(location = 2) in int extrasOfs;                    "
+"layout(location = 1) in int extrasOfs;                    "
 "out vec2 texUV;                                           "
 "out vec4 fragColor;                                       "
 "void main()                                               "
@@ -86,13 +86,13 @@ const char GlGfxDevice::blitVertexShader[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                   "
 "   gl_Position.w = 1.0;                                   "
-"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);	   "
 "   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
 "   vec2 src = srcDst.xy;                                  "
 "   vec2 dst = srcDst.zw;                                  "
 "   texUV.x = (src.x + 0.0001f + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
 "   texUV.y = (src.y + 0.0001f + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
-"   fragColor = color;									   "
+"   fragColor = texelFetch(extrasId, extrasOfs+2);		   "
 "}                                                         ";
 
 const char GlGfxDevice::blitFragmentShader[] =
@@ -137,8 +137,7 @@ const char GlGfxDevice::clutBlitNearestVertexShader[] =
 "uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
-"layout(location = 1) in vec4 color;                       "
-"layout(location = 2) in int extrasOfs;                    "
+"layout(location = 1) in int extrasOfs;                    "
 "out vec2 texUV;                                           "
 "out vec4 fragColor;                                       "
 "void main()                                               "
@@ -153,7 +152,7 @@ const char GlGfxDevice::clutBlitNearestVertexShader[] =
 "   vec2 dst = srcDst.zw;                                  "
 "   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
 "   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
-"   fragColor = color;									   "
+"   fragColor = texelFetch(extrasId, extrasOfs+2);		   "
 "}                                                         ";
 
 const char GlGfxDevice::clutBlitNearestFragmentShader[] =
@@ -185,8 +184,7 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 "uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
-"layout(location = 1) in vec4 color;                       "
-"layout(location = 2) in int extrasOfs;                    "
+"layout(location = 1) in int extrasOfs;                    "
 "out vec2 texUV00;                                         "
 "out vec2 texUV11;                                         "
 "out vec2 uvFrac;                                         "
@@ -213,7 +211,7 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 "   uvFrac = texUV;"
 "   texUV00 = texUV/texSize;				"
 "   texUV11 = (texUV+1)/texSize;			"
-"   fragColor = color;									   "
+"   fragColor = texelFetch(extrasId, extrasOfs+2);		   "
 "}                                                         ";
 
 const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
@@ -256,16 +254,17 @@ const char GlGfxDevice::plotVertexShader[] =
 "	int yMul;"
 "};"
 
+"uniform samplerBuffer extrasId;						"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;                       "
-"out vec4 fragColor;										"
+"layout(location = 1) in int extrasOfs;                 "
+"out vec4 fragColor;									"
 "void main()                                            "
 "{                                                      "
 "   gl_Position.x = (pos.x+0.5)*2.0/dimensions.x - 1.0; "
 "   gl_Position.y = ((yOfs + yMul*pos.y)+0.5)*2.0/dimensions.y - 1,0;	"
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
+"   fragColor = texelFetch(extrasId, extrasOfs);		   "
 "}                                                      ";
 
 
@@ -294,8 +293,7 @@ const char GlGfxDevice::lineFromToVertexShader[] =
 
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                         "
-"layout(location = 1) in vec4 color;                        "
-"layout(location = 2) in int extrasOfs;                       "
+"layout(location = 1) in int extrasOfs;                       "
 "out vec4 fragColor;                                        "
 "flat out float s;												"
 "flat out float w;												"
@@ -308,8 +306,8 @@ const char GlGfxDevice::lineFromToVertexShader[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
-"   fragColor = color;										"
-"   int ofs = extrasOfs;									"
+"   fragColor = texelFetch(extrasId, extrasOfs);			"
+"   int ofs = extrasOfs+1;									"
 "   vec4 x = texelFetch(extrasId, ofs);						"
 "   s = x.x;												"
 "   w = x.y;												"
@@ -348,8 +346,7 @@ const char GlGfxDevice::aaFillVertexShader[] =
 
 "uniform samplerBuffer extrasId;								"
 "layout(location = 0) in ivec2 pos;                         "
-"layout(location = 1) in vec4 color;                        "
-"layout(location = 2) in int extrasOfs;                       "
+"layout(location = 1) in int extrasOfs;                       "
 "out vec4 fragColor;                                        "
 "flat out vec4 rect;										"
 "void main()                                                "
@@ -358,8 +355,8 @@ const char GlGfxDevice::aaFillVertexShader[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;             "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
-"   fragColor = color;										"
-"   rect = texelFetch(extrasId, extrasOfs);					"
+"   fragColor = texelFetch(extrasId, extrasOfs);			"
+"   rect = texelFetch(extrasId, extrasOfs+1);				"
 "   rect.y = yOfs + yMul*rect.y;							"
 "   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
 "}                                                          ";
@@ -391,12 +388,10 @@ static const char segmentsVertexShader1[] =
 "};"
 
 "uniform samplerBuffer extrasId;						"
-"uniform samplerBuffer colorsId;					"
+"uniform samplerBuffer colorsId;						"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -409,7 +404,6 @@ static const char segmentsVertexShader1[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -427,7 +421,6 @@ static const char segmentsFragmentShader1[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -457,7 +450,6 @@ static const char segmentsFragmentShader1[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 
@@ -473,10 +465,8 @@ static const char segmentsVertexShader2[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -490,7 +480,6 @@ static const char segmentsVertexShader2[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -509,7 +498,6 @@ static const char segmentsFragmentShader2[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -548,7 +536,6 @@ static const char segmentsFragmentShader2[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 static const char segmentsVertexShader3[] =
@@ -563,10 +550,8 @@ static const char segmentsVertexShader3[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -581,7 +566,6 @@ static const char segmentsVertexShader3[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -601,7 +585,6 @@ static const char segmentsFragmentShader3[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -652,7 +635,6 @@ static const char segmentsFragmentShader3[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 
@@ -668,10 +650,8 @@ static const char segmentsVertexShader4[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -687,7 +667,6 @@ static const char segmentsVertexShader4[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -708,7 +687,6 @@ static const char segmentsFragmentShader4[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -771,7 +749,6 @@ static const char segmentsFragmentShader4[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 static const char segmentsVertexShader5[] =
@@ -787,10 +764,8 @@ static const char segmentsVertexShader5[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -807,7 +782,6 @@ static const char segmentsVertexShader5[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -829,7 +803,6 @@ static const char segmentsFragmentShader5[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -903,7 +876,6 @@ static const char segmentsFragmentShader5[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5 + col6.rgb * factor6)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 
@@ -920,10 +892,8 @@ static const char segmentsVertexShader6[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -941,7 +911,6 @@ static const char segmentsVertexShader6[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -964,7 +933,6 @@ static const char segmentsFragmentShader6[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1049,7 +1017,6 @@ static const char segmentsFragmentShader6[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5 + col6.rgb * factor6  + col7.rgb * factor7)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 static const char segmentsVertexShader7[] =
@@ -1065,10 +1032,8 @@ static const char segmentsVertexShader7[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -1087,7 +1052,6 @@ static const char segmentsVertexShader7[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -1111,7 +1075,6 @@ static const char segmentsFragmentShader7[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1207,7 +1170,6 @@ static const char segmentsFragmentShader7[] =
 
 "   color.a = totalAlpha; "
 "   color.rgb = (col1.rgb * factor1 + col2.rgb * factor2 + col3.rgb * factor3 + col4.rgb * factor4 + col5.rgb * factor5 + col6.rgb * factor6  + col7.rgb * factor7  + col8.rgb * factor8)/totalAlpha;"
-"   color *= fragColor;"
 "}												";
 
 static const char segmentsVertexShader8[] =
@@ -1222,10 +1184,8 @@ static const char segmentsVertexShader8[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -1245,7 +1205,6 @@ static const char segmentsVertexShader8[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -1269,7 +1228,6 @@ static const char segmentsFragmentShader8[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1379,7 +1337,6 @@ static const char segmentsFragmentShader8[] =
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9)/totalAlpha;"
 
-"   color *= fragColor;"
 "}";
 
 
@@ -1396,10 +1353,8 @@ static const char segmentsVertexShader9[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -1420,7 +1375,6 @@ static const char segmentsVertexShader9[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -1445,7 +1399,6 @@ static const char segmentsFragmentShader9[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1566,7 +1519,6 @@ static const char segmentsFragmentShader9[] =
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9 + col10.rgb * factor10)/totalAlpha;"
 
-"   color *= fragColor;"
 "}";
 
 
@@ -1583,10 +1535,8 @@ static const char segmentsVertexShader10[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -1608,7 +1558,6 @@ static const char segmentsVertexShader10[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -1634,7 +1583,6 @@ static const char segmentsFragmentShader10[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1767,7 +1715,6 @@ static const char segmentsFragmentShader10[] =
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11)/totalAlpha;"
 
-"   color *= fragColor;"
 "}";
 
 static const char segmentsVertexShader11[] =
@@ -1782,10 +1729,8 @@ static const char segmentsVertexShader11[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -1808,7 +1753,6 @@ static const char segmentsVertexShader11[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -1834,7 +1778,6 @@ static const char segmentsFragmentShader11[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -1977,7 +1920,6 @@ static const char segmentsFragmentShader11[] =
 "					col5.rgb * factor5 + col6.rgb * factor6 + col7.rgb * factor7 + col8.rgb * factor8 + "
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12)/totalAlpha;"
 
-"   color *= fragColor;"
 "}";
 
 
@@ -1993,10 +1935,8 @@ static const char segmentsVertexShader12[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -2020,7 +1960,6 @@ static const char segmentsVertexShader12[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -2049,7 +1988,6 @@ static const char segmentsFragmentShader12[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -2204,7 +2142,6 @@ static const char segmentsFragmentShader12[] =
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "					col13.rgb * factor13)/totalAlpha;"
 
-"   color *= fragColor;"
 "}";
 
 static const char segmentsVertexShader13[] =
@@ -2219,10 +2156,8 @@ static const char segmentsVertexShader13[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -2247,7 +2182,6 @@ static const char segmentsVertexShader13[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -2277,7 +2211,6 @@ static const char segmentsFragmentShader13[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -2442,7 +2375,6 @@ static const char segmentsFragmentShader13[] =
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "					col13.rgb * factor13 + col14.rgb * factor14)/totalAlpha;"
 "\n"
-"   color *= fragColor;"
 "}";
 
 
@@ -2458,10 +2390,8 @@ static const char segmentsVertexShader14[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -2487,7 +2417,6 @@ static const char segmentsVertexShader14[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -2518,7 +2447,6 @@ static const char segmentsFragmentShader14[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;				"
 "in vec2 texUV;									"
-"in vec4 fragColor;								"
 "flat in int segments;							"
 "flat in int stripesOfs;						"
 "flat in vec4 col1; "
@@ -2694,7 +2622,6 @@ static const char segmentsFragmentShader14[] =
 "					col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "					col13.rgb * factor13 + col14.rgb * factor14 + col15.rgb * factor15)/totalAlpha;"
 "\n"
-"   color *= fragColor;"
 "}";
 
 
@@ -2711,10 +2638,8 @@ static const char segmentsVertexShader15[] =
 "uniform samplerBuffer extrasId;						"
 "uniform samplerBuffer colorsId;					"
 "layout(location = 0) in ivec2 pos;                     "
-"layout(location = 1) in vec4 color;					"
-"layout(location = 2) in int extrasOfs;					"
-"layout(location = 3) in vec2 uv;						"
-"out vec4 fragColor;									"
+"layout(location = 1) in int extrasOfs;					"
+"layout(location = 2) in vec2 uv;						"
 "out vec2 texUV;										"
 "flat out int segments;									"
 "flat out int stripesOfs;								"
@@ -2741,7 +2666,6 @@ static const char segmentsVertexShader15[] =
 "   gl_Position.y = (yOfs + yMul*pos.y)*2/dimensions.y - 1.0;            "
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = color;									"
 "   vec4 extras = texelFetch(extrasId, extrasOfs);		"
 "   segments = int(extras.x);							"
 "   stripesOfs = int(extras.y);							"
@@ -2773,7 +2697,6 @@ static const char segmentsFragmentShader15[] =
 "#version 330 core\n"
 "uniform samplerBuffer stripesId;\n"
 "in vec2 texUV;\n"
-"in vec4 fragColor;\n"
 "flat in int segments;\n"
 "flat in int stripesOfs;\n"
 "flat in vec4 col1;\n"
@@ -2960,7 +2883,6 @@ static const char segmentsFragmentShader15[] =
 "	col9.rgb * factor9 + col10.rgb * factor10 + col11.rgb * factor11 + col12.rgb * factor12 + "
 "	col13.rgb * factor13 + col14.rgb * factor14 + col15.rgb * factor15 + col16.rgb * factor16) / totalAlpha; "
 "\n"
-"   color *= fragColor;"
 "}";
 
 

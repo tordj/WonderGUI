@@ -30,7 +30,7 @@ public:
 		if (!m_pSplash)
 			return false;
 
-		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::A8);
+		m_pAlphaOnly = pDevice->surfaceFactory()->createSurface({ 400,400 }, PixelFormat::A_8);
 
 		RectI	copySource = RectI(m_pClockFace->size()).center({ 400,400 });
 		m_pAlphaOnly->copyFrom(m_pClockFace, copySource, { 0,0 });

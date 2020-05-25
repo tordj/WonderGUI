@@ -159,6 +159,8 @@ namespace wg
 
 		float	m_lineThicknessTable[17];
 
+		float	m_sRGBtoLinearTable[256];
+
 		//
 
 
@@ -184,6 +186,8 @@ namespace wg
 		GLsync          m_idleSync = 0;
 
 		bool			m_bFullyInitialized = false;
+
+		float			m_linearTint[4];
 
 		// Device programs
 
@@ -245,7 +249,6 @@ namespace wg
 			GLfloat	incR2;
 			GLfloat	incA2;
 
-
 		};
 
 
@@ -254,7 +257,6 @@ namespace wg
 		struct Vertex
 		{
 			CoordI	coord;
-			Color	color;
 			int		extrasOfs;						// Offset into extras buffer.
 			CoordF	uv;
 		};
@@ -294,6 +296,7 @@ namespace wg
 		GLboolean	m_glDepthTest;
 		GLboolean   m_glScissorTest;
 		GLboolean	m_glBlendEnabled;
+		GLboolean	m_glSRGBEnabled;
 		GLint		m_glBlendSrc;
 		GLint		m_glBlendDst;
 		GLint		m_glViewport[4];

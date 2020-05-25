@@ -46,7 +46,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return StreamSurface_p();
 
 		return StreamSurface_p(new StreamSurface(stream,size,format,flags,pClut));
@@ -54,7 +54,7 @@ namespace wg
 
 	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return StreamSurface_p();
 
 		return StreamSurface_p(new StreamSurface(stream,size,format,pBlob,pitch,flags,pClut));
@@ -63,7 +63,7 @@ namespace wg
 	StreamSurface_p	StreamSurface::create( CGfxOutStream& stream,SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
+			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 || pPixelDescription == nullptr)
 			return StreamSurface_p();
 
 		return  StreamSurface_p(new StreamSurface(stream,size,format,pPixels,pitch, pPixelDescription,flags,pClut));
