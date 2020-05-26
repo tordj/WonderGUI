@@ -27,6 +27,7 @@
 #include <algorithm>
 #include <cstdlib>
 #include <wg_base.h>
+#include <wg_context.h>
 
 #include <cassert>
 
@@ -39,6 +40,14 @@ namespace wg
 	const TypeInfo SoftGfxDevice::TYPEINFO = { "SoftGfxDevice", &GfxDevice::TYPEINFO };
 
 	int SoftGfxDevice::s_mulTab[256];
+
+	int16_t		SoftGfxDevice::s_unpackSRGBTab[256];
+	int16_t		SoftGfxDevice::s_unpackLinearTab[256];
+
+	uint8_t		SoftGfxDevice::s_packSRGBTab[4097];
+	uint8_t		SoftGfxDevice::s_packLinearTab[4097];
+
+	int16_t		SoftGfxDevice::s_limit4096Tab[4097 * 3];
 
 	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
 	SoftGfxDevice::FillOp_p		SoftGfxDevice::s_fillOpTab[TintMode_size][BlendMode_size][PixelFormat_size];
@@ -144,23 +153,50 @@ namespace wg
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
-		if (format == PixelFormat::BGRA_8_sRGB || format == PixelFormat::BGRA_8_linear || format == PixelFormat::Unknown)
+		if (format == PixelFormat::Unknown)
 		{
-			outB = pPixel[0];
-			outG = pPixel[1];
-			outR = pPixel[2];
-			outA = pPixel[3];
+			const int16_t* p = (const int16_t*) pPixel;
+
+			outB = p[0];
+			outG = p[1];
+			outR = p[2];
+			outA = p[3];
 		}
 
-		if (format == PixelFormat::BGR_8_sRGB || format == PixelFormat::BGR_8_linear)
+		if (format == PixelFormat::BGRA_8_linear)
 		{
-			outB = pPixel[0];
-			outG = pPixel[1];
-			outR = pPixel[2];
-			outA = 255;
+			outB = s_unpackLinearTab[pPixel[0]];
+			outG = s_unpackLinearTab[pPixel[1]];
+			outR = s_unpackLinearTab[pPixel[2]];
+			outA = s_unpackLinearTab[pPixel[3]];
 		}
+
+		if (format == PixelFormat::BGRA_8_sRGB)
+		{
+			outB = s_unpackSRGBTab[pPixel[0]];
+			outG = s_unpackSRGBTab[pPixel[1]];
+			outR = s_unpackSRGBTab[pPixel[2]];
+			outA = s_unpackLinearTab[pPixel[3]];
+		}
+
+		if (format == PixelFormat::BGR_8_linear)
+		{
+			outB = s_unpackLinearTab[pPixel[0]];
+			outG = s_unpackLinearTab[pPixel[1]];
+			outR = s_unpackLinearTab[pPixel[2]];
+			outA = 4096;
+		}
+
+		if (format == PixelFormat::BGR_8_sRGB)
+		{
+			outB = s_unpackSRGBTab[pPixel[0]];
+			outG = s_unpackSRGBTab[pPixel[1]];
+			outR = s_unpackSRGBTab[pPixel[2]];
+			outA = 4096;
+		}
+
 
 		if (format == PixelFormat::BGR_565_linear)
 		{
@@ -184,13 +220,13 @@ namespace wg
 
 		if (format == PixelFormat::A_8)
 		{
-			outB = 255;
-			outG = 255;
-			outR = 255;
-			outA = *pPixel;
+			outB = 4096;
+			outG = 4096;
+			outR = 4096;
+			outA = s_unpackLinearTab[*pPixel];
 		}
 
-		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_sRGB)
+		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 		{
 			const Color& c = pClut[*pPixel];
 			outB = c.b;
@@ -204,21 +240,46 @@ namespace wg
 
 	//____ write_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a)
+	inline void SoftGfxDevice::_write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
 	{
-		if (format == PixelFormat::BGRA_8_sRGB || format == PixelFormat::BGRA_8_linear || format == PixelFormat::Unknown)
+		if (format == PixelFormat::Unknown)
 		{
-			pPixel[0] = b;
-			pPixel[1] = g;
-			pPixel[2] = r;
-			pPixel[3] = a;
+			int16_t* p = (int16_t*)pPixel;
+
+			p[0] = b;
+			p[1] = g;
+			p[2] = r;
+			p[3] = a;
 		}
 
-		if (format == PixelFormat::BGR_8_sRGB || format == PixelFormat::BGR_8_linear)
+		if (format == PixelFormat::BGRA_8_linear)
 		{
-			pPixel[0] = b;
-			pPixel[1] = g;
-			pPixel[2] = r;
+			pPixel[0] = s_packLinearTab[b];
+			pPixel[1] = s_packLinearTab[g];
+			pPixel[2] = s_packLinearTab[r];
+			pPixel[3] = s_packLinearTab[a];
+		}
+
+		if (format == PixelFormat::BGRA_8_sRGB)
+		{
+			pPixel[0] = s_packSRGBTab[b];
+			pPixel[1] = s_packSRGBTab[g];
+			pPixel[2] = s_packSRGBTab[r];
+			pPixel[3] = s_packLinearTab[a];
+		}
+
+		if (format == PixelFormat::BGR_8_linear)
+		{
+			pPixel[0] = s_packLinearTab[b];
+			pPixel[1] = s_packLinearTab[g];
+			pPixel[2] = s_packLinearTab[r];
+		}
+
+		if (format == PixelFormat::BGR_8_sRGB)
+		{
+			pPixel[0] = s_packSRGBTab[b];
+			pPixel[1] = s_packSRGBTab[g];
+			pPixel[2] = s_packSRGBTab[r];
 		}
 
 		if (format == PixelFormat::BGR_565_linear)
@@ -236,16 +297,16 @@ namespace wg
 
 		if (format == PixelFormat::A_8)
 		{
-			pPixel[0] = a;
+			pPixel[0] = s_packLinearTab[a];
 		}
 	}
 
 
 	//____ _blend_pixels() ____________________________________________________
 
-	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
-												uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA)
+	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
+												int16_t backB, int16_t backG, int16_t backR, int16_t backA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		// Note: We use if-statements instead of switch/case here since some compilers
 		// won't fully eliminate the switch/case statements when this code is inlined
@@ -262,40 +323,40 @@ namespace wg
 
 		if (mode == BlendMode::Blend)
 		{
-				int alpha = s_mulTab[srcA];
-				int invAlpha = 65536 - alpha;
+				int alpha = srcA;
+				int invAlpha = 4096 - alpha;
 
-				outB = (backB * invAlpha + srcB * alpha) >> 16;
-				outG = (backG * invAlpha + srcG * alpha) >> 16;
-				outR = (backR * invAlpha + srcR * alpha) >> 16;
-				outA = (backA * invAlpha + 255 * alpha) >> 16;
+				outB = (backB * invAlpha + srcB * alpha) >> 12;
+				outG = (backG * invAlpha + srcG * alpha) >> 12;
+				outR = (backR * invAlpha + srcR * alpha) >> 12;
+				outA = (backA * invAlpha + 4096 * alpha) >> 12;
 		}
 
 		if (mode == BlendMode::Add)
 		{
-			int alpha = s_mulTab[srcA];
+			int alpha = srcA;
 
-			outB = limitUint8(backB + (srcB * alpha >> 16));
-			outG = limitUint8(backG + (srcG * alpha >> 16));
-			outR = limitUint8(backR + (srcR * alpha >> 16));
+			outB = s_limit4096Tab[4097 + backB + (srcB * alpha >> 12)];
+			outG = s_limit4096Tab[4097 + backG + (srcG * alpha >> 12)];
+			outR = s_limit4096Tab[4097 + backR + (srcR * alpha >> 12)];
 			outA = backA;
 		}
 
 		if (mode == BlendMode::Subtract)
 		{
-			int alpha = s_mulTab[srcA];
+			int alpha = srcA;
 
-			outB = limitUint8(backB - (srcB * alpha >> 16));
-			outG = limitUint8(backG - (srcG * alpha >> 16));
-			outR = limitUint8(backR - (srcR * alpha >> 16));
+			outB = s_limit4096Tab[4097 + backB - (srcB * alpha >> 12)];
+			outG = s_limit4096Tab[4097 + backG - (srcG * alpha >> 12)];
+			outR = s_limit4096Tab[4097 + backR - (srcR * alpha >> 12)];
 			outA = backA;
 		}
 
 		if (mode == BlendMode::Multiply)
 		{
-			outB = (s_mulTab[backB] * srcB) >> 16;
-			outG = (s_mulTab[backG] * srcG) >> 16;
-			outR = (s_mulTab[backR] * srcR) >> 16;
+			outB = (backB * srcB) >> 12;
+			outG = (backG * srcG) >> 12;
+			outR = (backR * srcR) >> 12;
 			outA = backA;
 		}
 
@@ -317,13 +378,9 @@ namespace wg
 
 		if (mode == BlendMode::Invert)
 		{
-			int srcB2 = s_mulTab[srcB];
-			int srcG2 = s_mulTab[srcG];
-			int srcR2 = s_mulTab[srcR];
-
-			outB = (srcB2 * (255 - backB) + backB * (65536 - srcB2)) >> 16;
-			outG = (srcG2 * (255 - backG) + backG * (65536 - srcG2)) >> 16;
-			outR = (srcR2 * (255 - backR) + backR * (65536 - srcR2)) >> 16;
+			outB = (srcB * (4096 - backB) + backB * (4096 - srcB)) >> 12;
+			outG = (srcG * (4096 - backG) + backG * (4096 - srcG)) >> 12;
+			outR = (srcR * (4096 - backR) + backR * (4096 - srcR)) >> 12;
 			outA = backA;
 		}
 	}
@@ -331,8 +388,8 @@ namespace wg
 
 	//____ _color_tint_init() _________________________________________________
 
-	inline void SoftGfxDevice::_color_tint_init(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+	inline void SoftGfxDevice::_color_tint_init(TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA, 
 												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
@@ -349,10 +406,10 @@ namespace wg
 
 */
 
-			outB = (inB * s_mulTab[tint.flatTintColor.b]) >> 16;
-			outG = (inG * s_mulTab[tint.flatTintColor.g]) >> 16;
-			outR = (inR * s_mulTab[tint.flatTintColor.r]) >> 16;
-			outA = (inA * s_mulTab[tint.flatTintColor.a]) >> 16;
+			outR = (inR * tint.flatTintColor[0]) >> 12;
+			outG = (inG * tint.flatTintColor[1]) >> 12;
+			outB = (inB * tint.flatTintColor[2]) >> 12;
+			outA = (inA * tint.flatTintColor[3]) >> 12;
 		}
 		
 		if( tintMode == TintMode::None)
@@ -365,25 +422,25 @@ namespace wg
 		
 		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
 		{
-			uint32_t topLeftB = (inB * tint.topLeftB) >> 8;
-			uint32_t topLeftG = (inG * tint.topLeftG) >> 8;
-			uint32_t topLeftR = (inR * tint.topLeftR) >> 8;
-			uint32_t topLeftA = (inA * tint.topLeftA) >> 8;
+			uint32_t topLeftB = (inB * tint.topLeftB) >> 12;
+			uint32_t topLeftG = (inG * tint.topLeftG) >> 12;
+			uint32_t topLeftR = (inR * tint.topLeftR) >> 12;
+			uint32_t topLeftA = (inA * tint.topLeftA) >> 12;
 
-			uint32_t topRightB = (inB * tint.topRightB) >> 8;
-			uint32_t topRightG = (inG * tint.topRightG) >> 8;
-			uint32_t topRightR = (inR * tint.topRightR) >> 8;
-			uint32_t topRightA = (inA * tint.topRightA) >> 8;
+			uint32_t topRightB = (inB * tint.topRightB) >> 12;
+			uint32_t topRightG = (inG * tint.topRightG) >> 12;
+			uint32_t topRightR = (inR * tint.topRightR) >> 12;
+			uint32_t topRightA = (inA * tint.topRightA) >> 12;
 
-			uint32_t bottomLeftB = (inB * (tint.topLeftB + tint.leftIncB * tint.tintRect.h)) >> 8;
-			uint32_t bottomLeftG = (inG * (tint.topLeftG + tint.leftIncG * tint.tintRect.h)) >> 8;
-			uint32_t bottomLeftR = (inR * (tint.topLeftR + tint.leftIncR * tint.tintRect.h)) >> 8;
-			uint32_t bottomLeftA = (inA * (tint.topLeftA + tint.leftIncA * tint.tintRect.h)) >> 8;
+			uint32_t bottomLeftB = (inB * (tint.topLeftB + tint.leftIncB * tint.tintRect.h)) >> 12;
+			uint32_t bottomLeftG = (inG * (tint.topLeftG + tint.leftIncG * tint.tintRect.h)) >> 12;
+			uint32_t bottomLeftR = (inR * (tint.topLeftR + tint.leftIncR * tint.tintRect.h)) >> 12;
+			uint32_t bottomLeftA = (inA * (tint.topLeftA + tint.leftIncA * tint.tintRect.h)) >> 12;
 
-			uint32_t bottomRightB = (inB * (tint.topRightB + tint.rightIncB * tint.tintRect.h)) >> 8;
-			uint32_t bottomRightG = (inG * (tint.topRightG + tint.rightIncG * tint.tintRect.h)) >> 8;
-			uint32_t bottomRightR = (inR * (tint.topRightR + tint.rightIncR * tint.tintRect.h)) >> 8;
-			uint32_t bottomRightA = (inA * (tint.topRightA + tint.rightIncA * tint.tintRect.h)) >> 8;
+			uint32_t bottomRightB = (inB * (tint.topRightB + tint.rightIncB * tint.tintRect.h)) >> 12;
+			uint32_t bottomRightG = (inG * (tint.topRightG + tint.rightIncG * tint.tintRect.h)) >> 12;
+			uint32_t bottomRightR = (inR * (tint.topRightR + tint.rightIncR * tint.tintRect.h)) >> 12;
+			uint32_t bottomRightA = (inA * (tint.topRightA + tint.rightIncA * tint.tintRect.h)) >> 12;
 
 			if (tintMode == TintMode::GradientX)
 			{
@@ -433,8 +490,8 @@ namespace wg
 
 	//____ _color_tint_line() _________________________________________________
 
-	inline void SoftGfxDevice::_color_tint_line(TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+	inline void SoftGfxDevice::_color_tint_line(TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
@@ -452,10 +509,10 @@ namespace wg
 
 		if (tintMode == TintMode::GradientY)
 		{
-			outB = leftB >> 16;
-			outG = leftG >> 16;
-			outR = leftR >> 16;
-			outA = leftA >> 16;
+			outB = leftB >> 6;
+			outG = leftG >> 6;
+			outR = leftR >> 6;
+			outA = leftA >> 6;
 
 			leftB += leftIncB;
 			leftG += leftIncG;
@@ -493,16 +550,16 @@ namespace wg
 	//____ _color_tint_pixel() ______________________________________________________
 
 	inline void SoftGfxDevice::_color_tint_pixel(TintMode tintMode,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 												uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA)
 	{
 		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientXY)
 		{
-			outB = pixelB >> 16;
-			outG = pixelG >> 16;
-			outR = pixelR >> 16;
-			outA = pixelA >> 16;
+			outB = pixelB >> 6;
+			outG = pixelG >> 6;
+			outR = pixelR >> 6;
+			outA = pixelA >> 6;
 
 			pixelB += xIncB;
 			pixelG += xIncG;
@@ -527,10 +584,10 @@ namespace wg
 
 		if (tintMode == TintMode::Flat)
 		{
-			tintB = s_mulTab[tint.flatTintColor.b] << 8;
-			tintG = s_mulTab[tint.flatTintColor.g] << 8;
-			tintR = s_mulTab[tint.flatTintColor.r] << 8;
-			tintA = s_mulTab[tint.flatTintColor.a] << 8;
+			tintR = tint.flatTintColor[0] << 6;
+			tintG = tint.flatTintColor[1] << 6;
+			tintB = tint.flatTintColor[2] << 6;
+			tintA = tint.flatTintColor[3] << 6;
 		}
 
 		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
@@ -639,7 +696,7 @@ namespace wg
 
 	//____ _texel_tint_pixel() ________________________________________________
 
-	inline void SoftGfxDevice::_texel_tint_pixel(TintMode tintMode, uint8_t& pixelB, uint8_t& pixelG, uint8_t& pixelR, uint8_t& pixelA,
+	inline void SoftGfxDevice::_texel_tint_pixel(TintMode tintMode, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
 		uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 		uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA)
 	{
@@ -648,10 +705,10 @@ namespace wg
 		}
 		else
 		{
-			pixelB = (pixelB * tintB) >> 24;
-			pixelG = (pixelG * tintG) >> 24;
-			pixelR = (pixelR * tintR) >> 24;
-			pixelA = (pixelA * tintA) >> 24;
+			pixelB = (pixelB * tintB) >> 18;
+			pixelG = (pixelG * tintG) >> 18;
+			pixelR = (pixelR * tintR) >> 18;
+			pixelA = (pixelA * tintA) >> 18;
 
 			if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientXY)
 			{
@@ -667,43 +724,36 @@ namespace wg
 	//____ _plot() ____________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_plot(uint8_t * pDst, Color color, const ColTrans& tint, CoordI patchPos)
 	{
 		// Step 1: Read source pixels
 
-		uint8_t srcB, srcG, srcR, srcA;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
-		srcB = col.b;
-		srcG = col.g;
-		srcR = col.r;
-		srcA = col.a;
+		int16_t srcB = pUnpackTab[color.b];
+		int16_t srcG = pUnpackTab[color.g];
+		int16_t srcR = pUnpackTab[color.r];
+		int16_t srcA = s_unpackLinearTab[color.a];
 
 		// Step 1.5: Apply any tint to source
 
 		if (TINT != TintMode::None)
 		{
-			int tintB, tintG, tintR, tintA;
-
-			tintB = s_mulTab[tint.flatTintColor.b];
-			tintG = s_mulTab[tint.flatTintColor.g];
-			tintR = s_mulTab[tint.flatTintColor.r];
-			tintA = s_mulTab[tint.flatTintColor.a];
-
-			srcB = (col.b*tintB) >> 16;
-			srcG = (col.g*tintG) >> 16;
-			srcR = (col.r*tintR) >> 16;
-			srcA = (col.a*tintA) >> 16;
+			srcR = (srcR * tint.flatTintColor[0]) >> 12;
+			srcG = (srcG * tint.flatTintColor[1]) >> 12;
+			srcB = (srcB * tint.flatTintColor[2]) >> 12;
+			srcA = (srcA * tint.flatTintColor[3]) >> 12;
 		}
 
 		// Step 2: Get color components of background pixel blending into backX
 
-		uint8_t backB, backG, backR, backA;
+		int16_t backB, backG, backR, backA;
 
 		_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 		// Step 3: Blend srcX and backX into outX
 
-		uint8_t outB, outG, outR, outA;
+		int16_t outB, outG, outR, outA;
 		_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 		// Step 4: Write resulting pixel to destination
@@ -720,11 +770,13 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			tintB = s_mulTab[tint.flatTintColor.b];
-			tintG = s_mulTab[tint.flatTintColor.g];
-			tintR = s_mulTab[tint.flatTintColor.r];
-			tintA = s_mulTab[tint.flatTintColor.a];
+			tintR = tint.flatTintColor[0];
+			tintG = tint.flatTintColor[1];
+			tintB = tint.flatTintColor[2];
+			tintA = tint.flatTintColor[3];
 		}
+
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
 		for (int i = 0; i < nCoords; i++)
 		{
@@ -737,32 +789,30 @@ namespace wg
 
 				// Step 1: Read source pixels
 
-				uint8_t srcB, srcG, srcR, srcA;
-
-				srcB = pColors[i].b;
-				srcG = pColors[i].g;
-				srcR = pColors[i].r;
-				srcA = pColors[i].a;
+				int16_t srcB = pUnpackTab[pColors[i].b];
+				int16_t srcG = pUnpackTab[pColors[i].g];
+				int16_t srcR = pUnpackTab[pColors[i].r];
+				int16_t srcA = s_unpackLinearTab[pColors[i].a];
 
 				// Step 1.5: Apply any tint to source
 
 				if (TINT != TintMode::None)
 				{
-					srcB = (srcB*tintB) >> 16;
-					srcG = (srcG*tintG) >> 16;
-					srcR = (srcR*tintR) >> 16;
-					srcA = (srcA*tintA) >> 16;
+					srcB = (srcB*tintB) >> 12;
+					srcG = (srcG*tintG) >> 12;
+					srcR = (srcR*tintR) >> 12;
+					srcA = (srcA*tintA) >> 12;
 				}
 
 				// Step 2: Get color components of background pixel blending into backX
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				// Step 3: Blend srcX and backX into outX
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 4: Write resulting pixel to destination
@@ -784,21 +834,22 @@ namespace wg
 
 		// Step 1: Read source pixels
 
-		uint8_t srcB, srcG, srcR, srcA;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
-		srcB = color.b;
-		srcG = color.g;
-		srcR = color.r;
-		srcA = color.a;
+		int16_t srcB = pUnpackTab[color.b];
+		int16_t srcG = pUnpackTab[color.g];
+		int16_t srcR = pUnpackTab[color.r];
+		int16_t srcA = s_unpackLinearTab[color.a];
+
 
 		// Step 1.5: Apply any flatTintColor
 
 		if (TINT != TintMode::None)
 		{
-			srcB = (srcB * s_mulTab[tint.flatTintColor.b]) >> 16;
-			srcG = (srcG * s_mulTab[tint.flatTintColor.g]) >> 16;
-			srcR = (srcR * s_mulTab[tint.flatTintColor.r]) >> 16;
-			srcA = (srcA * s_mulTab[tint.flatTintColor.a]) >> 16;
+			srcR = (srcR * tint.flatTintColor[0]) >> 12;
+			srcG = (srcG * tint.flatTintColor[1]) >> 12;
+			srcB = (srcB * tint.flatTintColor[2]) >> 12;
+			srcA = (srcA * tint.flatTintColor[3]) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -813,12 +864,12 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (color.a * width) >> 16;
+				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -831,10 +882,10 @@ namespace wg
 
 				int alpha = (srcA * (65536 - (pos & 0xFFFF))) >> 16;		// Special AA
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -849,12 +900,12 @@ namespace wg
 					{
 						// Step 2: Get color components of background pixel blending into backX
 
-						uint8_t backB, backG, backR, backA;
+						int16_t backB, backG, backR, backA;
 						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 						// Step 3: Blend srcX and backX into outX
 
-						uint8_t outB, outG, outR, outA;
+						int16_t outB, outG, outR, outA;
 						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						// Step 4: Write resulting pixel to destination
@@ -873,10 +924,10 @@ namespace wg
 				{
 					int alpha = srcA * overflow >> 16;		// Special AA
 
-					uint8_t backB, backG, backR, backA;
+					int16_t backB, backG, backR, backA;
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-					uint8_t outB, outG, outR, outA;
+					int16_t outB, outG, outR, outA;
 					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -900,21 +951,21 @@ namespace wg
 
 		// Step 1: Read source pixels
 
-		uint8_t srcB, srcG, srcR, srcA;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
-		srcB = color.b;
-		srcG = color.g;
-		srcR = color.r;
-		srcA = color.a;
+		int16_t srcB = pUnpackTab[color.b];
+		int16_t srcG = pUnpackTab[color.g];
+		int16_t srcR = pUnpackTab[color.r];
+		int16_t srcA = s_unpackLinearTab[color.a];
 
 		// Step 1.5: Apply any flatTintColor
 
 		if (TINT != TintMode::None)
 		{
-			srcB = (srcB * s_mulTab[tint.flatTintColor.b]) >> 16;
-			srcG = (srcG * s_mulTab[tint.flatTintColor.g]) >> 16;
-			srcR = (srcR * s_mulTab[tint.flatTintColor.r]) >> 16;
-			srcA = (srcA * s_mulTab[tint.flatTintColor.a]) >> 16;
+			srcR = (srcR * tint.flatTintColor[0]) >> 12;
+			srcG = (srcG * tint.flatTintColor[1]) >> 12;
+			srcB = (srcB * tint.flatTintColor[2]) >> 12;
+			srcA = (srcA * tint.flatTintColor[3]) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -950,12 +1001,12 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (color.a * width) >> 16;
+				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -966,10 +1017,10 @@ namespace wg
 
 				int alpha = (srcA * (65536 - (clippedPos & 0xFFFF))) >> 16;		// Special AA
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -984,12 +1035,12 @@ namespace wg
 					{
 						// Step 2: Get color components of background pixel blending into backX
 
-						uint8_t backB, backG, backR, backA;
+						int16_t backB, backG, backR, backA;
 						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 						// Step 3: Blend srcX and backX into outX
 
-						uint8_t outB, outG, outR, outA;
+						int16_t outB, outG, outR, outA;
 						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						// Step 4: Write resulting pixel to destination
@@ -1008,10 +1059,10 @@ namespace wg
 				{
 					int alpha = srcA * overflow >> 16;		// Special AA
 
-					uint8_t backB, backG, backR, backA;
+					int16_t backB, backG, backR, backA;
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-					uint8_t outB, outG, outR, outA;
+					int16_t outB, outG, outR, outA;
 					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -1031,7 +1082,6 @@ namespace wg
 	{
 		// Step 1: Read source pixels and prepare tint
 
-		uint8_t srcB, srcG, srcR, srcA;
 
 		uint32_t	leftB, leftG, leftR, leftA;						// Left side colors when tinting Y
 		uint32_t	rightB, rightG, rightR, rightA;					// Right side colors when tinting X
@@ -1040,7 +1090,18 @@ namespace wg
 		uint32_t	xIncB, xIncG, xIncR, xIncA;
 		uint32_t	pixelB, pixelG, pixelR, pixelA;
 
-		_color_tint_init(	TINT, tint, col.b, col.g, col.r, col.a, srcB, srcG, srcR, srcA,
+
+		int16_t tintedB, tintedG, tintedR, tintedA;
+
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+
+		int16_t srcB = pUnpackTab[col.b];
+		int16_t srcG = pUnpackTab[col.g];
+		int16_t srcR = pUnpackTab[col.r];
+		int16_t srcA = pUnpackTab[col.a];
+
+
+		_color_tint_init(	TINT, tint, srcB, srcG, srcR, srcA, tintedB, tintedG, tintedR, tintedA,
 							leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
 							leftIncB, leftIncG, leftIncR, leftIncA, rightIncB, rightIncG, rightIncR, rightIncA,
 							xIncB, xIncG, xIncR, xIncA, patchPos );
@@ -1050,7 +1111,7 @@ namespace wg
 
 			// Step 2: Apply any vertical tint gradient
 
-			_color_tint_line(	TINT, tint, col.b, col.g, col.r, col.a, srcB, srcG, srcR, srcA,
+			_color_tint_line(	TINT, tint, srcB, srcG, srcR, srcA, tintedB, tintedG, tintedR, tintedA,
 								leftB, leftG, leftR, leftA, rightB, rightG, rightR, rightA,
 								leftIncB, leftIncG, leftIncR, leftIncA, rightIncB, rightIncG, rightIncR, rightIncA,
 								xIncB, xIncG, xIncR, xIncA, pixelB, pixelG, pixelR, pixelA, patchPos );
@@ -1059,19 +1120,19 @@ namespace wg
 			{
 				// Step 3: Apply any horizontal tint gradient
 
-				_color_tint_pixel(	TINT, srcB, srcG, srcR, srcA, xIncB, xIncG, xIncR, xIncA, 
+				_color_tint_pixel(	TINT, tintedB, tintedG, tintedR, tintedA, xIncB, xIncG, xIncR, xIncA, 
 									pixelB, pixelG, pixelR, pixelA);
 
 				// Step 4: Get color components of background pixel blending into backX
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				// Step 5: Blend srcX and backX into outX
 
-				uint8_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				int16_t outB, outG, outR, outA;
+				_blend_pixels(BLEND, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 6: Write resulting pixel to destination
 
@@ -1143,7 +1204,7 @@ namespace wg
 				} 
 				else
 				{
-					uint8_t inB, inG, inR, inA;
+					int16_t inB, inG, inR, inA;
 
 					if (GRADIENT == false)
 					{
@@ -1157,16 +1218,16 @@ namespace wg
 					{
 						if (GRADIENT)
 						{
-							inB = uint8_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 16);
-							inG = uint8_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 16);
-							inR = uint8_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 16);
-							inA = uint8_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 16);
+							inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 16);
+							inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 16);
+							inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 16);
+							inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 16);
 						}
 
-						uint8_t backB, backG, backR, backA;
+						int16_t backB, backG, backR, backA;
 						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-						uint8_t outB, outG, outR, outA;
+						int16_t outB, outG, outR, outA;
 						_blend_pixels(BLEND, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
@@ -1215,11 +1276,11 @@ namespace wg
 
 					segmentFractions[edge] = remainingFractions;
 
-					uint8_t backB, backG, backR, backA;
+					int16_t backB, backG, backR, backA;
 
 					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
-					uint8_t outB = 0, outG = 0, outR = 0, outA = 0;
+					int16_t outB = 0, outG = 0, outR = 0, outA = 0;
 
 					int accB = 0;
 					int accG = 0;
@@ -1370,7 +1431,7 @@ namespace wg
 			{
 				// Step 3: Read source pixels
 
-				uint8_t srcB, srcG, srcR, srcA;
+				int16_t srcB, srcG, srcR, srcA;
 				_read_pixel(pSrc, SRCFORMAT, pClut, srcB, srcG, srcR, srcA);
 
 				// Step 3: Apply any tint
@@ -1380,13 +1441,13 @@ namespace wg
 
 				// Step 2: Get color components of background pixel blending into backX
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				// Step 3: Blend srcX and backX into outX
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 4: Write resulting pixel to destination
@@ -1439,17 +1500,17 @@ namespace wg
 			{
 				// Step 1: Read source color.
 
-				uint8_t srcB, srcG, srcR, srcA;
+				int16_t srcB, srcG, srcR, srcA;
 				uint8_t * p = pSrcSurf->m_pData + (ofsY >> 15) * srcPitch + (ofsX >> 15)*srcPixelBytes;
 
 				if (SCALEMODE == ScaleMode::Interpolate)
 				{
 					// Read separate source color components for our 2x2 pixel square.
 
-					uint8_t src11_b, src11_g, src11_r, src11_a;
-					uint8_t src12_b, src12_g, src12_r, src12_a;
-					uint8_t src21_b, src21_g, src21_r, src21_a;
-					uint8_t src22_b, src22_g, src22_r, src22_a;
+					int16_t src11_b, src11_g, src11_r, src11_a;
+					int16_t src12_b, src12_g, src12_r, src12_a;
+					int16_t src21_b, src21_g, src21_r, src21_a;
+					int16_t src22_b, src22_g, src22_r, src22_a;
 
 
 					if (SRCCLIP && ((ofsX | ofsY | (srcMax.w - (ofsX+32768+1)) | (srcMax.h - (ofsY+32768+1))) < 0))
@@ -1550,13 +1611,13 @@ namespace wg
 */
 				// Step 3: Get color components of background pixel blending into backX
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
 
 				// Step 4: Blend srcX and backX into outX
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 5: Write resulting pixel to destination
@@ -1583,7 +1644,7 @@ namespace wg
 
 		int pixelIncX = (int)(matrix[0][0] * 32768);
 		int lineIncY = (int)(matrix[1][1] * 32768);
-
+/*
 		int tintB, tintG, tintR, tintA;
 
 		if (TINT != TintMode::None)
@@ -1593,7 +1654,7 @@ namespace wg
 			tintR = s_mulTab[tint.flatTintColor.r];
 			tintA = s_mulTab[tint.flatTintColor.a];
 		}
-
+*/
 		int ofsY = (int)(pos.y * 32768);		// We use 15 binals for all calculations
 
 		for (int y = 0; y < nLines; y++)
@@ -1606,17 +1667,17 @@ namespace wg
 			{
 				// Step 1: Read source color.
 
-				uint8_t srcB, srcG, srcR, srcA;
+				int16_t srcB, srcG, srcR, srcA;
 				uint8_t * p = pSrc + (ofsX >> 15)*srcPixelBytes;
 
 				if (SCALEMODE == ScaleMode::Interpolate)
 				{
 					// Separate source color components for our 2x2 pixel square.
 
-					uint8_t src11_b, src11_g, src11_r, src11_a;
-					uint8_t src12_b, src12_g, src12_r, src12_a;
-					uint8_t src21_b, src21_g, src21_r, src21_a;
-					uint8_t src22_b, src22_g, src22_r, src22_a;
+					int16_t src11_b, src11_g, src11_r, src11_a;
+					int16_t src12_b, src12_g, src12_r, src12_a;
+					int16_t src21_b, src21_g, src21_r, src21_a;
+					int16_t src22_b, src22_g, src22_r, src22_a;
 
 					_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
 					_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
@@ -1658,13 +1719,13 @@ namespace wg
 
 				// Step 3: Get color components of background pixel blending into backX
 
-				uint8_t backB, backG, backR, backA;
+				int16_t backB, backG, backR, backA;
 
 				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA );
 
 				// Step 4: Blend srcX and backX into outX
 
-				uint8_t outB, outG, outR, outA;
+				int16_t outB, outG, outR, outA;
 				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 5: Write resulting pixel to destination
@@ -1866,10 +1927,15 @@ namespace wg
 	{
 		TintMode tintMode;
 
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+
 		if (!m_bTintGradient)
 		{
 			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
-			m_colTrans.flatTintColor = m_tintColor;
+			m_colTrans.flatTintColor[0] = pUnpackTab[m_tintColor.r];
+			m_colTrans.flatTintColor[1] = pUnpackTab[m_tintColor.g];
+			m_colTrans.flatTintColor[2] = pUnpackTab[m_tintColor.b];
+			m_colTrans.flatTintColor[3] = s_unpackLinearTab[m_tintColor.a] ;
 			m_bTintOpaque = (m_tintColor.a == 255);
 		}
 		else
@@ -1878,19 +1944,20 @@ namespace wg
 
 			int diffMaskX = 0, diffMaskY = 0;
 
-			uint32_t	flatTintColorR = s_mulTab[m_tintColor.r]*256/255;
-			uint32_t	flatTintColorG = s_mulTab[m_tintColor.g]*256/255;
-			uint32_t	flatTintColorB = s_mulTab[m_tintColor.b]*256/255;
-			uint32_t	flatTintColorA = s_mulTab[m_tintColor.a]*256/255;
 
-			uint32_t	r[4], g[4], b[4], a[4];							// Scale: 0 -> (1 << 24)
+			uint32_t	flatTintColorR = pUnpackTab[m_tintColor.r];
+			uint32_t	flatTintColorG = pUnpackTab[m_tintColor.g];
+			uint32_t	flatTintColorB = pUnpackTab[m_tintColor.b];
+			uint32_t	flatTintColorA = s_unpackLinearTab[m_tintColor.a];
+
+			uint32_t	r[4], g[4], b[4], a[4];							// Scale: 0 -> (1 << 18)
 
 			for (int i = 0; i < 4; i++)
 			{
-				r[i] = m_tintGradient[i].r * flatTintColorR;
-				g[i] = m_tintGradient[i].g * flatTintColorG;
-				b[i] = m_tintGradient[i].b * flatTintColorB;
-				a[i] = m_tintGradient[i].a * flatTintColorA;
+				r[i] = (pUnpackTab[m_tintGradient[i].r] * flatTintColorR) >> 6;
+				g[i] = (pUnpackTab[m_tintGradient[i].g] * flatTintColorG) >> 6;
+				b[i] = (pUnpackTab[m_tintGradient[i].b] * flatTintColorB) >> 6;
+				a[i] = (s_unpackLinearTab[m_tintGradient[i].a] * flatTintColorA) >> 6;
 			}
 
 			m_colTrans.topLeftR = r[0];
@@ -1924,7 +1991,10 @@ namespace wg
 					tintMode = TintMode::None;
 				else
 				{
-					m_colTrans.flatTintColor = m_tintGradient[0] * m_tintColor;
+					m_colTrans.flatTintColor[0] = r[0] >> 6;
+					m_colTrans.flatTintColor[1] = g[0] >> 6;
+					m_colTrans.flatTintColor[2] = b[0] >> 6;
+					m_colTrans.flatTintColor[3] = a[0] >> 6;
 					tintMode = TintMode::Flat;
 				}
 			}
@@ -2959,10 +3029,10 @@ namespace wg
 		}
 		else if (m_colTrans.mode == TintMode::Flat)
 		{
-			int b = s_mulTab[m_colTrans.flatTintColor.b];
-			int g = s_mulTab[m_colTrans.flatTintColor.g];
-			int r = s_mulTab[m_colTrans.flatTintColor.r];
-			int a = s_mulTab[m_colTrans.flatTintColor.a];
+			int r = m_colTrans.flatTintColor[0] << 4;
+			int g = m_colTrans.flatTintColor[1] << 4;
+			int b = m_colTrans.flatTintColor[2] << 4;
+			int a = m_colTrans.flatTintColor[3] << 4;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -3526,11 +3596,11 @@ namespace wg
 		Pitches pitchesPass1, pitchesPass2;
 
 		pitchesPass1.srcX = srcPixelBytes * simpleTransform[0][0] + pSource->m_pitch * simpleTransform[0][1];
-		pitchesPass1.dstX = 4;
+		pitchesPass1.dstX = 8;
 		pitchesPass1.srcY = srcPixelBytes * simpleTransform[1][0] + pSource->m_pitch * simpleTransform[1][1] - pitchesPass1.srcX*dest.w;
 		pitchesPass1.dstY = 0;
 
-		pitchesPass2.srcX = 4;
+		pitchesPass2.srcX = 8;
 		pitchesPass2.dstX = dstPixelBytes;
 		pitchesPass2.srcY = 0;
 		pitchesPass2.dstY = m_canvasPitch - dstPixelBytes * dest.w;
@@ -3544,7 +3614,7 @@ namespace wg
 		else
 			chunkLines = 2048 / dest.w;
 
-		int memBufferSize = chunkLines * dest.w*4;
+		int memBufferSize = chunkLines * dest.w*8;
 
 		uint8_t * pChunkBuffer = (uint8_t*) Base::memStackAlloc(memBufferSize);
 
@@ -3611,7 +3681,7 @@ namespace wg
 
 		Pitches pitchesPass2;
 
-		pitchesPass2.srcX = 4;
+		pitchesPass2.srcX = 8;
 		pitchesPass2.dstX = dstPixelBytes;
 		pitchesPass2.srcY = 0;
 		pitchesPass2.dstY = m_canvasPitch - dstPixelBytes * dest.w;
@@ -3625,7 +3695,7 @@ namespace wg
 		else
 			chunkLines = 2048 / dest.w;
 
-		int memBufferSize = chunkLines * dest.w * 4;
+		int memBufferSize = chunkLines * dest.w * 8;
 
 		uint8_t * pChunkBuffer = (uint8_t*)Base::memStackAlloc(memBufferSize);
 
@@ -3639,7 +3709,7 @@ namespace wg
 
 			uint8_t * pDst = m_pCanvasPixels + (dest.y + line) * m_canvasPitch + dest.x * dstPixelBytes;
 
-			firstPassOp(pSource, pos, transformMatrix, pChunkBuffer, 4, 0, thisChunkLines, dest.w, m_colTrans, { 0,0 });
+			firstPassOp(pSource, pos, transformMatrix, pChunkBuffer, 8, 0, thisChunkLines, dest.w, m_colTrans, { 0,0 });
 			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans, patchPos);
 
 			pos.x += transformMatrix[1][0] * thisChunkLines;
@@ -3807,6 +3877,31 @@ namespace wg
 
 	void SoftGfxDevice::_initTables()
 	{
+		// Init sRGBtoLinearTab
+
+		float max = powf(255, 2.2f);
+
+		for (int i = 0; i < 256; i++)
+			s_unpackSRGBTab[i] = int((powf(float(i),2.2f) / max) * 4096);
+
+		for (int i = 0; i < 256; i++)
+			s_unpackLinearTab[i] = int(i / 255.f * 4096);
+
+		for (int i = 0; i <= 4096; i++)
+			s_packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f));
+
+		for (int i = 0; i <= 4096; i++)
+			s_packLinearTab[i] = uint8_t(i / 4096.f * 255.f + 0.5f);
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[i] = 0;
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[4097+i] = i;
+
+		for (int i = 0; i <= 4096; i++)
+			s_limit4096Tab[4097*2 + i] = 4096;
+
 		// Init mulTab
 
 		//TODO: Both of these causes artefacts, but in different ways. What to do?

@@ -114,13 +114,13 @@ namespace wg
 		{
 			TintMode mode;
 
-			Color	flatTintColor;				// Used in TintMode::Color.
+			int16_t	flatTintColor[4];	// Used in TintMode::Color. RGBA-order.
 
 			// Following used in TintMode GradientX, GradientY and GradientXY.
 
 			RectI		tintRect;
 
-			uint32_t	topLeftR;		// Scale: 0 -> (1<<24)
+			uint32_t	topLeftR;		// Scale: 0 -> (1<<18)
 			uint32_t	topLeftG;
 			uint32_t	topLeftB;
 			uint32_t	topLeftA;
@@ -163,23 +163,23 @@ namespace wg
 			int dstY;
 		};
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
-		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, uint8_t b, uint8_t g, uint8_t r, uint8_t a);
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
-		inline static void	_blend_pixels(BlendMode mode, uint8_t srcB, uint8_t srcG, uint8_t srcR, uint8_t srcA,
-											uint8_t backB, uint8_t backG, uint8_t backR, uint8_t backA,
-											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA);
+		inline static void	_blend_pixels(BlendMode mode, int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
+											int16_t backB, int16_t backG, int16_t backR, int16_t backA,
+											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 
-		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA, 
 												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
 												uint32_t& rightIncB, uint32_t& rightIncG, uint32_t& rightIncR, uint32_t& rightIncA,
 												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA, CoordI patchOfs);
 			
-		inline static void _color_tint_line(	TintMode tintMode, const ColTrans& tint, uint8_t inB, uint8_t inG, uint8_t inR, uint8_t inA,
-												uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+		inline static void _color_tint_line(	TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 												uint32_t& leftIncB, uint32_t& leftIncG, uint32_t& leftIncR, uint32_t& leftIncA,
@@ -188,7 +188,7 @@ namespace wg
 												uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA, CoordI patchOfs);
 
 		inline static void _color_tint_pixel(TintMode tintMode,
-											uint8_t& outB, uint8_t& outG, uint8_t& outR, uint8_t& outA,
+											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA);
 
@@ -204,7 +204,7 @@ namespace wg
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA, CoordI patchOfs);
 
-		inline static void _texel_tint_pixel(TintMode tintMode, uint8_t& pixelB, uint8_t& pixelG, uint8_t& pixelR, uint8_t& pixelA,
+		inline static void _texel_tint_pixel(TintMode tintMode, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA);
 
@@ -336,13 +336,21 @@ namespace wg
 
 
 		static int			s_mulTab[256];
+		static int16_t		s_unpackSRGBTab[256];
+		static int16_t		s_unpackLinearTab[256];
+
+		static uint8_t		s_packSRGBTab[4097];
+		static uint8_t		s_packLinearTab[4097];
+
+		static int16_t		s_limit4096Tab[4097 * 3];
+
 
 		SurfaceFactory_p	m_pSurfaceFactory;
 
 
 		// Members controlling render states
 
-		ColTrans			m_colTrans = { TintMode::None, Color::White, {0,0,0,0} };		// Color transformation data
+		ColTrans			m_colTrans = { TintMode::None, {4096,4096,4096,4096}, {0,0,0,0} };		// Color transformation data
 
 		bool				m_bTintOpaque = true;						// Set if tint alpha is 255 after combining tintColor and gradient.
 
