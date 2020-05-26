@@ -1149,39 +1149,39 @@ namespace wg
 
 	//____ _add_segment_color() _______________________________________________
 
-	inline void SoftGfxDevice::_add_segment_color(bool GRADIENT, int blendFraction, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
+	inline void SoftGfxDevice::_add_segment_color(bool GRADIENT, int blendFraction, int offset, const int16_t * pSegmentColor, const SegmentGradient * pSegmentGradient, int& accB, int& accG, int& accR, int& accA)
 	{
 		if (GRADIENT)
 		{
-			accB += blendFraction * ((pSegmentGradient->begB + pSegmentGradient->incB * offset) >> 16);
-			accG += blendFraction * ((pSegmentGradient->begG + pSegmentGradient->incG * offset) >> 16);
-			accR += blendFraction * ((pSegmentGradient->begR + pSegmentGradient->incR * offset) >> 16);
-			accA += blendFraction * ((pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 16);
+			accB += (blendFraction >> 4) * ((pSegmentGradient->begB + pSegmentGradient->incB * offset) >> 12);
+			accG += (blendFraction >> 4) * ((pSegmentGradient->begG + pSegmentGradient->incG * offset) >> 12);
+			accR += (blendFraction >> 4) * ((pSegmentGradient->begR + pSegmentGradient->incR * offset) >> 12);
+			accA += (blendFraction >> 4) * ((pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 12);
 		}
 		else
 		{
-			accB += blendFraction * pSegmentColor->b;
-			accG += blendFraction * pSegmentColor->g;
-			accR += blendFraction * pSegmentColor->r;
-			accA += blendFraction * pSegmentColor->a;
+			accR += blendFraction * pSegmentColor[0] >> 4;
+			accG += blendFraction * pSegmentColor[1] >> 4;
+			accB += blendFraction * pSegmentColor[2] >> 4;
+			accA += blendFraction * pSegmentColor[3] >> 4;
 		}
 	}
 
 	//____ _segment_alpha() _______________________________________________
 
-	inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const Color * pSegmentColor, const SegmentGradient * pSegmentGradient)
+	inline int SoftGfxDevice::_segment_alpha(bool GRADIENT, int offset, const int16_t * pSegmentColor, const SegmentGradient * pSegmentGradient)
 	{
 		if (GRADIENT)
-			return (pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 16;
+			return (pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 12;
 		else
-			return pSegmentColor->a;
+			return pSegmentColor[3];
 	}
 
 
 	//____ _draw_segment_strip() _______________________________________________
 
 	template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const Color * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients, const bool * pTransparentSegments)
+	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients, const bool * pTransparentSegments)
 	{
 		// Render the column
 
@@ -1195,7 +1195,6 @@ namespace wg
 				// We are fully inside a segment, no need to take any edge into account.
 
 				int end = nEdges == 0 ? colEnd : pEdges[0].begin;
-				Color segmentColor = *pSegmentColors;
 
 				if (*pTransparentSegments)									// This test is still valid in GRADIENT mode.
 				{
@@ -1208,20 +1207,20 @@ namespace wg
 
 					if (GRADIENT == false)
 					{
-						inB = pSegmentColors->b;
-						inG = pSegmentColors->g;
-						inR = pSegmentColors->r;
-						inA = pSegmentColors->a;
+						inR = pSegmentColors[0];
+						inG = pSegmentColors[1];
+						inB = pSegmentColors[2];
+						inA = pSegmentColors[3];
 					}
 
 					while (offset + 255 < end)
 					{
 						if (GRADIENT)
 						{
-							inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 16);
-							inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 16);
-							inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 16);
-							inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 16);
+							inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12);
+							inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12);
+							inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12);
+							inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12);
 						}
 
 						int16_t backB, backG, backR, backA;
@@ -1292,13 +1291,13 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						outB = accB >> 16;
-						outG = accG >> 16;
-						outR = accR >> 16;
-						outA = accA >> 16;
+						outB = accB >> 12;
+						outG = accG >> 12;
+						outR = accR >> 12;
+						outA = accA >> 12;
 					}
 
 					if (BLEND == BlendMode::Blend)
@@ -1307,30 +1306,30 @@ namespace wg
 
 						for (int i = 0; i <= edge; i++)
 						{
-							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
-							int blendFraction = ((segmentFractions[i] * alpha) / 255);
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
 							backFraction -= blendFraction;
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						outB = (accB + backB * backFraction) >> 16;
-						outG = (accG + backG * backFraction) >> 16;
-						outR = (accR + backR * backFraction) >> 16;
-						outA = 255;													//TODO: Handle alpha correctly when writing to destination with alpha channel.
+						outB = (accB >> 12) + ((backB * backFraction) >> 16);
+						outG = (accG >> 12) + ((backG * backFraction) >> 16);
+						outR = (accR >> 12) + ((backR * backFraction) >> 16);
+						outA = 4096;													//TODO: Handle alpha correctly when writing to destination with alpha channel.
 					}
 
 					if (BLEND == BlendMode::Add)
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
-							int blendFraction = ((segmentFractions[i] * alpha) / 255);
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						outB = limitUint8(backB + (accB >> 16));
-						outG = limitUint8(backG + (accG >> 16));
-						outR = limitUint8(backR + (accR >> 16));
+						outB = s_limit4096Tab[4097 + backB + (accB >> 12)];
+						outG = s_limit4096Tab[4097 + backG + (accG >> 12)];
+						outR = s_limit4096Tab[4097 + backR + (accR >> 12)];
 						outA = backA;
 					}
 
@@ -1338,14 +1337,14 @@ namespace wg
 					{
 						for (int i = 0; i <= edge; i++)
 						{
-							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i]);
-							int blendFraction = ((segmentFractions[i] * alpha) / 255);
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						outB = limitUint8(backB - (accB >> 16));
-						outG = limitUint8(backG - (accG >> 16));
-						outR = limitUint8(backR - (accR >> 16));
+						outB = s_limit4096Tab[4097 + backB - (accB >> 12)];
+						outG = s_limit4096Tab[4097 + backG - (accG >> 12)];
+						outR = s_limit4096Tab[4097 + backR - (accR >> 12)];
 						outA = backA;
 					}
 
@@ -1354,12 +1353,12 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						outB = (s_mulTab[backB] * (accB >> 16) ) >> 16;
-						outG = (s_mulTab[backG] * (accG >> 16)) >> 16;
-						outR = (s_mulTab[backR] * (accR >> 16)) >> 16;
+						outB = (backB * (accB >> 12)) >> 12;
+						outG = (backG * (accG >> 12)) >> 12;
+						outR = (backR * (accR >> 12)) >> 12;
 						outA = backA;
 					}
 
@@ -1368,16 +1367,16 @@ namespace wg
 						for (int i = 0; i <= edge; i++)
 						{
 							int blendFraction = segmentFractions[i];
-							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i], &pSegmentGradients[i], accB, accG, accR, accA);
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i*4], &pSegmentGradients[i], accB, accG, accR, accA);
 						}
 
-						int srcB2 = s_mulTab[accB>>16];
-						int srcG2 = s_mulTab[accG>>16];
-						int srcR2 = s_mulTab[accR>>16];
+						int srcB2 = accB>>12;
+						int srcG2 = accG>>12;
+						int srcR2 = accR>>12;
 
-						outB = (srcB2 * (255 - backB) + backB * (65536 - srcB2)) >> 16;
-						outG = (srcG2 * (255 - backG) + backG * (65536 - srcG2)) >> 16;
-						outR = (srcR2 * (255 - backR) + backR * (65536 - srcR2)) >> 16;
+						outB = (srcB2 * (4096 - backB) + backB * (4096 - srcB2)) >> 12;
+						outG = (srcG2 * (4096 - backG) + backG * (4096 - srcG2)) >> 12;
+						outR = (srcR2 * (4096 - backR) + backR * (4096 - srcR2)) >> 12;
 						outA = backA;
 					}
 
@@ -1396,7 +1395,7 @@ namespace wg
 				if (GRADIENT)
 					pSegmentGradients++;
 				else
-					pSegmentColors++;
+					pSegmentColors+=4;
 
 			}
 
@@ -2647,7 +2646,7 @@ namespace wg
 
 		// Apply tinting
 
-		Color colors[c_maxSegments];
+		int16_t	colors[c_maxSegments][4];				// RGBA order of elements
 		bool	transparentSegments[c_maxSegments];
 
 		SegmentGradient* pGradientsY = nullptr;
@@ -2678,31 +2677,41 @@ namespace wg
 			}
 		}
 
-		// If we have no tinting at all we still need to fill in transparentSegments
+		// Unpack input colors and fill in transparentSegments
 
-		if (!bTintFlat && !bTintX && !bTintY)
-		{
-			for (int i = 0; i < nSegments; i++)
-				transparentSegments[i] = pSegmentColors[i].a == 0;
-		}
-
-
-		// If we just use flat tinting, we just tint our segment colors
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
 		if (bTintFlat && !bTintX && !bTintY)
 		{
+			// If we just use flat tinting, we tint our segment colors right away
+
 			for (int i = 0; i < nSegments; i++)
 			{
-				Color col = pSegmentColors[i] * m_tintColor;
-				colors[i] = col;
-				transparentSegments[i] = (col.a == 0);
+				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor[0]) >> 12;
+				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor[1]) >> 12;
+				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor[2]) >> 12;
+				colors[i][3] = (s_unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
+
+				transparentSegments[i] = (colors[i][3] == 0);
 			}
-			pSegmentColors = colors;
+		}
+		else
+		{
+			for (int i = 0; i < nSegments; i++)
+			{
+				colors[i][0] = pUnpackTab[pSegmentColors[i].r];
+				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
+				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
+				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
+
+				transparentSegments[i] = (colors[i][3] == 0);
+			}
 		}
 
-		// If we instead have a gradient we have way more to do...
 
-		else if (bTintX || bTintY)
+		// If we instead have gradients we have things to take care of...
+
+		if (bTintX || bTintY)
 		{
 			// Generate the buffers that we will need
 
@@ -2738,44 +2747,81 @@ namespace wg
 
 				if (tintMode == TintMode::Flat)
 				{
-					Color col = pSegmentColors[seg];
-
 					for (int i = 0; i < 4; i++)
 					{
-						segB[i] = baseB[i] * col.b;
-						segG[i] = baseG[i] * col.g;
-						segR[i] = baseR[i] * col.r;
-						segA[i] = baseA[i] * col.a;
+						segR[i] = baseR[i] * colors[seg][0];
+						segG[i] = baseG[i] * colors[seg][1];
+						segB[i] = baseB[i] * colors[seg][2];
+						segA[i] = baseA[i] * colors[seg][3];
 					}
 				}
 				else
 				{
-					Color col[4];
-
 					if (tintMode == TintMode::GradientX)
 					{
-						col[0] = col[3] = pSegmentColors[seg * 2];
-						col[1] = col[2] = pSegmentColors[seg * 2 + 1];
+						segR[0] = baseR[0] * colors[seg*2][0];
+						segG[0] = baseG[0] * colors[seg * 2][1];
+						segB[0] = baseB[0] * colors[seg * 2][2];
+						segA[0] = baseA[0] * colors[seg * 2][3];
+
+						segR[1] = baseR[1] * colors[seg * 2+1][0];
+						segG[1] = baseG[1] * colors[seg * 2+1][1];
+						segB[1] = baseB[1] * colors[seg * 2+1][2];
+						segA[1] = baseA[1] * colors[seg * 2+1][3];
+
+						segR[2] = baseR[2] * colors[seg * 2 + 1][0];
+						segG[2] = baseG[2] * colors[seg * 2 + 1][1];
+						segB[2] = baseB[2] * colors[seg * 2 + 1][2];
+						segA[2] = baseA[2] * colors[seg * 2 + 1][3];
+
+						segR[3] = baseR[3] * colors[seg * 2][0];
+						segG[3] = baseG[3] * colors[seg * 2][1];
+						segB[3] = baseB[3] * colors[seg * 2][2];
+						segA[3] = baseA[3] * colors[seg * 2][3];
 					}
 					else if (tintMode == TintMode::GradientY)
 					{
-						col[0] = col[1] = pSegmentColors[seg * 2];
-						col[2] = col[3] = pSegmentColors[seg * 2 + 1];
+						segR[0] = baseR[0] * colors[seg * 2][0];
+						segG[0] = baseG[0] * colors[seg * 2][1];
+						segB[0] = baseB[0] * colors[seg * 2][2];
+						segA[0] = baseA[0] * colors[seg * 2][3];
+
+						segR[1] = baseR[1] * colors[seg * 2][0];
+						segG[1] = baseG[1] * colors[seg * 2][1];
+						segB[1] = baseB[1] * colors[seg * 2][2];
+						segA[1] = baseA[1] * colors[seg * 2][3];
+
+						segR[2] = baseR[2] * colors[seg * 2 + 1][0];
+						segG[2] = baseG[2] * colors[seg * 2 + 1][1];
+						segB[2] = baseB[2] * colors[seg * 2 + 1][2];
+						segA[2] = baseA[2] * colors[seg * 2 + 1][3];
+
+						segR[3] = baseR[3] * colors[seg * 2 + 1][0];
+						segG[3] = baseG[3] * colors[seg * 2 + 1][1];
+						segB[3] = baseB[3] * colors[seg * 2 + 1][2];
+						segA[3] = baseA[3] * colors[seg * 2 + 1][3];
 					}
 					else
 					{
-						col[0] = pSegmentColors[seg * 4];
-						col[1] = pSegmentColors[seg * 4 + 1];
-						col[2] = pSegmentColors[seg * 4 + 2];
-						col[3] = pSegmentColors[seg * 4 + 3];
-					}
+						segR[0] = baseR[0] * colors[seg * 4][0];
+						segG[0] = baseG[0] * colors[seg * 4][1];
+						segB[0] = baseB[0] * colors[seg * 4][2];
+						segA[0] = baseA[0] * colors[seg * 4][3];
 
-					for (int i = 0; i < 4; i++)
-					{
-						segB[i] = baseB[i] * col[i].b;
-						segG[i] = baseG[i] * col[i].g;
-						segR[i] = baseR[i] * col[i].r;
-						segA[i] = baseA[i] * col[i].a;
+						segR[1] = baseR[1] * colors[seg * 4 + 1][0];
+						segG[1] = baseG[1] * colors[seg * 4 + 1][1];
+						segB[1] = baseB[1] * colors[seg * 4 + 1][2];
+						segA[1] = baseA[1] * colors[seg * 4 + 1][3];
+
+						segR[2] = baseR[2] * colors[seg * 4 + 2][0];
+						segG[2] = baseG[2] * colors[seg * 4 + 2][1];
+						segB[2] = baseB[2] * colors[seg * 4 + 2][2];
+						segA[2] = baseA[2] * colors[seg * 4 + 2][3];
+
+						segR[3] = baseR[3] * colors[seg * 4 + 3][0];
+						segG[3] = baseG[3] * colors[seg * 4 + 3][1];
+						segB[3] = baseB[3] * colors[seg * 4 + 3][2];
+						segA[3] = baseA[3] * colors[seg * 4 + 3][3];
 					}
 				}
 
@@ -2936,7 +2982,7 @@ namespace wg
 
 				// Update tinting if we have X-gradient
 
-				const Color* pColors = pSegmentColors + skippedSegments;
+				const int16_t * pColors = &colors[skippedSegments][0];
 
 				if (bTintX)
 				{
@@ -2978,14 +3024,14 @@ namespace wg
 
 						for (int i = 0; i < nEdges + 1; i++)
 						{
-							colors[i].b = (pGrad->begB + pGrad->incB * columnOfs) >> 16;
-							colors[i].g = (pGrad->begG + pGrad->incG * columnOfs) >> 16;
-							colors[i].r = (pGrad->begR + pGrad->incR * columnOfs) >> 16;
-							colors[i].a = (pGrad->begA + pGrad->incA * columnOfs) >> 16;
+							colors[i][0] = (pGrad->begR + pGrad->incR * columnOfs) >> 12;
+							colors[i][1] = (pGrad->begG + pGrad->incG * columnOfs) >> 12;
+							colors[i][2] = (pGrad->begB + pGrad->incB * columnOfs) >> 12;
+							colors[i][3] = (pGrad->begA + pGrad->incA * columnOfs) >> 12;
 							pGrad += 2;												// Skipping bottom gradient data since we don't need it.
 						}
 
-						pColors = colors;
+						pColors = &colors[0][0];
 					}
 				}
 
@@ -3021,18 +3067,18 @@ namespace wg
 		{
 			for (int i = 0; i < 4; i++)
 			{
-				outB[i] = 0x10000;
-				outG[i] = 0x10000;
-				outR[i] = 0x10000;
-				outA[i] = 0x10000;
+				outB[i] = 0x1000;
+				outG[i] = 0x1000;
+				outR[i] = 0x1000;
+				outA[i] = 0x1000;
 			}
 		}
 		else if (m_colTrans.mode == TintMode::Flat)
 		{
-			int r = m_colTrans.flatTintColor[0] << 4;
-			int g = m_colTrans.flatTintColor[1] << 4;
-			int b = m_colTrans.flatTintColor[2] << 4;
-			int a = m_colTrans.flatTintColor[3] << 4;
+			int r = m_colTrans.flatTintColor[0];
+			int g = m_colTrans.flatTintColor[1];
+			int b = m_colTrans.flatTintColor[2];
+			int a = m_colTrans.flatTintColor[3];
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -3047,8 +3093,8 @@ namespace wg
 			int ofsX = dest.x - m_colTrans.tintRect.x;
 			int xIncB = int(m_colTrans.topRightB - m_colTrans.topLeftB) / m_colTrans.tintRect.w;
 
-			int leftB = (m_colTrans.topLeftB + xIncB * ofsX) >> 8;
-			int rightB = (m_colTrans.topLeftB + xIncB * (ofsX + dest.w)) >> 8;
+			int leftB = (m_colTrans.topLeftB + xIncB * ofsX) >> 6;
+			int rightB = (m_colTrans.topLeftB + xIncB * (ofsX + dest.w)) >> 6;
 
 			outB[0] = leftB;
 			outB[1] = rightB;
@@ -3059,8 +3105,8 @@ namespace wg
 
 			int xIncG = int(m_colTrans.topRightG - m_colTrans.topLeftG) / m_colTrans.tintRect.w;
 
-			int leftG = (m_colTrans.topLeftG + xIncG * ofsX) >> 8;
-			int rightG = (m_colTrans.topLeftG + xIncG * (ofsX + dest.w)) >> 8;
+			int leftG = (m_colTrans.topLeftG + xIncG * ofsX) >> 6;
+			int rightG = (m_colTrans.topLeftG + xIncG * (ofsX + dest.w)) >> 6;
 
 			outG[0] = leftG;
 			outG[1] = rightG;
@@ -3071,8 +3117,8 @@ namespace wg
 
 			int xIncR = int(m_colTrans.topRightR - m_colTrans.topLeftR) / m_colTrans.tintRect.w;
 
-			int leftR = (m_colTrans.topLeftR + xIncR * ofsX) >> 8;
-			int rightR = (m_colTrans.topLeftR + xIncR * (ofsX + dest.w)) >> 8;
+			int leftR = (m_colTrans.topLeftR + xIncR * ofsX) >> 6;
+			int rightR = (m_colTrans.topLeftR + xIncR * (ofsX + dest.w)) >> 6;
 
 			outR[0] = leftR;
 			outR[1] = rightR;
@@ -3083,8 +3129,8 @@ namespace wg
 
 			int xIncA = int(m_colTrans.topRightA - m_colTrans.topLeftA) / m_colTrans.tintRect.w;
 
-			int leftA = (m_colTrans.topLeftA + xIncA * ofsX) >> 8;
-			int rightA = (m_colTrans.topLeftA + xIncA * (ofsX + dest.w)) >> 8;
+			int leftA = (m_colTrans.topLeftA + xIncA * ofsX) >> 6;
+			int rightA = (m_colTrans.topLeftA + xIncA * (ofsX + dest.w)) >> 6;
 
 			outA[0] = leftA;
 			outA[1] = rightA;
@@ -3096,8 +3142,8 @@ namespace wg
 		{
 			int ofsY = dest.y - m_colTrans.tintRect.y;
 
-			int topB = (m_colTrans.topLeftB + m_colTrans.leftIncB * ofsY) >> 8;
-			int bottomB = (m_colTrans.topLeftB + m_colTrans.leftIncB * (ofsY + dest.h)) >> 8;
+			int topB = (m_colTrans.topLeftB + m_colTrans.leftIncB * ofsY) >> 6;
+			int bottomB = (m_colTrans.topLeftB + m_colTrans.leftIncB * (ofsY + dest.h)) >> 6;
 
 			outB[0] = topB;
 			outB[1] = topB;
@@ -3106,8 +3152,8 @@ namespace wg
 
 			//
 
-			int topG = (m_colTrans.topLeftG + m_colTrans.leftIncG * ofsY) >> 8;
-			int bottomG = (m_colTrans.topLeftG + m_colTrans.leftIncG * (ofsY + dest.h)) >> 8;
+			int topG = (m_colTrans.topLeftG + m_colTrans.leftIncG * ofsY) >> 6;
+			int bottomG = (m_colTrans.topLeftG + m_colTrans.leftIncG * (ofsY + dest.h)) >> 6;
 
 			outG[0] = topG;
 			outG[1] = topG;
@@ -3116,8 +3162,8 @@ namespace wg
 
 			//
 
-			int topR = (m_colTrans.topLeftR + m_colTrans.leftIncR * ofsY) >> 8;
-			int bottomR = (m_colTrans.topLeftR + m_colTrans.leftIncR * (ofsY + dest.h)) >> 8;
+			int topR = (m_colTrans.topLeftR + m_colTrans.leftIncR * ofsY) >> 6;
+			int bottomR = (m_colTrans.topLeftR + m_colTrans.leftIncR * (ofsY + dest.h)) >> 6;
 
 			outR[0] = topR;
 			outR[1] = topR;
@@ -3126,8 +3172,8 @@ namespace wg
 
 			//
 
-			int topA = (m_colTrans.topLeftA + m_colTrans.leftIncA * ofsY) >> 8;
-			int bottomA = (m_colTrans.topLeftA + m_colTrans.leftIncA * (ofsY + dest.h)) >> 8;
+			int topA = (m_colTrans.topLeftA + m_colTrans.leftIncA * ofsY) >> 6;
+			int bottomA = (m_colTrans.topLeftA + m_colTrans.leftIncA * (ofsY + dest.h)) >> 6;
 
 			outA[0] = topA;
 			outA[1] = topA;
@@ -3141,56 +3187,56 @@ namespace wg
 			int begB = m_colTrans.topLeftB + m_colTrans.leftIncB * ofs.y;
 			int xIncB = (m_colTrans.topRightB + m_colTrans.rightIncB * ofs.y - begB) / m_colTrans.tintRect.w;
 
-			outB[0] = (begB + xIncB * ofs.x) >> 8;
-			outB[1] = (begB + xIncB * (ofs.x + dest.w)) >> 8;
+			outB[0] = (begB + xIncB * ofs.x) >> 6;
+			outB[1] = (begB + xIncB * (ofs.x + dest.w)) >> 6;
 
 			begB = m_colTrans.topLeftB + m_colTrans.leftIncB * (ofs.y + dest.h);
 			xIncB = (m_colTrans.topRightB + m_colTrans.rightIncB * (ofs.y + dest.h) - begB) / m_colTrans.tintRect.w;
 
-			outB[2] = (begB + xIncB * (ofs.x + dest.w)) >> 8;
-			outB[3] = (begB + xIncB * ofs.x) >> 8;
+			outB[2] = (begB + xIncB * (ofs.x + dest.w)) >> 6;
+			outB[3] = (begB + xIncB * ofs.x) >> 6;
 
 			//
 
 			int begG = m_colTrans.topLeftG + m_colTrans.leftIncG * ofs.y;
 			int xIncG = (m_colTrans.topRightG + m_colTrans.rightIncG * ofs.y - begG) / m_colTrans.tintRect.w;
 
-			outG[0] = (begG + xIncG * ofs.x) >> 8;
-			outG[1] = (begG + xIncG * (ofs.x + dest.w)) >> 8;
+			outG[0] = (begG + xIncG * ofs.x) >> 6;
+			outG[1] = (begG + xIncG * (ofs.x + dest.w)) >> 6;
 
 			begG = m_colTrans.topLeftG + m_colTrans.leftIncG * (ofs.y + dest.h);
 			xIncG = (m_colTrans.topRightG + m_colTrans.rightIncG * (ofs.y + dest.h) - begG) / m_colTrans.tintRect.w;
 
-			outG[2] = (begG + xIncG * (ofs.x + dest.w)) >> 8;
-			outG[3] = (begG + xIncG * ofs.x) >> 8;
+			outG[2] = (begG + xIncG * (ofs.x + dest.w)) >> 6;
+			outG[3] = (begG + xIncG * ofs.x) >> 6;
 
 			//
 
 			int begR = m_colTrans.topLeftR + m_colTrans.leftIncR * ofs.y;
 			int xIncR = (m_colTrans.topRightR + m_colTrans.rightIncR * ofs.y - begR) / m_colTrans.tintRect.w;
 
-			outR[0] = (begR + xIncR * ofs.x) >> 8;
-			outR[1] = (begR + xIncR * (ofs.x + dest.w)) >> 8;
+			outR[0] = (begR + xIncR * ofs.x) >> 6;
+			outR[1] = (begR + xIncR * (ofs.x + dest.w)) >> 6;
 
 			begR = m_colTrans.topLeftR + m_colTrans.leftIncR * (ofs.y + dest.h);
 			xIncR = (m_colTrans.topRightR + m_colTrans.rightIncR * (ofs.y + dest.h) - begR) / m_colTrans.tintRect.w;
 
-			outR[2] = (begR + xIncR * (ofs.x + dest.w)) >> 8;
-			outR[3] = (begR + xIncR * ofs.x) >> 8;
+			outR[2] = (begR + xIncR * (ofs.x + dest.w)) >> 6;
+			outR[3] = (begR + xIncR * ofs.x) >> 6;
 
 			//
 
 			int begA = m_colTrans.topLeftA + m_colTrans.leftIncA * ofs.y;
 			int xIncA = (m_colTrans.topRightA + m_colTrans.rightIncA * ofs.y - begA) / m_colTrans.tintRect.w;
 
-			outA[0] = (begA + xIncA * ofs.x) >> 8;
-			outA[1] = (begA + xIncA * (ofs.x + dest.w)) >> 8;
+			outA[0] = (begA + xIncA * ofs.x) >> 6;
+			outA[1] = (begA + xIncA * (ofs.x + dest.w)) >> 6;
 
 			begA = m_colTrans.topLeftA + m_colTrans.leftIncA * (ofs.y + dest.h);
 			xIncA = (m_colTrans.topRightA + m_colTrans.rightIncA * (ofs.y + dest.h) - begA) / m_colTrans.tintRect.w;
 
-			outA[2] = (begA + xIncA * (ofs.x + dest.w)) >> 8;
-			outA[3] = (begA + xIncA * ofs.x) >> 8;
+			outA[2] = (begA + xIncA * (ofs.x + dest.w)) >> 6;
+			outA[3] = (begA + xIncA * ofs.x) >> 6;
 		}
 	}
 
