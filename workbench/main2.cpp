@@ -85,6 +85,7 @@ bool sliderTest(CStandardSlot_p pSlot);
 bool pieKnobTest(CStandardSlot_p pSlot);
 bool spinKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
+bool doubleSkinTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 
@@ -583,6 +584,7 @@ int main(int argc, char** argv)
 	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
+	doubleSkinTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -2242,6 +2244,43 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	*pSlot = pBaseLayer;
 	return true;
 }
+
+
+//____ doubleSkinTest() ____________________________________________________
+
+bool doubleSkinTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
+	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
+
+	Surface_p pSurfArrow = loadSurface("../resources/dialarrow_small.png", PixelFormat::BGRA_8);
+	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+
+	pSurfArrow->setScaleMode(ScaleMode::Interpolate);
+
+	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, { 0.5f,0.5f }, -135, 135);
+
+	auto pFillMeterSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green);
+
+	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pFillMeterSkin);
+
+	auto pKnob1 = Knob::create();
+	pKnob1->setSkin(pDoubleSkin);
+	pKnob1->setValue(0.5f);
+	pKnob1->setDragRange(500);
+
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 400, 100));
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
+
+
+//____
 
 void nisBlendTest()
 {

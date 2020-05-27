@@ -56,6 +56,7 @@ namespace wg
 		m_pBackSkin(pBackSkin),
 		m_bSkinInSkin(bSkinInSkin)
 	{
+		_onModified();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -255,7 +256,7 @@ namespace wg
 		Rect change1 = m_pBackSkin->fractionChangeRect(canvas, state, oldFraction, newFraction);
 
 		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		Rect change2 = m_pBackSkin->fractionChangeRect(canvas2, state, oldFraction, newFraction);
+		Rect change2 = m_pFrontSkin->fractionChangeRect(canvas2, state, oldFraction, newFraction);
 
 		if (change1.isEmpty() && change2.isEmpty())
 			return Rect();
@@ -266,7 +267,7 @@ namespace wg
 		if (change2.isEmpty())
 			return change1;
 
-		return Rect(change1, change2);
+		return Rect::getUnion(change1, change2);
 	}
 
 	//____ _onModified() ______________________________________________________

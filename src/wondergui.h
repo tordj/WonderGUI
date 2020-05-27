@@ -165,6 +165,7 @@
 #include <wg_fillmeterskin.h>
 #include <wg_piemeterskin.h>
 #include <wg_spinmeterskin.h>
+#include <wg_doubleskin.h>
 #include <wg_canvasstack.h>
 
 #endif //WONDERGUI_DOT_H
