@@ -288,6 +288,9 @@ namespace wg
 
 	Rect FillMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
 	{
+		if (m_barColorFull != m_barColorEmpty)
+			return _canvas;
+
 		Rect canvas = _canvas - m_contentPadding;
 
 		switch (m_direction)

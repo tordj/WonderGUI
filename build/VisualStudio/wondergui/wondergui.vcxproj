@@ -233,6 +233,7 @@
     <ClInclude Include="..\..\..\src\widgets\wg_slider.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_textdisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_texteditor.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_timer.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_togglebutton.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_valuedisplay.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_volumemeter.h" />
@@ -364,6 +365,7 @@
     <ClCompile Include="..\..\..\src\widgets\wg_slider.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_textdisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_texteditor.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_timer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_togglebutton.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_valuedisplay.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_volumemeter.cpp" />

@@ -86,6 +86,7 @@ bool pieKnobTest(CStandardSlot_p pSlot);
 bool spinKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 bool doubleSkinTest(CStandardSlot_p pSlot);
+bool timerTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 
@@ -202,8 +203,8 @@ int main(int argc, char** argv)
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 1300, height = 1620;
-
+//	int posX = 100, posY = 100, width = 1300, height = 1620;
+	int posX = 100, posY = 100, width = 600, height = 600;
 
 #ifdef USE_OPEN_GL
 
@@ -585,6 +586,7 @@ int main(int argc, char** argv)
 //	spinKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 	doubleSkinTest(&pRoot->slot);
+	timerTest(&pRoot->slot);
 
 	
 	// Test IChild and IChildIterator baseclasses
@@ -1258,7 +1260,7 @@ int main(int argc, char** argv)
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
 
-		SDL_Delay(16);
+		SDL_Delay(4);
 	}
 
 	// Exit WonderGUI
@@ -2277,6 +2279,31 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ timerTest() ____________________________________________________
+
+bool timerTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+//	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
+//	pSurfClockFace->setScaleMode(ScaleMode::Interpolate);
+//	auto pSkin = SpinMeterSkin::create(pSurfClockFace, { 419,419 } );
+
+	auto pSkin = FillMeterSkin::create();
+
+	auto pTimer1 = Timer::create();
+	pTimer1->setSkin(pSkin);
+	pTimer1->setDuration(5000);
+	pTimer1->setPlayMode(AnimMode::BackwardPingPong);
+	pTimer1->start();
+
+//	pBaseLayer->slots.pushBackMovable(pTimer1, Rect(10, 10, 419, 419));
+	pBaseLayer->slots.pushBackMovable(pTimer1, Rect(10, 10, 419, 50));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 
 
