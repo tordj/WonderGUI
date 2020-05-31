@@ -533,6 +533,12 @@
     <ClInclude Include="..\..\..\src\skins\state\wg_lambdastateskin.h">
       <Filter>skins\state</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\static\wg_staticblockskin.h">
+      <Filter>skins\static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h">
+      <Filter>skins\static</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -924,6 +930,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\state\wg_lambdastateskin.cpp">
       <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\static\wg_staticblockskin.cpp">
+      <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp">
+      <Filter>skins\static</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

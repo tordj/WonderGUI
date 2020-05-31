@@ -327,6 +327,7 @@ namespace wg
 		: m_pStack(pHolder), m_pSkin(pSkin), m_canvasIdx(canvasIdx)
 	{
 		m_bIgnoresFraction = pSkin->ignoresFraction();
+		m_bOpaque = pSkin->isOpaque();
 	}
 
 	const TypeInfo& CanvasStack::CustomSkin::typeInfo(void) const
@@ -367,11 +368,6 @@ namespace wg
 	Rect CanvasStack::CustomSkin::contentRect(const Rect& canvas, State state) const
 	{
 		return m_pSkin->contentRect(canvas,state);
-	}
-
-	bool CanvasStack::CustomSkin::isOpaque() const
-	{
-		return m_pSkin->isOpaque();
 	}
 
 	bool CanvasStack::CustomSkin::isOpaque(State state) const

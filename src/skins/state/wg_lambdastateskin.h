@@ -82,7 +82,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		isOpaque() const override;
 		bool		isOpaque(State state) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -99,7 +98,6 @@ namespace wg
 		LambdaStateSkin(const Blueprint& blueprint);
 		~LambdaStateSkin() {};
 
-		bool		m_bOpaque = false;
 		SizeI		m_preferredSize;				// Points
 		SizeI		m_minSize;						// Points
 

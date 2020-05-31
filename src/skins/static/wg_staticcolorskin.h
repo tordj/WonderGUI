@@ -48,16 +48,9 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		Size	minSize() const override;
-		Size	preferredSize() const override;
+		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
-
-		bool	isOpaque() const override;
-		bool	isOpaque(State state) const override;
-		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
-		bool	isStateIdentical(State state, State comparedTo, float fraction = 1.f) const override;
 
 		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;

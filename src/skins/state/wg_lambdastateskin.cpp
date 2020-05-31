@@ -120,14 +120,19 @@ namespace wg
 
 	//____ isOpaque() _________________________________________________________
 
-	bool LambdaStateSkin::isOpaque() const
+	bool LambdaStateSkin::isOpaque(State state) const
 	{
 		return m_bOpaque;
 	}
 
-	bool LambdaStateSkin::isOpaque(State state) const
+	bool LambdaStateSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
-		return m_bOpaque;
+		if (m_bOpaque)
+			return true;
+		else if (m_opacityTestFunc)
+			return m_opacityTestFunc(rect, canvasSize, state);
+		else
+			return false;
 	}
 
 	//____ isStateIdentical() _________________________________________________
@@ -150,18 +155,6 @@ namespace wg
 			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
 		else
 			return (opacityTreshold <= 0 || (m_bOpaque && opacityTreshold < 256));
-	}
-
-	//____ _isOpaque() ________________________________________________________
-
-	bool LambdaStateSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		if (m_bOpaque)
-			return true;
-		else if (m_opacityTestFunc)
-			return m_opacityTestFunc(rect, canvasSize, state);
-		else
-			return false;
 	}
 
 	//____ render() __________________________________________________________

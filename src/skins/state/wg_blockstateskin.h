@@ -44,7 +44,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BlockStateSkin_p	create();
-		static BlockStateSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
+		static BlockStateSkin_p create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockStateSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
 		static BlockStateSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 		static BlockStateSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
@@ -90,7 +90,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	isOpaque() const override;
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -119,8 +118,6 @@ namespace wg
 		Surface_p	m_pSurface;
 		SizeI		m_dimensions;   // Pixels
 		BorderI		m_frame;        // Pixels
-
-		bool		m_bOpaque;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 

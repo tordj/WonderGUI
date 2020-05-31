@@ -174,13 +174,6 @@ namespace wg
 
 	//____ isOpaque() _________________________________________________________
 
-	bool DoubleSkin::isOpaque() const
-	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
-		return m_bOpaque;
-	}
-
 	bool DoubleSkin::isOpaque(State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);

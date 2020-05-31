@@ -70,32 +70,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool SpinMeterSkin::isStateIdentical(State state, State comparedTo, float fraction) const
-	{
-		return true;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool SpinMeterSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
-
-	bool SpinMeterSkin::isOpaque(State state) const
-	{
-		return m_bOpaque;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool SpinMeterSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		return m_bOpaque;
-	}
-
 	//____ render() ______________________________________________________________
 
 	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
@@ -138,13 +112,6 @@ namespace wg
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
-	}
-
-	//____ minSize() ______________________________________________________________
-
-	Size SpinMeterSkin::minSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ preferredSize() ______________________________________________________________

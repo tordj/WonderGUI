@@ -72,7 +72,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool			isOpaque() const override;
 		bool			isOpaque( State state ) const override;
 		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -95,7 +94,6 @@ namespace wg
 		Skin_p		m_pFrontSkin;
 		Skin_p		m_pBackSkin;
 		bool		m_bSkinInSkin = false;
-		bool		m_bOpaque;
 	};
 
 

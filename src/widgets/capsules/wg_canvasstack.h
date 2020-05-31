@@ -118,7 +118,6 @@ namespace wg
 			Coord	contentOfs(State state) const override;
 			Rect	contentRect(const Rect& canvas, State state) const override;
 
-			bool	isOpaque() const override;
 			bool	isOpaque(State state) const override;
 			bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 

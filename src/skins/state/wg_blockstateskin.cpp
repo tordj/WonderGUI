@@ -375,15 +375,10 @@ namespace wg
 	bool BlockStateSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
+		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
 	}
 
 	//____ isOpaque() _____________________________________________________________
-
-	bool BlockStateSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
 
 	bool BlockStateSkin::isOpaque( State state ) const
 	{

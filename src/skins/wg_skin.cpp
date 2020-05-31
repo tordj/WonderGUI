@@ -34,6 +34,20 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ minSize() ______________________________________________________________
+
+	Size Skin::minSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ _preferredSize() ______________________________________________________________
+
+	Size Skin::preferredSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
 	//____ contentPadding() ______________________________________________________________
 
 	Border Skin::contentPadding(State state) const
@@ -69,6 +83,24 @@ namespace wg
 		return (canvas - Border(m_contentPadding).aligned()).aligned();
 	}
 
+	//____ isOpaque() _________________________________________________________
+
+	bool Skin::isOpaque(State state) const
+	{
+		return m_bOpaque;
+	}
+
+	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	{
+		return m_bOpaque;
+	}
+
+	//____ isStateIdentical() ____________________________________________________
+
+	bool Skin::isStateIdentical(State state, State comparedTo, float fraction) const
+	{
+		return true;
+	}
 
 	//____ fractionChangeRect() ______________________________________
 

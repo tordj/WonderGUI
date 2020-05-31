@@ -256,11 +256,6 @@ namespace wg
 
 	//____ isOpaque() _____________________________________________________________
 
-	bool BoxStateSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
-
 	bool BoxStateSkin::isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);

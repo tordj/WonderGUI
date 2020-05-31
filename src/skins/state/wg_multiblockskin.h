@@ -73,10 +73,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	isOpaque() const override;
-		bool	isOpaque( State state ) const override;
-		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
-
 		bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
 
 		//.____ Internal ________________________________________________
@@ -112,7 +108,6 @@ namespace wg
 		SizeI			m_blockSizePoints;					// Stored in points
 
 		SizeI			m_blockSize;						// Stored in pixels
-		bool			m_bIsOpaque;
 		BorderI			m_frame;                        // Stored in points
 
 		std::vector<LayerData>	m_layers;

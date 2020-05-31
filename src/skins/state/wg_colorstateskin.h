@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static ColorStateSkin_p	create();
-		static ColorStateSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorStateSkin_p create(Color color,  BorderI contentPadding = BorderI() );
 		static ColorStateSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
@@ -65,7 +65,6 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 
-		bool		isOpaque() const override;
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -84,7 +83,6 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		bool		m_bOpaque;
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;

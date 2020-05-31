@@ -104,27 +104,6 @@ namespace wg
 		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
 	}
 
-	//____ minSize() ______________________________________________________________
-
-	Size StateSkin::minSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ _preferredSize() ______________________________________________________________
-
-	Size StateSkin::preferredSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ sizeForContent() _______________________________________________________
-
-	Size StateSkin::sizeForContent( const Size& contentSize ) const
-	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
-	}
-
 	//____ contentPadding() _______________________________________________________
 
 	Border StateSkin::contentPadding(State state) const
@@ -136,13 +115,6 @@ namespace wg
 		b.top += ofs.y;
 
 		return b;
-	}
-
-	//____ contentPaddingSize() _______________________________________________________
-
-	Size StateSkin::contentPaddingSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ contentRect() __________________________________________________________

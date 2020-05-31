@@ -49,8 +49,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual Size	minSize() const = 0;
-		virtual Size	preferredSize() const = 0;
+		virtual Size	minSize() const;
+		virtual Size	preferredSize() const;
 
 		virtual Size	sizeForContent(const Size& contentSize) const;
 		virtual Border	contentPadding(State state) const;
@@ -60,11 +60,11 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		virtual bool	isOpaque() const = 0;
-		virtual bool	isOpaque( State state ) const = 0;
-		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const = 0;
+		bool			isOpaque() const { return m_bOpaque; }
+		virtual bool	isOpaque( State state ) const;
+		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 
-		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const = 0;
+		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const;
 
 		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const = 0;
 		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f ) const = 0;
@@ -132,7 +132,7 @@ namespace wg
 		BorderI		m_contentPadding;					// Unit: Points
 		bool		m_bContentShifting = false;
 		bool		m_bIgnoresFraction = true;
-
+		bool		m_bOpaque = false;
 	};
 
 

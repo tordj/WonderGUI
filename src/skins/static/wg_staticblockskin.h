@@ -19,24 +19,30 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_STATESKIN_DOT_H
-#define WG_STATESKIN_DOT_H
+#ifndef WG_STATICBLOCKSKIN_DOT_H
+#define WG_STATICBLOCKSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
-
-#include <initializer_list>
-#include <utility>
+#include <wg_color.h>
+#include <wg_surface.h>
 
 namespace wg
 {
 
-	class StateSkin;
-	typedef	StrongPtr<StateSkin>	StateSkin_p;
+	class StaticBlockSkin;
 
-	class StateSkin : public Skin
+	typedef	StrongPtr<StaticBlockSkin>	StaticBlockSkin_p;
+
+
+	class StaticBlockSkin : public Skin
 	{
 	public:
+		//.____ Creation __________________________________________
+
+		static StaticBlockSkin_p create(Surface* pSurface, const BorderI& frame = { 0 });
+		static StaticBlockSkin_p create(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -44,33 +50,24 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void			setContentPadding( const BorderI& padding );
-		Border			contentPadding(State state) const override;
+		Size	preferredSize() const override;
 
-		Coord			contentOfs(State state) const override;
-		Rect			contentRect(const Rect& canvas, State state) const override;
-
-
-		//.____ Behavior _______________________________________________________
-
-		void			clearContentShift();
-		void			setContentShift(State state, CoordI shift);
-		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
-		CoordI			contentShift(State state) const;
+		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 
-		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
+		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
+	private:
+		StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
+		~StaticBlockSkin() {};
 
-
-	protected:
-		void _refreshUnsetStates();
-
-        CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
-		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
+		Surface_p		m_pSurface;
+		RectI			m_block;
+		BorderI			m_frame;
 	};
 
 
 } // namespace wg
-#endif //WG_STATESKIN_DOT_H
+#endif //WG_STATICBLOCKSKIN_DOT_H

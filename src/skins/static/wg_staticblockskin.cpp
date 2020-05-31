@@ -20,58 +20,77 @@
 
 =========================================================================*/
 
-#include <wg_staticcolorskin.h>
+#include <wg_staticblockskin.h>
 #include <wg_gfxdevice.h>
+#include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_util.h>
 
 namespace wg
 {
 
-	const TypeInfo StaticColorSkin::TYPEINFO = { "StaticColorSkin", &Skin::TYPEINFO };
+	const TypeInfo StaticBlockSkin::TYPEINFO = { "StaticBlockSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
 	//____ create() _______________________________________________________________
 
-	StaticColorSkin_p StaticColorSkin::create( Color col )
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const BorderI& frame)
 	{
-		return StaticColorSkin_p(new StaticColorSkin(col));
+		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->size(),frame));
+	}
+
+	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const RectI& block, const BorderI& frame)
+	{
+		return StaticBlockSkin_p(new StaticBlockSkin(pSurface, block, frame));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticColorSkin::StaticColorSkin( Color col )
+	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame)
 	{
-		m_color = col;
-		m_bOpaque = (m_color.a == 255);
+		m_pSurface = pSurface;
+		m_block = block;
+		m_bOpaque = m_pSurface->isOpaque();
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& StaticColorSkin::typeInfo(void) const
+	const TypeInfo& StaticBlockSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
+	//____ preferredSize() ______________________________________________________________
+
+	Size StaticBlockSkin::preferredSize() const
+	{
+		return sizeForContent(m_block.size());
+	}
+
 	//____ setContentPadding() ____________________________________________________
 
-	void StaticColorSkin::setContentPadding(const BorderI& padding)
+	void StaticBlockSkin::setContentPadding(const BorderI& padding)
 	{
 		m_contentPadding = padding;
 	}
+
 	//____ render() ______________________________________________________________
 
-	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
+	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
-		pDevice->fill(canvas.px(), m_color);
+		if (!m_pSurface)
+			return;
+
+		pDevice->setBlitSource(m_pSurface);
+		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
+	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
 	{
-		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
+		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
 	}
 
 

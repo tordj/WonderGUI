@@ -144,11 +144,6 @@ namespace wg
 
 	//____ isOpaque() _____________________________________________________________
 
-	bool ColorStateSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
-
 	bool ColorStateSkin::isOpaque(State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);

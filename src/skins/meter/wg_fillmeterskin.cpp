@@ -55,6 +55,7 @@ namespace wg
 	{
 		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
 		m_bIgnoresFraction = false;
+		_updateOpacity();
 	}
 
 	FillMeterSkin::FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
@@ -69,6 +70,7 @@ namespace wg
 		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
 		m_bIgnoresFraction = false;
 		m_contentPadding = contentPadding;
+		_updateOpacity();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -76,20 +78,6 @@ namespace wg
 	const TypeInfo& FillMeterSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ isStateIdentical() _________________________________________________
-
-	bool FillMeterSkin::isStateIdentical(State state, State comparedTo, float fraction) const
-	{
-		return true;
-	}
-
-	//____ minSize() ______________________________________________________________
-
-	Size FillMeterSkin::minSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ preferredSize() ______________________________________________________________
@@ -128,6 +116,7 @@ namespace wg
 	void FillMeterSkin::setGfxPadding(BorderI padding)
 	{
 		m_barPadding = padding;
+		_updateOpacity();
 	}
 
 	//____ setBackColor() _____________________________________________________
@@ -135,6 +124,7 @@ namespace wg
 	void FillMeterSkin::setBackColor(Color back)
 	{
 		m_backColor = back;
+		_updateOpacity();
 	}
 
 	//____ setFillColors() ____________________________________________________
@@ -143,6 +133,7 @@ namespace wg
 	{
 		m_barColorEmpty = empty;
 		m_barColorFull = full;
+		_updateOpacity();
 	}
 
 	//____ setFillColorEmpty() ________________________________________________
@@ -150,6 +141,7 @@ namespace wg
 	void FillMeterSkin::setFillColorEmpty(Color empty)
 	{
 		m_barColorEmpty = empty;
+		_updateOpacity();
 	}
 
 	//____ setFillColorFull() ________________________________________________
@@ -157,6 +149,7 @@ namespace wg
 	void FillMeterSkin::setFillColorFull(Color full)
 	{
 		m_barColorFull = full;
+		_updateOpacity();
 	}
 
 	//____ setFillStartOutside() ________________________________________________
@@ -164,34 +157,6 @@ namespace wg
 	void FillMeterSkin::setFillStartOutside(bool bStartOutside)
 	{
 		m_bBarStartOutside = bStartOutside;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool FillMeterSkin::isOpaque() const
-	{
-		if (!m_barPadding.isEmpty())
-			return false;
-
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255*3 ? true : false;
-	}
-
-	bool FillMeterSkin::isOpaque(State state) const
-	{
-		if (!m_barPadding.isEmpty())
-			return false;
-
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool FillMeterSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		if (!m_barPadding.isEmpty())
-			return false;
-
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
 	}
 
 	//____ render() ______________________________________________________________
@@ -355,6 +320,15 @@ namespace wg
 		}
 	}
 	 
+	//____ _updateOpacity() ______________________________________________________________
+
+	void FillMeterSkin::_updateOpacity()
+	{
+		if (!m_barPadding.isEmpty())
+			m_bOpaque = false;
+		else
+			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+	}
 
 
 } // namespace wg

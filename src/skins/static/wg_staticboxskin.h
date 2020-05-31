@@ -19,39 +19,42 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SPINMETERSKIN_DOT_H
-#define WG_SPINMETERSKIN_DOT_H
+#ifndef WG_STATICBOXSKIN_DOT_H
+#define WG_STATICBOXSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
 #include <wg_color.h>
-#include <wg_surface.h>
 
 namespace wg
 {
 
-	class SpinMeterSkin;
+	class StaticBoxSkin;
 
-	typedef	StrongPtr<SpinMeterSkin>	SpinMeterSkin_p;
+	typedef	StrongPtr<StaticBoxSkin>	StaticBoxSkin_p;
 
 
-	class SpinMeterSkin : public Skin
+	class StaticBoxSkin : public Skin
 	{
 	public:
-
 		//.____ Creation __________________________________________
 
-		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
-										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
-										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
+		static StaticBoxSkin_p create(BorderI frame, Color fillColor, Color frameColor);
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+
 		//.____ Geometry _________________________________________________
 
+		Size	minSize() const override;
 		Size	preferredSize() const override;
 
 		void	setContentPadding(const BorderI& padding);
@@ -61,24 +64,19 @@ namespace wg
 		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
-		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
-
 	private:
-		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
-						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
-						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
-		~SpinMeterSkin() {};
+		StaticBoxSkin(BorderI frame, Color fillColor, Color frameColor);
+		~StaticBoxSkin() {};
 
-		Surface_p	m_pSurface;
-		Size		m_preferredSize;
-		CoordF		m_srcCenter;
-		CoordF		m_dstCenter;
-		float		m_fromDegrees;
-		float		m_toDegrees;
-		float		m_zoom;
-		BorderI		m_gfxPadding;
+		void		_updateOpaqueFlag();
+
+		BorderI		m_frame;							// In points
+		BlendMode	m_blendMode = BlendMode::Blend;
+
+		Color		m_fillColor;
+		Color		m_frameColor;
 	};
 
 
 } // namespace wg
-#endif //WG_PIEMETERSKIN_DOT_H
+#endif //WG_STATICBOXSKIN_DOT_H

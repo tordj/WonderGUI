@@ -47,7 +47,7 @@ namespace wg
 	{
 		m_blockSizePoints	= blockSize;
 		m_frame				= frame;
-		m_bIsOpaque			= false;
+		m_bOpaque			= false;
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		m_bStateOpaque[i] = false;
@@ -78,7 +78,7 @@ namespace wg
 		layer.stateBlockMask = 1;               // Only normal state is set.
 
 		if (pSurf->isOpaque())
-			m_bIsOpaque = true;
+			m_bOpaque = true;
 
 
 		for (int i = 0; i < StateEnum_Nb; i++)
@@ -114,7 +114,7 @@ namespace wg
 		layer.stateBlockMask = 0;
 
 		if (pSurf->isOpaque())
-			m_bIsOpaque = true;
+			m_bOpaque = true;
 
 		//
 
@@ -353,7 +353,7 @@ namespace wg
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
 
-		if( m_bIsOpaque )
+		if( m_bOpaque )
 			return true;
 
 		int stateIndex = _stateToIndex(state);
@@ -361,31 +361,12 @@ namespace wg
 		for (auto& layer : m_layers)
 		{
 			CoordI srcOfs = layer.blockOfs[stateIndex];
-			bool bMarked = markTestNinePatch(_ofs.qpix(), layer.pSurface, { srcOfs,m_blockSize }, canvas.qpix(), opacityTreshold, m_frame);
+			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, { srcOfs,m_blockSize }, canvas, opacityTreshold, m_frame);
 			if (bMarked)
 				return true;
 		}
 
 		return false;
-	}
-
-	//____ isOpaque() _____________________________________________________________
-
-	bool MultiBlockStateSkin::isOpaque() const
-	{
-		return m_bIsOpaque;
-	}
-
-	bool MultiBlockStateSkin::isOpaque( State state ) const
-	{
-		return m_bIsOpaque;
-	}
-
-	//____ isOpaque() _____________________________________________________________
-
-	bool MultiBlockStateSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
-	{
-		return m_bIsOpaque;
 	}
 
 	//____ _updateStateOpacity() __________________________________________________
@@ -407,13 +388,13 @@ namespace wg
 		{
 			m_bStateOpaque[stateIdx] = bOpaque;
 
-			if (bOpaque != m_bIsOpaque)
+			if (bOpaque != m_bOpaque)
 			{
-				m_bIsOpaque = true;
+				m_bOpaque = true;
 				for( int i = 0 ; i < StateEnum_Nb ; i++ )
 					if (m_bStateOpaque[i] )
 					{
-						m_bIsOpaque = false;
+						m_bOpaque = false;
 						break;
 					}
 			}

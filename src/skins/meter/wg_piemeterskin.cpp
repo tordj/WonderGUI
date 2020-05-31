@@ -223,32 +223,6 @@ namespace wg
 		m_backColor = back;
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool PieMeterSkin::isStateIdentical(State state, State comparedTo, float fraction) const
-	{
-		return true;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool PieMeterSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
-
-	bool PieMeterSkin::isOpaque(State state) const
-	{
-		return m_bOpaque;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool PieMeterSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		return m_bOpaque;
-	}
-
 	//____ render() ______________________________________________________________
 
 	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
@@ -371,13 +345,6 @@ namespace wg
 		}
 
 		pDevice->drawPieChart(canvas.px(), m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
-	}
-
-	//____ minSize() ______________________________________________________________
-
-	Size PieMeterSkin::minSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ setPreferredSize() _________________________________________________
