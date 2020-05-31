@@ -19,48 +19,39 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_CVECTOR_DOT_H
-#define WG_CVECTOR_DOT_H
+#ifndef WG_CDYNAMICVECTOR_DOT_H
+#define WG_CDYNAMICVECTOR_DOT_H
 #pragma once
 
-#include <vector>
 
-#include <wg_component.h>
+#include <wg_cstaticvector.h>
 
 namespace wg
 {
 
-	//____ CVector _____________________________________________________
+	//____ CDynamicVector _____________________________________________________
 	
 	template<class EntryType>
-	class CVector : public Component
+	class CDynamicVector : public CStaticVector<EntryType>
 	{
 	public:
 
-		class Holder	/** @private */
+		class Holder : public CStaticVector<EntryType>::Holder	/** @private */
 		{
 		public:
-			virtual Object * _object() = 0;
-
 			virtual void	_didAddEntries(EntryType * pEntry, int nb) = 0;
 			virtual void	_didMoveEntries(EntryType * pFrom, EntryType * pTo, int nb) = 0;
-			virtual void	_willEraseEntries(EntryType * pSlot, int nb) = 0;
+			virtual void	_willEraseEntries(EntryType * pEntry, int nb) = 0;
 		};
 		
-		using		iterator = typename std::vector<EntryType>::iterator;
-		using		const_iterator = typename std::vector<EntryType>::const_iterator;
+		CDynamicVector(Holder * pHolder) : CStaticVector(pHolder) {}
 
-		CVector(Holder * pHolder) : m_pHolder(pHolder) {}
-
-		//.____ Identification _________________________________________________
+		//.____ Identification _________________________________________________ 
 
 		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
-
-		inline int		size() const { return m_entries.size(); }
-		inline bool		isEmpty() const { return m_entries.empty(); }
 
 		inline int		capacity() const { return m_entries.capacity(); }
 
@@ -77,32 +68,19 @@ namespace wg
 
 		void			clear();
 
-		//.____ Misc _______________________________________________________
-
-		inline iterator	begin() { return m_entries.begin(); }
-		inline iterator	end() { return m_entries.end(); }
-
-		inline const_iterator	begin() const { return m_entries.begin(); }
-		inline const_iterator	end() const { return m_entries.end(); }
-
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
 		inline iterator operator<<(const std::initializer_list<const EntryType>& entries) { return pushBack(entries); }
 
-		inline EntryType& operator[](int index) { return m_entries[index]; }
-		inline const EntryType& operator[](int index) const { return m_entries[index]; }
-
 	protected:
-//		~CVector() {}
+//		~CDynamicVector() {}
 	
-		Object *		_object() override;
-		const Object *	_object() const override;
-	
-		Holder *				m_pHolder;
-		std::vector<EntryType>	m_entries;
+		virtual void	_didAddEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(m_pHolder)->_didAddEntries(pEntry, nb); }
+		virtual void	_didMoveEntries(EntryType* pFrom, EntryType* pTo, int nb) { static_cast<Holder*>(m_pHolder)->_didMoveEntries(pFrom, pTo, nb); }
+		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(m_pHolder)->_willEraseEntries(pEntry, nb); }
 	};
 
 } //namespace
 
-#endif //WG_CVECTOR_DOT_H
+#endif //WG_CDYNAMICVECTOR_DOT_H

@@ -143,6 +143,9 @@
     <ClInclude Include="..\..\..\src\base\wg_weakcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_weakptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotholder.h" />
+    <ClInclude Include="..\..\..\src\components\wg_canimframes.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicvector.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cdynamicvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxinstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxoutstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
@@ -164,8 +167,8 @@
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticslotvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cvector.h" />
-    <ClInclude Include="..\..\..\src\components\wg_cvector.impl.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstaticvector.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cstaticvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctext.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstatictextdisplay.h" />
@@ -287,6 +290,7 @@
     <ClCompile Include="..\..\..\src\base\wg_togglegroup.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_enumextras.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_util.cpp" />
+    <ClCompile Include="..\..\..\src\components\wg_canimframes.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_ccanvas.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_ccolumnheader.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cdynamicslotcollection.cpp" />

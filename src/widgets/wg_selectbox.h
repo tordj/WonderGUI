@@ -27,7 +27,7 @@
 #include <wg_widget.h>
 #include <wg_sidecanvas.h>
 #include <wg_ctextdisplay.h>
-#include <wg_cvector.h>
+#include <wg_cdynamicvector.h>
 
 namespace wg
 {
@@ -78,7 +78,7 @@ namespace wg
 	typedef	WeakPtr<SelectBox>		SelectBox_wp;
 
 
-	class SelectBox : public Widget, protected CVector<SelectBoxEntry>::Holder, protected SideCanvas::Holder
+	class SelectBox : public Widget, protected CDynamicVector<SelectBoxEntry>::Holder, protected SideCanvas::Holder
 	{
 		friend class SelectBoxEntry;
 	public:
@@ -89,7 +89,7 @@ namespace wg
 		//.____ Components ____________________________________
 
 		CTextDisplay			text;
-		CVector<SelectBoxEntry>	entries;
+		CDynamicVector<SelectBoxEntry>	entries;
 
 		//.____ Identification __________________________________________
 
@@ -117,7 +117,7 @@ namespace wg
 
 		//.___ Control _____________________________________________________________
 
-		void			selectEntry(const CVector<SelectBoxEntry>::iterator& it);
+		void			selectEntry(const CDynamicVector<SelectBoxEntry>::iterator& it);
 		bool			selectEntryById(int id);
 		void			selectEntryByIndex(int index);
 

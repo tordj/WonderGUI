@@ -104,7 +104,7 @@ namespace wg
 
 	//____ selectEntry() _____________________________________________________
 
-	void SelectBox::selectEntry(const CVector<SelectBoxEntry>::iterator& it)
+	void SelectBox::selectEntry(const CDynamicVector<SelectBoxEntry>::iterator& it)
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{

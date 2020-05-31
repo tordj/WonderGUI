@@ -23,6 +23,7 @@
 #define WG_COMPONENT_DOT_H
 #pragma once
 
+#include <wg_types.h>
 
 namespace wg
 {
