@@ -23,7 +23,7 @@
 #define WG_COLORSKIN_DOT_H
 #pragma once
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 #include <wg_color.h>
 
 #include <initializer_list>
@@ -32,17 +32,17 @@
 namespace wg
 {
 
-	class ColorSkin;
-	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
+	class ColorStateSkin;
+	typedef	StrongPtr<ColorStateSkin>	ColorStateSkin_p;
 
-	class ColorSkin : public ExtendedSkin
+	class ColorStateSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static ColorSkin_p	create();
-		static ColorSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
+		static ColorStateSkin_p	create();
+		static ColorStateSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorStateSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
@@ -77,9 +77,9 @@ namespace wg
 
 
 	private:
-		ColorSkin();
-		ColorSkin(Color color);
-		~ColorSkin() {};
+		ColorStateSkin();
+		ColorStateSkin(Color color);
+		~ColorStateSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();

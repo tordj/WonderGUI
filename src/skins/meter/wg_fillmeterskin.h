@@ -55,12 +55,6 @@ namespace wg
 		Size	preferredSize() const override;
 
 		void	setContentPadding(const BorderI& padding);
-		Border	contentPadding(State state) const override;
-		Size	contentPaddingSize() const override;
-		Coord	contentOfs(State state) const override;
-		Rect	contentRect(const Rect& canvas, State state) const override;
-
-		Size	sizeForContent(const Size& contentSize) const override;
 
 		//.____ Appearance ____________________________________________________
 
@@ -104,7 +98,6 @@ namespace wg
 
 
 		Direction	m_direction;
-		BorderI		m_contentPadding;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside;
 		Color		m_barColorEmpty;

@@ -34,6 +34,42 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ contentPadding() ______________________________________________________________
+
+	Border Skin::contentPadding(State state) const
+	{
+		return Border(m_contentPadding).aligned();
+	}
+
+	//____ contentPaddingSize() ______________________________________________________________
+
+	Size Skin::contentPaddingSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ contentOfs() ______________________________________________________________
+
+	Coord Skin::contentOfs(State state) const
+	{
+		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+	}
+
+	//____ sizeForContent() ___________________________________________________
+
+	Size Skin::sizeForContent(const Size& contentSize) const
+	{
+		return contentSize + Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ contentRect() ______________________________________________________
+
+	Rect Skin::contentRect(const Rect& canvas, State state) const
+	{
+		return (canvas - Border(m_contentPadding).aligned()).aligned();
+	}
+
+
 	//____ fractionChangeRect() ______________________________________
 
 	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const

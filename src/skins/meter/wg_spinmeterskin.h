@@ -19,31 +19,35 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_STATICCOLORSKIN_DOT_H
-#define WG_STATICCOLORSKIN_DOT_H
+#ifndef WG_SPINMETERSKIN_DOT_H
+#define WG_SPINMETERSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_surface.h>
 
 namespace wg
 {
 
-	class StaticColorSkin;
+	class SpinMeterSkin;
 
-	typedef	StrongPtr<StaticColorSkin>	StaticColorSkin_p;
+	typedef	StrongPtr<SpinMeterSkin>	SpinMeterSkin_p;
 
 
-	class StaticColorSkin : public Skin
+	class SpinMeterSkin : public Skin
 	{
 	public:
+
 		//.____ Creation __________________________________________
 
-		static StaticColorSkin_p create( Color col );
+		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
+										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
+										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
-		const TypeInfo&		typeInfo(void) const override;
+		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Geometry _________________________________________________
@@ -51,11 +55,7 @@ namespace wg
 		Size	minSize() const override;
 		Size	preferredSize() const override;
 
-		Size	sizeForContent(const Size& contentSize) const override;
-		Border	contentPadding(State state) const override;
-		Size	contentPaddingSize() const override;
-		Coord	contentOfs(State state) const override;
-		Rect	contentRect(const Rect& canvas, State state) const override;
+		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 
@@ -68,14 +68,26 @@ namespace wg
 		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
 		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
 
+		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
+
 	private:
-		StaticColorSkin( Color col );
-		~StaticColorSkin() {};
+		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
+						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
+						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
+		~SpinMeterSkin() {};
 
-		Color		m_color;
+		Surface_p	m_pSurface;
+		Size		m_preferredSize;
+		CoordF		m_srcCenter;
+		CoordF		m_dstCenter;
+		float		m_fromDegrees;
+		float		m_toDegrees;
+		float		m_zoom;
+		BorderI		m_gfxPadding;
 
+		bool		m_bOpaque;
 	};
 
 
 } // namespace wg
-#endif //WG_STATICCOLORSKIN_DOT_H
+#endif //WG_PIEMETERSKIN_DOT_H

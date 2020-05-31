@@ -98,13 +98,7 @@ namespace wg
 		void	setPreferredSize(const SizeI& preferred);
 		Size	preferredSize() const override;
 
-		Size	sizeForContent(const Size& contentSize) const override;
-	
 		void	setContentPadding(const BorderI& padding);
-		Border	contentPadding(State state) const override;
-		Size	contentPaddingSize() const override;
-		Coord	contentOfs(State state) const override;
-		Rect	contentRect(const Rect& canvas, State state) const override;
 
 		//.____ Misc ____________________________________________________
 
@@ -136,7 +130,6 @@ namespace wg
 		bool		m_bStaticSections = true;
 		bool		m_bOpaque;
 
-		BorderI		m_contentPadding;
 		BorderI		m_gfxPadding;
 
 		Color		m_hubColor = Color::Transparent;

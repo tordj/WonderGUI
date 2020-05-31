@@ -54,14 +54,13 @@ namespace wg
 		m_fromDegrees(fromDegrees),
 		m_toDegrees(toDegrees),
 		m_zoom(zoom),
-		m_gfxPadding(gfxPadding),
-		m_contentPadding(contentPadding)
+		m_gfxPadding(gfxPadding)
 	{
-
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = pSurface->isOpaque();
 		m_bIgnoresFraction = false;
+		m_contentPadding = contentPadding;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -161,42 +160,6 @@ namespace wg
 	{
 		m_contentPadding = padding;
 	}
-
-	//____ contentPadding() ______________________________________________________________
-
-	Border SpinMeterSkin::contentPadding(State state) const
-	{
-		return Border(m_contentPadding).aligned();
-	}
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size SpinMeterSkin::contentPaddingSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentOfs() ______________________________________________________________
-
-	Coord SpinMeterSkin::contentOfs(State state) const
-	{
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
-	}
-
-	//____ sizeForContent() ___________________________________________________
-
-	Size SpinMeterSkin::sizeForContent(const Size& contentSize) const
-	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect SpinMeterSkin::contentRect(const Rect& canvas, State state) const
-	{
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
-	}
-
 
 	//____ markTest() _________________________________________________________
 

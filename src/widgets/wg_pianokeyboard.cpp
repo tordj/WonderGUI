@@ -26,7 +26,7 @@
 #include <wg_base.h>
 #include <wg_msgrouter.h>
 
-//#include <wg_boxskin.h>
+//#include <wg_boxstateskin.h>
 
 namespace wg
 {

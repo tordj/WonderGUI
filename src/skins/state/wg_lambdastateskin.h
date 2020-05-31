@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_LAMDASKIN_DOT_H
-#define WG_LAMDASKIN_DOT_H
+#ifndef WG_LAMBDASKIN_DOT_H
+#define WG_LAMBDASKIN_DOT_H
 #pragma once
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 
 #include <functional>
 #include <initializer_list>
@@ -35,10 +35,10 @@ namespace wg
 
 
 
-	class LambdaSkin;
-	typedef	StrongPtr<LambdaSkin>	LambdaSkin_p;
+	class LambdaStateSkin;
+	typedef	StrongPtr<LambdaStateSkin>	LambdaStateSkin_p;
 
-	class LambdaSkin : public ExtendedSkin
+	class LambdaStateSkin : public StateSkin
 	{
 	public:
 
@@ -55,8 +55,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static LambdaSkin_p	create();
-		static LambdaSkin_p	create( const Blueprint& blueprint );
+		static LambdaStateSkin_p	create();
+		static LambdaStateSkin_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -95,9 +95,9 @@ namespace wg
 
 
 	private:
-		LambdaSkin();
-		LambdaSkin(const Blueprint& blueprint);
-		~LambdaSkin() {};
+		LambdaStateSkin();
+		LambdaStateSkin(const Blueprint& blueprint);
+		~LambdaStateSkin() {};
 
 		bool		m_bOpaque = false;
 		SizeI		m_preferredSize;				// Points
@@ -111,4 +111,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG_LAMDASKIN_DOT_H
+#endif //WG_LAMBDASKIN_DOT_H

@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 #include <wg_util.h>
 
 namespace wg
@@ -28,26 +28,26 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo ExtendedSkin::TYPEINFO = { "ExtendedSkin", &Skin::TYPEINFO };
+	const TypeInfo StateSkin::TYPEINFO = { "StateSkin", &Skin::TYPEINFO };
 
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ExtendedSkin::typeInfo(void) const
+	const TypeInfo& StateSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setContentPadding() ____________________________________________________
 
-	void ExtendedSkin::setContentPadding( const BorderI& padding )
+	void StateSkin::setContentPadding( const BorderI& padding )
 	{
 		m_contentPadding = padding;
 	}
 
 	//____ clearContentShift() ________________________________________________
 
-	void ExtendedSkin::clearContentShift()
+	void StateSkin::clearContentShift()
 	{
 		m_contentShiftStateMask = 1;			// Mode normal is set by default
 
@@ -59,7 +59,7 @@ namespace wg
 
 	//____ setContentShift() ______________________________________________________
 
-	void ExtendedSkin::setContentShift(State state, CoordI shift)
+	void StateSkin::setContentShift(State state, CoordI shift)
 	{
 		int index = _stateToIndex(state);
 		m_contentShift[index] = shift;
@@ -72,7 +72,7 @@ namespace wg
 
 	//____ setContentShift() _____________________________________________________
 
-	void ExtendedSkin::setContentShift(std::initializer_list< std::pair<State, CoordI> > stateShifts)
+	void StateSkin::setContentShift(std::initializer_list< std::pair<State, CoordI> > stateShifts)
 	{
 		for (auto& shift : stateShifts)
 		{
@@ -88,7 +88,7 @@ namespace wg
 
 	//____ contentShift() ________________________________________________
 
-	CoordI ExtendedSkin::contentShift(State state) const
+	CoordI StateSkin::contentShift(State state) const
 	{
 		int index = _stateToIndex(state);
 		if (m_contentShiftStateMask.bit(index))
@@ -99,35 +99,35 @@ namespace wg
 
 	//____ isStateIdentical() ______________________________________________________
 
-	bool ExtendedSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool StateSkin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
 		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
 	}
 
 	//____ minSize() ______________________________________________________________
 
-	Size ExtendedSkin::minSize() const
+	Size StateSkin::minSize() const
 	{
 		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ _preferredSize() ______________________________________________________________
 
-	Size ExtendedSkin::preferredSize() const
+	Size StateSkin::preferredSize() const
 	{
 		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size ExtendedSkin::sizeForContent( const Size& contentSize ) const
+	Size StateSkin::sizeForContent( const Size& contentSize ) const
 	{
 		return contentSize + Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ contentPadding() _______________________________________________________
 
-	Border ExtendedSkin::contentPadding(State state) const
+	Border StateSkin::contentPadding(State state) const
 	{
 		Border b = Border(m_contentPadding).aligned();
 		Coord ofs = Coord(m_contentShift[_stateToIndex(state)]).aligned();
@@ -140,28 +140,28 @@ namespace wg
 
 	//____ contentPaddingSize() _______________________________________________________
 
-	Size ExtendedSkin::contentPaddingSize() const
+	Size StateSkin::contentPaddingSize() const
 	{
 		return Size(Border(m_contentPadding).aligned());
 	}
 
 	//____ contentRect() __________________________________________________________
 
-	Rect ExtendedSkin::contentRect( const Rect& canvas, State state ) const
+	Rect StateSkin::contentRect( const Rect& canvas, State state ) const
 	{
 		return (canvas - Border(m_contentPadding).aligned()) + Coord(m_contentShift[_stateToIndex(state)]).aligned();
 	}
 
 	//____ contentofs() __________________________________________________________
 
-	Coord ExtendedSkin::contentOfs( State state ) const
+	Coord StateSkin::contentOfs( State state ) const
 	{
 		return Coord( m_contentPadding.left, m_contentPadding.top).aligned() + Coord(m_contentShift[_stateToIndex(state)]).aligned();
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________
 
-	void ExtendedSkin::_refreshUnsetStates()
+	void StateSkin::_refreshUnsetStates()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{

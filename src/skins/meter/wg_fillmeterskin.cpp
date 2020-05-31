@@ -63,12 +63,12 @@ namespace wg
 		m_barColorFull(barColorFull),
 		m_backColor(backColor),
 		m_barPadding(barPadding),
-		m_contentPadding(contentPadding),
 		m_bBarStartOutside(bBarStartOutside)
 	{
 		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
 		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
 		m_bIgnoresFraction = false;
+		m_contentPadding = contentPadding;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -114,41 +114,6 @@ namespace wg
 	void FillMeterSkin::setContentPadding(const BorderI& padding)
 	{
 		m_contentPadding = padding;
-	}
-
-	//____ contentPadding() ______________________________________________________________
-
-	Border FillMeterSkin::contentPadding(State state) const
-	{
-		return Border(m_contentPadding).aligned();
-	}
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size FillMeterSkin::contentPaddingSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentOfs() ______________________________________________________________
-
-	Coord FillMeterSkin::contentOfs(State state) const
-	{
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
-	}
-
-	//____ sizeForContent() ___________________________________________________
-
-	Size FillMeterSkin::sizeForContent(const Size& contentSize) const
-	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect FillMeterSkin::contentRect(const Rect& canvas, State state) const
-	{
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
 	}
 
 	//____ setDirection() _____________________________________________________

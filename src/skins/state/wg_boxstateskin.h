@@ -23,7 +23,7 @@
 #define WG_BOXSKIN_DOT_H
 #pragma once
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 #include <wg_color.h>
 
 #include <initializer_list>
@@ -32,17 +32,17 @@
 namespace wg
 {
 
-	class BoxSkin;
-	typedef	StrongPtr<BoxSkin>	BoxSkin_p;
+	class BoxStateSkin;
+	typedef	StrongPtr<BoxStateSkin>	BoxStateSkin_p;
 
-	class BoxSkin : public ExtendedSkin
+	class BoxStateSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static BoxSkin_p	create();
-		static BoxSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
-		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static BoxStateSkin_p	create();
+		static BoxStateSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
+		static BoxStateSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -83,9 +83,9 @@ namespace wg
 
 
 	private:
-		BoxSkin();
-		BoxSkin(BorderI frame, Color fillColor, Color frameColor  );
-		~BoxSkin() {};
+		BoxStateSkin();
+		BoxStateSkin(BorderI frame, Color fillColor, Color frameColor  );
+		~BoxStateSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();

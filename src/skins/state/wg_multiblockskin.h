@@ -23,7 +23,7 @@
 #define WG_MULTIBLOCKSKIN_DOT_H
 #pragma once
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 #include <wg_surface.h>
 
 #include <initializer_list>
@@ -33,12 +33,12 @@
 namespace wg
 {
 
-	class MultiBlockSkin;
-	typedef	StrongPtr<MultiBlockSkin>	MultiBlockSkin_p;
+	class MultiBlockStateSkin;
+	typedef	StrongPtr<MultiBlockStateSkin>	MultiBlockStateSkin_p;
 
 
 
-	class MultiBlockSkin : public ExtendedSkin
+	class MultiBlockStateSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -47,7 +47,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static MultiBlockSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
+		static MultiBlockStateSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
 
 		//.____ Identification __________________________________________
 
@@ -104,8 +104,8 @@ namespace wg
 		};
 
 
-		MultiBlockSkin(SizeI blockSize, BorderI frame);
-		~MultiBlockSkin() {};
+		MultiBlockStateSkin(SizeI blockSize, BorderI frame);
+		~MultiBlockStateSkin() {};
 
 		void			_updateStateOpacity( int stateIdx );
 

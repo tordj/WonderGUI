@@ -407,41 +407,6 @@ namespace wg
 		m_contentPadding = padding;
 	}
 
-	//____ contentPadding() ______________________________________________________________
-
-	Border PieMeterSkin::contentPadding(State state) const
-	{
-		return Border(m_contentPadding).aligned();
-	}
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size PieMeterSkin::contentPaddingSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentOfs() ______________________________________________________________
-
-	Coord PieMeterSkin::contentOfs(State state) const
-	{
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
-	}
-
-	//____ sizeForContent() ___________________________________________________
-
-	Size PieMeterSkin::sizeForContent(const Size& contentSize) const
-	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect PieMeterSkin::contentRect(const Rect& canvas, State state) const
-	{
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
-	}
-
 	//____ markTest() _________________________________________________________
 
 	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const

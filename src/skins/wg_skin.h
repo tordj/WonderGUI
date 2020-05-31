@@ -52,11 +52,11 @@ namespace wg
 		virtual Size	minSize() const = 0;
 		virtual Size	preferredSize() const = 0;
 
-		virtual Size	sizeForContent(const Size& contentSize) const = 0;
-		virtual Border	contentPadding(State state) const = 0;
-		virtual Size	contentPaddingSize() const = 0;
-		virtual Coord	contentOfs(State state) const = 0;
-		virtual Rect	contentRect(const Rect& canvas, State state) const = 0;
+		virtual Size	sizeForContent(const Size& contentSize) const;
+		virtual Border	contentPadding(State state) const;
+		virtual Size	contentPaddingSize() const;
+		virtual Coord	contentOfs(State state) const;
+		virtual Rect	contentRect(const Rect& canvas, State state) const;
 
 		//.____ Misc ____________________________________________________
 
@@ -129,8 +129,9 @@ namespace wg
 	protected:
 		Skin() {};
 
-		bool m_bContentShifting = false;
-		bool m_bIgnoresFraction = true;
+		BorderI		m_contentPadding;					// Unit: Points
+		bool		m_bContentShifting = false;
+		bool		m_bIgnoresFraction = true;
 
 	};
 

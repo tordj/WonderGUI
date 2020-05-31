@@ -40,19 +40,25 @@
     <Filter Include="components">
       <UniqueIdentifier>{613c7f7d-b779-4dec-b735-941efe88e6ef}</UniqueIdentifier>
     </Filter>
+    <Filter Include="skins\anim">
+      <UniqueIdentifier>{b657491c-2fc3-4361-bf72-49ac8c882272}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skins\meter">
+      <UniqueIdentifier>{0a09d8fc-d10d-4f70-977c-6a9c225ed69d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skins\misc">
+      <UniqueIdentifier>{dc9854ee-5745-460b-b064-7e547243343b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skins\state">
+      <UniqueIdentifier>{30bc4b94-9d60-43a3-aa03-ba07219be37e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="skins\static">
+      <UniqueIdentifier>{c03d62e0-d594-4d8e-a35f-85eac6ce2be6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
     <ClInclude Include="..\..\..\src\wondergui.h" />
-    <ClInclude Include="..\..\..\src\skins\wg_blockskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_boxskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_extendedskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\skins\wg_skin.h">
       <Filter>skins</Filter>
     </ClInclude>
@@ -320,15 +326,6 @@
     <ClInclude Include="..\..\..\src\widgets\wg_canvas.h">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_multiblockskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_staticcolorskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_colorskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_gfxstream.h">
       <Filter>gfxstream</Filter>
     </ClInclude>
@@ -455,9 +452,6 @@
     <ClInclude Include="..\..\..\src\widgets\wg_sidecanvas.h">
       <Filter>widgets</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_lambdaskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_internal.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -485,20 +479,8 @@
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h">
       <Filter>widgets\capsules</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_fillmeterskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_knob.h">
       <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_piemeterskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_spinmeterskin.h">
-      <Filter>skins</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\skins\wg_doubleskin.h">
-      <Filter>skins</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_timer.h">
       <Filter>widgets</Filter>
@@ -518,17 +500,41 @@
     <ClInclude Include="..\..\..\src\components\wg_canimframes.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_stateskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\meter\wg_fillmeterskin.h">
+      <Filter>skins\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\meter\wg_piemeterskin.h">
+      <Filter>skins\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\meter\wg_spinmeterskin.h">
+      <Filter>skins\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\misc\wg_doubleskin.h">
+      <Filter>skins\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h">
+      <Filter>skins\static</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_multiblockskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_blockstateskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_boxstateskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_colorstateskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_lambdastateskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\skins\wg_blockskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_boxskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_extendedskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
       <Filter>skins</Filter>
     </ClCompile>
@@ -769,15 +775,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_canvas.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_multiblockskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_staticcolorskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_colorskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp">
       <Filter>gfxstream</Filter>
     </ClCompile>
@@ -838,9 +835,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_sidecanvas.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_lambdaskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\layers\wg_designlayer.cpp">
       <Filter>widgets\layers</Filter>
     </ClCompile>
@@ -889,26 +883,47 @@
     <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_fillmeterskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_knob.cpp">
       <Filter>widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_piemeterskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_spinmeterskin.cpp">
-      <Filter>skins</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\skins\wg_doubleskin.cpp">
-      <Filter>skins</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_timer.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_canimframes.cpp">
       <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_stateskin.cpp">
+      <Filter>skins</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\meter\wg_fillmeterskin.cpp">
+      <Filter>skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\meter\wg_piemeterskin.cpp">
+      <Filter>skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\meter\wg_spinmeterskin.cpp">
+      <Filter>skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\misc\wg_doubleskin.cpp">
+      <Filter>skins\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\static\wg_staticcolorskin.cpp">
+      <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_multiblockskin.cpp">
+      <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_blockstateskin.cpp">
+      <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_boxstateskin.cpp">
+      <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_colorstateskin.cpp">
+      <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_lambdastateskin.cpp">
+      <Filter>skins\state</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

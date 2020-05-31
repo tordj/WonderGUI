@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_EXTENDEDSKIN_DOT_H
-#define WG_EXTENDEDSKIN_DOT_H
+#ifndef WG_STATESKIN_DOT_H
+#define WG_STATESKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
@@ -31,10 +31,10 @@
 namespace wg
 {
 
-	class ExtendedSkin;
-	typedef	StrongPtr<ExtendedSkin>	ExtendedSkin_p;
+	class StateSkin;
+	typedef	StrongPtr<StateSkin>	StateSkin_p;
 
-	class ExtendedSkin : public Skin
+	class StateSkin : public Skin
 	{
 	public:
 		//.____ Identification __________________________________________
@@ -72,11 +72,10 @@ namespace wg
 	protected:
 		void _refreshUnsetStates();
 
-        BorderI				m_contentPadding;					// Unit: Points
         CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 
 
 } // namespace wg
-#endif //WG_EXTENDEDSKIN_DOT_H
+#endif //WG_STATESKIN_DOT_H

@@ -23,18 +23,18 @@
 #define WG_BLOCKSKIN_DOT_H
 #pragma once
 
-#include <wg_extendedskin.h>
+#include <wg_stateskin.h>
 #include <wg_surface.h>
 
 namespace wg
 {
 
 
-	class BlockSkin;
-	typedef	StrongPtr<BlockSkin>	BlockSkin_p;
+	class BlockStateSkin;
+	typedef	StrongPtr<BlockStateSkin>	BlockStateSkin_p;
 
 
-	class BlockSkin : public ExtendedSkin
+	class BlockStateSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -43,11 +43,11 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static BlockSkin_p	create();
-		static BlockSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
-		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockStateSkin_p	create();
+		static BlockStateSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
+		static BlockStateSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
+		static BlockStateSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockStateSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 
 
 
@@ -101,16 +101,16 @@ namespace wg
 
 		//.____ Deprecated ____________________________________________________
 
-		static BlockSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
-		static BlockSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
-		static BlockSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
+		static BlockStateSkin_p createStatic(Surface * pSurface, RectI block, BorderI frame = BorderI(0));
+		static BlockStateSkin_p createClickable(Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame = BorderI(0));
+		static BlockStateSkin_p createStaticFromSurface(Surface * pSurface, BorderI frame = BorderI(0));
 
 
 	private:
 
-		BlockSkin();
-		BlockSkin(Surface * pSurface, RectI block, BorderI frame);
-		~BlockSkin() {};
+		BlockStateSkin();
+		BlockStateSkin(Surface * pSurface, RectI block, BorderI frame);
+		~BlockStateSkin() {};
 
 		void		_updateOpaqueFlags();
 		void		_updateUnsetStateBlocks();

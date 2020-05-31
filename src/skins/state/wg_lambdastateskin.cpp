@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_lambdaskin.h>
+#include <wg_lambdastateskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
@@ -30,28 +30,28 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo LambdaStateSkin::TYPEINFO = { "LambdaStateSkin", &StateSkin::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
-	LambdaSkin_p LambdaSkin::create()
+	LambdaStateSkin_p LambdaStateSkin::create()
 	{
-		return LambdaSkin_p(new LambdaSkin());
+		return LambdaStateSkin_p(new LambdaStateSkin());
 	}
 
-	LambdaSkin_p LambdaSkin::create(const Blueprint& blueprint)
+	LambdaStateSkin_p LambdaStateSkin::create(const Blueprint& blueprint)
 	{
-		return LambdaSkin_p(new LambdaSkin(blueprint));
+		return LambdaStateSkin_p(new LambdaStateSkin(blueprint));
 	}
 
 
 	//____ constructor ________________________________________________________
 
-	LambdaSkin::LambdaSkin()
+	LambdaStateSkin::LambdaStateSkin()
 	{
 	}
 
-	LambdaSkin::LambdaSkin(const Blueprint& blueprint)
+	LambdaStateSkin::LambdaStateSkin(const Blueprint& blueprint)
 	{
 		m_markTestFunc		= blueprint.markTestFunc;
 		m_minSize			= blueprint.minSize;
@@ -64,77 +64,77 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& LambdaSkin::typeInfo(void) const
+	const TypeInfo& LambdaStateSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setMinSize() _______________________________________________________
 
-	void LambdaSkin::setMinSize(SizeI pointSize)
+	void LambdaStateSkin::setMinSize(SizeI pointSize)
 	{
 		m_minSize = pointSize;
 	}
 
 	//____ setPreferredSize() _________________________________________________
 
-	void LambdaSkin::setPreferredSize(SizeI pointSize)
+	void LambdaStateSkin::setPreferredSize(SizeI pointSize)
 	{
 		m_preferredSize = pointSize;
 	}
 
 	//____ setOpaque() ________________________________________________________
 
-	void LambdaSkin::setOpaque(bool bOpaque)
+	void LambdaStateSkin::setOpaque(bool bOpaque)
 	{
 		m_bOpaque = bOpaque;
 	}
 
 	//____ setStateCompareFunc() ______________________________________________
 
-	void LambdaSkin::setStateCompareFunc(const std::function<bool(State state1, State state2)>& function)
+	void LambdaStateSkin::setStateCompareFunc(const std::function<bool(State state1, State state2)>& function)
 	{
 		m_stateCompareFunc = function;
 	}
 
 	//____ setMarkTestFunc() __________________________________________________
 
-	void LambdaSkin::setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function)
+	void LambdaStateSkin::setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function)
 	{
 		m_markTestFunc = function;
 	}
 
 	//____ setOpacityTestFunc() _______________________________________________
 
-	void LambdaSkin::setOpacityTestFunc(const std::function<bool(const Rect& rect, const Size& canvasSize, State state)>& function)
+	void LambdaStateSkin::setOpacityTestFunc(const std::function<bool(const Rect& rect, const Size& canvasSize, State state)>& function)
 	{
 		m_opacityTestFunc = function;
 	}
 
 	//____ setRenderFunc() ____________________________________________________
 
-	void LambdaSkin::setRenderFunc(const std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>& function)
+	void LambdaStateSkin::setRenderFunc(const std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>& function)
 	{
 		m_renderFunc = function;
 	}
 
 	//____ isOpaque() _________________________________________________________
 
-	bool LambdaSkin::isOpaque() const
+	bool LambdaStateSkin::isOpaque() const
 	{
 		return m_bOpaque;
 	}
 
-	bool LambdaSkin::isOpaque(State state) const
+	bool LambdaStateSkin::isOpaque(State state) const
 	{
 		return m_bOpaque;
 	}
 
 	//____ isStateIdentical() _________________________________________________
 
-	bool LambdaSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool LambdaStateSkin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
-		if (!ExtendedSkin::isStateIdentical(state, comparedTo))
+		if (!StateSkin::isStateIdentical(state, comparedTo))
 			return false;
 		else if (m_stateCompareFunc)
 			return m_stateCompareFunc(state, comparedTo);
@@ -144,7 +144,7 @@ namespace wg
 
 	//____ markTest() ________________________________________________________
 
-	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool LambdaStateSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		if (m_markTestFunc)
 			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
@@ -154,7 +154,7 @@ namespace wg
 
 	//____ _isOpaque() ________________________________________________________
 
-	bool LambdaSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool LambdaStateSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
 		if (m_bOpaque)
 			return true;
@@ -166,7 +166,7 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
+	void LambdaStateSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
 	{
 		if (m_renderFunc)
 			m_renderFunc(pDevice, canvas, state);
@@ -174,14 +174,14 @@ namespace wg
 
 	//____ minSize() _________________________________________________________
 
-	Size LambdaSkin::minSize() const
+	Size LambdaStateSkin::minSize() const
 	{
 		return m_minSize;
 	}
 
 	//____ preferredSize() ___________________________________________________
 
-	Size LambdaSkin::preferredSize() const
+	Size LambdaStateSkin::preferredSize() const
 	{
 		return m_preferredSize;
 	}

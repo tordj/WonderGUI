@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_boxskin.h>
+#include <wg_boxstateskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
@@ -30,23 +30,23 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo BoxSkin::TYPEINFO = { "BoxSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo BoxStateSkin::TYPEINFO = { "BoxStateSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
-	BoxSkin_p BoxSkin::create()
+	BoxStateSkin_p BoxStateSkin::create()
 	{
-		return BoxSkin_p(new BoxSkin());
+		return BoxStateSkin_p(new BoxStateSkin());
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, Color fillColor, Color frameColor )
+	BoxStateSkin_p BoxStateSkin::create(BorderI frame, Color fillColor, Color frameColor )
 	{
-		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
+		return BoxStateSkin_p(new BoxStateSkin(frame, fillColor, frameColor));
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
+	BoxStateSkin_p BoxStateSkin::create(BorderI frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
 	{
-		BoxSkin_p p = new BoxSkin();
+		BoxStateSkin_p p = new BoxStateSkin();
 
 		p->setFrame(frame);
 		p->setColors(stateColors);
@@ -57,7 +57,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	BoxSkin::BoxSkin()
+	BoxStateSkin::BoxStateSkin()
 	{
 		m_stateColorMask = 1;
 
@@ -70,7 +70,7 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	BoxSkin::BoxSkin(BorderI frame, Color fillColor, Color frameColor )
+	BoxStateSkin::BoxStateSkin(BorderI frame, Color fillColor, Color frameColor )
 	{
 		m_frame = frame;
 		setColors(fillColor, frameColor);
@@ -78,14 +78,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& BoxSkin::typeInfo(void) const
+	const TypeInfo& BoxStateSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setBlendMode() _____________________________________________________
 
-	void BoxSkin::setBlendMode(BlendMode mode)
+	void BoxStateSkin::setBlendMode(BlendMode mode)
 	{
 		m_blendMode = mode;
 		_updateOpaqueFlag();
@@ -93,7 +93,7 @@ namespace wg
 
 	//____ setFrame() ____________________________________________________
 
-	void BoxSkin::setFrame(BorderI frame)
+	void BoxStateSkin::setFrame(BorderI frame)
 	{
 		bool hadFrame = (m_frame.width() + m_frame.height() > 0);
 		bool hasFrame = (frame.width() + frame.height() > 0);
@@ -106,7 +106,7 @@ namespace wg
 
 	//____ setColors() ________________________________________________________
 
-	void BoxSkin::setColors(Color fill, Color frame)
+	void BoxStateSkin::setColors(Color fill, Color frame)
 	{
 		m_stateColorMask = 1;
 
@@ -123,7 +123,7 @@ namespace wg
 			m_bOpaque = false;
 	}
 
-	void BoxSkin::setColors(State state, Color fill, Color frame)
+	void BoxStateSkin::setColors(State state, Color fill, Color frame)
 	{
 		int i = _stateToIndex(state);
 
@@ -136,7 +136,7 @@ namespace wg
 		_updateOpaqueFlag();
 	}
 
-	void BoxSkin::setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors)
+	void BoxStateSkin::setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors)
 	{
 		for (auto& state : stateColors)
 		{
@@ -152,7 +152,7 @@ namespace wg
 
 	//____ colors() ______________________________________________________
 
-	std::tuple<Color, Color> BoxSkin::colors(State state) const
+	std::tuple<Color, Color> BoxStateSkin::colors(State state) const
 	{
 		int i = _stateToIndex(state);
 		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
@@ -160,7 +160,7 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void BoxStateSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
@@ -201,9 +201,9 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size BoxSkin::minSize() const
+	Size BoxStateSkin::minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
+		Size content = StateSkin::minSize();
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content,frame);
@@ -211,9 +211,9 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size BoxSkin::preferredSize() const
+	Size BoxStateSkin::preferredSize() const
 	{
-		Size content = ExtendedSkin::minSize();
+		Size content = StateSkin::minSize();
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content, frame);
@@ -221,9 +221,9 @@ namespace wg
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size BoxSkin::sizeForContent( const Size& contentSize ) const
+	Size BoxStateSkin::sizeForContent( const Size& contentSize ) const
 	{
-		Size content = ExtendedSkin::sizeForContent(contentSize);
+		Size content = StateSkin::sizeForContent(contentSize);
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content, frame);
@@ -231,7 +231,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool BoxStateSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -256,12 +256,12 @@ namespace wg
 
 	//____ isOpaque() _____________________________________________________________
 
-	bool BoxSkin::isOpaque() const
+	bool BoxStateSkin::isOpaque() const
 	{
 		return m_bOpaque;
 	}
 
-	bool BoxSkin::isOpaque( State state ) const
+	bool BoxStateSkin::isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);
 		if( m_bOpaque || (m_fillColor[i].a == 255 && (m_frameColor[i] == 255 || (m_frame.width() + m_frame.height() == 0))) )
@@ -270,7 +270,7 @@ namespace wg
 		return false;
 	}
 
-	bool BoxSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BoxStateSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		if( m_bOpaque )
 			return true;
@@ -287,13 +287,13 @@ namespace wg
 
 	//____ isStateIdentical() ____________________________________________________
 
-	bool BoxSkin::isStateIdentical( State state, State comparedTo, float fraction) const
+	bool BoxStateSkin::isStateIdentical( State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
 
 		if( m_fillColor[i1] == m_fillColor[i2] && (m_frame.isEmpty() || m_frameColor[i1] == m_frameColor[i2]) &&
-			ExtendedSkin::isStateIdentical(state,comparedTo) )
+			StateSkin::isStateIdentical(state,comparedTo) )
 			return true;
 		else
 			return false;
@@ -301,7 +301,7 @@ namespace wg
 
 	//____ _updateOpaqueFlag() ____________________________________________________
 
-	void BoxSkin::_updateOpaqueFlag()
+	void BoxStateSkin::_updateOpaqueFlag()
 	{
 		switch (m_blendMode)
 		{
@@ -337,7 +337,7 @@ namespace wg
 
 	//____ _updateUnsetColors() _______________________________________________
 
-	void BoxSkin::_updateUnsetColors()
+	void BoxStateSkin::_updateUnsetColors()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{

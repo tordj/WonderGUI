@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_blockskin.h>
+#include <wg_blockstateskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
@@ -30,27 +30,27 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo BlockSkin::TYPEINFO = { "BlockSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo BlockStateSkin::TYPEINFO = { "BlockStateSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
-	BlockSkin_p BlockSkin::create()
+	BlockStateSkin_p BlockStateSkin::create()
 	{
-		return BlockSkin_p(new BlockSkin());
+		return BlockStateSkin_p(new BlockStateSkin());
 	}
 
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, BorderI frame )
+	BlockStateSkin_p BlockStateSkin::create(Surface * pSurface, BorderI frame )
 	{
 		BorderI pixelFrame = (frame*pSurface->qpixPerPoint()) / 4;
 
 		if (pSurface == nullptr || pixelFrame.width() >= pSurface->size().w || pixelFrame.height() >= pSurface->size().h  )
 			return nullptr;
 
-		return BlockSkin_p( new BlockSkin(pSurface, pSurface->size(), pixelFrame) );
+		return BlockStateSkin_p( new BlockStateSkin(pSurface, pSurface->size(), pixelFrame) );
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, RectI block, BorderI frame)
+	BlockStateSkin_p BlockStateSkin::create(Surface * pSurface, RectI block, BorderI frame)
 	{
 		if (pSurface == nullptr)
 			return nullptr;
@@ -63,10 +63,10 @@ namespace wg
 			pixelBlock.x < 0 || pixelBlock.y < 0 || pixelBlock.right() > surfSize.w || pixelBlock.bottom() > surfSize.h )
 			return nullptr;
 
-		return BlockSkin_p(new BlockSkin(pSurface, pixelBlock, pixelFrame));
+		return BlockStateSkin_p(new BlockStateSkin(pSurface, pixelBlock, pixelFrame));
 	}
 
-	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockStateSkin_p	BlockStateSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
@@ -93,13 +93,13 @@ namespace wg
 
 		// Create the skin
 
-		BlockSkin * p = new BlockSkin(pSurface, firstBlock, frame);
+		BlockStateSkin * p = new BlockStateSkin(pSurface, firstBlock, frame);
 
 		p->setBlocks(stateBlocks, axis, _spacing, _firstBlock.pos());
-		return BlockSkin_p(p);
+		return BlockStateSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockStateSkin_p BlockStateSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1)
 			return nullptr;
@@ -123,18 +123,18 @@ namespace wg
 
 		SizeI blockSize = axis == Axis::X ? SizeI(blockLen, surfSize.h) : SizeI(surfSize.w, blockLen);
 
-		BlockSkin * p = new BlockSkin(pSurface, blockSize, frame);
+		BlockStateSkin * p = new BlockStateSkin(pSurface, blockSize, frame);
 		p->setBlocks(stateBlocks, axis, spacing, CoordI(0, 0));
-		return BlockSkin_p(p);
+		return BlockStateSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::createStatic( Surface * pSurface, RectI block, BorderI frame )
+	BlockStateSkin_p BlockStateSkin::createStatic( Surface * pSurface, RectI block, BorderI frame )
 	{
 		return create(pSurface, block, frame);
 	}
 
 
-	BlockSkin_p BlockSkin::createClickable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
+	BlockStateSkin_p BlockStateSkin::createClickable( Surface * pSurface, SizeI blockGeo, CoordI blockStartOfs, SizeI blockPitch, BorderI blockFrame )
 	{
 		auto p = create(pSurface, blockGeo, blockFrame);
 		if (p)
@@ -154,17 +154,17 @@ namespace wg
 
 			p->setBlocks({ StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, o, spacing, blockStartOfs);
 		}
-		return BlockSkin_p(p);
+		return BlockStateSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::createStaticFromSurface( Surface * pSurface, BorderI frame )
+	BlockStateSkin_p BlockStateSkin::createStaticFromSurface( Surface * pSurface, BorderI frame )
 	{
 		return create(pSurface, frame);
 	}
 
 	//____ constructor ____________________________________________________________
 
-	BlockSkin::BlockSkin()
+	BlockStateSkin::BlockStateSkin()
 	{
 		m_pSurface = nullptr;
 		m_bOpaque = false;
@@ -173,7 +173,7 @@ namespace wg
 			m_stateColors[i] = Color::White;
 	}
 
-	BlockSkin::BlockSkin(Surface * pSurface, RectI block, BorderI frame)
+	BlockStateSkin::BlockStateSkin(Surface * pSurface, RectI block, BorderI frame)
 	{
 		m_pSurface			= pSurface;
 		m_dimensions		= block.size();
@@ -191,14 +191,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& BlockSkin::typeInfo(void) const
+	const TypeInfo& BlockStateSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setBlock() _____________________________________________________________
 
-	void BlockSkin::setBlock(CoordI ofs)
+	void BlockStateSkin::setBlock(CoordI ofs)
 	{
 		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
@@ -208,7 +208,7 @@ namespace wg
 		_updateUnsetStateBlocks();
 	}
 
-	void BlockSkin::setBlock(State state, CoordI ofs)
+	void BlockStateSkin::setBlock(State state, CoordI ofs)
 	{
 		ofs = ofs*m_pSurface->qpixPerPoint() / 4;
 
@@ -221,7 +221,7 @@ namespace wg
 
 	//____ setBlocks() ________________________________________________________
 
-	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
+	void BlockStateSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
 	{
 		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
 		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
@@ -241,14 +241,14 @@ namespace wg
 
 	//____ block() ____________________________________________________________
 
-	RectI BlockSkin::block(State state) const
+	RectI BlockStateSkin::block(State state) const
 	{
 		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
 	}
 
 	//____ setTint() __________________________________________________________
 
-	void BlockSkin::setTint(Color tint)
+	void BlockStateSkin::setTint(Color tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -257,7 +257,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(State state, Color tint)
+	void BlockStateSkin::setTint(State state, Color tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -267,7 +267,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints)
+	void BlockStateSkin::setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -282,7 +282,7 @@ namespace wg
 
 	//____ tint() _____________________________________________________________
 
-	Color BlockSkin::tint(State state) const
+	Color BlockStateSkin::tint(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
@@ -291,7 +291,7 @@ namespace wg
 
 	//____ setBlendMode() _____________________________________________________
 
-	void BlockSkin::setBlendMode(BlendMode mode)
+	void BlockStateSkin::setBlendMode(BlendMode mode)
 	{
 		m_blendMode = mode;
 		_updateOpaqueFlags();
@@ -299,7 +299,7 @@ namespace wg
 
 	//____ setSurface() _______________________________________________________
 
-	void BlockSkin::setSurface(Surface * pSurf)
+	void BlockStateSkin::setSurface(Surface * pSurf)
 	{
 		m_pSurface = pSurf;
 		_updateOpaqueFlags();
@@ -307,21 +307,21 @@ namespace wg
 
 	//____ setBlockSize() _____________________________________________________
 
-	void BlockSkin::setBlockSize(SizeI size)
+	void BlockStateSkin::setBlockSize(SizeI size)
 	{
 		m_dimensions = size*m_pSurface->qpixPerPoint() / 4;
 	}
 
 	//____ setFrame() ____________________________________________________________
 
-	void BlockSkin::setFrame(BorderI frame)
+	void BlockStateSkin::setFrame(BorderI frame)
 	{
 		m_frame = frame*m_pSurface->qpixPerPoint() / 4;
 	}
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
+	void BlockStateSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
 		if( !m_pSurface )
 			return;
@@ -343,7 +343,7 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size BlockSkin::minSize() const
+	Size BlockStateSkin::minSize() const
 	{
 		Size content = Border(m_contentPadding).aligned();
 		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
@@ -352,7 +352,7 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size BlockSkin::preferredSize() const
+	Size BlockStateSkin::preferredSize() const
 	{
         //This takes the scale of the surface into account
         // Preferred size is to map each point of the surface to a point of the skinarea.
@@ -362,9 +362,9 @@ namespace wg
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size BlockSkin::sizeForContent( const Size& contentSize ) const
+	Size BlockStateSkin::sizeForContent( const Size& contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
+		Size sz = StateSkin::sizeForContent(contentSize);
 		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
 
 		return Size::max(sz, min);
@@ -372,7 +372,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool BlockStateSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
 		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
@@ -380,34 +380,34 @@ namespace wg
 
 	//____ isOpaque() _____________________________________________________________
 
-	bool BlockSkin::isOpaque() const
+	bool BlockStateSkin::isOpaque() const
 	{
 		return m_bOpaque;
 	}
 
-	bool BlockSkin::isOpaque( State state ) const
+	bool BlockStateSkin::isOpaque( State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	bool BlockSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
+	bool BlockStateSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
 	{
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
 	//____ isStateIdentical() _____________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction) const
+	bool BlockStateSkin::isStateIdentical( State state, State comparedTo, float fraction) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
 
-		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && ExtendedSkin::isStateIdentical(state,comparedTo) );
+		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && StateSkin::isStateIdentical(state,comparedTo) );
 	}
 
 	//____ _updateOpaqueFlags() ________________________________________________
 
-	void BlockSkin::_updateOpaqueFlags()
+	void BlockStateSkin::_updateOpaqueFlags()
 	{
 		bool bTintDecides = false;
 
@@ -437,7 +437,7 @@ namespace wg
 
 	//____ _updateUnsetStateBlocks() _______________________________________________
 
-	void BlockSkin::_updateUnsetStateBlocks()
+	void BlockStateSkin::_updateUnsetStateBlocks()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
@@ -451,7 +451,7 @@ namespace wg
 
 	//____ _updateUnsetStateColors() _______________________________________________
 
-	void BlockSkin::_updateUnsetStateColors()
+	void BlockStateSkin::_updateUnsetStateColors()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{

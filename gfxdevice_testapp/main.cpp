@@ -744,24 +744,24 @@ bool setup_chrome()
 
 	auto pPlateSurface = FileUtil::loadSurface("../resources/grey_plate.bmp", g_pBaseSurfaceFactory );
 	assert(pPlateSurface);
-	BlockSkin_p pPlateSkin = BlockSkin::create(pPlateSurface, BorderI(3));
+	BlockStateSkin_p pPlateSkin = BlockStateSkin::create(pPlateSurface, BorderI(3));
 	pPlateSkin->setContentPadding(BorderI(5));
 
 	auto pPressablePlateSurface = FileUtil::loadSurface("../resources/grey_pressable_plate.bmp", g_pBaseSurfaceFactory );
 	assert(pPressablePlateSurface);
-	BlockSkin_p pPressablePlateSkin = BlockSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
+	BlockStateSkin_p pPressablePlateSkin = BlockStateSkin::create(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pPressablePlateSkin->setContentPadding(BorderI(3));
 
 	auto pButtonSurface = FileUtil::loadSurface("../resources/simple_button.bmp", g_pBaseSurfaceFactory );
 	assert(pButtonSurface);
-	BlockSkin_p pSimpleButtonSkin = BlockSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
+	BlockStateSkin_p pSimpleButtonSkin = BlockStateSkin::create(pButtonSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3), Axis::X);
 	pSimpleButtonSkin->setContentPadding(BorderI(5));
 
 
     
-//    BoxSkin_p pPlateSkin = BoxSkin::create( Border(2), Color::Red, Color::Blue );
-//    BoxSkin_p pPressablePlateSkin = pPlateSkin;
-//    BoxSkin_p pSimpleButtonSkin = pPlateSkin;
+//    BoxStateSkin_p pPlateSkin = BoxStateSkin::create( Border(2), Color::Red, Color::Blue );
+//    BoxStateSkin_p pPressablePlateSkin = pPlateSkin;
+//    BoxStateSkin_p pSimpleButtonSkin = pPlateSkin;
     
 	// Setup base layers
 
@@ -1017,10 +1017,10 @@ bool setup_chrome()
 
 
 
-	auto pSkin = BoxSkin::create(1, Color::White, Color::Black);
+	auto pSkin = BoxStateSkin::create(1, Color::White, Color::Black);
 	pSkin->setContentPadding(8);
 
-	auto pEntrySkin = BoxSkin::create(1, Color::White, Color::Black);
+	auto pEntrySkin = BoxStateSkin::create(1, Color::White, Color::Black);
 	pEntrySkin->setContentPadding(8);
 	pEntrySkin->setColors(StateEnum::Hovered, Color::AntiqueWhite, Color::Black);
 	pEntrySkin->setColors(StateEnum::SelectedHovered, Color::Aquamarine, Color::Black);
@@ -1071,10 +1071,10 @@ bool setup_chrome()
 		auto pList = PackList::create();
 		pList->setSkin(StaticColorSkin::create(Color::White));
 
-		auto pOddEntrySkin = BoxSkin::create(0, Color::White, Color::White);
+		auto pOddEntrySkin = BoxStateSkin::create(0, Color::White, Color::White);
 		pOddEntrySkin->setContentPadding(BorderI(0));
 
-		auto pEvenEntrySkin = BoxSkin::create(0, Color::PaleGreen, Color::PaleGreen);
+		auto pEvenEntrySkin = BoxStateSkin::create(0, Color::PaleGreen, Color::PaleGreen);
 		pEvenEntrySkin->setContentPadding(BorderI(0));
 
 		pList->setEntrySkin(pOddEntrySkin, pEvenEntrySkin);

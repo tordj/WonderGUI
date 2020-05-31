@@ -100,42 +100,6 @@ namespace wg
 		return Size();
 	}
 
-	//____ contentPadding() ______________________________________________________________
-
-	Border StaticColorSkin::contentPadding(State state) const
-	{
-		return Border();
-	}
-
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size StaticColorSkin::contentPaddingSize() const
-	{
-		return Size();
-	}
-
-	//____ _contentOfs() ______________________________________________________________
-
-	Coord StaticColorSkin::contentOfs( State state ) const
-	{
-		return Coord();
-	}
-
-	//____ _sizeForContent() ___________________________________________________
-
-	Size StaticColorSkin::sizeForContent( const Size& contentSize ) const
-	{
-		return contentSize;
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect StaticColorSkin::contentRect( const Rect& canvas, State state ) const
-	{
-		return canvas;
-	}
-
 	//____ markTest() _________________________________________________________
 
 	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
