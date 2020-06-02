@@ -1998,7 +1998,7 @@ namespace wg
 
 				glActiveTexture(GL_TEXTURE2);
 				GLuint clutTex = pSurf->getClutTexture();
-				glBindTexture(GL_TEXTURE_BUFFER, clutTex);
+				glBindTexture(GL_TEXTURE_2D, clutTex);
 				glActiveTexture(GL_TEXTURE0);
 
 				assert(glGetError() == 0);

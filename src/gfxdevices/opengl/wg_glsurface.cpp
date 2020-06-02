@@ -237,28 +237,20 @@ namespace wg
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-			uint8_t clut[1024];
-
-			for (int i = 0; i < 256; i++)
-			{
-				clut[i * 4] = m_pClut[i].r;
-				clut[i * 4 + 1] = m_pClut[i].g;
-				clut[i * 4 + 2] = m_pClut[i].b;
-				clut[i * 4 + 3] = m_pClut[i].a;
-			}
-
-			// Create a TextureBufferObject for providing extra data to our shaders
-
-			glGenBuffers(1, &m_clutBufferId);
-			glBindBuffer(GL_TEXTURE_BUFFER, m_clutBufferId);
-			glBufferData(GL_TEXTURE_BUFFER, 256*sizeof(GLuint), clut, GL_STATIC_DRAW);
 
 			HANDLE_GLERROR(glGetError());
 
 			glGenTextures(1, &m_clutTexture);
-//			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
-			glTexBuffer(GL_TEXTURE_BUFFER, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, m_clutBufferId);
+			glBindTexture(GL_TEXTURE_2D, m_clutTexture);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pClut);
 
 			HANDLE_GLERROR(glGetError());
 		}
@@ -394,11 +386,7 @@ namespace wg
 		glDeleteTextures( 1, &m_texture );
 
 		if (m_pClut)
-		{
 			glDeleteTextures(1, &m_clutTexture);
-			glDeleteBuffers(1, &m_clutBufferId);
-		}
-
 	}
 
 	//____ typeInfo() _________________________________________________________

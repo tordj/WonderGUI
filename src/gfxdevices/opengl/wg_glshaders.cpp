@@ -160,14 +160,13 @@ const char GlGfxDevice::clutBlitNearestFragmentShader[] =
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform samplerBuffer clutId;					"
+"uniform sampler2D clutId;						"
 "in vec2 texUV;									"
 "in vec4 fragColor;								"
 "out vec4 color;								"
 "void main()									"
 "{												"
-"   int index = int(texture(texId, texUV).r*256);		"
-"   color = texelFetch(clutId, index) * fragColor;	"
+"   color = texture(clutId, vec2(texture(texId, texUV).r,0.5f)) * fragColor;	"
 "}												";
 
 const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
@@ -219,7 +218,7 @@ const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
 "#version 330 core\n"
 
 "uniform sampler2D texId;						"
-"uniform samplerBuffer clutId;					"
+"uniform sampler2D clutId;						"
 "in vec2 texUV00;								"
 "in vec2 texUV11;								"
 "in vec2 uvFrac;								"
@@ -227,19 +226,18 @@ const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
 "out vec4 color;								"
 "void main()									"
 "{												"
-"   int index00 = int(texture(texId, texUV00).r*256);		"
-"   int index01 = int(texture(texId, vec2(texUV11.x,texUV00.y) ).r*256);		"
-"   int index10 = int(texture(texId, vec2(texUV00.x,texUV11.y) ).r*256);		"
-"   int index11 = int(texture(texId, texUV11).r*256);		"
-"   vec4 color00 = texelFetch(clutId, index00);	"
-"   vec4 color01 = texelFetch(clutId, index01);	"
-"   vec4 color10 = texelFetch(clutId, index10);	"
-"   vec4 color11 = texelFetch(clutId, index11);	"
+"   float index00 = texture(texId, texUV00).r;		"
+"   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
+"   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
+"   float index11 = texture(texId, texUV11).r;		"
+"   vec4 color00 = texture(clutId, vec2(index00,0.5f));	"
+"   vec4 color01 = texture(clutId, vec2(index01,0.5f));	"
+"   vec4 color10 = texture(clutId, vec2(index10,0.5f));	"
+"   vec4 color11 = texture(clutId, vec2(index11,0.5f));	"
 
 "   vec4 out0 = color00 * (1-fract(uvFrac.x)) + color01 * fract(uvFrac.x);	"
 "   vec4 out1 = color10 * (1-fract(uvFrac.x)) + color11 * fract(uvFrac.x);	"
 "   color = (out0 * (1-fract(uvFrac.y)) + out1 * fract(uvFrac.y)) * fragColor;	"
-
 "}												";
 
 
