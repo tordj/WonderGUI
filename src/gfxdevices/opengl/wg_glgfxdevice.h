@@ -78,6 +78,9 @@ namespace wg
 		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
 		void	setTintColor(Color color) override;
+		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void	clearTintGradient() override;
+
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
 
@@ -121,6 +124,9 @@ namespace wg
 			SetCanvas,
 //			SetClip,
 			SetBlendMode,
+			SetTintColor,
+			SetTintGradient,
+			ClearTintGradient,
 			SetBlitSource,
 			Fill,
 			FillSubPixel,				// Includes start/direction lines.
@@ -134,6 +140,9 @@ namespace wg
 		void	_setCanvas( GlSurface * pCanvas, int width, int height );
 		void	_setBlendMode(BlendMode mode);
 		void	_setBlitSource(GlSurface * pSurf);
+		void	_setTintColor(Color color);
+		void	_setTintGradient(const RectI& rect, const Color colors[4]);
+		void	_clearTintGradient();
 
 		inline void	_beginDrawCommand(Command cmd);
 		inline void	_beginDrawCommandWithSource(Command cmd);
@@ -216,11 +225,21 @@ namespace wg
 		//
 
 		struct canvasUBO			// Uniform buffer object for canvas information.
-		{
-			GLfloat	dimX;
-			GLfloat	dimY;
-			int		yOfs;
-			int		yMul;
+		{							// DO NOT CHANGE ORDER OF MEMBERS!!!
+			GLfloat	canvasDimX;
+			GLfloat	canvasDimY;
+			int		canvasYOfs;
+			int		canvasYMul;
+
+			GLfloat flatTint[4];
+
+			RectI	tintRect;
+
+			GLfloat	topLeftTint[4];
+			GLfloat	topRightTint[4];
+			GLfloat	bottomRightTint[4];
+			GLfloat	bottomLeftTint[4];
+
 		};
 
 		GLuint	m_canvasUBOId;
@@ -230,29 +249,10 @@ namespace wg
 
 		struct tintUBO
 		{
-			CoordI	coord;
-			GLfloat	startB1;
-			GLfloat	startG1;
-			GLfloat	startR1;
-			GLfloat	startA1;
-
-			GLfloat	startB2;
-			GLfloat	startG2;
-			GLfloat	startR2;
-			GLfloat	startA2;
-
-			GLfloat	incB1;
-			GLfloat	incG1;
-			GLfloat	incR1;
-			GLfloat	incA1;
-
-			GLfloat	incB2;
-			GLfloat	incG2;
-			GLfloat	incR2;
-			GLfloat	incA2;
-
 		};
 
+		GLuint	m_tintUBOId;
+		canvasUBO	m_tintUBOBuffer;
 
 		//
 
@@ -288,10 +288,14 @@ namespace wg
 
 		RectI	m_clipListBuffer[c_clipListBufferSize];
 
+		// Active state data
+
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
+		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
 
+		Color		m_activeGradient[4];											// Currently active colors for the tint, not tu confuse with m_tintGradient which might not be active yet.
+		bool		m_bGradientActive = false;										
 
 		// GL states saved between BeginRender() and EndRender().
 
