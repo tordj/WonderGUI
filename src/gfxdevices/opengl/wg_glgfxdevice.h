@@ -106,6 +106,9 @@ namespace wg
 		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
 		~GlGfxDevice();
 
+		const static int	c_maxGLSegments = 6; //c_maxSegments;
+
+
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
@@ -207,7 +210,7 @@ namespace wg
 		GLuint  m_plotProg;
 		GLuint  m_lineFromToProg;
 
-		GLuint	m_segmentsProg[c_maxSegments];
+		GLuint	m_segmentsProg[c_maxGLSegments];
 
 
 		//

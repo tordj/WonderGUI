@@ -264,7 +264,7 @@ namespace wg
 
 		// IMPORTANT! Change in destructor as well when you change it back!!!!!
 
-		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)
+		for (int i = 1; i < c_maxGLSegments ; i++)
 		{
 			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
 			m_segmentsProg[i] = prog;
@@ -363,7 +363,7 @@ namespace wg
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
 
-		for( int i = 1 ; i < 6 /* c_maxSegments */ ; i++ )
+		for( int i = 1 ; i < c_maxGLSegments ; i++ )
 			glDeleteProgram(m_segmentsProg[i]);
 
 		glDeleteFramebuffers(1, &m_framebufferId);
@@ -1794,7 +1794,10 @@ namespace wg
 				}
 				case Command::Segments:
 				{
-					int nEdges = (*pCmd++)-1;
+					int nSegments = (*pCmd++);
+					if (nSegments > c_maxGLSegments)
+						nSegments = c_maxGLSegments;
+					int nEdges = nSegments-1;
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{

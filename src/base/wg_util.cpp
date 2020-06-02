@@ -288,8 +288,6 @@ double Util::powerOfTen(int num){
 
 	bool Util::pixelFormatToDescription( PixelFormat format, PixelDescription& output )
 	{
-		bool bLinear;
-
 		switch( format )
 		{
 			case PixelFormat::BGR_8:
@@ -525,9 +523,13 @@ double Util::powerOfTen(int num){
 				return true;
 
 			case PixelFormat::CLUT_8:
+				format = Base::activeContext()->gammaCorrection() ? PixelFormat::CLUT_8_sRGB : PixelFormat::CLUT_8_linear;
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
 				output.format = format;
 				output.bits = 8;
 				output.bIndexed = true;
+				output.bLinear = format == PixelFormat::CLUT_8_linear ? true : false;
 
 				output.R_bits = 8;
 				output.G_bits = 8;

@@ -87,8 +87,12 @@ namespace wg
 
 		virtual ~SoftSurface();
 
+		void		_makeClut4096();
+
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;
+
+		int16_t*	m_pClut4096 = nullptr;
 	};
 
 

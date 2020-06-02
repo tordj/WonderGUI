@@ -24,6 +24,9 @@
 #include <memory.h>
 #include <wg_softsurface.h>
 #include <wg_util.h>
+#include <wg_base.h>
+#include <wg_context.h>
+#include <wg_softgfxdevice.h>
 
 namespace wg
 {
@@ -92,6 +95,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pClut, 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -107,6 +111,8 @@ namespace wg
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_pClut = const_cast<Color*>(pClut);
+		if( m_pClut )
+			_makeClut4096();
 	}
 
 	SoftSurface::SoftSurface(SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
@@ -128,6 +134,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pClut, 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -158,6 +165,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pOther->clut(), 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -169,6 +177,7 @@ namespace wg
 
 	SoftSurface::~SoftSurface()
 	{
+		delete [] m_pClut4096;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -329,5 +338,25 @@ namespace wg
 				break;
 		}
 	}
+
+	//____ _makeClut4096() ____________________________________________________
+
+	void SoftSurface::_makeClut4096()
+	{
+		m_pClut4096 = new int16_t[256 * 4];
+
+		int16_t * p = m_pClut4096;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? SoftGfxDevice::s_unpackSRGBTab : SoftGfxDevice::s_unpackLinearTab;
+
+		for (int i = 0; i < 256; i++)
+		{
+			*p++ = pUnpackTab[m_pClut[i].r];
+			*p++ = pUnpackTab[m_pClut[i].g];
+			*p++ = pUnpackTab[m_pClut[i].b];
+			*p++ = SoftGfxDevice::s_unpackLinearTab[m_pClut[i].a];
+
+		}
+	}
+
 
 } // namespace wg

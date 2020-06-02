@@ -171,11 +171,12 @@ namespace wg
 
 		//
 
-		const static int	c_maxSegments = 16;
 
 	protected:
 		GfxDevice( SizeI canvasSize );
 		virtual ~GfxDevice();
+
+		const static int	c_maxSegments = 16;
 
 		//
 

@@ -81,7 +81,75 @@ namespace wg
 	SoftGfxDevice::ComplexBlitOp_p		SoftGfxDevice::s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][2];
 
 
+	const int16_t s_channel_4_1[256] =    { 0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15,
+											0, 4096*1/15, 4096*2/15, 4096*3/15, 4096*4/15, 4096*5/15, 4096*6/15, 4096*7/15, 4096*8/15, 4096*9/15, 4096*10/15, 4096*11/15, 4096*12/15, 4096*13/15, 4096*14/15, 4096*15/15 };
 
+	const int16_t s_channel_4_2[256] =    { 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15, 4096*0/15,
+											4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15, 4096*1/15,		
+											4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15, 4096*2/15,
+											4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15, 4096*3/15,
+											4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15, 4096*4/15,
+											4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15, 4096*5/15,
+											4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15, 4096*6/15,
+											4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15, 4096*7/15,
+											4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15, 4096*8/15,
+											4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15, 4096*9/15,
+											4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15, 4096*10/15,
+											4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15, 4096*11/15,
+											4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15, 4096*12/15,
+											4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15, 4096*13/15,
+											4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15, 4096*14/15,
+											4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15, 4096*15/15 };
+
+
+	const int16_t s_channel_5[256] =      { 4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31,
+											4096*0/31, 4096*1/31, 4096*2/31, 4096*3/31, 4096*4/31, 4096*5/31, 4096*6/31, 4096*7/31, 4096*8/31, 4096*9/31, 4096*10/31, 4096*11/31, 4096*12/31, 4096*13/31, 4096*14/31, 4096*15/31,
+											4096*16/31, 4096*17/31, 4096*18/31, 4096*19/31, 4096*20/31, 4096*21/31, 4096*22/31, 4096*23/31, 4096*24/31, 4096*25/31, 4096*26/31, 4096*27/31, 4096*28/31, 4096*29/31, 4096*30/31, 4096*31/31 };
+
+	const int16_t s_channel_6[256] =      { 4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+											4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+											4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+											4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+											4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+											4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+											4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+											4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+											4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63,
+											4096*0/63, 4096*1/63, 4096*2/63, 4096*3/63, 4096*4/63, 4096*5/63, 4096*6/63, 4096*7/63, 4096*8/63, 4096*9/63, 4096*10/63, 4096*11/63, 4096*12/63, 4096*13/63, 4096*14/63, 4096*15/63,
+											4096*16/63, 4096*17/63, 4096*18/63, 4096*19/63, 4096*20/63, 4096*21/63, 4096*22/63, 4096*23/63, 4096*24/63, 4096*25/63, 4096*26/63, 4096*27/63, 4096*28/63, 4096*29/63, 4096*30/63, 4096*31/63,
+											4096*32/63, 4096*33/63, 4096*34/63, 4096*35/63, 4096*36/63, 4096*37/63, 4096*38/63, 4096*39/63, 4096*40/63, 4096*41/63, 4096*42/63, 4096*43/63, 4096*44/63, 4096*45/63, 4096*46/63, 4096*47/63,
+											4096*48/63, 4096*49/63, 4096*50/63, 4096*51/63, 4096*52/63, 4096*53/63, 4096*54/63, 4096*55/63, 4096*56/63, 4096*57/63, 4096*58/63, 4096*59/63, 4096*60/63, 4096*61/63, 4096*62/63, 4096*63/63 };
+
+
+/*
 	const uint8_t s_channel_4_1[256] = {	0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 											0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
 											0, 0x11, 0x22, 0x33, 0x44, 0x55, 0x66, 0x77, 0x88, 0x99, 0xaa, 0xbb, 0xcc, 0xdd, 0xee, 0xff,
@@ -149,11 +217,11 @@ namespace wg
 											0x40, 0x44, 0x48, 0x4c, 0x50, 0x55, 0x59, 0x5d, 0x61, 0x65, 0x69, 0x6d, 0x71, 0x75, 0x79, 0x7d,
 											0x81, 0x85, 0x89, 0x8d, 0x91, 0x95, 0x99, 0x9d, 0xa1, 0xa5, 0xaa, 0xae, 0xb2, 0xb6, 0xba, 0xbe,
 											0xc2, 0xc6, 0xca, 0xce, 0xd2, 0xd6, 0xda, 0xde, 0xe2, 0xe6, 0xea, 0xee, 0xf2, 0xf6, 0xfa, 0xff	};
-
+*/
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -207,7 +275,7 @@ namespace wg
 			outB = s_channel_5[(uint8_t) pixel];
 			outG = s_channel_6[(uint8_t) (pixel >> 5)];
 			outR = s_channel_5[(uint8_t) (pixel >> 11)];
-			outA = 255;
+			outA = 4096;
 		}
 
 		if (format == PixelFormat::BGRA_4_linear)
@@ -228,11 +296,11 @@ namespace wg
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 		{
-			const Color& c = pClut[*pPixel];
-			outB = c.b;
-			outG = c.g;
-			outR = c.r;
-			outA = c.a;
+			const int16_t* p = &pClut4096[(*pPixel)*4];
+			outB = p[2];
+			outG = p[1];
+			outR = p[0];
+			outA = p[3];
 		}
 
 
@@ -284,15 +352,15 @@ namespace wg
 
 		if (format == PixelFormat::BGR_565_linear)
 		{
-			pPixel[0] = (b >> 3) | ((g & 0xFC) << 3);
-			pPixel[1] = (g >> 5) | (r & 0xF8);
+			pPixel[0] = (s_packLinearTab[b] >> 3) | ((s_packLinearTab[g] & 0xFC) << 3);
+			pPixel[1] = (s_packLinearTab[g] >> 5) | (s_packLinearTab[r] & 0xF8);
 
 		}
 
 		if (format == PixelFormat::BGRA_4_linear)
 		{
-			pPixel[0] = (b >> 4) | (g & 0xF0);
-			pPixel[1] = (r >> 4) | (a & 0xF0);
+			pPixel[0] = (s_packLinearTab[b] >> 4) | (s_packLinearTab[g] & 0xF0);
+			pPixel[1] = (s_packLinearTab[r] >> 4) | (s_packLinearTab[a] & 0xF0);
 		}
 
 		if (format == PixelFormat::A_8)
@@ -749,7 +817,7 @@ namespace wg
 
 		int16_t backB, backG, backR, backA;
 
-		_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+		_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 		// Step 3: Blend srcX and backX into outX
 
@@ -808,7 +876,7 @@ namespace wg
 
 				int16_t backB, backG, backR, backA;
 
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				// Step 3: Blend srcX and backX into outX
 
@@ -867,7 +935,7 @@ namespace wg
 				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -883,7 +951,7 @@ namespace wg
 				int alpha = (srcA * (65536 - (pos & 0xFFFF))) >> 16;		// Special AA
 
 				int16_t backB, backG, backR, backA;
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -901,7 +969,7 @@ namespace wg
 						// Step 2: Get color components of background pixel blending into backX
 
 						int16_t backB, backG, backR, backA;
-						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 						// Step 3: Blend srcX and backX into outX
 
@@ -925,7 +993,7 @@ namespace wg
 					int alpha = srcA * overflow >> 16;		// Special AA
 
 					int16_t backB, backG, backR, backA;
-					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB, outG, outR, outA;
 					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -1004,7 +1072,7 @@ namespace wg
 				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -1018,7 +1086,7 @@ namespace wg
 				int alpha = (srcA * (65536 - (clippedPos & 0xFFFF))) >> 16;		// Special AA
 
 				int16_t backB, backG, backR, backA;
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
 				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -1036,7 +1104,7 @@ namespace wg
 						// Step 2: Get color components of background pixel blending into backX
 
 						int16_t backB, backG, backR, backA;
-						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 						// Step 3: Blend srcX and backX into outX
 
@@ -1060,7 +1128,7 @@ namespace wg
 					int alpha = srcA * overflow >> 16;		// Special AA
 
 					int16_t backB, backG, backR, backA;
-					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB, outG, outR, outA;
 					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -1098,7 +1166,7 @@ namespace wg
 		int16_t srcB = pUnpackTab[col.b];
 		int16_t srcG = pUnpackTab[col.g];
 		int16_t srcR = pUnpackTab[col.r];
-		int16_t srcA = pUnpackTab[col.a];
+		int16_t srcA = s_unpackLinearTab[col.a];
 
 
 		_color_tint_init(	TINT, tint, srcB, srcG, srcR, srcA, tintedB, tintedG, tintedR, tintedA,
@@ -1127,7 +1195,7 @@ namespace wg
 
 				int16_t backB, backG, backR, backA;
 
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				// Step 5: Blend srcX and backX into outX
 
@@ -1224,7 +1292,7 @@ namespace wg
 						}
 
 						int16_t backB, backG, backR, backA;
-						_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 						int16_t outB, outG, outR, outA;
 						_blend_pixels(BLEND, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
@@ -1277,7 +1345,7 @@ namespace wg
 
 					int16_t backB, backG, backR, backA;
 
-					_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB = 0, outG = 0, outR = 0, outA = 0;
 
@@ -1406,7 +1474,7 @@ namespace wg
 	//_____ _simple_blit() ____________________________________________________________
 
 	template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const int16_t* pClut4096, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos)
 	{
 		// Step 1: Prepare any tint gradient
 
@@ -1431,7 +1499,7 @@ namespace wg
 				// Step 3: Read source pixels
 
 				int16_t srcB, srcG, srcR, srcA;
-				_read_pixel(pSrc, SRCFORMAT, pClut, srcB, srcG, srcR, srcA);
+				_read_pixel(pSrc, SRCFORMAT, pClut, pClut4096, srcB, srcG, srcR, srcA);
 
 				// Step 3: Apply any tint
 
@@ -1442,7 +1510,7 @@ namespace wg
 
 				int16_t backB, backG, backR, backA;
 
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				// Step 3: Blend srcX and backX into outX
 
@@ -1528,22 +1596,22 @@ namespace wg
 							// At least one of the four sample pixels is within source surface
 
 							if(ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h )
-								_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
+								_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
 							else
 								src11_b = src11_g = src11_r = src11_a = 0;
 
 							if ((ofsX+32768) >= 0 && ofsY >= 0 && (ofsX+32768) < srcMax.w && ofsY < srcMax.h)
-								_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
+								_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
 							else
 								src12_b = src12_g = src12_r = src12_a = 0;
 
 							if (ofsX >= 0 && (ofsY+32768) >= 0 && ofsX < srcMax.w && (ofsY+32768) < srcMax.h)
-								_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
+								_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
 							else
 								src21_b = src21_g = src21_r = src21_a = 0;
 
 							if ((ofsX + 32768) >= 0 && (ofsY+32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY+32768) < srcMax.h)
-								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
+								_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 							else
 								src22_b = src22_g = src22_r = src22_a = 0;
 						}
@@ -1555,10 +1623,10 @@ namespace wg
 						int nextX = (ofsX & 0x7FFF) == 0 ? 0 : srcPixelBytes;
 						int nextY = (ofsY & 0x7FFF) == 0 ? 0 : srcPitch;
 
-						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
-						_read_pixel(p + nextX, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
-						_read_pixel(p + nextY, SRCFORMAT, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
-						_read_pixel(p + nextX + nextY, SRCFORMAT, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
+						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+						_read_pixel(p + nextX, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+						_read_pixel(p + nextY, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+						_read_pixel(p + nextX + nextY, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 					}
 
 					// Interpolate our 2x2 source colors into one source color, srcX
@@ -1593,7 +1661,7 @@ namespace wg
 					{
 						assert((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) >= 0);
 
-						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, srcB, srcG, srcR, srcA);
+						_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
 					}
 				}
 
@@ -1612,7 +1680,7 @@ namespace wg
 
 				int16_t backB, backG, backR, backA;
 
-				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA);
+				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				// Step 4: Blend srcX and backX into outX
 
@@ -2697,7 +2765,9 @@ namespace wg
 		}
 		else
 		{
-			for (int i = 0; i < nSegments; i++)
+			int colorsPerSegment = bTintX && bTintY ? 4 : 2;
+
+			for (int i = 0; i < nSegments*colorsPerSegment; i++)
 			{
 				colors[i][0] = pUnpackTab[pSegmentColors[i].r];
 				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
@@ -3627,7 +3697,7 @@ namespace wg
 		uint8_t * pDst = m_pCanvasPixels + dest.y * m_canvasPitch + dest.x * dstPixelBytes;
 		uint8_t * pSrc = pSource->m_pData + src.y * pSource->m_pitch + src.x * srcPixelBytes;
 
-		m_pSimpleBlitOnePassOp(pSrc, pDst, pSource->m_pClut, pitches, dest.h, dest.w, m_colTrans, patchPos);
+		m_pSimpleBlitOnePassOp(pSrc, pDst, pSource->m_pClut, pSource->m_pClut4096, pitches, dest.h, dest.w, m_colTrans, patchPos);
 	}
 
 	//____ _twoPassSimpleBlit() _____________________________________________
@@ -3674,8 +3744,8 @@ namespace wg
 			uint8_t * pSrc = pSource->m_pData + src.y * pSource->m_pitch + line*(srcPixelBytes * simpleTransform[1][0] + pSource->m_pitch * simpleTransform[1][1]) + src.x * srcPixelBytes;
 //			uint8_t * pSrc = pSource->m_pData + (src.y+line) * pSource->m_pitch + src.x * srcPixelBytes;
 
-			m_pSimpleBlitFirstPassOp(pSrc, pChunkBuffer, pSource->m_pClut, pitchesPass1, thisChunkLines, dest.w, m_colTrans, { 0,0 });
-			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans, patchPos);
+			m_pSimpleBlitFirstPassOp(pSrc, pChunkBuffer, pSource->m_pClut, pSource->m_pClut4096, pitchesPass1, thisChunkLines, dest.w, m_colTrans, { 0,0 });
+			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans, patchPos);
 
 			patchPos.y += thisChunkLines;
 			line += thisChunkLines;
@@ -3756,7 +3826,7 @@ namespace wg
 			uint8_t * pDst = m_pCanvasPixels + (dest.y + line) * m_canvasPitch + dest.x * dstPixelBytes;
 
 			firstPassOp(pSource, pos, transformMatrix, pChunkBuffer, 8, 0, thisChunkLines, dest.w, m_colTrans, { 0,0 });
-			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans, patchPos);
+			m_pBlitSecondPassOp(pChunkBuffer, pDst, nullptr, nullptr, pitchesPass2, thisChunkLines, dest.w, m_colTrans, patchPos);
 
 			pos.x += transformMatrix[1][0] * thisChunkLines;
 			pos.y += transformMatrix[1][1] * thisChunkLines;
@@ -3928,13 +3998,13 @@ namespace wg
 		float max = powf(255, 2.2f);
 
 		for (int i = 0; i < 256; i++)
-			s_unpackSRGBTab[i] = int((powf(float(i),2.2f) / max) * 4096);
+			s_unpackSRGBTab[i] = int((powf(float(i),2.2f) / max) * 4096 + 0.5f);
 
 		for (int i = 0; i < 256; i++)
-			s_unpackLinearTab[i] = int(i / 255.f * 4096);
+			s_unpackLinearTab[i] = int(i / 255.f * 4096 + 0.5f);
 
 		for (int i = 0; i <= 4096; i++)
-			s_packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f));
+			s_packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f) + 0.5f);
 
 		for (int i = 0; i <= 4096; i++)
 			s_packLinearTab[i] = uint8_t(i / 4096.f * 255.f + 0.5f);
