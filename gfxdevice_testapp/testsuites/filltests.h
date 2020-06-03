@@ -15,7 +15,10 @@ public:
 		addTest("GradientXYFill", &FillTests::gradientXYFill);
 		addTest("NonGradientFill", &FillTests::nonGradientFill);
 		addTest("SubpixelFill", &FillTests::subPixelFill);
+		addTest("SubpixelGradientXYFill", &FillTests::subPixelGradientXYFill);
 	}
+
+
 
 
 	bool straightFill(GfxDevice * pDevice, const RectI& canvas)
@@ -125,6 +128,26 @@ public:
 
 		return true;
 	}
+
+	bool subPixelGradientXYFill(GfxDevice* pDevice, const RectI& canvas)
+	{
+		pDevice->setTintGradient(canvas, { 255,0,0,255 }, { 0,255,0,255 }, { 0,0,255,255 }, { 255,255,255,255 });
+
+		for (int i = 0; i < 10; i++)
+		{
+			RectF rect = { 10.f + i * 25.f, 10.f + i * 0.25f, 20.f, 10.f };
+
+			for (int j = 0; j < 10; j++)
+			{
+				pDevice->fill(rect, Color::White);
+				rect.y += 12.f;
+				rect.x += 0.25f;
+			}
+		}
+
+		return true;
+	}
+
 
 
 

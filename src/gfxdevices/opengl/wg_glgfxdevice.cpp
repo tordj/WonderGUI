@@ -155,6 +155,20 @@ namespace wg
 
 		LOG_INIT_GLERROR(glGetError());
 
+		// Create and init Fill Gradient shader
+
+		m_fillGradientProg = _createGLProgram(fillGradientVertexShader, fillFragmentShader);
+
+		canvasIndex = glGetUniformBlockIndex(m_fillGradientProg, "Canvas");
+		glUniformBlockBinding(m_fillGradientProg, canvasIndex, uboBindingPoint);
+
+		extrasIdLoc = glGetUniformLocation(m_fillGradientProg, "extrasId");
+		glUseProgram(m_fillGradientProg);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		LOG_INIT_GLERROR(glGetError());
+
+
 		// Create and init AA-Fill shader
 
 		m_aaFillProg		= _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
@@ -167,12 +181,24 @@ namespace wg
 
 		LOG_INIT_GLERROR(glGetError());
 
+		// Create and init AA-Fill gradient shader
+
+		m_aaFillGradientProg = _createGLProgram(aaFillGradientVertexShader, aaFillFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_aaFillGradientProg, "Canvas");
+		glUniformBlockBinding(m_aaFillGradientProg, canvasIndex, uboBindingPoint);
+
+		extrasIdLoc = glGetUniformLocation(m_aaFillGradientProg, "extrasId");
+		glUseProgram(m_aaFillGradientProg);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		LOG_INIT_GLERROR(glGetError());
+
+
 		// Create and init Blit shader
 
 		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
 		canvasIndex			= glGetUniformBlockIndex(m_blitProg, "Canvas");
 		glUniformBlockBinding(m_blitProg, canvasIndex, uboBindingPoint);
-		m_blitProgTexSizeLoc = glGetUniformLocation(m_blitProg, "texSize");
 
 		texIdLoc			= glGetUniformLocation(m_blitProg, "texId");
 		extrasIdLoc			= glGetUniformLocation(m_blitProg, "extrasId");
@@ -182,12 +208,26 @@ namespace wg
 
 		LOG_INIT_GLERROR(glGetError());
 
+		// Create and init Gradient Blit shader
+
+		m_blitGradientProg = _createGLProgram(blitGradientVertexShader, blitFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_blitGradientProg, "Canvas");
+		glUniformBlockBinding(m_blitGradientProg, canvasIndex, uboBindingPoint);
+
+		texIdLoc = glGetUniformLocation(m_blitGradientProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_blitGradientProg, "extrasId");
+		glUseProgram(m_blitGradientProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		LOG_INIT_GLERROR(glGetError());
+
+
 		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
 
 		m_alphaBlitProg = _createGLProgram(blitVertexShader, alphaBlitFragmentShader);
 		canvasIndex = glGetUniformBlockIndex(m_alphaBlitProg, "Canvas");
 		glUniformBlockBinding(m_alphaBlitProg, canvasIndex, uboBindingPoint);
-		m_alphaBlitProgTexSizeLoc = glGetUniformLocation(m_alphaBlitProg, "texSize");
 
 		texIdLoc = glGetUniformLocation(m_alphaBlitProg, "texId");
 		extrasIdLoc = glGetUniformLocation(m_alphaBlitProg, "extrasId");
@@ -197,13 +237,25 @@ namespace wg
 
 		LOG_INIT_GLERROR(glGetError());
 
+		// Create and init AlphaBlit gradient shader (shader program for blitting from alpha-only texture)
+
+		m_alphaBlitGradientProg = _createGLProgram(blitGradientVertexShader, alphaBlitFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_alphaBlitGradientProg, "Canvas");
+		glUniformBlockBinding(m_alphaBlitGradientProg, canvasIndex, uboBindingPoint);
+
+		texIdLoc = glGetUniformLocation(m_alphaBlitGradientProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_alphaBlitGradientProg, "extrasId");
+		glUseProgram(m_alphaBlitGradientProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+		LOG_INIT_GLERROR(glGetError());
 
 		// Create and init Clut Blit shaders
 
 		m_clutBlitNearestProg = _createGLProgram(clutBlitNearestVertexShader, clutBlitNearestFragmentShader);
 		canvasIndex = glGetUniformBlockIndex(m_clutBlitNearestProg, "Canvas");
 		glUniformBlockBinding(m_clutBlitNearestProg, canvasIndex, uboBindingPoint);
-		m_clutBlitNearestProgTexSizeLoc = glGetUniformLocation(m_clutBlitNearestProg, "texSize");
 
 		texIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "texId");
 		extrasIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "extrasId");
@@ -219,7 +271,6 @@ namespace wg
 		m_clutBlitInterpolateProg = _createGLProgram(clutBlitInterpolateVertexShader, clutBlitInterpolateFragmentShader);
 		canvasIndex = glGetUniformBlockIndex(m_clutBlitInterpolateProg, "Canvas");
 		glUniformBlockBinding(m_clutBlitInterpolateProg, canvasIndex, uboBindingPoint);
-		m_clutBlitInterpolateProgTexSizeLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texSize");
 
 		texIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texId");
 		extrasIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "extrasId");
@@ -232,6 +283,66 @@ namespace wg
 
 		LOG_INIT_GLERROR(glGetError());
 
+		// Create and init Clut Blit gradient shaders
+
+		m_clutBlitNearestGradientProg = _createGLProgram(clutBlitNearestGradientVertexShader, clutBlitNearestFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_clutBlitNearestGradientProg, "Canvas");
+		glUniformBlockBinding(m_clutBlitNearestGradientProg, canvasIndex, uboBindingPoint);
+
+		texIdLoc = glGetUniformLocation(m_clutBlitNearestGradientProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_clutBlitNearestGradientProg, "extrasId");
+		clutIdLoc = glGetUniformLocation(m_clutBlitNearestGradientProg, "clutId");
+
+		glUseProgram(m_clutBlitNearestGradientProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+
+		LOG_INIT_GLERROR(glGetError());
+
+		m_clutBlitInterpolateGradientProg = _createGLProgram(clutBlitInterpolateGradientVertexShader, clutBlitInterpolateFragmentShader);
+		canvasIndex = glGetUniformBlockIndex(m_clutBlitInterpolateGradientProg, "Canvas");
+		glUniformBlockBinding(m_clutBlitInterpolateGradientProg, canvasIndex, uboBindingPoint);
+
+		texIdLoc = glGetUniformLocation(m_clutBlitInterpolateGradientProg, "texId");
+		extrasIdLoc = glGetUniformLocation(m_clutBlitInterpolateGradientProg, "extrasId");
+		clutIdLoc = glGetUniformLocation(m_clutBlitInterpolateGradientProg, "clutId");
+
+		glUseProgram(m_clutBlitInterpolateGradientProg);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+
+		LOG_INIT_GLERROR(glGetError());
+
+
+		// Fill in our m_blitProgMatrix
+
+		for (int i = 0; i < PixelFormat_size; i++)
+		{
+			m_blitProgMatrix[i][0][0] = m_blitProg;
+			m_blitProgMatrix[i][1][0] = m_blitProg;
+			m_blitProgMatrix[i][0][1] = m_blitGradientProg;
+			m_blitProgMatrix[i][1][1] = m_blitGradientProg;
+		}
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][0] = m_alphaBlitProg;
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][0] = m_alphaBlitProg;
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][1] = m_alphaBlitGradientProg;
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][1] = m_alphaBlitGradientProg;
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][0] = m_clutBlitNearestProg;
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][0] = m_clutBlitInterpolateProg;
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][1] = m_clutBlitNearestGradientProg;
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][1] = m_clutBlitInterpolateGradientProg;
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][0] = m_clutBlitNearestProg;
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][0] = m_clutBlitInterpolateProg;
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1] = m_clutBlitNearestGradientProg;
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1] = m_clutBlitInterpolateGradientProg;
 
 		// Create and init Plot shader
 
@@ -358,8 +469,10 @@ namespace wg
 		LOG_GLERROR(glGetError());
 
 		glDeleteProgram(m_fillProg);
+		glDeleteProgram(m_fillGradientProg);
 		glDeleteProgram(m_aaFillProg);
 		glDeleteProgram(m_blitProg);
+		glDeleteProgram(m_blitGradientProg);
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
 
@@ -1745,7 +1858,7 @@ namespace wg
 				}
 				case Command::SetTintGradient:
 				{
-					Rect& rect = *(Rect*)pCmd;
+					RectI& rect = *(RectI*)pCmd;
 					pCmd += 4;
 					Color* pColors = (Color*)pCmd;
 					pCmd += 4;
@@ -1767,9 +1880,10 @@ namespace wg
 				case Command::Blit:
 				{
 					int nVertices = *pCmd++;
-					if( nVertices > 0 )
+					if( nVertices > 0 && m_pActiveBlitSource)
 					{
-						glUseProgram(m_cmdBlitProgram);
+						GlSurface* pSurf = m_pActiveBlitSource;
+						glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive]);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1784,7 +1898,10 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_fillProg);
+						if( m_bGradientActive )
+							glUseProgram(m_fillGradientProg);
+						else
+							glUseProgram(m_fillProg);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1799,7 +1916,10 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_aaFillProg);
+						if (m_bGradientActive)
+							glUseProgram(m_aaFillGradientProg);
+						else
+							glUseProgram(m_aaFillProg);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -2035,43 +2155,18 @@ namespace wg
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
+			m_canvasUBOBuffer.textureSize = pSurf->size();
+			glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+			glBufferSubData(GL_UNIFORM_BUFFER, ((char*)&m_canvasUBOBuffer.textureSize) - ((char*)&m_canvasUBOBuffer), sizeof(SizeI), &m_canvasUBOBuffer.textureSize);
+
 			if (pSurf->m_pClut)
 			{
-				if (pSurf->scaleMode() == ScaleMode::Interpolate)
-				{
-					glUseProgram(m_clutBlitInterpolateProg);
-					glUniform2i(m_clutBlitInterpolateProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-					m_cmdBlitProgram = m_clutBlitInterpolateProg;
-				}
-				else
-				{
-					glUseProgram(m_clutBlitNearestProg);
-					glUniform2i(m_clutBlitNearestProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-					m_cmdBlitProgram = m_clutBlitNearestProg;
-				}
-
 				glActiveTexture(GL_TEXTURE2);
 				GLuint clutTex = pSurf->getClutTexture();
 				glBindTexture(GL_TEXTURE_2D, clutTex);
 				glActiveTexture(GL_TEXTURE0);
 
 				assert(glGetError() == 0);
-			}
-			else if (pSurf->m_pixelDescription.format == PixelFormat::A_8)
-			{
-				glUseProgram(m_alphaBlitProg);
-				glUniform2i(m_alphaBlitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-				m_cmdBlitProgram = m_alphaBlitProg;
-			}
-			else
-			{
-				glUseProgram(m_blitProg);
-				glUniform2i(m_blitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-				m_cmdBlitProgram = m_blitProg;
 			}
 		}
 		else
@@ -2093,74 +2188,39 @@ namespace wg
 		m_canvasUBOBuffer.flatTint[2] = b = pConv[color.b];
 		m_canvasUBOBuffer.flatTint[3] = a = m_linearToLinearTable[color.a];
 
-		if (m_bGradientActive)
-		{
-			m_canvasUBOBuffer.topLeftTint[0] = r * pConv[m_activeGradient[0].r];
-			m_canvasUBOBuffer.topLeftTint[1] = g * pConv[m_activeGradient[0].g];
-			m_canvasUBOBuffer.topLeftTint[2] = b * pConv[m_activeGradient[0].b];
-			m_canvasUBOBuffer.topLeftTint[3] = a * m_linearToLinearTable[m_activeGradient[0].a];
-
-			m_canvasUBOBuffer.topRightTint[0] = r * pConv[m_activeGradient[1].r];
-			m_canvasUBOBuffer.topRightTint[1] = g * pConv[m_activeGradient[1].g];
-			m_canvasUBOBuffer.topRightTint[2] = b * pConv[m_activeGradient[1].b];
-			m_canvasUBOBuffer.topRightTint[3] = a * m_linearToLinearTable[m_activeGradient[1].a];
-
-			m_canvasUBOBuffer.bottomRightTint[0] = r * pConv[m_activeGradient[2].r];
-			m_canvasUBOBuffer.bottomRightTint[1] = g * pConv[m_activeGradient[2].g];
-			m_canvasUBOBuffer.bottomRightTint[2] = b * pConv[m_activeGradient[2].b];
-			m_canvasUBOBuffer.bottomRightTint[3] = a * m_linearToLinearTable[m_activeGradient[2].a];
-
-			m_canvasUBOBuffer.bottomLeftTint[0] = r * pConv[m_activeGradient[3].r];
-			m_canvasUBOBuffer.bottomLeftTint[1] = g * pConv[m_activeGradient[3].g];
-			m_canvasUBOBuffer.bottomLeftTint[2] = b * pConv[m_activeGradient[3].b];
-			m_canvasUBOBuffer.bottomLeftTint[3] = a * m_linearToLinearTable[m_activeGradient[3].a];
-
-			glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-			glBufferSubData(GL_UNIFORM_BUFFER, 16, 24 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.flatTint);
-		}
-		else
-		{
-			glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-			glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.flatTint);
-		}
-
-
+		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.flatTint);
 	}
 
 	//____ _setTintGradient() _________________________________________________
 
 	void GlGfxDevice::_setTintGradient(const RectI& rect, const Color colors[4])
 	{
-		m_activeGradient[0] = colors[0];
-		m_activeGradient[1] = colors[1];
-		m_activeGradient[2] = colors[2];
-		m_activeGradient[3] = colors[3];
-
 		m_bGradientActive = true;
 
 		m_canvasUBOBuffer.tintRect = rect;
 
 		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
-		m_canvasUBOBuffer.topLeftTint[0] = m_canvasUBOBuffer.flatTint[0] * pConv[colors[0].r];
-		m_canvasUBOBuffer.topLeftTint[1] = m_canvasUBOBuffer.flatTint[1] * pConv[colors[0].g];
-		m_canvasUBOBuffer.topLeftTint[2] = m_canvasUBOBuffer.flatTint[2] * pConv[colors[0].b];
-		m_canvasUBOBuffer.topLeftTint[3] = m_canvasUBOBuffer.flatTint[3] * m_linearToLinearTable[colors[0].a];
+		m_canvasUBOBuffer.topLeftTint[0] = pConv[colors[0].r];
+		m_canvasUBOBuffer.topLeftTint[1] = pConv[colors[0].g];
+		m_canvasUBOBuffer.topLeftTint[2] = pConv[colors[0].b];
+		m_canvasUBOBuffer.topLeftTint[3] = m_linearToLinearTable[colors[0].a];
 
-		m_canvasUBOBuffer.topRightTint[0] = m_canvasUBOBuffer.flatTint[0] * pConv[colors[1].r];
-		m_canvasUBOBuffer.topRightTint[1] = m_canvasUBOBuffer.flatTint[1] * pConv[colors[1].g];
-		m_canvasUBOBuffer.topRightTint[2] = m_canvasUBOBuffer.flatTint[2] * pConv[colors[1].b];
-		m_canvasUBOBuffer.topRightTint[3] = m_canvasUBOBuffer.flatTint[3] * m_linearToLinearTable[colors[1].a];
+		m_canvasUBOBuffer.topRightTint[0] = pConv[colors[1].r];
+		m_canvasUBOBuffer.topRightTint[1] = pConv[colors[1].g];
+		m_canvasUBOBuffer.topRightTint[2] = pConv[colors[1].b];
+		m_canvasUBOBuffer.topRightTint[3] = m_linearToLinearTable[colors[1].a];
 
-		m_canvasUBOBuffer.bottomRightTint[0] = m_canvasUBOBuffer.flatTint[0] * pConv[colors[2].r];
-		m_canvasUBOBuffer.bottomRightTint[1] = m_canvasUBOBuffer.flatTint[1] * pConv[colors[2].g];
-		m_canvasUBOBuffer.bottomRightTint[2] = m_canvasUBOBuffer.flatTint[2] * pConv[colors[2].b];
-		m_canvasUBOBuffer.bottomRightTint[3] = m_canvasUBOBuffer.flatTint[3] * m_linearToLinearTable[colors[2].a];
+		m_canvasUBOBuffer.bottomRightTint[0] = pConv[colors[2].r];
+		m_canvasUBOBuffer.bottomRightTint[1] = pConv[colors[2].g];
+		m_canvasUBOBuffer.bottomRightTint[2] = pConv[colors[2].b];
+		m_canvasUBOBuffer.bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
 
-		m_canvasUBOBuffer.bottomLeftTint[0] = m_canvasUBOBuffer.flatTint[0] * pConv[colors[3].r];
-		m_canvasUBOBuffer.bottomLeftTint[1] = m_canvasUBOBuffer.flatTint[1] * pConv[colors[3].g];
-		m_canvasUBOBuffer.bottomLeftTint[2] = m_canvasUBOBuffer.flatTint[2] * pConv[colors[3].b];
-		m_canvasUBOBuffer.bottomLeftTint[3] = m_canvasUBOBuffer.flatTint[3] * m_linearToLinearTable[colors[3].a];
+		m_canvasUBOBuffer.bottomLeftTint[0] = pConv[colors[3].r];
+		m_canvasUBOBuffer.bottomLeftTint[1] = pConv[colors[3].g];
+		m_canvasUBOBuffer.bottomLeftTint[2] = pConv[colors[3].b];
+		m_canvasUBOBuffer.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16+16, 20 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.tintRect);

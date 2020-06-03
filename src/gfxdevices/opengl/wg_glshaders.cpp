@@ -59,6 +59,45 @@ const char GlGfxDevice::fillVertexShader[] =
 "   fragColor = flatTint * texelFetch(extrasId, extrasOfs);		   "
 "}                                                         ";
 
+const char GlGfxDevice::fillGradientVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2   canvasSize;"
+"	int    canvasYOfs;"
+"	int    canvasYMul;"
+"   vec4   flatTint;"
+"   ivec2  tintRectPos;"
+"   ivec2  tintRectSize;"
+"   vec4   topLeftTint;"
+"   vec4   topRightTint;"
+"   vec4   bottomRightTint;"
+"   vec4   bottomLeftTint;"
+"};"
+
+
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in int extrasOfs;                    "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;            "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;    "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+
+"	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
+"   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
+"   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
+"   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
+
+"   fragColor = flatTint * gradientTint * texelFetch(extrasId, extrasOfs);		   "
+"}                                                         ";
+
+
 
 const char GlGfxDevice::fillFragmentShader[] =
 
@@ -86,10 +125,10 @@ const char GlGfxDevice::blitVertexShader[] =
 "   vec4   topRightTint;"
 "   vec4   bottomRightTint;"
 "   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
 "};"
 
 
-"uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 1) in int extrasOfs;                    "
@@ -109,6 +148,53 @@ const char GlGfxDevice::blitVertexShader[] =
 "   texUV.y = (src.y + 0.0001f + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
 "   fragColor = flatTint;									"
 "}                                                         ";
+
+const char GlGfxDevice::blitGradientVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2   canvasSize;"
+"	int    canvasYOfs;"
+"	int    canvasYMul;"
+"   vec4   flatTint;"
+"   ivec2  tintRectPos;"
+"   ivec2  tintRectSize;"
+"   vec4   topLeftTint;"
+"   vec4   topRightTint;"
+"   vec4   bottomRightTint;"
+"   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
+"};"
+
+
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in int extrasOfs;                    "
+"out vec2 texUV;                                           "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;            "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;            "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);	   "
+"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+"   vec2 src = srcDst.xy;                                  "
+"   vec2 dst = srcDst.zw;                                  "
+"   texUV.x = (src.x + 0.0001f + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
+"   texUV.y = (src.y + 0.0001f + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "      //TODO: Replace this ugly +0.02f fix with whatever is correct.
+
+"	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
+"   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
+"   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
+"   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
+
+"   fragColor = flatTint * gradientTint;		   "
+"}                                                         ";
+
 
 const char GlGfxDevice::blitFragmentShader[] =
 
@@ -154,9 +240,9 @@ const char GlGfxDevice::clutBlitNearestVertexShader[] =
 "   vec4   topRightTint;"
 "   vec4   bottomRightTint;"
 "   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
 "};"
 
-"uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 1) in int extrasOfs;                    "
@@ -176,6 +262,53 @@ const char GlGfxDevice::clutBlitNearestVertexShader[] =
 "   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
 "   fragColor = flatTint;		   "
 "}                                                         ";
+
+const char GlGfxDevice::clutBlitNearestGradientVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2   canvasSize;"
+"	int    canvasYOfs;"
+"	int    canvasYMul;"
+"   vec4   flatTint;"
+"   ivec2  tintRectPos;"
+"   ivec2  tintRectSize;"
+"   vec4   topLeftTint;"
+"   vec4   topRightTint;"
+"   vec4   bottomRightTint;"
+"   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
+"};"
+
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in int extrasOfs;                    "
+"out vec2 texUV;                                           "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;            "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;            "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+"   vec2 src = srcDst.xy;                                  "
+"   vec2 dst = srcDst.zw;                                  "
+"   texUV.x = (src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / texSize.x; "
+"   texUV.y = (src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / texSize.y; "
+
+"	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
+"   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
+"   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
+"   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
+
+"   fragColor = flatTint * gradientTint;		   "
+
+"}                                                         ";
+
 
 const char GlGfxDevice::clutBlitNearestFragmentShader[] =
 
@@ -207,9 +340,9 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 "   vec4   topRightTint;"
 "   vec4   bottomRightTint;"
 "   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
 "};"
 
-"uniform ivec2 texSize;									   "
 "uniform samplerBuffer extrasId;						   "
 "layout(location = 0) in ivec2 pos;                        "
 "layout(location = 1) in int extrasOfs;                    "
@@ -241,6 +374,65 @@ const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 "   texUV11 = (texUV+1)/texSize;			"
 "   fragColor = flatTint;		   "
 "}                                                         ";
+
+const char GlGfxDevice::clutBlitInterpolateGradientVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2   canvasSize;"
+"	int    canvasYOfs;"
+"	int    canvasYMul;"
+"   vec4   flatTint;"
+"   ivec2  tintRectPos;"
+"   ivec2  tintRectSize;"
+"   vec4   topLeftTint;"
+"   vec4   topRightTint;"
+"   vec4   bottomRightTint;"
+"   vec4   bottomLeftTint;"
+"   ivec2  texSize;"
+"};"
+
+"uniform samplerBuffer extrasId;						   "
+"layout(location = 0) in ivec2 pos;                        "
+"layout(location = 1) in int extrasOfs;                    "
+"out vec2 texUV00;                                         "
+"out vec2 texUV11;                                         "
+"out vec2 uvFrac;                                         "
+"out vec4 fragColor;                                       "
+"void main()                                               "
+"{                                                         "
+"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;            "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;            "
+"   gl_Position.z = 0.0;                                   "
+"   gl_Position.w = 1.0;                                   "
+"   vec4 srcDst = texelFetch(extrasId, extrasOfs);		   "
+"   vec4 transform = texelFetch(extrasId, extrasOfs+1);	   "
+"   vec2 src = srcDst.xy;                                  "
+"   vec2 dst = srcDst.zw;                                  "
+//"   float texU = src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z; "
+//"   float texV = src.y + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w; "
+
+//"   float texU = src.x + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z; "
+//"   float texV = src.y + (pos.y - dst.y) * transform.w + (pos.x - dst.x) * transform.y; "
+
+"   vec2 texUV = src + (pos-dst) * transform.xw + (pos.yx - dst.yx) * transform.zy;"
+"   texUV -= 0.5f;"
+
+"   uvFrac = texUV;"
+"   texUV00 = texUV/texSize;				"
+"   texUV11 = (texUV+1)/texSize;			"
+
+"	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
+"   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
+"   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
+"   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
+
+"   fragColor = flatTint * gradientTint;		   "
+
+"}                                                         ";
+
 
 const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
 
@@ -411,6 +603,50 @@ const char GlGfxDevice::aaFillVertexShader[] =
 "   rect.y = canvasYOfs + canvasYMul*rect.y;							"
 "   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
 "}                                                          ";
+
+const char GlGfxDevice::aaFillGradientVertexShader[] =
+
+"#version 330 core\n"
+
+"layout(std140) uniform Canvas"
+"{"
+"	vec2   canvasSize;"
+"	int    canvasYOfs;"
+"	int    canvasYMul;"
+"   vec4   flatTint;"
+"   ivec2  tintRectPos;"
+"   ivec2  tintRectSize;"
+"   vec4   topLeftTint;"
+"   vec4   topRightTint;"
+"   vec4   bottomRightTint;"
+"   vec4   bottomLeftTint;"
+"};"
+
+
+"uniform samplerBuffer extrasId;								"
+"layout(location = 0) in ivec2 pos;                         "
+"layout(location = 1) in int extrasOfs;                       "
+"out vec4 fragColor;                                        "
+"flat out vec4 rect;										"
+"void main()                                                "
+"{                                                          "
+"   gl_Position.x = pos.x*2/canvasSize.x - 1.0;             "
+"   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;             "
+"   gl_Position.z = 0.0;                                    "
+"   gl_Position.w = 1.0;                                    "
+
+"	vec2 tintOfs = (pos - tintRectPos) / vec2(tintRectSize); "
+"   vec4 lineStartTint = topLeftTint + (bottomLeftTint - topLeftTint) * tintOfs.y;"
+"   vec4 lineEndTint = topRightTint + (bottomRightTint - topRightTint) * tintOfs.y;"
+"   vec4 gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;"
+
+"   fragColor = flatTint * gradientTint * texelFetch(extrasId, extrasOfs);		   "
+
+"   rect = texelFetch(extrasId, extrasOfs+1);				"
+"   rect.y = canvasYOfs + canvasYMul*rect.y;							"
+"   rect.zw += vec2(0.5f,0.5f);								"		// Adding offset here so we don't have to do it in pixel shader.
+"}                                                          ";
+
 
 
 const char GlGfxDevice::aaFillFragmentShader[] =

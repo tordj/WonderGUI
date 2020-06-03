@@ -186,7 +186,6 @@ namespace wg
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
 		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
-		int				m_cmdBlitProgram;							// Blit program to be used by CmdFinalizer. Determined by surface type.
 
 		GLuint			m_framebufferId;
 		int				m_nSegments;								// Number of segments for current segment command.
@@ -203,24 +202,29 @@ namespace wg
 		// Device programs
 
 		GLuint  m_fillProg;
+		GLuint  m_fillGradientProg;
+
 		GLuint  m_aaFillProg;
+		GLuint  m_aaFillGradientProg;
+
 		GLuint  m_blitProg;
-		GLint	m_blitProgTexSizeLoc;
+		GLuint  m_blitGradientProg;
 
 		GLuint  m_alphaBlitProg;
-		GLint	m_alphaBlitProgTexSizeLoc;
+		GLuint  m_alphaBlitGradientProg;
 
 		GLuint  m_clutBlitNearestProg;
-		GLint	m_clutBlitNearestProgTexSizeLoc;
+		GLuint  m_clutBlitNearestGradientProg;
 
 		GLuint  m_clutBlitInterpolateProg;
-		GLint	m_clutBlitInterpolateProgTexSizeLoc;
+		GLuint  m_clutBlitInterpolateGradientProg;
 
 		GLuint  m_plotProg;
 		GLuint  m_lineFromToProg;
 
 		GLuint	m_segmentsProg[c_maxGLSegments];
 
+		GLuint	m_blitProgMatrix[PixelFormat_size][2][2];	// [source format][interpolation][tintgradient]
 
 		//
 
@@ -240,6 +244,7 @@ namespace wg
 			GLfloat	bottomRightTint[4];
 			GLfloat	bottomLeftTint[4];
 
+			SizeI	textureSize;
 		};
 
 		GLuint	m_canvasUBOId;
@@ -293,8 +298,6 @@ namespace wg
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
 		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
-
-		Color		m_activeGradient[4];											// Currently active colors for the tint, not tu confuse with m_tintGradient which might not be active yet.
 		bool		m_bGradientActive = false;										
 
 		// GL states saved between BeginRender() and EndRender().
@@ -340,6 +343,13 @@ namespace wg
 		static const char clutBlitNearestFragmentShader[];
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
+
+		static const char fillGradientVertexShader[];
+		static const char aaFillGradientVertexShader[];
+		static const char blitGradientVertexShader[];
+		static const char clutBlitNearestGradientVertexShader[];
+		static const char clutBlitInterpolateGradientVertexShader[];
+
 
 		//
 
