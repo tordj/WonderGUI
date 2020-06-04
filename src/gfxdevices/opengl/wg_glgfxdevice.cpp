@@ -370,29 +370,63 @@ namespace wg
 
 		// Create and init Segment shaders
 
-		//HACK! Some graphics cards can't handle more than 16 varying (of which 2 are used for other data). Maybe use unifieds in shader instead?
-		// To be on the really safe side and since we don't use more than 5 anyway (single color wave + top/bottom borders and transparency above/below), we stop at 6.
-
-		// IMPORTANT! Change in destructor as well when you change it back!!!!!
-
-		for (int i = 1; i < c_maxGLSegments ; i++)
+		for (int i = 1; i < c_maxSegments ; i++)
 		{
-			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
-			m_segmentsProg[i] = prog;
-			unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
-			glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
+			std::string fragShader = segmentsFragmentShader;
+			int edgesPos = fragShader.find("$EDGES");
+			fragShader.replace(edgesPos, 6, std::to_string(i));
 
-			extrasIdLoc = glGetUniformLocation(prog, "extrasId");
-			GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
-			GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+			int maxsegPos = fragShader.find("$MAXSEG");
+			fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
+			
+			const char* pVertexShader = segmentsVertexShader;
+			for (int j = 0; j < 2; j++)
+			{
+				GLuint prog = _createGLProgram(pVertexShader, fragShader.c_str());
+				m_segmentsProg[i][j] = prog;
+				unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
+				glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
 
-			glUseProgram(prog);
-			glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-			glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
-			glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+				extrasIdLoc = glGetUniformLocation(prog, "extrasId");
+				GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
+				GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+				GLint paletteIdLoc = glGetUniformLocation(prog, "paletteId");
+
+				glUseProgram(prog);
+				glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+				glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
+				glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 1 is used for segment stripes buffer.
+				glUniform1i(paletteIdLoc, 3);		// Needs to be set. Texture unit 3 is used for segment stripes buffer.
+
+				pVertexShader = segmentsVertexShaderGradient;
+			}
 		}
 
 		LOG_INIT_GLERROR(glGetError());
+
+		// Create texture for segment colors
+
+		for (int seg = 0; seg < c_maxSegments; seg++)
+		{
+			for (int i = 0; i < 16 * 2 * 2 * 4; i++)
+			{
+				m_segmentsTintTexMap[seg][i] = 65535;
+			}
+		}
+
+
+		glGenTextures(1, &m_segmentsTintTexId);
+		glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2 * c_maxSegments, 2 * c_segmentsTintTexMapSize, 0, GL_BGRA, GL_UNSIGNED_SHORT, nullptr);
+
 
 		// Create our Uniform Buffer
 
@@ -471,16 +505,28 @@ namespace wg
 		glDeleteProgram(m_fillProg);
 		glDeleteProgram(m_fillGradientProg);
 		glDeleteProgram(m_aaFillProg);
+		glDeleteProgram(m_aaFillGradientProg);
 		glDeleteProgram(m_blitProg);
 		glDeleteProgram(m_blitGradientProg);
+		glDeleteProgram(m_alphaBlitProg);
+		glDeleteProgram(m_alphaBlitGradientProg);
+		glDeleteProgram(m_clutBlitNearestProg);
+		glDeleteProgram(m_clutBlitNearestGradientProg);
+		glDeleteProgram(m_clutBlitInterpolateProg);
+		glDeleteProgram(m_clutBlitInterpolateGradientProg);
+
 		glDeleteProgram(m_plotProg);
 		glDeleteProgram(m_lineFromToProg);
 
-		for( int i = 1 ; i < c_maxGLSegments ; i++ )
-			glDeleteProgram(m_segmentsProg[i]);
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			glDeleteProgram(m_segmentsProg[i][0]);
+			glDeleteProgram(m_segmentsProg[i][1]);
+		}
 
 		glDeleteFramebuffers(1, &m_framebufferId);
 		glDeleteTextures(1, &m_extrasBufferTex);
+		glDeleteTextures(1, &m_segmentsTintTexId);
 
 		glDeleteBuffers(1, &m_vertexBufferId);
 		glDeleteBuffers(1, &m_extrasBufferId);
@@ -759,6 +805,7 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_segmentsTintTexOfs = 0;
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
@@ -772,11 +819,15 @@ namespace wg
 
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
-		// Set our textures extras buffer.
+		// Set our extras buffer and segments palette textures.
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
 		glActiveTexture(GL_TEXTURE0);
+
+
 
 
 		// Prepare for rendering
@@ -1573,11 +1624,11 @@ namespace wg
 
 		//
 
-		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
+		int extrasSpaceNeeded = (8 + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
 
 		assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded || m_segmentsTintTexOfs == c_segmentsTintTexMapSize)			// varios data, transform , colors, edgestrips
 		{
 			m_nSegments = nSegments;
 			_endCommand();
@@ -1719,25 +1770,168 @@ namespace wg
 
 		// Add various data to extras
 
-		int edgeStripOfs = (m_extrasOfs + 4 + nSegments * 4);	// Offset for edgestrips in buffer.
+		int edgeStripOfs = (m_extrasOfs + 8);	// Offset for edgestrips in buffer.
 
 		pExtras[0] = (GLfloat) nSegments;
 		pExtras[1] = (GLfloat) edgeStripOfs/4;
-		pExtras += 4;												// Alignment for vec4 reads.
+		pExtras[2] = (GLfloat)((_dest.w) * abs(simpleTransform[0][0]) + (_dest.h) * abs(simpleTransform[1][0]));
+		pExtras[3] = (GLfloat)((_dest.w) * abs(simpleTransform[0][1]) + (_dest.h) * abs(simpleTransform[1][1]));
+		pExtras[4] = GLfloat( 0.25f/c_maxSegments );
+		pExtras[5] = GLfloat(m_segmentsTintTexOfs + 0.25f) / c_segmentsTintTexMapSize;
+		pExtras[6] = GLfloat(c_maxSegments*2);
+		pExtras[7] = GLfloat(c_segmentsTintTexMapSize*2);
 
-		// Add segment colors to extras
+		pExtras += 8;												// Alignment for vec4 reads.
 
-		for (int i = 0; i < nSegments; i++)
+		// Add colors to segmentsTintTexMap
+
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		const Color* pSegCol = pSegmentColors;
+
+		uint16_t* pMapRow = m_segmentsTintTexMap[m_segmentsTintTexOfs];
+		int			mapPitch = c_maxSegments * 4 * 2;
+
+		switch (tintMode)
 		{
-			Color segCol = pSegmentColors[i];
+			case TintMode::None:
+			case TintMode::Flat:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					uint16_t r = uint16_t(pConv[pSegCol->r] * 65535);
+					uint16_t g = uint16_t(pConv[pSegCol->g] * 65535);
+					uint16_t b = uint16_t(pConv[pSegCol->b] * 65535);
+					uint16_t a = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
 
-			float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+					pMapRow[i * 8 + 0] = b;
+					pMapRow[i * 8 + 1] = g;
+					pMapRow[i * 8 + 2] = r;
+					pMapRow[i * 8 + 3] = a;
+					pMapRow[i * 8 + 4] = b;
+					pMapRow[i * 8 + 5] = g;
+					pMapRow[i * 8 + 6] = r;
+					pMapRow[i * 8 + 7] = a;
 
-			*pExtras++ = pConv[segCol.r] * pConv[m_tintColor.r];
-			*pExtras++ = pConv[segCol.g] * pConv[m_tintColor.g];
-			*pExtras++ = pConv[segCol.b] * pConv[m_tintColor.b];
-			*pExtras++ = (segCol.a * m_tintColor.a) / 65025.f;
+					pMapRow[mapPitch + i * 8 + 0] = b;
+					pMapRow[mapPitch + i * 8 + 1] = g;
+					pMapRow[mapPitch + i * 8 + 2] = r;
+					pMapRow[mapPitch + i * 8 + 3] = a;
+					pMapRow[mapPitch + i * 8 + 4] = b;
+					pMapRow[mapPitch + i * 8 + 5] = g;
+					pMapRow[mapPitch + i * 8 + 6] = r;
+					pMapRow[mapPitch + i * 8 + 7] = a;
+					pSegCol++;
+				}
+				break;
+			}
+
+			case TintMode::GradientX:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 0] = b1;
+					pMapRow[i * 8 + 1] = g1;
+					pMapRow[i * 8 + 2] = r1;
+					pMapRow[i * 8 + 3] = a1;
+					pMapRow[i * 8 + 4] = b2;
+					pMapRow[i * 8 + 5] = g2;
+					pMapRow[i * 8 + 6] = r2;
+					pMapRow[i * 8 + 7] = a2;
+
+					pMapRow[mapPitch + i * 8 + 0] = b1;
+					pMapRow[mapPitch + i * 8 + 1] = g1;
+					pMapRow[mapPitch + i * 8 + 2] = r1;
+					pMapRow[mapPitch + i * 8 + 3] = a1;
+					pMapRow[mapPitch + i * 8 + 4] = b2;
+					pMapRow[mapPitch + i * 8 + 5] = g2;
+					pMapRow[mapPitch + i * 8 + 6] = r2;
+					pMapRow[mapPitch + i * 8 + 7] = a2;
+				}
+				break;
+			}
+
+			case TintMode::GradientY:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 0] = b1;
+					pMapRow[i * 8 + 1] = g1;
+					pMapRow[i * 8 + 2] = r1;
+					pMapRow[i * 8 + 3] = a1;
+					pMapRow[i * 8 + 4] = b1;
+					pMapRow[i * 8 + 5] = g1;
+					pMapRow[i * 8 + 6] = r1;
+					pMapRow[i * 8 + 7] = a1;
+
+					pMapRow[mapPitch + i * 8 + 0] = b2;
+					pMapRow[mapPitch + i * 8 + 1] = g2;
+					pMapRow[mapPitch + i * 8 + 2] = r2;
+					pMapRow[mapPitch + i * 8 + 3] = a2;
+					pMapRow[mapPitch + i * 8 + 4] = b2;
+					pMapRow[mapPitch + i * 8 + 5] = g2;
+					pMapRow[mapPitch + i * 8 + 6] = r2;
+					pMapRow[mapPitch + i * 8 + 7] = a2;
+				}
+				break;
+			}
+
+			case TintMode::GradientXY:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					pMapRow[i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[mapPitch + i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[mapPitch + i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[mapPitch + i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[mapPitch + i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[mapPitch + i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[mapPitch + i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[mapPitch + i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[mapPitch + i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+				}
+				break;
+			}
 		}
+
+		m_segmentsTintTexOfs++;
 
 		// Add edgestrips to extras
 
@@ -1816,6 +2010,13 @@ namespace wg
 		glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
 		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_TEXTURE_BUFFER, 0, m_extrasOfs * sizeof(GLfloat), m_extrasBufferData);
+
+		if (m_segmentsTintTexOfs > 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, c_maxSegments * 2, m_segmentsTintTexOfs * 2, GL_BGRA, GL_UNSIGNED_SHORT, m_segmentsTintTexMap);
+		}
+		
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
@@ -1971,13 +2172,13 @@ namespace wg
 				case Command::Segments:
 				{
 					int nSegments = (*pCmd++);
-					if (nSegments > c_maxGLSegments)
-						nSegments = c_maxGLSegments;
+					if (nSegments > c_maxSegments)
+						nSegments = c_maxSegments;
 					int nEdges = nSegments-1;
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_segmentsProg[nEdges]);
+						glUseProgram(m_segmentsProg[nEdges][m_bGradientActive]);
 						glEnableVertexAttribArray(2);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
@@ -1999,6 +2200,7 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_segmentsTintTexOfs = 0;
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 

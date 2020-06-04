@@ -109,9 +109,6 @@ namespace wg
 		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
 		~GlGfxDevice();
 
-		const static int	c_maxGLSegments = 6; //c_maxSegments;
-
-
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
@@ -182,6 +179,7 @@ namespace wg
 		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_segmentsTintTexMapSize = 16;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -222,7 +220,7 @@ namespace wg
 		GLuint  m_plotProg;
 		GLuint  m_lineFromToProg;
 
-		GLuint	m_segmentsProg[c_maxGLSegments];
+		GLuint	m_segmentsProg[c_maxSegments][2];			// [nb segments][base tint gradient]
 
 		GLuint	m_blitProgMatrix[PixelFormat_size][2][2];	// [source format][interpolation][tintgradient]
 
@@ -275,6 +273,7 @@ namespace wg
 		int		m_extrasOfs;						// Write offset in m_extrasBufferData
 		int		m_commandOfs;						// Write offset in m_commandBuffer
 		int		m_surfaceOfs;						// Write offset in m_surfaceBuffer
+		int		m_segmentsTintTexOfs;				// Write offset in m_segmentsTintTexMap
 		int		m_clipWriteOfs;						// Write offset in m_clipListBuffer
 		int		m_clipCurrOfs;						// Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
 
@@ -286,6 +285,8 @@ namespace wg
 		GLuint	m_extrasBufferId;
 		GLfloat m_extrasBufferData[c_extrasBufferSize];								// Space to store additional primitive data for shaders
 
+		GLuint 		m_segmentsTintTexId;													// GL texture handle.
+		uint16_t	m_segmentsTintTexMap[c_segmentsTintTexMapSize][c_maxSegments * 4 * 4];	// Horizontally aligned blocks of 2x2 pixels each, one for each segment color.
 
 		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
 
@@ -334,8 +335,9 @@ namespace wg
 		static const char aaFillVertexShader[];
 		static const char aaFillFragmentShader[];
 
-		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
-		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
+		static const char segmentsVertexShader[];
+		static const char segmentsVertexShaderGradient[];
+		static const char segmentsFragmentShader[];
 
 		static const char alphaBlitFragmentShader[];
 
