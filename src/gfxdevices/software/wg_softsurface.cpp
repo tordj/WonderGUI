@@ -24,6 +24,9 @@
 #include <memory.h>
 #include <wg_softsurface.h>
 #include <wg_util.h>
+#include <wg_base.h>
+#include <wg_context.h>
+#include <wg_softgfxdevice.h>
 
 namespace wg
 {
@@ -43,7 +46,7 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, int flags, const Color * pClut )
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) )
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) )
 			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface(size,format,flags,pClut));
@@ -51,7 +54,7 @@ namespace wg
 
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut)
 	{
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0 )
 			return SoftSurface_p();
 
 		return SoftSurface_p(new SoftSurface(size,format,pBlob,pitch,flags,pClut));
@@ -60,7 +63,7 @@ namespace wg
 	SoftSurface_p SoftSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
 	{
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			 (format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
+			 ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return SoftSurface_p();
 
 		return  SoftSurface_p(new SoftSurface( size, format, pPixels, pitch, pPixelDescription, flags, pClut ));
@@ -92,6 +95,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pClut, 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -107,6 +111,8 @@ namespace wg
 		m_pBlob = pBlob;
 		m_pData = (uint8_t*) m_pBlob->data();
 		m_pClut = const_cast<Color*>(pClut);
+		if( m_pClut )
+			_makeClut4096();
 	}
 
 	SoftSurface::SoftSurface(SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
@@ -128,6 +134,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pClut, 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -158,6 +165,7 @@ namespace wg
 		{
 			m_pClut = (Color*)(m_pData + m_pitch * size.h);
 			memcpy(m_pClut, pOther->clut(), 1024);
+			_makeClut4096();
 		}
 		else
 			m_pClut = nullptr;
@@ -169,6 +177,7 @@ namespace wg
 
 	SoftSurface::~SoftSurface()
 	{
+		delete [] m_pClut4096;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -221,24 +230,26 @@ namespace wg
 
 		switch (m_pixelDescription.format)
 		{
-			case PixelFormat::I8:
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
 			{
 				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
 				return m_pClut[index].a;
 			}
-			case PixelFormat::A8:
+			case PixelFormat::A_8:
 			{
 				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
 				return pPixel[0];
 			}
-			case PixelFormat::BGRA_4:
+			case PixelFormat::BGRA_4_linear:
 			{
 				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x);
 				const uint8_t * pConvTab = s_pixelConvTabs[4];
 
 				return ((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
 			}
-			case PixelFormat::BGRA_8:
+			case PixelFormat::BGRA_8_sRGB:
+			case PixelFormat::BGRA_8_linear:
 			{
 				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
 				return pPixel[3];
@@ -327,5 +338,25 @@ namespace wg
 				break;
 		}
 	}
+
+	//____ _makeClut4096() ____________________________________________________
+
+	void SoftSurface::_makeClut4096()
+	{
+		m_pClut4096 = new int16_t[256 * 4];
+
+		int16_t * p = m_pClut4096;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? SoftGfxDevice::s_unpackSRGBTab : SoftGfxDevice::s_unpackLinearTab;
+
+		for (int i = 0; i < 256; i++)
+		{
+			*p++ = pUnpackTab[m_pClut[i].r];
+			*p++ = pUnpackTab[m_pClut[i].g];
+			*p++ = pUnpackTab[m_pClut[i].b];
+			*p++ = SoftGfxDevice::s_unpackLinearTab[m_pClut[i].a];
+
+		}
+	}
+
 
 } // namespace wg

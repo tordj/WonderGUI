@@ -26,6 +26,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_patches.h>
 #include <wg_base.h>
+#include <wg_context.h>
 
 namespace wg
 {
@@ -285,284 +286,298 @@ double Util::powerOfTen(int num){
 
 	//____ pixelFormatToDescription() _____________________________________________________
 
-	bool Util::pixelFormatToDescription( PixelFormat format, PixelDescription& wFormat )
+	bool Util::pixelFormatToDescription( PixelFormat format, PixelDescription& output )
 	{
 		switch( format )
 		{
 			case PixelFormat::BGR_8:
-				wFormat.format = format;
-				wFormat.bits = 24;
-				wFormat.bIndexed = false;
+				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGR_8_sRGB : PixelFormat::BGR_8_linear;
+			case PixelFormat::BGR_8_sRGB:
+			case PixelFormat::BGR_8_linear:
+				output.format = format;
+				output.bits = 24;
+				output.bIndexed = false;
+				output.bLinear = format == PixelFormat::BGR_8_linear ? true : false;
 
-				wFormat.R_bits = 8;
-				wFormat.G_bits = 8;
-				wFormat.B_bits = 8;
-				wFormat.A_bits = 0;
+				output.R_bits = 8;
+				output.G_bits = 8;
+				output.B_bits = 8;
+				output.A_bits = 0;
 
-				wFormat.R_loss = 0;
-				wFormat.G_loss = 0;
-				wFormat.B_loss = 0;
-				wFormat.A_loss = 8;
-
-	#if IS_LITTLE_ENDIAN
-				wFormat.R_mask = 0xFF0000;
-				wFormat.G_mask = 0xFF00;
-				wFormat.B_mask = 0xFF;
-				wFormat.A_mask = 0x0;
-
-				wFormat.R_shift = 16;
-				wFormat.G_shift = 8;
-				wFormat.B_shift = 0;
-				wFormat.A_shift = 0;
-	#else
-				wFormat.R_mask = 0xFF;
-				wFormat.G_mask = 0xFF00;
-				wFormat.B_mask = 0xFF0000;
-				wFormat.A_mask = 0x0;
-
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 8;
-				wFormat.B_shift = 16;
-				wFormat.A_shift = 0;
-	#endif
-				return true;
-
-			case PixelFormat::BGRA_8:
-				wFormat.format = format;
-				wFormat.bits = 32;
-				wFormat.bIndexed = false;
-
-				wFormat.R_bits = 8;
-				wFormat.G_bits = 8;
-				wFormat.B_bits = 8;
-				wFormat.A_bits = 8;
-
-				wFormat.R_loss = 0;
-				wFormat.G_loss = 0;
-				wFormat.B_loss = 0;
-				wFormat.A_loss = 0;
+				output.R_loss = 0;
+				output.G_loss = 0;
+				output.B_loss = 0;
+				output.A_loss = 8;
 
 	#if IS_LITTLE_ENDIAN
-				wFormat.A_mask = 0xFF000000;
-				wFormat.R_mask = 0xFF0000;
-				wFormat.G_mask = 0xFF00;
-				wFormat.B_mask = 0xFF;
+				output.R_mask = 0xFF0000;
+				output.G_mask = 0xFF00;
+				output.B_mask = 0xFF;
+				output.A_mask = 0x0;
 
-				wFormat.A_shift = 24;
-				wFormat.R_shift = 16;
-				wFormat.G_shift = 8;
-				wFormat.B_shift = 0;
+				output.R_shift = 16;
+				output.G_shift = 8;
+				output.B_shift = 0;
+				output.A_shift = 0;
 	#else
-				wFormat.A_mask = 0xFF;
-				wFormat.R_mask = 0xFF00;
-				wFormat.G_mask = 0xFF0000;
-				wFormat.B_mask = 0xFF000000;
+				output.R_mask = 0xFF;
+				output.G_mask = 0xFF00;
+				output.B_mask = 0xFF0000;
+				output.A_mask = 0x0;
 
-				wFormat.A_shift = 0;
-				wFormat.R_shift = 8;
-				wFormat.G_shift = 16;
-				wFormat.B_shift = 24;
+				output.R_shift = 0;
+				output.G_shift = 8;
+				output.B_shift = 16;
+				output.A_shift = 0;
 	#endif
 				return true;
 
 			case PixelFormat::BGRX_8:
-				wFormat.format = format;
-				wFormat.bits = 32;
-				wFormat.bIndexed = false;
+				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGRX_8_sRGB : PixelFormat::BGRX_8_linear;
+			case PixelFormat::BGRX_8_sRGB:
+			case PixelFormat::BGRX_8_linear:
+				output.format = format;
+				output.bits = 32;
+				output.bIndexed = false;
+				output.bLinear = format == PixelFormat::BGRX_8_linear ? true : false;
 
-				wFormat.R_bits = 8;
-				wFormat.G_bits = 8;
-				wFormat.B_bits = 8;
-				wFormat.A_bits = 0;
+				output.R_bits = 8;
+				output.G_bits = 8;
+				output.B_bits = 8;
+				output.A_bits = 0;
 
-				wFormat.R_loss = 0;
-				wFormat.G_loss = 0;
-				wFormat.B_loss = 0;
-				wFormat.A_loss = 0;
+				output.R_loss = 0;
+				output.G_loss = 0;
+				output.B_loss = 0;
+				output.A_loss = 0;
 
 #if IS_LITTLE_ENDIAN
-				wFormat.A_mask = 0x00000000;
-				wFormat.R_mask = 0xFF0000;
-				wFormat.G_mask = 0xFF00;
-				wFormat.B_mask = 0xFF;
+				output.A_mask = 0x00000000;
+				output.R_mask = 0xFF0000;
+				output.G_mask = 0xFF00;
+				output.B_mask = 0xFF;
 
-				wFormat.A_shift = 0;
-				wFormat.R_shift = 16;
-				wFormat.G_shift = 8;
-				wFormat.B_shift = 0;
+				output.A_shift = 0;
+				output.R_shift = 16;
+				output.G_shift = 8;
+				output.B_shift = 0;
 #else
-				wFormat.A_mask = 0x00;
-				wFormat.R_mask = 0xFF00;
-				wFormat.G_mask = 0xFF0000;
-				wFormat.B_mask = 0xFF000000;
+				output.A_mask = 0x00;
+				output.R_mask = 0xFF00;
+				output.G_mask = 0xFF0000;
+				output.B_mask = 0xFF000000;
 
-				wFormat.A_shift = 0;
-				wFormat.R_shift = 8;
-				wFormat.G_shift = 16;
-				wFormat.B_shift = 24;
+				output.A_shift = 0;
+				output.R_shift = 8;
+				output.G_shift = 16;
+				output.B_shift = 24;
 #endif
 				return true;
 
 
-			case PixelFormat::BGRA_4:
-				wFormat.format = format;
-				wFormat.bits = 16;
-				wFormat.bIndexed = false;
+			case PixelFormat::BGRA_8:
+				format = Base::activeContext()->gammaCorrection() ? PixelFormat::BGRA_8_sRGB : PixelFormat::BGRA_8_linear;
+			case PixelFormat::BGRA_8_sRGB:
+			case PixelFormat::BGRA_8_linear:
+				output.format = format;
+				output.bits = 32;
+				output.bIndexed = false;
+				output.bLinear = format == PixelFormat::BGRA_8_linear ? true : false;
 
-				wFormat.R_bits = 4;
-				wFormat.G_bits = 4;
-				wFormat.B_bits = 4;
-				wFormat.A_bits = 4;
+				output.R_bits = 8;
+				output.G_bits = 8;
+				output.B_bits = 8;
+				output.A_bits = 8;
 
-				wFormat.R_loss = 4;
-				wFormat.G_loss = 4;
-				wFormat.B_loss = 4;
-				wFormat.A_loss = 4;
+				output.R_loss = 0;
+				output.G_loss = 0;
+				output.B_loss = 0;
+				output.A_loss = 0;
+
+	#if IS_LITTLE_ENDIAN
+				output.A_mask = 0xFF000000;
+				output.R_mask = 0xFF0000;
+				output.G_mask = 0xFF00;
+				output.B_mask = 0xFF;
+
+				output.A_shift = 24;
+				output.R_shift = 16;
+				output.G_shift = 8;
+				output.B_shift = 0;
+	#else
+				output.A_mask = 0xFF;
+				output.R_mask = 0xFF00;
+				output.G_mask = 0xFF0000;
+				output.B_mask = 0xFF000000;
+
+				output.A_shift = 0;
+				output.R_shift = 8;
+				output.G_shift = 16;
+				output.B_shift = 24;
+	#endif
+				return true;
+
+			case PixelFormat::BGRA_4_linear:
+				output.format = format;
+				output.bits = 16;
+				output.bIndexed = false;
+				output.bLinear = true;
+
+				output.R_bits = 4;
+				output.G_bits = 4;
+				output.B_bits = 4;
+				output.A_bits = 4;
+
+				output.R_loss = 4;
+				output.G_loss = 4;
+				output.B_loss = 4;
+				output.A_loss = 4;
 
 #if IS_LITTLE_ENDIAN
-				wFormat.A_mask = 0xF000;
-				wFormat.R_mask = 0x0F00;
-				wFormat.G_mask = 0x00F0;
-				wFormat.B_mask = 0x000F;
+				output.A_mask = 0xF000;
+				output.R_mask = 0x0F00;
+				output.G_mask = 0x00F0;
+				output.B_mask = 0x000F;
 
-				wFormat.A_shift = 12;
-				wFormat.R_shift = 8;
-				wFormat.G_shift = 4;
-				wFormat.B_shift = 0;
+				output.A_shift = 12;
+				output.R_shift = 8;
+				output.G_shift = 4;
+				output.B_shift = 0;
 #else
-				wFormat.A_mask = 0x00F0;
-				wFormat.R_mask = 0x000F;
-				wFormat.G_mask = 0xF000;
-				wFormat.B_mask = 0x0F00;
+				output.A_mask = 0x00F0;
+				output.R_mask = 0x000F;
+				output.G_mask = 0xF000;
+				output.B_mask = 0x0F00;
 
-				wFormat.A_shift = 4;
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 12;
-				wFormat.B_shift = 8;
+				output.A_shift = 4;
+				output.R_shift = 0;
+				output.G_shift = 12;
+				output.B_shift = 8;
 #endif
 				return true;
 
-			case PixelFormat::BGR_565:
-				wFormat.format = format;
-				wFormat.bits = 16;
-				wFormat.bIndexed = false;
+			case PixelFormat::BGR_565_linear:
+				output.format = format;
+				output.bits = 16;
+				output.bIndexed = false;
+				output.bLinear = true;
 
-				wFormat.R_bits = 5;
-				wFormat.G_bits = 6;
-				wFormat.B_bits = 5;
-				wFormat.A_bits = 0;
+				output.R_bits = 5;
+				output.G_bits = 6;
+				output.B_bits = 5;
+				output.A_bits = 0;
 
-				wFormat.R_loss = 3;
-				wFormat.G_loss = 2;
-				wFormat.B_loss = 3;
-				wFormat.A_loss = 8;
+				output.R_loss = 3;
+				output.G_loss = 2;
+				output.B_loss = 3;
+				output.A_loss = 8;
 
 #if IS_LITTLE_ENDIAN
-				wFormat.A_mask = 0x0000;
-				wFormat.R_mask = 0xF800;
-				wFormat.G_mask = 0x07E0;
-				wFormat.B_mask = 0x001F;
+				output.A_mask = 0x0000;
+				output.R_mask = 0xF800;
+				output.G_mask = 0x07E0;
+				output.B_mask = 0x001F;
 
-				wFormat.A_shift = 0;
-				wFormat.R_shift = 11;
-				wFormat.G_shift = 5;
-				wFormat.B_shift = 0;
+				output.A_shift = 0;
+				output.R_shift = 11;
+				output.G_shift = 5;
+				output.B_shift = 0;
 #else
-				wFormat.A_mask = 0x0000;
-				wFormat.R_mask = 0x00F8;
-				wFormat.G_mask = 0xE007;
-				wFormat.B_mask = 0x1F00;
+				output.A_mask = 0x0000;
+				output.R_mask = 0x00F8;
+				output.G_mask = 0xE007;
+				output.B_mask = 0x1F00;
 
-				wFormat.A_shift = 0;
-				wFormat.R_shift = 3;
-				wFormat.G_shift = 13;
-				wFormat.B_shift = 8;
+				output.A_shift = 0;
+				output.R_shift = 3;
+				output.G_shift = 13;
+				output.B_shift = 8;
 #endif
 				return true;
 
 
-			case PixelFormat::A8:
-				wFormat.format = format;
-				wFormat.bits = 8;
-				wFormat.bIndexed = false;
+			case PixelFormat::A_8:
+				output.format = format;
+				output.bits = 8;
+				output.bIndexed = false;
 
-				wFormat.R_bits = 0;
-				wFormat.G_bits = 0;
-				wFormat.B_bits = 0;
-				wFormat.A_bits = 8;
+				output.R_bits = 0;
+				output.G_bits = 0;
+				output.B_bits = 0;
+				output.A_bits = 8;
 
-				wFormat.R_loss = 8;
-				wFormat.G_loss = 8;
-				wFormat.B_loss = 8;
-				wFormat.A_loss = 0;
+				output.R_loss = 8;
+				output.G_loss = 8;
+				output.B_loss = 8;
+				output.A_loss = 0;
 
-				wFormat.R_mask = 0x00;
-				wFormat.G_mask = 0x00;
-				wFormat.B_mask = 0x00;
-				wFormat.A_mask = 0xFF;
+				output.R_mask = 0x00;
+				output.G_mask = 0x00;
+				output.B_mask = 0x00;
+				output.A_mask = 0xFF;
 
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 0;
-				wFormat.B_shift = 0;
-				wFormat.A_shift = 0;
+				output.R_shift = 0;
+				output.G_shift = 0;
+				output.B_shift = 0;
+				output.A_shift = 0;
 				return true;
 
-			case PixelFormat::I8:
-				wFormat.format = format;
-				wFormat.bits = 8;
-				wFormat.bIndexed = true;
+			case PixelFormat::CLUT_8:
+				format = Base::activeContext()->gammaCorrection() ? PixelFormat::CLUT_8_sRGB : PixelFormat::CLUT_8_linear;
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
+				output.format = format;
+				output.bits = 8;
+				output.bIndexed = true;
+				output.bLinear = format == PixelFormat::CLUT_8_linear ? true : false;
 
-				wFormat.R_bits = 8;
-				wFormat.G_bits = 8;
-				wFormat.B_bits = 8;
-				wFormat.A_bits = 8;
+				output.R_bits = 8;
+				output.G_bits = 8;
+				output.B_bits = 8;
+				output.A_bits = 8;
 
-				wFormat.R_loss = 0;
-				wFormat.G_loss = 0;
-				wFormat.B_loss = 0;
-				wFormat.A_loss = 0;
+				output.R_loss = 0;
+				output.G_loss = 0;
+				output.B_loss = 0;
+				output.A_loss = 0;
 
-				wFormat.R_mask = 0x00;
-				wFormat.G_mask = 0x00;
-				wFormat.B_mask = 0x00;
-				wFormat.A_mask = 0x00;
+				output.R_mask = 0x00;
+				output.G_mask = 0x00;
+				output.B_mask = 0x00;
+				output.A_mask = 0x00;
 
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 0;
-				wFormat.B_shift = 0;
-				wFormat.A_shift = 0;
+				output.R_shift = 0;
+				output.G_shift = 0;
+				output.B_shift = 0;
+				output.A_shift = 0;
 				return true;
 
 			default:
-				wFormat.format = PixelFormat::Unknown;
-				wFormat.bits = 0;
-				wFormat.bIndexed = false;
+				output.format = PixelFormat::Unknown;
+				output.bits = 0;
+				output.bIndexed = false;
 
-				wFormat.R_bits = 0;
-				wFormat.G_bits = 0;
-				wFormat.B_bits = 0;
-				wFormat.A_bits = 0;
+				output.R_bits = 0;
+				output.G_bits = 0;
+				output.B_bits = 0;
+				output.A_bits = 0;
 
-				wFormat.R_loss = 0;
-				wFormat.G_loss = 0;
-				wFormat.B_loss = 0;
-				wFormat.A_loss = 0;
+				output.R_loss = 0;
+				output.G_loss = 0;
+				output.B_loss = 0;
+				output.A_loss = 0;
 
-				wFormat.R_mask = 0;
-				wFormat.G_mask = 0;
-				wFormat.B_mask = 0;
-				wFormat.A_mask = 0;
+				output.R_mask = 0;
+				output.G_mask = 0;
+				output.B_mask = 0;
+				output.A_mask = 0;
 
-				wFormat.R_shift = 0;
-				wFormat.G_shift = 0;
-				wFormat.B_shift = 0;
-				wFormat.A_shift = 0;
-
-
+				output.R_shift = 0;
+				output.G_shift = 0;
+				output.B_shift = 0;
+				output.A_shift = 0;
 				return false;
 		}
-
-
 	}
 
 	//____ sizeFromPolicy() __________________________________________________________

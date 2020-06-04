@@ -48,6 +48,8 @@
 #include <testsuites/piecharttests.h>
 #include <testsuites/tintblittests.h>
 #include <testsuites/tintsegmenttests.h>
+#include <testsuites/blitblendtests.h>
+
 
 using namespace wg;
 using namespace std;
@@ -648,6 +650,7 @@ void setup_tests()
 	add_testsuite(new PieChartTests(), new PieChartTests());
 	add_testsuite(new TintBlitTests(), new TintBlitTests());
 	add_testsuite(new TintSegmentTests(), new TintSegmentTests());
+	add_testsuite(new BlitBlendTests(), new BlitBlendTests());
 
 	regen_testentries();
 }

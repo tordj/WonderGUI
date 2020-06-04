@@ -207,7 +207,8 @@ namespace wg
 
 	bool CCanvas::setPixelFormat(PixelFormat format)
 	{
-		if (format != PixelFormat::BGRA_8 && format != PixelFormat::BGR_8)
+		if (format != PixelFormat::BGRA_8 && format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear && 
+			format != PixelFormat::BGR_8 && format != PixelFormat::BGR_8_sRGB && format != PixelFormat::BGR_8_linear)
 			return false;
 
 		if (format != m_pixelFormat)

@@ -35,6 +35,7 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
+#include FT_PARAMETER_TAGS_H
 
 namespace wg
 {
@@ -86,6 +87,20 @@ namespace wg
 
 		setRenderMode( RenderMode::BestShapes );
 		setSize( 10 );
+		
+		// Darken the stem if we have gammaCorrection enabled.
+
+		if (Base::activeContext()->gammaCorrection())
+		{
+			FT_Parameter         property1;
+			FT_Bool              darken_stems = 1;
+			property1.tag = FT_PARAM_TAG_STEM_DARKENING;
+			property1.data = &darken_stems;
+
+			FT_Parameter         properties[1] = { property1 };
+
+			FT_Face_Properties(m_ftFace, 1, properties);
+		}
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -485,7 +500,7 @@ namespace wg
 
 		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( AccessMode::WriteOnly, pSlot->bitmap.rect );
 		assert( pDest != 0 );
-		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8 );
+		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
 
 		int dest_pitch = pSurf->pitch();
 

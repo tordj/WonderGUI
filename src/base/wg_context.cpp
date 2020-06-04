@@ -28,18 +28,6 @@ namespace wg
 {
 	const TypeInfo Context::TYPEINFO = { "Context", &Object::TYPEINFO };
 
-	//____ Surface() ____________________________________________________________
-
-	Context::Context() :
-		m_scale(1.f)
-	{
-	}
-
-	//____ ~Context() ____________________________________________________________
-
-	Context::~Context()
-	{
-	}
 
 	//____ typeInfo() _________________________________________________________
 
@@ -52,8 +40,8 @@ namespace wg
 
 	bool Context::setScale(float scale)
 	{
-//		if (scale < 1.f || scale > 8.f || float(int(scale * 4)) != scale*4)
-//			return false;
+		if (scale < 0.25f || scale > 8.f || float(int(scale * 4)) != scale*4)
+			return false;
 
 		// Save scale
 
@@ -73,5 +61,12 @@ namespace wg
 	void Context::setSurfaceFactory(SurfaceFactory * pSurfaceFactory)
 	{
 		m_pSurfaceFactory = pSurfaceFactory;
+	}
+
+	//____ setGammaCorrection() _______________________________________________
+
+	void Context::setGammaCorrection(bool bOn)
+	{
+		m_bGammaCorrection = bOn;
 	}
 }

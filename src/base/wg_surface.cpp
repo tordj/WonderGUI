@@ -509,7 +509,7 @@ namespace wg
 			}
 
 		}
-		else if (pDstFormat->format == PixelFormat::I8)
+		else if (pDstFormat->format == PixelFormat::CLUT_8_sRGB || pDstFormat->format == PixelFormat::CLUT_8_linear)
 		{
 			return false;								// Can't copy to CLUT-based surface unless source is of identical format!
 		}

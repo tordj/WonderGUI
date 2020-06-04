@@ -26,6 +26,8 @@
 #include <wg_glgfxdevice.h>
 #include <wg_util.h>
 #include <wg_blob.h>
+#include <wg_base.h>
+#include <wg_context.h>
 #include <assert.h>
 
 
@@ -63,7 +65,7 @@ namespace wg
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr))
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(size,format,flags,pClut));
@@ -75,7 +77,7 @@ namespace wg
 		if (size.w > max.w || size.h > max.h)
 			return GlSurface_p();
 
-		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || (format == PixelFormat::I8 && pClut == nullptr) || !pBlob || pitch % 4 != 0)
+		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || !pBlob || pitch % 4 != 0)
 			return GlSurface_p();
 
 		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
@@ -88,7 +90,7 @@ namespace wg
 			return GlSurface_p();
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max ||
-			(format == PixelFormat::I8 && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
+			((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr) || pPixels == nullptr || pitch <= 0 )
 			return GlSurface_p();
 
 		return  GlSurface_p(new GlSurface(size,format,pPixels,pitch, pPixelDescription,flags,pClut));
@@ -235,28 +237,20 @@ namespace wg
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
-			uint8_t clut[1024];
-
-			for (int i = 0; i < 256; i++)
-			{
-				clut[i * 4] = m_pClut[i].r;
-				clut[i * 4 + 1] = m_pClut[i].g;
-				clut[i * 4 + 2] = m_pClut[i].b;
-				clut[i * 4 + 3] = m_pClut[i].a;
-			}
-
-			// Create a TextureBufferObject for providing extra data to our shaders
-
-			glGenBuffers(1, &m_clutBufferId);
-			glBindBuffer(GL_TEXTURE_BUFFER, m_clutBufferId);
-			glBufferData(GL_TEXTURE_BUFFER, 256*sizeof(GLuint), clut, GL_STATIC_DRAW);
 
 			HANDLE_GLERROR(glGetError());
 
 			glGenTextures(1, &m_clutTexture);
-//			glActiveTexture(GL_TEXTURE2);
-			glBindTexture(GL_TEXTURE_BUFFER, m_clutTexture);
-			glTexBuffer(GL_TEXTURE_BUFFER, GL_RGBA8, m_clutBufferId);
+			glBindTexture(GL_TEXTURE_2D, m_clutTexture);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+			glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+			glTexImage2D(GL_TEXTURE_2D, 0, m_pixelDescription.bLinear ? GL_RGBA8 : GL_SRGB8_ALPHA8, 256, 1, 0, GL_BGRA, GL_UNSIGNED_BYTE, m_pClut);
 
 			HANDLE_GLERROR(glGetError());
 		}
@@ -281,53 +275,99 @@ namespace wg
 		switch (format)
 		{
 			case PixelFormat::BGR_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
+				m_accessFormat = GL_BGR;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 3;
+				break;
+
+			case PixelFormat::BGR_8_sRGB:
+				m_internalFormat = GL_SRGB8;
+				m_accessFormat = GL_BGR;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 3;
+				break;
+
+			case PixelFormat::BGR_8_linear:
 				m_internalFormat = GL_RGB8;
 				m_accessFormat = GL_BGR;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 3;
 				break;
 
-			case PixelFormat::BGRA_8:
-				m_internalFormat = GL_RGBA8;
+			case PixelFormat::BGRX_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8 : GL_RGB8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;
 				break;
 
-			case PixelFormat::BGRX_8:
+			case PixelFormat::BGRX_8_sRGB:
+				m_internalFormat = GL_SRGB8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRX_8_linear:
 				m_internalFormat = GL_RGB8;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 4;
 				break;
 
-			case PixelFormat::BGR_565:
+			case PixelFormat::BGRA_8:
+				m_internalFormat = Base::activeContext()->gammaCorrection() ? GL_SRGB8_ALPHA8 : GL_RGBA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRA_8_sRGB:
+				m_internalFormat = GL_SRGB8_ALPHA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+			case PixelFormat::BGRA_8_linear:
+				m_internalFormat = GL_RGBA8;
+				m_accessFormat = GL_BGRA;
+				m_pixelDataType = GL_UNSIGNED_BYTE;
+				m_pixelSize = 4;
+				break;
+
+
+			case PixelFormat::BGR_565_linear:
 				m_internalFormat = GL_RGB565;					// NOTE: We lose one bit of precision on green here...
 				m_accessFormat = GL_RGB;
 				m_pixelDataType = GL_UNSIGNED_SHORT_5_6_5_REV;		// or should we use GL_UNSIGNED_SHORT_5_6_5_REV?
 				m_pixelSize = 2;
 				break;
 
-			case PixelFormat::BGRA_4:
+			case PixelFormat::BGRA_4_linear:
 				m_internalFormat = GL_RGBA4;
 				m_accessFormat = GL_BGRA;
 				m_pixelDataType = GL_UNSIGNED_SHORT_4_4_4_4;	// or should we use GL_UNSIGNED_SHORT_4_4_4_4_REV?
 				m_pixelSize = 2;
 				break;
 
-			case PixelFormat::A8:
+			case PixelFormat::CLUT_8:
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
 
-			case PixelFormat::I8:
+			case PixelFormat::A_8:
 				m_internalFormat = GL_R8;
 				m_accessFormat = GL_RED;
 				m_pixelDataType = GL_UNSIGNED_BYTE;
 				m_pixelSize = 1;
 				break;
+
 			default:
 				assert(false);           // Should never get here, just avoiding compiler warnings.
 				break;
@@ -346,11 +386,7 @@ namespace wg
 		glDeleteTextures( 1, &m_texture );
 
 		if (m_pClut)
-		{
 			glDeleteTextures(1, &m_clutTexture);
-			glDeleteBuffers(1, &m_clutBufferId);
-		}
-
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -609,22 +645,30 @@ namespace wg
 		switch (m_pixelDescription.format)
 		{
 		case PixelFormat::BGR_8:
+		case PixelFormat::BGR_8_sRGB:
+		case PixelFormat::BGR_8_linear:
 			type = GL_UNSIGNED_BYTE;
 			break;
 		case PixelFormat::BGRA_8:
+		case PixelFormat::BGRA_8_sRGB:
+		case PixelFormat::BGRA_8_linear:
 		case PixelFormat::BGRX_8:
+		case PixelFormat::BGRX_8_sRGB:
+		case PixelFormat::BGRX_8_linear:
 			type = GL_UNSIGNED_INT_8_8_8_8_REV;
 			break;
-		case PixelFormat::BGRA_4:
+		case PixelFormat::BGRA_4_linear:
 			type = GL_UNSIGNED_SHORT_4_4_4_4_REV;
 			break;
-		case PixelFormat::BGR_565:
+		case PixelFormat::BGR_565_linear:
 			type = GL_UNSIGNED_SHORT_5_6_5_REV;
 			break;
-		case PixelFormat::A8:
+		case PixelFormat::A_8:
 			type = GL_UNSIGNED_BYTE;
 			break;
-		case PixelFormat::I8:
+		case PixelFormat::CLUT_8:
+		case PixelFormat::CLUT_8_sRGB:
+		case PixelFormat::CLUT_8_linear:
 			type = GL_UNSIGNED_BYTE;
 			break;
 		default:
