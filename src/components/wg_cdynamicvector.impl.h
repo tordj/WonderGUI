@@ -25,15 +25,19 @@
 #pragma once
 
 #include <wg_cdynamicvector.h>
+#include <wg_cstaticvector.impl.h>
 
 namespace wg
 {
+	template class CStaticVector<AnimFrame>;
+
 	template<class EntryType> const TypeInfo CDynamicVector<EntryType>::TYPEINFO = { "CDynamicVector<Unknow>", &CStaticVector<EntryType>::TYPEINFO };
+
 
 	//____ pushBack() _________________________________________________________________
 
 	template < class EntryType>
-	CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const EntryType& entry)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const EntryType& entry)
 	{
 		m_entries.push_back(entry);		
 		_didAddEntries(&m_entries.back(), 1);
@@ -41,19 +45,21 @@ namespace wg
 	}
 
 	template < class EntryType>
-	CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const std::initializer_list<const EntryType>& entries)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const std::initializer_list<const EntryType>& entries)
 	{
-		int offset = m_entries.size();
-		
-		m_entries.push_back(entries);
-		_didAddEntries( &m_entries[offset], m_entries.size() - offset);
-		return m_entries.begin()+offset;
+		int amount = m_entries.size();
+
+		for( auto& entry : entries )
+			m_entries.push_back(entry);
+
+		_didAddEntries( &m_entries[amount], m_entries.size() - amount);
+		return m_entries.begin()+amount;
 	}
 
 	//____ insert() ______________________________________________________________
 
 	template < class EntryType>
-	CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::insert(int index, const EntryType& entry)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::insert(int index, const EntryType& entry)
 	{
 		//TODO: Add assert
 
@@ -65,7 +71,7 @@ namespace wg
 	//____ erase() ________________________________________________________________
 
 	template < class EntryType>
-	CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::erase(int index)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::erase(int index)
 	{
 		//TODO: Add assert
 
@@ -75,7 +81,7 @@ namespace wg
 
 
 	template < class EntryType>
-	CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::erase(int index, int amount)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::erase(int index, int amount)
 	{
 		//TODO: Add assert
 

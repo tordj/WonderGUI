@@ -26,7 +26,7 @@
 
 
 #include <wg_widget.h>
-#include <wg_gfxanim.h>
+#include <wg_canimframes.h>
 
 namespace wg
 {
@@ -41,13 +41,17 @@ namespace wg
 	*
 	**/
 
-	class AnimPlayer:public Widget
+	class AnimPlayer : public Widget, protected CAnimFrames::Holder
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
 		static AnimPlayer_p	create() { return AnimPlayer_p(new AnimPlayer()); }
+
+		//.____ Components _______________________________________
+
+		CAnimFrames		frames;
 
 		//.____ Identification __________________________________________
 
@@ -60,25 +64,24 @@ namespace wg
 
 		//.____ Control __________________________________________
 
-		bool			setAnimation( GfxAnim * pAnim );
-		GfxAnim_p		animation() const { return m_pAnim; }
+		void			setPlayMode(PlayMode mode);
+		PlayMode		playMode() const { return m_playMode; }
 
-		int				playPos();										/// Returns play position in ticks.
 		bool			setPlayPos( int ticks );						/// Position in ticks for next update.
-		bool			setPlayPosFractional( float fraction );			/// Position in fractions of duration.
+		bool			setPlayPosFraction( float fraction );			/// Position in fractions of duration.
+		int				playPos() const { return m_playPos; }										/// Returns play position in ticks.
 
 		bool			rewind( int ticks );
 		bool			fastForward( int ticks );
 
-		int				duration();										/// Returns duration of animation (one-shot-through, no looping).
-		int				durationScaled();								/// Returns duration of animation, scaled by speed.
+		int				cycleDuration() const { return m_cycleDuration; }								/// Returns duration of one cycle of animation.
 
-		float			speed();
-		bool			setSpeed( float speed );
+		void			setSpeed( float speed );
+		float			speed() const { return m_speed; }
 
 		bool			play();
-		bool			stop();
-		bool			isPlaying() { return m_bPlaying; };
+		void			stop();
+		bool			isPlaying() const { return m_bPlaying; };
 
 	protected:
 		AnimPlayer();
@@ -92,17 +95,26 @@ namespace wg
 		bool			_alphaTest( const Coord& ofs ) override;
 		void			_setState( State state ) override;
 
-		void			_playPosUpdated();
+		bool			_playPosUpdated();
+		int				_playPosToTimestamp(int playPos) const;
+
+		void			_didAddEntries(AnimFrame* pEntry, int nb) override;
+		void			_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
+		void			_willEraseEntries(AnimFrame* pEntry, int nb) override;
+		Object*			_object() override;
+
 
 	private:
 
-		GfxAnim_p	m_pAnim;
-		GfxFrame *	m_pAnimFrame;			// Frame currently used by animation.
-		RouteId		m_tickRouteId;
+		RouteId		m_tickRouteId = 0;
 
-		bool			m_bPlaying;
-		double			m_playPos;
-		float			m_speed;
+		PlayMode	m_playMode	= PlayMode::Forward;
+		int			m_playPos	= 0;
+		int			m_cycleDuration = 0;
+		int			m_frameTimestamp = -1;		// Timestamp for last rendered frame.
+
+		bool		m_bPlaying	= false;
+		float		m_speed		= 1.f;
 	};
 
 

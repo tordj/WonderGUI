@@ -61,8 +61,8 @@ namespace wg
 		void			setDuration(int millisec);
 		int				duration() const { return m_duration; }
 
-		void			setPlayMode(AnimMode playMode);
-		AnimMode		playMode() const { return m_playMode; }
+		void			setPlayMode(PlayMode playMode);
+		PlayMode		playMode() const { return m_playMode; }
 
 		void			setStepSize(int millisec);
 		inline int		stepSize() const { return m_stepSize; }
@@ -102,7 +102,7 @@ namespace wg
 		int			m_value;
 		int			m_duration;
 		int			m_stepSize;
-		AnimMode	m_playMode;
+		PlayMode	m_playMode;
 		int			m_direction;			// 1 or -1, depending on the direction we go.
 		bool		m_bOn;
 

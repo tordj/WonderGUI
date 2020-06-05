@@ -25,27 +25,22 @@
 #include <wg_util.h>
 #include <wg_msgrouter.h>
 #include <wg_gfxdevice.h>
+#include <wg_cdynamicvector.impl.h>
 
 #include <math.h>
 
 
 namespace wg
 {
+	template class CDynamicVector<AnimFrame>;
 
 	const TypeInfo AnimPlayer::TYPEINFO = { "AnimPlayer", &Widget::TYPEINFO };
 
 
 	//____ constructor _________________________________________________________________
 
-	AnimPlayer::AnimPlayer()
+	AnimPlayer::AnimPlayer() : frames(this)
 	{
-		m_pAnim			= 0;
-		m_pAnimFrame	= 0;
-		m_playPos		= 0.0;
-
-		m_bPlaying		= false;
-		m_speed			= 1.f;
-		m_tickRouteId	= 0;
 	}
 
 	//____ ~AnimPlayer() _______________________________________________________
@@ -63,119 +58,67 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setAnimation() ____________________________________________________________
+	//____ setPlayMode() ____________________________________________________________
 
-	bool AnimPlayer::setAnimation( GfxAnim * pAnim )
+	void AnimPlayer::setPlayMode(PlayMode mode)
 	{
-		m_pAnim			= pAnim;
-		m_playPos		= 0.0;
+		bool bWasPingPong = (m_playMode == PlayMode::PingPong || m_playMode == PlayMode::BackwardPingPong);
+		bool bIsPingPong = (mode == PlayMode::PingPong || mode == PlayMode::BackwardPingPong);
 
-		_requestResize();
+		if (bWasPingPong && !bIsPingPong)
+		{
+			m_cycleDuration = frames.duration();
+			if (m_playPos >= m_cycleDuration)
+				m_playPos = m_cycleDuration * 2 - m_playPos - 1;
+		}
+		else if (!bWasPingPong && bIsPingPong)
+			m_cycleDuration = frames.duration() * 2;
+
+		m_playMode = mode;
 		_requestRender();
-		return true;
 	}
 
-	//____ playPos() ______________________________________________________________
+	//____ setPlayPosFraction() _________________________________________________
 
-	int AnimPlayer::playPos()
+	bool AnimPlayer::setPlayPosFraction( float _fraction )
 	{
-		return (int) m_playPos;
+		m_playPos		= int(_fraction * m_cycleDuration);
+		return _playPosUpdated();
 	}
-
-	//____ setPlayPosFractional() _________________________________________________
-
-	bool AnimPlayer::setPlayPosFractional( float _fraction )
-	{
-		if( !m_pAnim )
-			return false;
-
-		_fraction *= m_pAnim->duration();
-
-		m_playPos		= _fraction;
-		_playPosUpdated();
-		return true;
-	}
-
 
 	//____ setPlayPos() ___________________________________________________________
 
 	bool AnimPlayer::setPlayPos( int _ticks )
 	{
-		if( !m_pAnim )
-			return false;
-
 		m_playPos		= _ticks;
-		_playPosUpdated();
-		return true;
+		return _playPosUpdated();
 	}
-
-
 
 	//____ rewind() _______________________________________________________________
 
 	bool AnimPlayer::rewind( int _ticks )
 	{
-		if( !m_pAnim )
-			return false;
-
 		if( m_playPos - _ticks < 0 )
 			m_playPos = 0;
 		else
 			m_playPos -= _ticks;
 
-		_playPosUpdated();
-		return true;
+		return _playPosUpdated();
 	}
 
 	//____ fastForward() __________________________________________________________
 
 	bool AnimPlayer::fastForward( int _ticks )
 	{
-		if( !m_pAnim )
-			return false;
-
 	 	m_playPos += _ticks;
-
-		_playPosUpdated();
-		return true;
-	}
-
-	//____ duration() _____________________________________________________________
-
-	int AnimPlayer::duration()
-	{
-		if( !m_pAnim )
-			return 0;
-
-		return	m_pAnim->durationScaled();
-	}
-
-	//____ durationScaled() _______________________________________________________
-
-	int AnimPlayer::durationScaled()
-	{
-		if( !m_pAnim )
-			return 0;
-
-		return	(int) (m_pAnim->durationScaled() / m_speed);
-	}
-
-	//____ speed() ________________________________________________________________
-
-	float AnimPlayer::speed()
-	{
-		return m_speed;
+		return _playPosUpdated();
 	}
 
 	//____ setSpeed() _____________________________________________________________
 
-	bool AnimPlayer::setSpeed( float _speed )
+	void AnimPlayer::setSpeed( float _speed )
 	{
-		if( _speed <= 0 || _speed > 1000 )
-			return false;
-
 		m_speed = _speed;
-		return true;
 	}
 
 	//____ play() _________________________________________________________________
@@ -185,7 +128,7 @@ namespace wg
 		if( m_bPlaying )
 			return true;
 
-		if( !m_pAnim )
+		if( m_cycleDuration == 0 )
 			return false;
 
 		m_bPlaying = true;
@@ -195,50 +138,22 @@ namespace wg
 
 	//____ stop() _________________________________________________________________
 
-	bool AnimPlayer::stop()
+	void AnimPlayer::stop()
 	{
 		if( !m_bPlaying )
-			return true;
+			return;
 
 		m_bPlaying = false;
 		Base::msgRouter()->deleteRoute( m_tickRouteId );
 		m_tickRouteId = 0;
-		return true;
 	}
 
 	//____ preferredSize() ___________________________________________________________
 
 	Size AnimPlayer::preferredSize() const
 	{
-		Size	sz;
-
-		if( m_pAnim )
-			sz = m_pAnim->size();
-
-		if( m_pSkin )
-			sz = m_pSkin->sizeForContent(sz);
-
-		return sz;
+		return m_pSkin ? m_pSkin->sizeForContent(frames.frameSize()) : frames.frameSize();
 	}
-
-	//_____ _playPosUpdated() ______________________________________________________
-
-	void AnimPlayer::_playPosUpdated()
-	{
-		if( !m_pAnim )
-			return;
-
-		GfxFrame * pAnimFrame = m_pAnim->getFrame( (int64_t) m_playPos );
-
-		if( pAnimFrame != m_pAnimFrame )
-		{
-			m_pAnimFrame = pAnimFrame;
-			_requestRender();
-
-			Base::msgRouter()->post( ValueUpdateMsg::create(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->duration()-1)),true));
-		}
-	}
-
 
 	//____ _receive() ______________________________________________________________
 
@@ -250,12 +165,11 @@ namespace wg
 		{
 			case MsgType::Tick:
 			{
-				if( !m_pAnim || !m_state.isEnabled() )
+				if( m_cycleDuration == 0 || !m_state.isEnabled() )
 					return;
 
-				m_playPos += static_cast<TickMsg*>(pMsg)->timediff() * m_speed;
+				m_playPos += int(static_cast<TickMsg*>(pMsg)->timediff() * m_speed);
 				_playPosUpdated();
-
 			}
 			break;
 
@@ -264,17 +178,17 @@ namespace wg
 		}
 	}
 
-
 	//____ _render() ________________________________________________________
 
 	void AnimPlayer::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render( pDevice, _canvas, _window );
 
-		if (m_pAnim && m_state.isEnabled())
+		if (m_cycleDuration > 0 && m_state.isEnabled())
 		{
-			pDevice->setBlitSource(m_pAnimFrame->pSurf);
-			pDevice->stretchBlit(_canvas, m_pAnimFrame->rect );
+			Rect canv = _contentRect();
+			pDevice->setBlitSource(frames._surface());
+			pDevice->stretchBlit(canv, RectI(frames.find(_playPosToTimestamp(m_playPos)).source(), frames.frameSize() ));
 		}
 	}
 
@@ -292,24 +206,19 @@ namespace wg
 		Widget::_cloneContent( _pOrg );
 
 		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
-
-		m_pAnim				= pOrg->m_pAnim;
-		m_pAnimFrame		= pOrg->m_pAnimFrame;
-		m_pSkin				= pOrg->m_pSkin;
-
-		m_bPlaying			= pOrg->m_bPlaying;
-		m_playPos			= pOrg->m_playPos;
-		m_speed				= pOrg->m_speed;
 	}
 
 	//____ _alphaTest() ______________________________________________________
 
 	bool AnimPlayer::_alphaTest( const Coord& ofs )
 	{
-		if( m_pAnim && m_state.isEnabled() && Util::markTestStretchRect( ofs, m_pAnimFrame->pSurf, m_pAnimFrame->rect, Rect(0,0,m_size), m_markOpacity ) )
+		if (Widget::_alphaTest(ofs))
 			return true;
 
-		return Widget::_alphaTest(ofs);
+		if (m_cycleDuration > 0 && m_state.isEnabled())
+			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos)).source(), frames.frameSize()), Rect(m_size), m_markOpacity);
+
+		return false;
 	}
 
 	//____ _setState() ______________________________________________________
@@ -329,6 +238,109 @@ namespace wg
 		}
 
 		Widget::_setState(state);
+	}
+
+	//_____ _playPosUpdated() ______________________________________________________
+
+	bool AnimPlayer::_playPosUpdated()
+	{
+		if (m_cycleDuration == 0)
+		{
+			m_playPos = 0;
+			return false;
+		}
+
+		if (m_playPos >= m_cycleDuration)
+		{
+			if (m_playMode == PlayMode::Forward || m_playMode == PlayMode::Backward)
+			{
+				m_playPos = 0;
+				stop();
+				return false;
+			}
+			else
+				m_playPos %= m_cycleDuration;
+		}
+
+		auto& newFrame = frames.find(_playPosToTimestamp(m_playPos));
+		if (newFrame.timestamp() != m_frameTimestamp)
+		{
+			m_frameTimestamp = newFrame.timestamp();
+			_requestRender();
+//			Base::msgRouter()->post(ValueUpdateMsg::create(this, (int)m_playPos, (float)(m_playPos / (m_cycleDuration)), true));
+		}
+		return true;
+	}
+
+	//____ _playPosToTimestamp() __________________________________________________________
+
+	int AnimPlayer::_playPosToTimestamp(int playPos) const
+	{
+		switch (m_playMode)
+		{
+		case PlayMode::PingPong:
+			if (playPos >= frames.duration())
+				playPos = frames.duration() * 2 - (playPos + 1);
+			break;
+
+		case PlayMode::BackwardPingPong:
+			if (playPos >= frames.duration())
+				playPos = frames.duration() * 2 - (playPos + 1);
+			// fall through on purpose.
+		case PlayMode::Backward:
+		case PlayMode::BackwardLooping:
+			playPos = frames.duration() - (playPos + 1);
+			break;
+		}
+
+		return playPos;
+	}
+
+	//____ _didAddEntries() ___________________________________________________
+
+	void AnimPlayer::_didAddEntries(AnimFrame* pEntry, int nb)
+	{
+		int total = 0;
+
+		for (int i = 0; i < nb; i++)
+			total += pEntry[i].duration();
+
+		//TODO: Compensate playPos for change
+
+		if (m_playMode == PlayMode::PingPong || m_playMode == PlayMode::BackwardPingPong)
+			total *= 2;
+		m_cycleDuration += total;
+	}
+
+	//____ _didMoveEntries() ___________________________________________________
+
+	void AnimPlayer::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
+	{
+		//TODO: Compensate playPos for change
+	}
+
+	//____ _willEraseEntries() _________________________________________________
+
+	void AnimPlayer::_willEraseEntries(AnimFrame* pEntry, int nb)
+	{
+		int total = 0;
+
+		for (int i = 0; i < nb; i++)
+			total += pEntry[i].duration();
+
+		//TODO: Compensate playPos for change
+
+		if (m_playMode == PlayMode::PingPong || m_playMode == PlayMode::BackwardPingPong)
+			total *= 2;
+		m_cycleDuration -= total;
+
+	}
+
+	//____ _object() __________________________________________________________
+
+	Object* AnimPlayer::_object()
+	{
+		return this;
 	}
 
 

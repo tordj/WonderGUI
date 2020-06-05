@@ -36,6 +36,8 @@ namespace wg
 	{
 	public:
 
+		using iterator = CStaticVector<EntryType>::iterator;
+
 		class Holder : public CStaticVector<EntryType>::Holder	/** @private */
 		{
 		public:
@@ -44,7 +46,7 @@ namespace wg
 			virtual void	_willEraseEntries(EntryType * pEntry, int nb) = 0;
 		};
 		
-		CDynamicVector(Holder * pHolder) : CStaticVector(pHolder) {}
+		CDynamicVector(Holder * pHolder) : CStaticVector<EntryType>(pHolder) {}
 
 		//.____ Identification _________________________________________________ 
 
@@ -53,10 +55,10 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline int		capacity() const { return m_entries.capacity(); }
+		inline int		capacity() const { return CStaticVector::m_entries.capacity(); }
 
-		inline void		reserve(int amount) { m_entries.reserve( amount ); }
-		inline void		shrinkToFit() { m_entries.shrink_to_fit(); }
+		inline void		reserve(int amount) { CStaticVector::m_entries.reserve( amount ); }
+		inline void		shrinkToFit() { CStaticVector::m_entries.shrink_to_fit(); }
 
 		iterator		pushBack( const EntryType& entry );
 		iterator		pushBack( const std::initializer_list<const EntryType>& entries );
@@ -76,9 +78,9 @@ namespace wg
 	protected:
 //		~CDynamicVector() {}
 	
-		virtual void	_didAddEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(m_pHolder)->_didAddEntries(pEntry, nb); }
-		virtual void	_didMoveEntries(EntryType* pFrom, EntryType* pTo, int nb) { static_cast<Holder*>(m_pHolder)->_didMoveEntries(pFrom, pTo, nb); }
-		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(m_pHolder)->_willEraseEntries(pEntry, nb); }
+		virtual void	_didAddEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_didAddEntries(pEntry, nb); }
+		virtual void	_didMoveEntries(EntryType* pFrom, EntryType* pTo, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_didMoveEntries(pFrom, pTo, nb); }
+		virtual void	_willEraseEntries(EntryType* pEntry, int nb) { static_cast<Holder*>(CStaticVector<EntryType>::m_pHolder)->_willEraseEntries(pEntry, nb); }
 	};
 
 } //namespace

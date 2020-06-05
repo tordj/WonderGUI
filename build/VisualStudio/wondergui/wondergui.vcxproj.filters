@@ -71,9 +71,6 @@
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h">
       <Filter>sizebrokers</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_anim.h">
-      <Filter>base</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_base.h">
       <Filter>base</Filter>
     </ClInclude>
@@ -105,9 +102,6 @@
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_geo.h">
-      <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\base\wg_gfxanim.h">
       <Filter>base</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h">
@@ -219,9 +213,6 @@
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_image.h">
-      <Filter>widgets</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h">
       <Filter>widgets</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h">
@@ -376,9 +367,6 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_slotholder.h">
       <Filter>base</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\src\components\wg_geocomponent.h">
-      <Filter>components</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\src\base\wg_weakcomponentptr.h">
       <Filter>base</Filter>
@@ -553,9 +541,6 @@
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp">
       <Filter>sizebrokers</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_anim.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_base.cpp">
       <Filter>base</Filter>
     </ClCompile>
@@ -584,9 +569,6 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp">
-      <Filter>base</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\base\wg_gfxanim.cpp">
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\base\wg_gfxdevice.cpp">
@@ -683,9 +665,6 @@
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_image.cpp">
-      <Filter>widgets</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp">

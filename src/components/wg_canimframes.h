@@ -31,29 +31,28 @@
 namespace wg
 {
 
-	class CAnimFrames_Frame;
+	class AnimFrame
+	{
+		friend class CAnimFrames;
+	public:
+		AnimFrame(CoordI source, int duration) : m_timestamp(0), m_duration(duration), m_source(source) {}
+
+		int		timestamp() const { return m_timestamp; }
+		int		duration() const { return m_duration; }
+		CoordI	source() const { return m_source; }
+
+	protected:
+		int		m_timestamp;	// Millisec
+		int		m_duration;		// Millisec
+		CoordI	m_source;		// Points
+	};
+
 
 	//____ CAnimFrames _____________________________________________________
 
-	class CAnimFrames : public CDynamicVector<CAnimFrames_Frame>
+	class CAnimFrames : public CDynamicVector<AnimFrame>
 	{
 	public:
-
-		class Frame
-		{
-			friend class CAnimFrames;
-
-			Frame(CoordI source, int duration);
-
-			int		timestamp() const { return m_timestamp; }
-			int		duration() const { return m_duration; }
-			CoordI	source() const { return m_source; }
-
-		protected:
-			int		m_timestamp;	// Millisec
-			int		m_duration;		// Millisec
-			CoordI	m_source;		// Points
-		};
 
 		CAnimFrames(Holder * pHolder) : CDynamicVector(pHolder) {}
 
@@ -71,22 +70,25 @@ namespace wg
 		SizeI			frameSize() const { return m_frameSize; }
 
 		inline int		duration() const { return m_duration; }
-		const Frame&	find(int timestamp) const;
+		const AnimFrame& find(int timestamp) const;
+
+		//.____ Internal ______________________________________________________
+
+		Surface *		_surface() const { return m_pSurface; }
+
 
 	protected:
 		//		~CVector() {}
 
-		void	_didAddEntries(CAnimFrames_Frame * pEntry, int nb) override;
-		void	_didMoveEntries(CAnimFrames_Frame * pFrom, CAnimFrames_Frame * pTo, int nb) override;
-		void	_willEraseEntries(CAnimFrames_Frame * pEntry, int nb) override;
+		void	_didAddEntries(AnimFrame * pEntry, int nb) override;
+		void	_didMoveEntries(AnimFrame * pFrom, AnimFrame * pTo, int nb) override;
+		void	_willEraseEntries(AnimFrame * pEntry, int nb) override;
 
 
 		int			m_duration = 0;
 		SizeI		m_frameSize;
 		Surface_p	m_pSurface;
 	};
-
-	class CAnimFrames_Frame : public CAnimFrames::Frame /** @private */ {};	// Workaround for C++ not allowing forward declaration of CAnimFrames::Frame
 
 
 } //namespace wg

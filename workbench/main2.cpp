@@ -87,6 +87,7 @@ bool spinKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 bool doubleSkinTest(CStandardSlot_p pSlot);
 bool timerTest(CStandardSlot_p pSlot);
+bool animPlayerTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 
@@ -587,7 +588,7 @@ int main(int argc, char** argv)
 //	canvasStackTest(&pRoot->slot);
 	doubleSkinTest(&pRoot->slot);
 	timerTest(&pRoot->slot);
-
+	animPlayerTest(&pRoot->slot);
 	
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2295,7 +2296,7 @@ bool timerTest(CStandardSlot_p pSlot)
 	auto pTimer1 = Timer::create();
 	pTimer1->setSkin(pSkin);
 	pTimer1->setDuration(5000);
-	pTimer1->setPlayMode(AnimMode::BackwardPingPong);
+	pTimer1->setPlayMode(PlayMode::BackwardPingPong);
 	pTimer1->start();
 
 //	pBaseLayer->slots.pushBackMovable(pTimer1, Rect(10, 10, 419, 419));
@@ -2305,6 +2306,34 @@ bool timerTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+
+bool animPlayerTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorStateSkin::create(Color::PapayaWhip));
+
+	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
+
+
+	auto pPlayer = AnimPlayer::create();
+	pPlayer->frames.setSurface(pSurfAnim);
+	pPlayer->frames.setFrameSize({ 204,180 });
+	pPlayer->setPlayMode(PlayMode::Looping);
+
+	for (int y = 0; y < 2; y++)
+	{
+		for (int x = 0; x < 5; x++)
+		{
+			pPlayer->frames.pushBack(AnimFrame({ x*204,y*180 }, 150));
+		}
+	}
+
+	pPlayer->play();
+
+	pBaseLayer->slots.pushBackMovable(pPlayer, Coord(10, 10));
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 
 //____

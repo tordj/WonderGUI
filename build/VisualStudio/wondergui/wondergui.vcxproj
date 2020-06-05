@@ -82,7 +82,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\src\base\wg_anim.h" />
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
     <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_blob.h" />
@@ -97,7 +96,6 @@
     <ClInclude Include="..\..\..\src\base\wg_dummyfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_font.h" />
     <ClInclude Include="..\..\..\src\base\wg_geo.h" />
-    <ClInclude Include="..\..\..\src\base\wg_gfxanim.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxdevice.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstream.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamlogger.h" />
@@ -169,7 +167,6 @@
     <ClInclude Include="..\..\..\src\components\wg_ctextdisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticvector.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstaticvector.impl.h" />
-    <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctext.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstatictextdisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_ctexteditor.h" />
@@ -229,7 +226,6 @@
     <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_pianokeyboard.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_popupopener.h" />
-    <ClInclude Include="..\..\..\src\widgets\wg_refreshbutton.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_scrollbar.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_selectbox.h" />
@@ -246,7 +242,6 @@
     <ClInclude Include="..\..\..\src\wondergui.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\src\base\wg_anim.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_base.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_blob.cpp" />
@@ -260,7 +255,6 @@
     <ClCompile Include="..\..\..\src\base\wg_dummyfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_font.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_geo.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_gfxanim.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxdevice.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamlogger.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamplayer.cpp" />
@@ -364,7 +358,6 @@
     <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_pianokeyboard.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_popupopener.cpp" />
-    <ClCompile Include="..\..\..\src\widgets\wg_refreshbutton.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_scrollbar.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_selectbox.cpp" />

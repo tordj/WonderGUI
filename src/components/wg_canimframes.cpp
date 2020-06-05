@@ -26,7 +26,7 @@
 namespace wg
 {
 
-	const TypeInfo CAnimFrames::TYPEINFO = { "CAnimFrames", &CStaticVector<CAnimFrames::Frame>::TYPEINFO };
+	const TypeInfo CAnimFrames::TYPEINFO = { "CAnimFrames", &CStaticVector<AnimFrame>::TYPEINFO };
 
 
 	//____ setSurface() __________________________________________________________
@@ -45,11 +45,11 @@ namespace wg
 
 	//____ find() _____________________________________________________________
 
-	const CAnimFrames::Frame& CAnimFrames::find(int timestamp) const
+	const AnimFrame& CAnimFrames::find(int timestamp) const
 	{
-		const Frame* pFirst = &m_entries.front();
-		const Frame* pLast = &m_entries.back();
-		const Frame* pFrame = pFirst + (pLast - pFirst);
+		const AnimFrame* pFirst = &m_entries.front();
+		const AnimFrame* pLast = &m_entries.back();
+		const AnimFrame* pFrame = pFirst + (pLast - pFirst);
 
 		if (timestamp < pFirst->m_duration)
 			return *pFirst;
@@ -60,17 +60,23 @@ namespace wg
 		while (true)
 		{
 			if (timestamp < pFrame->m_timestamp)
-				pFrame -= (pFrame - pFirst) / 2;
+			{
+				pLast = pFrame;
+				pFrame -= (pFrame - pFirst +1) / 2;
+			}
 			else if (timestamp < pFrame->m_timestamp + pFrame->m_duration)
 				return *pFrame;
 			else
-				pFrame += (pLast - pFrame) / 2;
+			{
+				pFirst = pFrame;
+				pFrame += (pLast - pFrame +1) / 2;
+			}
 		}
 	}
 
 	//____ _didAddEntries() ___________________________________________________
 
-	void CAnimFrames::_didAddEntries(CAnimFrames_Frame* pEntry, int nb)
+	void CAnimFrames::_didAddEntries(AnimFrame* pEntry, int nb)
 	{
 		int ofs = pEntry - &m_entries.front();
 		int timestamp = ofs == 0 ? 0 : pEntry[-1].timestamp() + pEntry[-1].duration();
@@ -95,9 +101,9 @@ namespace wg
 
 	//____ _didMoveEntries() __________________________________________________
 
-	void CAnimFrames::_didMoveEntries(CAnimFrames_Frame* pFrom, CAnimFrames_Frame* pTo, int nb)
+	void CAnimFrames::_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb)
 	{
-		CAnimFrames_Frame* pEntry = std::min(pFrom, pTo);
+		AnimFrame* pEntry = std::min(pFrom, pTo);
 
 		int ofs = pEntry - &m_entries.front();
 		int timestamp = ofs == 0 ? 0 : pEntry[-1].timestamp() + pEntry[-1].duration();
@@ -112,7 +118,7 @@ namespace wg
 
 	//____ _willEraseEntries() ___________________________________________________
 
-	void CAnimFrames::_willEraseEntries(CAnimFrames_Frame* pEntry, int nb)
+	void CAnimFrames::_willEraseEntries(AnimFrame* pEntry, int nb)
 	{
 		int ofs = pEntry - &m_entries.front();
 		int timestamp = pEntry->timestamp() + pEntry->duration();

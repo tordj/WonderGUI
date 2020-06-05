@@ -65,7 +65,6 @@ namespace wg
 		m_mapColors.clear();
 		m_mapSurfaces.clear();
 		m_mapFonts.clear();
-		m_mapGfxAnims.clear();
 		m_mapCarets.clear();
 		m_mapColors.clear();
 		m_mapTextStyles.clear();
@@ -83,7 +82,6 @@ namespace wg
 
 		m_surfaces.clear();
 		m_fonts.clear();
-		m_gfxAnims.clear();
 		m_carets.clear();
 		m_textProps.clear();
 		m_colors.clear();
@@ -121,13 +119,6 @@ namespace wg
 		static int nGenerated = 0;
 		char pBuf[100];
 		return std::string("_font__") + TextTool::itoa(++nGenerated, pBuf, 10);
-	}
-
-	std::string	ResDB::generateName( GfxAnim * data )
-	{
-		static int nGenerated = 0;
-		char pBuf[100];
-		return std::string("_anim__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 
 	std::string	ResDB::generateName( Caret * data )
@@ -253,22 +244,6 @@ namespace wg
 			m_fonts.pushBack(p);
 			if(id.size())
 				m_mapFonts[id] = p;
-			return true;
-		}
-		return false;
-	}
-
-	//____ () _________________________________________________________
-
-	bool ResDB::addGfxAnim( const std::string& id, GfxAnim * pAnim, MetaData * pMetaData )
-	{
-		assert(m_mapGfxAnims.find(id) == m_mapGfxAnims.end());
-		if(m_mapGfxAnims.find(id) == m_mapGfxAnims.end())
-		{
-			GfxAnimRes* p = new GfxAnimRes(id, pAnim, pMetaData);
-			m_gfxAnims.pushBack(p);
-			if(id.size())
-				m_mapGfxAnims[id] = p;
 			return true;
 		}
 		return false;
@@ -421,14 +396,6 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	GfxAnim_p ResDB::getGfxAnim( const std::string& id ) const
-	{
-		GfxAnimRes* animRes = getResGfxAnim(id);
-		return animRes ? animRes->res : GfxAnim_p();
-	}
-
-	//____ () _________________________________________________________
-
 	Caret_p ResDB::getCaret( const std::string& id ) const
 	{
 		CaretRes* caretRes = getResCaret(id);
@@ -539,23 +506,6 @@ namespace wg
 		}
 		FontMap::const_iterator it = m_mapFonts.find(id);
 		return it == m_mapFonts.end() ? 0 : it->second;
-	}
-
-	//____ () _________________________________________________________
-
-	ResDB::GfxAnimRes * ResDB::getResGfxAnim( const std::string& id ) const
-	{
-		GfxAnimRes* res = 0;
-		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
-		{
-			if(db->res)
-			{
-				if((res = db->res->getResGfxAnim(id)))
-					return res;
-			}
-		}
-		GfxAnimMap::const_iterator it = m_mapGfxAnims.find(id);
-		return it == m_mapGfxAnims.end() ? 0 : it->second;
 	}
 
 	//____ () _________________________________________________________
@@ -751,25 +701,6 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	ResDB::GfxAnimRes* ResDB::findResGfxAnim( GfxAnim * meta ) const
-	{
-		GfxAnimRes* res = 0;
-		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())
-		{
-			if(db->res)
-			{
-				if((res = db->res->findResGfxAnim(meta)))
-					return res;
-			}
-		}
-		for(res = getFirstResGfxAnim(); res; res = res->next())
-			if(res->res.rawPtr() == meta)
-				return res;
-		return 0;
-	}
-
-	//____ () _________________________________________________________
-
 	ResDB::CaretRes* ResDB::findResCaret( Caret * meta ) const
 	{
 		CaretRes* res = 0;
@@ -922,38 +853,6 @@ namespace wg
 			FontMap::iterator it = m_mapFonts.find( pRes->id );
 			assert( it != m_mapFonts.end() );
 			m_mapFonts.erase(it);
-		}
-		delete pRes;
-		return true;
-	}
-
-
-	//____ RemoveAnim() ___________________________________________________________
-
-	bool ResDB::removeGfxAnim( const std::string& id )
-	{
-		GfxAnimMap::iterator it = m_mapGfxAnims.find( id );
-
-		if( it == m_mapGfxAnims.end() )
-			return false;
-
-		GfxAnimRes * pRes = it->second;
-		m_mapGfxAnims.erase(it);
-		delete pRes;
-
-		return true;
-	}
-
-	bool ResDB::removeGfxAnim( ResDB::GfxAnimRes * pRes )
-	{
-		if( !pRes )
-			return false;
-
-		if( pRes->id.length() > 0 )
-		{
-			GfxAnimMap::iterator it = m_mapGfxAnims.find( pRes->id );
-			assert( it != m_mapGfxAnims.end() );
-			m_mapGfxAnims.erase(it);
 		}
 		delete pRes;
 		return true;

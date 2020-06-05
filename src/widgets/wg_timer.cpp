@@ -38,7 +38,7 @@ namespace wg
 		m_value(0),
 		m_duration(1000),
 		m_stepSize(1),
-		m_playMode(AnimMode::Forward),
+		m_playMode(PlayMode::Forward),
 		m_direction(1),
 		m_bOn(false),
 		m_tickRouteId(0),
@@ -76,13 +76,13 @@ namespace wg
 
 	//____ setPlayMode() ______________________________________________________
 
-	void Timer::setPlayMode(AnimMode playMode)
+	void Timer::setPlayMode(PlayMode playMode)
 	{
 		if (playMode != m_playMode)
 		{
 			m_playMode = playMode;
 
-			if (playMode == AnimMode::Backward || playMode == AnimMode::BackwardLooping || playMode == AnimMode::BackwardPingPong)
+			if (playMode == PlayMode::Backward || playMode == PlayMode::BackwardLooping || playMode == PlayMode::BackwardPingPong)
 				m_direction = -1;
 			else
 				m_direction = 1;
@@ -117,7 +117,7 @@ namespace wg
 	{
 		int value = 0;
 
-		if (m_playMode == AnimMode::Backward || m_playMode == AnimMode::BackwardLooping || m_playMode == AnimMode::BackwardPingPong)
+		if (m_playMode == PlayMode::Backward || m_playMode == PlayMode::BackwardLooping || m_playMode == PlayMode::BackwardPingPong)
 			value = m_duration;
 
 		if (value != m_value)
@@ -167,17 +167,17 @@ namespace wg
 
 				switch (m_playMode)
 				{
-					case AnimMode::Forward:
+					case PlayMode::Forward:
 						if (value >= m_duration)
 							stop();
 						break;
 
-					case AnimMode::Looping:
+					case PlayMode::Looping:
 						value %= m_duration;
 						break;
 
-					case AnimMode::PingPong:
-					case AnimMode::BackwardPingPong:
+					case PlayMode::PingPong:
+					case PlayMode::BackwardPingPong:
 						while (value < 0 || value > m_duration)
 						{
 							if (value < 0)
@@ -189,12 +189,12 @@ namespace wg
 						}
 						break;
 
-					case AnimMode::Backward:
+					case PlayMode::Backward:
 						if (value <= 0)
 							stop();
 						break;
 
-					case AnimMode::BackwardLooping:
+					case PlayMode::BackwardLooping:
 						if (value < 0)
 							value = m_duration + (value % m_duration);
 						break;

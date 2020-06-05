@@ -51,7 +51,6 @@
 #include <wg_charseq.h>
 #include <wg_enumextras.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_gfxanim.h>
 #include <wg_togglegroup.h>
 #include <wg_mempool.h>
 #include <wg_charbuffer.h>
@@ -69,7 +68,6 @@
 #include <wg_gfxstreamplug.h>
 #include <wg_inputhandler.h>
 #include <wg_mu.h>
-#include <wg_anim.h>
 #include <wg_color.h>
 #include <wg_bitmapfont.h>
 #include <wg_context.h>
@@ -142,7 +140,6 @@
 #include <wg_widget.h>
 #include <wg_packlist.h>
 #include <wg_list.h>
-#include <wg_refreshbutton.h>
 #include <wg_sizecapsule.h>
 #include <wg_capsule.h>
 #include <wg_shadercapsule.h>

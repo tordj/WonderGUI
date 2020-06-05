@@ -340,9 +340,9 @@ namespace wg
 	};
 
 
-	//____ AnimMode _____________________________________________________________
+	//____ PlayMode _____________________________________________________________
 
-	enum class AnimMode : uint8_t	//. autoExtras
+	enum class PlayMode : uint8_t	//. autoExtras
 	{
 		Forward,
 		Backward,
