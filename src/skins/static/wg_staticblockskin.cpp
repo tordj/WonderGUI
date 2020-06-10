@@ -68,13 +68,6 @@ namespace wg
 		return sizeForContent(m_block.size());
 	}
 
-	//____ setContentPadding() ____________________________________________________
-
-	void StaticBlockSkin::setContentPadding(const BorderI& padding)
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ render() ______________________________________________________________
 
 	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const

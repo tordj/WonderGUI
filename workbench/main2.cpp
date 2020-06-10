@@ -84,6 +84,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot);
 bool sliderTest(CStandardSlot_p pSlot);
 bool pieKnobTest(CStandardSlot_p pSlot);
 bool spinKnobTest(CStandardSlot_p pSlot);
+bool animKnobTest(CStandardSlot_p pSlot);
 bool canvasStackTest(CStandardSlot_p pSlot);
 bool doubleSkinTest(CStandardSlot_p pSlot);
 bool timerTest(CStandardSlot_p pSlot);
@@ -583,12 +584,13 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
-	pieKnobTest(&pRoot->slot);
+//	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
+	animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
-	doubleSkinTest(&pRoot->slot);
-	timerTest(&pRoot->slot);
-	animPlayerTest(&pRoot->slot);
+//	doubleSkinTest(&pRoot->slot);
+//	timerTest(&pRoot->slot);
+//	animPlayerTest(&pRoot->slot);
 	
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2123,7 +2125,36 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ animKnobTest() ____________________________________________________
 
+bool animKnobTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorStateSkin::create(Color::PapayaWhip));
+
+	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
+
+
+	auto pAnimSkin = FrameMeterSkin::create();
+	pAnimSkin->frames.setSurface(pSurfAnim);
+	pAnimSkin->frames.setFrameSize({ 204,180 });
+
+	for (int y = 0; y < 2; y++)
+	{
+		for (int x = 0; x < 5; x++)
+			pAnimSkin->frames.pushBack(AnimFrame({ x * 204,y * 180 }, 150));
+	}
+
+
+	auto pKnob1 = Knob::create();
+	pKnob1->setSkin(pAnimSkin);
+	pKnob1->setValue(0.5f);
+	pKnob1->setDragRange(500);
+
+	pBaseLayer->slots.pushBackMovable(pKnob1, Rect(10, 10, 0, 0));
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 
 //____ sliderTest() ____________________________________________________

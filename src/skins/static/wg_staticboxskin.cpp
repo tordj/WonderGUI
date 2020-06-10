@@ -84,13 +84,6 @@ namespace wg
 		return Size::max(content, frame);
 	}
 
-	//____ setContentPadding() ____________________________________________________
-
-	void StaticBoxSkin::setContentPadding(const BorderI& padding)
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ markTest() _________________________________________________________
 
 	bool StaticBoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const

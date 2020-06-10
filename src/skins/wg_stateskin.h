@@ -33,6 +33,7 @@ namespace wg
 
 	class StateSkin;
 	typedef	StrongPtr<StateSkin>	StateSkin_p;
+	typedef	WeakPtr<StateSkin>		StateSkin_wp;
 
 	class StateSkin : public Skin
 	{

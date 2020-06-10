@@ -32,6 +32,7 @@ namespace wg
 
 	class BlockStateSkin;
 	typedef	StrongPtr<BlockStateSkin>	BlockStateSkin_p;
+	typedef	WeakPtr<BlockStateSkin>		BlockStateSkin_wp;
 
 
 	class BlockStateSkin : public StateSkin

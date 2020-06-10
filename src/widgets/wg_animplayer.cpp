@@ -188,7 +188,7 @@ namespace wg
 		{
 			Rect canv = _contentRect();
 			pDevice->setBlitSource(frames._surface());
-			pDevice->stretchBlit(canv, RectI(frames.find(_playPosToTimestamp(m_playPos)).source(), frames.frameSize() ));
+			pDevice->stretchBlit(canv, RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize() ));
 		}
 	}
 
@@ -216,7 +216,7 @@ namespace wg
 			return true;
 
 		if (m_cycleDuration > 0 && m_state.isEnabled())
-			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos)).source(), frames.frameSize()), Rect(m_size), m_markOpacity);
+			return Util::markTestStretchRect(ofs, frames._surface(), RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize()), Rect(m_size), m_markOpacity);
 
 		return false;
 	}
@@ -262,10 +262,10 @@ namespace wg
 				m_playPos %= m_cycleDuration;
 		}
 
-		auto& newFrame = frames.find(_playPosToTimestamp(m_playPos));
-		if (newFrame.timestamp() != m_frameTimestamp)
+		auto pNewFrame = frames.find(_playPosToTimestamp(m_playPos));
+		if (pNewFrame->timestamp() != m_frameTimestamp)
 		{
-			m_frameTimestamp = newFrame.timestamp();
+			m_frameTimestamp = pNewFrame->timestamp();
 			_requestRender();
 //			Base::msgRouter()->post(ValueUpdateMsg::create(this, (int)m_playPos, (float)(m_playPos / (m_cycleDuration)), true));
 		}
@@ -294,6 +294,20 @@ namespace wg
 		}
 
 		return playPos;
+	}
+
+	//____ _didSetAnimFrameSize() _____________________________________________
+
+	void AnimPlayer::_didSetAnimFrameSize(CAnimFrames* pComponent)
+	{
+		_requestResize();
+	}
+
+	//____ _didSetAnimSurface() _______________________________________________
+
+	void AnimPlayer::_didSetAnimSurface(CAnimFrames* pComponent)
+	{
+		_requestRender();
 	}
 
 	//____ _didAddEntries() ___________________________________________________

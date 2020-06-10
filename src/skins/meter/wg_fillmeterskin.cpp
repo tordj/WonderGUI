@@ -97,13 +97,6 @@ namespace wg
 		m_preferredSize = preferred;
 	}
 
-	//____ setContentPadding() ________________________________________________
-
-	void FillMeterSkin::setContentPadding(const BorderI& padding)
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ setDirection() _____________________________________________________
 
 	void FillMeterSkin::setDirection(Direction dir)

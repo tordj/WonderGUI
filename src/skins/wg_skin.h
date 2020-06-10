@@ -35,6 +35,7 @@ namespace wg
 	class GfxDevice;
 
 	typedef	StrongPtr<Skin>	Skin_p;
+	typedef	WeakPtr<Skin>	Skin_wp;
 
 
 	class Skin : public Object

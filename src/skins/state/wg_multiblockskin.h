@@ -35,6 +35,7 @@ namespace wg
 
 	class MultiBlockStateSkin;
 	typedef	StrongPtr<MultiBlockStateSkin>	MultiBlockStateSkin_p;
+	typedef	WeakPtr<MultiBlockStateSkin>	MultiBlockStateSkin_wp;
 
 
 

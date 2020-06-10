@@ -32,6 +32,7 @@ namespace wg
 	class PieMeterSkin;
 
 	typedef	StrongPtr<PieMeterSkin>	PieMeterSkin_p;
+	typedef	WeakPtr<PieMeterSkin>	PieMeterSkin_wp;
 
 
 	class PieMeterSkin : public Skin
@@ -95,8 +96,6 @@ namespace wg
 
 		void	setPreferredSize(const SizeI& preferred);
 		Size	preferredSize() const override;
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 

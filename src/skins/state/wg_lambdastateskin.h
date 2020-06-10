@@ -32,11 +32,9 @@
 namespace wg
 {
 
-
-
-
 	class LambdaStateSkin;
 	typedef	StrongPtr<LambdaStateSkin>	LambdaStateSkin_p;
+	typedef	WeakPtr<LambdaStateSkin>	LambdaStateSkin_wp;
 
 	class LambdaStateSkin : public StateSkin
 	{

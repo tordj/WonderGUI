@@ -33,6 +33,7 @@ namespace wg
 	class SpinMeterSkin;
 
 	typedef	StrongPtr<SpinMeterSkin>	SpinMeterSkin_p;
+	typedef	WeakPtr<SpinMeterSkin>		SpinMeterSkin_wp;
 
 
 	class SpinMeterSkin : public Skin
@@ -53,8 +54,6 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		Size	preferredSize() const override;
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 

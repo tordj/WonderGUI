@@ -34,6 +34,7 @@ namespace wg
 
 	class ColorStateSkin;
 	typedef	StrongPtr<ColorStateSkin>	ColorStateSkin_p;
+	typedef	WeakPtr<ColorStateSkin>		ColorStateSkin_wp;
 
 	class ColorStateSkin : public StateSkin
 	{

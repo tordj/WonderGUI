@@ -33,6 +33,7 @@ namespace wg
 	class StaticBlockSkin;
 
 	typedef	StrongPtr<StaticBlockSkin>	StaticBlockSkin_p;
+	typedef	WeakPtr<StaticBlockSkin>	StaticBlockSkin_wp;
 
 
 	class StaticBlockSkin : public Skin
@@ -51,8 +52,6 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		Size	preferredSize() const override;
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 

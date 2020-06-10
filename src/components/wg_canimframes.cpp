@@ -33,29 +33,40 @@ namespace wg
 
 	void CAnimFrames::setSurface(Surface* pSurface)
 	{
-		m_pSurface = pSurface;
+		if (pSurface != m_pSurface)
+		{
+			m_pSurface = pSurface;
+			static_cast<CAnimFrames::Holder*>(m_pHolder)->_didSetAnimSurface(this);
+		}
 	}
 
 	//____ setFrameSize() __________________________________________________________
 
 	void CAnimFrames::setFrameSize(SizeI pointSize)
 	{
-		m_frameSize = pointSize;
+		if (pointSize != m_frameSize)
+		{
+			m_frameSize = pointSize;
+			static_cast<CAnimFrames::Holder*>(m_pHolder)->_didSetAnimFrameSize(this);
+		}
 	}
 
 	//____ find() _____________________________________________________________
 
-	const AnimFrame& CAnimFrames::find(int timestamp) const
+	const AnimFrame* CAnimFrames::find(int timestamp) const
 	{
+		if (m_entries.empty())
+			return nullptr;
+
 		const AnimFrame* pFirst = &m_entries.front();
 		const AnimFrame* pLast = &m_entries.back();
 		const AnimFrame* pFrame = pFirst + (pLast - pFirst);
 
 		if (timestamp < pFirst->m_duration)
-			return *pFirst;
+			return pFirst;
 
 		if (timestamp >= pLast->m_timestamp)
-			return *pLast;
+			return pLast;
 
 		while (true)
 		{
@@ -65,7 +76,7 @@ namespace wg
 				pFrame -= (pFrame - pFirst +1) / 2;
 			}
 			else if (timestamp < pFrame->m_timestamp + pFrame->m_duration)
-				return *pFrame;
+				return pFrame;
 			else
 			{
 				pFirst = pFrame;

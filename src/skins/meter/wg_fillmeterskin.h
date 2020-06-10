@@ -32,6 +32,7 @@ namespace wg
 	class FillMeterSkin;
 
 	typedef	StrongPtr<FillMeterSkin>	FillMeterSkin_p;
+	typedef	WeakPtr<FillMeterSkin>		FillMeterSkin_wp;
 
 
 	class FillMeterSkin : public Skin
@@ -51,8 +52,6 @@ namespace wg
 
 		void	setPreferredSize(const SizeI& preferred);
 		Size	preferredSize() const override;
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Appearance ____________________________________________________
 

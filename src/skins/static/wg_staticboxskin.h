@@ -32,6 +32,7 @@ namespace wg
 	class StaticBoxSkin;
 
 	typedef	StrongPtr<StaticBoxSkin>	StaticBoxSkin_p;
+	typedef	WeakPtr<StaticBoxSkin>		StaticBoxSkin_wp;
 
 
 	class StaticBoxSkin : public Skin
@@ -56,8 +57,6 @@ namespace wg
 
 		Size	minSize() const override;
 		Size	preferredSize() const override;
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 

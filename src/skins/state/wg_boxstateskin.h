@@ -34,6 +34,7 @@ namespace wg
 
 	class BoxStateSkin;
 	typedef	StrongPtr<BoxStateSkin>	BoxStateSkin_p;
+	typedef	WeakPtr<BoxStateSkin>	BoxStateSkin_wp;
 
 	class BoxStateSkin : public StateSkin
 	{

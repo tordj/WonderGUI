@@ -34,6 +34,7 @@ namespace wg
 
 	class DoubleSkin;
 	typedef	StrongPtr<DoubleSkin>	DoubleSkin_p;
+	typedef	WeakPtr<DoubleSkin>		DoubleSkin_wp;
 
 	class DoubleSkin : public Skin
 	{

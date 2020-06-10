@@ -32,6 +32,7 @@ namespace wg
 	class StaticColorSkin;
 
 	typedef	StrongPtr<StaticColorSkin>	StaticColorSkin_p;
+	typedef	WeakPtr<StaticColorSkin>	StaticColorSkin_wp;
 
 
 	class StaticColorSkin : public Skin
@@ -45,10 +46,6 @@ namespace wg
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
-
-		//.____ Geometry _________________________________________________
-
-		void	setContentPadding(const BorderI& padding);
 
 		//.____ Misc ____________________________________________________
 

@@ -367,13 +367,6 @@ namespace wg
 		return m_preferredSize;
 	}
 
-	//____ setContentPadding() ________________________________________________
-
-	void PieMeterSkin::setContentPadding(const BorderI& padding)
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ markTest() _________________________________________________________
 
 	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const

@@ -121,13 +121,6 @@ namespace wg
 		return m_preferredSize;
 	}
 
-	//____ setContentPadding() ________________________________________________
-
-	void SpinMeterSkin::setContentPadding(const BorderI& padding)
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ markTest() _________________________________________________________
 
 	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const

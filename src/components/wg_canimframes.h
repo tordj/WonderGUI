@@ -53,9 +53,17 @@ namespace wg
 	class CAnimFrames : public CDynamicVector<AnimFrame>
 	{
 	public:
+		 
+		class Holder : public CDynamicVector<AnimFrame>::Holder
+		{
+		public:
+			virtual void	_didSetAnimFrameSize(CAnimFrames * pComponent) = 0;
+			virtual void	_didSetAnimSurface(CAnimFrames * pComponent) = 0;
+		};
 
 		CAnimFrames(Holder * pHolder) : CDynamicVector(pHolder) {}
 
+		
 		//.____ Identification _________________________________________________
 
 		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
@@ -70,7 +78,7 @@ namespace wg
 		SizeI			frameSize() const { return m_frameSize; }
 
 		inline int		duration() const { return m_duration; }
-		const AnimFrame& find(int timestamp) const;
+		const AnimFrame * find(int timestamp) const;
 
 		//.____ Internal ______________________________________________________
 

@@ -527,6 +527,9 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h">
       <Filter>skins\static</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\meter\wg_framemeterskin.h">
+      <Filter>skins\meter</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -915,6 +918,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp">
       <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\meter\wg_framemeterskin.cpp">
+      <Filter>skins\meter</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

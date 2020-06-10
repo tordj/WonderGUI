@@ -177,6 +177,7 @@
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_fillmeterskin.h" />
+    <ClInclude Include="..\..\..\src\skins\meter\wg_framemeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_piemeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_spinmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\misc\wg_doubleskin.h" />
@@ -310,6 +311,7 @@
     <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_fillmeterskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\meter\wg_framemeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_piemeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_spinmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\misc\wg_doubleskin.cpp" />
