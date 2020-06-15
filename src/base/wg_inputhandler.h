@@ -55,7 +55,6 @@ namespace wg
 	{
 
 	friend class RootPanel;
-	friend class PopupOpener;
 
 	public:
 		//.____ Creation __________________________________________
@@ -121,6 +120,11 @@ namespace wg
 
 		EditCmd		translateCommand( int native_keycode, ModifierKeys modKeys );
 
+		//.____ Internal ______________________________________________________
+
+		void		_yieldButtonEvents(MouseButton button, Widget* pFrom, Widget* pTo);
+
+
 
 	protected:
 		InputHandler();
@@ -143,9 +147,6 @@ namespace wg
 
 		void 		_setFocused( Widget * pWidget );
 		void 		_setUnfocused( Widget * pWidget );
-
-		void		_yieldButtonEvents(MouseButton button, Widget * pFrom, Widget * pTo);
-
 
 		Widget *	_focusedWidget() const;
 

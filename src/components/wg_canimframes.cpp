@@ -20,11 +20,14 @@
 
 =========================================================================*/
 #include <wg_canimframes.h>
+#include <wg_cdynamicvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
+	template class CStaticVector<AnimFrame>;
+
 
 	const TypeInfo CAnimFrames::TYPEINFO = { "CAnimFrames", &CStaticVector<AnimFrame>::TYPEINFO };
 

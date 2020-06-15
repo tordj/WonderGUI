@@ -116,7 +116,7 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		inline const State&		state() const;
+		inline const State&	state() const;
 
 		void				setEnabled(bool bEnabled);
 		inline bool			isEnabled() const;
@@ -160,7 +160,7 @@ namespace wg
 		//.____ Misc _________________________________________________________________
 
 		virtual bool		markTest( const Coord& ofs );
-		void 				receive( Msg * pMsg ) override;
+		void 				receive( Msg * pMsg ) override final;
 
 		inline void			refresh();
 

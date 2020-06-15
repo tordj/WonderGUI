@@ -749,6 +749,22 @@ namespace wg
 		return true;
 	}
 
+	//____ setMorphFactor() ______________________________________________________
+
+	void GlGfxDevice::setMorphFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+
+		m_morphFactor = factor;
+
+		if (m_bRendering)
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetMorphFactor, 1);
+			m_commandBuffer[m_commandOfs++] = (int)(factor*1024);
+		}
+	}
+
 	//____ isCanvasReady() ___________________________________________________________
 
 	bool GlGfxDevice::isCanvasReady() const
@@ -811,6 +827,7 @@ namespace wg
 
 		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
 		_setBlendMode(m_blendMode);
+		_setMorphFactor(m_morphFactor);
 
 		if (m_bTintGradient)
 			_setTintGradient(m_tintGradientRect, m_tintGradient);
@@ -2052,6 +2069,11 @@ namespace wg
 					_setBlendMode((BlendMode)* pCmd++);
 					break;
 				}
+				case Command::SetMorphFactor:
+				{
+					_setMorphFactor((*pCmd++) / 1024.f);
+					break;
+				}
 				case Command::SetTintColor:
 				{
 					_setTintColor(*(Color*)(pCmd++));
@@ -2277,6 +2299,8 @@ namespace wg
 		{
 		case BlendMode::Replace:
 			glBlendEquation(GL_FUNC_ADD);
+//			glEnable(GL_BLEND);
+//			glBlendFunc(GL_ONE, GL_ZERO);
 			glDisable(GL_BLEND);
 			break;
 
@@ -2284,6 +2308,13 @@ namespace wg
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
 			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			//				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case BlendMode::Morph:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 			//				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 			break;
 
@@ -2314,13 +2345,13 @@ namespace wg
 		case BlendMode::Min:
 			glBlendEquation(GL_MIN);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Max:
 			glBlendEquation(GL_MAX);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
+			glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Ignore:
@@ -2334,6 +2365,13 @@ namespace wg
 			break;
 		}
 		LOG_GLERROR(glGetError());
+	}
+
+	//____ _setMorphFactor() __________________________________________________
+
+	void GlGfxDevice::_setMorphFactor(float morphFactor)
+	{
+		glBlendColor(1.f, 1.f, 1.f, morphFactor);
 	}
 
 	//____ _setBlitSource() _______________________________________________________

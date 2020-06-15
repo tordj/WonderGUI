@@ -78,6 +78,7 @@ namespace wg
 		void		clearTintGradient() override;
 
 		bool		setBlendMode(BlendMode blendMode) override;
+		void		setMorphFactor(float factor) override;
 
 		//.____ Rendering ________________________________________________
 
@@ -141,6 +142,8 @@ namespace wg
 			uint32_t	rightIncG;
 			uint32_t	rightIncB;
 			uint32_t	rightIncA;
+
+			int			morphFactor;	// Scale: 0 -> 4096
 		};
 
 		struct SegmentGradient
@@ -168,7 +171,8 @@ namespace wg
 		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
-		inline static void	_blend_pixels(BlendMode mode, int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
+		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+											int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 											int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 

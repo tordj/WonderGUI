@@ -132,9 +132,9 @@ namespace wg
 			_setValue(value);
 	}
 
-	//____ receive() __________________________________________________________
+	//____ _receive() __________________________________________________________
 
-	void Slider::receive(Msg * _pMsg)
+	void Slider::_receive(Msg * _pMsg)
 	{
 		switch (_pMsg->type())
 		{

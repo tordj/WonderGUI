@@ -103,6 +103,10 @@ namespace wg
 		virtual bool		setBlitSource(Surface * pSource);
 		inline Surface_p 	blitSource() const { return m_pBlitSource; }
 
+		virtual void		setMorphFactor(float factor);
+		float				morphFactor() const { return m_morphFactor; }
+
+
 		//.____ Rendering ________________________________________________
 
 		virtual bool	beginRender();
@@ -207,11 +211,12 @@ namespace wg
 		const RectI * m_pClipRects;
 		int			m_nClipRects;
 		RectI		m_clipBounds;
-		RectI		m_clipCanvas;		// Default clip rect for the canvas.
+		RectI		m_clipCanvas;			// Default clip rect for the canvas.
 
-		Color		m_tintColor;		// Current Tint color.
-		BlendMode	m_blendMode;		// Current BlendMode.
-		uint32_t	m_renderFlags;		// Current flags.
+		Color		m_tintColor;			// Current Tint color.
+		BlendMode	m_blendMode;			// Current BlendMode.
+		float		m_morphFactor = 0.5f;	// Factor used for morphing in BlendMode::Morph.
+		uint32_t	m_renderFlags;			// Current flags.
 
 		Color		m_tintGradient[4];
 		RectI		m_tintGradientRect;

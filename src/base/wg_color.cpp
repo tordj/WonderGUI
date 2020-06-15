@@ -296,6 +296,8 @@ namespace wg
 		{
 			case BlendMode::Add:
 				return baseColor + blendColor;
+			case BlendMode::Morph:
+				return mix(baseColor, blendColor, 128);
 			case BlendMode::Blend:
 				return mix(baseColor, Color(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
 			case BlendMode::Undefined:

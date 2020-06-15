@@ -166,5 +166,6 @@
 #include <wg_doubleskin.h>
 #include <wg_canvasstack.h>
 #include <wg_timer.h>
+#include <wg_selectbox.h>
 
 #endif //WONDERGUI_DOT_H

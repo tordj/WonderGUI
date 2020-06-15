@@ -303,7 +303,6 @@ namespace wg
 			outA = p[3];
 		}
 
-
 	}
 
 	//____ write_pixel() _______________________________________________________
@@ -372,7 +371,8 @@ namespace wg
 
 	//____ _blend_pixels() ____________________________________________________
 
-	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
+	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+												int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 												int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
@@ -381,16 +381,68 @@ namespace wg
 		// into templates where only one BlendMode is possible. With if-statements,
 		// the statements are properly detected as never occuring and completely removed.
 
-		if (mode == BlendMode::Replace)
+		if (destFormat == PixelFormat::A_8)
 		{
-			outB = srcB;
-			outG = srcG;
-			outR = srcR;
-			outA = srcA;
-		}
+			// Alpha only destination. We treat alpha differently when there is no other channel.
 
-		if (mode == BlendMode::Blend)
+			if (mode == BlendMode::Replace)
+				outA = srcA;
+
+			if (mode == BlendMode::Morph)
+			{
+				int invMorph = 4096 - morphFactor;
+				outA = (backA * invMorph + srcA * morphFactor) >> 12;
+			}
+
+			if (mode == BlendMode::Blend)
+			{
+				int alpha = srcA;
+				int invAlpha = 4096 - alpha;
+
+				outA = (backA * invAlpha + 4096 * alpha) >> 12;
+			}
+
+			if (mode == BlendMode::Add)
+				outA = s_limit4096Tab[4097 + backA + srcA];
+
+			if (mode == BlendMode::Subtract)
+				outA = s_limit4096Tab[4097 + backA - srcA];
+
+			if (mode == BlendMode::Multiply)
+				outA = (backA * srcA) >> 12;
+
+			if (mode == BlendMode::Min)
+				outA = std::min(backA, srcA);
+
+			if (mode == BlendMode::Max)
+				outA = std::max(backA, srcA);
+
+			if (mode == BlendMode::Invert)
+				outA = (srcA * (4096 - backA) + backA * (4096 - srcA)) >> 12;
+
+		}
+		else
 		{
+			if (mode == BlendMode::Replace)
+			{
+				outB = srcB;
+				outG = srcG;
+				outR = srcR;
+				outA = srcA;
+			}
+
+			if (mode == BlendMode::Morph)
+			{
+				int invMorph = 4096 - morphFactor;
+
+				outB = (backB * invMorph + srcB * morphFactor) >> 12;
+				outG = (backG * invMorph + srcG * morphFactor) >> 12;
+				outR = (backR * invMorph + srcR * morphFactor) >> 12;
+				outA = (backA * invMorph + srcA * morphFactor) >> 12;
+			}
+
+			if (mode == BlendMode::Blend)
+			{
 				int alpha = srcA;
 				int invAlpha = 4096 - alpha;
 
@@ -398,58 +450,62 @@ namespace wg
 				outG = (backG * invAlpha + srcG * alpha) >> 12;
 				outR = (backR * invAlpha + srcR * alpha) >> 12;
 				outA = (backA * invAlpha + 4096 * alpha) >> 12;
-		}
+			}
 
-		if (mode == BlendMode::Add)
-		{
-			int alpha = srcA;
+			if (mode == BlendMode::Add)
+			{
+				int alpha = srcA;
 
-			outB = s_limit4096Tab[4097 + backB + (srcB * alpha >> 12)];
-			outG = s_limit4096Tab[4097 + backG + (srcG * alpha >> 12)];
-			outR = s_limit4096Tab[4097 + backR + (srcR * alpha >> 12)];
-			outA = backA;
-		}
+				outB = s_limit4096Tab[4097 + backB + (srcB * alpha >> 12)];
+				outG = s_limit4096Tab[4097 + backG + (srcG * alpha >> 12)];
+				outR = s_limit4096Tab[4097 + backR + (srcR * alpha >> 12)];
+				outA = backA;
+			}
 
-		if (mode == BlendMode::Subtract)
-		{
-			int alpha = srcA;
+			if (mode == BlendMode::Subtract)
+			{
+				int alpha = srcA;
 
-			outB = s_limit4096Tab[4097 + backB - (srcB * alpha >> 12)];
-			outG = s_limit4096Tab[4097 + backG - (srcG * alpha >> 12)];
-			outR = s_limit4096Tab[4097 + backR - (srcR * alpha >> 12)];
-			outA = backA;
-		}
+				outB = s_limit4096Tab[4097 + backB - (srcB * alpha >> 12)];
+				outG = s_limit4096Tab[4097 + backG - (srcG * alpha >> 12)];
+				outR = s_limit4096Tab[4097 + backR - (srcR * alpha >> 12)];
+				outA = backA;
+			}
 
-		if (mode == BlendMode::Multiply)
-		{
-			outB = (backB * srcB) >> 12;
-			outG = (backG * srcG) >> 12;
-			outR = (backR * srcR) >> 12;
-			outA = backA;
-		}
+			if (mode == BlendMode::Multiply)
+			{
+				int alpha = srcA;
+				int invAlpha = 4096 - alpha;
 
-		if (mode == BlendMode::Min)
-		{
-			outB = std::min(backB,srcB);
-			outG = std::min(backG,srcG);
-			outR = std::min(backR,srcR);
-			outA = std::min(backA, srcA);
-		}
+				outB = (backB * srcB) >> 12;
+				outG = (backG * srcG) >> 12;
+				outR = (backR * srcR) >> 12;
+				outA = backA;
+			}
 
-		if (mode == BlendMode::Max)
-		{
-			outB = std::max(backB, srcB);
-			outG = std::max(backG, srcG);
-			outR = std::max(backR, srcR);
-			outA = std::max(backA, srcA);
-		}
+			if (mode == BlendMode::Min)
+			{
+				outB = std::min(backB, srcB);
+				outG = std::min(backG, srcG);
+				outR = std::min(backR, srcR);
+				outA = backA;
+			}
 
-		if (mode == BlendMode::Invert)
-		{
-			outB = (srcB * (4096 - backB) + backB * (4096 - srcB)) >> 12;
-			outG = (srcG * (4096 - backG) + backG * (4096 - srcG)) >> 12;
-			outR = (srcR * (4096 - backR) + backR * (4096 - srcR)) >> 12;
-			outA = backA;
+			if (mode == BlendMode::Max)
+			{
+				outB = std::max(backB, srcB);
+				outG = std::max(backG, srcG);
+				outR = std::max(backR, srcR);
+				outA = backA;
+			}
+
+			if (mode == BlendMode::Invert)
+			{
+				outB = (srcB * (4096 - backB) + backB * (4096 - srcB)) >> 12;
+				outG = (srcG * (4096 - backG) + backG * (4096 - srcG)) >> 12;
+				outR = (srcR * (4096 - backR) + backR * (4096 - srcR)) >> 12;
+				outA = backA;
+			}
 		}
 	}
 
@@ -822,7 +878,7 @@ namespace wg
 		// Step 3: Blend srcX and backX into outX
 
 		int16_t outB, outG, outR, outA;
-		_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+		_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 		// Step 4: Write resulting pixel to destination
 
@@ -881,7 +937,7 @@ namespace wg
 				// Step 3: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 4: Write resulting pixel to destination
 
@@ -938,9 +994,9 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
-				_blend_pixels(BLEND, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
@@ -954,7 +1010,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				ofs++;
@@ -974,7 +1030,7 @@ namespace wg
 						// Step 3: Blend srcX and backX into outX
 
 						int16_t outB, outG, outR, outA;
-						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						// Step 4: Write resulting pixel to destination
 
@@ -996,7 +1052,7 @@ namespace wg
 					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB, outG, outR, outA;
-					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
@@ -1075,7 +1131,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 			}
@@ -1089,7 +1145,7 @@ namespace wg
 				_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				ofs++;
@@ -1109,7 +1165,7 @@ namespace wg
 						// Step 3: Blend srcX and backX into outX
 
 						int16_t outB, outG, outR, outA;
-						_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						// Step 4: Write resulting pixel to destination
 
@@ -1131,7 +1187,7 @@ namespace wg
 					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB, outG, outR, outA;
-					_blend_pixels(EdgeBlendMode, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
@@ -1200,7 +1256,7 @@ namespace wg
 				// Step 5: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 6: Write resulting pixel to destination
 
@@ -1224,14 +1280,14 @@ namespace wg
 			accB += (blendFraction >> 4) * ((pSegmentGradient->begB + pSegmentGradient->incB * offset) >> 12);
 			accG += (blendFraction >> 4) * ((pSegmentGradient->begG + pSegmentGradient->incG * offset) >> 12);
 			accR += (blendFraction >> 4) * ((pSegmentGradient->begR + pSegmentGradient->incR * offset) >> 12);
-			accA += (blendFraction >> 4) * ((pSegmentGradient->begA + pSegmentGradient->incA * offset) >> 12);
+			accA += blendFraction << 8;
 		}
 		else
 		{
-			accR += blendFraction * pSegmentColor[0] >> 4;
-			accG += blendFraction * pSegmentColor[1] >> 4;
-			accB += blendFraction * pSegmentColor[2] >> 4;
-			accA += blendFraction * pSegmentColor[3] >> 4;
+			accR += (blendFraction * pSegmentColor[0]) >> 4;
+			accG += (blendFraction * pSegmentColor[1]) >> 4;
+			accB += (blendFraction * pSegmentColor[2]) >> 4;
+			accA += blendFraction << 8;
 		}
 	}
 
@@ -1294,8 +1350,10 @@ namespace wg
 						int16_t backB, backG, backR, backA;
 						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
+						//TODO: Replace hardcoded value with REAL morphFactor.
+
 						int16_t outB, outG, outR, outA;
-						_blend_pixels(BLEND, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
+						_blend_pixels(BLEND, 1.f, DSTFORMAT, false, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 
@@ -1383,7 +1441,7 @@ namespace wg
 						outB = (accB >> 12) + ((backB * backFraction) >> 16);
 						outG = (accG >> 12) + ((backG * backFraction) >> 16);
 						outR = (accR >> 12) + ((backR * backFraction) >> 16);
-						outA = 4096;													//TODO: Handle alpha correctly when writing to destination with alpha channel.
+						outA = (accA >> 12) + ((backA * backFraction) >> 16);	// This should be correct... 							
 					}
 
 					if (BLEND == BlendMode::Add)
@@ -1447,6 +1505,22 @@ namespace wg
 						outR = (srcR2 * (4096 - backR) + backR * (4096 - srcR2)) >> 12;
 						outA = backA;
 					}
+
+					if (BLEND == BlendMode::Min)
+					{ 
+						//TODO: Implement!!!
+					}
+
+					if (BLEND == BlendMode::Max)
+					{
+						//TODO: Implement!!!
+					}
+
+					if (BLEND == BlendMode::Morph)
+					{
+						//TODO: Implement!!!
+					}
+
 
 					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
@@ -1515,7 +1589,7 @@ namespace wg
 				// Step 3: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 4: Write resulting pixel to destination
 
@@ -1685,7 +1759,7 @@ namespace wg
 				// Step 4: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 5: Write resulting pixel to destination
 
@@ -1793,7 +1867,7 @@ namespace wg
 				// Step 4: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, false, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 5: Write resulting pixel to destination
 
@@ -1832,6 +1906,7 @@ namespace wg
 		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
+		m_colTrans.morphFactor = 2048;
 		_initTables();
 
 	}
@@ -1842,6 +1917,7 @@ namespace wg
 		m_pCanvasPixels = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
+		m_colTrans.morphFactor = 2048;
 		_initTables();
 	}
 
@@ -2106,6 +2182,14 @@ namespace wg
 		return retVal;
 	}
 
+	//____ setMorphFactor() ___________________________________________________
+
+	void SoftGfxDevice::setMorphFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+		m_morphFactor = factor;
+		m_colTrans.morphFactor = int(factor * 4096);
+	}
 
 	//____ beginRender() _______________________________________________________
 
@@ -4169,6 +4253,14 @@ namespace wg
 		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _plot<BlendMode::Invert, TintMode::None, PixelFormat::BGRA_4_linear>;
 		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::A_8] = _plot<BlendMode::Invert, TintMode::None, PixelFormat::A_8>;
 
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_linear>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGR_565_linear>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGRA_4_linear>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::A_8] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::A_8>;
+
+
 		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_plotOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _plot<BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
@@ -4200,6 +4292,10 @@ namespace wg
 		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _plot<BlendMode::Invert, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _plot<BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_plotOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _plot<BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
+
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_sRGB>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
+		s_plotOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _plot<BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
 
 		// Init Fill Operation Table
 
@@ -4259,6 +4355,13 @@ namespace wg
 		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::None, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _fill<TintMode::None, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::A_8>;
+
 
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear>;
@@ -4315,6 +4418,13 @@ namespace wg
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_565_linear>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::A_8>;
+
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::A_8>;
 
 
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
@@ -4373,6 +4483,13 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _fill<TintMode::GradientX, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::A_8>;
+
 
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear>;
@@ -4429,6 +4546,13 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_565_linear>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::A_8>;
+
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::A_8>;
 
 
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
@@ -4487,6 +4611,12 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _fill<TintMode::GradientXY, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::A_8>;
 
 
 		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
@@ -4521,6 +4651,10 @@ namespace wg
 		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_fillOpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+
 
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -4553,6 +4687,10 @@ namespace wg
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_8_sRGB>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
+
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_fillOpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
@@ -4587,6 +4725,10 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+
 
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -4619,6 +4761,10 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_8_sRGB>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
+
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
@@ -4653,6 +4799,9 @@ namespace wg
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_fillOpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _fill<TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		// Init Line Operation Table
@@ -4713,6 +4862,14 @@ namespace wg
 		s_LineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_4_linear>;
 		s_LineOpTab[(int)BlendMode::Invert][(int)PixelFormat::A_8] = _draw_line <BlendMode::Invert, TintMode::None, PixelFormat::A_8>;
 
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_linear>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_565_linear>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_4_linear>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::A_8] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::A_8>;
+
+
 		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_LineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
@@ -4745,6 +4902,9 @@ namespace wg
 		s_LineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_LineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
 
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_sRGB>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
+		s_LineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
 
 		// Init ClipLine Operation Table
 
@@ -4804,6 +4964,14 @@ namespace wg
 		s_clipLineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _clip_draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_4_linear>;
 		s_clipLineOpTab[(int)BlendMode::Invert][(int)PixelFormat::A_8] = _clip_draw_line <BlendMode::Invert, TintMode::None, PixelFormat::A_8>;
 
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_linear>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_565_linear>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_4_linear>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::A_8] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::A_8>;
+
+
 		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _clip_draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _clip_draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_clipLineOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _clip_draw_line <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
@@ -4835,6 +5003,10 @@ namespace wg
 		s_clipLineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _clip_draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_clipLineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _clip_draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_clipLineOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _clip_draw_line <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
+
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_sRGB>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
+		s_clipLineOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _clip_draw_line <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
 
 
 		// Init PlotList Operation Table
@@ -4895,6 +5067,13 @@ namespace wg
 		s_plotListOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _plot_list <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_4_linear>;
 		s_plotListOpTab[(int)BlendMode::Invert][(int)PixelFormat::A_8] = _plot_list <BlendMode::Invert, TintMode::None, PixelFormat::A_8>;
 
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_linear>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_linear>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGR_565_linear>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_4_linear>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::A_8] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::A_8>;
+
 
 		s_plotListOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _plot_list <BlendMode::Replace, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_plotListOpTab[(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _plot_list <BlendMode::Replace, TintMode::None, PixelFormat::BGR_8_sRGB>;
@@ -4927,6 +5106,10 @@ namespace wg
 		s_plotListOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _plot_list <BlendMode::Invert, TintMode::None, PixelFormat::BGRA_8_sRGB>;
 		s_plotListOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _plot_list <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
 		s_plotListOpTab[(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _plot_list <BlendMode::Invert, TintMode::None, PixelFormat::BGR_8_sRGB>;
+
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGRA_8_sRGB>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
+		s_plotListOpTab[(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _plot_list <BlendMode::Morph, TintMode::None, PixelFormat::BGR_8_sRGB>;
 
 
 		// Init Blit Pass 2 Operation Table
@@ -4987,6 +5170,13 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] =_simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::A_8>;
+
 
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_linear>;
@@ -5043,6 +5233,13 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_565_linear>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::A_8>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::A_8>;
 
 
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
@@ -5101,6 +5298,13 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::A_8>;
+
 
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_linear>;
@@ -5158,6 +5362,14 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::A_8>;
+
+
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_linear>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_linear>;
@@ -5214,6 +5426,12 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::A_8>;
 
 
 		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
@@ -5248,6 +5466,10 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::None][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::None, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+
 
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -5280,6 +5502,10 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGRA_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
+
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::Flat][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::Flat, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
@@ -5314,6 +5540,10 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientX][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientX, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+
 
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -5347,6 +5577,11 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+
+
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -5379,6 +5614,9 @@ namespace wg
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_pass2OpTab[(int)TintMode::GradientXY][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _simple_blit < PixelFormat::Unknown, TintMode::GradientXY, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		// Init straight move to internal Operation Table
@@ -6211,6 +6449,13 @@ namespace wg
 		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::A_8>;
+
 
 		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_segmentOpTab[0][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <0, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -6243,6 +6488,10 @@ namespace wg
 		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGRA_8_sRGB>;
 		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_segmentOpTab[0][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <0, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
+
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_segmentOpTab[0][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <0, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 
 
 		// Versions with vertical tint
@@ -6303,6 +6552,14 @@ namespace wg
 		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRA_4_linear] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGRA_4_linear>;
 		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::A_8] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::A_8>;
 
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_linear] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGRA_8_linear>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_linear] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_linear] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_linear>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGR_565_linear] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_565_linear>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRA_4_linear] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGRA_4_linear>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::A_8] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::A_8>;
+
+
 		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGRA_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Replace][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <1, BlendMode::Replace, PixelFormat::BGR_8_sRGB>;
@@ -6334,6 +6591,10 @@ namespace wg
 		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGRA_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
 		s_segmentOpTab[1][(int)BlendMode::Invert][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <1, BlendMode::Invert, PixelFormat::BGR_8_sRGB>;
+
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRA_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGRA_8_sRGB>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGRX_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
+		s_segmentOpTab[1][(int)BlendMode::Morph][(int)PixelFormat::BGR_8_sRGB] = _draw_segment_strip <1, BlendMode::Morph, PixelFormat::BGR_8_sRGB>;
 	}
 
 	//____ _scaleLineThickness() ___________________________________________________

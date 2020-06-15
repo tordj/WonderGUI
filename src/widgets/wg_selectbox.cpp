@@ -24,12 +24,18 @@
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
 #include <wg_msgrouter.h>
+#include <wg_base.h>
+#include <wg_popuplayer.h>
+#include <wg_inputhandler.h>
 #include <wg_internal.h>
+#include <wg_cdynamicvector.impl.h>
 
 #include <algorithm>
 
 namespace wg
 {
+	template class CDynamicVector<SelectBoxEntry>;
+
 	using namespace Util;
 
 	const TypeInfo SelectBox::TYPEINFO = { "SelectBox", &Widget::TYPEINFO };
@@ -58,13 +64,16 @@ namespace wg
 
 	void SelectBox::setEntrySkin(Skin * pSkin)
 	{
-		Size oldPadding = m_entryContentPadding.size();
+		Size oldPadding = m_entryContentPaddingSize;
 		Size newPadding = pSkin ? pSkin->contentPaddingSize() : Size();
 
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
 		{
-			m_entryContentPadding = pSkin ? pSkin->contentPadding(StateEnum::Normal) : Border(0, 0);		//TODO: This is wrong! Content padding can shift with state.
+			m_listCanvasPreferredSize.w += newPadding.w - oldPadding.w;
+			m_listCanvasPreferredSize.h += (newPadding.h - oldPadding.h) * entries.size();
+
+			m_entryContentPaddingSize = newPadding;
 			m_pListCanvas->_requestResize();
 		}
 
@@ -89,6 +98,14 @@ namespace wg
 
 	void SelectBox::setListSkin(Skin * pSkin)
 	{
+		Skin* pOldSkin = m_pListCanvas->skin();
+
+		Size oldPadding = pOldSkin ? pOldSkin->contentPaddingSize() : Size();
+		Size newPadding = pSkin ? pSkin->contentPaddingSize() : Size();
+
+		if (oldPadding != newPadding)
+			m_listCanvasPreferredSize += newPadding - oldPadding;
+
 		m_pListCanvas->setSkin(pSkin);
 	}
 
@@ -154,13 +171,6 @@ namespace wg
 			return -1;
 	}
 
-	//____ receive() _________________________________________________________________
-
-	void SelectBox::receive(Msg * pMsg)
-	{
-
-	}
-
 	//____ preferredSize() _____________________________________________________________
 
 	Size SelectBox::preferredSize() const
@@ -188,6 +198,48 @@ namespace wg
 			}
 			return contentHeight + contentPadding.h;
 		}
+	}
+
+	//____ _receive() _________________________________________________________________
+
+	void SelectBox::_receive(Msg* pMsg)
+	{
+		Widget::_receive(pMsg);
+
+		switch (pMsg->type())
+		{
+		case MsgType::PopupClosed:
+		{
+			m_bOpen = false;
+			_setState(m_closeState);
+			break;
+		}
+
+		case MsgType::MousePress:
+		{
+			if (static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
+			{
+				if (m_bOpen)
+				{
+					_close();
+				}
+				else
+				{
+					_open();
+					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, OO(_parent())->_getPopupLayer());
+					m_bPressed = false;		// We have yielded our press...
+				}
+			}
+			break;
+		}
+
+		default:
+			break;
+		}
+
+		if (pMsg->isMouseButtonMsg() && static_cast<MouseButtonMsg*>(pMsg)->button() == MouseButton::Left)
+			pMsg->swallow();
+
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -221,6 +273,44 @@ namespace wg
 	{
 		m_size = size;
 		m_matchingHeight = matchingHeight(size.w);
+	}
+
+	//____ _setState() ________________________________________________________
+
+	void SelectBox::_setState(State state)
+	{
+		if (m_bOpen)
+		{
+			m_closeState = state;
+			state.setPressed(true);			// Force pressed state when popup is open.
+		}
+		Widget::_setState(state);
+		OO(text)._setState(state);
+		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
+	}
+
+	//____ _open() ____________________________________________________________
+
+	void SelectBox::_open()
+	{
+		auto pLayer = OO(_parent())->_getPopupLayer();
+		if (pLayer && m_pListCanvas)
+		{
+			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Origo::SouthWest, false);
+			m_bOpen = true;
+			m_closeState = m_state;
+		}
+	}
+
+	//____ _close() ___________________________________________________________
+
+	void SelectBox::_close()
+	{
+		auto pLayer = OO(_parent())->_getPopupLayer();
+		if (pLayer && m_pListCanvas)
+		{
+			pLayer->popupSlots.pop(m_pListCanvas);
+		}
 	}
 
 	//____ _updateListCanvasOpacity() ____________________________________________
@@ -327,6 +417,7 @@ namespace wg
 
 		Size entryPadding = m_pEntrySkin ? m_pEntrySkin->contentPaddingSize() : Size();
 		Size boxPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
+		Size listPadding = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
 
 		Size	oldPreferred		= m_preferredSize;
 		int		oldMatchingHeight = m_matchingHeight;
@@ -358,8 +449,8 @@ namespace wg
 			Size entryPreferred = contentPreferred + entryPadding;
 			Size boxPreferred = contentPreferred + boxPadding;
 
-			if (entryPreferred.w > m_listCanvasPreferredSize.w)
-				m_listCanvasPreferredSize.w = entryPreferred.w;
+			if (entryPreferred.w + listPadding.w > m_listCanvasPreferredSize.w)
+				m_listCanvasPreferredSize.w = entryPreferred.w + listPadding.w;
 			m_listCanvasPreferredSize.h += entryPreferred.h;
 
 			if (m_preferredSize.w < boxPreferred.w)
@@ -423,14 +514,14 @@ namespace wg
 
 	MU SelectBox::_sideCanvasMatchingWidth(const SideCanvas * pCanvas, MU height) const
 	{
-		return m_listCanvasPreferredSize.w;
+		return std::max(m_listCanvasPreferredSize.w, m_preferredSize.w);
 	}
 
 	//____ _sideCanvasPreferredSize() _________________________________________
 
 	Size SelectBox::_sideCanvasPreferredSize(const SideCanvas * pCanvas) const
 	{
-		return m_listCanvasPreferredSize;
+		return { std::max(m_listCanvasPreferredSize.w, m_preferredSize.w), m_listCanvasPreferredSize.h };
 	}
 
 	//____ _sideCanvasRender() ________________________________________________
@@ -442,8 +533,20 @@ namespace wg
 
 		Rect contentRect = pWidget->_contentRect(canvas);
 
+		TextMapper* pTextMapper = m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper();
 
-
+		Coord pos = contentRect.pos();
+		for (auto& entry : entries )
+		{
+			Rect entryRect = { pos, canvas.w, entry.m_height };
+			if (m_pEntrySkin)
+			{
+				m_pEntrySkin->render(pDevice, entryRect, entry.m_state);
+				entryRect = m_pEntrySkin->contentRect(entryRect, entry.m_state);
+			}
+			pTextMapper->render(&entry, pDevice, entryRect);
+			pos.y += entry.m_height;
+		}
 
 	}
 
@@ -458,7 +561,23 @@ namespace wg
 
 	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const Size& size)
 	{
-		m_listCanvasMatchingHeight = m_pListCanvas->matchingHeight(size.w);
+		TextMapper* pMapper = m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper();
+
+		Size listCanvasPaddingSize = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
+
+		MU newContentWidth = size.w - listCanvasPaddingSize.w - m_entryContentPaddingSize.w;
+		MU matchingHeight = listCanvasPaddingSize.h;
+
+		for (auto& entry : entries)
+		{
+			MU newEntryHeight = pMapper->matchingHeight(&entry, newContentWidth);
+			pMapper->onResized(&entry, { newContentWidth, newEntryHeight }, { m_entryContentWidth,entry.m_height });
+			entry.m_height = newEntryHeight;
+			matchingHeight += newEntryHeight + m_entryContentPaddingSize.h;
+		}
+
+		m_entryContentWidth = newContentWidth;
+		m_listCanvasMatchingHeight = matchingHeight;
 		m_pListCanvas->Widget::_resize(size);
 	}
 
@@ -516,20 +635,12 @@ namespace wg
 
 	Size SelectBoxEntry::_textSize() const
 	{
-		return Size( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPadding.height() );
+		return Size( m_pParent->m_entryContentWidth, m_height - m_pParent->m_entryContentPaddingSize.h );
 	}
 
 	State SelectBoxEntry::_textState() const
 	{
-		int myIndex = this - &m_pParent->entries[0];
-
-		State s;
-		if (myIndex == m_pParent->m_selectedEntryIndex)
-			s = StateEnum::Selected;
-		if (myIndex == m_pParent->m_hoveredEntryIndex)
-			s.setHovered(true);
-
-		return s;
+		return m_state;
 	}
 
 	TextStyle * SelectBoxEntry::_textStyle() const

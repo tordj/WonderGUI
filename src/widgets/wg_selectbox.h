@@ -40,7 +40,7 @@ namespace wg
 	{
 		friend class SelectBox;
 	public:
-		SelectBoxEntry( int id, String& text ) : m_id(id), m_string(text) {};
+		SelectBoxEntry( int id, const String& text ) : m_id(id), m_string(text) {};
 		
 		inline int		id() const { return m_id; }
 		inline String	text() const { return m_string; }
@@ -68,6 +68,7 @@ namespace wg
 		MU			m_height;
 		String 		m_string;
 		SelectBox * m_pParent = nullptr;
+		State		m_state = StateEnum::Normal;
 	};
 		
 
@@ -124,20 +125,20 @@ namespace wg
 		int				selectedEntryId() const;
 		inline int		selectedEntryIndex() const { return m_selectedEntryIndex; }
 
-		//.____ Misc _________________________________________________________________
-
-		void 			receive(Msg * pMsg) override;
-
 
 	protected:
 		SelectBox();
 		virtual ~SelectBox();
 		virtual Widget* _newOfMyType() const override { return new SelectBox(); };
+		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void		_resize(const Size& size) override;
+		void		_setState(State state) override;
 
+		void		_open();
+		void		_close();
 
 		class MySideCanvas : public SideCanvas 
 		{ 
@@ -194,13 +195,16 @@ namespace wg
 		TextStyle_p		m_pEntryStyle;
 
 		MU				m_entryContentWidth;			// Width of content of an entry in the list, in quarterpixels.
-		Border			m_entryContentPadding;			// Padding of content of an entry in the list, in quarterpixels.
+		Size			m_entryContentPaddingSize;		// Sfize of padding of content of an entry in the list, in quarterpixels.
 
 		Size			m_preferredSize;
 		MU				m_matchingHeight = 0;			// Matching height for current width.
 
 		MU				m_listCanvasMatchingHeight = 0;
 		Size			m_listCanvasPreferredSize;
+
+		bool			m_bOpen = false;
+		State			m_closeState;
 
 
 	};

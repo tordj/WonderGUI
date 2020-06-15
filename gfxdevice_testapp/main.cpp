@@ -49,6 +49,7 @@
 #include <testsuites/tintblittests.h>
 #include <testsuites/tintsegmenttests.h>
 #include <testsuites/blitblendtests.h>
+#include <testsuites/a8tests.h>
 
 
 using namespace wg;
@@ -651,6 +652,7 @@ void setup_tests()
 	add_testsuite(new TintBlitTests(), new TintBlitTests());
 	add_testsuite(new TintSegmentTests(), new TintSegmentTests());
 	add_testsuite(new BlitBlendTests(), new BlitBlendTests());
+	add_testsuite(new A8Tests(), new A8Tests());
 
 	regen_testentries();
 }

@@ -277,6 +277,12 @@ namespace wg
 	//____ BlendMode ____________________________________________________________
 
 	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.
+	// There are two groups of BlendModes.
+	// The first one is for combining two surfaces into one and consists of Replace, Morph and Blend.
+	// The second one is for manipulating RGB values of destination and therefore does not update the
+	// destinations alpha channel (if any), unless the destination lacks RGB values, in which case the
+	// alpha is manipulated instead.
+
 
 	enum class BlendMode : uint8_t	//. autoExtras
 	{
@@ -297,10 +303,12 @@ namespace wg
 							///< Color Blending: DstRGB = SrcRGBA * TintRGBA/255
 		Invert,				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
-		Min,				///< Blitting: Minimum value of each RGBA component.
-							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA
-		Max,				///< Blitting: Maximum value of each RGBA component.
+		Min,				///< Blitting: Minimum value of each RGB component, alpha is ignored.
+							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA)
+		Max,				///< Blitting: Maximum value of each RGB component, alpha is ignored.
 							///< Color Blending: DstRGBA = max(SrcRGBA,DstRGBA)
+		Morph				///< Blitting: Transition RGBA into source by morph factor.
+							///< Color Blending: A 50% mix of the two colors.
 	};
 
 	//____ PointerStyle __________________________________________________________

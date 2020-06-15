@@ -111,9 +111,9 @@ namespace wg
 			_setValue(value);
 	}
 
-	//____ receive() __________________________________________________________
+	//____ _receive() __________________________________________________________
 
-	void Knob::receive(Msg * _pMsg)
+	void Knob::_receive(Msg * _pMsg)
 	{
 		switch (_pMsg->type())
 		{
@@ -192,7 +192,7 @@ namespace wg
 				break;
 		}
 
-		Widget::receive(_pMsg);
+		Widget::_receive(_pMsg);
 	}
 
 	//____ _cloneContent() _______________________________________________________

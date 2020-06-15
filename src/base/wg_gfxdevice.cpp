@@ -206,6 +206,14 @@ namespace wg
 		return true;
 	}
 
+	//____ setMorphFactor() ____________________________________________________
+
+	void GfxDevice::setMorphFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+		m_morphFactor = factor;
+	}
+
 	//____ beginRender() ___________________________________________________________
 
 	bool GfxDevice::beginRender()

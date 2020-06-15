@@ -65,7 +65,8 @@ namespace wg
 			"Multiply",
 			"Invert",
 			"Min",
-			"Max" };
+			"Max",
+			"Morph" };
 
 		return names[(int)i];
 	}

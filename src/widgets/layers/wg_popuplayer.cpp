@@ -103,7 +103,7 @@ namespace wg
 
 	//____ _updateGeo() __________________________________________________________
 
-	void PopupLayer::_updateGeo(Slot* pSlot, bool bForceResize)
+	void PopupLayer::_updateGeo(Slot* pSlot, bool bDoResize)
 	{
 		// Get size of parent and correct launcherGeo
 
@@ -261,6 +261,9 @@ namespace wg
 
 		// Update geometry if it has changed.
 
+		if (pSlot->size() != geo.size())
+			bDoResize = true;
+
 		if (geo != pSlot->m_geo)
 		{
 			_onRequestRender(pSlot->m_geo, pSlot);
@@ -268,7 +271,7 @@ namespace wg
 			_onRequestRender(pSlot->m_geo, pSlot);
 		}
 
-		if (bForceResize || pSlot->size() != geo.size())
+		if (bDoResize)
 			pSlot->_setSize(geo);
 	}
 
@@ -851,6 +854,7 @@ namespace wg
 			if( pEH )
 				pEH->post( new PopupClosedMsg( pSlot[i]._widget(), pSlot[i].m_pOpener ) );
 			_requestRender(pSlot[i].m_geo);
+			pSlot[i]._setWidget(nullptr);
 		}
 
 		popupSlots._erase(ofs, nb);

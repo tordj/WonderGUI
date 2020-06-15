@@ -83,6 +83,7 @@ namespace wg
 
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
+		void	setMorphFactor(float factor) override;
 
 		bool    isCanvasReady() const;
 
@@ -121,6 +122,7 @@ namespace wg
 			SetCanvas,
 //			SetClip,
 			SetBlendMode,
+			SetMorphFactor,
 			SetTintColor,
 			SetTintGradient,
 			ClearTintGradient,
@@ -136,6 +138,7 @@ namespace wg
 
 		void	_setCanvas( GlSurface * pCanvas, int width, int height );
 		void	_setBlendMode(BlendMode mode);
+		void	_setMorphFactor(float morphFactor);
 		void	_setBlitSource(GlSurface * pSurf);
 		void	_setTintColor(Color color);
 		void	_setTintGradient(const RectI& rect, const Color colors[4]);

@@ -24,6 +24,7 @@
 #pragma once
 
 #include <wg_container.h>
+#include <wg_sidecanvas.h>
 #include <wg_ctexteditor.h>
 #include <wg_ccanvas.h>
 
@@ -43,6 +44,16 @@ namespace wg
 		using Widget::_preRender;
 		using Widget::_setState;
 	};
+
+	class OSideCanvas : public SideCanvas
+	{
+	public:
+		using SideCanvas::_contentRect;
+		using SideCanvas::_contentPaddingSize;
+		using SideCanvas::_requestResize;
+
+	};
+
 
 	class OContainer : public Container
 	{
@@ -231,6 +242,10 @@ namespace wg
 
 	inline OCTextEditor&		OO(CTextEditor& component) { return reinterpret_cast<OCTextEditor&>(component); }
 	inline const OCTextEditor&	OO(const CTextEditor& component) { return reinterpret_cast<const OCTextEditor&>(component); }
+
+	inline OSideCanvas *		OO(SideCanvas* pWidget) { return reinterpret_cast<OSideCanvas*>(pWidget); }
+	inline const OSideCanvas *	OO(const SideCanvas* pWidget) { return reinterpret_cast<const OSideCanvas*>(pWidget); }
+
 
 }
 

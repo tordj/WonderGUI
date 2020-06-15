@@ -89,6 +89,8 @@ bool canvasStackTest(CStandardSlot_p pSlot);
 bool doubleSkinTest(CStandardSlot_p pSlot);
 bool timerTest(CStandardSlot_p pSlot);
 bool animPlayerTest(CStandardSlot_p pSlot);
+bool selectBoxTest(CStandardSlot_p pSlot);
+
 
 void nisBlendTest();
 
@@ -586,12 +588,13 @@ int main(int argc, char** argv)
 //	sliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
-	animKnobTest(&pRoot->slot);
+//  animKnobTest(&pRoot->slot);
 //	canvasStackTest(&pRoot->slot);
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-	
+	selectBoxTest(&pRoot->slot);
+
 	// Test IChild and IChildIterator baseclasses
 /*
 	{
@@ -2366,6 +2369,36 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+
+bool selectBoxTest(CStandardSlot_p pSlot)
+{
+	PopupLayer_p pPopupLayer = PopupLayer::create();
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorStateSkin::create(Color::PapayaWhip));
+
+	Surface_p pMainSurf = loadSurface("../resources/selectbox.png", PixelFormat::BGRA_8);
+
+	auto pMainSkin = BlockStateSkin::create(pMainSurf, { 0,0,32,16 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed }, { 3,23,3,3 });
+	pMainSkin->setContentPadding({ 3,23,3,3 });
+
+	auto pSelectBox = SelectBox::create();
+	pSelectBox->setSkin(pMainSkin);
+
+	auto pListSkin = BoxStateSkin::create(1, Color::White, Color::Black);
+	pListSkin->setContentPadding(3);
+
+	pSelectBox->setListSkin(pListSkin);
+
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("TESTAR UTAV BARA HELVETE")));
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("VERSUCH VERSUCH VERSUCH VERSUCH")));
+
+	pBaseLayer->slots.pushBackMovable(pSelectBox, Coord(10, 10));
+	pPopupLayer->mainSlot = pBaseLayer;
+
+	*pSlot = pPopupLayer;
+	return true;
+}
 
 //____
 

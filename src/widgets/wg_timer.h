@@ -83,15 +83,12 @@ namespace wg
 		void			setValue(int millisec);
 		inline int		value() const { return m_value;	}
 
-		///____ Misc __________________________________________________________
-
-		void 			receive(Msg * pMsg) override;
-
 
 	protected:
 		Timer();
 		virtual ~Timer();
 		virtual Widget* _newOfMyType() const override { return new Timer(); };
+		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
 		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
