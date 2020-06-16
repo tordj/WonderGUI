@@ -22,7 +22,7 @@
 #ifndef WG_GLSHADERS_DOT_H
 #define WG_GLSHADERS_DOT_H
 
-#include <wg_glgfxdevice.h>
+#include <wg_glgfxdevice.h>  
 
 namespace wg {
 
@@ -108,6 +108,18 @@ const char GlGfxDevice::fillFragmentShader[] =
 "{                                      "
 "   outColor = fragColor;                   "
 "}                                      ";
+
+const char GlGfxDevice::fillFragmentShader_A8[] =
+
+"#version 330 core\n"
+"out vec4 outColor;                     "
+"in vec4 fragColor;                         "
+"void main()                            "
+"{                                      "
+"   outColor.r = fragColor.a;                   "
+"}                                      ";
+
+
 
 const char GlGfxDevice::blitVertexShader[] =
 
@@ -209,6 +221,20 @@ const char GlGfxDevice::blitFragmentShader[] =
 "   color = texture(texId, texUV) * fragColor;  "
 "}												";
 
+const char GlGfxDevice::blitFragmentShader_A8[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   color.r = texture(texId, texUV).a * fragColor.a;  "
+"}												";
+
+
 const char GlGfxDevice::alphaBlitFragmentShader[] =
 
 "#version 330 core\n"
@@ -222,6 +248,20 @@ const char GlGfxDevice::alphaBlitFragmentShader[] =
 "   color = fragColor;							"
 "   color.a *= texture(texId, texUV).r;         "
 "}												";
+
+const char GlGfxDevice::alphaBlitFragmentShader_A8[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   color.r = fragColor.a * texture(texId, texUV).r;         "
+"}												";
+
 
 
 const char GlGfxDevice::clutBlitNearestVertexShader[] =
@@ -323,6 +363,21 @@ const char GlGfxDevice::clutBlitNearestFragmentShader[] =
 "{												"
 "   color = texture(clutId, vec2(texture(texId, texUV).r,0.5f)) * fragColor;	"
 "}												";
+
+const char GlGfxDevice::clutBlitNearestFragmentShader_A8[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"uniform sampler2D clutId;						"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   color.r = texture(clutId, vec2(texture(texId, texUV).r,0.5f)).a * fragColor.a;	"
+"}												";
+
 
 const char GlGfxDevice::clutBlitInterpolateVertexShader[] =
 
@@ -461,6 +516,34 @@ const char GlGfxDevice::clutBlitInterpolateFragmentShader[] =
 "   color = (out0 * (1-fract(uvFrac.y)) + out1 * fract(uvFrac.y)) * fragColor;	"
 "}												";
 
+const char GlGfxDevice::clutBlitInterpolateFragmentShader_A8[] =
+
+"#version 330 core\n"
+
+"uniform sampler2D texId;						"
+"uniform sampler2D clutId;						"
+"in vec2 texUV00;								"
+"in vec2 texUV11;								"
+"in vec2 uvFrac;								"
+"in vec4 fragColor;								"
+"out vec4 color;								"
+"void main()									"
+"{												"
+"   float index00 = texture(texId, texUV00).r;		"
+"   float index01 = texture(texId, vec2(texUV11.x,texUV00.y) ).r;		"
+"   float index10 = texture(texId, vec2(texUV00.x,texUV11.y) ).r;		"
+"   float index11 = texture(texId, texUV11).r;		"
+"   float color00 = texture(clutId, vec2(index00,0.5f)).a;	"
+"   float color01 = texture(clutId, vec2(index01,0.5f)).a;	"
+"   float color10 = texture(clutId, vec2(index10,0.5f)).a;	"
+"   float color11 = texture(clutId, vec2(index11,0.5f)).a;	"
+
+"   float out0 = color00 * (1-fract(uvFrac.x)) + color01 * fract(uvFrac.x);	"
+"   float out1 = color10 * (1-fract(uvFrac.x)) + color11 * fract(uvFrac.x);	"
+"   color.r = (out0 * (1-fract(uvFrac.y)) + out1 * fract(uvFrac.y)) * fragColor.a;	"
+"}												";
+
+
 
 const char GlGfxDevice::plotVertexShader[] =
 
@@ -503,6 +586,16 @@ const char GlGfxDevice::plotFragmentShader[] =
 "void main()                            "
 "{                                      "
 "   outColor = fragColor;				"
+"}                                      ";
+
+const char GlGfxDevice::plotFragmentShader_A8[] =
+
+"#version 330 core\n"
+"in vec4 fragColor;                     "
+"out vec4 outColor;                     "
+"void main()                            "
+"{                                      "
+"   outColor.r = fragColor.a;				"
 "}                                      ";
 
 
@@ -567,6 +660,22 @@ const char GlGfxDevice::lineFromToFragmentShader[] =
 "   outColor.rgb = fragColor.rgb;		"
 "   outColor.a = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
 "}                                      ";
+
+const char GlGfxDevice::lineFromToFragmentShader_A8[] =
+
+"#version 330 core\n"
+"in vec4 fragColor;                     "
+"flat in float s;							"
+"flat in float w;							"
+"flat in float slope;						"
+"flat in float ifSteep;						"
+"flat in float ifMild;						"
+"out vec4 outColor;                     "
+"void main()                            "
+"{										"
+"   outColor.t = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
+"}                                      ";
+
 
 const char GlGfxDevice::aaFillVertexShader[] =
 
@@ -662,6 +771,20 @@ const char GlGfxDevice::aaFillFragmentShader[] =
 "	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
 "	outColor.a = fragColor.a * alphas.x * alphas.y;  "
 "}                                      ";
+
+const char GlGfxDevice::aaFillFragmentShader_A8[] =
+
+"#version 330 core\n"
+"in vec4 fragColor;						"
+"flat in vec4 rect;						"
+"out vec4 outColor;                     "
+"void main()                            "
+"{										"
+"	vec2 middleofs = abs(gl_FragCoord.xy - rect.xy);   "
+"	vec2 alphas = clamp(rect.zw  - middleofs, 0.f, 1.f);  "
+"	outColor.r = fragColor.a * alphas.x * alphas.y;  "
+"}                                      ";
+
 
 const char GlGfxDevice::segmentsVertexShader[] =
 
@@ -814,6 +937,53 @@ const char GlGfxDevice::segmentsFragmentShader[] =
 "   color.a = totalAlpha * fragColor.a; "
 "   color.rgb = (rgbAcc/totalAlpha) * fragColor.rgb;"
 "}";
+
+const char GlGfxDevice::segmentsFragmentShader_A8[] =
+
+"#version 330 core\n"
+"uniform samplerBuffer stripesId;				"
+"uniform sampler2D	paletteId;					"
+"in vec2 texUV;									"
+"in vec4 fragColor;								"
+"flat in int segments;							"
+"flat in int stripesOfs;						"
+"in vec2 paletteOfs;"
+
+"out vec4 color;								"
+"void main()									"
+"{												"
+"	float totalAlpha = 0.f;"
+
+"	float factor = 1.f;"
+"   vec2 palOfs = paletteOfs;"
+"	for( int i = 0 ; i < $EDGES ; i++ )"
+"	{"
+"  		vec4 col = texture(paletteId, palOfs);"
+"  		palOfs.x += 1/$MAXSEG.f;"
+
+"		vec4 edge = texelFetch(stripesId, stripesOfs + int(texUV.x)*(segments-1)+i );"
+
+"		float x = (texUV.y - edge.r) * edge.g;"
+"		float adder = edge.g / 2.f;"
+"		if (x < 0.f)"
+"			adder = edge.b;"
+"		else if (x + edge.g > 1.f)"
+"			adder = edge.a;"
+"		float factor2 = clamp(x + adder, 0.f, 1.f);"
+
+"		float useFactor = (factor - factor2)*col.a;"
+"		totalAlpha += useFactor;"
+
+"		factor = factor2;"
+"	}"
+
+"  	vec4 col = texture(paletteId, palOfs);"
+"	float useFactor = factor*col.a;"
+"	totalAlpha += useFactor;"
+
+"   color.r = totalAlpha * fragColor.a; "
+"}";
+
 
 /*
 static const char segmentsFragmentShader2[] =

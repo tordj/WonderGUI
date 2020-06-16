@@ -161,6 +161,9 @@ namespace wg
 
 
 		GLuint  _createGLProgram(const char * pVertexShader, const char * pFragmentShader);
+		void	_setDrawUniforms(GLuint progId, int uboBindingPoint);
+		void	_setBlitUniforms(GLuint progId, int uboBindingPoint);
+		void	_setClutBlitUniforms(GLuint progId, int uboBindingPoint);
 
 		void	_initTables();
 		float	_scaleThickness(float thickeness, float slope);
@@ -202,30 +205,30 @@ namespace wg
 
 		// Device programs
 
-		GLuint  m_fillProg;
-		GLuint  m_fillGradientProg;
+		GLuint  m_fillProg[2];									// [RGB/A_8 dest]
+		GLuint  m_fillGradientProg[2];							// [RGB/A_8 dest]
 
-		GLuint  m_aaFillProg;
-		GLuint  m_aaFillGradientProg;
+		GLuint  m_aaFillProg[2];								// [RGB/A_8 dest]
+		GLuint  m_aaFillGradientProg[2];						// [RGB/A_8 dest]
 
-		GLuint  m_blitProg;
-		GLuint  m_blitGradientProg;
+		GLuint  m_blitProg[2];									// [RGB/A_8 dest]
+		GLuint  m_blitGradientProg[2];							// [RGB/A_8 dest]
 
-		GLuint  m_alphaBlitProg;
-		GLuint  m_alphaBlitGradientProg;
+		GLuint  m_alphaBlitProg[2];								// [RGB/A_8 dest]
+		GLuint  m_alphaBlitGradientProg[2];						// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitNearestProg;
-		GLuint  m_clutBlitNearestGradientProg;
+		GLuint  m_clutBlitNearestProg[2];						// [RGB/A_8 dest]
+		GLuint  m_clutBlitNearestGradientProg[2];				// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitInterpolateProg;
-		GLuint  m_clutBlitInterpolateGradientProg;
+		GLuint  m_clutBlitInterpolateProg[2];					// [RGB/A_8 dest]
+		GLuint  m_clutBlitInterpolateGradientProg[2];			// [RGB/A_8 dest]
 
-		GLuint  m_plotProg;
-		GLuint  m_lineFromToProg;
+		GLuint  m_plotProg[2];									// [RGB/A_8 dest]
+		GLuint  m_lineFromToProg[2];							// [RGB/A_8 dest]
 
-		GLuint	m_segmentsProg[c_maxSegments][2];			// [nb segments][base tint gradient]
+		GLuint	m_segmentsProg[c_maxSegments][2][2];			// [nb segments][base tint gradient][RGB/A_8 dest]
 
-		GLuint	m_blitProgMatrix[PixelFormat_size][2][2];	// [source format][interpolation][tintgradient]
+		GLuint	m_blitProgMatrix[PixelFormat_size][2][2][2];	// [source format][interpolation][tintgradient][RGB/A_8 dest]
 
 		//
 
@@ -303,7 +306,8 @@ namespace wg
 		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
 		bool		m_bGradientActive = false;										
-
+		BlendMode	m_activeBlendMode = BlendMode::Blend;
+		bool		m_bActiveCanvasIsA8 = false;
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;
@@ -329,25 +333,34 @@ namespace wg
 
 		static const char fillVertexShader[];
 		static const char fillFragmentShader[];
+		static const char fillFragmentShader_A8[];
 		static const char blitVertexShader[];
 		static const char blitFragmentShader[];
+		static const char blitFragmentShader_A8[];
 		static const char plotVertexShader[];
 		static const char plotFragmentShader[];
+		static const char plotFragmentShader_A8[];
 		static const char lineFromToVertexShader[];
 		static const char lineFromToFragmentShader[];
+		static const char lineFromToFragmentShader_A8[];
 		static const char aaFillVertexShader[];
 		static const char aaFillFragmentShader[];
+		static const char aaFillFragmentShader_A8[];
 
 		static const char segmentsVertexShader[];
 		static const char segmentsVertexShaderGradient[];
 		static const char segmentsFragmentShader[];
+		static const char segmentsFragmentShader_A8[];
 
 		static const char alphaBlitFragmentShader[];
+		static const char alphaBlitFragmentShader_A8[];
 
 		static const char clutBlitNearestVertexShader[];
 		static const char clutBlitNearestFragmentShader[];
+		static const char clutBlitNearestFragmentShader_A8[];
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
+		static const char clutBlitInterpolateFragmentShader_A8[];
 
 		static const char fillGradientVertexShader[];
 		static const char aaFillGradientVertexShader[];
