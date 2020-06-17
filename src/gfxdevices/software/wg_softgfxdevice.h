@@ -168,15 +168,24 @@ namespace wg
 			int dstY;
 		};
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
-		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
+		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, bool bFast8, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a);
+
+		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+			int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
+			int16_t backB, int16_t backG, int16_t backR, int16_t backA,
+			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+
+
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, bool bFast8, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a);
 
 		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
 											int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 											int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 
-		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+		inline static void	_color_tint_init(	TintMode tintMode, const ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
 												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA, 
@@ -184,7 +193,7 @@ namespace wg
 												uint32_t& rightIncB, uint32_t& rightIncG, uint32_t& rightIncR, uint32_t& rightIncA,
 												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA, CoordI patchOfs);
 			
-		inline static void _color_tint_line(	TintMode tintMode, const ColTrans& tint, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
+		inline static void _color_tint_line(	TintMode tintMode, const ColTrans& tint, int bits, int16_t inB, int16_t inG, int16_t inR, int16_t inA,
 												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 												uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 												uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
@@ -193,24 +202,24 @@ namespace wg
 												uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 												uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA, CoordI patchOfs);
 
-		inline static void _color_tint_pixel(TintMode tintMode,
+		inline static void _color_tint_pixel(TintMode tintMode, int bits,
 											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& pixelB, uint32_t& pixelG, uint32_t& pixelR, uint32_t& pixelA);
 
-		inline static void _texel_tint_init(TintMode tintMode, const ColTrans& tint, 
+		inline static void _texel_tint_init(TintMode tintMode, const ColTrans& tint, int bits,
 											uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 											uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA, CoordI patchOfs);
 
-		inline static void _texel_tint_line(TintMode tintMode, const ColTrans& tint, 
+		inline static void _texel_tint_line(TintMode tintMode, const ColTrans& tint, int bits,
 											uint32_t& leftB, uint32_t& leftG, uint32_t& leftR, uint32_t& leftA,
 											uint32_t& rightB, uint32_t& rightG, uint32_t& rightR, uint32_t& rightA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA, CoordI patchOfs);
 
-		inline static void _texel_tint_pixel(TintMode tintMode, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
+		inline static void _texel_tint_pixel(TintMode tintMode, int bits, int16_t& pixelB, int16_t& pixelG, int16_t& pixelR, int16_t& pixelA,
 											uint32_t& xIncB, uint32_t& xIncG, uint32_t& xIncR, uint32_t& xIncA,
 											uint32_t& tintB, uint32_t& tintG, uint32_t& tintR, uint32_t& tintA);
 
@@ -315,6 +324,7 @@ namespace wg
 		static SegmentOp_p		s_segmentOpTab[2][BlendMode_size][PixelFormat_size];				//[bVerticalTint][BlendMode][DestFormat]
 
 		static SimpleBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
+		static SimpleBlitOp_p	s_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
 
 		static SimpleBlitOp_p	s_moveTo_internal_OpTab[PixelFormat_size];							// [SourceFormat]
 

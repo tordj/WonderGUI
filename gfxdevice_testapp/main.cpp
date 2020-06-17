@@ -1144,6 +1144,7 @@ bool init_wondergui()
 	Context_p pContext = Context::create();
     pContext->setScale(1.0);
     pContext->setSurfaceFactory(g_pBaseSurfaceFactory);
+	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
 
