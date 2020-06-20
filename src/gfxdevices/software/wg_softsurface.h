@@ -62,6 +62,7 @@ namespace wg
 		//.____ Appearance ____________________________________________________
 
 		bool		isOpaque() const override;
+		void		setTiling(bool bTiling) override;
 
 		//.____ Content _______________________________________________________
 
@@ -88,6 +89,9 @@ namespace wg
 		virtual ~SoftSurface();
 
 		void		_makeClut4096();
+
+		int			m_srcPosMaskX = 0;
+		int			m_srcPosMaskY = 0;
 
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;

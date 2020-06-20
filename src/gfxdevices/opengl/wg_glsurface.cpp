@@ -439,6 +439,17 @@ namespace wg
 		return false;
 	}
 
+	//____ setTiling() ________________________________________________________
+
+	void GlSurface::setTiling(bool bTiling)
+	{
+		GLint mode = bTiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
+
+		glBindTexture(GL_TEXTURE_2D, m_texture);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
+	}
+
 
 	//____ lock() __________________________________________________________________
 

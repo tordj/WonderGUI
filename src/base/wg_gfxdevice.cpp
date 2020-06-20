@@ -558,6 +558,77 @@ namespace wg
 		_transformBlit(dest, { src.x,src.y }, mtx);
 	}
 
+	//____ tile() _____________________________________________________________
+
+	void GfxDevice::tile(const RectI& dest, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		_transformBlit( dest, shift, blitFlipTransforms[0]);
+	}
+
+	//____ flipTile() _________________________________________________________
+
+	void GfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		SizeI srcSize = m_pBlitSource->size();
+
+		int ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
+		int ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
+
+		ofsX += shift.x * blitFlipTransforms[(int)flip][0][0] + shift.y * blitFlipTransforms[(int)flip][1][0];
+		ofsY += shift.x * blitFlipTransforms[(int)flip][0][1] + shift.y * blitFlipTransforms[(int)flip][1][1];
+
+		SizeI dstSize = dest.size();
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+		_transformBlit({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+	}
+
+	//____ scaleTile() _________________________________________________________
+
+	void GfxDevice::scaleTile(const RectI& dest, float scale, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		float	mtx[2][2];
+
+		mtx[0][0] = 1.f/scale;
+		mtx[0][1] = 0;
+		mtx[1][0] = 0;
+		mtx[1][1] = 1.f/scale;
+
+		CoordF sh = { shift.x / scale,shift.y / scale };
+
+		_transformBlit(dest, sh, mtx);
+	}
+
+	//____ scaleFlipTile() _________________________________________________________
+
+	void GfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		float	mtx[2][2];
+
+		mtx[0][0] = blitFlipTransforms[(int)flip][0][0] / scale;
+		mtx[0][1] = blitFlipTransforms[(int)flip][0][1] / scale;
+		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] / scale;
+		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] / scale;
+
+		SizeI srcSize = m_pBlitSource->size();
+		float ofsX = (srcSize.w-1) * blitFlipOffsets[(int)flip][0];
+		float ofsY = (srcSize.h-1) * blitFlipOffsets[(int)flip][1];
+
+		ofsX += shift.x * mtx[0][0] + shift.y * mtx[1][0];
+		ofsY += shift.x * mtx[0][1] + shift.y * mtx[1][1];
+
+		_transformBlit(dest, {ofsX,ofsY}, mtx);
+	}
+
 
 	//____ blitNinePatch() ________________________________________________
 

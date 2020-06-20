@@ -270,6 +270,28 @@ namespace wg
 		return m_pixelDescription.A_bits==0?true:false;
 	}
 
+	//____ setTiling() ________________________________________________________
+
+	void SoftSurface::setTiling(bool bTiling)
+	{
+		if (bTiling)
+		{
+			int xBits = Util::mostSignificantBit(m_size.w);
+			int yBits = Util::mostSignificantBit(m_size.h);
+
+			m_srcPosMaskX = (1 << xBits) -1;
+			m_srcPosMaskY = (1 << yBits) -1;
+		}
+		else
+		{
+			m_srcPosMaskX = 0;
+			m_srcPosMaskY = 0;
+		}
+
+		Surface::setTiling(bTiling);
+	}
+
+
 	//____ lock() __________________________________________________________________
 
 	uint8_t * SoftSurface::lock( AccessMode mode )

@@ -98,6 +98,13 @@ namespace wg
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
 
+		void	tile(const RectI& dest, CoordI shift = { 0,0 }) override;
+		void	flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 }) override;
+
+		void	scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 }) override;
+		void	scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 }) override;
+
+
 	protected:
 		SoftGfxDevice();
 		SoftGfxDevice(Surface * pCanvas);
@@ -111,6 +118,13 @@ namespace wg
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::GradientXY;
 		const static int           TintMode_size = (int)TintMode::GradientXY + 1;
+
+		enum EdgeOp
+		{
+			None,
+			Clip,
+			Tile
+		};
 
 
 		struct ColTrans
@@ -162,10 +176,10 @@ namespace wg
 
 		struct Pitches
 		{
-			int srcX;
-			int srcY;
-			int dstX;
-			int dstY;
+			int srcX;			// Pitch in bytes for each pixel read.
+			int srcY;			// Pitch in bytes from end of line to beginning of next for each line read.
+			int dstX;			// Pitch in bytes for each pixel written.
+			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
 		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, bool bFast8, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
@@ -263,13 +277,13 @@ namespace wg
 		template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
 
-		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const int16_t* pClut4096, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
+		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
+		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 
 		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
 		static void _stretch_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
-		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool SRCCLIP>
+		template<PixelFormat SRCFORMAT, ScaleMode SCALEMODE, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, EdgeOp EDGEOP>
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
 		template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
@@ -295,7 +309,7 @@ namespace wg
 		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const Color * pClut, const int16_t* pClut4096, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments);
 
@@ -326,29 +340,29 @@ namespace wg
 		static SimpleBlitOp_p	s_pass2OpTab[TintMode_size][BlendMode_size][PixelFormat_size];
 		static SimpleBlitOp_p	s_pass2OpTab_fast8[TintMode_size][BlendMode_size][PixelFormat_size];
 
-		static SimpleBlitOp_p	s_moveTo_internal_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_internal_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 
-		static SimpleBlitOp_p	s_moveTo_BGRA_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_moveTo_BGRA_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_moveTo_BGR_8_linear_OpTab[PixelFormat_size];								// [SourceFormat]
-		static SimpleBlitOp_p	s_moveTo_BGR_8_sRGB_OpTab[PixelFormat_size];								// [SourceFormat]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_linear_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_moveTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_linear_OpTab[PixelFormat_size][2];								// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_moveTo_BGR_8_sRGB_OpTab[PixelFormat_size][2];								// [SourceFormat][Normal/Tile]
 
-		static SimpleBlitOp_p	s_blendTo_BGRA_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_blendTo_BGRA_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_blendTo_BGR_8_linear_OpTab[PixelFormat_size];							// [SourceFormat]
-		static SimpleBlitOp_p	s_blendTo_BGR_8_sRGB_OpTab[PixelFormat_size];							// [SourceFormat]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_linear_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_blendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_linear_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
+		static SimpleBlitOp_p	s_blendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2];							// [SourceFormat][Normal/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_internal_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][2];					// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];					// [SourceFormat][ScaleMode][Normal/Clip/Tile]
 
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][2];			// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
-		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][2];				// [SourceFormat][ScaleMode][SrcClip]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_linear_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGRA_8_sRGB_OpTab[PixelFormat_size][2][3];			// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_linear_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
+		static ComplexBlitOp_p	s_transformBlendTo_BGR_8_sRGB_OpTab[PixelFormat_size][2][3];				// [SourceFormat][ScaleMode][Normal/Clip/Tile]
 
 
 		static int			s_mulTab[256];
@@ -378,13 +392,18 @@ namespace wg
 
 		// These are called by SimpleBlitProxy_Op and ComplexBlitProxy_Op.
 
-		SimpleBlitOp_p		m_pSimpleBlitOnePassOp		= nullptr;
-		ComplexBlitOp_p		m_pComplexBlitOnePassOp		= nullptr;
-		ComplexBlitOp_p		m_pComplexBlitClipOnePassOp = nullptr;
-		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp	= nullptr;
-		ComplexBlitOp_p		m_pComplexBlitFirstPassOp	= nullptr;
-		ComplexBlitOp_p		m_pComplexBlitClipFirstPassOp = nullptr;
-		SimpleBlitOp_p		m_pBlitSecondPassOp			= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
+		SimpleBlitOp_p		m_pSimpleBlitOnePassOp			= nullptr;
+		SimpleBlitOp_p		m_pSimpleTileBlitOnePassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitOnePassOp			= nullptr;
+		ComplexBlitOp_p		m_pComplexTileBlitOnePassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexClipBlitOnePassOp		= nullptr;
+
+		SimpleBlitOp_p		m_pSimpleBlitFirstPassOp		= nullptr;
+		SimpleBlitOp_p		m_pSimpleTileBlitFirstPassOp	= nullptr;
+		ComplexBlitOp_p		m_pComplexBlitFirstPassOp		= nullptr;
+		ComplexBlitOp_p		m_pComplexTileBlitFirstPassOp	= nullptr;
+		ComplexBlitOp_p		m_pComplexClipBlitFirstPassOp	= nullptr;
+		SimpleBlitOp_p		m_pBlitSecondPassOp				= nullptr;		// Second pass is same for simple and complex blits (always a simple blit).
 
 		//
 

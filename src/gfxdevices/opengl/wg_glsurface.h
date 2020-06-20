@@ -77,6 +77,8 @@ namespace wg
 		void		setScaleMode(ScaleMode mode) override;
 		bool		isOpaque() const override;
 
+		void		setTiling(bool bTiling) override;
+
 		//.____ Content _______________________________________________________
 
 		uint32_t	pixel(CoordI coord) const override;

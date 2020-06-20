@@ -99,6 +99,13 @@ namespace wg
 		m_scaleMode = mode;
 	}
 
+	//____ setTiling() ________________________________________________________
+
+	void Surface::setTiling(bool bTiling)
+	{
+		m_bTiling = bTiling;
+	}
+
 	//____ width() ________________________________________________________________
 	/**
 	 * Get the width of the surface.

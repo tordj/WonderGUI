@@ -143,6 +143,13 @@ namespace wg
 
 		virtual void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f, 0.5f }, CoordF destCenter = { 0.5f,0.5f });
 
+		virtual void	tile(const RectI& dest, CoordI shift = { 0,0 });
+		virtual void	flipTile(const RectI& dest, GfxFlip flip, CoordI shift = { 0,0 });
+
+		virtual void	scaleTile(const RectI& dest, float scale, CoordI shift = { 0,0 });
+		virtual void	scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift = { 0,0 });
+
+
 		// Draw segments methods
 
 		virtual void	drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);

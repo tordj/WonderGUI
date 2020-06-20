@@ -87,6 +87,9 @@ namespace wg
 		virtual void		setScaleMode( ScaleMode mode );
 		inline ScaleMode	scaleMode() const;
 
+		virtual void		setTiling(bool bTiling);
+		inline bool			isTiling() const { return m_bTiling; }
+
 		inline bool			isMipmapped() const;
 
 		//.____ Content _______________________________________________________
@@ -152,6 +155,7 @@ namespace wg
 
 		ScaleMode			m_scaleMode = ScaleMode::Nearest;
 		bool				m_bMipmapped = false;
+		bool				m_bTiling = false;
 
 		AccessMode			m_accessMode = AccessMode::None;
 		Color *				m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.

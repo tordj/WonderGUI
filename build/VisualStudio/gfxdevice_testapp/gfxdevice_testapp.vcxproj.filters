@@ -81,5 +81,8 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\a8tests.h">
       <Filter>testsuites</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\tiletests.h">
+      <Filter>testsuites</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
