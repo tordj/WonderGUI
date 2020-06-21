@@ -644,8 +644,8 @@ namespace wg
 		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] / scale;
 
 		SizeI srcSize = m_pBlitSource->size();
-		float ofsX = (srcSize.w-1) * blitFlipOffsets[(int)flip][0];
-		float ofsY = (srcSize.h-1) * blitFlipOffsets[(int)flip][1];
+		float ofsX = (float) (srcSize.w-1) * blitFlipOffsets[(int)flip][0];
+		float ofsY = (float) (srcSize.h-1) * blitFlipOffsets[(int)flip][1];
 
 		ofsX += shift.x * mtx[0][0] + shift.y * mtx[1][0];
 		ofsY += shift.x * mtx[0][1] + shift.y * mtx[1][1];

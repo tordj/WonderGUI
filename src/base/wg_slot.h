@@ -76,7 +76,7 @@ namespace wg
 
 		StaticSlot(SlotHolder * pHolder) : m_pHolder(pHolder) {}
 
-		StaticSlot(StaticSlot&& o)
+		StaticSlot(StaticSlot&& o) noexcept
 		{
 			m_pWidget = o.m_pWidget;
 			m_pHolder = o.m_pHolder;
@@ -99,7 +99,7 @@ namespace wg
 			}
 		}
 
-		StaticSlot& operator=(StaticSlot&& o)
+		StaticSlot& operator=(StaticSlot&& o) noexcept
 		{
 			if (m_pWidget)
 			{
@@ -182,7 +182,7 @@ namespace wg
 
 		DynamicSlot(SlotHolder * pHolder) : StaticSlot(pHolder) {}
 
-		DynamicSlot(DynamicSlot&& o) : StaticSlot(o.m_pHolder)
+		DynamicSlot(DynamicSlot&& o) noexcept : StaticSlot(o.m_pHolder)
 		{
 			m_pWidget = o.m_pWidget;
 			if (m_pWidget)
@@ -192,7 +192,7 @@ namespace wg
 			}
 		}
 
-		DynamicSlot& operator=(DynamicSlot&& o)
+		DynamicSlot& operator=(DynamicSlot&& o) noexcept
 		{
 			if (m_pWidget)
 			{

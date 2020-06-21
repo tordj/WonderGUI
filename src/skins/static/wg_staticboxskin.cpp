@@ -158,7 +158,7 @@ namespace wg
 
 		case BlendMode::Blend:
 		{
-			m_bOpaque == (m_fillColor.a == 255 && (m_frame.isEmpty() || m_frameColor.a == 255));
+			m_bOpaque = (m_fillColor.a == 255 && (m_frame.isEmpty() || m_frameColor.a == 255));
 			break;
 		}
 

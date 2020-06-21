@@ -186,8 +186,6 @@ namespace wg
 
 		_initTables();
 
-		GLint	texIdLoc, extrasIdLoc, clutIdLoc;
-
 		// Create and init Fill shader
 
 		for (int i = 0; i < 2; i++)
@@ -398,7 +396,7 @@ namespace wg
 					unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
 					glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
 
-					extrasIdLoc = glGetUniformLocation(prog, "extrasId");
+					GLint extrasIdLoc = glGetUniformLocation(prog, "extrasId");
 					GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
 					GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
 					GLint paletteIdLoc = glGetUniformLocation(prog, "paletteId");
@@ -2613,7 +2611,7 @@ namespace wg
 
 		for (int i = 0; i < 256; i++)
 		{
-			m_sRGBtoLinearTable[i] = powf(i, 2.2f)/max;
+			m_sRGBtoLinearTable[i] = powf(float(i), 2.2f)/max;
 			m_linearToLinearTable[i] = i / 255.f;
 		}
 	}

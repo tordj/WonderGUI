@@ -103,9 +103,9 @@ namespace wg
 		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*fraction;
 
 		if (degrees < 0.f)
-			degrees = 360.f + fmod(degrees, 360.f);
+			degrees = 360.f + (float) fmod(degrees, 360.f);
 		else if (degrees >= 360.f)
-			degrees = fmod(degrees, 360.f);
+			degrees = (float) fmod(degrees, 360.f);
 
 
 		SizeI srcSize = m_pSurface->size();

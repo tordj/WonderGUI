@@ -126,7 +126,7 @@ namespace wg
 		if (frames.isEmpty())
 			return nullptr;
 
-		return frames.find(fraction * frames.duration());
+		return frames.find(int(fraction * frames.duration()));
 	}
 
 	//____ _didAddEntries() ___________________________________________________

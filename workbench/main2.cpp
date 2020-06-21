@@ -1423,7 +1423,8 @@ void myButtonClickCallback( const Msg_p& pMsg )
 
 Blob_p loadBlob( const char * pPath )
 {
-	FILE * fp = fopen( pPath, "rb" );
+	FILE* fp;
+	auto err = fopen_s( &fp, pPath, "rb" );
 	if( !fp )
 		return 0;
 
@@ -1448,7 +1449,8 @@ Blob_p loadBlob( const char * pPath )
 
 void * loadFile( const char * pPath )
 {
-	FILE * fp = fopen( pPath, "rb" );
+	FILE* fp;
+	auto err = fopen_s(&fp, pPath, "rb");
 	if( !fp )
 		return 0;
 
