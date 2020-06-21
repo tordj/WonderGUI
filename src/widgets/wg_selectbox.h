@@ -150,9 +150,9 @@ namespace wg
 
 		void		_updateListCanvasOpacity();
 		void		_requestRenderEntry(SelectBoxEntry* pEntry);
+		void		_markEntry(int idx);
 		void		_selectEntry(int idx);
-		State		_entryState(int idx);
-		int			_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut = 0);
+		int			_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut = nullptr);
 
 		inline TextMapper * _listTextMapper() { return m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper(); }
 		inline const TextMapper * _listTextMapper() const { return m_pListTextMapper ? m_pListTextMapper: Base::defaultTextMapper();  }
@@ -189,7 +189,7 @@ namespace wg
 		MySideCanvas_p	m_pListCanvas;
 		TextMapper_p	m_pListTextMapper;
 		int				m_selectedEntryIndex = -1;
-		int				m_hoveredEntryIndex = -1;
+		int				m_markedEntryIndex = -1;		// Marked through mouse hover or keyboard input.
 
 		Skin_p			m_pEntrySkin;
 		TextStyle_p		m_pEntryStyle;

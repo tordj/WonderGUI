@@ -396,7 +396,7 @@ namespace wg
 
 		ClipPopData popData;
 		if (pHeader->textSize.w > canvas.w || pHeader->textSize.h > canvas.h)
-			limitClipList(pDevice, canvas);
+			popData = limitClipList(pDevice, canvas);
 
 
 		// Render back colors

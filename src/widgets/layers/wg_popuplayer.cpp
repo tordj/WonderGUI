@@ -688,6 +688,8 @@ namespace wg
 
 			case MsgType::MouseRelease:
 			{
+				// Mouse release is used for selecting in popups.
+
 				if (popupSlots.isEmpty())
 					break;					// Popup was removed already on the press.
 
@@ -705,10 +707,32 @@ namespace wg
 						break;
 				}
 
-				// DON'T BREAK! Continuing down to case MousePress on purpose.
+				//
+
+				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+
+				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
+				if (!pSource || pSource == this)
+					_removeSlots(0, popupSlots.size());
+				else if (pSource->isSelectable())
+				{
+					MsgRouter* pRouter = Base::msgRouter().rawPtr();
+
+					if (pRouter)
+						pRouter->post(SelectMsg::create(pSource));
+
+					_removeSlots(0, popupSlots.size());
+				}
+
+				_pMsg->swallow();
 			}
+			break;
+
 			case MsgType::MousePress:
 			{
+				// The only mouse press we are interested in is a press outside all popups,
+				// in which case we will close all popups.
+
 				if (popupSlots.isEmpty())
 					break;
 
@@ -717,15 +741,6 @@ namespace wg
 				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )
 					_removeSlots(0,popupSlots.size());
-				else if (pSource->isSelectable())
-				{
-					MsgRouter * pRouter = Base::msgRouter().rawPtr();
-
-					if (pRouter)
-						pRouter->post(SelectMsg::create(pSource));
-
-					_removeSlots(0,popupSlots.size());
-				}
 
 				_pMsg->swallow();
 			}

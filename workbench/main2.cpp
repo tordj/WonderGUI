@@ -2388,7 +2388,14 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pListSkin = BoxStateSkin::create(1, Color::White, Color::Black);
 	pListSkin->setContentPadding(3);
 
+	auto pListEntrySkin = BoxStateSkin::create(1, { { StateEnum::Normal, Color::Transparent, Color::Transparent },
+													{ StateEnum::Hovered, Color::Yellow, Color::Orange },
+													{ StateEnum::Selected, Color::LightBlue, Color::White } });
+	pListEntrySkin->setContentPadding(3);
+
+
 	pSelectBox->setListSkin(pListSkin);
+	pSelectBox->setEntrySkin(pListEntrySkin);
 
 	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("TESTAR UTAV BARA HELVETE")));
 	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("VERSUCH VERSUCH VERSUCH VERSUCH")));

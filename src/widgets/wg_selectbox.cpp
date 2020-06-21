@@ -29,6 +29,7 @@
 #include <wg_inputhandler.h>
 #include <wg_internal.h>
 #include <wg_cdynamicvector.impl.h>
+#include <wg_internal.h>
 
 #include <algorithm>
 
@@ -70,6 +71,9 @@ namespace wg
 		m_pEntrySkin = pSkin;
 		if (oldPadding != newPadding)
 		{
+			for (auto& entry : entries)
+				entry.m_height += newPadding.h - oldPadding.h;
+
 			m_listCanvasPreferredSize.w += newPadding.w - oldPadding.w;
 			m_listCanvasPreferredSize.h += (newPadding.h - oldPadding.h) * entries.size();
 
@@ -226,7 +230,7 @@ namespace wg
 				else
 				{
 					_open();
-					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, OO(_parent())->_getPopupLayer());
+					Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pListCanvas);
 					m_bPressed = false;		// We have yielded our press...
 				}
 			}
@@ -349,6 +353,32 @@ namespace wg
 		m_pListCanvas->_requestRender(rect);
 	}
 
+	//____ _markEntry() ________________________________________________________
+
+	void SelectBox::_markEntry(int index)
+	{
+		if (index == m_markedEntryIndex)
+			return;
+
+		if (m_markedEntryIndex >= 0)
+		{
+			State oldState = entries[m_markedEntryIndex].m_state;
+			entries[m_markedEntryIndex].m_state.setHovered(false);
+			_listTextMapper()->onStateChanged(&entries[m_markedEntryIndex], entries[m_markedEntryIndex].m_state, oldState);
+			_requestRenderEntry(&entries[m_markedEntryIndex]);
+		}
+
+		if (index >= 0)
+		{
+			State oldState = entries[index].m_state;
+			entries[index].m_state.setHovered(true);
+			_listTextMapper()->onStateChanged(&entries[index], entries[index].m_state, oldState);
+			_requestRenderEntry(&entries[index]);
+		}
+
+		m_markedEntryIndex = index;
+	}
+
 	//____ _selectEntry() ________________________________________________________
 
 	void SelectBox::_selectEntry(int index)
@@ -357,8 +387,16 @@ namespace wg
 			return;
 
 		if (m_selectedEntryIndex >= 0)
+		{
+			State oldState = entries[m_selectedEntryIndex].m_state;
+			entries[m_selectedEntryIndex].m_state.setSelected(false);
+			_listTextMapper()->onStateChanged(&entries[m_selectedEntryIndex], entries[m_selectedEntryIndex].m_state, oldState);
 			_requestRenderEntry(&entries[m_selectedEntryIndex]);
+		}
 
+		State oldState = entries[index].m_state;
+		entries[index].m_state.setSelected(true);
+		_listTextMapper()->onStateChanged(&entries[index], entries[index].m_state, oldState);
 		_requestRenderEntry(&entries[index]);
 		m_selectedEntryIndex = index;
 
@@ -366,19 +404,6 @@ namespace wg
 		_requestRender();
 
 		Base::msgRouter()->post(SelectMsg::create(this));
-	}
-
-	//____ _entryState() __________________________________________________________
-
-	State SelectBox::_entryState(int index)
-	{
-		State state;
-		if (index == m_selectedEntryIndex)
-			state.setSelected(true);
-		if (index == m_hoveredEntryIndex)
-			state.setHovered(true);
-
-		return state;
 	}
 
 	//____ _findEntry() _____________________________________________________
@@ -533,12 +558,12 @@ namespace wg
 
 		Rect contentRect = pWidget->_contentRect(canvas);
 
-		TextMapper* pTextMapper = m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper();
+		TextMapper* pTextMapper = _listTextMapper();
 
 		Coord pos = contentRect.pos();
 		for (auto& entry : entries )
 		{
-			Rect entryRect = { pos, canvas.w, entry.m_height };
+			Rect entryRect = { pos, contentRect.w, entry.m_height };
 			if (m_pEntrySkin)
 			{
 				m_pEntrySkin->render(pDevice, entryRect, entry.m_state);
@@ -547,7 +572,6 @@ namespace wg
 			pTextMapper->render(&entry, pDevice, entryRect);
 			pos.y += entry.m_height;
 		}
-
 	}
 
 	//____ _sideCanvasRefresh() ________________________________________________
@@ -561,19 +585,20 @@ namespace wg
 
 	void SelectBox::_sideCanvasResize(SideCanvas * pCanvas, const Size& size)
 	{
-		TextMapper* pMapper = m_pListTextMapper ? m_pListTextMapper : Base::defaultTextMapper();
+		TextMapper* pMapper = _listTextMapper();
 
 		Size listCanvasPaddingSize = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
 
-		MU newContentWidth = size.w - listCanvasPaddingSize.w - m_entryContentPaddingSize.w;
+		MU newContentWidth = size.w - listCanvasPaddingSize.w;
 		MU matchingHeight = listCanvasPaddingSize.h;
 
 		for (auto& entry : entries)
 		{
 			MU newEntryHeight = pMapper->matchingHeight(&entry, newContentWidth);
 			pMapper->onResized(&entry, { newContentWidth, newEntryHeight }, { m_entryContentWidth,entry.m_height });
+			newEntryHeight += m_entryContentPaddingSize.h;
 			entry.m_height = newEntryHeight;
-			matchingHeight += newEntryHeight + m_entryContentPaddingSize.h;
+			matchingHeight += newEntryHeight;
 		}
 
 		m_entryContentWidth = newContentWidth;
@@ -585,7 +610,31 @@ namespace wg
 
 	void SelectBox::_sideCanvasReceive(SideCanvas * pCanvas, Msg * pMsg)
 	{
+		switch (pMsg->type())
+		{
+		case MsgType::MouseEnter:
+		case MsgType::MouseMove:
+		{
+			Coord pos = pCanvas->toLocal(static_cast<InputMsg*>(pMsg)->pointerPos());
+			_markEntry(_findEntry(pos));
+			break;
+		}
 
+		case MsgType::MouseLeave:
+			_markEntry(-1);
+			break;
+
+		case MsgType::MouseRelease:
+		{
+			if (m_markedEntryIndex != -1)
+				_selectEntry(m_markedEntryIndex);
+			break;
+		}
+
+
+		default:
+			break;
+		}
 	}
 
 	//____ _sideCanvasAlphaTest() _____________________________________________
@@ -605,11 +654,12 @@ namespace wg
 			int entryIdx = _findEntry(ofs, &ofsInEntry);
 
 			if (entryIdx >= 0)
+
 			{
 				Rect contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : Rect(m_pListCanvas->m_size);
 				Rect entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
 
-				return m_pEntrySkin->markTest(ofsInEntry, entryGeo, _entryState(entryIdx), m_pListCanvas->m_markOpacity);
+				return m_pEntrySkin->markTest(ofsInEntry, entryGeo, entries[entryIdx].m_state, m_pListCanvas->m_markOpacity);
 			}
 		}
 

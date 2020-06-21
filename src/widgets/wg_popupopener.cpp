@@ -168,7 +168,7 @@ namespace wg
 					else
 					{
 						_open();
-						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, OO(_parent())->_getPopupLayer());
+						Base::inputHandler()->_yieldButtonEvents(MouseButton::Left, this, m_pPopup);
 						m_bPressed = false;		// We have yielded our press...
 					}
 				}
