@@ -57,7 +57,7 @@ namespace wg
 	StaticSlot& CStaticSlotVector<SlotType>::_at(int index)
 	{
 		if (index < 0 || index >= m_size)
-			Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 
 		return *_slot(index);
 	}

@@ -89,7 +89,7 @@ namespace wg
 		StaticSlot&		_at(int index) override 
 		{ 
 			if (index < 0 || index >= SIZE)
-				Base::handleError(ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+				Base::handleError(ErrorSeverity::Serious, ErrorCode::OutOfRange, "Slot index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 
 			return m_slots[index];
 		}

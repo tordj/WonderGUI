@@ -932,7 +932,7 @@ const char GlGfxDevice::segmentsFragmentShader[] =
 "  	vec4 col = texture(paletteId, palOfs);"
 "	float useFactor = factor*col.a;"
 "	totalAlpha += useFactor;"
-"	rgbAcc += col.rgb * factor;"
+"	rgbAcc += col.rgb * useFactor;"
 
 "   color.a = totalAlpha * fragColor.a; "
 "   color.rgb = (rgbAcc/totalAlpha) * fragColor.rgb;"

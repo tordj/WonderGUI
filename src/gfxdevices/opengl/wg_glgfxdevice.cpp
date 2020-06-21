@@ -94,7 +94,7 @@ namespace wg
 
 
 		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
-		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
 
 
@@ -2581,7 +2581,7 @@ namespace wg
 			char	buffer[4096*3+256];
 
 			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-			Base::handleError(ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);

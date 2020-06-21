@@ -125,7 +125,7 @@ namespace wg
 	{
 		if (it < entries.begin() || it >= entries.end())
 		{
-			Base::handleError(ErrorCode::InvalidInterator, "Invalid iterator", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidIterator, "Invalid iterator", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
@@ -154,7 +154,7 @@ namespace wg
 	{
 		if (index < 0 || index >= entries.size())
 		{
-			Base::handleError(ErrorCode::OutOfRange, "Index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OutOfRange, "index out of range", _object(), TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 

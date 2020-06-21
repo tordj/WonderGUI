@@ -530,7 +530,7 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (scale <= 0.f || m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
+		if (m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
 			return;
 
 		CoordF	src;
@@ -564,6 +564,12 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
 		_transformBlit( dest, shift, blitFlipTransforms[0]);
 	}
 
@@ -572,6 +578,12 @@ namespace wg
 	void GfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
 	{
 		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
 
 		SizeI srcSize = m_pBlitSource->size();
 
@@ -594,6 +606,12 @@ namespace wg
 	{
 		assert(m_pBlitSource != nullptr);
 
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
 		float	mtx[2][2];
 
 		mtx[0][0] = 1.f/scale;
@@ -611,6 +629,12 @@ namespace wg
 	void GfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
 	{
 		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
 
 		float	mtx[2][2];
 

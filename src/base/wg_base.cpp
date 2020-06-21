@@ -108,7 +108,7 @@ namespace wg
 
 	//____ handleError() _________________________________________________________
 
-	void Base::handleError(ErrorCode code, const char * msg, const Object * pObject, const TypeInfo& classType, const char * function, const char * file, int line)
+	void Base::handleError(ErrorSeverity severity, ErrorCode code, const char * msg, const Object * pObject, const TypeInfo& classType, const char * function, const char * file, int line)
 	{
 		if (s_pErrorHandler)
 		{

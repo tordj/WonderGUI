@@ -222,7 +222,7 @@ namespace wg
 
 	//____ read_pixel_fast8() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, bool bFast8, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -291,7 +291,7 @@ namespace wg
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, bool bFast8, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -376,7 +376,7 @@ namespace wg
 
 	//____ write_pixel_fast8() _______________________________________________________
 
-	inline void SoftGfxDevice::_write_pixel_fast8(uint8_t* pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a)
+	inline void SoftGfxDevice::_write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -426,7 +426,7 @@ namespace wg
 
 	//____ write_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_write_pixel(uint8_t* pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a)
+	inline void SoftGfxDevice::_write_pixel(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -489,7 +489,7 @@ namespace wg
 
 	//____ _blend_pixels_fast8() ____________________________________________________
 
-	inline void	SoftGfxDevice::_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+	inline void	SoftGfxDevice::_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
 		int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 		int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 		int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
@@ -633,7 +633,7 @@ namespace wg
 
 	//____ _blend_pixels() ____________________________________________________
 
-	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+	inline void	SoftGfxDevice::_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat,
 												int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 												int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 												int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
@@ -1161,15 +1161,15 @@ namespace wg
 
 		if (bFast8)
 		{
-			_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-			_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-			_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+			_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+			_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+			_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 		}
 		else
 		{
-			_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-			_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-			_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+			_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+			_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+			_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 		}
 	}
 
@@ -1244,15 +1244,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 			}
 		}
@@ -1328,17 +1328,17 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 			}
 			else
@@ -1352,15 +1352,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
 				ofs++;
@@ -1377,15 +1377,15 @@ namespace wg
 
 						if (bFast8)
 						{
-							_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-							_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+							_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+							_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 						else
 						{
-							_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-							_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+							_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+							_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 						ofs++;
 						pDst += pixelInc;
@@ -1405,15 +1405,15 @@ namespace wg
 
 					if (bFast8)
 					{
-						_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-						_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+						_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+						_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+						_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 					else
 					{
-						_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-						_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+						_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 
 				}
@@ -1506,15 +1506,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 			}
 			else
@@ -1528,15 +1528,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
 				ofs++;
@@ -1557,15 +1557,15 @@ namespace wg
 
 						if (bFast8)
 						{
-							_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-							_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+							_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+							_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 						else
 						{
-							_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-							_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-							_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+							_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+							_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+							_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 						}
 
 						ofs++;
@@ -1586,15 +1586,15 @@ namespace wg
 
 					if (bFast8)
 					{
-						_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-						_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+						_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+						_blend_pixels_fast8(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+						_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 					else
 					{
-						_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-						_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
-						_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+						_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+						_blend_pixels(EdgeBlendMode, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, alpha, backB, backG, backR, backA, outB, outG, outR, outA);
+						_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 					}
 				}
 			}
@@ -1682,15 +1682,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, tintedB, tintedG, tintedR, tintedA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
 				// Step 7: Increment destination pointers
@@ -1736,9 +1736,19 @@ namespace wg
 	//____ _draw_segment_strip() _______________________________________________
 
 	template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients, const bool * pTransparentSegments)
+	void SoftGfxDevice::_draw_segment_strip(int colBeg, int colEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SoftGfxDevice::SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor)
 	{
+
 		bool bFast8 = false;
+		int		bits = 12;
+
+		if (DSTFORMAT == PixelFormat::A_8 || DSTFORMAT == PixelFormat::BGRA_4_linear ||
+			DSTFORMAT == PixelFormat::BGRA_8_linear || DSTFORMAT == PixelFormat::BGRX_8_linear ||
+			DSTFORMAT == PixelFormat::BGR_565_linear || DSTFORMAT == PixelFormat::BGR_8_linear)
+		{
+			bFast8 = true;
+			bits = 8;
+		}
 
 		// Render the column
 
@@ -1764,34 +1774,99 @@ namespace wg
 
 					if (GRADIENT == false)
 					{
-						inR = pSegmentColors[0];
-						inG = pSegmentColors[1];
-						inB = pSegmentColors[2];
-						inA = pSegmentColors[3];
+						if (bFast8)
+						{
+							inR = s_packLinearTab[pSegmentColors[0]];
+							inG = s_packLinearTab[pSegmentColors[1]];
+							inB = s_packLinearTab[pSegmentColors[2]];
+							inA = s_packLinearTab[pSegmentColors[3]];
+						}
+						else
+						{
+							inR = pSegmentColors[0];
+							inG = pSegmentColors[1];
+							inB = pSegmentColors[2];
+							inA = pSegmentColors[3];
+						}
 					}
 
-					while (offset + 255 < end)
+					if (*pOpaqueSegments)
 					{
-						if (GRADIENT)
+						while (offset + 255 < end)
 						{
-							inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12);
-							inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12);
-							inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12);
-							inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12);
+							if (GRADIENT)
+							{
+								if (bFast8)
+								{
+									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+								}
+								else
+								{
+									inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12);
+									inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12);
+									inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12);
+									inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12);
+								}
+							}
+
+							if (bFast8)
+							{
+								_write_pixel_fast8(pDst, DSTFORMAT, inB, inG, inR, inA);
+							}
+							else
+							{
+								_write_pixel(pDst, DSTFORMAT, inB, inG, inR, inA);
+							}
+
+							pDst += pixelPitch;
+							offset += 256;
+						}
+					}
+					else
+					{
+						while (offset + 255 < end)
+						{
+							if (GRADIENT)
+							{
+								if (bFast8)
+								{
+									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+								}
+								else
+								{
+									inB = int32_t((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12);
+									inG = int32_t((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12);
+									inR = int32_t((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12);
+									inA = int32_t((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12);
+								}
+							}
+
+							int16_t backB, backG, backR, backA;
+							int16_t outB, outG, outR, outA;
+
+							if (bFast8)
+							{
+								_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+								_blend_pixels_fast8(BLEND, morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
+								_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
+							}
+							else
+							{
+								_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+								_blend_pixels(BLEND, morphFactor, DSTFORMAT, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
+								_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
+							}
+
+							pDst += pixelPitch;
+							offset += 256;
 						}
 
-						int16_t backB, backG, backR, backA;
-						_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-
-						//TODO: Replace hardcoded value with REAL morphFactor.
-
-						int16_t outB, outG, outR, outA;
-						_blend_pixels(BLEND, 4096, DSTFORMAT, bFast8, inB, inG, inR, inA, backB, backG, backR, backA, outB, outG, outR, outA);
-
-						_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
-
-						pDst += pixelPitch;
-						offset += 256;
 					}
 				}
 			}
@@ -1836,7 +1911,7 @@ namespace wg
 
 					int16_t backB, backG, backR, backA;
 
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
 
 					int16_t outB = 0, outG = 0, outR = 0, outA = 0;
 
@@ -1941,21 +2016,67 @@ namespace wg
 
 					if (BLEND == BlendMode::Min)
 					{ 
-						//TODO: Implement!!!
+						int backFraction = 65536;
+
+						for (int i = 0; i <= edge; i++)
+						{
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+							backFraction -= blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						}
+
+						int16_t srcB = (accB >> 12) + ((backB * backFraction) >> 16);
+						int16_t srcG = (accG >> 12) + ((backG * backFraction) >> 16);
+						int16_t srcR = (accR >> 12) + ((backR * backFraction) >> 16);
+
+						outB = std::min(backB, srcB);
+						outG = std::min(backG, srcG);
+						outR = std::min(backR, srcR);
 					}
 
 					if (BLEND == BlendMode::Max)
 					{
-						//TODO: Implement!!!
+						int backFraction = 65536;
+
+						for (int i = 0; i <= edge; i++)
+						{
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+							backFraction -= blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						}
+
+						int16_t srcB = (accB >> 12) + ((backB * backFraction) >> 16);
+						int16_t srcG = (accG >> 12) + ((backG * backFraction) >> 16);
+						int16_t srcR = (accR >> 12) + ((backR * backFraction) >> 16);
+
+						outB = std::max(backB, srcB);
+						outG = std::max(backG, srcG);
+						outR = std::max(backR, srcR);
 					}
 
 					if (BLEND == BlendMode::Morph)
 					{
-						//TODO: Implement!!!
+						int backFraction = 65536;
+
+						for (int i = 0; i <= edge; i++)
+						{
+							int alpha = _segment_alpha(GRADIENT, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i]);
+							int blendFraction = ((segmentFractions[i] * alpha) / 4096);
+							backFraction -= blendFraction;
+							_add_segment_color(GRADIENT, blendFraction, offset >> 8, &pSegmentColors[i * 4], &pSegmentGradients[i], accB, accG, accR, accA);
+						}
+
+						int invMorph = 4096 - morphFactor;
+
+						outB = (backB * invMorph + (accB >> 12) * morphFactor) >> 12;
+						outG = (backG * invMorph + (accG >> 12) * morphFactor) >> 12;
+						outR = (backR * invMorph + (accR >> 12) * morphFactor) >> 12;
+						outA = (backA * invMorph + (backFraction >> 4) * morphFactor) >> 12;
 					}
 
-
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				pDst += pixelPitch;
 				offset += 256;
@@ -2053,9 +2174,9 @@ namespace wg
 
 				int16_t srcB, srcG, srcR, srcA;
 				if (bFast8)
-					_read_pixel_fast8(pSrc, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+					_read_pixel_fast8(pSrc, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
 				else
-					_read_pixel(pSrc, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+					_read_pixel(pSrc, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
 
 				// Step 3: Apply any tint
 
@@ -2071,15 +2192,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
 				// Step 6: Increment source and destination pointers
@@ -2194,44 +2315,44 @@ namespace wg
 							if (bFast8)
 							{
 								if(ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h )
-									_read_pixel_fast8(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+									_read_pixel_fast8(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
 								else
 									src11_b = src11_g = src11_r = src11_a = 0;
 
 								if ((ofsX+32768) >= 0 && ofsY >= 0 && (ofsX+32768) < srcMax.w && ofsY < srcMax.h)
-									_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+									_read_pixel_fast8(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
 								else
 									src12_b = src12_g = src12_r = src12_a = 0;
 
 								if (ofsX >= 0 && (ofsY+32768) >= 0 && ofsX < srcMax.w && (ofsY+32768) < srcMax.h)
-									_read_pixel_fast8(p + srcPitch, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+									_read_pixel_fast8(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
 								else
 									src21_b = src21_g = src21_r = src21_a = 0;
 
 								if ((ofsX + 32768) >= 0 && (ofsY+32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY+32768) < srcMax.h)
-									_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+									_read_pixel_fast8(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 								else
 									src22_b = src22_g = src22_r = src22_a = 0;
 							}
 							else
 							{
 								if (ofsX >= 0 && ofsY >= 0 && ofsX < srcMax.w && ofsY < srcMax.h)
-									_read_pixel(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+									_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
 								else
 									src11_b = src11_g = src11_r = src11_a = 0;
 
 								if ((ofsX + 32768) >= 0 && ofsY >= 0 && (ofsX + 32768) < srcMax.w && ofsY < srcMax.h)
-									_read_pixel(p + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+									_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
 								else
 									src12_b = src12_g = src12_r = src12_a = 0;
 
 								if (ofsX >= 0 && (ofsY + 32768) >= 0 && ofsX < srcMax.w && (ofsY + 32768) < srcMax.h)
-									_read_pixel(p + srcPitch, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+									_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
 								else
 									src21_b = src21_g = src21_r = src21_a = 0;
 
 								if ((ofsX + 32768) >= 0 && (ofsY + 32768) >= 0 && (ofsX + 32768) < srcMax.w && (ofsY + 32768) < srcMax.h)
-									_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+									_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 								else
 									src22_b = src22_g = src22_r = src22_a = 0;
 							}
@@ -2263,17 +2384,17 @@ namespace wg
 
 						if (bFast8)
 						{
-							_read_pixel_fast8(p , SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
-							_read_pixel_fast8(p2, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
-							_read_pixel_fast8(p3, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
-							_read_pixel_fast8(p4, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+							_read_pixel_fast8(p , SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+							_read_pixel_fast8(p2, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+							_read_pixel_fast8(p3, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+							_read_pixel_fast8(p4, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 						}
 						else
 						{
-							_read_pixel(p , SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
-							_read_pixel(p2, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
-							_read_pixel(p3, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
-							_read_pixel(p4, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
+							_read_pixel(p , SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src11_b, src11_g, src11_r, src11_a);
+							_read_pixel(p2, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src12_b, src12_g, src12_r, src12_a);
+							_read_pixel(p3, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src21_b, src21_g, src21_r, src21_a);
+							_read_pixel(p4, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, src22_b, src22_g, src22_r, src22_a);
 						}
 					}
 
@@ -2309,9 +2430,9 @@ namespace wg
 					{
 						assert((ofsX | ofsY | (srcMax.w - 1 - ofsX) | (srcMax.h - 1 - ofsY)) >= 0);
 						if( bFast8)
-							_read_pixel_fast8(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+							_read_pixel_fast8(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
 						else
-							_read_pixel(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
+							_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, pSrcSurf->m_pClut4096, srcB, srcG, srcR, srcA);
 					}
 				}
 
@@ -2324,15 +2445,15 @@ namespace wg
 
 				if (bFast8)
 				{
-					_read_pixel_fast8(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel_fast8(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel_fast8(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels_fast8(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel_fast8(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 				else
 				{
-					_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, nullptr, backB, backG, backR, backA);
-					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
-					_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+					_read_pixel(pDst, DSTFORMAT, nullptr, nullptr, backB, backG, backR, backA);
+					_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+					_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 				}
 
 				// Step 6: Increment source and destination pointers
@@ -2392,10 +2513,10 @@ namespace wg
 					int16_t src21_b, src21_g, src21_r, src21_a;
 					int16_t src22_b, src22_g, src22_r, src22_a;
 
-					_read_pixel(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
-					_read_pixel(p + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
-					_read_pixel(p + srcPitch, SRCFORMAT, bFast8, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
-					_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, bFast8, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
+					_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, src11_b, src11_g, src11_r, src11_a);
+					_read_pixel(p + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src12_b, src12_g, src12_r, src12_a);
+					_read_pixel(p + srcPitch, SRCFORMAT, pSrcSurf->m_pClut, src21_b, src21_g, src21_r, src21_a);
+					_read_pixel(p + srcPitch + srcPixelBytes, SRCFORMAT, pSrcSurf->m_pClut, src22_b, src22_g, src22_r, src22_a);
 
 					// Interpolate our 2x2 source colors into one source color, srcX
 
@@ -2417,7 +2538,7 @@ namespace wg
 				}
 				else
 				{
-					_read_pixel(p, SRCFORMAT, bFast8, pSrcSurf->m_pClut, srcB, srcG, srcR, srcA);
+					_read_pixel(p, SRCFORMAT, pSrcSurf->m_pClut, srcB, srcG, srcR, srcA);
 				}
 
 				// Step 3.5: Apply any tinting
@@ -2434,16 +2555,16 @@ namespace wg
 
 				int16_t backB, backG, backR, backA;
 
-				_read_pixel(pDst, DSTFORMAT, bFast8, nullptr, backB, backG, backR, backA );
+				_read_pixel(pDst, DSTFORMAT, nullptr, backB, backG, backR, backA );
 
 				// Step 4: Blend srcX and backX into outX
 
 				int16_t outB, outG, outR, outA;
-				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, bFast8, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
+				_blend_pixels(BLEND, tint.morphFactor, DSTFORMAT, srcB, srcG, srcR, srcA, backB, backG, backR, backA, outB, outG, outR, outA);
 
 				// Step 5: Write resulting pixel to destination
 
-				_write_pixel(pDst, DSTFORMAT, bFast8, outB, outG, outR, outA);
+				_write_pixel(pDst, DSTFORMAT, outB, outG, outR, outA);
 
 				// Step 6: Increment source and destination pointers
 
@@ -3376,6 +3497,7 @@ namespace wg
 
 		int16_t	colors[c_maxSegments][4];				// RGBA order of elements
 		bool	transparentSegments[c_maxSegments];
+		bool	opaqueSegments[c_maxSegments];
 
 		SegmentGradient* pGradientsY = nullptr;
 		SegmentGradient* pGradientsX = nullptr;
@@ -3421,6 +3543,7 @@ namespace wg
 				colors[i][3] = (s_unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
 
 				transparentSegments[i] = (colors[i][3] == 0);
+				opaqueSegments[i] = (colors[i][3] == 4096);
 			}
 		}
 		else
@@ -3435,6 +3558,7 @@ namespace wg
 				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
 
 				transparentSegments[i] = (colors[i][3] == 0);
+				opaqueSegments[i] = (colors[i][3] == 4096);
 			}
 		}
 
@@ -3613,6 +3737,7 @@ namespace wg
 				// Possibly mark this segment as transparent
 
 				transparentSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 0);
+				opaqueSegments[seg] = (segA[0] + segA[1] + segA[2] + segA[3] == 4096*4096*4);
 			}
 		}
 
@@ -3767,7 +3892,7 @@ namespace wg
 
 				//
 
-				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, pGradientsY + skippedSegments, transparentSegments + skippedSegments);
+				pOp(clipBeg, clipEnd, pStripStart, rowPitch, nEdges, edges, pColors, pGradientsY + skippedSegments, transparentSegments + skippedSegments, opaqueSegments + skippedSegments, int(m_morphFactor*4096));
 				pEdgeStrips += edgeStripPitch;
 				pStripStart += colPitch;
 				columnOfs++;

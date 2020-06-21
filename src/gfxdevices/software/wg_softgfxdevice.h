@@ -182,19 +182,19 @@ namespace wg
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
-		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, bool bFast8, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
-		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a);
+		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
-		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
 			int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 			int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, bool bFast8, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
-		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, bool bFast8, int16_t b, int16_t g, int16_t r, int16_t a);
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
-		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat, bool bFast8,
+		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat,
 											int16_t srcB, int16_t srcG, int16_t srcR, int16_t srcA,
 											int16_t backB, int16_t backG, int16_t backR, int16_t backA,
 											int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
@@ -287,10 +287,7 @@ namespace wg
 		static void _complex_blit(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const SoftGfxDevice::ColTrans& tint, CoordI patchPos);
 
 		template<bool GRADIENT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments);
-
-
-
+		static void	_draw_segment_strip(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
 
 		void	_lineToEdges(const WaveLine * pWave, int offset, int nPoints, SegmentEdge * pDest, int pitch);
 
@@ -311,7 +308,7 @@ namespace wg
 		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
-		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments);
+		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
 
 
 		typedef void(SoftGfxDevice::*SimpleBlitProxy_Op)(const RectI& dest, CoordI src, const int simpleTransform[2][2], CoordI patchPos);
