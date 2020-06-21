@@ -65,6 +65,10 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/meter/"/>
+        <IncludePath Value="../../src/skins/misc/"/>
+        <IncludePath Value="../../src/skins/state/"/>
+        <IncludePath Value="../../src/skins/static/"/>
         <IncludePath Value="../../src/textmappers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>
@@ -134,6 +138,10 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/meter/"/>
+        <IncludePath Value="../../src/skins/misc/"/>
+        <IncludePath Value="../../src/skins/state/"/>
+        <IncludePath Value="../../src/skins/static/"/>
         <IncludePath Value="../../src/textmappers/"/>
         <IncludePath Value="../../src/valueformatters/"/>
         <IncludePath Value="../../src/widgets/"/>

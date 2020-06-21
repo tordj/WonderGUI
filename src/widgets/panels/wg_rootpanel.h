@@ -78,7 +78,7 @@ namespace wg
 		//.____ Geometry _________________________________________________
 
 		bool				setGeo( const Rect& geo );
-		inline Rect			geo() const;
+		Rect				geo() const;
 
 		//.____ State _________________________________________________
 

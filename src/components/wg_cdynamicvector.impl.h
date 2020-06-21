@@ -20,8 +20,8 @@
 
 =========================================================================*/
 
-#ifndef	WG_CDYNAMICDynamicVector_IMPL_DOT_H
-#define	WG_CDYNAMICDynamicVector_IMPL_DOT_H
+#ifndef	WG_CDYNAMICVECTOR_IMPL_DOT_H
+#define	WG_CDYNAMICVECTOR_IMPL_DOT_H
 #pragma once
 
 #include <wg_cdynamicvector.h>
@@ -29,29 +29,29 @@
 
 namespace wg
 {
+	
 	template<class EntryType> const TypeInfo CDynamicVector<EntryType>::TYPEINFO = { "CDynamicVector<Unknow>", &CStaticVector<EntryType>::TYPEINFO };
-
 
 	//____ pushBack() _________________________________________________________________
 
 	template < class EntryType>
 	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const EntryType& entry)
 	{
-		m_entries.push_back(entry);		
-		_didAddEntries(&m_entries.back(), 1);
-		return m_entries.end()-1;
+		CStaticVector<EntryType>::m_entries.push_back(entry);		
+		_didAddEntries(&CStaticVector<EntryType>::m_entries.back(), 1);
+		return CStaticVector<EntryType>::m_entries.end()-1;
 	}
 
 	template < class EntryType>
 	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const std::initializer_list<const EntryType>& entries)
 	{
-		int amount = m_entries.size();
+		int amount = CStaticVector<EntryType>::m_entries.size();
 
 		for( auto& entry : entries )
-			m_entries.push_back(entry);
+			CStaticVector<EntryType>::m_entries.push_back(entry);
 
-		_didAddEntries( &m_entries[amount], m_entries.size() - amount);
-		return m_entries.begin()+amount;
+		_didAddEntries( &CStaticVector<EntryType>::m_entries[amount], CStaticVector<EntryType>::m_entries.size() - amount);
+		return CStaticVector<EntryType>::m_entries.begin()+amount;
 	}
 
 	//____ insert() ______________________________________________________________
@@ -61,8 +61,8 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		auto it = m_entries.insert( m_entries.begin() + index, entry);
-		_didAddEntries( &m_entries[index], 1);
+		auto it = CStaticVector<EntryType>::m_entries.insert( CStaticVector<EntryType>::m_entries.begin() + index, entry);
+		_didAddEntries( &CStaticVector<EntryType>::m_entries[index], 1);
 		return it;
 	}
 
@@ -73,8 +73,8 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		_willEraseEntries( &m_entries[index], 1);
-		return m_entries.erase(m_entries.begin()+index);
+		_willEraseEntries( &CStaticVector<EntryType>::m_entries[index], 1);
+		return CStaticVector<EntryType>::m_entries.erase(CStaticVector<EntryType>::m_entries.begin()+index);
 	}
 
 
@@ -83,8 +83,8 @@ namespace wg
 	{
 		//TODO: Add assert
 
-		_willEraseEntries( &m_entries[index], amount);
-		return m_entries.erase(m_entries.begin()+index,m_entries.begin()+index+amount );
+		_willEraseEntries( &CStaticVector<EntryType>::m_entries[index], amount);
+		return CStaticVector<EntryType>::m_entries.erase(CStaticVector<EntryType>::m_entries.begin()+index,CStaticVector<EntryType>::m_entries.begin()+index+amount );
 	}
 
 	//____ clear() ____________________________________________________________
@@ -92,8 +92,8 @@ namespace wg
 	template < class EntryType>
 	void CDynamicVector<EntryType>::clear()
 	{
-		_willEraseEntries(&m_entries[0], m_entries.size());
-		m_entries.clear();
+		_willEraseEntries(&CStaticVector<EntryType>::m_entries[0], CStaticVector<EntryType>::m_entries.size());
+		CStaticVector<EntryType>::m_entries.clear();
 	}
 
 

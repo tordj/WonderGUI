@@ -320,7 +320,7 @@ int main(int argc, char** argv)
 #endif
 	Base::setActiveContext(pContext);
 
-	nisBlendTest();
+//	nisBlendTest();
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -1423,8 +1423,7 @@ void myButtonClickCallback( const Msg_p& pMsg )
 
 Blob_p loadBlob( const char * pPath )
 {
-	FILE* fp;
-	auto err = fopen_s( &fp, pPath, "rb" );
+	FILE* fp = fopen( pPath, "rb" );
 	if( !fp )
 		return 0;
 
@@ -1449,8 +1448,7 @@ Blob_p loadBlob( const char * pPath )
 
 void * loadFile( const char * pPath )
 {
-	FILE* fp;
-	auto err = fopen_s(&fp, pPath, "rb");
+	FILE* fp = fopen(pPath, "rb");
 	if( !fp )
 		return 0;
 
@@ -2399,8 +2397,8 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	pSelectBox->setListSkin(pListSkin);
 	pSelectBox->setEntrySkin(pListEntrySkin);
 
-	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("TESTAR UTAV BARA HELVETE")));
-	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("VERSUCH VERSUCH VERSUCH VERSUCH")));
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 1")));
+	pSelectBox->entries.pushBack(SelectBoxEntry(1, String("ENTRY 2")));
 
 	pBaseLayer->slots.pushBackMovable(pSelectBox, Coord(10, 10));
 	pPopupLayer->mainSlot = pBaseLayer;

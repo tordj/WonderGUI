@@ -375,7 +375,7 @@ namespace wg
 
 	Size PianoKeyboard::maxSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : SizeI());
+		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
 	}
 
 

@@ -36,7 +36,7 @@ namespace wg
 	{
 	public:
 
-		using iterator = CStaticVector<EntryType>::iterator;
+		using iterator = typename CStaticVector<EntryType>::iterator;
 
 		class Holder : public CStaticVector<EntryType>::Holder	/** @private */
 		{
@@ -55,10 +55,10 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		inline int		capacity() const { return CStaticVector::m_entries.capacity(); }
+		inline int		capacity() const { return CStaticVector<EntryType>::m_entries.capacity(); }
 
-		inline void		reserve(int amount) { CStaticVector::m_entries.reserve( amount ); }
-		inline void		shrinkToFit() { CStaticVector::m_entries.shrink_to_fit(); }
+		inline void		reserve(int amount) { CStaticVector<EntryType>::m_entries.reserve( amount ); }
+		inline void		shrinkToFit() { CStaticVector<EntryType>::m_entries.shrink_to_fit(); }
 
 		iterator		pushBack( const EntryType& entry );
 		iterator		pushBack( const std::initializer_list<const EntryType>& entries );

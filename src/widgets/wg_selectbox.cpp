@@ -313,7 +313,7 @@ namespace wg
 		auto pLayer = OO(_parent())->_getPopupLayer();
 		if (pLayer && m_pListCanvas)
 		{
-			pLayer->popupSlots.pop(m_pListCanvas);
+			pLayer->popupSlots.pop(m_pListCanvas.rawPtr());
 		}
 	}
 

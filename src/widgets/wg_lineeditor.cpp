@@ -259,7 +259,7 @@ namespace wg
 			window -= m_pSkin->contentPaddingSize();
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
-			scrollOfs = canvas.w < window.w ? 0 : canvas.w - window.w;
+			scrollOfs = canvas.w < window.w ? MU() : canvas.w - window.w;
 
 		if( mustHave.x < scrollOfs )
 			scrollOfs = mustHave.x;

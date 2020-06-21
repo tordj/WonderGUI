@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_staticboxSkin.h>
+#include <wg_staticboxskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 

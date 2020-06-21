@@ -27,6 +27,8 @@
 #include <wg_base.h>
 #include <wg_context.h>
 
+#include <cmath>
+
 namespace wg
 {
 

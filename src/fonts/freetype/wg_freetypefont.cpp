@@ -35,7 +35,15 @@
 
 #include <ft2build.h>
 #include FT_FREETYPE_H
-#include FT_PARAMETER_TAGS_H
+
+
+#define SUPPORT_STEM_DARKENING
+
+#ifdef SUPPORT_STEM_DARKENING
+#	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library that does not support stem darkening. 
+										// Comment out define above to compile anyway. Small fonts will look thin/bright and anti-alias won't be as smooth
+										// if gamma correction is enabled.
+#endif
 
 namespace wg
 {
@@ -90,6 +98,7 @@ namespace wg
 		
 		// Darken the stem if we have gammaCorrection enabled.
 
+#ifdef SUPPORT_STEM_DARKENING
 		if (Base::activeContext()->gammaCorrection())
 		{
 			FT_Parameter         property1;
@@ -101,6 +110,7 @@ namespace wg
 
 			FT_Face_Properties(m_ftFace, 1, properties);
 		}
+#endif
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -220,7 +230,7 @@ namespace wg
 		FT_Vector	delta;
 		FT_Get_Kerning( m_ftFace, pLeftGlyph->kerningIndex(), pRightGlyph->kerningIndex(), FT_KERNING_DEFAULT, &delta );
 
-		return MU::fromPX(delta.x >> 6);
+		return MU::fromPX(int(delta.x >> 6));
 	}
 
 	//____ whitespaceAdvance() _________________________________________________
@@ -238,7 +248,7 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_whitespaceAdvance[m_size.px()] = MU::fromPX(m_ftFace->glyph->advance.x >> 6);
+			m_whitespaceAdvance[m_size.px()] = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
 		}
 
 		return m_whitespaceAdvance[m_size.px()];
@@ -292,7 +302,7 @@ namespace wg
 
 	MU FreeTypeFont::maxAdvance()
 	{
-		return MU::fromPX(m_ftFace->size->metrics.max_advance >> 6);
+		return MU::fromPX(int(m_ftFace->size->metrics.max_advance >> 6));
 	}
 
 
@@ -348,7 +358,7 @@ namespace wg
 
 			// Get some details about the glyph
 
-			MU advance = MU::fromPX(m_ftFace->glyph->advance.x >> 6);
+			MU advance = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
 
 			// Get a MyGlyph object and fill in details
 

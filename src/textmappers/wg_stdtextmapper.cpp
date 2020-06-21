@@ -1106,7 +1106,7 @@ namespace wg
 				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1256,7 +1256,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1291,7 +1291,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
 					MU w = pCaret->eolWidth(eolCellSize);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1501,7 +1501,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
 					eolCaretWidth = pCaret->eolWidth(eolCellSize);
 				}
 				else
@@ -1536,7 +1536,7 @@ namespace wg
 
 				if (pCaret)
 				{
-					Size eolCellSize(pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend());
+					Size eolCellSize(pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend());
 					MU w = pCaret->eolWidth(eolCellSize);
 					if (w > eolCellSize.w)
 						width += w - eolCellSize.w;
@@ -1747,7 +1747,7 @@ namespace wg
 
 				if( pCaret )
 				{
-					Size eolCellSize( pGlyph ? pGlyph->advance() : 0, pFont->maxAscend() + pFont->maxDescend() );
+					Size eolCellSize( pGlyph ? pGlyph->advance() : MU(), pFont->maxAscend() + pFont->maxDescend() );
 					MU w = pCaret->eolWidth( eolCellSize );
 					if( w > eolCellSize.w )
 						width += w - eolCellSize.w;

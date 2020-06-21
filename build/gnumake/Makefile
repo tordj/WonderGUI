@@ -65,13 +65,13 @@ DEPDIR = deps
 
 
 CPPFLAGS = -I/usr/include/freetype2/ -I../../src/ -I../../src/base/ -I../../src/components/ \
-  -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/textmappers/ -I../../src/valueformatters/ \
+  -I../../src/sizebrokers/ -I../../src/skins/ -I../../src/skins/meter/ -I../../src/skins/misc/ -I../../src/skins/state/ -I../../src/skins/static/ -I../../src/textmappers/ -I../../src/valueformatters/ \
   -I../../src/widgets/ -I../../src/widgets/capsules/ -I../../src/widgets/layers/ -I../../src/widgets/panels/ -I../../src/widgets/lists/ \
   -I../../src/gfxdevices/software/ -I../../src/gfxdevices/opengl/ -I../../src/gfxdevices/stream/ -I../../src/fonts/freetype/
 
-VPATH = ../../src/base::../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
+VPATH = ../../src/base::../../src/sizebrokers:../../src/components:../../src/sizebrokers:../../src/skins:../../src/skins/meter:../../src/skins/misc:../../src/skins/state:../../src/skins/static:../../src/textmappers:../../src/valueformatters:../../src/widgets:../../src/widgets/capsules:../../src/widgets/layers:../../src/widgets/lists:../../src/widgets/panels:../../src/gfxdevices/software/:../../src/gfxdevices/opengl/:../../src/gfxdevices/stream/:../../src/fonts/freetype:../../src/examples:$(OUTDIR):$(OBJDIR)
 
-BASE = wg_anim.o \
+BASE = \
   wg_base.o \
   wg_bitmapfont.o \
   wg_blob.o \
@@ -82,14 +82,12 @@ BASE = wg_anim.o \
   wg_codepages.o \
   wg_color.o \
   wg_context.o \
+  wg_dataset.o \
   wg_dummyfont.o \
   wg_enumextras.o \
   wg_font.o \
   wg_geo.o \
-  wg_gfxanim.o \
   wg_gfxdevice.o \
-  wg_gfxinstream.o \
-  wg_gfxoutstream.o \
   wg_gfxstreamlogger.o \
   wg_gfxstreamplayer.o \
   wg_gfxstreamplug.o \
@@ -101,14 +99,14 @@ BASE = wg_anim.o \
   wg_msg.o \
   wg_msglogger.o \
   wg_msgrouter.o \
+  wg_mu.o \
   wg_nullgfxdevice.o \
   wg_object.o \
   wg_patches.o \
-  wg_payload.o \
-  wg_qpix.o \
   wg_receiver.o \
   wg_resdb.o \
   wg_scrollbartarget.o \
+  wg_slot.o \
   wg_string.o \
   wg_surface.o \
   wg_surfacefactory.o \
@@ -119,72 +117,107 @@ BASE = wg_anim.o \
   wg_togglegroup.o \
   wg_util.o
 
-COMPONENTS = wg_ccanvas.o \
+COMPONENTS = \
+  wg_ccanvas.o \
+  wg_canimframes.o \
+  wg_ccanvas.o \
   wg_ccolumnheader.o \
+  wg_cdynamicslotcollection.o \
+  wg_cgfxinstream.o \
+  wg_cgfxoutstream.o \
   wg_cicondisplay.o \
   wg_component.o \
   wg_cshadows.o \
+  wg_cslot.o \
+  wg_cstandardslot.o \
+  wg_cstaticslotcollection.o \
   wg_cstatictextdisplay.o \
   wg_cstaticvaluedisplay.o \
   wg_ctext.o \
+  wg_ctextdisplay.o \
   wg_ctexteditor.o \
   wg_cvaluedisplay.o \
-  wg_cvalueeditor.o
+  wg_cvalueeditor.o \
+  wg_geocomponent.o
 
 
-SIZEBROKERS = wg_scalepreferred_sizebroker.o \
+SIZEBROKERS = \
+  wg_scalepreferred_sizebroker.o \
   wg_sizebroker.o \
   wg_uniform_sizebroker.o
 
-SKINS = wg_blockskin.o \
-  wg_boxskin.o \
-  wg_colorskin.o \
-  wg_extendedskin.o \
-  wg_multiblockskin.o \
+SKINS = \
   wg_skin.o \
+  wg_stateskin.o \
+  wg_fillmeterskin.o \
+  wg_framemeterskin.o \
+  wg_piemeterskin.o \
+  wg_spinmeterskin.o \
+  wg_doubleskin.o \
+  wg_blockstateskin.o \
+  wg_boxstateskin.o \
+  wg_colorstateskin.o \
+  wg_lambdastateskin.o \
+  wg_multiblockskin.o \
+  wg_staticblockskin.o \
+  wg_staticboxskin.o \
   wg_staticcolorskin.o
 
-TEXTMAPPERS = wg_stdtextmapper.o \
+TEXTMAPPERS = \
+  wg_stdtextmapper.o \
   wg_textmapper.o
 
-VALUEFORMATTERS = wg_standardformatter.o \
+VALUEFORMATTERS = \
+  wg_standardformatter.o \
   wg_timeformatter.o \
   wg_valueformatter.o
 
-WIDGETS = wg_animplayer.o \
+WIDGETS = \
+  wg_animplayer.o \
   wg_button.o \
   wg_canvas.o \
   wg_container.o \
   wg_filler.o \
   wg_fpsdisplay.o \
   wg_image.o \
+  wg_knob.o \
   wg_lineeditor.o \
+  wg_pianokeyboard.o \
   wg_popupopener.o \
-  wg_refreshbutton.o \
   wg_rulerlabels.o \
   wg_scrollbar.o \
+  wg_selectbox.o \
+  wg_sidecanvas.o \
   wg_simplevolumemeter.o \
+  wg_slider.o \
   wg_textdisplay.o \
   wg_texteditor.o \
+  wg_timer.o \
   wg_togglebutton.o \
   wg_valuedisplay.o \
   wg_volumemeter.o \
   wg_widget.o
 
 
-CAPSULES = wg_capsule.o \
+CAPSULES = \
+  wg_canvasstack.o \
+  wg_capsule.o \
   wg_shadercapsule.o \
   wg_sizecapsule.o
 
-LAYERS = wg_dragndroplayer.o \
+LAYERS = \
+  wg_designlayer.o \
+  wg_dragndroplayer.o \
   wg_layer.o \
   wg_modallayer.o \
   wg_popuplayer.o
 
-LISTS = wg_list.o \
+LISTS = \
+  wg_list.o \
   wg_packlist.o 
 
-PANELS = wg_flexpanel.o \
+PANELS = \
+  wg_flexpanel.o \
   wg_lambdapanel.o \
   wg_packpanel.o \
   wg_panel.o \
