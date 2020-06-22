@@ -84,6 +84,8 @@ namespace wg
 
 	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
 	{
+		//TODO: Support flip!
+
 		auto pFrame = _fractionToFrame(fraction);
 		if (pFrame)
 		{
@@ -96,6 +98,8 @@ namespace wg
 
 	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
+		//TODO: Support flip!
+
 		if (!canvas.contains(ofs))
 			return false;
 

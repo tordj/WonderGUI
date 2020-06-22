@@ -105,6 +105,7 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ isInstanceOf() _____________________________________________________
 	/**
 	 * @brief	Check if the object is an instance or subclass of specified class.
 	 *
@@ -135,6 +136,7 @@ namespace wg
 		return false;
 	}
 
+	//____ typeInfo() _________________________________________________________
 	/**
 	 * @brief Get class information about the object.
 	 *
@@ -159,6 +161,7 @@ namespace wg
 		delete this;
 	}
 
+	//____ setFinalizer() _____________________________________________________
 	/**
 	* @brief Set a callback for when object is destroyed.
 	*
@@ -181,6 +184,7 @@ namespace wg
 		WeakPtrHub::setFinalizer(this, pFinalizer);
 	}
 
+	//____ finalizer() ________________________________________________________
 	/**
 	* @brief Get the Finalizer for this Object.
 	*

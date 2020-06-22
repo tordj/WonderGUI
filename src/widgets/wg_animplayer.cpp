@@ -188,7 +188,8 @@ namespace wg
 		{
 			Rect canv = _contentRect();
 			pDevice->setBlitSource(frames._surface());
-			pDevice->stretchBlit(canv, RectI(frames.find(_playPosToTimestamp(m_playPos))->source(), frames.frameSize() ));
+			auto * pFrame = frames.find(_playPosToTimestamp(m_playPos));
+			pDevice->stretchFlipBlit(canv, RectI(pFrame->source(), frames.frameSize()), pFrame->flip());
 		}
 	}
 
@@ -212,6 +213,8 @@ namespace wg
 
 	bool AnimPlayer::_alphaTest( const Coord& ofs )
 	{
+		//TODO: Take flip into account!
+
 		if (Widget::_alphaTest(ofs))
 			return true;
 
