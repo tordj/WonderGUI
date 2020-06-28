@@ -93,6 +93,7 @@ bool selectBoxTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
+void commonAncestorTest();
 
 
 //____ main() _________________________________________________________________
@@ -321,6 +322,7 @@ int main(int argc, char** argv)
 	Base::setActiveContext(pContext);
 
 //	nisBlendTest();
+	commonAncestorTest();
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -2425,4 +2427,56 @@ void nisBlendTest()
 	pDevice->blit({ 0,0 });
 	pDevice->endRender();
 	savePNG(pCanvas, "knob_wg_software.png");
+}
+
+
+void commonAncestorTest()
+{
+	auto pBrother = PackPanel::create();
+	auto pMe = PackPanel::create();
+	auto pParent = PackPanel::create();
+	auto pUncle = PackPanel::create();
+
+	auto pGranny = PackPanel::create();
+
+	auto pGreatGranny = PackPanel::create();
+
+	auto pNephew = PackPanel::create();
+	auto pCousine = PackPanel::create();
+
+	auto pUnrelated = PackPanel::create();
+	auto pUnrelatedsChild = PackPanel::create();
+	pUnrelated->slots << pUnrelatedsChild;
+
+	pGreatGranny->slots << pGranny;
+	pGranny->slots << pParent;
+	pGranny->slots << pUncle;
+
+	pUncle->slots << pCousine;
+
+	pParent->slots << pMe;
+	pParent->slots << pBrother;
+	
+	pBrother->slots << pNephew;
+
+	assert(pMe->commonAncestor(pBrother) == pParent);
+	assert(pMe->commonAncestor(pNephew) == pParent);
+	assert(pMe->commonAncestor(pMe) == pMe);
+	assert(pMe->commonAncestor(pParent) == pParent);
+	assert(pParent->commonAncestor(pMe) == pParent);
+
+	assert(pParent->commonAncestor(pMe) == pParent);
+
+	assert(pMe->commonAncestor(pCousine) == pGranny);
+	assert(pMe->commonAncestor(pUncle) == pGranny);
+
+	assert(pMe->commonAncestor(pGranny) == pGranny);
+	assert(pMe->commonAncestor(pGreatGranny) == pGreatGranny);
+	assert(pGreatGranny->commonAncestor(pGreatGranny) == pGreatGranny);
+
+	assert(pMe->commonAncestor(nullptr) == nullptr);
+
+	assert(pMe->commonAncestor(pUnrelated) == nullptr);
+	assert(pMe->commonAncestor(pUnrelatedsChild) == nullptr);
+
 }

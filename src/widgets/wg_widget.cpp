@@ -105,6 +105,53 @@ namespace wg
 	}
 
 
+	//____ commonAncestor() ___________________________________________________
+	/**
+		@brief Finds closest common ancestor of widgets.
+
+		Finds the closest common ancestor between this and pOtherWidget (if any).
+		The result can be one of the specified widgets if one is an ancestor
+		of the other.
+
+		@param pOtherWidget	The widget this is checked against.
+
+		@return The closest common ancestor, which can be one of the widgets specifed,
+				or nullptr if they are not related.
+	*/
+	Widget_p Widget::commonAncestor(Widget* pOtherWidget)
+	{
+		if (pOtherWidget == nullptr)
+			return nullptr;
+
+		const int c_maxLevels = 128;
+
+		Widget* list1[c_maxLevels];
+		Widget* list2[c_maxLevels];
+
+		list1[0] = this;
+		list2[0] = pOtherWidget;
+
+		int nb1 = _listAncestors(list1+1, c_maxLevels-1) + 1;
+		int nb2 = pOtherWidget->_listAncestors(list2+1, c_maxLevels-1) + 1;
+
+		if (nb1 == c_maxLevels-1 || nb2 == c_maxLevels-1)
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::Internal, "Widget hierarchy too deep for operation.", this, Widget::TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
+		int maxSearchDepth = min(nb1, nb2);
+
+		int i = 0;
+		while (i < maxSearchDepth && list1[nb1-1 - i] == list2[nb2-1 - i])
+			i++;
+
+		if (i == 0 )
+			return nullptr;
+
+		return list1[nb1 - i];
+	}
+
 	//____ pointerStyle() ________________________________________
 	/**
 	 * @brief Returns mouse pointer style.
@@ -430,6 +477,20 @@ namespace wg
 	{
 		m_pHolder = pSlot ? pSlot->_holder() : nullptr;
 		m_pSlot = pSlot;
+	}
+
+	//____ _listAncestors() ________________________________________________________
+
+	int Widget::_listAncestors(Widget* array[], int max)
+	{
+		int n = 0;
+		Widget* p = _parent();
+		while (p != nullptr && n < max)
+		{
+			array[n++] = p;
+			p = p->_parent();
+		}
+		return n;
 	}
 
 	//____ _getBlendMode() _________________________________________________________
