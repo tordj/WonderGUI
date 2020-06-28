@@ -76,76 +76,53 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-
-		//.____ Hierarchy _____________________________________________
-
-		bool			setParent( TextStyle * pParent );
-		void			cascade();
-
 		//.____ Content _______________________________________________
 
 		void			setFont( Font * pFont );
 		void			setLink( TextLink * pLink );
+		void			setRenderMode(BlendMode mode);
+		void			setBgRenderMode(BlendMode mode);
 
-		void			setColor( Color color, BlendMode operation = BlendMode::Replace );
-		void			setBgColor( Color color, BlendMode operation = BlendMode::Replace );
+		void			setColor( Color color );
+		void			setColor(Color color, State state);
+		void			setBgColor( Color color );
+		void			setBgColor(Color color, State state);
 		void			setSize( int size );
+		void			setSize(int size, State state);
 		void			setDecoration( TextDecoration decoration );
-		void			setRenderMode( BlendMode mode );
-		void			setBgRenderMode( BlendMode mode );
-
-		void			setColor( Color color, State state, BlendMode operation = BlendMode::Replace );
-		void			setBgColor( Color color, State state, BlendMode operation = BlendMode::Replace );
-		void			setSize( int size, State state );
 		void			setDecoration( TextDecoration decoration, State state );
-		void			setRenderMode( BlendMode mode, State state );
-		void			setBgRenderMode( BlendMode mode, State state );
 
-		void			clearFont();
-		void			clearLink();
+		inline void		clearFont() { setFont(nullptr); }
+		inline void		clearLink() { setLink(nullptr); }
+		inline void		clearRenderMode() { setRenderMode(BlendMode::Undefined); }
+		inline void		clearBgRenderMode() { setBgRenderMode(BlendMode::Undefined); }
 
-		void			clearColor();
-		void			clearBgColor();
-		void			clearSize();
-		void			clearDecoration();
-		void			clearRenderMode();
-		void			clearBgRenderMode();
-
-		void			clearColor( State state );
-		void			clearBgColor( State state );
-		void			clearSize( State state );
-		void			clearDecoration( State state );
-		void			clearRenderMode( State state );
-		void			clearBgRenderMode( State state );
+		inline void		clearColor();
+		inline void		clearColor(State state);
+		inline void		clearBgColor();
+		inline void		clearBgColor(State state);
+		inline void		clearSize() { setSize(0); }
+		inline void		clearSize(State state) { setSize(0, state); }
+		inline void		clearDecoration() { setDecoration(TextDecoration::Underline); }
+		inline void		clearDecoration( State state ) { setDecoration(TextDecoration::Underline, state); }
 
 		inline Font_p			font() const;
 		inline TextLink_p		link() const;
+		inline BlendMode		renderMode() const;
+		inline BlendMode		bgRenderMode() const;
 		inline Color			color( State state ) const;
 		inline Color			bgColor( State state ) const;
 		inline int				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
-		inline BlendMode		colorBlendMode( State state ) const;
-		inline BlendMode		bgColorBlendMode( State state ) const;
-		inline BlendMode		renderMode( State state ) const;
-		inline BlendMode		bgRenderMode( State state ) const;
-
-		inline Font_p			combFont() const;
-		inline TextLink_p		combLink() const;
-		inline Color			combColor( State state ) const;
-		inline Color			combBgColor( State state ) const;
-		inline int				combSize( State state ) const;
-		inline TextDecoration 	combDecoration( State state ) const;
-		inline BlendMode		combColorBlendMode( State state ) const;
-		inline BlendMode		combBgColorBlendMode( State state ) const;
-		inline BlendMode		combRenderMode( State state ) const;
-		inline BlendMode		combBgRenderMode( State state ) const;
 
 		inline bool             isColorStatic() const { return m_bStaticColor; }
 		inline bool             isBgColorStatic() const { return m_bStaticBgColor; }
 		inline bool             isSizeStatic() const { return m_bStaticSize; }
 		inline bool             isDecorationStatic() const { return m_bStaticDecoration; }
-		inline bool             isRenderModeStatic() const { return m_bStaticRenderMode; }
-		inline bool             isBgRenderModeStatic() const { return m_bStaticBgRenderMode; }
+
+		inline bool             isColorDefined(State state) const;
+		inline bool             isBgColorDefined(State state) const;
+
 
 
 		//.____ Misc __________________________________________________________
@@ -165,50 +142,35 @@ namespace wg
 		TextStyle();
 		virtual ~TextStyle();
 
-		struct AttrSet
-		{
-			Font_p			pFont;
-			int				size[StateEnum_Nb];
-			Color			color[StateEnum_Nb];
-			Color			bgColor[StateEnum_Nb];
-			TextDecoration	decoration[StateEnum_Nb];
-			BlendMode		renderMode[StateEnum_Nb];
-			BlendMode		bgRenderMode[StateEnum_Nb];
-			TextLink_p		pLink;
-
-			BlendMode		colorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend color with color from upstream (parent or already in attr)
-			BlendMode		bgColorBlendMode[StateEnum_Nb];		// Internal use only, operation used to blend bgColor with bgColor from upstream (parent or already in attr)
+		void		_refreshSize();
+		void		_refreshColor();
+		void		_refreshBgColor();
+		void		_refreshDecoration();
 
 
-		};
+		Font_p				m_pFont;
+		TextLink_p			m_pLink;
+		BlendMode			m_renderMode = BlendMode::Blend;
+		BlendMode			m_bgRenderMode = BlendMode::Blend;
 
-		bool		_compareSets( AttrSet * pSet1, AttrSet * pSet2 );
-		bool		_compareSetsForState( AttrSet * pSet1, AttrSet * pSet2, State state );
-		bool		_refreshComb();
-		void		_clearSet( AttrSet * pSet );
+		int					m_size[StateEnum_Nb];
+		Color				m_color[StateEnum_Nb];
+		Color				m_bgColor[StateEnum_Nb];
+		TextDecoration		m_decoration[StateEnum_Nb];
 
-		bool        _isColorStatic() const;
-		bool        _isBgColorStatic() const;
-		bool        _isSizeStatic() const;
-		bool        _isDecorationStatic() const;
-		bool        _isRenderModeStatic() const;
-		bool        _isBgRenderModeStatic() const;
+		Bitmask<uint32_t>	m_sizeSetMask = 0;
+		Bitmask<uint32_t>	m_colorSetMask = 0;
+		Bitmask<uint32_t>	m_bgColorSetMask = 0;
+		Bitmask<uint32_t>	m_decorationSetMask = 0;
 
-		TextStyle_p	m_pParent;
-		TextStyle *	m_pFirstChild;
-		TextStyle *	m_pNextSibling;
-		TextStyle *	m_pPrevSibling;
+		Bitmask<uint32_t>	m_colorDefinedMask = 0;
+		Bitmask<uint32_t>	m_bgColorDefinedMask = 0;
 
 
-		AttrSet		m_specAttr;
-		AttrSet		m_combAttr;
-
-		bool        m_bStaticColor = true;         // Combined color is identical in all states.
-		bool        m_bStaticBgColor = true;       // Combined background color is identical in all states.
-		bool        m_bStaticSize = true;          // Combined size is identical for in states.
-		bool        m_bStaticDecoration = true;    // Combined decoration is identical in all states.
-		bool        m_bStaticRenderMode = true;
-		bool        m_bStaticBgRenderMode = true;
+		bool				m_bStaticColor = true;         // Combined color is identical in all states.
+		bool				m_bStaticBgColor = true;       // Combined background color is identical in all states.
+		bool				m_bStaticSize = true;          // Combined size is identical for in states.
+		bool				m_bStaticDecoration = true;    // Combined decoration is identical in all states.
 
 
 		TextStyle_h	m_handle;
@@ -218,112 +180,62 @@ namespace wg
 	//______________________________________________________________________________
 	inline Font_p TextStyle::font() const
 	{
-		return m_specAttr.pFont;
+		return m_pFont;
 	}
 
 	//______________________________________________________________________________
 	inline TextLink_p TextStyle::link() const
 	{
-		return m_specAttr.pLink;
-	}
-
-	//______________________________________________________________________________
-	inline BlendMode TextStyle::colorBlendMode( State state ) const
-	{
-		return m_specAttr.colorBlendMode[Util::_stateToIndex(state)];
+		return m_pLink;
 	}
 
 	//______________________________________________________________________________
 	inline Color TextStyle::color( State state ) const
 	{
-		return m_specAttr.color[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline BlendMode TextStyle::bgColorBlendMode( State state ) const
-	{
-		return m_specAttr.bgColorBlendMode[Util::_stateToIndex(state)];
+		return m_color[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
 	inline 	Color TextStyle::bgColor( State state ) const
 	{
-		return m_specAttr.bgColor[Util::_stateToIndex(state)];
+		return m_bgColor[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
 	inline int TextStyle::size( State state ) const
 	{
-		return m_specAttr.size[Util::_stateToIndex(state)];
+		return m_size[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
 	inline TextDecoration TextStyle::decoration( State state ) const
 	{
-		return m_specAttr.decoration[Util::_stateToIndex(state)];
+		return m_decoration[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
-	inline BlendMode TextStyle::renderMode( State state ) const
+	inline BlendMode TextStyle::renderMode() const
 	{
-		return m_specAttr.renderMode[Util::_stateToIndex(state)];
+		return m_renderMode;
 	}
 
 	//______________________________________________________________________________
-	inline BlendMode TextStyle::bgRenderMode( State state ) const
+	inline BlendMode TextStyle::bgRenderMode() const
 	{
-		return m_specAttr.bgRenderMode[Util::_stateToIndex(state)];
+		return m_bgRenderMode;
 	}
 
 	//______________________________________________________________________________
-
-	inline Font_p TextStyle::combFont() const
+	inline bool TextStyle::isColorDefined(State state) const
 	{
-		return m_combAttr.pFont;
+		return m_colorDefinedMask.bit(Util::_stateToIndex(state));
 	}
 
 	//______________________________________________________________________________
-	inline TextLink_p TextStyle::combLink() const
+	inline bool TextStyle::isBgColorDefined(State state) const
 	{
-		return m_combAttr.pLink;
+		return m_bgColorDefinedMask.bit(Util::_stateToIndex(state));
 	}
-
-	//______________________________________________________________________________
-	inline Color TextStyle::combColor( State state ) const
-	{
-		return m_combAttr.color[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline Color TextStyle::combBgColor( State state ) const
-	{
-		return m_combAttr.bgColor[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline int TextStyle::combSize( State state ) const
-	{
-		return m_combAttr.size[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline TextDecoration TextStyle::combDecoration( State state ) const
-	{
-		return m_combAttr.decoration[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline BlendMode TextStyle::combRenderMode( State state ) const
-	{
-		return m_combAttr.renderMode[Util::_stateToIndex(state)];
-	}
-
-	//______________________________________________________________________________
-	inline BlendMode TextStyle::combBgRenderMode( State state ) const
-	{
-		return m_combAttr.bgRenderMode[Util::_stateToIndex(state)];
-	}
-
 
 
 } // namespace wg

@@ -161,7 +161,7 @@ namespace wg
 		
 		void		_didAddEntries(SelectBoxEntry * pEntry, int nb) override;
 		void		_didMoveEntries(SelectBoxEntry * pFrom, SelectBoxEntry * pTo, int nb) override;
-		void		_willEraseEntries(SelectBoxEntry * pSlot, int nb) override;
+		void		_willEraseEntries(SelectBoxEntry * pEntry, int nb) override;
 
 		Object *	_object() override { return this; }
 

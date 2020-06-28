@@ -77,13 +77,13 @@ namespace wg
 				{
 					TextStyle_p pStyle = m_charBuffer.chars()[markedChar].stylePtr();
 					if( pStyle )
-						pLink = pStyle->combLink();
+						pLink = pStyle->link();
 				}
 
 				// Fall back to components default style
 
 				if( !pLink && m_pStyle )
-					pLink = m_pStyle->combLink();
+					pLink = m_pStyle->link();
 
 
 				// Post messages if there was a change in what link we are pointing at

@@ -32,18 +32,18 @@
 namespace wg
 {
 
-	class ColorStateSkin;
-	typedef	StrongPtr<ColorStateSkin>	ColorStateSkin_p;
-	typedef	WeakPtr<ColorStateSkin>		ColorStateSkin_wp;
+	class ColorSkin;
+	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
+	typedef	WeakPtr<ColorSkin>		ColorSkin_wp;
 
-	class ColorStateSkin : public StateSkin
+	class ColorSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static ColorStateSkin_p	create();
-		static ColorStateSkin_p create(Color color,  BorderI contentPadding = BorderI() );
-		static ColorStateSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create();
+		static ColorSkin_p create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
@@ -69,17 +69,19 @@ namespace wg
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const override;
+		bool		isStateIdentical(State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const override;
+		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
+								float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		void		render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction = 1.f ) const override;
+		void		render(	GfxDevice* pDevice, const Rect& canvas, State state,
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
 
 	private:
-		ColorStateSkin();
-		ColorStateSkin(Color color);
-		~ColorStateSkin() {};
+		ColorSkin();
+		ColorSkin(Color color);
+		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();

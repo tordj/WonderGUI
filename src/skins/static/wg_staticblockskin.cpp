@@ -70,7 +70,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
+	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		if (!m_pSurface)
 			return;
@@ -81,7 +81,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
+	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
 	}

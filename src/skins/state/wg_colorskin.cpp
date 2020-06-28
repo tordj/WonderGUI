@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_colorstateskin.h>
+#include <wg_colorskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
@@ -30,25 +30,25 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo ColorStateSkin::TYPEINFO = { "ColorStateSkin", &StateSkin::TYPEINFO };
+	const TypeInfo ColorSkin::TYPEINFO = { "ColorSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
-	ColorStateSkin_p ColorStateSkin::create()
+	ColorSkin_p ColorSkin::create()
 	{
-		return ColorStateSkin_p(new ColorStateSkin());
+		return ColorSkin_p(new ColorSkin());
 	}
 
-	ColorStateSkin_p ColorStateSkin::create(Color color, BorderI contentPadding )
+	ColorSkin_p ColorSkin::create(Color color, BorderI contentPadding )
 	{
-		auto p = new ColorStateSkin(color);
+		auto p = new ColorSkin(color);
 		p->setContentPadding(contentPadding);
 		return p;
 	}
 
-	ColorStateSkin_p ColorStateSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors, BorderI contentPadding )
+	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors, BorderI contentPadding )
 	{
-		auto p = new ColorStateSkin();
+		auto p = new ColorSkin();
 		p->setColor(stateColors);
 		p->setContentPadding(contentPadding);
 		return p;
@@ -57,7 +57,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	ColorStateSkin::ColorStateSkin()
+	ColorSkin::ColorSkin()
 	{
 		m_stateColorMask = 1;
 
@@ -67,21 +67,21 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	ColorStateSkin::ColorStateSkin(Color color )
+	ColorSkin::ColorSkin(Color color )
 	{
 		setColor(color);
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& ColorStateSkin::typeInfo(void) const
+	const TypeInfo& ColorSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ setBlendMode() _____________________________________________________
 
-	void ColorStateSkin::setBlendMode(BlendMode mode)
+	void ColorSkin::setBlendMode(BlendMode mode)
 	{
 		m_blendMode = mode;
 		_updateOpaqueFlag();
@@ -89,7 +89,7 @@ namespace wg
 
 	//____ setColor() ________________________________________________________
 
-	void ColorStateSkin::setColor(Color color)
+	void ColorSkin::setColor(Color color)
 	{
 		m_stateColorMask = 1;
 
@@ -99,7 +99,7 @@ namespace wg
 		m_bOpaque = (color.a == 255);
 	}
 
-	void ColorStateSkin::setColor(State state, Color color)
+	void ColorSkin::setColor(State state, Color color)
 	{
 		int i = _stateToIndex(state);
 
@@ -111,7 +111,7 @@ namespace wg
 		_updateUnsetColors();
 	}
 
-	void ColorStateSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateColors)
+	void ColorSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateColors)
 	{
 		for (auto& state : stateColors)
 		{
@@ -126,7 +126,7 @@ namespace wg
 
 	//____ color() ______________________________________________________
 
-	Color ColorStateSkin::color(State state) const
+	Color ColorSkin::color(State state) const
 	{
 		int i = _stateToIndex(state);
 		return m_color[i];
@@ -134,7 +134,7 @@ namespace wg
 
 	//____ isStateIdentical() ____________________________________________________
 
-	bool ColorStateSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool ColorSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
@@ -144,19 +144,19 @@ namespace wg
 
 	//____ isOpaque() _____________________________________________________________
 
-	bool ColorStateSkin::isOpaque(State state) const
+	bool ColorSkin::isOpaque(State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
-	bool ColorStateSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	bool ColorSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
 		return (m_color[_stateToIndex(state)].a == 255);
 	}
 
 	//____ render() _______________________________________________________________
 
-	void ColorStateSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
+	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -173,7 +173,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool ColorStateSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -183,7 +183,7 @@ namespace wg
 
 	//____ _updateOpaqueFlag() ____________________________________________________
 
-	void ColorStateSkin::_updateOpaqueFlag()
+	void ColorSkin::_updateOpaqueFlag()
 	{
 		switch (m_blendMode)
 		{
@@ -209,7 +209,7 @@ namespace wg
 
 	//____ _updateUnsetColors() _______________________________________________
 
-	void ColorStateSkin::_updateUnsetColors()
+	void ColorSkin::_updateUnsetColors()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{

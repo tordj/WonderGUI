@@ -25,9 +25,9 @@
 
 namespace wg
 {
+	using namespace Util;
 
 	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
-
 
 
 	//____ constructor _____________________________________________________________
@@ -36,12 +36,13 @@ namespace wg
 	{
 		m_handle = TextStyleManager::_reserveHandle(this);
 
-		m_pFirstChild = 0;
-		m_pNextSibling = 0;
-		m_pPrevSibling = 0;
-
-		_clearSet( &m_specAttr );
-		_clearSet( &m_combAttr );
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			m_size[i]			= 0;
+			m_color[i]			= Color::Black;
+			m_bgColor[i]		= Color::Transparent;
+			m_decoration[i]		= TextDecoration::Undefined;
+		}
 	}
 
 
@@ -49,12 +50,6 @@ namespace wg
 
 	TextStyle::~TextStyle()
 	{
-		if( m_pNextSibling )
-			m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
-
-		if( m_pPrevSibling )
-			m_pPrevSibling->m_pNextSibling = m_pNextSibling;
-
 		TextStyleManager::_releaseHandle(m_handle);
 	}
 
@@ -65,251 +60,96 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setParent() _____________________________________________________________
-
-	bool TextStyle::setParent( TextStyle * pParent )
-	{
-		// Check so we don't get circular references.
-
-		if( pParent )
-		{
-			TextStyle * p = pParent;
-			while( p != 0 && p != this )
-				p = p->m_pParent;
-
-			if( p == this )
-				return false;
-		}
-
-		//
-
-		if( m_pParent )
-		{
-			if( m_pNextSibling )
-				m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
-
-			if( m_pPrevSibling )
-				m_pPrevSibling->m_pNextSibling = m_pNextSibling;
-			else
-				m_pParent->m_pFirstChild = m_pNextSibling;
-		}
-
-		m_pParent = pParent;
-		if( pParent )
-		{
-			m_pNextSibling = m_pParent->m_pFirstChild;
-			m_pPrevSibling = 0;
-			m_pParent->m_pFirstChild = this;
-		}
-
-		// Update combined values
-
-		_refreshComb();
-		return true;
-	}
-
-
-	//____ cascade() _______________________________________________________________
-
-	void TextStyle::cascade()
-	{
-		TextStyle * pChild = m_pFirstChild;
-		while( pChild )
-		{
-			if( pChild->_refreshComb() )
-				pChild->cascade();
-
-			pChild = pChild->m_pNextSibling;
-		}
-	}
-
 	//____ setFont() _______________________________________________________________
 
 	void TextStyle::setFont( Font * pFont )
 	{
-		if( pFont != m_specAttr.pFont )
-		{
-			m_specAttr.pFont = pFont;
-			if( !pFont && m_pParent )
-				m_combAttr.pFont = m_pParent->m_combAttr.pFont;
-			else
-				m_combAttr.pFont = pFont;
-		}
+		m_pFont = pFont;
 	}
 
 	//____ setLink() _______________________________________________________________
 
 	void TextStyle::setLink( TextLink * pLink )
 	{
-		if( pLink != m_specAttr.pLink )
-		{
-			m_specAttr.pLink = pLink;
-			if( !pLink && m_pParent )
-				m_combAttr.pLink = m_pParent->m_combAttr.pLink;
-			else
-				m_combAttr.pLink = pLink;
-		}
+		m_pLink = pLink;
 	}
 
+	//____ setRenderMode() _________________________________________________________
+
+	void TextStyle::setRenderMode(BlendMode mode)
+	{
+		m_renderMode = mode;
+	}
+
+	//____ setBgRenderMode() _________________________________________________________
+
+	void TextStyle::setBgRenderMode(BlendMode mode)
+	{
+		m_bgRenderMode = mode;
+	}
 
 	//____ setColor() ______________________________________________________________
 
-	void TextStyle::setColor( Color color, BlendMode operation )
+	void TextStyle::setColor( Color color )
 	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.colorBlendMode[i] = operation;
-				m_specAttr.color[i] = color;
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_color[i] = color;
 
-				m_combAttr.color[i] = Color::blend( m_pParent->m_combAttr.color[i], color, operation );
-
-				// This doesn't always blends colors as logically expected when adding together attribute structures,
-				// but covers most common and important cases.
-				//
-				// It always gets right if attr-structures that gets added either:
-				//
-				// 1. Only has one level where color is set in its TextStyle hierarchy.
-				// 2. Has a BlendMode::Replace somewhere in its TextStyle hierarchy.
-
-				BlendMode parentOp = m_pParent->m_combAttr.colorBlendMode[i];
-				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
-					m_combAttr.colorBlendMode[i] = operation;
-			}
-			m_bStaticColor = _isColorStatic();
-		}
-		else
-		{
-
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.colorBlendMode[i] = operation;
-				m_specAttr.color[i] = color;
-
-				m_combAttr.color[i] = Color::blend( Color::White, color, operation );
-				m_combAttr.colorBlendMode[i] = operation;
-			}
-			m_bStaticColor = true;
-		}
+		m_colorSetMask = 1;
+		m_bStaticColor = true;
 	}
 
-	void TextStyle::setColor( Color color, State state, BlendMode operation )
+	void TextStyle::setColor( Color color, State state )
 	{
 		int i = Util::_stateToIndex(state);
 
-		m_specAttr.colorBlendMode[i] = operation;
-		m_specAttr.color[i] = color;
+		m_color[i] = color;
+		m_colorSetMask.setBit(i);
 
-		if( m_pParent )
-		{
-			m_combAttr.color[i] = Color::blend( m_pParent->m_combAttr.color[i], color, operation );
-
-			BlendMode parentOp = m_pParent->m_combAttr.colorBlendMode[i];
-			if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
-				m_combAttr.colorBlendMode[i] = operation;
-		}
-		else
-		{
-			m_combAttr.color[i] = Color::blend( Color::White, color, operation );
-			m_combAttr.colorBlendMode[i] = operation;
-		}
-		m_bStaticColor = _isColorStatic();
+		_refreshColor();
 	}
+
 
 	//____ setBgColor() ______________________________________________________________
 
-	void TextStyle::setBgColor( Color color, BlendMode operation )
+	void TextStyle::setBgColor( Color color )
 	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgColorBlendMode[i] = operation;
-				m_specAttr.bgColor[i] = color;
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_bgColor[i] = color;
 
-				m_combAttr.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], color, operation );
-
-				// This doesn't always blends colors as logically expected when adding together attribute structures,
-				// but covers most common and important cases.
-				//
-				// It always gets right if attr-structures that gets added either:
-				//
-				// 1. Only has one level where color is set in its TextStyle hierarchy.
-				// 2. Has a BlendMode::Replace somewhere in its TextStyle hierarchy.
-
-				BlendMode parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
-				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
-					m_combAttr.bgColorBlendMode[i] = operation;
-			}
-			m_bStaticBgColor = _isBgColorStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgColorBlendMode[i] = operation;
-				m_specAttr.bgColor[i] = color;
-
-				m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
-				m_combAttr.bgColorBlendMode[i] = operation;
-			}
-			m_bStaticBgColor = true;
-		}
+		m_bgColorSetMask = 1;
+		m_bStaticBgColor = true;
 	}
 
-	void TextStyle::setBgColor( Color color, State state, BlendMode operation )
+	void TextStyle::setBgColor( Color color, State state )
 	{
 		int i = Util::_stateToIndex(state);
 
-		m_specAttr.bgColorBlendMode[i] = operation;
-		m_specAttr.bgColor[i] = color;
+		m_bgColor[i] = color;
+		m_bgColorSetMask.setBit(i);
 
-		if( m_pParent )
-		{
-			m_combAttr.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], color, operation );
-
-			BlendMode parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
-			if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || operation == BlendMode::Replace )
-				m_combAttr.bgColorBlendMode[i] = operation;
-		}
-		else
-		{
-			m_combAttr.bgColor[i] = Color::blend( Color::White, color, operation );
-			m_combAttr.bgColorBlendMode[i] = operation;
-		}
-		m_bStaticBgColor = _isBgColorStatic();
+		_refreshBgColor();
 	}
-
 
 	//____ setSize() _______________________________________________________________
 
 	void TextStyle::setSize( int size )
 	{
-		if( size == 0 )
-			clearSize();
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.size[i] = size;
-				m_combAttr.size[i] = size;
-			}
-			m_bStaticSize = true;
-		}
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_size[i] = size;
+
+		m_sizeSetMask = size == 0 ? 0 : 1;
+		m_bStaticSize = true;
 	}
 
 	void TextStyle::setSize( int size, State state )
 	{
-		if( size == 0 )
-			clearSize(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.size[idx] = size;
-			m_combAttr.size[idx] = size;
-			m_bStaticSize = _isSizeStatic();
-		}
+		int i = Util::_stateToIndex(state);
+
+		m_size[i] = size;
+		m_sizeSetMask.setBit(i, size != 0);
+
+		_refreshSize();
 	}
 
 
@@ -317,348 +157,63 @@ namespace wg
 
 	void TextStyle::setDecoration( TextDecoration decoration )
 	{
-		if( decoration == TextDecoration::Undefined )
-			clearDecoration();
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.decoration[i] = decoration;
-				m_combAttr.decoration[i] = decoration;
-			}
-			m_bStaticDecoration = true;
-		}
+		for (int i = 1; i < StateEnum_Nb; i++)
+			m_decoration[i] = decoration;
+
+		m_decorationSetMask = decoration == TextDecoration::Undefined ? 0 : 1;
+		m_bStaticDecoration = true;
 	}
 
 	void TextStyle::setDecoration( TextDecoration decoration, State state )
 	{
-		if( decoration == TextDecoration::Undefined )
-			clearDecoration(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.decoration[idx] = decoration;
-			m_combAttr.decoration[idx] = decoration;
-			m_bStaticDecoration = _isDecorationStatic();
-		}
+		int i = Util::_stateToIndex(state);
+
+		m_decoration[i] = decoration;
+		m_decorationSetMask.setBit(i,decoration != TextDecoration::Undefined);
+
+		_refreshDecoration();
 	}
 
-	//____ setRenderMode() _________________________________________________________
-
-	void TextStyle::setRenderMode( BlendMode mode )
-	{
-		if( mode == BlendMode::Undefined )
-			clearRenderMode();
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.renderMode[i] = mode;
-				m_combAttr.renderMode[i] = mode;
-			}
-			m_bStaticRenderMode = true;
-		}
-	}
-
-	void TextStyle::setRenderMode( BlendMode mode, State state )
-	{
-		if( mode == BlendMode::Undefined )
-			clearRenderMode(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.renderMode[idx] = mode;
-			m_combAttr.renderMode[idx] = mode;
-			m_bStaticRenderMode = _isRenderModeStatic();
-		}
-	}
-
-	//____ setBgRenderMode() _________________________________________________________
-
-	void TextStyle::setBgRenderMode( BlendMode mode )
-	{
-		if( mode == BlendMode::Undefined )
-			clearBgRenderMode();
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgRenderMode[i] = mode;
-				m_combAttr.bgRenderMode[i] = mode;
-			}
-			m_bStaticBgRenderMode = true;
-		}
-	}
-
-	void TextStyle::setBgRenderMode( BlendMode mode, State state )
-	{
-		if( mode == BlendMode::Undefined )
-			clearBgRenderMode(state);
-		else
-		{
-			int idx = Util::_stateToIndex(state);
-			m_specAttr.bgRenderMode[idx] = mode;
-			m_combAttr.bgRenderMode[idx] = mode;
-			m_bStaticBgRenderMode = _isBgRenderModeStatic();
-		}
-	}
-
-
-
-	//____ clearFont() _____________________________________________________________
-
-	void TextStyle::clearFont()
-	{
-		m_specAttr.pFont = 0;
-		if( m_pParent )
-			m_combAttr.pFont = m_pParent->m_combAttr.pFont;
-		else
-			m_combAttr.pFont = 0;
-	}
-
-	//____ clearLink() _____________________________________________________________
-
-	void TextStyle::clearLink()
-	{
-		m_specAttr.pLink = 0;
-		if( m_pParent )
-			m_combAttr.pLink = m_pParent->m_combAttr.pLink;
-		else
-			m_combAttr.pLink = 0;
-	}
-
-	//____ clearColor() ____________________________________________________________
+	//____ clearColor() __________________________________________________________
 
 	void TextStyle::clearColor()
 	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.colorBlendMode[i] = BlendMode::Undefined;
-				m_specAttr.color[i] = Color::White;
-				m_combAttr.color[i] = m_pParent->m_combAttr.color[i];
-				m_combAttr.colorBlendMode[i] = m_pParent->m_combAttr.colorBlendMode[i];
-			}
-			m_bStaticColor = _isColorStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.colorBlendMode[i] = BlendMode::Undefined;
-				m_specAttr.color[i] = Color::White;
-				m_combAttr.color[i] = Color::White;
-				m_combAttr.colorBlendMode[i] = BlendMode::Undefined;
-			}
-			m_bStaticColor = true;
-		}
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_color[i] = Color::Black;
+
+		m_colorSetMask = 0;
+		m_bStaticColor = true;
 	}
 
-	void TextStyle::clearColor( State state )
+	void TextStyle::clearColor( State state)
 	{
-		int idx = Util::_stateToIndex(state);
+		int i = Util::_stateToIndex(state);
 
-		m_specAttr.colorBlendMode[idx] = BlendMode::Undefined;
-		m_specAttr.color[idx] = Color::White;
+		m_color[i] = Color::Black;
+		m_colorSetMask.clearBit(i);
 
-		if( m_pParent )
-		{
-			m_combAttr.color[idx] = m_pParent->m_combAttr.color[idx];
-			m_combAttr.colorBlendMode[idx] = m_pParent->m_combAttr.colorBlendMode[idx];
-		}
-		else
-		{
-			m_combAttr.color[idx] = Color::White;
-			m_combAttr.colorBlendMode[idx] = BlendMode::Undefined;
-		}
-		m_bStaticColor = _isColorStatic();
+		_refreshColor();
 	}
 
-
-	//____ clearBgColor() ____________________________________________________________
+	//____ clearBgColor() __________________________________________________________
 
 	void TextStyle::clearBgColor()
 	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgColorBlendMode[i] = BlendMode::Undefined;
-				m_specAttr.bgColor[i] = Color::White;
-				m_combAttr.bgColor[i] = m_pParent->m_combAttr.bgColor[i];
-				m_combAttr.bgColorBlendMode[i] = m_pParent->m_combAttr.bgColorBlendMode[i];
-			}
-			m_bStaticBgColor = _isBgColorStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgColorBlendMode[i] = BlendMode::Undefined;
-				m_specAttr.bgColor[i] = Color::White;
-				m_combAttr.bgColor[i] = Color::White;
-				m_combAttr.bgColorBlendMode[i] = BlendMode::Undefined;
-			}
-			m_bStaticBgColor = true;
-		}
+		for (int i = 0; i < StateEnum_Nb; i++)
+			m_bgColor[i] = Color::Transparent;
+
+		m_bgColorSetMask = 0;
+		m_bStaticBgColor = true;
 	}
 
-	void TextStyle::clearBgColor( State state )
+	void TextStyle::clearBgColor(State state)
 	{
-		int idx = Util::_stateToIndex(state);
+		int i = Util::_stateToIndex(state);
 
-		m_specAttr.bgColorBlendMode[idx] = BlendMode::Ignore;
-		m_specAttr.bgColor[idx] = Color::White;
+		m_bgColor[i] = Color::Transparent;
+		m_bgColorSetMask.clearBit(i);
 
-		if( m_pParent )
-		{
-			m_combAttr.bgColor[idx] = m_pParent->m_combAttr.bgColor[idx];
-			m_combAttr.bgColorBlendMode[idx] = m_pParent->m_combAttr.bgColorBlendMode[idx];
-		}
-		else
-		{
-			m_combAttr.bgColor[idx] = Color::White;
-			m_combAttr.bgColorBlendMode[idx] = BlendMode::Undefined;
-		}
-		m_bStaticBgColor = _isBgColorStatic();
-	}
-
-	//____ clearSize() ____________________________________________________________
-
-	void TextStyle::clearSize()
-	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.size[i] = 0;
-				m_combAttr.size[i] = m_pParent->m_combAttr.size[i];
-			}
-			m_bStaticSize = _isSizeStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.size[i] = 0;
-				m_combAttr.size[i] = 0;
-			}
-			m_bStaticSize = true;
-		}
-	}
-
-	void TextStyle::clearSize( State state )
-	{
-		int idx = Util::_stateToIndex(state);
-
-		m_specAttr.size[idx] = 0;
-		m_combAttr.size[idx] = m_pParent ? m_pParent->m_combAttr.size[idx] : 0;
-
-		m_bStaticSize = _isSizeStatic();
- }
-
-	//____ clearDecoration() ____________________________________________________________
-
-	void TextStyle::clearDecoration()
-	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.decoration[i] = TextDecoration::Undefined;
-				m_combAttr.decoration[i] = m_pParent->m_combAttr.decoration[i];
-			}
-			m_bStaticDecoration = _isDecorationStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.decoration[i] = TextDecoration::Undefined;
-				m_combAttr.decoration[i] = TextDecoration::Undefined;
-			}
-			m_bStaticDecoration = true;
-		}
-	}
-
-	void TextStyle::clearDecoration( State state )
-	{
-		int idx = Util::_stateToIndex(state);
-
-		m_specAttr.decoration[idx] = TextDecoration::Undefined;
-		m_combAttr.decoration[idx] = m_pParent ? m_pParent->m_combAttr.decoration[idx] : TextDecoration::Undefined;
-
-		m_bStaticDecoration = _isDecorationStatic();
-	}
-
-	//____ clearRenderMode() ____________________________________________________________
-
-	void TextStyle::clearRenderMode()
-	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.renderMode[i] = BlendMode::Undefined;
-				m_combAttr.renderMode[i] = m_pParent->m_combAttr.renderMode[i];
-			}
-			m_bStaticRenderMode = _isRenderModeStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.renderMode[i] = BlendMode::Undefined;
-				m_combAttr.renderMode[i] = BlendMode::Undefined;
-			}
-			m_bStaticRenderMode = true;
-		}
-	}
-
-	void TextStyle::clearRenderMode( State state )
-	{
-		int idx = Util::_stateToIndex(state);
-
-		m_specAttr.renderMode[idx] = BlendMode::Undefined;
-		m_combAttr.renderMode[idx] = m_pParent ? m_pParent->m_combAttr.renderMode[idx] : BlendMode::Undefined;
-
-		m_bStaticRenderMode = _isRenderModeStatic();
-	}
-
-
-	//____ clearBgRenderMode() ____________________________________________________________
-
-	void TextStyle::clearBgRenderMode()
-	{
-		if( m_pParent )
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
-				m_combAttr.bgRenderMode[i] = m_pParent->m_combAttr.bgRenderMode[i];
-			}
-			m_bStaticBgRenderMode = _isBgRenderModeStatic();
-		}
-		else
-		{
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			{
-				m_specAttr.bgRenderMode[i] = BlendMode::Undefined;
-				m_combAttr.bgRenderMode[i] = BlendMode::Undefined;
-			}
-			m_bStaticBgRenderMode = true;
-		}
-	}
-
-	void TextStyle::clearBgRenderMode( State state )
-	{
-		int idx = Util::_stateToIndex(state);
-
-		m_specAttr.bgRenderMode[idx] = BlendMode::Undefined;
-		m_combAttr.bgRenderMode[idx] = m_pParent ? m_pParent->m_combAttr.bgRenderMode[idx] : BlendMode::Undefined;
-
-		m_bStaticBgRenderMode = _isBgRenderModeStatic();
+		_refreshBgColor();
 	}
 
 
@@ -668,20 +223,24 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 
-		pDest->pFont 		= m_combAttr.pFont;
-		pDest->pLink 		= m_combAttr.pLink;
-		pDest->size 		= m_combAttr.size[idx];
-		pDest->color		= m_combAttr.color[idx];
-		pDest->bgColor		= m_combAttr.bgColor[idx];
-		pDest->decoration	= m_combAttr.decoration[idx];
-		pDest->renderMode		= m_combAttr.renderMode[idx];
-		pDest->bgRenderMode		= m_combAttr.bgRenderMode[idx];
+		pDest->pFont 		= m_pFont;
+		pDest->pLink 		= m_pLink;
+		pDest->renderMode	= m_renderMode;
+		pDest->bgRenderMode = m_bgRenderMode;
+
+		pDest->size 		= m_size[idx];
+		pDest->color		= m_color[idx];
+		pDest->bgColor		= m_bgColor[idx];
+		pDest->decoration	= m_decoration[idx];
 
 		if( pDest->size == 0 )
 			pDest->size = 12;								// Default to size 12.
 
 		if( pDest->decoration == TextDecoration::Undefined )
 			pDest->decoration = TextDecoration::None;
+
+		if (pDest->renderMode == BlendMode::Undefined)
+			pDest->renderMode = BlendMode::Blend;			// Default to Blend.
 	}
 
 	//____ addToAttr() _____________________________________________________________
@@ -690,52 +249,77 @@ namespace wg
 	{
 		int idx = Util::_stateToIndex(state);
 
-		if( m_combAttr.pFont )
-			pDest->pFont = m_combAttr.pFont;
-		if( m_combAttr.pLink )
-			pDest->pLink = m_combAttr.pLink;
-		if( m_combAttr.size[idx] != 0 )
-			pDest->size	= m_combAttr.size[idx];
-		if( m_combAttr.decoration[idx] != TextDecoration::Undefined )
-			pDest->decoration = m_combAttr.decoration[idx];
-		if( m_combAttr.renderMode[idx] != BlendMode::Undefined )
-			pDest->renderMode = m_combAttr.renderMode[idx];
-		if( m_combAttr.bgRenderMode[idx] != BlendMode::Undefined )
-			pDest->bgRenderMode = m_combAttr.bgRenderMode[idx];
+		if( m_pFont )
+			pDest->pFont = m_pFont;
+		if( m_pLink )
+			pDest->pLink = m_pLink;
+		if (m_renderMode != BlendMode::Undefined)
+			pDest->renderMode = m_renderMode;
+		if (m_bgRenderMode != BlendMode::Undefined)
+			pDest->bgRenderMode = m_bgRenderMode;
 
-		pDest->color = Color::blend( pDest->color, m_combAttr.color[idx], m_combAttr.colorBlendMode[idx] );
-		pDest->bgColor = Color::blend( pDest->bgColor, m_combAttr.bgColor[idx], m_combAttr.bgColorBlendMode[idx] );
+		if( m_size[idx] != 0 )
+			pDest->size	= m_size[idx];
+		if( m_decoration[idx] != TextDecoration::Undefined )
+			pDest->decoration = m_decoration[idx];
+
+		if( m_colorDefinedMask.bit(idx) )
+			pDest->color = m_color[idx];
+
+		if (m_bgColorDefinedMask.bit(idx))
+			pDest->bgColor = m_bgColor[idx];
 	}
 
     //____ isStateIdentical() ________________________________________________
 
     bool TextStyle::isStateIdentical( State state1, State state2 ) const
     {
-        //NOTE: This is ignoring colorBlendMode and bgColorBlendMode. Is that really safe?
-
         int idx1 = Util::_stateToIndex(state1);
         int idx2 = Util::_stateToIndex(state2);
 
-        return ((m_combAttr.size[idx1] == m_combAttr.size[idx2]) &&
-                 (m_combAttr.color[idx1] == m_combAttr.color[idx2]) &&
-                 (m_combAttr.bgColor[idx1] == m_combAttr.bgColor[idx2]) &&
-                 (m_combAttr.decoration[idx1] == m_combAttr.decoration[idx2]) &&
-                 (m_combAttr.renderMode[idx1] == m_combAttr.renderMode[idx2]) &&
-                 (m_combAttr.bgRenderMode[idx1] == m_combAttr.bgRenderMode[idx2]) );
+        return ((m_size[idx1] == m_size[idx2]) &&
+                (m_color[idx1] == m_color[idx2]) &&
+                (m_bgColor[idx1] == m_bgColor[idx2]) &&
+                (m_decoration[idx1] == m_decoration[idx2]));
     }
 
 	//____ isIdentical() _____________________________________________________
 
 	bool TextStyle::isIdentical( TextStyle * pOther )
 	{
-		return _compareSets( &m_combAttr, &(pOther->m_combAttr) );
+		if (m_pFont != pOther->m_pFont || m_pLink != pOther->m_pLink ||
+			m_renderMode != pOther->m_renderMode || m_bgRenderMode != pOther->m_bgRenderMode)
+			return false;
+
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			if (m_size[i] != pOther->m_size[i] ||
+				m_decoration[i] != pOther->m_decoration[i] ||
+				m_color[i] != pOther->m_color[i] ||
+				m_bgColor[i] != pOther->m_bgColor[i])
+				return false;
+		}
+
+		return true;
 	}
 
 	//____ isIdenticalForState() _____________________________________________
 
 	bool TextStyle::isIdenticalForState( TextStyle * pOther, State state )
 	{
-		return _compareSetsForState( &m_combAttr, &(pOther->m_combAttr), state );
+		if (m_pFont != pOther->m_pFont || m_pLink != pOther->m_pLink ||
+			m_renderMode != pOther->m_renderMode || m_bgRenderMode != pOther->m_bgRenderMode)
+			return false;
+
+		int i = Util::_stateToIndex(state);
+
+		if (m_size[i] != pOther->m_size[i] ||
+			m_decoration[i] != pOther->m_decoration[i] ||
+			m_color[i] != pOther->m_color[i] ||
+			m_bgColor[i] != pOther->m_bgColor[i])
+			return false;
+
+		return true;
 	}
 
 	//____ clone() ____________________________________________________________
@@ -744,229 +328,154 @@ namespace wg
 	{
 		auto p = create();
 
-		p->setParent(m_pParent);
+		p->m_pFont = m_pFont;
+		p->m_pLink = m_pLink;
+		p->m_renderMode = m_renderMode;
+		p->m_bgRenderMode = m_bgRenderMode;
 
-		p->m_specAttr = m_specAttr;
-		p->m_combAttr = m_combAttr;
+		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			p->m_size[i] = m_size[i];
+			p->m_color[i] = m_color[i];
+			p->m_bgColor[i] = m_bgColor[i];
+			p->m_decoration[i] = m_decoration[i];
+		}
+
+		p->m_sizeSetMask = m_sizeSetMask;
+		p->m_colorSetMask = m_colorSetMask;
+		p->m_bgColorSetMask = m_bgColorSetMask;
+		p->m_decorationSetMask = m_decorationSetMask;
+
+		p->m_colorDefinedMask = m_colorDefinedMask;
+		p->m_bgColorDefinedMask = m_bgColorDefinedMask;
 
 		p->m_bStaticColor = m_bStaticColor;
 		p->m_bStaticBgColor = m_bStaticBgColor;
 		p->m_bStaticSize = m_bStaticSize;
 		p->m_bStaticDecoration = m_bStaticDecoration;
-		p->m_bStaticRenderMode = m_bStaticRenderMode;
-		p->m_bStaticBgRenderMode = m_bStaticBgRenderMode;
 
 		return p;
 	}
 
-	//____ refreshComb() ___________________________________________________________
+	//____ _refreshSize() _____________________________________________________
 
-	bool TextStyle::_refreshComb()
+	void TextStyle::_refreshSize()
 	{
-		if( m_pParent )
+		Bitmask<uint32_t> mask = m_sizeSetMask;
+		mask.setBit(0);
+		for (int i = 1; i < StateEnum_Nb; i++)
 		{
-			AttrSet		newComb;
+			if (!mask.bit(i))
+				m_size[i] = m_size[bestStateIndexMatch(i, mask)];
+		}
 
-			newComb.pFont = m_specAttr.pFont ? m_specAttr.pFont : m_pParent->m_combAttr.pFont;
-			newComb.pLink = m_specAttr.pLink ? m_specAttr.pLink : m_pParent->m_combAttr.pLink;
+		//
 
-
-			for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		auto x = m_size[0];
+		for (int i = 1; i < StateEnum_Nb; i++)
+			if (m_size[i] != x)
 			{
-				newComb.size[i] = m_specAttr.size[i] != 0 ? m_specAttr.size[i] : m_pParent->m_combAttr.size[i];
-				newComb.color[i] = Color::blend( m_pParent->m_combAttr.color[i], m_specAttr.color[i], m_specAttr.colorBlendMode[i] );
-				newComb.bgColor[i] = Color::blend( m_pParent->m_combAttr.bgColor[i], m_specAttr.bgColor[i], m_specAttr.bgColorBlendMode[i] );
-				newComb.decoration[i] = m_specAttr.decoration[i] != TextDecoration::Undefined ? m_specAttr.decoration[i] : m_pParent->m_combAttr.decoration[i];
-				newComb.renderMode[i] = m_specAttr.renderMode[i] == BlendMode::Undefined ? m_pParent->m_combAttr.renderMode[i] : m_specAttr.renderMode[i];
-				newComb.bgRenderMode[i] = m_specAttr.bgRenderMode[i] == BlendMode::Undefined ? m_pParent->m_combAttr.bgRenderMode[i] : m_specAttr.bgRenderMode[i];
-
-				BlendMode parentOp = m_pParent->m_combAttr.colorBlendMode[i];
-				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || m_specAttr.colorBlendMode[i] == BlendMode::Replace )
-					m_combAttr.colorBlendMode[i] = m_specAttr.colorBlendMode[i];
-
-				parentOp = m_pParent->m_combAttr.bgColorBlendMode[i];
-				if( parentOp == BlendMode::Undefined || parentOp == BlendMode::Ignore || m_specAttr.bgColorBlendMode[i] == BlendMode::Replace )
-					m_combAttr.bgColorBlendMode[i] = m_specAttr.bgColorBlendMode[i];
+				m_bStaticSize = false;
+				return;
 			}
 
-			if( _compareSets( &newComb, &m_combAttr ) == false )
+		m_bStaticSize = true;
+		return;
+	}
+
+	//____ _refreshColor() _____________________________________________________
+
+	void TextStyle::_refreshColor()
+	{
+		Bitmask<uint32_t> defined = m_colorSetMask;
+		Bitmask<uint32_t> mask = m_colorSetMask;
+		mask.setBit(0);
+
+		for (int i = 1; i < StateEnum_Nb; i++)
+		{
+			if (!mask.bit(i))
 			{
-				m_combAttr = newComb;
-
-				m_bStaticColor = _isColorStatic();
-				m_bStaticBgColor = _isBgColorStatic();
-				m_bStaticSize = _isSizeStatic();
-				m_bStaticDecoration = _isDecorationStatic();
-				m_bStaticRenderMode = _isRenderModeStatic();
-				m_bStaticBgRenderMode = _isBgRenderModeStatic();
-
-				return true;
+				int idx = bestStateIndexMatch(i, mask);
+				m_color[i] = m_color[idx];
+				defined.setBit(i, m_colorSetMask.bit(idx));		// Set defined if we copy from a defined color.
 			}
-			return false;
 		}
-		else
-		{
-			bool bChanged = !_compareSets( &m_specAttr, &m_combAttr );
 
-			if( bChanged )
+		m_colorDefinedMask = defined;
+
+		//
+
+		auto x = m_color[0];
+		for (int i = 1; i < StateEnum_Nb; i++)
+			if (m_color[i] != x)
 			{
-				m_combAttr = m_specAttr;
-
-				m_bStaticColor = _isColorStatic();
-				m_bStaticBgColor = _isBgColorStatic();
-				m_bStaticSize = _isSizeStatic();
-				m_bStaticDecoration = _isDecorationStatic();
-				m_bStaticRenderMode = _isRenderModeStatic();
-				m_bStaticBgRenderMode = _isBgRenderModeStatic();
+				m_bStaticColor = false;
+				return;
 			}
 
-			return bChanged;
-		}
+		m_bStaticColor = true;
+		return;
 	}
 
-	//____ _clearSet() _____________________________________________________________
+	//____ _refreshBgColor() _____________________________________________________
 
-	void TextStyle::_clearSet( TextStyle::AttrSet * pSet )
+	void TextStyle::_refreshBgColor()
 	{
-		pSet->pFont = 0;
-		pSet->pLink = 0;
+		Bitmask<uint32_t> defined = m_bgColorSetMask;
+		Bitmask<uint32_t> mask = m_bgColorSetMask;
+		mask.setBit(0);
 
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		for (int i = 1; i < StateEnum_Nb; i++)
 		{
-			pSet->size[i] 			= 0;
-			pSet->color[i] 			= Color::White;
-			pSet->bgColor[i] 		= Color::Transparent;
-			pSet->colorBlendMode[i]	= BlendMode::Undefined;
-			pSet->bgColorBlendMode[i]	= BlendMode::Undefined;
-			pSet->decoration[i] 	= TextDecoration::Undefined;
-			pSet->renderMode[i] 		= BlendMode::Undefined;
-			pSet->bgRenderMode[i] 		= BlendMode::Undefined;
+			if (!mask.bit(i))
+			{
+				int idx = bestStateIndexMatch(i, mask);
+				m_bgColor[i] = m_bgColor[idx];
+				defined.setBit(i, m_bgColorSetMask.bit(idx));		// Set defined if we copy from a defined color.
+			}
 		}
+
+		m_bgColorDefinedMask = defined;
+
+		//
+
+		auto x = m_bgColor[0];
+		for (int i = 1; i < StateEnum_Nb; i++)
+			if (m_bgColor[i] != x)
+			{
+				m_bStaticBgColor = false;
+				return;
+			}
+
+		m_bStaticBgColor = true;
+		return;
+
 	}
 
-	//____ _compareSets() __________________________________________________________
+	//____ _refreshDecoration() _____________________________________________________
 
-	bool TextStyle::_compareSets( TextStyle::AttrSet * p1, TextStyle::AttrSet * p2 )
+	void TextStyle::_refreshDecoration()
 	{
-		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink )
-			return false;
-
-		for( int i = 0 ; i < StateEnum_Nb ; i++ )
+		Bitmask<uint32_t> mask = m_decorationSetMask;
+		mask.setBit(0);
+		for (int i = 1; i < StateEnum_Nb; i++)
 		{
-			if( p1->size[i] 			!= p2->size[i] ||
-				p1->colorBlendMode[i] 	!= p2->colorBlendMode[i] ||
-				p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
-				p1->decoration[i] 		!= p2->decoration[i] ||
-				p1->renderMode[i]			!= p2->renderMode[i] ||
-				p1->bgRenderMode[i]			!= p2->bgRenderMode[i] ||
-				p1->color[i] 			!= p2->color[i] ||
-				p1->bgColor[i] 			!= p2->bgColor[i] )
-				return false;
+			if (!mask.bit(i))
+				m_decoration[i] = m_decoration[bestStateIndexMatch(i, mask)];
 		}
 
-		return true;
+		//
+
+		auto x = m_decoration[0];
+		for (int i = 1; i < StateEnum_Nb; i++)
+			if (m_decoration[i] != x)
+			{
+				m_bStaticDecoration = false;
+				return;
+			}
+
+		m_bStaticDecoration = true;
+		return;
 	}
-
-	//____ _compareSetsForState() __________________________________________________________
-
-	bool TextStyle::_compareSetsForState( TextStyle::AttrSet * p1, TextStyle::AttrSet * p2, State state )
-	{
-		if( p1->pFont != p2->pFont || p1->pLink != p2->pLink )
-			return false;
-
-		int i = Util::_stateToIndex(state);
-
-		if( p1->size[i] 			!= p2->size[i] ||
-			p1->colorBlendMode[i] 	!= p2->colorBlendMode[i] ||
-			p1->bgColorBlendMode[i] 	!= p2->bgColorBlendMode[i] ||
-			p1->decoration[i] 		!= p2->decoration[i] ||
-			p1->renderMode[i]			!= p2->renderMode[i] ||
-			p1->bgRenderMode[i]			!= p2->bgRenderMode[i] ||
-			p1->color[i] 			!= p2->color[i] ||
-			p1->bgColor[i] 			!= p2->bgColor[i] )
-			return false;
-
-		return true;
-	}
-
-	//____ _isColorStatic() ____________________________________________________________________
-
-	bool TextStyle::_isColorStatic() const
-	{
-		auto x = m_combAttr.color[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.color[i] != x )
-				return false;
-
-		return true;
-	}
-
-	//____ _isBgColorStatic() ____________________________________________________________________
-
-	bool TextStyle::_isBgColorStatic() const
-	{
-		auto x = m_combAttr.bgColor[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.bgColor[i] != x )
-				return false;
-
-		return true;
-	}
-
-	//____ _isSizeStatic() ____________________________________________________________________
-
-	bool TextStyle::_isSizeStatic() const
-	{
-		auto x = m_combAttr.size[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.size[i] != x )
-				return false;
-
-		return true;
-	}
-
-	//____ _isDecorationStatic() ____________________________________________________________________
-
-	bool TextStyle::_isDecorationStatic() const
-	{
-		auto x = m_combAttr.decoration[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.decoration[i] != x )
-				return false;
-
-		return true;
-	}
-
-	//____ _isRenderModeStatic() ____________________________________________________________________
-
-	bool TextStyle::_isRenderModeStatic() const
-	{
-		auto x = m_combAttr.renderMode[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.renderMode[i] != x )
-				return false;
-
-		return true;
-	}
-
-	//____ _isBgRenderModeStatic() ____________________________________________________________________
-
-	bool TextStyle::_isBgRenderModeStatic() const
-	{
-		auto x = m_combAttr.bgRenderMode[0];
-
-		for( int i = 1 ; i < StateEnum_Nb ; i++ )
-			if( m_combAttr.bgRenderMode[i] != x )
-				return false;
-
-		return true;
-	}
-
-
 
 } // namespace wg

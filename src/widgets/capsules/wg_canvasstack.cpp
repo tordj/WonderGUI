@@ -381,24 +381,24 @@ namespace wg
 		return m_pSkin->isOpaque(rect,canvasSize,state);
 	}
 
-	bool CanvasStack::CustomSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool CanvasStack::CustomSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
-		return m_pSkin->isStateIdentical(state,comparedTo,fraction);
+		return m_pSkin->isStateIdentical(state,comparedTo,fraction,fraction2);
 	}
 
-	bool CanvasStack::CustomSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool CanvasStack::CustomSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
-		return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction);
+		return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction,fraction2);
 	}
 
-	void CanvasStack::CustomSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
+	void CanvasStack::CustomSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		if (!m_pStack || !m_pStack->m_bRendering)
 		{
 			// Skin rendered from Widget not descendant to CanvasStack.
 			// This is ok, we just do no redirection.
 
-			m_pSkin->render(pDevice, canvas, state, fraction);
+			m_pSkin->render(pDevice, canvas, state, fraction,fraction2);
 			return;
 		}
 
@@ -412,9 +412,10 @@ namespace wg
 	}
 
 
-	Rect CanvasStack::CustomSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const
+	Rect CanvasStack::CustomSkin::fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
+														float oldFraction2, float newFraction2) const
 	{
-		return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction);
+		return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction,oldFraction2,newFraction2);
 	}
 
 

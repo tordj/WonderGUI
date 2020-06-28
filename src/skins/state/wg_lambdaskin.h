@@ -32,11 +32,11 @@
 namespace wg
 {
 
-	class LambdaStateSkin;
-	typedef	StrongPtr<LambdaStateSkin>	LambdaStateSkin_p;
-	typedef	WeakPtr<LambdaStateSkin>	LambdaStateSkin_wp;
+	class LambdaSkin;
+	typedef	StrongPtr<LambdaSkin>	LambdaSkin_p;
+	typedef	WeakPtr<LambdaSkin>	LambdaSkin_wp;
 
-	class LambdaStateSkin : public StateSkin
+	class LambdaSkin : public StateSkin
 	{
 	public:
 
@@ -53,8 +53,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static LambdaStateSkin_p	create();
-		static LambdaStateSkin_p	create( const Blueprint& blueprint );
+		static LambdaSkin_p	create();
+		static LambdaSkin_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -72,6 +72,8 @@ namespace wg
 		//.____ Control _________________________________________________
 
 		void		setOpaque(bool bOpaque);
+//		void		setContentShifting(bool bShifting);
+//		void		setIgnoresFraction(bool bIgnoresFraction);
 
 		void		setStateCompareFunc(const std::function<bool(State state1, State state2)>& function);
 		void		setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function);
@@ -83,18 +85,20 @@ namespace wg
 		bool		isOpaque(State state) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical(State state, State comparedTo, float fraction = 1.f) const override;
+		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
+		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+								float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		void		render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
+		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
 
 
 	private:
-		LambdaStateSkin();
-		LambdaStateSkin(const Blueprint& blueprint);
-		~LambdaStateSkin() {};
+		LambdaSkin();
+		LambdaSkin(const Blueprint& blueprint);
+		~LambdaSkin() {};
 
 		SizeI		m_preferredSize;				// Points
 		SizeI		m_minSize;						// Points

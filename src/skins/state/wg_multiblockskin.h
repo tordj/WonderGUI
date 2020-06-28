@@ -74,13 +74,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		//.____ Internal ________________________________________________
+		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+								float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
-
-		void	render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction = 1.f) const override;
+		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
 
 	private:

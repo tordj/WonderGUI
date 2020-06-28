@@ -32,18 +32,18 @@
 namespace wg
 {
 
-	class BoxStateSkin;
-	typedef	StrongPtr<BoxStateSkin>	BoxStateSkin_p;
-	typedef	WeakPtr<BoxStateSkin>	BoxStateSkin_wp;
+	class BoxSkin;
+	typedef	StrongPtr<BoxSkin>	BoxSkin_p;
+	typedef	WeakPtr<BoxSkin>	BoxSkin_wp;
 
-	class BoxStateSkin : public StateSkin
+	class BoxSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static BoxStateSkin_p	create();
-		static BoxStateSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
-		static BoxStateSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static BoxSkin_p	create();
+		static BoxSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
+		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -74,18 +74,20 @@ namespace wg
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
+		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+								float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		void		render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
+		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
 
 
 	private:
-		BoxStateSkin();
-		BoxStateSkin(BorderI frame, Color fillColor, Color frameColor  );
-		~BoxStateSkin() {};
+		BoxSkin();
+		BoxSkin(BorderI frame, Color fillColor, Color frameColor  );
+		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();

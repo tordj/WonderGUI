@@ -33,7 +33,7 @@
 
 
 #include <wg_filler.h>
-#include <wg_boxstateskin.h>
+#include <wg_boxskin.h>
 
 namespace wg
 {
@@ -546,7 +546,7 @@ namespace wg
 
 //            auto pImage = Filler::create();
 //            pImage->setPreferredSize({16,16});
-//            pImage->setSkin(BoxStateSkin::create( 1, Color::Red, Color::Black ));
+//            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
 
 
 			m_dragSlot._setWidget(pImage);

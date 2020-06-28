@@ -23,7 +23,7 @@
 #include <wg_rootpanel.h>
 #include <wg_base.h>
 #include <wg_container.h>
-#include <wg_boxstateskin.h>
+#include <wg_boxskin.h>
 #include <wg_inputhandler.h>
 #include <wg_util.h>
 #include <wg_internal.h>
@@ -50,7 +50,7 @@ namespace wg
 
 		m_bDebugMode = false;
 
-		BoxStateSkin_p pDebugOverlay = BoxStateSkin::create( 1, Color(255,0,0,128), Color(255,0,0,128) );
+		BoxSkin_p pDebugOverlay = BoxSkin::create( 1, Color(255,0,0,128), Color(255,0,0,128) );
 		pDebugOverlay->setColors( StateEnum::Focused, Color(255,0,0,128), Color(255,0,0,255) );
 		m_pDebugOverlay = pDebugOverlay;
 		m_afterglowFrames = 4;

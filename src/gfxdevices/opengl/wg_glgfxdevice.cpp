@@ -2284,7 +2284,10 @@ namespace wg
 
 				return;
 			}
-		}
+
+            glViewport(0, 0, width, height);
+            glScissor(0, 0, width, height);
+        }
 		else
 		{
 			if( Base::activeContext()->gammaCorrection() )
@@ -2293,13 +2296,34 @@ namespace wg
 				glDisable(GL_FRAMEBUFFER_SRGB);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+ 
+			// Normally we would set the viewport and scissoring to the values given,
+			// but a bug in Logic Pro X doesn't handle viewports correctly when moving
+			// plugin window between screens with different scaling. Just maintaining
+			// viewport value avoids the issue.
+			// The patch seems to be work generally fine under OSX, but breaks resizing
+			// of viewport on Windows (OSD and PresetManager).
+
+#ifdef PATCH_LOGIC_PRO_X_VIEWPORT_BUG
+            if( abs(m_glViewport[2] - width) > 10 && abs(m_glViewport[3] - height) > 10 )
+            {
+				glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
+				glScissor(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
+            }
+            else
+            {
+				glViewport(0, 0, width, height);
+				glScissor(0, 0, width, height);
+            }
+#else
+            glViewport(0, 0, width, height);
+            glScissor(0, 0, width, height);
+#endif
 		}
 
 		int canvasYstart	= pCanvas ? 0 : height;
 		int canvasYmul		= pCanvas ? 1 : -1;
 
-		glViewport(0, 0, width, height);
-		glScissor(0, 0, width, height);
 
 		// Updating canvas info for our shaders
 

@@ -114,6 +114,8 @@ namespace wg
 
 		void				releaseFromParent();
 
+		Widget_p			commonAncestor(Widget* pOtherWidget);
+
 		//.____ State _________________________________________________
 
 		inline const State&	state() const;
@@ -173,6 +175,8 @@ namespace wg
 		bool				hasBaggage() const;
 		Object_p			baggage() const;
 
+
+
 	protected:
 		Widget();
 		virtual ~Widget();
@@ -184,6 +188,8 @@ namespace wg
 
 		virtual BlendMode	_getBlendMode() const;
 
+		int					_listAncestors(Widget* array[], int max);
+
 		virtual Widget* 	_newOfMyType() const = 0;
 
 		bool            	_requestPreRenderCall();
@@ -191,6 +197,7 @@ namespace wg
 		inline Rect			_contentRect() const { return m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect( m_size ); }
 		inline Rect			_contentRect(const Rect& canvas) const { return m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas; }
 		inline Size			_contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
+
 
 		// Convenient calls to holder
 

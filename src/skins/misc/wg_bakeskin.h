@@ -19,10 +19,12 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_DOUBLESKIN_DOT_H
-#define WG_DOUBLESKIN_DOT_H
+#ifndef WG_BAKESKIN_DOT_H
+#define WG_BAKESKIN_DOT_H
 #pragma once
 
+#include <wg_cdynamicvector.h>
+#include <wg_surface.h>
 #include <wg_skin.h>
 #include <wg_color.h>
 
@@ -31,18 +33,22 @@
 
 namespace wg
 {
+	class BakeSkin;
+	typedef	StrongPtr<BakeSkin>	BakeSkin_p;
+	typedef	WeakPtr<BakeSkin>		BakeSkin_wp;
 
-	class DoubleSkin;
-	typedef	StrongPtr<DoubleSkin>	DoubleSkin_p;
-	typedef	WeakPtr<DoubleSkin>		DoubleSkin_wp;
-
-	class DoubleSkin : public Skin
+	class BakeSkin : public Skin, protected CDynamicVector<Skin_p>::Holder
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static DoubleSkin_p	create();
-		static DoubleSkin_p create( Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true );
+		static BakeSkin_p	create();
+		static BakeSkin_p	create(Surface* pBakeSurface);
+		static BakeSkin_p	create( Surface * pBakeSurface, const std::initializer_list<Skin_p>& skins );
+
+		//.____ Components ____________________________________
+
+		CDynamicVector<Skin_p>	skins;
 
 		//.____ Identification __________________________________________
 
@@ -51,20 +57,16 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void			setFrontSkin(Skin * pSkin);
-		Skin_p			frontSkin() const { return m_pFrontSkin; }
+		void			setBlendMode( BlendMode blend );
+		BlendMode		blendMode() const { return m_blendMode; }
 
-		void			setBackSkin(Skin * pSkin);
-		Skin_p			backSkin() const { return m_pBackSkin; }
-
-		void			setSkinInSkin(bool bInside);
-		bool			isSkinInSkin() const { return m_bSkinInSkin; }
+		void			setTintColor(Color color);
+		Color			tintColor() const { return m_tintColor; }
 
 		//.____ Geometry _________________________________________________
 
 		Size			minSize() const override;
 		Size			preferredSize() const override;
-		Size			sizeForContent(const Size& contentSize) const override;
 
 		void			setContentPadding(const BorderI& padding) override;
 		Border			contentPadding(State state) const override;
@@ -74,10 +76,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
+		void			setBakeSurface(Surface* pSurface);
+		Surface_p		bakeSurface() const { return m_pBakeSurface; }
+
 		bool			isOpaque( State state ) const override;
 		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool			isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
+		bool			isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2= 0.f) const override;
 
 		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
 									float fraction = 1.f, float fraction2 = -1.f) const override;
@@ -90,20 +95,33 @@ namespace wg
 
 
 	private:
-		DoubleSkin();
-		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
-		~DoubleSkin() {};
+		BakeSkin(Surface * pBakeSurface);
+		BakeSkin(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skins);
+		~BakeSkin() {};
 
-		void		_onModified();
+		void			_updateCachedGeo() const;
+		void			_onModified();
 
-		Skin_p		m_pFrontSkin;
-		Skin_p		m_pBackSkin;
-		bool		m_bSkinInSkin = false;
-		bool		m_bContentPaddingSet = false;
+		void			_didAddEntries(Skin_p* pEntry, int nb) override;
+		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
+		void			_willEraseEntries(Skin_p* pEntry, int nb) override;
+
+		Object*			_object() override { return this; }
+
+
+		Surface_p			m_pBakeSurface;
+		BlendMode			m_blendMode = BlendMode::Blend;
+		Color				m_tintColor = Color::White;
+		bool				m_bContentPaddingSet = false;
+
+		mutable int			m_cachedQPixPerPoint = 0;
+		mutable Size		m_cachedMinSize;				// Calculated minSize for scale represented by m_cachedQPixPerPoint;
+		mutable Size		m_cachedPreferredSize;			// Calculated preferredSize for scale represented by m_cachedQPixPerPoint;
+
+		Bitmask<uint32_t>	m_opaqueStates;
 	};
 
-
 } // namespace wg
-#endif //WG_BOXSKIN_DOT_H
+#endif //WG_BAKESKIN_DOT_H
 
 
