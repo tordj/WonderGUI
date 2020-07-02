@@ -16,7 +16,7 @@ class WgPanelHook;
 
 namespace wg
 {
-	class TextAttr;
+	struct TextAttr;
 	class Char;
 }
 

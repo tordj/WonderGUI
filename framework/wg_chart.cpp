@@ -315,6 +315,18 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 	if (!pWave)
 		return false;
 
+    if(m_useTemporalFiltering)
+    {
+        // m_msTime is not correct, but works ok, is updated on every TICK event.
+        // Also, the attack/release filtering of the curve requires constant
+        // updates by SetWaveSamples, which is not good, but at this point it's
+        // too difficult to get this into the "resampled wave" data.
+        //
+        // Another caveat is the this is only supported by TopSamples (not BottomSamples)
+        // at the moment.
+        _filterWaveSamples(pTopBorderSamples, pWave, m_msTime);
+    }
+
     // Check if waves are the same as already stored so that we don't trigger a re-render.
     bool earlyOut = false;
     if(pWave->nSamples == nSamples)
@@ -349,11 +361,13 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 
 	if (pTopBorderSamples)
 	{
-		pWave->orgTopSamples.resize(nSamples);
-		for (int i = 0; i < nSamples; i++)
+		pWave->orgTopSamples.resize(nSamples, m_defaultValue);
+
+        for (int i = 0; i < nSamples; i++)
 		{
 			float sample = pTopBorderSamples[i];
-			pWave->orgTopSamples[i] = sample;
+            if(!m_useTemporalFiltering)
+                pWave->orgTopSamples[i] = sample;
 
 			if (max < sample) max = sample;
 			if (min > sample) min = sample;
@@ -367,7 +381,7 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 	}
 	if (pBottomBorderSamples)
 	{
-		pWave->orgBottomSamples.resize(nSamples);
+		pWave->orgBottomSamples.resize(nSamples, m_defaultValue);
 		for (int i = 0; i < nSamples; i++)
 		{
 			float sample = pBottomBorderSamples[i];
@@ -398,6 +412,34 @@ bool WgChart::_setWaveSamples(int waveId, int firstSample, int nSamples, float *
 
 	return true;
 }
+
+//____ _filterWaveSamples() ________________________________________________________
+
+void WgChart::_filterWaveSamples(float* in, Wave* p, int ms)
+{
+    int N = p->nSamples;
+    if(p->orgTopSamples.size() != N)
+        return;
+
+    // Lambda filtering on linear values means linear filtering in dB space
+    // x dB/second avg (in log space)
+    // ms = milliseconds since last call
+    // delta = x * ms / 1000
+
+    float delta_release = m_releaseTime * (float)ms * 0.001f;
+    float delta_attack = m_attackTime * (float)ms * 0.001f;
+
+    for(int i=0; i<N; i++)
+    {
+        if(in[i] < p->orgTopSamples[i] - delta_release)
+            p->orgTopSamples[i] -= delta_release;
+        else if(in[i] > p->orgTopSamples[i] + delta_attack)
+            p->orgTopSamples[i] += delta_attack;
+        else
+            p->orgTopSamples[i] = in[i];
+    }
+}
+
 
 //____ SetFixedValueRange() ________________________________________________________
 
@@ -644,6 +686,7 @@ void WgChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
             const WgEvent::Tick * pTick = static_cast<const WgEvent::Tick*>(pEvent);
 
             int ms = pTick->Millisec();
+            m_msTime = ms; // Used by _filterWaveSamples
 
             bool isDirty = false;
             for( int i = 0 ; i < m_waves.size() ; i++ )
@@ -695,7 +738,8 @@ void WgChart::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
             else
             {
                 _requestRender();
-                _stopReceiveTicks();
+                if(!m_useTemporalFiltering)
+                    _stopReceiveTicks();
             }
 
             break;

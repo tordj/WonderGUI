@@ -90,7 +90,8 @@ public:
     void    SetDynamicStepSize(float step) { m_fDynamicStepSize = step; m_bForceSymmetricAndQuantized = true;}
     void    SetDynamicMinSize(float minsize) { m_fDynamicMinSize = minsize; }
     void    IgnoreDynamicScaling(int waveId, bool ignore = true);
-
+    void    SetDefaultValue(float v) { m_defaultValue = v; }
+    
 	float	ValueRangeStart() { return m_topValue; }
 	float	ValueRangeEnd() { return m_bottomValue; }
 
@@ -123,6 +124,9 @@ public:
 
 	void	SetScale(int scale) { _setScale(scale); }
 
+    void    UseTemporalFiltering(bool useFilter) { m_useTemporalFiltering = useFilter; }
+    void    SetAttackTime(float attackTime) { m_attackTime = attackTime; }
+    void    SetReleaseTime(float releaseTime) { m_releaseTime = releaseTime; }
 
 protected:
 
@@ -195,6 +199,8 @@ protected:
 	bool	_setWaveSamples(int waveId, int firstSample, int nSamples, float * pTopBorderSamples, float * pBottomBorderSamples, float defaultSample);
 	void	_resampleAllWaves();
 	void	_resampleWave( Wave * pWave, bool bRequestRenderOnChanges = false );
+    void    _filterWaveSamples(float* in, Wave * p, int ms);
+
 
 	void	_requestRenderOnNewSamples(	int begOrgSamples, int nbOrgTopSamples, int * pOrgTopSamples, int nbOrgBottomSamples, int * pOrgBottomSamples,
 										int begNewSamples, int nbNewTopSamples, int * pNewTopSamples, int nbNewBottomSamples, int * pNewBottomSamples,
@@ -239,6 +245,7 @@ private:
 
 	float		m_topValue;
 	float		m_bottomValue;
+    float       m_defaultValue = 0.0f;
 
 	float		m_firstSample;
 	float		m_lastSample;
@@ -250,12 +257,18 @@ private:
 	std::function<void(WgChart * pWidget, float firstSample, float lastSample)> m_sampleRangeResponder;
 	std::function<void(WgChart * pWidget, float topValue, float bottomValue)> m_valueRangeResponder;
 
-	wg::SurfaceFactory_p  m_pSurfaceFactory;
-	wg::Surface_p         m_pCacheBitmap;
-	WgPatches           m_cacheDirt;
+    wg::SurfaceFactory_p  m_pSurfaceFactory;
+    wg::Surface_p         m_pCacheBitmap;
+    WgPatches           m_cacheDirt;
+    
+    int                 m_cacheFirst = 0;
+    int                 m_cacheLast = 0;
 
-	int                 m_cacheFirst = 0;
-	int                 m_cacheLast = 0;
+    float               m_attackTime = 100.0f;
+    float               m_releaseTime = 10.0f;
+    int                 m_msTimeState = 0;
+    int                 m_msTime = 0;
+    bool                m_useTemporalFiltering = false;
 };
 
 

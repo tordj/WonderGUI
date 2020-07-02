@@ -25,6 +25,7 @@
 #include <wg_event.h>
 #include <wg_base.h>
 #include <wg_eventhandler.h>
+#include <wg3_util.h>
 
 //#include <wg_boxskin.h>
 
@@ -565,6 +566,8 @@ void WgPianoKeyboard::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * p
 				m_bIsHoveredPressed = false;
 			break;
 		}
+        default:
+            break;
 	}
 }
 

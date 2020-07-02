@@ -96,42 +96,32 @@ private:
         class CustomSkin : public wg::Skin
         {
         public:
-            CustomSkin(WgCanvasStack * pHolder, Skin * pSkin, int canvasIdx);
+            CustomSkin(WgCanvasStack * pHolder, wg::Skin * pSkin, int canvasIdx);
 
-            bool                isInstanceOf( const char * pClassName ) const override;
-            const char *        className( void ) const override;
-            static const char    CLASSNAME[];
+            const wg::TypeInfo&		typeInfo(void) const override;
+            const static wg::TypeInfo	TYPEINFO;
 
-    //        const TypeInfo&		typeInfo(void) const override;
-    //        const static TypeInfo	TYPEINFO;
+            wg::Size    minSize() const override;
+            wg::Size    preferredSize() const override;
 
-            wg::SizeI	_minSize() const override;
-            wg::SizeI	_preferredSize() const override;
+            wg::Size    sizeForContent(const wg::Size& contentSize) const override;
+            wg::Border  contentPadding() const override;
+            wg::Size    contentPaddingSize() const override;
+            wg::Coord   contentOfs(wg::State state) const override;
+            wg::Rect    contentRect(const wg::Rect& canvas, wg::State state) const override;
 
-            wg::SizeI	_sizeForContent(const wg::SizeI contentSize) const override;
-            wg::SizeI	_contentPadding() const override;
-            wg::CoordI	_contentOfs(wg::State state) const override;
-            wg::RectI	_contentRect(const wg::RectI& canvas, wg::State state) const override;
+            bool    isOpaque() const override;
+            bool    isOpaque(wg::State state) const override;
+            bool    isOpaque(const wg::Rect& rect, const wg::Size& canvasSize, wg::State state) const override;
 
-            bool	    isOpaque() const override;
-            bool	    isOpaque(wg::State state) const override;
-            bool	    _isOpaque(const wg::RectI& rect, const wg::SizeI& canvasSize, wg::State state) const override;
+            bool    isStateIdentical(wg::State state, wg::State comparedTo, float fraction = 1.f) const override;
 
-            bool	    isStateIdentical(wg::State state, wg::State comparedTo, float fraction = 1.f) const override;
+            bool    markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction = 1.f ) const override;
+            void    render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction = 1.f) const override;
 
-            bool	    _markTest(const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, float fraction = 1.f) const override;
-            void 	    _render(wg::GfxDevice * pDevice, const wg::RectI& canvas, wg::State state, float fraction = 1.f) const override;
+            bool    ignoresFraction() const override;
+            wg::Rect    fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const override;
 
-            bool	    ignoresFraction() const override;
-            wg::RectI	fractionChangeRect(const wg::RectI& canvas, wg::State state, float oldFraction, float newFraction) const override;
-
-            bool        isStateIdentical(wg::State state, wg::State comparedTo) const override
-                                            { return isStateIdentical(state,comparedTo,1.f); }
-
-            bool        _markTest(const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold) const override
-                                            { return _markTest(ofs,canvas,state,opacityTreshold,1.f); }
-            void        _render(wg::GfxDevice * pDevice, const wg::RectI& canvas, wg::State state) const override
-                                            { return _render(pDevice,canvas,state,1.f); }
 
         protected:
 

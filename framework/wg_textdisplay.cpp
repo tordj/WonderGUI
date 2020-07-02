@@ -185,8 +185,7 @@ void WgTextDisplay::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 
 	WgRect canvas = m_pSkin ? _skinContentRect( m_pSkin, _canvas, m_state, m_scale) : _canvas;
 
-	//    m_text.setMode(WG_MODE_NORMAL);
-	//    m_text.setMode(WgUtil::StateToMode(m_state));
+    m_text.setState(m_state);       // TODO: _setState not called from SetSelected/SetNormal
 
 	WgText * pText = &m_text;
 
@@ -505,6 +504,16 @@ void WgTextDisplay::_onCloneContent( const WgWidget * _pOrg )
 bool WgTextDisplay::_onAlphaTest( const WgCoord& ofs )
 {
 	return true;																				// Accept all at least for now...
+}
+
+//____ _setState() ________________________________________________________
+
+void WgTextDisplay::_setState(WgState state)
+{
+    //    WgWidget::_setState(state);
+
+    m_text.setState(m_state);
+    _requestRender(); //TODO: Only requestRender if text appearance has changed (let m_text.setState() return if rendering is needed)
 }
 
 //____ _onEnable() ___________________________________________________

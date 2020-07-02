@@ -102,6 +102,7 @@ protected:
 	void	_onRefresh();
 	void	_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pHandler );
 	bool	_onAlphaTest( const WgCoord& ofs );
+    void    _setState(WgState state);
 	void	_onEnable();
 	void	_onDisable();
 	void	_onGotInputFocus();

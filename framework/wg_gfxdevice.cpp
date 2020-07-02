@@ -94,7 +94,7 @@ bool WgGfxDevice::PrintText( wg::GfxDevice * pDevice, const WgText * pText, cons
 	ClipPopData pop;
 
 	if( textSize.w > dest.w || textSize.h > dest.h )
-	   pop = limitClipList( pDevice, dest );
+	   pop = limitClipList( pDevice, wg::Rect::fromPX(dest) );
 
 //	if( dest.h < (int) textSize.h || dest.w < (int) textSize.w || !clip.contains( dest ) || pText->isCursorShowing() )
 

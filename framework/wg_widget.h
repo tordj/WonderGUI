@@ -159,6 +159,8 @@ public:
 
 	wg::Surface_p     Screenshot( int surfaceFlags = 0 );
 
+    WgWidget *      CommonAncestor(WgWidget* pOtherWidget);
+
 	int Scale() const { return m_scale; }
 
 	// To be overloaded by Widget
@@ -217,6 +219,8 @@ protected:
 
 	bool            _requestPreRenderCall();
 
+    int             _listAncestors(WgWidget* array[], int max);
+    
 	// Convenient calls to hook
 
 	void			_requestRender() { if( m_pHook ) m_pHook->_requestRender(); }

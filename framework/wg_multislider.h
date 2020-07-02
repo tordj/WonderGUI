@@ -133,6 +133,7 @@ public:
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
 	void		SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
+    void        SetStaticCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
 
 	void		SetPassive(bool bPassive);							// No slider repositioning on its own, relies callback/event-listener to call SetSliderValue().
 	bool		IsPassive() const { return m_bPassive; }
@@ -171,6 +172,9 @@ public:
 	WgCoord HandlePointPos( int sliderId );
 	WgCoord HandlePixelPos( int sliderId );
 
+    int     NbSliders() const { return m_sliders.size(); }
+    int     SliderId(int index) { return m_sliders[index].id; }
+
 	bool	MarkTest(const WgCoord& ofs) override;
 
 	wg::Skin_p GetHandleSkin(int sliderId)
@@ -199,6 +203,10 @@ public:
 		_requestRender(WgRect::getUnion(handleGeo1,handleGeo2));
 	}
 
+    //NOTE: Would be better if this just returned the sliderId, instead of exposing internal structure.
+    Slider* MarkedSlider(WgCoord kPointOfs) { return _markedSlider(kPointOfs * m_scale / WG_SCALE_BASE); }
+
+    WgRect  SliderHandleGeo(int sliderId) const;
 protected:
 
 	enum AxisLockState
@@ -248,9 +256,9 @@ protected:
 	void	_updateHandlePos(Slider& slider);									// Updates handlePos from its parameter values.
 	void	_updateGeo(Slider& slider);
 
-	WgRect	_sliderGeo(Slider& slider, const WgRect& canvas);
-	WgRect	_sliderSkinGeo(Slider& slider, const WgRect& sliderGeo );
-	WgRect	_sliderHandleGeo(Slider& slider, const WgRect& sliderGeo );
+	WgRect	_sliderGeo(const Slider& slider, const WgRect& canvas) const;
+	WgRect	_sliderSkinGeo(const Slider& slider, const WgRect& sliderGeo ) const;
+	WgRect	_sliderHandleGeo(const Slider& slider, const WgRect& sliderGeo ) const;
 
 	Slider * _markedSliderHandle(WgCoord ofs, WgCoord * pOfsOutput = nullptr );
 	void	_markSliderHandle(Slider * pSlider);

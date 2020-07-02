@@ -30,6 +30,7 @@
 #else
 #	ifdef __APPLE__
 #		include <OpenGL/gl3.h>
+#		define PATCH_LOGIC_PRO_X_VIEWPORT_BUG
 #	else
 #		include <GL/glew.h>
 #	endif

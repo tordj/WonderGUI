@@ -22,7 +22,7 @@
 
 #include <wg_canvasstack.h>
 #include <wg_base.h>
-#include <wg_context.h>
+#include <wg3_context.h>
 #include <wg3_util.h>
 #include <wg3_base.h>
 
@@ -31,12 +31,11 @@
 static const char    c_widgetType[] = {"WgCanvasStack"};
 static const char    c_customCapsuleType[] = {"WgCanvasStack::CustomCapsule"};
 
-const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"};
 
+const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomSkin", &wg::Skin::TYPEINFO };
 
 
 //	const TypeInfo CanvasStack::TYPEINFO = { "CanvasStack", &Capsule::TYPEINFO };
-//	const TypeInfo CanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomSkin", &Skin::TYPEINFO };
 //	const TypeInfo CanvasStack::CustomCapsule::TYPEINFO = { "CanvasStack::CustomCapsule", &Capsule::TYPEINFO };
 
 	//____ constructor ____________________________________________________________
@@ -80,21 +79,21 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
 
 	WgSize WgCanvasStack::PreferredPixelSize() const
 	{
-		return m_preferred.isEmpty() ? WgCapsule::PreferredPixelSize() : m_preferred;
+		return m_preferred.isEmpty() ? WgCapsule::PreferredPixelSize() : m_preferred*m_scale/WG_SCALE_BASE;
 	}
 
 	//____ MatchingPixelWidth() ____________________________________________________
 
 	int WgCanvasStack::MatchingPixelWidth(int height) const
 	{
-		return m_preferred.isEmpty() ? WgCapsule::MatchingPixelWidth(height) : m_preferred.w;
+		return m_preferred.isEmpty() ? WgCapsule::MatchingPixelWidth(height) : m_preferred.w*m_scale/WG_SCALE_BASE;
 	}
 
 	//____ MatchingPixelHeight() ___________________________________________________
 
 	int WgCanvasStack::MatchingPixelHeight(int width) const
 	{
-		return m_preferred.isEmpty() ? WgCapsule::MatchingPixelHeight(width) : m_preferred.h;
+		return m_preferred.isEmpty() ? WgCapsule::MatchingPixelHeight(width) : m_preferred.h*m_scale/WG_SCALE_BASE;
 	}
 
 	//____ SetCanvases() ______________________________________________________
@@ -129,8 +128,8 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
 
 	void WgCanvasStack::ForceRedraw()
 	{
-		m_patches.Clear();
-		m_patches.Push(PixelSize() - _contentPaddingSize());
+		m_patches.clear();
+		m_patches.push(PixelSize() - _contentPaddingSize());
 		_requestRender();
 	}
 
@@ -186,24 +185,24 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
             if (m_pSkin)
                 _renderSkin(m_pSkin, pDevice, m_state, _canvas, m_scale);
 
-            pDevice->setClipList(m_patches.Size(), m_patches.Begin());
+            pDevice->setClipList(m_patches.size(), m_patches.begin());
             _clearCanvases(pDevice);
             WgRect canvasRect(0,0, _canvas.size() - _contentPaddingSize());
 
             auto pOldCanvas = pDevice->canvas();
             pDevice->setCanvas(m_canvases[0],false);
             WgCapsule::_renderPatches(pDevice, canvasRect, canvasRect, &m_patches);
-            pDevice->setClipList(m_patches.Size(), m_patches.Begin());
+            pDevice->setClipList(m_patches.size(), m_patches.begin());
             pDevice->setCanvas(pOldCanvas,false);
 
             _combineCanvases(pDevice);
 
-            pDevice->setClipList(_pPatches->Size(), _pPatches->Begin());
+            pDevice->setClipList(_pPatches->size(), _pPatches->begin());
 
             pDevice->setBlitSource(m_pEndCanvas);
             pDevice->blit(_canvas.pos(), _canvas.size() );
 
-            m_patches.Clear();
+            m_patches.clear();
         }
         m_bRendering = false;
     }
@@ -248,26 +247,26 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
 		if (nbCanvases == 0)
 			m_pEndCanvas = nullptr;
 		else if (!m_pEndCanvas || m_pEndCanvas->size() != canvasSize)
-			m_pEndCanvas = WgBase::Context()->pFactory->createSurface(canvasSize);
+			m_pEndCanvas = wg::Base::activeContext()->surfaceFactory()->createSurface(canvasSize);
 
 		// Request render
 
-		m_patches.Clear();
-		m_patches.Push(canvasSize);
+		m_patches.clear();
+		m_patches.push(canvasSize);
 	}
 
 	//____ _childRequestRender() ______________________________________________
 
     void WgCanvasStack::_onRenderRequested()
     {
-		m_patches.Clear();
-		m_patches.Push(m_size - _contentPaddingSize());
+		m_patches.clear();
+		m_patches.push(m_size - _contentPaddingSize());
 		WgCapsule::_onRenderRequested();
 	}
 
     void WgCanvasStack::_onRenderRequested(const WgRect& rect)
 	{
-		m_patches.Add(rect - _contentRect().pos());
+		m_patches.add(rect - _contentRect().pos());
 		WgCapsule::_onRenderRequested(rect);
 	}
 
@@ -278,7 +277,7 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
 		if (m_createFunc)
 			return m_createFunc(canvasIdx, size);
 		else
-			return WgBase::Context()->pFactory->createSurface(size);
+			return wg::Base::activeContext()->surfaceFactory()->createSurface(size);
 	}
 
 	//____ _clearCanvases() ___________________________________________________
@@ -292,7 +291,7 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
         auto oldClipList = pDevice->clipList();
         auto oldClipListSize = pDevice->clipListSize();
 
-        pDevice->setClipList(m_patches.Size(), m_patches.Begin());
+        pDevice->setClipList(m_patches.size(), m_patches.begin());
 		pDevice->setBlendMode(wg::BlendMode::Replace);
 
 		if (m_clearFunc)
@@ -322,7 +321,7 @@ const char WgCanvasStack::CustomSkin::CLASSNAME[] = {"WgCanvasStack::CustomSkin"
         auto oldClipList = pDevice->clipList();
         auto oldClipListSize = pDevice->clipListSize();
 
-        pDevice->setClipList(m_patches.Size(), m_patches.Begin());
+        pDevice->setClipList(m_patches.size(), m_patches.begin());
 		pDevice->setBlendMode(wg::BlendMode::Replace);
 		pDevice->setCanvas(m_pEndCanvas, false);
 
@@ -348,47 +347,44 @@ WgCanvasStack::CustomSkin::CustomSkin(WgCanvasStack * pHolder, wg::Skin * pSkin,
 {
 }
 
-bool WgCanvasStack::CustomSkin::isInstanceOf( const char * pClassName ) const
+const wg::TypeInfo& WgCanvasStack::CustomSkin::typeInfo(void) const
 {
-    if( pClassName==CLASSNAME )
-        return true;
-
-    return Skin::isInstanceOf(pClassName);
+		return TYPEINFO;
 }
 
-const char * WgCanvasStack::CustomSkin::className( void ) const
+wg::Size WgCanvasStack::CustomSkin::minSize() const
 {
-    return CLASSNAME;
+    return m_pSkin->minSize();
 }
 
-wg::SizeI WgCanvasStack::CustomSkin::_minSize() const
+wg::Size WgCanvasStack::CustomSkin::preferredSize() const
 {
-    return m_pSkin->_minSize();
+    return m_pSkin->preferredSize();
 }
 
-wg::SizeI WgCanvasStack::CustomSkin::_preferredSize() const
+wg::Size WgCanvasStack::CustomSkin::sizeForContent(const wg::Size& contentSize) const
 {
-    return m_pSkin->_preferredSize();
+    return m_pSkin->sizeForContent(contentSize);
 }
 
-wg::SizeI WgCanvasStack::CustomSkin::_sizeForContent(const wg::SizeI contentSize) const
+wg::Border WgCanvasStack::CustomSkin::contentPadding() const
 {
-    return m_pSkin->_sizeForContent(contentSize);
+    return m_pSkin->contentPadding();
 }
 
-wg::SizeI WgCanvasStack::CustomSkin::_contentPadding() const
+wg::Size WgCanvasStack::CustomSkin::contentPaddingSize() const
 {
-    return m_pSkin->_contentPadding();
+    return m_pSkin->contentPaddingSize();
 }
 
-wg::CoordI WgCanvasStack::CustomSkin::_contentOfs(wg::State state) const
+wg::Coord WgCanvasStack::CustomSkin::contentOfs(wg::State state) const
 {
-    return m_pSkin->_contentOfs(state);
+    return m_pSkin->contentOfs(state);
 }
 
-wg::RectI WgCanvasStack::CustomSkin::_contentRect(const wg::RectI& canvas, wg::State state) const
+wg::Rect WgCanvasStack::CustomSkin::contentRect(const wg::Rect& canvas, wg::State state) const
 {
-    return m_pSkin->_contentRect(canvas,state);
+    return m_pSkin->contentRect(canvas,state);
 }
 
 bool WgCanvasStack::CustomSkin::isOpaque() const
@@ -402,9 +398,9 @@ bool WgCanvasStack::CustomSkin::isOpaque(wg::State state) const
 
 }
 
-bool WgCanvasStack::CustomSkin::_isOpaque(const wg::RectI& rect, const wg::SizeI& canvasSize, wg::State state) const
+bool WgCanvasStack::CustomSkin::isOpaque(const wg::Rect& rect, const wg::Size& canvasSize, wg::State state) const
 {
-    return m_pSkin->_isOpaque(rect,canvasSize,state);
+    return m_pSkin->isOpaque(rect,canvasSize,state);
 }
 
 bool WgCanvasStack::CustomSkin::isStateIdentical(wg::State state, wg::State comparedTo, float fraction) const
@@ -412,12 +408,12 @@ bool WgCanvasStack::CustomSkin::isStateIdentical(wg::State state, wg::State comp
     return m_pSkin->isStateIdentical(state,comparedTo,fraction);
 }
 
-bool WgCanvasStack::CustomSkin::_markTest(const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, float fraction) const
+bool WgCanvasStack::CustomSkin::markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction) const
 {
-    return m_pSkin->_markTest(ofs, canvas, state, opacityTreshold, fraction);
+    return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction);
 }
 
-void WgCanvasStack::CustomSkin::_render(wg::GfxDevice * pDevice, const wg::RectI& canvas, wg::State state, float fraction) const
+void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction) const
 {
     WgCanvasStack * pStack = m_pStack.GetRealPtr() ? static_cast<WgCanvasStack*>(m_pStack.GetRealPtr()) : nullptr;
 
@@ -427,7 +423,7 @@ void WgCanvasStack::CustomSkin::_render(wg::GfxDevice * pDevice, const wg::RectI
         // Skin rendered from Widget not descendant to CanvasStack.
         // This is ok, we just do no redirection.
 
-        m_pSkin->_render(pDevice, canvas, state, fraction);
+        m_pSkin->render(pDevice, canvas, state, fraction);
         return;
     }
 
@@ -436,7 +432,7 @@ void WgCanvasStack::CustomSkin::_render(wg::GfxDevice * pDevice, const wg::RectI
 
     auto oldCanvas = pDevice->canvas();
     pDevice->setCanvas(pStack->m_canvases[m_canvasIdx],false);
-    m_pSkin->_render(pDevice,canvas,state,fraction);
+    m_pSkin->render(pDevice,canvas,state,fraction);
     pDevice->setCanvas(oldCanvas,false);
 }
 
@@ -445,7 +441,7 @@ bool WgCanvasStack::CustomSkin::ignoresFraction() const
     return m_pSkin->ignoresFraction();
 }
 
-wg::RectI WgCanvasStack::CustomSkin::fractionChangeRect(const wg::RectI& canvas, wg::State state, float oldFraction, float newFraction) const
+wg::Rect WgCanvasStack::CustomSkin::fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const
 {
     return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction);
 }
