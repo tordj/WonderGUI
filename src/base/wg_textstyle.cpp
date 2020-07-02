@@ -49,11 +49,17 @@ namespace wg
 
 	TextStyle::~TextStyle()
 	{
-		if( m_pNextSibling )
-			m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
+		if (m_pParent)
+		{
+			if (m_pNextSibling)
+				m_pNextSibling->m_pPrevSibling = m_pPrevSibling;
 
-		if( m_pPrevSibling )
-			m_pPrevSibling->m_pNextSibling = m_pNextSibling;
+
+			if (m_pPrevSibling)
+				m_pPrevSibling->m_pNextSibling = m_pNextSibling;
+			else
+				m_pParent->m_pFirstChild = m_pNextSibling;
+		}
 
 		TextStyleManager::_releaseHandle(m_handle);
 	}
@@ -95,10 +101,17 @@ namespace wg
 		}
 
 		m_pParent = pParent;
+		m_pPrevSibling = nullptr;
+		m_pNextSibling = nullptr;
+
 		if( pParent )
 		{
-			m_pNextSibling = m_pParent->m_pFirstChild;
-			m_pPrevSibling = 0;
+			if (pParent->m_pFirstChild)
+			{
+				m_pNextSibling = m_pParent->m_pFirstChild;
+				m_pNextSibling->m_pPrevSibling = this;
+			}
+
 			m_pParent->m_pFirstChild = this;
 		}
 
