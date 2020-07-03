@@ -43,7 +43,7 @@ namespace wg
 	}
 
 	template < class EntryType>
-	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const std::initializer_list<const EntryType>& entries)
+	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(const std::initializer_list<EntryType>& entries)
 	{
 		int amount = CStaticVector<EntryType>::m_entries.size();
 

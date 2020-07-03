@@ -32,11 +32,11 @@
 namespace wg
 {
 
-	class LambdaStateSkin;
-	typedef	StrongPtr<LambdaStateSkin>	LambdaStateSkin_p;
-	typedef	WeakPtr<LambdaStateSkin>	LambdaStateSkin_wp;
+	class LambdaSkin;
+	typedef	StrongPtr<LambdaSkin>	LambdaSkin_p;
+	typedef	WeakPtr<LambdaSkin>	LambdaSkin_wp;
 
-	class LambdaStateSkin : public StateSkin
+	class LambdaSkin : public StateSkin
 	{
 	public:
 
@@ -53,8 +53,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static LambdaStateSkin_p	create();
-		static LambdaStateSkin_p	create( const Blueprint& blueprint );
+		static LambdaSkin_p	create();
+		static LambdaSkin_p	create( const Blueprint& blueprint );
 
 		//.____ Identification __________________________________________
 
@@ -72,6 +72,8 @@ namespace wg
 		//.____ Control _________________________________________________
 
 		void		setOpaque(bool bOpaque);
+//		void		setContentShifting(bool bShifting);
+//		void		setIgnoresFraction(bool bIgnoresFraction);
 
 		void		setStateCompareFunc(const std::function<bool(State state1, State state2)>& function);
 		void		setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function);
@@ -92,9 +94,9 @@ namespace wg
 
 
 	private:
-		LambdaStateSkin();
-		LambdaStateSkin(const Blueprint& blueprint);
-		~LambdaStateSkin() {};
+		LambdaSkin();
+		LambdaSkin(const Blueprint& blueprint);
+		~LambdaSkin() {};
 
 		SizeI		m_preferredSize;				// Points
 		SizeI		m_minSize;						// Points

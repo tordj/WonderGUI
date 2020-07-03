@@ -506,7 +506,7 @@ namespace wg
 
 	//____ _willEraseEntries() ________________________________________________
 
-	void SelectBox::_willEraseEntries(SelectBoxEntry * pSlot, int nb)
+	void SelectBox::_willEraseEntries(SelectBoxEntry * pEntry, int nb)
 	{
 		//TODO: Implement!!!
 	}

@@ -53,9 +53,11 @@ namespace wg
 		virtual Size	minSize() const;
 		virtual Size	preferredSize() const;
 
-		virtual Size	sizeForContent(const Size& contentSize) const;
+		virtual void	setContentPadding(const BorderI& padding);
 		virtual Border	contentPadding(State state) const;
+
 		virtual Size	contentPaddingSize() const;
+		virtual Size	sizeForContent(const Size& contentSize) const;
 		virtual Coord	contentOfs(State state) const;
 		virtual Rect	contentRect(const Rect& canvas, State state) const;
 

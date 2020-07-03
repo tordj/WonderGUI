@@ -111,11 +111,11 @@
 #include <wg_ctexteditor.h>
 #include <wg_component.h>
 #include <wg_multiblockskin.h>
-#include <wg_colorstateskin.h>
+#include <wg_colorskin.h>
 #include <wg_stateskin.h>
 #include <wg_skin.h>
-#include <wg_blockstateskin.h>
-#include <wg_boxstateskin.h>
+#include <wg_blockskin.h>
+#include <wg_boxskin.h>
 #include <wg_staticcolorskin.h>
 #include <wg_timeformatter.h>
 #include <wg_valueformatter.h>

@@ -38,13 +38,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ setContentPadding() ____________________________________________________
-
-	void StateSkin::setContentPadding( const BorderI& padding )
-	{
-		m_contentPadding = padding;
-	}
-
 	//____ clearContentShift() ________________________________________________
 
 	void StateSkin::clearContentShift()

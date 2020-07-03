@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_BOXSKIN_DOT_H
-#define WG_BOXSKIN_DOT_H
+#ifndef WG_COLORSKIN_DOT_H
+#define WG_COLORSKIN_DOT_H
 #pragma once
 
 #include <wg_stateskin.h>
@@ -32,18 +32,18 @@
 namespace wg
 {
 
-	class BoxStateSkin;
-	typedef	StrongPtr<BoxStateSkin>	BoxStateSkin_p;
-	typedef	WeakPtr<BoxStateSkin>	BoxStateSkin_wp;
+	class ColorSkin;
+	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
+	typedef	WeakPtr<ColorSkin>		ColorSkin_wp;
 
-	class BoxStateSkin : public StateSkin
+	class ColorSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static BoxStateSkin_p	create();
-		static BoxStateSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
-		static BoxStateSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static ColorSkin_p	create();
+		static ColorSkin_p create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
@@ -56,51 +56,43 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setFrame( BorderI frame );
 
-		void						setColors(Color fill, Color frame);
-		void						setColors(State state, Color fill, Color frame);
-		void						setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors);
-		std::tuple<Color, Color>	colors(State state) const;
+		void		setColor(Color fill);
+		void		setColor(State state, Color fill);
+		void		setColor(std::initializer_list< std::tuple<State, Color> > stateColors);
+		Color		color(State state) const;
 
-		//.____ Geometry _________________________________________________
-
-		Size		minSize() const override;
-		Size		preferredSize() const override;
-		Size		sizeForContent(const Size& contentSize) const override;
 
 		//.____ Misc ____________________________________________________
+
 
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const override;
 
-		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
+		bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const override;
 
-		void		render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
-
+		void		render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction = 1.f ) const override;
 
 
 	private:
-		BoxStateSkin();
-		BoxStateSkin(BorderI frame, Color fillColor, Color frameColor  );
-		~BoxStateSkin() {};
+		ColorSkin();
+		ColorSkin(Color color);
+		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		BorderI		m_frame;							// In points
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Color		m_fillColor[StateEnum_Nb];
-		Color		m_frameColor[StateEnum_Nb];
+		Color		m_color[StateEnum_Nb];
 	};
 
 
 } // namespace wg
-#endif //WG_BOXSKIN_DOT_H
+#endif //WG_COLORSKIN_DOT_H
 
 

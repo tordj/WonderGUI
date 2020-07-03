@@ -48,6 +48,13 @@ namespace wg
 		return Size(Border(m_contentPadding).aligned());
 	}
 
+	//____ setContentPadding() ____________________________________________________
+
+	void Skin::setContentPadding(const BorderI& padding)
+	{
+		m_contentPadding = padding;
+	}
+
 	//____ contentPadding() ______________________________________________________________
 
 	Border Skin::contentPadding(State state) const

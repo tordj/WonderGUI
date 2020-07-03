@@ -45,12 +45,9 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		void			setContentPadding( const BorderI& padding );
 		Border			contentPadding(State state) const override;
-
 		Coord			contentOfs(State state) const override;
 		Rect			contentRect(const Rect& canvas, State state) const override;
-
 
 		//.____ Behavior _______________________________________________________
 
@@ -62,8 +59,6 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
-
-
 
 	protected:
 		void _refreshUnsetStates();

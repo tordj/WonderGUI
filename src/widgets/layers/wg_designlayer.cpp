@@ -26,7 +26,7 @@
 #include <wg_msgrouter.h>
 #include <wg_base.h>
 #include <wg_inputhandler.h>
-#include <wg_boxstateskin.h>
+#include <wg_boxskin.h>
 #include <wg_packpanel.h>
 #include <wg_valuedisplay.h>
 #include <wg_textdisplay.h>
@@ -52,11 +52,11 @@ namespace wg
 	{
 		// Create default skins
 
-		auto pSelSkin = BoxStateSkin::create(1, Color::Transparent, Color::Red);
+		auto pSelSkin = BoxSkin::create(1, Color::Transparent, Color::Red);
 		pSelSkin->setContentPadding(1);
 		m_pSelectionSkin = pSelSkin;
 
-		auto pPalSkin = BoxStateSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow);
+		auto pPalSkin = BoxSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow);
 		pPalSkin->setContentPadding({ 16,2,2,2 });
 		m_pToolboxSkin = pPalSkin;
 

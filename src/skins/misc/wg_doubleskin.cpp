@@ -94,6 +94,8 @@ namespace wg
 
 	Size DoubleSkin::minSize() const
 	{
+		assert(m_pFrontSkin && m_pBackSkin);
+
 		if (m_bSkinInSkin)
 			return m_pBackSkin->sizeForContent(m_pFrontSkin->minSize());
 		else
@@ -104,6 +106,8 @@ namespace wg
 
 	Size DoubleSkin::preferredSize() const
 	{
+		assert(m_pFrontSkin && m_pBackSkin);
+
 		if (m_bSkinInSkin)
 			return Size::max(m_pBackSkin->sizeForContent(m_pFrontSkin->preferredSize()), m_pBackSkin->preferredSize());
 		else
@@ -124,13 +128,24 @@ namespace wg
 		}
 	}
 
+	//____ setContentPadding() ____________________________________________
+
+	void DoubleSkin::setContentPadding(const BorderI& padding)
+	{
+		m_contentPadding = padding;
+		m_bContentPaddingSet = !padding.isEmpty();
+	}
+
+
 	//____ contentPadding() _______________________________________________
 
 	Border DoubleSkin::contentPadding(State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_bSkinInSkin)
+		if (m_bContentPaddingSet)
+			return m_contentPadding;
+		else if (m_bSkinInSkin)
 			return m_pFrontSkin->contentPadding(state) + m_pBackSkin->contentPadding(state);
 		else
 			return m_pFrontSkin->contentPadding(state);
@@ -143,7 +158,9 @@ namespace wg
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_bSkinInSkin)
+		if (m_bContentPaddingSet)
+			return Size(Border(m_contentPadding).aligned());
+		else if (m_bSkinInSkin)
 			return m_pFrontSkin->contentPaddingSize() + m_pBackSkin->contentPaddingSize();
 		else
 			return m_pFrontSkin->contentPaddingSize();
@@ -155,7 +172,9 @@ namespace wg
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_bSkinInSkin)
+		if( m_bContentPaddingSet )
+			return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+		else if( m_bSkinInSkin )
 			return m_pFrontSkin->contentOfs(state) + m_pBackSkin->contentOfs(state);
 		else
 			return m_pFrontSkin->contentOfs(state);
@@ -166,6 +185,9 @@ namespace wg
 	Rect DoubleSkin::contentRect(const Rect& canvas, State state) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
+
+		if (m_bContentPaddingSet)
+			return (canvas - Border(m_contentPadding).aligned()).aligned();
 
 		Rect content = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
 
