@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg3_fillbarskin.h>
+#include <wg3_fillmeterskin.h>
 #include <wg3_gfxdevice.h>
 #include <wg3_geo.h>
 #include <wg3_util.h>
@@ -28,75 +28,133 @@
 namespace wg
 {
 
-	const TypeInfo FillBarSkin::TYPEINFO = { "FillBarSkin", &Skin::TYPEINFO };
+	const TypeInfo FillMeterSkin::TYPEINFO = { "FillMeterSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
 	//____ create() _______________________________________________________________
 
-	FillBarSkin_p FillBarSkin::create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillMeterSkin_p FillMeterSkin::create()
 	{
-		return FillBarSkin_p(new FillBarSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
+		return FillMeterSkin_p(new FillMeterSkin());
+	}
+
+	FillMeterSkin_p FillMeterSkin::create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	{
+		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	FillBarSkin::FillBarSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillMeterSkin::FillMeterSkin() :
+		m_direction(Direction::Right),
+		m_bBarStartOutside(false),
+		m_barColorEmpty(Color::DarkBlue),
+		m_barColorFull(Color::LightBlue),
+		m_backColor(Color::Transparent)
 	{
-		m_direction = direction;
-		m_barColorEmpty = barColorEmpty;
-		m_barColorFull = barColorFull;
-		m_backColor = backColor;
-		m_barPadding = barPadding;
+		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
+		m_bIgnoresFraction = false;
+		_updateOpacity();
+	}
+
+	FillMeterSkin::FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
+		m_direction(direction),
+		m_barColorEmpty(barColorEmpty),
+		m_barColorFull(barColorFull),
+		m_backColor(backColor),
+		m_barPadding(barPadding),
+		m_bBarStartOutside(bBarStartOutside)
+	{
+		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
+		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
+		m_bIgnoresFraction = false;
 		m_contentPadding = contentPadding;
-		m_bBarStartOutside = bBarStartOutside;
+		_updateOpacity();
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& FillBarSkin::typeInfo(void) const
+	const TypeInfo& FillMeterSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
-	//____ isStateIdentical() _________________________________________________
+	//____ preferredSize() ______________________________________________________________
 
-	bool FillBarSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	Size FillMeterSkin::preferredSize() const
 	{
-		return true;
+		if (!m_preferredSize.isEmpty())
+			return m_preferredSize;
+		else
+			return minSize();
 	}
 
-	//____ isOpaque() ______________________________________________________________
+	//____ setPreferredSize() _________________________________________________
 
-	bool FillBarSkin::isOpaque() const
+	void FillMeterSkin::setPreferredSize(const SizeI& preferred)
 	{
-		if (!m_barPadding.isEmpty())
-			return false;
-
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255*3 ? true : false;
+		m_preferredSize = preferred;
 	}
 
-	bool FillBarSkin::isOpaque(State state) const
-	{
-		if (!m_barPadding.isEmpty())
-			return false;
+	//____ setDirection() _____________________________________________________
 
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+	void FillMeterSkin::setDirection(Direction dir)
+	{
+		m_direction = dir;
 	}
 
-	//____ isOpaque() ______________________________________________________________
+	//____ setGfxPadding() ____________________________________________________
 
-	bool FillBarSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	void FillMeterSkin::setGfxPadding(BorderI padding)
 	{
-		if (!m_barPadding.isEmpty())
-			return false;
+		m_barPadding = padding;
+		_updateOpacity();
+	}
 
-		return int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+	//____ setBackColor() _____________________________________________________
+
+	void FillMeterSkin::setBackColor(Color back)
+	{
+		m_backColor = back;
+		_updateOpacity();
+	}
+
+	//____ setFillColors() ____________________________________________________
+
+	void FillMeterSkin::setFillColors(Color empty, Color full)
+	{
+		m_barColorEmpty = empty;
+		m_barColorFull = full;
+		_updateOpacity();
+	}
+
+	//____ setFillColorEmpty() ________________________________________________
+
+	void FillMeterSkin::setFillColorEmpty(Color empty)
+	{
+		m_barColorEmpty = empty;
+		_updateOpacity();
+	}
+
+	//____ setFillColorFull() ________________________________________________
+
+	void FillMeterSkin::setFillColorFull(Color full)
+	{
+		m_barColorFull = full;
+		_updateOpacity();
+	}
+
+	//____ setFillStartOutside() ________________________________________________
+
+	void FillMeterSkin::setFillStartOutside(bool bStartOutside)
+	{
+		m_bBarStartOutside = bStartOutside;
 	}
 
 	//____ render() ______________________________________________________________
 
-	void FillBarSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
 	{
 		RectI barCanvas = _barFillArea(_canvas,fraction).px();
 		RectI backCanvas = (_canvas - m_barPadding).px();
@@ -136,59 +194,9 @@ namespace wg
 		pDevice->fill(backCanvas, m_backColor);
 	}
 
-	//____ minSize() ______________________________________________________________
-
-	Size FillBarSkin::minSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ preferredSize() ______________________________________________________________
-
-	Size FillBarSkin::preferredSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentPadding() ______________________________________________________________
-
-	Border FillBarSkin::contentPadding() const
-	{
-		return Border(m_contentPadding).aligned();
-	}
-
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size FillBarSkin::contentPaddingSize() const
-	{
-		return Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ _contentOfs() ______________________________________________________________
-
-	Coord FillBarSkin::contentOfs(State state) const
-	{
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
-	}
-
-	//____ _sizeForContent() ___________________________________________________
-
-	Size FillBarSkin::sizeForContent(const Size& contentSize) const
-	{
-		return contentSize + Size(Border(m_contentPadding).aligned());
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect FillBarSkin::contentRect(const Rect& canvas, State state) const
-	{
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
-	}
-
 	//____ markTest() _________________________________________________________
 
-	bool FillBarSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -199,17 +207,13 @@ namespace wg
 		return (((int)m_backColor.a) >= opacityTreshold);
 	}
 
-	//____ ignoresFraction() __________________________________________________
-
-	bool FillBarSkin::ignoresFraction() const
-	{
-		return false;
-	}
-
 	//____ fractionChangeRect() ______________________________________
 
-	Rect FillBarSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
+	Rect FillMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
 	{
+		if (m_barColorFull != m_barColorEmpty)
+			return _canvas;
+
 		Rect canvas = _canvas - m_contentPadding;
 
 		switch (m_direction)
@@ -221,7 +225,7 @@ namespace wg
 				if (ofs1 > ofs2)
 					std::swap(ofs1, ofs2);
 
-				return { canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1 };
+				return Rect( canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1 ).aligned();
 			}
 
 			case Direction::Down:
@@ -231,7 +235,7 @@ namespace wg
 				if (ofs1 > ofs2)
 					std::swap(ofs1, ofs2);
 
-				return { canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1 };
+				return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
 			}
 
 			case Direction::Left:
@@ -241,7 +245,7 @@ namespace wg
 				if (ofs1 > ofs2)
 					std::swap(ofs1, ofs2);
 
-				return { canvas.x +  ofs1, canvas.y, ofs2 - ofs1, canvas.h };
+				return Rect( canvas.x +  ofs1, canvas.y, ofs2 - ofs1, canvas.h ).aligned();
 			}
 
 			case Direction::Right:
@@ -251,7 +255,7 @@ namespace wg
 				if (ofs1 > ofs2)
 					std::swap(ofs1, ofs2);
 
-				return { canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h };
+				return Rect( canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h ).aligned();
 			}
 
 			default:
@@ -261,7 +265,7 @@ namespace wg
 
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillBarSkin::_barFillArea(const Rect& _canvas, float fraction) const
+	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float fraction) const
 	{
 		Rect canvas = (_canvas - m_barPadding);
 
@@ -269,7 +273,7 @@ namespace wg
 		{
 			case Direction::Up:
 			{
-				int ofs = canvas.h - canvas.h * fraction;
+				MU ofs = canvas.h - canvas.h * fraction;
 
 				if (m_bBarStartOutside)
 					return { canvas.x, canvas.y + ofs, canvas.w, _canvas.h - ofs };
@@ -279,7 +283,7 @@ namespace wg
 
 			case Direction::Down:
 			{
-				int ofs = canvas.h * fraction;
+				MU ofs = canvas.h * fraction;
 				if (m_bBarStartOutside)
 					return { canvas.x, _canvas.y, canvas.w, ofs + (canvas.y - _canvas.y) };
 				else
@@ -288,7 +292,7 @@ namespace wg
 
 			case Direction::Left:
 			{
-				int ofs = canvas.w - canvas.w * fraction;
+				MU ofs = canvas.w - canvas.w * fraction;
 				if (m_bBarStartOutside)
 					return { canvas.x + ofs, canvas.y, _canvas.w - ofs, canvas.h };
 				else
@@ -297,7 +301,7 @@ namespace wg
 
 			case Direction::Right:
 			{
-				int ofs = canvas.w * fraction;
+				MU ofs = canvas.w * fraction;
 				if (m_bBarStartOutside)
 					return { _canvas.x, canvas.y, ofs + (canvas.x - _canvas.x), canvas.h };
 				else
@@ -309,6 +313,15 @@ namespace wg
 		}
 	}
 	 
+	//____ _updateOpacity() ______________________________________________________________
+
+	void FillMeterSkin::_updateOpacity()
+	{
+		if (!m_barPadding.isEmpty())
+			m_bOpaque = false;
+		else
+			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+	}
 
 
 } // namespace wg

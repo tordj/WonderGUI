@@ -54,6 +54,9 @@ cp wg_object.* \
 
 cd ../components
 cp wg_component.* \
+   wg_cstaticvector.* \
+   wg_cdynamicvector.* \
+   wg_canimframes.* \
    ../../../wg2/_kato_wg3/imports/components
 
 cd ../gfxdevices/opengl
@@ -63,7 +66,7 @@ cd ../software
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/software/
 
 cd ../../skins
-cp * ../../../wg2/_kato_wg3/imports/skins
+cp -r * ../../../wg2/_kato_wg3/imports/skins
 
 cd ../fonts
 cp -r * ../../../wg2/_kato_wg3/imports/fonts

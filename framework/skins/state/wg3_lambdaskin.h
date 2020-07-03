@@ -19,11 +19,11 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG3_LAMDASKIN_DOT_H
-#define WG3_LAMDASKIN_DOT_H
+#ifndef WG3_LAMBDASKIN_DOT_H
+#define WG3_LAMBDASKIN_DOT_H
 #pragma once
 
-#include <wg3_extendedskin.h>
+#include <wg3_stateskin.h>
 
 #include <functional>
 #include <initializer_list>
@@ -32,13 +32,11 @@
 namespace wg
 {
 
-
-
-
 	class LambdaSkin;
 	typedef	StrongPtr<LambdaSkin>	LambdaSkin_p;
+	typedef	WeakPtr<LambdaSkin>	LambdaSkin_wp;
 
-	class LambdaSkin : public ExtendedSkin
+	class LambdaSkin : public StateSkin
 	{
 	public:
 
@@ -74,6 +72,8 @@ namespace wg
 		//.____ Control _________________________________________________
 
 		void		setOpaque(bool bOpaque);
+//		void		setContentShifting(bool bShifting);
+//		void		setIgnoresFraction(bool bIgnoresFraction);
 
 		void		setStateCompareFunc(const std::function<bool(State state1, State state2)>& function);
 		void		setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function);
@@ -82,7 +82,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		isOpaque() const override;
 		bool		isOpaque(State state) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -99,7 +98,6 @@ namespace wg
 		LambdaSkin(const Blueprint& blueprint);
 		~LambdaSkin() {};
 
-		bool		m_bOpaque = false;
 		SizeI		m_preferredSize;				// Points
 		SizeI		m_minSize;						// Points
 
@@ -111,4 +109,4 @@ namespace wg
 
 
 } // namespace wg
-#endif //WG3_LAMDASKIN_DOT_H
+#endif //WG3_LAMBDASKIN_DOT_H

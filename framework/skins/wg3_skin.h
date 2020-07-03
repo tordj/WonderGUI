@@ -35,6 +35,7 @@ namespace wg
 	class GfxDevice;
 
 	typedef	StrongPtr<Skin>	Skin_p;
+	typedef	WeakPtr<Skin>	Skin_wp;
 
 
 	class Skin : public Object
@@ -49,28 +50,32 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual Size	minSize() const = 0;
-		virtual Size	preferredSize() const = 0;
+		virtual Size	minSize() const;
+		virtual Size	preferredSize() const;
 
-		virtual Size	sizeForContent(const Size& contentSize) const = 0;
-		virtual Border	contentPadding() const = 0;
-		virtual Size	contentPaddingSize() const = 0;
-		virtual Coord	contentOfs(State state) const = 0;
-		virtual Rect	contentRect(const Rect& canvas, State state) const = 0;
+		virtual void	setContentPadding(const BorderI& padding);
+		virtual Border	contentPadding(State state) const;
+
+		virtual Size	contentPaddingSize() const;
+		virtual Size	sizeForContent(const Size& contentSize) const;
+		virtual Coord	contentOfs(State state) const;
+		virtual Rect	contentRect(const Rect& canvas, State state) const;
 
 		//.____ Misc ____________________________________________________
 
-		virtual bool	isOpaque() const = 0;
-		virtual bool	isOpaque( State state ) const = 0;
-		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const = 0;
+		bool			isOpaque() const { return m_bOpaque; }
+		virtual bool	isOpaque( State state ) const;
+		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 
-		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const = 0;
+		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const;
 
 		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const = 0;
 		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f ) const = 0;
 
-		virtual bool	ignoresFraction() const;
+		inline bool		ignoresFraction() const { return m_bIgnoresFraction; }
 		virtual Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+
+		inline bool		isContentShifting() { return m_bContentShifting; }
 
 		//.____ Deprecated ______________________________________________________
 /*
@@ -126,6 +131,11 @@ namespace wg
 */
 	protected:
 		Skin() {};
+
+		BorderI		m_contentPadding;					// Unit: Points
+		bool		m_bContentShifting = false;
+		bool		m_bIgnoresFraction = true;
+		bool		m_bOpaque = false;
 	};
 
 

@@ -23,7 +23,7 @@
 #define WG3_COLORSKIN_DOT_H
 #pragma once
 
-#include <wg3_extendedskin.h>
+#include <wg3_stateskin.h>
 #include <wg3_color.h>
 
 #include <initializer_list>
@@ -34,14 +34,15 @@ namespace wg
 
 	class ColorSkin;
 	typedef	StrongPtr<ColorSkin>	ColorSkin_p;
+	typedef	WeakPtr<ColorSkin>		ColorSkin_wp;
 
-	class ColorSkin : public ExtendedSkin
+	class ColorSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
 
 		static ColorSkin_p	create();
-		static ColorSkin_p 	create(Color color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p create(Color color,  BorderI contentPadding = BorderI() );
 		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
@@ -65,7 +66,6 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 
-		bool		isOpaque() const override;
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -84,7 +84,6 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		bool		m_bOpaque;
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;

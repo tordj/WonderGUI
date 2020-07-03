@@ -167,6 +167,25 @@ namespace wg
 		m_tintColor = color;
 	}
 
+	//____ setTintGradient() __________________________________________________
+
+	void GfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	{
+		m_tintGradientRect = rect;
+		m_tintGradient[0] = topLeft;
+		m_tintGradient[1] = topRight;
+		m_tintGradient[2] = bottomRight;
+		m_tintGradient[3] = bottomLeft;
+		m_bTintGradient = true;
+	}
+
+	//____ clearTintGradient() ________________________________________________
+
+	void GfxDevice::clearTintGradient()
+	{
+		m_bTintGradient = false;
+	}
+
 	//____ setBlendMode() __________________________________________________________
 
 	bool GfxDevice::setBlendMode( BlendMode blendMode )
@@ -185,6 +204,14 @@ namespace wg
 	{
 		m_pBlitSource = pSource;
 		return true;
+	}
+
+	//____ setMorphFactor() ____________________________________________________
+
+	void GfxDevice::setMorphFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+		m_morphFactor = factor;
 	}
 
 	//____ beginRender() ___________________________________________________________
@@ -499,11 +526,11 @@ namespace wg
 
 	//____ rotScaleBlit() _____________________________________________________
 
-	void GfxDevice::rotScaleBlit(const RectI& dest, CoordF srcCenter, float rotationDegrees, float scale)
+	void GfxDevice::rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter, CoordF destCenter)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (scale <= 0.f || m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
+		if (m_pBlitSource->m_size.w * scale < 1.f || m_pBlitSource->m_size.h * scale < 1.f )			// Values very close to zero gives overflow in calculations.
 			return;
 
 		CoordF	src;
@@ -520,12 +547,110 @@ namespace wg
 		mtx[1][0] = -sz * scale;
 		mtx[1][1] = cz * scale;
 
-		src = srcCenter;
+		src = { srcCenter.x * m_pBlitSource->m_size.w, srcCenter.y * m_pBlitSource->m_size.h };
+		 
+//		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
+//		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
 
-		src.x -= dest.w / 2.f * mtx[0][0] + dest.h / 2.f * mtx[1][0];
-		src.y -= dest.w / 2.f * mtx[0][1] + dest.h / 2.f * mtx[1][1];
+		src.x -= dest.w * destCenter.x * mtx[0][0] + dest.h * destCenter.y * mtx[1][0];
+		src.y -= dest.w * destCenter.x * mtx[0][1] + dest.h * destCenter.y * mtx[1][1];
 
 		_transformBlit(dest, { src.x,src.y }, mtx);
+	}
+
+	//____ tile() _____________________________________________________________
+
+	void GfxDevice::tile(const RectI& dest, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		_transformBlit( dest, shift, blitFlipTransforms[0]);
+	}
+
+	//____ flipTile() _________________________________________________________
+
+	void GfxDevice::flipTile(const RectI& dest, GfxFlip flip, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		SizeI srcSize = m_pBlitSource->size();
+
+		int ofsX = srcSize.w * blitFlipOffsets[(int)flip][0];
+		int ofsY = srcSize.h * blitFlipOffsets[(int)flip][1];
+
+		ofsX += shift.x * blitFlipTransforms[(int)flip][0][0] + shift.y * blitFlipTransforms[(int)flip][1][0];
+		ofsY += shift.x * blitFlipTransforms[(int)flip][0][1] + shift.y * blitFlipTransforms[(int)flip][1][1];
+
+		SizeI dstSize = dest.size();
+		if (blitFlipTransforms[(int)flip][0][0] == 0)
+			swap(dstSize.w, dstSize.h);
+
+		_transformBlit({ dest.pos(), dstSize }, { ofsX, ofsY }, blitFlipTransforms[(int)flip]);
+	}
+
+	//____ scaleTile() _________________________________________________________
+
+	void GfxDevice::scaleTile(const RectI& dest, float scale, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		float	mtx[2][2];
+
+		mtx[0][0] = 1.f/scale;
+		mtx[0][1] = 0;
+		mtx[1][0] = 0;
+		mtx[1][1] = 1.f/scale;
+
+		CoordF sh = { shift.x / scale,shift.y / scale };
+
+		_transformBlit(dest, sh, mtx);
+	}
+
+	//____ scaleFlipTile() _________________________________________________________
+
+	void GfxDevice::scaleFlipTile(const RectI& dest, float scale, GfxFlip flip, CoordI shift)
+	{
+		assert(m_pBlitSource != nullptr);
+
+		if (!m_pBlitSource->isTiling())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "Tile method called on non-tiling surface", this, GfxDevice::TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		float	mtx[2][2];
+
+		mtx[0][0] = blitFlipTransforms[(int)flip][0][0] / scale;
+		mtx[0][1] = blitFlipTransforms[(int)flip][0][1] / scale;
+		mtx[1][0] = blitFlipTransforms[(int)flip][1][0] / scale;
+		mtx[1][1] = blitFlipTransforms[(int)flip][1][1] / scale;
+
+		SizeI srcSize = m_pBlitSource->size();
+		float ofsX = (float) (srcSize.w-1) * blitFlipOffsets[(int)flip][0];
+		float ofsY = (float) (srcSize.h-1) * blitFlipOffsets[(int)flip][1];
+
+		ofsX += shift.x * mtx[0][0] + shift.y * mtx[1][0];
+		ofsY += shift.x * mtx[0][1] + shift.y * mtx[1][1];
+
+		_transformBlit(dest, {ofsX,ofsY}, mtx);
 	}
 
 
@@ -748,7 +873,7 @@ namespace wg
 			col[3] = pBottomBorder->color;
 			col[4] = Color::Transparent;
 
-			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, simpleTransform );
+			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
 		}
 		else
@@ -794,7 +919,7 @@ namespace wg
 			col[4] = pBottomBorder->color;
 			col[5] = Color::Transparent;
 
-			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, simpleTransform);
+			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
 
 
@@ -1029,18 +1154,362 @@ namespace wg
 
 	}
 
+	//____ drawPieChart() _____________________________________________________
+
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float hubSize, Color hubColor, Color backColor, bool bRectangular)
+	{
+		static const int c_maxSlices = c_maxSegments - 2;
+
+		if (nSlices < 0 || nSlices > c_maxSlices)
+		{
+			//TODO: Error handling;
+			return;
+		}
+
+		//TODO: Early out if no slices, no hud and no background
+		//TODO: Replace with fill if no hub, no slices.
+
+		RectI canvas = _canvas;
+		canvas.w = canvas.w + 1 & 0xFFFFFFFC;
+		canvas.h = canvas.h + 1 & 0xFFFFFFFC;
+
+		if (canvas.w <= 0 || canvas.h <= 0 || (hubSize == 1.f && !bRectangular))
+			return;
+
+
+		// Setup our slices
+
+		struct Slice
+		{
+			float ofs;
+			float size;
+			Color color;
+		};
+
+		Slice slices[c_maxSlices+2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
+
+		float totalSize = 0.f;
+
+		// Trim our slices, so we have a length of most 1.0.
+
+		Slice trimmedSlices[c_maxSlices+1];
+
+		float ofs = start;
+		for (int i = 0; i < nSlices; i++)
+		{
+			if (ofs >= 1.f)
+				ofs = fmod(ofs, 1.f);
+
+			float sliceSize = _pSliceSizes[i];
+
+			if (totalSize + sliceSize >= 1.f)
+			{
+				trimmedSlices[i] = { ofs, 1.f - totalSize, pSliceColors[i] };
+				totalSize = 1.f;
+				nSlices = i + 1;
+				break;
+			}
+
+
+			trimmedSlices[i] = { ofs,sliceSize, pSliceColors[i] };
+			totalSize += sliceSize;
+			ofs += sliceSize;
+		}
+
+		// Adding an empty slice at end if totalSize < 1.0
+
+		if (totalSize < 0.9999f)
+		{
+			if (ofs >= 1.f)
+				ofs = fmod(ofs, 1.f);
+
+			trimmedSlices[nSlices++] = { ofs,1.f-totalSize, backColor };
+		}
+
+		// Find first slice (one with smallest offset)
+
+		int		firstSlice, lastSlice;
+		float	firstSliceOfs = 1.f;
+
+		for (int i = 0; i < nSlices; i++)
+		{
+			if (trimmedSlices[i].ofs < firstSliceOfs)
+			{
+				firstSlice = i;
+				firstSliceOfs = trimmedSlices[i].ofs;
+			}
+
+		}
+
+		// Find last slice
+
+		if (firstSlice == 0)
+			lastSlice = nSlices - 1;
+		else
+			lastSlice = firstSlice - 1;
+
+		// Take care of possible rounding errors on inparameters
+
+		if (firstSliceOfs < 0.0001f)
+			trimmedSlices[firstSlice].ofs = firstSliceOfs = 0.f;
+
+		// Rearrange our slices so we start from offset 0. Possibly adding one more slice in the beginning.
+
+		int sliceIdx = 0;
+
+		if (nSlices == 1)
+		{
+			slices[sliceIdx++] = { 0.f, 1.f, trimmedSlices[0].color };
+		}
+		else
+		{
+			// Fill in rollover from last slice (or transparent gap) due to rotation
+
+			if (firstSliceOfs > 0.f )
+				slices[sliceIdx++] = { 0.f, firstSliceOfs, trimmedSlices[lastSlice].color };
+
+			// Our buffer is circular, take care of slices from first slice to end of buffer.
+
+			for (int i = firstSlice; i < nSlices; i++)
+				slices[sliceIdx++] = trimmedSlices[i];
+
+			// Take care of slices from beginning of buffer to last slice.
+
+			if (lastSlice < firstSlice)
+			{
+				for (int i = 0; i <= lastSlice; i++)
+					slices[sliceIdx++] = trimmedSlices[i];
+			}
+
+			// Correct for any rollover or inprecision for last slice
+
+			slices[sliceIdx - 1].size = 1.f - slices[sliceIdx - 1].ofs;
+		}
+
+		nSlices = sliceIdx;			// Repurpose this variable 
+
+		// Slices now in order, lets render the quadrants
+
+		int quadW = canvas.w / 2, quadH = canvas.h / 2;
+
+		RectI quadCanvas[4] = { {canvas.x + quadW, canvas.y, quadW, quadH },
+								{canvas.x + quadW, canvas.y + quadH, quadW, quadH},
+								{canvas.x, canvas.y + quadH, quadW, quadH},
+								{canvas.x, canvas.y, quadW, quadH} };
+
+		GfxFlip quadFlip[4] = { GfxFlip::Normal, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
+
+		Color colors[c_maxSegments];
+
+		int maxSegments = nSlices + 2;
+		int edgePitch = maxSegments - 1;
+		int bufferSize = (quadW + 1) * edgePitch * sizeof(int);
+
+		int * pBuffer = (int*) Base::memStackAlloc(bufferSize);
+
+
+		// Setting the outer edge (same for all quads)
+
+		if (bRectangular)
+		{
+			int * pEdge = pBuffer;
+			for (int i = 0; i <= quadW; i++)
+			{
+				*pEdge = 0;
+				pEdge += edgePitch;
+			}
+		}
+		else
+		{
+			int * pEdge = pBuffer;
+
+			int curveTabInc = ((c_nCurveTabEntries << 16)-1) / (quadW);
+
+			int curveTabOfs = 0;
+			for (int i = 0; i <= quadW; i++)
+			{
+				*pEdge = (quadH<<8) - ((s_pCurveTab[(c_nCurveTabEntries-1)-(curveTabOfs >> 16)] * quadH) >> 8);
+				pEdge += edgePitch;
+				curveTabOfs += curveTabInc;
+			}
+		}
+
+		// Generating an inner edge if we have one.
+		// Storing it separately, used for all 4 quads. Copied into right place later.
+
+		int * pHubBuffer = nullptr;
+		int hubBufferSize = 0;
+		if (hubSize > 0.f)
+		{
+			hubBufferSize = (quadW + 1) * sizeof(int);
+			pHubBuffer = (int*)Base::memStackAlloc(hubBufferSize);
+
+			int * p = pHubBuffer;
+
+			int ringW = int(hubSize * quadW);
+			int ringH = int(hubSize * quadH);
+
+			int inc = ((c_nCurveTabEntries << 16)-1) / (ringW);
+			int ofs = 0;
+
+			for (int i = 0; i <= ringW; i++)
+			{
+				*p++ = (quadH << 8) - ((s_pCurveTab[(c_nCurveTabEntries - 1) - (ofs >> 16)] * ringH) >> 8);
+				ofs += inc;
+			}
+
+			int maxVal = quadH << 8;
+			for (int i = ringW + 1; i <= quadW; i++)
+				*p++ = maxVal;
+		}
+
+		//
+
+		for (int quad = 0; quad < 4; quad++)
+		{
+			int nSegments = 0;
+			Slice * pSlice = slices;
+			Slice * pSliceEnd = slices + nSlices;
+
+			float quadStartOfs = 0.25f * quad;
+
+			// Add background as first segment
+
+			colors[nSegments] = backColor;
+			nSegments++;
+
+			// Find first slice to include
+
+			while (pSlice != pSliceEnd && pSlice->ofs + pSlice->size < quadStartOfs )
+				pSlice++;
+
+			colors[nSegments] = pSlice->color;
+			nSegments++;
+			pSlice++;
+
+			// Generate edges for all following slices included
+
+			while (pSlice != pSliceEnd && pSlice->ofs < quadStartOfs + 0.25f)
+			{
+				int * pEdge = pBuffer + nSegments-1;
+
+				// Set startvalue and decrease per strip.
+
+				int value = quadH << 8;
+				int dec;
+
+				float rot = (pSlice->ofs - quadStartOfs);
+
+				if (rot == 0.f)
+				{
+					value = 0;
+					dec = 0;
+				}
+				else
+				{
+					rot *= 3.14159265358979f * 2;
+					float s = sin(rot);
+					float c = cos(rot);
+
+					float decF = (c/s) * (quadH << 12) / float(quadW);
+
+					if (decF > 400000*4096)
+						decF = 400000*4096;
+
+					dec = int(decF);
+				}
+
+				// Fill in the edge
+
+				int strip;
+				int precisionValue = value << 4;
+				for (strip = 0; strip <= quadW && value >= pEdge[-1] ; strip++)
+				{
+					* pEdge = value;
+					pEdge += edgePitch;
+					precisionValue -= dec;
+					value = precisionValue >> 4;
+				}
+
+				while (strip <= quadW)
+				{
+					*pEdge = pEdge[-1];
+					pEdge += edgePitch;
+					strip++;
+				}
+
+				colors[nSegments] = pSlice->color;
+				nSegments++;
+				pSlice++;
+			}
+
+			// Add edge for hub if present
+
+			if (pHubBuffer)
+			{
+				int * pEdge = pBuffer + nSegments - 1;
+
+				for (int i = 0; i <= quadW; i++)
+				{
+					int value = pHubBuffer[i];
+					*pEdge = value;
+
+					int * pPrev = pEdge - 1;
+					while (*pPrev > value)
+					{
+						* pPrev = value;
+						pPrev--;
+					}
+
+					pEdge += edgePitch;
+				}
+
+				colors[nSegments] = hubColor;
+				nSegments++;
+			}
+
+			// Draw
+
+			int * pEdges = pBuffer;
+			Color * pColors = colors;
+			if (bRectangular)
+			{
+				pEdges++;
+				pColors++;
+				nSegments--;
+			}
+
+			uint8_t		alphaCheck = 0;
+			for (int i = 0; i < nSegments; i++)
+				alphaCheck |= pColors[i].a;
+
+			if (alphaCheck == 0)
+				continue;
+
+			if (nSegments == 1)
+				fill(quadCanvas[quad], pColors[0]);
+			else
+				_transformDrawSegments(quadCanvas[quad], nSegments, pColors, quadW+1, pEdges, edgePitch, TintMode::Flat, blitFlipTransforms[(int)quadFlip[quad]]);
+		}
+
+		if( hubBufferSize != 0 )
+			Base::memStackRelease(hubBufferSize);
+
+		Base::memStackRelease(bufferSize);
+	}
+
 	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch )
+	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
-		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)GfxFlip::Normal] );
+		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip )
+	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
-		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, blitFlipTransforms[(int)flip] );
+		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
 	}
 
 

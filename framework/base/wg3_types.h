@@ -77,13 +77,25 @@ namespace wg
 
 	template<typename T, typename T2, typename T3> inline void limit(T& x, T2 min, T3 max) { if( x < min) x = min; if( x > max) x = max; }
 
+	//____ ErrorSeverity ________________________________________________
+
+	enum class ErrorSeverity
+	{
+		Warning,
+		SilentFail,
+		Serious,
+		Critical
+	};
+
 	//____ ErrorCode ____________________________________________________
 
 	enum class ErrorCode
 	{
 		OutOfRange,
-		InvalidInterator,
-		OpenGL,
+		InvalidIterator,
+		FailedPrerequisite,
+		OpenGL,						// OpenGL has issued a GLerror
+		Internal,
 		Other
 	};
 
@@ -263,9 +275,26 @@ namespace wg
 		BreakAfter	= 64
 	};
 
+	//____ TintMode ___________________________________________________________
+
+	enum class TintMode
+	{
+		None = 0,
+		Flat,
+		GradientX,
+		GradientY,
+		GradientXY
+	};
+
 	//____ BlendMode ____________________________________________________________
 
 	// BlendModes control how blits and fills are blended against their backgrounds and how colors are blended against each other.
+	// There are two groups of BlendModes.
+	// The first one is for combining two surfaces into one and consists of Replace, Morph and Blend.
+	// The second one is for manipulating RGB values of destination and therefore does not update the
+	// destinations alpha channel (if any), unless the destination lacks RGB values, in which case the
+	// alpha is manipulated instead.
+
 
 	enum class BlendMode : uint8_t	//. autoExtras
 	{
@@ -286,10 +315,12 @@ namespace wg
 							///< Color Blending: DstRGB = SrcRGBA * TintRGBA/255
 		Invert,				///< Blitting: Inverts destination RGB values where alpha of source is non-zero. Ignores RBG components. Uses alpha of tint-color.
 							///< Color Blending: DstA = SrcA, DstRGB = ((255 - SrcRGB)*TintA + SrcRGB*(255-TintA))/255
-		Min,				///< Blitting: Minimum value of each RGBA component.
-							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA
-		Max,				///< Blitting: Maximum value of each RGBA component.
+		Min,				///< Blitting: Minimum value of each RGB component, alpha is ignored.
+							///< Color Blending: DstRGBA = min(SrcRGBA,DstRGBA)
+		Max,				///< Blitting: Maximum value of each RGB component, alpha is ignored.
 							///< Color Blending: DstRGBA = max(SrcRGBA,DstRGBA)
+		Morph				///< Blitting: Transition RGBA into source by morph factor.
+							///< Color Blending: A 50% mix of the two colors.
 	};
 
 	//____ PointerStyle __________________________________________________________
@@ -329,9 +360,9 @@ namespace wg
 	};
 
 
-	//____ AnimMode _____________________________________________________________
+	//____ PlayMode _____________________________________________________________
 
-	enum class AnimMode : uint8_t	//. autoExtras
+	enum class PlayMode : uint8_t	//. autoExtras
 	{
 		Forward,
 		Backward,
@@ -593,12 +624,25 @@ namespace wg
 		Unknown,			///< Pixelformat is unkown or can't be expressed in a PixelDescription struct.
 		Custom,				///< Pixelformat has no PixelFormat enum, but is fully specified through the PixelDescription struct.
 		BGR_8,				///< One byte of blue, green and red in exactly that order in memory.
+		BGR_8_sRGB,			///< One byte of blue, green and red in exactly that order in memory.
+		BGR_8_linear,		///< One byte of blue, green and red in exactly that order in memory.
+
 		BGRX_8,				///< One byte of blue, green, red and padding in exactly that order in memory.
+		BGRX_8_sRGB,		///< One byte of blue, green, red and padding in exactly that order in memory.
+		BGRX_8_linear,		///< One byte of blue, green, red and padding in exactly that order in memory.
+
 		BGRA_8,				///< One byte of blue, green, red and alpha in exactly that order in memory.
-		BGRA_4,				///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
-		BGR_565,			///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
-		I8,					///< 8 bits of index into the CLUT (Color Lookup Table).
-		A8					///< 8 bits of alpha only.
+		BGRA_8_sRGB,		///< One byte of blue, green, red and alpha in exactly that order in memory.
+		BGRA_8_linear,		///< One byte of blue, green, red and alpha in exactly that order in memory.
+
+		BGRA_4_linear,		///< 4 bits each of blue, green, red and alpha in exactly that order in memory.
+		BGR_565_linear,		///< 5 bits of blue, 6 bits of green and 5 bits of red in exactly that order in memory.
+
+		CLUT_8,				///< 8 bits of index into the CLUT (Color Lookup Table).
+		CLUT_8_sRGB,		///< 8 bits of index into the CLUT (Color Lookup Table).
+		CLUT_8_linear,		///< 8 bits of index into the CLUT (Color Lookup Table).
+
+		A_8,				///< 8 bits of alpha only.
 	};
 
 	//____ PixelDescription __________________________________________________________
@@ -660,6 +704,7 @@ namespace wg
 		PixelFormat	format;			///< Enum specifying the format if it exacty matches a predefined format, otherwise set to CUSTOM or UNKNOWN.
 		int			bits;			///< Number of bits for the pixel, includes any non-used padding bits.
 		bool		bIndexed;		///< True if pixels are index into CLUT, no RGB values in pixel.
+		bool		bLinear;		///< True if RGB values are linear (as opposed to in sRGB format, e.g. logarithmic with gamma 2.2).
 
 		uint32_t	R_mask;			///< bitmask for getting the red bits out of the pixel
 		uint32_t	G_mask;			///< bitmask for getting the green bits out of the pixel

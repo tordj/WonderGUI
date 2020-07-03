@@ -44,6 +44,7 @@ namespace wg
 	StaticColorSkin::StaticColorSkin( Color col )
 	{
 		m_color = col;
+		m_bOpaque = (m_color.a == 255);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -53,87 +54,11 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool StaticColorSkin::isStateIdentical( State state, State comparedTo, float fraction ) const
-	{
-		return true;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool StaticColorSkin::isOpaque() const
-	{
-		return m_color.a == 255 ? true : false;
-	}
-
-	bool StaticColorSkin::isOpaque(State state) const
-	{
-		return m_color.a == 255 ? true : false;
-	}
-
-	//____ isOpaque() ______________________________________________________________
-
-	bool StaticColorSkin::isOpaque( const Rect& rect, const Size& canvasSize, State state ) const
-	{
-		return m_color.a == 255 ? true : false;
-	}
-
 	//____ render() ______________________________________________________________
 
 	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction ) const
 	{
 		pDevice->fill(canvas.px(), m_color);
-	}
-
-	//____ minSize() ______________________________________________________________
-
-	Size StaticColorSkin::minSize() const
-	{
-		return Size();
-	}
-
-	//____ preferredSize() ______________________________________________________________
-
-	Size StaticColorSkin::preferredSize() const
-	{
-		return Size();
-	}
-
-	//____ contentPadding() ______________________________________________________________
-
-	Border StaticColorSkin::contentPadding() const
-	{
-		return Border();
-	}
-
-
-	//____ contentPaddingSize() ______________________________________________________________
-
-	Size StaticColorSkin::contentPaddingSize() const
-	{
-		return Size();
-	}
-
-	//____ _contentOfs() ______________________________________________________________
-
-	Coord StaticColorSkin::contentOfs( State state ) const
-	{
-		return Coord();
-	}
-
-	//____ _sizeForContent() ___________________________________________________
-
-	Size StaticColorSkin::sizeForContent( const Size& contentSize ) const
-	{
-		return contentSize;
-	}
-
-	//____ contentRect() ______________________________________________________
-
-	Rect StaticColorSkin::contentRect( const Rect& canvas, State state ) const
-	{
-		return canvas;
 	}
 
 	//____ markTest() _________________________________________________________

@@ -345,6 +345,9 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 WgCanvasStack::CustomSkin::CustomSkin(WgCanvasStack * pHolder, wg::Skin * pSkin, int canvasIdx)
     : m_pStack(pHolder), m_pSkin(pSkin), m_canvasIdx(canvasIdx)
 {
+    m_bOpaque = m_pSkin->isOpaque();
+    m_bIgnoresFraction = m_pSkin->ignoresFraction();
+    m_bContentShifting = m_pSkin->isContentShifting();
 }
 
 const wg::TypeInfo& WgCanvasStack::CustomSkin::typeInfo(void) const
@@ -367,9 +370,9 @@ wg::Size WgCanvasStack::CustomSkin::sizeForContent(const wg::Size& contentSize) 
     return m_pSkin->sizeForContent(contentSize);
 }
 
-wg::Border WgCanvasStack::CustomSkin::contentPadding() const
+wg::Border WgCanvasStack::CustomSkin::contentPadding(wg::State state) const
 {
-    return m_pSkin->contentPadding();
+    return m_pSkin->contentPadding(state);
 }
 
 wg::Size WgCanvasStack::CustomSkin::contentPaddingSize() const
@@ -385,11 +388,6 @@ wg::Coord WgCanvasStack::CustomSkin::contentOfs(wg::State state) const
 wg::Rect WgCanvasStack::CustomSkin::contentRect(const wg::Rect& canvas, wg::State state) const
 {
     return m_pSkin->contentRect(canvas,state);
-}
-
-bool WgCanvasStack::CustomSkin::isOpaque() const
-{
-    return m_pSkin->isOpaque();
 }
 
 bool WgCanvasStack::CustomSkin::isOpaque(wg::State state) const
@@ -434,11 +432,6 @@ void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& 
     pDevice->setCanvas(pStack->m_canvases[m_canvasIdx],false);
     m_pSkin->render(pDevice,canvas,state,fraction);
     pDevice->setCanvas(oldCanvas,false);
-}
-
-bool WgCanvasStack::CustomSkin::ignoresFraction() const
-{
-    return m_pSkin->ignoresFraction();
 }
 
 wg::Rect WgCanvasStack::CustomSkin::fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const

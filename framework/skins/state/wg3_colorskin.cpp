@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo ColorSkin::TYPEINFO = { "ColorSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo ColorSkin::TYPEINFO = { "ColorSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -139,15 +139,10 @@ namespace wg
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
 
-		return (m_color[i1] == m_color[i2] && ExtendedSkin::isStateIdentical(state, comparedTo));
+		return (m_color[i1] == m_color[i2] && StateSkin::isStateIdentical(state, comparedTo));
 	}
 
 	//____ isOpaque() _____________________________________________________________
-
-	bool ColorSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
 
 	bool ColorSkin::isOpaque(State state) const
 	{

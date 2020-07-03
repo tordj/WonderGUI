@@ -23,7 +23,7 @@
 #define WG3_BLOCKSKIN_DOT_H
 #pragma once
 
-#include <wg3_extendedskin.h>
+#include <wg3_stateskin.h>
 #include <wg3_surface.h>
 
 namespace wg
@@ -32,9 +32,10 @@ namespace wg
 
 	class BlockSkin;
 	typedef	StrongPtr<BlockSkin>	BlockSkin_p;
+	typedef	WeakPtr<BlockSkin>		BlockSkin_wp;
 
 
-	class BlockSkin : public ExtendedSkin
+	class BlockSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -44,7 +45,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BlockSkin_p	create();
-		static BlockSkin_p 	create(Surface * pSurface, BorderI frame = { 0 } );
+		static BlockSkin_p create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
@@ -90,7 +91,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	isOpaque() const override;
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -119,8 +119,6 @@ namespace wg
 		Surface_p	m_pSurface;
 		SizeI		m_dimensions;   // Pixels
 		BorderI		m_frame;        // Pixels
-
-		bool		m_bOpaque;
 
 		BlendMode	m_blendMode = BlendMode::Undefined;
 

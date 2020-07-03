@@ -37,7 +37,7 @@ namespace wg
 
 	const char * toString(CodePage i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Latin1",
 			"_1250",
 			"_1251",
@@ -55,7 +55,7 @@ namespace wg
 
 	const char * toString(BlendMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Undefined",
 			"Ignore",
 			"Replace",
@@ -65,18 +65,21 @@ namespace wg
 			"Multiply",
 			"Invert",
 			"Min",
-			"Max" };
+			"Max",
+			"Morph" };
 
 		return names[(int)i];
 	}
 
 	const char * toString(PointerStyle i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Arrow",
 			"Default = Arrow",
 			"Hourglass",
 			"Hand",
+			"OpenHand",
+			"ClosedHand",
 			"Crosshair",
 			"Help",
 			"Ibeam",
@@ -86,14 +89,16 @@ namespace wg
 			"ResizeNeSw",
 			"ResizeNwSe",
 			"ResizeNS",
-			"ResizeWE" };
+			"ResizeWE",
+			"ResizeBeamNS",
+			"ResizeBeamWE" };
 
 		return names[(int)i];
 	}
 
 	const char * toString(MouseButton i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"None = 0",
 			"Left",
 			"Middle",
@@ -104,9 +109,9 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(AnimMode i)
+	const char * toString(PlayMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Forward",
 			"Backward",
 			"Looping",
@@ -119,7 +124,7 @@ namespace wg
 
 	const char * toString(SearchMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"MarkPolicy",
 			"Geometry",
 			"ActionTarget" };
@@ -129,7 +134,7 @@ namespace wg
 
 	const char * toString(Origo i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"NorthWest",
 			"North",
 			"NorthEast",
@@ -145,7 +150,7 @@ namespace wg
 
 	const char * toString(Direction i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Up",
 			"Right",
 			"Down",
@@ -156,16 +161,16 @@ namespace wg
 
 	const char * toString(Axis i)
 	{
-		static const char * names[] = {
-			"Horizontal",
-			"Vertical" };
+		static const char * names[] = { 
+			"X",
+			"Y" };
 
 		return names[(int)i];
 	}
 
 	const char * toString(SizePolicy i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Default = 0",
 			"Bound",
 			"Confined",
@@ -176,7 +181,7 @@ namespace wg
 
 	const char * toString(SizePolicy2D i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Original",
 			"Stretch",
 			"Scale" };
@@ -186,7 +191,7 @@ namespace wg
 
 	const char * toString(MsgType i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Dummy = 0",
 			"Tick",
 			"PointerChange",
@@ -227,14 +232,16 @@ namespace wg
 			"PopupClosed",
 			"ModalMoveOutside",
 			"ModalBlockedPress",
-			"ModalBlockedRelease" };
+			"ModalBlockedRelease",
+			"PianoKeyPress",
+			"PianoKeyRelease" };
 
 		return names[(int)i];
 	}
 
 	const char * toString(SortOrder i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"None",
 			"Ascending",
 			"Descending" };
@@ -244,7 +251,7 @@ namespace wg
 
 	const char * toString(SelectMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Unselectable",
 			"SingleEntry",
 			"MultiEntries",
@@ -255,7 +262,7 @@ namespace wg
 
 	const char * toString(TextEditMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Static",
 			"Selectable",
 			"Editable" };
@@ -265,7 +272,7 @@ namespace wg
 
 	const char * toString(AccessMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"None",
 			"ReadOnly",
 			"WriteOnly",
@@ -276,7 +283,7 @@ namespace wg
 
 	const char * toString(ScaleMode i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Nearest",
 			"Interpolate" };
 
@@ -285,23 +292,31 @@ namespace wg
 
 	const char * toString(PixelFormat i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Unknown",
 			"Custom",
 			"BGR_8",
+			"BGR_8_sRGB",
+			"BGR_8_linear",
 			"BGRX_8",
+			"BGRX_8_sRGB",
+			"BGRX_8_linear",
 			"BGRA_8",
-			"BGRA_4",
-			"BGR_565",
-			"I8",
-			"A8" };
+			"BGRA_8_sRGB",
+			"BGRA_8_linear",
+			"BGRA_4_linear",
+			"BGR_565_linear",
+			"CLUT_8",
+			"CLUT_8_sRGB",
+			"CLUT_8_linear",
+			"A_8" };
 
 		return names[(int)i];
 	}
 
 	const char * toString(MaskOp i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Recurse",
 			"Skip",
 			"Mask" };
@@ -311,7 +326,7 @@ namespace wg
 
 	const char * toString(GfxChunkId i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"OutOfData",
 			"BeginRender",
 			"EndRender",
@@ -345,7 +360,7 @@ namespace wg
 
 	const char * toString(GfxFlip i)
 	{
-		static const char * names[] = {
+		static const char * names[] = { 
 			"Normal = 0",
 			"FlipX",
 			"FlipY",

@@ -19,8 +19,8 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG3_EXTENDEDSKIN_DOT_H
-#define WG3_EXTENDEDSKIN_DOT_H
+#ifndef WG3_STATESKIN_DOT_H
+#define WG3_STATESKIN_DOT_H
 #pragma once
 
 #include <wg3_skin.h>
@@ -31,10 +31,11 @@
 namespace wg
 {
 
-	class ExtendedSkin;
-	typedef	StrongPtr<ExtendedSkin>	ExtendedSkin_p;
+	class StateSkin;
+	typedef	StrongPtr<StateSkin>	StateSkin_p;
+	typedef	WeakPtr<StateSkin>		StateSkin_wp;
 
-	class ExtendedSkin : public Skin
+	class StateSkin : public Skin
 	{
 	public:
 		//.____ Identification __________________________________________
@@ -44,17 +45,9 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-
-		void			setContentPadding( const BorderI& padding );
-		Border			contentPadding() const override;
-
-		Size			minSize() const override;
-		Size			preferredSize() const override;
-		Size			sizeForContent(const Size& contentSize) const override;
-		Size			contentPaddingSize() const override;
+		Border			contentPadding(State state) const override;
 		Coord			contentOfs(State state) const override;
 		Rect			contentRect(const Rect& canvas, State state) const override;
-
 
 		//.____ Behavior _______________________________________________________
 
@@ -62,22 +55,18 @@ namespace wg
 		void			setContentShift(State state, CoordI shift);
 		void			setContentShift(std::initializer_list< std::pair<State, CoordI> > StateShifts);
 		CoordI			contentShift(State state) const;
-		Coord			contentShiftAdapted(State state) const;
 
 		//.____ Misc ____________________________________________________
 
 		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
 
-
-
 	protected:
 		void _refreshUnsetStates();
 
-        BorderI				m_contentPadding;					// Unit: Points
         CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points
 		Bitmask<uint32_t>	m_contentShiftStateMask = 1;		// Bitfield with one bit set for each stateIndex that has been explicitly set.
 	};
 
 
 } // namespace wg
-#endif //WG3_EXTENDEDSKIN_DOT_H
+#endif //WG3_STATESKIN_DOT_H

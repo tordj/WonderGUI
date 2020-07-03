@@ -72,14 +72,14 @@ namespace wg
 		bool		setSize( MU size ) override;
 		inline MU	size() override { return m_size; }
 
-		int			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		MU			kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 		Glyph_p		getGlyph( uint16_t chr ) override;
 
-		int			lineGap() override;
-		int			whitespaceAdvance() override;
-		int			maxAdvance() override;
-		int			maxAscend() override;
-		int			maxDescend() override;
+		MU			lineGap() override;
+		MU			whitespaceAdvance() override;
+		MU			maxAdvance() override;
+		MU			maxAscend() override;
+		MU			maxDescend() override;
 
 		//.____ Misc ___________________________________________________________
 
@@ -91,9 +91,6 @@ namespace wg
 		static void	clearCache();
 
 		//.____ Appearance ___________________________________________
-
-		inline void	setSizeOffset( int offset ) { m_sizeOffset = offset; }
-		inline int	sizeOffset() const { return m_sizeOffset; }
 
 		inline bool setRenderMode( RenderMode mode ) { return setRenderMode( mode, 0, 0xFFFF ); }
 		inline bool setRenderMode( RenderMode mode, int size ) { return setRenderMode(mode,size,size); }
@@ -117,7 +114,7 @@ namespace wg
 		{
 		public:
 			MyGlyph();
-			MyGlyph( uint16_t character, uint16_t size, int advance, uint32_t kerningIndex, Font * pFont );
+			MyGlyph( uint16_t character, MU size, MU advance, uint32_t kerningIndex, Font * pFont );
 			~MyGlyph();
 			const GlyphBitmap * getBitmap();
 
@@ -125,8 +122,8 @@ namespace wg
 			bool	isInitialized() { return m_pFont?true:false; }
 
 			CacheSlot * m_pSlot;
-			uint16_t		m_size;			// size of character in points.
-			uint16_t		m_character;	// Unicode for character.
+			MU			m_size;			// size of character.
+			uint16_t	m_character;	// Unicode for character.
 		};
 
 		class CacheSurf : public Link
@@ -168,8 +165,8 @@ namespace wg
 		CacheSlot *			_generateBitmap( MyGlyph * pGlyph );
 		void				_copyBitmap( FT_Bitmap * pBitmap, CacheSlot * pSlot );
 
-		MyGlyph *			_addGlyph( uint16_t ch, int size, int advance, uint32_t kerningIndex );
-		inline MyGlyph *	_findGlyph( uint16_t glyph, int size ) const;
+		MyGlyph *			_addGlyph( uint16_t ch, MU size, MU advance, uint32_t kerningIndex );
+		inline MyGlyph *	_findGlyph( uint16_t glyph, MU size ) const;
 
 		inline void			_touchSlot( CacheSlot * pSlot );
 		void				_refreshRenderFlags();
@@ -178,13 +175,11 @@ namespace wg
 		FT_Face				m_ftFace;
 		Blob_p				m_pFontFile;
 		char*				m_pData;
-		int					m_ftCharSize;
 		MyGlyph **			m_cachedGlyphsIndex[c_maxFontSize+1];
 		uint32_t			m_accessCounter;
 		int					m_renderFlags;
 		RenderMode			m_renderMode[c_maxFontSize+1];
-		int					m_sizeOffset;								// value to add to specified size (for getGlyph(), getKerning() etc) before getting glyph data.
-		int					m_whitespaceAdvance[c_maxFontSize+1];
+		MU					m_whitespaceAdvance[c_maxFontSize+1];
 		MU					m_size;
 
 		//____ Static stuff __________________________________________________________
@@ -212,10 +207,12 @@ namespace wg
 
 	//____ _findGlyphInIndex() _______________________________________________________
 
-	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, int size ) const
+	FreeTypeFont::MyGlyph * FreeTypeFont::_findGlyph( uint16_t ch, MU size ) const
 	{
-		if( m_cachedGlyphsIndex[size] != 0 && m_cachedGlyphsIndex[size][ch>>8] != 0 && m_cachedGlyphsIndex[size][ch>>8][ch&0xFF].isInitialized() )
-			return &m_cachedGlyphsIndex[size][ch>>8][ch&0xFF];
+		int sizeOfs = size.px();
+
+		if( m_cachedGlyphsIndex[sizeOfs] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8] != 0 && m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF].isInitialized() )
+			return &m_cachedGlyphsIndex[sizeOfs][ch>>8][ch&0xFF];
 
 		return 0;
 	}

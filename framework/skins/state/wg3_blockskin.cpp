@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo BlockSkin::TYPEINFO = { "BlockSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo BlockSkin::TYPEINFO = { "BlockSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -364,7 +364,7 @@ namespace wg
 
 	Size BlockSkin::sizeForContent( const Size& contentSize ) const
 	{
-		Size sz = ExtendedSkin::sizeForContent(contentSize);
+		Size sz = StateSkin::sizeForContent(contentSize);
 		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
 
 		return Size::max(sz, min);
@@ -375,15 +375,10 @@ namespace wg
 	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
 	{
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-		return markTestNinePatch(_ofs.qpix(), m_pSurface, { srcOfs,m_dimensions }, canvas.qpix(), opacityTreshold, m_frame);
+		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
 	}
 
 	//____ isOpaque() _____________________________________________________________
-
-	bool BlockSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
 
 	bool BlockSkin::isOpaque( State state ) const
 	{
@@ -402,7 +397,7 @@ namespace wg
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
 
-		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && ExtendedSkin::isStateIdentical(state,comparedTo) );
+		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && StateSkin::isStateIdentical(state,comparedTo) );
 	}
 
 	//____ _updateOpaqueFlags() ________________________________________________

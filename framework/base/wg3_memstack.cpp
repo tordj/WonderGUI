@@ -68,7 +68,10 @@ namespace wg
 
 	void MemStack::release( int bytes )
 	{
-		assert( !m_blocks.isEmpty() && bytes <= m_blocks.last()->allocated );
+		if (bytes == 0)
+			return;
+
+		assert( !m_blocks.isEmpty() && bytes <= m_blocks.last()->allocated && bytes > 0 );
 
 		m_blocks.last()->allocated -= bytes;
 		if( m_blocks.last()->allocated == 0 && m_blocks.first() != m_blocks.last() )

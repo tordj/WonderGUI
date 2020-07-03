@@ -23,7 +23,7 @@
 #define WG3_BOXSKIN_DOT_H
 #pragma once
 
-#include <wg3_extendedskin.h>
+#include <wg3_stateskin.h>
 #include <wg3_color.h>
 
 #include <initializer_list>
@@ -34,8 +34,9 @@ namespace wg
 
 	class BoxSkin;
 	typedef	StrongPtr<BoxSkin>	BoxSkin_p;
+	typedef	WeakPtr<BoxSkin>	BoxSkin_wp;
 
-	class BoxSkin : public ExtendedSkin
+	class BoxSkin : public StateSkin
 	{
 	public:
 		//.____ Creation __________________________________________
@@ -70,7 +71,6 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		isOpaque() const override;
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
@@ -90,7 +90,6 @@ namespace wg
 		void	_updateOpaqueFlag();
 		void	_updateUnsetColors();
 
-		bool		m_bOpaque;
 		BorderI		m_frame;							// In points
 		BlendMode	m_blendMode = BlendMode::Blend;
 

@@ -1176,7 +1176,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 				if( m_valueLabelStyle.pTextStyle )
 					m_valueLabelStyle.pTextStyle->addToAttr(WgStateEnum::Normal, &attr);
 
-				attr.size = attr.size * m_scale >> WG_SCALE_BINALS;
+				attr.size = int(attr.size) * m_scale >> WG_SCALE_BINALS;
 				pen.SetAttributes(attr);
 
 				WgSize labelSize;

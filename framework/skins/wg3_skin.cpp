@@ -34,9 +34,77 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ ignoresFraction() _____________________________________________________
+	//____ minSize() ______________________________________________________________
 
-	bool Skin::ignoresFraction() const
+	Size Skin::minSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ _preferredSize() ______________________________________________________________
+
+	Size Skin::preferredSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ setContentPadding() ____________________________________________________
+
+	void Skin::setContentPadding(const BorderI& padding)
+	{
+		m_contentPadding = padding;
+	}
+
+	//____ contentPadding() ______________________________________________________________
+
+	Border Skin::contentPadding(State state) const
+	{
+		return Border(m_contentPadding).aligned();
+	}
+
+	//____ contentPaddingSize() ______________________________________________________________
+
+	Size Skin::contentPaddingSize() const
+	{
+		return Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ contentOfs() ______________________________________________________________
+
+	Coord Skin::contentOfs(State state) const
+	{
+		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+	}
+
+	//____ sizeForContent() ___________________________________________________
+
+	Size Skin::sizeForContent(const Size& contentSize) const
+	{
+		return contentSize + Size(Border(m_contentPadding).aligned());
+	}
+
+	//____ contentRect() ______________________________________________________
+
+	Rect Skin::contentRect(const Rect& canvas, State state) const
+	{
+		return (canvas - Border(m_contentPadding).aligned()).aligned();
+	}
+
+	//____ isOpaque() _________________________________________________________
+
+	bool Skin::isOpaque(State state) const
+	{
+		return m_bOpaque;
+	}
+
+	bool Skin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
+	{
+		return m_bOpaque;
+	}
+
+	//____ isStateIdentical() ____________________________________________________
+
+	bool Skin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
 		return true;
 	}

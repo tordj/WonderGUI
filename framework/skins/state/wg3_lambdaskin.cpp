@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo LambdaSkin::TYPEINFO = { "LambdaSkin", &StateSkin::TYPEINFO };
 
 	//____ create() ___________________________________________________________
 
@@ -120,21 +120,26 @@ namespace wg
 
 	//____ isOpaque() _________________________________________________________
 
-	bool LambdaSkin::isOpaque() const
+	bool LambdaSkin::isOpaque(State state) const
 	{
 		return m_bOpaque;
 	}
 
-	bool LambdaSkin::isOpaque(State state) const
+	bool LambdaSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
 	{
-		return m_bOpaque;
+		if (m_bOpaque)
+			return true;
+		else if (m_opacityTestFunc)
+			return m_opacityTestFunc(rect, canvasSize, state);
+		else
+			return false;
 	}
 
 	//____ isStateIdentical() _________________________________________________
 
 	bool LambdaSkin::isStateIdentical(State state, State comparedTo, float fraction) const
 	{
-		if (!ExtendedSkin::isStateIdentical(state, comparedTo))
+		if (!StateSkin::isStateIdentical(state, comparedTo))
 			return false;
 		else if (m_stateCompareFunc)
 			return m_stateCompareFunc(state, comparedTo);
@@ -150,18 +155,6 @@ namespace wg
 			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
 		else
 			return (opacityTreshold <= 0 || (m_bOpaque && opacityTreshold < 256));
-	}
-
-	//____ _isOpaque() ________________________________________________________
-
-	bool LambdaSkin::isOpaque(const Rect& rect, const Size& canvasSize, State state) const
-	{
-		if (m_bOpaque)
-			return true;
-		else if (m_opacityTestFunc)
-			return m_opacityTestFunc(rect, canvasSize, state);
-		else
-			return false;
 	}
 
 	//____ render() __________________________________________________________

@@ -23,7 +23,7 @@
 #define WG3_MULTIBLOCKSKIN_DOT_H
 #pragma once
 
-#include <wg3_extendedskin.h>
+#include <wg3_stateskin.h>
 #include <wg3_surface.h>
 
 #include <initializer_list>
@@ -33,12 +33,13 @@
 namespace wg
 {
 
-	class MultiBlockSkin;
-	typedef	StrongPtr<MultiBlockSkin>	MultiBlockSkin_p;
+	class MultiBlockStateSkin;
+	typedef	StrongPtr<MultiBlockStateSkin>	MultiBlockStateSkin_p;
+	typedef	WeakPtr<MultiBlockStateSkin>	MultiBlockStateSkin_wp;
 
 
 
-	class MultiBlockSkin : public ExtendedSkin
+	class MultiBlockStateSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -47,7 +48,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static MultiBlockSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
+		static MultiBlockStateSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
 
 		//.____ Identification __________________________________________
 
@@ -72,10 +73,6 @@ namespace wg
 		Size	sizeForContent(const Size& contentSize) const override;
 
 		//.____ Misc ____________________________________________________
-
-		bool	isOpaque() const override;
-		bool	isOpaque( State state ) const override;
-		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
 		bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
 
@@ -104,15 +101,14 @@ namespace wg
 		};
 
 
-		MultiBlockSkin(SizeI blockSize, BorderI frame);
-		~MultiBlockSkin() {};
+		MultiBlockStateSkin(SizeI blockSize, BorderI frame);
+		~MultiBlockStateSkin() {};
 
 		void			_updateStateOpacity( int stateIdx );
 
 		SizeI			m_blockSizePoints;					// Stored in points
 
 		SizeI			m_blockSize;						// Stored in pixels
-		bool			m_bIsOpaque;
 		BorderI			m_frame;                        // Stored in points
 
 		std::vector<LayerData>	m_layers;

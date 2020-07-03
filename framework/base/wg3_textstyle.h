@@ -43,7 +43,7 @@ namespace wg
 			//.____ Properties ___________________________________________________________
 
 			Font_p			pFont;
-			int				size;
+			MU				size;
 			Color			color;
 			BlendMode		renderMode;
 			Color			bgColor;

@@ -771,11 +771,11 @@ wg::SizeI WgWidget::_skinContentPadding(wg::Skin * pSkin, int scale) const
 
 	int globalPixelQuarters = wg::MU::qpixPerPoint();
 	if( pixelQuarters == globalPixelQuarters )
-		return pSkin->contentPadding().px();
+		return pSkin->contentPadding(m_state).px();
 	else
 	{
 		WgBase::_setQuartersPerPoint(pixelQuarters);
-		wg::SizeI ret = pSkin->contentPadding().px();
+		wg::SizeI ret = pSkin->contentPadding(m_state).px();
 		WgBase::_setQuartersPerPoint(globalPixelQuarters);
 		return ret;
 	}

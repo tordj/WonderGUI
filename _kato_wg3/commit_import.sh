@@ -10,6 +10,6 @@ rm -rf ../framework/fonts
 
 
 cp -rf imports/* ../framework
-ruby flip_files.rb ../framework/base/* ../framework/components/* ../framework/gfxdevices/**/* ../framework/skins/* ../framework/fonts/**/*
+ruby flip_files.rb ../framework/base/* ../framework/components/* ../framework/gfxdevices/**/* ../framework/skins/*.cpp ../framework/skins/*.h ../framework/skins/**/*  ../framework/fonts/**/*
 
 mv wg3_base.h wg3_base.cpp ../framework/base

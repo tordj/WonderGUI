@@ -28,6 +28,7 @@
 #include <wg3_glsurface.h>
 #include <wg3_glsurfacefactory.h>
 #include <wg3_base.h>
+#include <wg3_context.h>
 #include <wg3_util.h>
 
 using namespace std;
@@ -93,7 +94,7 @@ namespace wg
 
 
 		sprintf( buffer, "OpenGL error 0x%x: %s", errorCode, pErrorName );
-		Base::handleError(ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
+		Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, pObject, pClassType, func, file, line);
 	}
 
 
@@ -103,7 +104,7 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
 
-		if( !p->m_bFullyInitialized != 0 )
+		if( !p->m_bFullyInitialized )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -113,7 +114,7 @@ namespace wg
 	{
 		GlGfxDevice_p p(new GlGfxDevice(pSurface, uboBindingPoint ));
 
-		if ( !p->m_bFullyInitialized != 0)
+		if ( !p->m_bFullyInitialized )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
@@ -130,6 +131,52 @@ namespace wg
 		setCanvas(viewport);
 	}
 
+	//____ _setDrawUniforms() __________________________________________________
+
+	void GlGfxDevice::_setDrawUniforms(GLuint progId, int uboBindingPoint)
+	{
+		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
+		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
+
+		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
+		glUseProgram(progId);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+
+	}
+
+	//____ _setBlitUniforms() __________________________________________________
+
+	void GlGfxDevice::_setBlitUniforms(GLuint progId, int uboBindingPoint)
+	{
+		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
+		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
+
+		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
+		GLint texIdLoc = glGetUniformLocation(progId, "texId");
+
+		glUseProgram(progId);
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+	}
+
+	//____ _setClutBlitUniforms() __________________________________________________
+
+	void GlGfxDevice::_setClutBlitUniforms(GLuint progId, int uboBindingPoint)
+	{
+		unsigned int canvasIndex = glGetUniformBlockIndex(progId, "Canvas");
+		glUniformBlockBinding(progId, canvasIndex, uboBindingPoint);
+
+		GLint extrasIdLoc = glGetUniformLocation(progId, "extrasId");
+		GLint texIdLoc = glGetUniformLocation(progId, "texId");
+		GLint clutIdLoc = glGetUniformLocation(progId, "clutId");
+
+		glUseProgram(progId);
+		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
+		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+	}
+
+
 	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{
 		m_bFullyInitialized = true;
@@ -139,140 +186,257 @@ namespace wg
 
 		_initTables();
 
-		GLint	texIdLoc, extrasIdLoc, clutIdLoc;
-
 		// Create and init Fill shader
 
-		m_fillProg			= _createGLProgram(fillVertexShader, fillFragmentShader);
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId			= _createGLProgram(fillVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_fillProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		unsigned int canvasIndex = glGetUniformBlockIndex(m_fillProg, "Canvas");
-		glUniformBlockBinding(m_fillProg, canvasIndex, uboBindingPoint);
+		// Create and init Fill Gradient shader
 
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(fillGradientVertexShader, i == 0 ? fillFragmentShader : fillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_fillGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init AA-Fill shader
 
-		m_aaFillProg		= _createGLProgram(aaFillVertexShader, aaFillFragmentShader);
-		canvasIndex			= glGetUniformBlockIndex(m_aaFillProg, "Canvas");
-		glUniformBlockBinding(m_aaFillProg, canvasIndex, uboBindingPoint);
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(aaFillVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_aaFillProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		extrasIdLoc			= glGetUniformLocation(m_aaFillProg, "extrasId");
-		glUseProgram(m_aaFillProg);
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		// Create and init AA-Fill gradient shader
 
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(aaFillGradientVertexShader, i == 0 ? aaFillFragmentShader : aaFillFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_aaFillGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init Blit shader
 
-		m_blitProg			= _createGLProgram(blitVertexShader, blitFragmentShader);
-		canvasIndex			= glGetUniformBlockIndex(m_blitProg, "Canvas");
-		glUniformBlockBinding(m_blitProg, canvasIndex, uboBindingPoint);
-		m_blitProgTexSizeLoc = glGetUniformLocation(m_blitProg, "texSize");
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(blitVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_blitProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		texIdLoc			= glGetUniformLocation(m_blitProg, "texId");
-		extrasIdLoc			= glGetUniformLocation(m_blitProg, "extrasId");
-		glUseProgram(m_blitProg);
-		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		// Create and init Gradient Blit shader
 
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(blitGradientVertexShader, i == 0 ? blitFragmentShader : blitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_blitGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init AlphaBlit shader (shader program for blitting from alpha-only texture)
 
-		m_alphaBlitProg = _createGLProgram(blitVertexShader, alphaBlitFragmentShader);
-		canvasIndex = glGetUniformBlockIndex(m_alphaBlitProg, "Canvas");
-		glUniformBlockBinding(m_alphaBlitProg, canvasIndex, uboBindingPoint);
-		m_alphaBlitProgTexSizeLoc = glGetUniformLocation(m_alphaBlitProg, "texSize");
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(blitVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_alphaBlitProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		texIdLoc = glGetUniformLocation(m_alphaBlitProg, "texId");
-		extrasIdLoc = glGetUniformLocation(m_alphaBlitProg, "extrasId");
-		glUseProgram(m_alphaBlitProg);
-		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+		// Create and init AlphaBlit gradient shader (shader program for blitting from alpha-only texture)
 
-		LOG_INIT_GLERROR(glGetError());
-
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(blitGradientVertexShader, i == 0 ? alphaBlitFragmentShader : alphaBlitFragmentShader_A8);
+			_setBlitUniforms(progId, uboBindingPoint);
+			m_alphaBlitGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init Clut Blit shaders
 
-		m_clutBlitNearestProg = _createGLProgram(clutBlitNearestVertexShader, clutBlitNearestFragmentShader);
-		canvasIndex = glGetUniformBlockIndex(m_clutBlitNearestProg, "Canvas");
-		glUniformBlockBinding(m_clutBlitNearestProg, canvasIndex, uboBindingPoint);
-		m_clutBlitNearestProgTexSizeLoc = glGetUniformLocation(m_clutBlitNearestProg, "texSize");
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(clutBlitNearestVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitNearestProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		texIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "texId");
-		extrasIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "extrasId");
-		clutIdLoc = glGetUniformLocation(m_clutBlitNearestProg, "clutId");
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(clutBlitInterpolateVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitInterpolateProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		glUseProgram(m_clutBlitNearestProg);
-		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+		// Create and init Clut Blit gradient shaders
 
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(clutBlitNearestGradientVertexShader, i == 0 ? clutBlitNearestFragmentShader : clutBlitNearestFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitNearestGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		m_clutBlitInterpolateProg = _createGLProgram(clutBlitInterpolateVertexShader, clutBlitInterpolateFragmentShader);
-		canvasIndex = glGetUniformBlockIndex(m_clutBlitInterpolateProg, "Canvas");
-		glUniformBlockBinding(m_clutBlitInterpolateProg, canvasIndex, uboBindingPoint);
-		m_clutBlitInterpolateProgTexSizeLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texSize");
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(clutBlitInterpolateGradientVertexShader, i == 0 ? clutBlitInterpolateFragmentShader : clutBlitInterpolateFragmentShader_A8);
+			_setClutBlitUniforms(progId, uboBindingPoint);
+			m_clutBlitInterpolateGradientProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
-		texIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "texId");
-		extrasIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "extrasId");
-		clutIdLoc = glGetUniformLocation(m_clutBlitInterpolateProg, "clutId");
+		// Fill in our m_blitProgMatrix
 
-		glUseProgram(m_clutBlitInterpolateProg);
-		glUniform1i(texIdLoc, 0);			// Needs to be set. Texture unit 0 is used for textures.
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
+		for (int i = 0; i < PixelFormat_size; i++)
+		{
+			for (int j = 0; j < 2; j++)
+			{
+				m_blitProgMatrix[i][0][0][j] = m_blitProg[j];
+				m_blitProgMatrix[i][0][0][j] = m_blitProg[j];
+				m_blitProgMatrix[i][1][0][j] = m_blitProg[j];
+				m_blitProgMatrix[i][0][1][j] = m_blitGradientProg[j];
+				m_blitProgMatrix[i][1][1][j] = m_blitGradientProg[j];
+			}
+		}
 
-		LOG_INIT_GLERROR(glGetError());
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][0][0] = m_alphaBlitProg[0];
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][0][0] = m_alphaBlitProg[0];
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][1][0] = m_alphaBlitGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][1][0] = m_alphaBlitGradientProg[0];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][0][0] = m_clutBlitNearestProg[0];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][0][0] = m_clutBlitInterpolateProg[0];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][1][0] = m_clutBlitNearestGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][1][0] = m_clutBlitInterpolateGradientProg[0];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][0][0] = m_clutBlitNearestProg[0];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][0][0] = m_clutBlitInterpolateProg[0];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1][0] = m_clutBlitNearestGradientProg[0];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1][0] = m_clutBlitInterpolateGradientProg[0];
+
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][0][1] = m_alphaBlitProg[1];
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][0][1] = m_alphaBlitProg[1];
+
+		m_blitProgMatrix[(int)PixelFormat::A_8][0][1][1] = m_alphaBlitGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::A_8][1][1][1] = m_alphaBlitGradientProg[1];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][0][1] = m_clutBlitNearestProg[1];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][0][1] = m_clutBlitInterpolateProg[1];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][0][1][1] = m_clutBlitNearestGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_linear][1][1][1] = m_clutBlitInterpolateGradientProg[1];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][0][1] = m_clutBlitNearestProg[1];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][0][1] = m_clutBlitInterpolateProg[1];
+
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][0][1][1] = m_clutBlitNearestGradientProg[1];
+		m_blitProgMatrix[(int)PixelFormat::CLUT_8_sRGB][1][1][1] = m_clutBlitInterpolateGradientProg[1];
 
 
 		// Create and init Plot shader
 
-		m_plotProg			= _createGLProgram(plotVertexShader, plotFragmentShader);
-		canvasIndex			= glGetUniformBlockIndex(m_plotProg, "Canvas");
-		glUniformBlockBinding(m_plotProg, canvasIndex, uboBindingPoint);
-
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(plotVertexShader, i == 0 ? plotFragmentShader : plotFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_plotProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init Line shader
 
-		m_lineFromToProg	= _createGLProgram(lineFromToVertexShader, lineFromToFragmentShader);
-		canvasIndex			= glGetUniformBlockIndex(m_lineFromToProg, "Canvas");
-		glUniformBlockBinding(m_lineFromToProg, canvasIndex, uboBindingPoint);
-
-		extrasIdLoc = glGetUniformLocation(m_lineFromToProg, "extrasId");
-		glUseProgram(m_lineFromToProg);
-		glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-
-		LOG_INIT_GLERROR(glGetError());
+		for (int i = 0; i < 2; i++)
+		{
+			GLuint progId = _createGLProgram(lineFromToVertexShader, i == 0 ? lineFromToFragmentShader : lineFromToFragmentShader_A8);
+			_setDrawUniforms(progId, uboBindingPoint);
+			m_lineFromToProg[i] = progId;
+			LOG_INIT_GLERROR(glGetError());
+		}
 
 		// Create and init Segment shaders
 
-		//HACK! Some graphics cards can't handle more than 16 varying (of which 2 are used for other data). Maybe use unifieds in shader instead?
-		// To be on the really safe side and since we don't use more than 5 anyway (single color wave + top/bottom borders and transparency above/below), we stop at 6.
-
-		// IMPORTANT! Change in destructor as well when you change it back!!!!!
-
-		for (int i = 1; i < 6 /*c_maxSegments*/ ; i++)
+		for (int i = 1; i < c_maxSegments ; i++)
 		{
-			GLuint prog = _createGLProgram(segmentVertexShaders[i], segmentFragmentShaders[i]);
-			m_segmentsProg[i] = prog;
-			unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
-			glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
+			for (int canvType = 0; canvType < 2; canvType++)
+			{
+				std::string fragShader = canvType == 0 ? segmentsFragmentShader : segmentsFragmentShader_A8;
+				int edgesPos = fragShader.find("$EDGES");
+				fragShader.replace(edgesPos, 6, std::to_string(i));
 
-			extrasIdLoc = glGetUniformLocation(prog, "extrasId");
-			GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
-			GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+				int maxsegPos = fragShader.find("$MAXSEG");
+				fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
+			
+				const char* pVertexShader = segmentsVertexShader;
+				for (int j = 0; j < 2; j++)
+				{
+					GLuint prog = _createGLProgram(pVertexShader, fragShader.c_str());
+					m_segmentsProg[i][j][canvType] = prog;
+					unsigned int canvasIndex = glGetUniformBlockIndex(prog, "Canvas");
+					glUniformBlockBinding(prog, canvasIndex, uboBindingPoint);
 
-			glUseProgram(prog);
-			glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
-			glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
-			glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 2 is used for segment stripes buffer.
+					GLint extrasIdLoc = glGetUniformLocation(prog, "extrasId");
+					GLint colorsIdLoc = glGetUniformLocation(prog, "colorsId");
+					GLint stripesIdLoc = glGetUniformLocation(prog, "stripesId");
+					GLint paletteIdLoc = glGetUniformLocation(prog, "paletteId");
+
+					glUseProgram(prog);
+					glUniform1i(extrasIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer.
+					glUniform1i(colorsIdLoc, 1);		// Needs to be set. Texture unit 1 is used for extras buffer, which doubles as the colors buffer.
+					glUniform1i(stripesIdLoc, 1);		// Needs to be set. Texture unit 1 is used for segment stripes buffer.
+					glUniform1i(paletteIdLoc, 3);		// Needs to be set. Texture unit 3 is used for segment stripes buffer.
+
+					pVertexShader = segmentsVertexShaderGradient;
+				}
+			}
 		}
 
 		LOG_INIT_GLERROR(glGetError());
+
+		// Create texture for segment colors
+
+		for (int seg = 0; seg < c_maxSegments; seg++)
+		{
+			for (int i = 0; i < 16 * 2 * 2 * 4; i++)
+			{
+				m_segmentsTintTexMap[seg][i] = 65535;
+			}
+		}
+
+
+		glGenTextures(1, &m_segmentsTintTexId);
+		glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
+
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 2 * c_maxSegments, 2 * c_segmentsTintTexMapSize, 0, GL_BGRA, GL_UNSIGNED_SHORT, nullptr);
+
 
 		// Create our Uniform Buffer
 
@@ -303,32 +467,23 @@ namespace wg
 			(void*)0				// array buffer offset
 		);
 
-		glVertexAttribPointer(
-			1,						// attribute number, must match the layout in the shader.
-			GL_BGRA,				// size
-			GL_UNSIGNED_BYTE,		// type
-			GL_TRUE,				// normalized?
-			sizeof(Vertex),			// stride
-			(void*)sizeof(CoordI)	// array buffer offset
-		);
-
 		LOG_INIT_GLERROR(glGetError());
 
 		glVertexAttribIPointer(
-			2,                  // attribute number, must match the layout in the shader.
+			1,                  // attribute number, must match the layout in the shader.
 			1,                  // size
 			GL_INT,           // type
 			sizeof(Vertex),		// stride
-			(void*)(sizeof(CoordI)+sizeof(Color))  // array buffer offset
+			(void*)(sizeof(CoordI))  // array buffer offset
 		);
 
 		glVertexAttribPointer(
-			3,						// attribute number, must match the layout in the shader.
+			2,						// attribute number, must match the layout in the shader.
 			2,						// size
 			GL_FLOAT,				// type
 			GL_TRUE,				// normalized?
 			sizeof(Vertex),			// stride
-			(void*)(sizeof(CoordI) + sizeof(Color) + sizeof(int) )  // array buffer offset
+			(void*)(sizeof(CoordI) + sizeof(int) )  // array buffer offset
 		);
 
 
@@ -357,17 +512,47 @@ namespace wg
 	{
 		LOG_GLERROR(glGetError());
 
-		glDeleteProgram(m_fillProg);
-		glDeleteProgram(m_aaFillProg);
-		glDeleteProgram(m_blitProg);
-		glDeleteProgram(m_plotProg);
-		glDeleteProgram(m_lineFromToProg);
+		glDeleteProgram(m_fillProg[0]);
+		glDeleteProgram(m_fillProg[1]);
+		glDeleteProgram(m_fillGradientProg[0]);
+		glDeleteProgram(m_fillGradientProg[1]);
+		glDeleteProgram(m_aaFillProg[0]);
+		glDeleteProgram(m_aaFillProg[1]);
+		glDeleteProgram(m_aaFillGradientProg[0]);
+		glDeleteProgram(m_aaFillGradientProg[1]);
+		glDeleteProgram(m_blitProg[0]);
+		glDeleteProgram(m_blitProg[1]);
+		glDeleteProgram(m_blitGradientProg[0]);
+		glDeleteProgram(m_blitGradientProg[1]);
+		glDeleteProgram(m_alphaBlitProg[0]);
+		glDeleteProgram(m_alphaBlitProg[1]);
+		glDeleteProgram(m_alphaBlitGradientProg[0]);
+		glDeleteProgram(m_alphaBlitGradientProg[1]);
+		glDeleteProgram(m_clutBlitNearestProg[0]);
+		glDeleteProgram(m_clutBlitNearestProg[1]);
+		glDeleteProgram(m_clutBlitNearestGradientProg[0]);
+		glDeleteProgram(m_clutBlitNearestGradientProg[1]);
+		glDeleteProgram(m_clutBlitInterpolateProg[0]);
+		glDeleteProgram(m_clutBlitInterpolateProg[1]);
+		glDeleteProgram(m_clutBlitInterpolateGradientProg[0]);
+		glDeleteProgram(m_clutBlitInterpolateGradientProg[1]);
 
-		for( int i = 1 ; i < 6 /* c_maxSegments */ ; i++ )
-			glDeleteProgram(m_segmentsProg[i]);
+		glDeleteProgram(m_plotProg[0]);
+		glDeleteProgram(m_plotProg[1]);
+		glDeleteProgram(m_lineFromToProg[0]);
+		glDeleteProgram(m_lineFromToProg[1]);
+
+		for (int i = 1; i < c_maxSegments; i++)
+		{
+			glDeleteProgram(m_segmentsProg[i][0][0]);
+			glDeleteProgram(m_segmentsProg[i][0][1]);
+			glDeleteProgram(m_segmentsProg[i][1][0]);
+			glDeleteProgram(m_segmentsProg[i][1][1]);
+		}
 
 		glDeleteFramebuffers(1, &m_framebufferId);
 		glDeleteTextures(1, &m_extrasBufferTex);
+		glDeleteTextures(1, &m_segmentsTintTexId);
 
 		glDeleteBuffers(1, &m_vertexBufferId);
 		glDeleteBuffers(1, &m_extrasBufferId);
@@ -453,7 +638,7 @@ namespace wg
 		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
-		if (pSurface->pixelFormat() == PixelFormat::I8)
+		if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
 			return false;
 
 		m_pCanvas = pSurface;
@@ -507,7 +692,50 @@ namespace wg
 	void GlGfxDevice::setTintColor(Color color)
 	{
 		GfxDevice::setTintColor(color);
+
+		if( m_bRendering )
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetTintColor, 1);
+			m_commandBuffer[m_commandOfs++] = color.argb;
+		}
 	}
+
+	//____ setTintGradient() __________________________________________________________________
+
+	void GlGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	{
+		GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+
+		if (m_bRendering)
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetTintGradient, 8);
+			m_commandBuffer[m_commandOfs++] = rect.x;
+			m_commandBuffer[m_commandOfs++] = rect.y;
+			m_commandBuffer[m_commandOfs++] = rect.w;
+			m_commandBuffer[m_commandOfs++] = rect.h;
+			m_commandBuffer[m_commandOfs++] = topLeft.argb;
+			m_commandBuffer[m_commandOfs++] = topRight.argb;
+			m_commandBuffer[m_commandOfs++] = bottomRight.argb;
+			m_commandBuffer[m_commandOfs++] = bottomLeft.argb;
+		}
+
+	}
+
+	//____ clearTintGradient() __________________________________________________________________
+
+	void GlGfxDevice::clearTintGradient()
+	{
+		GfxDevice::clearTintGradient();
+
+		if (m_bRendering)
+		{
+			_endCommand();
+			_beginStateCommand(Command::ClearTintGradient, 0);
+		}
+	}
+
 
 	//____ setBlendMode() __________________________________________________________________
 
@@ -547,6 +775,22 @@ namespace wg
 		return true;
 	}
 
+	//____ setMorphFactor() ______________________________________________________
+
+	void GlGfxDevice::setMorphFactor(float factor)
+	{
+		limit(factor, 0.f, 1.f);
+
+		m_morphFactor = factor;
+
+		if (m_bRendering)
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetMorphFactor, 1);
+			m_commandBuffer[m_commandOfs++] = (int)(factor*1024);
+		}
+	}
+
 	//____ isCanvasReady() ___________________________________________________________
 
 	bool GlGfxDevice::isCanvasReady() const
@@ -571,6 +815,7 @@ namespace wg
 		m_glDepthTest 		= glIsEnabled(GL_DEPTH_TEST);
 		m_glScissorTest 	= glIsEnabled(GL_SCISSOR_TEST);
 		m_glBlendEnabled  	= glIsEnabled(GL_BLEND);
+		m_glSRGBEnabled		= glIsEnabled(GL_FRAMEBUFFER_SRGB);
 		glGetIntegerv(GL_BLEND_SRC, &m_glBlendSrc);
 		glGetIntegerv(GL_BLEND_DST, &m_glBlendDst);
 		glGetIntegerv(GL_VIEWPORT, m_glViewport);
@@ -583,7 +828,6 @@ namespace wg
 
 		glDisable(GL_DEPTH_TEST);
 		glEnable(GL_SCISSOR_TEST);
-
 
 		// If there already is an active device, that needs to be flushed before we
 		// take over the role as the active device.
@@ -603,18 +847,30 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_segmentsTintTexOfs = 0;
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
 		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
 		_setBlendMode(m_blendMode);
+		_setMorphFactor(m_morphFactor);
+
+		if (m_bTintGradient)
+			_setTintGradient(m_tintGradientRect, m_tintGradient);
+		else
+			_setTintColor(m_tintColor);
+
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
-		// Set our textures extras buffer.
+		// Set our extras buffer and segments palette textures.
 
 		glActiveTexture(GL_TEXTURE1);
 		glBindTexture(GL_TEXTURE_BUFFER, m_extrasBufferTex);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
 		glActiveTexture(GL_TEXTURE0);
+
+
 
 
 		// Prepare for rendering
@@ -660,6 +916,12 @@ namespace wg
 			glEnable(GL_BLEND);
 		else
 			glDisable(GL_BLEND);
+
+		if( m_glSRGBEnabled )
+			glEnable(GL_FRAMEBUFFER_SRGB);
+		else
+			glDisable(GL_FRAMEBUFFER_SRGB);
+
 
 		glBlendFunc( m_glBlendSrc, m_glBlendDst );
 		glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
@@ -747,9 +1009,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects )
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -773,35 +1033,42 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
+				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.b];
+		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f;
 	}
 
 	//____ fill() ____ [subpixel] __________________________________________________
@@ -824,8 +1091,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -849,41 +1115,44 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		// Provide color	
+
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[col.b];
+		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f;
 
 		// Provide rectangle center and radius
 
@@ -903,7 +1172,7 @@ namespace wg
 		if (nPixels == 0)
 			return;
 
-		if (m_vertexOfs > c_vertexBufferSize - 1 )
+		if (m_vertexOfs > c_vertexBufferSize - 1 || m_extrasOfs > c_extrasBufferSize - 4)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -915,6 +1184,8 @@ namespace wg
 			_beginDrawCommand(Command::Plot);
 		}
 
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
 		for (int i = 0; i < m_nClipRects; i++)
 		{
 			const RectI& clip = m_pClipRects[i];
@@ -923,10 +1194,17 @@ namespace wg
 				if (clip.contains(pCoords[pixel]))
 				{
 					m_vertexBufferData[m_vertexOfs].coord = pCoords[pixel];
-					m_vertexBufferData[m_vertexOfs].color = pColors[pixel] * m_tintColor;
+					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 					m_vertexOfs++;
 
-					if (m_vertexOfs == c_vertexBufferSize)
+					Color color = pColors[pixel];
+
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
+					m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
+					m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
+
+					if (m_vertexOfs == c_vertexBufferSize || m_extrasOfs == c_extrasBufferSize)
 					{
 						_endCommand();
 						_executeBuffer();
@@ -941,7 +1219,7 @@ namespace wg
 
 	void GlGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
-		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 4 || m_clipCurrOfs == -1 )
+		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 8 || m_clipCurrOfs == -1 )
 		{
 			_endCommand();
 			_executeBuffer();
@@ -959,8 +1237,6 @@ namespace wg
 		float	slope;
 		float	s, w;
 		bool	bSteep;
-
-		Color fillColor = color * m_tintColor;
 
 		CoordI	c1, c2, c3, c4;
 
@@ -1029,34 +1305,35 @@ namespace wg
 		}
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c2;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c1;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c3;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
 		m_vertexBufferData[m_vertexOfs].coord = c4;
-		m_vertexBufferData[m_vertexOfs].color = fillColor;
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
+
+		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
+		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
 
 		m_extrasBufferData[m_extrasOfs++] = s;
 		m_extrasBufferData[m_extrasOfs++] = w;
@@ -1066,11 +1343,11 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
 	{
 		// Skip calls that won't affect destination
 
-		if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+		if (color.a == 0 && (m_blendMode == BlendMode::Blend))
 			return;
 
 		// Create a rectangle from the line
@@ -1120,9 +1397,7 @@ namespace wg
 
 		//
 
-		Color fillColor = col * m_tintColor;
-
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 4)
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - 8)
 		{
 			_endCommand();
 			_executeBuffer();
@@ -1149,41 +1424,44 @@ namespace wg
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy1;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx2;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 
 				m_vertexBufferData[m_vertexOfs].coord.x = dx1;
 				m_vertexBufferData[m_vertexOfs].coord.y = dy2;
-				m_vertexBufferData[m_vertexOfs].color = fillColor;
 				m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 				m_vertexOfs++;
 			}
 		}
+
+		// Provide color
+
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
+		m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
+		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
 
 		// Provide rectangle center and raidus.
 
@@ -1223,12 +1501,13 @@ namespace wg
 			RectI patch(m_pClipRects[i], dest);
 			if (patch.w > 0 && patch.h > 0)
 			{
-				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
-
 				int		dx1 = patch.x;
 				int		dx2 = patch.x + patch.w;
 				int		dy1 = patch.y;
 				int		dy2 = patch.y + patch.h;
+
+				Vertex * pVertex = m_vertexBufferData + m_vertexOfs;
+
 /*
 				float	sx1 = (src.x + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]) / sw;
 				float	sy1 = (src.y + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]) / sh;
@@ -1245,37 +1524,31 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs/4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
@@ -1332,37 +1605,31 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex++;
 
@@ -1393,18 +1660,18 @@ namespace wg
 
 	//____ _transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2] )
+	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
 	{
 		if (!_dest.intersectsWith(m_clipBounds))
 			return;
 
 		//
 
-		int extrasSpaceNeeded = (4 + 4 * nSegments + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
+		int extrasSpaceNeeded = (8 + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
 
 		assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
 
-		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded )			// varios data, transform , colors, edgestrips
+		if (m_vertexOfs > c_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > c_extrasBufferSize - extrasSpaceNeeded || m_segmentsTintTexOfs == c_segmentsTintTexMapSize)			// varios data, transform , colors, edgestrips
 		{
 			m_nSegments = nSegments;
 			_endCommand();
@@ -1457,12 +1724,12 @@ namespace wg
 		int vTopLeft = 0;
 
 		if (uIncX + uIncY < 0)
-			uTopLeft = maxCol - 1;
+			uTopLeft = maxCol;
 
 		if (vIncX < 0)
-			vTopLeft = dest.w - 1;
+			vTopLeft = dest.w;
 		else if (vIncY < 0)
-			vTopLeft = dest.h - 1;
+			vTopLeft = dest.h;
 
 		// Setup vertices
 
@@ -1502,42 +1769,36 @@ namespace wg
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv2;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy1;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv1;
 				pVertex++;
 
 				pVertex->coord.x = dx2;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv3;
 				pVertex++;
 
 				pVertex->coord.x = dx1;
 				pVertex->coord.y = dy2;
-				pVertex->color = m_tintColor;
 				pVertex->extrasOfs = m_extrasOfs / 4;
 				pVertex->uv = uv4;
 				pVertex++;
@@ -1552,21 +1813,168 @@ namespace wg
 
 		// Add various data to extras
 
-		int edgeStripOfs = (m_extrasOfs + 4 + nSegments * 4);	// Offset for edgestrips in buffer.
+		int edgeStripOfs = (m_extrasOfs + 8);	// Offset for edgestrips in buffer.
 
 		pExtras[0] = (GLfloat) nSegments;
 		pExtras[1] = (GLfloat) edgeStripOfs/4;
-		pExtras += 4;												// Alignment for vec4 reads.
+		pExtras[2] = (GLfloat)((_dest.w) * abs(simpleTransform[0][0]) + (_dest.h) * abs(simpleTransform[1][0]));
+		pExtras[3] = (GLfloat)((_dest.w) * abs(simpleTransform[0][1]) + (_dest.h) * abs(simpleTransform[1][1]));
+		pExtras[4] = GLfloat( 0.25f/c_maxSegments );
+		pExtras[5] = GLfloat(m_segmentsTintTexOfs + 0.25f) / c_segmentsTintTexMapSize;
+		pExtras[6] = GLfloat(c_maxSegments*2);
+		pExtras[7] = GLfloat(c_segmentsTintTexMapSize*2);
 
-		// Add segment colors to extras
+		pExtras += 8;												// Alignment for vec4 reads.
 
-		for (int i = 0; i < nSegments; i++)
+		// Add colors to segmentsTintTexMap
+
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		const Color* pSegCol = pSegmentColors;
+
+		uint16_t* pMapRow = m_segmentsTintTexMap[m_segmentsTintTexOfs];
+		int			mapPitch = c_maxSegments * 4 * 2;
+
+		switch (tintMode)
 		{
-			*pExtras++ = pSegmentColors[i].r/256.f;
-			*pExtras++ = pSegmentColors[i].g/256.f;
-			*pExtras++ = pSegmentColors[i].b/256.f;
-			*pExtras++ = pSegmentColors[i].a/256.f;
+			case TintMode::None:
+			case TintMode::Flat:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					uint16_t r = uint16_t(pConv[pSegCol->r] * 65535);
+					uint16_t g = uint16_t(pConv[pSegCol->g] * 65535);
+					uint16_t b = uint16_t(pConv[pSegCol->b] * 65535);
+					uint16_t a = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+
+					pMapRow[i * 8 + 0] = b;
+					pMapRow[i * 8 + 1] = g;
+					pMapRow[i * 8 + 2] = r;
+					pMapRow[i * 8 + 3] = a;
+					pMapRow[i * 8 + 4] = b;
+					pMapRow[i * 8 + 5] = g;
+					pMapRow[i * 8 + 6] = r;
+					pMapRow[i * 8 + 7] = a;
+
+					pMapRow[mapPitch + i * 8 + 0] = b;
+					pMapRow[mapPitch + i * 8 + 1] = g;
+					pMapRow[mapPitch + i * 8 + 2] = r;
+					pMapRow[mapPitch + i * 8 + 3] = a;
+					pMapRow[mapPitch + i * 8 + 4] = b;
+					pMapRow[mapPitch + i * 8 + 5] = g;
+					pMapRow[mapPitch + i * 8 + 6] = r;
+					pMapRow[mapPitch + i * 8 + 7] = a;
+					pSegCol++;
+				}
+				break;
+			}
+
+			case TintMode::GradientX:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 0] = b1;
+					pMapRow[i * 8 + 1] = g1;
+					pMapRow[i * 8 + 2] = r1;
+					pMapRow[i * 8 + 3] = a1;
+					pMapRow[i * 8 + 4] = b2;
+					pMapRow[i * 8 + 5] = g2;
+					pMapRow[i * 8 + 6] = r2;
+					pMapRow[i * 8 + 7] = a2;
+
+					pMapRow[mapPitch + i * 8 + 0] = b1;
+					pMapRow[mapPitch + i * 8 + 1] = g1;
+					pMapRow[mapPitch + i * 8 + 2] = r1;
+					pMapRow[mapPitch + i * 8 + 3] = a1;
+					pMapRow[mapPitch + i * 8 + 4] = b2;
+					pMapRow[mapPitch + i * 8 + 5] = g2;
+					pMapRow[mapPitch + i * 8 + 6] = r2;
+					pMapRow[mapPitch + i * 8 + 7] = a2;
+				}
+				break;
+			}
+
+			case TintMode::GradientY:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 0] = b1;
+					pMapRow[i * 8 + 1] = g1;
+					pMapRow[i * 8 + 2] = r1;
+					pMapRow[i * 8 + 3] = a1;
+					pMapRow[i * 8 + 4] = b1;
+					pMapRow[i * 8 + 5] = g1;
+					pMapRow[i * 8 + 6] = r1;
+					pMapRow[i * 8 + 7] = a1;
+
+					pMapRow[mapPitch + i * 8 + 0] = b2;
+					pMapRow[mapPitch + i * 8 + 1] = g2;
+					pMapRow[mapPitch + i * 8 + 2] = r2;
+					pMapRow[mapPitch + i * 8 + 3] = a2;
+					pMapRow[mapPitch + i * 8 + 4] = b2;
+					pMapRow[mapPitch + i * 8 + 5] = g2;
+					pMapRow[mapPitch + i * 8 + 6] = r2;
+					pMapRow[mapPitch + i * 8 + 7] = a2;
+				}
+				break;
+			}
+
+			case TintMode::GradientXY:
+			{
+				for (int i = 0; i < nSegments; i++)
+				{
+					pMapRow[i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[mapPitch + i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[mapPitch + i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[mapPitch + i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[mapPitch + i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+
+					pMapRow[mapPitch + i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
+					pMapRow[mapPitch + i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+					pMapRow[mapPitch + i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
+					pMapRow[mapPitch + i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pSegCol++;
+				}
+				break;
+			}
 		}
+
+		m_segmentsTintTexOfs++;
 
 		// Add edgestrips to extras
 
@@ -1646,6 +2054,13 @@ namespace wg
 		glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
 		glBufferSubData(GL_TEXTURE_BUFFER, 0, m_extrasOfs * sizeof(GLfloat), m_extrasBufferData);
 
+		if (m_segmentsTintTexOfs > 0)
+		{
+			glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
+			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, c_maxSegments * 2, m_segmentsTintTexOfs * 2, GL_BGRA, GL_UNSIGNED_SHORT, m_segmentsTintTexMap);
+		}
+		
+
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
@@ -1680,6 +2095,31 @@ namespace wg
 					_setBlendMode((BlendMode)* pCmd++);
 					break;
 				}
+				case Command::SetMorphFactor:
+				{
+					_setMorphFactor((*pCmd++) / 1024.f);
+					break;
+				}
+				case Command::SetTintColor:
+				{
+					_setTintColor(*(Color*)(pCmd++));
+					break;
+				}
+				case Command::SetTintGradient:
+				{
+					RectI& rect = *(RectI*)pCmd;
+					pCmd += 4;
+					Color* pColors = (Color*)pCmd;
+					pCmd += 4;
+
+					_setTintGradient(rect, pColors);
+					break;
+				}
+				case Command::ClearTintGradient:
+				{
+					_clearTintGradient();
+					break;
+				}
 				case Command::SetBlitSource:
 				{
 					_setBlitSource(m_surfaceBuffer[surfaceOfs]);
@@ -1689,10 +2129,10 @@ namespace wg
 				case Command::Blit:
 				{
 					int nVertices = *pCmd++;
-					if( nVertices > 0 )
+					if (nVertices > 0 && m_pActiveBlitSource)
 					{
-						glUseProgram(m_cmdBlitProgram);
-						glEnableVertexAttribArray(2);
+						GlSurface* pSurf = m_pActiveBlitSource;
+						glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1707,8 +2147,10 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_fillProg);
-						glDisableVertexAttribArray(2);
+						if( m_bGradientActive )
+							glUseProgram(m_fillGradientProg[m_bActiveCanvasIsA8]);
+						else
+							glUseProgram(m_fillProg[m_bActiveCanvasIsA8]);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1723,8 +2165,10 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_aaFillProg);
-						glEnableVertexAttribArray(2);
+						if (m_bGradientActive)
+							glUseProgram(m_aaFillGradientProg[m_bActiveCanvasIsA8]);
+						else
+							glUseProgram(m_aaFillProg[m_bActiveCanvasIsA8]);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1741,8 +2185,7 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_lineFromToProg);
-						glEnableVertexAttribArray(2);
+						glUseProgram(m_lineFromToProg[m_bActiveCanvasIsA8]);
 
 						for (int i = 0; i < clipListLen; i++)
 						{
@@ -1764,8 +2207,7 @@ namespace wg
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_plotProg);
-						glDisableVertexAttribArray(2);
+						glUseProgram(m_plotProg[m_bActiveCanvasIsA8]);
 
 						glDrawArrays(GL_POINTS, vertexOfs, nVertices);
 						vertexOfs += nVertices;
@@ -1777,18 +2219,20 @@ namespace wg
 				}
 				case Command::Segments:
 				{
-					int nEdges = (*pCmd++)-1;
+					int nSegments = (*pCmd++);
+					if (nSegments > c_maxSegments)
+						nSegments = c_maxSegments;
+					int nEdges = nSegments-1;
 					int nVertices = *pCmd++;
 					if( nVertices > 0 )
 					{
-						glUseProgram(m_segmentsProg[nEdges]);
+						glUseProgram(m_segmentsProg[nEdges][m_bGradientActive][m_bActiveCanvasIsA8]);
 						glEnableVertexAttribArray(2);
-						glEnableVertexAttribArray(3);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
 						vertexOfs += nVertices;
 
-						glDisableVertexAttribArray(3);
+						glDisableVertexAttribArray(2);
 
 						if( m_bMipmappedActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = true;
@@ -1804,6 +2248,7 @@ namespace wg
 		m_extrasOfs = 0;
 		m_commandOfs = 0;
 		m_surfaceOfs = 0;
+		m_segmentsTintTexOfs = 0;
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
@@ -1817,8 +2262,12 @@ namespace wg
 	{
 		LOG_GLERROR(glGetError());
 
+		bool bWasAlphaOnly = m_bActiveCanvasIsA8;
+
 		if (pCanvas)
 		{
+			glEnable(GL_FRAMEBUFFER_SRGB);		// Always use SRGB on Canvas that is SRGB.
+
 			glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
 			glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
 
@@ -1840,9 +2289,14 @@ namespace wg
             glScissor(0, 0, width, height);
         }
 		else
-        {
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
+		{
+			if( Base::activeContext()->gammaCorrection() )
+				glEnable(GL_FRAMEBUFFER_SRGB);
+			else
+				glDisable(GL_FRAMEBUFFER_SRGB);
 
+			glBindFramebuffer(GL_FRAMEBUFFER, 0);
+ 
 			// Normally we would set the viewport and scissoring to the values given,
 			// but a bug in Logic Pro X doesn't handle viewports correctly when moving
 			// plugin window between screens with different scaling. Just maintaining
@@ -1867,24 +2321,32 @@ namespace wg
 #endif
 
 		}
+
 		int canvasYstart	= pCanvas ? 0 : height;
 		int canvasYmul		= pCanvas ? 1 : -1;
 
 
 		// Updating canvas info for our shaders
 
-		m_canvasUBOBuffer.dimX = (GLfloat) width;
-		m_canvasUBOBuffer.dimY = (GLfloat) height;
-		m_canvasUBOBuffer.yOfs = canvasYstart;
-		m_canvasUBOBuffer.yMul = canvasYmul;
+		m_canvasUBOBuffer.canvasDimX = (GLfloat) width;
+		m_canvasUBOBuffer.canvasDimY = (GLfloat) height;
+		m_canvasUBOBuffer.canvasYOfs = canvasYstart;
+		m_canvasUBOBuffer.canvasYMul = canvasYmul;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferSubData(GL_UNIFORM_BUFFER, 0, sizeof(canvasUBO), &m_canvasUBOBuffer);
+		glBufferSubData(GL_UNIFORM_BUFFER, 0, 4*4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer);
 
 		LOG_GLERROR(glGetError());
 
 		m_pActiveCanvas = pCanvas;
 		m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->m_bMipmapped : false;
+
+		bool bIsAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
+
+		if (bIsAlphaOnly != bWasAlphaOnly)
+			_setBlendMode(m_activeBlendMode);
+
+		m_bActiveCanvasIsA8 = bIsAlphaOnly;
 	}
 
 	//____ _setBlendMode() _______________________________________________________
@@ -1892,6 +2354,9 @@ namespace wg
 	void GlGfxDevice::_setBlendMode( BlendMode mode )
 	{
 		LOG_GLERROR(glGetError());
+
+		bool bAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
+
 
 		switch (mode)
 		{
@@ -1903,44 +2368,80 @@ namespace wg
 		case BlendMode::Blend:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
-			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-			//				glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+			if (bAlphaOnly)
+				glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
+			else
+				glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
+			break;
+
+		case BlendMode::Morph:
+			glBlendEquation(GL_FUNC_ADD);
+			glEnable(GL_BLEND);
+			glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
 			break;
 
 		case BlendMode::Add:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
-			glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+			if( bAlphaOnly )
+				glBlendFunc(GL_ONE, GL_ONE);
+			else
+				glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Subtract:
-			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_SRC_ALPHA, GL_ONE);
+			glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
+			if (bAlphaOnly)
+				glBlendFunc(GL_ONE, GL_ONE);
+			else
+				glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Multiply:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			if( bAlphaOnly )
+				glBlendFunc(GL_DST_COLOR, GL_ZERO);
+			else
+				glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Invert:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
+			if( bAlphaOnly )
+				glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
+			else
+				glBlendFuncSeparate(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE);
 			break;
 
 		case BlendMode::Min:
-			glBlendEquation(GL_MIN);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
+			if (bAlphaOnly)
+			{
+				glBlendEquation(GL_MIN);
+				glBlendFunc(GL_ONE, GL_ONE);
+			}
+			else
+			{
+				glBlendEquationSeparate(GL_MIN, GL_FUNC_ADD);
+				glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
+			}
 			break;
 
 		case BlendMode::Max:
-			glBlendEquation(GL_MAX);
 			glEnable(GL_BLEND);
-			glBlendFunc(GL_ONE, GL_ONE);
+			if (bAlphaOnly)
+			{
+				glBlendEquation(GL_MAX);
+				glBlendFunc(GL_ONE, GL_ONE);
+			}
+			else
+			{
+				glBlendEquationSeparate(GL_MAX, GL_FUNC_ADD);
+				glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
+			}
 			break;
 
 		case BlendMode::Ignore:
@@ -1953,7 +2454,17 @@ namespace wg
 			assert(false);
 			break;
 		}
+
+		m_activeBlendMode = mode;
+
 		LOG_GLERROR(glGetError());
+	}
+
+	//____ _setMorphFactor() __________________________________________________
+
+	void GlGfxDevice::_setMorphFactor(float morphFactor)
+	{
+		glBlendColor(1.f, 1.f, 1.f, morphFactor);
 	}
 
 	//____ _setBlitSource() _______________________________________________________
@@ -1977,49 +2488,82 @@ namespace wg
 			m_pActiveBlitSource = pSurf;
 			pSurf->m_bPendingReads = false;			// Clear this as we pass it by...
 
+			m_canvasUBOBuffer.textureSize = pSurf->size();
+			glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+			glBufferSubData(GL_UNIFORM_BUFFER, ((char*)&m_canvasUBOBuffer.textureSize) - ((char*)&m_canvasUBOBuffer), sizeof(SizeI), &m_canvasUBOBuffer.textureSize);
+
 			if (pSurf->m_pClut)
 			{
-				if (pSurf->scaleMode() == ScaleMode::Interpolate)
-				{
-					glUseProgram(m_clutBlitInterpolateProg);
-					glUniform2i(m_clutBlitInterpolateProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-					m_cmdBlitProgram = m_clutBlitInterpolateProg;
-				}
-				else
-				{
-					glUseProgram(m_clutBlitNearestProg);
-					glUniform2i(m_clutBlitNearestProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-					m_cmdBlitProgram = m_clutBlitNearestProg;
-				}
-
 				glActiveTexture(GL_TEXTURE2);
 				GLuint clutTex = pSurf->getClutTexture();
-				glBindTexture(GL_TEXTURE_BUFFER, clutTex);
+				glBindTexture(GL_TEXTURE_2D, clutTex);
 				glActiveTexture(GL_TEXTURE0);
 
 				assert(glGetError() == 0);
-			}
-			else if (pSurf->m_pixelDescription.format == PixelFormat::A8)
-			{
-				glUseProgram(m_alphaBlitProg);
-				glUniform2i(m_alphaBlitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-				m_cmdBlitProgram = m_alphaBlitProg;
-			}
-			else
-			{
-				glUseProgram(m_blitProg);
-				glUniform2i(m_blitProgTexSizeLoc, pSurf->size().w, pSurf->size().h);
-
-				m_cmdBlitProgram = m_blitProg;
 			}
 		}
 		else
 			glBindTexture(GL_TEXTURE_2D, 0 );
 
 		LOG_GLERROR(glGetError());
+	}
+
+	//____ _setTintColor() ____________________________________________________
+
+	void GlGfxDevice::_setTintColor(Color color)
+	{
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		float r, g, b, a;
+
+		m_canvasUBOBuffer.flatTint[0] = r = pConv[color.r];
+		m_canvasUBOBuffer.flatTint[1] = g = pConv[color.g];
+		m_canvasUBOBuffer.flatTint[2] = b = pConv[color.b];
+		m_canvasUBOBuffer.flatTint[3] = a = m_linearToLinearTable[color.a];
+
+		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.flatTint);
+	}
+
+	//____ _setTintGradient() _________________________________________________
+
+	void GlGfxDevice::_setTintGradient(const RectI& rect, const Color colors[4])
+	{
+		m_bGradientActive = true;
+
+		m_canvasUBOBuffer.tintRect = rect;
+
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		m_canvasUBOBuffer.topLeftTint[0] = pConv[colors[0].r];
+		m_canvasUBOBuffer.topLeftTint[1] = pConv[colors[0].g];
+		m_canvasUBOBuffer.topLeftTint[2] = pConv[colors[0].b];
+		m_canvasUBOBuffer.topLeftTint[3] = m_linearToLinearTable[colors[0].a];
+
+		m_canvasUBOBuffer.topRightTint[0] = pConv[colors[1].r];
+		m_canvasUBOBuffer.topRightTint[1] = pConv[colors[1].g];
+		m_canvasUBOBuffer.topRightTint[2] = pConv[colors[1].b];
+		m_canvasUBOBuffer.topRightTint[3] = m_linearToLinearTable[colors[1].a];
+
+		m_canvasUBOBuffer.bottomRightTint[0] = pConv[colors[2].r];
+		m_canvasUBOBuffer.bottomRightTint[1] = pConv[colors[2].g];
+		m_canvasUBOBuffer.bottomRightTint[2] = pConv[colors[2].b];
+		m_canvasUBOBuffer.bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
+
+		m_canvasUBOBuffer.bottomLeftTint[0] = pConv[colors[3].r];
+		m_canvasUBOBuffer.bottomLeftTint[1] = pConv[colors[3].g];
+		m_canvasUBOBuffer.bottomLeftTint[2] = pConv[colors[3].b];
+		m_canvasUBOBuffer.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
+
+		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16+16, 20 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.tintRect);
+	}
+
+	//____ _clearTintGradient() _________________________________________________
+
+	void GlGfxDevice::_clearTintGradient()
+	{
+		m_bGradientActive = false;
 	}
 
 	//____ _createGlProgram() ___________________________________________________
@@ -2060,7 +2604,7 @@ namespace wg
 			char	buffer[4096*3+256];
 
 			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
-			Base::handleError(ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
 		glDetachShader(programID, vertexShaderID);
@@ -2084,6 +2628,16 @@ namespace wg
 		{
 			double b = i / 16.0;
 			m_lineThicknessTable[i] = (float)Util::squareRoot(1.0 + b * b);
+		}
+
+		// Init sRGBtoLinearTable
+
+		float max = powf(255, 2.2f);
+
+		for (int i = 0; i < 256; i++)
+		{
+			m_sRGBtoLinearTable[i] = powf(float(i), 2.2f)/max;
+			m_linearToLinearTable[i] = i / 255.f;
 		}
 	}
 

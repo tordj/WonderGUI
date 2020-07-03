@@ -55,13 +55,13 @@ namespace wg
 		inline MU			size() override { return m_size; }
 
 		Glyph_p				getGlyph( uint16_t chr ) override;
-		int					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
+		MU					kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) override;
 
-		inline int			lineGap() override { return m_lineGap; }
-		inline int			whitespaceAdvance() override { return m_spaceAdvance; }
-		inline int			maxAdvance() override { return m_maxAdvance; }
-		inline int 			maxAscend() override { return m_maxAscend; }
-		inline int 			maxDescend() override { return m_maxDescend; }
+		inline MU			lineGap() override { return m_lineGap; }
+		inline MU			whitespaceAdvance() override { return m_spaceAdvance; }
+		inline MU			maxAdvance() override { return m_maxAdvance; }
+		inline MU 			maxAscend() override { return m_maxAscend; }
+		inline MU 			maxDescend() override { return m_maxDescend; }
 
 		//.____ Misc ___________________________________________________________
 

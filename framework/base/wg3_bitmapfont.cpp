@@ -138,7 +138,7 @@ namespace wg
 	//____ kerning() _________________________________________________________
 
 
-	inline int BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
+	inline MU BitmapFont::kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph )
 	{
 		if( !m_pKerningTable )
 			return 0;
@@ -152,7 +152,7 @@ namespace wg
 		if( indexLeft >= m_nKerningGlyphs || indexRight >= m_nKerningGlyphs )
 			return 0;
 
-		return m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ];
+		return MU::fromPX(m_pKerningTable[ (indexLeft * m_nKerningGlyphs) + indexRight ]);
 	}
 
 
@@ -332,12 +332,12 @@ namespace wg
 	}
 
 	BitmapFont::MyGlyph::MyGlyph( int advance, int16_t bearingX, int16_t bearingY, uint32_t kerningIndex, Font * pFont, Surface * pSurf, const RectI& rect )
-	: Glyph( advance, kerningIndex, pFont )
+	: Glyph( MU::fromPX(advance), kerningIndex, pFont )
 	{
 			m_src.pSurface	= pSurf;
 			m_src.rect		= rect;
-			m_src.bearingX	= bearingX;
-			m_src.bearingY	= bearingY;
+			m_src.bearingX	= MU::fromPX(bearingX);
+			m_src.bearingY  = MU::fromPX(bearingY);
 	}
 
 } // namespace wg

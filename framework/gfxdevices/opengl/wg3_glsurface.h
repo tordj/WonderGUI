@@ -77,6 +77,8 @@ namespace wg
 		void		setScaleMode(ScaleMode mode) override;
 		bool		isOpaque() const override;
 
+		void		setTiling(bool bTiling) override;
+
 		//.____ Content _______________________________________________________
 
 		uint32_t	pixel(CoordI coord) const override;
@@ -117,8 +119,6 @@ namespace wg
 
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.
-		GLuint		m_clutBufferId = 0;
-
 
 		GLuint 		m_texture;			// GL texture handle.
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.

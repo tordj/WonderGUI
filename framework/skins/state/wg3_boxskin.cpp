@@ -30,7 +30,7 @@ namespace wg
 
 	using namespace Util;
 
-	const TypeInfo BoxSkin::TYPEINFO = { "BoxSkin", &ExtendedSkin::TYPEINFO };
+	const TypeInfo BoxSkin::TYPEINFO = { "BoxSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
@@ -203,7 +203,7 @@ namespace wg
 
 	Size BoxSkin::minSize() const
 	{
-		Size content = ExtendedSkin::minSize();
+		Size content = StateSkin::minSize();
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content,frame);
@@ -213,7 +213,7 @@ namespace wg
 
 	Size BoxSkin::preferredSize() const
 	{
-		Size content = ExtendedSkin::minSize();
+		Size content = StateSkin::minSize();
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content, frame);
@@ -223,7 +223,7 @@ namespace wg
 
 	Size BoxSkin::sizeForContent( const Size& contentSize ) const
 	{
-		Size content = ExtendedSkin::sizeForContent(contentSize);
+		Size content = StateSkin::sizeForContent(contentSize);
 		Size frame = Border(m_frame).aligned();
 
 		return Size::max(content, frame);
@@ -255,11 +255,6 @@ namespace wg
 	}
 
 	//____ isOpaque() _____________________________________________________________
-
-	bool BoxSkin::isOpaque() const
-	{
-		return m_bOpaque;
-	}
 
 	bool BoxSkin::isOpaque( State state ) const
 	{
@@ -293,7 +288,7 @@ namespace wg
 		int i2 = _stateToIndex(comparedTo);
 
 		if( m_fillColor[i1] == m_fillColor[i2] && (m_frame.isEmpty() || m_frameColor[i1] == m_frameColor[i2]) &&
-			ExtendedSkin::isStateIdentical(state,comparedTo) )
+			StateSkin::isStateIdentical(state,comparedTo) )
 			return true;
 		else
 			return false;

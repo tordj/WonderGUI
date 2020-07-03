@@ -58,7 +58,7 @@ typedef wg::SortOrder   WgSortOrder;
 typedef wg::SelectMode  WgSelectMode;
 typedef wg::TextEditMode WgTextEditMode;
 typedef wg::MaskOp      WgMaskOp;
-typedef wg::AnimMode    WgAnimMode;
+typedef wg::PlayMode    WgAnimMode;
 
 typedef wg::PixelDescription    WgPixelFormat;
 

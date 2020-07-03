@@ -46,8 +46,8 @@ namespace wg
 
 		Surface_p 	pSurface;
 		RectI		rect;
-		int16_t		bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
-		int16_t		bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
+		MU			bearingX;		// x offset when rendering the glyph (negated offset to glyph origo)
+		MU			bearingY;		// y offset when rendering the glyph (negated offset to glyph origo)
 	};
 
 
@@ -65,7 +65,7 @@ namespace wg
 
 		//.____ Misc ___________________________________________________________
 
-		inline int		advance() { return m_advance; }
+		inline MU		advance() { return m_advance; }
 		inline int		kerningIndex() { return m_kerningIndex; }
 
         //.____ Internal _______________________________________________________
@@ -74,18 +74,18 @@ namespace wg
 
 	protected:
 		Glyph();
-		Glyph( int advance, int _kerningIndex, Font * pFont );
+		Glyph( MU advance, int _kerningIndex, Font * pFont );
 		virtual ~Glyph() {}
 
 		Font *			m_pFont;		// glyphset that this glyph belongs to
-		int				m_advance;		// spacing to next glyph
+		MU				m_advance;		// spacing to next glyph
 		int				m_kerningIndex;	// index into kerning table (BitmapFont) or glyph_index (FreeTypeFont)
 	};
 
 	typedef Glyph*	Glyph_p;
 
 	class Font;
-	typedef	StrongPtr<Font>	Font_p;
+	typedef	StrongPtr<Font>		Font_p;
 	typedef	WeakPtr<Font>		Font_wp;
 
 	//____ Font _____________________________________________________________
@@ -112,14 +112,14 @@ namespace wg
 
 		virtual bool			setSize( MU size ) = 0;		    ///@brief Set the font size for subsequent calls.
 		virtual MU				size() = 0;
-		virtual int				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
+		virtual MU				kerning( Glyph_p pLeftGlyph, Glyph_p pRightGlyph ) = 0;
 		virtual Glyph_p			getGlyph( uint16_t chr ) = 0;
 
-		virtual int				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
-		virtual int				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
-		virtual int				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
-		virtual int				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
-		virtual int				maxDescend() = 0;				///@brief Returns largets depth from baseline of a character for current size.
+		virtual MU				lineGap() = 0;					///@brief Returns distance between two lines of this font and current size.
+		virtual MU				whitespaceAdvance() = 0;		///@brief Returns width of a whitespace for current size.
+		virtual MU				maxAdvance() = 0;				///@brief Returns largets occupied width of a character for current size.
+		virtual MU				maxAscend() = 0;				///@brief Returns largets height from baseline of a character for current size.
+		virtual MU				maxDescend() = 0;				///@brief Returns largets depth from baseline of a character for current size.
 
 		//.____ Misc ___________________________________________________________
 

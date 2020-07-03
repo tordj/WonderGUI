@@ -79,8 +79,12 @@ namespace wg
 		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
 		void	setTintColor(Color color) override;
+		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void	clearTintGradient() override;
+
 		bool	setBlendMode(BlendMode blendMode) override;
 		bool	setBlitSource(Surface * pSource) override;
+		void	setMorphFactor(float factor) override;
 
 		bool    isCanvasReady() const;
 
@@ -110,7 +114,7 @@ namespace wg
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
 		enum Command
@@ -119,6 +123,10 @@ namespace wg
 			SetCanvas,
 //			SetClip,
 			SetBlendMode,
+			SetMorphFactor,
+			SetTintColor,
+			SetTintGradient,
+			ClearTintGradient,
 			SetBlitSource,
 			Fill,
 			FillSubPixel,				// Includes start/direction lines.
@@ -131,7 +139,11 @@ namespace wg
 
 		void	_setCanvas( GlSurface * pCanvas, int width, int height );
 		void	_setBlendMode(BlendMode mode);
+		void	_setMorphFactor(float morphFactor);
 		void	_setBlitSource(GlSurface * pSurf);
+		void	_setTintColor(Color color);
+		void	_setTintGradient(const RectI& rect, const Color colors[4]);
+		void	_clearTintGradient();
 
 		inline void	_beginDrawCommand(Command cmd);
 		inline void	_beginDrawCommandWithSource(Command cmd);
@@ -150,6 +162,9 @@ namespace wg
 
 
 		GLuint  _createGLProgram(const char * pVertexShader, const char * pFragmentShader);
+		void	_setDrawUniforms(GLuint progId, int uboBindingPoint);
+		void	_setBlitUniforms(GLuint progId, int uboBindingPoint);
+		void	_setClutBlitUniforms(GLuint progId, int uboBindingPoint);
 
 		void	_initTables();
 		float	_scaleThickness(float thickeness, float slope);
@@ -160,6 +175,9 @@ namespace wg
 
 		float	m_lineThicknessTable[17];
 
+		float	m_sRGBtoLinearTable[256];
+		float	m_linearToLinearTable[256];
+
 		//
 
 
@@ -168,11 +186,11 @@ namespace wg
 		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_segmentsTintTexMapSize = 16;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
 		int				m_cmdBeginVertexOfs;						// Saved for CmdFinalizer
-		int				m_cmdBlitProgram;							// Blit program to be used by CmdFinalizer. Determined by surface type.
 
 		GLuint			m_framebufferId;
 		int				m_nSegments;								// Number of segments for current segment command.
@@ -188,47 +206,69 @@ namespace wg
 
 		// Device programs
 
-		GLuint  m_fillProg;
-		GLuint  m_aaFillProg;
-		GLuint  m_blitProg;
-		GLint	m_blitProgTexSizeLoc;
+		GLuint  m_fillProg[2];									// [RGB/A_8 dest]
+		GLuint  m_fillGradientProg[2];							// [RGB/A_8 dest]
 
-		GLuint  m_alphaBlitProg;
-		GLint	m_alphaBlitProgTexSizeLoc;
+		GLuint  m_aaFillProg[2];								// [RGB/A_8 dest]
+		GLuint  m_aaFillGradientProg[2];						// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitNearestProg;
-		GLint	m_clutBlitNearestProgTexSizeLoc;
+		GLuint  m_blitProg[2];									// [RGB/A_8 dest]
+		GLuint  m_blitGradientProg[2];							// [RGB/A_8 dest]
 
-		GLuint  m_clutBlitInterpolateProg;
-		GLint	m_clutBlitInterpolateProgTexSizeLoc;
+		GLuint  m_alphaBlitProg[2];								// [RGB/A_8 dest]
+		GLuint  m_alphaBlitGradientProg[2];						// [RGB/A_8 dest]
 
-		GLuint  m_plotProg;
-		GLuint  m_lineFromToProg;
+		GLuint  m_clutBlitNearestProg[2];						// [RGB/A_8 dest]
+		GLuint  m_clutBlitNearestGradientProg[2];				// [RGB/A_8 dest]
 
-		GLuint	m_segmentsProg[c_maxSegments];
+		GLuint  m_clutBlitInterpolateProg[2];					// [RGB/A_8 dest]
+		GLuint  m_clutBlitInterpolateGradientProg[2];			// [RGB/A_8 dest]
 
+		GLuint  m_plotProg[2];									// [RGB/A_8 dest]
+		GLuint  m_lineFromToProg[2];							// [RGB/A_8 dest]
 
+		GLuint	m_segmentsProg[c_maxSegments][2][2];			// [nb segments][base tint gradient][RGB/A_8 dest]
+
+		GLuint	m_blitProgMatrix[PixelFormat_size][2][2][2];	// [source format][interpolation][tintgradient][RGB/A_8 dest]
 
 		//
 
 		struct canvasUBO			// Uniform buffer object for canvas information.
-		{
-			GLfloat	dimX;
-			GLfloat	dimY;
-			int		yOfs;
-			int		yMul;
-		};
+		{							// DO NOT CHANGE ORDER OF MEMBERS!!!
+			GLfloat	canvasDimX;
+			GLfloat	canvasDimY;
+			int		canvasYOfs;
+			int		canvasYMul;
 
+			GLfloat flatTint[4];
+
+			RectI	tintRect;
+
+			GLfloat	topLeftTint[4];
+			GLfloat	topRightTint[4];
+			GLfloat	bottomRightTint[4];
+			GLfloat	bottomLeftTint[4];
+
+			SizeI	textureSize;
+		};
 
 		GLuint	m_canvasUBOId;
 		canvasUBO	m_canvasUBOBuffer;
 
 		//
 
+		struct tintUBO
+		{
+		};
+
+		GLuint	m_tintUBOId;
+		canvasUBO	m_tintUBOBuffer;
+
+		//
+
 		struct Vertex
 		{
 			CoordI	coord;
-			Color	color;
 			int		extrasOfs;						// Offset into extras buffer.
 			CoordF	uv;
 		};
@@ -240,6 +280,7 @@ namespace wg
 		int		m_extrasOfs;						// Write offset in m_extrasBufferData
 		int		m_commandOfs;						// Write offset in m_commandBuffer
 		int		m_surfaceOfs;						// Write offset in m_surfaceBuffer
+		int		m_segmentsTintTexOfs;				// Write offset in m_segmentsTintTexMap
 		int		m_clipWriteOfs;						// Write offset in m_clipListBuffer
 		int		m_clipCurrOfs;						// Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
 
@@ -251,6 +292,8 @@ namespace wg
 		GLuint	m_extrasBufferId;
 		GLfloat m_extrasBufferData[c_extrasBufferSize];								// Space to store additional primitive data for shaders
 
+		GLuint 		m_segmentsTintTexId;													// GL texture handle.
+		uint16_t	m_segmentsTintTexMap[c_segmentsTintTexMapSize][c_maxSegments * 4 * 4];	// Horizontally aligned blocks of 2x2 pixels each, one for each segment color.
 
 		int		m_commandBuffer[c_commandBufferSize];								// Queue of commands to execute when flushing buffer
 
@@ -258,16 +301,20 @@ namespace wg
 
 		RectI	m_clipListBuffer[c_clipListBufferSize];
 
+		// Active state data
+
 		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to consfuse with m_pCanvas which might not be active yet.
+		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
-
-
+		bool		m_bGradientActive = false;										
+		BlendMode	m_activeBlendMode = BlendMode::Blend;
+		bool		m_bActiveCanvasIsA8 = false;
 		// GL states saved between BeginRender() and EndRender().
 
 		GLboolean	m_glDepthTest;
 		GLboolean   m_glScissorTest;
 		GLboolean	m_glBlendEnabled;
+		GLboolean	m_glSRGBEnabled;
 		GLint		m_glBlendSrc;
 		GLint		m_glBlendDst;
 		GLint		m_glViewport[4];
@@ -287,24 +334,41 @@ namespace wg
 
 		static const char fillVertexShader[];
 		static const char fillFragmentShader[];
+		static const char fillFragmentShader_A8[];
 		static const char blitVertexShader[];
 		static const char blitFragmentShader[];
+		static const char blitFragmentShader_A8[];
 		static const char plotVertexShader[];
 		static const char plotFragmentShader[];
+		static const char plotFragmentShader_A8[];
 		static const char lineFromToVertexShader[];
 		static const char lineFromToFragmentShader[];
+		static const char lineFromToFragmentShader_A8[];
 		static const char aaFillVertexShader[];
 		static const char aaFillFragmentShader[];
+		static const char aaFillFragmentShader_A8[];
 
-		static const char * segmentVertexShaders[c_maxSegments];			// One entry for each number of edges
-		static const char * segmentFragmentShaders[c_maxSegments];		// One entry for each number of edges
+		static const char segmentsVertexShader[];
+		static const char segmentsVertexShaderGradient[];
+		static const char segmentsFragmentShader[];
+		static const char segmentsFragmentShader_A8[];
 
 		static const char alphaBlitFragmentShader[];
+		static const char alphaBlitFragmentShader_A8[];
 
 		static const char clutBlitNearestVertexShader[];
 		static const char clutBlitNearestFragmentShader[];
+		static const char clutBlitNearestFragmentShader_A8[];
 		static const char clutBlitInterpolateVertexShader[];
 		static const char clutBlitInterpolateFragmentShader[];
+		static const char clutBlitInterpolateFragmentShader_A8[];
+
+		static const char fillGradientVertexShader[];
+		static const char aaFillGradientVertexShader[];
+		static const char blitGradientVertexShader[];
+		static const char clutBlitNearestGradientVertexShader[];
+		static const char clutBlitInterpolateGradientVertexShader[];
+
 
 		//
 

@@ -12,10 +12,25 @@
 		170F7CB122007F6D00B70B56 /* sdl_wglib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */; };
 		1797BB1423D9F10900CDB5F2 /* libwg_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB32200829800B70B56 /* libwg_software.a */; settings = {ATTRIBUTES = (Required, ); }; };
 		1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 170F7CB52200829800B70B56 /* libwondergui.a */; };
-		17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316D23A0E33A006F2ED3 /* SDL2.framework */; };
 		17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17BB316F23A0E379006F2ED3 /* SDL2_image.framework */; };
+		17E2217024AF3D5C003F83FE /* SDL2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 17E2216F24AF3D5C003F83FE /* SDL2.framework */; };
+		17E2217124AF3D5C003F83FE /* SDL2.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 17E2216F24AF3D5C003F83FE /* SDL2.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		B3B75A50242A7AB100036988 /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = B3B75A4F242A7A8F00036988 /* libfreetype.a */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		17E2217224AF3D5D003F83FE /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				17E2217124AF3D5C003F83FE /* SDL2.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		170F7A54220073C300B70B56 /* bench.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = bench.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -26,8 +41,9 @@
 		170F7CB022007F6D00B70B56 /* sdl_wglib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = sdl_wglib.cpp; path = ../extras/sdl_wglib.cpp; sourceTree = "<group>"; };
 		170F7CB32200829800B70B56 /* libwg_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwg_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		170F7CB52200829800B70B56 /* libwondergui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libwondergui.a; sourceTree = BUILT_PRODUCTS_DIR; };
-		17BB316D23A0E33A006F2ED3 /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		17BB316F23A0E379006F2ED3 /* SDL2_image.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2_image.framework; path = ../../../../../Library/Frameworks/SDL2_image.framework; sourceTree = "<group>"; };
+		17E2216E24AF3D48003F83FE /* Library */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Library; path = ../../../../../Library; sourceTree = "<group>"; };
+		17E2216F24AF3D5C003F83FE /* SDL2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL2.framework; path = ../../../../../Library/Frameworks/SDL2.framework; sourceTree = "<group>"; };
 		B3B75A4F242A7A8F00036988 /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../usr/local/Cellar/freetype/2.10.1/lib/libfreetype.a; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -36,11 +52,11 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17E2217024AF3D5C003F83FE /* SDL2.framework in Frameworks */,
 				1797BB1423D9F10900CDB5F2 /* libwg_software.a in Frameworks */,
 				1797BB1523D9F10900CDB5F2 /* libwondergui.a in Frameworks */,
 				B3B75A50242A7AB100036988 /* libfreetype.a in Frameworks */,
 				17BB317023A0E379006F2ED3 /* SDL2_image.framework in Frameworks */,
-				17BB316E23A0E33B006F2ED3 /* SDL2.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -79,9 +95,10 @@
 		170F7CB22200829800B70B56 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				17E2216F24AF3D5C003F83FE /* SDL2.framework */,
+				17E2216E24AF3D48003F83FE /* Library */,
 				B3B75A4F242A7A8F00036988 /* libfreetype.a */,
 				17BB316F23A0E379006F2ED3 /* SDL2_image.framework */,
-				17BB316D23A0E33A006F2ED3 /* SDL2.framework */,
 				170F7CB32200829800B70B56 /* libwg_software.a */,
 				170F7CB52200829800B70B56 /* libwondergui.a */,
 			);
@@ -98,6 +115,7 @@
 				170F7A50220073C300B70B56 /* Sources */,
 				170F7A51220073C300B70B56 /* Frameworks */,
 				170F7A52220073C300B70B56 /* Resources */,
+				17E2217224AF3D5D003F83FE /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -281,12 +299,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../SDL2/",
-					"$(SRCROOT)/../../SDL2_image/",
-					"$(USER_LIBRARY_DIR)/SDL2_image",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				HEADER_SEARCH_PATHS = (
 					../Framework,
 					../Framework/wg_soft,
@@ -294,10 +307,15 @@
 					../Framework/opengl,
 					../Framework/base,
 					../Framework/skins,
+					../Framework/skins/meter,
+					../Framework/skins/misc,
+					../Framework/skins/state,
+					../Framework/skins/static,
 					../Framework/components,
 					../Framework/gfxdevices/opengl,
 					../Framework/gfxdevices/software,
 					../Framework/fonts/freetype,
+					/Library/Frameworks,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -306,7 +324,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/freetype/2.10.1/lib,
+					/usr/local/Cellar/freetype/2.10.2/lib,
 				);
 				OTHER_LDFLAGS = (
 					"-framework",
@@ -327,12 +345,7 @@
 				CODE_SIGN_IDENTITY = "";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				FRAMEWORK_SEARCH_PATHS = (
-					"$(SRCROOT)/../../SDL2/",
-					"$(SRCROOT)/../../SDL2_image/",
-					"$(USER_LIBRARY_DIR)/SDL2_image",
-					"$(LOCAL_LIBRARY_DIR)/Frameworks",
-				);
+				FRAMEWORK_SEARCH_PATHS = "$(LOCAL_LIBRARY_DIR)/Frameworks";
 				HEADER_SEARCH_PATHS = (
 					../Framework,
 					../Framework/wg_soft,
@@ -340,10 +353,15 @@
 					../Framework/opengl,
 					../Framework/base,
 					../Framework/skins,
+					../Framework/skins/meter,
+					../Framework/skins/misc,
+					../Framework/skins/state,
+					../Framework/skins/static,
 					../Framework/components,
 					../Framework/gfxdevices/opengl,
 					../Framework/gfxdevices/software,
 					../Framework/fonts/freetype,
+					/Library/Frameworks,
 				);
 				INFOPLIST_FILE = bench/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -352,7 +370,7 @@
 				);
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
-					/usr/local/Cellar/freetype/2.10.1/lib,
+					/usr/local/Cellar/freetype/2.10.2/lib,
 				);
 				OTHER_LDFLAGS = (
 					"-framework",

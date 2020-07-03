@@ -105,12 +105,11 @@ private:
             wg::Size    preferredSize() const override;
 
             wg::Size    sizeForContent(const wg::Size& contentSize) const override;
-            wg::Border  contentPadding() const override;
+            wg::Border  contentPadding(wg::State state) const override;
             wg::Size    contentPaddingSize() const override;
             wg::Coord   contentOfs(wg::State state) const override;
             wg::Rect    contentRect(const wg::Rect& canvas, wg::State state) const override;
 
-            bool    isOpaque() const override;
             bool    isOpaque(wg::State state) const override;
             bool    isOpaque(const wg::Rect& rect, const wg::Size& canvasSize, wg::State state) const override;
 
@@ -119,7 +118,6 @@ private:
             bool    markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction = 1.f ) const override;
             void    render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction = 1.f) const override;
 
-            bool    ignoresFraction() const override;
             wg::Rect    fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const override;
 
 
