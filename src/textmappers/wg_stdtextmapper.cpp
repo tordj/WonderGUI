@@ -569,11 +569,15 @@ namespace wg
 		{
 			if( pChar->styleHandle() != hStyle )
 			{
-				Color newColor = _baseStyle(pText)->combBgColor( _state(pText) );
+				State state = _state(pText);
+
+				Color newColor;
 
 				TextStyle_p p = pChar->stylePtr();
-				if( p )
-					newColor = Color::blend( newColor, p->combBgColor(_state(pText)), p->bgColorBlendMode(_state(pText)) );
+				if( p && p->isBgColorDefined(state) )
+					newColor = p->bgColor(state);
+				else
+					newColor = _baseStyle(pText)->bgColor(state);
 
 				if( newColor != color )
 				{
