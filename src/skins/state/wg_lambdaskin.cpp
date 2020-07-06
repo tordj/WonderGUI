@@ -137,7 +137,7 @@ namespace wg
 
 	//____ isStateIdentical() _________________________________________________
 
-	bool LambdaSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool LambdaSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		if (!StateSkin::isStateIdentical(state, comparedTo))
 			return false;
@@ -149,7 +149,7 @@ namespace wg
 
 	//____ markTest() ________________________________________________________
 
-	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (m_markTestFunc)
 			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
@@ -159,7 +159,7 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction) const
+	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		if (m_renderFunc)
 			m_renderFunc(pDevice, canvas, state);

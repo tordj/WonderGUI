@@ -82,6 +82,7 @@ bool splitPanelTest(CStandardSlot_p pSlot);
 bool designLayerTest(CStandardSlot_p pSlot);
 bool pianoKeyboardTest(CStandardSlot_p pSlot);
 bool sliderTest(CStandardSlot_p pSlot);
+bool rangeSliderTest(CStandardSlot_p pSlot);
 bool pieKnobTest(CStandardSlot_p pSlot);
 bool spinKnobTest(CStandardSlot_p pSlot);
 bool animKnobTest(CStandardSlot_p pSlot);
@@ -94,7 +95,7 @@ bool selectBoxTest(CStandardSlot_p pSlot);
 
 void nisBlendTest();
 void commonAncestorTest();
-
+void textStyleTest();
 
 //____ main() _________________________________________________________________
 
@@ -323,6 +324,7 @@ int main(int argc, char** argv)
 
 //	nisBlendTest();
 	commonAncestorTest();
+	textStyleTest();
 
 //	FreeTypeFont::init(SoftSurfaceFactory::create());
 
@@ -588,6 +590,7 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
+	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
@@ -595,7 +598,7 @@ int main(int argc, char** argv)
 //	doubleSkinTest(&pRoot->slot);
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
-	selectBoxTest(&pRoot->slot);
+//	selectBoxTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2198,6 +2201,46 @@ bool sliderTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ rangeSliderTest() ____________________________________________________
+
+bool rangeSliderTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	pHandleSkin->setContentPadding(10);
+
+	auto pSliderX = RangeSlider::create();
+	{
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0, 10, 0, 10), BorderI(), true);
+
+		pSliderX->setAxis(Axis::X);
+		pSliderX->setSkin(pBgSkin);
+		pSliderX->setBeginHandleSkin(pHandleSkin);
+		pSliderX->setEndHandleSkin(pHandleSkin);
+		pSliderX->setPreferredSlideLength(100);
+	}
+
+	auto pSliderY = RangeSlider::create();
+	{
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+
+		pSliderY->setAxis(Axis::Y);
+		pSliderY->setSkin(pBgSkin);
+		pSliderY->setBeginHandleSkin(pHandleSkin);
+		pSliderY->setEndHandleSkin(pHandleSkin);
+		pSliderY->setPreferredSlideLength(100);
+	}
+
+	pBaseLayer->slots.pushBackMovable(pSliderY, Coord(10, 10));
+	pBaseLayer->slots.pushBackMovable(pSliderX, Coord(40, 10));
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
+
 //____ canvasStackTest() ____________________________________________________
 
 bool canvasStackTest(CStandardSlot_p pSlot)
@@ -2478,5 +2521,33 @@ void commonAncestorTest()
 
 	assert(pMe->commonAncestor(pUnrelated) == nullptr);
 	assert(pMe->commonAncestor(pUnrelatedsChild) == nullptr);
+
+}
+
+void textStyleTest()
+{
+	auto pBase = TextStyle::create();
+	auto pAdded = TextStyle::create();
+
+	assert(pBase->bgColor(StateEnum::Selected) == Color::Transparent);
+	assert(pBase->color(StateEnum::Hovered) == Color::Black);
+
+	pBase->setColor(Color::Red, StateEnum::Hovered);
+	assert(pBase->color(StateEnum::Normal) == Color::Black);
+	assert(pBase->color(StateEnum::Hovered) == Color::Red);
+	assert(pBase->color(StateEnum::Pressed) == Color::Red);
+	assert(pBase->color(StateEnum::SelectedHoveredFocused) == Color::Red);
+	assert(pBase->color(StateEnum::SelectedFocused) == Color::Black);
+
+	pBase->setSize(16, StateEnum::Hovered);
+	pAdded->setSize(15);
+
+	TextAttr attr;
+	
+	pBase->exportAttr(StateEnum::Hovered, &attr);
+	assert(attr.size == 16);
+
+	pAdded->exportAttr(StateEnum::Hovered, &attr);
+	assert(attr.size == 15);
 
 }

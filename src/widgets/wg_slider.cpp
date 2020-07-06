@@ -363,7 +363,7 @@ namespace wg
 			handleGeo.y = contentGeo.y + contentGeo.h - handleGeo.h - (contentGeo.h - handleGeo.h) * m_value;
 		}
 
-		return handleGeo;
+		return handleGeo.aligned();
 	}
 
 

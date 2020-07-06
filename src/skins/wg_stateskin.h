@@ -58,7 +58,7 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
 	protected:
 		void _refreshUnsetStates();

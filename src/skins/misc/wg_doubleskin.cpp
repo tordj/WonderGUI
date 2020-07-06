@@ -224,54 +224,55 @@ namespace wg
 
 	//____ isStateIdentical() _________________________________________________
 
-	bool DoubleSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool DoubleSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		return (m_pBackSkin->isStateIdentical(state, comparedTo, fraction) && m_pFrontSkin->isStateIdentical(state, comparedTo, fraction));
+		return (m_pBackSkin->isStateIdentical(state, comparedTo, fraction, fraction2) && m_pFrontSkin->isStateIdentical(state, comparedTo, fraction, fraction2));
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool DoubleSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool DoubleSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_pBackSkin->markTest(ofs, canvas, state, opacityTreshold, fraction))
+		if (m_pBackSkin->markTest(ofs, canvas, state, opacityTreshold, fraction,fraction2))
 			return true;
 
 		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		return canvas2.contains(ofs) && m_pFrontSkin->markTest(ofs, canvas2, state, opacityTreshold, fraction);
+		return canvas2.contains(ofs) && m_pFrontSkin->markTest(ofs, canvas2, state, opacityTreshold, fraction,fraction2);
 	}
 
 	//____ render() ___________________________________________________________
 
-	void DoubleSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void DoubleSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		Rect canvas = _canvas;
 
-		m_pBackSkin->render(pDevice, canvas, state, fraction);
+		m_pBackSkin->render(pDevice, canvas, state, fraction,fraction2);
 		if (m_bSkinInSkin)
 			canvas = m_pBackSkin->contentRect(canvas, state);
 
-		m_pFrontSkin->render(pDevice, canvas, state, fraction);
+		m_pFrontSkin->render(pDevice, canvas, state, fraction,fraction2);
 	}
 
 	//____ fractionChangeRect() _______________________________________________
 
-	Rect DoubleSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const
+	Rect DoubleSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, 
+										float oldFraction2, float newFraction2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		if (m_bIgnoresFraction)
 			return Rect();
 
-		Rect change1 = m_pBackSkin->fractionChangeRect(canvas, state, oldFraction, newFraction);
+		Rect change1 = m_pBackSkin->fractionChangeRect(canvas, state, oldFraction, newFraction, oldFraction2, newFraction2);
 
 		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		Rect change2 = m_pFrontSkin->fractionChangeRect(canvas2, state, oldFraction, newFraction);
+		Rect change2 = m_pFrontSkin->fractionChangeRect(canvas2, state, oldFraction, newFraction, oldFraction2, newFraction2);
 
 		if (change1.isEmpty() && change2.isEmpty())
 			return Rect();

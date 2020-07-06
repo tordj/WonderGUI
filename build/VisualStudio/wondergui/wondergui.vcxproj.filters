@@ -533,6 +533,9 @@
     <ClInclude Include="..\..\..\src\skins\state\wg_lambdaskin.h">
       <Filter>skins\state</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\wg_rangeslider.h">
+      <Filter>widgets</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -927,6 +930,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\state\wg_lambdaskin.cpp">
       <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\wg_rangeslider.cpp">
+      <Filter>widgets</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

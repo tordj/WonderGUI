@@ -228,6 +228,7 @@
     <ClInclude Include="..\..\..\src\widgets\wg_lineeditor.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_pianokeyboard.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_popupopener.h" />
+    <ClInclude Include="..\..\..\src\widgets\wg_rangeslider.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_rulerlabels.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_scrollbar.h" />
     <ClInclude Include="..\..\..\src\widgets\wg_selectbox.h" />
@@ -362,6 +363,7 @@
     <ClCompile Include="..\..\..\src\widgets\wg_lineeditor.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_pianokeyboard.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_popupopener.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\wg_rangeslider.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_rulerlabels.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_scrollbar.cpp" />
     <ClCompile Include="..\..\..\src\widgets\wg_selectbox.cpp" />
