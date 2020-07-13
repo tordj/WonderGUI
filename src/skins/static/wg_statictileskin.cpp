@@ -20,7 +20,7 @@
 
 =========================================================================*/
 
-#include <wg_staticblockskin.h>
+#include <wg_statictileskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_surface.h>
 #include <wg_geo.h>
@@ -29,62 +29,57 @@
 namespace wg
 {
 
-	const TypeInfo StaticBlockSkin::TYPEINFO = { "StaticBlockSkin", &Skin::TYPEINFO };
+	const TypeInfo StaticTileSkin::TYPEINFO = { "StaticTileSkin", &Skin::TYPEINFO };
 
 	using namespace Util;
 
 	//____ create() _______________________________________________________________
 
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const BorderI& frame)
+	StaticTileSkin_p StaticTileSkin::create(Surface* pSurface)
 	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface,pSurface->size(),frame));
-	}
-
-	StaticBlockSkin_p StaticBlockSkin::create(Surface* pSurface, const RectI& block, const BorderI& frame)
-	{
-		return StaticBlockSkin_p(new StaticBlockSkin(pSurface, block, frame));
+		return StaticTileSkin_p(new StaticTileSkin(pSurface));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame)
+	StaticTileSkin::StaticTileSkin(Surface* pSurface)
 	{
 		m_pSurface = pSurface;
-		m_block = block;
-		m_frame = frame;
 		m_bOpaque = m_pSurface->isOpaque();
 	}
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& StaticBlockSkin::typeInfo(void) const
+	const TypeInfo& StaticTileSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ preferredSize() ______________________________________________________________
 
-	Size StaticBlockSkin::preferredSize() const
+	Size StaticTileSkin::preferredSize() const
 	{
-		return sizeForContent(m_block.size());
+		return m_pSurface ? m_pSurface->size() : Size();
 	}
 
 	//____ render() ______________________________________________________________
 
-	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		if (!m_pSurface)
 			return;
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);
+		pDevice->scaleTile(canvas.px(),MU::scale());
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
+		return true;  //TODO: Implement!
+
+//		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
 	}
 
 

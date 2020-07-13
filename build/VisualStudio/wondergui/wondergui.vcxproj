@@ -187,9 +187,11 @@
     <ClInclude Include="..\..\..\src\skins\state\wg_colorskin.h" />
     <ClInclude Include="..\..\..\src\skins\state\wg_lambdaskin.h" />
     <ClInclude Include="..\..\..\src\skins\state\wg_multiblockskin.h" />
+    <ClInclude Include="..\..\..\src\skins\state\wg_tileskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticblockskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_stateskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_stdtextmapper.h" />
@@ -323,9 +325,11 @@
     <ClCompile Include="..\..\..\src\skins\state\wg_colorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\state\wg_lambdaskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\state\wg_multiblockskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\state\wg_tileskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticblockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticcolorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_stateskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp" />
     <ClCompile Include="..\..\..\src\textmappers\wg_stdtextmapper.cpp" />
