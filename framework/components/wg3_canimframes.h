@@ -35,20 +35,35 @@ namespace wg
 	{
 		friend class CAnimFrames;
 	public:
-		AnimFrame(CoordI source, int duration) : m_timestamp(0), m_duration(duration), m_source(source) {}
+		AnimFrame(CoordI source, int duration, GfxFlip flip = GfxFlip::Normal) : m_timestamp(0), m_duration(duration), m_source(source), m_flip(flip) {}
 
-		int		timestamp() const { return m_timestamp; }
 		int		duration() const { return m_duration; }
+		GfxFlip	flip() const { return m_flip; }
 		CoordI	source() const { return m_source; }
+		int		timestamp() const { return m_timestamp; }
 
 	protected:
+		CoordI	m_source;		// Points
 		int		m_timestamp;	// Millisec
 		int		m_duration;		// Millisec
-		CoordI	m_source;		// Points
+		GfxFlip	m_flip;			
+
 	};
 
 
 	//____ CAnimFrames _____________________________________________________
+	/**
+		@brief Vector of frames for a bitmap-based animation.
+
+		The CAnimFrames component contains a vector of rectangular bitmap
+		areas, all of the same size, used as frames in an animation.
+
+		All frames must be from the same Surface. Each frame
+		has an individual duration (set in milliseconds) so the frame rate
+		can vary throughout the animation. Frames can overlap each other and
+		each frame can also be flipped or rotated in 90 degrees increments, which
+		can be used to cut down on the amount of graphics needed for certain animations.
+	*/
 
 	class CAnimFrames : public CDynamicVector<AnimFrame>
 	{
@@ -77,7 +92,7 @@ namespace wg
 		void			setFrameSize(SizeI pointSize);
 		SizeI			frameSize() const { return m_frameSize; }
 
-		inline int		duration() const { return m_duration; }
+		inline int		duration() const;
 		const AnimFrame * find(int timestamp) const;
 
 		//.____ Internal ______________________________________________________
@@ -97,6 +112,21 @@ namespace wg
 		SizeI		m_frameSize;
 		Surface_p	m_pSurface;
 	};
+
+	//____ duration() _________________________________________________________
+	/**
+		@brief Return the duration for the entire animation.
+
+		Return the duration for the entire animation, measured in milliseconds.
+
+		@return Duration of the animation.
+	*/
+
+	inline int CAnimFrames::duration() const 
+	{ 
+		return m_duration; 
+	}
+
 
 
 } //namespace wg

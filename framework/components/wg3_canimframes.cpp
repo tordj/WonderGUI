@@ -55,7 +55,19 @@ namespace wg
 	}
 
 	//____ find() _____________________________________________________________
+	/**
+		@brief Find frame to display for specific timestamp
 
+		This method returns a pointer to the frame to display for the given timestamp.
+
+		Negative values will return the first frame and values beyond the last frame
+		will return the last frame.
+
+		@timestamp Timestamp in milliseconds.
+
+		@return Pointer to the frame for the timestamp or nullptr if component contains
+				no frames.
+	*/
 	const AnimFrame* CAnimFrames::find(int timestamp) const
 	{
 		if (m_entries.empty())
