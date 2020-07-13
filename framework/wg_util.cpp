@@ -7,6 +7,7 @@
 #include <wg_panel.h>
 #include <wg_gfxanim.h>
 #include <wg_pen.h>
+#include <assert.h>
 
 
 bool WgUtil::AdjustScaledArea(const WgBlock& block, WgRect& area)
