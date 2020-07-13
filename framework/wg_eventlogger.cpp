@@ -455,7 +455,23 @@ void WgEventLogger::OnEvent( const WgEvent::Event * _pEvent )
 			break;
 		}
 
-				/*
+		case WG_EVENT_KNOB_TURN:
+		{
+			id = "KnobTurn";
+			const WgEvent::KnobTurn* pEvent = static_cast<const WgEvent::KnobTurn*>(_pEvent);
+			sprintf(params, "pos=%d fraction=%f", pEvent->Pos(), pEvent->Fraction());
+			break;
+		}
+
+		case WG_EVENT_RANGE_CHANGED:
+		{
+			id = "RangeChanged";
+			const WgEvent::RangeChanged* pEvent = static_cast<const WgEvent::RangeChanged*>(_pEvent);
+			sprintf(params, "begin=%f end=%f", pEvent->Begin(), pEvent->End());
+			break;
+		}
+
+		/*
 		case WG_EVENT_MENUITEM_SELECT:
 		{
 			id = "MenuitemSelect";

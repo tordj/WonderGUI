@@ -253,6 +253,13 @@
     <ClInclude Include="framework\wg_volumemeter.h" />
     <ClInclude Include="framework\wg_zoomoutcapsule.h" />
     <ClInclude Include="framework\wondergui.h" />
+    <ClInclude Include="framework\wg_rangeslider.h" />
+    <ClInclude Include="framework\skins\state\wg3_tileskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\static\wg3_statictileskin.h">
+      <Filter>Skins\static</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -496,5 +503,12 @@
     <ClCompile Include="framework\wg_widgetholder.cpp" />
     <ClCompile Include="framework\wg_volumemeter.cpp" />
     <ClCompile Include="framework\wg_zoomoutcapsule.cpp" />
+    <ClCompile Include="framework\wg_rangeslider.cpp" />
+    <ClCompile Include="framework\skins\state\wg3_tileskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\static\wg3_statictileskin.cpp">
+      <Filter>Skins\static</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

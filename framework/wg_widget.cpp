@@ -675,34 +675,34 @@ Wg_Interface_TextHolder* WgWidget::TempGetText()
 
 //____ _renderSkin() ____________________________________________________________
 
-void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale, float value )
+void WgWidget::_renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale, float value1, float value2 )
 {
 	int pixelQuarters = (scale * 4) / 4096;
 
 	int globalPixelQuarters = wg::MU::qpixPerPoint();
 	if( pixelQuarters == globalPixelQuarters )
-		pSkin->render( pDevice, wg::Rect::fromPX(rect), state );
+		pSkin->render( pDevice, wg::Rect::fromPX(rect), state, value1, value2 );
 	else
 	{
 		WgBase::_setQuartersPerPoint(pixelQuarters);
-		pSkin->render( pDevice, wg::Rect::fromPX(rect), state );
+		pSkin->render( pDevice, wg::Rect::fromPX(rect), state, value1, value2 );
 		WgBase::_setQuartersPerPoint(globalPixelQuarters);
 	}
 }
 
 //____ _markTestSkin() ______________________________________________________________
 
-bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale) const
+bool WgWidget::_markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale, float value1, float value2) const
 {
 	int pixelQuarters = (scale * 4) / 4096;
 
 	int globalPixelQuarters = wg::MU::qpixPerPoint();
 	if( pixelQuarters == globalPixelQuarters )
-		return pSkin->markTest( wg::Coord::fromPX(ofs), wg::Rect::fromPX(canvas), state, opacityTreshold );
+		return pSkin->markTest( wg::Coord::fromPX(ofs), wg::Rect::fromPX(canvas), state, opacityTreshold, value1, value2 );
 	else
 	{
 		WgBase::_setQuartersPerPoint(pixelQuarters);
-		bool ret = pSkin->markTest( wg::Coord::fromPX(ofs), wg::Rect::fromPX(canvas), state, opacityTreshold );
+		bool ret = pSkin->markTest( wg::Coord::fromPX(ofs), wg::Rect::fromPX(canvas), state, opacityTreshold, value1, value2 );
 		WgBase::_setQuartersPerPoint(globalPixelQuarters);
 		return ret;
 	}

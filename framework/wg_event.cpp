@@ -1097,6 +1097,25 @@ namespace WgEvent
 		return m_pos;
 	}
 
+	//____ WgRangeSlider events __________________________________________________
+
+	RangeChanged::RangeChanged(WgWidget* pWidget, float begin, float end)
+	{
+		m_type = WG_EVENT_RANGE_CHANGED;
+		m_pWidget = pWidget;
+		m_begin = begin;
+		m_end = end;
+	}
+
+	float RangeChanged::Begin() const
+	{
+		return m_begin;
+	}
+
+	float RangeChanged::End() const
+	{
+		return m_end;
+	}
 
 
 	//____ MousePosition _______________________________________________________

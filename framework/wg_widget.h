@@ -257,8 +257,8 @@ protected:
 
 	// Skin wrapping methods
 
-	void            _renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale, float value = 1.f );
-	bool            _markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale ) const;
+	void            _renderSkin( wg::Skin * pSkin, wg::GfxDevice * pDevice, wg::State state, const wg::RectI& rect, int scale, float value = 1.f, float value2 = -1.f );
+	bool            _markTestSkin( wg::Skin * pSkin, const wg::CoordI& ofs, const wg::RectI& canvas, wg::State state, int opacityTreshold, int scale, float value = 1.f, float value2 = -1.f) const;
 	wg::SizeI       _skinMinSize( wg::Skin * pSkin, int scale ) const;
 	wg::SizeI       _skinPreferredSize( wg::Skin * pSkin, int scale ) const;
 	wg::SizeI       _skinSizeForContent( wg::Skin * pSkin, const wg::SizeI contentSize, int scale) const;

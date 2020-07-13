@@ -177,6 +177,9 @@
 #include <wg3_colorskin.h>
 #include <wg3_blockskin.h>
 #include <wg3_multiblockskin.h>
+#include <wg3_fillmeterskin.h>
+
+#include <wg_rangeslider.h>
 
 
 #endif //WONDERGUI_DOT_H

@@ -134,9 +134,11 @@
     <ClInclude Include="framework\skins\state\wg3_colorskin.h" />
     <ClInclude Include="framework\skins\state\wg3_lambdaskin.h" />
     <ClInclude Include="framework\skins\state\wg3_multiblockskin.h" />
+    <ClInclude Include="framework\skins\state\wg3_tileskin.h" />
     <ClInclude Include="framework\skins\static\wg3_staticblockskin.h" />
     <ClInclude Include="framework\skins\static\wg3_staticboxskin.h" />
     <ClInclude Include="framework\skins\static\wg3_staticcolorskin.h" />
+    <ClInclude Include="framework\skins\static\wg3_statictileskin.h" />
     <ClInclude Include="framework\skins\wg3_skin.h" />
     <ClInclude Include="framework\skins\wg3_stateskin.h" />
     <ClInclude Include="framework\wg_anim.h" />
@@ -186,6 +188,7 @@
     <ClInclude Include="framework\wg_popuplayer.h" />
     <ClInclude Include="framework\wg_popupopener.h" />
     <ClInclude Include="framework\wg_radiobutton.h" />
+    <ClInclude Include="framework\wg_rangeslider.h" />
     <ClInclude Include="framework\wg_rootpanel.h" />
     <ClInclude Include="framework\wg_rulerlabels.h" />
     <ClInclude Include="framework\wg_scaleimage.h" />
@@ -259,9 +262,11 @@
     <ClCompile Include="framework\skins\state\wg3_colorskin.cpp" />
     <ClCompile Include="framework\skins\state\wg3_lambdaskin.cpp" />
     <ClCompile Include="framework\skins\state\wg3_multiblockskin.cpp" />
+    <ClCompile Include="framework\skins\state\wg3_tileskin.cpp" />
     <ClCompile Include="framework\skins\static\wg3_staticblockskin.cpp" />
     <ClCompile Include="framework\skins\static\wg3_staticboxskin.cpp" />
     <ClCompile Include="framework\skins\static\wg3_staticcolorskin.cpp" />
+    <ClCompile Include="framework\skins\static\wg3_statictileskin.cpp" />
     <ClCompile Include="framework\skins\wg3_skin.cpp" />
     <ClCompile Include="framework\skins\wg3_stateskin.cpp" />
     <ClCompile Include="framework\wg_anim.cpp" />
@@ -307,6 +312,7 @@
     <ClCompile Include="framework\wg_popuplayer.cpp" />
     <ClCompile Include="framework\wg_popupopener.cpp" />
     <ClCompile Include="framework\wg_radiobutton.cpp" />
+    <ClCompile Include="framework\wg_rangeslider.cpp" />
     <ClCompile Include="framework\wg_rootpanel.cpp" />
     <ClCompile Include="framework\wg_rulerlabels.cpp" />
     <ClCompile Include="framework\wg_scaleimage.cpp" />

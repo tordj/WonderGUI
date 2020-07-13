@@ -716,6 +716,21 @@ namespace WgEvent
 		int		m_pos;
 	};
 
+	//____ WgRangeSlider events __________________________________________________
+
+	class RangeChanged : public Event
+	{
+	public:
+		RangeChanged(WgWidget* pWidget, float begin, float end);
+		float	Begin() const;
+		float	End() const;
+	private:
+		float	m_begin;
+		float	m_end;
+	};
+
+
+
 	//____ Text events ________________________________________
 
 	class TextEvent : public Event

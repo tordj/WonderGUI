@@ -70,6 +70,8 @@ void flexHookGrowthTest( WgRootPanel * pRoot );
 void packPanelPaddingTest( WgRootPanel * pRoot );
 void packPanelTextWrapTest( WgRootPanel * pRoot );
 bool pianoKeyboardTest(WgRootPanel * pRoot);
+bool rangeSliderTest(WgRootPanel* pRoot);
+
 
 //#define USE_OPEN_GL
 
@@ -300,6 +302,7 @@ int main ( int argc, char** argv )
 
 //    cursorInViewTest( pRoot );
 //	pianoKeyboardTest(pRoot);
+	rangeSliderTest(pRoot);
 
 
 	// Setup debug overlays
@@ -1091,6 +1094,46 @@ bool pianoKeyboardTest(WgRootPanel * pRoot)
 	return true;
 }
 
+
+//____ rangeSliderTest() ____________________________________________________
+
+bool rangeSliderTest(WgRootPanel* pRoot)
+{
+	auto pBaseLayer = new WgFlexPanel();
+	pBaseLayer->SetSkin(wg::ColorSkin::create(wg::Color::PapayaWhip));
+
+	auto pHandleSkin = wg::ColorSkin::create({ {wg::StateEnum::Normal,0x7F808080},{wg::StateEnum::Hovered,0x7FA0A0A0},{wg::StateEnum::Pressed,0xFFF0F0F0} });
+	pHandleSkin->setContentPadding(10);
+
+	auto pSliderX = new WgRangeSlider();
+	{
+		auto pBgSkin = wg::FillMeterSkin::create(wg::Direction::Right, wg::Color::Green, wg::Color::Green, wg::Color::Black, wg::BorderI(0, 10, 0, 10), wg::BorderI(), true);
+
+		pSliderX->SetAxis(wg::Axis::X);
+		pSliderX->SetSkin(pBgSkin);
+		pSliderX->SetBeginHandleSkin(pHandleSkin);
+		pSliderX->SetEndHandleSkin(pHandleSkin);
+		pSliderX->SetPreferredSlideLength(100);
+	}
+
+	auto pSliderY = new WgRangeSlider();
+	{
+		auto pBgSkin = wg::FillMeterSkin::create(wg::Direction::Up, wg::Color::Green, wg::Color::Green, wg::Color::Black, wg::BorderI(10, 0, 10, 0), wg::BorderI(), false);
+
+		pSliderY->SetAxis(wg::Axis::Y);
+		pSliderY->SetSkin(pBgSkin);
+		pSliderY->SetBeginHandleSkin(pHandleSkin);
+		pSliderY->SetEndHandleSkin(pHandleSkin);
+		pSliderY->SetPreferredSlideLength(100);
+	}
+
+	pBaseLayer->AddChild(pSliderY, WgCoord(10, 10));
+	pBaseLayer->AddChild(pSliderX, WgCoord(40, 10));
+
+
+	pRoot->SetChild(pBaseLayer);
+	return true;
+}
 
 
 //____ setupGUI() ______________________________________________________________
