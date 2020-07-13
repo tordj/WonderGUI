@@ -67,13 +67,18 @@ namespace wg
 		virtual bool	isOpaque( State state ) const;
 		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 
-		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f ) const;
+		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const;
 
-		virtual bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f ) const = 0;
-		virtual void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f ) const = 0;
+		virtual bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+									float fraction = 1.f, float fraction2 = -1.f ) const = 0;
+
+		virtual void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+								float fraction = 1.f, float fraction2 = -1.f ) const = 0;
 
 		inline bool		ignoresFraction() const { return m_bIgnoresFraction; }
-		virtual Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+
+		virtual Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
+											float oldFraction2 = -1.f, float newFraction2 = -1.f ) const;
 
 		inline bool		isContentShifting() { return m_bContentShifting; }
 

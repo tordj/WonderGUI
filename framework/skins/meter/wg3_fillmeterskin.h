@@ -75,18 +75,23 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
-		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
+		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
+		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f, float fraction2 = -1.f) const override;
+
+		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
+									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
 
 	private:
 		FillMeterSkin();
-		FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside);
+		FillMeterSkin(	Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, 
+						const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const Rect& canvas, float fraction) const;
+		Rect		_barFillArea(const Rect& canvas, float fraction, float fraction2) const;
 		void		_updateOpacity();
+		Rect		_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
 
 		Direction	m_direction;

@@ -32,8 +32,6 @@ namespace WgUtil
 
 	bool		MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect area, int opacityTreshold );
 
-	bool		PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat );
-
 	WgCoord 	OrigoToOfs( WgOrigo origo, WgSize base );
 	WgRect		OrigoToRect( WgOrigo origo, WgSize base, WgSize rect );
 
@@ -67,35 +65,7 @@ namespace WgUtil
 		return s_indexToStateTable[index];
 	}
 
-	uint32_t lineWidth( void * pNode, const wg::TextAttr& attr, wg::State mode, const wg::Char * pString );
-
-
-	// A simple checksum algorithm that just performs a long division
-	// with a standard CRC polynomial. Quicker and less complex than a standard
-	// CRC on modern hardware with FPU but probably gives a checksum of
-	// somewhat lower quality.
-
-	class Checksum8
-	{
-	public:
-		Checksum8() { remainder = 0; }
-
-		inline void Add8( Uint8 x ) { remainder = ((remainder << 8) + x)%dividend;}
-		inline void Add16( Uint16 x ) { remainder = ((remainder << 16) + x)%dividend;}
-		inline void Add32( Uint32 x ) { remainder = (Uint32)(((((Uint64)remainder) << 32) + x)%dividend);}
-
-		void Add( const void * pData, Uint32 nBytes );
-
-		Uint8 GetChecksum() { return (remainder & 0xFF); }
-		inline void Clear() { remainder = 0; }
-
-	private:
-		Uint32	remainder;
-		const static int dividend = 0x107;
-	};
-
-
-	Uint32 DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest );
+	uint32_t lineWidth( void * pNode, const wg::TextAttr& attr, wg::State mode, const wg::Char * pString, int scale );
 
 	template<typename T>
 	inline std::string ToString(T value)

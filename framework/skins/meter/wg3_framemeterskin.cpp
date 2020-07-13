@@ -82,7 +82,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		auto pFrame = _fractionToFrame(fraction);
 		if (pFrame)
@@ -94,7 +94,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -108,7 +108,8 @@ namespace wg
 
 	//____ fractionChangeRect() ______________________________________
 
-	Rect FrameMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
+	Rect FrameMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction,
+											float oldFraction2, float newFraction2) const
 	{
 		auto pOldFrame = _fractionToFrame(oldFraction);
 		auto pNewFrame = _fractionToFrame(newFraction);

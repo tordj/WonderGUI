@@ -551,7 +551,7 @@ bool WgText::setColor( const WgColor color )
 
 bool WgText::setColor( const WgColor color, wg::State state )
 {
-	if( m_pBaseStyle && m_pBaseStyle->colorBlendMode(state) != wg::BlendMode::Undefined && m_pBaseStyle->color(state) == color )
+	if( m_pBaseStyle && m_pBaseStyle->color(state) == color )
 		return false;
 
 	m_pBaseStyle = _cloneBaseStyle();

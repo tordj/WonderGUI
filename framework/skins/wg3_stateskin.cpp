@@ -92,7 +92,7 @@ namespace wg
 
 	//____ isStateIdentical() ______________________________________________________
 
-	bool StateSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool StateSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
 	}

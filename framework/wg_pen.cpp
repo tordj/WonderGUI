@@ -85,7 +85,7 @@ void WgPen::_onAttrChanged()
 	}
 
 	m_size = m_wantedSize * m_scale >> WG_SCALE_BINALS;
-	m_pFont->setSize(m_size);
+	m_pFont->setSize(wg::MU::fromPX(m_size));
 }
 
 //____ SetAttributes() ________________________________________________________

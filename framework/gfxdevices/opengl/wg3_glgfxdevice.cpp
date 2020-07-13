@@ -2304,22 +2304,21 @@ namespace wg
 			// The patch seems to be work generally fine under OSX, but breaks resizing
 			// of viewport on Windows (OSD and PresetManager).
 
-#ifdef        PATCH_LOGIC_PRO_X_VIEWPORT_BUG
+#ifdef PATCH_LOGIC_PRO_X_VIEWPORT_BUG
             if( abs(m_glViewport[2] - width) > 10 && abs(m_glViewport[3] - height) > 10 )
             {
-              glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
-              glScissor(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
+				glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
+				glScissor(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
             }
             else
             {
-              glViewport(0, 0, width, height);
-              glScissor(0, 0, width, height);
+				glViewport(0, 0, width, height);
+				glScissor(0, 0, width, height);
             }
 #else
             glViewport(0, 0, width, height);
             glScissor(0, 0, width, height);
 #endif
-
 		}
 
 		int canvasYstart	= pCanvas ? 0 : height;

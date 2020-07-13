@@ -191,11 +191,11 @@ namespace wg
 
 	//____ isStateIdentical() _________________________________________________
 
-	bool BakeSkin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool BakeSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		for (auto& pSkin : skins)
 		{
-			if (pSkin && !pSkin->isStateIdentical(state, comparedTo, fraction))
+			if (pSkin && !pSkin->isStateIdentical(state, comparedTo, fraction,fraction2))
 				return false;
 		}
 
@@ -204,11 +204,11 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool BakeSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool BakeSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		for (auto& pSkin : skins)
 		{
-			if (pSkin && pSkin->markTest(ofs,canvas,state,opacityTreshold,fraction))
+			if (pSkin && pSkin->markTest(ofs,canvas,state,opacityTreshold,fraction,fraction2))
 				return true;
 		}
 		return false;
@@ -216,7 +216,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void BakeSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float fraction) const
+	void BakeSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
 	{
 		// Sanity checking
 
@@ -265,7 +265,7 @@ namespace wg
 		for (auto it = skins.end(); it-- != skins.begin(); ) 
 		{
 			if ( (*it) != nullptr)
-				(*it)->render(pDevice, bakeCanvas, state, fraction);
+				(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
 		}
 
 		// Reset canvas and cliplist
@@ -281,7 +281,8 @@ namespace wg
 
 	//____ fractionChangeRect() _______________________________________________
 
-	Rect BakeSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const
+	Rect BakeSkin::fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
+										float oldFraction2, float newFraction2 ) const
 	{
 		if (m_bIgnoresFraction)
 			return Rect();
@@ -292,7 +293,7 @@ namespace wg
 		{
 			if (pSkin && !pSkin->ignoresFraction() )
 			{
-				Rect r2 = pSkin->fractionChangeRect(canvas, state, oldFraction, newFraction);
+				Rect r2 = pSkin->fractionChangeRect(canvas, state, oldFraction, newFraction, oldFraction2, newFraction2);
 				if (!r2.isEmpty())
 				{
 					if (r.isEmpty())

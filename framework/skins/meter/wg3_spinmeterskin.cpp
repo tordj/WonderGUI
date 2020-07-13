@@ -74,7 +74,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		float	zoom = m_zoom * Base::activeContext()->scale();
 
@@ -125,7 +125,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -140,7 +140,8 @@ namespace wg
 
 	//____ fractionChangeRect() ______________________________________
 
-	Rect SpinMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
+	Rect SpinMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
+											float oldFraction2, float newFraction2) const
 	{
 		return _canvas;
 	}

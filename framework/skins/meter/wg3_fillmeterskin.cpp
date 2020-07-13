@@ -154,54 +154,57 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
-		RectI barCanvas = _barFillArea(_canvas,fraction).px();
-		RectI backCanvas = (_canvas - m_barPadding).px();
+		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * fraction));
 
-		switch (m_direction)
+		RectI barCanvas = _barFillArea(_canvas,fraction, fraction2).px();
+		pDevice->fill(barCanvas, barColor);
+
+		if (m_backColor.a != 0)
 		{
-			case Direction::Up:
-			{
-				backCanvas.h = barCanvas.y - backCanvas.y;
-				break;
-			}
+			RectI backCanvas = (_canvas - m_barPadding).px();
+			RectI backCanvas1 = backCanvas;
+			RectI backCanvas2 = backCanvas;
 
+			switch (m_direction)
+			{
+			case Direction::Up:
 			case Direction::Down:
 			{
-				backCanvas.h = backCanvas.bottom() - barCanvas.bottom();
-				backCanvas.y = barCanvas.bottom();
+				backCanvas1.h = barCanvas.y - backCanvas.y;
+	
+				backCanvas2.h = backCanvas.bottom() - barCanvas.bottom();
+				backCanvas2.y = barCanvas.bottom();
 				break;
 			}
 
 			case Direction::Left:
-			{
-				backCanvas.w = barCanvas.x - backCanvas.x;
-				break;
-			}
-
 			case Direction::Right:
 			{
-				backCanvas.w = backCanvas.right() - barCanvas.right();
-				backCanvas.x = barCanvas.right();
+				backCanvas1.w = barCanvas.x - backCanvas.x;
+
+				backCanvas2.w = backCanvas.right() - barCanvas.right();
+				backCanvas2.x = barCanvas.right();
 				break;
 			}
+			}
+
+			pDevice->fill(backCanvas1, m_backColor);
+			pDevice->fill(backCanvas2, m_backColor);
 		}
 
-		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * fraction));
 
-		pDevice->fill(barCanvas, barColor);
-		pDevice->fill(backCanvas, m_backColor);
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, fraction).contains(ofs) )
+		if( _barFillArea(canvas, fraction, fraction2).contains(ofs) )
 			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*fraction)).a) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
@@ -209,103 +212,138 @@ namespace wg
 
 	//____ fractionChangeRect() ______________________________________
 
-	Rect FillMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
+	Rect FillMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
+											float oldFraction2, float newFraction2 ) const
 	{
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
 		Rect canvas = _canvas - m_contentPadding;
 
+		Rect result1;
+		Rect result2;
+
+		if(oldFraction != newFraction)
+			result1 = _fractionChangeRect(canvas, state, oldFraction, newFraction);
+
+		if(oldFraction2 != newFraction2)
+			result2 = _fractionChangeRect(canvas, state, oldFraction2, newFraction2);
+
+		if (result2.isEmpty())
+			return result1;
+
+		if (result1.isEmpty())
+			return result2;
+
+		return Rect::getUnion(result1,result2);
+	}
+
+	Rect FillMeterSkin::_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
+	{
 		switch (m_direction)
 		{
-			case Direction::Up:
-			{
-				MU ofs1 = canvas.h - canvas.h * oldFraction;
-				MU ofs2 = canvas.h - canvas.h * newFraction;
-				if (ofs1 > ofs2)
-					std::swap(ofs1, ofs2);
+		case Direction::Up:
+		{
+			MU ofs1 = canvas.h - canvas.h * oldFraction;
+			MU ofs2 = canvas.h - canvas.h * newFraction;
+			if (ofs1 > ofs2)
+				std::swap(ofs1, ofs2);
 
-				return Rect( canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1 ).aligned();
-			}
+			return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
+		}
 
-			case Direction::Down:
-			{
-				MU ofs1 = canvas.h * oldFraction;
-				MU ofs2 = canvas.h * newFraction;
-				if (ofs1 > ofs2)
-					std::swap(ofs1, ofs2);
+		case Direction::Down:
+		{
+			MU ofs1 = canvas.h * oldFraction;
+			MU ofs2 = canvas.h * newFraction;
+			if (ofs1 > ofs2)
+				std::swap(ofs1, ofs2);
 
-				return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
-			}
+			return Rect(canvas.x, canvas.y + ofs1, canvas.w, ofs2 - ofs1).aligned();
+		}
 
-			case Direction::Left:
-			{
-				MU ofs1 = canvas.w - canvas.w * oldFraction;
-				MU ofs2 = canvas.w - canvas.w * newFraction;
-				if (ofs1 > ofs2)
-					std::swap(ofs1, ofs2);
+		case Direction::Left:
+		{
+			MU ofs1 = canvas.w - canvas.w * oldFraction;
+			MU ofs2 = canvas.w - canvas.w * newFraction;
+			if (ofs1 > ofs2)
+				std::swap(ofs1, ofs2);
 
-				return Rect( canvas.x +  ofs1, canvas.y, ofs2 - ofs1, canvas.h ).aligned();
-			}
+			return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
+		}
 
-			case Direction::Right:
-			{
-				MU ofs1 = canvas.w * oldFraction;
-				MU ofs2 = canvas.w * newFraction;
-				if (ofs1 > ofs2)
-					std::swap(ofs1, ofs2);
+		case Direction::Right:
+		{
+			MU ofs1 = canvas.w * oldFraction;
+			MU ofs2 = canvas.w * newFraction;
+			if (ofs1 > ofs2)
+				std::swap(ofs1, ofs2);
 
-				return Rect( canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h ).aligned();
-			}
+			return Rect(canvas.x + ofs1, canvas.y, ofs2 - ofs1, canvas.h).aligned();
+		}
 
-			default:
-				return Rect();			// Just to avoid compiler warnings.
+		default:
+			return Rect();			// Just to avoid compiler warnings.
 		}
 	}
 
+
+
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float fraction) const
+	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float fraction, float fraction2) const
 	{
 		Rect canvas = (_canvas - m_barPadding);
+
+		float beg = fraction2 >= 0.f ? fraction : 0.f;
+		float end = fraction2 >= 0.f ? fraction2 : fraction;
+
+		bool bStartOutside = m_bBarStartOutside && beg == 0.f;
 
 		switch (m_direction)
 		{
 			case Direction::Up:
 			{
-				MU ofs = canvas.h - canvas.h * fraction;
+				MU ofs = canvas.h - canvas.h * end;
+				MU len = canvas.h * (end-beg);
 
-				if (m_bBarStartOutside)
+				if (bStartOutside)
 					return { canvas.x, canvas.y + ofs, canvas.w, _canvas.h - ofs };
 				else
-					return { canvas.x, canvas.y + ofs, canvas.w, canvas.h - ofs };
+					return { canvas.x, canvas.y + ofs, canvas.w, len };
 			}
 
 			case Direction::Down:
 			{
-				MU ofs = canvas.h * fraction;
-				if (m_bBarStartOutside)
-					return { canvas.x, _canvas.y, canvas.w, ofs + (canvas.y - _canvas.y) };
+				MU ofs = canvas.h * beg;
+				MU len = canvas.h * (end - beg);
+
+				if (bStartOutside)
+					return { canvas.x, _canvas.y, canvas.w, len + (canvas.y - _canvas.y) };
 				else
-					return { canvas.x, canvas.y, canvas.w, ofs };
+					return { canvas.x, canvas.y + ofs, canvas.w, len };
 			}
 
 			case Direction::Left:
 			{
-				MU ofs = canvas.w - canvas.w * fraction;
-				if (m_bBarStartOutside)
+				MU ofs = canvas.w - canvas.w * end;
+				MU len = canvas.w * (end - beg);
+
+				if (bStartOutside)
 					return { canvas.x + ofs, canvas.y, _canvas.w - ofs, canvas.h };
 				else
-					return { canvas.x + ofs, canvas.y, canvas.w - ofs, canvas.h };
+					return { canvas.x + ofs, canvas.y, len, canvas.h };
 			}
 
 			case Direction::Right:
 			{
-				MU ofs = canvas.w * fraction;
-				if (m_bBarStartOutside)
-					return { _canvas.x, canvas.y, ofs + (canvas.x - _canvas.x), canvas.h };
+				MU ofs = canvas.w * beg;
+				MU len = canvas.w * (end - beg);
+
+				if (bStartOutside)
+					return { _canvas.x, canvas.y, len + (canvas.x - _canvas.x), canvas.h };
 				else
-					return { canvas.x, canvas.y, ofs, canvas.h };
+					return { canvas.x + ofs, canvas.y, len, canvas.h };
 			}
 
 			default:

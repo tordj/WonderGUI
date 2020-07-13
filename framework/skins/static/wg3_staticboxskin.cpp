@@ -86,7 +86,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticBoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
+	bool StaticBoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -106,7 +106,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void StaticBoxSkin::render(GfxDevice* pDevice, const Rect& _canvas, State state, float fraction) const
+	void StaticBoxSkin::render(GfxDevice* pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 

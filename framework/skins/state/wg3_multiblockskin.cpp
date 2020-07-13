@@ -252,7 +252,7 @@ namespace wg
 
 	//____ isStateIdentical() _____________________________________________________
 
-	bool MultiBlockStateSkin::isStateIdentical(State state, State comparedTo, float fraction ) const
+	bool MultiBlockStateSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
@@ -269,7 +269,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void MultiBlockStateSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction ) const
+	void MultiBlockStateSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
@@ -348,7 +348,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool MultiBlockStateSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction ) const
+	bool MultiBlockStateSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;

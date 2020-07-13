@@ -113,12 +113,13 @@ private:
             bool    isOpaque(wg::State state) const override;
             bool    isOpaque(const wg::Rect& rect, const wg::Size& canvasSize, wg::State state) const override;
 
-            bool    isStateIdentical(wg::State state, wg::State comparedTo, float fraction = 1.f) const override;
+            bool    isStateIdentical(wg::State state, wg::State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-            bool    markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction = 1.f ) const override;
-            void    render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction = 1.f) const override;
+            bool    markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction = 1.f, float fraction2 = -1.f ) const override;
+            void    render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction = 1.f, float fraction2 = -1.f) const override;
 
-            wg::Rect    fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const override;
+            wg::Rect    fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction,
+                                           float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
 
 
         protected:

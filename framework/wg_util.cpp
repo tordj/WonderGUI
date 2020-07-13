@@ -174,99 +174,6 @@ bool WgUtil::MarkTestBlock( WgCoord ofs, const WgBlock& block, WgRect canvas, in
 }
 
 
-//____ PixelTypeToFormat() _____________________________________________________
-
-bool WgUtil::PixelTypeToFormat( WgPixelType type, WgPixelFormat& wFormat )
-{
-	switch( type )
-	{
-		case WgPixelType::BGR_8:
-			wFormat.format = type;
-			wFormat.bits = 24;
-
-			wFormat.R_bits = 8;
-			wFormat.G_bits = 8;
-			wFormat.B_bits = 8;
-			wFormat.A_bits = 0;
-
-#if WG_IS_LITTLE_ENDIAN
-			wFormat.R_mask = 0xFF0000;
-			wFormat.G_mask = 0xFF00;
-			wFormat.B_mask = 0xFF;
-			wFormat.A_mask = 0x0;
-
-			wFormat.R_shift = 16;
-			wFormat.G_shift = 8;
-			wFormat.B_shift = 0;
-			wFormat.A_shift = 0;
-#else
-			wFormat.R_mask = 0xFF;
-			wFormat.G_mask = 0xFF00;
-			wFormat.B_mask = 0xFF0000;
-			wFormat.A_mask = 0x0;
-
-			wFormat.R_shift = 0;
-			wFormat.G_shift = 8;
-			wFormat.B_shift = 16;
-			wFormat.A_shift = 0;
-#endif
-
-			return true;
-
-		case WgPixelType::BGRA_8:
-			wFormat.format = type;
-			wFormat.bits = 32;
-
-			wFormat.R_bits = 8;
-			wFormat.G_bits = 8;
-			wFormat.B_bits = 8;
-			wFormat.A_bits = 8;
-
-#if WG_IS_LITTLE_ENDIAN
-			wFormat.A_mask = 0xFF000000;
-			wFormat.R_mask = 0xFF0000;
-			wFormat.G_mask = 0xFF00;
-			wFormat.B_mask = 0xFF;
-
-			wFormat.A_shift = 24;
-			wFormat.R_shift = 16;
-			wFormat.G_shift = 8;
-			wFormat.B_shift = 0;
-#else
-			wFormat.A_mask = 0xFF;
-			wFormat.R_mask = 0xFF00;
-			wFormat.G_mask = 0xFF0000;
-			wFormat.B_mask = 0xFF000000;
-
-			wFormat.A_shift = 0;
-			wFormat.R_shift = 8;
-			wFormat.G_shift = 16;
-			wFormat.B_shift = 24;
-#endif
-
-			return true;
-
-		default:
-			wFormat.format = WgPixelType::Unknown;
-			wFormat.bits = 0;
-
-			wFormat.R_mask = 0;
-			wFormat.G_mask = 0;
-			wFormat.B_mask = 0;
-			wFormat.A_mask = 0;
-
-			wFormat.R_shift = 0;
-			wFormat.G_shift = 0;
-			wFormat.B_shift = 0;
-			wFormat.A_shift = 0;
-
-			wFormat.R_bits = 0;
-			wFormat.G_bits = 0;
-			wFormat.B_bits = 0;
-			wFormat.A_bits = 0;
-			return false;
-	}
-}
 
 //____ SizeFromPolicy() __________________________________________________________
 
@@ -286,101 +193,6 @@ int WgUtil::SizeFromPolicy( int defaultSize, int specifiedSize, WgSizePolicy pol
 				return specifiedSize;
 	}
 	return defaultSize;
-}
-
-//____ Checksum8::Add() ________________________________________________________
-
-void WgUtil::Checksum8::Add( const void * pData, Uint32 nBytes )
-{
-	Uint32 x = remainder;
-
-	for( Uint32 i = 0 ; i < nBytes ; i++ )
-		x = ((x << 8) + ((Uint8*)pData)[i])%dividend;
-
-	remainder = x;
-}
-
-
-
-//____ DecodeBase64() _________________________________________________________
-
-Uint32 WgUtil::DecodeBase64( const char * pSrc, Uint32 nIn, char * pDest )
-{
-	const static unsigned char conv[256] =
-					{	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0x3E, 0xFF, 0xFF, 0xFF, 0x3F,
-						0x34, 0x35, 0x36, 0x37, 0x38, 0x39, 0x3A, 0x3B,
-						0x3C, 0x3D, 0xFF, 0xFF, 0xFF, 0x00, 0xFF, 0xFF,
-						0xFF, 0x00, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06,
-						0x07, 0x08, 0x09, 0x0A, 0x0B, 0x0C, 0x0D, 0x0E,
-						0x0F, 0x10, 0x11, 0x12, 0x13, 0x14, 0x15, 0x16,
-						0x17, 0x18, 0x19, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0x1A, 0x1B, 0x1C, 0x1D, 0x1E, 0x1F, 0x20,
-						0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27, 0x28,
-						0x29, 0x2A, 0x2B, 0x2C, 0x2D, 0x2E, 0x2F, 0x30,
-						0x31, 0x32, 0x33, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
-						0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF };
-
-	if( nIn == 0 || (nIn%4)!= 0 )
-		return 0;
-
-
-
-	for( unsigned int i = 0 ; i < nIn/4 ; i++ )
-	{
-		Uint32	acc = 0;
-
-		unsigned char x = conv[(Uint8) * pSrc++];
-		if( x == 0xFF )	return 0;
-		acc += x;
-		acc <<= 6;
-
-		x = conv[(Uint8) * pSrc++];
-		if( x == 0xFF ) return 0;
-		acc += x;
-		acc <<= 6;
-
-		x = conv[(Uint8) * pSrc++];
-		if( x == 0xFF ) return 0;
-		acc += x;
-		acc <<= 6;
-
-		x = conv[(Uint8) * pSrc++];
-		if( x == 0xFF ) return 0;
-		acc += x;
-
-		* pDest++ = (char) (acc >> 16);
-		* pDest++ = (char) (acc >> 8);
-		* pDest++ = (char) acc;
-	}
-
-	Uint32 nChar = (nIn/4) * 3;
-
-	if( pSrc[-2] == '=' )
-		nChar-=2;
-	else if( pSrc[-1] == '=' )
-		nChar--;
-
-	return nChar;
 }
 
 //____ OrigoToOfs() ________________________________________________________
@@ -515,11 +327,12 @@ float WgUtil::ParametricBlendInOut(float t)
 
 //____ lineWidth() ____________________________________________________________________
 
-uint32_t WgUtil::lineWidth( void * pNode, const wg::TextAttr& attr, wg::State state, const wg::Char * pString )
+uint32_t WgUtil::lineWidth( void * pNode, const wg::TextAttr& attr, wg::State state, const wg::Char * pString, int scale )
 {
 	wg::TextAttr    attr2;
 
 	WgPen pen;
+    pen.SetScale(scale);
 	Uint16 hStyle = 0xFFFF;
 
 	while( !pString->isEndOfLine() )

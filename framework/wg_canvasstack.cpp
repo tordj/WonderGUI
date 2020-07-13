@@ -401,17 +401,17 @@ bool WgCanvasStack::CustomSkin::isOpaque(const wg::Rect& rect, const wg::Size& c
     return m_pSkin->isOpaque(rect,canvasSize,state);
 }
 
-bool WgCanvasStack::CustomSkin::isStateIdentical(wg::State state, wg::State comparedTo, float fraction) const
+bool WgCanvasStack::CustomSkin::isStateIdentical(wg::State state, wg::State comparedTo, float fraction, float fraction2 ) const
 {
-    return m_pSkin->isStateIdentical(state,comparedTo,fraction);
+    return m_pSkin->isStateIdentical(state,comparedTo,fraction,fraction2);
 }
 
-bool WgCanvasStack::CustomSkin::markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction) const
+bool WgCanvasStack::CustomSkin::markTest(const wg::Coord& ofs, const wg::Rect& canvas, wg::State state, int opacityTreshold, float fraction, float fraction2 ) const
 {
-    return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction);
+    return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction2);
 }
 
-void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction) const
+void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& canvas, wg::State state, float fraction, float fraction2) const
 {
     WgCanvasStack * pStack = m_pStack.GetRealPtr() ? static_cast<WgCanvasStack*>(m_pStack.GetRealPtr()) : nullptr;
 
@@ -421,7 +421,7 @@ void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& 
         // Skin rendered from Widget not descendant to CanvasStack.
         // This is ok, we just do no redirection.
 
-        m_pSkin->render(pDevice, canvas, state, fraction);
+        m_pSkin->render(pDevice, canvas, state, fraction, fraction2);
         return;
     }
 
@@ -434,9 +434,9 @@ void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& 
     pDevice->setCanvas(oldCanvas,false);
 }
 
-wg::Rect WgCanvasStack::CustomSkin::fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction) const
+wg::Rect WgCanvasStack::CustomSkin::fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2) const
 {
-    return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction);
+    return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction,oldFraction2,newFraction2);
 }
 
 

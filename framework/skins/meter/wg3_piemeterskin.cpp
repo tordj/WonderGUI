@@ -225,7 +225,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction) const
+	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		bool	bFramed = false;
 
@@ -369,7 +369,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction) const
+	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -384,7 +384,8 @@ namespace wg
 
 	//____ fractionChangeRect() ______________________________________
 
-	Rect PieMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction) const
+	Rect PieMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
+											float oldFraction2, float newFraction2) const
 	{
 		//TODO: Implement!
 

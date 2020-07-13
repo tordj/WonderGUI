@@ -104,14 +104,14 @@ namespace wg
 
 	//____ isStateIdentical() ____________________________________________________
 
-	bool Skin::isStateIdentical(State state, State comparedTo, float fraction) const
+	bool Skin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2 ) const
 	{
 		return true;
 	}
 
 	//____ fractionChangeRect() ______________________________________
 
-	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const
+	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2 ) const
 	{
 		return Rect();
 	}

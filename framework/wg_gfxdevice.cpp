@@ -413,9 +413,9 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	if( !pStyle )
 		pStyle = wg::Base::defaultStyle();
 
-	if( selStart != selEnd && pStyle->combBgColor(state).a != 0 )
+	if( selStart != selEnd && pStyle->bgColor(state).a != 0 )
 	{
-		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, pStyle->combBgColor(state) );
+		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, pStyle->bgColor(state) );
 	}
 	else
 	{

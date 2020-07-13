@@ -57,10 +57,14 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool	markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
-		void 	render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
+		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+							float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		Rect	fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
+		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+						float fraction = 1.f, float fraction2 = -1.f) const override;
+
+		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
+									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
 
 	private:
 		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),

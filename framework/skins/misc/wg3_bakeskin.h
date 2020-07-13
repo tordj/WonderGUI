@@ -82,13 +82,16 @@ namespace wg
 		bool			isOpaque( State state ) const override;
 		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool			isStateIdentical( State state, State comparedTo, float fraction = 1.f) const override;
+		bool			isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2= 0.f) const override;
 
-		bool			markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction = 1.f) const override;
+		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
+									float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		void			render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f) const override;
+		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
+								float fraction = 1.f, float fraction2 = -1.f) const override;
 
-		Rect			fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const override;
+		Rect			fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
+											float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
 
 
 	private:
