@@ -1,79 +1,27 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <ClInclude Include="Debug.h" />
-    <ClInclude Include="framework\wg_anim.h" />
-    <ClInclude Include="framework\wg_animplayer.h" />
-    <ClInclude Include="framework\wg_base.h" />
-    <ClInclude Include="framework\wg_blockset.h" />
-    <ClInclude Include="framework\wg_button.h" />
-    <ClInclude Include="framework\wg_canvascapsule.h" />
-    <ClInclude Include="framework\wg_capsule.h" />
-    <ClInclude Include="framework\wg_chart.h" />
-    <ClInclude Include="framework\wg_checkbox.h" />
-    <ClInclude Include="framework\wg_color.h" />
-    <ClInclude Include="framework\wg_colorset.h" />
-    <ClInclude Include="framework\wg_container.h" />
-    <ClInclude Include="framework\wg_cursor.h" />
-    <ClInclude Include="framework\wg_cursorinstance.h" />
-    <ClInclude Include="framework\wg_dragndroplayer.h" />
-    <ClInclude Include="framework\wg_event.h" />
-    <ClInclude Include="framework\wg_eventfilter.h" />
-    <ClInclude Include="framework\wg_eventhandler.h" />
-    <ClInclude Include="framework\wg_eventlogger.h" />
-    <ClInclude Include="framework\wg_filler.h" />
-    <ClInclude Include="framework\wg_flexpanel.h" />
-    <ClInclude Include="framework\wg_flowpanel.h" />
-    <ClInclude Include="framework\wg_fpsdisplay.h" />
-    <ClInclude Include="framework\wg_geo.h" />
-    <ClInclude Include="framework\wg_gfxanim.h" />
-    <ClInclude Include="framework\wg_gfxdevice.h" />
-    <ClInclude Include="framework\wg_hook.h" />
-    <ClInclude Include="framework\wg_iconholder.h" />
-    <ClInclude Include="framework\wg_image.h" />
-    <ClInclude Include="framework\wg_interface_edittext.h" />
-    <ClInclude Include="framework\wg_interface_textholder.h" />
-    <ClInclude Include="framework\wg_key.h" />
-    <ClInclude Include="framework\wg_knob.h" />
-    <ClInclude Include="framework\wg_layer.h" />
-    <ClInclude Include="framework\wg_lineeditor.h" />
-    <ClInclude Include="framework\wg_modallayer.h" />
-    <ClInclude Include="framework\wg_multislider.h" />
-    <ClInclude Include="framework\wg_oscilloscope.h" />
-    <ClInclude Include="framework\wg_packpanel.h" />
-    <ClInclude Include="framework\wg_panel.h" />
-    <ClInclude Include="framework\wg_pen.h" />
-    <ClInclude Include="framework\wg_popuplayer.h" />
-    <ClInclude Include="framework\wg_popupopener.h" />
-    <ClInclude Include="framework\wg_radiobutton.h" />
-    <ClInclude Include="framework\wg_rootpanel.h" />
-    <ClInclude Include="framework\wg_rulerlabels.h" />
-    <ClInclude Include="framework\wg_scaleimage.h" />
-    <ClInclude Include="framework\wg_scrollchart.h" />
-    <ClInclude Include="framework\wg_scrollpanel.h" />
-    <ClInclude Include="framework\wg_shadercapsule.h" />
-    <ClInclude Include="framework\wg_shadowlayer.h" />
-    <ClInclude Include="framework\wg_simpleknob.h" />
-    <ClInclude Include="framework\wg_simplevolumemeter.h" />
-    <ClInclude Include="framework\wg_sizebroker.h" />
-    <ClInclude Include="framework\wg_sizecapsule.h" />
-    <ClInclude Include="framework\wg_slider.h" />
-    <ClInclude Include="framework\wg_slidertarget.h" />
-    <ClInclude Include="framework\wg_smartptr.h" />
-    <ClInclude Include="framework\wg_stackpanel.h" />
-    <ClInclude Include="framework\wg_switch.h" />
-    <ClInclude Include="framework\wg_text.h" />
-    <ClInclude Include="framework\wg_textdisplay.h" />
-    <ClInclude Include="framework\wg_types.h" />
-    <ClInclude Include="framework\wg_userdefines.h" />
-    <ClInclude Include="framework\wg_util.h" />
-    <ClInclude Include="framework\wg_valueformat.h" />
-    <ClInclude Include="framework\wg_vectorpanel.h" />
-    <ClInclude Include="framework\wg_widget.h" />
-    <ClInclude Include="framework\wg_widgetholder.h" />
-    <ClInclude Include="framework\wg_volumemeter.h" />
-    <ClInclude Include="framework\wg_zoomoutcapsule.h" />
-    <ClInclude Include="framework\wondergui.h" />
+    <ClInclude Include="framework\components\wg3_component.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\fonts\freetype\wg3_freetypefont.h">
+      <Filter>Fonts\Freetype</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\components\wg3_canimframes.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\components\wg3_cdynamicvector.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\components\wg3_cdynamicvector.impl.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\components\wg3_cstaticvector.h">
+      <Filter>Components</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\components\wg3_cstaticvector.impl.h">
+      <Filter>Components</Filter>
+    </ClInclude>
     <ClInclude Include="framework\base\wg3_base.h">
       <Filter>Base</Filter>
     </ClInclude>
@@ -104,6 +52,9 @@
     <ClInclude Include="framework\base\wg3_context.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="framework\base\wg3_dataset.h">
+      <Filter>Base</Filter>
+    </ClInclude>
     <ClInclude Include="framework\base\wg3_dummyfont.h">
       <Filter>Base</Filter>
     </ClInclude>
@@ -125,6 +76,9 @@
     <ClInclude Include="framework\base\wg3_memstack.h">
       <Filter>Base</Filter>
     </ClInclude>
+    <ClInclude Include="framework\base\wg3_mu.h">
+      <Filter>Base</Filter>
+    </ClInclude>
     <ClInclude Include="framework\base\wg3_nullgfxdevice.h">
       <Filter>Base</Filter>
     </ClInclude>
@@ -134,13 +88,7 @@
     <ClInclude Include="framework\base\wg3_patches.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="framework\base\wg3_payload.h">
-      <Filter>Base</Filter>
-    </ClInclude>
     <ClInclude Include="framework\base\wg3_pointers.h">
-      <Filter>Base</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\base\wg3_qpix.h">
       <Filter>Base</Filter>
     </ClInclude>
     <ClInclude Include="framework\base\wg3_string.h">
@@ -182,37 +130,129 @@
     <ClInclude Include="framework\base\wg3_weakptr.h">
       <Filter>Base</Filter>
     </ClInclude>
-    <ClInclude Include="framework\skins\wg3_blockskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\skins\wg3_boxskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\skins\wg3_colorskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\skins\wg3_extendedskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\skins\wg3_lambdaskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
-    <ClInclude Include="framework\skins\wg3_multiblockskin.h">
-      <Filter>Skins</Filter>
-    </ClInclude>
     <ClInclude Include="framework\skins\wg3_skin.h">
       <Filter>Skins</Filter>
     </ClInclude>
-    <ClInclude Include="framework\skins\wg3_staticcolorskin.h">
+    <ClInclude Include="framework\skins\wg3_stateskin.h">
       <Filter>Skins</Filter>
     </ClInclude>
-    <ClInclude Include="framework\components\wg3_component.h">
-      <Filter>Components</Filter>
+    <ClInclude Include="framework\skins\meter\wg3_fillmeterskin.h">
+      <Filter>Skins\meter</Filter>
     </ClInclude>
-    <ClInclude Include="framework\fonts\freetype\wg3_freetypefont.h">
-      <Filter>Fonts\Freetype</Filter>
+    <ClInclude Include="framework\skins\meter\wg3_framemeterskin.h">
+      <Filter>Skins\meter</Filter>
     </ClInclude>
+    <ClInclude Include="framework\skins\meter\wg3_piemeterskin.h">
+      <Filter>Skins\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\meter\wg3_spinmeterskin.h">
+      <Filter>Skins\meter</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\misc\wg3_bakeskin.h">
+      <Filter>Skins\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\misc\wg3_doubleskin.h">
+      <Filter>Skins\misc</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\state\wg3_blockskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\state\wg3_boxskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\state\wg3_colorskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\state\wg3_lambdaskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\state\wg3_multiblockskin.h">
+      <Filter>Skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\static\wg3_staticblockskin.h">
+      <Filter>Skins\static</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\static\wg3_staticboxskin.h">
+      <Filter>Skins\static</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\skins\static\wg3_staticcolorskin.h">
+      <Filter>Skins\static</Filter>
+    </ClInclude>
+    <ClInclude Include="framework\wg_anim.h" />
+    <ClInclude Include="framework\wg_animplayer.h" />
+    <ClInclude Include="framework\wg_base.h" />
+    <ClInclude Include="framework\wg_blockset.h" />
+    <ClInclude Include="framework\wg_button.h" />
+    <ClInclude Include="framework\wg_canvascapsule.h" />
+    <ClInclude Include="framework\wg_canvasstack.h" />
+    <ClInclude Include="framework\wg_capsule.h" />
+    <ClInclude Include="framework\wg_chart.h" />
+    <ClInclude Include="framework\wg_checkbox.h" />
+    <ClInclude Include="framework\wg_color.h" />
+    <ClInclude Include="framework\wg_colorset.h" />
+    <ClInclude Include="framework\wg_container.h" />
+    <ClInclude Include="framework\wg_cursor.h" />
+    <ClInclude Include="framework\wg_cursorinstance.h" />
+    <ClInclude Include="framework\wg_dragndroplayer.h" />
+    <ClInclude Include="framework\wg_event.h" />
+    <ClInclude Include="framework\wg_eventfilter.h" />
+    <ClInclude Include="framework\wg_eventhandler.h" />
+    <ClInclude Include="framework\wg_eventlogger.h" />
+    <ClInclude Include="framework\wg_filler.h" />
+    <ClInclude Include="framework\wg_flexpanel.h" />
+    <ClInclude Include="framework\wg_flowpanel.h" />
+    <ClInclude Include="framework\wg_fpsdisplay.h" />
+    <ClInclude Include="framework\wg_geo.h" />
+    <ClInclude Include="framework\wg_gfxanim.h" />
+    <ClInclude Include="framework\wg_gfxdevice.h" />
+    <ClInclude Include="framework\wg_hook.h" />
+    <ClInclude Include="framework\wg_iconholder.h" />
+    <ClInclude Include="framework\wg_image.h" />
+    <ClInclude Include="framework\wg_interface_edittext.h" />
+    <ClInclude Include="framework\wg_interface_textholder.h" />
+    <ClInclude Include="framework\wg_key.h" />
+    <ClInclude Include="framework\wg_knob.h" />
+    <ClInclude Include="framework\wg_layer.h" />
+    <ClInclude Include="framework\wg_lineeditor.h" />
+    <ClInclude Include="framework\wg_modallayer.h" />
+    <ClInclude Include="framework\wg_multislider.h" />
+    <ClInclude Include="framework\wg_oscilloscope.h" />
+    <ClInclude Include="framework\wg_packpanel.h" />
+    <ClInclude Include="framework\wg_panel.h" />
+    <ClInclude Include="framework\wg_patches.h" />
+    <ClInclude Include="framework\wg_pen.h" />
     <ClInclude Include="framework\wg_pianokeyboard.h" />
+    <ClInclude Include="framework\wg_popuplayer.h" />
+    <ClInclude Include="framework\wg_popupopener.h" />
+    <ClInclude Include="framework\wg_radiobutton.h" />
+    <ClInclude Include="framework\wg_rootpanel.h" />
+    <ClInclude Include="framework\wg_rulerlabels.h" />
+    <ClInclude Include="framework\wg_scaleimage.h" />
+    <ClInclude Include="framework\wg_scrollchart.h" />
+    <ClInclude Include="framework\wg_scrollpanel.h" />
+    <ClInclude Include="framework\wg_shadercapsule.h" />
+    <ClInclude Include="framework\wg_shadowlayer.h" />
+    <ClInclude Include="framework\wg_simpleknob.h" />
+    <ClInclude Include="framework\wg_simplevolumemeter.h" />
+    <ClInclude Include="framework\wg_sizebroker.h" />
+    <ClInclude Include="framework\wg_sizecapsule.h" />
+    <ClInclude Include="framework\wg_slider.h" />
+    <ClInclude Include="framework\wg_slidertarget.h" />
+    <ClInclude Include="framework\wg_smartptr.h" />
+    <ClInclude Include="framework\wg_stackpanel.h" />
+    <ClInclude Include="framework\wg_switch.h" />
+    <ClInclude Include="framework\wg_text.h" />
+    <ClInclude Include="framework\wg_textdisplay.h" />
+    <ClInclude Include="framework\wg_types.h" />
+    <ClInclude Include="framework\wg_userdefines.h" />
+    <ClInclude Include="framework\wg_util.h" />
+    <ClInclude Include="framework\wg_valueformat.h" />
+    <ClInclude Include="framework\wg_vectorpanel.h" />
+    <ClInclude Include="framework\wg_widget.h" />
+    <ClInclude Include="framework\wg_widgetholder.h" />
+    <ClInclude Include="framework\wg_volumemeter.h" />
+    <ClInclude Include="framework\wg_zoomoutcapsule.h" />
+    <ClInclude Include="framework\wondergui.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Base">
@@ -230,14 +270,171 @@
     <Filter Include="Fonts\Freetype">
       <UniqueIdentifier>{ee54b00c-a068-489f-aae5-90dbd176239e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Skins\meter">
+      <UniqueIdentifier>{a0ebef89-6170-4f66-ab38-6e6236b7e24a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Skins\misc">
+      <UniqueIdentifier>{5568c977-8e73-41d5-9266-84c1449d9ac7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Skins\static">
+      <UniqueIdentifier>{d215d204-5e1f-449f-90e6-3e48fb40b1cd}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Skins\state">
+      <UniqueIdentifier>{488bda34-94e4-41cc-8ffb-95010313d8cc}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="framework\components\wg3_component.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\fonts\freetype\wg3_freetypefont.cpp">
+      <Filter>Fonts\Freetype</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\components\wg3_canimframes.cpp">
+      <Filter>Components</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_base.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_bitmapfont.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_blob.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_chain.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_charbuffer.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_charseq.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_codepages.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_color.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_context.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_dataset.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_dummyfont.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_enumextras.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_font.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_geo.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_gfxdevice.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_mempool.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_memstack.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_mu.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_nullgfxdevice.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_object.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_patches.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_string.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_surface.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_surfacefactory.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_textlink.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_textstyle.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_textstylemanager.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_texttool.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\base\wg3_util.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\wg3_skin.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\wg3_stateskin.cpp">
+      <Filter>Skins</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\meter\wg3_fillmeterskin.cpp">
+      <Filter>Skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\meter\wg3_framemeterskin.cpp">
+      <Filter>Skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\meter\wg3_piemeterskin.cpp">
+      <Filter>Skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\meter\wg3_spinmeterskin.cpp">
+      <Filter>Skins\meter</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\misc\wg3_bakeskin.cpp">
+      <Filter>Skins\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\misc\wg3_doubleskin.cpp">
+      <Filter>Skins\misc</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\state\wg3_blockskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\state\wg3_boxskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\state\wg3_colorskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\state\wg3_lambdaskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\state\wg3_multiblockskin.cpp">
+      <Filter>Skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\static\wg3_staticblockskin.cpp">
+      <Filter>Skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\static\wg3_staticboxskin.cpp">
+      <Filter>Skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="framework\skins\static\wg3_staticcolorskin.cpp">
+      <Filter>Skins\static</Filter>
+    </ClCompile>
     <ClCompile Include="framework\wg_anim.cpp" />
     <ClCompile Include="framework\wg_animplayer.cpp" />
     <ClCompile Include="framework\wg_base.cpp" />
     <ClCompile Include="framework\wg_blockset.cpp" />
     <ClCompile Include="framework\wg_button.cpp" />
     <ClCompile Include="framework\wg_canvascapsule.cpp" />
+    <ClCompile Include="framework\wg_canvasstack.cpp" />
     <ClCompile Include="framework\wg_capsule.cpp" />
     <ClCompile Include="framework\wg_chart.cpp" />
     <ClCompile Include="framework\wg_checkbox.cpp" />
@@ -259,7 +456,6 @@
     <ClCompile Include="framework\wg_hook.cpp" />
     <ClCompile Include="framework\wg_iconholder.cpp" />
     <ClCompile Include="framework\wg_image.cpp" />
-    <ClCompile Include="framework\wg_interface_edittext.cpp" />
     <ClCompile Include="framework\wg_interface_textholder.cpp" />
     <ClCompile Include="framework\wg_knob.cpp" />
     <ClCompile Include="framework\wg_layer.cpp" />
@@ -269,7 +465,9 @@
     <ClCompile Include="framework\wg_oscilloscope.cpp" />
     <ClCompile Include="framework\wg_packpanel.cpp" />
     <ClCompile Include="framework\wg_panel.cpp" />
+    <ClCompile Include="framework\wg_patches.cpp" />
     <ClCompile Include="framework\wg_pen.cpp" />
+    <ClCompile Include="framework\wg_pianokeyboard.cpp" />
     <ClCompile Include="framework\wg_popuplayer.cpp" />
     <ClCompile Include="framework\wg_popupopener.cpp" />
     <ClCompile Include="framework\wg_radiobutton.cpp" />
@@ -298,123 +496,5 @@
     <ClCompile Include="framework\wg_widgetholder.cpp" />
     <ClCompile Include="framework\wg_volumemeter.cpp" />
     <ClCompile Include="framework\wg_zoomoutcapsule.cpp" />
-    <ClCompile Include="framework\base\wg3_base.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_bitmapfont.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_blob.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_chain.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_charbuffer.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_charseq.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_codepages.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_color.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_context.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_dummyfont.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_enumextras.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_font.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_geo.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_gfxdevice.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_mempool.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_memstack.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_nullgfxdevice.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_object.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_patches.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_payload.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_qpix.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_string.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_surface.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_surfacefactory.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_textlink.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_textstyle.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_textstylemanager.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_texttool.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\base\wg3_util.cpp">
-      <Filter>Base</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_blockskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_boxskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_colorskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_extendedskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_lambdaskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_multiblockskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_skin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\skins\wg3_staticcolorskin.cpp">
-      <Filter>Skins</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\components\wg3_component.cpp">
-      <Filter>Components</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\fonts\freetype\wg3_freetypefont.cpp">
-      <Filter>Fonts\Freetype</Filter>
-    </ClCompile>
-    <ClCompile Include="framework\wg_pianokeyboard.cpp" />
   </ItemGroup>
 </Project>
