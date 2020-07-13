@@ -55,8 +55,8 @@ public:
 
 	void    SetOversample(int oversample) { m_iOversampleX = oversample; }
 	void    SetValue( float value );
-	float   GetValue() { return m_fValue; }
-	int     GetValueIndex()
+	float   GetValue() const { return m_fValue; }
+	int     GetValueIndex() const
 	{
 		int i = (int)(m_fValue * m_iNumSteps);
 		i = i>=m_iNumSteps?m_iNumSteps-1:i;

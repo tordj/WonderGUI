@@ -155,7 +155,7 @@ bool WgPen::SetChar( Uint32 chr )
 		if( chr == ' ' && !m_bShowSpace )
 		{
 			if(m_pFont)
-				m_dummyGlyph.SetAdvance( m_pFont->whitespaceAdvance() );
+                m_dummyGlyph.SetAdvance( m_pFont->whitespaceAdvance() );
 			else
 				m_dummyGlyph.SetAdvance(0);
 			m_pGlyph = &m_dummyGlyph;
@@ -238,8 +238,8 @@ void WgPen::BlitChar() const
 
 	if( pSrc )
 	{
-		int x = m_pos.x + pSrc->bearingX;
-		int y = m_pos.y + pSrc->bearingY;
+        int x = m_pos.x + pSrc->bearingX.px();
+        int y = m_pos.y + pSrc->bearingY.px();
 
 		m_pDevice->setBlitSource(pSrc->pSurface);            //TODO: Optimize!!!!
 

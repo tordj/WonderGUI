@@ -96,6 +96,7 @@ namespace wg
 			m_color[i] = color;
 
 		m_colorSetMask = 1;
+        m_colorDefinedMask = 0xFFFFFFFF;
 		m_bStaticColor = true;
 	}
 
@@ -118,6 +119,7 @@ namespace wg
 			m_bgColor[i] = color;
 
 		m_bgColorSetMask = 1;
+        m_bgColorDefinedMask = 0xFFFFFFFF;
 		m_bStaticBgColor = true;
 	}
 
@@ -182,6 +184,7 @@ namespace wg
 			m_color[i] = Color::Black;
 
 		m_colorSetMask = 0;
+        m_colorDefinedMask = 0;
 		m_bStaticColor = true;
 	}
 
@@ -203,6 +206,7 @@ namespace wg
 			m_bgColor[i] = Color::Transparent;
 
 		m_bgColorSetMask = 0;
+        m_bgColorDefinedMask = 0;
 		m_bStaticBgColor = true;
 	}
 

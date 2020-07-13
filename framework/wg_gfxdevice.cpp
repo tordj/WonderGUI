@@ -299,9 +299,9 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 		if( pBitmap )
 		{
 			if( ellipsisChar == int(WgExtChar::Ellipsis) )
-				ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX;
+                ellipsisWidth = pBitmap->rect.w + pBitmap->bearingX.px();
 			else
-				ellipsisWidth = pEllipsis->advance()*2+pBitmap->rect.w + pBitmap->bearingX;
+                ellipsisWidth = pEllipsis->advance().px()*2+pBitmap->rect.w + pBitmap->bearingX.px();
 		}
 	}
 
@@ -347,7 +347,7 @@ void WgGfxDevice::_printEllipsisTextSpan( wg::GfxDevice * pDevice, WgPen& pen, c
 		WgCoord savedPos = pen.GetPos();
 		pen.ApplyKerning();
 		wg::Glyph_p pGlyph = pen.GetGlyph();
-		if( pen.GetPosX() +  pGlyph->advance() + ellipsisWidth > endX )
+        if( pen.GetPosX() +  pGlyph->advance().px() + ellipsisWidth > endX )
 		{
 			pen.SetPos( savedPos );
 			break;
@@ -413,9 +413,11 @@ void WgGfxDevice::_drawTextBg( wg::GfxDevice * pDevice, const WgText * pText, co
 	if( !pStyle )
 		pStyle = wg::Base::defaultStyle();
 
-	if( selStart != selEnd && pStyle->bgColor(state).a != 0 )
+    wg::Color selectionBgColor = pStyle->bgColor(state + wg::StateEnum::Selected);
+    
+	if( selStart != selEnd && selectionBgColor.a != 0 )
 	{
-		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, pStyle->bgColor(state) );
+		_drawTextSectionBg( pDevice, pText, dest, selStart, selEnd, selectionBgColor );
 	}
 	else
 	{

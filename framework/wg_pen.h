@@ -78,10 +78,10 @@ public:
 	void					SetTab( int width ) { m_tabWidth = width; }
 	bool					SetChar( Uint32 chr );
 	void					FlushChar() { m_pGlyph = &m_dummyGlyph; m_dummyGlyph.SetAdvance(0); }
-	void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pFont->kerning( m_pPrevGlyph, m_pGlyph); }
+    void					ApplyKerning() { if( m_pPrevGlyph != &m_dummyGlyph && m_pGlyph != &m_dummyGlyph ) m_pos.x += m_pFont->kerning( m_pPrevGlyph, m_pGlyph).px(); }
 
-	inline void				AdvancePos() { m_pos.x += m_pGlyph->advance(); }							///< Advances position past current character.
-	inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance(); }	///< Advances position past current character using monospace spacing.
+    inline void				AdvancePos() { m_pos.x += m_pGlyph->advance().px(); }							///< Advances position past current character.
+    inline void				AdvancePosMonospaced() { m_pos.x += m_pFont->maxAdvance().px(); }	///< Advances position past current character using monospace spacing.
 	void					AdvancePosCursor( const WgCursorInstance& instance );
 
 	inline wg::Glyph_p		GetGlyph() const { return m_pGlyph; }
@@ -97,9 +97,9 @@ public:
 	inline int				GetSize() const { return m_size; }
 	inline WgColor			GetColor() const { return m_color; }
 
-	inline int				GetLineSpacing() const { return m_pFont->maxAscend() + m_pFont->maxDescend() + m_pFont->lineGap(); }
-	inline int				GetLineHeight() const { return m_pFont->maxAscend() + m_pFont->maxDescend(); }
-	inline int				GetBaseline() const { return m_pFont->maxAscend(); }
+    inline int				GetLineSpacing() const { return m_pFont->maxAscend().px() + m_pFont->maxDescend() + m_pFont->lineGap().px(); }
+    inline int				GetLineHeight() const { return m_pFont->maxAscend().px() + m_pFont->maxDescend().px(); }
+    inline int				GetBaseline() const { return m_pFont->maxAscend().px(); }
 
 	void					BlitChar() const;
 	bool					BlitCursor( const WgCursorInstance& instance ) const;
