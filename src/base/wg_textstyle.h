@@ -97,10 +97,10 @@ namespace wg
 		inline void		clearRenderMode() { setRenderMode(BlendMode::Undefined); }
 		inline void		clearBgRenderMode() { setBgRenderMode(BlendMode::Undefined); }
 
-		inline void		clearColor();
-		inline void		clearColor(State state);
-		inline void		clearBgColor();
-		inline void		clearBgColor(State state);
+		void		    clearColor();
+		void		    clearColor(State state);
+		void		    clearBgColor();
+		void		    clearBgColor(State state);
 		inline void		clearSize() { setSize(0); }
 		inline void		clearSize(State state) { setSize(0, state); }
 		inline void		clearDecoration() { setDecoration(TextDecoration::Underline); }
