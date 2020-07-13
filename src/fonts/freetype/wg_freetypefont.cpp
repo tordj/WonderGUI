@@ -237,7 +237,9 @@ namespace wg
 
 	MU FreeTypeFont::whitespaceAdvance()
 	{
-		if( !m_whitespaceAdvance[m_size.px()].qpix )
+        int pxSize = m_size.px();
+        
+		if( !m_whitespaceAdvance[pxSize].qpix )
 		{
 			FT_Error err;
 
@@ -248,10 +250,10 @@ namespace wg
 				return 0;
 
 			// Get and return advance
-			m_whitespaceAdvance[m_size.px()] = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
+			m_whitespaceAdvance[pxSize] = MU::fromPX(int(m_ftFace->glyph->advance.x >> 6));
 		}
 
-		return m_whitespaceAdvance[m_size.px()];
+        return m_whitespaceAdvance[pxSize];
 	}
 
 	//____ lineGap() ____________________________________________________________

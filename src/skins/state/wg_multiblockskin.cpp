@@ -31,19 +31,19 @@ namespace wg
 {
 	using namespace Util;
 
-	const TypeInfo MultiBlockStateSkin::TYPEINFO = { "MultiBlockStateSkin", &StateSkin::TYPEINFO };
+	const TypeInfo MultiBlockSkin::TYPEINFO = { "MultiBlockSkin", &StateSkin::TYPEINFO };
 
 	//____ create() _______________________________________________________________
 
-	MultiBlockStateSkin_p MultiBlockStateSkin::create(SizeI blockSize, BorderI frame)
+	MultiBlockSkin_p MultiBlockSkin::create(SizeI blockSize, BorderI frame)
 	{
-		return MultiBlockStateSkin_p(new MultiBlockStateSkin(blockSize,frame));
+		return MultiBlockSkin_p(new MultiBlockSkin(blockSize,frame));
 	}
 
 
 	//____ constructor ____________________________________________________________
 
-	MultiBlockStateSkin::MultiBlockStateSkin(SizeI blockSize, BorderI frame)
+	MultiBlockSkin::MultiBlockSkin(SizeI blockSize, BorderI frame)
 	{
 		m_blockSizePoints	= blockSize;
 		m_frame				= frame;
@@ -55,14 +55,14 @@ namespace wg
 
 	//____ typeInfo() _________________________________________________________
 
-	const TypeInfo& MultiBlockStateSkin::typeInfo(void) const
+	const TypeInfo& MultiBlockSkin::typeInfo(void) const
 	{
 		return TYPEINFO;
 	}
 
 	//____ addLayer() _____________________________________________________________
 
-	int MultiBlockStateSkin::addLayer(Surface * pSurf, CoordI ofs)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI ofs)
 	{
 		// HACK!
 
@@ -93,7 +93,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockStateSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks)
 	{
 		// HACK!
 
@@ -155,7 +155,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockStateSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
+	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
 	{
 		SizeI blockPitch;
 
@@ -171,7 +171,7 @@ namespace wg
 
 	//____ setLayerTint() _________________________________________________________
 
-	bool MultiBlockStateSkin::setLayerTint(int layerIdx, Color tintColor)
+	bool MultiBlockSkin::setLayerTint(int layerIdx, Color tintColor)
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
@@ -188,7 +188,7 @@ namespace wg
 	}
 
 
-	bool MultiBlockStateSkin::setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors)
+	bool MultiBlockSkin::setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors)
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
@@ -235,7 +235,7 @@ namespace wg
 
 	//____ SetLayerBlendMode() ____________________________________________________
 
-	bool MultiBlockStateSkin::setLayerBlendMode(int layerIdx, BlendMode blendMode)
+	bool MultiBlockSkin::setLayerBlendMode(int layerIdx, BlendMode blendMode)
 	{
 		auto& layer = m_layers.at(layerIdx - 1);
 
@@ -252,7 +252,7 @@ namespace wg
 
 	//____ isStateIdentical() _____________________________________________________
 
-	bool MultiBlockStateSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
+	bool MultiBlockSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
 	{
 		int i1 = _stateToIndex(state);
 		int i2 = _stateToIndex(comparedTo);
@@ -269,7 +269,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void MultiBlockStateSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
@@ -320,7 +320,7 @@ namespace wg
 
 	//____ minSize() ______________________________________________________________
 
-	Size MultiBlockStateSkin::minSize() const
+	Size MultiBlockSkin::minSize() const
 	{
 		Size content = StateSkin::minSize();
 		Size frame = Border(m_frame).aligned();
@@ -329,7 +329,7 @@ namespace wg
 
 	//____ preferredSize() ________________________________________________________
 
-	Size MultiBlockStateSkin::preferredSize() const
+	Size MultiBlockSkin::preferredSize() const
 	{
         // Preferred size is to map each point of the surface to a pixel of the skinarea.
         
@@ -338,7 +338,7 @@ namespace wg
 
 	//____ sizeForContent() _______________________________________________________
 
-	Size MultiBlockStateSkin::sizeForContent( const Size& contentSize ) const
+	Size MultiBlockSkin::sizeForContent( const Size& contentSize ) const
 	{
 		Size sz = StateSkin::sizeForContent(contentSize);
 		Size min = Border(m_frame).aligned();
@@ -348,7 +348,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool MultiBlockStateSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
@@ -371,7 +371,7 @@ namespace wg
 
 	//____ _updateStateOpacity() __________________________________________________
 
-	void MultiBlockStateSkin::_updateStateOpacity(int stateIdx)
+	void MultiBlockSkin::_updateStateOpacity(int stateIdx)
 	{
 		bool bOpaque = false;
 

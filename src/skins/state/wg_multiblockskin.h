@@ -33,13 +33,13 @@
 namespace wg
 {
 
-	class MultiBlockStateSkin;
-	typedef	StrongPtr<MultiBlockStateSkin>	MultiBlockStateSkin_p;
-	typedef	WeakPtr<MultiBlockStateSkin>	MultiBlockStateSkin_wp;
+	class MultiBlockSkin;
+	typedef	StrongPtr<MultiBlockSkin>	MultiBlockSkin_p;
+	typedef	WeakPtr<MultiBlockSkin>	MultiBlockSkin_wp;
 
 
 
-	class MultiBlockStateSkin : public StateSkin
+	class MultiBlockSkin : public StateSkin
 	{
 		//TODO: Add sanity-checking to all Set-methods.
 		//TODO: Optimize rendering based on invisibleSections and opaqueSections!
@@ -48,7 +48,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static MultiBlockStateSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
+		static MultiBlockSkin_p create(SizeI blockSize, BorderI frame = BorderI(0) );
 
 		//.____ Identification __________________________________________
 
@@ -101,8 +101,8 @@ namespace wg
 		};
 
 
-		MultiBlockStateSkin(SizeI blockSize, BorderI frame);
-		~MultiBlockStateSkin() {};
+		MultiBlockSkin(SizeI blockSize, BorderI frame);
+		~MultiBlockSkin() {};
 
 		void			_updateStateOpacity( int stateIdx );
 
