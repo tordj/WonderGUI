@@ -198,9 +198,11 @@ namespace wg
 		inline Border operator/(Type2 v) const { return { (MU)(top / v), (MU)(right / v), (MU)(bottom / v), (MU)(left / v) }; }
 
 
-		bool			operator==(const Border& borders) const {
+		bool			operator==(const Border& borders) const 
+		{
 			return ((left.qpix - borders.left.qpix) | (right.qpix - borders.right.qpix) | (top.qpix - borders.top.qpix) | (bottom.qpix - borders.bottom.qpix)) == 0;
 		}
+		
 		bool			operator!=(const Border& borders) const { return !(*this == borders); }
 
 		//.____ Properties __________________________________________

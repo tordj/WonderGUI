@@ -61,12 +61,10 @@ namespace wg
 
 			const static TypeInfo	TYPEINFO;
 
-			//.____ Properties _________________________________________________
-
-			inline float	weight() const { return m_weight; }
-			void			setWeight(float weight);
-
 			//.____ Geometry _________________________________________________
+
+			void			setWeight(float weight);
+			inline float	weight() const { return m_weight; }
 
 			inline Coord	pos() const { return m_geo.pos(); }
 			inline Size		size() const { return m_geo.size(); }

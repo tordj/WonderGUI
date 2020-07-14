@@ -17,11 +17,32 @@ end
 
 def doxify( lines )
 
+  scope = []
+
   output = []
-  inPublic = false;
-  inGroup = false;
+  inPublic = false
+  inGroup = false
 
   for line in lines
+
+	if( line =~ /^\s*{/ )
+		scope.push inPublic
+		scope.push inGroup
+		inPublic = false
+		inGroup = false
+	end
+
+	if( line =~ /^\s*}/ )
+
+	  if( inGroup )
+		output << '///@}'
+	  end
+
+		inGroup = scope.pop
+		inPublic = scope.pop
+	end
+
+
 	if( line =~ /^\s*public:/ )
 	  inPublic = true
 	elsif( line =~ /^\s*private:/ or line =~ /^\s*protected:/  )
