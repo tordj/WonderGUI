@@ -66,7 +66,6 @@ namespace wg
             FT_Error err = FT_Init_FreeType(&s_freeTypeLibrary);
             if (err != 0)
             {
-                int x = 0;
                 //TODO: Error handling!
             }
         }
@@ -89,7 +88,6 @@ namespace wg
 											&m_ftFace );
 		if( err )
 		{
-			int x = 0;
 			//TODO: Error handling...
 		}
 

@@ -66,8 +66,6 @@ public:
 
 	bool overflowPieChart(GfxDevice * pDevice, const RectI& canvas)
 	{
-		float	sliceSize = 1.f;
-
 		pDevice->drawPieChart(canvas, 0.125f, 7, m_sliceSizesOverflow, m_rainbowColors);
 		return true;
 	}

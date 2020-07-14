@@ -709,8 +709,6 @@ namespace wg
 
 				//
 
-				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
-
 				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this)
 					_removeSlots(0, popupSlots.size());
@@ -736,7 +734,7 @@ namespace wg
 				if (popupSlots.isEmpty())
 					break;
 
-				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+//				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 
 				auto pSource = static_cast<Widget*>(_pMsg->originalSource().rawPtr());
 				if (!pSource || pSource == this )

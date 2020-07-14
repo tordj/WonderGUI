@@ -86,7 +86,7 @@ namespace wg
 		int			nbGlyphs() override;
 		bool		hasGlyphs() override;
 		bool		hasGlyph( uint16_t chr ) override;
-		bool		isMonospace();
+		bool		isMonospace() override;
 
 		static void	clearCache();
 

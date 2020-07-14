@@ -206,7 +206,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
+//		AnimPlayer * pOrg = (AnimPlayer *) _pOrg;
 	}
 
 	//____ _alphaTest() ______________________________________________________
@@ -281,6 +281,10 @@ namespace wg
 	{
 		switch (m_playMode)
 		{
+		case PlayMode::Forward:
+		case PlayMode::Looping:
+			break;
+				
 		case PlayMode::PingPong:
 			if (playPos >= frames.duration())
 				playPos = frames.duration() * 2 - (playPos + 1);

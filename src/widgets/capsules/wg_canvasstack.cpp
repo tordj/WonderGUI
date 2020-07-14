@@ -208,7 +208,7 @@ namespace wg
 	{
 		if (size != m_size)
 		{
-			_regenCanvases(m_canvases.size(), size - _contentPaddingSize());
+			_regenCanvases(int(m_canvases.size()), size - _contentPaddingSize());
 			Capsule::_resize(size);
 		}
 	}

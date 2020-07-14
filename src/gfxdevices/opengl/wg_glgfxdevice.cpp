@@ -382,10 +382,10 @@ namespace wg
 			for (int canvType = 0; canvType < 2; canvType++)
 			{
 				std::string fragShader = canvType == 0 ? segmentsFragmentShader : segmentsFragmentShader_A8;
-				int edgesPos = fragShader.find("$EDGES");
+				auto edgesPos = fragShader.find("$EDGES");
 				fragShader.replace(edgesPos, 6, std::to_string(i));
 
-				int maxsegPos = fragShader.find("$MAXSEG");
+				auto maxsegPos = fragShader.find("$MAXSEG");
 				fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
 			
 				const char* pVertexShader = segmentsVertexShader;

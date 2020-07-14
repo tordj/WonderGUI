@@ -293,7 +293,7 @@ int main(int argc, char** argv)
 
 	Base::init();
 
-	Base::setErrorHandler([](Error&) { int x = 0; });
+//	Base::setErrorHandler([](Error&) { int x = 0; });
 
 	Context_p pContext = Context::create();
 	pContext->setScale(2.00);
@@ -382,18 +382,6 @@ int main(int argc, char** argv)
 
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL, EditCmd::Undo);
 	pInput->mapCommand(SDLK_z, MODKEY_CTRL_SHIFT, EditCmd::Redo);
-
-
-	auto pDataset = Dataset<Rect>::create();
-
-	const TypeInfo& typeInfo1 = pDataset->typeInfo();
-
-	const TypeInfo& typeInfo2 = Dataset<Rect>::TYPEINFO;
-
-	if (pDataset->isInstanceOf(Dataset<Rect>::TYPEINFO))
-	{
-		int x = 0;
-	}
 
 
 /*
@@ -1648,7 +1636,7 @@ bool savePNG(Surface * pSurface, const char * path)
 	SDL_UnlockSurface(pOutput);
 
 
-	int err2 = IMG_SavePNG(pOutput, path);
+	IMG_SavePNG(pOutput, path);
 	SDL_FreeSurface(pOutput);
 
 	return true;

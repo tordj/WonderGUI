@@ -32,6 +32,14 @@ namespace wg
 	
 	template<class EntryType> const TypeInfo CDynamicVector<EntryType>::TYPEINFO = { "CDynamicVector<Unknow>", &CStaticVector<EntryType>::TYPEINFO };
 
+	//____ typeInfo() _________________________________________________________________
+
+	template < class EntryType>
+	const TypeInfo& CDynamicVector<EntryType>::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ pushBack() _________________________________________________________________
 
 	template < class EntryType>
@@ -45,12 +53,12 @@ namespace wg
 	template < class EntryType>
 	typename CDynamicVector<EntryType>::iterator CDynamicVector<EntryType>::pushBack(std::initializer_list<EntryType> entries)
 	{
-		int amount = CStaticVector<EntryType>::m_entries.size();
+		int amount = (int) CStaticVector<EntryType>::m_entries.size();
 
 		for( auto& entry : entries )
 			CStaticVector<EntryType>::m_entries.push_back(entry);
 
-		_didAddEntries( &CStaticVector<EntryType>::m_entries[amount], CStaticVector<EntryType>::m_entries.size() - amount);
+		_didAddEntries( &CStaticVector<EntryType>::m_entries[amount], int(CStaticVector<EntryType>::m_entries.size()) - amount);
 		return CStaticVector<EntryType>::m_entries.begin()+amount;
 	}
 
@@ -92,7 +100,7 @@ namespace wg
 	template < class EntryType>
 	void CDynamicVector<EntryType>::clear()
 	{
-		_willEraseEntries(&CStaticVector<EntryType>::m_entries[0], CStaticVector<EntryType>::m_entries.size());
+		_willEraseEntries(&CStaticVector<EntryType>::m_entries[0], (int) CStaticVector<EntryType>::m_entries.size());
 		CStaticVector<EntryType>::m_entries.clear();
 	}
 

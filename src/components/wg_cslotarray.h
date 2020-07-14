@@ -61,7 +61,7 @@ namespace wg
 			auto pSlot = static_cast<SlotType*>(pWidget->_slot());
 
 			if (pSlot >= m_slots && pSlot < &m_slots[SIZE])
-				return pSlot - m_slots;
+				return int(pSlot - m_slots);
 
 			return -1;
 		}

@@ -736,9 +736,6 @@ namespace wg
 
 			if (mode == BlendMode::Multiply)
 			{
-				int alpha = srcA;
-				int invAlpha = 4096 - alpha;
-
 				outB = (backB * srcB) >> 12;
 				outG = (backG * srcG) >> 12;
 				outR = (backR * srcR) >> 12;
@@ -2134,7 +2131,7 @@ namespace wg
 			xPitch = pSrcSurf->m_pixelDescription.bits / 8;
 			yPitch = pSrcSurf->m_pitch;
 
-			int ofs = pSrc - pSrcSurf->m_pData;
+			int ofs = int(pSrc - pSrcSurf->m_pData);
 			srcY = ofs / yPitch;
 			srcX = (ofs % yPitch) / xPitch;
 			pSrc = pSrcSurf->m_pData;
@@ -2890,7 +2887,7 @@ namespace wg
 		int pixelBytes = m_canvasPixelBits / 8;
 		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
 		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
-		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{

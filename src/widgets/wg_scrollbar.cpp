@@ -214,7 +214,7 @@ namespace wg
 
 		float scrollhandlePos = 0.f;
 		if( m_handleSize < 1.f)
-			scrollhandlePos = ((float)(pos - (handleLen >> 1))) / (length - handleLen);
+			scrollhandlePos = ((float)(pos - (handleLen / 2))) / (length - handleLen);
 
 		setHandlePos(scrollhandlePos);
 	}

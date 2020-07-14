@@ -274,6 +274,8 @@ namespace wg
 					}
 				}
 			}
+			default:
+				break;
 		}
 	}
 

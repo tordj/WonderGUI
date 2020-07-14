@@ -44,7 +44,7 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Control _______________________________________________________

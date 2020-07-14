@@ -98,7 +98,7 @@ namespace wg
 		pInfo->isSetToPressed = false;
 		pInfo++;
 
-		m_nbKeys = pInfo - m_keyInfo;
+		m_nbKeys = int(pInfo - m_keyInfo);
 	}
 
 	//____ setSurfaces() ______________________________________________________
@@ -386,7 +386,7 @@ namespace wg
 	{
 		Widget::_cloneContent(_pOrg);
 
-		PianoKeyboard * pOrg = (PianoKeyboard*)_pOrg;
+//		PianoKeyboard * pOrg = (PianoKeyboard*)_pOrg;
 
 	}
 
@@ -402,7 +402,6 @@ namespace wg
 
 
 		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
-		MU whiteKeyMargin = whiteKeySpacing/2;
 
 		float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
 		float yScaleFactor = m_keyboardSourceSize.h / float(canvas.h);
@@ -534,6 +533,9 @@ namespace wg
 					m_bIsHoveredPressed = false;
 				break;
 			}
+				
+			default:
+				break;
 		}
 	}
 
@@ -692,7 +694,7 @@ namespace wg
 		for (auto& key : m_keyInfo)
 		{
 			if (key.keyPos == keyPos && key.isBlack == isBlack )
-				return &key - m_keyInfo;
+				return int(&key - m_keyInfo);
 		}
 
 		return -1;

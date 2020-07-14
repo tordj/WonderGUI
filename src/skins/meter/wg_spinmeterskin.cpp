@@ -110,8 +110,6 @@ namespace wg
 			degrees = (float) fmod(degrees, 360.f);
 
 
-		SizeI srcSize = m_pSurface->size();
-
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
 	}

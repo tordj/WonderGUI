@@ -35,6 +35,15 @@ namespace wg
 
 	template<class SlotType> const TypeInfo CStaticSlotVector<SlotType>::TYPEINFO = { "CStaticSlotVector<Unknow>", &CStaticSlotCollection::TYPEINFO };
 
+
+	//____ typeInfo() __________________________________________________________________
+
+	template < class SlotType>
+	const TypeInfo& CStaticSlotVector<SlotType>::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ _begin_iterator() ___________________________________________________________
 
 	template < class SlotType>

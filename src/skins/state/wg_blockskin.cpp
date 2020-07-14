@@ -106,7 +106,7 @@ namespace wg
 
 
 		SizeI	surfSize = pSurface->size();
-		int		nBlocks = stateBlocks.size();
+		int		nBlocks = (int) stateBlocks.size();
 		BorderI frame = _frame * pSurface->qpixPerPoint() / 4;
 		int   spacing = _spacing * pSurface->qpixPerPoint() / 4;
 

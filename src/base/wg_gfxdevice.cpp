@@ -1228,7 +1228,7 @@ namespace wg
 
 		// Find first slice (one with smallest offset)
 
-		int		firstSlice, lastSlice;
+		int		firstSlice = 0, lastSlice;
 		float	firstSliceOfs = 1.f;
 
 		for (int i = 0; i < nSlices; i++)

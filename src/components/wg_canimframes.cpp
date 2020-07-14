@@ -104,7 +104,7 @@ namespace wg
 
 	void CAnimFrames::_didAddEntries(AnimFrame* pEntry, int nb)
 	{
-		int ofs = pEntry - &m_entries.front();
+		int ofs = int(pEntry - &m_entries.front());
 		int timestamp = ofs == 0 ? 0 : pEntry[-1].timestamp() + pEntry[-1].duration();
 
 		auto it = m_entries.begin() + ofs;
@@ -131,7 +131,7 @@ namespace wg
 	{
 		AnimFrame* pEntry = std::min(pFrom, pTo);
 
-		int ofs = pEntry - &m_entries.front();
+		int ofs = int(pEntry - &m_entries.front());
 		int timestamp = ofs == 0 ? 0 : pEntry[-1].timestamp() + pEntry[-1].duration();
 		for (auto it = m_entries.begin() + ofs; it != m_entries.end(); it++)
 		{
@@ -146,7 +146,7 @@ namespace wg
 
 	void CAnimFrames::_willEraseEntries(AnimFrame* pEntry, int nb)
 	{
-		int ofs = pEntry - &m_entries.front();
+		int ofs = int(pEntry - &m_entries.front());
 		int timestamp = pEntry->timestamp() + pEntry->duration();
 
 		auto it = m_entries.begin() + ofs;

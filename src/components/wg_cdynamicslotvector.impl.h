@@ -36,6 +36,15 @@ namespace wg
 	template<class SlotType> const TypeInfo CDynamicSlotVector<SlotType>::TYPEINFO = { "CDynamicSlotVector<Unknow>", &CDynamicSlotCollection::TYPEINFO };
 
 
+	//____ typeInfo() _________________________________________________________________
+
+	template < class SlotType>
+	const TypeInfo& CDynamicSlotVector<SlotType>::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+
 	//____ pushFront() _________________________________________________________________
 
 	template < class SlotType>

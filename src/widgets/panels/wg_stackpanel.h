@@ -117,7 +117,7 @@ namespace wg
 
 		//.____ Components _______________________________________
 
-		CSlots	slots;
+		CSlots		slots;
 
 		//.____ Identification __________________________________________
 
@@ -126,10 +126,10 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual MU			matchingHeight(MU width) const;
-		virtual MU			matchingWidth(MU height) const;
+		MU			matchingHeight(MU width) const override;
+		MU			matchingWidth(MU height) const override;
 
-		virtual Size		preferredSize() const;
+		Size		preferredSize() const override;
 
 
 	protected:

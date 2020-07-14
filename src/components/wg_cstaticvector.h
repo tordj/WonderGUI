@@ -50,12 +50,12 @@ namespace wg
 
 		//.____ Identification _________________________________________________
 
-		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
-		inline int		size() const { return m_entries.size(); }
+		inline int		size() const { return (int) m_entries.size(); }
 		inline bool		isEmpty() const { return m_entries.empty(); }
 
 		//.____ Misc _______________________________________________________

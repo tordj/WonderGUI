@@ -642,7 +642,6 @@ namespace wg
 	 * Note: A widget may override the tooltip set by this method and display another 
 	 * text, depending on the situation and exact position of the pointer.
 	 * 
-	 * @return void
 	 */
 
 	void Widget::setTooltip(const String& str) 

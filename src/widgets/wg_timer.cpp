@@ -216,7 +216,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		Timer * pOrg = (Timer*) _pOrg;
+//		Timer * pOrg = (Timer*) _pOrg;
 	}
 
 	//____ _render() __________________________________________________________

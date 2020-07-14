@@ -192,6 +192,9 @@ namespace wg
 				if (static_cast<MouseButtonMsg*>(_pMsg)->button() == MouseButton::Left)
 					_pMsg->swallow();
 				break;
+				
+			default:
+				break;
 		}
 
 		Widget::_receive(_pMsg);
@@ -203,7 +206,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		Knob * pOrg = (Knob*) _pOrg;
+//		Knob * pOrg = (Knob*) _pOrg;
 	}
 
 	//____ _render() __________________________________________________________

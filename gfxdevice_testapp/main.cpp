@@ -1107,7 +1107,7 @@ bool setup_chrome()
 
 		auto pFiller = Filler::create();
 
-		auto it = pBottom->slots << pFiller;
+		pBottom->slots << pFiller;
 		pBottom->slots << pRefresh;
 
 		//
@@ -1226,7 +1226,7 @@ bool init_system( Rect windowGeo )
 		return false;
 	}
     
-	SDL_GLContext context = SDL_GL_CreateContext(pWin);
+	SDL_GL_CreateContext(pWin);
 
 //	SDL_GL_SetSwapInterval(1);
 

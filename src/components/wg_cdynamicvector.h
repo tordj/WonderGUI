@@ -50,12 +50,12 @@ namespace wg
 
 		//.____ Identification _________________________________________________ 
 
-		const TypeInfo& typeInfo(void) const override { return TYPEINFO; }
+		const TypeInfo& typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Content _______________________________________________________
 
-		inline int		capacity() const { return CStaticVector<EntryType>::m_entries.capacity(); }
+		inline int		capacity() const { return (int) CStaticVector<EntryType>::m_entries.capacity(); }
 
 		inline void		reserve(int amount) { CStaticVector<EntryType>::m_entries.reserve( amount ); }
 		inline void		shrinkToFit() { CStaticVector<EntryType>::m_entries.shrink_to_fit(); }

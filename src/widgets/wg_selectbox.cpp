@@ -133,7 +133,7 @@ namespace wg
 			return;
 		}
 
-		_selectEntry( it - entries.begin() );
+		_selectEntry( int(it - entries.begin()) );
 	}
 
 	//____ selectEntryById() __________________________________________________
@@ -144,7 +144,7 @@ namespace wg
 		{
 			if (entry.m_id == id)
 			{
-				int idx = &entry - &entries[0];
+				int idx = int(&entry - &entries[0]);
 				_selectEntry(idx);
 				return true;
 			}
@@ -252,7 +252,7 @@ namespace wg
 	{
 		Widget::_cloneContent( _pOrg );
 
-		SelectBox * pOrg = (SelectBox*) _pOrg;
+//		SelectBox * pOrg = (SelectBox*) _pOrg;
 
 	}
 
@@ -445,7 +445,7 @@ namespace wg
 		Size listPadding = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
 
 		Size	oldPreferred		= m_preferredSize;
-		int		oldMatchingHeight = m_matchingHeight;
+//		int		oldMatchingHeight = m_matchingHeight;
 
 		for (int i = 0; i < nb; i++)
 		{

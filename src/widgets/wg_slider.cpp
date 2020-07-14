@@ -183,14 +183,15 @@ namespace wg
 				if (pMsg->button() != MouseButton::Left)
 					break;
 
-				Coord pos = toLocal(pMsg->pointerPos());
-				Rect  handle = _handleGeo(m_size);
 				if (m_handleState.isPressed())
 				{
 					_setHandleState(m_handleState - StateEnum::Pressed);
 				}
 				else
 				{
+//					Coord pos = toLocal(pMsg->pointerPos());
+//					Rect  handle = _handleGeo(m_size);
+
 					//TODO: Handle click on background.
 				}
 				break;
@@ -229,6 +230,9 @@ namespace wg
 					_setValue(newValue);
 				}
 			}
+				
+			default:
+				break;
 		}
 	}
 

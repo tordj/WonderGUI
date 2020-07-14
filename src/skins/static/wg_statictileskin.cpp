@@ -62,7 +62,7 @@ namespace wg
 
 	Size StaticTileSkin::preferredSize() const
 	{
-		return m_pSurface ? m_pSurface->size() : Size();
+		return m_pSurface ? Size(m_pSurface->size()) : Size();
 	}
 
 	//____ render() ______________________________________________________________

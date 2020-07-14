@@ -35,6 +35,15 @@ namespace wg
 
 	template<class SlotType> const TypeInfo CPaddedSlotVector<SlotType>::TYPEINFO = { "CPaddedSlotVector<Unknow>", &CDynamicSlotVector<SlotType>::TYPEINFO };
 
+	//____ typeInfo() _________________________________________________________________
+
+	template < class SlotType>
+	const TypeInfo& CPaddedSlotVector<SlotType>::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
+
 	//____ setPadding() _______________________________________________________
 
 	template<class SlotType>
