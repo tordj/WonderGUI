@@ -153,15 +153,18 @@ SKINS = \
   wg_framemeterskin.o \
   wg_piemeterskin.o \
   wg_spinmeterskin.o \
+  wg_bakeskin.o \
   wg_doubleskin.o \
-  wg_blockstateskin.o \
-  wg_boxstateskin.o \
-  wg_colorstateskin.o \
-  wg_lambdastateskin.o \
+  wg_blockskin.o \
+  wg_boxskin.o \
+  wg_colorskin.o \
+  wg_lambdaskin.o \
   wg_multiblockskin.o \
+  wg_tileskin.o \
   wg_staticblockskin.o \
   wg_staticboxskin.o \
-  wg_staticcolorskin.o
+  wg_staticcolorskin.o \
+  wg_statictileskin.o
 
 TEXTMAPPERS = \
   wg_stdtextmapper.o \
@@ -184,6 +187,7 @@ WIDGETS = \
   wg_lineeditor.o \
   wg_pianokeyboard.o \
   wg_popupopener.o \
+  wg_rangeslider.o \
   wg_rulerlabels.o \
   wg_scrollbar.o \
   wg_selectbox.o \

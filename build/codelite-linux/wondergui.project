@@ -29,6 +29,8 @@
   <Description/>
   <Dependencies/>
   <VirtualDirectory Name="widgets">
+    <File Name="../../src/widgets/wg_rangeslider.h"/>
+    <File Name="../../src/widgets/wg_rangeslider.cpp"/>
     <File Name="../../src/widgets/wg_widget.h"/>
     <File Name="../../src/widgets/wg_widget.cpp"/>
     <File Name="../../src/widgets/wg_volumemeter.h"/>
@@ -126,6 +128,8 @@
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
     <VirtualDirectory Name="static">
+      <File Name="../../src/skins/static/wg_statictileskin.h"/>
+      <File Name="../../src/skins/static/wg_statictileskin.cpp"/>
       <File Name="../../src/skins/static/wg_staticcolorskin.h"/>
       <File Name="../../src/skins/static/wg_staticcolorskin.cpp"/>
       <File Name="../../src/skins/static/wg_staticboxskin.h"/>
@@ -134,18 +138,22 @@
       <File Name="../../src/skins/static/wg_staticblockskin.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="state">
+      <File Name="../../src/skins/state/wg_tileskin.h"/>
+      <File Name="../../src/skins/state/wg_tileskin.cpp"/>
       <File Name="../../src/skins/state/wg_multiblockskin.h"/>
       <File Name="../../src/skins/state/wg_multiblockskin.cpp"/>
-      <File Name="../../src/skins/state/wg_lambdastateskin.h"/>
-      <File Name="../../src/skins/state/wg_lambdastateskin.cpp"/>
-      <File Name="../../src/skins/state/wg_colorstateskin.h"/>
-      <File Name="../../src/skins/state/wg_colorstateskin.cpp"/>
-      <File Name="../../src/skins/state/wg_boxstateskin.h"/>
-      <File Name="../../src/skins/state/wg_boxstateskin.cpp"/>
-      <File Name="../../src/skins/state/wg_blockstateskin.h"/>
-      <File Name="../../src/skins/state/wg_blockstateskin.cpp"/>
+      <File Name="../../src/skins/state/wg_lambdaskin.h"/>
+      <File Name="../../src/skins/state/wg_lambdaskin.cpp"/>
+      <File Name="../../src/skins/state/wg_colorskin.h"/>
+      <File Name="../../src/skins/state/wg_colorskin.cpp"/>
+      <File Name="../../src/skins/state/wg_boxskin.h"/>
+      <File Name="../../src/skins/state/wg_boxskin.cpp"/>
+      <File Name="../../src/skins/state/wg_blockskin.h"/>
+      <File Name="../../src/skins/state/wg_blockskin.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="misc">
+      <File Name="../../src/skins/misc/wg_bakeskin.h"/>
+      <File Name="../../src/skins/misc/wg_bakeskin.cpp"/>
       <File Name="../../src/skins/misc/wg_doubleskin.h"/>
       <File Name="../../src/skins/misc/wg_doubleskin.cpp"/>
     </VirtualDirectory>

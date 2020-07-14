@@ -37,7 +37,7 @@
 #include FT_FREETYPE_H
 
 
-#define SUPPORT_STEM_DARKENING
+//s#define SUPPORT_STEM_DARKENING
 
 #ifdef SUPPORT_STEM_DARKENING
 #	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library that does not support stem darkening. 

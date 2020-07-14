@@ -119,7 +119,7 @@ namespace wg
 		{
 			case MsgType::Tick:
 			{
-                auto pTick = static_cast<TickMsg*>(pMsg);
+//                auto pTick = static_cast<TickMsg*>(pMsg);
 				
 				RectI area( 0,0, m_size );
 				

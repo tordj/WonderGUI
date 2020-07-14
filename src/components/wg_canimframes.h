@@ -35,7 +35,7 @@ namespace wg
 	{
 		friend class CAnimFrames;
 	public:
-		AnimFrame(CoordI source, int duration, GfxFlip flip = GfxFlip::Normal) : m_timestamp(0), m_duration(duration), m_source(source), m_flip(flip) {}
+		AnimFrame(CoordI source, int duration, GfxFlip flip = GfxFlip::Normal) : m_source(source), m_timestamp(0), m_duration(duration), m_flip(flip) {}
 
 		int		duration() const { return m_duration; }
 		GfxFlip	flip() const { return m_flip; }
