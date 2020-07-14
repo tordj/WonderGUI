@@ -23,6 +23,8 @@
 #include <wg_slider.h>
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
+#include <wg_base.h>
+#include <wg_msgrouter.h>
 
 namespace wg
 {
@@ -118,7 +120,7 @@ namespace wg
 		{
 			m_nbSteps = nbSteps;
 			if( nbSteps > 0 )
-				setValue(m_value);		// Have the value aligned to the steps.
+				_setValue(m_value);		// Have the value aligned to the steps.
 		}
 	}
 
@@ -127,9 +129,7 @@ namespace wg
 	void Slider::setValue(float value)
 	{
 		limit(value, 0.f, 1.f);
-
-		if (value != m_value)
-			_setValue(value);
+		_setValue(value,false);
 	}
 
 	//____ _receive() __________________________________________________________
@@ -297,7 +297,7 @@ namespace wg
 
 	//____ _setValue() __________________________________________________________
 
-	void Slider::_setValue(float value)
+	void Slider::_setValue(float value, bool bPostMsg)
 	{
 		if (m_nbSteps > 0)
 		{
@@ -317,6 +317,9 @@ namespace wg
 				changeRect.growToContain( m_pSkin->fractionChangeRect(m_size, m_state, m_value, value) );
 
 			_requestRender( changeRect );
+
+			if(bPostMsg)
+				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
 		}
 	}
 

@@ -23,6 +23,8 @@
 #include <wg_knob.h>
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
+#include <wg_base.h>
+#include <wg_msgrouter.h>
 
 namespace wg
 {
@@ -108,7 +110,7 @@ namespace wg
 	void Knob::setValue(float value)
 	{
 		if (value != m_value)
-			_setValue(value);
+			_setValue(value, false);
 	}
 
 	//____ _receive() __________________________________________________________
@@ -214,7 +216,7 @@ namespace wg
 
 	//____ _setValue() __________________________________________________________
 
-	void Knob::_setValue(float value)
+	void Knob::_setValue(float value, bool bPostMsg)
 	{
 		limit(value, 0.f, 1.f);
 
@@ -229,6 +231,9 @@ namespace wg
 			if (m_pSkin)
 				_requestRender(m_pSkin->fractionChangeRect(m_size, m_state, m_value, value));
 			m_value = value;
+
+			if( bPostMsg )
+				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
 		}
 	}
 

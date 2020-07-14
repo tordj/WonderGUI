@@ -49,7 +49,7 @@ namespace wg
 		return BakeSkin_p(new BakeSkin(pBakeSurface));
 	}
 
-	BakeSkin_p BakeSkin::create(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skins)
+	BakeSkin_p BakeSkin::create(Surface* pBakeSurface, std::initializer_list<Skin_p> skins)
 	{
 		return BakeSkin_p(new BakeSkin(pBakeSurface,skins));
 	}
@@ -61,7 +61,7 @@ namespace wg
 		m_pBakeSurface = pBakeSurface;
 	}
 
-	BakeSkin::BakeSkin(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skinsIn) : skins(this)
+	BakeSkin::BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skinsIn) : skins(this)
 	{
 		m_pBakeSurface = pBakeSurface;
 
@@ -260,10 +260,15 @@ namespace wg
 		// Render skins to bake surface, from back to front
 
 		if (!skins[0]->isOpaque())
-			pDevice->fill(Color::Transparent);
-
-		for (auto it = skins.end(); it-- != skins.begin(); ) 
 		{
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(Color::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+		}
+
+		for (auto it = skins.end(); it != skins.begin(); ) 
+		{
+			it--;
 			if ( (*it) != nullptr)
 				(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
 		}

@@ -61,7 +61,7 @@ namespace wg
 		inline void		shrinkToFit() { CStaticVector<EntryType>::m_entries.shrink_to_fit(); }
 
 		iterator		pushBack( const EntryType& entry );
-		iterator		pushBack( const std::initializer_list<EntryType>& entries );
+		iterator		pushBack( std::initializer_list<EntryType> entries );
 
 		iterator		insert( int index, const EntryType& entry );
 
@@ -73,7 +73,7 @@ namespace wg
 		//.____ Operators __________________________________________
 
 		inline iterator operator<<(const EntryType& entry) { return pushBack(entry); }
-		inline iterator operator<<(const std::initializer_list<EntryType>& entries) { return pushBack(entries); }
+		inline iterator operator<<(std::initializer_list<EntryType> entries) { return pushBack(entries); }
 
 	protected:
 //		~CDynamicVector() {}

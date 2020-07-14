@@ -104,8 +104,8 @@ namespace wg
 
 			bool		setWeight(int index, int amount, float weight);
 			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, float weight);
-			bool		setWeight(int index, int amount, const std::initializer_list<float> weights);
-			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, const std::initializer_list<float> weights);
+			bool		setWeight(int index, int amount, std::initializer_list<float> weights);
+			bool		setWeight(const SlotIterator&  beg, const SlotIterator&  end, std::initializer_list<float> weights);
 
 			//.____ Misc __________________________________________________________
 

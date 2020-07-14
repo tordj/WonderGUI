@@ -47,8 +47,8 @@ namespace wg
 
 		bool		setPadding(int index, int amount, Border padding);
 		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, Border padding);
-		bool		setPadding(int index, int amount, const std::initializer_list<Border> padding);
-		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding);
+		bool		setPadding(int index, int amount, std::initializer_list<Border> padding);
+		bool		setPadding(const SlotIterator& beg, const SlotIterator& end, std::initializer_list<Border> padding);
 
 	protected:
 		SlotHolder *		_holder() { return static_cast<SlotHolder*>(CDynamicSlotVector<SlotType>::_holder()); }

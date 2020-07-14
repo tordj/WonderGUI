@@ -160,7 +160,7 @@ namespace wg
 	void Button::_receive( Msg * _pMsg )
 	{
 		State state = m_state;
-		MsgRouter_p	pHandler = Base::msgRouter();
+		MsgRouter_p	pRouter = Base::msgRouter();
 
 		switch( _pMsg->type() )
 		{
@@ -181,7 +181,7 @@ namespace wg
 				if( static_cast<KeyReleaseMsg*>(_pMsg)->translatedKeyCode() == Key::Return )
 				{
 					m_bReturnPressed = false;
-					pHandler->post( SelectMsg::create(this) );
+					pRouter->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;
@@ -209,7 +209,7 @@ namespace wg
 			case MsgType::MouseClick:
 				if( static_cast<MouseClickMsg*>(_pMsg)->button() == MouseButton::Left )
 				{
-					pHandler->post( SelectMsg::create(this) );
+					pRouter->post( SelectMsg::create(this) );
 					_pMsg->swallow();
 				}
 				break;

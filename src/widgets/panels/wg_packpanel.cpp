@@ -66,7 +66,7 @@ namespace wg
 		return true;
 	}
 
-	bool PackPanel::CSlots::setWeight(int index, int amount, const std::initializer_list<float> weights)
+	bool PackPanel::CSlots::setWeight(int index, int amount, std::initializer_list<float> weights)
 	{
 		if (index < 0 || amount <= 0 || index + amount >= size() || amount >(int) weights.size())
 			return false;
@@ -76,7 +76,7 @@ namespace wg
 		return true;
 	}
 
-	bool PackPanel::CSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<float> weights)
+	bool PackPanel::CSlots::setWeight(const SlotIterator& beg, const SlotIterator& end, std::initializer_list<float> weights)
 	{
 		//TODO: Add assert
 

@@ -37,6 +37,9 @@ namespace wg
 
 	StaticTileSkin_p StaticTileSkin::create(Surface* pSurface)
 	{
+		if (pSurface == nullptr || !pSurface->isTiling())
+			return nullptr;
+
 		return StaticTileSkin_p(new StaticTileSkin(pSurface));
 	}
 
@@ -77,9 +80,7 @@ namespace wg
 
 	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
-		return true;  //TODO: Implement!
-
-//		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
+		return markTestTileRect(ofs, m_pSurface, canvas, opacityTreshold);
 	}
 
 

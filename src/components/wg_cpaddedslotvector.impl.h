@@ -58,7 +58,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool CPaddedSlotVector<SlotType>::setPadding(int index, int amount, const std::initializer_list<Border> padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(int index, int amount, std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 
@@ -67,7 +67,7 @@ namespace wg
 	}
 
 	template<class SlotType>
-	bool CPaddedSlotVector<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, const std::initializer_list<Border> padding)
+	bool CPaddedSlotVector<SlotType>::setPadding(const SlotIterator& beg, const SlotIterator& end, std::initializer_list<Border> padding)
 	{
 		//TODO: Assert
 

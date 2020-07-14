@@ -66,10 +66,10 @@ namespace wg
 
 		void			setSkin(Skin * pSkin) override;
 
-		void			setBeginHandleSkin(const Skin_p& pSkin);
+		void			setBeginHandleSkin(Skin * pSkin);
 		inline Skin_p	beginHandleSkin() const { return m_pBeginHandleSkin; }
 
-		void			setEndHandleSkin(const Skin_p& pSkin);
+		void			setEndHandleSkin(Skin * pSkin);
 		inline Skin_p	endHandleSkin() const { return m_pEndHandleSkin; }
 
 		void			setAxis(Axis axis);
@@ -101,7 +101,7 @@ namespace wg
 
 		void		_updatePreferredSize();
 
-		void		_setRange(float begin, float end);
+		void		_setRange(float begin, float end, bool bPostMsg = true);
 		void		_setHandleState(State state, bool isBeginHandle);
 		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle);
 

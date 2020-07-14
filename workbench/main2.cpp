@@ -91,6 +91,8 @@ bool doubleSkinTest(CStandardSlot_p pSlot);
 bool timerTest(CStandardSlot_p pSlot);
 bool animPlayerTest(CStandardSlot_p pSlot);
 bool selectBoxTest(CStandardSlot_p pSlot);
+bool tileSkinTest(CStandardSlot_p pSlot);
+bool bakeSkinTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -294,7 +296,7 @@ int main(int argc, char** argv)
 	Base::setErrorHandler([](Error&) { int x = 0; });
 
 	Context_p pContext = Context::create();
-	pContext->setScale(1.00);
+	pContext->setScale(2.00);
 
 #ifdef USE_OPEN_GL
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
@@ -552,7 +554,7 @@ int main(int argc, char** argv)
 	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, BorderI(5), { {StateEnum::Hovered, Color::Green} });
 	//	pTestSkin->setBlendMode(BlendMode::Add);
 
-	auto pTestSkin = MultiBlockStateSkin::create({ 10,10 }, BorderI(4));
+	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
 
 	int layer1 = pTestSkin->addLayer(pPressablePlateSurface, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, Axis::X);
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
@@ -599,6 +601,8 @@ int main(int argc, char** argv)
 //	timerTest(&pRoot->slot);
 //	animPlayerTest(&pRoot->slot);
 //	selectBoxTest(&pRoot->slot);
+//	tileSkinTest(&pRoot->slot);
+	bakeSkinTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2385,6 +2389,7 @@ bool timerTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ animPlayerTest() ____________________________________________________
 
 bool animPlayerTest(CStandardSlot_p pSlot)
 {
@@ -2414,6 +2419,7 @@ bool animPlayerTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ selectBoxTest() ____________________________________________________
 
 bool selectBoxTest(CStandardSlot_p pSlot)
 {
@@ -2451,6 +2457,89 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	*pSlot = pPopupLayer;
 	return true;
 }
+
+//____ tileSkinTest() ____________________________________________________
+
+bool tileSkinTest(CStandardSlot_p pSlot)
+{
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
+	pNormalSurf->setTiling(true);
+
+	Surface_p pHoveredSurf = loadSurface("../resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
+	pHoveredSurf->setTiling(true);
+
+	auto pStaticSkin = TileSkin::create(pNormalSurf);
+	pStaticSkin->setContentPadding({ 10,10,10,10 });
+
+	auto pDynamicSkin = TileSkin::create({ {StateEnum::Normal, pNormalSurf}, {StateEnum::Hovered, pHoveredSurf} } );
+	pDynamicSkin->setContentPadding({ 10,10,10,10 });
+
+	auto pFiller1 = Filler::create();
+	pFiller1->setSkin(pStaticSkin);
+
+	auto pFiller2 = Filler::create();
+	pFiller2->setSkin(pDynamicSkin);
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
+	pBaseLayer->slots.pushBackMovable(pFiller2, Rect(10, 120, 400, 100));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+//____ bakeSkinTest() ____________________________________________________
+
+bool bakeSkinTest(CStandardSlot_p pSlot)
+{
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
+	pNormalSurf->setTiling(true);
+
+	Surface_p pHoveredSurf = loadSurface("../resources/tile_blocks_marked.png", PixelFormat::BGRA_8);
+	pHoveredSurf->setTiling(true);
+
+	auto pDynamicSkin = TileSkin::create({ {StateEnum::Normal, pNormalSurf}, {StateEnum::Hovered, pHoveredSurf} });
+	pDynamicSkin->setContentPadding({ 10,10,10,10 });
+
+
+	Surface_p pSplashSurf = loadSurface("../resources/splash.png" );
+
+	auto pSplashSkin = BlockSkin::create(pSplashSurf);
+	pSplashSkin->setBlendMode(BlendMode::Add);
+
+	Surface_p pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(Size(512, 512));
+
+	auto pBakedSkin = BakeSkin::create(pBakeSurface);
+
+	pBakedSkin->skins.pushBack(pSplashSkin);
+	pBakedSkin->skins.pushBack(pDynamicSkin);
+
+
+	auto pFiller1 = Filler::create();
+	pFiller1->setSkin(pBakedSkin);
+
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 100, 100));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+
+
 
 //____
 

@@ -42,13 +42,13 @@ namespace wg
 
 	TileSkin_p TileSkin::create(Surface * pSurface)
 	{
-		if (pSurface == nullptr || pSurface->isTiling() )
+		if (pSurface == nullptr || !pSurface->isTiling() )
 			return nullptr;
 
 		return TileSkin_p( new TileSkin(pSurface) );
 	}
 
-	TileSkin_p TileSkin::create(std::initializer_list<std::tuple<State, Surface_p>>& stateSurfaces)
+	TileSkin_p TileSkin::create(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces)
 	{
 		if (stateSurfaces.size() < 1 )
 			return nullptr;
@@ -113,7 +113,7 @@ namespace wg
 
 	//____ setSurfaces() ________________________________________________________
 
-	void TileSkin::setSurfaces(std::initializer_list<std::tuple<State, Surface_p>>& stateSurfaces)
+	void TileSkin::setSurfaces(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces)
 	{
 		for (auto& state : stateSurfaces)
 		{
@@ -152,7 +152,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints)
+	void TileSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -223,10 +223,9 @@ namespace wg
 
 	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
-		return true; //TODO: Implement!
+		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
-//		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-//		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
+		return markTestTileRect(_ofs, pSurf, canvas, opacityTreshold);
 	}
 
 	//____ isOpaque() _____________________________________________________________

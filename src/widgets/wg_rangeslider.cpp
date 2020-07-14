@@ -23,6 +23,8 @@
 #include <wg_rangeslider.h>
 #include <wg_gfxdevice.h>
 #include <wg_msg.h>
+#include <wg_base.h>
+#include <wg_msgrouter.h>
 
 namespace wg
 {
@@ -82,7 +84,7 @@ namespace wg
 
 	//____ setBeginHandleSkin() ___________________________________________________
 
-	void RangeSlider::setBeginHandleSkin(const Skin_p& pSkin)
+	void RangeSlider::setBeginHandleSkin(Skin * pSkin)
 	{
 		if (pSkin != m_pBeginHandleSkin)
 		{
@@ -94,7 +96,7 @@ namespace wg
 
 	//____ setEndHandleSkin() ___________________________________________________
 
-	void RangeSlider::setEndHandleSkin(const Skin_p& pSkin)
+	void RangeSlider::setEndHandleSkin(Skin * pSkin)
 	{
 		if (pSkin != m_pEndHandleSkin)
 		{
@@ -131,7 +133,7 @@ namespace wg
 		{
 			m_nbSteps = nbSteps;
 			if( nbSteps > 0 )
-				setRange(m_rangeBegin, m_rangeEnd);		// Have the range aligned to the steps.
+				_setRange(m_rangeBegin, m_rangeEnd);		// Have the range aligned to the steps.
 		}
 	}
 
@@ -142,8 +144,7 @@ namespace wg
 		limit(begin, 0.f, 1.f - m_minRange);
 		limit(end, begin + m_minRange, 1.f);
 
-		if (begin != m_rangeBegin || end != m_rangeEnd)
-			_setRange(begin,end);
+		_setRange(begin,end,false);
 	}
 
 	//____ _receive() __________________________________________________________
@@ -349,7 +350,7 @@ namespace wg
 
 	//____ _setRange() __________________________________________________________
 
-	void RangeSlider::_setRange(float begin, float end)
+	void RangeSlider::_setRange(float begin, float end, bool bPostMsg)
 	{
 		if (m_nbSteps > 0)
 		{
@@ -389,6 +390,10 @@ namespace wg
 				changeRect.growToContain( m_pSkin->fractionChangeRect(m_size, m_state, m_rangeBegin, begin, m_rangeEnd, end) );
 
 			_requestRender( changeRect );
+
+			if(bPostMsg)
+				Base::msgRouter()->post(RangeUpdateMsg::create(this, 0, 0, m_rangeBegin, m_rangeEnd - m_rangeBegin, false));
+
 		}
 	}
 

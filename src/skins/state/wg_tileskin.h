@@ -46,7 +46,7 @@ namespace wg
 
 		static TileSkin_p	create();
 		static TileSkin_p	create(Surface * pSurface );
-		static TileSkin_p	create(std::initializer_list<std::tuple<State,Surface_p>>& stateSurfaces);
+		static TileSkin_p	create(std::initializer_list<std::tuple<State,Surface_p>> stateSurfaces);
 
 		//.____ Identification __________________________________________
 
@@ -58,13 +58,13 @@ namespace wg
 
 		void	setSurface(Surface * pSurface);
 		void	setSurface(State state, Surface * pSurface);
-		void	setSurfaces(std::initializer_list<std::tuple<State, Surface_p>>& stateSurfaces);
+		void	setSurfaces(std::initializer_list<std::tuple<State, Surface_p>> stateSurfaces);
 
 		Surface_p surface(State state = StateEnum::Normal) const;
 
 		void	setTint(Color tint);
 		void	setTint(State state, Color tint);
-		void	setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints);
+		void	setTint(std::initializer_list< std::tuple<State, Color> > stateTints);
 		Color	tint(State state) const;
 
 		void			setBlendMode(BlendMode mode);

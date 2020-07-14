@@ -47,8 +47,8 @@ namespace wg
 		static BlockSkin_p	create();
 		static BlockSkin_p create(Surface * pSurface, BorderI frame = { 0 } );
 		static BlockSkin_p	create(Surface * pSurface, RectI block, BorderI frame = { 0 } );
-		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
-		static BlockSkin_p	create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, RectI firstBlock, std::initializer_list<State> stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
+		static BlockSkin_p	create(Surface * pSurface, std::initializer_list<State> stateBlocks, BorderI frame = { 0 }, Axis axis = Axis::Y, int spacing = 0);
 
 
 
@@ -62,12 +62,12 @@ namespace wg
 
 		void		setBlock(CoordI ofs);
 		void		setBlock(State state, CoordI ofs);
-		void		setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
+		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
 		RectI		block(State state) const;
 
 		void		setTint(Color tint);
 		void		setTint(State state, Color tint);
-		void		setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints);
+		void		setTint(std::initializer_list< std::tuple<State, Color> > stateTints);
 		Color		tint(State state) const;
 
 		void		setBlendMode(BlendMode mode);

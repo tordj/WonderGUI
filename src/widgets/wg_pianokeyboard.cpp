@@ -103,7 +103,8 @@ namespace wg
 
 	//____ setSurfaces() ______________________________________________________
 
-	void PianoKeyboard::setSurfaces(const Surface_p& pOddWhiteKeys, const Surface_p& pEvenWhiteKeys, const Surface_p& pBlackKeys, std::initializer_list<State> states)
+	void PianoKeyboard::setSurfaces(const Surface_p& pOddWhiteKeys, const Surface_p& pEvenWhiteKeys, 
+									const Surface_p& pBlackKeys, std::initializer_list<State> states)
 	{
 		if (!pOddWhiteKeys || !pEvenWhiteKeys || (!pBlackKeys && m_blackKeyPositions.count() > 0))
 		{

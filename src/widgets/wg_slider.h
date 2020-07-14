@@ -96,7 +96,7 @@ namespace wg
 
 		void		_updatePreferredSize();
 
-		void		_setValue(float value);
+		void		_setValue(float value, bool bPostMsg = true);
 		void		_setHandleState(State state);
 		Rect		_handleGeo(const Rect& widgetGeo);
 

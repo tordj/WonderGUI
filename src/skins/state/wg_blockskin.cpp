@@ -66,7 +66,7 @@ namespace wg
 		return BlockSkin_p(new BlockSkin(pSurface, pixelBlock, pixelFrame));
 	}
 
-	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockSkin_p	BlockSkin::create(Surface * pSurface, RectI _firstBlock, std::initializer_list<State> stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1 )
 			return nullptr;
@@ -99,7 +99,7 @@ namespace wg
 		return BlockSkin_p(p);
 	}
 
-	BlockSkin_p BlockSkin::create(Surface * pSurface, const std::initializer_list<State>& stateBlocks, BorderI _frame, Axis axis, int _spacing)
+	BlockSkin_p BlockSkin::create(Surface * pSurface, std::initializer_list<State> stateBlocks, BorderI _frame, Axis axis, int _spacing)
 	{
 		if (pSurface == nullptr || stateBlocks.size() < 1)
 			return nullptr;
@@ -221,7 +221,7 @@ namespace wg
 
 	//____ setBlocks() ________________________________________________________
 
-	void BlockSkin::setBlocks(const std::initializer_list<State>& stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
+	void BlockSkin::setBlocks(std::initializer_list<State> stateBlocks, Axis axis, int _spacing, CoordI _blockStartOfs )
 	{
 		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
 		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
@@ -267,7 +267,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(const std::initializer_list< std::tuple<State, Color> >& stateTints)
+	void BlockSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -374,6 +374,8 @@ namespace wg
 
 	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
 	{
+		//TODO: Take blendMode and tint (incl gradient) into account.
+
 		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
 		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
 	}

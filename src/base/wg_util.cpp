@@ -191,6 +191,39 @@ double Util::powerOfTen(int num){
 		return (alpha >= opacityTreshold);
 	}
 
+	//____ markTestTileRect() __________________________________________________
+
+	bool Util::markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold)
+	{
+		// Sanity check & shortcuts.
+		if (!pSurface || !area.contains(ofs) || area.isEmpty() || opacityTreshold > 255)
+			return false;
+
+		if (pSurface->isOpaque() || opacityTreshold <= 0)
+			return true;
+
+		// Make cordinates relative area.
+
+		ofs.x -= area.x;
+		ofs.y -= area.y;
+
+		// Convert offset in area to offset in bitmap.
+
+		CoordI sourceOfs = ofs.px() * pSurface->qpixPerPoint() / MU::qpixPerPoint();
+
+		SizeI size = pSurface->size();
+
+		sourceOfs.x %= size.w;
+		sourceOfs.y %= size.h;
+
+		// Do alpha test
+
+		int alpha = pSurface->alpha(sourceOfs);
+
+		return (alpha >= opacityTreshold);
+	}
+
+
 	//____ markTestNinePatch() ________________________________________________
 
 	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const RectI& _source, const Rect& _dest, int opacityTreshold, const BorderI& sourceFrame)

@@ -44,7 +44,7 @@ namespace wg
 
 		static BakeSkin_p	create();
 		static BakeSkin_p	create(Surface* pBakeSurface);
-		static BakeSkin_p	create( Surface * pBakeSurface, const std::initializer_list<Skin_p>& skins );
+		static BakeSkin_p	create( Surface * pBakeSurface, std::initializer_list<Skin_p> skins );
 
 		//.____ Components ____________________________________
 
@@ -96,7 +96,7 @@ namespace wg
 
 	private:
 		BakeSkin(Surface * pBakeSurface);
-		BakeSkin(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skins);
+		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
 		~BakeSkin() {};
 
 		void			_updateCachedGeo() const;
