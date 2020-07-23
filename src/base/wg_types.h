@@ -93,6 +93,7 @@ namespace wg
 	{
 		OutOfRange,
 		InvalidIterator,
+		InvalidParam,
 		FailedPrerequisite,
 		OpenGL,						// OpenGL has issued a GLerror
 		Internal,
