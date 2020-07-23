@@ -113,6 +113,7 @@ namespace wg
 		virtual bool	endRender();
 		virtual bool    isRendering();
 		virtual bool	isIdle();
+		virtual void	flush();
 
 		// Draw methods.
 

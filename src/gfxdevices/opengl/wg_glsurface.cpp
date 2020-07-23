@@ -540,7 +540,7 @@ namespace wg
 		{
 			uint32_t val;
 
-				uint8_t * pPixel = (uint8_t*) m_pBlob->data();
+			uint8_t * pPixel = ((uint8_t*) m_pBlob->data()) + coord.y * m_pitch + coord.x * m_pixelSize;
 
 				switch( m_pixelSize )
 				{
@@ -596,7 +596,7 @@ namespace wg
 
 	bool GlSurface::isLoaded()
 	{
-		return (m_texture == 0);
+		return (m_texture != 0);
 	}
 
 	//____ reloaded() _________________________________________________________

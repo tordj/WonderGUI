@@ -67,8 +67,8 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		inline void         setId(int id);
-		inline int          id() const;
+		inline void         setIdentity(int id);
+		inline int          identity() const;
 
 		//.____ Geometry _________________________________________________
 
@@ -168,16 +168,16 @@ namespace wg
 		int                 m_qpixPerPoint = 4;
 	};
 
-	//____ setId() ____________________________________________________________
+	//____ setIdentity() ____________________________________________________________
 
-	void Surface::setId(int id)
+	void Surface::setIdentity(int id)
 	{
 		m_id = id;
 	}
 
-	//____ id() _______________________________________________________________
+	//____ identity() _______________________________________________________________
 
-	int Surface::id() const
+	int Surface::identity() const
 	{
 		return m_id;
 	}

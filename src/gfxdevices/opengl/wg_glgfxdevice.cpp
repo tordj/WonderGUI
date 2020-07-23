@@ -176,6 +176,7 @@ namespace wg
 		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
 	}
 
+	//____ Constructor _____________________________________________________________________
 
 	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{

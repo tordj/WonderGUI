@@ -274,6 +274,25 @@ namespace wg
 		return !m_bRendering;
 	}
 
+	//____ flush() ____________________________________________________________
+	/**
+	 * @brief Flush internal rendering queue.
+	 *
+	 * Most GfxDevices, except for SoftGfxDevice, queues rendering calls
+	 * in order to optimize for speed by sending them in bulk to the underlying
+	 * rendering library.
+	 *
+	 * A call to flush() forces the GfxDevice to immediately send all queued rendering
+	 * calls.
+	 *
+	 * Calling flush only makes sense between beginRender() and endRender() since endRender()
+	 * flushes for you.
+	 */
+
+	void GfxDevice::flush()
+	{
+	}
+
 	//____ fill() ______________________________________________________
 	/**
 	 * @brief Fill the canvas with specified color.
