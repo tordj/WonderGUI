@@ -768,6 +768,8 @@ namespace wg
 
 		if (m_bRendering)
 		{
+            //TODO: Check so that we don't overrun m_surfaceBuffer;
+
 			_endCommand();
 			_beginStateCommand(Command::SetBlitSource, 0);
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSource);

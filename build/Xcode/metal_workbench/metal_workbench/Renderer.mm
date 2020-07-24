@@ -35,6 +35,7 @@ using namespace wg;
     vector_uint2 _viewportSize;
     
     wg::MetalGfxDevice_p    m_pDevice;
+    wg::MetalSurface_p      m_pSurface;
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -45,7 +46,14 @@ using namespace wg;
         Base::init();
         MetalGfxDevice::setMetalDevice( mtkView.device );
         m_pDevice = MetalGfxDevice::create( SizeI(512,512), mtkView.currentRenderPassDescriptor );
+ 
+        Color myTexture[16] {   Color::Red, Color::Green, Color::Blue, Color::White,
+                                Color::White, Color::Black, Color::White, Color::Black,
+                                Color::Black, Color::White, Color::Black, Color::White,
+                                Color::Yellow, Color::Pink, Color::Brown, Color::AntiqueWhite };
         
+        m_pSurface = MetalSurface::create({4,4}, PixelFormat::BGRA_8, (uint8_t*) myTexture, 16);
+ 
         
     }
 
@@ -67,8 +75,35 @@ using namespace wg;
     m_pDevice->setDrawableToAutopresent(view.currentDrawable);
 
     m_pDevice->beginRender();
+
+    m_pDevice->setTintGradient({10,300,200,200}, Color::Red, Color::Red, Color::Red, Color::Red);
+    m_pDevice->clearTintGradient();
+
     
     m_pDevice->fill( RectI(10,10,100,100), Color::GreenYellow );
+    m_pDevice->fill( RectI(50,50,100,100), Color::Blue );
+    m_pDevice->fill( RectI(90,90,100,100), Color::Red );
+    m_pDevice->fill( RectI(130,130,100,100), Color::White );
+
+    m_pDevice->setTintGradient({10,300,100,100}, Color::Red, Color::Blue, Color::Blue, Color::Red);
+    m_pDevice->fill( RectI(10,300,100,100), Color::White );
+
+    m_pDevice->setTintGradient({120,300,100,100}, Color::Green, Color::Green, Color::White, Color::White);
+    m_pDevice->fill( RectI(120,300,100,100), Color::White );
+
+    m_pDevice->setTintGradient({230,300,100,100}, Color::Red, Color::Red, Color::Yellow, Color::Yellow);
+    m_pDevice->fill( RectI(230,300,100,100), Color::White );
+
+    m_pDevice->clearTintGradient();
+
+    
+    m_pDevice->setBlitSource(m_pSurface);
+    m_pDevice->blit({1,1});
+
+    m_pDevice->stretchBlit({300,10,128,128});
+
+    m_pDevice->fill( RectF(200.5f,2.25f,20.f,10.f), Color::White);
+    
     
     m_pDevice->endRender();
     

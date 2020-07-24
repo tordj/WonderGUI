@@ -27,5 +27,5 @@ namespace wg {
 
 const char MetalGfxDevice::shaders[] =
 
-@INSERTLINEQUOTED <wg_metalshaders.txt>
+@INSERTLINEQUOTED <wg_shadercontent.mm>
 ;}

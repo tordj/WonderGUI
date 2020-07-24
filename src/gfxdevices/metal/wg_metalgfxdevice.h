@@ -110,6 +110,20 @@ namespace wg
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
+        enum class VertexInputIndex : unsigned long
+        {
+            VertexBuffer = 0,
+            ExtrasBuffer = 1,
+            Uniform = 2
+        };
+        
+        enum class TextureIndex
+        {
+            Texture = 0,
+            Clut = 1,
+        };
+        
+        
         enum Command
         {
             None,
@@ -137,7 +151,7 @@ namespace wg
         void            _setTintColor(Color color);
         void            _setTintGradient(const RectI& rect, const Color colors[4]);
         void            _clearTintGradient();
-
+        
         inline void    _beginDrawCommand(Command cmd);
         inline void    _beginDrawCommandWithSource(Command cmd);
         inline void    _beginDrawCommandWithInt(Command cmd, int data);
@@ -151,7 +165,6 @@ namespace wg
         void    _dummyFinalizer();
         void    _drawCmdFinalizer();
         
-    
         void    _initTables();
         float    _scaleThickness(float thickeness, float slope);
         
@@ -167,14 +180,6 @@ namespace wg
         
         
         //
-/*
-        static const int c_commandBufferSize = 4096;
-        static const int c_vertexBufferSize = 16384;                // Size of vertex buffer, in number of vertices.
-        static const int c_extrasBufferSize = 65536*4;                // Size of extras buffer, in GLfloats.
-        static const int c_surfaceBufferSize = 1024;                // Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
-        static const int c_clipListBufferSize = 4096;                // Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
-*/
-        
         
         Command         m_cmd;
         CmdFinalizer_p  m_pCmdFinalizer;
@@ -192,8 +197,8 @@ namespace wg
 
         bool            m_bFullyInitialized = false;
 
-        struct UniformBuffer            // Uniform buffer object for canvas information.
-        {                               // DO NOT CHANGE ORDER OF MEMBERS!!!
+        struct Uniform
+        {
             float      canvasDimX;
             float      canvasDimY;
             int        canvasYOfs;
@@ -220,26 +225,26 @@ namespace wg
            
         // Buffers
 
-        id<MTLBuffer>   m_uniformBufferId = nil;
-        UniformBuffer * m_pUniformBuffer = nullptr;
-        
+        Uniform         m_uniform;
+
         int             m_commandBufferSize = 4096;
-        int *           m_pCommandBuffer = nullptr;           // Queue of commands to execute when flushing buffer
+        int *           m_pCommandBuffer = nullptr;         // Queue of commands to execute when flushing buffer
         int             m_commandOfs = 0;                   // Write offset in m_commandBuffer
         
         id<MTLBuffer>   m_vertexBufferId = nil;
         int             m_vertexBufferSize = 4096;
-        Vertex *        m_pVertexBuffer = nullptr;            // Pointer to content of vertex buffer
+        Vertex *        m_pVertexBuffer = nullptr;          // Pointer to content of vertex buffer
         int             m_vertexOfs = 0;                    // Write offset in m_pVertexData
 
         id<MTLBuffer>   m_extrasBufferId = nil;
         int             m_extrasBufferSize = 16384;
-        float *         m_pExtrasBuffer = nullptr;            // Pointer to content of extras buffer
+        float *         m_pExtrasBuffer = nullptr;          // Pointer to content of extras buffer
         int             m_extrasOfs = 0;                    // Write offset in m_pExtrasData
         int             m_neededExtrasBufferSize = 0;       // Set to non-zero to potentially force a bigger jump in extrasBufferSize.
-
-//        MetalSurface_p  m_surfaceBuffer[c_surfaceBufferSize];
+        
+        id<MTLBuffer>   m_surfaceBufferId = nil;
         int             m_surfaceBufferSize = 1024;
+        MetalSurface_p* m_pSurfaceBuffer = nullptr;
         int             m_surfaceOfs;                       // Write offset in m_surfaceBuffer
 
         id<MTLBuffer>   m_clipListBufferId = nil;
@@ -271,9 +276,18 @@ namespace wg
         
         id<MTLCommandBuffer>        m_metalCommandBuffer;
         id<MTLRenderCommandEncoder> m_renderEncoder;
-        bool                        m_bRendering = false;
+        bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
+        bool                        m_bIdle = true;                     // Set to false between beginRender() and when metal has completed all commands,
+                                                                        // sometimes after endRender().
         
         id<MTLRenderPipelineState>  m_cmdFill;
+        id<MTLRenderPipelineState>  m_cmdFillGradient;
+        id<MTLRenderPipelineState>  m_cmdFillAA;
+        id<MTLRenderPipelineState>  m_cmdFillGradientAA;
+
+        
+        id<MTLRenderPipelineState>  m_cmdBlit;
+
 
         static const char shaders[];
 
@@ -295,7 +309,7 @@ namespace wg
         m_pCmdFinalizer = &MetalGfxDevice::_drawCmdFinalizer;
         m_cmdBeginVertexOfs = m_vertexOfs;
         m_pCommandBuffer[m_commandOfs++] = cmd;
-
+        
 //        if (m_pCanvas)
 //            static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
     }

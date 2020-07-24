@@ -42,7 +42,7 @@ namespace wg
 	{
         
         friend class MetalSurfaceFactory;
-		friend class GlGfxDevice;
+		friend class MetalGfxDevice;
 
 	public:
 		//.____ Creation __________________________________________
@@ -104,7 +104,7 @@ namespace wg
         void            _syncTexture( RectI region );
         void            _waitForSyncToComplete();
                 
-		int			    m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.
+		int			    m_bPendingReads = false;					// Set if there are queued commands that will use surface as source. Active MetalGfxDevice needs to be flushed before we modify.
 		bool            m_bMipmapStale = false;
 
         bool            m_bBufferNeedsSync = false;                 // Texture has changes that have not been synced to buffer yet.

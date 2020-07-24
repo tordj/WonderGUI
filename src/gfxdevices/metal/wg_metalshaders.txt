@@ -6,7 +6,8 @@ using namespace metal;
 typedef struct
 {
     vector_int2     coord;
-    int             extrasOfs;                        // Offset into extras buffer.
+    int             envOfs;                       // Offset into shaderEnvironment buffer.
+    int             extrasOfs;                    // Offset into extras buffer.
     vector_float2   uv;
 } Vertex;
 
@@ -26,7 +27,7 @@ typedef struct             // Uniform buffer object for canvas information.
     vector_float4   bottomLeftTint;
 
     vector_int2     textureSize;
-} UniformBuffer;
+} Environment;
 
 
 typedef struct 
@@ -40,7 +41,7 @@ vertex RasterizerData
 fillVertexShader(uint vertexID [[vertex_id]],
              constant Vertex *pVertices [[buffer(0)]],
              constant float  *pExtras [[buffer(1)]],
-             constant UniformBuffer * pUniform[[buffer(2)]])
+             constant Environment * pEnvironments[[buffer(2)]])
 {
     RasterizerData out;
 

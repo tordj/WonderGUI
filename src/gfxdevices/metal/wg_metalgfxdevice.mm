@@ -80,20 +80,89 @@ namespace wg
 
         // Create and init Fill shader
         
-        id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillVertexShader"];
-        id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillFragmentShader"];
+        {
+            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillVertexShader"];
+            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillFragmentShader"];
 
-        // Configure a pipeline descriptor that is used to create a pipeline state.
-        MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-        pipelineStateDescriptor.label = @"Simple Pipeline";
-        pipelineStateDescriptor.vertexFunction = vertexFunction;
-        pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-        pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+            // Configure a pipeline descriptor that is used to create a pipeline state.
+            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+            pipelineStateDescriptor.label = @"Fill Pipeline";
+            pipelineStateDescriptor.vertexFunction = vertexFunction;
+            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
 
-        m_cmdFill = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+            m_cmdFill = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+        }
         
-        assert(m_cmdFill);
-                
+        // Create and init GradientFill shader
+    
+        {
+            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillGradientVertexShader"];
+            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillFragmentShader"];
+
+            // Configure a pipeline descriptor that is used to create a pipeline state.
+            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+            pipelineStateDescriptor.label = @"GradientFill Pipeline";
+            pipelineStateDescriptor.vertexFunction = vertexFunction;
+            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+            m_cmdFillGradient = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+        }
+
+            // Create and init AA Fill shader
+            
+            {
+                id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillAAVertexShader"];
+                id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillAAFragmentShader"];
+
+                // Configure a pipeline descriptor that is used to create a pipeline state.
+                MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+                pipelineStateDescriptor.label = @"Fill AA Pipeline";
+                pipelineStateDescriptor.vertexFunction = vertexFunction;
+                pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+                pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+                pipelineStateDescriptor.colorAttachments[0].blendingEnabled = YES;
+                pipelineStateDescriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                pipelineStateDescriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                pipelineStateDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+
+                m_cmdFillAA = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+            }
+            
+            // Create and init AA GradientFill shader
+        
+            {
+                id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillGradientAAVertexShader"];
+                id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillAAFragmentShader"];
+
+                // Configure a pipeline descriptor that is used to create a pipeline state.
+                MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+                pipelineStateDescriptor.label = @"GradientFill AA Pipeline";
+                pipelineStateDescriptor.vertexFunction = vertexFunction;
+                pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+                pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+                m_cmdFillGradientAA = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+            }
+
+        
+        // Create and init Blit shader
+        
+        {
+            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"blitVertexShader"];
+            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"blitFragmentShader"];
+
+            // Configure a pipeline descriptor that is used to create a pipeline state.
+            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
+            pipelineStateDescriptor.label = @"Blit Pipeline";
+            pipelineStateDescriptor.vertexFunction = vertexFunction;
+            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
+            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+
+            m_cmdBlit = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
+        }
+        
         // Initialize our buffers
         
         m_pCommandBuffer = new int[m_commandBufferSize];
@@ -104,17 +173,17 @@ namespace wg
         m_extrasBufferId = [s_metalDevice newBufferWithLength:m_extrasBufferSize*sizeof(float) options:MTLResourceStorageModeShared];
         m_pExtrasBuffer = (float *)[m_extrasBufferId contents];
      
-        // Initialize our uniform buffer
+        m_surfaceBufferId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
+        m_pSurfaceBuffer = (MetalSurface_p *)[m_surfaceBufferId contents];
         
-        m_uniformBufferId = [s_metalDevice newBufferWithLength:sizeof(UniformBuffer) options:MTLResourceStorageModeShared];
-        m_pUniformBuffer = (UniformBuffer *)[m_uniformBufferId contents];
-        
-        m_pUniformBuffer->canvasDimX = size.w;
-        m_pUniformBuffer->canvasDimY = size.h;
-        m_pUniformBuffer->canvasYOfs = m_canvasYstart;
-        m_pUniformBuffer->canvasYMul = m_canvasYmul;
+        // Initialize our shader environment
+                
+        m_uniform.canvasDimX = size.w;
+        m_uniform.canvasDimY = size.h;
+        m_uniform.canvasYOfs = m_canvasYstart;
+        m_uniform.canvasYMul = m_canvasYmul;
 
-        m_pUniformBuffer->flatTint = { 1.f, 1.f, 1.f, 1.f };
+        m_uniform.flatTint = { 1.f, 1.f, 1.f, 1.f };
     }
 
     //____ destructor() _______________________________________________________
@@ -168,66 +237,147 @@ namespace wg
 
     //____ clearClipList() _______________________________________________________
 
-void MetalGfxDevice::clearClipList()
+    void MetalGfxDevice::clearClipList()
     {
         GfxDevice::clearClipList();
         m_clipCurrOfs = -1;
     }
 
+    //____ setTintColor() _______________________________________________________
+
     void MetalGfxDevice::setTintColor(Color color)
     {
-    
+        GfxDevice::setTintColor(color);
+
+        if( m_bRendering )
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetTintColor, 1);
+            m_pCommandBuffer[m_commandOfs++] = color.argb;
+        }
     }
+
+    //____ setTintGradient() ______________________________________________________
 
     void MetalGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
     {
-    
+        GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+
+        if (m_bRendering)
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetTintGradient, 8);
+            m_pCommandBuffer[m_commandOfs++] = rect.x;
+            m_pCommandBuffer[m_commandOfs++] = rect.y;
+            m_pCommandBuffer[m_commandOfs++] = rect.w;
+            m_pCommandBuffer[m_commandOfs++] = rect.h;
+            m_pCommandBuffer[m_commandOfs++] = topLeft.argb;
+            m_pCommandBuffer[m_commandOfs++] = topRight.argb;
+            m_pCommandBuffer[m_commandOfs++] = bottomRight.argb;
+            m_pCommandBuffer[m_commandOfs++] = bottomLeft.argb;
+        }
     }
+
+    //____ clearTintGradient() _____________________________________________________
 
     void MetalGfxDevice::clearTintGradient()
     {
-    
+        GfxDevice::clearTintGradient();
+
+        if (m_bRendering)
+        {
+            _endCommand();
+            _beginStateCommand(Command::ClearTintGradient, 0);
+        }
     }
+
+    //____ setBlendMode() ____________________________________________________________
 
     bool MetalGfxDevice::setBlendMode(BlendMode blendMode)
     {
-        return false;
+        if (blendMode == m_blendMode)
+            return true;
+
+        GfxDevice::setBlendMode(blendMode);
+
+        if( m_bRendering )
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetBlendMode, 1);
+            m_pCommandBuffer[m_commandOfs++] = (int) blendMode;
+        }
+
+        return true;
     }
-    
+
+    //____ setBlitSource() ___________________________________________________________
+
     bool MetalGfxDevice::setBlitSource(Surface * pSource)
     {
-        return false;
+        if (!pSource || pSource->typeInfo() != MetalSurface::TYPEINFO)
+            return false;
+
+        m_pBlitSource = pSource;
+
+        if (m_bRendering)
+        {
+            //TODO: Check so that we don't overrun m_pSurfaceBuffer;
+            
+            _endCommand();
+            _beginStateCommand(Command::SetBlitSource, 0);
+            m_pSurfaceBuffer[m_surfaceOfs++] = static_cast<MetalSurface*>(pSource);
+        }
+
+        return true;
     }
+
+    //____ setMorphFactor() __________________________________________________________
 
     void MetalGfxDevice::setMorphFactor(float factor)
     {
+        limit(factor, 0.f, 1.f);
+
+        m_morphFactor = factor;
+
+        if (m_bRendering)
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetMorphFactor, 1);
+            m_pCommandBuffer[m_commandOfs++] = (int)(factor*1024);
+        }
     }
+
+    //____ isCanvasReady() ___________________________________________________________
 
     bool MetalGfxDevice::isCanvasReady() const
     {
-        return true;
+        return m_bIdle;
     }
- 
+
+    //____ setRenderPassDescriptor() _________________________________________________
+
     void MetalGfxDevice::setRenderPassDescriptor( MTLRenderPassDescriptor* passDesc )
     {
         m_renderPassDesc = passDesc;
     }
+
+    //____ setDrawableToAutopresent() ________________________________________________
 
     void MetalGfxDevice::setDrawableToAutopresent( id<MTLDrawable> drawable )
     {
         m_drawableToAutoPresent = drawable;
     }
 
+    //____ beginRender() _____________________________________________________________
 
     bool MetalGfxDevice::beginRender()
     {
-        
-        if( m_bRendering == true )
+        if( m_bRendering == true || m_renderPassDesc == nil )
             return false;
 
-//        if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
-//            return false;
-
+        while( !m_bIdle )
+            usleep(50);
+              
         // If there already is an active device, that needs to be flushed before we
         // take over the role as the active device.
 
@@ -239,6 +389,7 @@ void MetalGfxDevice::clearClipList()
 
         //
 
+        m_bIdle = false;
         m_bRendering = true;
         m_cmd = Command::None;
         m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
@@ -255,9 +406,6 @@ void MetalGfxDevice::clearClipList()
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
 
-        if(m_renderPassDesc == nil)
-            return false;
-
         // Create a render command encoder.
         m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
         m_renderEncoder.label = @"MyRenderEncoder";
@@ -266,7 +414,7 @@ void MetalGfxDevice::clearClipList()
         _setBlendMode(m_blendMode);
         _setMorphFactor(m_morphFactor);
 
-        if (m_bTintGradient)
+         if (m_bTintGradient)
             _setTintGradient(m_tintGradientRect, m_tintGradient);
         else
             _setTintColor(m_tintColor);
@@ -275,6 +423,8 @@ void MetalGfxDevice::clearClipList()
 
         return true;
     }
+
+    //____ endRender() ___________________________________________________________
 
     bool MetalGfxDevice::endRender()
     {
@@ -294,6 +444,12 @@ void MetalGfxDevice::clearClipList()
 
         if( m_drawableToAutoPresent != nil )
             [m_metalCommandBuffer presentDrawable:m_drawableToAutoPresent];
+
+        // Add a completion handler and commit the command buffer.
+        [m_metalCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            // Shared buffer is populated.
+            m_bIdle = true;
+        }];
         
         // Finalize rendering here & push the command buffer to the GPU.
         [m_metalCommandBuffer commit];
@@ -311,9 +467,32 @@ void MetalGfxDevice::clearClipList()
         return !m_bRendering;
     }
 
+
+    //____ flush() _______________________________________________________________
+
     void MetalGfxDevice::flush()
     {
-    
+        if( !m_bRendering )
+            return;
+
+        // Finalize any commands and execute queue.
+        
+        _endCommand();
+        _executeBuffer();
+                
+        // Finalize queued rendering and push the comand buffer to the GPU.
+        
+        [m_renderEncoder endEncoding];
+        [m_metalCommandBuffer commit];
+        
+
+        // Create a new command buffer.
+        m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
+        m_metalCommandBuffer.label = @"MetalGfxDevice";
+
+        // Create a new render command encoder.
+        m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+        m_renderEncoder.label = @"MyRenderEncoder";
     }
 
 
@@ -390,50 +569,99 @@ void MetalGfxDevice::clearClipList()
         m_pExtrasBuffer[m_extrasOfs++] = pConv[col.b];
         m_pExtrasBuffer[m_extrasOfs++] = col.a / 255.f;
     }
-/*
-	void MetalGfxDevice::fill(const RectI& rect, const Color& col)
-	{
-        [m_renderEncoder setRenderPipelineState:m_cmdFill];
 
-        Vertex triangleVertices[6];
-     
-        vector_uint2 _viewportSize;
-        
-        _viewportSize.x = m_viewportSize.w;
-        _viewportSize.y = m_viewportSize.h;
-        
-        triangleVertices[0].position = {(float)rect.x,(float)rect.y};
-        triangleVertices[0].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
+    //____ fill() ____ [subpixel] __________________________________________________
 
-        triangleVertices[1].position = {(float)(rect.x + rect.w),(float)rect.y};
-        triangleVertices[1].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
-
-        triangleVertices[2].position = {(float)(rect.x + rect.w),(float)(rect.y + rect.h)};
-        triangleVertices[2].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
-
-        triangleVertices[3].position = {(float)rect.x,(float)rect.y};
-        triangleVertices[3].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
-
-        triangleVertices[4].position = {(float)(rect.x + rect.w),(float)(rect.y + rect.h)};
-        triangleVertices[4].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
-
-        triangleVertices[5].position = {(float)(rect.x),(float)(rect.y + rect.h)};
-        triangleVertices[5].color = {col.r/255.f, col.g/255.f, col.b/255.f, col.a/255.f};
-
-        [m_renderEncoder setVertexBytes:triangleVertices length:sizeof(triangleVertices) atIndex:0];
-        
-        [m_renderEncoder setVertexBytes:&_viewportSize length:sizeof(_viewportSize) atIndex:1];
-
-        // Draw the triangle.
-        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle
-                          vertexStart:0
-                          vertexCount:6];
-        
-        
-	}
-*/
 	void MetalGfxDevice::fill(const RectF& rect, const Color& col)
 	{
+        // Skip calls that won't affect destination
+
+        if (col.a == 0 && (m_blendMode == BlendMode::Blend))
+            return;
+
+        // Create our outer rectangle
+
+        RectI outerRect( (int) rect.x, (int) rect.y, ((int) (rect.x+rect.w+0.999f)) - (int) rect.x, ((int) (rect.y + rect.h + 0.999f)) - (int) rect.y );
+
+
+        RectI clip(outerRect, m_clipBounds);
+        if (clip.w == 0 || clip.h == 0)
+            return;
+
+        //
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
+        {
+            _endCommand();
+            _executeBuffer();
+            _beginDrawCommand(Command::FillSubPixel);
+        }
+        else if (m_cmd != Command::FillSubPixel)
+        {
+            _endCommand();
+            _beginDrawCommand(Command::FillSubPixel);
+        }
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            RectI patch(m_pClipRects[i], outerRect);
+            if (patch.w > 0 && patch.h > 0)
+            {
+                int    dx1 = patch.x;
+                int    dy1 = patch.y;
+                int dx2 = patch.x + patch.w;
+                int dy2 = patch.y + patch.h;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+            }
+        }
+
+        // Provide color
+
+        float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.r];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.g];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.b];
+        m_pExtrasBuffer[m_extrasOfs++] = col.a / 255.f;
+
+        // Provide rectangle center and radius
+
+        SizeF    radius(rect.w / 2, rect.h / 2);
+        CoordF    center(rect.x + radius.w, rect.y + radius.h);
+
+        m_pExtrasBuffer[m_extrasOfs++] = center.x;
+        m_pExtrasBuffer[m_extrasOfs++] = center.y;
+        m_pExtrasBuffer[m_extrasOfs++] = radius.w;
+        m_pExtrasBuffer[m_extrasOfs++] = radius.h;
 	}
 
 	void MetalGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
@@ -444,12 +672,174 @@ void MetalGfxDevice::clearClipList()
 	{
 	}
 
+    //____ _transformBlit() ____ [simple] __________________________________________________
+
 	void MetalGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
 	{
-	}
+        if (m_pBlitSource == nullptr)
+            return;
+
+        if (!dest.intersectsWith(m_clipBounds))
+            return;
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
+        {
+            _endCommand();
+            _executeBuffer();
+            _beginDrawCommandWithSource(Command::Blit);
+        }
+        else if (m_cmd != Command::Blit)
+        {
+            _endCommand();
+            _beginDrawCommandWithSource(Command::Blit);
+        }
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            RectI patch(m_pClipRects[i], dest);
+            if (patch.w > 0 && patch.h > 0)
+            {
+                int        dx1 = patch.x;
+                int        dx2 = patch.x + patch.w;
+                int        dy1 = patch.y;
+                int        dy2 = patch.y + patch.h;
+
+                Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs/4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                m_vertexOfs += 6;
+            }
+        }
+
+        m_pExtrasBuffer[m_extrasOfs++] = (float) src.x;
+        m_pExtrasBuffer[m_extrasOfs++] = (float) src.y;
+        m_pExtrasBuffer[m_extrasOfs++] = (float) dest.x;
+        m_pExtrasBuffer[m_extrasOfs++] = (float) dest.y;
+
+        m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[0][0];
+        m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[0][1];
+        m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[1][0];
+        m_pExtrasBuffer[m_extrasOfs++] = (float) simpleTransform[1][1];
+    }
+
+    //____ _transformBlit() ____ [complex] __________________________________________________
 
 	void MetalGfxDevice::_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2])
 	{
+        if (m_pBlitSource == nullptr)
+            return;
+
+        if (!dest.intersectsWith(m_clipBounds))
+            return;
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
+        {
+            _endCommand();
+            _executeBuffer();
+            _beginDrawCommandWithSource(Command::Blit);
+        }
+        else if (m_cmd != Command::Blit)
+        {
+            _endCommand();
+            _beginDrawCommandWithSource(Command::Blit);
+        }
+
+        //
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            RectI patch(m_pClipRects[i], dest);
+            if (patch.w > 0 && patch.h > 0)
+            {
+                Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
+
+                int        dx1 = patch.x;
+                int        dx2 = patch.x + patch.w;
+                int        dy1 = patch.y;
+                int        dy2 = patch.y + patch.h;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex++;
+
+                m_vertexOfs += 6;
+            }
+        }
+
+        if (m_pBlitSource->scaleMode() == ScaleMode::Interpolate)
+        {
+            m_pExtrasBuffer[m_extrasOfs++] = src.x + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = src.y + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
+        }
+        else
+        {
+            m_pExtrasBuffer[m_extrasOfs++] = src.x;
+            m_pExtrasBuffer[m_extrasOfs++] = src.y;
+            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
+        }
+
+        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][0];
+        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][1];
+        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[1][0];
+        m_pExtrasBuffer[m_extrasOfs++] = complexTransform[1][1];
 	}
 
 	void MetalGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
@@ -493,7 +883,6 @@ void MetalGfxDevice::clearClipList()
             memcpy( pNewBuffer, m_pVertexBuffer, m_vertexOfs * sizeof(float));
             m_pVertexBuffer = pNewBuffer;
             
-//            [m_vertexBufferId release];
             m_vertexBufferId = newId;
         }
 
@@ -510,7 +899,6 @@ void MetalGfxDevice::clearClipList()
             memcpy( pNewBuffer, m_pExtrasBuffer, m_extrasOfs * sizeof(float));
             m_pExtrasBuffer = pNewBuffer;
             
-//            [m_extraBufferId release];
             m_extrasBufferId = newId;
         }
     }
@@ -544,14 +932,18 @@ void MetalGfxDevice::clearClipList()
         LOG_GLERROR(glGetError());
     */
         
-       
+        [m_renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
+        
+        [m_renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
+        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+
         
         int * pCmd = m_pCommandBuffer;
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
 
         int vertexOfs = 0;
         int surfaceOfs = 0;
-
+      
         // Clear pending flags of active BlitSource and Canvas.
 
     //    if (m_pActiveBlitSource)
@@ -563,11 +955,11 @@ void MetalGfxDevice::clearClipList()
 
             switch (cmd)
             {
-    /*
+    
                 case Command::SetCanvas:
                 {
-                    _setCanvas(m_surfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
-                    m_surfaceBuffer[surfaceOfs++] = nullptr;
+                    _setCanvas(m_pSurfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
+                    m_pSurfaceBuffer[surfaceOfs++] = nullptr;
                     pCmd += 2;
                     break;
                 }
@@ -598,13 +990,13 @@ void MetalGfxDevice::clearClipList()
                 }
                 case Command::ClearTintGradient:
                 {
-                    _clearTintGradient();
-                    break;
+                     _clearTintGradient();
+                   break;
                 }
                 case Command::SetBlitSource:
                 {
-                    _setBlitSource(m_surfaceBuffer[surfaceOfs]);
-                    m_surfaceBuffer[surfaceOfs++] = nullptr;
+                    _setBlitSource(m_pSurfaceBuffer[surfaceOfs]);
+                    m_pSurfaceBuffer[surfaceOfs++] = nullptr;
                     break;
                 }
                 case Command::Blit:
@@ -612,10 +1004,14 @@ void MetalGfxDevice::clearClipList()
                     int nVertices = *pCmd++;
                     if (nVertices > 0 && m_pActiveBlitSource)
                     {
-                        GlSurface* pSurf = m_pActiveBlitSource;
-                        glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
+                        MetalSurface* pSurf = m_pActiveBlitSource;
+                        
+//                        glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
+//                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        
+                        [m_renderEncoder setRenderPipelineState:m_cmdBlit];
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
@@ -623,65 +1019,37 @@ void MetalGfxDevice::clearClipList()
                     }
                     break;
                 }
-    */
+    
                 case Command::Fill:
                 {
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
                         if( m_bGradientActive )
-                        {
-    //                        glUseProgram(m_fillGradientProg[m_bActiveCanvasIsA8]);
-                        }
+                            [m_renderEncoder setRenderPipelineState:m_cmdFillGradient];
                         else
                             [m_renderEncoder setRenderPipelineState:m_cmdFill];
 
-                        
-                        [m_renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:0];
-                        
-                        [m_renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:1];
-                        [m_renderEncoder setVertexBuffer:m_uniformBufferId offset:0 atIndex:2];
-
-                        
-                        
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
-                        vertexOfs += nVertices;
-
-    //                    if( m_bMipmappedActiveCanvas )
-    //                        m_pActiveCanvas->m_bMipmapStale = true;
-                    }
-                    break;
-
-    /*
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        if( m_bGradientActive )
-                            glUseProgram(m_fillGradientProg[m_bActiveCanvasIsA8]);
-                        else
-                            glUseProgram(m_fillProg[m_bActiveCanvasIsA8]);
-
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
-    */
                 }
-    /*
+    
                 case Command::FillSubPixel:
                 {
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
                         if (m_bGradientActive)
-                            glUseProgram(m_aaFillGradientProg[m_bActiveCanvasIsA8]);
+                            [m_renderEncoder setRenderPipelineState:m_cmdFillGradientAA];
                         else
-                            glUseProgram(m_aaFillProg[m_bActiveCanvasIsA8]);
+                            [m_renderEncoder setRenderPipelineState:m_cmdFillAA];
 
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
@@ -689,6 +1057,8 @@ void MetalGfxDevice::clearClipList()
                     }
                     break;
                 }
+                    /*
+
                 case Command::LineFromTo:
                 {
                     int clipListOfs = *pCmd++;
@@ -764,8 +1134,6 @@ void MetalGfxDevice::clearClipList()
         m_segmentsTintTexOfs = 0;
         m_clipWriteOfs = 0;
         m_clipCurrOfs = -1;
-
-    //    LOG_GLERROR(glGetError());
     }
 
     //____ _setCanvas() _______________________________________________________
@@ -808,11 +1176,6 @@ void MetalGfxDevice::clearClipList()
                 glEnable(GL_FRAMEBUFFER_SRGB);
             else
                 glDisable(GL_FRAMEBUFFER_SRGB);
-
-            glBindFramebuffer(GL_FRAMEBUFFER, 0);
- 
-            glViewport(0, 0, width, height);
-            glScissor(0, 0, width, height);
  */
         }
 
@@ -821,16 +1184,16 @@ void MetalGfxDevice::clearClipList()
 
 
         // Updating canvas info for our shaders
-/*
-        m_pUniformBuffer->canvasDimX = (GLfloat) width;
-        m_pUniformBuffer->canvasDimY = (GLfloat) height;
-        m_pUniformBuffer->canvasYOfs = canvasYstart;
-        m_pUniformBuffer->canvasYMul = canvasYmul;
 
-        glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-        glBufferSubData(GL_UNIFORM_BUFFER, 0, 4*4, &m_canvasUBOBuffer);
-*/
- 
+        m_uniform.canvasDimX = (GLfloat) width;
+        m_uniform.canvasDimY = (GLfloat) height;
+        m_uniform.canvasYOfs = canvasYstart;
+        m_uniform.canvasYMul = canvasYmul;
+
+        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex: (unsigned) VertexInputIndex::Uniform];
+
+        //
+        
         m_pActiveCanvas = pCanvas;
         m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->isMipmapped() : false;
 
@@ -965,43 +1328,31 @@ void MetalGfxDevice::clearClipList()
 
     void MetalGfxDevice::_setBlitSource( MetalSurface * pSurf )
     {
-/*
-        LOG_GLERROR(glGetError());
-
-        glActiveTexture(GL_TEXTURE0);
-
         if( pSurf )
         {
-            glBindTexture(GL_TEXTURE_2D, pSurf->getTexture());
-
+            [m_renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
+            
             if( pSurf->m_bMipmapStale )
             {
-                glGenerateMipmap(GL_TEXTURE_2D);
+//                glGenerateMipmap(GL_TEXTURE_2D);
                 pSurf->m_bMipmapStale = false;
             }
 
             m_pActiveBlitSource = pSurf;
             pSurf->m_bPendingReads = false;            // Clear this as we pass it by...
 
-            m_pUniformBuffer->textureSize = pSurf->size();
-            glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-            glBufferSubData(GL_UNIFORM_BUFFER, ((char*)&m_pUniformBuffer->textureSize) - ((char*)&m_canvasUBOBuffer), sizeof(SizeI), &m_pUniformBuffer->textureSize);
+            m_uniform.textureSize = pSurf->size();
+            [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
             if (pSurf->m_pClut)
             {
-                glActiveTexture(GL_TEXTURE2);
-                GLuint clutTex = pSurf->getClutTexture();
-                glBindTexture(GL_TEXTURE_2D, clutTex);
-                glActiveTexture(GL_TEXTURE0);
-
-                assert(glGetError() == 0);
+                [m_renderEncoder setFragmentTexture:pSurf->getClutTexture() atIndex:(unsigned) TextureIndex::Clut];
             }
         }
         else
-            glBindTexture(GL_TEXTURE_2D, 0 );
+            [m_renderEncoder setFragmentTexture:nil atIndex:(unsigned) TextureIndex::Texture];
 
-        LOG_GLERROR(glGetError());
-*/
+
     }
 
     //____ _setTintColor() ____________________________________________________
@@ -1012,13 +1363,12 @@ void MetalGfxDevice::clearClipList()
 
         float r, g, b, a;
 
-        m_pUniformBuffer->flatTint[0] = r = pConv[color.r];
-        m_pUniformBuffer->flatTint[1] = g = pConv[color.g];
-        m_pUniformBuffer->flatTint[2] = b = pConv[color.b];
-        m_pUniformBuffer->flatTint[3] = a = m_linearToLinearTable[color.a];
+        m_uniform.flatTint[0] = r = pConv[color.r];
+        m_uniform.flatTint[1] = g = pConv[color.g];
+        m_uniform.flatTint[2] = b = pConv[color.b];
+        m_uniform.flatTint[3] = a = m_linearToLinearTable[color.a];
 
-//        glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-//        glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4 /*sizeof(canvasUBO)*/, &m_pUniformBuffer->flatTint);
+        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }
 
     //____ _setTintGradient() _________________________________________________
@@ -1027,32 +1377,31 @@ void MetalGfxDevice::clearClipList()
     {
         m_bGradientActive = true;
 
-        m_pUniformBuffer->tintRect = rect;
+        m_uniform.tintRect = rect;
 
         float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
-        m_pUniformBuffer->topLeftTint[0] = pConv[colors[0].r];
-        m_pUniformBuffer->topLeftTint[1] = pConv[colors[0].g];
-        m_pUniformBuffer->topLeftTint[2] = pConv[colors[0].b];
-        m_pUniformBuffer->topLeftTint[3] = m_linearToLinearTable[colors[0].a];
+        m_uniform.topLeftTint[0] = pConv[colors[0].r];
+        m_uniform.topLeftTint[1] = pConv[colors[0].g];
+        m_uniform.topLeftTint[2] = pConv[colors[0].b];
+        m_uniform.topLeftTint[3] = m_linearToLinearTable[colors[0].a];
 
-        m_pUniformBuffer->topRightTint[0] = pConv[colors[1].r];
-        m_pUniformBuffer->topRightTint[1] = pConv[colors[1].g];
-        m_pUniformBuffer->topRightTint[2] = pConv[colors[1].b];
-        m_pUniformBuffer->topRightTint[3] = m_linearToLinearTable[colors[1].a];
+        m_uniform.topRightTint[0] = pConv[colors[1].r];
+        m_uniform.topRightTint[1] = pConv[colors[1].g];
+        m_uniform.topRightTint[2] = pConv[colors[1].b];
+        m_uniform.topRightTint[3] = m_linearToLinearTable[colors[1].a];
 
-        m_pUniformBuffer->bottomRightTint[0] = pConv[colors[2].r];
-        m_pUniformBuffer->bottomRightTint[1] = pConv[colors[2].g];
-        m_pUniformBuffer->bottomRightTint[2] = pConv[colors[2].b];
-        m_pUniformBuffer->bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
+        m_uniform.bottomRightTint[0] = pConv[colors[2].r];
+        m_uniform.bottomRightTint[1] = pConv[colors[2].g];
+        m_uniform.bottomRightTint[2] = pConv[colors[2].b];
+        m_uniform.bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
 
-        m_pUniformBuffer->bottomLeftTint[0] = pConv[colors[3].r];
-        m_pUniformBuffer->bottomLeftTint[1] = pConv[colors[3].g];
-        m_pUniformBuffer->bottomLeftTint[2] = pConv[colors[3].b];
-        m_pUniformBuffer->bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
+        m_uniform.bottomLeftTint[0] = pConv[colors[3].r];
+        m_uniform.bottomLeftTint[1] = pConv[colors[3].g];
+        m_uniform.bottomLeftTint[2] = pConv[colors[3].b];
+        m_uniform.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
 
-//        glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-//        glBufferSubData(GL_UNIFORM_BUFFER, 16+16, 20 * 4 /*sizeof(canvasUBO)*/, &m_pUniformBuffer->tintRect);
+        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }
 
     //____ _clearTintGradient() _________________________________________________
@@ -1061,7 +1410,6 @@ void MetalGfxDevice::clearClipList()
     {
         m_bGradientActive = false;
     }
-
 
     //____ _initTables() ___________________________________________________________
 

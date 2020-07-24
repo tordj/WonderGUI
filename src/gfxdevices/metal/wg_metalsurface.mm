@@ -143,6 +143,9 @@ namespace wg
 		m_size	= size;
 		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
 
+        if( pPixelDescription == nullptr )
+            pPixelDescription = &m_pixelDescription;
+        
 		_setupMetalTexture( pPixels, pitch, pPixelDescription, pClut);
 	}
 
@@ -224,7 +227,7 @@ namespace wg
         
         // Copy from buffers to textures (pixels and cluts)
         
-        MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h};
+        MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
         MTLOrigin textureOrigin = {0,0,0};
         
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
@@ -242,7 +245,7 @@ namespace wg
 
         if( pClut )
         {
-            MTLSize clutSize = { 256, 1 };
+            MTLSize clutSize = { 256, 1, 1 };
             MTLOrigin clutOrigin = {0,0,0};
 
             [blitCommandEncoder copyFromBuffer:     m_clutBuffer
