@@ -78,90 +78,33 @@ namespace wg
                 
         m_library = [s_metalDevice newLibraryWithSource:shaderSource options:nil error:&error];
 
-        // Create and init Fill shader
+        // Create and init Fill pipelines
         
-        {
-            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillVertexShader"];
-            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillFragmentShader"];
-
-            // Configure a pipeline descriptor that is used to create a pipeline state.
-            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-            pipelineStateDescriptor.label = @"Fill Pipeline";
-            pipelineStateDescriptor.vertexFunction = vertexFunction;
-            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-
-            m_cmdFill = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-        }
+        m_pipelineFill = _compileRenderPipeline( @"Fill Pipeline", @"fillVertexShader", @"fillFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
         
-        // Create and init GradientFill shader
-    
-        {
-            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillGradientVertexShader"];
-            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillFragmentShader"];
-
-            // Configure a pipeline descriptor that is used to create a pipeline state.
-            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-            pipelineStateDescriptor.label = @"GradientFill Pipeline";
-            pipelineStateDescriptor.vertexFunction = vertexFunction;
-            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-
-            m_cmdFillGradient = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-        }
-
-            // Create and init AA Fill shader
-            
-            {
-                id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillAAVertexShader"];
-                id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillAAFragmentShader"];
-
-                // Configure a pipeline descriptor that is used to create a pipeline state.
-                MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-                pipelineStateDescriptor.label = @"Fill AA Pipeline";
-                pipelineStateDescriptor.vertexFunction = vertexFunction;
-                pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-                pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
-                pipelineStateDescriptor.colorAttachments[0].blendingEnabled = YES;
-                pipelineStateDescriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
-                pipelineStateDescriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-                pipelineStateDescriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
-
-                m_cmdFillAA = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-            }
-            
-            // Create and init AA GradientFill shader
         
-            {
-                id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"fillGradientAAVertexShader"];
-                id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"fillAAFragmentShader"];
+        // Create and init GradientFill pipelines
 
-                // Configure a pipeline descriptor that is used to create a pipeline state.
-                MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-                pipelineStateDescriptor.label = @"GradientFill AA Pipeline";
-                pipelineStateDescriptor.vertexFunction = vertexFunction;
-                pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-                pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+        m_pipelineFillGradient = _compileRenderPipeline( @"GradientFill Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
-                m_cmdFillGradientAA = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-            }
+        // Create and init AA Fill pipelines
+
+        m_pipelineFillAA = _compileRenderPipeline( @"FillAA Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
+           
+        // Create and init AA GradientFill pipelines
+ 
+        m_pipelineFillGradientAA = _compileRenderPipeline( @"GradientFillAA Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
         
-        // Create and init Blit shader
+        // Create and init Blit pipelines
         
-        {
-            id<MTLFunction> vertexFunction = [m_library newFunctionWithName:@"blitVertexShader"];
-            id<MTLFunction> fragmentFunction = [m_library newFunctionWithName:@"blitFragmentShader"];
+        m_pipelineBlit = _compileRenderPipeline( @"Blit Pipeline", @"blitVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
-            // Configure a pipeline descriptor that is used to create a pipeline state.
-            MTLRenderPipelineDescriptor *pipelineStateDescriptor = [[MTLRenderPipelineDescriptor alloc] init];
-            pipelineStateDescriptor.label = @"Blit Pipeline";
-            pipelineStateDescriptor.vertexFunction = vertexFunction;
-            pipelineStateDescriptor.fragmentFunction = fragmentFunction;
-            pipelineStateDescriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+        // Create and init GradientBlit pipelines
+         
+        m_pipelineBlitGradient = _compileRenderPipeline( @"GradientBlit Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
-            m_cmdBlit = [s_metalDevice newRenderPipelineStateWithDescriptor:pipelineStateDescriptor error:&error];
-        }
         
         // Initialize our buffers
         
@@ -1005,11 +948,11 @@ namespace wg
                     if (nVertices > 0 && m_pActiveBlitSource)
                     {
                         MetalSurface* pSurf = m_pActiveBlitSource;
-                        
-//                        glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
-//                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-                        
-                        [m_renderEncoder setRenderPipelineState:m_cmdBlit];
+                                                
+                        if( m_bGradientActive )
+                            [m_renderEncoder setRenderPipelineState:m_pipelineBlitGradient];
+                        else
+                            [m_renderEncoder setRenderPipelineState:m_pipelineBlit];
 
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
@@ -1026,9 +969,9 @@ namespace wg
                     if( nVertices > 0 )
                     {
                         if( m_bGradientActive )
-                            [m_renderEncoder setRenderPipelineState:m_cmdFillGradient];
+                            [m_renderEncoder setRenderPipelineState:m_pipelineFillGradient];
                         else
-                            [m_renderEncoder setRenderPipelineState:m_cmdFill];
+                            [m_renderEncoder setRenderPipelineState:m_pipelineFill];
 
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
@@ -1045,9 +988,9 @@ namespace wg
                     if( nVertices > 0 )
                     {
                         if (m_bGradientActive)
-                            [m_renderEncoder setRenderPipelineState:m_cmdFillGradientAA];
+                            [m_renderEncoder setRenderPipelineState:m_pipelineFillGradientAA];
                         else
-                            [m_renderEncoder setRenderPipelineState:m_cmdFillAA];
+                            [m_renderEncoder setRenderPipelineState:m_pipelineFillAA];
 
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
@@ -1321,7 +1264,7 @@ namespace wg
 
     void MetalGfxDevice::_setMorphFactor(float morphFactor)
     {
-//        glBlendColor(1.f, 1.f, 1.f, morphFactor);
+        [m_renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
     }
 
     //____ _setBlitSource() _______________________________________________________
@@ -1450,6 +1393,209 @@ namespace wg
         }
 
         return thickness * scale;
+    }
+
+    //____ _compileRenderPipeline() _______________________________________________
+
+    id<MTLRenderPipelineState> MetalGfxDevice::_compileRenderPipeline( NSString* label, NSString* vertexShader,
+                                 NSString* fragmentShader, BlendMode blendMode, PixelFormat destFormat )
+    {
+        NSError *error = nil;
+        MTLRenderPipelineDescriptor *descriptor = [[MTLRenderPipelineDescriptor alloc] init];
+
+        descriptor.label = label;
+        descriptor.vertexFunction = [m_library newFunctionWithName:vertexShader];
+        descriptor.fragmentFunction = [m_library newFunctionWithName:fragmentShader];
+        
+        // Set pixelFormat
+
+        switch(destFormat)
+        {
+            case PixelFormat::BGRA_8_linear:
+            case PixelFormat::BGRX_8_linear:
+                descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm;
+                break;
+
+            case PixelFormat::BGRA_8_sRGB:
+            case PixelFormat::BGRX_8_sRGB:
+                descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+                break;
+
+            case PixelFormat::A_8:
+                descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatA8Unorm;
+                break;
+                
+            default:
+                assert(false);
+        }
+        
+        bool bAlphaOnly = (destFormat == PixelFormat::A_8);
+        
+        switch( blendMode )
+        {
+            case BlendMode::Replace:
+                descriptor.colorAttachments[0].blendingEnabled = NO;
+                break;
+
+            case BlendMode::Blend:
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+                break;
+
+            case BlendMode::Morph:
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorBlendAlpha;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorBlendAlpha;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusBlendAlpha;
+                break;
+
+            case BlendMode::Add:
+ 
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Subtract:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationReverseSubtract;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationReverseSubtract;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Multiply:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorDestinationColor;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorZero;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorDestinationAlpha;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorZero;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Invert:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOneMinusDestinationColor;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceColor;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOneMinusDestinationAlpha;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Min:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMin;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationMin;
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Max:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMax;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+
+                if( bAlphaOnly )
+                {
+                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationMax;
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                }
+                break;
+
+            case BlendMode::Ignore:
+
+                descriptor.colorAttachments[0].blendingEnabled = YES;
+                descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
+                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                break;
+
+            default:
+                assert(false);
+                break;
+        }
+        
+        return [s_metalDevice newRenderPipelineStateWithDescriptor:descriptor error:&error];
     }
 
 

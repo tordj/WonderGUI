@@ -100,7 +100,12 @@ using namespace wg;
     m_pDevice->setBlitSource(m_pSurface);
     m_pDevice->blit({1,1});
 
+
     m_pDevice->stretchBlit({300,10,128,128});
+
+    m_pDevice->setTintGradient({300,140,128,128}, Color::Black, Color::Black, Color::White, Color::White);
+    m_pDevice->stretchBlit({300,140,128,128});
+    m_pDevice->clearTintGradient();
 
     m_pDevice->fill( RectF(200.5f,2.25f,20.f,10.f), Color::White);
     

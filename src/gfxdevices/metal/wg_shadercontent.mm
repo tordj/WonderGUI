@@ -233,6 +233,48 @@ blitVertexShader(uint vertexID [[vertex_id]],
     return out;
 }
 
+//____ blitGradientVertexShader() _______________________________________________
+
+
+vertex BlitFragInput
+blitGradientVertexShader(uint vertexID [[vertex_id]],
+             constant Vertex *pVertices [[buffer(0)]],
+             constant vector_float4  *pExtras [[buffer(1)]],
+             constant Uniform * pUniform[[buffer(2)]])
+{
+    BlitFragInput out;
+
+    float2 pos = (vector_float2) pVertices[vertexID].coord.xy;
+
+    vector_float2 canvasSize = pUniform->canvasDim;
+    
+    out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
+    out.position.x = pos.x*2 / canvasSize.x - 1.0;
+    out.position.y = (pUniform->canvasYOfs + pUniform->canvasYMul*pos.y)*2 / canvasSize.y - 1.0;
+
+
+    int     eOfs = pVertices[vertexID].extrasOfs;
+
+    vector_float4 srcDst = pExtras[eOfs];
+    vector_float4 transform = pExtras[eOfs+1];
+    vector_float2 src = srcDst.xy;
+    vector_float2 dst = srcDst.zw;
+
+    out.texUV.x = (src.x + 0.0001f + (pos.x - dst.x) * transform.x + (pos.y - dst.y) * transform.z) / pUniform->texSize.x;      //TODO: Replace this ugly +0.02f fix with whatever is correct.
+    out.texUV.y = (src.y + 0.0001f + (pos.x - dst.x) * transform.y + (pos.y - dst.y) * transform.w) / pUniform->texSize.y;      //TODO: Replace this ugly +0.02f fix with whatever is correct.
+
+    float2   tintOfs = (pos - float2(pUniform->tintRectPos)) / float2(pUniform->tintRectSize);
+    float4   lineStartTint = pUniform->topLeftTint + (pUniform->bottomLeftTint - pUniform->topLeftTint) * tintOfs.y;
+    float4   lineEndTint = pUniform->topRightTint + (pUniform->bottomRightTint - pUniform->topRightTint) * tintOfs.y;
+    float4   gradientTint = lineStartTint + (lineEndTint - lineStartTint) * tintOfs.x;
+
+    out.color = pUniform->flatTint * gradientTint;
+
+    return out;
+}
+
+
+
 //____ blitFragmentShader() ____________________________________________
 
 fragment float4 blitFragmentShader(BlitFragInput in [[stage_in]],

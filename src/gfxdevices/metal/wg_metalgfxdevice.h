@@ -167,6 +167,8 @@ namespace wg
         
         void    _initTables();
         float    _scaleThickness(float thickeness, float slope);
+        id<MTLRenderPipelineState> _compileRenderPipeline( NSString* label, NSString* vertexShader,
+                                    NSString* fragmentShader, BlendMode blendMode, PixelFormat destFormat );
         
         void    _resizeBuffers();
         void    _executeBuffer();
@@ -280,13 +282,14 @@ namespace wg
         bool                        m_bIdle = true;                     // Set to false between beginRender() and when metal has completed all commands,
                                                                         // sometimes after endRender().
         
-        id<MTLRenderPipelineState>  m_cmdFill;
-        id<MTLRenderPipelineState>  m_cmdFillGradient;
-        id<MTLRenderPipelineState>  m_cmdFillAA;
-        id<MTLRenderPipelineState>  m_cmdFillGradientAA;
+        id<MTLRenderPipelineState>  m_pipelineFill;
+        id<MTLRenderPipelineState>  m_pipelineFillGradient;
+        id<MTLRenderPipelineState>  m_pipelineFillAA;
+        id<MTLRenderPipelineState>  m_pipelineFillGradientAA;
 
         
-        id<MTLRenderPipelineState>  m_cmdBlit;
+        id<MTLRenderPipelineState>  m_pipelineBlit;
+        id<MTLRenderPipelineState>  m_pipelineBlitGradient;
 
 
         static const char shaders[];
