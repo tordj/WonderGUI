@@ -36,6 +36,7 @@ using namespace wg;
     
     wg::MetalGfxDevice_p    m_pDevice;
     wg::MetalSurface_p      m_pSurface;
+    wg::MetalSurface_p      m_pClutSurface;
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -54,7 +55,15 @@ using namespace wg;
         
         m_pSurface = MetalSurface::create({4,4}, PixelFormat::BGRA_8, (uint8_t*) myTexture, 16);
  
+        uint8_t myIndexedTexture[16] { 1, 0, 1, 1,
+                                1, 0, 2, 1,
+                                1, 3, 4, 1,
+                                1, 1, 0, 1 };
+
+        Color   myClut[256] = { Color::Transparent, Color::Yellow, Color::Red, Color::Green, Color::Blue };
         
+        m_pClutSurface = MetalSurface::create({4,4}, PixelFormat::CLUT_8, myIndexedTexture, 4, nullptr, SurfaceFlag::Static, myClut);
+        m_pClutSurface->setScaleMode(ScaleMode::Nearest);
     }
 
     return self;
@@ -97,8 +106,8 @@ using namespace wg;
     m_pDevice->clearTintGradient();
 
     
-    m_pDevice->setBlitSource(m_pSurface);
-    m_pDevice->blit({1,1});
+    m_pDevice->setBlitSource(m_pClutSurface);
+//    m_pDevice->blit({1,1});
 
 
     m_pDevice->stretchBlit({300,10,128,128});
@@ -109,6 +118,12 @@ using namespace wg;
 
     m_pDevice->fill( RectF(200.5f,2.25f,20.f,10.f), Color::White);
     
+    CoordI plotCoords[5] { {1,1}, {2,2}, {4,4}, {6,6}, {8,8} };
+    Color  plotColors[5] { Color::White, Color::White, Color::White, Color::White, Color::White };
+
+    m_pDevice->plotPixels(5, plotCoords, plotColors);
+    
+    m_pDevice->drawLine( CoordI(20,20), CoordI(400,40), {255,255,255,255}, 5.f );
     
     m_pDevice->endRender();
     

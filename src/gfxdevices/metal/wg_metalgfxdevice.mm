@@ -78,6 +78,14 @@ namespace wg
                 
         m_library = [s_metalDevice newLibraryWithSource:shaderSource options:nil error:&error];
 
+        // Create and init Plot pipelines
+               
+        m_pipelinePlot = _compileRenderPipeline( @"Plot Pipeline", @"plotVertexShader", @"plotFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
+        // Create and init LineFromTo pipelines
+               
+        m_pipelineLineFromTo = _compileRenderPipeline( @"Line Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
         // Create and init Fill pipelines
         
         m_pipelineFill = _compileRenderPipeline( @"Fill Pipeline", @"fillVertexShader", @"fillFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
@@ -96,26 +104,78 @@ namespace wg
  
         m_pipelineFillGradientAA = _compileRenderPipeline( @"GradientFillAA Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
-        
         // Create and init Blit pipelines
+
+        for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+        {
+            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
+            {
+                            // [BlitFragShader][bGradient][BlendMode][DestFormat]
+                
+                m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blit BGRA_8_linear Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blit BGRA_8_sRGB Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blit BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blit BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_linear Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_sRGB Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_linear Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_sRGB Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_linear Gradient Pipeline", @"clutBlitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_sRGB Gradient Pipeline", @"clutBlitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+//                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Gradient Pipeline", @"clutblitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+            }
+        }
         
+        
+        
+ /*
         m_pipelineBlit = _compileRenderPipeline( @"Blit Pipeline", @"blitVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
         // Create and init GradientBlit pipelines
          
         m_pipelineBlitGradient = _compileRenderPipeline( @"GradientBlit Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
 
+        // Create and init ClutBlitNearest pipelines
+        
+        m_pipelineClutBlitNearest = _compileRenderPipeline( @"ClutBlitNearest Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
+        m_pipelineClutBlitNearestGradient = _compileRenderPipeline( @"ClutBlitNearest Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
+        
+        // Create and init ClutBlitInterpolate pipelines
+        
+        m_pipelineClutBlitInterpolate = _compileRenderPipeline( @"ClutBlitInterpolate Pipeline", @"clutblitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+
+        m_pipelineClutBlitInterpolateGradient = _compileRenderPipeline( @"ClutBlitInterpolate Pipeline", @"clutblitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+*/
+        
+
         
         // Initialize our buffers
         
         m_pCommandBuffer = new int[m_commandBufferSize];
 
-        m_vertexBufferId = [s_metalDevice newBufferWithLength:m_vertexBufferSize*sizeof(float) options:MTLResourceStorageModeShared];
+        m_vertexBufferId = [s_metalDevice newBufferWithLength:m_vertexBufferSize*sizeof(Vertex) options:MTLResourceStorageModeShared];
         m_pVertexBuffer = (Vertex *)[m_vertexBufferId contents];
 
         m_extrasBufferId = [s_metalDevice newBufferWithLength:m_extrasBufferSize*sizeof(float) options:MTLResourceStorageModeShared];
         m_pExtrasBuffer = (float *)[m_extrasBufferId contents];
-     
+
+        m_clipListBufferId = [s_metalDevice newBufferWithLength:m_clipListBufferSize*sizeof(RectI) options:MTLResourceStorageModeShared];
+        m_pClipListBuffer = (RectI *)[m_clipListBufferId contents];
+        
         m_surfaceBufferId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
         m_pSurfaceBuffer = (MetalSurface_p *)[m_surfaceBufferId contents];
         
@@ -454,10 +514,9 @@ namespace wg
         //
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 4)
-        {
             _resizeBuffers();
-        }
-        else if (m_cmd != Command::Fill)
+        
+        if (m_cmd != Command::Fill)
         {
             _endCommand();
             _beginDrawCommand(Command::Fill);
@@ -534,12 +593,9 @@ namespace wg
         //
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-        {
-            _endCommand();
-            _executeBuffer();
-            _beginDrawCommand(Command::FillSubPixel);
-        }
-        else if (m_cmd != Command::FillSubPixel)
+             _resizeBuffers();
+        
+        if (m_cmd != Command::FillSubPixel)
         {
             _endCommand();
             _beginDrawCommand(Command::FillSubPixel);
@@ -607,13 +663,308 @@ namespace wg
         m_pExtrasBuffer[m_extrasOfs++] = radius.h;
 	}
 
-	void MetalGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+    //____ plotPixels() _________________________________________________________________
+
+	void MetalGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
 	{
-	}
+        if (nPixels == 0)
+            return;
+
+        if (m_vertexOfs > m_vertexBufferSize - 1 || m_extrasOfs > m_extrasBufferSize - 4)
+            _resizeBuffers();
+
+        if (m_cmd != Command::Plot)
+        {
+            _endCommand();
+            _beginDrawCommand(Command::Plot);
+        }
+
+        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            const RectI& clip = m_pClipRects[i];
+            for (int pixel = 0; pixel < nPixels; pixel++)
+            {
+                if (clip.contains(pCoords[pixel]))
+                {
+                    m_pVertexBuffer[m_vertexOfs].coord = pCoords[pixel];
+                    m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                    m_vertexOfs++;
+
+                    Color color = pColors[pixel];
+
+                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
+                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
+                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
+                    m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
+
+                    if (m_vertexOfs == m_vertexBufferSize || m_extrasOfs == m_extrasBufferSize)
+                    {
+                        _endCommand();
+                        _executeBuffer();
+                        _beginDrawCommand(Command::Plot);
+                    }
+                }
+            }
+        }
+    }
+
+    //____ drawLine() ____ [from/to] __________________________________________________
 
 	void MetalGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
 	{
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 || m_extrasOfs > m_extrasBufferSize - 8 )
+              _resizeBuffers();
+
+        if (m_cmd != Command::LineFromTo || m_clipCurrOfs == -1)
+        {
+            _endCommand();
+            _beginClippedDrawCommand(Command::LineFromTo);
+        }
+
+        int     length;
+        float   width;
+
+        float    slope;
+        float    s, w;
+        bool    bSteep;
+
+        CoordI    c1, c2, c3, c4;
+
+        if (std::abs(begin.x - end.x) > std::abs(begin.y - end.y))
+        {
+            // Prepare mainly horizontal line segment
+
+            if (begin.x > end.x)
+                std::swap(begin, end);
+
+            length = end.x - begin.x;
+            if (length == 0)
+                return;                                            // TODO: Should stil draw the caps!
+
+            slope = ((float)(end.y - begin.y)) / length;
+            width = _scaleThickness(thickness, slope);
+            bSteep = false;
+
+            s = ((begin.y + 0.5f) - (begin.x + 0.5f)*slope);
+            w =  width / 2 + 0.5f;
+
+            float   y1 = begin.y - width / 2;
+            float   y2 = end.y - width / 2;
+
+            c1.x = begin.x;
+            c1.y = int(y1) - 1;
+            c2.x = end.x;
+            c2.y = int(y2) - 1;
+            c3.x = end.x;
+            c3.y = int(y2 + width) + 2;
+            c4.x = begin.x;
+            c4.y = int(y1 + width) + 2;
+        }
+        else
+        {
+            // Prepare mainly vertical line segment
+
+            if (begin.y > end.y)
+                std::swap(begin, end);
+
+            length = end.y - begin.y;
+            if (length == 0)
+                return;                                            // TODO: Should stil draw the caps!
+
+            slope = ((float)(end.x - begin.x)) / length;
+            width = _scaleThickness(thickness, slope);
+            bSteep = true;
+
+//            s = (begin.x + 0.5f) - (m_canvasYstart + m_canvasYmul * (begin.y + 0.5f))*slope*m_canvasYmul;
+            s = (begin.x + 0.5f) - ((begin.y + 0.5f))*slope;
+            w = width / 2 + 0.5f;
+
+            float   x1 = begin.x - width / 2;
+            float   x2 = end.x - width / 2;
+
+            c1.x = int(x1) - 1;
+            c1.y = begin.y;
+            c2.x = int(x1 + width) + 2;
+            c2.y = begin.y;
+            c3.x = int(x2 + width) + 2;
+            c3.y = end.y;
+            c4.x = int(x2) - 1;
+            c4.y = end.y;
+
+
+        }
+
+        m_pVertexBuffer[m_vertexOfs].coord = c1;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        m_pVertexBuffer[m_vertexOfs].coord = c2;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        m_pVertexBuffer[m_vertexOfs].coord = c3;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        m_pVertexBuffer[m_vertexOfs].coord = c1;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        m_pVertexBuffer[m_vertexOfs].coord = c3;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        m_pVertexBuffer[m_vertexOfs].coord = c4;
+        m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
+        m_vertexOfs++;
+
+        float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
+        m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
+
+        m_pExtrasBuffer[m_extrasOfs++] = s;
+        m_pExtrasBuffer[m_extrasOfs++] = w;
+        m_pExtrasBuffer[m_extrasOfs++] = slope;
+        m_pExtrasBuffer[m_extrasOfs++] = bSteep;
+
 	}
+
+    //____ drawLine() ____ [start/direction] __________________________________________________
+
+    void MetalGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
+    {
+        // Skip calls that won't affect destination
+
+        if (color.a == 0 && (m_blendMode == BlendMode::Blend))
+            return;
+
+        // Create a rectangle from the line
+
+        RectF rect;
+
+        switch (dir)
+        {
+            case Direction::Up:
+                rect.x = begin.x + 0.5f - thickness/2;
+                rect.y = float(begin.y - length);
+                rect.w = thickness;
+                rect.h = float(length);
+                break;
+
+            case Direction::Down:
+                rect.x = begin.x + 0.5f - thickness/2;
+                rect.y = float(begin.y);
+                rect.w = thickness;
+                rect.h = float(length);
+                break;
+
+            case Direction::Left:
+                rect.x = float(begin.x - length);
+                rect.y = begin.y + 0.5f - thickness/2;
+                rect.w = float(length);
+                rect.h = thickness;
+                break;
+
+            case Direction::Right:
+                rect.x = float(begin.x);
+                rect.y = begin.y + 0.5f - thickness/2;
+                rect.w = float(length);
+                rect.h = thickness;
+                break;
+        }
+
+
+        // Create our outer rectangle
+
+        RectI outerRect((int)rect.x, (int)rect.y, ((int)(rect.x + rect.w + 0.999f)) - (int)rect.x, ((int)(rect.y + rect.h + 0.999f)) - (int)rect.y);
+
+        // Clip our rectangle
+
+        if (!outerRect.intersectsWith(m_clipBounds))
+            return;
+
+        //
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
+            _resizeBuffers();
+
+        if (m_cmd != Command::FillSubPixel)
+        {
+            _endCommand();
+            _beginDrawCommand(Command::FillSubPixel);
+        }
+
+
+        // Provide the patches
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            RectI patch(m_pClipRects[i], outerRect);
+            if (patch.w > 0 && patch.h > 0)
+            {
+                int    dx1 = patch.x;
+                int    dy1 = patch.y;
+                int dx2 = patch.x + patch.w;
+                int dy2 = patch.y + patch.h;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy1;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx2;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+
+                m_pVertexBuffer[m_vertexOfs].coord.x = dx1;
+                m_pVertexBuffer[m_vertexOfs].coord.y = dy2;
+                m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
+                m_vertexOfs++;
+            }
+        }
+
+        // Provide color
+
+        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
+        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
+        m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
+
+        // Provide rectangle center and raidus.
+
+        SizeF    radius(rect.w / 2, rect.h / 2);
+        CoordF    center(rect.x + radius.w, rect.y + radius.h);
+
+        m_pExtrasBuffer[m_extrasOfs++] = center.x;
+        m_pExtrasBuffer[m_extrasOfs++] = center.y;
+        m_pExtrasBuffer[m_extrasOfs++] = radius.w;
+        m_pExtrasBuffer[m_extrasOfs++] = radius.h;
+    }
+
 
     //____ _transformBlit() ____ [simple] __________________________________________________
 
@@ -626,12 +977,9 @@ namespace wg
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 )
-        {
-            _endCommand();
-            _executeBuffer();
-            _beginDrawCommandWithSource(Command::Blit);
-        }
-        else if (m_cmd != Command::Blit)
+            _resizeBuffers();
+
+        if (m_cmd != Command::Blit)
         {
             _endCommand();
             _beginDrawCommandWithSource(Command::Blit);
@@ -705,12 +1053,9 @@ namespace wg
             return;
 
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8)
-        {
-            _endCommand();
-            _executeBuffer();
-            _beginDrawCommandWithSource(Command::Blit);
-        }
-        else if (m_cmd != Command::Blit)
+            _resizeBuffers();
+
+        if (m_cmd != Command::Blit)
         {
             _endCommand();
             _beginDrawCommandWithSource(Command::Blit);
@@ -844,6 +1189,33 @@ namespace wg
             
             m_extrasBufferId = newId;
         }
+        
+        if( m_surfaceOfs > m_surfaceBufferSize/2 )
+        {
+            m_surfaceBufferSize *= 2;
+
+            id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
+
+            MetalSurface_p * pNewBuffer = (MetalSurface_p *)[newId contents];
+            memcpy( pNewBuffer, m_pSurfaceBuffer, m_surfaceOfs * sizeof(MetalSurface_p));
+            m_pSurfaceBuffer = pNewBuffer;
+            
+            m_surfaceBufferId = newId;
+        }
+
+        if( m_clipWriteOfs > m_clipListBufferSize/2 )
+        {
+            m_clipListBufferSize *= 2;
+
+            id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_clipListBufferSize*sizeof(RectI) options:MTLResourceStorageModeShared];
+
+            RectI * pNewBuffer = (RectI *)[newId contents];
+            memcpy( pNewBuffer, m_pClipListBuffer, m_clipWriteOfs * sizeof(RectI));
+            m_pClipListBuffer = pNewBuffer;
+            
+            m_clipListBufferId = newId;
+        }
+
     }
 
 
@@ -948,11 +1320,18 @@ namespace wg
                     if (nVertices > 0 && m_pActiveBlitSource)
                     {
                         MetalSurface* pSurf = m_pActiveBlitSource;
-                                                
-                        if( m_bGradientActive )
-                            [m_renderEncoder setRenderPipelineState:m_pipelineBlitGradient];
-                        else
-                            [m_renderEncoder setRenderPipelineState:m_pipelineBlit];
+                      
+                        BlitFragShader shader = BlitFragShader::Normal;
+
+                        if(pSurf->m_pixelDescription.bIndexed)
+                        {
+                            if( pSurf->scaleMode() == ScaleMode::Interpolate )
+                                shader = BlitFragShader::ClutInterpolated;
+                            else
+                                shader = BlitFragShader::ClutNearest;
+                        }
+                        
+                        [m_renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
 
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
@@ -1000,8 +1379,6 @@ namespace wg
                     }
                     break;
                 }
-                    /*
-
                 case Command::LineFromTo:
                 {
                     int clipListOfs = *pCmd++;
@@ -1009,39 +1386,44 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        glUseProgram(m_lineFromToProg[m_bActiveCanvasIsA8]);
-
+                        [m_renderEncoder setRenderPipelineState:m_pipelineLineFromTo];
+                        
                         for (int i = 0; i < clipListLen; i++)
                         {
-                            RectI& clip = m_clipListBuffer[clipListOfs++];
-                            glScissor(clip.x, clip.y, clip.w, clip.h);
-                            glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                            RectI& clip = m_pClipListBuffer[clipListOfs++];
+                            MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
+                            [m_renderEncoder setScissorRect:metalClip];
+                            [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         }
 
-                        glScissor(0, 0, m_canvasSize.w, m_canvasSize.h);
+                        MTLScissorRect orgClip = {0, 0, (unsigned) m_canvasSize.w, (unsigned) m_canvasSize.h};
+                        [m_renderEncoder setScissorRect:orgClip];
+
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
+ 
                     }
                     break;
                 }
                 case Command::Plot:
                 {
-                    int nVertices = *pCmd++;
-                    if( nVertices > 0 )
-                    {
-                        glUseProgram(m_plotProg[m_bActiveCanvasIsA8]);
+                     int nVertices = *pCmd++;
+                     if( nVertices > 0 )
+                     {
+                         [m_renderEncoder setRenderPipelineState:m_pipelinePlot];
 
-                        glDrawArrays(GL_POINTS, vertexOfs, nVertices);
-                        vertexOfs += nVertices;
+                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
+                         vertexOfs += nVertices;
 
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
-                    }
-                    break;
+                         if( m_bMipmappedActiveCanvas )
+                             m_pActiveCanvas->m_bMipmapStale = true;
+                     }
+                     break;
+
                 }
-                case Command::Segments:
+/*                case Command::Segments:
                 {
                     int nSegments = (*pCmd++);
                     if (nSegments > c_maxSegments)

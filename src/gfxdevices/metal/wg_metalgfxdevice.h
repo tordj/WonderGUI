@@ -99,6 +99,7 @@ namespace wg
 		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
 
 		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
+        void    drawLine(CoordI begin, Direction dir, int length, Color color, float thickness) override;
 
 
 	protected:
@@ -121,6 +122,20 @@ namespace wg
         {
             Texture = 0,
             Clut = 1,
+        };
+        
+        enum class BlitFragShader
+        {
+            Normal = 0,
+            ClutNearest = 1,
+            ClutInterpolated = 2
+        };
+        
+        enum class DestFormat
+        {
+            BGRA8_linear,
+            BGRA8_sRGB,
+            A_8
         };
         
         
@@ -287,11 +302,23 @@ namespace wg
         id<MTLRenderPipelineState>  m_pipelineFillAA;
         id<MTLRenderPipelineState>  m_pipelineFillGradientAA;
 
-        
+        id<MTLRenderPipelineState>  m_pipelinePlot;
+
+        id<MTLRenderPipelineState>  m_pipelineLineFromTo;
+/*
         id<MTLRenderPipelineState>  m_pipelineBlit;
         id<MTLRenderPipelineState>  m_pipelineBlitGradient;
 
+        id<MTLRenderPipelineState>  m_pipelineClutBlitNearest;
+        id<MTLRenderPipelineState>  m_pipelineClutBlitNearestGradient;
 
+        id<MTLRenderPipelineState>  m_pipelineClutBlitInterpolate;
+        id<MTLRenderPipelineState>  m_pipelineClutBlitInterpolateGradient;
+*/
+        id<MTLRenderPipelineState>  m_blitPipelines[3][2][BlendMode_size][3]; // [BlitFragShader][bGradient][BlendMode][DestFormat]
+
+        
+        
         static const char shaders[];
 
         static id<MTLDevice>        s_metalDevice;

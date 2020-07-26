@@ -308,7 +308,7 @@ namespace wg
 			case PixelFormat::CLUT_8:
 			case PixelFormat::CLUT_8_sRGB:
 			case PixelFormat::CLUT_8_linear:
-				m_internalFormat = MTLPixelFormatR8Uint;
+				m_internalFormat = MTLPixelFormatR8Unorm;
 				m_pixelSize = 1;
 				break;
 
