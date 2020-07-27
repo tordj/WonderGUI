@@ -128,7 +128,8 @@ namespace wg
         {
             Normal = 0,
             ClutNearest = 1,
-            ClutInterpolated = 2
+            ClutInterpolated = 2,
+            A8Source = 3
         };
         
         enum class DestFormat
@@ -297,25 +298,12 @@ namespace wg
         bool                        m_bIdle = true;                     // Set to false between beginRender() and when metal has completed all commands,
                                                                         // sometimes after endRender().
         
-        id<MTLRenderPipelineState>  m_pipelineFill;
-        id<MTLRenderPipelineState>  m_pipelineFillGradient;
-        id<MTLRenderPipelineState>  m_pipelineFillAA;
-        id<MTLRenderPipelineState>  m_pipelineFillGradientAA;
-
-        id<MTLRenderPipelineState>  m_pipelinePlot;
-
-        id<MTLRenderPipelineState>  m_pipelineLineFromTo;
-/*
-        id<MTLRenderPipelineState>  m_pipelineBlit;
-        id<MTLRenderPipelineState>  m_pipelineBlitGradient;
-
-        id<MTLRenderPipelineState>  m_pipelineClutBlitNearest;
-        id<MTLRenderPipelineState>  m_pipelineClutBlitNearestGradient;
-
-        id<MTLRenderPipelineState>  m_pipelineClutBlitInterpolate;
-        id<MTLRenderPipelineState>  m_pipelineClutBlitInterpolateGradient;
-*/
-        id<MTLRenderPipelineState>  m_blitPipelines[3][2][BlendMode_size][3]; // [BlitFragShader][bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_plotPipelines[BlendMode_size][3];          // [BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_lineFromToPipelines[BlendMode_size][3];    // [BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_fillPipelines[2][BlendMode_size][3];       // [bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_fillAAPipelines[2][BlendMode_size][3];     // [bGradient][BlendMode][DestFormat]
+        
+        id<MTLRenderPipelineState>  m_blitPipelines[4][2][BlendMode_size][3];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
 
         
         

@@ -186,7 +186,7 @@ namespace wg
 		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
-		static const int c_segmentsTintTexMapSize = 16;				// Number of segments tint palettes that fit into segmentsTintTexMap.
+		static const int c_segmentsTintTexMapSize = 64;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;

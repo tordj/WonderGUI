@@ -78,90 +78,88 @@ namespace wg
                 
         m_library = [s_metalDevice newLibraryWithSource:shaderSource options:nil error:&error];
 
-        // Create and init Plot pipelines
-               
-        m_pipelinePlot = _compileRenderPipeline( @"Plot Pipeline", @"plotVertexShader", @"plotFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+        // Create and init Plot & Line pipelines
 
-        // Create and init LineFromTo pipelines
-               
-        m_pipelineLineFromTo = _compileRenderPipeline( @"Line Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
+        for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+        {
+//            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
+            {
+                m_plotPipelines[blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Plot BGRA_8_linear Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_plotPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Plot BGRA_8_sRGB Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_plotPipelines[blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Plot A_8 Pipeline", @"plotVertexShader", @"plotFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+                
+                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Line BGRA_8_linear Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Line BGRA_8_sRGB Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_lineFromToPipelines[blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Line A_8 Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+            }
+        }
+        
         // Create and init Fill pipelines
+
+        for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+        {
+//            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
+            {
+                m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillPipelines[0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Fill A_8 Pipeline", @"fillVertexShader", @"fillFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillPipelines[1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"GradientFill A_8 Pipeline", @"fillGradientVertexShader", @"fillFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Fill A_8 Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"GradientFill A_8 Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+            }
+        }
         
-        m_pipelineFill = _compileRenderPipeline( @"Fill Pipeline", @"fillVertexShader", @"fillFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-        
-        
-        // Create and init GradientFill pipelines
-
-        m_pipelineFillGradient = _compileRenderPipeline( @"GradientFill Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        // Create and init AA Fill pipelines
-
-        m_pipelineFillAA = _compileRenderPipeline( @"FillAA Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-           
-        // Create and init AA GradientFill pipelines
- 
-        m_pipelineFillGradientAA = _compileRenderPipeline( @"GradientFillAA Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
         // Create and init Blit pipelines
 
         for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
         {
-            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
+//            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
             {
-                            // [BlitFragShader][bGradient][BlendMode][DestFormat]
+               
+                    // [BlitFragShader][bGradient][BlendMode][DestFormat]
                 
                 m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blit BGRA_8_linear Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blit BGRA_8_sRGB Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Pipeline", @"blitVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::Normal][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Pipeline", @"blitVertexShader", @"blitFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Blit BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"Blit BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::Normal][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"Blit A_8 Gradient Pipeline", @"blitGradientVertexShader", @"blitFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_linear Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_sRGB Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitNearest BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::ClutNearest][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitNearest A_8 Gradient Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_linear Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_sRGB Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Pipeline", @"clutBlitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_linear Gradient Pipeline", @"clutBlitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
                 m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"ClutBlitInterpolated BGRA_8_sRGB Gradient Pipeline", @"clutBlitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-//                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Gradient Pipeline", @"clutblitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_blitPipelines[(int)BlitFragShader::ClutInterpolated][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"ClutBlitInterpolated A_8 Gradient Pipeline", @"clutBlitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"A8SourceBlit BGRA_8_linear Pipeline", @"blitVertexShader", @"alphaBlitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"A8SourceBlit BGRA_8_sRGB Pipeline", @"blitVertexShader", @"alphaBlitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_blitPipelines[(int)BlitFragShader::A8Source][0][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"A8SourceBlit A_8 Pipeline", @"blitVertexShader", @"alphaBlitFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"A8SourceBlit BGRA_8_linear Gradient Pipeline", @"blitGradientVertexShader", @"alphaBlitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::BGRA8_sRGB]   = _compileRenderPipeline( @"A8SourceBlit BGRA_8_sRGB Gradient Pipeline", @"blitGradientVertexShader", @"alphaBlitFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_blitPipelines[(int)BlitFragShader::A8Source][1][blendMode][(int)DestFormat::A_8]          = _compileRenderPipeline( @"A8SourceBlit A_8 Gradient Pipeline", @"blitGradientVertexShader", @"alphaBlitFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
             }
         }
-        
-        
-        
- /*
-        m_pipelineBlit = _compileRenderPipeline( @"Blit Pipeline", @"blitVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        // Create and init GradientBlit pipelines
-         
-        m_pipelineBlitGradient = _compileRenderPipeline( @"GradientBlit Pipeline", @"blitGradientVertexShader", @"blitFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        // Create and init ClutBlitNearest pipelines
-        
-        m_pipelineClutBlitNearest = _compileRenderPipeline( @"ClutBlitNearest Pipeline", @"blitVertexShader", @"clutBlitNearestFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        m_pipelineClutBlitNearestGradient = _compileRenderPipeline( @"ClutBlitNearest Pipeline", @"blitGradientVertexShader", @"clutBlitNearestFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        
-        // Create and init ClutBlitInterpolate pipelines
-        
-        m_pipelineClutBlitInterpolate = _compileRenderPipeline( @"ClutBlitInterpolate Pipeline", @"clutblitInterpolateVertexShader", @"clutBlitInterpolateFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-
-        m_pipelineClutBlitInterpolateGradient = _compileRenderPipeline( @"ClutBlitInterpolate Pipeline", @"clutblitInterpolateGradientVertexShader", @"clutBlitInterpolateFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
-*/
-        
-
         
         // Initialize our buffers
         
@@ -1330,6 +1328,8 @@ namespace wg
                             else
                                 shader = BlitFragShader::ClutNearest;
                         }
+                        else if(pSurf->m_pixelDescription.format == PixelFormat::A_8)
+                            shader = BlitFragShader::A8Source;
                         
                         [m_renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
 
@@ -1347,11 +1347,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        if( m_bGradientActive )
-                            [m_renderEncoder setRenderPipelineState:m_pipelineFillGradient];
-                        else
-                            [m_renderEncoder setRenderPipelineState:m_pipelineFill];
-
+                        [m_renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
@@ -1366,11 +1362,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        if (m_bGradientActive)
-                            [m_renderEncoder setRenderPipelineState:m_pipelineFillGradientAA];
-                        else
-                            [m_renderEncoder setRenderPipelineState:m_pipelineFillAA];
-
+                        [m_renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
@@ -1386,7 +1378,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [m_renderEncoder setRenderPipelineState:m_pipelineLineFromTo];
+                        [m_renderEncoder setRenderPipelineState:m_lineFromToPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         
                         for (int i = 0; i < clipListLen; i++)
                         {
@@ -1412,8 +1404,7 @@ namespace wg
                      int nVertices = *pCmd++;
                      if( nVertices > 0 )
                      {
-                         [m_renderEncoder setRenderPipelineState:m_pipelinePlot];
-
+                         [m_renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                          [m_renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
                          vertexOfs += nVertices;
 
@@ -1804,7 +1795,7 @@ namespace wg
                 break;
 
             case PixelFormat::A_8:
-                descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatA8Unorm;
+                descriptor.colorAttachments[0].pixelFormat = MTLPixelFormatR8Unorm;
                 break;
                 
             default:
@@ -1962,6 +1953,7 @@ namespace wg
                 break;
 
             case BlendMode::Ignore:
+            case BlendMode::Undefined:
 
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
