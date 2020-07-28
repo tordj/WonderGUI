@@ -45,6 +45,14 @@ using namespace wg;
     if(self)
     {
         Base::init();
+    
+        auto pContext = Context::create();
+        pContext->setGammaCorrection(false);
+        
+        Base::setActiveContext(pContext);
+
+    
+        
         MetalGfxDevice::setMetalDevice( mtkView.device );
         m_pDevice = MetalGfxDevice::create( SizeI(512,512), mtkView.currentRenderPassDescriptor );
  
@@ -83,6 +91,7 @@ using namespace wg;
     m_pDevice->setRenderPassDescriptor(view.currentRenderPassDescriptor);
     m_pDevice->setDrawableToAutopresent(view.currentDrawable);
 
+    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
     m_pDevice->beginRender();
 
     m_pDevice->setTintGradient({10,300,200,200}, Color::Red, Color::Red, Color::Red, Color::Red);
@@ -124,6 +133,9 @@ using namespace wg;
     m_pDevice->plotPixels(5, plotCoords, plotColors);
     
     m_pDevice->drawLine( CoordI(20,20), CoordI(400,40), {255,255,255,255}, 5.f );
+    
+    m_pDevice->fill( RectI(200,200,100,100), Color::DarkBlue );
+    m_pDevice->drawElipse( {200,200,100,100}, 20.f, Color::Red, 4.f, Color::White );
     
     m_pDevice->endRender();
     

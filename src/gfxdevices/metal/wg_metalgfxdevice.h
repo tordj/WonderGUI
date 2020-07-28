@@ -66,6 +66,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
+        bool    setCanvas( SizeI canvasSize, bool bResetClipList = true );
 		bool	setCanvas(Surface * pCanvas, bool bResetClipList = true ) override;
 
         //.____ State _________________________________________________
@@ -111,17 +112,24 @@ namespace wg
 
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
-        enum class VertexInputIndex : unsigned long
+        enum class VertexInputIndex
         {
             VertexBuffer = 0,
             ExtrasBuffer = 1,
             Uniform = 2
         };
+
+        enum class FragmentInputIndex
+        {
+            ExtrasBuffer = 0
+        };
+
         
         enum class TextureIndex
         {
             Texture = 0,
             Clut = 1,
+            SegPal = 2
         };
         
         enum class BlitFragShader
@@ -204,7 +212,7 @@ namespace wg
         int             m_cmdBeginVertexOfs;                        // Saved for CmdFinalizer
 
 //        GLuint            m_framebufferId;
-//        int             m_nSegments;                                // Number of segments for current segment command.
+        int             m_nSegments;                                // Number of segments for current segment command.
 
         int             m_canvasYstart;
         int             m_canvasYmul;
@@ -271,9 +279,17 @@ namespace wg
         int             m_clipWriteOfs = 0;                 // Write offset in m_clipListBuffer
         int             m_clipCurrOfs = -1;                 // Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
 
+        const int       c_segPalEntrySize = 2*4*4*c_maxSegments;  // Bytes per palette (4 pixels of 4 uint16_t per segment).
+
+        id<MTLTexture>  m_segPalTextureId = nil;
+        id<MTLBuffer>   m_segPalBufferId = nil;
+        int             m_segPalBufferSize = 64;            // Number of complete palettes, not number of uint16_t.
+        uint16_t *      m_pSegPalBuffer = nullptr;
+        int             m_segPalOfs = 0;
+        
 //        GLuint         m_segmentsTintTexId;                                                    // GL texture handle.
 //        uint16_t    m_segmentsTintTexMap[c_segmentsTintTexMapSize][c_maxSegments * 4 * 4];    // Horizontally aligned blocks of 2x2 pixels each, one for each segment color.
-        int             m_segmentsTintTexOfs;               // Write offset in m_segmentsTintTexMap
+//        int             m_segmentsTintTexOfs;               // Write offset in m_segmentsTintTexMap
 
         
         // Active state data
@@ -305,7 +321,7 @@ namespace wg
         
         id<MTLRenderPipelineState>  m_blitPipelines[4][2][BlendMode_size][3];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
 
-        
+        id<MTLRenderPipelineState>  m_segmentsPipeline;
         
         static const char shaders[];
 

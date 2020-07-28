@@ -161,6 +161,10 @@ namespace wg
             }
         }
         
+        // Create and init Segments pipelines
+        
+        m_segmentsPipeline = _compileRenderPipeline( @"Segments BGRA_8_linear Pipeline", @"segmentsVertexShader", @"segmentsFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+        
         // Initialize our buffers
         
         m_pCommandBuffer = new int[m_commandBufferSize];
@@ -176,6 +180,22 @@ namespace wg
         
         m_surfaceBufferId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
         m_pSurfaceBuffer = (MetalSurface_p *)[m_surfaceBufferId contents];
+        
+        m_segPalBufferId = [s_metalDevice newBufferWithLength:m_segPalBufferSize*c_segPalEntrySize options:MTLResourceStorageModeShared];
+        m_pSegPalBuffer = (uint16_t *)[m_segPalBufferId contents];
+
+        // Create the private texture
+        
+        MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
+
+        textureDescriptor.pixelFormat   = MTLPixelFormatRGBA16Unorm;
+        textureDescriptor.width         = c_maxSegments*2;
+        textureDescriptor.height        = m_segPalBufferSize*2;   // Two pixels height for each palette entry.
+        textureDescriptor.storageMode   = MTLStorageModePrivate;
+
+        m_segPalTextureId = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
+
+        
         
         // Initialize our shader environment
                 
@@ -215,7 +235,7 @@ namespace wg
 	{
 		return SurfaceFactory_p();
 	}
-
+/*
 	//____ setCanvas() ________________________________________________________
 
 	bool MetalGfxDevice::setCanvas(Surface * pCanvas, bool bResetClipList )
@@ -223,6 +243,83 @@ namespace wg
 		m_pCanvas = pCanvas;
 		return true;
 	}
+*/
+    //____ setCanvas() __________________________________________________________________
+
+    bool MetalGfxDevice::setCanvas( SizeI canvasSize, bool bResetClipRects )
+    {
+        // Do NOT add any gl-calls here, INCLUDING glGetError()!!!
+        // This method can be called without us having our GL-context.
+
+        if (canvasSize.w < 1 || canvasSize.h < 1)
+            return false;
+
+        m_pCanvas = nullptr;
+        m_canvasSize = canvasSize;
+        m_clipCanvas = m_canvasSize;
+
+        if( bResetClipRects )
+        {
+            m_clipBounds = m_canvasSize;
+            m_pClipRects = &m_clipCanvas;
+            m_nClipRects = 1;
+        }
+
+        m_canvasYstart = canvasSize.h;
+        m_canvasYmul = -1;
+
+        if (m_bRendering)
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetCanvas, 2);
+            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
+            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
+            m_pSurfaceBuffer[m_surfaceOfs++] = nullptr;
+        }
+
+        m_emptyCanvasSize = canvasSize;
+
+        return true;
+    }
+
+    bool MetalGfxDevice::setCanvas( Surface * pSurface, bool bResetClipRects )
+    {
+        // Do NOT add any gl-calls here, INCLUDING glGetError()!!!
+        // This method can be called without us having our GL-context.
+
+        if( pSurface == nullptr )
+            return setCanvas( m_emptyCanvasSize, bResetClipRects );
+
+        if (!pSurface || pSurface->typeInfo() != MetalSurface::TYPEINFO)
+            return false;
+
+        if (pSurface->pixelFormat() != PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
+            return false;
+
+        m_pCanvas = pSurface;
+        m_canvasSize = pSurface->size();
+        m_clipCanvas = m_canvasSize;
+
+        if( bResetClipRects )
+        {
+            m_clipBounds = m_canvasSize;
+            m_pClipRects = &m_clipCanvas;
+            m_nClipRects = 1;
+        }
+
+        m_canvasYstart = 0;
+        m_canvasYmul = 1;
+
+        if (m_bRendering)
+        {
+            _endCommand();
+            _beginStateCommand(Command::SetCanvas, 2);
+            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
+            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
+            m_pSurfaceBuffer[m_surfaceOfs++] = static_cast<MetalSurface*>(pSurface);
+        }
+        return true;
+    }
 
     //____ setClipList() _______________________________________________________
 
@@ -398,7 +495,7 @@ namespace wg
         m_extrasOfs = 0;
         m_commandOfs = 0;
         m_surfaceOfs = 0;
-        m_segmentsTintTexOfs = 0;
+        m_segPalOfs = 0;
         m_clipWriteOfs = 0;
         m_clipCurrOfs = -1;
 
@@ -409,7 +506,7 @@ namespace wg
 
         // Create a render command encoder.
         m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        m_renderEncoder.label = @"MyRenderEncoder";
+        m_renderEncoder.label = @"MetalGfxDeviceRenderEncoder";
 
         _setCanvas( static_cast<MetalSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
         _setBlendMode(m_blendMode);
@@ -422,6 +519,8 @@ namespace wg
 
         _setBlitSource( static_cast<MetalSurface*>(m_pBlitSource.rawPtr()) );
 
+        [m_renderEncoder endEncoding];
+        
         return true;
     }
 
@@ -439,8 +538,6 @@ namespace wg
         
         //
         
-        [m_renderEncoder endEncoding];
-
         // Schedule a present once the framebuffer is complete using the current drawable.
 
         if( m_drawableToAutoPresent != nil )
@@ -1128,8 +1225,375 @@ namespace wg
         m_pExtrasBuffer[m_extrasOfs++] = complexTransform[1][1];
 	}
 
-	void MetalGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+    //____ _transformDrawSegments() ___________________________________________________
+
+	void MetalGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
+        if (!_dest.intersectsWith(m_clipBounds))
+            return;
+
+        //
+
+        int extrasSpaceNeeded = (8 + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;        // Various data + colors + strips + alignment + margin for
+
+        assert( extrasSpaceNeeded <= m_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
+
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - extrasSpaceNeeded || m_segPalOfs == m_segPalBufferSize )            // varios data, transform , colors, edgestrips
+        {
+            m_neededExtrasBufferSize = m_extrasOfs + extrasSpaceNeeded;
+            _resizeBuffers();
+        }
+        
+        if (m_cmd != Command::Segments || m_nSegments != nSegments )
+        {
+            m_nSegments = nSegments;
+
+            _endCommand();
+            _beginDrawCommandWithInt(Command::Segments, m_nSegments);
+        }
+
+        // Do transformations
+
+        RectI dest = _dest;
+
+        int uIncX = simpleTransform[0][0];
+        int vIncX = simpleTransform[0][1];
+        int uIncY = simpleTransform[1][0];
+        int vIncY = simpleTransform[1][1];
+
+        // Possibly clip the destination rectangle if we have space for more columns than we have
+
+        int maxCol = (nEdgeStrips - 1);
+        if (uIncX != 0)                                // Columns are aligned horizontally
+        {
+            if (dest.w > maxCol)
+            {
+                if (uIncX < 0)
+                    dest.x += dest.w - maxCol;
+                dest.w = maxCol;
+            }
+        }
+        else                                        // Columns are aligned vertically
+        {
+            if (dest.h > maxCol)
+            {
+                if (uIncY < 0)
+                    dest.y += dest.h - maxCol;
+                dest.h = maxCol;
+            }
+        }
+
+        // Calc topLeft UV values
+
+        int uTopLeft = 0;
+        int vTopLeft = 0;
+
+        if (uIncX + uIncY < 0)
+            uTopLeft = maxCol;
+
+        if (vIncX < 0)
+            vTopLeft = dest.w;
+        else if (vIncY < 0)
+            vTopLeft = dest.h;
+
+        // Setup vertices
+
+        for (int i = 0; i < m_nClipRects; i++)
+        {
+            RectI patch(m_pClipRects[i], dest);
+            if (patch.w > 0 && patch.h > 0)
+            {
+                Vertex * pVertex = m_pVertexBuffer + m_vertexOfs;
+
+                int        dx1 = patch.x;
+                int        dx2 = patch.x + patch.w;
+                int        dy1 = patch.y;
+                int        dy2 = patch.y + patch.h;
+
+                // Calc UV-coordinates. U is edge offset, V is pixel offset from begin in column.
+
+                float    u1 = (float) (uTopLeft + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]);
+                float    v1 = (float) (vTopLeft + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]);
+
+                float    u2 = (float) (uTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y - dest.y) * simpleTransform[1][0]);
+                float    v2 = (float) (vTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y - dest.y) * simpleTransform[1][1]);
+
+                float    u3 = (float) (uTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]);
+                float    v3 = (float) (vTopLeft + (patch.x + patch.w - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]);
+
+                float    u4 = (float) (uTopLeft + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]);
+                float    v4 = (float) (vTopLeft + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]);
+
+                float uMod = -0.5f;
+                float vMod = -0.5f;
+                
+                CoordF    uv1 = { u1 + uMod, v1 + vMod };
+                CoordF    uv2 = { u2 + uMod, v2 + vMod };
+                CoordF    uv3 = { u3 + uMod, v3 + vMod };
+                CoordF    uv4 = { u4 + uMod, v4 + vMod };
+
+
+                //
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv1.x, uv1.y };
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv2.x, uv2.y };
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv3.x, uv3.y };
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy1;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv1.x, uv1.y };
+                pVertex++;
+
+                pVertex->coord.x = dx2;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv3.x, uv3.y };
+                pVertex++;
+
+                pVertex->coord.x = dx1;
+                pVertex->coord.y = dy2;
+                pVertex->extrasOfs = m_extrasOfs / 4;
+                pVertex->uv = { uv4.x, uv4.y };
+                pVertex++;
+
+                m_vertexOfs += 6;
+            }
+        }
+
+        // Setup extras data
+
+        GLfloat * pExtras = m_pExtrasBuffer + m_extrasOfs;
+
+        // Add various data to extras
+
+        int edgeStripOfs = (m_extrasOfs + 8);    // Offset for edgestrips in buffer.
+
+        pExtras[0] = (float) nSegments;
+        pExtras[1] = (float) edgeStripOfs/4;
+        pExtras[2] = (float)((_dest.w) * abs(simpleTransform[0][0]) + (_dest.h) * abs(simpleTransform[1][0]));
+        pExtras[3] = (float)((_dest.w) * abs(simpleTransform[0][1]) + (_dest.h) * abs(simpleTransform[1][1]));
+        pExtras[4] = float( 0.25f/c_maxSegments );
+        pExtras[5] = float(m_segPalOfs + 0.25f) / m_segPalBufferSize;
+        pExtras[6] = float(c_maxSegments*2);
+        pExtras[7] = float(m_segPalBufferSize*2);
+
+        pExtras += 8;                                                // Alignment for vec4 reads.
+
+        // Add colors to segmentsTintTexMap
+
+        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+        const Color* pSegCol = pSegmentColors;
+
+        uint16_t* pMapRow = &m_pSegPalBuffer[m_segPalOfs*c_segPalEntrySize/2];
+        int            mapPitch = c_maxSegments * 4 * 2;
+
+        switch (tintMode)
+        {
+            case TintMode::None:
+            case TintMode::Flat:
+            {
+                for (int i = 0; i < nSegments; i++)
+                {
+                    uint16_t r = uint16_t(pConv[pSegCol->r] * 65535);
+                    uint16_t g = uint16_t(pConv[pSegCol->g] * 65535);
+                    uint16_t b = uint16_t(pConv[pSegCol->b] * 65535);
+                    uint16_t a = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+
+                    pMapRow[i * 8 + 0] = r;
+                    pMapRow[i * 8 + 1] = g;
+                    pMapRow[i * 8 + 2] = b;
+                    pMapRow[i * 8 + 3] = a;
+                    pMapRow[i * 8 + 4] = r;
+                    pMapRow[i * 8 + 5] = g;
+                    pMapRow[i * 8 + 6] = b;
+                    pMapRow[i * 8 + 7] = a;
+
+                    pMapRow[mapPitch + i * 8 + 0] = r;
+                    pMapRow[mapPitch + i * 8 + 1] = g;
+                    pMapRow[mapPitch + i * 8 + 2] = b;
+                    pMapRow[mapPitch + i * 8 + 3] = a;
+                    pMapRow[mapPitch + i * 8 + 4] = r;
+                    pMapRow[mapPitch + i * 8 + 5] = g;
+                    pMapRow[mapPitch + i * 8 + 6] = b;
+                    pMapRow[mapPitch + i * 8 + 7] = a;
+                    pSegCol++;
+                }
+                break;
+            }
+
+            case TintMode::GradientX:
+            {
+                for (int i = 0; i < nSegments; i++)
+                {
+                    int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+                    int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+                    int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+                    int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+                    int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+                    int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+                    int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    pMapRow[i * 8 + 0] = r1;
+                    pMapRow[i * 8 + 1] = g1;
+                    pMapRow[i * 8 + 2] = b1;
+                    pMapRow[i * 8 + 3] = a1;
+                    pMapRow[i * 8 + 4] = r2;
+                    pMapRow[i * 8 + 5] = g2;
+                    pMapRow[i * 8 + 6] = b2;
+                    pMapRow[i * 8 + 7] = a2;
+
+                    pMapRow[mapPitch + i * 8 + 0] = r1;
+                    pMapRow[mapPitch + i * 8 + 1] = g1;
+                    pMapRow[mapPitch + i * 8 + 2] = b1;
+                    pMapRow[mapPitch + i * 8 + 3] = a1;
+                    pMapRow[mapPitch + i * 8 + 4] = r2;
+                    pMapRow[mapPitch + i * 8 + 5] = g2;
+                    pMapRow[mapPitch + i * 8 + 6] = b2;
+                    pMapRow[mapPitch + i * 8 + 7] = a2;
+                }
+                break;
+            }
+
+            case TintMode::GradientY:
+            {
+                for (int i = 0; i < nSegments; i++)
+                {
+                    int r1 = uint16_t(pConv[pSegCol->r] * 65535);
+                    int g1 = uint16_t(pConv[pSegCol->g] * 65535);
+                    int b1 = uint16_t(pConv[pSegCol->b] * 65535);
+                    int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    int r2 = uint16_t(pConv[pSegCol->r] * 65535);
+                    int g2 = uint16_t(pConv[pSegCol->g] * 65535);
+                    int b2 = uint16_t(pConv[pSegCol->b] * 65535);
+                    int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    pMapRow[i * 8 + 0] = r1;
+                    pMapRow[i * 8 + 1] = g1;
+                    pMapRow[i * 8 + 2] = b1;
+                    pMapRow[i * 8 + 3] = a1;
+                    pMapRow[i * 8 + 4] = r1;
+                    pMapRow[i * 8 + 5] = g1;
+                    pMapRow[i * 8 + 6] = b1;
+                    pMapRow[i * 8 + 7] = a1;
+
+                    pMapRow[mapPitch + i * 8 + 0] = r2;
+                    pMapRow[mapPitch + i * 8 + 1] = g2;
+                    pMapRow[mapPitch + i * 8 + 2] = b2;
+                    pMapRow[mapPitch + i * 8 + 3] = a2;
+                    pMapRow[mapPitch + i * 8 + 4] = r2;
+                    pMapRow[mapPitch + i * 8 + 5] = g2;
+                    pMapRow[mapPitch + i * 8 + 6] = b2;
+                    pMapRow[mapPitch + i * 8 + 7] = a2;
+                }
+                break;
+            }
+
+            case TintMode::GradientXY:
+            {
+                for (int i = 0; i < nSegments; i++)
+                {
+                    pMapRow[i * 8 + 0] = uint16_t(pConv[pSegCol->r] * 65535);
+                    pMapRow[i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+                    pMapRow[i * 8 + 2] = uint16_t(pConv[pSegCol->b] * 65535);
+                    pMapRow[i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    pMapRow[i * 8 + 4] = uint16_t(pConv[pSegCol->r] * 65535);
+                    pMapRow[i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+                    pMapRow[i * 8 + 6] = uint16_t(pConv[pSegCol->b] * 65535);
+                    pMapRow[i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    pMapRow[mapPitch + i * 8 + 4] = uint16_t(pConv[pSegCol->r] * 65535);
+                    pMapRow[mapPitch + i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
+                    pMapRow[mapPitch + i * 8 + 6] = uint16_t(pConv[pSegCol->b] * 65535);
+                    pMapRow[mapPitch + i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+
+                    pMapRow[mapPitch + i * 8 + 0] = uint16_t(pConv[pSegCol->r] * 65535);
+                    pMapRow[mapPitch + i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
+                    pMapRow[mapPitch + i * 8 + 2] = uint16_t(pConv[pSegCol->b] * 65535);
+                    pMapRow[mapPitch + i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pSegCol++;
+                }
+                break;
+            }
+        }
+
+        m_segPalOfs++;
+
+        // Add edgestrips to extras
+
+        pExtras = m_pExtrasBuffer + edgeStripOfs;
+
+        const int * pEdges = pEdgeStrips;
+
+        for (int i = 0; i < nEdgeStrips-1; i++)
+        {
+            for (int j = 0; j < nSegments - 1; j++)
+            {
+                int edgeIn = pEdges[j];
+                int edgeOut = pEdges[edgeStripPitch+j];
+
+                if (edgeIn > edgeOut)
+                    std::swap(edgeIn, edgeOut);
+
+                float increment = edgeOut == edgeIn ? 100.f : 256.f / (edgeOut - edgeIn);
+                float beginAdder;
+                float endAdder;
+
+                if ((edgeOut & 0xFFFFFF00) <= (unsigned int) edgeIn)
+                {
+                    float firstPixelCoverage = ((256 - (edgeOut & 0xFF)) + (edgeOut - edgeIn) / 2) / 256.f;
+
+                    beginAdder = increment * (edgeIn & 0xFF)/256.f + firstPixelCoverage;
+                    endAdder = beginAdder;
+                }
+                else
+                {
+                    int height = 256 - (edgeIn & 0xFF);
+                    int width = (int)(increment * height);
+                    float firstPixelCoverage = (height * width) / (2 * 65536.f);
+                    float lastPixelCoverage = 1.f - (edgeOut & 0xFF)*increment*(edgeOut & 0xFF) / (2*65536.f);
+
+                    beginAdder = increment * (edgeIn & 0xFF) / 256.f + firstPixelCoverage;
+                    endAdder = lastPixelCoverage - (1.f - (edgeOut & 0xFF)*increment / 256.f);
+//                     endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
+                }
+
+                *pExtras++ = edgeIn/256.f;                    // Segment begin pixel
+                *pExtras++ = increment;                        // Segment increment
+                *pExtras++ = beginAdder;                    // Segment begin adder
+                *pExtras++ = endAdder;                        // Segment end adder
+            }
+
+            pEdges += edgeStripPitch;
+        }
+
+        m_extrasOfs += extrasSpaceNeeded;
+
 	}
 
 
@@ -1221,6 +1685,9 @@ namespace wg
 
     void MetalGfxDevice::_executeBuffer()
     {
+        if( m_commandOfs == 0 )
+            return;
+        
     /*
         LOG_GLERROR(glGetError());
 
@@ -1244,12 +1711,47 @@ namespace wg
 
         LOG_GLERROR(glGetError());
     */
+        // Update segments palette texture
+        
+        if( m_segPalOfs > 0 )
+        {
+            int bytesPerRow = sizeof(uint16_t)*4*2*c_maxSegments;
+
+            MTLSize textureSize = { (unsigned) c_maxSegments*2, (unsigned) m_segPalOfs*2, 1};
+            MTLOrigin textureOrigin = {0,0,0};
+                        
+            id<MTLBlitCommandEncoder> blitCommandEncoder = [m_metalCommandBuffer blitCommandEncoder];
+            [blitCommandEncoder copyFromBuffer:     m_segPalBufferId
+                                sourceOffset:       0
+                                sourceBytesPerRow:  bytesPerRow
+                                sourceBytesPerImage:m_segPalOfs*c_segPalEntrySize
+                                sourceSize:         textureSize
+                                toTexture:          m_segPalTextureId
+                                destinationSlice:   0
+                                destinationLevel:   0
+                                destinationOrigin:  textureOrigin];
+
+            [blitCommandEncoder endEncoding];
+            
+            //TODO: We need to sync this, don't start drawing segments until this has been fully uploaded.
+        }
+
+        // Create our render encoder.
+        
+        m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+        m_renderEncoder.label = @"GfxDeviceMetalRenderEncoder";
+
+        // Set buffers for vertex shaders
         
         [m_renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
         
         [m_renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
         [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
+        // Set buffers/textures for segments fragment shader
+        
+        [m_renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
+        [m_renderEncoder setFragmentBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
         
         int * pCmd = m_pCommandBuffer;
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
@@ -1414,7 +1916,7 @@ namespace wg
                      break;
 
                 }
-/*                case Command::Segments:
+                case Command::Segments:
                 {
                     int nSegments = (*pCmd++);
                     if (nSegments > c_maxSegments)
@@ -1423,6 +1925,9 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
+                        [m_renderEncoder setRenderPipelineState:m_segmentsPipeline ];
+                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+/*
                         glUseProgram(m_segmentsProg[nEdges][m_bGradientActive][m_bActiveCanvasIsA8]);
                         glEnableVertexAttribArray(2);
 
@@ -1430,24 +1935,26 @@ namespace wg
                         vertexOfs += nVertices;
 
                         glDisableVertexAttribArray(2);
-
+*/
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
                 }
-     */
+     
                 default:
     //                assert(false);
                     break;
             }
         }
 
+        [m_renderEncoder endEncoding];
+        
         m_vertexOfs = 0;
         m_extrasOfs = 0;
         m_commandOfs = 0;
         m_surfaceOfs = 0;
-        m_segmentsTintTexOfs = 0;
+        m_segPalOfs = 0;
         m_clipWriteOfs = 0;
         m_clipCurrOfs = -1;
     }

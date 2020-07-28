@@ -95,6 +95,19 @@ typedef struct
     float2 uvFrac;
  } ClutBlitInterpolateFragInput;
 
+//____ SegmentsFragInput ______________________________________________
+
+typedef struct 
+{
+    float4 position [[position]];
+    float4 color;
+    float2 texUV;
+    int segments;
+    int stripesOfs;
+    float2 paletteOfs;
+} SegmentsFragInput;
+
+
 
 //____ plotVertexShader() ____________________________________________
 
@@ -637,4 +650,93 @@ fragment float4 clutBlitInterpolateFragmentShader_A8(ClutBlitInterpolateFragInpu
    float colorSample = (out0 * (1-fract(in.uvFrac.y)) + out1 * fract(in.uvFrac.y));
 
    return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
+};
+
+//____ segmentsVertexShader() _______________________________________________
+
+vertex SegmentsFragInput
+segmentsVertexShader(uint vertexID [[vertex_id]],
+             constant Vertex *pVertices [[buffer(0)]],
+             constant vector_float4  *pExtras [[buffer(1)]],
+             constant Uniform * pUniform[[buffer(2)]])
+{
+    SegmentsFragInput out;
+
+    float2 pos = (vector_float2) pVertices[vertexID].coord.xy;
+
+    vector_float2 canvasSize = pUniform->canvasDim;
+    
+    out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
+    out.position.x = pos.x*2 / canvasSize.x - 1.0;
+    out.position.y = (pUniform->canvasYOfs + pUniform->canvasYMul*pos.y)*2 / canvasSize.y - 1.0;
+
+
+    int     eOfs = pVertices[vertexID].extrasOfs;
+
+    vector_float4 extras = pExtras[eOfs];
+    vector_float4 extras2 = pExtras[eOfs+1];
+
+    out.segments = int(extras.x);
+    out.stripesOfs = int(extras.y);
+ 
+    float2 uv = pVertices[vertexID].uv;
+    out.texUV = uv;
+
+    float xTintOfs = uv.x/extras.z*1/extras2.z;
+    float yTintOfs = uv.y/extras.w*1/extras2.w;
+
+    out.paletteOfs = { extras2.x+xTintOfs, extras2.y+yTintOfs };
+    out.color = pUniform->flatTint;
+
+    return out;
+}
+
+
+//____ segmentsFragmentShader() ____________________________________________
+
+fragment float4 segmentsFragmentShader(SegmentsFragInput in [[stage_in]],
+                                    constant float4  *pExtras [[buffer(0)]],
+                                    texture2d<half> paletteTexture [[ texture(2) ]])
+{
+
+    constexpr sampler textureSampler (mag_filter::linear,
+                                      min_filter::linear);
+
+     float totalAlpha = 0.f;
+    float3    rgbAcc = float3(0,0,0);
+
+    float factor = 1.f;
+    float2 palOfs = in.paletteOfs;
+//    for( int i = 0 ; i < $EDGES ; i++ )
+    for( int i = 0 ; i < 4 ; i++ )
+    {
+        float4 col = (float4) paletteTexture.sample(textureSampler, palOfs);
+        palOfs.x += 1/16.f; //$MAXSEG.f;
+
+        float4 edge = pExtras[in.stripesOfs + int(in.texUV.x)*(in.segments-1)+i];
+
+        float x = (in.texUV.y - edge.r) * edge.g;
+        float adder = edge.g / 2.f;
+        if (x < 0.f)
+            adder = edge.b;
+        else if (x + edge.g > 1.f)
+            adder = edge.a;
+        float factor2 = clamp(x + adder, 0.f, 1.f);
+
+        float useFactor = (factor - factor2)*col.a;
+        totalAlpha += useFactor;
+        rgbAcc += col.rgb * useFactor;
+
+        factor = factor2;
+    }
+
+    float4 col = (float4) paletteTexture.sample(textureSampler, palOfs);
+    float useFactor = factor*col.a;
+    totalAlpha += useFactor;
+    rgbAcc += col.rgb * useFactor;
+
+    float4 out;
+    out.a = totalAlpha * in.color.a;
+    out.rgb = (rgbAcc/totalAlpha) * in.color.rgb;
+    return out;
 };
