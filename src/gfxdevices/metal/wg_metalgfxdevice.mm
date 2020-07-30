@@ -63,6 +63,8 @@ namespace wg
 	{
         m_bFullyInitialized = true;
 
+        m_flushesInProgress = 0;
+        
         m_canvasYstart = size.h;
         m_canvasYmul = -1;
 
@@ -162,8 +164,39 @@ namespace wg
         }
         
         // Create and init Segments pipelines
+
         
-        m_segmentsPipeline = _compileRenderPipeline( @"Segments BGRA_8_linear Pipeline", @"segmentsVertexShader", @"segmentsFragmentShader", BlendMode::Blend, PixelFormat::BGRA_8_linear );
+        NSString * segFragShaders[16] = { nil, @"segmentsFragmentShader1", @"segmentsFragmentShader2", @"segmentsFragmentShader3",
+                                            @"segmentsFragmentShader4", @"segmentsFragmentShader5", @"segmentsFragmentShader6", @"segmentsFragmentShader7",
+                                            @"segmentsFragmentShader8", @"segmentsFragmentShader9", @"segmentsFragmentShader10", @"segmentsFragmentShader11",
+                                            @"segmentsFragmentShader12", @"segmentsFragmentShader13", @"segmentsFragmentShader14", @"segmentsFragmentShader15" };
+
+        NSString * segFragShaders_A8[16] = { nil, @"segmentsFragmentShader1_A8", @"segmentsFragmentShader2_A8", @"segmentsFragmentShader3_A8",
+                                            @"segmentsFragmentShader4_A8", @"segmentsFragmentShader5_A8", @"segmentsFragmentShader6_A8", @"segmentsFragmentShader7_A8",
+                                            @"segmentsFragmentShader8_A8", @"segmentsFragmentShader9_A8", @"segmentsFragmentShader10_A8", @"segmentsFragmentShader11_A8",
+                                            @"segmentsFragmentShader12_A8", @"segmentsFragmentShader13_A8", @"segmentsFragmentShader14_A8", @"segmentsFragmentShader15_A8" };
+
+        
+        for( int shader = 1 ; shader < 16 ; shader++ )
+        {
+            for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
+            {
+                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+
+                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+
+                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Segments A_8 pipeline", @"segmentsVertexShader", segFragShaders_A8[shader], (BlendMode) blendMode, PixelFormat::A_8 );
+
+                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+
+                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+
+                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Segments A_8 gradient pipeline", @"segmentsGradientVertexShader", segFragShaders_A8[shader], (BlendMode) blendMode, PixelFormat::A_8 );
+
+
+            }
+
+        }
         
         // Initialize our buffers
         
@@ -180,11 +213,14 @@ namespace wg
         
         m_surfaceBufferId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
         m_pSurfaceBuffer = (MetalSurface_p *)[m_surfaceBufferId contents];
-        
+
+        m_segEdgeBufferId = [s_metalDevice newBufferWithLength:m_segEdgeBufferSize*sizeof(float) options:MTLResourceStorageModeManaged];
+        m_pSegEdgeBuffer = (float *)[m_segEdgeBufferId contents];
+                
         m_segPalBufferId = [s_metalDevice newBufferWithLength:m_segPalBufferSize*c_segPalEntrySize options:MTLResourceStorageModeShared];
         m_pSegPalBuffer = (uint16_t *)[m_segPalBufferId contents];
 
-        // Create the private texture
+        // Create the private segPal texture
         
         MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
 
@@ -449,7 +485,7 @@ namespace wg
 
     bool MetalGfxDevice::isCanvasReady() const
     {
-        return m_bIdle;
+        return m_flushesInProgress == 0;
     }
 
     //____ setRenderPassDescriptor() _________________________________________________
@@ -472,10 +508,12 @@ namespace wg
     {
         if( m_bRendering == true || m_renderPassDesc == nil )
             return false;
+        
+        m_bRendering = true;
 
-        while( !m_bIdle )
-            usleep(50);
-              
+        m_cmd = Command::None;
+        m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
+        
         // If there already is an active device, that needs to be flushed before we
         // take over the role as the active device.
 
@@ -484,42 +522,36 @@ namespace wg
 
         m_pPrevActiveDevice = s_pActiveDevice;
         s_pActiveDevice = this;
-
-        //
-
-        m_bIdle = false;
-        m_bRendering = true;
-        m_cmd = Command::None;
-        m_pCmdFinalizer = &MetalGfxDevice::_dummyFinalizer;
-        m_vertexOfs = 0;
-        m_extrasOfs = 0;
-        m_commandOfs = 0;
-        m_surfaceOfs = 0;
-        m_segPalOfs = 0;
-        m_clipWriteOfs = 0;
-        m_clipCurrOfs = -1;
-
                 
         // Create a new command buffer for each render pass to the current drawable.
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
 
         // Create a render command encoder.
-        m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        m_renderEncoder.label = @"MetalGfxDeviceRenderEncoder";
+        id<MTLRenderCommandEncoder> renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+        renderEncoder.label = @"MetalGfxDeviceRenderEncoder";
 
-        _setCanvas( static_cast<MetalSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
-        _setBlendMode(m_blendMode);
-        _setMorphFactor(m_morphFactor);
+        _setCanvas( renderEncoder, static_cast<MetalSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
+        _setBlendMode( renderEncoder, m_blendMode);
+        _setMorphFactor( renderEncoder, m_morphFactor);
 
          if (m_bTintGradient)
-            _setTintGradient(m_tintGradientRect, m_tintGradient);
+            _setTintGradient( renderEncoder, m_tintGradientRect, m_tintGradient);
         else
-            _setTintColor(m_tintColor);
+            _setTintColor( renderEncoder, m_tintColor);
 
-        _setBlitSource( static_cast<MetalSurface*>(m_pBlitSource.rawPtr()) );
+        _setBlitSource( renderEncoder, static_cast<MetalSurface*>(m_pBlitSource.rawPtr()) );
 
-        [m_renderEncoder endEncoding];
+        [renderEncoder endEncoding];
+
+        // Wait for previous render pass to complete.
+        
+        if( m_flushesInProgress > 0 )
+            flushAndWait();
+        
+        //
+
+        _resetBuffers();
         
         return true;
     }
@@ -535,7 +567,9 @@ namespace wg
 
         _endCommand();
         _executeBuffer();
-        
+
+        m_flushesInProgress++;
+
         //
         
         // Schedule a present once the framebuffer is complete using the current drawable.
@@ -543,10 +577,10 @@ namespace wg
         if( m_drawableToAutoPresent != nil )
             [m_metalCommandBuffer presentDrawable:m_drawableToAutoPresent];
 
-        // Add a completion handler and commit the command buffer.
+        // Add a completion handler.
         [m_metalCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             // Shared buffer is populated.
-            m_bIdle = true;
+            m_flushesInProgress--;
         }];
         
         // Finalize rendering here & push the command buffer to the GPU.
@@ -560,11 +594,12 @@ namespace wg
         return true;
     }
 
+    //____ isIdle() ______________________________________________________________
+
     bool MetalGfxDevice::isIdle()
     {
-        return !m_bRendering;
+        return !m_bRendering && m_flushesInProgress == 0;
     }
-
 
     //____ flush() _______________________________________________________________
 
@@ -577,22 +612,47 @@ namespace wg
         
         _endCommand();
         _executeBuffer();
-                
-        // Finalize queued rendering and push the comand buffer to the GPU.
+
+        m_flushesInProgress++;
+
+        // Add a completion handler.
+        [m_metalCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
+            // Shared buffer is populated.
+            m_flushesInProgress--;
+        }];
         
-        [m_renderEncoder endEncoding];
+        // Push the command buffer to the GPU.
+        
         [m_metalCommandBuffer commit];
         
-
         // Create a new command buffer.
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
-
-        // Create a new render command encoder.
-        m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        m_renderEncoder.label = @"MyRenderEncoder";
     }
 
+    //____ flushAndWait() _______________________________________________________________
+
+    void MetalGfxDevice::flushAndWait()
+    {
+        if( !m_bRendering )
+            return;
+
+        // Finalize any commands and execute queue.
+        
+        _endCommand();
+        _executeBuffer();
+                
+        // Push the command buffer to the GPU.
+        
+        [m_metalCommandBuffer commit];
+        [m_metalCommandBuffer waitUntilCompleted];
+    
+        _resetBuffers();
+        
+        // Create a new command buffer.
+        m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
+        m_metalCommandBuffer.label = @"MetalGfxDevice";
+    }
 
     //____ fill() ____ [standard] __________________________________________________
 
@@ -1234,13 +1294,14 @@ namespace wg
 
         //
 
-        int extrasSpaceNeeded = (8 + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;        // Various data + colors + strips + alignment + margin for
-
-        assert( extrasSpaceNeeded <= m_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
-
-        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - extrasSpaceNeeded || m_segPalOfs == m_segPalBufferSize )            // varios data, transform , colors, edgestrips
+        int segEdgeSpaceNeeded = 4 * (nEdgeStrips - 1)*(nSegments - 1);
+                
+        if( m_segPalOfs == m_segPalBufferSize )
+            flushAndWait();
+        
+        if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 || m_segEdgeOfs > m_segEdgeBufferSize - segEdgeSpaceNeeded )            // various data, transform , colors, edgestrips
         {
-            m_neededExtrasBufferSize = m_extrasOfs + extrasSpaceNeeded;
+            m_neededSegEdge = segEdgeSpaceNeeded;
             _resizeBuffers();
         }
         
@@ -1324,7 +1385,7 @@ namespace wg
                 float    u4 = (float) (uTopLeft + (patch.x - dest.x) * simpleTransform[0][0] + (patch.y + patch.h - dest.y) * simpleTransform[1][0]);
                 float    v4 = (float) (vTopLeft + (patch.x - dest.x) * simpleTransform[0][1] + (patch.y + patch.h - dest.y) * simpleTransform[1][1]);
 
-                float uMod = -0.5f;
+                float uMod = 0; //-0.5f;
                 float vMod = -0.5f;
                 
                 CoordF    uv1 = { u1 + uMod, v1 + vMod };
@@ -1381,10 +1442,8 @@ namespace wg
 
         // Add various data to extras
 
-        int edgeStripOfs = (m_extrasOfs + 8);    // Offset for edgestrips in buffer.
-
         pExtras[0] = (float) nSegments;
-        pExtras[1] = (float) edgeStripOfs/4;
+        pExtras[1] = (float) m_segEdgeOfs/4;
         pExtras[2] = (float)((_dest.w) * abs(simpleTransform[0][0]) + (_dest.h) * abs(simpleTransform[1][0]));
         pExtras[3] = (float)((_dest.w) * abs(simpleTransform[0][1]) + (_dest.h) * abs(simpleTransform[1][1]));
         pExtras[4] = float( 0.25f/c_maxSegments );
@@ -1392,8 +1451,8 @@ namespace wg
         pExtras[6] = float(c_maxSegments*2);
         pExtras[7] = float(m_segPalBufferSize*2);
 
-        pExtras += 8;                                                // Alignment for vec4 reads.
-
+        m_extrasOfs += 8;
+        
         // Add colors to segmentsTintTexMap
 
         float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
@@ -1544,9 +1603,9 @@ namespace wg
 
         m_segPalOfs++;
 
-        // Add edgestrips to extras
-
-        pExtras = m_pExtrasBuffer + edgeStripOfs;
+        // Add our edge strips to segEdgeBuffer;
+        
+        float * pEdgeData = m_pSegEdgeBuffer + m_segEdgeOfs;
 
         const int * pEdges = pEdgeStrips;
 
@@ -1583,17 +1642,16 @@ namespace wg
 //                     endAdder = lastPixelCoverage - ((edgeOut & 0xFFFFFF00)-edgeIn)*increment / 256.f;
                 }
 
-                *pExtras++ = edgeIn/256.f;                    // Segment begin pixel
-                *pExtras++ = increment;                        // Segment increment
-                *pExtras++ = beginAdder;                    // Segment begin adder
-                *pExtras++ = endAdder;                        // Segment end adder
+                *pEdgeData++ = edgeIn/256.f;                    // Segment begin pixel
+                *pEdgeData++ = increment;                        // Segment increment
+                *pEdgeData++ = beginAdder;                    // Segment begin adder
+                *pEdgeData++ = endAdder;                        // Segment end adder
             }
 
             pEdges += edgeStripPitch;
         }
 
-        m_extrasOfs += extrasSpaceNeeded;
-
+        m_segEdgeOfs+= segEdgeSpaceNeeded;
 	}
 
 
@@ -1614,7 +1672,10 @@ namespace wg
     
     void MetalGfxDevice::_resizeBuffers()
     {
-        if( m_commandOfs > m_commandBufferSize/2 )
+        // We are modifying buffers even though a flush might be in progress.
+        // We are assuming that original buffer will be kept alive and utilized during the flush.
+        
+        if( (m_commandBufferSize - m_commandOfs) < m_commandBufferSize/4 )
         {
             m_commandBufferSize *= 2;
             int * pNewBuffer = new int[m_commandBufferSize];
@@ -1623,7 +1684,7 @@ namespace wg
             m_pCommandBuffer = pNewBuffer;
         }
 
-        if( m_vertexOfs > m_vertexBufferSize/2 )
+        if( (m_vertexBufferSize - m_vertexOfs) < m_vertexBufferSize/4 )
         {
             m_vertexBufferSize *= 2;
 
@@ -1636,12 +1697,12 @@ namespace wg
             m_vertexBufferId = newId;
         }
 
-        if( m_extrasOfs > m_extrasBufferSize/2 || m_neededExtrasBufferSize > m_extrasBufferSize )
+        if( (m_extrasBufferSize - m_extrasOfs) < m_extrasBufferSize/4 || (m_extrasBufferSize - m_extrasOfs) < m_neededExtras )
         {
             m_extrasBufferSize *= 2;
-            while( m_extrasBufferSize < m_neededExtrasBufferSize )
+            while( (m_extrasBufferSize - m_extrasOfs) < m_neededExtras )
                 m_extrasBufferSize *= 2;
-            m_neededExtrasBufferSize = 0;
+            m_neededExtras = 0;
 
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_extrasBufferSize*sizeof(float) options:MTLResourceStorageModeShared];
 
@@ -1652,7 +1713,7 @@ namespace wg
             m_extrasBufferId = newId;
         }
         
-        if( m_surfaceOfs > m_surfaceBufferSize/2 )
+        if( (m_surfaceBufferSize - m_surfaceOfs) < m_surfaceBufferSize/4 )
         {
             m_surfaceBufferSize *= 2;
 
@@ -1665,7 +1726,7 @@ namespace wg
             m_surfaceBufferId = newId;
         }
 
-        if( m_clipWriteOfs > m_clipListBufferSize/2 )
+        if( (m_clipListBufferSize - m_clipWriteOfs) < m_clipListBufferSize/4 )
         {
             m_clipListBufferSize *= 2;
 
@@ -1676,6 +1737,22 @@ namespace wg
             m_pClipListBuffer = pNewBuffer;
             
             m_clipListBufferId = newId;
+        }
+        
+        if( (m_segEdgeBufferSize - m_segEdgeOfs ) < m_segEdgeBufferSize/4 || (m_segEdgeBufferSize - m_segEdgeOfs) < m_neededSegEdge )
+        {
+            m_segEdgeBufferSize *= 2;
+            while( (m_segEdgeBufferSize - m_segEdgeOfs) < m_neededSegEdge )
+                m_segEdgeBufferSize *= 2;
+            m_neededSegEdge = 0;
+
+            id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_segEdgeBufferSize*sizeof(float) options:MTLResourceStorageModeManaged];
+
+            float * pNewBuffer = (float*)[newId contents];
+            memcpy( pNewBuffer, m_pSegEdgeBuffer, m_segEdgeOfs * sizeof(float));
+            m_pSegEdgeBuffer = pNewBuffer;
+            
+            m_segEdgeBufferId = newId;
         }
 
     }
@@ -1688,29 +1765,14 @@ namespace wg
         if( m_commandOfs == 0 )
             return;
         
-    /*
-        LOG_GLERROR(glGetError());
-
-        glBindBuffer(GL_ARRAY_BUFFER, m_vertexBufferId);
-        glBufferData(GL_ARRAY_BUFFER, c_vertexBufferSize * sizeof(Vertex), NULL, GL_DYNAMIC_DRAW);        // Orphan current buffer if still in use.
-        glBufferSubData(GL_ARRAY_BUFFER, 0, m_vertexOfs * sizeof(Vertex), m_vertexBufferData);            // Fill new buffer with as much data as needed.
-
-        glBindBuffer(GL_TEXTURE_BUFFER, m_extrasBufferId);
-        glBufferData(GL_TEXTURE_BUFFER, c_extrasBufferSize * sizeof(GLfloat), NULL, GL_DYNAMIC_DRAW);
-        glBufferSubData(GL_TEXTURE_BUFFER, 0, m_extrasOfs * sizeof(GLfloat), m_extrasBufferData);
-
-        if (m_segmentsTintTexOfs > 0)
+        // Sync segments segEdge buffer to GPU
+        
+        if( m_segEdgeOfs > m_segEdgeFlushPoint )
         {
-            glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
-            glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, c_maxSegments * 2, m_segmentsTintTexOfs * 2, GL_BGRA, GL_UNSIGNED_SHORT, m_segmentsTintTexMap);
+            [m_segEdgeBufferId didModifyRange:NSMakeRange(m_segEdgeFlushPoint*sizeof(float), (m_segEdgeOfs-m_segEdgeFlushPoint)*sizeof(float))];
         }
         
-
-        glEnableVertexAttribArray(0);
-        glEnableVertexAttribArray(1);
-
-        LOG_GLERROR(glGetError());
-    */
+        
         // Update segments palette texture
         
         if( m_segPalOfs > 0 )
@@ -1737,27 +1799,27 @@ namespace wg
         }
 
         // Create our render encoder.
-        
-        m_renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        m_renderEncoder.label = @"GfxDeviceMetalRenderEncoder";
+
+        id<MTLRenderCommandEncoder> renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+        renderEncoder.label = @"GfxDeviceMetalRenderEncoder";
 
         // Set buffers for vertex shaders
         
-        [m_renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
+        [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
         
-        [m_renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
-        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+        [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
+        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
         // Set buffers/textures for segments fragment shader
         
-        [m_renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
-        [m_renderEncoder setFragmentBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
+        [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
+        [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
         
         int * pCmd = m_pCommandBuffer;
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
 
-        int vertexOfs = 0;
-        int surfaceOfs = 0;
+        int vertexOfs = m_vertexFlushPoint;
+        int surfaceOfs = m_surfaceFlushPoint;
       
         // Clear pending flags of active BlitSource and Canvas.
 
@@ -1773,24 +1835,24 @@ namespace wg
     
                 case Command::SetCanvas:
                 {
-                    _setCanvas(m_pSurfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
+                    _setCanvas(renderEncoder, m_pSurfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
                     m_pSurfaceBuffer[surfaceOfs++] = nullptr;
                     pCmd += 2;
                     break;
                 }
                 case Command::SetBlendMode:
                 {
-                    _setBlendMode((BlendMode)* pCmd++);
+                    _setBlendMode(renderEncoder, (BlendMode)* pCmd++);
                     break;
                 }
                 case Command::SetMorphFactor:
                 {
-                    _setMorphFactor((*pCmd++) / 1024.f);
+                    _setMorphFactor(renderEncoder, (*pCmd++) / 1024.f);
                     break;
                 }
                 case Command::SetTintColor:
                 {
-                    _setTintColor(*(Color*)(pCmd++));
+                    _setTintColor(renderEncoder, *(Color*)(pCmd++));
                     break;
                 }
                 case Command::SetTintGradient:
@@ -1800,17 +1862,17 @@ namespace wg
                     Color* pColors = (Color*)pCmd;
                     pCmd += 4;
 
-                    _setTintGradient(rect, pColors);
+                    _setTintGradient(renderEncoder, rect, pColors);
                     break;
                 }
                 case Command::ClearTintGradient:
                 {
-                     _clearTintGradient();
+                     _clearTintGradient(renderEncoder);
                    break;
                 }
                 case Command::SetBlitSource:
                 {
-                    _setBlitSource(m_pSurfaceBuffer[surfaceOfs]);
+                    _setBlitSource(renderEncoder, m_pSurfaceBuffer[surfaceOfs]);
                     m_pSurfaceBuffer[surfaceOfs++] = nullptr;
                     break;
                 }
@@ -1833,9 +1895,8 @@ namespace wg
                         else if(pSurf->m_pixelDescription.format == PixelFormat::A_8)
                             shader = BlitFragShader::A8Source;
                         
-                        [m_renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
-
-                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+                        [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
@@ -1849,8 +1910,8 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [m_renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
-                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+                        [renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
@@ -1864,8 +1925,8 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [m_renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
-                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+                        [renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
 
                         if( m_bMipmappedActiveCanvas )
@@ -1880,18 +1941,18 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [m_renderEncoder setRenderPipelineState:m_lineFromToPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_lineFromToPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         
                         for (int i = 0; i < clipListLen; i++)
                         {
                             RectI& clip = m_pClipListBuffer[clipListOfs++];
                             MTLScissorRect metalClip = {(unsigned) clip.x, (unsigned) clip.y, (unsigned) clip.w, (unsigned) clip.h};
-                            [m_renderEncoder setScissorRect:metalClip];
-                            [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
+                            [renderEncoder setScissorRect:metalClip];
+                            [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         }
 
                         MTLScissorRect orgClip = {0, 0, (unsigned) m_canvasSize.w, (unsigned) m_canvasSize.h};
-                        [m_renderEncoder setScissorRect:orgClip];
+                        [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;
 
@@ -1906,8 +1967,8 @@ namespace wg
                      int nVertices = *pCmd++;
                      if( nVertices > 0 )
                      {
-                         [m_renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
-                         [m_renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
+                         [renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                         [renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
                          vertexOfs += nVertices;
 
                          if( m_bMipmappedActiveCanvas )
@@ -1925,17 +1986,10 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [m_renderEncoder setRenderPipelineState:m_segmentsPipeline ];
-                        [m_renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
-/*
-                        glUseProgram(m_segmentsProg[nEdges][m_bGradientActive][m_bActiveCanvasIsA8]);
-                        glEnableVertexAttribArray(2);
-
-                        glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
+                        [renderEncoder setRenderPipelineState:m_segmentsPipelines[nEdges][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
-
-                        glDisableVertexAttribArray(2);
-*/
+                        
                         if( m_bMipmappedActiveCanvas )
                             m_pActiveCanvas->m_bMipmapStale = true;
                     }
@@ -1948,23 +2002,41 @@ namespace wg
             }
         }
 
-        [m_renderEncoder endEncoding];
+        [renderEncoder endEncoding];
         
+        //
+        
+        m_vertexFlushPoint = m_vertexOfs;
+        m_surfaceFlushPoint = m_surfaceOfs;
+        m_segEdgeFlushPoint = m_segEdgeOfs;
+        m_commandOfs = 0;
+    }
+
+    //____ _resetBuffers() ____________________________________________________
+
+    void MetalGfxDevice::_resetBuffers()
+    {
+        // Prepare our buffers
+
         m_vertexOfs = 0;
         m_extrasOfs = 0;
         m_commandOfs = 0;
         m_surfaceOfs = 0;
+        m_segEdgeOfs = 0;
         m_segPalOfs = 0;
         m_clipWriteOfs = 0;
         m_clipCurrOfs = -1;
+
+        m_vertexFlushPoint = 0;
+        m_surfaceFlushPoint = 0;
+        m_segEdgeFlushPoint = 0;
+        
     }
 
     //____ _setCanvas() _______________________________________________________
 
-    void MetalGfxDevice::_setCanvas( MetalSurface * pCanvas, int width, int height )
+    void MetalGfxDevice::_setCanvas( id<MTLRenderCommandEncoder> renderEncoder, MetalSurface * pCanvas, int width, int height )
     {
-        bool bWasAlphaOnly = m_bActiveCanvasIsA8;
-
         if (pCanvas)
         {
 /*
@@ -1992,7 +2064,7 @@ namespace wg
         else
         {
             // Set the region of the drawable to draw into.
-            [m_renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
+            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
 
 /*
             if( Base::activeContext()->gammaCorrection() )
@@ -2013,147 +2085,35 @@ namespace wg
         m_uniform.canvasYOfs = canvasYstart;
         m_uniform.canvasYMul = canvasYmul;
 
-        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex: (unsigned) VertexInputIndex::Uniform];
+        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex: (unsigned) VertexInputIndex::Uniform];
 
         //
         
         m_pActiveCanvas = pCanvas;
         m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->isMipmapped() : false;
-
-        bool bIsAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
-
-        if (bIsAlphaOnly != bWasAlphaOnly)
-            _setBlendMode(m_activeBlendMode);
-
-        m_bActiveCanvasIsA8 = bIsAlphaOnly;
-
     }
 
     //____ _setBlendMode() _______________________________________________________
 
-    void MetalGfxDevice::_setBlendMode( BlendMode mode )
+    void MetalGfxDevice::_setBlendMode( id<MTLRenderCommandEncoder> renderEncoder, BlendMode mode )
     {
-/*
-        bool bAlphaOnly = m_pActiveCanvas ? m_pActiveCanvas->pixelFormat() == PixelFormat::A_8 : false;
-
-
-        switch (mode)
-        {
-        case BlendMode::Replace:
-            glBlendEquation(GL_FUNC_ADD);
-            glDisable(GL_BLEND);
-            break;
-
-        case BlendMode::Blend:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            if (bAlphaOnly)
-                glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_COLOR);
-            else
-                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
-            break;
-
-        case BlendMode::Morph:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_CONSTANT_ALPHA, GL_ONE_MINUS_CONSTANT_ALPHA);
-            break;
-
-        case BlendMode::Add:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            if( bAlphaOnly )
-                glBlendFunc(GL_ONE, GL_ONE);
-            else
-                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-            break;
-
-        case BlendMode::Subtract:
-            glEnable(GL_BLEND);
-            glBlendEquation(GL_FUNC_REVERSE_SUBTRACT);
-            if (bAlphaOnly)
-                glBlendFunc(GL_ONE, GL_ONE);
-            else
-                glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
-            break;
-
-        case BlendMode::Multiply:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            if( bAlphaOnly )
-                glBlendFunc(GL_DST_COLOR, GL_ZERO);
-            else
-                glBlendFuncSeparate(GL_DST_COLOR, GL_ZERO, GL_ZERO, GL_ONE);
-            break;
-
-        case BlendMode::Invert:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            if( bAlphaOnly )
-                glBlendFunc(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR);
-            else
-                glBlendFuncSeparate(GL_ONE_MINUS_DST_COLOR, GL_ONE_MINUS_SRC_COLOR, GL_ZERO, GL_ONE);
-            break;
-
-        case BlendMode::Min:
-            glEnable(GL_BLEND);
-            if (bAlphaOnly)
-            {
-                glBlendEquation(GL_MIN);
-                glBlendFunc(GL_ONE, GL_ONE);
-            }
-            else
-            {
-                glBlendEquationSeparate(GL_MIN, GL_FUNC_ADD);
-                glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
-            }
-            break;
-
-        case BlendMode::Max:
-            glEnable(GL_BLEND);
-            if (bAlphaOnly)
-            {
-                glBlendEquation(GL_MAX);
-                glBlendFunc(GL_ONE, GL_ONE);
-            }
-            else
-            {
-                glBlendEquationSeparate(GL_MAX, GL_FUNC_ADD);
-                glBlendFuncSeparate(GL_ONE, GL_ONE, GL_ZERO, GL_ONE);
-            }
-            break;
-
-        case BlendMode::Ignore:
-            glBlendEquation(GL_FUNC_ADD);
-            glEnable(GL_BLEND);
-            glBlendFunc(GL_ZERO, GL_ONE);
-            break;
-
-        default:
-            assert(false);
-            break;
-        }
-
         m_activeBlendMode = mode;
-
-        LOG_GLERROR(glGetError());
- */
     }
 
     //____ _setMorphFactor() __________________________________________________
 
-    void MetalGfxDevice::_setMorphFactor(float morphFactor)
+    void MetalGfxDevice::_setMorphFactor( id<MTLRenderCommandEncoder> renderEncoder, float morphFactor)
     {
-        [m_renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
+        [renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
     }
 
     //____ _setBlitSource() _______________________________________________________
 
-    void MetalGfxDevice::_setBlitSource( MetalSurface * pSurf )
+    void MetalGfxDevice::_setBlitSource( id<MTLRenderCommandEncoder> renderEncoder, MetalSurface * pSurf )
     {
         if( pSurf )
         {
-            [m_renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
+            [renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
             
             if( pSurf->m_bMipmapStale )
             {
@@ -2165,22 +2125,22 @@ namespace wg
             pSurf->m_bPendingReads = false;            // Clear this as we pass it by...
 
             m_uniform.textureSize = pSurf->size();
-            [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+            [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
             if (pSurf->m_pClut)
             {
-                [m_renderEncoder setFragmentTexture:pSurf->getClutTexture() atIndex:(unsigned) TextureIndex::Clut];
+                [renderEncoder setFragmentTexture:pSurf->getClutTexture() atIndex:(unsigned) TextureIndex::Clut];
             }
         }
         else
-            [m_renderEncoder setFragmentTexture:nil atIndex:(unsigned) TextureIndex::Texture];
+            [renderEncoder setFragmentTexture:nil atIndex:(unsigned) TextureIndex::Texture];
 
 
     }
 
     //____ _setTintColor() ____________________________________________________
 
-    void MetalGfxDevice::_setTintColor(Color color)
+    void MetalGfxDevice::_setTintColor( id<MTLRenderCommandEncoder> renderEncoder, Color color)
     {
         float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
@@ -2191,12 +2151,12 @@ namespace wg
         m_uniform.flatTint[2] = b = pConv[color.b];
         m_uniform.flatTint[3] = a = m_linearToLinearTable[color.a];
 
-        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }
 
     //____ _setTintGradient() _________________________________________________
 
-    void MetalGfxDevice::_setTintGradient(const RectI& rect, const Color colors[4])
+    void MetalGfxDevice::_setTintGradient( id<MTLRenderCommandEncoder> renderEncoder, const RectI& rect, const Color colors[4])
     {
         m_bGradientActive = true;
 
@@ -2224,12 +2184,12 @@ namespace wg
         m_uniform.bottomLeftTint[2] = pConv[colors[3].b];
         m_uniform.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
 
-        [m_renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }
 
     //____ _clearTintGradient() _________________________________________________
 
-    void MetalGfxDevice::_clearTintGradient()
+    void MetalGfxDevice::_clearTintGradient( id<MTLRenderCommandEncoder> renderEncoder )
     {
         m_bGradientActive = false;
     }

@@ -137,6 +137,11 @@ using namespace wg;
     m_pDevice->fill( RectI(200,200,100,100), Color::DarkBlue );
     m_pDevice->drawElipse( {200,200,100,100}, 20.f, Color::Red, 4.f, Color::White );
     
+    float sliceSizes[6] = { 0.15f, 0.10f, 0.30f, 0.04f, 0.08f, 0.38f };
+    Color sliceColors[6] = { Color::LightSalmon, Color::LightYellow, Color::LightGreen, Color::LightBlue, Color::LightCyan, Color::LightCoral };
+    
+    m_pDevice->drawPieChart( {200,310,100,100}, 0.f, 6, sliceSizes, sliceColors );
+    
     m_pDevice->endRender();
     
 }

@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		1760D4E424D170FD006C04A4 /* wg_metalsurfacefactory.mm in Sources */ = {isa = PBXBuildFile; fileRef = 1760D4E224D170FC006C04A4 /* wg_metalsurfacefactory.mm */; };
+		1760D4E524D170FD006C04A4 /* wg_metalsurfacefactory.h in Headers */ = {isa = PBXBuildFile; fileRef = 1760D4E324D170FC006C04A4 /* wg_metalsurfacefactory.h */; };
 		17E1C81224C18DA8006F657B /* wg_metalgfxdevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E1C80F24C18DA8006F657B /* wg_metalgfxdevice.h */; };
 		17E1C81C24C19A9F006F657B /* wg_metalgfxdevice.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E1C81B24C19A9F006F657B /* wg_metalgfxdevice.mm */; };
 		17E1C82024C1DAF3006F657B /* wg_metalshaders.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17E1C81F24C1DAF3006F657B /* wg_metalshaders.mm */; };
@@ -15,6 +17,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		1760D4E224D170FC006C04A4 /* wg_metalsurfacefactory.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = wg_metalsurfacefactory.mm; path = ../../../../src/gfxdevices/metal/wg_metalsurfacefactory.mm; sourceTree = "<group>"; };
+		1760D4E324D170FC006C04A4 /* wg_metalsurfacefactory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_metalsurfacefactory.h; path = ../../../../src/gfxdevices/metal/wg_metalsurfacefactory.h; sourceTree = "<group>"; };
 		17E1C80224C18D65006F657B /* libgfxdevice_metal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libgfxdevice_metal.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E1C80F24C18DA8006F657B /* wg_metalgfxdevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_metalgfxdevice.h; path = ../../../../src/gfxdevices/metal/wg_metalgfxdevice.h; sourceTree = "<group>"; };
 		17E1C81B24C19A9F006F657B /* wg_metalgfxdevice.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = wg_metalgfxdevice.mm; path = ../../../../src/gfxdevices/metal/wg_metalgfxdevice.mm; sourceTree = "<group>"; };
@@ -53,6 +57,8 @@
 		17E1C80424C18D65006F657B /* gfxdevice_metal */ = {
 			isa = PBXGroup;
 			children = (
+				1760D4E224D170FC006C04A4 /* wg_metalsurfacefactory.mm */,
+				1760D4E324D170FC006C04A4 /* wg_metalsurfacefactory.h */,
 				17E1C82224C70F2B006F657B /* wg_metalsurface.h */,
 				17E1C82124C70F2B006F657B /* wg_metalsurface.mm */,
 				17E1C81F24C1DAF3006F657B /* wg_metalshaders.mm */,
@@ -70,6 +76,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				17E1C82424C70F2B006F657B /* wg_metalsurface.h in Headers */,
+				1760D4E524D170FD006C04A4 /* wg_metalsurfacefactory.h in Headers */,
 				17E1C81224C18DA8006F657B /* wg_metalgfxdevice.h in Headers */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -131,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				1760D4E424D170FD006C04A4 /* wg_metalsurfacefactory.mm in Sources */,
 				17E1C82324C70F2B006F657B /* wg_metalsurface.mm in Sources */,
 				17E1C82024C1DAF3006F657B /* wg_metalshaders.mm in Sources */,
 				17E1C81C24C19A9F006F657B /* wg_metalgfxdevice.mm in Sources */,

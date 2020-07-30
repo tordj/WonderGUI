@@ -92,7 +92,7 @@ namespace wg
         bool    endRender() override;
         bool    isIdle() override;
         void    flush() override;
-
+        void    flushAndWait();
         
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -168,13 +168,13 @@ namespace wg
 
         };
 
-        void            _setCanvas( MetalSurface * pCanvas, int width, int height );
-        void            _setBlendMode(BlendMode mode);
-        void            _setMorphFactor(float morphFactor);
-        void            _setBlitSource(MetalSurface * pSurf);
-        void            _setTintColor(Color color);
-        void            _setTintGradient(const RectI& rect, const Color colors[4]);
-        void            _clearTintGradient();
+        void            _setCanvas( id<MTLRenderCommandEncoder>, MetalSurface * pCanvas, int width, int height );
+        void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
+        void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
+        void            _setBlitSource( id<MTLRenderCommandEncoder>, MetalSurface * pSurf);
+        void            _setTintColor( id<MTLRenderCommandEncoder>, Color color);
+        void            _setTintGradient( id<MTLRenderCommandEncoder>, const RectI& rect, const Color colors[4]);
+        void            _clearTintGradient( id<MTLRenderCommandEncoder> renderEncoder );
         
         inline void    _beginDrawCommand(Command cmd);
         inline void    _beginDrawCommandWithSource(Command cmd);
@@ -196,6 +196,7 @@ namespace wg
         
         void    _resizeBuffers();
         void    _executeBuffer();
+        void    _resetBuffers();
 
         SurfaceFactory_p    m_pSurfaceFactory = nullptr;
 
@@ -260,25 +261,35 @@ namespace wg
         id<MTLBuffer>   m_vertexBufferId = nil;
         int             m_vertexBufferSize = 4096;
         Vertex *        m_pVertexBuffer = nullptr;          // Pointer to content of vertex buffer
+        int             m_vertexFlushPoint = 0;
         int             m_vertexOfs = 0;                    // Write offset in m_pVertexData
 
         id<MTLBuffer>   m_extrasBufferId = nil;
-        int             m_extrasBufferSize = 16384;
+        int             m_extrasBufferSize = 4096;
         float *         m_pExtrasBuffer = nullptr;          // Pointer to content of extras buffer
         int             m_extrasOfs = 0;                    // Write offset in m_pExtrasData
-        int             m_neededExtrasBufferSize = 0;       // Set to non-zero to potentially force a bigger jump in extrasBufferSize.
+        int             m_neededExtras = 0;                 // Set to non-zero to potentially force a bigger jump in extrasBufferSize.
         
         id<MTLBuffer>   m_surfaceBufferId = nil;
         int             m_surfaceBufferSize = 1024;
         MetalSurface_p* m_pSurfaceBuffer = nullptr;
+        int             m_surfaceFlushPoint = 0;
         int             m_surfaceOfs;                       // Write offset in m_surfaceBuffer
 
         id<MTLBuffer>   m_clipListBufferId = nil;
-        int             m_clipListBufferSize = 1024;
+        int             m_clipListBufferSize = 256;
         RectI *         m_pClipListBuffer = nullptr;
         int             m_clipWriteOfs = 0;                 // Write offset in m_clipListBuffer
         int             m_clipCurrOfs = -1;                 // Offset to where current clipList is written to in clipListBuffer, or -1 if not written.
 
+        id<MTLBuffer>   m_segEdgeBufferId = nil;
+        int             m_segEdgeBufferSize = 16384;
+        float *         m_pSegEdgeBuffer = nullptr;
+        int             m_segEdgeFlushPoint = 0;
+        int             m_segEdgeOfs = 0;
+        int             m_neededSegEdge = 0;
+        
+        
         const int       c_segPalEntrySize = 2*4*4*c_maxSegments;  // Bytes per palette (4 pixels of 4 uint16_t per segment).
 
         id<MTLTexture>  m_segPalTextureId = nil;
@@ -286,7 +297,7 @@ namespace wg
         int             m_segPalBufferSize = 64;            // Number of complete palettes, not number of uint16_t.
         uint16_t *      m_pSegPalBuffer = nullptr;
         int             m_segPalOfs = 0;
-        
+                
 //        GLuint         m_segmentsTintTexId;                                                    // GL texture handle.
 //        uint16_t    m_segmentsTintTexMap[c_segmentsTintTexMapSize][c_maxSegments * 4 * 4];    // Horizontally aligned blocks of 2x2 pixels each, one for each segment color.
 //        int             m_segmentsTintTexOfs;               // Write offset in m_segmentsTintTexMap
@@ -299,7 +310,6 @@ namespace wg
         bool            m_bMipmappedActiveCanvas = false;               // Set if currently active canvas is a surface that is mipmapped.
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
-        bool            m_bActiveCanvasIsA8 = false;
         
         
         SizeI                       m_viewportSize;
@@ -309,11 +319,10 @@ namespace wg
         MTLRenderPassDescriptor*    m_renderPassDesc;
         
         id<MTLCommandBuffer>        m_metalCommandBuffer;
-        id<MTLRenderCommandEncoder> m_renderEncoder;
         bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
-        bool                        m_bIdle = true;                     // Set to false between beginRender() and when metal has completed all commands,
-                                                                        // sometimes after endRender().
         
+        std::atomic<int>            m_flushesInProgress;                // Number of buffer flushes to complete before metal is idle.
+                
         id<MTLRenderPipelineState>  m_plotPipelines[BlendMode_size][3];          // [BlendMode][DestFormat]
         id<MTLRenderPipelineState>  m_lineFromToPipelines[BlendMode_size][3];    // [BlendMode][DestFormat]
         id<MTLRenderPipelineState>  m_fillPipelines[2][BlendMode_size][3];       // [bGradient][BlendMode][DestFormat]
@@ -321,7 +330,7 @@ namespace wg
         
         id<MTLRenderPipelineState>  m_blitPipelines[4][2][BlendMode_size][3];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
 
-        id<MTLRenderPipelineState>  m_segmentsPipeline;
+        id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][3];   // [nbEdges][bGradient][BlendMode][DestFormat]
         
         static const char shaders[];
 
