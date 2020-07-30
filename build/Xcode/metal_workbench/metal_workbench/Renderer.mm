@@ -37,6 +37,7 @@ using namespace wg;
     wg::MetalGfxDevice_p    m_pDevice;
     wg::MetalSurface_p      m_pSurface;
     wg::MetalSurface_p      m_pClutSurface;
+    wg::MetalSurface_p      m_pMipMapSurface;
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -62,7 +63,9 @@ using namespace wg;
                                 Color::Yellow, Color::Pink, Color::Brown, Color::AntiqueWhite };
         
         m_pSurface = MetalSurface::create({4,4}, PixelFormat::BGRA_8, (uint8_t*) myTexture, 16);
- 
+        m_pSurface->setTiling(true);
+//        m_pSurface->setScaleMode(ScaleMode::Nearest);
+        
         uint8_t myIndexedTexture[16] { 1, 0, 1, 1,
                                 1, 0, 2, 1,
                                 1, 3, 4, 1,
@@ -72,6 +75,27 @@ using namespace wg;
         
         m_pClutSurface = MetalSurface::create({4,4}, PixelFormat::CLUT_8, myIndexedTexture, 4, nullptr, SurfaceFlag::Static, myClut);
         m_pClutSurface->setScaleMode(ScaleMode::Nearest);
+
+
+        Color   myMipMapTexture[128*128];
+        
+        Color col1 = Color::Blue;
+        Color col2 = Color::Red;
+        
+        for( int y = 0 ; y < 128 ; y++ )
+        {
+            for( int x = 0 ; x < 128 ; x+=2 )
+            {
+                myMipMapTexture[y*128+x] = col1;
+                myMipMapTexture[y*128+x+1] = col2;
+            }
+            std::swap(col1,col2);
+        }
+        
+        m_pMipMapSurface = MetalSurface::create({128,128}, PixelFormat::BGRA_8, (uint8_t*) myMipMapTexture, 128*4, nullptr, SurfaceFlag::Mipmapped, nullptr);
+
+        
+
     }
 
     return self;
@@ -141,6 +165,19 @@ using namespace wg;
     Color sliceColors[6] = { Color::LightSalmon, Color::LightYellow, Color::LightGreen, Color::LightBlue, Color::LightCyan, Color::LightCoral };
     
     m_pDevice->drawPieChart( {200,310,100,100}, 0.f, 6, sliceSizes, sliceColors );
+    
+    m_pDevice->setBlitSource(m_pSurface);
+//    m_pDevice->stretchBlit( {340,300,100,100} );
+
+    m_pDevice->tile( {340,300,100,100} );
+    
+    
+    m_pDevice->setBlitSource(m_pMipMapSurface);
+    m_pDevice->stretchBlit( {512,0,128,128});
+    m_pDevice->stretchBlit( {512,128,96,96});
+    m_pDevice->stretchBlit( {512,128+96,64,64});
+    m_pDevice->stretchBlit( {512,128+96+64,48,48});
+
     
     m_pDevice->endRender();
     

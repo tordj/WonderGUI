@@ -66,8 +66,6 @@ namespace wg
 		void		setScaleMode(ScaleMode mode) override;
 		bool		isOpaque() const override;
 
-		void		setTiling(bool bTiling) override;
-
 		//.____ Content _______________________________________________________
 
 		uint32_t	pixel(CoordI coord) const override;
@@ -98,7 +96,7 @@ namespace wg
 
 
 		void		    _setPixelDetails( PixelFormat format );
-        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut );
+        void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
 
         void            _syncBuffer();
         void            _syncTexture( RectI region );

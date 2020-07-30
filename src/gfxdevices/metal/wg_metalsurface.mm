@@ -120,7 +120,7 @@ namespace wg
 		m_size	= size;
         
 		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-        _setupMetalTexture( nullptr, 0, nullptr, pClut );
+        _setupMetalTexture( nullptr, 0, nullptr, flags, pClut );
 	}
 
 
@@ -133,7 +133,7 @@ namespace wg
 		m_size	= size;
 		m_pitch = pitch;
 
-		_setupMetalTexture(pBlob->data(), pitch, &m_pixelDescription, pClut);
+		_setupMetalTexture(pBlob->data(), pitch, &m_pixelDescription, flags, pClut);
 	}
 
 	MetalSurface::MetalSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
@@ -146,7 +146,7 @@ namespace wg
         if( pPixelDescription == nullptr )
             pPixelDescription = &m_pixelDescription;
         
-		_setupMetalTexture( pPixels, pitch, pPixelDescription, pClut);
+		_setupMetalTexture( pPixels, pitch, pPixelDescription, flags, pClut);
 	}
 
 
@@ -158,13 +158,13 @@ namespace wg
 		m_pitch = m_size.w * m_pixelSize;
 
         pOther->lock(AccessMode::ReadOnly);
-		_setupMetalTexture(pOther->pixels(), pOther->pitch(), pOther->pixelDescription(), pOther->clut());
+		_setupMetalTexture(pOther->pixels(), pOther->pitch(), pOther->pixelDescription(), flags, pOther->clut());
         pOther->unlock();
 	}
 
     //____ _setupMetalTexture() __________________________________________________________________
 
-    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, const Color * pClut )
+    void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
     {
         // Create our shared buffer
         
@@ -202,6 +202,17 @@ namespace wg
         textureDescriptor.width         = m_size.w;
         textureDescriptor.height        = m_size.h;
         textureDescriptor.storageMode   = MTLStorageModePrivate;
+        
+        if(flags & SurfaceFlag::Mipmapped)
+        {
+            int heightLevels = ceil(log2(m_size.h));
+            int widthLevels = ceil(log2(m_size.w));
+            int mipCount = (heightLevels > widthLevels) ? heightLevels : widthLevels;
+            
+            textureDescriptor.mipmapLevelCount = mipCount;
+            
+            m_bMipmapped = true;
+        }
 
         m_texture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
 
@@ -259,6 +270,9 @@ namespace wg
                                 destinationOrigin:  clutOrigin];
         }
 
+        if(m_bMipmapped)
+            [blitCommandEncoder generateMipmapsForTexture:m_texture];
+        
         [blitCommandEncoder endEncoding];
 
         m_bTextureSyncInProgress = true;
@@ -271,10 +285,9 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
-        
-        //TODO: Mipmap handling.
-        
 
+        //
+        
         setScaleMode(m_scaleMode);
     }
 
@@ -350,30 +363,6 @@ namespace wg
 
 	void MetalSurface::setScaleMode( ScaleMode mode )
 	{
-/*
-		if (m_pClut == nullptr)
-		{
-			GLint oldBinding;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
-			glBindTexture(GL_TEXTURE_2D, m_texture);
-
-			switch (mode)
-			{
-			case ScaleMode::Interpolate:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, m_bMipmapped ? GL_LINEAR_MIPMAP_LINEAR : GL_LINEAR);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-				break;
-
-			case ScaleMode::Nearest:
-			default:
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-				break;
-			}
-
-			glBindTexture(GL_TEXTURE_2D, oldBinding);
-		}
-*/
 		Surface::setScaleMode(mode);
 	}
 
@@ -386,20 +375,6 @@ namespace wg
 
 		return false;
 	}
-
-	//____ setTiling() ________________________________________________________
-
-	void MetalSurface::setTiling(bool bTiling)
-	{
-/*
-        GLint mode = bTiling ? GL_REPEAT : GL_CLAMP_TO_EDGE;
-
-		glBindTexture(GL_TEXTURE_2D, m_texture);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, mode);
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, mode);
- */
-	}
-
 
 	//____ lock() __________________________________________________________________
 

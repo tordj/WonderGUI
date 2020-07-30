@@ -289,7 +289,6 @@ namespace wg
         int             m_segEdgeOfs = 0;
         int             m_neededSegEdge = 0;
         
-        
         const int       c_segPalEntrySize = 2*4*4*c_maxSegments;  // Bytes per palette (4 pixels of 4 uint16_t per segment).
 
         id<MTLTexture>  m_segPalTextureId = nil;
@@ -331,6 +330,8 @@ namespace wg
         id<MTLRenderPipelineState>  m_blitPipelines[4][2][BlendMode_size][3];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
 
         id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][3];   // [nbEdges][bGradient][BlendMode][DestFormat]
+        
+        id<MTLSamplerState>         m_samplers[2][2][2];                        // [bMipMap][bInterpolate][bTile]
         
         static const char shaders[];
 

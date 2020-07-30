@@ -192,11 +192,36 @@ namespace wg
                 m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
 
                 m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Segments A_8 gradient pipeline", @"segmentsGradientVertexShader", segFragShaders_A8[shader], (BlendMode) blendMode, PixelFormat::A_8 );
-
-
             }
-
         }
+        
+        // Create samplers
+        
+        MTLSamplerDescriptor *desc = [MTLSamplerDescriptor new];
+
+        for( int mipmapped = 0 ; mipmapped < 2 ; mipmapped++ )
+        {
+            desc.mipFilter = (mipmapped == 0) ? MTLSamplerMipFilterNotMipmapped : MTLSamplerMipFilterLinear;
+            
+            for( int interpolated = 0 ; interpolated < 2 ; interpolated++ )
+            {
+                MTLSamplerMinMagFilter filter = (interpolated == 0) ? MTLSamplerMinMagFilterNearest : MTLSamplerMinMagFilterLinear;
+                desc.minFilter = filter;
+                desc.magFilter = filter;
+                
+                for( int tiled = 0 ; tiled < 2 ; tiled++ )
+                {
+                    MTLSamplerAddressMode addressMode = (tiled == 0) ? MTLSamplerAddressModeClampToZero : MTLSamplerAddressModeRepeat;
+                    desc.rAddressMode = addressMode;
+                    desc.sAddressMode = addressMode;
+                    desc.tAddressMode = addressMode;
+
+                    m_samplers[mipmapped][interpolated][tiled] = [s_metalDevice newSamplerStateWithDescriptor:desc];
+                }
+            }
+        }
+        
+        desc = nil;
         
         // Initialize our buffers
         
@@ -2114,7 +2139,12 @@ namespace wg
         if( pSurf )
         {
             [renderEncoder setFragmentTexture:pSurf->getTexture() atIndex: (unsigned) TextureIndex::Texture];
-            
+
+            if(pSurf->pixelDescription()->bIndexed)
+                [renderEncoder setFragmentSamplerState: m_samplers[0][0][pSurf->isTiling()] atIndex:0];
+            else
+                [renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->scaleMode() == ScaleMode::Interpolate][pSurf->isTiling()] atIndex:0];
+
             if( pSurf->m_bMipmapStale )
             {
 //                glGenerateMipmap(GL_TEXTURE_2D);
@@ -2133,8 +2163,10 @@ namespace wg
             }
         }
         else
+        {
             [renderEncoder setFragmentTexture:nil atIndex:(unsigned) TextureIndex::Texture];
-
+            [renderEncoder setFragmentSamplerState: m_samplers[0][0][0] atIndex:0];
+        }
 
     }
 
