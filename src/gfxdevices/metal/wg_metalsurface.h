@@ -98,16 +98,15 @@ namespace wg
 		void		    _setPixelDetails( PixelFormat format );
         void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
 
-        void            _syncBuffer();
+        void            _syncBufferAndWait();
         void            _syncTexture( RectI region );
-        void            _waitForSyncToComplete();
+        void            _waitForSyncedTexture();
                 
 		int			    m_bPendingReads = false;					// Set if there are queued commands that will use surface as source. Active MetalGfxDevice needs to be flushed before we modify.
 		bool            m_bMipmapStale = false;
 
         bool            m_bBufferNeedsSync = false;                 // Texture has changes that have not been synced to buffer yet.
         bool            m_bTextureNeedsSync = false;                // Buffer has changes that have not been synced to texture yet.
-        bool            m_bBufferSyncInProgress = false;            // Buffer is being updated with changes from texture.
         bool            m_bTextureSyncInProgress = false;           // Texture is being updated with changes from buffer.
 
 

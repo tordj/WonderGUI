@@ -386,13 +386,9 @@ namespace wg
         // Make sure we have any changes made by GPU
         
         if( m_bBufferNeedsSync )
-            _syncBuffer();
-        
-        // Wait for any sync in progress (either way) to complete
-        
-        _waitForSyncToComplete();
-        
-        //
+            _syncBufferAndWait();
+        else
+            _waitForSyncedTexture();
 		//
 
 		m_pPixels = (uint8_t*) [m_textureBuffer contents];
@@ -411,11 +407,9 @@ namespace wg
         // Make sure we have any changes made by GPU
         
         if( m_bBufferNeedsSync )
-            _syncBuffer();
-        
-        // Wait for any sync in progress (either way) to complete
-        
-        _waitForSyncToComplete();
+            _syncBufferAndWait();
+        else
+            _waitForSyncedTexture();
         
 		//
 
@@ -525,19 +519,14 @@ namespace wg
  */
 	}
 
-	//____ _syncBuffer() ____________________________________________
+	//____ _syncBufferAndWait() ____________________________________________
 
-	void MetalSurface::_syncBuffer()
+	void MetalSurface::_syncBufferAndWait()
 	{
 		// Flush any active device to make sure our texture is up-to-date
 
 		if (MetalGfxDevice::s_pActiveDevice)
 			MetalGfxDevice::s_pActiveDevice->flush();
-
-        _waitForSyncToComplete();
-        
-        m_bBufferSyncInProgress = true;
-        m_bBufferNeedsSync = false;
 
 		//
         MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h};
@@ -557,14 +546,13 @@ namespace wg
                                 destinationBytesPerImage: m_pixelSize * m_size.w * m_size.h ];
         [blitCommandEncoder endEncoding];
 
-
-        // Add a completion handler and commit the command buffer.
-        [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
-            // Shared buffer is populated.
-            m_bBufferSyncInProgress = false;
-        }];
         [commandBuffer commit];
-	}
+
+        [commandBuffer waitUntilCompleted];
+
+        m_bBufferNeedsSync = false;
+
+    }
 
     //____ _syncTexture() _______________________________________________
 
@@ -574,9 +562,7 @@ namespace wg
         
         if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
             MetalGfxDevice::s_pActiveDevice->flush();
-        
-        //TODO: We should wait for commands to complete!
-        
+ 
         //
         
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;
@@ -598,6 +584,9 @@ namespace wg
                             destinationLevel:   0
                             destinationOrigin:  textureOrigin];
 
+        if(m_bMipmapped)
+            [blitCommandEncoder generateMipmapsForTexture:m_texture];
+        
         [blitCommandEncoder endEncoding];
 
         m_bTextureSyncInProgress = true;
@@ -615,11 +604,11 @@ namespace wg
     }
 
 
-    //____ _waitForSyncToComplete() _______________________________________________
+    //____ _waitForSyncedTexture() _______________________________________________
 
-    void MetalSurface::_waitForSyncToComplete()
+    void MetalSurface::_waitForSyncedTexture()
     {
-        while( m_bBufferSyncInProgress || m_bTextureSyncInProgress )
+        while( m_bTextureSyncInProgress )
             usleep(50);        // Sleep for 0.05 millisec
     }
 
