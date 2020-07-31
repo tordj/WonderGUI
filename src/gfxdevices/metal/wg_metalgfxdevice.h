@@ -270,12 +270,6 @@ namespace wg
         int             m_extrasOfs = 0;                    // Write offset in m_pExtrasData
         int             m_neededExtras = 0;                 // Set to non-zero to potentially force a bigger jump in extrasBufferSize.
         
-        id<MTLBuffer>   m_surfaceBufferId = nil;
-        int             m_surfaceBufferSize = 1024;
-        MetalSurface_p* m_pSurfaceBuffer = nullptr;
-        int             m_surfaceFlushPoint = 0;
-        int             m_surfaceOfs;                       // Write offset in m_surfaceBuffer
-
         id<MTLBuffer>   m_clipListBufferId = nil;
         int             m_clipListBufferSize = 256;
         RectI *         m_pClipListBuffer = nullptr;
@@ -430,7 +424,7 @@ namespace wg
 
     inline void MetalGfxDevice::_beginStateCommand(Command cmd, int dataSize)
     {
-        if (m_commandOfs > m_commandBufferSize - dataSize - 1 || m_surfaceOfs == m_surfaceBufferSize )
+        if (m_commandOfs > m_commandBufferSize - dataSize - 1 )
             _resizeBuffers();
 
         m_cmd = cmd;

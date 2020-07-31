@@ -236,9 +236,6 @@ namespace wg
         m_clipListBufferId = [s_metalDevice newBufferWithLength:m_clipListBufferSize*sizeof(RectI) options:MTLResourceStorageModeShared];
         m_pClipListBuffer = (RectI *)[m_clipListBufferId contents];
         
-        m_surfaceBufferId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
-        m_pSurfaceBuffer = (MetalSurface_p *)[m_surfaceBufferId contents];
-
         m_segEdgeBufferId = [s_metalDevice newBufferWithLength:m_segEdgeBufferSize*sizeof(float) options:MTLResourceStorageModeManaged];
         m_pSegEdgeBuffer = (float *)[m_segEdgeBufferId contents];
                 
@@ -332,10 +329,11 @@ namespace wg
         if (m_bRendering)
         {
             _endCommand();
-            _beginStateCommand(Command::SetCanvas, 2);
+            _beginStateCommand(Command::SetCanvas, 2 + sizeof(void*)/sizeof(int));
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            m_pSurfaceBuffer[m_surfaceOfs++] = nullptr;
+            * (void**)(m_pCommandBuffer+m_commandOfs) = nullptr;
+            m_commandOfs += sizeof(void*)/sizeof(int);
         }
 
         m_emptyCanvasSize = canvasSize;
@@ -374,10 +372,13 @@ namespace wg
         if (m_bRendering)
         {
             _endCommand();
-            _beginStateCommand(Command::SetCanvas, 2);
+            _beginStateCommand(Command::SetCanvas, 2 + sizeof(void*)/sizeof(int));
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            m_pSurfaceBuffer[m_surfaceOfs++] = static_cast<MetalSurface*>(pSurface);
+            
+            * (void**)(m_pCommandBuffer+m_commandOfs) = pSurface;
+            m_commandOfs += sizeof(void*)/sizeof(int);
+            pSurface->retain();
         }
         return true;
     }
@@ -483,8 +484,11 @@ namespace wg
             //TODO: Check so that we don't overrun m_pSurfaceBuffer;
             
             _endCommand();
-            _beginStateCommand(Command::SetBlitSource, 0);
-            m_pSurfaceBuffer[m_surfaceOfs++] = static_cast<MetalSurface*>(pSource);
+            _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+            * (void**)(m_pCommandBuffer+m_commandOfs) = pSource;
+            m_commandOfs += sizeof(void*)/sizeof(int);
+            if( pSource )
+                pSource->retain();
         }
 
         return true;
@@ -1737,19 +1741,6 @@ namespace wg
             
             m_extrasBufferId = newId;
         }
-        
-        if( (m_surfaceBufferSize - m_surfaceOfs) < m_surfaceBufferSize/4 )
-        {
-            m_surfaceBufferSize *= 2;
-
-            id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_surfaceBufferSize*sizeof(MetalSurface_p) options:MTLResourceStorageModeShared];
-
-            MetalSurface_p * pNewBuffer = (MetalSurface_p *)[newId contents];
-            memcpy( pNewBuffer, m_pSurfaceBuffer, m_surfaceOfs * sizeof(MetalSurface_p));
-            m_pSurfaceBuffer = pNewBuffer;
-            
-            m_surfaceBufferId = newId;
-        }
 
         if( (m_clipListBufferSize - m_clipWriteOfs) < m_clipListBufferSize/4 )
         {
@@ -1844,7 +1835,6 @@ namespace wg
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
 
         int vertexOfs = m_vertexFlushPoint;
-        int surfaceOfs = m_surfaceFlushPoint;
       
         // Clear pending flags of active BlitSource and Canvas.
 
@@ -1860,9 +1850,11 @@ namespace wg
     
                 case Command::SetCanvas:
                 {
-                    _setCanvas(renderEncoder, m_pSurfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
-                    m_pSurfaceBuffer[surfaceOfs++] = nullptr;
-                    pCmd += 2;
+                    MetalSurface* pSurf = *((MetalSurface**)(pCmd+2));
+                    _setCanvas(renderEncoder, pSurf, pCmd[0], pCmd[1]);
+                    if( pSurf )
+                        pSurf->release();
+                    pCmd += 2 + sizeof(MetalSurface*)/sizeof(int);
                     break;
                 }
                 case Command::SetBlendMode:
@@ -1897,8 +1889,11 @@ namespace wg
                 }
                 case Command::SetBlitSource:
                 {
-                    _setBlitSource(renderEncoder, m_pSurfaceBuffer[surfaceOfs]);
-                    m_pSurfaceBuffer[surfaceOfs++] = nullptr;
+                    MetalSurface* pSurf = *((MetalSurface**)(pCmd));
+                    _setBlitSource(renderEncoder, pSurf);
+                    if( pSurf )
+                        pSurf->release();
+                    pCmd += sizeof(MetalSurface*)/sizeof(int);
                     break;
                 }
                 case Command::Blit:
@@ -2032,7 +2027,6 @@ namespace wg
         //
         
         m_vertexFlushPoint = m_vertexOfs;
-        m_surfaceFlushPoint = m_surfaceOfs;
         m_segEdgeFlushPoint = m_segEdgeOfs;
         m_commandOfs = 0;
     }
@@ -2046,14 +2040,12 @@ namespace wg
         m_vertexOfs = 0;
         m_extrasOfs = 0;
         m_commandOfs = 0;
-        m_surfaceOfs = 0;
         m_segEdgeOfs = 0;
         m_segPalOfs = 0;
         m_clipWriteOfs = 0;
         m_clipCurrOfs = -1;
 
         m_vertexFlushPoint = 0;
-        m_surfaceFlushPoint = 0;
         m_segEdgeFlushPoint = 0;
         
     }

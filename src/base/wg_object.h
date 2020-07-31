@@ -89,6 +89,9 @@ namespace wg
 		void			setFinalizer(Finalizer_p pFinalizer);
 		Finalizer_p		finalizer() const;
 
+		inline void		retain() { _incRefCount(); }
+		inline void		release() { _decRefCount(); }
+		
 	protected:
 		Object() : m_pWeakPtrHub(0), m_refCount(0) {}
 		virtual ~Object() {};
