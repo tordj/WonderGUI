@@ -52,28 +52,27 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	MetalGfxDevice_p MetalGfxDevice::create( SizeI size, MTLRenderPassDescriptor* passDesc )
+	MetalGfxDevice_p MetalGfxDevice::create()
 	{
-		return MetalGfxDevice_p(new MetalGfxDevice(size, passDesc));
+		return MetalGfxDevice_p(new MetalGfxDevice());
     }
 
     //____ constructor() ______________________________________________________
 
-	MetalGfxDevice::MetalGfxDevice( SizeI size, MTLRenderPassDescriptor* passDesc ) : GfxDevice(size)
+MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 	{
         m_bFullyInitialized = true;
 
         m_flushesInProgress = 0;
         
-        m_canvasYstart = size.h;
+        m_canvasYstart = 0;
         m_canvasYmul = -1;
 
         _initTables();
         
         //
         
-        m_viewportSize = size;
-        m_renderPassDesc = passDesc;
+        m_viewportSize = {0,0};
         
         NSError *error = nil;
         NSString *shaderSource = [[NSString alloc] initWithUTF8String:shaders];
@@ -253,14 +252,7 @@ namespace wg
 
         m_segPalTextureId = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
 
-        
-        
         // Initialize our shader environment
-                
-        m_uniform.canvasDimX = size.w;
-        m_uniform.canvasDimY = size.h;
-        m_uniform.canvasYOfs = m_canvasYstart;
-        m_uniform.canvasYMul = m_canvasYmul;
 
         m_uniform.flatTint = { 1.f, 1.f, 1.f, 1.f };
     }
@@ -296,22 +288,19 @@ namespace wg
 
     //____ setCanvas() __________________________________________________________________
 
-    bool MetalGfxDevice::setCanvas( SizeI canvasSize, CanvasInit initOperation, bool bResetClipRects )
+    bool MetalGfxDevice::setCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI canvasSize, PixelFormat pixelFormat, bool bResetClipList )
     {
-        // Do NOT add any gl-calls here, INCLUDING glGetError()!!!
-        // This method can be called without us having our GL-context.
-
-        if (canvasSize.w < 1 || canvasSize.h < 1)
+        if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
         {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "CanvasSize must be at least 1x1 pixels", this, TYPEINFO, __func__, __FILE__, __LINE__);
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
         }
-
+        
         m_pCanvas = nullptr;
         m_canvasSize = canvasSize;
         m_clipCanvas = m_canvasSize;
 
-        if( bResetClipRects )
+        if( bResetClipList )
         {
             m_clipBounds = m_canvasSize;
             m_pClipRects = &m_clipCanvas;
@@ -327,23 +316,22 @@ namespace wg
             _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            m_pCommandBuffer[m_commandOfs++] = (int) initOperation;
-            m_pCommandBuffer[m_commandOfs++] = m_clearColor.argb;
+            m_pCommandBuffer[m_commandOfs++] = 0;                                       // No CanvasInit operation specified, it is already in passDesc.
+            m_pCommandBuffer[m_commandOfs++] = 0;                                       // No clear color specified, it is already in passDesc;
             * (void**)(m_pCommandBuffer+m_commandOfs) = nullptr;
             m_commandOfs += sizeof(void*)/sizeof(int);
         }
-        else
-            m_beginRenderOp = initOperation;
 
-        m_emptyCanvasSize = canvasSize;
-
+        m_renderPassDesc = renderPassDesc;
+        m_baseCanvasSize = canvasSize;
+        m_baseCanvasPixelFormat = pixelFormat;
         return true;
     }
 
     bool MetalGfxDevice::setCanvas( Surface * pSurface, CanvasInit initOperation, bool bResetClipRects )
     {
         if( pSurface == nullptr )
-            return setCanvas( m_emptyCanvasSize, initOperation, bResetClipRects );
+            return setCanvas( m_renderPassDesc, m_baseCanvasSize, m_baseCanvasPixelFormat, bResetClipRects );
 
         if (!pSurface || pSurface->typeInfo() != MetalSurface::TYPEINFO)
         {
@@ -374,8 +362,8 @@ namespace wg
             m_nClipRects = 1;
         }
 
-        m_canvasYstart = 0;
-        m_canvasYmul = 1;
+        m_canvasYstart = m_canvasSize.h;
+        m_canvasYmul = -1;
 
         if (m_bRendering)
         {
@@ -532,16 +520,9 @@ namespace wg
         return m_flushesInProgress == 0;
     }
 
-    //____ setRenderPassDescriptor() _________________________________________________
+    //____ autopresent() ________________________________________________
 
-    void MetalGfxDevice::setRenderPassDescriptor( MTLRenderPassDescriptor* passDesc )
-    {
-        m_renderPassDesc = passDesc;
-    }
-
-    //____ setDrawableToAutopresent() ________________________________________________
-
-    void MetalGfxDevice::setDrawableToAutopresent( id<MTLDrawable> drawable )
+    void MetalGfxDevice::autopresent( id<MTLDrawable> drawable )
     {
         m_drawableToAutoPresent = drawable;
     }
@@ -651,8 +632,11 @@ namespace wg
         // Schedule a present once the framebuffer is complete using the current drawable.
 
         if( m_drawableToAutoPresent != nil )
+        {
             [m_metalCommandBuffer presentDrawable:m_drawableToAutoPresent];
-
+            m_drawableToAutoPresent = nil;
+        }
+        
         // Add a completion handler.
         [m_metalCommandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
             // Shared buffer is populated.
@@ -1009,7 +993,6 @@ namespace wg
             width = _scaleThickness(thickness, slope);
             bSteep = true;
 
-//            s = (begin.x + 0.5f) - (m_canvasYstart + m_canvasYmul * (begin.y + 0.5f))*slope*m_canvasYmul;
             s = (begin.x + 0.5f) - ((begin.y + 0.5f))*slope;
             w = width / 2 + 0.5f;
 
@@ -1977,7 +1960,7 @@ namespace wg
                         else if(pSurf->m_pixelDescription.format == PixelFormat::A_8)
                             shader = BlitFragShader::A8Source;
                         
-                        [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
                     }
@@ -1989,7 +1972,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
                     }
@@ -2001,7 +1984,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
                     }
@@ -2014,7 +1997,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [renderEncoder setRenderPipelineState:m_lineFromToPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_lineFromToPipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         
                         for (int i = 0; i < clipListLen; i++)
                         {
@@ -2024,7 +2007,7 @@ namespace wg
                             [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         }
 
-                        MTLScissorRect orgClip = {0, 0, (unsigned) m_canvasSize.w, (unsigned) m_canvasSize.h};
+                        MTLScissorRect orgClip = {0, 0, (unsigned) m_activeCanvasSize.w, (unsigned) m_activeCanvasSize.h};
                         [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;
@@ -2036,7 +2019,7 @@ namespace wg
                      int nVertices = *pCmd++;
                      if( nVertices > 0 )
                      {
-                         [renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                         [renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                          [renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
                          vertexOfs += nVertices;
                      }
@@ -2052,7 +2035,7 @@ namespace wg
                     int nVertices = *pCmd++;
                     if( nVertices > 0 )
                     {
-                        [renderEncoder setRenderPipelineState:m_segmentsPipelines[nEdges][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
+                        [renderEncoder setRenderPipelineState:m_segmentsPipelines[nEdges][m_bGradientActive][(int)m_activeBlendMode][(int)m_activeCanvasFormat] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
                     }
@@ -2099,6 +2082,8 @@ namespace wg
     {
         id<MTLRenderCommandEncoder> renderEncoder;
         
+        PixelFormat pixelFormat;
+        
         if (pCanvas)
         {
             MTLRenderPassDescriptor* pDescriptor = [MTLRenderPassDescriptor new];
@@ -2127,44 +2112,25 @@ namespace wg
             
             renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:pDescriptor];
             renderEncoder.label = @"GfxDeviceMetal Render to Surface Pass";
+            
+            pixelFormat = pCanvas->pixelFormat();
         }
         else
         {
-            switch(initOperation)
-            {
-                case CanvasInit::Keep:
-                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
-                    break;
-                    
-                case CanvasInit::Clear:
-                {
-                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionClear;
-                    float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-                    m_renderPassDesc.colorAttachments[0].clearColor = MTLClearColorMake(pConv[clearColor.r]/4096.f, pConv[clearColor.g]/4096.f, pConv[clearColor.b]/4096.f, clearColor.a/255.f);
-                    break;
-                }
-                case CanvasInit::Discard:
-                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionDontCare;
-                    break;
-            }
-
             renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
             renderEncoder.label = @"GfxDeviceMetal Render Pass";
-            
+           
+            pixelFormat = m_baseCanvasPixelFormat;
         }
 
         [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
-
-        int canvasYstart    = pCanvas ? 0 : height;
-        int canvasYmul        = pCanvas ? 1 : -1;
-
 
         // Updating canvas info for our shaders
 
         m_uniform.canvasDimX = (GLfloat) width;
         m_uniform.canvasDimY = (GLfloat) height;
-        m_uniform.canvasYOfs = canvasYstart;
-        m_uniform.canvasYMul = canvasYmul;
+        m_uniform.canvasYOfs = height;
+        m_uniform.canvasYMul = -1;
 
         [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex: (unsigned) VertexInputIndex::Uniform];
 
@@ -2172,6 +2138,26 @@ namespace wg
         
         m_pActiveCanvas = pCanvas;
         m_activeCanvasSize = {width,height};
+
+        switch(pixelFormat)
+        {
+            case PixelFormat::BGRA_8_linear:
+                m_activeCanvasFormat = DestFormat::BGRA8_linear;
+                break;
+                
+            case PixelFormat::BGRA_8_sRGB:
+                m_activeCanvasFormat = DestFormat::BGRA8_sRGB;
+                break;
+                
+            case PixelFormat::A_8:
+                m_activeCanvasFormat = DestFormat::A_8;
+                break;
+                
+            default:
+                Base::handleError(ErrorSeverity::Serious, ErrorCode::Internal, "Canvas format is neither BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__ );
+                break;
+        }
+
         
         return renderEncoder;
     }

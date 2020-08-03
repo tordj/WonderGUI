@@ -46,17 +46,19 @@ using namespace wg;
     self = [super init];
     if(self)
     {
+        mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+        
         Base::init();
     
         auto pContext = Context::create();
-        pContext->setGammaCorrection(false);
+        pContext->setGammaCorrection(true);
         
         Base::setActiveContext(pContext);
 
     
         
         MetalGfxDevice::setMetalDevice( mtkView.device );
-        m_pDevice = MetalGfxDevice::create( SizeI(512,512), mtkView.currentRenderPassDescriptor );
+        m_pDevice = MetalGfxDevice::create();
  
         Color myTexture[16] {   Color::Red, Color::Green, Color::Blue, Color::White,
                                 Color::White, Color::Black, Color::White, Color::Black,
@@ -95,7 +97,7 @@ using namespace wg;
         
         m_pMipMapSurface = MetalSurface::create({128,128}, PixelFormat::BGRA_8, (uint8_t*) myMipMapTexture, 128*4, nullptr, SurfaceFlag::Mipmapped, nullptr);
 
-        m_pCanvasSurface = MetalSurface::create( {256,256}, PixelFormat::BGRA_8_linear, SurfaceFlag::Canvas );
+        m_pCanvasSurface = MetalSurface::create( {256,256}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
 
     }
 
@@ -116,10 +118,9 @@ using namespace wg;
     MTLRenderPassDescriptor * pDesc = view.currentRenderPassDescriptor;
     pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
 
-    m_pDevice->setRenderPassDescriptor(pDesc);
-    m_pDevice->setDrawableToAutopresent(view.currentDrawable);
+    m_pDevice->autopresent(view.currentDrawable);
 
-    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y}, CanvasInit::Clear );
+    m_pDevice->setCanvas( pDesc, {(int)_viewportSize.x,(int)_viewportSize.y}, PixelFormat::BGRA_8_sRGB );
     m_pDevice->beginRender();
 
     m_pDevice->setTintGradient({10,300,200,200}, Color::Red, Color::Red, Color::Red, Color::Red);
@@ -188,11 +189,12 @@ using namespace wg;
     m_pDevice->fill( Color::Yellow );
 
     m_pDevice->setBlendMode(BlendMode::Subtract);
-    m_pDevice->fill( RectI(0,100,256,56), Color::White );
+    m_pDevice->fill( RectI(0,50,256,106), Color::White );
     
-    
+    m_pDevice->drawLine( CoordI(20,20), CoordI(400,40), {255,255,255,255}, 5.f );
+
  
-    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
+    m_pDevice->setCanvas( nullptr );
 
     m_pDevice->setBlendMode(BlendMode::Add);
     m_pDevice->setTintColor({255,255,255,128});

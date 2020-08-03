@@ -51,7 +51,7 @@ namespace wg
         static void setMetalDevice( id<MTLDevice> device );
         static id<MTLDevice> metalDevice() { return s_metalDevice; }
         
-        static MetalGfxDevice_p	create( SizeI size, MTLRenderPassDescriptor* passDesc );
+        static MetalGfxDevice_p	create();
 
 		//.____ Identification __________________________________________
 
@@ -66,7 +66,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-        bool    setCanvas( SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipList = true );
+        bool    setCanvas( MTLRenderPassDescriptor* passDesc, SizeI canvasSize, PixelFormat pixelFormat, bool bResetClipList = true );
 		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipList = true ) override;
 
         //.____ State _________________________________________________
@@ -83,17 +83,17 @@ namespace wg
 
         bool    isCanvasReady() const;
         
-        void    setRenderPassDescriptor( MTLRenderPassDescriptor* passDesc );
-        void    setDrawableToAutopresent( id<MTLDrawable> drawable );
         
         //.____ Rendering ________________________________________________
-
+        
         bool    beginRender() override;
         bool    endRender() override;
         bool    isIdle() override;
         void    flush() override;
         void    flushAndWait();
-        
+
+        void    autopresent( id<MTLDrawable> drawable );           // endRender() will clear this, so needs to be set for each begin/end render cycle.
+
         using   GfxDevice::fill;
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
@@ -105,7 +105,7 @@ namespace wg
 
 
 	protected:
-		MetalGfxDevice( SizeI size, MTLRenderPassDescriptor* passDesc );
+		MetalGfxDevice();
 		~MetalGfxDevice();
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
@@ -213,15 +213,10 @@ namespace wg
         CmdFinalizer_p  m_pCmdFinalizer;
         int             m_cmdBeginVertexOfs;                        // Saved for CmdFinalizer
 
-//        GLuint            m_framebufferId;
         int             m_nSegments;                                // Number of segments for current segment command.
 
         int             m_canvasYstart;
         int             m_canvasYmul;
-
-        SizeI           m_emptyCanvasSize;
-
-//        GLsync          m_idleSync = 0;
 
         bool            m_bFullyInitialized = false;
         CanvasInit      m_beginRenderOp = CanvasInit::Keep;
@@ -293,16 +288,13 @@ namespace wg
         uint16_t *      m_pSegPalBuffer = nullptr;
         int             m_segPalOfs = 0;
                 
-//        GLuint         m_segmentsTintTexId;                                                    // GL texture handle.
-//        uint16_t    m_segmentsTintTexMap[c_segmentsTintTexMapSize][c_maxSegments * 4 * 4];    // Horizontally aligned blocks of 2x2 pixels each, one for each segment color.
-//        int             m_segmentsTintTexOfs;               // Write offset in m_segmentsTintTexMap
-
         
         // Active state data
 
         MetalSurface *  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
         MetalSurface *  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
         SizeI           m_activeCanvasSize;
+        DestFormat      m_activeCanvasFormat;
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
                 
@@ -311,6 +303,8 @@ namespace wg
         id<MTLLibrary>              m_library;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
         MTLRenderPassDescriptor*    m_renderPassDesc;
+        SizeI                       m_baseCanvasSize;
+        PixelFormat                 m_baseCanvasPixelFormat;
         
         id<MTLCommandBuffer>        m_metalCommandBuffer;
         bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
