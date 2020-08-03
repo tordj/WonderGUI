@@ -71,13 +71,14 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(SizeI canvasSize, bool bResetClipRects = true );
-		bool	setCanvas(Surface * pCanvas, bool bResetClipRects = true ) override;
+		bool	setCanvas(SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true );
+		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
 
 		//.____ State _________________________________________________
 
 		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
+		void	setClearColor( Color col ) override;
 		void	setTintColor(Color color) override;
 		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
 		void	clearTintGradient() override;
@@ -95,6 +96,7 @@ namespace wg
 		bool    isIdle() override;
 		void	flush() override;
 
+		using 	GfxDevice::fill;
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
@@ -124,6 +126,7 @@ namespace wg
 		//			SetClip,
 					SetBlendMode,
 					SetMorphFactor,
+					SetClearColor,
 					SetTintColor,
 					SetTintGradient,
 					ClearTintGradient,
@@ -141,6 +144,7 @@ namespace wg
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
 				void	_setBlitSource(GlSurface * pSurf);
+				void	_setClearColor(Color color);
 				void	_setTintColor(Color color);
 				void	_setTintGradient(const RectI& rect, const Color colors[4]);
 				void	_clearTintGradient();
@@ -203,6 +207,8 @@ namespace wg
 		GLsync          m_idleSync = 0;
 
 		bool			m_bFullyInitialized = false;
+		
+		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 
 		// Device programs
 
@@ -312,6 +318,7 @@ namespace wg
 		GLint		m_glScissorBox[4];
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
+		GLfloat		m_glClearColor[4];
 
 		//
 
@@ -395,7 +402,8 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 
-		static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
+		if( m_pBlitSource )
+			static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
 
 		if( m_pCanvas)
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;

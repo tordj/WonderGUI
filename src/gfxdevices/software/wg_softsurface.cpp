@@ -189,7 +189,7 @@ namespace wg
 
 	//____ pixel() _________________________________________________________________
 
-	uint32_t SoftSurface::pixel( CoordI coord ) const
+	uint32_t SoftSurface::pixel( CoordI coord )
 	{
 		//TODO: Take endianess into account.
 
@@ -224,7 +224,7 @@ namespace wg
 
 	//____ alpha() _______________________________________________________________
 
-	uint8_t SoftSurface::alpha( CoordI coord ) const
+	uint8_t SoftSurface::alpha( CoordI coord )
 	{
 		//TODO: Take endianess into account.
 

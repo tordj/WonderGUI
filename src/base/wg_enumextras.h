@@ -55,6 +55,7 @@ namespace wg
 	const static TextEditMode    TextEditMode_min    = TextEditMode::Static;
 	const static AccessMode      AccessMode_min      = AccessMode::None;
 	const static ScaleMode       ScaleMode_min       = ScaleMode::Nearest;
+	const static CanvasInit      CanvasInit_min      = CanvasInit::Keep;
 	const static PixelFormat     PixelFormat_min     = PixelFormat::Unknown;
 	const static MaskOp          MaskOp_min          = MaskOp::Recurse;
 	const static GfxChunkId      GfxChunkId_min      = GfxChunkId::OutOfData;
@@ -77,6 +78,7 @@ namespace wg
 	const static TextEditMode    TextEditMode_max    = TextEditMode::Editable;
 	const static AccessMode      AccessMode_max      = AccessMode::ReadWrite;
 	const static ScaleMode       ScaleMode_max       = ScaleMode::Interpolate;
+	const static CanvasInit      CanvasInit_max      = CanvasInit::Clear;
 	const static PixelFormat     PixelFormat_max     = PixelFormat::A_8;
 	const static MaskOp          MaskOp_max          = MaskOp::Mask;
 	const static GfxChunkId      GfxChunkId_max      = GfxChunkId::DeleteSurface;
@@ -99,6 +101,7 @@ namespace wg
 	const static int             TextEditMode_size   = (int)TextEditMode::Editable + 1;
 	const static int             AccessMode_size     = (int)AccessMode::ReadWrite + 1;
 	const static int             ScaleMode_size      = (int)ScaleMode::Interpolate + 1;
+	const static int             CanvasInit_size     = (int)CanvasInit::Clear + 1;
 	const static int             PixelFormat_size    = (int)PixelFormat::A_8 + 1;
 	const static int             MaskOp_size         = (int)MaskOp::Mask + 1;
 	const static int             GfxChunkId_size     = (int)GfxChunkId::DeleteSurface + 1;
@@ -121,6 +124,7 @@ namespace wg
 	const char * toString(TextEditMode);
 	const char * toString(AccessMode);
 	const char * toString(ScaleMode);
+	const char * toString(CanvasInit);
 	const char * toString(PixelFormat);
 	const char * toString(MaskOp);
 	const char * toString(GfxChunkId);

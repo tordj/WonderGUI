@@ -66,8 +66,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-        bool    setCanvas( SizeI canvasSize, bool bResetClipList = true );
-		bool	setCanvas(Surface * pCanvas, bool bResetClipList = true ) override;
+        bool    setCanvas( SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipList = true );
+		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipList = true ) override;
 
         //.____ State _________________________________________________
 
@@ -94,6 +94,7 @@ namespace wg
         void    flush() override;
         void    flushAndWait();
         
+        using   GfxDevice::fill;
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
@@ -168,7 +169,7 @@ namespace wg
 
         };
 
-        void            _setCanvas( id<MTLRenderCommandEncoder>, MetalSurface * pCanvas, int width, int height );
+        id<MTLRenderCommandEncoder> _setCanvas( MetalSurface * pCanvas, int width, int height, CanvasInit initOperation, Color clearColor );
         void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
         void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
         void            _setBlitSource( id<MTLRenderCommandEncoder>, MetalSurface * pSurf);
@@ -223,7 +224,8 @@ namespace wg
 //        GLsync          m_idleSync = 0;
 
         bool            m_bFullyInitialized = false;
-
+        CanvasInit      m_beginRenderOp = CanvasInit::Keep;
+        
         struct Uniform
         {
             float      canvasDimX;
@@ -298,13 +300,12 @@ namespace wg
         
         // Active state data
 
-        MetalSurface *  m_pActiveBlitSource = nullptr;                  // Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-        MetalSurface *  m_pActiveCanvas     = nullptr;                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
-        bool            m_bMipmappedActiveCanvas = false;               // Set if currently active canvas is a surface that is mipmapped.
+        MetalSurface *  m_pActiveBlitSource = nullptr;                  // Currently active blit source during buffer execution, not to confuse with m_pBlitSource which might not be active yet.
+        MetalSurface *  m_pActiveCanvas     = nullptr;                  // Currently active canvas during buffer execution, not to confuse with m_pCanvas which might not be active yet.
+        SizeI           m_activeCanvasSize;
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
-        
-        
+                
         SizeI                       m_viewportSize;
         
         id<MTLLibrary>              m_library;
@@ -348,8 +349,8 @@ namespace wg
         m_cmdBeginVertexOfs = m_vertexOfs;
         m_pCommandBuffer[m_commandOfs++] = cmd;
         
-//        if (m_pCanvas)
-//            static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+        if (m_pCanvas)
+            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginDrawCommandWithSource() ________________________________________________
@@ -364,10 +365,11 @@ namespace wg
         m_cmdBeginVertexOfs = m_vertexOfs;
         m_pCommandBuffer[m_commandOfs++] = cmd;
 
-//        static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
+        if( m_pBlitSource )
+            static_cast<MetalSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
 
-//        if( m_pCanvas)
-//            static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+        if( m_pCanvas)
+            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginDrawCommandWithInt() ________________________________________________
@@ -383,8 +385,8 @@ namespace wg
         m_pCommandBuffer[m_commandOfs++] = cmd;
         m_pCommandBuffer[m_commandOfs++] = data;
 
-//        if (m_pCanvas)
-//            static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+        if (m_pCanvas)
+            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
     }
 
     //____ _beginClippedDrawCommand() ________________________________________________
@@ -415,8 +417,8 @@ namespace wg
         m_pCommandBuffer[m_commandOfs++] = m_clipCurrOfs;
         m_pCommandBuffer[m_commandOfs++] = m_nClipRects;
 
-//        if (m_pCanvas)
-//            static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
+        if (m_pCanvas)
+            static_cast<MetalSurface*>(m_pCanvas.rawPtr())->m_bBufferNeedsSync = true;
     }
 
 

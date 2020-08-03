@@ -68,8 +68,8 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) const override;
-		uint8_t		alpha(CoordI coord) const override;
+		uint32_t	pixel(CoordI coord) override;
+		uint8_t		alpha(CoordI coord) override;
 
 		//.____ Control _______________________________________________________
 
@@ -98,16 +98,16 @@ namespace wg
 		void		    _setPixelDetails( PixelFormat format );
         void            _setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
 
+        void            _createAndSyncTextures();
+        
         void            _syncBufferAndWait();
         void            _syncTexture( RectI region );
         void            _waitForSyncedTexture();
-                
+
 		int			    m_bPendingReads = false;					// Set if there are queued commands that will use surface as source. Active MetalGfxDevice needs to be flushed before we modify.
-		bool            m_bMipmapStale = false;
 
         bool            m_bBufferNeedsSync = false;                 // Texture has changes that have not been synced to buffer yet.
-        bool            m_bTextureNeedsSync = false;                // Buffer has changes that have not been synced to texture yet.
-        bool            m_bTextureSyncInProgress = false;           // Texture is being updated with changes from buffer.
+        volatile bool   m_bTextureSyncInProgress = false;           // Texture is being updated with changes from buffer.
 
 
 		id<MTLTexture>	m_clutTexture = nil;	    // Private texture with clut data, only accessed by GPU.

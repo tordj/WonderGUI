@@ -105,11 +105,14 @@ namespace wg
 			{
 				uint16_t	surfaceId;
 				uint16_t	bResetClipList;
+				uint16_t 	initOperation;
 
 				*m_pGfxStream >> surfaceId;
+				*m_pGfxStream >> initOperation;
 				*m_pGfxStream >> bResetClipList;
 
 				m_charStream << "    surfaceId   = " << surfaceId << std::endl;
+				m_charStream << "    initOperation   = " << toString((CanvasInit)initOperation) << std::endl;
 				m_charStream << "    resetClipList   = " << bResetClipList << std::endl;	//TODO: Should write true/false instead.
 				break;
 			}

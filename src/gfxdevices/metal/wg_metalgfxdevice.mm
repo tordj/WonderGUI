@@ -293,24 +293,19 @@ namespace wg
 	{
 		return SurfaceFactory_p();
 	}
-/*
-	//____ setCanvas() ________________________________________________________
 
-	bool MetalGfxDevice::setCanvas(Surface * pCanvas, bool bResetClipList )
-	{
-		m_pCanvas = pCanvas;
-		return true;
-	}
-*/
     //____ setCanvas() __________________________________________________________________
 
-    bool MetalGfxDevice::setCanvas( SizeI canvasSize, bool bResetClipRects )
+    bool MetalGfxDevice::setCanvas( SizeI canvasSize, CanvasInit initOperation, bool bResetClipRects )
     {
         // Do NOT add any gl-calls here, INCLUDING glGetError()!!!
         // This method can be called without us having our GL-context.
 
         if (canvasSize.w < 1 || canvasSize.h < 1)
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "CanvasSize must be at least 1x1 pixels", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
+        }
 
         m_pCanvas = nullptr;
         m_canvasSize = canvasSize;
@@ -329,32 +324,45 @@ namespace wg
         if (m_bRendering)
         {
             _endCommand();
-            _beginStateCommand(Command::SetCanvas, 2 + sizeof(void*)/sizeof(int));
+            _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
+            m_pCommandBuffer[m_commandOfs++] = (int) initOperation;
+            m_pCommandBuffer[m_commandOfs++] = m_clearColor.argb;
             * (void**)(m_pCommandBuffer+m_commandOfs) = nullptr;
             m_commandOfs += sizeof(void*)/sizeof(int);
         }
+        else
+            m_beginRenderOp = initOperation;
 
         m_emptyCanvasSize = canvasSize;
 
         return true;
     }
 
-    bool MetalGfxDevice::setCanvas( Surface * pSurface, bool bResetClipRects )
+    bool MetalGfxDevice::setCanvas( Surface * pSurface, CanvasInit initOperation, bool bResetClipRects )
     {
-        // Do NOT add any gl-calls here, INCLUDING glGetError()!!!
-        // This method can be called without us having our GL-context.
-
         if( pSurface == nullptr )
-            return setCanvas( m_emptyCanvasSize, bResetClipRects );
+            return setCanvas( m_emptyCanvasSize, initOperation, bResetClipRects );
 
         if (!pSurface || pSurface->typeInfo() != MetalSurface::TYPEINFO)
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
+        }
 
-        if (pSurface->pixelFormat() != PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
+        if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
+        {
+                Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "A CLUT-based surface can not be used as canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
+                return false;
+        }
+        
+        if( !(static_cast<MetalSurface*>(pSurface)->m_flags & SurfaceFlag::Canvas) )
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Surface can not be set as canvas unless created with SurfaceFlag::Canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
-
+        }
+            
         m_pCanvas = pSurface;
         m_canvasSize = pSurface->size();
         m_clipCanvas = m_canvasSize;
@@ -372,14 +380,18 @@ namespace wg
         if (m_bRendering)
         {
             _endCommand();
-            _beginStateCommand(Command::SetCanvas, 2 + sizeof(void*)/sizeof(int));
+            _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
             m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            
+            m_pCommandBuffer[m_commandOfs++] = (int) initOperation;
+            m_pCommandBuffer[m_commandOfs++] = m_clearColor.argb;
             * (void**)(m_pCommandBuffer+m_commandOfs) = pSurface;
             m_commandOfs += sizeof(void*)/sizeof(int);
             pSurface->retain();
         }
+        else
+            m_beginRenderOp = initOperation;
+        
         return true;
     }
 
@@ -475,7 +487,10 @@ namespace wg
     bool MetalGfxDevice::setBlitSource(Surface * pSource)
     {
         if (!pSource || pSource->typeInfo() != MetalSurface::TYPEINFO)
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
             return false;
+        }
 
         m_pBlitSource = pSource;
 
@@ -551,36 +566,68 @@ namespace wg
 
         m_pPrevActiveDevice = s_pActiveDevice;
         s_pActiveDevice = this;
-                
+                   
+        //
+
+        _resetBuffers();
+
+        
         // Create a new command buffer for each render pass to the current drawable.
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
 
-        // Create a render command encoder.
-        id<MTLRenderCommandEncoder> renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        renderEncoder.label = @"MetalGfxDeviceRenderEncoder";
+        // Set intial canvas for first _executeBuffer() call.
+        
+        m_pActiveCanvas     = (MetalSurface*) m_pCanvas.rawPtr();
+        m_activeCanvasSize  = m_canvasSize;
 
-        _setCanvas( renderEncoder, static_cast<MetalSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
-        _setBlendMode( renderEncoder, m_blendMode);
-        _setMorphFactor( renderEncoder, m_morphFactor);
+        // Queue initial blend mode.
+        
+        _beginStateCommand(Command::SetBlendMode, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int) m_blendMode;
+        _endCommand();
 
+        // Queue initial morph factor.
+        
+        _beginStateCommand(Command::SetMorphFactor, 1);
+        m_pCommandBuffer[m_commandOfs++] = (int)(m_morphFactor*1024);
+        _endCommand();
+
+        // Queue initial blitSource.
+        
+        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
+        * (void**)(m_pCommandBuffer+m_commandOfs) = m_pBlitSource.rawPtr();
+        m_commandOfs += sizeof(void*)/sizeof(int);
+        if( m_pBlitSource )
+            m_pBlitSource->retain();
+        _endCommand();
+
+        // Queue intial tint
+        
          if (m_bTintGradient)
-            _setTintGradient( renderEncoder, m_tintGradientRect, m_tintGradient);
+         {
+             _beginStateCommand(Command::SetTintGradient, 8);
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[0].argb;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[1].argb;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[2].argb;
+             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[3].argb;
+             _endCommand();
+         }
         else
-            _setTintColor( renderEncoder, m_tintColor);
-
-        _setBlitSource( renderEncoder, static_cast<MetalSurface*>(m_pBlitSource.rawPtr()) );
-
-        [renderEncoder endEncoding];
-
-        // Wait for previous render pass to complete.
+        {
+             _beginStateCommand(Command::SetTintColor, 1);
+             m_pCommandBuffer[m_commandOfs++] = m_tintColor.argb;
+            _endCommand();
+        }
+  
+        // Wait for previous render pass to complete by doing a flushAndWait on what we have in buffer so far.
         
         if( m_flushesInProgress > 0 )
             flushAndWait();
-        
-        //
-
-        _resetBuffers();
         
         return true;
     }
@@ -1816,9 +1863,9 @@ namespace wg
 
         // Create our render encoder.
 
-        id<MTLRenderCommandEncoder> renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
-        renderEncoder.label = @"GfxDeviceMetalRenderEncoder";
-
+        id<MTLRenderCommandEncoder> renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, m_beginRenderOp, m_clearColor );
+        m_beginRenderOp = CanvasInit::Keep;
+        
         // Set buffers for vertex shaders
         
         [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
@@ -1847,11 +1894,26 @@ namespace wg
 
             switch (cmd)
             {
-    
                 case Command::SetCanvas:
                 {
-                    MetalSurface* pSurf = *((MetalSurface**)(pCmd+2));
-                    _setCanvas(renderEncoder, pSurf, pCmd[0], pCmd[1]);
+                    [renderEncoder endEncoding];
+                    
+                    MetalSurface* pSurf = *((MetalSurface**)(pCmd+4));
+                    renderEncoder = _setCanvas(pSurf, pCmd[0], pCmd[1], (CanvasInit) pCmd[2], pCmd[3]);
+                    
+                    [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
+                    
+                    [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
+                    [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+
+                    // Set buffers/textures for segments fragment shader
+                    
+                    [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
+                    [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
+
+                    
+                    
+                    
                     if( pSurf )
                         pSurf->release();
                     pCmd += 2 + sizeof(MetalSurface*)/sizeof(int);
@@ -1918,9 +1980,6 @@ namespace wg
                         [renderEncoder setRenderPipelineState:m_blitPipelines[(int)shader][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
-
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
                 }
@@ -1933,9 +1992,6 @@ namespace wg
                         [renderEncoder setRenderPipelineState:m_fillPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
-
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
                 }
@@ -1948,9 +2004,6 @@ namespace wg
                         [renderEncoder setRenderPipelineState:m_fillAAPipelines[m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
-
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
                 }
@@ -1975,10 +2028,6 @@ namespace wg
                         [renderEncoder setScissorRect:orgClip];
 
                         vertexOfs += nVertices;
-
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
- 
                     }
                     break;
                 }
@@ -1990,9 +2039,6 @@ namespace wg
                          [renderEncoder setRenderPipelineState:m_plotPipelines[(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                          [renderEncoder drawPrimitives:MTLPrimitiveTypePoint vertexStart:vertexOfs vertexCount:nVertices];
                          vertexOfs += nVertices;
-
-                         if( m_bMipmappedActiveCanvas )
-                             m_pActiveCanvas->m_bMipmapStale = true;
                      }
                      break;
 
@@ -2009,9 +2055,6 @@ namespace wg
                         [renderEncoder setRenderPipelineState:m_segmentsPipelines[nEdges][m_bGradientActive][(int)m_activeBlendMode][(int)DestFormat::BGRA8_linear] ];
                         [renderEncoder drawPrimitives:MTLPrimitiveTypeTriangle vertexStart:vertexOfs vertexCount:nVertices];
                         vertexOfs += nVertices;
-                        
-                        if( m_bMipmappedActiveCanvas )
-                            m_pActiveCanvas->m_bMipmapStale = true;
                     }
                     break;
                 }
@@ -2023,7 +2066,7 @@ namespace wg
         }
 
         [renderEncoder endEncoding];
-        
+
         //
         
         m_vertexFlushPoint = m_vertexOfs;
@@ -2052,44 +2095,65 @@ namespace wg
 
     //____ _setCanvas() _______________________________________________________
 
-    void MetalGfxDevice::_setCanvas( id<MTLRenderCommandEncoder> renderEncoder, MetalSurface * pCanvas, int width, int height )
+    id<MTLRenderCommandEncoder> MetalGfxDevice::_setCanvas( MetalSurface * pCanvas, int width, int height, CanvasInit initOperation, Color clearColor )
     {
+        id<MTLRenderCommandEncoder> renderEncoder;
+        
         if (pCanvas)
         {
-/*
-            glBindFramebuffer(GL_FRAMEBUFFER, m_framebufferId);
-            glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, pCanvas->getTexture(), 0);
+            MTLRenderPassDescriptor* pDescriptor = [MTLRenderPassDescriptor new];
+            
+            pDescriptor.colorAttachments[0].texture = pCanvas->getTexture();
+            pDescriptor.colorAttachments[0].storeAction = MTLStoreActionStore;
 
-            GLenum drawBuffers[1] = { GL_COLOR_ATTACHMENT0 };
-            glDrawBuffers(1, drawBuffers);
-
-            if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE)
+            switch(initOperation)
             {
-                glBindFramebuffer(GL_FRAMEBUFFER, 0);
-                m_pActiveCanvas = nullptr;
-                m_bMipmappedActiveCanvas = false;
-
-                //TODO: Signal error that we could not set the specified canvas.
-
-                return;
+                case CanvasInit::Keep:
+                    pDescriptor.colorAttachments[0].loadAction = MTLLoadActionLoad;
+                    break;
+                    
+                case CanvasInit::Clear:
+                {
+                    pDescriptor.colorAttachments[0].loadAction = MTLLoadActionClear;
+                    float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+                    pDescriptor.colorAttachments[0].clearColor = MTLClearColorMake(pConv[clearColor.r]/4096.f, pConv[clearColor.g]/4096.f, pConv[clearColor.b]/4096.f, clearColor.a/255.f);
+                    break;
+                }
+                case CanvasInit::Discard:
+                    pDescriptor.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+                    break;
             }
-
-            glViewport(0, 0, width, height);
-            glScissor(0, 0, width, height);
-*/
+            
+            
+            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:pDescriptor];
+            renderEncoder.label = @"GfxDeviceMetal Render to Surface Pass";
         }
         else
         {
-            // Set the region of the drawable to draw into.
-            [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
+            switch(initOperation)
+            {
+                case CanvasInit::Keep:
+                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+                    break;
+                    
+                case CanvasInit::Clear:
+                {
+                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionClear;
+                    float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+                    m_renderPassDesc.colorAttachments[0].clearColor = MTLClearColorMake(pConv[clearColor.r]/4096.f, pConv[clearColor.g]/4096.f, pConv[clearColor.b]/4096.f, clearColor.a/255.f);
+                    break;
+                }
+                case CanvasInit::Discard:
+                    m_renderPassDesc.colorAttachments[0].loadAction = MTLLoadActionDontCare;
+                    break;
+            }
 
-/*
-            if( Base::activeContext()->gammaCorrection() )
-                glEnable(GL_FRAMEBUFFER_SRGB);
-            else
-                glDisable(GL_FRAMEBUFFER_SRGB);
- */
+            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+            renderEncoder.label = @"GfxDeviceMetal Render Pass";
+            
         }
+
+        [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
 
         int canvasYstart    = pCanvas ? 0 : height;
         int canvasYmul        = pCanvas ? 1 : -1;
@@ -2107,7 +2171,9 @@ namespace wg
         //
         
         m_pActiveCanvas = pCanvas;
-        m_bMipmappedActiveCanvas = m_pActiveCanvas ? m_pActiveCanvas->isMipmapped() : false;
+        m_activeCanvasSize = {width,height};
+        
+        return renderEncoder;
     }
 
     //____ _setBlendMode() _______________________________________________________
@@ -2137,14 +2203,8 @@ namespace wg
             else
                 [renderEncoder setFragmentSamplerState: m_samplers[pSurf->isMipmapped()][pSurf->scaleMode() == ScaleMode::Interpolate][pSurf->isTiling()] atIndex:0];
 
-            if( pSurf->m_bMipmapStale )
-            {
-//                glGenerateMipmap(GL_TEXTURE_2D);
-                pSurf->m_bMipmapStale = false;
-            }
-
             m_pActiveBlitSource = pSurf;
-            pSurf->m_bPendingReads = false;            // Clear this as we pass it by...
+            pSurf->m_bPendingReads = false;            // Clear this as we pass it by. All pending reads will have encoded before _executeBuffer() ends.
 
             m_uniform.textureSize = pSurf->size();
             [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];

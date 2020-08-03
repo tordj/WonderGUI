@@ -38,6 +38,7 @@ using namespace wg;
     wg::MetalSurface_p      m_pSurface;
     wg::MetalSurface_p      m_pClutSurface;
     wg::MetalSurface_p      m_pMipMapSurface;
+    wg::MetalSurface_p      m_pCanvasSurface;
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -94,7 +95,7 @@ using namespace wg;
         
         m_pMipMapSurface = MetalSurface::create({128,128}, PixelFormat::BGRA_8, (uint8_t*) myMipMapTexture, 128*4, nullptr, SurfaceFlag::Mipmapped, nullptr);
 
-        
+        m_pCanvasSurface = MetalSurface::create( {256,256}, PixelFormat::BGRA_8_linear, SurfaceFlag::Canvas );
 
     }
 
@@ -112,10 +113,13 @@ using namespace wg;
 /// Called whenever the view needs to render a frame.
 - (void)drawInMTKView:(nonnull MTKView *)view
 {
-    m_pDevice->setRenderPassDescriptor(view.currentRenderPassDescriptor);
+    MTLRenderPassDescriptor * pDesc = view.currentRenderPassDescriptor;
+    pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+
+    m_pDevice->setRenderPassDescriptor(pDesc);
     m_pDevice->setDrawableToAutopresent(view.currentDrawable);
 
-    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
+    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y}, CanvasInit::Clear );
     m_pDevice->beginRender();
 
     m_pDevice->setTintGradient({10,300,200,200}, Color::Red, Color::Red, Color::Red, Color::Red);
@@ -178,7 +182,26 @@ using namespace wg;
     m_pDevice->stretchBlit( {512,128+96,64,64});
     m_pDevice->stretchBlit( {512,128+96+64,48,48});
 
+    m_pDevice->setCanvas(m_pCanvasSurface);
+
+    m_pDevice->setBlendMode(BlendMode::Replace);
+    m_pDevice->fill( Color::Yellow );
+
+    m_pDevice->setBlendMode(BlendMode::Subtract);
+    m_pDevice->fill( RectI(0,100,256,56), Color::White );
     
+    
+ 
+    m_pDevice->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
+
+    m_pDevice->setBlendMode(BlendMode::Add);
+    m_pDevice->setTintColor({255,255,255,128});
+    m_pDevice->setBlitSource(m_pCanvasSurface);
+    m_pDevice->blit({200,200});
+    m_pDevice->setTintColor(Color::White);
+    m_pDevice->setBlendMode(BlendMode::Blend);
+
+     
     m_pDevice->endRender();
     
 }

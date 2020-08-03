@@ -615,6 +615,16 @@ namespace wg
 		const int WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
 		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
 		const int Scale200 = 8;
+		const int Canvas = 16;		// Surface may be used as Canvas.
+	};
+
+	//____ CanvasInit ______________________________________________________________
+
+enum class CanvasInit 		//. autoExtras
+	{
+		Keep,
+		Discard,
+		Clear
 	};
 
 

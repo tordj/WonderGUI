@@ -57,7 +57,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool		setCanvas(Surface * pCanvas, bool bResetClipList = true ) override;
+		bool		setCanvas(Surface * pCanvas, CanvasInit init = CanvasInit::Keep, bool bResetClipList = true ) override;
 
 		//.____ Rendering ________________________________________________
 

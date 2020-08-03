@@ -166,6 +166,9 @@ namespace wg
 
     void MetalSurface::_setupMetalTexture(void * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
     {
+        if(flags & SurfaceFlag::Mipmapped)
+            m_bMipmapped = true;
+        
         // Create our shared buffer
         
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;
@@ -180,20 +183,29 @@ namespace wg
             m_pPixels = (uint8_t*) [m_textureBuffer contents];
             _copyFrom( pPixelDescription, (uint8_t*) pPixels, pitch, m_size, m_size );
             m_pPixels = 0;
-
- /*
-            char *  pDest = (char *) [m_textureBuffer contents];
-            char *  pSource = (char *) pPixels;
-            
-            for( int y = 0 ; y < m_size.h ; y++ )
-            {
-                memcpy(pDest, pSource, lineLength);
-                pDest += lineLength;
-                pSource += pitch;
-            }
- */
         }
         
+        // Setup the clut if present
+        
+        if( pClut )
+        {
+            // Create the clut buffer and copy data
+
+            m_clutBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pClut length:1024 options:MTLResourceStorageModeShared];
+            m_pClut = (Color*) [m_clutBuffer contents];
+        }
+        
+        //
+        
+        _createAndSyncTextures();
+        
+        setScaleMode(m_scaleMode);
+    }
+
+    //____ _createAndSyncTextures() __________________________________________________
+
+    void MetalSurface::_createAndSyncTextures()
+    {
         // Create the private texture
         
         MTLTextureDescriptor *textureDescriptor = [[MTLTextureDescriptor alloc] init];
@@ -202,28 +214,23 @@ namespace wg
         textureDescriptor.width         = m_size.w;
         textureDescriptor.height        = m_size.h;
         textureDescriptor.storageMode   = MTLStorageModePrivate;
+        textureDescriptor.usage         = (m_flags & SurfaceFlag::Canvas) ? (MTLTextureUsageRenderTarget | MTLTextureUsageShaderRead) : MTLTextureUsageShaderRead;
         
-        if(flags & SurfaceFlag::Mipmapped)
+        if(m_bMipmapped)
         {
             int heightLevels = ceil(log2(m_size.h));
             int widthLevels = ceil(log2(m_size.w));
             int mipCount = (heightLevels > widthLevels) ? heightLevels : widthLevels;
             
             textureDescriptor.mipmapLevelCount = mipCount;
-            
-            m_bMipmapped = true;
         }
 
         m_texture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:textureDescriptor];
 
-        // Setup the clut if present
+        // Create the clut texture
         
-        if( pClut )
+        if( m_pClut )
         {
-            // Create the clut buffer and copy data
-
-            m_clutBuffer = [MetalGfxDevice::s_metalDevice newBufferWithBytes:pClut length:1024 options:MTLResourceStorageModeShared];
-            
             MTLTextureDescriptor *clutDescriptor = [[MTLTextureDescriptor alloc] init];
 
             clutDescriptor.pixelFormat   = m_pixelDescription.bLinear ? MTLPixelFormatBGRA8Unorm : MTLPixelFormatBGRA8Unorm_sRGB;
@@ -232,10 +239,8 @@ namespace wg
             clutDescriptor.storageMode   = MTLStorageModePrivate;
 
             m_clutTexture = [MetalGfxDevice::s_metalDevice newTextureWithDescriptor:clutDescriptor];
-
-            m_pClut = (Color*) [m_clutBuffer contents];
         }
-        
+
         // Copy from buffers to textures (pixels and cluts)
         
         MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h, 1};
@@ -246,15 +251,15 @@ namespace wg
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
                             sourceOffset:       0
-                            sourceBytesPerRow:  lineLength
-                            sourceBytesPerImage:bufferLength
+                            sourceBytesPerRow:  m_size.w * m_pixelSize
+                            sourceBytesPerImage:m_size.w * m_size.h * m_pixelSize
                             sourceSize:         textureSize
                             toTexture:          m_texture
                             destinationSlice:   0
                             destinationLevel:   0
                             destinationOrigin:  textureOrigin];
 
-        if( pClut )
+        if( m_pClut )
         {
             MTLSize clutSize = { 256, 1, 1 };
             MTLOrigin clutOrigin = {0,0,0};
@@ -276,7 +281,6 @@ namespace wg
         [blitCommandEncoder endEncoding];
 
         m_bTextureSyncInProgress = true;
-        m_bTextureNeedsSync = false;
         
         // Add a completion handler and commit the command buffer.
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
@@ -285,10 +289,6 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
-
-        //
-        
-        setScaleMode(m_scaleMode);
     }
 
     //____ _setPixelDetails() __________________________________________________________
@@ -442,12 +442,10 @@ namespace wg
 
 	//____ pixel() ______________________________________________________________
 
-	uint32_t MetalSurface::pixel( CoordI coord ) const
+	uint32_t MetalSurface::pixel( CoordI coord )
 	{
-        //TODO: Figure out how to refresh stale backing buffer
-
-//		if (m_bBackingBufferStale)
-//			_refreshBackingBuffer();
+        if( m_bBufferNeedsSync )
+            _syncBufferAndWait();
 
         uint32_t val;
 
@@ -472,13 +470,10 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t MetalSurface::alpha( CoordI coord ) const
+	uint8_t MetalSurface::alpha( CoordI coord )
 	{
-        //TODO: Figure out how to refresh stale backing buffer
-        //TODO: Support more pixelformats than BGRA_8 only.
-        
-//		if (m_bBackingBufferStale)
-//			_refreshBackingBuffer();
+        if( m_bBufferNeedsSync )
+            _syncBufferAndWait();
 
 		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
 		{
@@ -509,14 +504,11 @@ namespace wg
 		return (m_texture != nil);
 	}
 
-	//____ reloaded() _________________________________________________________
+	//____ reload() _________________________________________________________
 
 	void MetalSurface::reload()
 	{
-/*        _setupMetalTexture(m_pBlob->data());
-
-		m_bMipmapStale = m_bMipmapped;
- */
+        _createAndSyncTextures();
 	}
 
 	//____ _syncBufferAndWait() ____________________________________________
@@ -590,7 +582,6 @@ namespace wg
         [blitCommandEncoder endEncoding];
 
         m_bTextureSyncInProgress = true;
-        m_bTextureNeedsSync = false;
         
         // Add a completion handler and commit the command buffer.
         [commandBuffer addCompletedHandler:^(id<MTLCommandBuffer> cb) {
@@ -599,8 +590,6 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
-        
-        m_bMipmapStale = m_bMipmapped;
     }
 
 
@@ -609,7 +598,7 @@ namespace wg
     void MetalSurface::_waitForSyncedTexture()
     {
         while( m_bTextureSyncInProgress )
-            usleep(50);        // Sleep for 0.05 millisec
+            usleep(20);        // Sleep for 0.02 millisec
     }
 
 

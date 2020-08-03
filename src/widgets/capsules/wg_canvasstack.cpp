@@ -179,9 +179,9 @@ namespace wg
 			Rect canvasRect(0,0, _canvas.size() - _contentPaddingSize());
 
 			auto pOldCanvas = pDevice->canvas();
-			pDevice->setCanvas(m_canvases[0],false);
+			pDevice->setCanvas(m_canvases[0], CanvasInit::Keep, false);
 			Capsule::_render(pDevice, canvasRect, canvasRect);
-			pDevice->setCanvas(pOldCanvas,false);
+			pDevice->setCanvas(pOldCanvas, CanvasInit::Keep,false);
 
 			_combineCanvases(pDevice);
 
@@ -284,13 +284,13 @@ namespace wg
 		{
 			for (auto& pCanvas : m_canvases)
 			{
-				pDevice->setCanvas(pCanvas, false);
+				pDevice->setCanvas(pCanvas, CanvasInit::Keep, false);
 				pDevice->fill(Color::Transparent);
 			}
 		}
 
 		pDevice->setBlendMode(oldBlendMode);
-		pDevice->setCanvas(oldCanvas,false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep,false);
 
 		Util::popClipList(pDevice, clipPopData);
 	}
@@ -304,7 +304,7 @@ namespace wg
 
 		auto clipPopData = Util::patchesToClipList(pDevice, m_patches);
 		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->setCanvas(m_pEndCanvas, false);
+		pDevice->setCanvas(m_pEndCanvas, CanvasInit::Keep, false);
 
 		if (m_combineFunc)
 			m_combineFunc(pDevice, m_pEndCanvas, m_canvases);
@@ -318,7 +318,7 @@ namespace wg
 		}
 
 		pDevice->setBlendMode(oldBlendMode);
-		pDevice->setCanvas(oldCanvas, false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 		Util::popClipList(pDevice, clipPopData);
 	}
 
@@ -406,9 +406,9 @@ namespace wg
 			return;												// The indexed canvas does not exist. Render nothing.
 
 		auto oldCanvas = pDevice->canvas();
-		pDevice->setCanvas(m_pStack->m_canvases[m_canvasIdx],false);
+		pDevice->setCanvas(m_pStack->m_canvases[m_canvasIdx], CanvasInit::Keep, false);
 		m_pSkin->render(pDevice,canvas,state,fraction);
-		pDevice->setCanvas(oldCanvas,false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 	}
 
 
@@ -444,9 +444,9 @@ namespace wg
 			return;												// The indexed canvas does not exist. Render nothing.
 
 		auto oldCanvas = pDevice->canvas();
-		pDevice->setCanvas(m_pStack->m_canvases[m_canvasIdx], false);
+		pDevice->setCanvas(m_pStack->m_canvases[m_canvasIdx], CanvasInit::Keep, false);
 		Capsule::_render(pDevice, _canvas, _window);
-		pDevice->setCanvas(oldCanvas, false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 	}
 
 

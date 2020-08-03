@@ -160,6 +160,13 @@ namespace wg
 		m_nClipRects = 1;
 	}
 
+	//____ setClearColor() __________________________________________________________
+
+	void GfxDevice::setClearColor( Color color )
+	{
+		m_clearColor = color;
+	}
+
 	//____ setTintColor() __________________________________________________________
 
 	void GfxDevice::setTintColor( Color color )

@@ -78,7 +78,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual bool		setCanvas(Surface * pCanvas, bool bResetClipRects = true ) = 0;
+		virtual bool		setCanvas(Surface * pCanvas, CanvasInit initOperaton = CanvasInit::Keep, bool bResetClipRects = true ) = 0;
 		inline Surface_p	canvas() const { return m_pCanvas; }
 
 		inline SizeI		canvasSize() const { return m_canvasSize; }
@@ -90,6 +90,9 @@ namespace wg
 		inline const RectI*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
 		inline RectI		clipBounds() const { return m_clipBounds; }
+
+		virtual void		setClearColor( Color col );
+		inline Color		clearColor() const { return m_clearColor; }
 
 		virtual void		setTintColor( Color color );
 		inline const Color&	tintColor() const { return m_tintColor; }
@@ -219,12 +222,13 @@ namespace wg
 		const RectI * m_pClipRects;
 		int			m_nClipRects;
 		RectI		m_clipBounds;
-		RectI		m_clipCanvas;			// Default clip rect for the canvas.
+		RectI		m_clipCanvas;						// Default clip rect for the canvas.
 
-		Color		m_tintColor;			// Current Tint color.
-		BlendMode	m_blendMode;			// Current BlendMode.
-		float		m_morphFactor = 0.5f;	// Factor used for morphing in BlendMode::Morph.
-		uint32_t	m_renderFlags;			// Current flags.
+		Color		m_clearColor = Color::Transparent;	// Current Clear color;
+		Color		m_tintColor;						// Current Tint color.
+		BlendMode	m_blendMode;						// Current BlendMode.
+		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
+		uint32_t	m_renderFlags;						// Current flags.
 
 		Color		m_tintGradient[4];
 		RectI		m_tintGradientRect;
