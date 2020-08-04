@@ -46,9 +46,9 @@ namespace wg
 
 
 
-	//____ alloc() ________________________________________________________________
+	//____ allocBytes() ________________________________________________________________
 
-	char * MemStack::alloc( int bytes )
+	char * MemStack::allocBytes( int bytes )
 	{
 		BlockHeader * p = m_blocks.last();
 
@@ -64,9 +64,9 @@ namespace wg
 		return pBytes;
 	}
 
-	//____ release() ______________________________________________________________
+	//____ releaseBytes() ______________________________________________________________
 
-	void MemStack::release( int bytes )
+	void MemStack::releaseBytes( int bytes )
 	{
 		if (bytes == 0)
 			return;

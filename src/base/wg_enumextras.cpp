@@ -290,6 +290,16 @@ namespace wg
 		return names[(int)i];
 	}
 
+	const char * toString(CanvasInit i)
+	{
+		static const char * names[] = { 
+			"Keep",
+			"Discard",
+			"Clear" };
+
+		return names[(int)i];
+	}
+
 	const char * toString(PixelFormat i)
 	{
 		static const char * names[] = { 

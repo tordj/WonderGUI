@@ -71,13 +71,14 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(SizeI canvasSize, bool bResetClipRects = true );
-		bool	setCanvas(Surface * pCanvas, bool bResetClipRects = true ) override;
+		bool	setCanvas(SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true );
+		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
 
 		//.____ State _________________________________________________
 
 		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
 		void	clearClipList() override;
+		void	setClearColor( Color col ) override;
 		void	setTintColor(Color color) override;
 		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
 		void	clearTintGradient() override;
@@ -93,8 +94,9 @@ namespace wg
 		bool	beginRender() override;
 		bool	endRender() override;
 		bool    isIdle() override;
-		void	flush();
+		void	flush() override;
 
+		using 	GfxDevice::fill;
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
@@ -117,47 +119,49 @@ namespace wg
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
-		enum Command
-		{
-			None,
-			SetCanvas,
-//			SetClip,
-			SetBlendMode,
-			SetMorphFactor,
-			SetTintColor,
-			SetTintGradient,
-			ClearTintGradient,
-			SetBlitSource,
-			Fill,
-			FillSubPixel,				// Includes start/direction lines.
-			Plot,
-			LineFromTo,
-			Blit,
-			Segments,
+				enum Command
+				{
+					None,
+					SetCanvas,
+		//			SetClip,
+					SetBlendMode,
+					SetMorphFactor,
+					SetClearColor,
+					SetTintColor,
+					SetTintGradient,
+					ClearTintGradient,
+					SetBlitSource,
+					Fill,
+					FillSubPixel,				// Includes start/direction lines.
+					Plot,
+					LineFromTo,
+					Blit,
+					Segments,
 
-		};
+				};
 
-		void	_setCanvas( GlSurface * pCanvas, int width, int height );
-		void	_setBlendMode(BlendMode mode);
-		void	_setMorphFactor(float morphFactor);
-		void	_setBlitSource(GlSurface * pSurf);
-		void	_setTintColor(Color color);
-		void	_setTintGradient(const RectI& rect, const Color colors[4]);
-		void	_clearTintGradient();
+				void	_setCanvas( GlSurface * pCanvas, int width, int height );
+				void	_setBlendMode(BlendMode mode);
+				void	_setMorphFactor(float morphFactor);
+				void	_setBlitSource(GlSurface * pSurf);
+				void	_setClearColor(Color color);
+				void	_setTintColor(Color color);
+				void	_setTintGradient(const RectI& rect, const Color colors[4]);
+				void	_clearTintGradient();
 
-		inline void	_beginDrawCommand(Command cmd);
-		inline void	_beginDrawCommandWithSource(Command cmd);
-		inline void	_beginDrawCommandWithInt(Command cmd, int data);
-		inline void	_beginClippedDrawCommand(Command cmd );
-		inline void	_beginStateCommand(Command cmd, int dataSize);
-		inline void	_endCommand();
+				inline void	_beginDrawCommand(Command cmd);
+				inline void	_beginDrawCommandWithSource(Command cmd);
+				inline void	_beginDrawCommandWithInt(Command cmd, int data);
+				inline void	_beginClippedDrawCommand(Command cmd );
+				inline void	_beginStateCommand(Command cmd, int dataSize);
+				inline void	_endCommand();
 
 
 
-		typedef void(GlGfxDevice::*CmdFinalizer_p)();
+				typedef void(GlGfxDevice::*CmdFinalizer_p)();
 
-		void	_dummyFinalizer();
-		void	_drawCmdFinalizer();
+				void	_dummyFinalizer();
+				void	_drawCmdFinalizer();
 
 
 
@@ -181,12 +185,12 @@ namespace wg
 		//
 
 
-		static const int c_commandBufferSize = 256;
+		static const int c_commandBufferSize = 4096;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
 		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
 		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
-		static const int c_segmentsTintTexMapSize = 16;				// Number of segments tint palettes that fit into segmentsTintTexMap.
+		static const int c_segmentsTintTexMapSize = 64;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -203,6 +207,8 @@ namespace wg
 		GLsync          m_idleSync = 0;
 
 		bool			m_bFullyInitialized = false;
+		
+		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 
 		// Device programs
 
@@ -254,16 +260,7 @@ namespace wg
 
 		GLuint	m_canvasUBOId;
 		canvasUBO	m_canvasUBOBuffer;
-
-		//
-
-		struct tintUBO
-		{
-		};
-
-		GLuint	m_tintUBOId;
-		canvasUBO	m_tintUBOBuffer;
-
+		
 		//
 
 		struct Vertex
@@ -321,6 +318,7 @@ namespace wg
 		GLint		m_glScissorBox[4];
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
+		GLfloat		m_glClearColor[4];
 
 		//
 
@@ -392,7 +390,9 @@ namespace wg
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
-	inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
+	//____ _beginDrawCommandWithSource() ________________________________________________
+
+inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 	{
 		if (m_commandOfs > c_commandBufferSize - 2)
 			_executeBuffer();
@@ -402,11 +402,14 @@ namespace wg
 		m_cmdBeginVertexOfs = m_vertexOfs;
 		m_commandBuffer[m_commandOfs++] = cmd;
 
-		static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
+		if( m_pBlitSource )
+			static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
 
 		if( m_pCanvas)
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
+
+	//____ _beginDrawCommandWithInt() ________________________________________________
 
 	inline void GlGfxDevice::_beginDrawCommandWithInt(Command cmd, int data)
 	{
@@ -423,6 +426,7 @@ namespace wg
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
 	}
 
+	//____ _beginClippedDrawCommand() ________________________________________________
 
 	inline void GlGfxDevice::_beginClippedDrawCommand(Command cmd)
 	{

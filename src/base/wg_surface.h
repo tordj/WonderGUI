@@ -67,8 +67,8 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		inline void         setId(int id);
-		inline int          id() const;
+		inline void         setIdentity(int id);
+		inline int          identity() const;
 
 		//.____ Geometry _________________________________________________
 
@@ -89,16 +89,16 @@ namespace wg
 
 		virtual void		setTiling(bool bTiling);
 		inline bool			isTiling() const { return m_bTiling; }
-
+		
 		inline bool			isMipmapped() const;
 
 		//.____ Content _______________________________________________________
 
-		virtual uint32_t	pixel( CoordI coord ) const = 0;	///< @brief Get pixel at specified coordinate.
-		inline uint32_t		pixel( int x, int y ) const;		///< @brief Get pixel at specified coordinate.
+		virtual uint32_t	pixel( CoordI coord ) = 0;					///< @brief Get pixel at specified coordinate.
+		inline uint32_t		pixel( int x, int y );						///< @brief Get pixel at specified coordinate.
 
-		virtual uint8_t		alpha( CoordI coord ) const = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
-		inline uint8_t		alpha( int x, int y ) const;		///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual uint8_t		alpha( CoordI coord ) = 0;					///< @brief Get Alpha value of pixel at specified coordinate.
+		inline uint8_t		alpha( int x, int y );						///< @brief Get Alpha value of pixel at specified coordinate.
 
 		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
@@ -149,6 +149,8 @@ namespace wg
 
 		int                 m_id = 0;
 
+        int             	m_flags;                              // The flags provided to the constructor.
+		
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
 		SizeI				m_size;				// Width and height in pixels.
@@ -168,16 +170,16 @@ namespace wg
 		int                 m_qpixPerPoint = 4;
 	};
 
-	//____ setId() ____________________________________________________________
+	//____ setIdentity() ____________________________________________________________
 
-	void Surface::setId(int id)
+	void Surface::setIdentity(int id)
 	{
 		m_id = id;
 	}
 
-	//____ id() _______________________________________________________________
+	//____ identity() _______________________________________________________________
 
-	int Surface::id() const
+	int Surface::identity() const
 	{
 		return m_id;
 	}
@@ -333,7 +335,7 @@ namespace wg
 	 *
 	 * @return Pixel value in surface's native format.
 	 */
-	uint32_t Surface::pixel( int x, int y ) const
+	uint32_t Surface::pixel( int x, int y )
 	{
 		return pixel( CoordI(x,y) );
 	}
@@ -353,7 +355,7 @@ namespace wg
 	 *
 	 * @return Alpha value of pixel at coordinate.
 	 */
-	uint8_t Surface::alpha( int x, int y ) const
+	uint8_t Surface::alpha( int x, int y )
 	{
 		return alpha( CoordI(x,y) );
 	}

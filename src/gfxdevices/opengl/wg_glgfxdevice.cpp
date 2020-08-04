@@ -176,6 +176,7 @@ namespace wg
 		glUniform1i(clutIdLoc, 2);			// Needs to be set. Texture unit 2 is used for CLUT.
 	}
 
+	//____ Constructor _____________________________________________________________________
 
 	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
 	{
@@ -591,7 +592,7 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool GlGfxDevice::setCanvas( SizeI canvasSize, bool bResetClipRects )
+	bool GlGfxDevice::setCanvas( SizeI canvasSize, CanvasInit initOperation, bool bResetClipRects )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
@@ -616,18 +617,21 @@ namespace wg
 		if (m_bRendering)
 		{
 			_endCommand();
-			_beginStateCommand(Command::SetCanvas, 2);
+			_beginStateCommand(Command::SetCanvas, 3);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+			m_commandBuffer[m_commandOfs++] = initOperation;
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
 		}
+		else
+			m_beginRenderOp = initOperation;
 
 		m_emptyCanvasSize = canvasSize;
 
 		return true;
 	}
 
-	bool GlGfxDevice::setCanvas( Surface * pSurface, bool bResetClipRects )
+	bool GlGfxDevice::setCanvas( Surface * pSurface, CanvasInit initOperation, bool bResetClipRects )
 	{
 		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
 		// This method can be called without us having our GL-context.
@@ -636,10 +640,16 @@ namespace wg
 			return setCanvas( m_emptyCanvasSize, bResetClipRects );
 
 		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a GlSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
+		}
 
 		if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "A CLUT-based surface can not be used as canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return false;
+		}
 
 		m_pCanvas = pSurface;
 		m_canvasSize = pSurface->size();
@@ -658,11 +668,14 @@ namespace wg
 		if (m_bRendering)
 		{
 			_endCommand();
-			_beginStateCommand(Command::SetCanvas, 2);
+			_beginStateCommand(Command::SetCanvas, 3);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+			m_commandBuffer[m_commandOfs++] = initOperation;
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
 		}
+		else
+			m_beginRenderOp = initOperation;
 
 		return true;
 	}
@@ -686,6 +699,21 @@ namespace wg
 		GfxDevice::clearClipList();
 		m_clipCurrOfs = -1;
 	}
+
+	//____ setClearColor() _____________________________________________________
+
+	void GlGfxDevice::setClearColor( Color color )
+	{
+		GfxDevice::setClearColor(color);
+		
+		if( m_bRendering )
+		{
+			_endCommand();
+			_beginStateCommand(Command::SetClearColor, 1);
+			m_commandBuffer[m_commandOfs++] = color.argb;
+		}
+	}
+
 
 	//____ setTintColor() __________________________________________________________________
 
@@ -767,6 +795,8 @@ namespace wg
 
 		if (m_bRendering)
 		{
+            //TODO: Check so that we don't overrun m_surfaceBuffer;
+
 			_endCommand();
 			_beginStateCommand(Command::SetBlitSource, 0);
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSource);
@@ -822,7 +852,7 @@ namespace wg
 		glGetIntegerv(GL_SCISSOR_BOX, m_glScissorBox);
 		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_glReadFrameBuffer);
 		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_glDrawFrameBuffer);
-
+		glGetFloatv(GL_COLOR_CLEAR_VALUE, &m_glClearColor);
 
 		//  Modify states
 
@@ -852,16 +882,23 @@ namespace wg
 		m_clipCurrOfs = -1;
 
 		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
+
 		_setBlendMode(m_blendMode);
 		_setMorphFactor(m_morphFactor);
+		_setClearColor(m_clearColor);
+
+		if( m_beginRenderOp == CanvasInit::Clear )
+			glClear( GL_COLOR_BUFFER_BIT );
+		m_beginRenderOp = CanvasInit::Keep;
 
 		if (m_bTintGradient)
 			_setTintGradient(m_tintGradientRect, m_tintGradient);
 		else
 			_setTintColor(m_tintColor);
-
+		
 		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
 
+		
 		// Set our extras buffer and segments palette textures.
 
 		glActiveTexture(GL_TEXTURE1);
@@ -871,15 +908,12 @@ namespace wg
 		glActiveTexture(GL_TEXTURE0);
 
 
-
-
 		// Prepare for rendering
 
 		glBindVertexArray(m_vertexArrayId);
 
 
 		glFinish();  //TODO: Remove.
-
 
 		//
 
@@ -922,7 +956,7 @@ namespace wg
 		else
 			glDisable(GL_FRAMEBUFFER_SRGB);
 
-
+		glClearColor( m_glClearColor[0], m_glClearColor[1], m_glClearColor[2], m_glClearColor[3] );
 		glBlendFunc( m_glBlendSrc, m_glBlendDst );
 		glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
 		glScissor(m_glScissorBox[0], m_glScissorBox[1], m_glScissorBox[2], m_glScissorBox[3]);
@@ -2087,7 +2121,11 @@ namespace wg
 				{
 					_setCanvas(m_surfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
 					m_surfaceBuffer[surfaceOfs++] = nullptr;
-					pCmd += 2;
+					
+					CanvasInit initOp = (CanvasInit) pCmd[2];
+					if( initOp == CanvasInit::Clear )
+						glClear( GL_COLOR_BUFFER_BIT);
+					pCmd += 3;
 					break;
 				}
 				case Command::SetBlendMode:
@@ -2098,6 +2136,11 @@ namespace wg
 				case Command::SetMorphFactor:
 				{
 					_setMorphFactor((*pCmd++) / 1024.f);
+					break;
+				}
+				case Command::SetClearColor:
+				{
+					_setClearColor(*(Color*)(pCmd++));
 					break;
 				}
 				case Command::SetTintColor:
@@ -2505,6 +2548,15 @@ namespace wg
 			glBindTexture(GL_TEXTURE_2D, 0 );
 
 		LOG_GLERROR(glGetError());
+	}
+
+	//____ _setClearColor() ___________________________________________________
+
+	void GlGfxDevice::_setClearColor(Color color)
+	{
+		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+
+		glClearColor( pConv[color.r]/4096.f, pConv[color.g]/4096.f, pConv[color.b]/4096.f, color.a/255.f );
 	}
 
 	//____ _setTintColor() ____________________________________________________

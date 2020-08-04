@@ -110,8 +110,8 @@ namespace wg
 
 	//____ setCanvas() __________________________________________________________________
 
-	bool StreamGfxDevice::setCanvas( Surface * _pSurface, bool bResetClipRects )
-	{
+	bool StreamGfxDevice::setCanvas( Surface * _pSurface, CanvasInit initOperation, bool bResetClipRects )
+	{	
 		if (_pSurface)
 		{
 			StreamSurface * pSurface = static_cast<StreamSurface*>(_pSurface);
@@ -121,13 +121,14 @@ namespace wg
 
 		m_pCanvas		= _pSurface;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 4 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 6 };
 
 		if( _pSurface )
 			(*m_pStream) << static_cast<StreamSurface*>(_pSurface)->m_inStreamId;
 		else
 			(*m_pStream) << (short) 0;
 
+		(*m_pStream) << (short) initOperation;
 		(*m_pStream) << (short) bResetClipRects;
 
 		return true;

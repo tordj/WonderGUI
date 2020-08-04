@@ -73,6 +73,8 @@ namespace wg
 
 	Surface::Surface( int flags )
 	{
+		m_flags = flags;
+		
 		memset( &m_pixelDescription, 0, sizeof(PixelDescription) );
         
         if( flags & SurfaceFlag::Scale200 )

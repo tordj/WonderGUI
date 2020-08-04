@@ -253,7 +253,7 @@ namespace wg
 
 		// Set new canvas (surface and rect).
 
-		pDevice->setCanvas(m_pBakeSurface,false);
+		pDevice->setCanvas(m_pBakeSurface, CanvasInit::Discard,false);
 
 		Rect bakeCanvas = canvas.size();
 		RectI bakeCanvasPX = bakeCanvas.px();
@@ -309,7 +309,7 @@ namespace wg
 
 		// Reset canvas and cliplist
 
-		pDevice->setCanvas(oldCanvas, false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 		Util::popClipList(pDevice, oldClip);
 
 		// Blit baked graphics to canvas.

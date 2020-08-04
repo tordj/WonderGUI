@@ -267,14 +267,14 @@ namespace wg
 	char * Base::memStackAlloc( int bytes )
 	{
 		assert(s_pData!=0);
-		return s_pData->pMemStack->alloc(bytes);
+		return s_pData->pMemStack->allocBytes(bytes);
 	}
 
 	//____ memStackRelease() ______________________________________________________
 
 	void Base::memStackRelease( int bytes )
 	{	assert(s_pData!=0);
-		return s_pData->pMemStack->release(bytes);
+		return s_pData->pMemStack->releaseBytes(bytes);
 	}
 
 } // namespace wg

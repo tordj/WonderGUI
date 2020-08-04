@@ -1,0 +1,66 @@
+
+#include <metal_stdlib>
+using namespace metal; 
+
+
+typedef struct
+{
+    vector_int2     coord;
+    int             envOfs;                       // Offset into shaderEnvironment buffer.
+    int             extrasOfs;                    // Offset into extras buffer.
+    vector_float2   uv;
+} Vertex;
+
+typedef struct             // Uniform buffer object for canvas information.
+{                               // DO NOT CHANGE ORDER OF MEMBERS!!!
+    vector_float2   canvasDim;
+    int        canvasYOfs;
+    int        canvasYMul;
+
+    vector_float4 flatTint;
+
+    vector_int4     tintRect;
+
+    vector_float4   topLeftTint;
+    vector_float4   topRightTint;
+    vector_float4   bottomRightTint;
+    vector_float4   bottomLeftTint;
+
+    vector_int2     textureSize;
+} Environment;
+
+
+typedef struct 
+{
+    float4 position [[position]];
+    float4 color;
+} RasterizerData;
+
+
+vertex RasterizerData
+fillVertexShader(uint vertexID [[vertex_id]],
+             constant Vertex *pVertices [[buffer(0)]],
+             constant float  *pExtras [[buffer(1)]],
+             constant Environment * pEnvironments[[buffer(2)]])
+{
+    RasterizerData out;
+
+    float2 pixelSpacePosition = (vector_float2) pVertices[vertexID].coord.xy;
+
+    vector_float2 viewportSize = pUniform->canvasDim;
+    
+    out.position = vector_float4(0.0, 0.0, 0.0, 1.0);
+    out.position.x = pixelSpacePosition.x*2 / viewportSize.x - 1.0;
+    out.position.y = (pUniform->canvasYOfs + pUniform->canvasYMul*pixelSpacePosition.y)*2 / viewportSize.y - 1.0;
+
+    out.color = pUniform->flatTint * vector_float4(pExtras[0],pExtras[1],pExtras[2],pExtras[3]);
+
+    return out;
+}
+
+fragment float4 fillFragmentShader(RasterizerData in [[stage_in]])
+{
+    // Return the interpolated color.
+    return in.color;
+};
+

@@ -67,8 +67,8 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) const override;
-		uint8_t		alpha(CoordI coord) const override;
+		uint32_t	pixel(CoordI coord) override;
+		uint8_t		alpha(CoordI coord) override;
 
 		//.____ Control _______________________________________________________
 

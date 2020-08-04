@@ -344,7 +344,7 @@ namespace wg
 
 	//____ pixel() ______________________________________________________________
 
-	uint32_t StreamSurface::pixel( CoordI coord ) const
+	uint32_t StreamSurface::pixel( CoordI coord )
 	{
 		if (!m_pBlob)
 			return 0;
@@ -373,7 +373,7 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t StreamSurface::alpha( CoordI coord ) const
+	uint8_t StreamSurface::alpha( CoordI coord )
 	{
 		if (m_pixelDescription.A_bits == 0)
 			return 255;

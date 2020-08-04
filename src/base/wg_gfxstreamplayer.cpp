@@ -106,13 +106,16 @@ namespace wg
 		{
 			uint16_t	surfaceId;
 			uint16_t	bResetClipList;
+			uint16_t 	initOperation;
+			
 			*m_pStream >> surfaceId;
+			*m_pStream >> initOperation;
 			*m_pStream >> bResetClipList;
 
 			if( surfaceId > 0 )
-				m_pDevice->setCanvas(m_vSurfaces[surfaceId], (bool) bResetClipList );
+				m_pDevice->setCanvas(m_vSurfaces[surfaceId], (CanvasInit) initOperation, (bool) bResetClipList );
 			else
-				m_pDevice->setCanvas(nullptr, (bool) bResetClipList);
+				m_pDevice->setCanvas(nullptr, (CanvasInit) initOperation, (bool) bResetClipList);
 
 			break;
 		}

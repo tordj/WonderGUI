@@ -38,8 +38,8 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		char *  alloc( int bytes );
-		void	release( int bytes );
+		char *  allocBytes( int bytes );
+		void	releaseBytes( int bytes );
 		void	clear();
 		bool	isEmpty() const;
 

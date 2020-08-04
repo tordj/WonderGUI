@@ -2531,7 +2531,7 @@ namespace wg
 
 	//____ setCanvas() _______________________________________________________________
 
-	bool SoftGfxDevice::setCanvas( Surface * pCanvas, bool bResetClipRects )
+	bool SoftGfxDevice::setCanvas( Surface * pCanvas, CanvasInit initOperation, bool bResetClipRects )
 	{
 		if (m_pCanvas == pCanvas)
 			return true;			// Not an error.
@@ -2584,8 +2584,13 @@ namespace wg
 			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 			m_canvasPitch = m_pCanvas->pitch();
 
+			if( initOperation == CanvasInit::Clear )
+				m_pCanvas->fill(m_clearColor);
+			
 			_updateBlitFunctions();
 		}
+		else
+			m_beginRenderOp = initOperation;				// Save operation for beginRender().
 
 		return true;
 	}
@@ -2775,6 +2780,11 @@ namespace wg
 	{
 		if( m_bRendering || !m_pCanvas)
 			return false;
+
+		if( m_beginRenderOp == CanvasInit::Clear )
+			m_pCanvas->fill(m_clearColor);
+
+		m_beginRenderOp = CanvasInit::Keep;
 
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
 		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;

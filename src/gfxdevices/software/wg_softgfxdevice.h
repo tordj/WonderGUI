@@ -68,7 +68,7 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		bool	setCanvas(Surface * pCanvas, bool bResetClipRects = true) override;
+		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true) override;
 
 		//.____ State _________________________________________________
 
@@ -87,6 +87,7 @@ namespace wg
 
 		//
 
+		using 	GfxDevice::fill;
 		void	fill(const RectI& rect, const Color& col) override;
 		void	fill(const RectF& rect, const Color& col) override;
 
@@ -406,7 +407,7 @@ namespace wg
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
 		int				m_canvasPitch;
-
+		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 	};
 
 
