@@ -456,6 +456,28 @@ fragment float4 blitFragmentShader_A8(BlitFragInput in [[stage_in]],
     return { colorSample * in.color.a, 0.0, 0.0, 0.0 };
 };
 
+//____ rgbxBlitFragmentShader() ____________________________________________
+
+fragment float4 rgbxBlitFragmentShader(BlitFragInput in [[stage_in]],
+                                    texture2d<half> colorTexture [[ texture(0) ]],
+                                    sampler textureSampler [[ sampler(0) ]])
+{
+    half4 colorSample = colorTexture.sample(textureSampler, in.texUV);
+    colorSample.a = (half) 1.0;
+
+    return float4(colorSample) * in.color;
+};
+
+//____ rgbxBlitFragmentShader_A8() ____________________________________________
+
+fragment float4 rgbxBlitFragmentShader_A8(BlitFragInput in [[stage_in]],
+                                    texture2d<half> colorTexture [[ texture(0) ]],
+                                    sampler textureSampler [[ sampler(0) ]])
+{
+    return { in.color.a, 0.0, 0.0, 0.0 };
+};
+
+
 //____ alphaBlitFragmentShader() ____________________________________________
 
 fragment float4 alphaBlitFragmentShader(BlitFragInput in [[stage_in]],

@@ -133,7 +133,10 @@ namespace wg
 		m_size	= size;
 		m_pitch = pitch;
 
-		_setupMetalTexture(pBlob->data(), pitch, &m_pixelDescription, flags, pClut);
+        PixelDescription srcFormat;
+        Util::pixelFormatToDescription(format, srcFormat);
+
+		_setupMetalTexture(pBlob->data(), pitch, &srcFormat, flags, pClut);
 	}
 
 	MetalSurface::MetalSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
@@ -143,8 +146,13 @@ namespace wg
 		m_size	= size;
 		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
 
+        PixelDescription srcFormat;
+        
         if( pPixelDescription == nullptr )
-            pPixelDescription = &m_pixelDescription;
+        {
+            Util::pixelFormatToDescription(format, srcFormat);
+            pPixelDescription = &srcFormat;
+        }
         
 		_setupMetalTexture( pPixels, pitch, pPixelDescription, flags, pClut);
 	}
@@ -172,19 +180,18 @@ namespace wg
         // Create our shared buffer
         
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;
-        int     lineLength = m_size.w * m_pixelSize;
 
         m_textureBuffer = [MetalGfxDevice::s_metalDevice newBufferWithLength:bufferLength options:MTLResourceStorageModeShared];
         
         // Copy pixel data to our shared buffer
-       
+              
         if( pPixels )
         {
             m_pPixels = (uint8_t*) [m_textureBuffer contents];
             _copyFrom( pPixelDescription, (uint8_t*) pPixels, pitch, m_size, m_size );
             m_pPixels = 0;
         }
-        
+               
         // Setup the clut if present
         
         if( pClut )
@@ -297,46 +304,57 @@ namespace wg
 	{
 		switch (format)
 		{
+            case PixelFormat::BGR_8:
+                format = PixelFormat::BGRX_8;
+            case PixelFormat::BGRX_8:
 			case PixelFormat::BGRA_8:
 				m_internalFormat = Base::activeContext()->gammaCorrection() ? MTLPixelFormatBGRA8Unorm_sRGB : MTLPixelFormatBGRA8Unorm;
-				m_pixelSize = 4;
 				break;
-
+                
+            case PixelFormat::BGR_8_sRGB:
+                format = PixelFormat::BGRX_8_sRGB;
+            case PixelFormat::BGRX_8_sRGB:
 			case PixelFormat::BGRA_8_sRGB:
 				m_internalFormat = MTLPixelFormatBGRA8Unorm_sRGB;
-				m_pixelSize = 4;
 				break;
 
+            case PixelFormat::BGR_8_linear:
+                format = PixelFormat::BGRX_8_linear;
+            case PixelFormat::BGRX_8_linear:
 			case PixelFormat::BGRA_8_linear:
 				m_internalFormat = MTLPixelFormatBGRA8Unorm;
-				m_pixelSize = 4;
 				break;
 
-#if TARGET_OS_IPHONE
 			case PixelFormat::BGR_565_linear:
+#if TARGET_OS_IPHONE
 				m_internalFormat = MTLPixelFormatB5G6R5Unorm;
-				m_pixelSize = 2;
-				break;
+#else
+                m_internalFormat = MTLPixelFormatBGRA8Unorm;
 #endif
+				break;
+                
+            case PixelFormat::BGRA_4_linear:
+                m_internalFormat = MTLPixelFormatBGRA8Unorm;
+                break;
+                
 			case PixelFormat::CLUT_8:
 			case PixelFormat::CLUT_8_sRGB:
 			case PixelFormat::CLUT_8_linear:
 				m_internalFormat = MTLPixelFormatR8Unorm;
-				m_pixelSize = 1;
 				break;
 
 			case PixelFormat::A_8:
 				m_internalFormat = MTLPixelFormatA8Unorm;
-				m_pixelSize = 1;
 				break;
 
 			default:
-                Base::handleError( ErrorSeverity::Critical, ErrorCode::InvalidParam, "Specified PixelFormat not supported for MetalSurface on this OS", this, TYPEINFO, __func__, __FILE__, __LINE__ );
+                Base::handleError( ErrorSeverity::Critical, ErrorCode::InvalidParam, "Specified PixelFormat not supported", this, TYPEINFO, __func__, __FILE__, __LINE__ );
 				assert(false);           // Should never get here, just avoiding compiler warnings.
 				break;
 		}
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
+        m_pixelSize = m_pixelDescription.bits / 8;
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -475,13 +493,39 @@ namespace wg
         if( m_bBufferNeedsSync )
             _syncBufferAndWait();
 
-		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
-		{
-			uint8_t * p = (uint8_t*) [m_textureBuffer contents];
-			return p[coord.y*m_pitch+coord.x*4+3];
-		}
-		else
-			return 255;
+        //TODO: Take endianess into account.
+
+        uint8_t * p = (uint8_t*) [m_textureBuffer contents];
+
+        switch (m_pixelDescription.format)
+        {
+            case PixelFormat::CLUT_8_sRGB:
+            case PixelFormat::CLUT_8_linear:
+            {
+                uint8_t index = p[m_pitch * coord.y + coord.x];
+                return m_pClut[index].a;
+            }
+            case PixelFormat::A_8:
+            {
+                uint8_t * pPixel = p + m_pitch * coord.y + coord.x;
+                return pPixel[0];
+            }
+            case PixelFormat::BGRA_4_linear:
+            {
+                uint16_t pixel = * (uint16_t *)(p + m_pitch * coord.y + coord.x);
+                const uint8_t * pConvTab = s_pixelConvTabs[4];
+
+                return pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+            }
+            case PixelFormat::BGRA_8_sRGB:
+            case PixelFormat::BGRA_8_linear:
+            {
+                uint8_t * pPixel = p + m_pitch * coord.y + coord.x * 4;
+                return pPixel[3];
+            }
+            default:
+                return 0xFF;
+        }
 	}
 
 	//____ unload() ___________________________________________________________

@@ -382,7 +382,7 @@ double Util::powerOfTen(int num){
 				output.R_loss = 0;
 				output.G_loss = 0;
 				output.B_loss = 0;
-				output.A_loss = 0;
+				output.A_loss = 8;
 
 #if IS_LITTLE_ENDIAN
 				output.A_mask = 0x00000000;

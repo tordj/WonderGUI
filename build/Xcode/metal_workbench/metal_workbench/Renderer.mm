@@ -39,6 +39,7 @@ using namespace wg;
     wg::MetalSurface_p      m_pClutSurface;
     wg::MetalSurface_p      m_pMipMapSurface;
     wg::MetalSurface_p      m_pCanvasSurface;
+    wg::MetalSurface_p      m_pRGBXSurface;
 }
 
 - (nonnull instancetype)initWithMetalKitView:(nonnull MTKView *)mtkView
@@ -99,6 +100,16 @@ using namespace wg;
 
         m_pCanvasSurface = MetalSurface::create( {256,256}, PixelFormat::BGRA_8, SurfaceFlag::Canvas );
 
+        
+        uint8_t my24bitTexture[16][3] { {00,0xff,0xff}, {0,0,0}, {00,0xff,0xff}, {00,0xff,0xff},
+                                        {00,0xff,0xff}, {0,0,0}, {0,0,255}, {00,0xff,0xff},
+                                        {00,0xff,0xff}, {0,128,0}, {255,0,0}, {00,0xff,0xff},
+                                        {00,0xff,0xff}, {00,0xff,0xff}, {0,0,0}, {00,0xff,0xff} };
+
+        
+//        m_pRGBXSurface = MetalSurface::create({4,4}, PixelFormat::BGRX_8, (uint8_t*) myTexture, 16 );
+        m_pRGBXSurface = MetalSurface::create({4,4}, PixelFormat::BGR_8, (uint8_t*) my24bitTexture, 12 );
+        m_pRGBXSurface->setScaleMode(ScaleMode::Nearest);
     }
 
     return self;
@@ -154,6 +165,10 @@ using namespace wg;
     m_pDevice->stretchBlit({300,140,128,128});
     m_pDevice->clearTintGradient();
 
+    m_pDevice->setBlitSource(m_pRGBXSurface);
+    m_pDevice->stretchBlit({430,10,128,128});
+
+/*
     m_pDevice->fill( RectF(200.5f,2.25f,20.f,10.f), Color::White);
     
     CoordI plotCoords[5] { {1,1}, {2,2}, {4,4}, {6,6}, {8,8} };
@@ -202,7 +217,7 @@ using namespace wg;
     m_pDevice->blit({200,200});
     m_pDevice->setTintColor(Color::White);
     m_pDevice->setBlendMode(BlendMode::Blend);
-
+*/
      
     m_pDevice->endRender();
     

@@ -138,12 +138,15 @@ namespace wg
             Normal = 0,
             ClutNearest = 1,
             ClutInterpolated = 2,
-            A8Source = 3
+            A8Source = 3,
+            RGBXSource = 4
         };
         
         enum class DestFormat
         {
+            BGRX8_linear,
             BGRA8_linear,
+            BGRX8_sRGB,
             BGRA8_sRGB,
             A_8
         };
@@ -311,14 +314,14 @@ namespace wg
         
         std::atomic<int>            m_flushesInProgress;                // Number of buffer flushes to complete before metal is idle.
                 
-        id<MTLRenderPipelineState>  m_plotPipelines[BlendMode_size][3];          // [BlendMode][DestFormat]
-        id<MTLRenderPipelineState>  m_lineFromToPipelines[BlendMode_size][3];    // [BlendMode][DestFormat]
-        id<MTLRenderPipelineState>  m_fillPipelines[2][BlendMode_size][3];       // [bGradient][BlendMode][DestFormat]
-        id<MTLRenderPipelineState>  m_fillAAPipelines[2][BlendMode_size][3];     // [bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_plotPipelines[BlendMode_size][5];          // [BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_lineFromToPipelines[BlendMode_size][5];    // [BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_fillPipelines[2][BlendMode_size][5];       // [bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_fillAAPipelines[2][BlendMode_size][5];     // [bGradient][BlendMode][DestFormat]
         
-        id<MTLRenderPipelineState>  m_blitPipelines[4][2][BlendMode_size][3];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_blitPipelines[5][2][BlendMode_size][5];   // [BlitFragShader][bGradient][BlendMode][DestFormat]
 
-        id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][3];   // [nbEdges][bGradient][BlendMode][DestFormat]
+        id<MTLRenderPipelineState>  m_segmentsPipelines[c_maxSegments][2][BlendMode_size][5];   // [nbEdges][bGradient][BlendMode][DestFormat]
         
         id<MTLSamplerState>         m_samplers[2][2][2];                        // [bMipMap][bInterpolate][bTile]
         
