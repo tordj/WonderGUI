@@ -63,6 +63,9 @@ namespace wg
 		void			setTintColor(Color color);
 		Color			tintColor() const { return m_tintColor; }
 
+		void			setSkinInSkin(bool bInside);
+		bool			isSkinInSkin() const { return m_bSkinInSkin; }
+
 		//.____ Geometry _________________________________________________
 
 		Size			minSize() const override;
@@ -101,6 +104,7 @@ namespace wg
 
 		void			_updateCachedGeo() const;
 		void			_onModified();
+		Border			_stateContentPadding(State state) const;
 
 		void			_didAddEntries(Skin_p* pEntry, int nb) override;
 		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
@@ -113,10 +117,12 @@ namespace wg
 		BlendMode			m_blendMode = BlendMode::Blend;
 		Color				m_tintColor = Color::White;
 		bool				m_bContentPaddingSet = false;
+		bool				m_bSkinInSkin = false;
 
 		mutable int			m_cachedQPixPerPoint = 0;
-		mutable Size		m_cachedMinSize;				// Calculated minSize for scale represented by m_cachedQPixPerPoint;
-		mutable Size		m_cachedPreferredSize;			// Calculated preferredSize for scale represented by m_cachedQPixPerPoint;
+		mutable Size		m_cachedMinSize;						// Calculated minSize for scale represented by m_cachedQPixPerPoint;
+		mutable Size		m_cachedPreferredSize;					// Calculated preferredSize for scale represented by m_cachedQPixPerPoint;
+		mutable Border		m_cachedContentPadding[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_opaqueStates;
 	};

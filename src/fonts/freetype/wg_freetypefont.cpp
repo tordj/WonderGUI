@@ -37,12 +37,12 @@
 #include FT_FREETYPE_H
 
 
-//s#define SUPPORT_STEM_DARKENING
+#define SUPPORT_STEM_DARKENING
 
 #ifdef SUPPORT_STEM_DARKENING
 #	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library that does not support stem darkening. 
 										// Comment out define above to compile anyway. Small fonts will look thin/bright and anti-alias won't be as smooth
-										// if gamma correction is enabled.
+										// without stem darkening when gamma correction is enabled.
 #endif
 
 namespace wg
