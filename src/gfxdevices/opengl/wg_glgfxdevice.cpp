@@ -620,7 +620,7 @@ namespace wg
 			_beginStateCommand(Command::SetCanvas, 3);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
-			m_commandBuffer[m_commandOfs++] = initOperation;
+			m_commandBuffer[m_commandOfs++] = (int) initOperation;
 			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
 		}
 		else
@@ -637,7 +637,7 @@ namespace wg
 		// This method can be called without us having our GL-context.
 
 		if( pSurface == nullptr )
-			return setCanvas( m_emptyCanvasSize, bResetClipRects );
+			return setCanvas( m_emptyCanvasSize, initOperation, bResetClipRects );
 
 		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
 		{
@@ -671,7 +671,7 @@ namespace wg
 			_beginStateCommand(Command::SetCanvas, 3);
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
-			m_commandBuffer[m_commandOfs++] = initOperation;
+			m_commandBuffer[m_commandOfs++] = (int) initOperation;
 			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
 		}
 		else
@@ -852,7 +852,7 @@ namespace wg
 		glGetIntegerv(GL_SCISSOR_BOX, m_glScissorBox);
 		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_glReadFrameBuffer);
 		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_glDrawFrameBuffer);
-		glGetFloatv(GL_COLOR_CLEAR_VALUE, &m_glClearColor);
+		glGetFloatv(GL_COLOR_CLEAR_VALUE, m_glClearColor);
 
 		//  Modify states
 

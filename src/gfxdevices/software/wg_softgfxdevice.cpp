@@ -2085,6 +2085,7 @@ namespace wg
 				nEdges--;
 
 				pTransparentSegments++;
+				pOpaqueSegments++;
 				if (GRADIENT)
 					pSegmentGradients++;
 				else
@@ -3390,7 +3391,7 @@ namespace wg
 
 		// Apply tinting
 
-		int16_t	colors[c_maxSegments][4];				// RGBA order of elements
+		int16_t	colors[c_maxSegments*4][4];				// RGBA order of elements
 		bool	transparentSegments[c_maxSegments];
 		bool	opaqueSegments[c_maxSegments];
 
@@ -3426,9 +3427,9 @@ namespace wg
 
 		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
-		if (bTintFlat && !bTintX && !bTintY)
+		if (!bTintX && !bTintY)
 		{
-			// If we just use flat tinting, we tint our segment colors right away
+			// If we just use flat tinting (or no tint at all), we tint our segment colors right away
 
 			for (int i = 0; i < nSegments; i++)
 			{
@@ -3451,9 +3452,6 @@ namespace wg
 				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
 				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
 				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
-
-				transparentSegments[i] = (colors[i][3] == 0);
-				opaqueSegments[i] = (colors[i][3] == 4096);
 			}
 		}
 
@@ -3482,8 +3480,46 @@ namespace wg
 			// Calculate RGBA values from m_colTrans for our four corners.
 
 			int		baseB[4], baseG[4], baseR[4], baseA[4];
+			int		tempB[4], tempG[4], tempR[4], tempA[4];
 
-			_colTransRect(baseB, baseG, baseR, baseA, _dest);
+			_colTransRect(tempB, tempG, tempR, tempA, _dest);
+
+			// Rotate the colors of our four corners if we are flipped
+
+			static const int cornerSwitchMap[2][2][2][4] = 
+							{ {{{0,3,2,1},				// [ 0,-1,-1, 0] = Rot90FlipY
+								{1,2,3,0}},				// [ 0,-1, 1, 0] = Rot90
+								{{3,0,1,2},				// [ 0, 1,-1, 0] = Rot270
+								{2,1,0,3}}},			// [ 0, 1, 1, 0] = Rot90FlipX
+								{{{2,3,0,1},			// [-1, 0, 0,-1] = Rot180
+								{1,0,3,2}},				// [-1, 0, 0, 1] = FlipX
+								{{3,2,1,0},				// [ 1, 0, 0,-1] = FlipY
+								{0,1,2,3}}} };			// [ 1, 0, 0, 1] = Normal
+
+			int i1, i2, i3;
+			if (_simpleTransform[0][0] == 0)
+			{
+				i1 = 0;
+				i2 = _simpleTransform[0][1] == 1 ? 1 : 0;
+				i3 = _simpleTransform[1][0] == 1 ? 1 : 0;
+			}
+			else
+			{
+				i1 = 1;
+				i2 = _simpleTransform[0][0] == 1 ? 1 : 0;
+				i3 = _simpleTransform[1][1] == 1 ? 1 : 0;
+			}
+
+			const int* pSwitch = cornerSwitchMap[i1][i2][i3];
+
+			for (int i = 0; i < 4; i++)
+			{
+				int n = pSwitch[i];
+				baseB[i] = tempB[n];
+				baseG[i] = tempG[n];
+				baseR[i] = tempR[n];
+				baseA[i] = tempA[n];
+			}
 
 			// Lets process each segment
 

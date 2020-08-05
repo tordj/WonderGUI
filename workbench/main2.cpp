@@ -2260,7 +2260,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 		//
 
-		pDevice->setCanvas(pLedMixTempSurf,false);
+		pDevice->setCanvas(pLedMixTempSurf, CanvasInit::Keep, false);
 		pDevice->fill(Color::Transparent);
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->setBlitSource(canvases[1]);
@@ -2271,7 +2271,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 		pDevice->setBlitSource(pLedMaskSurf);
 		pDevice->blit({ 0,0 });
 
-		pDevice->setCanvas(pEndCanvas,false);
+		pDevice->setCanvas(pEndCanvas, CanvasInit::Keep,false);
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->setBlitSource(pLedMixTempSurf);
 		pDevice->blit({ 0,0 });
