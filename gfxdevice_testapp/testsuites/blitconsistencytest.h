@@ -24,17 +24,17 @@ public:
 
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pPalette = FileUtil::loadSurface("../resources/stretchblit_consistency.png", pDevice->surfaceFactory());
+		m_pPalette = pAppVisitor->loadSurface("../resources/stretchblit_consistency.png", pDevice->surfaceFactory());
 		if (!m_pPalette)
 			return false;
 
-		m_pFrame = FileUtil::loadSurface("../resources/white_frame_256x256.png", pDevice->surfaceFactory());
+		m_pFrame = pAppVisitor->loadSurface("../resources/white_frame_256x256.png", pDevice->surfaceFactory());
 		if (!m_pFrame)
 			return false;
 
-        m_pGrid = FileUtil::loadSurface("../resources/grid_31x31.png", pDevice->surfaceFactory());
+        m_pGrid = pAppVisitor->loadSurface("../resources/grid_31x31.png", pDevice->surfaceFactory());
         if (!m_pFrame)
             return false;
 

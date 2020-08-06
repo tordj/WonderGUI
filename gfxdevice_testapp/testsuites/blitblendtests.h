@@ -20,13 +20,13 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pSplash = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+		m_pSplash = pAppVisitor->loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pSplash)
 			return false;
 
-		m_pBackground = FileUtil::loadSurface("../resources/What-Goes-Up-3.bmp", pDevice->surfaceFactory());
+		m_pBackground = pAppVisitor->loadSurface("../resources/What-Goes-Up-3.bmp", pDevice->surfaceFactory());
 		if (!m_pBackground)
 			return false;
 

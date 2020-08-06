@@ -1,4 +1,6 @@
 
+#include <cmath>
+
 #include <fonts/freetype/wg_freetypefont.h>
 
 #include "gfxdevicetester.h"
@@ -54,7 +56,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 
 	// Init fonts
 
-	Blob_p pFontFile = FileUtil::loadBlob("../resources/DroidSans.ttf");
+	Blob_p pFontFile = pVisitor->loadBlob("../resources/DroidSans.ttf");
 	FreeTypeFont_p pFont = FreeTypeFont::create(pFontFile, 0);
 
 	TextStyle_p pStyle = TextStyle::create();
@@ -513,8 +515,8 @@ bool GfxDeviceTester::add_testsuite(TestSuite* pTesteeSuite, TestSuite* pReferen
 	se.pTesteeSuite = pTesteeSuite;
 	se.pRefSuite = pReferenceSuite;
 
-	bool bTesteeWorking = pTesteeSuite->init(g_pTesteeDevice->gfxDevice(), g_canvasSize);
-	bool bRefWorking = pReferenceSuite->init(g_pReferenceDevice->gfxDevice(), g_canvasSize);
+	bool bTesteeWorking = pTesteeSuite->init(g_pTesteeDevice->gfxDevice(), g_canvasSize, m_pVisitor);
+	bool bRefWorking = pReferenceSuite->init(g_pReferenceDevice->gfxDevice(), g_canvasSize, m_pVisitor);
 
 	bool bWorking = (bTesteeWorking && bRefWorking);
 

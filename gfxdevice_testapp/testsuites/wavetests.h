@@ -19,7 +19,7 @@ public:
 	}
 
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
 		// Generate simple wave
 

@@ -23,8 +23,8 @@ public:
 	TestSuite() {}
 	virtual ~TestSuite() {}
 
-	virtual bool			init(GfxDevice * pDevice, const RectI& canvas) { return true; }
-	virtual bool			exit(GfxDevice * pDevice, const RectI& canvas) { return true; }
+	virtual bool			init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor ) { return true; }
+	virtual bool			exit(GfxDevice * pDevice, const RectI& canvas ) { return true; }
 
 	string					name = "Unnamed TestSuite";
 	vector<Test>			tests;
@@ -46,8 +46,6 @@ protected:
 	{
 		tests.push_back({ name, nullptr, [this,testMethod](GfxDevice * pDevice, const RectI& canvas) { return (static_cast<T*>(this)->*testMethod)(pDevice,canvas); }, nullptr });
 	}
-
-
 
 };
 

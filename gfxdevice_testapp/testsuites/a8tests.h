@@ -11,11 +11,11 @@ public:
 		addTest("A8_Fills", &A8Tests::setCanvas, &A8Tests::fills, &A8Tests::finalize);
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
 		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size(), PixelFormat::A_8);
 
-		m_pImg = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+		m_pImg = pAppVisitor->loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pImg)
 			return false;
 

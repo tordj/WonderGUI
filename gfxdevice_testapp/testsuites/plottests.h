@@ -10,7 +10,7 @@ public:
 		addTest("Plot", &PlotTests::plot );
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
 		m_coords[0] = { 1,1 };
 		m_coords[1] = { 3,1 };

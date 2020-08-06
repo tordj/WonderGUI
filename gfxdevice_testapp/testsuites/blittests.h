@@ -19,14 +19,14 @@ public:
 		addTest("RotScaleBlit", &PatchBlitTests::setClockFace, &PatchBlitTests::rotScaleBlit, &PatchBlitTests::dummy);
 	}
 
-	bool init(GfxDevice * pDevice, const RectI& canvas)
+	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pClockFace = FileUtil::loadSurface("../resources/clockface_2500.png", pDevice->surfaceFactory());
+		m_pClockFace = pAppVisitor->loadSurface("../resources/clockface_2500.png", pDevice->surfaceFactory());
 		if (!m_pClockFace)
 			return false;
 		m_pClockFace->setScaleMode(ScaleMode::Interpolate);
 
-		m_pSplash = FileUtil::loadSurface("../resources/splash.png", pDevice->surfaceFactory());
+		m_pSplash = pAppVisitor->loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pSplash)
 			return false;
 
