@@ -1,3 +1,6 @@
+#pragma once
+
+
 #include <wg_gfxdevice.h>
 #include <wg_softgfxdevice.h>
 #include <wg_streamgfxdevice.h>

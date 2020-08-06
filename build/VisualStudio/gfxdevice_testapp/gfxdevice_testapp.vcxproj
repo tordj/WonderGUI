@@ -21,10 +21,13 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\gfxdevice_testapp\device.cpp" />
     <ClCompile Include="..\..\..\gfxdevice_testapp\main.cpp" />
+    <ClCompile Include="..\..\..\gfxdevice_testapp\gfxdevicetester.cpp" />
     <ClCompile Include="..\..\..\gfxdevice_testapp\wg_fileutil.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\gfxdevice_testapp\app.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\device.h" />
+    <ClInclude Include="..\..\..\gfxdevice_testapp\gfxdevicetester.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\a8tests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blendtests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\blitblendtests.h" />
