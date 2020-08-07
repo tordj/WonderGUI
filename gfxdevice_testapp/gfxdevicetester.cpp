@@ -8,21 +8,21 @@
 #include "testsuites/testsuite.h"
 #include "testsuites/blendtests.h"
 #include "testsuites/filltests.h"
-#include <testsuites/plottests.h>
-#include <testsuites/linetests.h>
-#include <testsuites/canvasformattests.h>
-#include <testsuites/blittests.h>
-#include <testsuites/segmenttests.h>
-#include <testsuites/wavetests.h>
-#include <testsuites/clutblittests.h>
-#include <testsuites/mipmaptests.h>
-#include <testsuites/blitconsistencytest.h>
-#include <testsuites/piecharttests.h>
-#include <testsuites/tintblittests.h>
-#include <testsuites/tintsegmenttests.h>
-#include <testsuites/blitblendtests.h>
-#include <testsuites/a8tests.h>
-#include <testsuites/tiletests.h>
+#include "testsuites/plottests.h"
+#include "testsuites/linetests.h"
+#include "testsuites/canvasformattests.h"
+#include "testsuites/blittests.h"
+#include "testsuites/segmenttests.h"
+#include "testsuites/wavetests.h"
+#include "testsuites/clutblittests.h"
+#include "testsuites/mipmaptests.h"
+#include "testsuites/blitconsistencytest.h"
+#include "testsuites/piecharttests.h"
+#include "testsuites/tintblittests.h"
+#include "testsuites/tintsegmenttests.h"
+#include "testsuites/blitblendtests.h"
+#include "testsuites/a8tests.h"
+#include "testsuites/tiletests.h"
 
 using namespace wg;
 using namespace std;

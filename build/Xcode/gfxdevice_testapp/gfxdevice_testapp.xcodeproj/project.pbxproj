@@ -8,7 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		176CBA4A24DC677200958F2C /* gfxdevicetester.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176CBA4824DC677200958F2C /* gfxdevicetester.cpp */; };
-		1779600A236EDB8C0030534D /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17796005236EDB8B0030534D /* main.cpp */; };
+		176CBA6924DC6E9A00958F2C /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176CBA6824DC6E9A00958F2C /* main.cpp */; };
 		1779600B236EDB8C0030534D /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17796006236EDB8B0030534D /* device.cpp */; };
 		1779600F236EDBED0030534D /* libfont_freetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 1779600E236EDBED0030534D /* libfont_freetype.a */; };
 		17796011236EDBED0030534D /* libgfxdevice_opengl.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17796010236EDBED0030534D /* libgfxdevice_opengl.a */; };
@@ -37,10 +37,10 @@
 		176CBA4724DC677200958F2C /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = ../../../gfxdevice_testapp/app.h; sourceTree = "<group>"; };
 		176CBA4824DC677200958F2C /* gfxdevicetester.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gfxdevicetester.cpp; path = ../../../gfxdevice_testapp/gfxdevicetester.cpp; sourceTree = "<group>"; };
 		176CBA4924DC677200958F2C /* gfxdevicetester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gfxdevicetester.h; path = ../../../gfxdevice_testapp/gfxdevicetester.h; sourceTree = "<group>"; };
+		176CBA6824DC6E9A00958F2C /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../gfxdevice_testapp/framework_sdlgl/main.cpp; sourceTree = "<group>"; };
 		17795FF9236EDB5F0030534D /* gfxdevice_testapp */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = gfxdevice_testapp; sourceTree = BUILT_PRODUCTS_DIR; };
 		17796003236EDB8B0030534D /* testunit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testunit.h; path = ../../../gfxdevice_testapp/testunit.h; sourceTree = "<group>"; };
 		17796004236EDB8B0030534D /* testsuites */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testsuites; path = ../../../gfxdevice_testapp/testsuites; sourceTree = "<group>"; };
-		17796005236EDB8B0030534D /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = main.cpp; path = ../../../gfxdevice_testapp/main.cpp; sourceTree = "<group>"; };
 		17796006236EDB8B0030534D /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device.cpp; path = ../../../gfxdevice_testapp/device.cpp; sourceTree = "<group>"; };
 		17796007236EDB8C0030534D /* device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = device.h; path = ../../../gfxdevice_testapp/device.h; sourceTree = "<group>"; };
 		1779600E236EDBED0030534D /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,12 +77,12 @@
 		17795FF0236EDB5F0030534D = {
 			isa = PBXGroup;
 			children = (
+				176CBA6824DC6E9A00958F2C /* main.cpp */,
 				176CBA4724DC677200958F2C /* app.h */,
 				176CBA4824DC677200958F2C /* gfxdevicetester.cpp */,
 				176CBA4924DC677200958F2C /* gfxdevicetester.h */,
 				17796006236EDB8B0030534D /* device.cpp */,
 				17796007236EDB8C0030534D /* device.h */,
-				17796005236EDB8B0030534D /* main.cpp */,
 				17796004236EDB8B0030534D /* testsuites */,
 				17796003236EDB8B0030534D /* testunit.h */,
 				17795FFA236EDB5F0030534D /* Products */,
@@ -173,8 +173,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				176CBA4A24DC677200958F2C /* gfxdevicetester.cpp in Sources */,
-				1779600A236EDB8C0030534D /* main.cpp in Sources */,
 				1779600B236EDB8C0030534D /* device.cpp in Sources */,
+				176CBA6924DC6E9A00958F2C /* main.cpp in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

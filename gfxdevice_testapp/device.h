@@ -85,6 +85,7 @@ private:
 	SoftSurface_p		m_pCanvas;
 };
 
+/*
 class OpenGLDevice : public Device
 {
 public:
@@ -138,7 +139,7 @@ private:
 	GlGfxDevice_p	m_pDevice;
 	GlSurface_p		m_pCanvas;
 };
-
+*/
 
 
 class StreamToSoftwareDevice : public Device

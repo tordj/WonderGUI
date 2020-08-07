@@ -604,16 +604,33 @@ namespace wg
         int     bufferLength = m_size.w * m_size.h * m_pixelSize;
         int     lineLength = m_size.w * m_pixelSize;
 
-        MTLSize textureSize = { (unsigned) region.w, (unsigned) region.h};
+        MTLSize textureSize = { (unsigned) region.w, (unsigned) region.h,1};
         MTLOrigin textureOrigin = { (unsigned) region.x, (unsigned) region.y,0};
 
+        int     sourceOffset = region.y * m_size.w * m_pixelSize + region.x * m_pixelSize;
+        
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
+        
+        m_pPixels = (uint8_t*) [m_textureBuffer contents];
+
+        m_pPixels[3] = 255;
+        m_pPixels[1024+4+3] = 255;
+        m_pPixels[2*(1024+4)+3] = 255;
+        m_pPixels[3*(1024+4)+3] = 255;
+        m_pPixels[4*(1024+4)+3] = 255;
+        m_pPixels[5*(1024+4)+3] = 255;
+        m_pPixels[6*(1024+4)+3] = 255;
+        m_pPixels[7*(1024+4)+3] = 255;
+        m_pPixels[8*(1024+4)+3] = 255;
+
+        
+        
         
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
-                            sourceOffset:       0
+                            sourceOffset:       sourceOffset
                             sourceBytesPerRow:  lineLength
-                            sourceBytesPerImage:bufferLength
+                            sourceBytesPerImage:0
                             sourceSize:         textureSize
                             toTexture:          m_texture
                             destinationSlice:   0

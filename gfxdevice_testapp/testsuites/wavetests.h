@@ -1,4 +1,4 @@
-#include <testsuites/testsuite.h>
+#include "testsuites/testsuite.h"
 
 class WaveTests : public TestSuite
 {
@@ -15,7 +15,6 @@ public:
 		addTest("SimpleWaveFlipY", &WaveTests::simpleWaveFlipY);
 		addTest("BackfaceWave", &WaveTests::backfaceWave);
 		addTest("BackfaceWaveSameColor", &WaveTests::backfaceWaveSameColor);
-
 	}
 
 

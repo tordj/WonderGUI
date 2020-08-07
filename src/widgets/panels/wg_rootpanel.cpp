@@ -93,14 +93,17 @@ namespace wg
 
 	//_____ setGeo() _____________________________________________________________
 
-	bool RootPanel::setGeo( const Rect& geo )
+	bool RootPanel::setGeo( const Rect& _geo )
 	{
-		m_geo = geo.aligned();
+		if( m_geo == _geo )
+			return true;
+		
+		m_geo = _geo.aligned();
 
-		if( geo.x == 0 && geo.y == 0 && geo.w == 0 && geo.h == 0 )
-			m_bHasGeo = false;
-		else
-			m_bHasGeo = true;
+		m_bHasGeo = !_geo.isEmpty();
+
+		if( slot._widget())
+			OO(slot)._setSize(geo().size());
 
 		return true;
 	}

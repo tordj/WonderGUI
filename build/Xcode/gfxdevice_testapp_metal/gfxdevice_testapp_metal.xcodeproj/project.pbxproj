@@ -1,0 +1,409 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 50;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		176CBAED24DD396700958F2C /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 176CBAEC24DD396700958F2C /* AppDelegate.mm */; };
+		176CBAF024DD396700958F2C /* Renderer.mm in Sources */ = {isa = PBXBuildFile; fileRef = 176CBAEF24DD396700958F2C /* Renderer.mm */; };
+		176CBAF324DD396700958F2C /* GameViewController.mm in Sources */ = {isa = PBXBuildFile; fileRef = 176CBAF224DD396700958F2C /* GameViewController.mm */; };
+		176CBAF824DD396800958F2C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 176CBAF724DD396800958F2C /* Assets.xcassets */; };
+		176CBAFB24DD396800958F2C /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 176CBAF924DD396800958F2C /* Main.storyboard */; };
+		176CBAFE24DD396800958F2C /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 176CBAFD24DD396800958F2C /* main.m */; };
+		176CBB0B24DD3A2200958F2C /* libfont_freetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB0624DD3A2200958F2C /* libfont_freetype.a */; };
+		176CBB0C24DD3A2200958F2C /* libgfxdevice_metal.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB0724DD3A2200958F2C /* libgfxdevice_metal.a */; };
+		176CBB0D24DD3A2200958F2C /* libgfxdevice_software.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB0824DD3A2200958F2C /* libgfxdevice_software.a */; };
+		176CBB0E24DD3A2200958F2C /* libgfxdevice_stream.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB0924DD3A2200958F2C /* libgfxdevice_stream.a */; };
+		176CBB0F24DD3A2200958F2C /* libWonderGUI.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB0A24DD3A2200958F2C /* libWonderGUI.a */; };
+		176CBB1124DD3B6F00958F2C /* libfreetype.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 176CBB1024DD3B2D00958F2C /* libfreetype.a */; };
+		176CBB1A24DD3ED700958F2C /* testsuites in Resources */ = {isa = PBXBuildFile; fileRef = 176CBB1324DD3ED700958F2C /* testsuites */; };
+		176CBB1B24DD3ED700958F2C /* device.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176CBB1524DD3ED700958F2C /* device.cpp */; };
+		176CBB1C24DD3ED700958F2C /* gfxdevicetester.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176CBB1724DD3ED700958F2C /* gfxdevicetester.cpp */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		176CBAE824DD396700958F2C /* gfxdevice_testapp_metal.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = gfxdevice_testapp_metal.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBAEB24DD396700958F2C /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
+		176CBAEC24DD396700958F2C /* AppDelegate.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = AppDelegate.mm; sourceTree = "<group>"; };
+		176CBAEE24DD396700958F2C /* Renderer.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Renderer.h; sourceTree = "<group>"; };
+		176CBAEF24DD396700958F2C /* Renderer.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = Renderer.mm; sourceTree = "<group>"; };
+		176CBAF124DD396700958F2C /* GameViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GameViewController.h; sourceTree = "<group>"; };
+		176CBAF224DD396700958F2C /* GameViewController.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = GameViewController.mm; sourceTree = "<group>"; };
+		176CBAF724DD396800958F2C /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		176CBAFA24DD396800958F2C /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
+		176CBAFC24DD396800958F2C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		176CBAFD24DD396800958F2C /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		176CBAFF24DD396800958F2C /* gfxdevice_testapp_metal.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = gfxdevice_testapp_metal.entitlements; sourceTree = "<group>"; };
+		176CBB0624DD3A2200958F2C /* libfont_freetype.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libfont_freetype.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBB0724DD3A2200958F2C /* libgfxdevice_metal.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_metal.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBB0824DD3A2200958F2C /* libgfxdevice_software.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_software.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBB0924DD3A2200958F2C /* libgfxdevice_stream.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libgfxdevice_stream.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBB0A24DD3A2200958F2C /* libWonderGUI.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libWonderGUI.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		176CBB1024DD3B2D00958F2C /* libfreetype.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; name = libfreetype.a; path = ../../../../../../../usr/local/Cellar/freetype/2.10.2/lib/libfreetype.a; sourceTree = "<group>"; };
+		176CBB1324DD3ED700958F2C /* testsuites */ = {isa = PBXFileReference; lastKnownFileType = folder; name = testsuites; path = ../../../gfxdevice_testapp/testsuites; sourceTree = "<group>"; };
+		176CBB1424DD3ED700958F2C /* device.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = device.h; path = ../../../gfxdevice_testapp/device.h; sourceTree = "<group>"; };
+		176CBB1524DD3ED700958F2C /* device.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = device.cpp; path = ../../../gfxdevice_testapp/device.cpp; sourceTree = "<group>"; };
+		176CBB1624DD3ED700958F2C /* app.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = app.h; path = ../../../gfxdevice_testapp/app.h; sourceTree = "<group>"; };
+		176CBB1724DD3ED700958F2C /* gfxdevicetester.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = gfxdevicetester.cpp; path = ../../../gfxdevice_testapp/gfxdevicetester.cpp; sourceTree = "<group>"; };
+		176CBB1824DD3ED700958F2C /* gfxdevicetester.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = gfxdevicetester.h; path = ../../../gfxdevice_testapp/gfxdevicetester.h; sourceTree = "<group>"; };
+		176CBB1924DD3ED700958F2C /* testunit.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = testunit.h; path = ../../../gfxdevice_testapp/testunit.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		176CBAE524DD396700958F2C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176CBB0B24DD3A2200958F2C /* libfont_freetype.a in Frameworks */,
+				176CBB0D24DD3A2200958F2C /* libgfxdevice_software.a in Frameworks */,
+				176CBB0C24DD3A2200958F2C /* libgfxdevice_metal.a in Frameworks */,
+				176CBB0F24DD3A2200958F2C /* libWonderGUI.a in Frameworks */,
+				176CBB0E24DD3A2200958F2C /* libgfxdevice_stream.a in Frameworks */,
+				176CBB1124DD3B6F00958F2C /* libfreetype.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		176CBADF24DD396700958F2C = {
+			isa = PBXGroup;
+			children = (
+				176CBB1224DD3EB100958F2C /* common */,
+				176CBAEA24DD396700958F2C /* gfxdevice_testapp_metal */,
+				176CBAE924DD396700958F2C /* Products */,
+				176CBB0524DD3A2200958F2C /* Frameworks */,
+			);
+			sourceTree = "<group>";
+		};
+		176CBAE924DD396700958F2C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				176CBAE824DD396700958F2C /* gfxdevice_testapp_metal.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		176CBAEA24DD396700958F2C /* gfxdevice_testapp_metal */ = {
+			isa = PBXGroup;
+			children = (
+				176CBAEB24DD396700958F2C /* AppDelegate.h */,
+				176CBAEC24DD396700958F2C /* AppDelegate.mm */,
+				176CBAEE24DD396700958F2C /* Renderer.h */,
+				176CBAEF24DD396700958F2C /* Renderer.mm */,
+				176CBAF124DD396700958F2C /* GameViewController.h */,
+				176CBAF224DD396700958F2C /* GameViewController.mm */,
+				176CBAF724DD396800958F2C /* Assets.xcassets */,
+				176CBAF924DD396800958F2C /* Main.storyboard */,
+				176CBAFC24DD396800958F2C /* Info.plist */,
+				176CBAFD24DD396800958F2C /* main.m */,
+				176CBAFF24DD396800958F2C /* gfxdevice_testapp_metal.entitlements */,
+			);
+			path = gfxdevice_testapp_metal;
+			sourceTree = "<group>";
+		};
+		176CBB0524DD3A2200958F2C /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				176CBB1024DD3B2D00958F2C /* libfreetype.a */,
+				176CBB0624DD3A2200958F2C /* libfont_freetype.a */,
+				176CBB0724DD3A2200958F2C /* libgfxdevice_metal.a */,
+				176CBB0824DD3A2200958F2C /* libgfxdevice_software.a */,
+				176CBB0924DD3A2200958F2C /* libgfxdevice_stream.a */,
+				176CBB0A24DD3A2200958F2C /* libWonderGUI.a */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		176CBB1224DD3EB100958F2C /* common */ = {
+			isa = PBXGroup;
+			children = (
+				176CBB1624DD3ED700958F2C /* app.h */,
+				176CBB1524DD3ED700958F2C /* device.cpp */,
+				176CBB1424DD3ED700958F2C /* device.h */,
+				176CBB1724DD3ED700958F2C /* gfxdevicetester.cpp */,
+				176CBB1824DD3ED700958F2C /* gfxdevicetester.h */,
+				176CBB1324DD3ED700958F2C /* testsuites */,
+				176CBB1924DD3ED700958F2C /* testunit.h */,
+			);
+			name = common;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		176CBAE724DD396700958F2C /* gfxdevice_testapp_metal */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 176CBB0224DD396800958F2C /* Build configuration list for PBXNativeTarget "gfxdevice_testapp_metal" */;
+			buildPhases = (
+				176CBAE424DD396700958F2C /* Sources */,
+				176CBAE524DD396700958F2C /* Frameworks */,
+				176CBAE624DD396700958F2C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = gfxdevice_testapp_metal;
+			productName = gfxdevice_testapp_metal;
+			productReference = 176CBAE824DD396700958F2C /* gfxdevice_testapp_metal.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		176CBAE024DD396700958F2C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 1150;
+				ORGANIZATIONNAME = "Nordic UI Technologies AB";
+				TargetAttributes = {
+					176CBAE724DD396700958F2C = {
+						CreatedOnToolsVersion = 11.5;
+					};
+				};
+			};
+			buildConfigurationList = 176CBAE324DD396700958F2C /* Build configuration list for PBXProject "gfxdevice_testapp_metal" */;
+			compatibilityVersion = "Xcode 9.3";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = 176CBADF24DD396700958F2C;
+			productRefGroup = 176CBAE924DD396700958F2C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				176CBAE724DD396700958F2C /* gfxdevice_testapp_metal */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		176CBAE624DD396700958F2C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176CBAF824DD396800958F2C /* Assets.xcassets in Resources */,
+				176CBB1A24DD3ED700958F2C /* testsuites in Resources */,
+				176CBAFB24DD396800958F2C /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		176CBAE424DD396700958F2C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				176CBB1C24DD3ED700958F2C /* gfxdevicetester.cpp in Sources */,
+				176CBAFE24DD396800958F2C /* main.m in Sources */,
+				176CBAF024DD396700958F2C /* Renderer.mm in Sources */,
+				176CBB1B24DD3ED700958F2C /* device.cpp in Sources */,
+				176CBAF324DD396700958F2C /* GameViewController.mm in Sources */,
+				176CBAED24DD396700958F2C /* AppDelegate.mm in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		176CBAF924DD396800958F2C /* Main.storyboard */ = {
+			isa = PBXVariantGroup;
+			children = (
+				176CBAFA24DD396800958F2C /* Base */,
+			);
+			name = Main.storyboard;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		176CBB0024DD396800958F2C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "../../../src/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				MTL_HEADER_SEARCH_PATHS = "";
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../gfxdevice_testapp;
+			};
+			name = Debug;
+		};
+		176CBB0124DD396800958F2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++14";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu11;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				HEADER_SEARCH_PATHS = "../../../src/**";
+				MACOSX_DEPLOYMENT_TARGET = 10.15;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				MTL_HEADER_SEARCH_PATHS = "";
+				SDKROOT = macosx;
+				USER_HEADER_SEARCH_PATHS = ../../../gfxdevice_testapp;
+			};
+			name = Release;
+		};
+		176CBB0324DD396800958F2C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = gfxdevice_testapp_metal/gfxdevice_testapp_metal.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = gfxdevice_testapp_metal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.2/lib,
+				);
+				MTL_HEADER_SEARCH_PATHS = "../../../src/**";
+				PRODUCT_BUNDLE_IDENTIFIER = "Nordic-UI-Technologies-AB.gfxdevice-testapp-metal";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		176CBB0424DD396800958F2C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_ENTITLEMENTS = gfxdevice_testapp_metal/gfxdevice_testapp_metal.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				COMBINE_HIDPI_IMAGES = YES;
+				INFOPLIST_FILE = gfxdevice_testapp_metal/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/../Frameworks",
+				);
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					/usr/local/Cellar/freetype/2.10.2/lib,
+				);
+				MTL_HEADER_SEARCH_PATHS = "../../../src/**";
+				PRODUCT_BUNDLE_IDENTIFIER = "Nordic-UI-Technologies-AB.gfxdevice-testapp-metal";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		176CBAE324DD396700958F2C /* Build configuration list for PBXProject "gfxdevice_testapp_metal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				176CBB0024DD396800958F2C /* Debug */,
+				176CBB0124DD396800958F2C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		176CBB0224DD396800958F2C /* Build configuration list for PBXNativeTarget "gfxdevice_testapp_metal" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				176CBB0324DD396800958F2C /* Debug */,
+				176CBB0424DD396800958F2C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 176CBAE024DD396700958F2C /* Project object */;
+}

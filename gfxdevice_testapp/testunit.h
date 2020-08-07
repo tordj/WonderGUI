@@ -1,7 +1,6 @@
 
 #include <string>
 #include <wondergui.h>
-#include "wg_fileutil.h"
 
 using namespace wg;
 using namespace std;
