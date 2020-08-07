@@ -329,11 +329,13 @@ namespace wg
 #if TARGET_OS_IPHONE
 				m_internalFormat = MTLPixelFormatB5G6R5Unorm;
 #else
+                format = PixelFormat::BGRA_8_linear;
                 m_internalFormat = MTLPixelFormatBGRA8Unorm;
 #endif
 				break;
                 
             case PixelFormat::BGRA_4_linear:
+                format = PixelFormat::BGRA_8_linear;
                 m_internalFormat = MTLPixelFormatBGRA8Unorm;
                 break;
                 
@@ -565,8 +567,8 @@ namespace wg
 			MetalGfxDevice::s_pActiveDevice->flush();
 
 		//
-        MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h};
-        MTLOrigin textureOrigin = { 0, 0};
+        MTLSize textureSize = { (unsigned) m_size.w, (unsigned) m_size.h,1};
+        MTLOrigin textureOrigin = { 0, 0, 0};
         
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
 

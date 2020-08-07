@@ -7,8 +7,6 @@
 #include <wg_streamsurface.h>
 #include <wg_gfxstreamplug.h>
 #include <wg_gfxstreamplayer.h>
-#include <wg_glgfxdevice.h>
-#include <wg_glsurface.h>
 
 using namespace wg;
 

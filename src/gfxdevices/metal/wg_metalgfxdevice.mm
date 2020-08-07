@@ -23,6 +23,7 @@
 #import "Foundation/Foundation.h"
 
 #include <wg_metalgfxdevice.h>
+#include <wg_metalsurfacefactory.h>
 #include <wg_base.h>
 #include <wg_context.h>
 #include <wg_util.h>
@@ -327,7 +328,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
 	SurfaceFactory_p MetalGfxDevice::surfaceFactory()
 	{
-		return SurfaceFactory_p();
+        if( !m_pSurfaceFactory )
+            m_pSurfaceFactory = MetalSurfaceFactory::create();
+
+        return m_pSurfaceFactory;
 	}
 
     //____ setCanvas() __________________________________________________________________
@@ -575,7 +579,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     bool MetalGfxDevice::beginRender()
     {
-        if( m_bRendering == true || m_renderPassDesc == nil )
+        if( m_bRendering == true )
             return false;
         
         m_bRendering = true;
@@ -648,7 +652,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
              m_pCommandBuffer[m_commandOfs++] = m_tintColor.argb;
             _endCommand();
         }
-  
+        
         // Wait for previous render pass to complete by doing a flushAndWait on what we have in buffer so far.
         
         if( m_flushesInProgress > 0 )
