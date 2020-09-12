@@ -10,24 +10,18 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\gfxdevice_testapp\main.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\..\gfxdevice_testapp\wg_fileutil.cpp">
-      <Filter>code</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\gfxdevice_testapp\device.cpp">
       <Filter>code</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\gfxdevice_testapp\gfxdevicetester.cpp">
       <Filter>code</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\..\gfxdevice_testapp\framework_sdlgl\main.cpp">
+      <Filter>code</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\gfxdevice_testapp\testunit.h">
-      <Filter>code</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\..\gfxdevice_testapp\wg_fileutil.h">
       <Filter>code</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\testsuite.h">

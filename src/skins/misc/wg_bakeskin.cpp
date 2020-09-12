@@ -67,6 +67,7 @@ namespace wg
 
 		skins.pushBack(skinsIn);
 
+		_onModified();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -440,77 +441,101 @@ namespace wg
 	{
 		// Update various flags.
 
-		bool		bContentShifting = false;
-		bool		bSupportsFraction = false;
-		bool		bOpaque = false;
+		m_bContentShifting = false;
+		m_bIgnoresFraction = true;
 
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
 			{
-				bContentShifting = bContentShifting || pSkin->isContentShifting();
-				bSupportsFraction = bSupportsFraction || !pSkin->ignoresFraction();
-				bOpaque = bOpaque || pSkin->isOpaque();
+				m_bContentShifting = m_bContentShifting || pSkin->isContentShifting();
+				m_bIgnoresFraction = m_bIgnoresFraction && pSkin->ignoresFraction();
 			}
 		}
 
-		// Redo opacity check if we have skin in skin.
+		//  Update bOpaque and opaqueStates
 
-		if (m_bSkinInSkin && bOpaque)
-		{
-			for (auto it = skins.end(); it != skins.begin(); )
-			{
-				it--;
-				if ((*it) != nullptr)
-				{
-					if ((*it)->isOpaque())
-					{
-						// Skin is opaque and has not been padded by outer skin, thus we are opaque.
-						break;
-					}
-
-					if (!(*it)->contentPaddingSize().isEmpty())
-					{
-						// Skin is not opaque and padds child, thus we are not opaque.
-						bOpaque = false;
-						break;
-					}
-				}
-			}
-		}
-
-		m_bContentShifting = bContentShifting;
-		m_bIgnoresFraction = !bSupportsFraction;
-		m_bOpaque = bOpaque;
-
-		// Update opaqueStates bitmask.
-
+		bool		bOpaque = false;
 		Bitmask<uint32_t> opaqueStates;
 
-		if (bOpaque)
+		if (m_blendMode == BlendMode::Replace)
+		{
+			bOpaque = true;
 			opaqueStates = 0xFFFFFFFF;
+		}
+		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 255)
+		{
+			bOpaque = false;
+			opaqueStates = 0;
+		}
 		else
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
-			{
-				State state = _indexToState(i);
+			// Do global opacity check
 
-				bool bStateOpaque = false;
+			if (m_bSkinInSkin)
+			{
 				for (auto it = skins.end(); it != skins.begin(); )
 				{
 					it--;
 					if ((*it) != nullptr)
 					{
-						bStateOpaque = bStateOpaque || (*it)->isOpaque(state);
-						if (m_bSkinInSkin && !(*it)->contentPaddingSize().isEmpty())
-							break;			// is padding inner/upper skins, thus they are irrelevant.
+						if ((*it)->isOpaque())
+						{
+							// Skin is opaque and has not been padded by outer skin, thus we are opaque.
+							break;
+						}
+
+						if (!(*it)->contentPaddingSize().isEmpty())
+						{
+							// Skin is not opaque and padds child, thus we are not opaque.
+							bOpaque = false;
+							break;
+						}
 					}
 				}
-				opaqueStates.setBit(i, bStateOpaque);
+			}
+			else
+			{
+				for (auto& pSkin : skins)
+				{
+					if (pSkin)
+						bOpaque = bOpaque || pSkin->isOpaque();
+				}
+			}
+
+			// Update opaqueStates bitmask.
+
+			if (bOpaque)
+				opaqueStates = 0xFFFFFFFF;
+			else
+			{
+				for (int i = 0; i < StateEnum_Nb; i++)
+				{
+					State state = _indexToState(i);
+
+					bool bStateOpaque = false;
+					for (auto it = skins.end(); it != skins.begin(); )
+					{
+						it--;
+						if ((*it) != nullptr)
+						{
+							if ((*it)->isOpaque(state))
+							{
+								bStateOpaque = true;
+								break;
+							}
+
+							if (m_bSkinInSkin && !(*it)->contentPaddingSize().isEmpty())
+								break;			// is padding inner/upper skins, thus they are irrelevant.
+						}
+					}
+					opaqueStates.setBit(i, bStateOpaque);
+				}
 			}
 		}
 
-		m_opaqueStates = opaqueStates;
+		m_bOpaque			= bOpaque;
+		m_opaqueStates		= opaqueStates;
 
 		// Invalidate our geo cache
 
@@ -528,7 +553,10 @@ namespace wg
 
 	void BakeSkin::_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb)
 	{
-		// Do nothing. Order doesn't affect any internal state.
+		// Opacity might change when we have skin in skin.
+
+		if( !m_bSkinInSkin )
+			_onModified();
 	}
 
 	//____ _willEraseEntries() ________________________________________________

@@ -20,9 +20,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\gfxdevice_testapp\device.cpp" />
-    <ClCompile Include="..\..\..\gfxdevice_testapp\main.cpp" />
+    <ClCompile Include="..\..\..\gfxdevice_testapp\framework_sdlgl\main.cpp" />
     <ClCompile Include="..\..\..\gfxdevice_testapp\gfxdevicetester.cpp" />
-    <ClCompile Include="..\..\..\gfxdevice_testapp\wg_fileutil.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\gfxdevice_testapp\app.h" />
@@ -47,7 +46,6 @@
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\tintsegmenttests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testsuites\wavetests.h" />
     <ClInclude Include="..\..\..\gfxdevice_testapp\testunit.h" />
-    <ClInclude Include="..\..\..\gfxdevice_testapp\wg_fileutil.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>

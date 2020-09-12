@@ -83,61 +83,6 @@ private:
 	SoftSurface_p		m_pCanvas;
 };
 
-/*
-class OpenGLDevice : public Device
-{
-public:
-	OpenGLDevice()
-	{
-	}
-
-	const char * name() const
-	{
-		return m_pName;
-	}
-
-	bool init(SizeI canvasSize, PixelFormat canvasFormat)
-	{
-		m_pCanvas = GlSurface::create(canvasSize, canvasFormat);
-		m_pDevice = GlGfxDevice::create(m_pCanvas, 1);              // Needs a UBO binding point separate from other GfxDevice.
-		return true;
-	}
-
-	void exit()
-	{
-		m_pDevice = nullptr;
-		m_pCanvas = nullptr;
-	}
-
-	GfxDevice_p beginRender() const
-	{
-		m_pDevice->beginRender();
-		return m_pDevice;
-	}
-
-	void endRender() const
-	{
-		m_pDevice->endRender();
-	}
-
-	GfxDevice_p	gfxDevice() const
-	{
-		return m_pDevice;
-	}
-
-	Surface_p canvas() const
-	{
-		return m_pCanvas;
-	}
-
-private:
-
-	const char * m_pName = { "OpenGL" };
-
-	GlGfxDevice_p	m_pDevice;
-	GlSurface_p		m_pCanvas;
-};
-*/
 
 
 class StreamToSoftwareDevice : public Device
