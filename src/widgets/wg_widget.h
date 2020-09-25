@@ -26,10 +26,10 @@
 
 #include <wg_types.h>
 #include <wg_string.h>
-#include <wg_skin.h>
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
+#include <wg_skinslot.h>
 
 namespace wg
 {
@@ -62,7 +62,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected GeoComponent::Holder
+	class Widget : public Receiver, protected GeoComponent::Holder, protected SkinSlot::Holder
 	{
 		friend class Container;
 		friend class GeoComponent;
@@ -237,26 +237,30 @@ namespace wg
 
 		// Methods for components to access
 
-		virtual Object * 	_object() override;
-		virtual const Object * _object() const override;
+		Object * 	_object() override;
+		const Object * _object() const override;
 
-		virtual Coord		_componentPos( const GeoComponent * pComponent ) const override;
-		virtual Size		_componentSize( const GeoComponent * pComponent ) const override;
-		virtual Rect		_componentGeo( const GeoComponent * pComponent ) const override;
-		virtual Coord		_globalComponentPos( const GeoComponent * pComponent ) const override;
-		virtual Rect		_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_componentPos( const GeoComponent * pComponent ) const override;
+		Size			_componentSize( const GeoComponent * pComponent ) const override;
+		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_globalComponentPos( const GeoComponent * pComponent ) const override;
+		Rect			_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		virtual void		_componentRequestRender( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
-		virtual void		_componentRequestResize( const GeoComponent * pComponent ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
+		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 
- 		virtual void		_componentRequestFocus( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestInView( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
+ 		void			_componentRequestFocus( const GeoComponent * pComponent ) override;
+		void			_componentRequestInView( const GeoComponent * pComponent ) override;
+		void			_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
 
-		virtual void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		void			_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
-		//
+		// Methods for skin to access
+
+		void			_skinRequestRender(SkinSlot* pSlot) override;
+		void			_skinRequestRender(SkinSlot* pSlot, const Rect& rect) override;
+
 
 		int				m_id;
 		Object_p		m_pBaggage;
@@ -264,7 +268,7 @@ namespace wg
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
 
-		Skin_p			m_pSkin;
+		SkinSlot		m_pSkin;
 		PointerStyle	m_pointerStyle;
 
 		String			m_tooltip;

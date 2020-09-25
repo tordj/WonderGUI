@@ -109,6 +109,7 @@
     <ClInclude Include="..\..\..\src\base\wg_dataset.h" />
     <ClInclude Include="..\..\..\src\base\wg_mu.h" />
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
+    <ClInclude Include="..\..\..\src\base\wg_skinslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
@@ -176,6 +177,7 @@
     <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
+    <ClInclude Include="..\..\..\src\skins\anim\wg_spinanimskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_fillmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_framemeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_piemeterskin.h" />
@@ -192,6 +194,7 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_animskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_stateskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_stdtextmapper.h" />
@@ -314,6 +317,7 @@
     <ClCompile Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />
+    <ClCompile Include="..\..\..\src\skins\anim\wg_spinanimskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_fillmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_framemeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_piemeterskin.cpp" />
@@ -330,6 +334,7 @@
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticcolorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_animskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_stateskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp" />
     <ClCompile Include="..\..\..\src\textmappers\wg_stdtextmapper.cpp" />

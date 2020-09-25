@@ -37,7 +37,7 @@ namespace wg
 	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
 						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
-						m_bPickable(false), m_bDropTarget(false)
+						m_bPickable(false), m_bDropTarget(false), m_pSkin(this), m_pickCategory(0)
 	{
 	}
 
@@ -807,7 +807,6 @@ namespace wg
 		return this;
 	}
 
-
 	//____ _receiveComponentNotif() __________________________________________________
 
 	void Widget::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
@@ -815,6 +814,17 @@ namespace wg
 		// By default we do nothing
 	}
 
+	//____ _skinRequestRender() _______________________________________________
+
+	void Widget::_skinRequestRender(SkinSlot* pSlot)
+	{
+		_requestRender();
+	}
+
+	void Widget::_skinRequestRender(SkinSlot* pSlot, const Rect& rect)
+	{
+		_requestRender(rect);
+	}
 
 
 } // namespace wg

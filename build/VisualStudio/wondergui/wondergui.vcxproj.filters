@@ -542,6 +542,15 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h">
       <Filter>skins\static</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_skinslot.h">
+      <Filter>base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\anim\wg_spinanimskin.h">
+      <Filter>skins\anim</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_animskin.h">
+      <Filter>skins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -945,6 +954,12 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp">
       <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\anim\wg_spinanimskin.cpp">
+      <Filter>skins\anim</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\wg_animskin.cpp">
+      <Filter>skins</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

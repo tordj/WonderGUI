@@ -116,5 +116,19 @@ namespace wg
 		return Rect();
 	}
 
+	//____ _addSlot() __________________________________________________________
+
+	void Skin::_addSlot(SkinSlot* pSlot)
+	{
+		m_nSkinSlots++;
+	}
+
+	//____ _removeSlot() _______________________________________________________
+
+	void Skin::_removeSlot(SkinSlot* pSlot)
+	{
+		m_nSkinSlots--;
+	}
+
 
 } // namespace wg

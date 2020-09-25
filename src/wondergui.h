@@ -114,6 +114,7 @@
 #include <wg_scalepreferred_sizebroker.h>
 #include <wg_sizebroker.h>
 #include <wg_uniform_sizebroker.h>
+#include <wg_spinanimskin.h>
 #include <wg_fillmeterskin.h>
 #include <wg_framemeterskin.h>
 #include <wg_piemeterskin.h>

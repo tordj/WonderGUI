@@ -23,7 +23,7 @@
 #define WG_OBJECT_DOT_H
 #pragma once
 
-#include <wg_strongptr.h>
+#include <wg_pointers.h>
 #include <wg_types.h>
 
 namespace wg
@@ -33,23 +33,7 @@ namespace wg
 	struct TypeInfo;
 
 	typedef StrongPtr<Object>	Object_p;
-
-	typedef	void(*Finalizer_p)(Object*);
-
-	class WeakPtrHub		/** @private */
-	{
-	public:
-		int				refCnt;
-		Object *		pObj;
-		Finalizer_p		pFinalizer;
-
-		static WeakPtrHub *	getHub(Object * pObj);
-		static void			releaseHub(WeakPtrHub * pHub);
-
-		static void			objectWillDestroy(WeakPtrHub * pHub);
-		static void			setFinalizer(Object * pObj, Finalizer_p pFinalizer);
-		static Finalizer_p	getFinalizer(Object * pObj);
-	};
+	typedef WeakPtr<Object>		Object_wp;
 
 
 	/**

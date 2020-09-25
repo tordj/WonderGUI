@@ -187,7 +187,7 @@ namespace wg
 			CViewSlot(SlotHolder * pHolder) : CDynamicSlotImpl(pHolder) {}
 
 			inline ScrollPanel * _holder() { return static_cast<ScrollPanel*>(m_pHolder); }
-			inline const Holder * _holder() const { return static_cast<ScrollPanel*>(m_pHolder); }
+			inline ScrollPanel * _holder() const { return static_cast<ScrollPanel*>(m_pHolder); }
 
 		};
 

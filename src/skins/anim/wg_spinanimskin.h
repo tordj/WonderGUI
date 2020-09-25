@@ -19,30 +19,30 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_SPINMETERSKIN_DOT_H
-#define WG_SPINMETERSKIN_DOT_H
+#ifndef WG_SPINANIMSKIN_DOT_H
+#define WG_SPINANIMSKIN_DOT_H
 #pragma once
 
-#include <wg_skin.h>
+#include <wg_animskin.h>
 #include <wg_color.h>
 #include <wg_surface.h>
 
 namespace wg
 {
 
-	class SpinMeterSkin;
+	class SpinAnimSkin;
 
-	typedef	StrongPtr<SpinMeterSkin>	SpinMeterSkin_p;
-	typedef	WeakPtr<SpinMeterSkin>		SpinMeterSkin_wp;
+	typedef	StrongPtr<SpinAnimSkin>	SpinAnimSkin_p;
+	typedef	WeakPtr<SpinAnimSkin>		SpinAnimSkin_wp;
 
 
-	class SpinMeterSkin : public Skin
+	class SpinAnimSkin : public AnimSkin
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		static SpinMeterSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
+		static SpinAnimSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
 										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
 										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
 
@@ -50,6 +50,11 @@ namespace wg
 
 		const TypeInfo&			typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
+
+		//.____ Control __________________________________________________
+
+		void	setCycleDuration(int millisec);
+		int		cycleDuration() const { return m_cycleDuration; }								/// Returns duration of one cycle of animation.
 
 		//.____ Geometry _________________________________________________
 
@@ -67,10 +72,16 @@ namespace wg
 									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
 
 	private:
-		SpinMeterSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
+		SpinAnimSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
 						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
 						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
-		~SpinMeterSkin() {};
+		~SpinAnimSkin();
+
+		void		_update(int ms) override;
+
+
+		int			m_cycleDuration;			// In millisec
+		int			m_cycleProgress;			// In millisec
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
@@ -80,8 +91,9 @@ namespace wg
 		float		m_toDegrees;
 		float		m_zoom;
 		BorderI		m_gfxPadding;
+
 	};
 
 
 } // namespace wg
-#endif //WG_SPINMETERSKIN_DOT_H
+#endif //WG_SPINANIMSKIN_DOT_H

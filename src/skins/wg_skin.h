@@ -33,6 +33,7 @@ namespace wg
 
 	class Skin;
 	class GfxDevice;
+	class SkinSlot;
 
 	typedef	StrongPtr<Skin>	Skin_p;
 	typedef	WeakPtr<Skin>	Skin_wp;
@@ -40,6 +41,8 @@ namespace wg
 
 	class Skin : public Object
 	{
+		friend class SkinSlot;
+
 	public:
 		virtual ~Skin() {};
 
@@ -137,10 +140,14 @@ namespace wg
 	protected:
 		Skin() {};
 
+		virtual void	_addSlot(SkinSlot* pSlot);
+		virtual void	_removeSlot(SkinSlot* pSlot);
+
 		BorderI		m_contentPadding;					// Unit: Points
 		bool		m_bContentShifting = false;
 		bool		m_bIgnoresFraction = true;
 		bool		m_bOpaque = false;
+		int			m_nSkinSlots = 0;					// Counter of connected SkinSlots.
 	};
 
 

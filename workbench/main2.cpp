@@ -93,6 +93,7 @@ bool animPlayerTest(CStandardSlot_p pSlot);
 bool selectBoxTest(CStandardSlot_p pSlot);
 bool tileSkinTest(CStandardSlot_p pSlot);
 bool bakeSkinTest(CStandardSlot_p pSlot);
+bool animSkinTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -584,7 +585,7 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
-	rangeSliderTest(&pRoot->slot);
+//	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
@@ -594,7 +595,8 @@ int main(int argc, char** argv)
 //	animPlayerTest(&pRoot->slot);
 //	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
-	bakeSkinTest(&pRoot->slot);
+//	bakeSkinTest(&pRoot->slot);
+	animSkinTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2533,7 +2535,30 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ animSkinTest() ____________________________________________________
 
+bool animSkinTest(CStandardSlot_p pSlot)
+{
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+
+	Surface_p pSplashSurf = loadSurface("../resources/splash.png");
+
+	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 } );
+	pAnimSkin->setCycleDuration(10000);
+
+	auto pFiller1 = Filler::create();
+	pFiller1->setSkin(pAnimSkin);
+
+
+
+
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 256, 256));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 
 //____
