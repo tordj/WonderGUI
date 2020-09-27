@@ -117,7 +117,7 @@ int main(int argc, char** argv)
 //	printf("Slot is safe to relocate: %d\n", StaticSlot::safe_to_relocate);
 //	printf("PackListSlot is safe to relocate: %d\n", PackListSlot::safe_to_relocate);
 //	printf("LambdaSlot is safe to relocate: %d\n", LambdaSlot::safe_to_relocate);
-
+/*
 	auto pPackPanel = PackPanel::create();
 
 	auto pBase = wg_cast<Widget_p>(pPackPanel);
@@ -126,7 +126,7 @@ int main(int argc, char** argv)
 	auto pCapsule = wg_cast<Capsule_p>(pBase);
 
 	auto pBlob = wg_cast<Blob_p>(pBase);
-
+*/
 //	pPackPanel->slots[0].
 
 //	auto it = pPackPanel->slots.begin();
@@ -291,12 +291,16 @@ int main(int argc, char** argv)
 */
 
 
+	Base::beginObjectTracking();
 	Base::init();
+
 
 //	Base::setErrorHandler([](Error&) { int x = 0; });
 
-	Context_p pContext = Context::create();
+	Context_p pContext = WGTRACK( Context::create() );
 	pContext->setScale(2.00);
+
+
 
 #ifdef USE_OPEN_GL
 	pContext->setSurfaceFactory(GlSurfaceFactory::create());
@@ -1269,6 +1273,8 @@ int main(int argc, char** argv)
 	// Exit WonderGUI
 
 	Base::exit();
+	Base::printObjects(std::cout);
+	Base::endObjectTracking();
 
 	// Exit SDL
 

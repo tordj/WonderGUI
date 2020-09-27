@@ -92,8 +92,10 @@ namespace wg
 		inline void		retain() { _incRefCount(); }
 		inline void		release() { _decRefCount(); }
 		
+		inline int		refcount() const { return m_refCount; }
+
 	protected:
-		Object() : m_pWeakPtrHub(0), m_refCount(0) {}
+		Object();
 		virtual ~Object() {};
 
 		inline void _incRefCount() { m_refCount++; }
@@ -102,11 +104,11 @@ namespace wg
 		inline void _incRefCount(int amount) { m_refCount += amount; }
 		inline void _decRefCount(int amount) { m_refCount -= amount; if( m_refCount == 0 ) _destroy(); }
 
-		WeakPtrHub *	m_pWeakPtrHub;
+		WeakPtrHub *	m_pWeakPtrHub = nullptr;
 
 	private:
 		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
-		int				m_refCount;
+		int				m_refCount = 0;
 	};
 
 

@@ -35,12 +35,22 @@
 #include <wg_texttool.h>
 #include <wg_textstylemanager.h>
 
+#include <iostream>
+
 namespace wg
 {
 
-	Base::Data *			Base::s_pData = 0;
+	Base::Data *				Base::s_pData = 0;
 
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
+
+	unsigned int				Base::s_objectsCreated = 0;
+	unsigned int				Base::s_objectsDestroyed = 0;
+
+	bool						Base::s_bTrackingObjects = false;
+
+	std::unordered_map<Object*, Base::ObjectInfo>	Base::s_trackedObjects;
+
 
 	//____ init() __________________________________________________________________
 
@@ -125,6 +135,48 @@ namespace wg
 			s_pErrorHandler(error);
 		}
 	}
+
+	//____ beginObjectTracking() _________________________________________________
+
+	void Base::beginObjectTracking()
+	{
+		s_bTrackingObjects = true;
+	}
+
+	//____ endObjectTracking() __________________________________________________
+
+	void Base::endObjectTracking()
+	{
+		s_bTrackingObjects = false;
+		s_trackedObjects.clear();
+	}
+
+	//____ printObjects() ________________________________________________
+
+	void Base::printObjects(std::ostream& stream)
+	{
+
+		stream << "Objects created: " << s_objectsCreated << std::endl;
+		stream << "Objects destroyed: " << s_objectsDestroyed << std::endl;
+		stream << "Objects alive: " << (s_objectsCreated - s_objectsDestroyed) << std::endl;
+		stream << std::endl;
+		stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
+		stream << "---------------------------------------" << std::endl;
+
+
+		for (auto& tracked : s_trackedObjects)
+		{
+			const char* pClassName = tracked.first->typeInfo().className;
+
+			stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
+
+			if (tracked.second.pFileName)
+				stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
+
+			stream << std::endl;
+		}
+	}
+
 
 	//____ msgRouter() _________________________________________________________
 
@@ -276,5 +328,13 @@ namespace wg
 	{	assert(s_pData!=0);
 		return s_pData->pMemStack->releaseBytes(bytes);
 	}
+
+	//____ _trackObject() ________________________________________________________
+
+	void Base::_trackObject(Object* pObject, const char* pFileName, int lineNb)
+	{
+		s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
+	}
+
 
 } // namespace wg

@@ -105,6 +105,13 @@ namespace wg
 		return nullptr;
 	}
 
+	//____ Constructor ________________________________________________________
+
+	Object::Object()
+	{
+		Base::_objectWasCreated(this);
+	}
+
 	//____ isInstanceOf() _____________________________________________________
 	/**
 	 * @brief	Check if the object is an instance or subclass of specified class.
@@ -156,6 +163,8 @@ namespace wg
 
 	void Object::_destroy()
 	{
+		Base::_objectWillDestroy(this);
+
 		if (m_pWeakPtrHub)
 			WeakPtrHub::objectWillDestroy(m_pWeakPtrHub);
 		delete this;
