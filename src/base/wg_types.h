@@ -102,6 +102,8 @@ namespace wg
 		FailedPrerequisite,
 		OpenGL,						// OpenGL has issued a GLerror
 		Internal,
+		SystemIntegrity,
+		IllegalCall,
 		Other
 	};
 

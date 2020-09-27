@@ -95,8 +95,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static void init();
-		static int exit();
+		static bool init();
+		static bool exit();
 
 		//.____ Content _____________________________________________
 
@@ -122,6 +122,8 @@ namespace wg
 		std::function<void(Error&)>	errorHandler();
 
 		//.____ Misc ________________________________________________
+
+		const static TypeInfo	TYPEINFO;
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );

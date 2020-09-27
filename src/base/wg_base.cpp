@@ -39,6 +39,7 @@
 
 namespace wg
 {
+	const TypeInfo	Base::TYPEINFO = { "Base", nullptr };
 
 	Base::Data *				Base::s_pData = 0;
 
@@ -54,9 +55,13 @@ namespace wg
 
 	//____ init() __________________________________________________________________
 
-	void Base::init()
+	bool Base::init()
 	{
-		assert( s_pData == 0 );
+		if (s_pData != 0)
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		TextStyleManager::init();
 
@@ -85,22 +90,30 @@ namespace wg
 
 		MU::s_scale = 1.f;
 		MU::s_qpixPerPoint = 4;
-
+		return true;
 	}
 
 	//____ exit() __________________________________________________________________
 
-	int Base::exit()
+	bool Base::exit()
 	{
 
-		if( s_pData == 0 )
-			return -1;					// Base already exited or not intialized.
+		if (s_pData == 0)
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		if( !s_pData->pPtrPool->isEmpty() )
-			return -2;					// There are weak pointers left.
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		if( !s_pData->pMemStack->isEmpty() )
-			return -3;					// There is data left in memstack.
+		{
+			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+		}
 
 		s_pData->pDefaultCaret = nullptr;
 		s_pData->pDefaultTextMapper = nullptr;
@@ -113,7 +126,11 @@ namespace wg
 		s_pData = nullptr;
 
 		TextStyleManager::exit();
-		return 0;
+
+		if (s_objectsCreated != s_objectsDestroyed)
+			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return true;
 	}
 
 	//____ handleError() _________________________________________________________
