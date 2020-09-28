@@ -571,13 +571,35 @@ namespace wg
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
 
-		if( m_pixelDescription.format == PixelFormat::BGRA_8 )
+        uint8_t * pPixel = (uint8_t*) m_pBlob->data();
+        pPixel += coord.y*m_pitch+coord.x*(m_pixelSize);
+
+        if( m_pixelDescription.bIndexed )
+        {
+            return m_pClut[*pPixel].a;
+        }
+        else if( m_pixelDescription.A_bits == 0 )
+            return 255;
+        else
 		{
-			uint8_t * p = (uint8_t*) m_pBlob->data();
-			return p[coord.y*m_pitch+coord.x*4+3];
+            uint32_t val;
+            
+            switch( m_pixelSize )
+            {
+                case 1:
+                    val = (uint32_t) *pPixel;
+                case 2:
+                    val = (uint32_t) ((uint16_t*) pPixel)[0];
+                case 3:
+                    val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
+                default:
+                    val = *((uint32_t*) pPixel);
+            }
+
+            const uint8_t * pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+
+            return pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 		}
-		else
-			return 255;
 	}
 
 	//____ unload() ___________________________________________________________

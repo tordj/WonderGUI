@@ -1701,7 +1701,7 @@ namespace wg
 
 		//
 
-		int extrasSpaceNeeded = (8 + 4 * (nEdgeStrips - 1)*(nSegments - 1) + 3) & 0xFFFFFFFC;		// Various data + colors + strips + alignment + margin for
+		int extrasSpaceNeeded = 8 + 4 * (nEdgeStrips - 1)*(nSegments - 1);		// Various data + colors + strips
 
 		assert( extrasSpaceNeeded <= c_extrasBufferSize );               // EXTRAS BUFFER IS SET TOO SMALL!
 
@@ -2090,10 +2090,12 @@ namespace wg
 
 		if (m_segmentsTintTexOfs > 0)
 		{
+            glActiveTexture(GL_TEXTURE10);
 			glBindTexture(GL_TEXTURE_2D, m_segmentsTintTexId);
 			glTexSubImage2D(GL_TEXTURE_2D, 0, 0, 0, c_maxSegments * 2, m_segmentsTintTexOfs * 2, GL_BGRA, GL_UNSIGNED_SHORT, m_segmentsTintTexMap);
-		}
-		
+            glActiveTexture(GL_TEXTURE0);
+        }
+
 
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
@@ -2178,11 +2180,11 @@ namespace wg
 						glUseProgram(m_blitProgMatrix[(int)pSurf->m_pixelDescription.format][(int)pSurf->scaleMode()][m_bGradientActive][m_bActiveCanvasIsA8]);
 
 						glDrawArrays(GL_TRIANGLES, vertexOfs, nVertices);
-						vertexOfs += nVertices;
 
 						if( m_bMipmappedActiveCanvas )
 							m_pActiveCanvas->m_bMipmapStale = true;
 					}
+                    vertexOfs += nVertices;
 					break;
 				}
 				case Command::Fill:
@@ -2347,8 +2349,11 @@ namespace wg
 			// The patch seems to be work generally fine under OSX, but breaks resizing
 			// of viewport on Windows (OSD and PresetManager).
 
-#ifdef PATCH_LOGIC_PRO_X_VIEWPORT_BUG
-            if( abs(m_glViewport[2] - width) > 10 && abs(m_glViewport[3] - height) > 10 )
+#ifdef        PATCH_LOGIC_PRO_X_VIEWPORT_BUG
+//            if( abs(m_glViewport[2] - width) > 10 && abs(m_glViewport[3] - height) > 10 )
+
+            if( (abs(m_glViewport[2] - width/2) < 5 && abs(m_glViewport[3] - height/2) < 5) ||
+                (abs(m_glViewport[2] - width*2) < 5 && abs(m_glViewport[3] - height*  2) < 5) )
             {
 				glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
 				glScissor(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
@@ -2425,10 +2430,12 @@ namespace wg
 		case BlendMode::Add:
 			glBlendEquation(GL_FUNC_ADD);
 			glEnable(GL_BLEND);
+
 			if( bAlphaOnly )
 				glBlendFunc(GL_ONE, GL_ONE);
 			else
 				glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE, GL_ZERO, GL_ONE);
+
 			break;
 
 		case BlendMode::Subtract:
@@ -2545,8 +2552,10 @@ namespace wg
 			}
 		}
 		else
+        {
 			glBindTexture(GL_TEXTURE_2D, 0 );
-
+            m_pActiveBlitSource = nullptr;
+        }
 		LOG_GLERROR(glGetError());
 	}
 
@@ -2565,15 +2574,14 @@ namespace wg
 	{
 		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
-		float r, g, b, a;
-
-		m_canvasUBOBuffer.flatTint[0] = r = pConv[color.r];
-		m_canvasUBOBuffer.flatTint[1] = g = pConv[color.g];
-		m_canvasUBOBuffer.flatTint[2] = b = pConv[color.b];
-		m_canvasUBOBuffer.flatTint[3] = a = m_linearToLinearTable[color.a];
+		m_canvasUBOBuffer.flatTint[0] = pConv[color.r];
+		m_canvasUBOBuffer.flatTint[1] = pConv[color.g];
+		m_canvasUBOBuffer.flatTint[2] = pConv[color.b];
+		m_canvasUBOBuffer.flatTint[3] = m_linearToLinearTable[color.a];
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
-		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.flatTint);
+		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4, &m_canvasUBOBuffer.flatTint);
+
 	}
 
 	//____ _setTintGradient() _________________________________________________

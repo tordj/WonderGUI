@@ -228,17 +228,38 @@ namespace wg
 	{
 		//TODO: Take endianess into account.
 
-		if( m_pixelDescription.bIndexed )
+		switch (m_pixelDescription.format)
 		{
-			uint8_t index = m_pData[m_pitch * coord.y + coord.x];
-			return m_pClut[index].a;
-		}
-		else
-		{
-			uint32_t px = pixel(coord);
-			const uint8_t * pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+			case PixelFormat::CLUT_8_sRGB:
+			case PixelFormat::CLUT_8_linear:
+			{
+				uint8_t index = m_pData[m_pitch * coord.y + coord.x];
+				return m_pClut[index].a;
+			}
+			case PixelFormat::A_8:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x;
+				return pPixel[0];
+			}
+			case PixelFormat::BGRA_4_linear:
+			{
+				uint16_t pixel = * (uint16_t *)(m_pData + m_pitch * coord.y + coord.x);
+				const uint8_t * pConvTab = s_pixelConvTabs[4];
 
-			return pConvTab[(px & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+				return ((pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift] >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
+			}
+			case PixelFormat::BGRA_8_sRGB:
+			case PixelFormat::BGRA_8_linear:
+			{
+				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 4;
+				return pPixel[3];
+			}
+			case PixelFormat::Custom:
+			{
+				//TODO: Implement!
+			}
+			default:
+				return 0xFF;
 		}
 	}
 

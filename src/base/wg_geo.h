@@ -411,6 +411,12 @@ namespace wg
 
 		inline Coord distance(Coord coord) const;				////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
 
+        inline Coord topLeft() const { return {x,y}; }
+        inline Coord topRight() const { return {x+w,y}; }
+        inline Coord bottomRight() const { return {x+w,y+h}; }
+        inline Coord bottomLeft() const { return {x,y+h}; }
+
+        
 		inline const RectI&	qpix() const { return reinterpret_cast<const RectI&>(*this); }
 		inline const RectI	px() const;
 		inline const RectF	fpx() const;
@@ -902,6 +908,11 @@ namespace wg
 		inline void clear();									///< @brief Sets all values to zero.
 
 		inline CoordT<Type> distance( CoordT<Type> coord ) const;   ////< @brief Get distance (signed) between coordinate and rectangle. 0 if inside.
+
+        inline CoordT<Type> topLeft() const { return {x,y}; }
+        inline CoordT<Type> topRight() const { return {x+w,y}; }
+        inline CoordT<Type> bottomRight() const { return {x+w,y+h}; }
+        inline CoordT<Type> bottomLeft() const { return {x,y+h}; }
 
 		//.____ Operators ___________________________________________
 

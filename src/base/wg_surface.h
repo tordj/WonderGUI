@@ -94,11 +94,11 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		virtual uint32_t	pixel( CoordI coord ) = 0;					///< @brief Get pixel at specified coordinate.
-		inline uint32_t		pixel( int x, int y );						///< @brief Get pixel at specified coordinate.
+		virtual uint32_t	pixel( CoordI coord ) = 0;	///< @brief Get pixel at specified coordinate.
+		inline uint32_t		pixel( int x, int y );		///< @brief Get pixel at specified coordinate.
 
-		virtual uint8_t		alpha( CoordI coord ) = 0;					///< @brief Get Alpha value of pixel at specified coordinate.
-		inline uint8_t		alpha( int x, int y );						///< @brief Get Alpha value of pixel at specified coordinate.
+		virtual uint8_t		alpha( CoordI coord ) = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
+		inline uint8_t		alpha( int x, int y );		///< @brief Get Alpha value of pixel at specified coordinate.
 
 		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
 		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.

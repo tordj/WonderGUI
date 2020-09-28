@@ -112,6 +112,12 @@ namespace wg
 
 
 		bool operator == ( const String& kOther ) const	{ return (m_buffer == kOther.m_buffer); }
+        bool operator == ( const char * pCString ) const    { return (m_buffer == pCString); }
+        bool operator == ( const std::string& str ) const    { return (m_buffer == str); }
+
+        bool operator != ( const String& kOther ) const    { return (m_buffer != kOther.m_buffer); }
+        bool operator != ( const char * pCString ) const    { return (m_buffer != pCString); }
+        bool operator != ( const std::string& str ) const    { return (m_buffer != str); }
 
 
 	private:

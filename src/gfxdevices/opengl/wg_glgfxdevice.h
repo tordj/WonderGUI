@@ -185,7 +185,7 @@ namespace wg
 		//
 
 
-		static const int c_commandBufferSize = 4096;
+		static const int c_commandBufferSize = 512;
 		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
 		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
 		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.

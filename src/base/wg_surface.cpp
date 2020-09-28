@@ -216,14 +216,15 @@ namespace wg
 
 		Color col;
 
-		col.r = ((pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift) << m_pixelDescription.R_loss;
-		col.g = ((pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift) << m_pixelDescription.G_loss;
-		col.b = ((pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift) << m_pixelDescription.B_loss;
-
-		if(m_pixelDescription.A_mask == 0)
-			col.a = 255;
-		else
-			col.a = ((pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift) << m_pixelDescription.A_loss;
+        const uint8_t *    pConvTab_R = s_pixelConvTabs[m_pixelDescription.R_bits];
+        const uint8_t *    pConvTab_G = s_pixelConvTabs[m_pixelDescription.G_bits];
+        const uint8_t *    pConvTab_B = s_pixelConvTabs[m_pixelDescription.B_bits];
+        const uint8_t *    pConvTab_A = s_pixelConvTabs[m_pixelDescription.A_bits];
+        
+        col.r = pConvTab_R[(pixel & m_pixelDescription.R_mask) >> m_pixelDescription.R_shift];
+        col.g = pConvTab_G[(pixel & m_pixelDescription.G_mask) >> m_pixelDescription.G_shift];
+        col.b = pConvTab_B[(pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift];
+        col.a = pConvTab_A[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 
 		return col;
 	}
