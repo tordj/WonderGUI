@@ -730,7 +730,8 @@ namespace wg
 	}
 
 	//____ strcmp() ____________________________________________________________
-	int TextTool::strcmp( const Char * pStr1, const Char * pStr2 )
+
+    int TextTool::strcmp( const Char * pStr1, const Char * pStr2 )
 	{
 		while( !pStr1->isEndOfText() && pStr1->equals(*pStr2) )
 		{
@@ -741,12 +742,38 @@ namespace wg
 		if( pStr1->isEndOfText() && pStr2->isEndOfText() )
 			return 0;
 
-		return pStr1->equals( * pStr2 );
+        int diff = pStr1->code() - pStr2->code();
+        if( diff == 0 )
+            diff = pStr1->styleHandle() - pStr2->styleHandle();
+        
+        return diff;
 	}
+
+    int TextTool::strcmp( const Char * pStr1, const char * pUTF8String )
+    {
+        const char * readPos = pUTF8String;
+        uint16_t chr = readChar( readPos );
+
+        while( !pStr1->isEndOfText() && pStr1->styleHandle() == 0 && pStr1->code() == chr )
+        {
+            pStr1++;
+            chr = readChar( readPos );
+        }
+
+        if( pStr1->isEndOfText() && chr == 0 )
+            return 0;
+
+        int diff = pStr1->code() - chr;
+        if( diff == 0 )
+            diff = pStr1->styleHandle();
+        
+        return diff;
+    }
 
 
 	//____ charcodecmp() ____________________________________________________________
-	int TextTool::charcodecmp( const Char * pStr1, const Char * pStr2 )
+
+    int TextTool::charcodecmp( const Char * pStr1, const Char * pStr2 )
 	{
 		while( !pStr1->isEndOfText() && pStr1->code() == pStr2->code() )
 		{
@@ -759,6 +786,24 @@ namespace wg
 
 		return pStr1->code() - pStr2->code();
 	}
+
+    int TextTool::charcodecmp( const Char * pStr1, const char * pUTF8String )
+    {
+        const char * readPos = pUTF8String;
+        uint16_t chr = readChar( readPos );
+
+        while( !pStr1->isEndOfText() && pStr1->code() == chr )
+        {
+            pStr1++;
+            chr = readChar( readPos );
+        }
+
+        if( pStr1->isEndOfText() && chr == 0 )
+            return 0;
+
+        return pStr1->code() - chr;
+    }
+
 
 	//____ charcodecmpIgnoreCase() _______________________________________________________
 	int TextTool::charcodecmpIgnoreCase( const Char * pStr1, const Char * pStr2 )
@@ -774,6 +819,24 @@ namespace wg
 
 		return towlower(pStr1->code()) - towlower(pStr2->code());
 	}
+
+    //____ charcodecmpIgnoreCase() _______________________________________________________
+    int TextTool::charcodecmpIgnoreCase( const Char * pStr1, const char * pUTF8String )
+    {
+        const char * readPos = pUTF8String;
+        uint16_t chr = readChar( readPos );
+        
+        while( !pStr1->isEndOfText() && towlower(pStr1->code()) == towlower(chr) )
+        {
+            pStr1++;
+            chr = readChar( readPos );
+        }
+
+        if( pStr1->isEndOfText() && chr == 0)
+            return 0;
+
+        return towlower(pStr1->code()) - towlower(chr);
+    }
 
 
 

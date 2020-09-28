@@ -129,18 +129,21 @@ public:
 	typedef std::function<WgRectF(SetGeoVisitor& visitor)>			SetGeoFunc;
 
 
-	void		SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
+	void	SetDefaults(wg::Skin * pBgSkin, wg::Skin * pHandleSkin, WgCoordF handleHotspot = { 0.5f,0.5f },
 						WgBorders handleMarkExtension = WgBorders(0), WgBorders sliderMarkExtension = WgBorders(0) );
 
-	void		SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
-    void        SetStaticCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
+	void	SetCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
+    void    SetStaticCallback(const std::function<void(int sliderId, float value, float value2)>& callback);
 
-	void		SetPassive(bool bPassive);							// No slider repositioning on its own, relies callback/event-listener to call SetSliderValue().
-	bool		IsPassive() const { return m_bPassive; }
+	void	SetPassive(bool bPassive);							// No slider repositioning on its own, relies callback/event-listener to call SetSliderValue().
+	bool	IsPassive() const { return m_bPassive; }
 
-	void		SetDeltaDrag(bool bDelta);							// Use relative movements, instead of the new position, for slider placement.
-	bool		IsDeltaDrag() const { return m_bDeltaDrag;  }
+	void	SetDeltaDrag(bool bDelta);							// Use relative movements, instead of the new position, for slider placement.
+	bool	IsDeltaDrag() const { return m_bDeltaDrag;  }
 
+    void    SetSlidersPointAligned(bool bAlign);
+    bool    IsSlidersPointAligned() const { return m_bPointAlignSliders; }
+    
 	void	SetGhostHandle(bool bGhost);						// Handle is not pressable, only background. Can be useful in some press-modes.
 																// In ghost-mode, handle will also get hover and press states when slider is hovered/pressed.
 	bool	IsGhostHandle() const { return m_bGhostHandle; }
@@ -304,14 +307,15 @@ private:
 
 	PressMode			m_pressMode = PressMode::NoMovement;
 
-	bool				m_bPassive = false;
-	bool				m_bGhostHandle = false;
-	bool				m_bDeltaDrag = false;
-
-	WgModifierKeys		m_axisLockModifier = WG_MODKEY_ALT;
-	WgModifierKeys		m_finetuneModifier = WG_MODKEY_CTRL;
-	WgModifierKeys		m_overrideModifier = WG_MODKEY_NONE;			// If pressed, we only do callback and send event, we don't grab or move slider.
-	WgModifierKeys		m_staticModifier = WG_MODKEY_NONE;
+    bool                   m_bPassive = false;
+    bool                   m_bGhostHandle = false;
+    bool                   m_bDeltaDrag = false;
+    bool                   m_bPointAlignSliders = false;
+    
+    WgModifierKeys         m_axisLockModifier = WG_MODKEY_ALT;
+    WgModifierKeys         m_finetuneModifier = WG_MODKEY_CTRL;
+    WgModifierKeys         m_overrideModifier = WG_MODKEY_NONE;             // If pressed, we only do callback and send event, we don't grab or move slider.
+    WgModifierKeys         m_staticModifier = WG_MODKEY_NONE;
 
 	int					m_finetuneStepSize = 5;							// 0 = increment on every pixel, otherwise points to move pointer before value incremented.
 	float				m_finetuneStepIncrement = 0.f;					// 0 = increment with value of one pixels movement, otherwise by specified value.

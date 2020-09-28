@@ -42,7 +42,6 @@ WgTextDisplay::WgTextDisplay()
 	m_text.SetAutoEllipsis(IsAutoEllipsisDefault());
 	m_text.SetEditMode( WgTextEditMode::Static );
 	m_bResetCursorOnFocus = true;
-	m_str.assign("");
 }
 
 
@@ -149,6 +148,43 @@ WgSize WgTextDisplay::PreferredPixelSize() const
 	}
 
 	return bestSize;
+}
+
+//____ ChangeText() _____________________________________________________________
+
+void WgTextDisplay::ChangeText(const wg::CharSeq& kStr)
+{
+    wg::String kStrTmp = wg::String(kStr);
+
+    if(kStrTmp != m_kStr)
+    {
+        SetText(kStrTmp);
+        m_kStr = kStrTmp;
+    }
+}
+
+//____ ChangeText() _____________________________________________________________
+
+void WgTextDisplay::ChangeText(std::string kStr)
+{
+    if(m_kStr != kStr)
+    {
+        wg::String kStrTmp = wg::String(kStr);
+        SetText(kStrTmp);
+        m_kStr = kStrTmp;
+    }
+}
+
+//____ ChangeText() _____________________________________________________________
+
+void WgTextDisplay::ChangeText(const char* kStr)
+{
+    if(m_kStr != kStr)
+    {
+        wg::String kStrTmp = wg::String(kStr);
+        SetText(kStrTmp);
+        m_kStr = kStrTmp;
+    }
 }
 
 //____ GetPointerStyle() ________________________________________
@@ -456,8 +492,7 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 		m_text.setState(m_state);
 	}
 
-
-	// Forward event depending on rules.
+    // Forward event depending on rules.
 
 	if (!bSwallowed)
 	{

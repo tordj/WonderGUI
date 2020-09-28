@@ -183,14 +183,23 @@ namespace wg
 
 		//.____ Misc ___________________________________________________________
 
-		int					findFirst( const CharSeq& seq, int ofs = 0 );
-		int					findFirst( uint16_t character, int ofs = 0 );
+		int					findFirst( const CharSeq& seq, int ofs = 0 ) const;
+		int					findFirst( uint16_t character, int ofs = 0 ) const;
 
 
-		int					compareTo( const CharBuffer * pBuffer );
-		int					compareCharCodesTo( const CharBuffer * pBuffer );
-		int					compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer );
+		int					compareTo( const CharBuffer * pBuffer ) const;
+        int                 compareTo( const char * pCString ) const;
+        int                 compareTo( const std::string& str ) const;
 
+        int					compareCharCodesTo( const CharBuffer * pBuffer ) const;
+        int                 compareCharCodesTo( const char * pCString ) const;
+        int                 compareCharCodesTo( const std::string& str ) const;
+
+		int					compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer ) const;
+        int                 compareCharCodesIgnoreCaseTo( const char * pCString ) const;
+        int                 compareCharCodesIgnoreCaseTo( const std::string& str ) const;
+
+        
 		// Methods mostly for debugging and profiling purposes.
 
 		inline int			refCount() const;
@@ -203,8 +212,14 @@ namespace wg
 		CharBuffer& operator=(CharSeq const & r);
 
 		inline bool operator==(const CharBuffer& other) const { return _compareBuffers(this->m_pHead, other.m_pHead); }
-		inline bool operator!=(const CharBuffer& other) const { return !_compareBuffers(this->m_pHead, other.m_pHead); }
+        inline bool operator==(const char * pCString ) const { return (compareTo(pCString) == 0); }
+        inline bool operator==(const std::string& str ) const { return (compareTo(str) == 0); }
 
+        inline bool operator!=(const CharBuffer& other) const { return !_compareBuffers(this->m_pHead, other.m_pHead); }
+        inline bool operator!=(const char * pCString ) const { return (compareTo(pCString) != 0); }
+        inline bool operator!=(const std::string& str ) const { return (compareTo(str) != 0); }
+
+        
 		// These operator[] are slow, please use chars() or beginWrite() instead.
 
 		Char&				operator[](int i) { if (m_pHead->m_refCnt > 1) _reshapeBuffer(0, 0, m_pHead->m_len, 0); return *(Char*)_ptr(i); }

@@ -37,7 +37,7 @@ WgScaleImage::WgScaleImage()
 	m_pGenSurface = 0;
 	m_pSurfaceFactory = 0;
 	m_bScale = false;
-	m_maxImgSize = WgSize(2048,2048);//WgSize(1024,1024);
+	m_maxImgSize = WgSize(4096,2048);//WgSize(1024,1024);
 	m_imgOrigo = WgOrigo::NorthWest;
 }
 

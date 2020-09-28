@@ -114,8 +114,14 @@ namespace wg
 		static uint32_t	strlen( const Char * pSrc );
 		static int		strcmp( const uint16_t * pStr1, const uint16_t * pStr2 );
 		static int		strcmp( const Char * pStr1, const Char * pStr2 );
+        static int      strcmp( const Char * pStr1, const char * pCString );
+        static int      strcmp( const Char * pStr1, const std::string& str ) { return strcmp( pStr1, str.c_str() ); }
 		static int		charcodecmp( const Char * pStr1, const Char * pStr2 );
+        static int      charcodecmp( const Char * pStr1, const char * pCString );
+        static int      charcodecmp( const Char * pStr1, const std::string& str ) { return charcodecmp( pStr1, str.c_str() ); }
 		static int		charcodecmpIgnoreCase( const Char * pStr1, const Char * pStr2 );
+        static int      charcodecmpIgnoreCase( const Char * pStr1, const char * pCString );
+        static int      charcodecmpIgnoreCase( const Char * pStr1, const std::string& str ) { return charcodecmpIgnoreCase( pStr1, str.c_str() ); }
 
 		static void		forwardCharacters( const char *& pChar, int nChars );
 

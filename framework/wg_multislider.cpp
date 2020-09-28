@@ -88,6 +88,14 @@ void WgMultiSlider::SetStaticCallback(const std::function<void(int sliderId, flo
     m_staticCallback = callback;
 }
 
+//____ SetSlidersPointAligned() _______________________________________________
+
+void WgMultiSlider::SetSlidersPointAligned(bool bAlign)
+{
+    m_bPointAlignSliders = true;
+}
+
+
 //____ SetPassive() ___________________________________________________________
 
 void WgMultiSlider::SetPassive(bool bPassive)
@@ -1619,7 +1627,15 @@ WgRect  WgMultiSlider::_sliderGeo(const Slider& slider, const WgRect& _canvas ) 
 {
 	WgRect canvas = m_pSkin ? _skinContentRect(m_pSkin, _canvas, m_state, m_scale ) : _canvas;
 
-	return { canvas.x + (int)(slider.geo.x * canvas.w + 0.5f), canvas.y + (int)(slider.geo.y * canvas.h + 0.5f), (int)(canvas.w * slider.geo.w), (int)(canvas.h * slider.geo.h) };
+	WgRect r = { canvas.x + (int)(slider.geo.x * canvas.w + 0.5f), canvas.y + (int)(slider.geo.y * canvas.h + 0.5f), (int)(canvas.w * slider.geo.w), (int)(canvas.h * slider.geo.h) };
+
+    if( m_bPointAlignSliders )
+    {
+        r = (r * WG_SCALE_BASE ) / m_scale;
+        r = (r * m_scale) / WG_SCALE_BASE;
+    }
+
+    return r;
 }
 
 //____ _sliderSkinGeo() _______________________________________________________

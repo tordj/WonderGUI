@@ -1050,7 +1050,7 @@ namespace wg
 
 	//____ compareTo() ____________________________________________________________
 
-	int CharBuffer::compareTo( const CharBuffer * pBuffer )
+	int CharBuffer::compareTo( const CharBuffer * pBuffer ) const
 	{
 		if( m_pHead == pBuffer->m_pHead )
 			return 0;
@@ -1058,9 +1058,19 @@ namespace wg
 		return TextTool::strcmp( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 
+    int CharBuffer::compareTo( const char * pCString ) const
+    {
+        return TextTool::strcmp( (Char*) _ptr(0), pCString);
+    }
+
+    int CharBuffer::compareTo( const std::string& str ) const
+    {
+        return TextTool::strcmp( (Char*) _ptr(0), str);
+    }
+
 	//____ compareCharCodesTo() ______________________________________________________
 
-	int CharBuffer::compareCharCodesTo( const CharBuffer * pBuffer )
+	int CharBuffer::compareCharCodesTo( const CharBuffer * pBuffer ) const
 	{
 		if( m_pHead == pBuffer->m_pHead )
 			return 0;
@@ -1068,9 +1078,19 @@ namespace wg
 		return TextTool::charcodecmp( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 
+    int CharBuffer::compareCharCodesTo( const char * pCString ) const
+    {
+        return TextTool::charcodecmp( (Char*) _ptr(0), pCString );
+    }
+
+    int CharBuffer::compareCharCodesTo( const std::string& str ) const
+    {
+        return TextTool::charcodecmp( (Char*) _ptr(0), str );
+    }
+
 	//____ compareCharCodesIgnoreCaseTo() ____________________________________________
 
-	int CharBuffer::compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer )
+	int CharBuffer::compareCharCodesIgnoreCaseTo( const CharBuffer * pBuffer ) const
 	{
 		if( m_pHead == pBuffer->m_pHead )
 			return 0;
@@ -1078,6 +1098,15 @@ namespace wg
 		return TextTool::charcodecmpIgnoreCase( (Char*) _ptr(0), (Char*) pBuffer->_ptr(0) );
 	}
 
+    int CharBuffer::compareCharCodesIgnoreCaseTo( const char * pCString ) const
+    {
+        return TextTool::charcodecmpIgnoreCase( (Char*) _ptr(0), pCString );
+    }
+
+    int CharBuffer::compareCharCodesIgnoreCaseTo( const std::string& str ) const
+    {
+        return TextTool::charcodecmpIgnoreCase( (Char*) _ptr(0), str );
+    }
 
 	//____ fill() __________________________________________________________________
 	//
@@ -1190,7 +1219,7 @@ namespace wg
 	///
 	/// @return Offset in buffer for first match found or -1 if none found.
 
-	int CharBuffer::findFirst( const CharSeq& _seq, int ofs )
+	int CharBuffer::findFirst( const CharSeq& _seq, int ofs ) const
 	{
 		if( ofs < 0 )
 			ofs = 0;
@@ -1228,7 +1257,7 @@ namespace wg
 	///
 	/// @return Offset in buffer for first match found or -1 if none found.
 
-	int CharBuffer::findFirst( uint16_t character, int ofs )
+	int CharBuffer::findFirst( uint16_t character, int ofs ) const
 	{
 		if( ofs < 0 )
 			ofs = 0;

@@ -204,6 +204,20 @@ int WgFlowPanel::MatchingPixelWidth( int height ) const
 	return m_preferredSize.w;
 }
 
+//____ PadAllChildren() _______________________________________________________
+
+void WgFlowPanel::PadAllChildren( WgBorders padding )
+{
+    WgFlowHook * pHook = static_cast<WgFlowHook *>(m_hooks.first());
+    while( pHook )
+    {
+        pHook->m_padding = padding;
+        pHook->m_preferredSize = pHook->_paddedPreferredPixelSize(m_scale);
+        pHook = pHook->Next();
+    }
+    
+    _refreshAllWidgets();
+}
 
 
 //____ _firstHookWithGeo() _____________________________________________________

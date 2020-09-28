@@ -574,7 +574,7 @@ const char GlGfxDevice::plotVertexShader[] =
 "   gl_Position.y = ((canvasYOfs + canvasYMul*pos.y)+0.5)*2.0/canvasSize.y - 1,0;	"
 "   gl_Position.z = 0.0;                                "
 "   gl_Position.w = 1.0;                                "
-"   fragColor = texelFetch(extrasId, extrasOfs);		   "
+"   fragColor = flatTint * texelFetch(extrasId, extrasOfs);		   "
 "}                                                      ";
 
 
@@ -634,7 +634,7 @@ const char GlGfxDevice::lineFromToVertexShader[] =
 "   gl_Position.y = (canvasYOfs + canvasYMul*pos.y)*2/canvasSize.y - 1.0;             "
 "   gl_Position.z = 0.0;                                    "
 "   gl_Position.w = 1.0;                                    "
-"   fragColor = texelFetch(extrasId, extrasOfs);			"
+"   fragColor = flatTint * texelFetch(extrasId, extrasOfs);			"
 "   int ofs = extrasOfs+1;									"
 "   vec4 x = texelFetch(extrasId, ofs);						"
 "   s = x.x;												"

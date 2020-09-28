@@ -117,7 +117,7 @@ private:
 		DummyGlyph() : wg::Glyph( 0, 0, 0 ) {}
 		const wg::GlyphBitmap * getBitmap() { return nullptr; }
 
-		void SetAdvance( int advance ) { m_advance = advance; }
+		void SetAdvance( wg::MU advance ) { m_advance = advance; }
 	};
 
 	//

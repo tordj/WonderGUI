@@ -80,6 +80,7 @@ public:
 	inline WgFlowHook * InsertChild( WgWidget * pWidget, WgWidget * pSibling ) { return static_cast<WgFlowHook*>(WgVectorPanel::InsertChild(pWidget,pSibling)); }
 	inline WgFlowHook * InsertChildSorted( WgWidget * pWidget ) { return static_cast<WgFlowHook*>(WgVectorPanel::InsertChildSorted(pWidget)); }
 
+    void            PadAllChildren( WgBorders padding );
 
 //	void			SetOrientation( wg::Axis orientaiton );
 //	wg::Axis		Orientation() const { return m_bHorizontal?wg::Axis::X:wg::Axis::Y; }
