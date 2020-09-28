@@ -23,13 +23,17 @@
 
 
 #include <wg_base.h>
-#include <wg_msgrouter.h>
+
+#ifndef WG2_MODE
+	#include <wg_msgrouter.h>
+	#include <wg_stdtextmapper.h>
+	#include <wg_standardformatter.h>
+	#include <wg_inputhandler.h>
+#endif
+
 #include <wg_dummyfont.h>
 #include <wg_memstack.h>
-#include <wg_stdtextmapper.h>
 #include <wg_mempool.h>
-#include <wg_standardformatter.h>
-#include <wg_inputhandler.h>
 #include <wg_context.h>
 #include <wg_textstyle.h>
 #include <wg_texttool.h>
@@ -71,17 +75,19 @@ namespace wg
 		s_pData->pMemStack = new MemStack( 4096 );
 
 		s_pData->pActiveContext = Context::create();
+		s_pData->pDefaultStyle = TextStyle::create();
 
+#ifndef WG2_MODE
 		s_pData->pDefaultCaret = Caret::create();
 
 		s_pData->pDefaultTextMapper = StdTextMapper::create();
 
-		s_pData->pDefaultStyle = TextStyle::create();
 
 		s_pData->pDefaultValueFormatter = StandardFormatter::create();
 
 		s_pData->pMsgRouter = MsgRouter::create();
-		s_pData->pInputHandler = InputHandler::create();
+      	s_pData->pInputHandler = InputHandler::create();
+#endif
 
 		s_pData->pDefaultStyle = TextStyle::create();
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
@@ -115,10 +121,6 @@ namespace wg
 			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
-		s_pData->pDefaultCaret = nullptr;
-		s_pData->pDefaultTextMapper = nullptr;
-		s_pData->pDefaultStyle = nullptr;
-		s_pData->pDefaultValueFormatter = nullptr;
 
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
@@ -195,6 +197,8 @@ namespace wg
 	}
 
 
+#ifndef WG2_MODE
+
 	//____ msgRouter() _________________________________________________________
 
 	MsgRouter_p	Base::msgRouter()
@@ -207,29 +211,6 @@ namespace wg
 	InputHandler_p Base::inputHandler()
 	{
 		return s_pData->pInputHandler;
-	}
-
-
-
-	//____ _allocWeakPtrHub() ______________________________________________________
-
-	WeakPtrHub * Base::_allocWeakPtrHub()
-	{
-		assert( s_pData != 0 );
-		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
-
-		new (pHub) WeakPtrHub();
-
-		return pHub;
-	}
-
-	//____ _freeWeakPtrHub() _______________________________________________________
-
-	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
-	{
-		assert( s_pData != 0 );
-		pHub->~WeakPtrHub();
-		s_pData->pPtrPool->freeEntry( pHub );
 	}
 
 	//____ defaultCaret() ______________________________________________________
@@ -265,6 +246,25 @@ namespace wg
 		s_pData->pDefaultTextMapper = pTextMapper;
 	}
 
+	//____ defaultValueFormatter() _____________________________________________
+
+	ValueFormatter_p Base::defaultValueFormatter()
+	{
+		assert(s_pData != 0);
+		return s_pData->pDefaultValueFormatter;
+	}
+
+	//____ setDefaultValueFormatter() _______________________________________________________
+
+	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
+	{
+		assert(s_pData != 0);
+		s_pData->pDefaultValueFormatter = pFormatter;
+	}
+
+#endif
+
+
 	//____ defaultStyle() ______________________________________________________
 
 	TextStyle_p Base::defaultStyle()
@@ -281,14 +281,6 @@ namespace wg
 		s_pData->pDefaultStyle = pStyle;
 	}
 
-	//____ defaultValueFormatter() _____________________________________________
-
-	ValueFormatter_p Base::defaultValueFormatter()
-	{
-		assert(s_pData != 0);
-		return s_pData->pDefaultValueFormatter;
-	}
-
 	//___ setActiveContext() __________________________________________________
 
 	void Base::setActiveContext(Context * pContext)
@@ -296,8 +288,17 @@ namespace wg
 		assert(s_pData != 0);
 		s_pData->pActiveContext = pContext;
 
-		MU::s_scale = pContext->scale();
-		MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
+        if( pContext )
+        {
+            MU::s_scale = pContext->scale();
+            MU::s_qpixPerPoint = int(pContext->scale() * 4.f);
+        }
+        else
+        {
+            MU::s_scale = 1.f;
+            MU::s_qpixPerPoint = 4;
+        }
+
 	}
 
 	//____ activeContext() ____________________________________________________
@@ -306,15 +307,6 @@ namespace wg
 	{
 		assert(s_pData != 0);
 		return s_pData->pActiveContext;
-	}
-
-
-	//____ setDefaultValueFormatter() _______________________________________________________
-
-	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
-	{
-		assert(s_pData != 0);
-		s_pData->pDefaultValueFormatter = pFormatter;
 	}
 
 	//____ setErrorHandler() _________________________________________________________
@@ -351,6 +343,27 @@ namespace wg
 	void Base::_trackObject(Object* pObject, const char* pFileName, int lineNb)
 	{
 		s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
+	}
+
+	//____ _allocWeakPtrHub() ______________________________________________________
+
+	WeakPtrHub * Base::_allocWeakPtrHub()
+	{
+		assert( s_pData != 0 );
+		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
+
+		new (pHub) WeakPtrHub();
+
+		return pHub;
+	}
+
+	//____ _freeWeakPtrHub() _______________________________________________________
+
+	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
+	{
+		assert( s_pData != 0 );
+		pHub->~WeakPtrHub();
+		s_pData->pPtrPool->freeEntry( pHub );
 	}
 
 

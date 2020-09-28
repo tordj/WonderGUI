@@ -33,6 +33,9 @@
 #include <functional>
 #include <unordered_map>
 
+
+//#define WG2_MODE
+
 namespace wg
 {
 	class Font;
@@ -161,15 +164,17 @@ namespace wg
 
 		struct Data
 		{
+
+#ifndef WG2_MODE
 			MsgRouter_p		pMsgRouter;
 			InputHandler_p	pInputHandler;
-
-			Context_p		pActiveContext;
-
 			TextMapper_p		pDefaultTextMapper;
 			Caret_p				pDefaultCaret;
-			TextStyle_p			pDefaultStyle;
 			ValueFormatter_p	pDefaultValueFormatter;
+#endif
+
+			Context_p		pActiveContext;
+			TextStyle_p			pDefaultStyle;
 
 
 			//
