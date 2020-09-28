@@ -49,7 +49,7 @@ namespace wg
 		return BakeSkin_p(new BakeSkin(pBakeSurface));
 	}
 
-	BakeSkin_p BakeSkin::create(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skins)
+	BakeSkin_p BakeSkin::create(Surface* pBakeSurface, std::initializer_list<Skin_p> skins)
 	{
 		return BakeSkin_p(new BakeSkin(pBakeSurface,skins));
 	}
@@ -61,12 +61,13 @@ namespace wg
 		m_pBakeSurface = pBakeSurface;
 	}
 
-	BakeSkin::BakeSkin(Surface* pBakeSurface, const std::initializer_list<Skin_p>& skinsIn) : skins(this)
+	BakeSkin::BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skinsIn) : skins(this)
 	{
 		m_pBakeSurface = pBakeSurface;
 
 		skins.pushBack(skinsIn);
 
+		_onModified();
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -88,6 +89,14 @@ namespace wg
 	void BakeSkin::setTintColor(Color color)
 	{
 		m_tintColor = color;
+	}
+
+	//____ setSkinInSkin() ____________________________________________________
+
+	void BakeSkin::setSkinInSkin(bool bInside)
+	{
+		if( m_bSkinInSkin != bInside )
+			m_bSkinInSkin = bInside;
 	}
 
 	//____ minSize() __________________________________________________________
@@ -115,8 +124,15 @@ namespace wg
 
 	void BakeSkin::setContentPadding(const BorderI& padding)
 	{
-		m_contentPadding = padding;
-		m_bContentPaddingSet = !padding.isEmpty();
+		if (padding != m_contentPadding)
+		{
+			m_contentPadding = padding;
+			m_bContentPaddingSet = !padding.isEmpty();
+
+			// Invalidate our geo cache
+
+			m_cachedQPixPerPoint = 0;
+		}
 	}
 
 
@@ -124,10 +140,10 @@ namespace wg
 
 	Border BakeSkin::contentPadding(State state) const
 	{
-		if (!m_bContentPaddingSet && !skins.isEmpty() && skins[0] != nullptr )
-			return skins[0]->contentPadding(state);
+		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
+			_updateCachedGeo();
 
-		return m_contentPadding;
+		return m_cachedContentPadding[_stateToIndex(state)];
 	}
 
 
@@ -135,30 +151,32 @@ namespace wg
 
 	Size BakeSkin::contentPaddingSize() const
 	{
-		if (!m_bContentPaddingSet && !skins.isEmpty() && skins[0] != nullptr)
-			return skins[0]->contentPaddingSize();
+		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
+			_updateCachedGeo();
 
-		return Size(Border(m_contentPadding).aligned());
+		return m_cachedContentPadding[0].size();
 	}
 
 	//____ contentOfs() _______________________________________________________
 
 	Coord BakeSkin::contentOfs(State state) const
 	{
-		if (!m_bContentPaddingSet && !skins.isEmpty() && skins[0] != nullptr)
-			return skins[0]->contentOfs(state);
+		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
+			_updateCachedGeo();
 
-		return Coord(m_contentPadding.left, m_contentPadding.top).aligned();
+		int index = _stateToIndex(state);
+
+		return Coord(m_cachedContentPadding[index].left, m_cachedContentPadding[index].top);
 	}
 
 	//____ contentRect() _____________________________________________________
 
 	Rect BakeSkin::contentRect(const Rect& canvas, State state) const
 	{
-		if (!m_bContentPaddingSet && !skins.isEmpty() && skins[0] != nullptr)
-			return skins[0]->contentRect(canvas, state);
+		if (m_cachedQPixPerPoint != MU::qpixPerPoint())
+			_updateCachedGeo();
 
-		return (canvas - Border(m_contentPadding).aligned()).aligned();
+		return canvas - m_cachedContentPadding[_stateToIndex(state)];
 	}
 
 	//____ setBakeSurface() ______________________________________________________
@@ -236,7 +254,7 @@ namespace wg
 
 		// Set new canvas (surface and rect).
 
-		pDevice->setCanvas(m_pBakeSurface,false);
+		pDevice->setCanvas(m_pBakeSurface, CanvasInit::Discard,false);
 
 		Rect bakeCanvas = canvas.size();
 		RectI bakeCanvasPX = bakeCanvas.px();
@@ -260,17 +278,39 @@ namespace wg
 		// Render skins to bake surface, from back to front
 
 		if (!skins[0]->isOpaque())
-			pDevice->fill(Color::Transparent);
-
-		for (auto it = skins.end(); it-- != skins.begin(); ) 
 		{
-			if ( (*it) != nullptr)
-				(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
+			pDevice->setBlendMode(BlendMode::Replace);
+			pDevice->fill(Color::Transparent);
+			pDevice->setBlendMode(BlendMode::Blend);
+		}
+
+		if (m_bSkinInSkin)
+		{
+			Rect canvas = bakeCanvas;
+
+			for (auto it = skins.end(); it != skins.begin(); )
+			{
+				it--;
+				if ((*it) != nullptr)
+				{
+					(*it)->render(pDevice, canvas, state, fraction, fraction2);
+					canvas = (*it)->contentRect(canvas, state);
+				}
+			}
+		}
+		else
+		{
+			for (auto it = skins.end(); it != skins.begin(); )
+			{
+				it--;
+				if ((*it) != nullptr)
+					(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
+			}
 		}
 
 		// Reset canvas and cliplist
 
-		pDevice->setCanvas(oldCanvas, false);
+		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 		Util::popClipList(pDevice, oldClip);
 
 		// Blit baked graphics to canvas.
@@ -311,6 +351,10 @@ namespace wg
 
 	void BakeSkin::_updateCachedGeo() const
 	{
+		m_cachedQPixPerPoint = MU::qpixPerPoint();
+
+		// Update cached preferred and min size.
+
 		Size preferred;
 		Size min;
 
@@ -326,8 +370,70 @@ namespace wg
 		m_cachedPreferredSize = preferred;
 		m_cachedMinSize = min;
 
-		m_cachedQPixPerPoint = MU::qpixPerPoint();
+		// Update cached content padding.
+
+		if (m_bContentPaddingSet || skins.isEmpty())
+		{
+			// Content padding is specified.
+
+			Border padding = Border(m_contentPadding).aligned();
+
+			for (int index = 0; index < StateEnum_Nb; index++)
+				m_cachedContentPadding[index] = padding;
+		}
+		else
+		{
+			if (m_bSkinInSkin)
+			{
+				// Content padding is the sum of all skins padding.
+
+				if (m_bContentShifting)
+				{
+					for (int index = 0; index < StateEnum_Nb; index++)
+						m_cachedContentPadding[index] = _stateContentPadding(_indexToState(index));
+				}
+				else
+				{
+					Border padding = _stateContentPadding(StateEnum::Normal);
+
+					for (int index = 0; index < StateEnum_Nb; index++)
+						m_cachedContentPadding[index] = padding;
+				}
+			}
+			else
+			{
+				// Content padding is that of top skin.
+
+				Border contentPadding;
+
+				for (auto& pSkin : skins)
+				{
+					if (pSkin)
+					{
+						for (int index = 0; index < StateEnum_Nb; index++)
+							m_cachedContentPadding[index] = pSkin->contentPadding(_indexToState(index));
+						break;
+					}
+				}
+			}
+		}
 	}
+
+	//____ _stateContentPadding() _____________________________________________
+
+	Border BakeSkin::_stateContentPadding(State state) const
+	{
+		Border padding;
+
+		for (auto& pSkin : skins)
+		{
+			if (pSkin)
+				padding += pSkin->contentPadding(state);
+		}
+
+		return padding;
+	}
+
 
 	//____ _onModified() ______________________________________________________
 
@@ -335,48 +441,101 @@ namespace wg
 	{
 		// Update various flags.
 
-		bool		bContentShifting = false;
-		bool		bSupportsFraction = false;
-		bool		bOpaque = false;
+		m_bContentShifting = false;
+		m_bIgnoresFraction = true;
 
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
 			{
-				bContentShifting = bContentShifting || pSkin->isContentShifting();
-				bSupportsFraction = bSupportsFraction || !pSkin->ignoresFraction();
-				bOpaque = bOpaque || pSkin->isOpaque();
+				m_bContentShifting = m_bContentShifting || pSkin->isContentShifting();
+				m_bIgnoresFraction = m_bIgnoresFraction && pSkin->ignoresFraction();
 			}
 		}
 
-		m_bContentShifting = bContentShifting;
-		m_bIgnoresFraction = !bSupportsFraction;
-		m_bOpaque = bOpaque;
+		//  Update bOpaque and opaqueStates
 
-		// Update opaqueStates bitmask.
-
+		bool		bOpaque = false;
 		Bitmask<uint32_t> opaqueStates;
 
-		if (bOpaque)
+		if (m_blendMode == BlendMode::Replace)
+		{
+			bOpaque = true;
 			opaqueStates = 0xFFFFFFFF;
+		}
+		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 255)
+		{
+			bOpaque = false;
+			opaqueStates = 0;
+		}
 		else
 		{
-			for (int i = 0; i < StateEnum_Nb; i++)
-			{
-				State state = _indexToState(i);
+			// Do global opacity check
 
-				bool bStateOpaque = false;
+			if (m_bSkinInSkin)
+			{
+				for (auto it = skins.end(); it != skins.begin(); )
+				{
+					it--;
+					if ((*it) != nullptr)
+					{
+						if ((*it)->isOpaque())
+						{
+							// Skin is opaque and has not been padded by outer skin, thus we are opaque.
+							break;
+						}
+
+						if (!(*it)->contentPaddingSize().isEmpty())
+						{
+							// Skin is not opaque and padds child, thus we are not opaque.
+							bOpaque = false;
+							break;
+						}
+					}
+				}
+			}
+			else
+			{
 				for (auto& pSkin : skins)
 				{
 					if (pSkin)
-						bStateOpaque = bStateOpaque || pSkin->isOpaque(state);
+						bOpaque = bOpaque || pSkin->isOpaque();
 				}
+			}
 
-				opaqueStates.setBit(i, bStateOpaque);
+			// Update opaqueStates bitmask.
+
+			if (bOpaque)
+				opaqueStates = 0xFFFFFFFF;
+			else
+			{
+				for (int i = 0; i < StateEnum_Nb; i++)
+				{
+					State state = _indexToState(i);
+
+					bool bStateOpaque = false;
+					for (auto it = skins.end(); it != skins.begin(); )
+					{
+						it--;
+						if ((*it) != nullptr)
+						{
+							if ((*it)->isOpaque(state))
+							{
+								bStateOpaque = true;
+								break;
+							}
+
+							if (m_bSkinInSkin && !(*it)->contentPaddingSize().isEmpty())
+								break;			// is padding inner/upper skins, thus they are irrelevant.
+						}
+					}
+					opaqueStates.setBit(i, bStateOpaque);
+				}
 			}
 		}
 
-		m_opaqueStates = opaqueStates;
+		m_bOpaque			= bOpaque;
+		m_opaqueStates		= opaqueStates;
 
 		// Invalidate our geo cache
 
@@ -394,7 +553,10 @@ namespace wg
 
 	void BakeSkin::_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb)
 	{
-		// Do nothing. Order doesn't affect any internal state.
+		// Opacity might change when we have skin in skin.
+
+		if( !m_bSkinInSkin )
+			_onModified();
 	}
 
 	//____ _willEraseEntries() ________________________________________________

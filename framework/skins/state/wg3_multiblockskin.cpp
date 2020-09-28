@@ -93,7 +93,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks)
+	int MultiBlockSkin::addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks)
 	{
 		// HACK!
 
@@ -155,7 +155,7 @@ namespace wg
 		return (int) m_layers.size();
 	}
 
-	int MultiBlockSkin::addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
+	int MultiBlockSkin::addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis, int spacing, CoordI blockStartOfs )
 	{
 		SizeI blockPitch;
 
@@ -188,7 +188,7 @@ namespace wg
 	}
 
 
-	bool MultiBlockSkin::setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors)
+	bool MultiBlockSkin::setLayerTint(int layerIdx, std::initializer_list< std::pair<State,Color> > stateColors)
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 

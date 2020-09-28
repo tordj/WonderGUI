@@ -59,11 +59,11 @@ namespace wg
 		//.____ Appearance _________________________________________________
 
 		int		addLayer(Surface * pSurf, CoordI ofs);
-		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, const std::initializer_list<State>& stateBlocks);		// DEPRECATED!!!
-		int		addLayer(Surface * pSurf, const std::initializer_list<State>& stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
+		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks);		// DEPRECATED!!!
+		int		addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
 
 		bool	setLayerTint(int layerIdx, Color tintColor);
-		bool	setLayerTint(int layerIdx, const std::initializer_list< std::pair<State,Color> >& stateColors);
+		bool	setLayerTint(int layerIdx, std::initializer_list< std::pair<State,Color> > stateColors);
 		bool	setLayerBlendMode(int layerIdx, BlendMode blendMode);
 
 		//.____ Geometry _________________________________________________

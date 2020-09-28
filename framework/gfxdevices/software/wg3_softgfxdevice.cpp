@@ -736,9 +736,6 @@ namespace wg
 
 			if (mode == BlendMode::Multiply)
 			{
-				int alpha = srcA;
-				int invAlpha = 4096 - alpha;
-
 				outB = (backB * srcB) >> 12;
 				outG = (backG * srcG) >> 12;
 				outR = (backR * srcR) >> 12;
@@ -2088,6 +2085,7 @@ namespace wg
 				nEdges--;
 
 				pTransparentSegments++;
+				pOpaqueSegments++;
 				if (GRADIENT)
 					pSegmentGradients++;
 				else
@@ -2134,7 +2132,7 @@ namespace wg
 			xPitch = pSrcSurf->m_pixelDescription.bits / 8;
 			yPitch = pSrcSurf->m_pitch;
 
-			int ofs = pSrc - pSrcSurf->m_pData;
+			int ofs = int(pSrc - pSrcSurf->m_pData);
 			srcY = ofs / yPitch;
 			srcX = (ofs % yPitch) / xPitch;
 			pSrc = pSrcSurf->m_pData;
@@ -2534,7 +2532,7 @@ namespace wg
 
 	//____ setCanvas() _______________________________________________________________
 
-	bool SoftGfxDevice::setCanvas( Surface * pCanvas, bool bResetClipRects )
+	bool SoftGfxDevice::setCanvas( Surface * pCanvas, CanvasInit initOperation, bool bResetClipRects )
 	{
 		if (m_pCanvas == pCanvas)
 			return true;			// Not an error.
@@ -2587,8 +2585,13 @@ namespace wg
 			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 			m_canvasPitch = m_pCanvas->pitch();
 
+			if( initOperation == CanvasInit::Clear )
+				m_pCanvas->fill(m_clearColor);
+			
 			_updateBlitFunctions();
 		}
+		else
+			m_beginRenderOp = initOperation;				// Save operation for beginRender().
 
 		return true;
 	}
@@ -2779,6 +2782,11 @@ namespace wg
 		if( m_bRendering || !m_pCanvas)
 			return false;
 
+		if( m_beginRenderOp == CanvasInit::Clear )
+			m_pCanvas->fill(m_clearColor);
+
+		m_beginRenderOp = CanvasInit::Keep;
+
 		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
 		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
 		m_canvasPitch = m_pCanvas->pitch();
@@ -2890,7 +2898,7 @@ namespace wg
 		int pixelBytes = m_canvasPixelBits / 8;
 		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
 		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
-		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -3383,7 +3391,7 @@ namespace wg
 
 		// Apply tinting
 
-		int16_t	colors[c_maxSegments][4];				// RGBA order of elements
+		int16_t	colors[c_maxSegments*4][4];				// RGBA order of elements
 		bool	transparentSegments[c_maxSegments];
 		bool	opaqueSegments[c_maxSegments];
 
@@ -3419,9 +3427,9 @@ namespace wg
 
 		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
 
-		if (bTintFlat && !bTintX && !bTintY)
+		if (!bTintX && !bTintY)
 		{
-			// If we just use flat tinting, we tint our segment colors right away
+			// If we just use flat tinting (or no tint at all), we tint our segment colors right away
 
 			for (int i = 0; i < nSegments; i++)
 			{
@@ -3444,9 +3452,6 @@ namespace wg
 				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
 				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
 				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
-
-				transparentSegments[i] = (colors[i][3] == 0);
-				opaqueSegments[i] = (colors[i][3] == 4096);
 			}
 		}
 
@@ -3475,8 +3480,46 @@ namespace wg
 			// Calculate RGBA values from m_colTrans for our four corners.
 
 			int		baseB[4], baseG[4], baseR[4], baseA[4];
+			int		tempB[4], tempG[4], tempR[4], tempA[4];
 
-			_colTransRect(baseB, baseG, baseR, baseA, _dest);
+			_colTransRect(tempB, tempG, tempR, tempA, _dest);
+
+			// Rotate the colors of our four corners if we are flipped
+
+			static const int cornerSwitchMap[2][2][2][4] = 
+							{ {{{0,3,2,1},				// [ 0,-1,-1, 0] = Rot90FlipY
+								{1,2,3,0}},				// [ 0,-1, 1, 0] = Rot90
+								{{3,0,1,2},				// [ 0, 1,-1, 0] = Rot270
+								{2,1,0,3}}},			// [ 0, 1, 1, 0] = Rot90FlipX
+								{{{2,3,0,1},			// [-1, 0, 0,-1] = Rot180
+								{1,0,3,2}},				// [-1, 0, 0, 1] = FlipX
+								{{3,2,1,0},				// [ 1, 0, 0,-1] = FlipY
+								{0,1,2,3}}} };			// [ 1, 0, 0, 1] = Normal
+
+			int i1, i2, i3;
+			if (_simpleTransform[0][0] == 0)
+			{
+				i1 = 0;
+				i2 = _simpleTransform[0][1] == 1 ? 1 : 0;
+				i3 = _simpleTransform[1][0] == 1 ? 1 : 0;
+			}
+			else
+			{
+				i1 = 1;
+				i2 = _simpleTransform[0][0] == 1 ? 1 : 0;
+				i3 = _simpleTransform[1][1] == 1 ? 1 : 0;
+			}
+
+			const int* pSwitch = cornerSwitchMap[i1][i2][i3];
+
+			for (int i = 0; i < 4; i++)
+			{
+				int n = pSwitch[i];
+				baseB[i] = tempB[n];
+				baseG[i] = tempG[n];
+				baseR[i] = tempR[n];
+				baseA[i] = tempA[n];
+			}
 
 			// Lets process each segment
 

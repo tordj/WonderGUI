@@ -67,8 +67,8 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		inline void         setId(int id);
-		inline int          id() const;
+		inline void         setIdentity(int id);
+		inline int          identity() const;
 
 		//.____ Geometry _________________________________________________
 
@@ -89,7 +89,7 @@ namespace wg
 
 		virtual void		setTiling(bool bTiling);
 		inline bool			isTiling() const { return m_bTiling; }
-
+		
 		inline bool			isMipmapped() const;
 
 		//.____ Content _______________________________________________________
@@ -149,6 +149,8 @@ namespace wg
 
 		int                 m_id = 0;
 
+        int             	m_flags;                              // The flags provided to the constructor.
+		
 		PixelDescription	m_pixelDescription;
 		int					m_pitch;
 		SizeI				m_size;				// Width and height in pixels.
@@ -168,16 +170,16 @@ namespace wg
 		int                 m_qpixPerPoint = 4;
 	};
 
-	//____ setId() ____________________________________________________________
+	//____ setIdentity() ____________________________________________________________
 
-	void Surface::setId(int id)
+	void Surface::setIdentity(int id)
 	{
 		m_id = id;
 	}
 
-	//____ id() _______________________________________________________________
+	//____ identity() _______________________________________________________________
 
-	int Surface::id() const
+	int Surface::identity() const
 	{
 		return m_id;
 	}

@@ -673,7 +673,7 @@ const char GlGfxDevice::lineFromToFragmentShader_A8[] =
 "out vec4 outColor;                     "
 "void main()                            "
 "{										"
-"   outColor.t = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
+"   outColor.r = fragColor.a * clamp(w - abs(gl_FragCoord.x*ifSteep + gl_FragCoord.y*ifMild - s - (gl_FragCoord.x*ifMild + gl_FragCoord.y*ifSteep) * slope), 0.0, 1.0); "
 "}                                      ";
 
 

@@ -67,7 +67,7 @@ namespace wg
 
 	//____ setCanvas() ________________________________________________________
 
-	bool NullGfxDevice::setCanvas(Surface * pCanvas, bool bResetClipList )
+	bool NullGfxDevice::setCanvas(Surface * pCanvas, CanvasInit initOperation, bool bResetClipList )
 	{
 		m_pCanvas = pCanvas;
 		return true;
