@@ -533,7 +533,7 @@ namespace wg
 
 	//____ pixel() ______________________________________________________________
 
-	uint32_t GlSurface::pixel( CoordI coord ) const
+	uint32_t GlSurface::pixel( CoordI coord )
 	{
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
@@ -566,7 +566,7 @@ namespace wg
 
 	//____ alpha() ____________________________________________________________
 
-	uint8_t GlSurface::alpha( CoordI coord ) const
+	uint8_t GlSurface::alpha( CoordI coord )
 	{
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();

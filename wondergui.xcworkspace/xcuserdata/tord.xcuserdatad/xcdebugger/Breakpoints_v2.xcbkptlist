@@ -3389,7 +3389,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "730"
             endingLineNumber = "730"
-            landmarkName = "WgPackPanel::_onWidgetAppeared( WgVectorHook * pInserted )"
+            landmarkName = "WgPackPanel::_onWidgetAppeared(pInserted)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>
@@ -3576,7 +3576,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "577"
             endingLineNumber = "577"
-            landmarkName = "WgPackPanel::_onResizeRequested( WgVectorHook * pHook )"
+            landmarkName = "WgPackPanel::_onResizeRequested(pHook)"
             landmarkType = "7">
          </BreakpointContent>
       </BreakpointProxy>

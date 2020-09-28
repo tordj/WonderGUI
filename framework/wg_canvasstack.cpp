@@ -190,10 +190,10 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
             WgRect canvasRect(0,0, _canvas.size() - _contentPaddingSize());
 
             auto pOldCanvas = pDevice->canvas();
-            pDevice->setCanvas(m_canvases[0],false);
+            pDevice->setCanvas(m_canvases[0], wg::CanvasInit::Keep, false);
             WgCapsule::_renderPatches(pDevice, canvasRect, canvasRect, &m_patches);
             pDevice->setClipList(m_patches.size(), m_patches.begin());
-            pDevice->setCanvas(pOldCanvas,false);
+            pDevice->setCanvas(pOldCanvas, wg::CanvasInit::Keep, false);
 
             _combineCanvases(pDevice);
 
@@ -300,13 +300,13 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 		{
 			for (auto& pCanvas : m_canvases)
 			{
-				pDevice->setCanvas(pCanvas, false);
+				pDevice->setCanvas(pCanvas, wg::CanvasInit::Keep, false);
 				pDevice->fill(wg::Color::Transparent);
 			}
 		}
 
 		pDevice->setBlendMode(oldBlendMode);
-		pDevice->setCanvas(oldCanvas,false);
+        pDevice->setCanvas(oldCanvas, wg::CanvasInit::Keep, false);
 
         pDevice->setClipList(oldClipListSize, oldClipList);
 	}
@@ -323,7 +323,7 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 
         pDevice->setClipList(m_patches.size(), m_patches.begin());
 		pDevice->setBlendMode(wg::BlendMode::Replace);
-		pDevice->setCanvas(m_pEndCanvas, false);
+		pDevice->setCanvas(m_pEndCanvas, wg::CanvasInit::Keep, false);
 
 		if (m_combineFunc)
 			m_combineFunc(pDevice, m_pEndCanvas, m_canvases);
@@ -337,7 +337,7 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 		}
 
 		pDevice->setBlendMode(oldBlendMode);
-		pDevice->setCanvas(oldCanvas, false);
+		pDevice->setCanvas(oldCanvas, wg::CanvasInit::Keep, false);
         pDevice->setClipList(oldClipListSize, oldClipList);
 	}
 
@@ -429,9 +429,9 @@ void WgCanvasStack::CustomSkin::render(wg::GfxDevice * pDevice, const wg::Rect& 
         return;												// The indexed canvas does not exist. Render nothing.
 
     auto oldCanvas = pDevice->canvas();
-    pDevice->setCanvas(pStack->m_canvases[m_canvasIdx],false);
+    pDevice->setCanvas(pStack->m_canvases[m_canvasIdx], wg::CanvasInit::Keep, false);
     m_pSkin->render(pDevice,canvas,state,fraction);
-    pDevice->setCanvas(oldCanvas,false);
+    pDevice->setCanvas(oldCanvas, wg::CanvasInit::Keep, false);
 }
 
 wg::Rect WgCanvasStack::CustomSkin::fractionChangeRect(const wg::Rect& canvas, wg::State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2) const
@@ -469,9 +469,9 @@ void WgCanvasStack::CustomCapsule::_renderPatches( wg::GfxDevice * pDevice, cons
         return;												// The indexed canvas does not exist. Render nothing.
 
     auto oldCanvas = pDevice->canvas();
-    pDevice->setCanvas(pStack->m_canvases[m_canvasIdx], false);
+    pDevice->setCanvas(pStack->m_canvases[m_canvasIdx], wg::CanvasInit::Keep, false);
     WgCapsule::_renderPatches(pDevice, _canvas, _window,_pPatches);
-    pDevice->setCanvas(oldCanvas, false);
+    pDevice->setCanvas(oldCanvas, wg::CanvasInit::Keep, false);
 }
 
 

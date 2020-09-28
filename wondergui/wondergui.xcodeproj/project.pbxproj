@@ -33,6 +33,8 @@
 		170768F123FED11A00CAAAED /* wg3_textstylemanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 170768EF23FED11A00CAAAED /* wg3_textstylemanager.cpp */; };
 		170768F223FED11A00CAAAED /* wg3_textstylemanager.h in Headers */ = {isa = PBXBuildFile; fileRef = 170768F023FED11A00CAAAED /* wg3_textstylemanager.h */; };
 		170F7CA82200782100B70B56 /* Debug.h in Headers */ = {isa = PBXBuildFile; fileRef = 170F7CA72200782100B70B56 /* Debug.h */; };
+		1712A1122521FCC100C977A9 /* wg_rangeslider.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1712A1102521FCC000C977A9 /* wg_rangeslider.cpp */; };
+		1712A1132521FCC100C977A9 /* wg_rangeslider.h in Headers */ = {isa = PBXBuildFile; fileRef = 1712A1112521FCC000C977A9 /* wg_rangeslider.h */; };
 		1739F3982407FC75005FECF2 /* wg3_memstack.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1739F3962407FC75005FECF2 /* wg3_memstack.cpp */; };
 		1739F3992407FC75005FECF2 /* wg3_memstack.h in Headers */ = {isa = PBXBuildFile; fileRef = 1739F3972407FC75005FECF2 /* wg3_memstack.h */; };
 		177A719F23C620CB003E629B /* wg3_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177A719D23C620CB003E629B /* wg3_component.cpp */; };
@@ -288,6 +290,8 @@
 		170768F023FED11A00CAAAED /* wg3_textstylemanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_textstylemanager.h; path = ../framework/base/wg3_textstylemanager.h; sourceTree = "<group>"; };
 		170F7A74220076C000B70B56 /* libwondergui.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libwondergui.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		170F7CA72200782100B70B56 /* Debug.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Debug.h; path = ../Debug.h; sourceTree = "<group>"; };
+		1712A1102521FCC000C977A9 /* wg_rangeslider.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_rangeslider.cpp; path = ../framework/wg_rangeslider.cpp; sourceTree = "<group>"; };
+		1712A1112521FCC000C977A9 /* wg_rangeslider.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_rangeslider.h; path = ../framework/wg_rangeslider.h; sourceTree = "<group>"; };
 		1739F3962407FC75005FECF2 /* wg3_memstack.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_memstack.cpp; path = ../framework/base/wg3_memstack.cpp; sourceTree = "<group>"; };
 		1739F3972407FC75005FECF2 /* wg3_memstack.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_memstack.h; path = ../framework/base/wg3_memstack.h; sourceTree = "<group>"; };
 		177A719D23C620CB003E629B /* wg3_component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_component.cpp; path = ../framework/components/wg3_component.cpp; sourceTree = "<group>"; };
@@ -537,6 +541,8 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
+				1712A1102521FCC000C977A9 /* wg_rangeslider.cpp */,
+				1712A1112521FCC000C977A9 /* wg_rangeslider.h */,
 				17E03D2023D9F34900B0A3D8 /* base */,
 				1717918422CB48DD00B10F51 /* Components */,
 				170F7CA72200782100B70B56 /* Debug.h */,
@@ -986,6 +992,7 @@
 				17F8271A24AF1E4E00AF77DF /* wg_widget.h in Headers */,
 				17E03D4C23D9F37D00B0A3D8 /* wg3_color.h in Headers */,
 				17F827C924AF365100AF77DF /* wg3_cstaticvector.h in Headers */,
+				1712A1132521FCC100C977A9 /* wg_rangeslider.h in Headers */,
 				17E03D4723D9F37D00B0A3D8 /* wg3_geo.h in Headers */,
 				B3A162E2242CA2DF00A0C6D8 /* wg3_mu.h in Headers */,
 				17F8273D24AF1E4E00AF77DF /* wg_widgetholder.h in Headers */,
@@ -1090,6 +1097,7 @@
 				B3A162E3242CA2DF00A0C6D8 /* wg3_mu.cpp in Sources */,
 				17F827A424AF1F3200AF77DF /* wg3_fillmeterskin.cpp in Sources */,
 				17F826E824AF1E4E00AF77DF /* wg_patches.cpp in Sources */,
+				1712A1122521FCC100C977A9 /* wg_rangeslider.cpp in Sources */,
 				17F8274824AF1E4E00AF77DF /* wg_scaleimage.cpp in Sources */,
 				17C483AA240D196F0030453B /* wg3_context.cpp in Sources */,
 				17F826F524AF1E4E00AF77DF /* wg_valueformat.cpp in Sources */,

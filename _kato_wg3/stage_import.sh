@@ -15,7 +15,8 @@ cd ..
 cd ../../WonderGUI/src
 
 cd base
-cp wg_object.* \
+cp wg_base.* \
+   wg_object.* \
    wg_bitmapfont.* \
    wg_blob.* \
    wg_chain.* \

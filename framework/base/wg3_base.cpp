@@ -23,30 +23,49 @@
 
 
 #include <wg3_base.h>
-//#include <wg3_msgrouter.h>
+
+#ifndef WG2_MODE
+	#include <wg3_msgrouter.h>
+	#include <wg3_stdtextmapper.h>
+	#include <wg3_standardformatter.h>
+	#include <wg3_inputhandler.h>
+#endif
+
 #include <wg3_dummyfont.h>
 #include <wg3_memstack.h>
-//#include <wg3_stdtextmapper.h>
 #include <wg3_mempool.h>
-//#include <wg3_standardformatter.h>
-//#include <wg3_inputhandler.h>
 #include <wg3_context.h>
 #include <wg3_textstyle.h>
 #include <wg3_texttool.h>
 #include <wg3_textstylemanager.h>
 
+#include <iostream>
+
 namespace wg
 {
+	const TypeInfo	Base::TYPEINFO = { "Base", nullptr };
 
-	Base::Data *			Base::s_pData = 0;
+	Base::Data *				Base::s_pData = 0;
 
 	std::function<void(Error&)>	Base::s_pErrorHandler = nullptr;
 
+	unsigned int				Base::s_objectsCreated = 0;
+	unsigned int				Base::s_objectsDestroyed = 0;
+
+	bool						Base::s_bTrackingObjects = false;
+
+	std::unordered_map<Object*, Base::ObjectInfo>	Base::s_trackedObjects;
+
+
 	//____ init() __________________________________________________________________
 
-	void Base::init()
+	bool Base::init()
 	{
-		assert( s_pData == 0 );
+		if (s_pData != 0)
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::init() ignored, already initialized.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		TextStyleManager::init();
 
@@ -56,17 +75,19 @@ namespace wg
 		s_pData->pMemStack = new MemStack( 4096 );
 
 		s_pData->pActiveContext = Context::create();
-
-//		s_pData->pDefaultCaret = Caret::create();
-
-//		s_pData->pDefaultTextMapper = StdTextMapper::create();
-
 		s_pData->pDefaultStyle = TextStyle::create();
 
-//		s_pData->pDefaultValueFormatter = StandardFormatter::create();
+#ifndef WG2_MODE
+		s_pData->pDefaultCaret = Caret::create();
 
-//		s_pData->pMsgRouter = MsgRouter::create();
-//      s_pData->pInputHandler = InputHandler::create();
+		s_pData->pDefaultTextMapper = StdTextMapper::create();
+
+
+		s_pData->pDefaultValueFormatter = StandardFormatter::create();
+
+		s_pData->pMsgRouter = MsgRouter::create();
+      	s_pData->pInputHandler = InputHandler::create();
+#endif
 
 		s_pData->pDefaultStyle = TextStyle::create();
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
@@ -75,27 +96,31 @@ namespace wg
 
 		MU::s_scale = 1.f;
 		MU::s_qpixPerPoint = 4;
-
+		return true;
 	}
 
 	//____ exit() __________________________________________________________________
 
-	int Base::exit()
+	bool Base::exit()
 	{
 
-		if( s_pData == 0 )
-			return -1;					// Base already exited or not intialized.
+		if (s_pData == 0)
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::IllegalCall, "Call to Base::exit() ignored, not initialized or already exited.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		if( !s_pData->pPtrPool->isEmpty() )
-			return -2;					// There are weak pointers left.
+		{
+			handleError(ErrorSeverity::SilentFail, ErrorCode::SystemIntegrity, "Some weak pointers still in use. Can not exit WonderGUI.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
 
 		if( !s_pData->pMemStack->isEmpty() )
-			return -3;					// There is data left in memstack.
+		{
+			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+		}
 
-//		s_pData->pDefaultCaret = nullptr;
-//		s_pData->pDefaultTextMapper = nullptr;
-		s_pData->pDefaultStyle = nullptr;
-//		s_pData->pDefaultValueFormatter = nullptr;
 
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
@@ -103,7 +128,11 @@ namespace wg
 		s_pData = nullptr;
 
 		TextStyleManager::exit();
-		return 0;
+
+		if (s_objectsCreated != s_objectsDestroyed)
+			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Some objects still alive after wondergui exit. Might cause problems when they go out of scope. Forgotten to clear pointers?\nHint: Enable object tracking to find out which ones.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+
+		return true;
 	}
 
 	//____ handleError() _________________________________________________________
@@ -126,76 +155,116 @@ namespace wg
 		}
 	}
 
+	//____ beginObjectTracking() _________________________________________________
+
+	void Base::beginObjectTracking()
+	{
+		s_bTrackingObjects = true;
+	}
+
+	//____ endObjectTracking() __________________________________________________
+
+	void Base::endObjectTracking()
+	{
+		s_bTrackingObjects = false;
+		s_trackedObjects.clear();
+	}
+
+	//____ printObjects() ________________________________________________
+
+	void Base::printObjects(std::ostream& stream)
+	{
+
+		stream << "Objects created: " << s_objectsCreated << std::endl;
+		stream << "Objects destroyed: " << s_objectsDestroyed << std::endl;
+		stream << "Objects alive: " << (s_objectsCreated - s_objectsDestroyed) << std::endl;
+		stream << std::endl;
+		stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
+		stream << "---------------------------------------" << std::endl;
+
+
+		for (auto& tracked : s_trackedObjects)
+		{
+			const char* pClassName = tracked.first->typeInfo().className;
+
+			stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
+
+			if (tracked.second.pFileName)
+				stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
+
+			stream << std::endl;
+		}
+	}
+
+
+#ifndef WG2_MODE
+
 	//____ msgRouter() _________________________________________________________
-/*
+
 	MsgRouter_p	Base::msgRouter()
 	{
 		return s_pData->pMsgRouter;
 	}
-*/
+
 	//____ inputHandler() ______________________________________________________
-/*
+
 	InputHandler_p Base::inputHandler()
 	{
 		return s_pData->pInputHandler;
 	}
-*/
-
-
-	//____ _allocWeakPtrHub() ______________________________________________________
-
-	WeakPtrHub * Base::_allocWeakPtrHub()
-	{
-		assert( s_pData != 0 );
-		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
-
-		new (pHub) WeakPtrHub();
-
-		return pHub;
-	}
-
-	//____ _freeWeakPtrHub() _______________________________________________________
-
-	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
-	{
-		assert( s_pData != 0 );
-		pHub->~WeakPtrHub();
-		s_pData->pPtrPool->freeEntry( pHub );
-	}
 
 	//____ defaultCaret() ______________________________________________________
-/*
+
 	Caret_p Base::defaultCaret()
 	{
 		assert(s_pData != 0);
 		return s_pData->pDefaultCaret;
 	}
-*/
+
 	//____ setDefaultCaret() ___________________________________________________
-/*
+
 	void Base::setDefaultCaret( Caret * pCaret )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultCaret = pCaret;
 	}
-*/
+
 	//_____ defaultTextMapper() ________________________________________________
-/*
+
 	TextMapper_p Base::defaultTextMapper()
 	{
 		assert(s_pData!=0);
 		return s_pData->pDefaultTextMapper;
 	}
-*/
+
 
 	//____ setDefaultTextMapper() ___________________________________________________
-/*
+
 	void Base::setDefaultTextMapper( TextMapper * pTextMapper )
 	{
 		assert( s_pData != 0 );
 		s_pData->pDefaultTextMapper = pTextMapper;
 	}
-*/
+
+	//____ defaultValueFormatter() _____________________________________________
+
+	ValueFormatter_p Base::defaultValueFormatter()
+	{
+		assert(s_pData != 0);
+		return s_pData->pDefaultValueFormatter;
+	}
+
+	//____ setDefaultValueFormatter() _______________________________________________________
+
+	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
+	{
+		assert(s_pData != 0);
+		s_pData->pDefaultValueFormatter = pFormatter;
+	}
+
+#endif
+
+
 	//____ defaultStyle() ______________________________________________________
 
 	TextStyle_p Base::defaultStyle()
@@ -212,14 +281,6 @@ namespace wg
 		s_pData->pDefaultStyle = pStyle;
 	}
 
-	//____ defaultValueFormatter() _____________________________________________
-/*
-	ValueFormatter_p Base::defaultValueFormatter()
-	{
-		assert(s_pData != 0);
-		return s_pData->pDefaultValueFormatter;
-	}
-*/
 	//___ setActiveContext() __________________________________________________
 
 	void Base::setActiveContext(Context * pContext)
@@ -248,15 +309,6 @@ namespace wg
 		return s_pData->pActiveContext;
 	}
 
-
-	//____ setDefaultValueFormatter() _______________________________________________________
-/*
-	void Base::setDefaultValueFormatter(ValueFormatter * pFormatter)
-	{
-		assert(s_pData != 0);
-		s_pData->pDefaultValueFormatter = pFormatter;
-	}
-*/
 	//____ setErrorHandler() _________________________________________________________
 
 	void Base::setErrorHandler(std::function<void(Error&)> handler)
@@ -276,14 +328,43 @@ namespace wg
 	char * Base::memStackAlloc( int bytes )
 	{
 		assert(s_pData!=0);
-		return s_pData->pMemStack->alloc(bytes);
+		return s_pData->pMemStack->allocBytes(bytes);
 	}
 
 	//____ memStackRelease() ______________________________________________________
 
 	void Base::memStackRelease( int bytes )
 	{	assert(s_pData!=0);
-		return s_pData->pMemStack->release(bytes);
+		return s_pData->pMemStack->releaseBytes(bytes);
 	}
+
+	//____ _trackObject() ________________________________________________________
+
+	void Base::_trackObject(Object* pObject, const char* pFileName, int lineNb)
+	{
+		s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
+	}
+
+	//____ _allocWeakPtrHub() ______________________________________________________
+
+	WeakPtrHub * Base::_allocWeakPtrHub()
+	{
+		assert( s_pData != 0 );
+		WeakPtrHub * pHub = (WeakPtrHub*) s_pData->pPtrPool->allocEntry();
+
+		new (pHub) WeakPtrHub();
+
+		return pHub;
+	}
+
+	//____ _freeWeakPtrHub() _______________________________________________________
+
+	void Base::_freeWeakPtrHub( WeakPtrHub * pHub )
+	{
+		assert( s_pData != 0 );
+		pHub->~WeakPtrHub();
+		s_pData->pPtrPool->freeEntry( pHub );
+	}
+
 
 } // namespace wg

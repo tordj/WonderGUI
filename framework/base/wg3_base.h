@@ -31,6 +31,10 @@
 
 #include <string>
 #include <functional>
+#include <unordered_map>
+
+
+#define WG2_MODE
 
 namespace wg
 {
@@ -84,6 +88,7 @@ namespace wg
 	class Base
 	{
 //		friend class Object_wp;
+		friend class Object;
 
 		template<class T> friend class WeakComponentPtr;
 
@@ -93,8 +98,8 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static void init();
-		static int exit();
+		static bool init();
+		static bool exit();
 
 		//.____ Content _____________________________________________
 
@@ -121,11 +126,31 @@ namespace wg
 
 		//.____ Misc ________________________________________________
 
+		const static TypeInfo	TYPEINFO;
+
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 
 
 		static void			handleError( ErrorSeverity severity, ErrorCode code, const char * pMsg, const Object * pObject, const TypeInfo& pClassType, const char * pFunction, const char * pFile, int line );
+
+		static void			beginObjectTracking();
+		static void			endObjectTracking();
+		static bool			isObjectTracking() { return s_bTrackingObjects;  }
+
+		static void			printObjects(std::ostream& stream);
+
+		//.____ Internal ____________________________________________________________
+
+		template<typename T>
+		static T _trackObj(const T& pObj, const char* pFileName, int lineNb)
+		{
+			_trackObject(pObj, pFileName, lineNb);
+			return pObj;
+		}
+
+		static void			_trackObject(Object* pObject, const char* pFileName, int lineNb);
+
 
 
 	private:
@@ -133,19 +158,23 @@ namespace wg
 		static WeakPtrHub *	_allocWeakPtrHub();
 		static void			_freeWeakPtrHub(WeakPtrHub * pHub);
 
+		inline static void	_objectWasCreated(Object* pObject) { s_objectsCreated++; if (s_bTrackingObjects) _trackObject(pObject, nullptr, -1); }
+		inline static void	_objectWillDestroy(Object* pObject) { s_objectsDestroyed++; if (s_bTrackingObjects) s_trackedObjects.erase(pObject); }
 
 
 		struct Data
 		{
-//			MsgRouter_p		pMsgRouter;
-//			InputHandler_p	pInputHandler;
+
+#ifndef WG2_MODE
+			MsgRouter_p		pMsgRouter;
+			InputHandler_p	pInputHandler;
+			TextMapper_p		pDefaultTextMapper;
+			Caret_p				pDefaultCaret;
+			ValueFormatter_p	pDefaultValueFormatter;
+#endif
 
 			Context_p		pActiveContext;
-
-//			TextMapper_p		pDefaultTextMapper;
-//			Caret_p				pDefaultCaret;
 			TextStyle_p			pDefaultStyle;
-//			ValueFormatter_p	pDefaultValueFormatter;
 
 
 			//
@@ -158,6 +187,21 @@ namespace wg
 
 		static Data *						s_pData;
 		static std::function<void(Error&)>	s_pErrorHandler;
+
+		struct ObjectInfo
+		{
+			// Filename and line where this objects create() method was called.
+
+			const char*		pFileName;
+			int				lineNb;
+			unsigned int	serialNb;
+		};
+
+		static unsigned int	s_objectsCreated;
+		static unsigned int	s_objectsDestroyed;
+
+		static bool			s_bTrackingObjects;
+		static std::unordered_map<Object*, ObjectInfo>	s_trackedObjects;
 	};
 
 
