@@ -1404,7 +1404,11 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         int segEdgeSpaceNeeded = 4 * (nEdgeStrips - 1)*(nSegments - 1);
                 
         if( m_segPalOfs == m_segPalBufferSize )
+        {
             flushAndWait();
+            m_nSegments = nSegments;
+            _beginDrawCommandWithInt(Command::Segments, m_nSegments);
+        }
         
         if (m_vertexOfs > m_vertexBufferSize - 6 * m_nClipRects || m_extrasOfs > m_extrasBufferSize - 8 || m_segEdgeOfs > m_segEdgeBufferSize - segEdgeSpaceNeeded )            // various data, transform , colors, edgestrips
         {
@@ -2105,6 +2109,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         m_vertexFlushPoint = m_vertexOfs;
         m_segEdgeFlushPoint = m_segEdgeOfs;
         m_commandOfs = 0;
+        m_segPalOfs = 0;
     }
 
     //____ _resetBuffers() ____________________________________________________

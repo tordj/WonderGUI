@@ -13,7 +13,7 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size(), PixelFormat::A_8);
+		m_pCanvas = pDevice->surfaceFactory()->createSurface(canvas.size(), PixelFormat::A_8, SurfaceFlag::Canvas);
 
 		m_pImg = pAppVisitor->loadSurface("../resources/splash.png", pDevice->surfaceFactory());
 		if (!m_pImg)

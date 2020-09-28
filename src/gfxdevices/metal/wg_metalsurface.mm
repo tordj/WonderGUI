@@ -346,7 +346,7 @@ namespace wg
 				break;
 
 			case PixelFormat::A_8:
-				m_internalFormat = MTLPixelFormatA8Unorm;
+				m_internalFormat = MTLPixelFormatR8Unorm;
 				break;
 
 			default:
@@ -612,21 +612,6 @@ namespace wg
         int     sourceOffset = region.y * m_size.w * m_pixelSize + region.x * m_pixelSize;
         
         id<MTLCommandBuffer> commandBuffer = [MetalGfxDevice::s_metalCommandQueue commandBuffer];
-        
-        m_pPixels = (uint8_t*) [m_textureBuffer contents];
-
-        m_pPixels[3] = 255;
-        m_pPixels[1024+4+3] = 255;
-        m_pPixels[2*(1024+4)+3] = 255;
-        m_pPixels[3*(1024+4)+3] = 255;
-        m_pPixels[4*(1024+4)+3] = 255;
-        m_pPixels[5*(1024+4)+3] = 255;
-        m_pPixels[6*(1024+4)+3] = 255;
-        m_pPixels[7*(1024+4)+3] = 255;
-        m_pPixels[8*(1024+4)+3] = 255;
-
-        
-        
         
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
