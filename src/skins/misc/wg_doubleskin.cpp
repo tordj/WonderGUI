@@ -23,6 +23,7 @@
 #include <wg_doubleskin.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_internal.h>
 #include <cassert>
 
 namespace wg
@@ -306,8 +307,6 @@ namespace wg
 				if (m_pBackSkin->isContentShifting())
 					m_bContentShifting = true;
 			}
-
-
 		}
 
 		if (m_pFrontSkin)
@@ -320,6 +319,28 @@ namespace wg
 				m_bContentShifting = true;
 		}
 
+	}
+
+	//____ _addSlot() _________________________________________________________
+
+	void DoubleSkin::_addSlot(SkinSlot* pSlot)
+	{
+		if (m_pFrontSkin)
+			OO(m_pFrontSkin)->_addSlot(pSlot);
+
+		if (m_pBackSkin)
+			OO(m_pBackSkin)->_addSlot(pSlot);
+	}
+
+	//____ _removeSlot() ______________________________________________________
+
+	void DoubleSkin::_removeSlot(SkinSlot* pSlot)
+	{
+		if (m_pFrontSkin)
+			OO(m_pFrontSkin)->_removeSlot(pSlot);
+
+		if (m_pBackSkin)
+			OO(m_pBackSkin)->_removeSlot(pSlot);
 	}
 
 

@@ -162,8 +162,7 @@ namespace wg
 
 	void SpinAnimSkin::_update(int ms)
 	{
-		m_cycleProgress += ms;
-//		m_cycleProgress = (m_cycleProgress + ms) % m_cycleDuration;
+		m_cycleProgress = (m_cycleProgress + ms) % m_cycleDuration;
 		_requestRender();
 	}
 

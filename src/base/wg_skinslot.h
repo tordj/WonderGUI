@@ -37,8 +37,6 @@ namespace wg
 		{
 		public:
 			virtual void _skinRequestRender(SkinSlot* pSlot) = 0;
-			virtual void _skinRequestRender(SkinSlot* pSlot, const Rect& rect ) = 0;
-
 			virtual Object* _object() = 0;
 		};
 
@@ -68,7 +66,6 @@ namespace wg
 		// Methods for the skin to call.
 
 		inline void requestRender() { m_pHolder->_skinRequestRender( this ); }
-		inline void requestRender( const Rect& rect) { m_pHolder->_skinRequestRender( this, rect); }
 		inline Object* object() { return m_pHolder->_object(); }
 	protected:
 		Skin_p	m_pSkin;

@@ -35,7 +35,7 @@
 #include <wg_freetypefont.h>
 #include "testwidget.h"
 
-//#define USE_OPEN_GL
+#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -2547,9 +2547,24 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 } );
 	pAnimSkin->setCycleDuration(10000);
+	pAnimSkin->setContentPadding(80);
+
+	auto pAnimSkin2 = SpinAnimSkin::create(pSplashSurf, { 256,256 });
+	pAnimSkin2->setCycleDuration(5000);
+	pAnimSkin2->setContentPadding(10);
+
+
+	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
+
+	auto pDoubleSkin = DoubleSkin::create(pBoxSkin,pAnimSkin);
+
+	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+
+	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pAnimSkin});
+	pBakeSkin->setSkinInSkin(true);
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(pAnimSkin);
+	pFiller1->setSkin(pBakeSkin);
 
 
 

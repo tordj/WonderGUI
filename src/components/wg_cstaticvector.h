@@ -66,6 +66,12 @@ namespace wg
 		inline const_iterator	begin() const { return m_entries.begin(); }
 		inline const_iterator	end() const { return m_entries.end(); }
 
+		inline EntryType& front() { return m_entries.front(); }
+		inline const EntryType& front() const { return m_entries.front(); }
+
+		inline EntryType& back() { return m_entries.back(); }
+		inline const EntryType& back() const { return m_entries.back(); }
+
 		//.____ Operators __________________________________________
 
 		inline EntryType& operator[](int index) { return m_entries[index]; }

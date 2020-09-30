@@ -25,6 +25,7 @@
 #include <wg_util.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <wg_internal.h>
 #include <cassert>
 #include <wg_cdynamicvector.impl.h>
 
@@ -277,7 +278,7 @@ namespace wg
 
 		// Render skins to bake surface, from back to front
 
-		if (!skins[0]->isOpaque())
+		if (!skins.back()->isOpaque())
 		{
 			pDevice->setBlendMode(BlendMode::Replace);
 			pDevice->fill(Color::Transparent);
@@ -567,6 +568,28 @@ namespace wg
 			*pEntry++ = nullptr;
 
 		_onModified();
+	}
+
+	//____ _addSlot() _________________________________________________________
+
+	void BakeSkin::_addSlot(SkinSlot* pSlot)
+	{
+		for (auto& pSkin : skins)
+		{
+			if (pSkin)
+				OO(pSkin)->_addSlot(pSlot);
+		}
+	}
+
+	//____ _removeSlot() ______________________________________________________
+
+	void BakeSkin::_removeSlot(SkinSlot* pSlot)
+	{
+		for (auto& pSkin : skins)
+		{
+			if (pSkin)
+				OO(pSkin)->_addSlot(pSlot);
+		}
 	}
 
 } // namespace wg

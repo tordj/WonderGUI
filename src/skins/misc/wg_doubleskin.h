@@ -94,6 +94,8 @@ namespace wg
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
 		~DoubleSkin() {};
 
+		void		_addSlot(SkinSlot* pSlot) override;
+		void		_removeSlot(SkinSlot* pSlot) override;
 		void		_onModified();
 
 		Skin_p		m_pFrontSkin;

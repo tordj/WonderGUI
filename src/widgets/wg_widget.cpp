@@ -821,10 +821,5 @@ namespace wg
 		_requestRender();
 	}
 
-	void Widget::_skinRequestRender(SkinSlot* pSlot, const Rect& rect)
-	{
-		_requestRender(rect);
-	}
-
 
 } // namespace wg
