@@ -100,7 +100,7 @@ namespace wg
 	private:
 		BakeSkin(Surface * pBakeSurface);
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
-		~BakeSkin() {};
+		~BakeSkin();
 
 		void			_addSlot(SkinSlot* pSlot) override;
 		void			_removeSlot(SkinSlot* pSlot) override;
@@ -112,6 +112,8 @@ namespace wg
 		void			_didAddEntries(Skin_p* pEntry, int nb) override;
 		void			_didMoveEntries(Skin_p* pFrom, Skin_p* pTo, int nb) override;
 		void			_willEraseEntries(Skin_p* pEntry, int nb) override;
+
+		Rect			_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const override;
 
 		Object*			_object() override { return this; }
 

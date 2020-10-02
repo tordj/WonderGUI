@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_skin.h>
 #include <wg_util.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -129,6 +130,31 @@ namespace wg
 	{
 		m_nSkinSlots--;
 	}
+
+	//____ _subSkinGeo() ______________________________________________________
+
+	Rect Skin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
+	{
+		return myGeo;
+	}
+
+	//____ _setSuperSkin() ____________________________________________________
+
+	bool Skin::_setSuperSkin(Skin* pSuperSkin)
+	{
+		if (pSuperSkin == nullptr)
+		{
+			m_pSuperSkin = nullptr;
+			return true;
+		}
+
+		if (m_pSuperSkin)
+			return false;
+
+		m_pSuperSkin = pSuperSkin;
+		return true;
+	}
+
 
 
 } // namespace wg

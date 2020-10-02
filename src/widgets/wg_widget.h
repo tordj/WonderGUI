@@ -258,7 +258,13 @@ namespace wg
 
 		// Methods for skin to access
 
-		void			_skinRequestRender(SkinSlot* pSlot) override;
+		void	_skinRequestRender(const SkinSlot* pSlot) override;
+		void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+
+		Size	_skinSize(const SkinSlot* pSlot) const override;
+		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
+
+		State	_skinState(const SkinSlot* pSlot) const override;
 
 
 		int				m_id;

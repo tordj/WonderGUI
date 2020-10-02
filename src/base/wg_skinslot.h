@@ -36,7 +36,14 @@ namespace wg
 		class Holder
 		{
 		public:
-			virtual void _skinRequestRender(SkinSlot* pSlot) = 0;
+			virtual void	_skinRequestRender(const SkinSlot* pSlot) = 0;
+			virtual void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) = 0;
+
+			virtual Size	_skinSize(const SkinSlot* pSlot) const = 0;
+			virtual Coord	_skinGlobalPos(const SkinSlot* pSlot) const = 0;
+
+			virtual State	_skinState(const SkinSlot* pSlot) const = 0;
+
 			virtual Object* _object() = 0;
 		};
 
@@ -66,20 +73,16 @@ namespace wg
 		// Methods for the skin to call.
 
 		inline void requestRender() { m_pHolder->_skinRequestRender( this ); }
+		inline void requestRender( const Rect& rect ) { m_pHolder->_skinRequestRender(this, rect); }
+		inline Size size() const { return m_pHolder->_skinSize(this); }
+		inline Coord globalPos() const { return m_pHolder->_skinGlobalPos(this); }
+		inline State state() const { return m_pHolder->_skinState(this); }
 		inline Object* object() { return m_pHolder->_object(); }
+
 	protected:
 		Skin_p	m_pSkin;
 		Holder* m_pHolder;
-
 	};
-
-
-
-
-
-
-}
-
-;
+};
 
 #endif //WG_SKINSLOT_DOT_H

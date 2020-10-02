@@ -25,6 +25,7 @@
 #include <wg_base.h>
 #include <wg_msgrouter.h>
 #include <wg_skinslot.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -79,8 +80,20 @@ namespace wg
 
 	void AnimSkin::_requestRender()
 	{
-		for (auto pSlot : m_mySlots)
-			pSlot->requestRender();
+		if (m_pSuperSkin)
+		{
+			for (auto pSlot : m_mySlots)
+			{
+				Rect myGeo = OO(m_pSuperSkin)->_subSkinGeo(this, pSlot->size(), pSlot->state() );
+				pSlot->requestRender(myGeo);
+			}
+		}
+		else
+		{
+			for (auto pSlot : m_mySlots)
+				pSlot->requestRender();
+		}
+
 	}
 
 }

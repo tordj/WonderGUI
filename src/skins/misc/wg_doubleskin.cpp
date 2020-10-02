@@ -42,6 +42,18 @@ namespace wg
 
 	DoubleSkin_p DoubleSkin::create(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin)
 	{
+		if (pFrontSkin && OO(pFrontSkin)->_superSkin())
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pFrontSkin is already part of a skin hierarchy.", nullptr, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
+		if (pBackSkin && OO(pBackSkin)->_superSkin())
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pBackSkin is already part of a skin hierarchy.", nullptr, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
 		return DoubleSkin_p(new DoubleSkin(pFrontSkin, pBackSkin, bSkinInSkin));
 	}
 
@@ -57,7 +69,23 @@ namespace wg
 		m_pBackSkin(pBackSkin),
 		m_bSkinInSkin(bSkinInSkin)
 	{
+		if( pFrontSkin )
+			OO(pFrontSkin)->_setSuperSkin(this);
+		if( pBackSkin )
+			OO(pBackSkin)->_setSuperSkin(this);
+
 		_onModified();
+	}
+
+	//____ destructor __________________________________________________________
+
+	DoubleSkin::~DoubleSkin()
+	{
+		if (m_pFrontSkin)
+			OO(m_pFrontSkin)->_setSuperSkin(nullptr);
+
+		if (m_pBackSkin)
+			OO(m_pBackSkin)->_setSuperSkin(nullptr);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -69,18 +97,38 @@ namespace wg
 
 	//____ setFrontSkin() _____________________________________________________
 
-	void DoubleSkin::setFrontSkin(Skin * pSkin)
+	bool DoubleSkin::setFrontSkin(Skin * pSkin)
 	{
+		if ( pSkin && !OO(pSkin)->_setSuperSkin(this))
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pSkin is already part of a skin hierarchy.", this, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		if (m_pFrontSkin)
+			OO(m_pFrontSkin)->_setSuperSkin(nullptr);
+
 		m_pFrontSkin = pSkin;
 		_onModified();
+		return true;
 	}
 
 	//____ setBackSkin() _____________________________________________________
 
-	void DoubleSkin::setBackSkin(Skin * pSkin)
+	bool DoubleSkin::setBackSkin(Skin* pSkin)
 	{
+		if (pSkin && !OO(pSkin)->_setSuperSkin(this))
+		{
+			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pSkin is already part of a skin hierarchy.", this, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		if (m_pBackSkin)
+			OO(m_pBackSkin)->_setSuperSkin(nullptr);
+
 		m_pBackSkin = pSkin;
 		_onModified();
+		return true;
 	}
 
 	//____ setSkinInSkin() _____________________________________________________
@@ -343,6 +391,15 @@ namespace wg
 			OO(m_pBackSkin)->_removeSlot(pSlot);
 	}
 
+	//____ _subSkinGeo() _______________________________________________________
+
+	Rect DoubleSkin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
+	{
+		if (!m_bSkinInSkin || pSubSkin == m_pBackSkin)
+			return myGeo;
+
+		return m_pBackSkin->contentRect(myGeo, state);
+	}
 
 
 } // namespace wg

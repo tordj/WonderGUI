@@ -51,10 +51,10 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void			setFrontSkin(Skin * pSkin);
+		bool			setFrontSkin(Skin * pSkin);
 		Skin_p			frontSkin() const { return m_pFrontSkin; }
 
-		void			setBackSkin(Skin * pSkin);
+		bool			setBackSkin(Skin * pSkin);
 		Skin_p			backSkin() const { return m_pBackSkin; }
 
 		void			setSkinInSkin(bool bInside);
@@ -92,11 +92,14 @@ namespace wg
 	private:
 		DoubleSkin();
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
-		~DoubleSkin() {};
+		~DoubleSkin();
 
 		void		_addSlot(SkinSlot* pSlot) override;
 		void		_removeSlot(SkinSlot* pSlot) override;
 		void		_onModified();
+
+		Rect		_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const override;
+
 
 		Skin_p		m_pFrontSkin;
 		Skin_p		m_pBackSkin;

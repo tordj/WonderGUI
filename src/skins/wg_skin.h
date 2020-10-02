@@ -143,11 +143,16 @@ namespace wg
 		virtual void	_addSlot(SkinSlot* pSlot);
 		virtual void	_removeSlot(SkinSlot* pSlot);
 
+		virtual Rect	_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const;
+		bool			_setSuperSkin(Skin* pSuperSkin);
+		Skin*			_superSkin() const { return m_pSuperSkin; }
+
 		BorderI		m_contentPadding;					// Unit: Points
 		bool		m_bContentShifting = false;
 		bool		m_bIgnoresFraction = true;
 		bool		m_bOpaque = false;
 		int			m_nSkinSlots = 0;					// Counter of connected SkinSlots.
+		Skin*		m_pSuperSkin = nullptr;				// Skin containing us, affecting our geo (there can only be one).
 	};
 
 

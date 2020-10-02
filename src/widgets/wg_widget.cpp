@@ -816,10 +816,37 @@ namespace wg
 
 	//____ _skinRequestRender() _______________________________________________
 
-	void Widget::_skinRequestRender(SkinSlot* pSlot)
+	void Widget::_skinRequestRender(const SkinSlot* pSlot)
 	{
 		_requestRender();
 	}
+
+	void Widget::_skinRequestRender(const SkinSlot* pSlot, const Rect& rect)
+	{
+		_requestRender(rect);
+	}
+
+	//____ _skinSize() ________________________________________________________
+
+	Size Widget::_skinSize(const SkinSlot* pSlot) const
+	{
+		return m_size;
+	}
+
+	//____ _skinGlobalPos() ___________________________________________________
+
+	Coord Widget::_skinGlobalPos(const SkinSlot* pSlot) const
+	{
+		return globalPos();
+	}
+
+	//____ _skinState() _______________________________________________________
+
+	State Widget::_skinState(const SkinSlot* pSlot) const
+	{
+		return m_state;
+	}
+
 
 
 } // namespace wg

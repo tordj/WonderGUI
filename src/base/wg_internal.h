@@ -221,6 +221,9 @@ namespace wg
 	public:
 		using Skin::_addSlot;
 		using Skin::_removeSlot;
+		using Skin::_subSkinGeo;
+		using Skin::_setSuperSkin;
+		using Skin::_superSkin;
 	};
 
 

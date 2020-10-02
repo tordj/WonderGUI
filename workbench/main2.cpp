@@ -2556,15 +2556,18 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 
-	auto pDoubleSkin = DoubleSkin::create(pBoxSkin,pAnimSkin);
+	auto pFramingSkin = BoxSkin::create(2, Color::Transparent, Color::Black);
+	pFramingSkin->setContentPadding(80);
 
-	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pAnimSkin});
-	pBakeSkin->setSkinInSkin(true);
+//	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+
+//	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pFramingSkin});
+//	pBakeSkin->setSkinInSkin(true);
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(pBakeSkin);
+	pFiller1->setSkin(pDoubleSkin);
 
 
 

@@ -28,6 +28,7 @@
 #include <wg_internal.h>
 #include <cassert>
 #include <wg_cdynamicvector.impl.h>
+#include <wg_internal.h>
 
 namespace wg
 {
@@ -55,7 +56,7 @@ namespace wg
 		return BakeSkin_p(new BakeSkin(pBakeSurface,skins));
 	}
 
-	//____ Constructor ________________________________________________________
+	//____ constructor ________________________________________________________
 
 	BakeSkin::BakeSkin(Surface* pBakeSurface) : skins(this)
 	{
@@ -69,6 +70,17 @@ namespace wg
 		skins.pushBack(skinsIn);
 
 		_onModified();
+	}
+
+	//____ destructor _________________________________________________________
+
+	BakeSkin::~BakeSkin()
+	{
+		for (auto& pSkin : skins)
+		{
+			if (pSkin)
+				OO(pSkin)->_setSuperSkin(nullptr);
+		}
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -98,6 +110,8 @@ namespace wg
 	{
 		if( m_bSkinInSkin != bInside )
 			m_bSkinInSkin = bInside;
+
+		_onModified();
 	}
 
 	//____ minSize() __________________________________________________________
@@ -276,22 +290,23 @@ namespace wg
 			pDevice->setClipList(1, clip);
 		}
 
-		// Render skins to bake surface, from back to front
+		// Clear bake surface, unless we are opaque.
 
-		if (!skins.back()->isOpaque())
+		if (!m_bOpaque)
 		{
 			pDevice->setBlendMode(BlendMode::Replace);
 			pDevice->fill(Color::Transparent);
 			pDevice->setBlendMode(BlendMode::Blend);
 		}
 
+		// Render skins to bake surface, from back to front
+
 		if (m_bSkinInSkin)
 		{
 			Rect canvas = bakeCanvas;
 
-			for (auto it = skins.end(); it != skins.begin(); )
+			for (auto it = skins.rbegin(); it != skins.rend(); it++ )
 			{
-				it--;
 				if ((*it) != nullptr)
 				{
 					(*it)->render(pDevice, canvas, state, fraction, fraction2);
@@ -301,9 +316,8 @@ namespace wg
 		}
 		else
 		{
-			for (auto it = skins.end(); it != skins.begin(); )
+			for (auto it = skins.rbegin(); it != skins.rend(); it++)
 			{
-				it--;
 				if ((*it) != nullptr)
 					(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
 			}
@@ -547,6 +561,17 @@ namespace wg
 
 	void BakeSkin::_didAddEntries(Skin_p* pEntry, int nb)
 	{
+		for (int i = 0; i < nb; i++)
+		{
+			if (OO(pEntry[i])->_superSkin())
+			{
+				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Can not add skin that is already in a skin hieararchy. Vector entry set to null.", this, BakeSkin::TYPEINFO, __func__, __FILE__, __LINE__);
+				pEntry[i] = nullptr;
+			}
+			else
+				OO(pEntry[i])->_setSuperSkin(this);
+		}
+
 		_onModified();
 	}
 
@@ -564,8 +589,12 @@ namespace wg
 
 	void BakeSkin::_willEraseEntries(Skin_p* pEntry, int nb)
 	{
-		while (nb > 0)
-			*pEntry++ = nullptr;
+		for (int i = 0; i < nb; i++)
+		{
+			if (pEntry[i])
+				OO(pEntry[i])->_setSuperSkin(nullptr);
+			pEntry[i] = nullptr;
+		}
 
 		_onModified();
 	}
@@ -591,5 +620,28 @@ namespace wg
 				OO(pSkin)->_addSlot(pSlot);
 		}
 	}
+
+	//____ _subSkinGeo() _______________________________________________________
+
+	Rect BakeSkin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
+	{
+		if (!m_bSkinInSkin)
+			return myGeo;
+
+		Rect canvas = myGeo;
+
+		for (auto it = skins.rbegin(); it != skins.rend(); it++)
+		{
+			if ((*it) != nullptr)
+			{
+				if ((*it) == pSubSkin)
+					break;
+
+				canvas = (*it)->contentRect(canvas, state);
+			}
+		}
+		return canvas;
+	}
+
 
 } // namespace wg
