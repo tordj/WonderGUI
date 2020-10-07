@@ -102,8 +102,8 @@ namespace wg
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
 		~BakeSkin();
 
-		void			_addSlot(SkinSlot* pSlot) override;
-		void			_removeSlot(SkinSlot* pSlot) override;
+		void			_incUseCount() override;
+		void			_decUseCount() override;
 
 		void			_updateCachedGeo() const;
 		void			_onModified();

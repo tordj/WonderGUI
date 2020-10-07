@@ -77,8 +77,6 @@ namespace wg
 						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
 		~SpinAnimSkin();
 
-		void		_update(int ms) override;
-
 
 		int			m_cycleDuration;			// In millisec
 		int			m_cycleProgress;			// In millisec

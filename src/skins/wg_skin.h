@@ -140,19 +140,25 @@ namespace wg
 	protected:
 		Skin() {};
 
-		virtual void	_addSlot(SkinSlot* pSlot);
-		virtual void	_removeSlot(SkinSlot* pSlot);
+		virtual void	_incUseCount() { m_useCount++; }
+		virtual void	_decUseCount() { m_useCount--; }
 
+		virtual const int*	_stateTransitionTimes() const;
+		virtual Bitmask<uint8_t> _animatedStates() const;
+		
 		virtual Rect	_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const;
 		bool			_setSuperSkin(Skin* pSuperSkin);
 		Skin*			_superSkin() const { return m_pSuperSkin; }
 
-		BorderI		m_contentPadding;					// Unit: Points
-		bool		m_bContentShifting = false;
-		bool		m_bIgnoresFraction = true;
-		bool		m_bOpaque = false;
-		int			m_nSkinSlots = 0;					// Counter of connected SkinSlots.
-		Skin*		m_pSuperSkin = nullptr;				// Skin containing us, affecting our geo (there can only be one).
+		BorderI			m_contentPadding;					// Unit: Points
+		bool			m_bContentShifting = false;
+		bool			m_bIgnoresFraction = true;
+		bool			m_bOpaque = false;
+		int				m_useCount = 0;						// Counter of instances of this skin in use.
+		Skin*			m_pSuperSkin = nullptr;				// Skin containing us, affecting our geo (there can only be one).
+
+		const static int		s_stateTransitionTimes[StateBits_Nb];
+
 	};
 
 

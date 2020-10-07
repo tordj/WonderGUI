@@ -38,6 +38,7 @@
 #include <wg_textstyle.h>
 #include <wg_texttool.h>
 #include <wg_textstylemanager.h>
+#include <wg_skinslotmanager.h>
 
 #include <iostream>
 
@@ -68,6 +69,7 @@ namespace wg
 		}
 
 		TextStyleManager::init();
+		SkinSlotManager::init();
 
 		s_pData = new Data;
 
@@ -127,6 +129,7 @@ namespace wg
 		delete s_pData;
 		s_pData = nullptr;
 
+		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
 		if (s_objectsCreated != s_objectsDestroyed)

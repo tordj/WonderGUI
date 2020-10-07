@@ -29,10 +29,12 @@
 namespace wg
 {
 
+
+
 	class SkinSlot
 	{
+		friend class SkinSlotManager;
 	public:
-
 		class Holder
 		{
 		public:
@@ -47,8 +49,19 @@ namespace wg
 			virtual Object* _object() = 0;
 		};
 
+		struct Pocket
+		{
+			SkinSlot*	pSkinSlot;
+
+			State		transitionFromState;
+			State		transitionToState;
+			int			transitionMillisec[StateBits_Nb];
+
+			float		transitionProgress[StateBits_Nb];
+		};
+
 		SkinSlot(Holder* pHolder) : m_pHolder(pHolder) {}
-		~SkinSlot() { if (m_pSkin) m_pSkin->_removeSlot(this); }
+		~SkinSlot() { if (m_pSkin) m_pSkin->_incUseCount(); }
 
 
 		// Operators for the holder
@@ -57,31 +70,24 @@ namespace wg
 		inline operator Skin*() const { return m_pSkin; }
 		inline operator Skin_p() const { return m_pSkin; }
 
-		inline SkinSlot& operator=(Skin* pSkin)
-		{
-			if (m_pSkin)
-				m_pSkin->_removeSlot(this);
+		inline SkinSlot& operator=(Skin* pSkin) { _setSkin(pSkin); return *this; }
 
-			m_pSkin = pSkin;
+		//
 
-			if (m_pSkin)
-				m_pSkin->_addSlot(this);
 
-			return *this;
-		}
-
-		// Methods for the skin to call.
-
-		inline void requestRender() { m_pHolder->_skinRequestRender( this ); }
-		inline void requestRender( const Rect& rect ) { m_pHolder->_skinRequestRender(this, rect); }
-		inline Size size() const { return m_pHolder->_skinSize(this); }
-		inline Coord globalPos() const { return m_pHolder->_skinGlobalPos(this); }
-		inline State state() const { return m_pHolder->_skinState(this); }
-		inline Object* object() { return m_pHolder->_object(); }
 
 	protected:
+
+		void _setSkin(Skin* pSkin);
+		void _changeState(State newState, State oldState);
+		bool _update(int msPassed);
+
+		void _initPocket();
+		void _releasePocket();
+
 		Skin_p	m_pSkin;
 		Holder* m_pHolder;
+		Pocket* m_pPocket = nullptr;
 	};
 };
 

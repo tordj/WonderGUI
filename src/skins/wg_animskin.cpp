@@ -38,14 +38,12 @@ namespace wg
 
 	AnimSkin::AnimSkin()
 	{
-		m_routeId = Base::msgRouter()->addRoute(MsgType::Tick, [this](Msg* pMsg) { this->_update(static_cast<TickMsg*>(pMsg)->timediff()); });
 	}
 
 	//____ destructor _________________________________________________________
 
 	AnimSkin::~AnimSkin()
 	{
-		Base::msgRouter()->deleteRoute(m_routeId);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -55,29 +53,9 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ _addSlot() _________________________________________________________
-
-	void AnimSkin::_addSlot(SkinSlot* pSlot)
-	{
-		m_mySlots.push_back( pSlot );
-		m_nSkinSlots++;
-	}
-
-	//____ _removeSlot() ______________________________________________________
-
-	void AnimSkin::_removeSlot(SkinSlot* pSlot)
-	{
-		//TODO: We need something faster here...
-
-		auto it = std::find(m_mySlots.begin(), m_mySlots.end(), pSlot);
-		if (it != m_mySlots.end())
-			m_mySlots.erase(it);
-
-		m_nSkinSlots--;
-	}
 
 	//____ _requestRender() ___________________________________________________
-
+/*
 	void AnimSkin::_requestRender()
 	{
 		if (m_pSuperSkin)
@@ -95,5 +73,5 @@ namespace wg
 		}
 
 	}
-
+*/
 }

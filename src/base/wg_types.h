@@ -107,6 +107,21 @@ namespace wg
 		Other
 	};
 
+	//___ StateBits ____________________________________________________
+
+	enum class StateBits
+	{
+		Focused = 0,
+		Hovered = 1,
+		Pressed = 2,
+		Selected = 3,
+		Targeted = 4,
+		Disabled = 5
+	};
+
+	static const int	StateBits_Nb = 6;
+	static const int	StateBits_MaxValue = 5;
+
 	//____ StateEnum ____________________________________________________
 
 	enum class StateEnum : uint8_t
@@ -198,6 +213,8 @@ namespace wg
 				m_state &= ~hoverDependant;			// If we remove hovered we can't keep a state dependant on it.
 			return *this;
 		}
+
+		inline uint8_t mask() { return m_state; }
 
 	private:
 		uint8_t		m_state;

@@ -219,8 +219,8 @@ namespace wg
 	class OSkin : public Skin
 	{
 	public:
-		using Skin::_addSlot;
-		using Skin::_removeSlot;
+		using Skin::_incUseCount;
+		using Skin::_decUseCount;
 		using Skin::_subSkinGeo;
 		using Skin::_setSuperSkin;
 		using Skin::_superSkin;

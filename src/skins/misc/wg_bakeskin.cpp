@@ -599,26 +599,30 @@ namespace wg
 		_onModified();
 	}
 
-	//____ _addSlot() _________________________________________________________
+	//____ _incUseCount() _________________________________________________________
 
-	void BakeSkin::_addSlot(SkinSlot* pSlot)
+	void BakeSkin::_incUseCount()
 	{
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
-				OO(pSkin)->_addSlot(pSlot);
+				OO(pSkin)->_incUseCount();
 		}
+
+		m_useCount++;
 	}
 
-	//____ _removeSlot() ______________________________________________________
+	//____ _decUseCount() ______________________________________________________
 
-	void BakeSkin::_removeSlot(SkinSlot* pSlot)
+	void BakeSkin::_decUseCount()
 	{
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
-				OO(pSkin)->_addSlot(pSlot);
+				OO(pSkin)->_decUseCount();
 		}
+
+		m_useCount--;
 	}
 
 	//____ _subSkinGeo() _______________________________________________________

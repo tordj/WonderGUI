@@ -19,38 +19,40 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_ANIMSKIN_DOT_H
-#define WG_ANIMSKIN_DOT_H
+#ifndef WG_SKINSLOTMANAGER_DOT_H
+#define WG_SKINSLOTMANAGER_DOT_H
 #pragma once
 
-#include <wg_skin.h>
-#include <wg_object.h>
+#include <wg_mempool.h>
+#include <wg_skinslot.h>
 
-#include <utility>
 #include <vector>
 
 namespace wg
 {
 
-	class AnimSkin;
-	typedef	StrongPtr<AnimSkin>	AnimSkin_p;
-	typedef	WeakPtr<AnimSkin>		AnimSkin_wp;
 
-	class AnimSkin : public Skin
+
+	class SkinSlotManager
 	{
 	public:
-		//.____ Identification __________________________________________
+		static void init();
+		static void exit();
 
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
+		static void update(int msPassed);
+
+		static SkinSlot::Pocket* allocPocket();
+		static void freePocket(SkinSlot::Pocket* pEntry);
 
 
-	protected:
-		AnimSkin();
-		~AnimSkin();
+	private:
+
+		static MemPool* s_pMemPool;
+
+		static std::vector<SkinSlot::Pocket*>	s_slotPockets;
 
 	};
+};
 
 
-} // namespace wg
-#endif //WG_ANIMSKIN_DOT_H
+#endif 

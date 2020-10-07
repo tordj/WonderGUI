@@ -94,8 +94,8 @@ namespace wg
 		DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin = true);
 		~DoubleSkin();
 
-		void		_addSlot(SkinSlot* pSlot) override;
-		void		_removeSlot(SkinSlot* pSlot) override;
+		void		_incUseCount() override;
+		void		_decUseCount() override;
 		void		_onModified();
 
 		Rect		_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const override;

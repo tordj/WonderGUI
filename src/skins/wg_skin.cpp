@@ -110,25 +110,27 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ fractionChangeRect() _______________________________________________
 
 	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2 ) const
 	{
 		return Rect();
 	}
 
-	//____ _addSlot() __________________________________________________________
+	//____ _stateTransitionTimes() ____________________________________________
 
-	void Skin::_addSlot(SkinSlot* pSlot)
+	const int* Skin::_stateTransitionTimes() const
 	{
-		m_nSkinSlots++;
+		const int	transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
+
+		return transitionTimes;
 	}
 
-	//____ _removeSlot() _______________________________________________________
+	//____ _animatedStates() __________________________________________________
 
-	void Skin::_removeSlot(SkinSlot* pSlot)
+	Bitmask<uint8_t> Skin::_animatedStates() const
 	{
-		m_nSkinSlots--;
+		return Bitmask<uint8_t>(0);
 	}
 
 	//____ _subSkinGeo() ______________________________________________________
@@ -154,6 +156,7 @@ namespace wg
 		m_pSuperSkin = pSuperSkin;
 		return true;
 	}
+
 
 
 

@@ -369,26 +369,30 @@ namespace wg
 
 	}
 
-	//____ _addSlot() _________________________________________________________
+	//____ _incUseCount() _________________________________________________________
 
-	void DoubleSkin::_addSlot(SkinSlot* pSlot)
+	void DoubleSkin::_incUseCount()
 	{
 		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_addSlot(pSlot);
+			OO(m_pFrontSkin)->_incUseCount();
 
 		if (m_pBackSkin)
-			OO(m_pBackSkin)->_addSlot(pSlot);
+			OO(m_pBackSkin)->_incUseCount();
+
+		m_useCount++;
 	}
 
-	//____ _removeSlot() ______________________________________________________
+	//____ _decUseCount() ______________________________________________________
 
-	void DoubleSkin::_removeSlot(SkinSlot* pSlot)
+	void DoubleSkin::_decUseCount()
 	{
 		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_removeSlot(pSlot);
+			OO(m_pFrontSkin)->_decUseCount();
 
 		if (m_pBackSkin)
-			OO(m_pBackSkin)->_removeSlot(pSlot);
+			OO(m_pBackSkin)->_decUseCount();
+
+		m_useCount--;
 	}
 
 	//____ _subSkinGeo() _______________________________________________________
