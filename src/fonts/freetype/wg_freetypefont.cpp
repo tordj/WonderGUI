@@ -508,11 +508,9 @@ namespace wg
 	{
 		Surface_p pSurf = pSlot->bitmap.pSurface;
 
-		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( AccessMode::WriteOnly, pSlot->bitmap.rect );
-		assert( pDest != 0 );
-		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
+		auto pixbuf = pSurf->allocPixelBuffer(pSlot->bitmap.rect);
 
-		int dest_pitch = pSurf->pitch();
+		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
 
 		// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 		// left over area of slots alpha channel.
@@ -521,11 +519,11 @@ namespace wg
 		switch( m_renderFlags )
 		{
 			case (FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
-				_copyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+				_copyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
 			case (FT_LOAD_TARGET_NORMAL):
 			case (FT_LOAD_TARGET_LIGHT):
-				_copyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+				_copyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
 
 			default:
@@ -543,7 +541,8 @@ namespace wg
 		}
 	*/
 
-		pSurf->unlock();
+		pSurf->pullPixels(pixbuf);
+		pSurf->freePixelBuffer(pixbuf);
 	}
 
 

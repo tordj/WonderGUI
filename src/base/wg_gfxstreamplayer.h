@@ -72,6 +72,7 @@ namespace wg
 		std::vector<Surface_p>	m_vSurfaces;
 
 		Surface_p			m_pUpdatingSurface;
+		PixelBuffer			m_pixelBuffer;
 		uint8_t *			m_pWritePixels;
 
 

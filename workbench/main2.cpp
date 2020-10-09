@@ -1628,16 +1628,17 @@ bool savePNG(Surface * pSurface, const char * path)
 	if (err != 0)
 		return false;
 
-	char * pSrcPixels = (char *)pSurface->lock(AccessMode::ReadOnly);
+	auto pixbuf = pSurface->allocPixelBuffer();
+	pSurface->pushPixels(pixbuf);
 
 	for (int y = 0; y < size.h; y++)
 	{
 		char * pDest = ((char *)pOutput->pixels) + pOutput->pitch * y;
-		char * pSource = pSrcPixels + pSurface->pitch() * y;
+		char * pSource = (char*) pixbuf.pPixels + pixbuf.pitch * y;
 		memcpy(pDest, pSource, size.w * pFmt->bits / 8);
 	}
 
-	pSurface->unlock();
+	pSurface->freePixelBuffer(pixbuf);
 
 	SDL_UnlockSurface(pOutput);
 

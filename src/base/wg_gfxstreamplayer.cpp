@@ -414,12 +414,16 @@ namespace wg
 			*m_pStream >> rect;
 
 			m_pUpdatingSurface = m_vSurfaces[surfaceId];
-			m_pWritePixels = m_pUpdatingSurface->lockRegion(AccessMode::WriteOnly, rect);
+			m_pixelBuffer = m_pUpdatingSurface->allocPixelBuffer(rect);
+
+			m_pWritePixels = m_pixelBuffer.pPixels;
 			break;
 		}
 
 		case GfxChunkId::SurfaceData:
 		{
+			//TODO: Take width and pitch of pixelbuffer into account.
+
 			*m_pStream >> GfxStream::DataChunk{ header.size, m_pWritePixels };
 			m_pWritePixels += header.size;
 			break;
@@ -427,7 +431,8 @@ namespace wg
 
 		case GfxChunkId::EndSurfaceUpdate:
 		{
-			m_pUpdatingSurface->unlock();
+			m_pUpdatingSurface->pullPixels(m_pixelBuffer);
+			m_pUpdatingSurface->freePixelBuffer(m_pixelBuffer);
 			m_pUpdatingSurface = nullptr;
 			break;
 		}

@@ -157,11 +157,8 @@ namespace wg
 
 		Blob_p pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0) );
 
-		m_pPixels = (uint8_t*)pBlob->data();	// Simulate a lock
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
-
-		_sendPixels(size, m_pPixels, pitch);
-		m_pPixels = 0;
+		_sendPixels(size, (uint8_t*)pBlob->data(), pitch);
 
 
 		if (m_pixelDescription.bits > 8 && (flags & SurfaceFlag::WriteOnly))
@@ -191,10 +188,14 @@ namespace wg
 
 	StreamSurface::StreamSurface( CGfxOutStream& stream, Surface * pOther, int flags ) : Surface(flags)
 	{
+		assert(pOther);
+
 		PixelFormat format = pOther->pixelFormat();
-		uint8_t * pPixels = (uint8_t*)pOther->lock(AccessMode::ReadOnly);
-		int pitch = pOther->pitch();
-		SizeI size = pOther->size();
+		auto pixelbuffer = pOther->allocPixelBuffer();
+		pOther->pushPixels(pixelbuffer);
+
+		int pitch = pixelbuffer.pitch;
+		SizeI size = pixelbuffer.rect.size();
 
 		m_pStream = &stream;
 		m_size = size;
@@ -207,15 +208,13 @@ namespace wg
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
-				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
+				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 		else
 		{
 			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0));
 
-			m_pPixels = (uint8_t*)m_pBlob->data();	// Simulate a lock
-			_copyFrom(&m_pixelDescription, pPixels, pitch, RectI(size), RectI(size));
-			m_pPixels = 0;
+			_copyFrom(&m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size), RectI(size));
 
 			if (pOther->clut())
 			{
@@ -228,8 +227,8 @@ namespace wg
 
 		m_inStreamId = _sendCreateSurface(size, format, flags, pOther->clut());
 
-		_sendPixels(size, pPixels, pitch);
-		pOther->unlock();
+		_sendPixels(size, pixelbuffer.pPixels, pitch);
+		pOther->freePixelBuffer(pixelbuffer);
 	}
 
 
@@ -237,9 +236,6 @@ namespace wg
 
 	StreamSurface::~StreamSurface()
 	{
-		if (!m_pBlob && m_pPixels)
-			delete[] m_pPixels;		// Surface shouldn't really be deleted while locked, but let's clean up nicely anyway...
-
 		_sendDeleteSurface();
 	}
 
@@ -274,102 +270,57 @@ namespace wg
 		return false;
 	}
 
-	//____ lock() __________________________________________________________________
+	//____ allocPixelBuffer() _________________________________________________
 
-	uint8_t * StreamSurface::lock( AccessMode mode )
+	const PixelBuffer StreamSurface::allocPixelBuffer(const RectI& rect)
 	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
-
-		if (!m_pBlob && mode != AccessMode::WriteOnly)
-			return 0;
+		PixelBuffer	buf;
 
 		if (m_pBlob)
-			m_pPixels = (uint8_t*) m_pBlob->data();
-		else
-			m_pPixels = new uint8_t[m_size.h*m_pitch];
-
-		m_lockRegion = RectI(0,0,m_size);
-		m_accessMode = mode;
-		return m_pPixels;
-	}
-
-	//____ lockRegion() __________________________________________________________________
-
-	uint8_t * StreamSurface::lockRegion( AccessMode mode, const RectI& region )
-	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
-
-		if (!m_pBlob && mode != AccessMode::WriteOnly)
-			return 0;
-
-		if( region.x + region.w > m_size.w || region.y + region.w > m_size.h || region.x < 0 || region.y < 0 )
-			return 0;
-
-		if( m_pBlob )
-			m_pPixels = ((uint8_t*)m_pBlob->data()) + m_pitch*region.y + region.x*m_pixelDescription.bits / 8;
+		{
+			buf.pPixels = (uint8_t*) m_pBlob->data() + m_pitch * rect.y + rect.x * m_pixelDescription.bits / 8;
+			buf.pClut = m_pClut;
+			buf.format = m_pixelDescription.format;
+			buf.rect = rect;
+			buf.pitch = m_pitch;
+		}
 		else
 		{
-			m_pitch = ((region.w + 3) & 0xFFFFFFFC)*m_pixelDescription.bits / 8;
-			m_pPixels = new uint8_t[m_pitch*region.h];
+			buf.pitch = ((rect.w + 3) & 0xFFFFFFFC) * m_pixelDescription.bits / 8;
+			buf.pPixels = new uint8_t[buf.pitch*rect.h];
+			buf.pClut = m_pClut;
+			buf.format = m_pixelDescription.format;
+			buf.rect = rect;
 		}
-		m_lockRegion = region;
-		m_accessMode = mode;
-		return m_pPixels;
+
+		return buf;
 	}
 
+	//____ pushPixels() _______________________________________________________
 
-	//____ unlock() ________________________________________________________________
-
-	void StreamSurface::unlock()
+	bool StreamSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		if(m_accessMode ==  AccessMode::None )
-			return;
-
-		_sendPixels(m_lockRegion, m_pPixels, m_pitch);
-
-		if (!m_pBlob)
-		{
-			delete[] m_pPixels;
-			m_pitch = 0;
-		}
-
-		m_accessMode = AccessMode::None;
-		m_pPixels = 0;
-		m_lockRegion.w = 0;
-		m_lockRegion.h = 0;
+		if (m_pBlob)
+			return true;
+		else
+			return false;
 	}
 
+	//____ pullPixels() _______________________________________________________
 
-	//____ pixel() ______________________________________________________________
+	void StreamSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		_sendPixels(buffer.rect.size(), buffer.pPixels, buffer.pitch);
 
-	uint32_t StreamSurface::pixel( CoordI coord )
+	}
+
+	//____ freePixelBuffer() __________________________________________________
+
+	void StreamSurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
 		if (!m_pBlob)
-			return 0;
-
-		uint8_t * pPixel = &((uint8_t*)m_pBlob->data())[coord.x*m_pixelDescription.bits / 8 + coord.y*m_pitch];
-
-		switch (m_pixelDescription.bits)
-		{
-		case 8:
-			while (true);	// Error: unsupported pixel format.
-		case 16:
-			while (true);	// Error: unsupported pixel format.
-		case 24:
-#if WG_IS_BIG_ENDIAN
-			return pPixel[2] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[0]) << 16);
-#else
-			return pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
-#endif
-		case 32:
-			return *((uint32_t*)pPixel);
-		default:
-			while (true);	// Error: unsupported pixel format.
-		}
+			delete[] buffer.pPixels;
 	}
-
 
 	//____ alpha() ____________________________________________________________
 

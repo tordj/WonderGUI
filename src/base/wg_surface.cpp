@@ -229,24 +229,6 @@ namespace wg
 		return col;
 	}
 
-	//____ _lockAndAdjustRegion() __________________________________________________
-
-	RectI Surface::_lockAndAdjustRegion( AccessMode modeNeeded, const RectI& region )
-	{
-		if( m_accessMode == AccessMode::None )
-		{
-			lock( modeNeeded );
-			return region;
-		}
-		else if( m_accessMode != AccessMode::ReadWrite && m_accessMode != modeNeeded )
-			return RectI(0,0,0,0);
-
-		if( !m_lockRegion.contains( region ) )
-			return RectI(0,0,0,0);
-
-		return region - m_lockRegion.pos();
-	}
-
 	//____ fill() _________________________________________________________________
 	/**
 	 * Fill the surface with the specified color.
@@ -286,20 +268,14 @@ namespace wg
 	bool Surface::fill( Color col, const RectI& region )
 	{
 
-		AccessMode oldMode = m_accessMode;
-		RectI rect = _lockAndAdjustRegion(AccessMode::WriteOnly,region);
-
-		if( rect.w == 0 )
-			return false;
-
-		//
+		auto pixbuf = allocPixelBuffer(region);
 
 
 		uint32_t pixel = colorToPixel( col );
-		int w = rect.w;
-		int h = rect.h;
-		int p = pitch();
-		uint8_t * pDest = m_pPixels + rect.y * p + rect.x*m_pixelDescription.bits / 8;
+		int w = pixbuf.rect.w;
+		int h = pixbuf.rect.h;
+		int p = pixbuf.pitch;
+		uint8_t * pDest = pixbuf.pPixels;
 
 		bool ret = true;
 		switch( m_pixelDescription.bits )
@@ -352,8 +328,8 @@ namespace wg
 
 		//
 
-		if( oldMode == AccessMode::None )
-			unlock();
+		pullPixels(pixbuf);
+		freePixelBuffer(pixbuf);
 
 		return ret;
 	}
@@ -403,25 +379,19 @@ namespace wg
 		if( !pSrcSurface || pSrcSurface->m_pixelDescription.format == PixelFormat::Unknown || m_pixelDescription.format == PixelFormat::Unknown )
 			return false;
 
-		// Save old locks and lock the way we want.
 
-		AccessMode 	dstOldMode 		= m_accessMode;
-		AccessMode 	srcOldMode 		= pSrcSurface->lockStatus();
+		auto srcbuf = pSrcSurface->allocPixelBuffer(_srcRect);
+		bool bPushed = pSrcSurface->pushPixels(srcbuf);
+		if (!bPushed)
+		{
+			//TODO: Error handling.
+		}
 
-		RectI srcRect = pSrcSurface->_lockAndAdjustRegion( AccessMode::ReadOnly, _srcRect );
-		RectI dstRect = _lockAndAdjustRegion( AccessMode::WriteOnly, RectI(_dst.x,_dst.y,srcRect.w,srcRect.h) );
 
-		// Do the copying
+		bool retVal = _copyFrom(pSrcSurface->pixelDescription(), srcbuf.pPixels, srcbuf.pitch, { 0,0,_srcRect.size() }, { _dst, _srcRect.size() }, srcbuf.pClut);
 
-		bool retVal = _copyFrom( pSrcSurface->pixelDescription(), (uint8_t*) pSrcSurface->pixels(), pSrcSurface->pitch(), srcRect, dstRect, pSrcSurface->m_pClut );
+		pSrcSurface->freePixelBuffer(srcbuf);
 
-		// Release any temporary locks
-
-		if( dstOldMode == AccessMode::None )
-			unlock();
-
-		if( srcOldMode == AccessMode::None )
-			pSrcSurface->unlock();
 
 		return retVal;
 	}
@@ -454,14 +424,17 @@ namespace wg
 		if( srcRect.w <= 0 || dstRect.w <= 0 )
 			return false;
 
+		auto pixbuf = allocPixelBuffer(dstRect);
+
+
 		const PixelDescription * pDstFormat 	= &m_pixelDescription;
-		int		dstPitch 				= m_pitch;
+		int		dstPitch = pixbuf.pitch;
 
 		uint8_t *	pSrc = pSrcPixels;
-		uint8_t *	pDst = m_pPixels;
+		uint8_t *	pDst = pixbuf.pPixels;
 
 		pSrc += srcRect.y * srcPitch + srcRect.x * pSrcFormat->bits/8;
-		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
+//		pDst += dstRect.y * dstPitch + dstRect.x * pDstFormat->bits/8;
 
 
 		if( pSrcFormat->bits == pDstFormat->bits && pSrcFormat->R_mask == pDstFormat->R_mask &&
@@ -521,6 +494,7 @@ namespace wg
 		}
 		else if (pDstFormat->format == PixelFormat::CLUT_8_sRGB || pDstFormat->format == PixelFormat::CLUT_8_linear)
 		{
+			freePixelBuffer(pixbuf);
 			return false;								// Can't copy to CLUT-based surface unless source is of identical format!
 		}
 		else if (pSrcFormat->bIndexed)
@@ -528,7 +502,10 @@ namespace wg
 			// Convert pixels from CLUT-based to normal when copying
 
 			if (pSrcFormat->bits != 8)
+			{
+				freePixelBuffer(pixbuf);
 				return false;							// Only 8-bit CLUTS are supported for the momment.
+			}
 
 			int		srcInc = pSrcFormat->bits / 8;
 			int		dstInc = pDstFormat->bits / 8;
@@ -602,6 +579,7 @@ namespace wg
 					}
 					break;
 				default:
+					freePixelBuffer(pixbuf);
 					return false;								// Unsupported destination format!
 
 			}
@@ -897,9 +875,13 @@ namespace wg
 				break;
 
 				default:
+					freePixelBuffer(pixbuf);
 					return false;			// Failed to copy
 			}
 		}
+
+		pullPixels(pixbuf);
+		freePixelBuffer(pixbuf);
 		return true;
 	}
 

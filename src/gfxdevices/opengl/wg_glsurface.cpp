@@ -117,32 +117,36 @@ namespace wg
 	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
 		HANDLE_GLERROR(glGetError());
-/*
-		// @TODO: TMP workaround for annoying error (MAIN-16725).
-		auto glError = glGetError();
 
-		if(glError == 1281)
-		{
-			glGetError();
-		}
-		else
-		{
-			HANDLE_GLERROR(glError);
-		}
-*/
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
-		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 4096 : 0));
+		m_pClut = nullptr;
 
-		if (pClut)
+		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
 		{
-			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 4096);
+			m_pitch = 0;
+
+			if (pClut)
+			{
+				m_pClut = new Color[256];
+				memcpy(m_pClut, pClut, 1024);
+			}
+
+			if (m_pixelDescription.A_bits > 0)
+				m_pAlphaMap = new uint8_t[size.w * size.h];
 		}
 		else
-			m_pClut = nullptr;
+		{
+			m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+			m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+
+			if (pClut)
+			{
+				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+				memcpy(m_pClut, pClut, 1024);
+			}
+		}
 
 		_setupGlTexture(nullptr, flags);
 
@@ -156,10 +160,40 @@ namespace wg
 
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
-		m_size	= size;
-		m_pitch = pitch;
-		m_pBlob = pBlob;
+		m_size = size;
 		m_pClut = const_cast<Color*>(pClut);
+
+
+		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+		{
+			m_pitch = 0;
+
+			if (pClut)
+			{
+				m_pClut = new Color[256];
+				memcpy(m_pClut, pClut, 1024);
+			}
+
+			if (m_pixelDescription.A_bits > 0)
+			{
+				m_pAlphaMap = new uint8_t[size.w * size.h];
+
+				// Setup a fake PixelBuffer for call to _updateAlphaMap
+				PixelBuffer buf;
+				buf.format = format;
+				buf.pClut = m_pClut;
+				buf.pitch = pitch;
+				buf.pPixels = (uint8_t*) pBlob->data();
+				buf.rect = size;
+
+				_updateAlphaMap( buf, size );
+			}
+		}
+		else
+		{
+			m_pitch = pitch;
+			m_pBlob = pBlob;
+		}
 
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
@@ -169,20 +203,46 @@ namespace wg
 	   _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
-		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0));
+		m_pClut = nullptr;
 
-		m_pPixels = (uint8_t *) m_pBlob->data();
-		_copyFrom( pPixelDescription==0 ? &m_pixelDescription:pPixelDescription, pPixels, pitch, size, size );
-		m_pPixels = 0;
-
-		if (pClut)
+		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
 		{
-			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-			memcpy(m_pClut, pClut, 1024);
+			m_pitch = 0;
+
+			if (pClut)
+			{
+				m_pClut = new Color[256];
+				memcpy(m_pClut, pClut, 1024);
+			}
+
+			if (m_pixelDescription.A_bits > 0)
+			{
+				m_pAlphaMap = new uint8_t[size.w * size.h];
+
+				// Setup a fake PixelBuffer for call to _updateAlphaMap
+				PixelBuffer buf;
+				buf.format = format;
+				buf.pClut = m_pClut;
+				buf.pitch = pitch;
+				buf.pPixels = pPixels;
+				buf.rect = size;
+
+				_updateAlphaMap(buf, size);
+			}
 		}
 		else
-			m_pClut = nullptr;
+		{
+			m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+			m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+
+			_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+
+			if (pClut)
+			{
+				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+				memcpy(m_pClut, pClut, 1024);
+			}
+		}
 
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
@@ -193,21 +253,45 @@ namespace wg
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= pOther->size();
-		m_pitch = m_size.w * m_pixelSize;
-		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
+		m_pClut = nullptr;
 
-		m_pPixels = (uint8_t *) m_pBlob->data();
-		_copyFrom( pOther->pixelDescription(), (uint8_t*)pOther->pixels(), pOther->pitch(), m_size, m_size );
-		m_pPixels = 0;
-
-		if (pOther->clut())
+		auto pixbuf = pOther->allocPixelBuffer();
+		if( pOther->pushPixels(pixbuf) )
+			_copyFrom(pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size, m_size);
+		else
 		{
-			m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-			memcpy(m_pClut, pOther->clut(), 1024);
+			// Error handling
+		}
+
+		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+		{
+			m_pitch = 0;
+
+			if (pOther->clut())
+			{
+				m_pClut = new Color[256];
+				memcpy(m_pClut, pOther->clut(), 1024);
+			}
+
+			if (m_pixelDescription.A_bits > 0)
+			{
+				m_pAlphaMap = new uint8_t[m_size.w * m_size.h];
+				_updateAlphaMap(pixbuf, m_size);
+			}
 		}
 		else
-			m_pClut = nullptr;
+		{
+			m_pitch = m_size.w * m_pixelSize;
+			m_pBlob = Blob::create(m_pitch * m_size.h + (pOther->clut() ? 1024 : 0));
 
+			if (pOther->clut())
+			{
+				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+				memcpy(m_pClut, pOther->clut(), 1024);
+			}
+		}
+
+		pOther->freePixelBuffer(pixbuf);
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
@@ -386,7 +470,11 @@ namespace wg
 		glDeleteTextures( 1, &m_texture );
 
 		if (m_pClut)
+		{
 			glDeleteTextures(1, &m_clutTexture);
+			if (!m_pBlob)
+				delete[] m_pClut;		// Clut is not part of the blob.
+		}
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -452,117 +540,84 @@ namespace wg
 		m_bTiling = bTiling;
 	}
 
+	//____ allocPixelBuffer() _________________________________________________
 
-	//____ lock() __________________________________________________________________
-
-	uint8_t * GlSurface::lock( AccessMode mode )
+	const PixelBuffer GlSurface::allocPixelBuffer(const RectI& rect)
 	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
+		PixelBuffer pixbuf;
 
-		// Refresh backingBuffer if it is stale.
-		// Flush active device if we have pending reads and might write.
+		if (m_pBlob)
+		{
+			pixbuf.format = m_pixelDescription.format;
+			pixbuf.pClut = m_pClut;
+			pixbuf.pitch = m_pitch;
+			pixbuf.pPixels = ((uint8_t*)m_pBlob->data()) + rect.y * m_pitch + rect.x * m_pixelSize;
+			pixbuf.rect = rect;
+		}
+		else
+		{
+			pixbuf.format = m_pixelDescription.format;
+			pixbuf.pClut = m_pClut;
+			pixbuf.pitch = ((rect.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+			pixbuf.pPixels = new uint8_t[rect.h * pixbuf.pitch + rect.w * m_pixelSize];
+			pixbuf.rect = rect;
+		}
+		return pixbuf;
+	}
 
-		if (m_bBackingBufferStale)
-			_refreshBackingBuffer();
-		else if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
+	//____ pushPixels() _______________________________________________________
+
+	bool GlSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		if (m_pBlob)
+		{
+			if (m_bBackingBufferStale)
+				_refreshBackingBuffer();
+
+			return true;
+		}
+		else
+		{
+			// Implement a push instead. (but that seems to need OpenGL 4.5)
+
+			return false;
+		}
+	}
+
+	//____ pullPixels() _______________________________________________________
+
+	void GlSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		if (m_bPendingReads)
 			GlGfxDevice::s_pActiveDevice->flush();
 
-		//
+		GLint oldBinding;
+		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+		glBindTexture(GL_TEXTURE_2D, m_texture);
 
-		m_pPixels = (uint8_t*) m_pBlob->data();
-		m_lockRegion = RectI(0,0,m_size);
-		m_accessMode = mode;
-		return m_pPixels;
-	}
+		RectI texRect = { buffer.rect.pos() + bufferRect.pos(), bufferRect.size() };
+		uint8_t* pSrc = buffer.pPixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
 
-	//____ lockRegion() __________________________________________________________________
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.rect.w);
+		glTexSubImage2D(GL_TEXTURE_2D, 0, texRect.x, texRect.y, texRect.w, texRect.h, m_accessFormat, m_pixelDataType, pSrc);
 
-	uint8_t * GlSurface::lockRegion( AccessMode mode, const RectI& region )
-	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
+		glBindTexture(GL_TEXTURE_2D, oldBinding);
+		m_bMipmapStale = m_bMipmapped;
 
-		// Refresh backingBuffer if it is stale.
-		// Flush active device if we have pending reads and might write.
-
-		if (m_bBackingBufferStale)
-			_refreshBackingBuffer();
-		else if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
-			GlGfxDevice::s_pActiveDevice->flush();
-
-		//
-
-		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
-			return 0;
-
-		m_pPixels = ((uint8_t*) m_pBlob->data()) + region.y*m_pitch + region.x*m_pixelSize;
-		m_lockRegion = region;
-		m_accessMode = mode;
-		return m_pPixels;
-	}
-
-
-	//____ unlock() ________________________________________________________________
-
-	void GlSurface::unlock()
-	{
 		HANDLE_GLERROR(glGetError());
-		if(m_accessMode == AccessMode::None )
-			return;
 
-		if( m_accessMode != AccessMode::ReadOnly )
-		{
-			GLint oldBinding;
-			glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
-
-			glBindTexture( GL_TEXTURE_2D, m_texture );
-			glPixelStorei( GL_UNPACK_ROW_LENGTH, m_size.w );
-			glTexSubImage2D( GL_TEXTURE_2D, 0, m_lockRegion.x, m_lockRegion.y, m_lockRegion.w, m_lockRegion.h, m_accessFormat, m_pixelDataType, m_pPixels );
-			glPixelStorei( GL_UNPACK_ROW_LENGTH, 0 );
-			glBindTexture( GL_TEXTURE_2D, oldBinding );
-
-			m_bMipmapStale = m_bMipmapped;
-		}
-		m_accessMode = AccessMode::None;
-		m_pPixels = 0;
-		m_lockRegion.w = 0;
-		m_lockRegion.h = 0;
-		HANDLE_GLERROR(glGetError());
+		if (m_pAlphaMap)
+			_updateAlphaMap(buffer, bufferRect);
 	}
 
-	//____ pixel() ______________________________________________________________
+	//____ freePixelBuffer() ____________________________________________________
 
-	uint32_t GlSurface::pixel( CoordI coord )
+	void GlSurface::freePixelBuffer(const PixelBuffer& buffer)
 	{
-//		if (m_bBackingBufferStale)
-//			_refreshBackingBuffer();
-
-		if( m_accessMode != AccessMode::WriteOnly )
-		{
-			uint32_t val;
-
-			uint8_t * pPixel = ((uint8_t*) m_pBlob->data()) + coord.y * m_pitch + coord.x * m_pixelSize;
-
-				switch( m_pixelSize )
-				{
-					case 1:
-						val = (uint32_t) *pPixel;
-					case 2:
-						val = (uint32_t) ((uint16_t*) pPixel)[0];
-					case 3:
-						val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
-					default:
-						val = *((uint32_t*) pPixel);
-			}
-
-			return val;
-		}
-
-		return 0;
+		if (!m_pBlob)
+			delete [] buffer.pPixels;
 	}
-
-
 
 	//____ alpha() ____________________________________________________________
 
@@ -571,41 +626,51 @@ namespace wg
 //		if (m_bBackingBufferStale)
 //			_refreshBackingBuffer();
 
-        uint8_t * pPixel = (uint8_t*) m_pBlob->data();
-        pPixel += coord.y*m_pitch+coord.x*(m_pixelSize);
-
-        if( m_pixelDescription.bIndexed )
-        {
-            return m_pClut[*pPixel].a;
-        }
-        else if( m_pixelDescription.A_bits == 0 )
-            return 255;
-        else
+		if (m_pBlob)
 		{
-            uint32_t val;
-            
-            switch( m_pixelSize )
-            {
-                case 1:
-                    val = (uint32_t) *pPixel;
-                case 2:
-                    val = (uint32_t) ((uint16_t*) pPixel)[0];
-                case 3:
-                    val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
-                default:
-                    val = *((uint32_t*) pPixel);
-            }
+			uint8_t* pPixel = (uint8_t*)m_pBlob->data();
+			pPixel += coord.y * m_pitch + coord.x * (m_pixelSize);
 
-            const uint8_t * pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+			if (m_pixelDescription.bIndexed)
+			{
+				return m_pClut[*pPixel].a;
+			}
+			else if (m_pixelDescription.A_bits == 0)
+				return 255;
+			else
+			{
+				uint32_t val;
 
-            return pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+				switch (m_pixelSize)
+				{
+				case 1:
+					val = (uint32_t)*pPixel;
+				case 2:
+					val = (uint32_t)((uint16_t*)pPixel)[0];
+				case 3:
+					val = ((uint32_t)pPixel[0]) + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
+				default:
+					val = *((uint32_t*)pPixel);
+				}
+
+				const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+
+				return pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+			}
 		}
+		else if (m_pAlphaMap)
+			return m_pAlphaMap[coord.y * m_size.w + coord.x];
+		else
+			return 255;
 	}
 
 	//____ unload() ___________________________________________________________
 
 	bool GlSurface::unload()
 	{
+		if (!m_pBlob)
+			return false;
+
 		if( m_texture == 0 )
 			return true;
 
@@ -627,6 +692,9 @@ namespace wg
 
 	void GlSurface::reload()
 	{
+		if (m_texture != 0)
+			return;
+
 		HANDLE_GLERROR(glGetError());
 
 		GLint oldBinding;
@@ -660,6 +728,90 @@ namespace wg
 		m_bMipmapStale = m_bMipmapped;
 
 		HANDLE_GLERROR(glGetError());
+	}
+
+	//____ _updateAlphaMap() __________________________________________________
+
+	void GlSurface::_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect)
+	{
+		uint8_t* pDst = m_pAlphaMap + (buffer.rect.y + bufferRect.y) * m_size.w + (buffer.rect.x + bufferRect.x);
+		uint8_t* pSrc = buffer.pPixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
+
+		int srcPitchAdd = buffer.pitch - bufferRect.w * m_pixelSize;
+		int dstPitchAdd = m_size.w - bufferRect.w;
+
+		PixelFormat fmt = m_pixelDescription.format;
+		
+		if (fmt == PixelFormat::BGRA_8_linear || fmt == PixelFormat::BGRA_8_sRGB)
+		{
+			for (int y = 0; y < bufferRect.h; y++)
+			{
+				for (int x = 0; x < bufferRect.w; x++)
+				{
+					*pDst++ = *pSrc;
+					pSrc += 4;
+				}
+				pSrc += srcPitchAdd;
+				pDst += dstPitchAdd;
+			}
+		}
+		else
+		{
+			switch (m_pixelSize)
+			{
+				case 2:
+				{
+					for (int y = 0; y < bufferRect.h; y++)
+					{
+						for (int x = 0; x < bufferRect.w; x++)
+						{
+							uint32_t val = (uint32_t)((uint16_t*)pSrc)[0];
+							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+							pSrc += m_pixelSize;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+				case 3:
+				{
+					for (int y = 0; y < bufferRect.h; y++)
+					{
+						for (int x = 0; x < bufferRect.w; x++)
+						{
+							uint32_t val = ((uint32_t)pSrc[0]) + (((uint32_t)pSrc[1]) << 8) + (((uint32_t)pSrc[2]) << 16);
+							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+							pSrc += m_pixelSize;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+				case 4:
+				{
+					for (int y = 0; y < bufferRect.h; y++)
+					{
+						for (int x = 0; x < bufferRect.w; x++)
+						{
+							uint32_t val = *((uint32_t*)pSrc);
+							const uint8_t* pConvTab = s_pixelConvTabs[m_pixelDescription.A_bits];
+							*pDst++ = pConvTab[(val & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
+							pSrc += m_pixelSize;
+						}
+						pSrc += srcPitchAdd;
+						pDst += dstPitchAdd;
+					}
+					break;
+				}
+				default:
+					break;
+			}
+		}
+	
 	}
 
 	//____ _refreshBackingBuffer() ____________________________________________

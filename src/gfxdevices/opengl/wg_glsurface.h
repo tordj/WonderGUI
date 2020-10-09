@@ -81,14 +81,14 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel(CoordI coord) override;
 		uint8_t		alpha(CoordI coord) override;
 
 		//.____ Control _______________________________________________________
 
-		uint8_t *	lock(AccessMode mode) override;
-		uint8_t *	lockRegion(AccessMode mode, const RectI& region) override;
-		void		unlock() override;
+		const PixelBuffer	allocPixelBuffer(const RectI& rect) override;
+		bool				pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
+		void				pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
+		void				freePixelBuffer(const PixelBuffer& buffer) override;
 
 		bool		unload();
 		bool		isLoaded();
@@ -110,6 +110,7 @@ namespace wg
 
 		void		_setPixelDetails( PixelFormat format );
 		void		_setupGlTexture( void * pPixelsToUpload, int flags);
+		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.
@@ -124,11 +125,13 @@ namespace wg
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
 		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
 		Blob_p      m_pBlob;
+		int			m_pitch;
 
 		uint32_t	m_pixelSize;		// Size in bytes of a pixel.
 		GLenum		m_pixelDataType;
 		static SizeI	s_maxSize;
 
+		uint8_t*	m_pAlphaMap = nullptr;
 	};
 } // namespace wg
 #endif //WG_GLSURFACE_DOT_H
