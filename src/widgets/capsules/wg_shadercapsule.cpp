@@ -87,7 +87,7 @@ namespace wg
 	{
 		// Render our skin
 
-		m_skin.render( pDevice, _canvas, m_state );
+		OO(skin)._render( pDevice, _canvas, m_state );
 
 		if (!slot._widget())
 			return;
@@ -107,7 +107,7 @@ namespace wg
 
 		// Render children recursively
 
-		Rect canvas = m_skin.contentRect(_canvas, m_state);
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		if (canvas != _canvas)
 		{

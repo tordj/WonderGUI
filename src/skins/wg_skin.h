@@ -33,7 +33,7 @@ namespace wg
 
 	class Skin;
 	class GfxDevice;
-	class SkinSlot;
+	class CSkinSlot;
 
 	typedef	StrongPtr<Skin>	Skin_p;
 	typedef	WeakPtr<Skin>	Skin_wp;
@@ -41,7 +41,7 @@ namespace wg
 
 	class Skin : public Object
 	{
-		friend class SkinSlot;
+		friend class CSkinSlot;
 
 	public:
 		virtual ~Skin() {};

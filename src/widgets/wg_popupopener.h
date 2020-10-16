@@ -59,12 +59,6 @@ namespace wg
 
 		Size			preferredSize() const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void			setSkin(Skin * pSkin) override;
-
-
-
 		//.____ Behavior ____________________________________________
 
 		void		setPopup(Widget * pPopup);

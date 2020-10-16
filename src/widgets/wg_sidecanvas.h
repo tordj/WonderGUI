@@ -82,10 +82,6 @@ namespace wg
 		Size		minSize() const override;
 		Size		maxSize() const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void		setSkin(Skin * pSkin) override;
-
 
 	protected:
 	

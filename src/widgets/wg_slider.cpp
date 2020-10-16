@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Slider::Slider() : m_handleSkin(this)
+	Slider::Slider() : handleSkin(this)
 	{
 	}
 
@@ -72,21 +72,6 @@ namespace wg
 		}
 
 		m_preferredSlideLength = length;
-		_updatePreferredSize();
-	}
-
-	//____ setSkin() _________________________________________________________
-
-	void Slider::setSkin(Skin * pSkin)
-	{
-		Widget::setSkin(pSkin);
-	}
-
-	//____ setHandleSkin() ___________________________________________________
-
-	void Slider::setHandleSkin(const Skin_p& pSkin)
-	{
-		m_handleSkin.setSkin(pSkin);
 		_updatePreferredSize();
 	}
 
@@ -203,7 +188,7 @@ namespace wg
 				{
 					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
 
-					Size contentSize = m_size - m_skin.contentPaddingSize();
+					Size contentSize = m_size - OO(skin)._contentPaddingSize();
 					Size handleSize = _handleGeo(m_size).size();
 					Coord totalDrag = pMsg->draggedTotal();
 
@@ -248,19 +233,19 @@ namespace wg
 
 	void Slider::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
 	{
-			m_skin.render(pDevice, canvas, m_state, m_value);
+			OO(skin)._render(pDevice, canvas, m_state, m_value);
 
-			m_handleSkin.render(pDevice, _handleGeo(canvas), m_handleState, m_value);
+			OO(handleSkin)._render(pDevice, _handleGeo(canvas), m_handleState, m_value);
 	}
 
 	//____ _alphaTest() ________________________________________________________
 
 	bool Slider::_alphaTest(const Coord& ofs)
 	{
-		bool bMarked = m_skin.markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_value);
+		bool bMarked = OO(skin)._markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_value);
 
-		if (!bMarked && !m_handleSkin.isEmpty())
-			bMarked = m_handleSkin.markTest(ofs, _handleGeo(m_size), m_handleState, m_markOpacity, m_value);
+		if (!bMarked && !handleSkin.isEmpty())
+			bMarked = OO(handleSkin)._markTest(ofs, _handleGeo(m_size), m_handleState, m_markOpacity, m_value);
 
 		return bMarked;
 	}
@@ -270,15 +255,15 @@ namespace wg
 
 	void Slider::_updatePreferredSize()
 	{
-		Size sz = m_handleSkin.isEmpty() ? Size(4,4) : m_handleSkin.preferredSize();
+		Size sz = handleSkin.isEmpty() ? Size(4,4) : OO(handleSkin)._preferredSize();
 
 		if (m_axis == Axis::X)
 			sz.w += m_preferredSlideLength;
 		else
 			sz.h += m_preferredSlideLength;
 
-		sz += m_skin.contentPaddingSize();
-		sz = Size::max(sz, m_skin.preferredSize());
+		sz += OO(skin)._contentPaddingSize();
+		sz = Size::max(sz, OO(skin)._preferredSize());
 
 		if (sz != m_preferredSize)
 		{
@@ -308,7 +293,7 @@ namespace wg
 			Rect changeRect = Rect::getUnion(oldGeo, newGeo);
 			_requestRender(changeRect);
 
-			m_skin.valueChanged(m_value, oldValue);
+			OO(skin)._valueChanged(m_value, oldValue);
 
 			if(bPostMsg)
 				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
@@ -322,7 +307,7 @@ namespace wg
 		State oldState = m_state;
 		m_handleState = state;
 
-		m_handleSkin.stateChanged(m_state, oldState);
+		OO(handleSkin)._stateChanged(m_state, oldState);
 	}
 
 
@@ -330,11 +315,11 @@ namespace wg
 
 	Rect Slider::_handleGeo(const Rect& widgetGeo) const
 	{
-		Rect contentGeo =  m_skin.contentRect(widgetGeo, m_state);
+		Rect contentGeo =  OO(skin)._contentRect(widgetGeo, m_state);
 
 		Rect handleGeo;
 
-		Size handlePrefSize = m_handleSkin.preferredSize();
+		Size handlePrefSize = OO(handleSkin)._preferredSize();
 
 		if (m_axis == Axis::X)
 		{
@@ -356,58 +341,75 @@ namespace wg
 		return handleGeo.aligned();
 	}
 
-	//____ _skinRequestRender() _______________________________________________
+		//____ _componentState() _______________________________________________________
 
-	void Slider::_skinRequestRender(const SkinSlot* pSlot)
+	State Slider::_componentState(const GeoComponent* pComponent) const
 	{
-		if (pSlot == &m_handleSkin)
-			_requestRender(_handleGeo(m_size));
-		else
-			_requestRender();
-	}
-
-	void Slider::_skinRequestRender(const SkinSlot* pSlot, const Rect& rect)
-	{
-		if (pSlot == &m_handleSkin)
-			_requestRender( rect + _handleGeo(m_size).pos() );
-		else
-			_requestRender( rect );
-	}
-
-	//____ _skinSize() ________________________________________________________
-
-	Size Slider::_skinSize(const SkinSlot* pSlot) const
-	{
-		if (pSlot == &m_handleSkin)
-			return _handleGeo(m_size).size();
-		else
-			return m_size;
-
-	}
-
-	//____ _skinGlobalPos() ___________________________________________________
-
-	Coord Slider::_skinGlobalPos(const SkinSlot* pSlot) const
-	{
-		if (pSlot == &m_handleSkin)
-			return globalPos() + _handleGeo(m_size).pos();
-		else
-			return globalPos();
-	}
-
-	//____ _skinState() _______________________________________________________
-
-	State Slider::_skinState(const SkinSlot* pSlot) const
-	{
-		if (pSlot == &m_handleSkin)
+		if (pComponent == &handleSkin)
 			return m_handleState;
 		else
 			return m_state;
 	}
 
+	//____ _componentPos() ___________________________________________________
+
+	Coord Slider::_componentPos(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &handleSkin)
+			return _handleGeo(m_size).pos();
+		else
+			return Coord();
+	}
+
+	//____ _componentSize() ___________________________________________________
+
+	Size Slider::_componentSize(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &handleSkin)
+			return _handleGeo(m_size).size();
+		else
+			return m_size;
+	}
+
+	//____ _componentGeo() ___________________________________________________
+
+	Rect Slider::_componentGeo(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &handleSkin)
+			return _handleGeo(m_size);
+		else
+			return m_size;
+	}
+
+	//____ _componentRequestRender() _______________________________________________
+
+	void Slider::_componentRequestRender(const GeoComponent* pComponent)
+	{
+		if (pComponent == &handleSkin)
+			_requestRender(_handleGeo(m_size));
+		else
+			_requestRender();
+	}
+
+	void Slider::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	{
+		if (pComponent == &handleSkin)
+			_requestRender(rect + _handleGeo(m_size).pos());
+		else
+			_requestRender(rect);
+	}
+
+	//____ Slider::_skinChanged() ________________________________________________
+
+	void Slider::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
+	{
+		Widget::_skinChanged(pSlot, pNewSkin, pOldSkin);
+		_updatePreferredSize();
+	}
+
 	//____ _skinValue() _______________________________________________________
 
-	float Slider::_skinValue(const SkinSlot* pSlot) const
+	float Slider::_skinValue(const CSkinSlot* pSlot) const
 	{
 		return m_value;
 	}

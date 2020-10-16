@@ -102,7 +102,7 @@ namespace wg
 		if( valueHeight > contentSize.h )
 			contentSize.h = valueHeight;
 
-		return m_skin.sizeForContent(contentSize);
+		return OO(skin)._sizeForContent(contentSize);
 	}
 
 	//____ _render() ________________________________________________________
@@ -111,7 +111,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect content = m_skin.contentRect( _canvas, m_state );
+		Rect content = OO(skin)._contentRect( _canvas, m_state );
 
 		OO(labels)._render( pDevice, content );
 		OO(values)._render( pDevice, content );

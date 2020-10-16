@@ -106,7 +106,7 @@ namespace wg
 
 		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
 
-		preferredSize = m_skin.sizeForContent( preferredSize );
+		preferredSize = OO(skin)._sizeForContent( preferredSize );
 
 		return preferredSize;
 	}
@@ -230,7 +230,7 @@ namespace wg
 
 		if (!_icon().isEmpty())
 		{
-			//TODO: Remove once icon uses SkinSlot.
+			//TODO: Remove once icon uses CSkinSlot.
 			_requestRender();
 		}
 		if( state.isSelected() != oldState.isSelected() )
@@ -242,16 +242,6 @@ namespace wg
 		}
 	}
 
-	//____ setSkin() _______________________________________________________
-
-	void ToggleButton::setSkin( Skin * pSkin )
-	{
-		//TODO: Set canvas size for the components
-
-		Widget::setSkin(pSkin);
-	}
-
-
 	//____ _render() ________________________________________________________
 
 	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
@@ -260,7 +250,7 @@ namespace wg
 
 		// Get the content rect and icon rect
 
-		Rect contentRect	= m_skin.contentRect(_canvas, m_state );
+		Rect contentRect	= OO(skin)._contentRect(_canvas, m_state );
 
 		Rect iconRect		= _icon()._getIconRect( contentRect );
 
@@ -293,7 +283,7 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		Rect contentRect	= m_skin.contentRect(size, m_state );
+		Rect contentRect	= OO(skin)._contentRect(size, m_state );
 
 		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
 	}
@@ -317,7 +307,7 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( const Coord& pos )
 	{
-		Rect contentRect = m_skin.contentRect(m_size, m_state );
+		Rect contentRect = OO(skin)._contentRect(m_size, m_state );
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
@@ -333,7 +323,7 @@ namespace wg
 	{
 		Size	bgSize		= m_size;
 
-		Rect	contentRect = m_skin.contentRect( bgSize, m_state );
+		Rect	contentRect = OO(skin)._contentRect( bgSize, m_state );
 
 		Rect	iconRect	= _icon()._getIconRect( contentRect );
 

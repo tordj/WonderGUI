@@ -24,7 +24,7 @@
 #pragma once
 
 #include <wg_mempool.h>
-#include <wg_skinslot.h>
+#include <wg_cskinslot.h>
 
 #include <vector>
 
@@ -33,7 +33,7 @@ namespace wg
 
 
 
-	class SkinSlotManager
+	class CSkinSlotManager
 	{
 	public:
 		static void init();
@@ -41,15 +41,15 @@ namespace wg
 
 		static void update(int msPassed);
 
-		static SkinSlot::Pocket* allocPocket();
-		static void freePocket(SkinSlot::Pocket* pEntry);
+		static CSkinSlot::Pocket* allocPocket();
+		static void freePocket(CSkinSlot::Pocket* pEntry);
 
 
 	private:
 
 		static MemPool* s_pMemPool;
 
-		static std::vector<SkinSlot::Pocket*>	s_slotPockets;
+		static std::vector<CSkinSlot::Pocket*>	s_slotPockets;
 
 	};
 };

@@ -59,16 +59,10 @@ namespace wg
 		MU				matchingHeight(MU width) const override;
 		Size			preferredSize() const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void			setSkin(Skin * pSkin) override;
-
-
 	protected:
 		TextEditor();
 		virtual ~TextEditor();
 		virtual Widget* _newOfMyType() const override { return new TextEditor(); };
-
 
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;

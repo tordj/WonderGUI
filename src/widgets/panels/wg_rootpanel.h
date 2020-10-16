@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder
+	class RootPanel : public Object, protected SlotHolder, protected CSkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -69,6 +69,7 @@ namespace wg
 		//.____ Components ____________________________________
 
 		CStandardSlot		slot;
+		CSkinSlot			skin;				//TODO: Padding is not respected yet.
 
 		//.____ Identification __________________________________________
 
@@ -86,11 +87,6 @@ namespace wg
 		bool				isVisible() const { return m_bVisible; }
 
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
-
-		//.____ Appearance _________________________________________________
-
-		void				setSkin(Skin * pSkin);
-		inline Skin_p		skin() const;
 
 		//.____ Rendering ________________________________________________
 
@@ -178,18 +174,30 @@ namespace wg
 		void			_hideSlots(StaticSlot * pSlot, int nb) override;
 		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
-		// SkinSlot::Holder methods
+		// CSkinSlot::Holder methods
 
-		void			_skinRequestRender(const SkinSlot* pSlot) override;
-		void			_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos(const GeoComponent* pComponent) const override;
+		Size			_componentSize(const GeoComponent* pComponent) const override;
+		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+		Coord			_globalComponentPos(const GeoComponent* pComponent) const override;
+		Rect			_globalComponentGeo(const GeoComponent* pComponent) const override;
 
-		Size			_skinSize(const SkinSlot* pSlot) const override;
-		Coord			_skinGlobalPos(const SkinSlot* pSlot) const override;
+		void			_componentRequestRender(const GeoComponent* pComponent) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void			_componentRequestResize(const GeoComponent* pComponent) override;
 
-		State			_skinState(const SkinSlot* pSlot) const override;
-		float			_skinValue(const SkinSlot* pSlot) const override;
-		float			_skinValue2(const SkinSlot* pSlot) const override;
+		void			_componentRequestFocus(const GeoComponent* pComponent) override;
+		void			_componentRequestInView(const GeoComponent* pComponent) override;
+		void			_componentRequestInView(const GeoComponent* pComponent, const Rect& mustHave, const Rect& niceToHave) override;
 
+		void			_receiveComponentNotif(GeoComponent* pComponent, ComponentNotif notification, int value, void* pData) override;
+
+		// Methods for skin to access
+
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		float			_skinValue(const CSkinSlot* pSlot) const override;
+		float			_skinValue2(const CSkinSlot* pSlot) const override;
 
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
@@ -204,8 +212,6 @@ namespace wg
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
-		SkinSlot			m_skin;				//TODO: Padding is not respected yet.
-
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;
 		int					m_afterglowFrames;
@@ -218,21 +224,6 @@ namespace wg
 
 		Widget_wp			m_pFocusedChild;
 	};
-
-
-	//____ skin() _____________________________________________________________
-	/**
-	 * @brief Get the skin used as background.
-	 *
-	 * Get the skin used as background for the whole RootPanel.
-	 *
-	 * @return Pointer to the skin.
-	 */
-
-	Skin_p RootPanel::skin() const
-	{
-		return m_skin.skin();
-	}
 
 } // namespace wg
 #endif //WG_ROOTPANEL_DOT_H

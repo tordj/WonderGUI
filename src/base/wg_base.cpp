@@ -69,7 +69,7 @@ namespace wg
 		}
 
 		TextStyleManager::init();
-		SkinSlotManager::init();
+		CSkinSlotManager::init();
 
 		s_pData = new Data;
 
@@ -129,7 +129,7 @@ namespace wg
 		delete s_pData;
 		s_pData = nullptr;
 
-		SkinSlotManager::exit();
+		CSkinSlotManager::exit();
 		TextStyleManager::exit();
 
 		if (s_objectsCreated != s_objectsDestroyed)
@@ -333,7 +333,7 @@ namespace wg
 
 	void Base::update(int msPassed)
 	{
-		SkinSlotManager::update(msPassed);
+		CSkinSlotManager::update(msPassed);
 	}
 
 	//____ memStackAlloc() ________________________________________________________

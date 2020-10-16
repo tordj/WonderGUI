@@ -83,6 +83,7 @@ namespace wg
 		inline const Object *	_object() const override { return GeoComponent::_object(); }
 
 
+		State	_componentState(const GeoComponent* pComponent) const override { return StateEnum::Normal; }
 		Coord	_componentPos( const GeoComponent * pComponent ) const override;
 		Size	_componentSize( const GeoComponent * pComponent ) const override;
 		Rect	_componentGeo( const GeoComponent * pComponent ) const override;

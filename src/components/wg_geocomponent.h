@@ -46,6 +46,7 @@ namespace wg
 			virtual Object * _object() = 0;
 			virtual const Object * _object() const = 0;
 
+			virtual State	_componentState(const GeoComponent* pComponent) const = 0;
 			virtual Coord	_componentPos(const GeoComponent * pComponent) const = 0;
 			virtual Size	_componentSize(const GeoComponent * pComponent) const = 0;
 			virtual Rect	_componentGeo(const GeoComponent * pComponent) const = 0;

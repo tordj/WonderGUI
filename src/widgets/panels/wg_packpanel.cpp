@@ -138,7 +138,7 @@ namespace wg
 
 	Size PackPanel::preferredSize() const
 	{
-		return m_preferredContentSize + m_skin.contentPaddingSize();
+		return m_preferredContentSize + OO(skin)._contentPaddingSize();
 	}
 
 	//____ matchingHeight() _______________________________________________________
@@ -217,7 +217,7 @@ namespace wg
 			}
 		}
 
-		height += m_skin.contentPaddingSize().h;
+		height += OO(skin)._contentPaddingSize().h;
 
 		return height;
 	}
@@ -298,7 +298,7 @@ namespace wg
 			}
 		}
 
-		width += m_skin.contentPaddingSize().w;
+		width += OO(skin)._contentPaddingSize().w;
 
 		return width;
 	}
@@ -590,7 +590,7 @@ namespace wg
 		// Recalculate preferred sizes for widget and content.
 
 		Size newPreferredContentSize = _calcPreferredSize();
-		Size newPreferredSize = newPreferredContentSize + m_skin.contentPaddingSize();
+		Size newPreferredSize = newPreferredContentSize + OO(skin)._contentPaddingSize();
 
 		// request resize or just refresh child geo, depending on what is needed.
 
@@ -689,8 +689,8 @@ namespace wg
 		if( slots.isEmpty() )
 			return;
 
-		Size sz = m_size - m_skin.contentPaddingSize();
-		Coord contentOfs = m_skin.contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
+		Size sz = m_size - OO(skin)._contentPaddingSize();
+		Coord contentOfs = OO(skin)._contentOfs(StateEnum::Normal);			//TODO: Support offset changing in different states.
 
 		MU wantedLength = m_bHorizontal?m_preferredContentSize.w:m_preferredContentSize.h;
 		MU givenLength = m_bHorizontal?sz.w:sz.h;

@@ -256,6 +256,7 @@ namespace wg
 
 		CViewSlot		viewSlot;
 		ScrollbarEntry	hscrollbar, vscrollbar;
+		CSkinSlot		cornerSkin;
 
 		//.____ Identification __________________________________________
 
@@ -286,13 +287,6 @@ namespace wg
 		void		setStepFunc(std::function<int (Direction,int steps)> func );
 		void		setJumpFunc(std::function<int (Direction, int steps)> func);
 		void		setWheelRollFunc(std::function<int(Direction, int steps)> func);
-
-		//.____ Appearance _________________________________________________
-
-		void		setCornerSkin(Skin * pSkin);
-		Skin_p		cornerSkin() const { return m_cornerSkin.skin(); }
-
-		virtual void setSkin(Skin * pSkin) override;
 
 		//.____ Misc _________________________________________________________________
 
@@ -405,7 +399,6 @@ namespace wg
 
 		ScrollbarSlot	m_scrollbarSlots[2];			// xScroll and yScroll widgets in that order.
 
-		SkinSlot	m_cornerSkin;
 		Rect		m_cornerGeo;
 
 		int			m_wheelForScroll;					// What wheel should be used for scrolling. (0=none)

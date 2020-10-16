@@ -99,7 +99,7 @@ namespace wg
 			m_fSectionHeight[1] = middleFraction;
 			m_fSectionHeight[2] = topFraction;
 
-			Size canvasSize = Size() - m_skin.contentPaddingSize();
+			Size canvasSize = Size() - OO(skin)._contentPaddingSize();
 
 			_updateValueDisplays( canvasSize );
 			_requestRender();
@@ -116,7 +116,7 @@ namespace wg
 		{
 			m_fHoldHeight = fraction;
 
-			Size size = m_size - m_skin.contentPaddingSize();
+			Size size = m_size - OO(skin)._contentPaddingSize();
 			_updateValueDisplays( size );
 			_requestRender();
 		}
@@ -132,7 +132,7 @@ namespace wg
 		m_fPeak[0] = peak;
 		m_fHold[0] = hold;
 
-		Rect canvas = m_skin.contentRect( m_size, m_state );
+		Rect canvas = OO(skin)._contentRect( m_size, m_state );
 
 		MU length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 		MU  iPeak = (peak * length).aligned();
@@ -166,7 +166,7 @@ namespace wg
 		m_fHold[0] = leftHold;
 		m_fHold[1] = rightHold;
 
-		Rect canvas = m_skin.contentRect( m_size, m_state );
+		Rect canvas = OO(skin)._contentRect( m_size, m_state );
 
 		MU length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
@@ -201,7 +201,7 @@ namespace wg
 		{
 			m_direction = direction;
 
-			Size size = m_size - m_skin.contentPaddingSize();
+			Size size = m_size - OO(skin)._contentPaddingSize();
 			_updateValueDisplays(size);
 			_requestResize();
 			_requestRender();
@@ -314,24 +314,9 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		Size canvasSize = size - m_skin.contentPaddingSize();
+		Size canvasSize = size - OO(skin)._contentPaddingSize();
 
 		_updateValueDisplays( canvasSize );
-	}
-
-	//____ setSkin() ________________________________________________________________
-
-	void SimpleVolumeMeter::setSkin( Skin * pSkin )
-	{
-		Size sz;
-
-		Rect oldCanvas = m_skin.contentRect(sz,m_state);
-		Widget::setSkin(pSkin);
-		Rect newCanvas = m_skin.contentRect(sz,m_state);
-
-
-		if( oldCanvas != newCanvas )
-			_updateValueDisplays( newCanvas );
 	}
 
 	//____ _render() _____________________________________________________________________
@@ -343,7 +328,7 @@ namespace wg
 		if( !m_state.isEnabled() )
 			return;
 
-		Rect canvas = m_skin.contentRect(_canvas, m_state);
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		if( m_bStereo )
 		{
@@ -540,7 +525,7 @@ namespace wg
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
 
-		Size canvasSize = m_size - m_skin.contentPaddingSize();
+		Size canvasSize = m_size - OO(skin)._contentPaddingSize();
 		_updateValueDisplays( canvasSize );
 	}
 

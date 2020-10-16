@@ -198,9 +198,9 @@ namespace wg
 
 		MU		length;
 		if( m_bHorizontal )
-			length = m_size.w - m_skin.contentPaddingSize().w;
+			length = m_size.w - OO(skin)._contentPaddingSize().w;
 		else
-			length = m_size.h - m_skin.contentPaddingSize().h;
+			length = m_size.h - OO(skin)._contentPaddingSize().h;
 
 		length -= m_headerLen + m_footerLen;
 
@@ -263,7 +263,7 @@ namespace wg
 								Skin * pHandleSkin,
 								Skin * pBwdButtonSkin, Skin * pFwdButtonSkin )
 	{
-		m_skin.setSkin( pBaseSkin );
+		skin.set( pBaseSkin );
 		m_pBgSkin		= pBackgroundSkin;
 		m_pHandleSkin	= pHandleSkin;
 		m_pBtnFwdSkin	= pFwdButtonSkin;
@@ -472,9 +472,9 @@ namespace wg
 
 		MU	maxLen;
 		if( m_bHorizontal )
-			maxLen = m_size.w - m_skin.contentPaddingSize().w;
+			maxLen = m_size.w - OO(skin)._contentPaddingSize().w;
 		else
-			maxLen = m_size.h - m_skin.contentPaddingSize().h;
+			maxLen = m_size.h - OO(skin)._contentPaddingSize().h;
 
 		maxLen -= m_headerLen + m_footerLen;
 
@@ -609,8 +609,8 @@ namespace wg
 
 		// Add padding for base skin
 
-		minW += m_skin.contentPaddingSize().w;
-		minH += m_skin.contentPaddingSize().h;
+		minW += OO(skin)._contentPaddingSize().w;
+		minH += OO(skin)._contentPaddingSize().h;
 
 		// Set if changed.
 
@@ -646,7 +646,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	dest = m_skin.contentRect(_canvas,m_state);
+		Rect	dest = OO(skin)._contentRect(_canvas,m_state);
 
 		// Render header buttons
 
@@ -730,7 +730,7 @@ namespace wg
 
 	Scrollbar::Component Scrollbar::_findMarkedComponent( Coord ofs )
 	{
-		Rect canvas = m_skin.contentRect( Rect(0,0,m_size),m_state);
+		Rect canvas = OO(skin)._contentRect( Rect(0,0,m_size),m_state);
 
 		Rect dest = canvas;
 
@@ -816,7 +816,7 @@ namespace wg
 		MU		pointerOfs;
 		MU		length;
 
-		Rect contentRect = m_skin.contentRect(Rect(0,0,m_size),m_state);
+		Rect contentRect = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
 
 		if( m_bHorizontal )
 		{
@@ -1060,7 +1060,7 @@ namespace wg
 		MU   handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		Rect area = m_skin.contentRect((0,0,m_size),m_state);
+		Rect area = OO(skin)._contentRect((0,0,m_size),m_state);
 
 		if( m_bHorizontal )
 		{

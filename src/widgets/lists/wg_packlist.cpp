@@ -165,7 +165,7 @@ namespace wg
 
 	Size PackList::preferredSize() const
 	{
-		Size sz = m_skin.contentPaddingSize();
+		Size sz = OO(skin)._contentPaddingSize();
 		Size headerSize = _header()._preferredSize();
 
 		if (m_bHorizontal)
@@ -190,13 +190,13 @@ namespace wg
 	{
 		if (m_bHorizontal)
 		{
-			MU height = m_contentPreferredBreadth + m_skin.contentPaddingSize().h;
+			MU height = m_contentPreferredBreadth + OO(skin)._contentPaddingSize().h;
 			return std::max(height, _header()._preferredSize().h);
 		}
 		else
 		{
 			MU height = _header()._matchingHeight(width);
-			Size pad = m_skin.contentPaddingSize();
+			Size pad = OO(skin)._contentPaddingSize();
 			width -= pad.w;
 			height += pad.h;
 
@@ -217,7 +217,7 @@ namespace wg
 		if (m_bHorizontal)
 		{
 			MU width = _header()._matchingWidth(height);
-			Size pad = m_skin.contentPaddingSize();
+			Size pad = OO(skin)._contentPaddingSize();
 			height -= pad.w;
 			width += pad.h;
 
@@ -231,7 +231,7 @@ namespace wg
 		}
 		else
 		{
-			MU width = m_contentPreferredBreadth + m_skin.contentPaddingSize().w;
+			MU width = m_contentPreferredBreadth + OO(skin)._contentPaddingSize().w;
 
 			return std::max(width, _header()._preferredSize().w);
 		}
@@ -242,7 +242,7 @@ namespace wg
 
 	void PackList::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_skin.isEmpty() )
+		if( skin.isEmpty() )
 		{
 			if (m_bHorizontal)
 				container.add(Rect(Rect(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
@@ -300,8 +300,8 @@ namespace wg
 
 		Rect clip = Rect::fromPX(pDevice->clipBounds());
 
-		m_skin.render( pDevice, contentRect, m_state );
-		contentRect = m_skin.contentRect( contentRect, m_state );
+		OO(skin)._render( pDevice, contentRect, m_state );
+		contentRect = OO(skin)._contentRect( contentRect, m_state );
 
 		MU startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
 		if( startOfs < 0 )
@@ -402,7 +402,7 @@ namespace wg
 		Size headerSize = m_bHorizontal ? Size(_header()._matchingWidth(_size.h), _size.h) : Size( _size.w, _header()._matchingHeight( _size.w ));
 		_header()._setSize( headerSize );
 
-		Size size = _size - m_skin.contentPaddingSize();
+		Size size = _size - OO(skin)._contentPaddingSize();
 
 		MU newContentBreadth;
 
@@ -1317,7 +1317,7 @@ namespace wg
 
 	Rect PackList::_listArea() const
 	{
-		return m_skin.contentRect( _listCanvas(), m_state );
+		return OO(skin)._contentRect( _listCanvas(), m_state );
 	}
 
 	//____ _listWindow() ____________________________________________________________

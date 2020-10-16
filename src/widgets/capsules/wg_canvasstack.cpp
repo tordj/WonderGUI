@@ -164,7 +164,7 @@ namespace wg
 	{
 		m_bRendering = true;
 
-		m_skin.render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_state);
 
 		if (m_canvases.size() == 0)
 		{

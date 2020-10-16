@@ -152,7 +152,7 @@ namespace wg
 
 	Size AnimPlayer::preferredSize() const
 	{
-		return m_skin.sizeForContent(frames.frameSize());
+		return OO(skin)._sizeForContent(frames.frameSize());
 	}
 
 	//____ _receive() ______________________________________________________________

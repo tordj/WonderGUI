@@ -348,7 +348,7 @@ namespace wg
 	{
 		// Render container itself
 
-		m_skin.render(pDevice, _canvas, m_state );
+		OO(skin)._render(pDevice, _canvas, m_state );
 
 		// Render children
 
@@ -442,7 +442,7 @@ namespace wg
 
 	void Container::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_skin.isEmpty() )
+		if( skin.isEmpty() )
 		{
 			SlotWithGeo child;
 			_firstSlotWithGeo(child);

@@ -87,7 +87,7 @@ namespace wg
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect	contentRect = m_skin.contentRect(_canvas, m_state);
+		Rect	contentRect = OO(skin)._contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -114,7 +114,7 @@ namespace wg
 
 		Rect	contentRect(0, 0, _size);
 
-		contentRect -= m_skin.contentPaddingSize();
+		contentRect -= OO(skin)._contentPaddingSize();
 
 		Rect textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect));
 
@@ -193,11 +193,11 @@ namespace wg
 
 	MU PopupOpener::matchingHeight(MU width) const
 	{
-		MU height = m_skin.preferredSize().h;
+		MU height = OO(skin)._preferredSize().h;
 
 		if (!OO(text).isEmpty())
 		{
-			Size padding = m_skin.contentPaddingSize();
+			Size padding = OO(skin)._contentPaddingSize();
 
 			MU heightForText = OO(text)._matchingHeight(width - padding.w) + padding.h;
 			if (heightForText > height)
@@ -219,7 +219,7 @@ namespace wg
 		if (!OO(text).isEmpty())
 			preferred = OO(text)._preferredSize();
 
-		preferred = m_skin.sizeForContent(preferred);
+		preferred = OO(skin)._sizeForContent(preferred);
 
 		//TODO: Take icon into account.
 
@@ -238,15 +238,6 @@ namespace wg
 		Widget::_setState(state);
 		OO(text)._setState(state);
 		_requestRender(); //TODO: Only requestRender if text appearance has changed (let OO(text).setState() return if rendering is needed)
-	}
-
-	//____ setSkin() _________________________________________________________
-
-	void PopupOpener::setSkin(Skin * pSkin)
-	{
-		//TODO: Set canvas size for components.
-
-		Widget::setSkin(pSkin);
 	}
 
 	//____ _open() ____________________________________________________________
@@ -277,7 +268,10 @@ namespace wg
 
 	Coord PopupOpener::_componentPos(const GeoComponent * pComponent) const
 	{
-		Rect contentRect = m_skin.contentRect(m_size, m_state);
+		if (pComponent == &skin)
+			return Coord();
+
+		Rect contentRect = OO(skin)._contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -294,7 +288,10 @@ namespace wg
 
 	Size PopupOpener::_componentSize(const GeoComponent * pComponent) const
 	{
-		Size sz = m_size - m_skin.contentPaddingSize();
+		if (pComponent == &skin)
+			return m_size;
+
+		Size sz = m_size - OO(skin)._contentPaddingSize();
 
 		Rect iconRect = _icon()._getIconRect(sz);
 
@@ -310,7 +307,10 @@ namespace wg
 
 	Rect PopupOpener::_componentGeo(const GeoComponent * pComponent) const
 	{
-		Rect	contentRect = m_skin.contentRect(m_size, m_state);
+		if (pComponent == &skin)
+			return m_size;
+
+		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 

@@ -109,7 +109,6 @@
     <ClInclude Include="..\..\..\src\base\wg_dataset.h" />
     <ClInclude Include="..\..\..\src\base\wg_mu.h" />
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
-    <ClInclude Include="..\..\..\src\base\wg_skinslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_skinslotmanager.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
@@ -148,6 +147,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cdynamicvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxinstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxoutstream.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cskinslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
@@ -285,7 +285,6 @@
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />
-    <ClCompile Include="..\..\..\src\base\wg_skinslot.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_skinslotmanager.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_slot.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_string.cpp" />
@@ -307,6 +306,7 @@
     <ClCompile Include="..\..\..\src\components\wg_cicondisplay.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_component.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cshadows.cpp" />
+    <ClCompile Include="..\..\..\src\components\wg_cskinslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstandardslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstaticslotcollection.cpp" />

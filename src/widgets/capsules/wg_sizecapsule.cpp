@@ -119,7 +119,7 @@ namespace wg
 		if (!slot._widget())
 		{
 			Size size = { std::max(MU(), m_preferred.w), std::max(MU(), m_preferred.h) };
-			size += m_skin.contentPaddingSize();
+			size += OO(skin)._contentPaddingSize();
 
 			return size;
 		}
@@ -263,7 +263,7 @@ namespace wg
 			}
 		}
 
-		pref += m_skin.contentPaddingSize();
+		pref += OO(skin)._contentPaddingSize();
 
 		return pref;
 	}

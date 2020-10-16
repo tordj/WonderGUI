@@ -99,7 +99,7 @@ namespace wg
 	Size Image::preferredSize() const
 	{
 		if( m_pSurface )
-			return m_skin.sizeForContent( m_rect.size() );
+			return OO(skin)._sizeForContent( m_rect.size() );
 		else
 			return Widget::preferredSize();
 	}
@@ -124,7 +124,7 @@ namespace wg
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest = m_skin.contentRect( _canvas, state() );
+			Rect dest = OO(skin)._contentRect( _canvas, state() );
 
 			pDevice->setBlitSource(m_pSurface);
 			pDevice->stretchBlit( dest.px(), m_rect );
@@ -137,7 +137,7 @@ namespace wg
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest = m_skin.contentRect( m_size, state() );
+			Rect dest = OO(skin)._contentRect( m_size, state() );
 
 			if( Util::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
 				return true;

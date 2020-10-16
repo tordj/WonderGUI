@@ -102,7 +102,7 @@ namespace wg
 
 	void SelectBox::setListSkin(Skin * pSkin)
 	{
-		Skin* pOldSkin = m_pListCanvas->skin();
+		Skin* pOldSkin = m_pListCanvas->skin;
 
 		Size oldPadding = pOldSkin ? pOldSkin->contentPaddingSize() : Size();
 		Size newPadding = pSkin ? pSkin->contentPaddingSize() : Size();
@@ -110,7 +110,7 @@ namespace wg
 		if (oldPadding != newPadding)
 			m_listCanvasPreferredSize += newPadding - oldPadding;
 
-		m_pListCanvas->setSkin(pSkin);
+		m_pListCanvas->skin = pSkin;
 	}
 
 	//____ setListTextMapper() ______________________________________________
@@ -262,7 +262,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = m_skin.contentRect(_canvas, m_state);
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		OO(text)._render(pDevice, canvas);
 	}
@@ -317,9 +317,9 @@ namespace wg
 
 	void SelectBox::_updateListCanvasOpacity()
 	{
-		bool bOpaque = m_pListCanvas->m_skin.isOpaque();
+		bool bOpaque = OO(m_pListCanvas->skin)._isOpaque();
 
-		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && m_pListCanvas->m_skin.contentPaddingSize().isEmpty())
+		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && OO(m_pListCanvas->skin)._contentPaddingSize().isEmpty())
 			bOpaque = true;
 
 		m_pListCanvas->m_bOpaque = bOpaque;
@@ -432,8 +432,8 @@ namespace wg
 		auto pMapper = _listTextMapper();
 
 		Size entryPadding = m_pEntrySkin ? m_pEntrySkin->contentPaddingSize() : Size();
-		Size boxPadding = m_skin.contentPaddingSize();
-		Size listPadding = m_pListCanvas->m_skin.contentPaddingSize();
+		Size boxPadding = OO(skin)._contentPaddingSize();
+		Size listPadding = OO(m_pListCanvas->skin)._contentPaddingSize();
 
 		Size	oldPreferred		= m_preferredSize;
 //		int		oldMatchingHeight = m_matchingHeight;
@@ -578,7 +578,7 @@ namespace wg
 	{
 		TextMapper* pMapper = _listTextMapper();
 
-		Size listCanvasPaddingSize = m_pListCanvas->m_skin.contentPaddingSize();
+		Size listCanvasPaddingSize = OO(m_pListCanvas->skin)._contentPaddingSize();
 
 		MU newContentWidth = size.w - listCanvasPaddingSize.w;
 		MU matchingHeight = listCanvasPaddingSize.h;
@@ -661,7 +661,7 @@ namespace wg
 
 	void SelectBox::_sideCanvasSetSkin(SideCanvas * pCanvas, Skin * pSkin)
 	{
-		m_pListCanvas->Widget::setSkin(pSkin);
+		m_pListCanvas->Widget::skin = pSkin;
 		_updateListCanvasOpacity();
 	}
 

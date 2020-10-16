@@ -63,9 +63,6 @@ namespace wg
 		PointerStyle	pointerStyle() const override;
 		String			tooltip() const override;
 
-		void			setSkin(Skin * pSkin) override;
-
-
 	protected:
 		TextDisplay();
 		virtual ~TextDisplay();

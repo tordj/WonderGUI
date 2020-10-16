@@ -103,6 +103,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CSlots			slots;
+		CSkinSlot		handleSkin;
 
 		//.____ Identification __________________________________________
 
@@ -112,14 +113,11 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		void			setAxis(Axis orientaiton);
-		Axis		axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
+		Axis			axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
 
 		Size			preferredSize() const override;
 
 		//.____ Appearance _________________________________________________
-
-		void			setHandleSkin(Skin * pSkin);
-		Skin_p			handleSkin() const { return m_handleSkin.skin(); }
 
 		void			setHandleThickness(MU thickness);
 		MU				handleThickness() const { return m_handleThickness;  }
@@ -193,13 +191,15 @@ namespace wg
 
 		//
 
-		void	_skinRequestRender(const SkinSlot* pSlot) override;
-		void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos(const GeoComponent* pComponent) const override;
+		Size			_componentSize(const GeoComponent* pComponent) const override;
+		Rect			_componentGeo(const GeoComponent* pComponent) const override;
 
-		Size	_skinSize(const SkinSlot* pSlot) const override;
-		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
+		void			_componentRequestRender(const GeoComponent* pComponent) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
 
-		State	_skinState(const SkinSlot* pSlot) const override;
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
 
 		//
 
@@ -208,7 +208,6 @@ namespace wg
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
-		SkinSlot		m_handleSkin;
 		MU				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		Rect			m_handleGeo;
 		State			m_handleState;

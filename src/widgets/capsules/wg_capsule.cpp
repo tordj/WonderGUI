@@ -55,7 +55,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			Size padding = m_skin.contentPaddingSize();
+			Size padding = OO(skin)._contentPaddingSize();
 
 			return slot._widget()->matchingHeight( width-padding.w ) + padding.h;
 		}
@@ -69,7 +69,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			Size padding = m_skin.contentPaddingSize();
+			Size padding = OO(skin)._contentPaddingSize();
 
 			return slot._widget()->matchingWidth(height - padding.h) + padding.w;
 		}
@@ -82,7 +82,7 @@ namespace wg
 	Size Capsule::preferredSize() const
 	{
 		if( slot._widget() )
-			return slot._widget()->preferredSize() + m_skin.contentPaddingSize();
+			return slot._widget()->preferredSize() + OO(skin)._contentPaddingSize();
 		else
 			return Widget::preferredSize();
 	}
@@ -91,21 +91,21 @@ namespace wg
 
 	Coord Capsule::_childPos( const StaticSlot * pSlot ) const
 	{
-		return m_skin.contentOfs( m_state );
+		return OO(skin)._contentOfs( m_state );
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void Capsule::_childRequestRender( StaticSlot * pSlot )
 	{
-		_requestRender( m_skin.contentRect( m_size, m_state ));
+		_requestRender(OO(skin)._contentRect( m_size, m_state ));
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void Capsule::_childRequestRender( StaticSlot * pSlot, const Rect& rect )
 	{
-		_requestRender( rect + m_skin.contentOfs( m_state ));
+		_requestRender( rect + OO(skin)._contentOfs( m_state ));
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -134,7 +134,7 @@ namespace wg
 
 	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( !m_skin.isEmpty() )
+		if( !skin.isEmpty() )
 			container.add(Rect(geo, clip));
 		else if( slot._widget() )
 			OO(slot._widget())->_collectPatches(container, geo, clip);
@@ -144,12 +144,12 @@ namespace wg
 
 	void Capsule::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if (!m_skin.isEmpty())
+		if (!skin.isEmpty())
 		{
-			if( m_skin.isOpaque( clip, geo.size(), m_state ) )
+			if(OO(skin)._isOpaque( clip, geo.size(), m_state ) )
 				patches.sub(Rect(geo, clip));
 			else if( slot._widget() )
-				OO(slot._widget())->_maskPatches(patches, m_skin.contentRect(geo, m_state), clip, blendMode);
+				OO(slot._widget())->_maskPatches(patches, OO(skin)._contentRect(geo, m_state), clip, blendMode);
 		}
 		else if( slot._widget() )
 			OO( slot._widget())->_maskPatches( patches, geo, clip, blendMode );
@@ -170,7 +170,7 @@ namespace wg
 
 		if ( slot._widget())
 		{
-			Size sz = size - m_skin.contentPaddingSize();
+			Size sz = size - OO(skin)._contentPaddingSize();
 			OO( slot._widget())->_resize(sz);
 		}
 	}
@@ -207,7 +207,7 @@ namespace wg
 		else
 		{
 			package.pSlot = &slot;
-			package.geo = m_skin.contentRect(Rect(0,0,m_size),m_state);
+			package.geo = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
 		}
 	}
 
@@ -235,7 +235,7 @@ namespace wg
 
 		if (pWidget)
 		{
-			Size sz = m_size - m_skin.contentPaddingSize();
+			Size sz = m_size - OO(skin)._contentPaddingSize();
 			OO(pWidget)->_resize(sz);
 		}
 

@@ -29,7 +29,7 @@
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
-#include <wg_skinslot.h>
+#include <wg_cskinslot.h>
 
 namespace wg
 {
@@ -62,7 +62,7 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected GeoComponent::Holder, protected SkinSlot::Holder
+	class Widget : public Receiver, protected CSkinSlot::Holder
 	{
 		friend class Container;
 		friend class GeoComponent;
@@ -74,6 +74,26 @@ namespace wg
 		template<class S, int X> friend class CSlotArray;
 
 	public:
+
+		//.____ Components ____________________________________
+
+		/**
+		 * @brief The skin of this widget.
+		 *
+		 * The skin used by this widget. The skin covers the
+		 * whole widget and provide the background for any components placed
+		 * on the widget (if any).
+		 *
+		 * A skin typically has different looks depending on the widgets state (normal,
+		 * disabled, mouse inside, pressed, selected etc) and can also include padding,
+		 * transitions and be animated.
+		 *
+		 * Some widgets have more than one skin, but this is always the background skin for
+		 * the whole widget.
+		 *
+		 */
+
+		CSkinSlot			skin;
 
 		//.____ Identification _________________________________________________
 
@@ -133,9 +153,6 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		virtual void		setSkin( Skin * pSkin );
-		inline Skin_p		skin() const;
-
 		inline void			setTooltip(const String& str);
 		inline virtual String tooltip() const;
 
@@ -194,9 +211,9 @@ namespace wg
 
 		bool            	_requestPreRenderCall();
 
-		inline Rect			_contentRect() const { return m_skin.contentRect(m_size, m_state); }
-		inline Rect			_contentRect(const Rect& canvas) const { return m_skin.contentRect(canvas, m_state); }
-		inline Size			_contentPaddingSize() const { return m_skin.contentPaddingSize(); }
+		inline Rect			_contentRect() const { return OO(skin)._contentRect(m_size, m_state); }
+		inline Rect			_contentRect(const Rect& canvas) const { return OO(skin)._contentRect(canvas, m_state); }
+		inline Size			_contentPaddingSize() const { return OO(skin)._contentPaddingSize(); }
 
 
 		// Convenient calls to holder
@@ -240,6 +257,7 @@ namespace wg
 		Object * 	_object() override;
 		const Object * _object() const override;
 
+		State			_componentState(const GeoComponent* pComponent) const override;
 		Coord			_componentPos( const GeoComponent * pComponent ) const override;
 		Size			_componentSize( const GeoComponent * pComponent ) const override;
 		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
@@ -258,15 +276,9 @@ namespace wg
 
 		// Methods for skin to access
 
-		void	_skinRequestRender(const SkinSlot* pSlot) override;
-		void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
-
-		Size	_skinSize(const SkinSlot* pSlot) const override;
-		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
-
-		State	_skinState(const SkinSlot* pSlot) const override;
-		float	_skinValue(const SkinSlot* pSlot) const override;
-		float	_skinValue2(const SkinSlot* pSlot) const override;
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		float			_skinValue(const CSkinSlot* pSlot) const override;
+		float			_skinValue2(const CSkinSlot* pSlot) const override;
 
 		int				m_id;
 		Object_p		m_pBaggage;
@@ -274,7 +286,6 @@ namespace wg
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
 
-		SkinSlot		m_skin;
 		PointerStyle	m_pointerStyle;
 
 		String			m_tooltip;
@@ -624,21 +635,6 @@ namespace wg
 		if( m_pHolder )
 			return m_pHolder->_prevChild( m_pSlot );
 		return 0;
-	}
-
-	//____ skin() _____________________________________________________________
-	/**
-	 * @brief Get the skin used by widget.
-	 *
-	 * Get the skin used by this widget. If a widget has several skins, this is the background skin,
-	 * covering the area of the widget and padding its content.
-	 *
-	 * @return Pointer to the skin used by this widget.
-	 */
-
-	Skin_p Widget::skin() const 
-	{ 
-		return m_skin.skin(); 
 	}
 
 	//____ setTooltip() _______________________________________________________

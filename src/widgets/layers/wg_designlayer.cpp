@@ -172,9 +172,9 @@ namespace wg
 	{
 		// Render skin
 
-		m_skin.render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_state);
 
-		Rect contentRect = m_skin.contentRect(_canvas, m_state);
+		Rect contentRect = OO(skin)._contentRect(_canvas, m_state);
 
 		if (!mainSlot.isEmpty())
 		{

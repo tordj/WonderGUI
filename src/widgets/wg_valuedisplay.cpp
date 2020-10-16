@@ -56,7 +56,7 @@ namespace wg
 	{
 		Size size = OO(value)._preferredSize();
 
-		return m_skin.sizeForContent(size);
+		return OO(skin)._sizeForContent(size);
 	}
 
 
@@ -91,13 +91,5 @@ namespace wg
 		OO(value)._setState(state);
 	}
 
-	//____ setSkin() _______________________________________________________
-
-	void ValueDisplay::setSkin( Skin * pSkin )
-	{
-		//TODO: Refresh size for the CValueDisplay
-
-		Widget::setSkin(pSkin);
-	}
 
 } // namespace wg

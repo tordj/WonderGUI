@@ -25,19 +25,19 @@
 
 namespace wg
 {
-	MemPool* SkinSlotManager::s_pMemPool = nullptr;
-	std::vector<SkinSlot::Pocket*>	SkinSlotManager::s_slotPockets;
+	MemPool* CSkinSlotManager::s_pMemPool = nullptr;
+	std::vector<CSkinSlot::Pocket*>	CSkinSlotManager::s_slotPockets;
 
 	//____ init() _____________________________________________________________
 
-	void SkinSlotManager::init()
+	void CSkinSlotManager::init()
 	{
-		s_pMemPool = new MemPool(16, sizeof(SkinSlot::Pocket));
+		s_pMemPool = new MemPool(16, sizeof(CSkinSlot::Pocket));
 	}
 
 	//____ exit() _____________________________________________________________
 
-	void SkinSlotManager::exit()
+	void CSkinSlotManager::exit()
 	{
 		assert(s_pMemPool->entriesAllocated() == 0);
 		delete s_pMemPool;
@@ -45,13 +45,13 @@ namespace wg
 
 	//____ update() ___________________________________________________________
 
-	void SkinSlotManager::update(int msPassed)
+	void CSkinSlotManager::update(int msPassed)
 	{
 		auto deleteIt = std::remove_if(s_slotPockets.begin(),
 			s_slotPockets.end(),
-			[msPassed](SkinSlot::Pocket* pPocket) 
+			[msPassed](CSkinSlot::Pocket* pPocket) 
 			{
-				bool bDelete = pPocket->pSkinSlot->_update(msPassed); 
+				bool bDelete = pPocket->pCSkinSlot->_update(msPassed); 
 				if (bDelete) 
 					s_pMemPool->freeEntry(pPocket); 
 				return bDelete; 
@@ -64,11 +64,11 @@ namespace wg
 
 	//____ allocPocket() ______________________________________________________
 
-	SkinSlot::Pocket* SkinSlotManager::allocPocket()
+	CSkinSlot::Pocket* CSkinSlotManager::allocPocket()
 	{
 		auto pBuff = s_pMemPool->allocEntry();
 
-		auto pPocket = new(pBuff) SkinSlot::Pocket();
+		auto pPocket = new(pBuff) CSkinSlot::Pocket();
 
 		s_slotPockets.push_back(pPocket);
 		return pPocket;
@@ -76,7 +76,7 @@ namespace wg
 
 	//____ freePocket() _______________________________________________________
 
-	void SkinSlotManager::freePocket(SkinSlot::Pocket* pPocket)
+	void CSkinSlotManager::freePocket(CSkinSlot::Pocket* pPocket)
 	{
 		s_pMemPool->freeEntry(pPocket);
 

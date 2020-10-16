@@ -60,11 +60,11 @@ namespace wg
 
 	MU Button::matchingHeight( MU width ) const
 	{
-		MU height = m_skin.preferredSize().h;
+		MU height = OO(skin)._preferredSize().h;
 
 		if( !OO(text).isEmpty() )
 		{
-			Size padding = m_skin.contentPaddingSize();
+			Size padding = OO(skin)._contentPaddingSize();
 
 			MU heightForText = OO(text)._matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
@@ -86,7 +86,7 @@ namespace wg
 		if( !OO(text).isEmpty() )
 			preferred = OO(text)._preferredSize();
 
-		preferred = m_skin.sizeForContent(preferred);
+		preferred = OO(skin)._sizeForContent(preferred);
 
 		//TODO: Take icon into account.
 
@@ -99,7 +99,7 @@ namespace wg
 	{
 		if (!_icon().isEmpty())
 		{
-			//TODO: Remove once icon uses SkinSlot.
+			//TODO: Remove once icon uses CSkinSlot.
 			_requestRender();
 		}
 
@@ -113,7 +113,7 @@ namespace wg
 	{
 		Widget::_resize(_size);
 
-		Rect	contentRect = m_skin.contentRect(_size,m_state);
+		Rect	contentRect = OO(skin)._contentRect(_size,m_state);
 
 		Rect textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
@@ -126,7 +126,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	contentRect = m_skin.contentRect(_canvas, m_state);
+		Rect	contentRect = OO(skin)._contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -269,7 +269,10 @@ namespace wg
 
 	Coord Button::_componentPos( const GeoComponent * pComponent ) const
 	{
-		Rect contentRect = m_skin.contentRect(contentRect, m_state);
+		if (pComponent == &skin)
+			return Coord();
+
+		Rect contentRect = OO(skin)._contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -286,7 +289,10 @@ namespace wg
 
 	Size Button::_componentSize( const GeoComponent * pComponent ) const
 	{
-		Size	sz = m_size - m_skin.contentPaddingSize();
+		if (pComponent == &skin)
+			return m_size;
+
+		Size	sz = m_size - OO(skin)._contentPaddingSize();
 
 		Rect iconRect = _icon()._getIconRect( sz );
 
@@ -302,7 +308,10 @@ namespace wg
 
 	Rect Button::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		Rect	contentRect = m_skin.contentRect(m_size, m_state);
+		if (pComponent == &skin)
+			return m_size;
+
+		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 

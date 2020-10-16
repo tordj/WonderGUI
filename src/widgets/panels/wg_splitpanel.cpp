@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	SplitPanel::SplitPanel() : slots(this), m_handleSkin(this)
+	SplitPanel::SplitPanel() : slots(this), handleSkin(this)
 	{
 		m_bHorizontal = false;
 		m_handleThickness = 0;
@@ -67,18 +67,6 @@ namespace wg
 		{
 			m_bHorizontal = bHorizontal;
 			_refresh();
-		}
-	}
-
-	//____ setHandleSkin() _______________________________________________________
-
-	void SplitPanel::setHandleSkin(Skin * pSkin)
-	{
-		if (pSkin != m_handleSkin.skin())
-		{
-			m_handleSkin.setSkin(pSkin);
-			_updatePreferredSize();
-			_updateGeo();
 		}
 	}
 
@@ -136,7 +124,7 @@ namespace wg
 	{
 		int thickness = m_handleThickness;
 		if (thickness == 0 )
-			thickness = m_bHorizontal ? m_handleSkin.preferredSize().w : m_handleSkin.preferredSize().h;
+			thickness = m_bHorizontal ? OO(handleSkin)._preferredSize().w : OO(handleSkin)._preferredSize().h;
 		return thickness;
 	}
 
@@ -160,23 +148,23 @@ namespace wg
 		{
 			sz.w = firstSz.w + secondSz.w + _handleThickness();
 			sz.h = max(firstSz.h, secondSz.h);
-			if (m_handleSkin.preferredSize().h > sz.h)
-				sz.h = m_handleSkin.preferredSize().h;
+			if (OO(handleSkin)._preferredSize().h > sz.h)
+				sz.h = OO(handleSkin)._preferredSize().h;
 		}
 		else
 		{
 			sz.w = max(firstSz.w, secondSz.w);
 			sz.h = firstSz.h + secondSz.h + _handleThickness();
-			if (m_handleSkin.preferredSize().w > sz.w)
-				sz.w = m_handleSkin.preferredSize().w;
+			if (OO(handleSkin)._preferredSize().w > sz.w)
+				sz.w = OO(handleSkin)._preferredSize().w;
 		}
 
 		// Take skins padding and preferred size into account
 
-		if (!m_skin.isEmpty())
+		if (!skin.isEmpty())
 		{
-			sz += m_skin.contentPaddingSize();
-			Size skinSz = m_skin.preferredSize();
+			sz += OO(skin)._contentPaddingSize();
+			Size skinSz = OO(skin)._preferredSize();
 			if (skinSz.w > sz.w)
 				sz.w = skinSz.w;
 			if (skinSz.h > sz.h)
@@ -196,7 +184,7 @@ namespace wg
 	bool SplitPanel::_updateGeo(MU handleMovement)
 	{
 		Rect geo = m_size;
-		Rect contentGeo = m_skin.contentRect(geo, m_state);
+		Rect contentGeo = OO(skin)._contentRect(geo, m_state);
 
 		Rect firstChildGeo;
 		Rect secondChildGeo;
@@ -431,7 +419,7 @@ namespace wg
 		State oldHandleState = m_handleState;
 		m_handleState = handleState;
 
-		m_handleSkin.stateChanged(handleState, oldHandleState);
+		OO(handleSkin)._stateChanged(handleState, oldHandleState);
 	}
 
 
@@ -441,7 +429,7 @@ namespace wg
 	{
 		Panel::_render(pDevice, canvas, window);
 
-		m_handleSkin.render(pDevice, m_handleGeo, m_handleState);
+		OO(handleSkin)._render(pDevice, m_handleGeo, m_handleState);
 	}
 
 
@@ -449,12 +437,12 @@ namespace wg
 
 	void SplitPanel::_collectPatches(Patches& container, const Rect& geo, const Rect& clip)
 	{
-		if (m_skin.isEmpty())
+		if (skin.isEmpty())
 		{
 			if (slots[0]._widget())
 				OO(slots[0]._widget())->_collectPatches(container, slots[0].m_geo + geo.pos(), clip);
 
-			if (!m_handleSkin.isEmpty())
+			if (!handleSkin.isEmpty())
 				container.add(Rect(m_handleGeo, clip));
 
 			if (slots[1]._widget())
@@ -477,7 +465,7 @@ namespace wg
 				if (slots[0]._widget())
 					OO(slots[0]._widget())->_maskPatches(patches, slots[0].m_geo + geo.pos(), clip, blendMode );
 
-				if (m_handleSkin.isOpaque() )
+				if (OO(handleSkin)._isOpaque() )
 					patches.sub(Rect(m_handleGeo, clip));
 
 				if (slots[1]._widget())
@@ -493,7 +481,7 @@ namespace wg
 		bool bHit = Panel::_alphaTest(ofs);
 
 		if( !bHit )
-			bHit = m_handleSkin.markTest(ofs, m_handleGeo, m_handleState, m_markOpacity);
+			bHit = OO(handleSkin)._markTest(ofs, m_handleGeo, m_handleState, m_markOpacity);
 
 		return bHit;
 	}
@@ -653,52 +641,70 @@ namespace wg
 			_requestRender(pSlot->m_geo);
 	}
 
-	//____ _skinRequestRender() _______________________________________________
+	//____ _componentState() _______________________________________________________
 
-	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot)
+	State SplitPanel::_componentState(const GeoComponent* pComponent) const
 	{
-		if (pSlot == &m_handleSkin)
-			_requestRender(m_handleGeo);
+		if (pComponent == &handleSkin)
+			return m_handleState;
 		else
-			_requestRender();
+			return m_state;
 	}
 
-	void SplitPanel::_skinRequestRender(const SkinSlot* pSlot, const Rect& rect)
+	//____ _componentPos() ___________________________________________________
+
+	Coord SplitPanel::_componentPos(const GeoComponent* pComponent) const
 	{
-		if (pSlot == &m_handleSkin)
-			_requestRender(rect + m_handleGeo.pos());
+		if (pComponent == &handleSkin)
+			return m_handleGeo.pos();
 		else
-			_requestRender(rect);
+			return Coord();
 	}
 
-	//____ _skinSize() ___________________________________________________________
+	//____ _componentSize() ___________________________________________________________
 
-	Size SplitPanel::_skinSize(const SkinSlot* pSlot) const
+	Size SplitPanel::_componentSize(const GeoComponent* pComponent) const
 	{
-		if (pSlot == &m_handleSkin)
+		if (pComponent == &handleSkin)
 			return m_handleGeo.size();
 		else
 			return m_size;
 	}
 
-	//____ _skinGlobalPos() ___________________________________________________
+	//____ _componentGeo() ___________________________________________________________
 
-	Coord SplitPanel::_skinGlobalPos(const SkinSlot* pSlot) const
+	Rect SplitPanel::_componentGeo(const GeoComponent* pComponent) const
 	{
-		if (pSlot == &m_handleSkin)
-			return globalPos() + m_handleGeo.pos();
+		if (pComponent == &handleSkin)
+			return m_handleGeo;
 		else
-			return globalPos();
+			return m_size;
 	}
 
-	//____ _skinState() _______________________________________________________
+	//____ _componentRequestRender() _______________________________________________
 
-	State SplitPanel::_skinState(const SkinSlot* pSlot) const
+	void SplitPanel::_componentRequestRender(const GeoComponent* pSlot)
 	{
-		if (pSlot == &m_handleSkin)
-			return m_handleState;
+		if (pSlot == &handleSkin)
+			_requestRender(m_handleGeo);
 		else
-			return m_state;
+			_requestRender();
+	}
+
+	void SplitPanel::_componentRequestRender(const GeoComponent* pSlot, const Rect& rect)
+	{
+		if (pSlot == &handleSkin)
+			_requestRender(rect + m_handleGeo.pos());
+		else
+			_requestRender(rect);
+	}
+
+	//____ _skinChanged() _____________________________________________________
+
+	void SplitPanel::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
+	{
+		_updatePreferredSize();
+		_updateGeo();
 	}
 
 }

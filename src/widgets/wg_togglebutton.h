@@ -88,11 +88,6 @@ namespace wg
 
 		Size			preferredSize() const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void			setSkin(Skin * pSkin) override;
-
-
 		//.____ State _________________________________________________
 
 		inline bool			isSelected();

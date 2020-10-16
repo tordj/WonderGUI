@@ -62,8 +62,6 @@ namespace wg
 
 		void            setGaps(float fSides, float fGap) {m_fSidePadding = fSides; m_fGap = fGap; }
 
-		void			setSkin(Skin * pSkin) override;
-
 		void				setDirection(Direction direction);
 		inline Direction	direction() const { return m_direction; }
 

@@ -20,15 +20,20 @@
 
 =========================================================================*/
 
-#include <wg_skinslot.h>
+#include <wg_cskinslot.h>
 #include <wg_skinslotmanager.h>
 
 namespace wg
 {
-	//____ setSkin() _________________________________________________________
+	//____ set() _________________________________________________________
 
-	void SkinSlot::setSkin(Skin* pSkin)
+	void CSkinSlot::set(Skin* pSkin)
 	{
+		if (pSkin == m_pSkin)
+			return;
+
+		Skin_p pOldSkin = m_pSkin;
+
 		// Replace the skin
 
 		if (m_pSkin)
@@ -43,7 +48,7 @@ namespace wg
 
 		if (pSkin)
 		{
-			State state = m_pHolder->_skinState(this);
+			State state = m_pHolder->_componentState(this);
 
 			if (pSkin->animationLength(state))
 			{
@@ -57,12 +62,12 @@ namespace wg
 		else if (m_pPocket)
 			_releasePocket();
 
-		m_pHolder->_skinRequestRender(this);
+		static_cast<CSkinSlot::Holder*>(m_pHolder)->_skinChanged(this, pSkin, pOldSkin);
 	}
 
-	//____ stateChanged() _____________________________________________________
+	//____ _stateChanged() _____________________________________________________
 
-	void SkinSlot::stateChanged(State newState, State oldState)
+	void CSkinSlot::_stateChanged(State newState, State oldState)
 	{
 		if (!m_pSkin || newState == oldState || m_pSkin->ignoresState() )
 			return;
@@ -130,9 +135,9 @@ namespace wg
 
 		// Check if we need to update skin right away due to state change.
 
-		Rect	canvas		= m_pHolder->_skinSize(this);
-		float	value1		= m_pHolder->_skinValue(this);
-		float	value2		= m_pHolder->_skinValue2(this);
+		Rect	canvas		= m_pHolder->_componentSize(this);
+		float	value1		= static_cast<CSkinSlot::Holder*>(m_pHolder)->_skinValue(this);
+		float	value2		= static_cast<CSkinSlot::Holder*>(m_pHolder)->_skinValue2(this);
 
 		int		animPos = m_pPocket ? m_pPocket->animationCounter : 0;
 		float* pStateFractions = m_pPocket ? m_pPocket->fractionalState : nullptr;
@@ -140,31 +145,31 @@ namespace wg
 
 		Rect dirtyRect = m_pSkin->dirtyRect(canvas, oldState, newState, value1, value1, value2, value2, animPos, animPos, pStateFractions, pStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_skinRequestRender(this, dirtyRect);
+			m_pHolder->_componentRequestRender(this, dirtyRect);
 	}
 
-	//____ valueChanged() _____________________________________________________
+	//____ _valueChanged() _____________________________________________________
 
-	void SkinSlot::valueChanged(float newValue, float oldValue, float newValue2, float oldValue2)
+	void CSkinSlot::_valueChanged(float newValue, float oldValue, float newValue2, float oldValue2)
 	{
 		if (!m_pSkin || m_pSkin->ignoresValue())
 			return;
 
-		Rect	canvas = m_pHolder->_skinSize(this);
-		State	state = m_pHolder->_skinState(this);
+		Rect	canvas = m_pHolder->_componentSize(this);
+		State	state = m_pHolder->_componentState(this);
 
 		int		animPos = m_pPocket ? m_pPocket->animationCounter : 0;
 		float*	pStateFractions = m_pPocket ? m_pPocket->fractionalState : nullptr;
 
 		Rect dirtyRect = m_pSkin->dirtyRect(canvas, state, state, newValue, oldValue, newValue2, oldValue2, animPos, animPos, pStateFractions, pStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_skinRequestRender(this, dirtyRect);
+			m_pHolder->_componentRequestRender(this, dirtyRect);
 
 	}
 
-	//____ render() ___________________________________________________________
+	//____ _render() ___________________________________________________________
 
-	void SkinSlot::render(GfxDevice* pDevice, const Rect& canvas, State state, float value, float value2) const
+	void CSkinSlot::_render(GfxDevice* pDevice, const Rect& canvas, State state, float value, float value2) const
 	{
 		if (m_pSkin)
 		{
@@ -177,7 +182,7 @@ namespace wg
 
 	//____ _update() __________________________________________________________
 
-	bool SkinSlot::_update(int msPassed)
+	bool CSkinSlot::_update(int msPassed)
 	{
 		if (!m_pPocket)
 			return false;
@@ -241,29 +246,29 @@ namespace wg
 
 		// Request render if needed
 
-		Rect	canvas = m_pHolder->_skinSize(this);
-		State	state = m_pHolder->_skinState(this);
-		float	value1 = m_pHolder->_skinValue(this);
-		float	value2 = m_pHolder->_skinValue2(this);
+		Rect	canvas = m_pHolder->_componentSize(this);
+		State	state = m_pHolder->_componentState(this);
+		float	value1 = static_cast<CSkinSlot::Holder*>(m_pHolder)->_skinValue(this);
+		float	value2 = static_cast<CSkinSlot::Holder*>(m_pHolder)->_skinValue2(this);
 
 		float	animPos = m_pPocket ? m_pPocket->animationCounter : 0.f;
 		float* pStateFractions = m_pPocket ? m_pPocket->fractionalState : nullptr;
 
 		Rect dirtyRect = m_pSkin->dirtyRect(canvas, state, state, value1, value1, value2, value2, newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 		if (!dirtyRect.isEmpty())
-			m_pHolder->_skinRequestRender(this, dirtyRect);
+			m_pHolder->_componentRequestRender(this, dirtyRect);
 
 		return (m_pPocket->bAnimated == false && m_pPocket->transitionFrom == m_pPocket->transitionTo);
 	}
 
 	//____ _initPocket() ______________________________________________________
 
-	void SkinSlot::_initPocket(State state)
+	void CSkinSlot::_initPocket(State state)
 	{
 		if (!m_pPocket)
 		{
-			m_pPocket = SkinSlotManager::allocPocket();
-			m_pPocket->pSkinSlot = this;
+			m_pPocket = CSkinSlotManager::allocPocket();
+			m_pPocket->pCSkinSlot = this;
 		}
 
 		Bitmask<uint8_t> statemask = state.mask();
@@ -280,11 +285,11 @@ namespace wg
 
 	//____ _releasePocket() ___________________________________________________
 
-	void SkinSlot::_releasePocket()
+	void CSkinSlot::_releasePocket()
 	{
 		if (m_pPocket)
 		{
-			SkinSlotManager::freePocket(m_pPocket);
+			CSkinSlotManager::freePocket(m_pPocket);
 			m_pPocket = nullptr;
 		}
 	}

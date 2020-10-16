@@ -55,11 +55,6 @@ namespace wg
 
 		Size			preferredSize() const override;
 
-		//.____ Appearance ____________________________________________________
-
-		void			setSkin(Skin * pSkin) override;
-
-
 	protected:
 		LineEditor();
 		virtual ~LineEditor();

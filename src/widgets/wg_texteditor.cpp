@@ -62,7 +62,7 @@ namespace wg
 
 		MU textHeight = OO(text)._matchingHeight( width );
 
-		textHeight += m_skin.contentPaddingSize().h;
+		textHeight += OO(skin)._contentPaddingSize().h;
 
 		return textHeight;
 	}
@@ -73,7 +73,7 @@ namespace wg
 	{
 		Size contentSize = OO(text)._preferredSize();
 
-		return m_skin.sizeForContent(contentSize);
+		return OO(skin)._sizeForContent(contentSize);
 	}
 
 	//____ _render() ________________________________________________________
@@ -82,7 +82,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = m_skin.contentRect(_canvas, m_state);
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		OO(text)._render( pDevice, canvas );
 	}
@@ -125,26 +125,13 @@ namespace wg
 //		const TextEditor * pOrg = static_cast<const TextEditor*>(_pOrg);
 	}
 
-	//____ setSkin() _______________________________________________________
-
-	void TextEditor::setSkin( Skin * pSkin )
-	{
-		Size oldTextCanvas = m_size - m_skin.contentPaddingSize();
-		Widget::setSkin(pSkin);
-
-		Size newTextCanvas = m_size - m_skin.contentPaddingSize();
-
-		if (newTextCanvas != oldTextCanvas)
-			OO(text)._setSize(newTextCanvas);
-	}
-
 	//____ _resize() ________________________________________________
 
 	void TextEditor::_resize( const Size& size )
 	{
 		Widget::_resize( size );
 
-		OO(text)._setSize(size - m_skin.contentPaddingSize());
+		OO(text)._setSize(size - OO(skin)._contentPaddingSize());
 	}
 
 } // namespace wg
