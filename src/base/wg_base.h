@@ -128,6 +128,8 @@ namespace wg
 
 		const static TypeInfo	TYPEINFO;
 
+		static void			update(int msPassed);
+
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
 

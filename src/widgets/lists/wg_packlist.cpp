@@ -165,7 +165,7 @@ namespace wg
 
 	Size PackList::preferredSize() const
 	{
-		Size sz = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
+		Size sz = m_skin.contentPaddingSize();
 		Size headerSize = _header()._preferredSize();
 
 		if (m_bHorizontal)
@@ -190,21 +190,16 @@ namespace wg
 	{
 		if (m_bHorizontal)
 		{
-			MU height = m_contentPreferredBreadth;
-			if (m_pSkin)
-				height += m_pSkin->contentPaddingSize().h;
-
+			MU height = m_contentPreferredBreadth + m_skin.contentPaddingSize().h;
 			return std::max(height, _header()._preferredSize().h);
 		}
 		else
 		{
 			MU height = _header()._matchingHeight(width);
-			if (m_pSkin)
-			{
-				Size pad = m_pSkin->contentPaddingSize();
-				width -= pad.w;
-				height += pad.h;
-			}
+			Size pad = m_skin.contentPaddingSize();
+			width -= pad.w;
+			height += pad.h;
+
 			width -= m_entryPadding.w;
 
 			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
@@ -222,12 +217,10 @@ namespace wg
 		if (m_bHorizontal)
 		{
 			MU width = _header()._matchingWidth(height);
-			if (m_pSkin)
-			{
-				Size pad = m_pSkin->contentPaddingSize();
-				height -= pad.w;
-				width += pad.h;
-			}
+			Size pad = m_skin.contentPaddingSize();
+			height -= pad.w;
+			width += pad.h;
+
 			height -= m_entryPadding.h;
 
 			for (auto pSlot = slots._begin(); pSlot < slots._end(); pSlot++)
@@ -238,9 +231,7 @@ namespace wg
 		}
 		else
 		{
-			MU width = m_contentPreferredBreadth;
-			if (m_pSkin)
-				width += m_pSkin->contentPaddingSize().w;
+			MU width = m_contentPreferredBreadth + m_skin.contentPaddingSize().w;
 
 			return std::max(width, _header()._preferredSize().w);
 		}
@@ -251,15 +242,15 @@ namespace wg
 
 	void PackList::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_pSkin )
-			container.add( Rect( geo, clip ) );
-		else
+		if( m_skin.isEmpty() )
 		{
-			if( m_bHorizontal )
-				container.add( Rect( Rect( geo.x, geo.y, wg::min(geo.w,m_contentLength), geo.h ), clip ) );
+			if (m_bHorizontal)
+				container.add(Rect(Rect(geo.x, geo.y, wg::min(geo.w, m_contentLength), geo.h), clip));
 			else
-				container.add( Rect( Rect( geo.x, geo.y, geo.w, wg::min(geo.h,m_contentLength) ), clip ) );
+				container.add(Rect(Rect(geo.x, geo.y, geo.w, wg::min(geo.h, m_contentLength)), clip));
 		}
+		else
+			container.add( Rect( geo, clip ) );
 	}
 
 	//____ _maskPatches() _______________________________________________________
@@ -309,11 +300,8 @@ namespace wg
 
 		Rect clip = Rect::fromPX(pDevice->clipBounds());
 
-		if( m_pSkin )
-		{
-			m_pSkin->render( pDevice, contentRect, m_state );
-			contentRect = m_pSkin->contentRect( contentRect, m_state );
-		}
+		m_skin.render( pDevice, contentRect, m_state );
+		contentRect = m_skin.contentRect( contentRect, m_state );
 
 		MU startOfs = m_bHorizontal ? clip.x-contentRect.x : clip.y-contentRect.y;
 		if( startOfs < 0 )
@@ -414,9 +402,7 @@ namespace wg
 		Size headerSize = m_bHorizontal ? Size(_header()._matchingWidth(_size.h), _size.h) : Size( _size.w, _header()._matchingHeight( _size.w ));
 		_header()._setSize( headerSize );
 
-		Size size = _size;
-		if( m_pSkin )
-			size -= m_pSkin->contentPaddingSize();
+		Size size = _size - m_skin.contentPaddingSize();
 
 		MU newContentBreadth;
 
@@ -1331,11 +1317,7 @@ namespace wg
 
 	Rect PackList::_listArea() const
 	{
-		Rect r = _listCanvas();
-		if( m_pSkin )
-			r = m_pSkin->contentRect( r, m_state );
-
-		return r;
+		return m_skin.contentRect( _listCanvas(), m_state );
 	}
 
 	//____ _listWindow() ____________________________________________________________

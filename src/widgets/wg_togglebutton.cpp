@@ -106,8 +106,7 @@ namespace wg
 
 		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
 
-		if( m_pSkin )
-			preferredSize = m_pSkin->sizeForContent( preferredSize );
+		preferredSize = m_skin.sizeForContent( preferredSize );
 
 		return preferredSize;
 	}
@@ -229,9 +228,11 @@ namespace wg
 
 		OO(text)._setState( state );
 
-		if( !_icon().isEmpty() && !_icon().skin()->isStateIdentical(state, m_state) )
-			_requestRender();		//TODO: Just request render on icon?
-
+		if (!_icon().isEmpty())
+		{
+			//TODO: Remove once icon uses SkinSlot.
+			_requestRender();
+		}
 		if( state.isSelected() != oldState.isSelected() )
 		{
 			Base::msgRouter()->post( ToggleMsg::create(this, state.isSelected() ) );
@@ -259,9 +260,7 @@ namespace wg
 
 		// Get the content rect and icon rect
 
-		Rect contentRect	= _canvas;
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(_canvas, m_state );
+		Rect contentRect	= m_skin.contentRect(_canvas, m_state );
 
 		Rect iconRect		= _icon()._getIconRect( contentRect );
 
@@ -294,9 +293,7 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		Rect contentRect	= Rect(0,0,size);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+		Rect contentRect	= m_skin.contentRect(size, m_state );
 
 		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
 	}
@@ -320,9 +317,7 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( const Coord& pos )
 	{
-		Rect contentRect	= Rect(0,0,m_size);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+		Rect contentRect = m_skin.contentRect(m_size, m_state );
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
@@ -338,9 +333,7 @@ namespace wg
 	{
 		Size	bgSize		= m_size;
 
-		Rect	contentRect = Rect(0,0,bgSize);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect( contentRect, m_state );
+		Rect	contentRect = m_skin.contentRect( bgSize, m_state );
 
 		Rect	iconRect	= _icon()._getIconRect( contentRect );
 
@@ -361,7 +354,7 @@ namespace wg
 					iconRect.x = textRect.right();
 				}
 
-				if( iconRect.y + iconRect.h < textRect.y )
+				if( iconRect.y + iconRect.h < textRect.y ) 
 					iconRect.h = textRect.y - iconRect.y;
 
 				if( iconRect.y > textRect.bottom() )

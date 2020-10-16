@@ -250,26 +250,9 @@ namespace wg
 		return true;
 	}
 
-	//____ isStateIdentical() _____________________________________________________
-
-	bool MultiBlockSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
-	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
-
-		for (auto& layer : m_layers)
-		{
-			if (layer.blockOfs[i1] != layer.blockOfs[i2] || layer.tintColor[i1] != layer.tintColor[i2])
-				return false;
-		}
-
-		return StateSkin::isStateIdentical(state, comparedTo);
-	}
-
-
 	//____ render() _______________________________________________________________
 
-	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void MultiBlockSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0 )
 			return;
@@ -348,7 +331,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool MultiBlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(_ofs) || m_layers.empty() || m_blockSize.w <= 0 || m_blockSize.h <= 0)
 			return false;
@@ -367,6 +350,28 @@ namespace wg
 		}
 
 		return false;
+	}
+
+	//____ dirtyRect() ______________________________________________________
+
+	Rect MultiBlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
+	{
+		if (oldState == newState)
+			return Rect();
+
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		for (auto& layer : m_layers)
+		{
+			if (layer.blockOfs[i1] != layer.blockOfs[i2] || layer.tintColor[i1] != layer.tintColor[i2])
+				return canvas;
+		}
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 	//____ _updateStateOpacity() __________________________________________________

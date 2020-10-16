@@ -453,7 +453,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	ScrollPanel::ScrollPanel() : viewSlot(this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
+	ScrollPanel::ScrollPanel() : viewSlot(this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this), m_cornerSkin(this)
 	{
 		m_scrollbarSlots[0].m_pHolder = (SlotHolder*) this;
 		m_scrollbarSlots[1].m_pHolder = (SlotHolder*) this;
@@ -665,8 +665,7 @@ namespace wg
 
 	void ScrollPanel::setCornerSkin( Skin * pSkin )
 	{
-		m_pCornerSkin = pSkin;
-		_requestRender( m_cornerGeo );
+		m_cornerSkin.setSkin(pSkin);
 	}
 
 	//____ _setWindowPos() ____________________________________________________
@@ -746,11 +745,8 @@ namespace wg
 
 			// Check window skin
 
-			if( m_pSkin )
-			{
-				if( m_pSkin->markTest( pos - p->m_windowGeo.pos() + p->m_viewPointOfs, p->m_contentSize, m_state, m_markOpacity ) )
-					return this;
-			}
+			if( m_skin.markTest( pos - p->m_windowGeo.pos() + p->m_viewPointOfs, p->m_contentSize, m_state, m_markOpacity ) )
+				return this;
 		}
 
 		// Check our little corner square and geometry
@@ -1126,22 +1122,22 @@ namespace wg
 
 		// Render Window background skin
 
-		if( m_pSkin )
+		if( !m_skin.isEmpty() )
 		{
 			Rect skinWindow = viewSlot.m_windowGeo + _canvas.pos();
 
 			Size skinSize = Size::max(viewSlot.m_contentSize, viewSlot.m_windowGeo);
 			Rect skinCanvas = Rect( skinWindow.pos() - viewSlot.m_viewPointOfs, skinSize );
 
-			m_pSkin->render( pDevice, skinCanvas, m_state );
+			m_skin.render( pDevice, skinCanvas, m_state );
 		}
 
 		// Render corner piece
 
-		if (m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
+		if (m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
 		{
 			Rect canvas = m_cornerGeo + _canvas.pos();
-			m_pCornerSkin->render(pDevice, canvas, m_state);
+			m_cornerSkin.render(pDevice, canvas, m_state);
 		}
 
 		// Render view recursively
@@ -1189,7 +1185,7 @@ namespace wg
 	void ScrollPanel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( ((m_bOpaque || (m_pSkin && m_pSkin->isOpaque(m_state))) && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
+		if( ((m_bOpaque || (m_skin.isOpaque(m_state))) && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
 			patches.sub( Rect(geo,clip) );
 			return;
@@ -1204,7 +1200,7 @@ namespace wg
 				{
 					ViewSlot * p = &viewSlot;
 
-					if (m_pSkin && m_pSkin->isOpaque())
+					if (m_skin.isOpaque(m_state))
 						patches.sub(Rect(p->m_windowGeo + geo.pos(), clip));
 					else if (p->_widget())
 						OO(p->_widget())->_maskPatches(patches, p->m_canvasGeo + geo.pos(), Rect(p->m_windowGeo + geo.pos(), clip), blendMode);
@@ -1222,7 +1218,7 @@ namespace wg
 
 				// Maska against corner piece
 
-				if( !m_cornerGeo.isEmpty() && m_pCornerSkin && m_pCornerSkin->isOpaque() )
+				if( !m_cornerGeo.isEmpty() && m_cornerSkin.isOpaque(m_state) )
 					patches.sub( Rect(m_cornerGeo + geo.pos(), clip) );
 
 				break;
@@ -1239,14 +1235,14 @@ namespace wg
 
 	bool ScrollPanel::_alphaTest( const Coord& ofs )
 	{
-		if( m_pSkin && viewSlot.m_windowGeo.contains( ofs ) )
+		if( viewSlot.m_windowGeo.contains( ofs ) )
 		{
-			return m_pSkin->markTest( ofs, viewSlot.m_canvasGeo, m_state, m_markOpacity );
+			return m_skin.markTest( ofs, viewSlot.m_canvasGeo, m_state, m_markOpacity );
 		}
 
-		if( m_pCornerSkin && m_cornerGeo.contains( ofs ) )
+		if( m_cornerGeo.contains( ofs ) )
 		{
-			return m_pCornerSkin->markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
+			return m_cornerSkin.markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
 		}
 
 		return false;

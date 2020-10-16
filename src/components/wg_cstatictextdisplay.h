@@ -44,7 +44,7 @@ namespace wg
 
 	//____ CStaticTextDisplay __________________________________________________________________
 
-	class CStaticTextDisplay : public CText		/** @private */
+	class CStaticTextDisplay : public CText
 	{
 	public:
 

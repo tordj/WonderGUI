@@ -67,10 +67,10 @@ namespace wg
 		void			setSkin(Skin * pSkin) override;
 
 		void			setBeginHandleSkin(Skin * pSkin);
-		inline Skin_p	beginHandleSkin() const { return m_pBeginHandleSkin; }
+		inline Skin_p	beginHandleSkin() const { return m_beginHandleSkin.skin(); }
 
 		void			setEndHandleSkin(Skin * pSkin);
-		inline Skin_p	endHandleSkin() const { return m_pEndHandleSkin; }
+		inline Skin_p	endHandleSkin() const { return m_endHandleSkin.skin(); }
 
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
@@ -103,14 +103,24 @@ namespace wg
 
 		void		_setRange(float begin, float end, bool bPostMsg = true);
 		void		_setHandleState(State state, bool isBeginHandle);
-		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle);
+		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle) const;
+
+		void	_skinRequestRender(const SkinSlot* pSlot) override;
+		void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+
+		Size	_skinSize(const SkinSlot* pSlot) const override;
+		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
+
+		State	_skinState(const SkinSlot* pSlot) const override;
+		float	_skinValue(const SkinSlot* pSlot) const override;
+		float	_skinValue2(const SkinSlot* pSlot) const override;
 
 
 	private:
 		Size		m_preferredSize;
 		MU			m_preferredSlideLength;
-		Skin_p		m_pBeginHandleSkin;
-		Skin_p		m_pEndHandleSkin;
+		SkinSlot	m_beginHandleSkin;
+		SkinSlot	m_endHandleSkin;
 		float		m_rangeBegin = 0.f;
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;

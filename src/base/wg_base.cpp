@@ -329,6 +329,13 @@ namespace wg
 		return s_pErrorHandler;
 	}
 
+	//____ update() ______________________________________________________________
+
+	void Base::update(int msPassed)
+	{
+		SkinSlotManager::update(msPassed);
+	}
+
 	//____ memStackAlloc() ________________________________________________________
 
 	char * Base::memStackAlloc( int bytes )

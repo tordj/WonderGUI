@@ -47,7 +47,7 @@ namespace wg
 
 	void SkinSlotManager::update(int msPassed)
 	{
-		std::remove_if(s_slotPockets.begin(),
+		auto deleteIt = std::remove_if(s_slotPockets.begin(),
 			s_slotPockets.end(),
 			[msPassed](SkinSlot::Pocket* pPocket) 
 			{
@@ -57,6 +57,9 @@ namespace wg
 				return bDelete; 
 			}
 		);
+
+		if (deleteIt != s_slotPockets.end())
+			s_slotPockets.erase(deleteIt, s_slotPockets.end());
 	}
 
 	//____ allocPocket() ______________________________________________________

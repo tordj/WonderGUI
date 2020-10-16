@@ -121,10 +121,7 @@ namespace wg
 			}
 		}
 
-		if( m_pSkin )
-			return m_pSkin->sizeForContent(preferred);
-		else
-			return preferred;
+		return m_skin.sizeForContent(preferred);
 	}
 
 
@@ -134,11 +131,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas;
-		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas,m_state);
-		else
-			canvas = _canvas;
+		Rect canvas = m_skin.contentRect(_canvas,m_state);
 
 		if( m_direction == Direction::Up || m_direction == Direction::Down )
 		{

@@ -62,7 +62,7 @@ namespace wg
 	*
 	**/
 
-	class CCanvas : public GeoComponent	/** @private */
+	class CCanvas : public GeoComponent
 	{
 		friend class ICanvas;
 

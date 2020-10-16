@@ -70,94 +70,38 @@ namespace wg
 		virtual bool	isOpaque( State state ) const;
 		virtual bool	isOpaque( const Rect& rect, const Size& canvasSize, State state ) const;
 
-		virtual bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const;
-
 		virtual bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-									float fraction = 1.f, float fraction2 = -1.f ) const = 0;
+									float value = 1.f, float value2 = -1.f ) const = 0;
 
 		virtual void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float fraction = 1.f, float fraction2 = -1.f ) const = 0;
+								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const = 0;
 
-		inline bool		ignoresFraction() const { return m_bIgnoresFraction; }
+		inline bool		ignoresValue() const { return m_bIgnoresValue; }
+		inline bool		ignoresState() const { return m_bIgnoresState; }
 
-		virtual Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
-											float oldFraction2 = -1.f, float newFraction2 = -1.f ) const;
+		inline bool		isContentShifting() const { return m_bContentShifting; }
 
-		inline bool		isContentShifting() { return m_bContentShifting; }
+		virtual Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0, 
+									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const;
 
-		//.____ Deprecated ______________________________________________________
-/*
-		inline bool		_markTest(const CoordI& ofs, const RectI& canvas, State state, int opacityTreshold) const
-		{
-			return markTest(reinterpret_cast<const Coord&>(ofs), reinterpret_cast<const Rect&>(canvas), state, opacityTreshold);
-		}
+		virtual int		animationLength(State state) const;
 
-		inline bool		_isOpaque(const RectI& rect, const SizeI& canvasSize, State state) const
-		{
-			return isOpaque(reinterpret_cast<const Rect&>(rect), reinterpret_cast<const Size&>(canvasSize), state);
-		}
+		virtual Bitmask<uint8_t>transitioningStates() const;
+		virtual const int*		transitionTimes() const;
 
-		inline SizeI	_minSize() const
-		{
-			return minSize().qpix();
-		}
-
-		inline SizeI	_preferredSize() const
-		{
-			return preferredSize().qpix();
-		}
-
-		inline SizeI	_sizeForContent(const SizeI contentSize) const
-		{
-			return sizeForContent(Util::qpixToMU(contentSize)).qpix();
-		}
-
-		inline BorderI	_contentPadding() const
-		{
-			return contentPadding().qpix();
-		}
-
-		inline SizeI	_contentPaddingSize() const
-		{
-			return contentPaddingSize().qpix();
-		}
-
-		inline CoordI	_contentOfs(State state) const
-		{
-			return contentOfs(state).qpix();
-		}
-
-		inline RectI	_contentRect(const RectI& canvas, State state) const
-		{
-			return contentRect(Util::qpixToMU(canvas), state).qpix();
-		}
-
-		inline void 	_render(GfxDevice * pDevice, const RectI& canvas, State state) const
-		{
-			render(pDevice, Util::qpixToMU(canvas), state);
-		}
-*/
 	protected:
 		Skin() {};
 
 		virtual void	_incUseCount() { m_useCount++; }
 		virtual void	_decUseCount() { m_useCount--; }
 
-		virtual const int*	_stateTransitionTimes() const;
-		virtual Bitmask<uint8_t> _animatedStates() const;
-		
-		virtual Rect	_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const;
-		bool			_setSuperSkin(Skin* pSuperSkin);
-		Skin*			_superSkin() const { return m_pSuperSkin; }
-
 		BorderI			m_contentPadding;					// Unit: Points
 		bool			m_bContentShifting = false;
-		bool			m_bIgnoresFraction = true;
+		bool			m_bIgnoresValue = true;
+		bool			m_bIgnoresState = true;
 		bool			m_bOpaque = false;
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
-		Skin*			m_pSuperSkin = nullptr;				// Skin containing us, affecting our geo (there can only be one).
-
-		const static int		s_stateTransitionTimes[StateBits_Nb];
 
 	};
 

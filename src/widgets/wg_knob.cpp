@@ -55,10 +55,7 @@ namespace wg
 
 	Size Knob::preferredSize() const
 	{
-		if (m_pSkin)
-			return m_pSkin->preferredSize();
-		else
-			return Size();
+		return m_skin.preferredSize();
 	}
 
 	//____ setSteps() ________________________________________________________
@@ -213,8 +210,7 @@ namespace wg
 
 	void Knob::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
 	{
-		if (m_pSkin)
-			m_pSkin->render(pDevice, canvas, m_state, m_value);
+		m_skin.render(pDevice, canvas, m_state, m_value);
 	}
 
 	//____ _setValue() __________________________________________________________
@@ -231,13 +227,20 @@ namespace wg
 
 		if (value != m_value)
 		{
-			if (m_pSkin)
-				_requestRender(m_pSkin->fractionChangeRect(m_size, m_state, m_value, value));
+			float oldValue = m_value;
 			m_value = value;
+			m_skin.valueChanged(value, oldValue);
 
 			if( bPostMsg )
 				Base::msgRouter()->post(ValueUpdateMsg::create(this, 0, m_value, false));
 		}
+	}
+
+	//____ _skinValue() _______________________________________________________
+
+	float Knob::_skinValue(const SkinSlot* pSlot) const
+	{
+		return m_value;
 	}
 
 } // namespace wg

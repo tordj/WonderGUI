@@ -35,7 +35,7 @@ namespace wg
 
 	//____ CStaticValueDisplay ____________________________________________________________
 
-	class CStaticValueDisplay : public CText		/** @private */
+	class CStaticValueDisplay : public CText
 	{
 	public:
 		CStaticValueDisplay(Holder * pHolder);

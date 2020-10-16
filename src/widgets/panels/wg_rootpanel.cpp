@@ -43,7 +43,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	RootPanel::RootPanel() : slot(this)
+	RootPanel::RootPanel() : slot(this), m_skin(this)
 	{
 		m_bVisible = true;
 		m_bHasGeo = false;
@@ -181,9 +181,7 @@ namespace wg
 
 	void RootPanel::setSkin(Skin * pSkin)
 	{
-		m_pSkin = pSkin;
-		m_dirtyPatches.clear();
-		m_dirtyPatches.push(m_geo);
+		m_skin.setSkin(pSkin);
 	}
 
 
@@ -291,8 +289,7 @@ namespace wg
 		if( dirtyPatches.size() > 0 )
 		{
 			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
-			if (m_pSkin)
-				m_pSkin->render(m_pGfxDevice, canvas, StateEnum::Normal);
+			m_skin.render(m_pGfxDevice, canvas, StateEnum::Normal);
 
 			OO(slot._widget())->_render( m_pGfxDevice, canvas, canvas );
 			popClipList(m_pGfxDevice, clipPop);
@@ -579,5 +576,54 @@ namespace wg
 	{
 		return;				// RootPanel doesn't support hiding
 	}
+
+	//____ _skinRequestRender() _______________________________________________
+
+	void RootPanel::_skinRequestRender(const SkinSlot* pSlot)
+	{
+		m_dirtyPatches.clear();
+		m_dirtyPatches.push(m_geo);
+	}
+
+	void RootPanel::_skinRequestRender(const SkinSlot* pSlot, const Rect& rect)
+	{
+		m_dirtyPatches.push(rect);
+	}
+
+	//____ _skinSize() ________________________________________________________
+
+	Size RootPanel::_skinSize(const SkinSlot* pSlot) const
+	{
+		return m_geo;
+	}
+
+	//____ _skinGlobalPos() ___________________________________________________
+
+	Coord RootPanel::_skinGlobalPos(const SkinSlot* pSlot) const
+	{
+		return m_geo;
+	}
+
+	//____ _skinState() _______________________________________________________
+
+	State RootPanel::_skinState(const SkinSlot* pSlot) const
+	{
+		return StateEnum::Normal;
+	}
+
+	//____ _skinValue() _______________________________________________________
+
+	float RootPanel::_skinValue(const SkinSlot* pSlot) const
+	{
+		return 1.f;
+	}
+
+	//____ _skinValue2() ______________________________________________________
+
+	float RootPanel::_skinValue2(const SkinSlot* pSlot) const
+	{
+		return -1.f;
+	}
+
 
 } // namespace wg

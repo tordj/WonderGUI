@@ -223,12 +223,12 @@ namespace wg
 
 	void Timer::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
 	{
-		if (m_pSkin)
+		if (!m_skin.isEmpty())
 		{
 			int quantizedValue = m_value - (m_value % m_stepSize);
 			m_renderedFraction = quantizedValue / float(m_duration);
 
-			m_pSkin->render(pDevice, canvas, m_state, m_renderedFraction );
+			m_skin.render(pDevice, canvas, m_state, m_renderedFraction );
 		}
 	}
 
@@ -245,14 +245,16 @@ namespace wg
 			int quantizedValue = value - (value % m_stepSize);
 			float fraction = quantizedValue / float(m_duration);
 
-			if (m_pSkin && fraction != m_renderedFraction)
-			{
-				if (m_renderedFraction < 0)
-					_requestRender();
-				else
-					_requestRender(m_pSkin->fractionChangeRect(m_size, m_state, m_renderedFraction, fraction));
-			}
+			m_skin.valueChanged(fraction, m_renderedFraction);
 		}
 	}
+
+	//____ _skinValue() _______________________________________________________
+
+	float Timer::_skinValue(const SkinSlot* pSlot) const
+	{
+		return float(m_value)/m_duration;
+	}
+
 
 } // namespace wg

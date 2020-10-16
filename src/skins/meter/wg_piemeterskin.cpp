@@ -59,7 +59,7 @@ namespace wg
 		_updateOpacity();
 
 		m_preferredSize = { 64,64 };
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
 	PieMeterSkin::PieMeterSkin(	float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize,
@@ -88,7 +88,7 @@ namespace wg
 		_updateOpacity();
 		
 		m_preferredSize = minSize() + SizeI(64, 64);
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -225,7 +225,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		bool	bFramed = false;
 
@@ -290,7 +290,7 @@ namespace wg
 
 		Color hubColor = m_hubColor.a == 255 ? m_hubColor : Color::blend(m_backColor, m_hubColor, BlendMode::Blend);
 
-		float totalLength = m_minRange + fraction * (m_maxRange - m_minRange);
+		float totalLength = m_minRange + value * (m_maxRange - m_minRange);
 
 //		if (totalLength == 0.f)
 //			return;
@@ -303,7 +303,7 @@ namespace wg
 
 			for (int i = 0; i < m_nSlices; i++)
 			{
-				sliceColors[i] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(fraction*255));
+				sliceColors[i] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(value*255));
 
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size >= totalLength)
@@ -329,7 +329,7 @@ namespace wg
 				if (length + size > gapSize )
 				{
 					sliceSizes[nSlices] = length < gapSize ? length + size - gapSize : size;
-					sliceColors[nSlices] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(fraction * 255));
+					sliceColors[nSlices] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(value * 255));
 					nSlices++;
 				}
 				length += size;
@@ -338,10 +338,10 @@ namespace wg
 
 		// Possibly fill out with empty section
 
-		if (fraction < 1.f)
+		if (value < 1.f)
 		{
 			sliceColors[nSlices] = m_emptyColor;
-			sliceSizes[nSlices++] = (1.f - fraction) * (m_maxRange - m_minRange);
+			sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
 		}
 
 		pDevice->drawPieChart(canvas.px(), m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
@@ -369,7 +369,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -382,14 +382,18 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect PieMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect PieMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		//TODO: Implement!
+		//TODO: Implement more optimized version.
 
-		return _canvas;
+		if (newValue != oldValue)
+			return canvas;
+
+		return Rect();
 	}
 
 	//____ _updateOpacity() ___________________________________________________

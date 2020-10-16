@@ -58,9 +58,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		virtual	bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	protected:
+		StateSkin() { m_bIgnoresState = false; }
+
 		void _refreshUnsetStates();
 
         CoordI				m_contentShift[StateEnum_Nb];       // Unit: Points

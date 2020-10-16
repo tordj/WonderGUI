@@ -35,7 +35,7 @@ namespace wg
 
 	//____ CValueEditor ____________________________________________________________
 
-	class CValueEditor : public CValueDisplay	/** @private */
+	class CValueEditor : public CValueDisplay
 	{
 	public:
 		CValueEditor(Holder * pHolder );

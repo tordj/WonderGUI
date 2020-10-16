@@ -184,7 +184,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
@@ -221,7 +221,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
@@ -240,14 +240,23 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ isStateIdentical() _____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool TileSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect TileSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		return ( m_stateSurfaces[i1] == m_stateSurfaces[i2] && StateSkin::isStateIdentical(state,comparedTo) );
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
+			return canvas;
+		
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2, 
+									newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 	//____ _updateOpaqueFlags() ________________________________________________

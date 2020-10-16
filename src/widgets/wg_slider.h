@@ -67,7 +67,7 @@ namespace wg
 		void			setSkin(Skin * pSkin) override;
 
 		void			setHandleSkin(const Skin_p& pSkin);
-		inline Skin_p	handleSkin() const { return m_pHandleSkin; }
+		inline Skin_p	handleSkin() const { return m_handleSkin.skin(); }
 
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
@@ -98,13 +98,21 @@ namespace wg
 
 		void		_setValue(float value, bool bPostMsg = true);
 		void		_setHandleState(State state);
-		Rect		_handleGeo(const Rect& widgetGeo);
+		Rect		_handleGeo(const Rect& widgetGeo) const;
 
+		void		_skinRequestRender(const SkinSlot* pSlot) override;
+		void		_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+
+		Size		_skinSize(const SkinSlot* pSlot) const override;
+		Coord		_skinGlobalPos(const SkinSlot* pSlot) const override;
+
+		State		_skinState(const SkinSlot* pSlot) const override;
+		float		_skinValue(const SkinSlot* pSlot) const override;
 
 	private:
 		Size		m_preferredSize;
 		MU			m_preferredSlideLength;
-		Skin_p		m_pHandleSkin;
+		SkinSlot	m_handleSkin;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		int			m_nbSteps = 0;

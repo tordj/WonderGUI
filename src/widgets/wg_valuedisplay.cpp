@@ -22,6 +22,7 @@
 
 #include	<wg_valuedisplay.h>
 #include	<wg_gfxdevice.h>
+#include	<wg_internal.h>
 
 namespace wg
 {
@@ -53,12 +54,9 @@ namespace wg
 
 	Size ValueDisplay::preferredSize() const
 	{
-		Size size = _value()._preferredSize();
+		Size size = OO(value)._preferredSize();
 
-		if( m_pSkin )
-			return m_pSkin->sizeForContent(size);
-		else
-			return size;
+		return m_skin.sizeForContent(size);
 	}
 
 
@@ -66,7 +64,7 @@ namespace wg
 
 	void ValueDisplay::_refresh( void )
 	{
-		_value()._refresh();
+		OO(value)._refresh();
 		Widget::_refresh();
 	}
 
@@ -75,7 +73,7 @@ namespace wg
 	void ValueDisplay::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
 		Widget::_render(pDevice,_canvas,_window);
-		_value()._render(pDevice, _canvas);
+		OO(value)._render(pDevice, _canvas);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -90,7 +88,7 @@ namespace wg
 	void ValueDisplay::_setState( State state )
 	{
 		Widget::_setState(state);
-		_value()._setState(state);
+		OO(value)._setState(state);
 	}
 
 	//____ setSkin() _______________________________________________________

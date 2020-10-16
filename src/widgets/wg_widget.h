@@ -194,9 +194,9 @@ namespace wg
 
 		bool            	_requestPreRenderCall();
 
-		inline Rect			_contentRect() const { return m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect( m_size ); }
-		inline Rect			_contentRect(const Rect& canvas) const { return m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas; }
-		inline Size			_contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
+		inline Rect			_contentRect() const { return m_skin.contentRect(m_size, m_state); }
+		inline Rect			_contentRect(const Rect& canvas) const { return m_skin.contentRect(canvas, m_state); }
+		inline Size			_contentPaddingSize() const { return m_skin.contentPaddingSize(); }
 
 
 		// Convenient calls to holder
@@ -265,7 +265,8 @@ namespace wg
 		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
 
 		State	_skinState(const SkinSlot* pSlot) const override;
-
+		float	_skinValue(const SkinSlot* pSlot) const override;
+		float	_skinValue2(const SkinSlot* pSlot) const override;
 
 		int				m_id;
 		Object_p		m_pBaggage;
@@ -273,7 +274,7 @@ namespace wg
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
 
-		SkinSlot		m_pSkin;
+		SkinSlot		m_skin;
 		PointerStyle	m_pointerStyle;
 
 		String			m_tooltip;
@@ -637,7 +638,7 @@ namespace wg
 
 	Skin_p Widget::skin() const 
 	{ 
-		return m_pSkin; 
+		return m_skin.skin(); 
 	}
 
 	//____ setTooltip() _______________________________________________________

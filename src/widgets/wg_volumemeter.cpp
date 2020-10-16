@@ -189,10 +189,7 @@ namespace wg
 	{
 		Size	sz = m_direction == Direction::Up || m_direction == Direction::Down ? Size(10,5*m_nLEDs) : Size( 5*m_nLEDs,10);
 
-		if( m_pSkin )
-			return m_pSkin->sizeForContent( sz );
-		else
-			return sz;
+		return m_skin.sizeForContent( sz );
 	}
 
 	//____ _resize() ____________________________________________________________________
@@ -352,11 +349,7 @@ namespace wg
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		RectI canvas;
-		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state).px();
-		else
-			canvas = _canvas.px();
+		RectI canvas = m_skin.contentRect(_canvas, m_state).px();
 
 		int p = m_iSidePadding.qpix >> 2;
 

@@ -42,18 +42,6 @@ namespace wg
 
 	DoubleSkin_p DoubleSkin::create(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin)
 	{
-		if (pFrontSkin && OO(pFrontSkin)->_superSkin())
-		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pFrontSkin is already part of a skin hierarchy.", nullptr, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
-			return nullptr;
-		}
-
-		if (pBackSkin && OO(pBackSkin)->_superSkin())
-		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pBackSkin is already part of a skin hierarchy.", nullptr, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
-			return nullptr;
-		}
-
 		return DoubleSkin_p(new DoubleSkin(pFrontSkin, pBackSkin, bSkinInSkin));
 	}
 
@@ -69,11 +57,6 @@ namespace wg
 		m_pBackSkin(pBackSkin),
 		m_bSkinInSkin(bSkinInSkin)
 	{
-		if( pFrontSkin )
-			OO(pFrontSkin)->_setSuperSkin(this);
-		if( pBackSkin )
-			OO(pBackSkin)->_setSuperSkin(this);
-
 		_onModified();
 	}
 
@@ -81,11 +64,6 @@ namespace wg
 
 	DoubleSkin::~DoubleSkin()
 	{
-		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_setSuperSkin(nullptr);
-
-		if (m_pBackSkin)
-			OO(m_pBackSkin)->_setSuperSkin(nullptr);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -99,15 +77,6 @@ namespace wg
 
 	bool DoubleSkin::setFrontSkin(Skin * pSkin)
 	{
-		if ( pSkin && !OO(pSkin)->_setSuperSkin(this))
-		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pSkin is already part of a skin hierarchy.", this, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-
-		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_setSuperSkin(nullptr);
-
 		m_pFrontSkin = pSkin;
 		_onModified();
 		return true;
@@ -117,15 +86,6 @@ namespace wg
 
 	bool DoubleSkin::setBackSkin(Skin* pSkin)
 	{
-		if (pSkin && !OO(pSkin)->_setSuperSkin(this))
-		{
-			Base::handleError(ErrorSeverity::Serious, ErrorCode::FailedPrerequisite, "Parameter pSkin is already part of a skin hierarchy.", this, DoubleSkin::TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-
-		if (m_pBackSkin)
-			OO(m_pBackSkin)->_setSuperSkin(nullptr);
-
 		m_pBackSkin = pSkin;
 		_onModified();
 		return true;
@@ -271,100 +231,143 @@ namespace wg
 		return (!rect2.isEmpty() && m_pFrontSkin->isOpaque(rect2, canvas2.size(), state));
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool DoubleSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
-	{
-		assert(m_pFrontSkin && m_pBackSkin);
-
-		return (m_pBackSkin->isStateIdentical(state, comparedTo, fraction, fraction2) && m_pFrontSkin->isStateIdentical(state, comparedTo, fraction, fraction2));
-	}
-
 	//____ markTest() _________________________________________________________
 
-	bool DoubleSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool DoubleSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
-		if (m_pBackSkin->markTest(ofs, canvas, state, opacityTreshold, fraction,fraction2))
+		if (m_pBackSkin->markTest(ofs, canvas, state, opacityTreshold, value,value2))
 			return true;
 
 		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		return canvas2.contains(ofs) && m_pFrontSkin->markTest(ofs, canvas2, state, opacityTreshold, fraction,fraction2);
+		return canvas2.contains(ofs) && m_pFrontSkin->markTest(ofs, canvas2, state, opacityTreshold, value, value2);
 	}
 
 	//____ render() ___________________________________________________________
 
-	void DoubleSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void DoubleSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		assert(m_pFrontSkin && m_pBackSkin);
 
 		Rect canvas = _canvas;
 
-		m_pBackSkin->render(pDevice, canvas, state, fraction,fraction2);
+		m_pBackSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
 		if (m_bSkinInSkin)
 			canvas = m_pBackSkin->contentRect(canvas, state);
 
-		m_pFrontSkin->render(pDevice, canvas, state, fraction,fraction2);
+		m_pFrontSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
 	}
 
-	//____ fractionChangeRect() _______________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	Rect DoubleSkin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, 
-										float oldFraction2, float newFraction2) const
+	Rect DoubleSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		assert(m_pFrontSkin && m_pBackSkin);
+		Rect dirt1 = m_pBackSkin->dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 
-		if (m_bIgnoresFraction)
-			return Rect();
+		if (dirt1 == canvas)
+			return dirt1;
 
-		Rect change1 = m_pBackSkin->fractionChangeRect(canvas, state, oldFraction, newFraction, oldFraction2, newFraction2);
+		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, newState) : canvas;
+		Rect dirt2 = m_pFrontSkin->dirtyRect(canvas2, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 
-		Rect canvas2 = m_bSkinInSkin ? m_pBackSkin->contentRect(canvas, state) : canvas;
-		Rect change2 = m_pFrontSkin->fractionChangeRect(canvas2, state, oldFraction, newFraction, oldFraction2, newFraction2);
+		if (dirt1.isEmpty())
+			return dirt2;
 
-		if (change1.isEmpty() && change2.isEmpty())
-			return Rect();
+		if (dirt2.isEmpty())
+			return dirt1;
 
-		if (change1.isEmpty())
-			return change2;
+		return Rect::getUnion(dirt1, dirt2);
+	}
 
-		if (change2.isEmpty())
-			return change1;
+	//____ animationLength() __________________________________________________
 
-		return Rect::getUnion(change1, change2);
+	int DoubleSkin::animationLength(State state) const
+	{
+		int frontLength = m_pFrontSkin ? m_pFrontSkin->animationLength(state) : 0;
+		int backLength = m_pBackSkin ? m_pBackSkin->animationLength(state) : 0;
+
+		int length = frontLength * backLength;
+
+		if (length == 0)
+			return frontLength + backLength;
+
+		int g = Util::gcd(frontLength, backLength);
+
+		return frontLength / g * backLength;
+	}
+
+	//____ transitioningStates() ______________________________________________
+
+	Bitmask<uint8_t>  DoubleSkin::transitioningStates() const
+	{
+		Bitmask<uint8_t> x = 0;
+
+		if (m_pFrontSkin)
+			x |= m_pFrontSkin->transitioningStates();
+
+		if (m_pBackSkin)
+			x |= m_pBackSkin->transitioningStates();
+
+		return x;
+	}
+
+	//____ transitionTimes() __________________________________________________
+
+	const int* DoubleSkin::transitionTimes() const
+	{
+		return m_transitionTimes;
 	}
 
 	//____ _onModified() ______________________________________________________
 
 	void DoubleSkin::_onModified()
 	{
-		m_bIgnoresFraction = true;
+		m_bIgnoresValue = true;
+		m_bIgnoresState = true;
 		m_bOpaque = false;
 		m_bContentShifting = false;
 
 		if (m_pBackSkin)
 		{
-			if (!m_pBackSkin->ignoresFraction())
-				m_bIgnoresFraction = false;
-			if (m_pBackSkin->isOpaque())
-				m_bOpaque = true;
+			m_bIgnoresValue = m_pBackSkin->ignoresValue();
+			m_bIgnoresState = m_pBackSkin->ignoresState();
+			m_bOpaque = m_pBackSkin->isOpaque();
 
 			if (m_bSkinInSkin)
-			{
-				if (m_pBackSkin->isContentShifting())
-					m_bContentShifting = true;
-			}
+				m_bContentShifting = m_pBackSkin->isContentShifting();
+
+			const int* p = m_pBackSkin->transitionTimes();
+			for (int i = 0; i < StateBits_Nb ; i++)
+				m_transitionTimes[i] = p[i];
+		}
+		else
+		{
+			for (int i = 0; i < StateBits_Nb; i++)
+				m_transitionTimes[i] = 0;
 		}
 
 		if (m_pFrontSkin)
 		{
-			if (!m_pFrontSkin->ignoresFraction())
-				m_bIgnoresFraction = false;
+			if (!m_pFrontSkin->ignoresValue())
+				m_bIgnoresValue = false;
+			if (!m_pFrontSkin->ignoresState())
+				m_bIgnoresState = false;
 			if (m_pFrontSkin->isOpaque())
 				m_bOpaque = true;
 			if (m_pFrontSkin->isContentShifting())
 				m_bContentShifting = true;
+
+			const int* p = m_pFrontSkin->transitionTimes();
+			for (int i = 0; i < StateBits_Nb; i++)
+			{
+				if( p[i] != 0)
+					m_transitionTimes[i] = std::max(m_transitionTimes[i],p[i]);
+			}
 		}
 
 	}
@@ -393,16 +396,6 @@ namespace wg
 			OO(m_pBackSkin)->_decUseCount();
 
 		m_useCount--;
-	}
-
-	//____ _subSkinGeo() _______________________________________________________
-
-	Rect DoubleSkin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
-	{
-		if (!m_bSkinInSkin || pSubSkin == m_pBackSkin)
-			return myGeo;
-
-		return m_pBackSkin->contentRect(myGeo, state);
 	}
 
 

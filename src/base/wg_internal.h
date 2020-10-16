@@ -27,6 +27,7 @@
 #include <wg_sidecanvas.h>
 #include <wg_ctexteditor.h>
 #include <wg_ccanvas.h>
+#include <wg_cvaluedisplay.h>
 #include <wg_skin.h>
 
 namespace wg
@@ -216,14 +217,21 @@ namespace wg
 		using CTextEditor::_setState;
 	};
 
+	class OCValueDisplay : public CValueDisplay
+	{
+	public:
+		using CValueDisplay::_preferredSize;
+		using CValueDisplay::_refresh;
+		using CValueDisplay::_render;
+		using CValueDisplay::_setState;
+	};
+
+
 	class OSkin : public Skin
 	{
 	public:
 		using Skin::_incUseCount;
 		using Skin::_decUseCount;
-		using Skin::_subSkinGeo;
-		using Skin::_setSuperSkin;
-		using Skin::_superSkin;
 	};
 
 
@@ -253,6 +261,9 @@ namespace wg
 
 	inline OCTextEditor&		OO(CTextEditor& component) { return reinterpret_cast<OCTextEditor&>(component); }
 	inline const OCTextEditor&	OO(const CTextEditor& component) { return reinterpret_cast<const OCTextEditor&>(component); }
+
+	inline OCValueDisplay&		OO(CValueDisplay& component) { return reinterpret_cast<OCValueDisplay&>(component); }
+	inline const OCValueDisplay& OO(const CValueDisplay& component) { return reinterpret_cast<const OCValueDisplay&>(component); }
 
 	inline OSideCanvas *		OO(SideCanvas* pWidget) { return reinterpret_cast<OSideCanvas*>(pWidget); }
 	inline const OSideCanvas *	OO(const SideCanvas* pWidget) { return reinterpret_cast<const OSideCanvas*>(pWidget); }

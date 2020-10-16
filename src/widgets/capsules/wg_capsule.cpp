@@ -55,7 +55,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			Size padding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
+			Size padding = m_skin.contentPaddingSize();
 
 			return slot._widget()->matchingHeight( width-padding.w ) + padding.h;
 		}
@@ -69,7 +69,7 @@ namespace wg
 	{
 		if( slot._widget() )
 		{
-			Size padding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
+			Size padding = m_skin.contentPaddingSize();
 
 			return slot._widget()->matchingWidth(height - padding.h) + padding.w;
 		}
@@ -82,12 +82,7 @@ namespace wg
 	Size Capsule::preferredSize() const
 	{
 		if( slot._widget() )
-		{
-			if (m_pSkin)
-				return slot._widget()->preferredSize() + m_pSkin->contentPaddingSize();
-
-			return slot._widget()->preferredSize();
-		}
+			return slot._widget()->preferredSize() + m_skin.contentPaddingSize();
 		else
 			return Widget::preferredSize();
 	}
@@ -96,30 +91,21 @@ namespace wg
 
 	Coord Capsule::_childPos( const StaticSlot * pSlot ) const
 	{
-		if( m_pSkin )
-			return m_pSkin->contentOfs( m_state );
-
-		return CoordI();
+		return m_skin.contentOfs( m_state );
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void Capsule::_childRequestRender( StaticSlot * pSlot )
 	{
-		if( m_pSkin )
-			_requestRender( m_pSkin->contentRect( m_size, m_state ));
-		else
-			_requestRender();
+		_requestRender( m_skin.contentRect( m_size, m_state ));
 	}
 
 	//____ _childRequestRender() _________________________________________________
 
 	void Capsule::_childRequestRender( StaticSlot * pSlot, const Rect& rect )
 	{
-		if( m_pSkin )
-			_requestRender( rect + m_pSkin->contentOfs( m_state ));
-		else
-			_requestRender( rect );
+		_requestRender( rect + m_skin.contentOfs( m_state ));
 	}
 
 	//____ _childRequestResize() _________________________________________________
@@ -148,7 +134,7 @@ namespace wg
 
 	void Capsule::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_pSkin )
+		if( !m_skin.isEmpty() )
 			container.add(Rect(geo, clip));
 		else if( slot._widget() )
 			OO(slot._widget())->_collectPatches(container, geo, clip);
@@ -158,12 +144,12 @@ namespace wg
 
 	void Capsule::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
-		if (m_pSkin)
+		if (!m_skin.isEmpty())
 		{
-			if( m_pSkin->isOpaque( clip, geo.size(), m_state ) )
+			if( m_skin.isOpaque( clip, geo.size(), m_state ) )
 				patches.sub(Rect(geo, clip));
 			else if( slot._widget() )
-				OO(slot._widget())->_maskPatches(patches, m_pSkin->contentRect(geo, m_state), clip, blendMode);
+				OO(slot._widget())->_maskPatches(patches, m_skin.contentRect(geo, m_state), clip, blendMode);
 		}
 		else if( slot._widget() )
 			OO( slot._widget())->_maskPatches( patches, geo, clip, blendMode );
@@ -184,7 +170,7 @@ namespace wg
 
 		if ( slot._widget())
 		{
-			Size sz = m_pSkin ? size - m_pSkin->contentPaddingSize() : size;
+			Size sz = size - m_skin.contentPaddingSize();
 			OO( slot._widget())->_resize(sz);
 		}
 	}
@@ -221,7 +207,7 @@ namespace wg
 		else
 		{
 			package.pSlot = &slot;
-			package.geo = m_pSkin ? m_pSkin->contentRect(Rect(0,0,m_size),m_state) : Rect(0, 0, m_size);
+			package.geo = m_skin.contentRect(Rect(0,0,m_size),m_state);
 		}
 	}
 
@@ -236,7 +222,7 @@ namespace wg
 
 	void Capsule::_releaseChild(StaticSlot * _pSlot)
 	{
-		OO(&slot)->_setWidget(nullptr);
+		OO(slot)._setWidget(nullptr);
 		_requestRender();
 		_requestResize();
 	}
@@ -245,11 +231,11 @@ namespace wg
 
 	void Capsule::_replaceChild( StaticSlot * pSlot, Widget * pWidget )
 	{
-		OO(&slot)->_setWidget(pWidget );
+		OO(slot)._setWidget(pWidget );
 
 		if (pWidget)
 		{
-			Size sz = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
+			Size sz = m_size - m_skin.contentPaddingSize();
 			OO(pWidget)->_resize(sz);
 		}
 

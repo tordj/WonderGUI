@@ -175,6 +175,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cstaticvaluedisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cvaluedisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cvalueeditor.h" />
+    <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />

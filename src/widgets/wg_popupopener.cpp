@@ -87,10 +87,7 @@ namespace wg
 	{
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect	contentRect = _canvas;
-
-		if (m_pSkin)
-			contentRect = m_pSkin->contentRect(_canvas, m_state);
+		Rect	contentRect = m_skin.contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -117,8 +114,7 @@ namespace wg
 
 		Rect	contentRect(0, 0, _size);
 
-		if (m_pSkin)
-			contentRect -= m_pSkin->contentPaddingSize();
+		contentRect -= m_skin.contentPaddingSize();
 
 		Rect textRect = _icon()._getTextRect(contentRect, _icon()._getIconRect(contentRect));
 
@@ -197,17 +193,11 @@ namespace wg
 
 	MU PopupOpener::matchingHeight(MU width) const
 	{
-		MU height = 0;
-
-		if (m_pSkin)
-			height = m_pSkin->preferredSize().h;
+		MU height = m_skin.preferredSize().h;
 
 		if (!OO(text).isEmpty())
 		{
-			Size padding;
-
-			if (m_pSkin)
-				padding = m_pSkin->contentPaddingSize();
+			Size padding = m_skin.contentPaddingSize();
 
 			MU heightForText = OO(text)._matchingHeight(width - padding.w) + padding.h;
 			if (heightForText > height)
@@ -229,8 +219,7 @@ namespace wg
 		if (!OO(text).isEmpty())
 			preferred = OO(text)._preferredSize();
 
-		if (m_pSkin)
-			preferred = m_pSkin->sizeForContent(preferred);
+		preferred = m_skin.sizeForContent(preferred);
 
 		//TODO: Take icon into account.
 
@@ -288,10 +277,7 @@ namespace wg
 
 	Coord PopupOpener::_componentPos(const GeoComponent * pComponent) const
 	{
-		Rect	contentRect = m_size;
-
-		if (m_pSkin)
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+		Rect contentRect = m_skin.contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -308,10 +294,7 @@ namespace wg
 
 	Size PopupOpener::_componentSize(const GeoComponent * pComponent) const
 	{
-		Size	sz = m_size;
-
-		if (m_pSkin)
-			sz -= m_pSkin->contentPaddingSize();
+		Size sz = m_size - m_skin.contentPaddingSize();
 
 		Rect iconRect = _icon()._getIconRect(sz);
 
@@ -327,10 +310,7 @@ namespace wg
 
 	Rect PopupOpener::_componentGeo(const GeoComponent * pComponent) const
 	{
-		Rect	contentRect = m_size;
-
-		if (m_pSkin)
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+		Rect	contentRect = m_skin.contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 

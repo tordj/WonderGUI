@@ -80,10 +80,7 @@ namespace wg
 			contentSize.h = 16;
 		}
 
-		if( m_pSkin )
-			return m_pSkin->sizeForContent( contentSize );
-		else
-			return contentSize;
+		return m_skin.sizeForContent( contentSize );
 	}
 
 	//____ _render() ________________________________________________________
@@ -92,7 +89,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect( _canvas, m_state ) : _canvas;
+		Rect canvas = m_skin.contentRect(_canvas, m_state);
 
 		//
 
@@ -158,10 +155,7 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		if( m_pSkin )
-			OO(text)._setSize( Size( OO(text)._preferredSize().w, size.h - m_pSkin->contentPaddingSize().h ) );
-		else
-			OO(text)._setSize( Size( OO(text)._preferredSize().w, size.h ) );
+		OO(text)._setSize( Size( OO(text)._preferredSize().w, size.h - m_skin.contentPaddingSize().h ) );
 	}
 
 	//____ _componentPos() __________________________________________________________
@@ -170,47 +164,31 @@ namespace wg
 	{
 		Coord c(-m_textScrollOfs, 0);
 
-		if( m_pSkin )
-			return m_pSkin->contentOfs( m_state ) + c;
-		else
-			return c;
+		return m_skin.contentOfs( m_state ) + c;
 	}
 
 	//____ _componentSize() _________________________________________________________
 
 	Size LineEditor::_componentSize( const GeoComponent * pComponent ) const
 	{
-		if( m_pSkin )
-			return Size( OO(text)._preferredSize().w, m_size.h - m_pSkin->contentPaddingSize().h );
-		else
-			return Size( OO(text)._preferredSize().w, m_size.h );
+		return Size( OO(text)._preferredSize().w, m_size.h - m_skin.contentPaddingSize().h );
 	}
 
 	//____ _componentGeo() __________________________________________________________
 
 	Rect LineEditor::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		if( m_pSkin )
-		{
-			Rect r = m_pSkin->contentRect( m_size, m_state );
-			r.x -= m_textScrollOfs;
-			r.w = OO(text)._preferredSize().w;
-			return r;
-		}
-		else
-			return Rect( -m_textScrollOfs, 0, OO(text)._preferredSize().w, m_size.h );
+		Rect r = m_skin.contentRect( m_size, m_state );
+		r.x -= m_textScrollOfs;
+		r.w = OO(text)._preferredSize().w;
+		return r;
 	}
 
 	//____ _componentRequestRender() ______________________________________________
 
 	void LineEditor::_componentRequestRender(const GeoComponent * pComponent)
 	{
-		Rect visible(0, 0, m_size);
-
-		if (m_pSkin)
-			visible = m_pSkin->contentRect(m_size, m_state);
-
-		_requestRender(visible);
+		_requestRender(m_skin.contentRect(m_size, m_state));
 	}
 
 	void LineEditor::_componentRequestRender( const GeoComponent * pComponent, const Rect& rect )
@@ -218,13 +196,8 @@ namespace wg
 		Rect dirt = rect;
 		dirt.x -= m_textScrollOfs;
 
-		Rect visible(0,0,m_size);
-
-		if( m_pSkin )
-		{
-			visible = m_pSkin->contentRect( m_size, m_state );
-			dirt += visible.pos();
-		}
+		Rect visible = m_skin.contentRect( m_size, m_state );
+		dirt += visible.pos();
 
 		dirt.intersection( dirt, visible );
 		if( !dirt.isEmpty() )
@@ -237,9 +210,7 @@ namespace wg
 	{
 		Size preferred = OO(text)._preferredSize();
 
-		MU height = m_size.h;
-		if( m_pSkin )
-			height -= m_pSkin->contentPaddingSize().h;
+		MU height = m_size.h - m_skin.contentPaddingSize().h;
 
 		if( preferred.h != height )
 			_requestResize();
@@ -254,9 +225,7 @@ namespace wg
 		MU scrollOfs = m_textScrollOfs;
 		Size canvas = _componentSize(pComponent);
 
-		Size window = m_size;
-		if( m_pSkin )
-			window -= m_pSkin->contentPaddingSize();
+		Size window = m_size - m_skin.contentPaddingSize();
 
 		if (scrollOfs > 0 && canvas.w - scrollOfs < window.w)
 			scrollOfs = canvas.w < window.w ? MU() : canvas.w - window.w;

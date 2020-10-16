@@ -103,61 +103,37 @@ namespace wg
 		return m_bOpaque;
 	}
 
-	//____ isStateIdentical() ____________________________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	bool Skin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2 ) const
-	{
-		return true;
-	}
-
-	//____ fractionChangeRect() _______________________________________________
-
-	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2 ) const
+	Rect Skin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos, float* pNewStateFractions,
+		float* pOldStateFractions) const
 	{
 		return Rect();
 	}
 
-	//____ _stateTransitionTimes() ____________________________________________
+	//____ animationLength() ____________________________________________
 
-	const int* Skin::_stateTransitionTimes() const
+	int Skin::animationLength(State state) const
+	{
+		return 0;
+	}
+
+	//____ transitioningStates() __________________________________________________
+
+	Bitmask<uint8_t> Skin::transitioningStates() const
+	{
+		return Bitmask<uint8_t>(0);
+	}
+
+	//____ transitionTimes() ____________________________________________
+
+	const int* Skin::transitionTimes() const
 	{
 		const int	transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
 
 		return transitionTimes;
 	}
-
-	//____ _animatedStates() __________________________________________________
-
-	Bitmask<uint8_t> Skin::_animatedStates() const
-	{
-		return Bitmask<uint8_t>(0);
-	}
-
-	//____ _subSkinGeo() ______________________________________________________
-
-	Rect Skin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
-	{
-		return myGeo;
-	}
-
-	//____ _setSuperSkin() ____________________________________________________
-
-	bool Skin::_setSuperSkin(Skin* pSuperSkin)
-	{
-		if (pSuperSkin == nullptr)
-		{
-			m_pSuperSkin = nullptr;
-			return true;
-		}
-
-		if (m_pSuperSkin)
-			return false;
-
-		m_pSuperSkin = pSuperSkin;
-		return true;
-	}
-
-
 
 
 } // namespace wg

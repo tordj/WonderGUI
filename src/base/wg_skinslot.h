@@ -45,19 +45,22 @@ namespace wg
 			virtual Coord	_skinGlobalPos(const SkinSlot* pSlot) const = 0;
 
 			virtual State	_skinState(const SkinSlot* pSlot) const = 0;
+			virtual float	_skinValue(const SkinSlot* pSlot) const = 0;
+			virtual float	_skinValue2(const SkinSlot* pSlot) const = 0;
 
-			virtual Object* _object() = 0;
+
+//			virtual Object* _object() = 0;
 		};
 
 		struct Pocket
 		{
-			SkinSlot*	pSkinSlot;
+			SkinSlot*			pSkinSlot;
+			bool				bAnimated;		// Set if skin is animated beyond transitions.
+			int					animationCounter;	// Count animation progress in millisec.
 
-			State		transitionFromState;
-			State		transitionToState;
-			int			transitionMillisec[StateBits_Nb];
-
-			float		transitionProgress[StateBits_Nb];
+			Bitmask<uint8_t>	transitionFrom;	// Bitmask representation of state we transition from.
+			Bitmask<uint8_t>	transitionTo;	// Bitmask representation of tstate we transition to.
+			float				fractionalState[StateBits_Nb];
 		};
 
 		SkinSlot(Holder* pHolder) : m_pHolder(pHolder) {}
@@ -66,11 +69,45 @@ namespace wg
 
 		// Operators for the holder
 
-		inline Skin* operator->() const { return m_pSkin; }
-		inline operator Skin*() const { return m_pSkin; }
-		inline operator Skin_p() const { return m_pSkin; }
+//		inline Skin* operator->() const { return m_pSkin; }
+//		inline operator Skin*() const { return m_pSkin; }
 
-		inline SkinSlot& operator=(Skin* pSkin) { _setSkin(pSkin); return *this; }
+//		inline SkinSlot& operator=(Skin* pSkin) { setSkin(pSkin); return *this; }
+//		inline operator Skin_p() const { return m_pSkin; }
+
+
+
+		void			setSkin(Skin* pSkin);
+		inline Skin_p	skin() const { return m_pSkin; }
+		inline bool		isEmpty() const { return m_pSkin == nullptr; }
+
+		void			stateChanged(State newState, State oldState);
+		void			valueChanged(float newValue, float oldValue, float newValue2 = -1, float oldValue2 = -1);
+
+		void 			render(GfxDevice* pDevice, const Rect& canvas, State state, float value = 1.f, float value2 = -1.f ) const;
+
+		inline Size		minSize() const { return m_pSkin ? m_pSkin->minSize() : Size(); }
+		inline Size		preferredSize() const { return m_pSkin ? m_pSkin->preferredSize() : Size(); }
+
+		inline Size		contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
+		inline Size		sizeForContent(const Size& contentSize) const { return m_pSkin ? m_pSkin->sizeForContent(contentSize) : contentSize; }
+		inline Coord	contentOfs(State state) const { return m_pSkin ? m_pSkin->contentOfs(state) : Coord(); }
+		inline Rect		contentRect(const Rect& canvas, State state) const { return m_pSkin ? m_pSkin->contentRect(canvas,state): canvas; }
+
+		inline bool		isOpaque() const { return m_pSkin ? m_pSkin->isOpaque() : false; }
+		inline bool		isOpaque(State state) const { return m_pSkin ? m_pSkin->isOpaque(state) : false; }
+		inline bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const 
+						{ 
+							return m_pSkin ? m_pSkin->isOpaque(rect, canvasSize, state) : false; 
+						}
+
+		inline bool		markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold,
+									float value = 1.f, float value2 = -1.f) const 
+						{
+							return m_pSkin ? m_pSkin->markTest(ofs, canvas, state, opacityTreshold, value, value2) : false;
+						}
+
+		inline bool		isContentShifting() { return m_pSkin ? m_pSkin->isContentShifting() : false; }
 
 		//
 
@@ -78,12 +115,10 @@ namespace wg
 
 	protected:
 
-		void _setSkin(Skin* pSkin);
-		void _changeState(State newState, State oldState);
-		bool _update(int msPassed);
+		bool	_update(int msPassed);
 
-		void _initPocket();
-		void _releasePocket();
+		void	_initPocket(State state);
+		void	_releasePocket();
 
 		Skin_p	m_pSkin;
 		Holder* m_pHolder;

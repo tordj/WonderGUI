@@ -119,7 +119,7 @@ namespace wg
 		//.____ Appearance _________________________________________________
 
 		void			setHandleSkin(Skin * pSkin);
-		Skin_p			handleSkin() const { return m_pHandleSkin; }
+		Skin_p			handleSkin() const { return m_handleSkin.skin(); }
 
 		void			setHandleThickness(MU thickness);
 		MU				handleThickness() const { return m_handleThickness;  }
@@ -193,12 +193,22 @@ namespace wg
 
 		//
 
+		void	_skinRequestRender(const SkinSlot* pSlot) override;
+		void	_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+
+		Size	_skinSize(const SkinSlot* pSlot) const override;
+		Coord	_skinGlobalPos(const SkinSlot* pSlot) const override;
+
+		State	_skinState(const SkinSlot* pSlot) const override;
+
+		//
+
 		bool			m_bHorizontal;
 		Size			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
-		Skin_p			m_pHandleSkin;
+		SkinSlot		m_handleSkin;
 		MU				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		Rect			m_handleGeo;
 		State			m_handleState;

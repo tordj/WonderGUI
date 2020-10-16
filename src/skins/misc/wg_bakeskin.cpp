@@ -76,11 +76,6 @@ namespace wg
 
 	BakeSkin::~BakeSkin()
 	{
-		for (auto& pSkin : skins)
-		{
-			if (pSkin)
-				OO(pSkin)->_setSuperSkin(nullptr);
-		}
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -222,26 +217,13 @@ namespace wg
 		return false;
 	}
 
-	//____ isStateIdentical() _________________________________________________
-
-	bool BakeSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
-	{
-		for (auto& pSkin : skins)
-		{
-			if (pSkin && !pSkin->isStateIdentical(state, comparedTo, fraction,fraction2))
-				return false;
-		}
-
-		return true;
-	}
-
 	//____ markTest() _________________________________________________________
 
-	bool BakeSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool BakeSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		for (auto& pSkin : skins)
 		{
-			if (pSkin && pSkin->markTest(ofs,canvas,state,opacityTreshold,fraction,fraction2))
+			if (pSkin && pSkin->markTest(ofs,canvas,state,opacityTreshold,value,value2))
 				return true;
 		}
 		return false;
@@ -249,7 +231,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void BakeSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void BakeSkin::render(GfxDevice* pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		// Sanity checking
 
@@ -309,7 +291,7 @@ namespace wg
 			{
 				if ((*it) != nullptr)
 				{
-					(*it)->render(pDevice, canvas, state, fraction, fraction2);
+					(*it)->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
 					canvas = (*it)->contentRect(canvas, state);
 				}
 			}
@@ -319,7 +301,7 @@ namespace wg
 			for (auto it = skins.rbegin(); it != skins.rend(); it++)
 			{
 				if ((*it) != nullptr)
-					(*it)->render(pDevice, bakeCanvas, state, fraction, fraction2);
+					(*it)->render(pDevice, bakeCanvas, state, value, value2, animPos, pStateFractions);
 			}
 		}
 
@@ -334,21 +316,21 @@ namespace wg
 		pDevice->blit(canvas.pos().px(), { 0,0,canvas.size().px() });
 	}
 
-	//____ fractionChangeRect() _______________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	Rect BakeSkin::fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
-										float oldFraction2, float newFraction2 ) const
+	Rect BakeSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		if (m_bIgnoresFraction)
-			return Rect();
-
+		Rect canvas = _canvas;
 		Rect r;
 
-		for (auto& pSkin : skins)
+		for (auto it = skins.rbegin(); it != skins.rend(); it++)
 		{
-			if (pSkin && !pSkin->ignoresFraction() )
+			if ((*it) != nullptr)
 			{
-				Rect r2 = pSkin->fractionChangeRect(canvas, state, oldFraction, newFraction, oldFraction2, newFraction2);
+				Rect r2 = (*it)->dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+					newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 				if (!r2.isEmpty())
 				{
 					if (r.isEmpty())
@@ -356,11 +338,36 @@ namespace wg
 					else
 						r.growToContain(r2);
 				}
+
+				if( m_bSkinInSkin )
+					canvas = (*it)->contentRect(canvas, newState);
 			}
 		}
 
 		return r;
 	}
+
+	//____ animationLength() __________________________________________________
+
+	int BakeSkin::animationLength(State state) const
+	{
+		return m_animationLengths[_stateToIndex(state)];
+	}
+
+	//____ transitioningStates() _______________________________________________
+
+	Bitmask<uint8_t> BakeSkin::transitioningStates() const
+	{
+		return m_transitioningStates;
+	}
+
+	//____ transitionTimes() __________________________________________________
+
+	const int* BakeSkin::transitionTimes() const
+	{
+		return m_transitionTimes;
+	}
+
 
 	//____ _updateCachedGeo() _________________________________________________
 
@@ -438,6 +445,8 @@ namespace wg
 
 	Border BakeSkin::_stateContentPadding(State state) const
 	{
+		// Only called if we are skin-in-skin.
+
 		Border padding;
 
 		for (auto& pSkin : skins)
@@ -445,7 +454,7 @@ namespace wg
 			if (pSkin)
 				padding += pSkin->contentPadding(state);
 		}
-
+		
 		return padding;
 	}
 
@@ -457,14 +466,14 @@ namespace wg
 		// Update various flags.
 
 		m_bContentShifting = false;
-		m_bIgnoresFraction = true;
+		m_bIgnoresValue = true;
 
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
 			{
 				m_bContentShifting = m_bContentShifting || pSkin->isContentShifting();
-				m_bIgnoresFraction = m_bIgnoresFraction && pSkin->ignoresFraction();
+				m_bIgnoresValue = m_bIgnoresValue && pSkin->ignoresValue();
 			}
 		}
 
@@ -555,23 +564,63 @@ namespace wg
 		// Invalidate our geo cache
 
 		m_cachedQPixPerPoint = 0;
+
+		// Update transition data
+
+		for (int i = 0; i < StateBits_Nb; i++)
+			m_transitionTimes[i] = 0;
+
+		m_transitioningStates = 0;
+
+		for (auto& pSkin : skins)
+		{
+			if (pSkin)
+			{
+				m_transitioningStates |= pSkin->transitioningStates();
+				auto p = pSkin->transitionTimes();
+
+				for (int i = 0; i < StateBits_Nb; i++)
+				{
+					if( p[i] > m_transitionTimes[i] )
+						m_transitionTimes[i] = p[i];
+				}
+			}
+		}
+
+		// Update animation lengths
+
+		for (int index = 0; index < StateEnum_Nb; index++)
+		{
+			State state = _indexToState(index);
+
+			int		combinedLength = 0;
+
+			for (auto& pSkin : skins)
+			{
+				if (pSkin)
+				{
+					int skinLength = pSkin->animationLength(state);
+					if (skinLength > 0)
+					{
+						if (combinedLength == 0)
+							combinedLength = skinLength;
+						else
+						{
+							int g = Util::gcd(combinedLength, skinLength);
+							combinedLength = skinLength / g * combinedLength;
+						}
+					}
+				}
+			}
+
+			m_animationLengths[index] = combinedLength;
+		}
 	}
 
 	//____ didAddEntries() _______________________________________________________
 
 	void BakeSkin::_didAddEntries(Skin_p* pEntry, int nb)
 	{
-		for (int i = 0; i < nb; i++)
-		{
-			if (OO(pEntry[i])->_superSkin())
-			{
-				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Can not add skin that is already in a skin hieararchy. Vector entry set to null.", this, BakeSkin::TYPEINFO, __func__, __FILE__, __LINE__);
-				pEntry[i] = nullptr;
-			}
-			else
-				OO(pEntry[i])->_setSuperSkin(this);
-		}
-
 		_onModified();
 	}
 
@@ -590,11 +639,7 @@ namespace wg
 	void BakeSkin::_willEraseEntries(Skin_p* pEntry, int nb)
 	{
 		for (int i = 0; i < nb; i++)
-		{
-			if (pEntry[i])
-				OO(pEntry[i])->_setSuperSkin(nullptr);
 			pEntry[i] = nullptr;
-		}
 
 		_onModified();
 	}
@@ -624,28 +669,5 @@ namespace wg
 
 		m_useCount--;
 	}
-
-	//____ _subSkinGeo() _______________________________________________________
-
-	Rect BakeSkin::_subSkinGeo(Skin* pSubSkin, const Rect& myGeo, State state) const
-	{
-		if (!m_bSkinInSkin)
-			return myGeo;
-
-		Rect canvas = myGeo;
-
-		for (auto it = skins.rbegin(); it != skins.rend(); it++)
-		{
-			if ((*it) != nullptr)
-			{
-				if ((*it) == pSubSkin)
-					break;
-
-				canvas = (*it)->contentRect(canvas, state);
-			}
-		}
-		return canvas;
-	}
-
 
 } // namespace wg

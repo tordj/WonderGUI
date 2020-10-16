@@ -42,7 +42,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static SpinAnimSkin_p create(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f,0.5f), 
+		static SpinAnimSkin_p create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f,0.5f), 
 										CoordF dstCenter = CoordF(0.5f,0.5f), float fromDegrees = 0.f, float toDegrees = 360.f, 
 										float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI() );
 
@@ -63,23 +63,26 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f) const override;
 
 		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float fraction = 1.f, float fraction2 = -1.f) const override;
+						float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr ) const override;
 
-		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
-									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
+		int		animationLength(State state) const override;
 
 	private:
-		SpinAnimSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter = CoordF(0.5f, 0.5f),
+		SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter = CoordF(0.5f, 0.5f),
 						CoordF dstCenter = CoordF(0.5f, 0.5f), float fromDegrees = 0.f, float toDegrees = 360.f,
 						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
 		~SpinAnimSkin();
 
+		int			m_animationCycles[StateBits_Nb];
 
 		int			m_cycleDuration;			// In millisec
-		int			m_cycleProgress;			// In millisec
 
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;

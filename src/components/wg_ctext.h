@@ -41,7 +41,7 @@ namespace wg
 
 	//____ CText __________________________________________________________________
 
-	class CText : public GeoComponent, protected Text		/** @private */
+	class CText : public GeoComponent, protected Text
 	{
 		friend class TextMapper;
 		friend class StdTextMapper;

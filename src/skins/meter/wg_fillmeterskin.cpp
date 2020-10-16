@@ -54,7 +54,7 @@ namespace wg
 		m_backColor(Color::Transparent)
 	{
 		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		_updateOpacity();
 	}
 
@@ -68,7 +68,7 @@ namespace wg
 	{
 		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
 		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		m_contentPadding = contentPadding;
 		_updateOpacity();
 	}
@@ -154,11 +154,11 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * fraction));
+		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * value));
 
-		RectI barCanvas = _barFillArea(_canvas,fraction, fraction2).px();
+		RectI barCanvas = _barFillArea(_canvas,value, value2).px();
 		pDevice->fill(barCanvas, barColor);
 
 		if (m_backColor.a != 0)
@@ -199,22 +199,26 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, fraction, fraction2).contains(ofs) )
-			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*fraction)).a) >= opacityTreshold);
+		if( _barFillArea(canvas, value, value2).contains(ofs) )
+			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*value)).a) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect FillMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2 ) const
+	Rect FillMeterSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
+		if (newValue == oldValue)
+			return Rect();
+
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
@@ -223,11 +227,11 @@ namespace wg
 		Rect result1;
 		Rect result2;
 
-		if(oldFraction != newFraction)
-			result1 = _fractionChangeRect(canvas, state, oldFraction, newFraction);
+		if (oldValue != newValue)
+			result1 = _valueChangeRect(canvas, newState, oldValue, newValue);
 
-		if(oldFraction2 != newFraction2)
-			result2 = _fractionChangeRect(canvas, state, oldFraction2, newFraction2);
+		if (oldValue2 != newValue2)
+			result2 = _valueChangeRect(canvas, newState, oldValue2, newValue2);
 
 		if (result2.isEmpty())
 			return result1;
@@ -235,10 +239,11 @@ namespace wg
 		if (result1.isEmpty())
 			return result2;
 
-		return Rect::getUnion(result1,result2);
+		return Rect::getUnion(result1, result2);
 	}
 
-	Rect FillMeterSkin::_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
+
+	Rect FillMeterSkin::_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
 	{
 		switch (m_direction)
 		{
@@ -291,12 +296,12 @@ namespace wg
 
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float fraction, float fraction2) const
+	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float value, float value2) const
 	{
 		Rect canvas = (_canvas - m_barPadding);
 
-		float beg = fraction2 >= 0.f ? fraction : 0.f;
-		float end = fraction2 >= 0.f ? fraction2 : fraction;
+		float beg = value2 >= 0.f ? value : 0.f;
+		float end = value2 >= 0.f ? value2 : value;
 
 		bool bStartOutside = m_bBarStartOutside && beg == 0.f;
 

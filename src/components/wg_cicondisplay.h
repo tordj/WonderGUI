@@ -39,7 +39,7 @@ namespace wg
 
 	//____ CIconDisplay _____________________________________________________________
 
-	class CIconDisplay : public GeoComponent	/** @private */
+	class CIconDisplay : public GeoComponent
 	{
 	public:
 		CIconDisplay( GeoComponent::Holder * pHolder );

@@ -31,7 +31,7 @@ namespace wg
 
 	//____ CValueDisplay ____________________________________________________________
 
-	class CValueDisplay : public CStaticValueDisplay		/** @private */
+	class CValueDisplay : public CStaticValueDisplay
 	{
 	public:
 		CValueDisplay(Holder * pHolder);

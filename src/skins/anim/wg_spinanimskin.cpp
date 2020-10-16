@@ -39,16 +39,16 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	SpinAnimSkin_p SpinAnimSkin::create(	Surface * pSurface, Size preferredSize, CoordF srcCenter,	CoordF dstCenter, 
+	SpinAnimSkin_p SpinAnimSkin::create(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter,	CoordF dstCenter, 
 											float fromDegrees, float toDegrees, float zoom, const BorderI& gfxPadding, 
 											const BorderI& contentPadding)
 	{
-		return SpinAnimSkin_p(new SpinAnimSkin(pSurface, preferredSize, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
+		return SpinAnimSkin_p(new SpinAnimSkin(pSurface, preferredSize, cycleDuration, srcCenter, dstCenter, fromDegrees, toDegrees, zoom, gfxPadding, contentPadding));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	SpinAnimSkin::SpinAnimSkin(	Surface * pSurface, Size preferredSize, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
+	SpinAnimSkin::SpinAnimSkin(	Surface * pSurface, Size preferredSize, int cycleDuration, CoordF srcCenter, CoordF dstCenter, float fromDegrees, 
 									float toDegrees, float zoom, const BorderI& gfxPadding, const BorderI& contentPadding) : 
 		m_pSurface(pSurface),
 		m_preferredSize(preferredSize),
@@ -57,13 +57,16 @@ namespace wg
 		m_fromDegrees(fromDegrees),
 		m_toDegrees(toDegrees),
 		m_zoom(zoom),
-		m_gfxPadding(gfxPadding)
+		m_gfxPadding(gfxPadding),
+		m_cycleDuration(cycleDuration)
 	{
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = pSurface->isOpaque();
-		m_bIgnoresFraction = false;
 		m_contentPadding = contentPadding;
+
+		for (int i = 0; i < StateBits_Nb; i++)
+			m_animationCycles[i] = cycleDuration;
 	}
 
 	//____ destructor _________________________________________________________
@@ -84,11 +87,14 @@ namespace wg
 	void SpinAnimSkin::setCycleDuration(int millisec)
 	{
 		m_cycleDuration = millisec;
+
+		for (int i = 0; i < StateBits_Nb; i++)
+			m_animationCycles[i] = millisec;
 	}
 
 	//____ render() ______________________________________________________________
 
-	void SpinAnimSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void SpinAnimSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		float	zoom = m_zoom * Base::activeContext()->scale();
 
@@ -116,7 +122,7 @@ namespace wg
 
 		canvas -= m_gfxPadding;
 
-		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*m_cycleProgress/(float)m_cycleDuration;
+		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*animPos/(float)m_cycleDuration;
 
 		if (degrees < 0.f)
 			degrees = 360.f + (float) fmod(degrees, 360.f);
@@ -137,7 +143,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool SpinAnimSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool SpinAnimSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -150,21 +156,26 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
 
-	Rect SpinAnimSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	//____ dirtyRect() ________________________________________________________
+
+	Rect SpinAnimSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		return Rect();
+		if (newAnimPos == oldAnimPos)
+			return Rect();
+
+		return _canvas;
 	}
 
-	//____ _update() __________________________________________________________
+	//____ animationLength() __________________________________________________
 
-	void SpinAnimSkin::_update(int ms)
+	int SpinAnimSkin::animationLength(State state) const
 	{
-		m_cycleProgress = (m_cycleProgress + ms) % m_cycleDuration;
-		_requestRender();
+		return m_cycleDuration;
 	}
+
 
 
 } // namespace wg

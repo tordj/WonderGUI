@@ -321,7 +321,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if( !m_pSurface )
 			return;
@@ -372,7 +372,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
@@ -392,15 +392,25 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ isStateIdentical() _____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect BlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && StateSkin::isStateIdentical(state,comparedTo) );
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if (m_stateBlocks[i1] != m_stateBlocks[i2])
+			return canvas;
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
+
 
 	//____ _updateOpaqueFlags() ________________________________________________
 

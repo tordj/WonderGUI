@@ -232,9 +232,21 @@ namespace wg
 		inline void setBit(int index, bool value) { m_mask &= ~(T(1) << index); m_mask |= (T(value) << index); }
 		inline bool bit(int index) const { return ((m_mask & (T(1) << index)) != 0); }
 		inline void clearBit(int index) { m_mask &= ~(T(1) << index); }
+		inline bool isEmpty() const { return m_mask == 0; }
+		inline void flipBit(int index) { m_mask ^= (T(1) << index);  }
 
 		inline Bitmask<T> operator=(const Bitmask<T>& r) { m_mask = r.m_mask; return *this; }
 		inline Bitmask<T> operator=(T r) { m_mask = r; return *this; }
+
+		inline Bitmask<T> operator&(const Bitmask<T>& r) { return Bitmask<T>(m_mask & r.m_mask); }
+		inline Bitmask<T> operator|(const Bitmask<T>& r) { return Bitmask<T>(m_mask | r.m_mask); }
+		inline Bitmask<T> operator^(const Bitmask<T>& r) { return Bitmask<T>(m_mask ^ r.m_mask); }
+		inline Bitmask<T> operator~() { return Bitmask<T>(~m_mask); }
+
+		inline Bitmask<T> operator&=(const Bitmask<T>& r) { m_mask &= r.m_mask; return *this; }
+		inline Bitmask<T> operator|=(const Bitmask<T>& r) { m_mask |= r.m_mask; return *this; }
+		inline Bitmask<T> operator^=(const Bitmask<T>& r) { m_mask ^= r.m_mask; return *this; }
+
 
 		inline operator T() const { return m_mask; }
 

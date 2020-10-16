@@ -262,11 +262,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect canvas;
-		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
-		else
-			canvas = _canvas;
+		Rect canvas = m_skin.contentRect(_canvas, m_state);
 
 		OO(text)._render(pDevice, canvas);
 	}
@@ -321,14 +317,9 @@ namespace wg
 
 	void SelectBox::_updateListCanvasOpacity()
 	{
-		bool bOpaque = false;
+		bool bOpaque = m_pListCanvas->m_skin.isOpaque();
 
-		Skin * pBgSkin = m_pListCanvas->m_pSkin;
-
-		if (pBgSkin && pBgSkin->isOpaque())
-			bOpaque = true;
-
-		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && (!pBgSkin || pBgSkin->contentPaddingSize().isEmpty()))
+		if (m_pEntrySkin && m_pEntrySkin->isOpaque() && m_pListCanvas->m_skin.contentPaddingSize().isEmpty())
 			bOpaque = true;
 
 		m_pListCanvas->m_bOpaque = bOpaque;
@@ -410,7 +401,7 @@ namespace wg
 
 	int SelectBox::_findEntry(const Coord& ofsInListPanel, Coord * pOfsOut)
 	{
-		Rect contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : Rect(m_pListCanvas->m_size);
+		Rect contentRect = m_pListCanvas->_contentRect();
 
 		if (contentRect.contains(ofsInListPanel))
 		{
@@ -441,8 +432,8 @@ namespace wg
 		auto pMapper = _listTextMapper();
 
 		Size entryPadding = m_pEntrySkin ? m_pEntrySkin->contentPaddingSize() : Size();
-		Size boxPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
-		Size listPadding = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
+		Size boxPadding = m_skin.contentPaddingSize();
+		Size listPadding = m_pListCanvas->m_skin.contentPaddingSize();
 
 		Size	oldPreferred		= m_preferredSize;
 //		int		oldMatchingHeight = m_matchingHeight;
@@ -587,7 +578,7 @@ namespace wg
 	{
 		TextMapper* pMapper = _listTextMapper();
 
-		Size listCanvasPaddingSize = m_pListCanvas->m_pSkin ? m_pListCanvas->m_pSkin->contentPaddingSize() : Size();
+		Size listCanvasPaddingSize = m_pListCanvas->m_skin.contentPaddingSize();
 
 		MU newContentWidth = size.w - listCanvasPaddingSize.w;
 		MU matchingHeight = listCanvasPaddingSize.h;
@@ -656,7 +647,7 @@ namespace wg
 			if (entryIdx >= 0)
 
 			{
-				Rect contentRect = m_pListCanvas->m_pSkin ? m_pListCanvas->_contentRect() : Rect(m_pListCanvas->m_size);
+				Rect contentRect = m_pListCanvas->_contentRect();
 				Rect entryGeo = { 0,0,contentRect.w,entries[entryIdx].m_height };
 
 				return m_pEntrySkin->markTest(ofsInEntry, entryGeo, entries[entryIdx].m_state, m_pListCanvas->m_markOpacity);

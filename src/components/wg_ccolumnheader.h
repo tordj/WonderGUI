@@ -34,7 +34,7 @@ namespace wg
 
 	//____ CColumnHeader ___________________________________________________
 
-	class CColumnHeader : public GeoComponent, protected GeoComponent::Holder   /** @private */
+	class CColumnHeader : public GeoComponent, protected GeoComponent::Holder
 	{
 	public:
 		CColumnHeader(GeoComponent::Holder * pHolder);

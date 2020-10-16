@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder
+	class RootPanel : public Object, protected SlotHolder, protected SkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -178,7 +178,19 @@ namespace wg
 		void			_hideSlots(StaticSlot * pSlot, int nb) override;
 		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
-		//
+		// SkinSlot::Holder methods
+
+		void			_skinRequestRender(const SkinSlot* pSlot) override;
+		void			_skinRequestRender(const SkinSlot* pSlot, const Rect& rect) override;
+
+		Size			_skinSize(const SkinSlot* pSlot) const override;
+		Coord			_skinGlobalPos(const SkinSlot* pSlot) const override;
+
+		State			_skinState(const SkinSlot* pSlot) const override;
+		float			_skinValue(const SkinSlot* pSlot) const override;
+		float			_skinValue2(const SkinSlot* pSlot) const override;
+
+
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
@@ -192,7 +204,7 @@ namespace wg
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
-		Skin_p				m_pSkin;				//TODO: Padding is not respected yet.
+		SkinSlot			m_skin;				//TODO: Padding is not respected yet.
 
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;
@@ -219,7 +231,7 @@ namespace wg
 
 	Skin_p RootPanel::skin() const
 	{
-		return m_pSkin;
+		return m_skin.skin();
 	}
 
 } // namespace wg

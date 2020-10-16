@@ -90,13 +90,6 @@ namespace wg
 		return CoordI();
 	}
 
-	//____ isStateIdentical() ______________________________________________________
-
-	bool StateSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
-	{
-		return (m_contentShift[_stateToIndex(state)] == m_contentShift[_stateToIndex(comparedTo)]);
-	}
-
 	//____ contentPadding() _______________________________________________________
 
 	Border StateSkin::contentPadding(State state) const
@@ -122,6 +115,18 @@ namespace wg
 	Coord StateSkin::contentOfs( State state ) const
 	{
 		return Coord( m_contentPadding.left, m_contentPadding.top).aligned() + Coord(m_contentShift[_stateToIndex(state)]).aligned();
+	}
+
+	//____ dirtyRect() ______________________________________________________
+
+	Rect StateSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
+	{
+		if (m_contentShift[_stateToIndex(newState)] == m_contentShift[_stateToIndex(oldState)])
+			return canvas;
+		else
+			return Rect();
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

@@ -67,7 +67,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
@@ -78,7 +78,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		return markTestTileRect(ofs, m_pSurface, canvas, opacityTreshold);
 	}

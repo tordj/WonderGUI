@@ -90,6 +90,7 @@ namespace wg
 		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
+		float		_skinValue(const SkinSlot* pSlot) const override;
 
 	private:
 		MU			m_dragRange = 200;

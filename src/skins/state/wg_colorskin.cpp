@@ -132,16 +132,6 @@ namespace wg
 		return m_color[i];
 	}
 
-	//____ isStateIdentical() ____________________________________________________
-
-	bool ColorSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
-	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
-
-		return (m_color[i1] == m_color[i2] && StateSkin::isStateIdentical(state, comparedTo));
-	}
-
 	//____ isOpaque() _____________________________________________________________
 
 	bool ColorSkin::isOpaque(State state) const
@@ -156,7 +146,7 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		BlendMode	oldBlendMode = pDevice->blendMode();
 
@@ -173,12 +163,31 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool ColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
 
 		return ( m_color[_stateToIndex(state)].a >= opacityTreshold);
+	}
+
+	//____ dirtyRect() ______________________________________________________
+
+	Rect ColorSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
+	{
+		if (oldState == newState)
+			return Rect();
+
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if (m_color[i1] != m_color[i2])
+			return canvas;
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 	//____ _updateOpaqueFlag() ____________________________________________________

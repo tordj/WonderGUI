@@ -65,8 +65,9 @@ namespace wg
 
 
 
-		double squareRoot(double a);
-		double powerOfTen(int num);
+		double	squareRoot(double a);
+		double	powerOfTen(int num);
+		int		gcd(int a, int b);
 
 		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
 		bool		markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold);

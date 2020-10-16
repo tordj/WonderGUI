@@ -61,7 +61,7 @@ namespace wg
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = pSurface->isOpaque();
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		m_contentPadding = contentPadding;
 	}
 
@@ -74,7 +74,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		float	zoom = m_zoom * Base::activeContext()->scale();
 
@@ -102,7 +102,7 @@ namespace wg
 
 		canvas -= m_gfxPadding;
 
-		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*fraction;
+		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*value;
 
 		if (degrees < 0.f)
 			degrees = 360.f + (float) fmod(degrees, 360.f);
@@ -123,7 +123,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -136,12 +136,16 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect SpinMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect SpinMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		return _canvas;
+		if (newValue != oldValue)
+			return canvas;
+
+		return Rect();
 	}
 
 } // namespace wg

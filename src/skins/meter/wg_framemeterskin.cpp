@@ -43,7 +43,7 @@ namespace wg
 
 	FrameMeterSkin::FrameMeterSkin() : frames(this)
 	{
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -82,11 +82,11 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
-		auto pFrame = _fractionToFrame(fraction);
+		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
 			pDevice->setBlitSource(frames.surface());
@@ -96,37 +96,41 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Support flip!
 
 		if (!canvas.contains(ofs))
 			return false;
 
-		auto pFrame = _fractionToFrame(fraction);
+		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 			return Util::markTestNinePatch(ofs, frames._surface(), RectI(pFrame->source(), frames.frameSize()), canvas, opacityTreshold, m_gfxPadding);
 
 		return false;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect FrameMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect FrameMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		auto pOldFrame = _fractionToFrame(oldFraction);
-		auto pNewFrame = _fractionToFrame(newFraction);
+		if (newValue == oldValue)
+			return Rect();
+
+		auto pOldFrame = _valueToFrame(oldValue);
+		auto pNewFrame = _valueToFrame(newValue);
 
 		if (pOldFrame == pNewFrame)
 			return Rect();
 		else
-			return _canvas;
+			return canvas;
 	}
 
-	//____ _fractionToFrame() _________________________________________________
+	//____ _valueToFrame() _________________________________________________
 
-	const AnimFrame* FrameMeterSkin::_fractionToFrame(float fraction) const
+	const AnimFrame* FrameMeterSkin::_valueToFrame(float fraction) const
 	{
 		if (frames.isEmpty())
 			return nullptr;

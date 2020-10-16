@@ -1264,7 +1264,7 @@ int main(int argc, char** argv)
 	{
 
 		translateEvents( pInput, pRoot );
-
+		Base::update(16);
 		pRoot->render();
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
@@ -2545,12 +2545,10 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	Surface_p pSplashSurf = loadSurface("../resources/splash.png");
 
-	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 } );
-	pAnimSkin->setCycleDuration(10000);
+	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 10000 );
 	pAnimSkin->setContentPadding(80);
 
-	auto pAnimSkin2 = SpinAnimSkin::create(pSplashSurf, { 256,256 });
-	pAnimSkin2->setCycleDuration(5000);
+	auto pAnimSkin2 = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 5000 );
 	pAnimSkin2->setContentPadding(10);
 
 
@@ -2561,16 +2559,13 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
 
-//	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
 
-//	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pFramingSkin});
-//	pBakeSkin->setSkinInSkin(true);
+	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pAnimSkin});
+	pBakeSkin->setSkinInSkin(true);
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(pDoubleSkin);
-
-
-
+	pFiller1->setSkin(pBakeSkin);
 
 	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 256, 256));
 

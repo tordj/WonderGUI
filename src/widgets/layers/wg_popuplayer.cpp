@@ -400,8 +400,7 @@ namespace wg
 	{
 		// Render container itself
 
-		if( m_pSkin )
-			m_pSkin->render(pDevice, _canvas, m_state);
+		m_skin.render(pDevice, _canvas, m_state);
 
 		// Render children
 

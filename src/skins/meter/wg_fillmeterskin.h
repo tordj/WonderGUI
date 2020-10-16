@@ -76,12 +76,14 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f, float fraction2 = -1.f) const override;
+		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float value = 1.f, 
+						float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
-									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		FillMeterSkin();
@@ -89,9 +91,9 @@ namespace wg
 						const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const Rect& canvas, float fraction, float fraction2) const;
+		Rect		_barFillArea(const Rect& canvas, float value, float value2) const;
 		void		_updateOpacity();
-		Rect		_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
 
 		Direction	m_direction;

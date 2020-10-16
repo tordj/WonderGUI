@@ -146,20 +146,27 @@ double Util::squareRoot(double a)
 	return rst;
 }
 
-double Util::powerOfTen(int num){
+double Util::powerOfTen(int num)
+{
 	double rst = 1.0;
-	if(num >= 0){
-		for(int i = 0; i < num ; i++){
+	if(num >= 0)
+	{
+		for(int i = 0; i < num ; i++)
 			rst *= 10.0;
-		}
-	}else{
-		for(int i = 0; i < (0 - num ); i++){
-			rst *= 0.1;
-		}
 	}
-
+	else
+	{
+		for(int i = 0; i < (0 - num ); i++)
+			rst *= 0.1;
+	}
 	return rst;
 }
+
+int Util::gcd(int a, int b) 
+{
+	return b == 0 ? a : Util::gcd(b, a % b);
+}
+
 
 	//____ markTestStretchRect() __________________________________________________
 
