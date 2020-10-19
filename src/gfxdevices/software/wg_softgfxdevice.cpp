@@ -3683,6 +3683,17 @@ namespace wg
 			}
 		}
 
+		// Modify opaqueSegments if our state isn't blend
+		
+		if( m_blendMode != BlendMode::Blend )
+		{
+			bool val = (m_blendMode == BlendMode::Replace);
+			
+			for (int seg = 0; seg < nSegments; seg++)
+				opaqueSegments[seg] = val;
+		}
+		
+		
 		// Set start position and clip dest
 
 		uint8_t* pOrigo = m_pCanvasPixels + start.y * yPitch + start.x * xPitch;
