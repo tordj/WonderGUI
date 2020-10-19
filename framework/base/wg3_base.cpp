@@ -25,10 +25,10 @@
 #include <wg3_base.h>
 
 #ifndef WG2_MODE
-	#include <wg3_msgrouter.h>
-	#include <wg3_stdtextmapper.h>
-	#include <wg3_standardformatter.h>
-	#include <wg3_inputhandler.h>
+	#include <wg_msgrouter.h>
+	#include <wg_stdtextmapper.h>
+	#include <wg_standardformatter.h>
+	#include <wg_inputhandler.h>
 #endif
 
 #include <wg3_dummyfont.h>
@@ -178,22 +178,25 @@ namespace wg
 		stream << "Objects created: " << s_objectsCreated << std::endl;
 		stream << "Objects destroyed: " << s_objectsDestroyed << std::endl;
 		stream << "Objects alive: " << (s_objectsCreated - s_objectsDestroyed) << std::endl;
-		stream << std::endl;
-		stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
-		stream << "---------------------------------------" << std::endl;
 
+        if( !s_trackedObjects.empty() )
+        {
+            stream << std::endl;
+            stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
+            stream << "---------------------------------------" << std::endl;
 
-		for (auto& tracked : s_trackedObjects)
-		{
-			const char* pClassName = tracked.first->typeInfo().className;
+            for (auto& tracked : s_trackedObjects)
+            {
+                const char* pClassName = tracked.first->typeInfo().className;
 
-			stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
+                stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
 
-			if (tracked.second.pFileName)
-				stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
+                if (tracked.second.pFileName)
+                    stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
 
-			stream << std::endl;
-		}
+                stream << std::endl;
+            }
+        }
 	}
 
 
@@ -342,7 +345,8 @@ namespace wg
 
 	void Base::_trackObject(Object* pObject, const char* pFileName, int lineNb)
 	{
-		s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
+        if( s_bTrackingObjects )
+            s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
 	}
 
 	//____ _allocWeakPtrHub() ______________________________________________________

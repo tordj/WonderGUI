@@ -404,6 +404,7 @@ namespace wg
 
 		int				m_lineThicknessTable[17];
 
+		PixelBuffer		m_canvasPixelBuffer;
 		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
 		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
 		int				m_canvasPitch;

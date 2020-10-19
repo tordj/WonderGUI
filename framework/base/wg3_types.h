@@ -594,16 +594,6 @@ namespace wg
 		Other
 	};
 
-	//____ AccessMode ____________________________________________________________
-
-	enum class AccessMode	//. autoExtras
-	{
-		None,
-		ReadOnly,
-		WriteOnly,
-		ReadWrite
-	};
-
 	//____ ScaleMode ____________________________________________________________
 
 	enum class ScaleMode	//. autoExtras
@@ -619,7 +609,7 @@ namespace wg
 	{
 		const int Static = 0;		// No content access/modification expected
 		const int Dynamic = 1;		// Expect content to be accessed and/or modified
-		const int WriteOnly = 2;	// Can only be locked in WriteOnly mode. Alpha can still be read pixel by pixel if present.
+		const int Buffered = 2;	    // Hardware accelerated surface is buffered in memory for faster allocPixelBuffer() and pushPixels() calls.
 		const int Mipmapped = 4;	// Surface should be Mipmapped. Better downscaling, but takes more memory and time to initialize and unlock Write-access.
 		const int Scale200 = 8;
 		const int Canvas = 16;		// Surface may be used as Canvas.

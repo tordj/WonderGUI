@@ -466,7 +466,8 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 	WgColor col;
 
-	unsigned char* dest = (unsigned char*)m_pSurf->lockRegion(WgAccessMode::WriteOnly, region );
+    auto pixbuf = m_pSurf->allocPixelBuffer(region);
+    unsigned char* dest = (unsigned char*) pixbuf.pPixels;
 
 	float x = 0.0f, y = 0.0f;
 	float y_inv = 0.0f;
@@ -479,7 +480,7 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 		y = (float)yc*yd - 1.0f;
 		y_inv = 1.0f / std::max(std::abs(y), 0.0001f);
 
-		unsigned int *ddest = (unsigned int *)(dest + m_pSurf->pitch() * (yc-region.y));    // Don't forget about pitch
+        unsigned int *ddest = (unsigned int *)(dest + pixbuf.pitch * (yc-region.y));    // Don't forget about pitch
 		for (int xc = region.x; xc<region.x + region.w*oversampling; xc++)
 		{
 			// [-1, 1] coordinates
@@ -962,7 +963,8 @@ void WgKnob::_redrawBackBuffer(WgRect region)
 
 	}
 
-	m_pSurf->unlock();
+    m_pSurf->pullPixels(pixbuf);
+    m_pSurf->freePixelBuffer(pixbuf);
 
 	// Downsample. Oversampling is not used.
 	//    _downsample(m_pSurf, m_iOversampleX);
@@ -1003,7 +1005,10 @@ void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
 	int h = pSurf->size().h; //Height();
 	unsigned int col = (255) | (2<<8) | (1<<16) | (192<<24);
 
-	unsigned int* data = (unsigned int*)pSurf->lock(WgAccessMode::ReadWrite);
+    auto pixbuf = pSurf->allocPixelBuffer();
+    pSurf->pushPixels(pixbuf);
+    
+    unsigned int* data = (unsigned int*) pixbuf.pPixels;
 	int i=0, j=0;
 
 	// Loop over small size
@@ -1031,7 +1036,8 @@ void WgKnob::_downsample(wg::Surface* pSurf, const int oversample)
 		}
 	}
 
-	pSurf->unlock();
+    pSurf->pullPixels(pixbuf);
+    pSurf->freePixelBuffer(pixbuf);
 }
 
 //____ _onAlphaTest() ___________________________________________________________

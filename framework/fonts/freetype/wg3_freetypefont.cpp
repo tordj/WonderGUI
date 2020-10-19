@@ -508,11 +508,9 @@ namespace wg
 	{
 		Surface_p pSurf = pSlot->bitmap.pSurface;
 
-		unsigned char * pDest = (unsigned char*) pSurf->lockRegion( AccessMode::WriteOnly, pSlot->bitmap.rect );
-		assert( pDest != 0 );
-		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
+		auto pixbuf = pSurf->allocPixelBuffer(pSlot->rect);
 
-		int dest_pitch = pSurf->pitch();
+		assert( pSurf->pixelDescription()->format == PixelFormat::BGRA_8_sRGB || pSurf->pixelDescription()->format == PixelFormat::BGRA_8_linear);
 
 		// Copy glyph bitmap into alpha channel of slot, making sure to clear any
 		// left over area of slots alpha channel.
@@ -521,11 +519,11 @@ namespace wg
 		switch( m_renderFlags )
 		{
 			case (FT_LOAD_MONOCHROME | FT_LOAD_TARGET_MONO):
-				_copyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+				_copyA1ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, (uint32_t*)pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
 			case (FT_LOAD_TARGET_NORMAL):
 			case (FT_LOAD_TARGET_LIGHT):
-				_copyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, pDest, pSlot->rect.w, pSlot->rect.h, dest_pitch );
+				_copyA8ToRGBA8( pBitmap->buffer, pBitmap->width, pBitmap->rows, pBitmap->pitch, (uint32_t*)pixbuf.pPixels, pSlot->rect.w, pSlot->rect.h, pixbuf.pitch );
 				break;
 
 			default:
@@ -543,14 +541,15 @@ namespace wg
 		}
 	*/
 
-		pSurf->unlock();
+		pSurf->pullPixels(pixbuf);
+		pSurf->freePixelBuffer(pixbuf);
 	}
 
 
 	//____ _copyA8ToRGBA8() _____________________________________________________
 
 	void FreeTypeFont::_copyA8ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
-										uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
+										uint32_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 
 		int y = 0;
@@ -558,28 +557,28 @@ namespace wg
 		{
 			int x = 0;
 			for( ; x < src_width ; x++ )
-				pDest[x*4+3] = pSrc[x];
+				pDest[x] = (int(pSrc[x]) << 24) | 0xFFFFFF;
 
 			for( ; x < dest_width ; x++ )
-				pDest[x*4+3] = 0;
+				pDest[x] = 0;
 
 			pSrc  += src_pitch;
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
 
 		for( ; y < dest_height ; y++ )
 		{
 			for( int x = 0 ; x < dest_width ; x++ )
-				pDest[x*4+3] = 0;
+				pDest[x] = 0;
 
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
 	}
 
 	//____ _copyA1ToRGBA8() _____________________________________________________
 
 	void FreeTypeFont::_copyA1ToRGBA8( const uint8_t * pSrc, int src_width, int src_height, int src_pitch,
-										uint8_t * pDest, int dest_width, int dest_height, int dest_pitch )
+										uint32_t * pDest, int dest_width, int dest_height, int dest_pitch )
 	{
 		uint8_t lookup[2] = { 0, 255 };
 
@@ -590,22 +589,22 @@ namespace wg
 			int x = 0;
 			for( ; x < src_width ; x++ )
 			{
-				pDest[x*4+3] = lookup[(((pSrc[x>>3])<<(x&7))&0xFF)>>7];
+				pDest[x] = (int(lookup[(((pSrc[x>>3])<<(x&7))&0xFF)>>7]) << 24) | 0xFFFFFF;
 			}
 
 			for( ; x < dest_width ; x++ )
-				pDest[x*4+3] = 0;
+				pDest[x] = 0;
 
 			pSrc  += src_pitch;
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
 
 		for( ; y < dest_height ; y++ )
 		{
 			for( int x = 0 ; x < dest_width ; x++ )
-				pDest[x*4+3] = 0;
+				pDest[x] = 0;
 
-			pDest += dest_pitch;
+			pDest += dest_pitch/4;
 		}
 	}
 
@@ -699,8 +698,8 @@ namespace wg
 
 		SizeI texSize = calcTextureSize( slotSize, 16 );
 
-		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize );
-		pSurf->fill( Color( 255,255,255,0 ) );
+		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize, wg::PixelFormat::BGRA_8 );
+//		pSurf->fill( Color( 255,255,255,0 ) );
 
 		CacheSurf * pCache = new CacheSurf( pSurf );
 		s_cacheSurfaces.pushBack( pCache );

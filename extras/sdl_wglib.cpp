@@ -132,16 +132,17 @@ namespace sdl_wglib
 		if (err != 0)
 			return false;
 
-        char * pSrcPixels = (char *)pSurface->lock(WgAccessMode::ReadOnly);
+        wg::PixelBuffer pixbuf = pSurface->allocPixelBuffer();
+        pSurface->pushPixels(pixbuf);
 
 		for (int y = 0; y < size.h; y++)
 		{
-			char * pDest = ((char *) pOutput->pixels) + pOutput->pitch * y;
-			char * pSource = pSrcPixels + pSurface->pitch() * y;
+			uint8_t * pDest = ((uint8_t *) pOutput->pixels) + pOutput->pitch * y;
+            uint8_t * pSource = pixbuf.pPixels + pixbuf.pitch * y;
 			memcpy(pDest, pSource, size.w * pFmt->bits / 8);
 		}
 
-		pSurface->unlock();
+        pSurface->freePixelBuffer(pixbuf);
 
 		SDL_UnlockSurface(pOutput);
 

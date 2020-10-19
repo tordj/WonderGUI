@@ -126,9 +126,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pClut ? 1024 : 0) );
 		m_pData = (uint8_t*)m_pBlob->data();
 
-		m_pPixels = m_pData;	// Simulate a lock
 		_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
-		m_pPixels = 0;
 
 		if (pClut)
 		{
@@ -146,9 +144,16 @@ namespace wg
 		assert( pOther );
 
 		PixelFormat format = pOther->pixelFormat();
-		uint8_t * pPixels = (uint8_t*) pOther->lock( AccessMode::ReadOnly );
-		int pitch = pOther->pitch();
-		SizeI size = pOther->size();
+
+		auto pixelbuffer = pOther->allocPixelBuffer();
+		bool bPushed = pOther->pushPixels(pixelbuffer);
+		if (!bPushed)
+		{
+			//TODO: Error handling.
+		}
+
+		int pitch = pixelbuffer.pitch;
+		SizeI size = pixelbuffer.rect.size();
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
@@ -157,9 +162,7 @@ namespace wg
 		m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 1024 : 0) );
 		m_pData = (uint8_t*) m_pBlob->data();
 
-		m_pPixels = m_pData;	// Simulate a lock
-		_copyFrom( &m_pixelDescription, pPixels, pitch, RectI(size), RectI(size) );
-		m_pPixels = 0;
+		_copyFrom( &m_pixelDescription, pixelbuffer.pPixels, pitch, RectI(size), RectI(size) );
 
 		if ( pOther->clut() )
 		{
@@ -170,7 +173,7 @@ namespace wg
 		else
 			m_pClut = nullptr;
 
-		pOther->unlock();
+		pOther->freePixelBuffer(pixelbuffer);
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -185,41 +188,6 @@ namespace wg
 	const TypeInfo& SoftSurface::typeInfo(void) const
 	{
 		return TYPEINFO;
-	}
-
-	//____ pixel() _________________________________________________________________
-
-	uint32_t SoftSurface::pixel( CoordI coord )
-	{
-		//TODO: Take endianess into account.
-
-		switch (m_pixelDescription.bits)
-		{
-			case 8:
-			{
-				uint32_t k = (uint32_t)m_pData[m_pitch*coord.y + coord.x];
-				return k;
-			}
-			case 16:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 2;
-				uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8);
-				return k;
-			}
-			case 24:
-			{
-				uint8_t * pPixel = m_pData + m_pitch * coord.y + coord.x * 3;
-				uint32_t k = pPixel[0] + (((uint32_t)pPixel[1]) << 8) + (((uint32_t)pPixel[2]) << 16);
-				return k;
-			}
-			case 32:
-			{
-				uint32_t k = *((uint32_t*)&m_pData[m_pitch*coord.y + coord.x * 4]);
-				return k;
-			}
-			default:
-				return 0;
-		}
 	}
 
 	//____ alpha() _______________________________________________________________
@@ -297,34 +265,38 @@ namespace wg
 		Surface::setTiling(bTiling);
 	}
 
+	//____ allocPixelBuffer() _________________________________________________
 
-	//____ lock() __________________________________________________________________
-
-	uint8_t * SoftSurface::lock( AccessMode mode )
+	const PixelBuffer SoftSurface::allocPixelBuffer(const RectI& rect)
 	{
-		m_accessMode = AccessMode::ReadWrite;
-		m_pPixels = m_pData;
-		m_lockRegion = RectI(0,0,m_size);
-		return m_pPixels;
+		PixelBuffer	buf;
+		buf.pPixels = m_pData + m_pitch*rect.y + rect.x*m_pixelDescription.bits/8;
+		buf.pClut = m_pClut;
+		buf.format = m_pixelDescription.format;
+		buf.rect = rect;
+		buf.pitch = m_pitch;
+		return buf;
 	}
 
-	//____ lockRegion() ____________________________________________________________
+	//____ pushPixels() _______________________________________________________
 
-	uint8_t * SoftSurface::lockRegion( AccessMode mode, const RectI& region )
+	bool SoftSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		m_accessMode = mode;
-		m_pPixels = m_pData + m_pitch*region.y + region.x*m_pixelDescription.bits/8;
-		m_lockRegion = region;
-		return m_pPixels;
+		return true;
 	}
 
-	//____ unlock() ________________________________________________________________
+	//____ pullPixels() _______________________________________________________
 
-	void SoftSurface::unlock()
+	void SoftSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
-		m_accessMode = AccessMode::None;
-		m_pPixels = 0;
-		m_lockRegion.clear();
+		// Nothing to do here.
+	}
+
+	//____ freePixelBuffer() __________________________________________________
+
+	void SoftSurface::freePixelBuffer(const PixelBuffer& buffer)
+	{
+		// Nothing to do here.
 	}
 
 	//____ putPixels() _____________________________________________________________

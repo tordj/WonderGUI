@@ -49,8 +49,6 @@ typedef wg::Origo       WgOrigo;
 typedef wg::Direction   WgDirection;
 typedef wg::SizePolicy  WgSizePolicy;
 
-typedef wg::AccessMode  WgAccessMode;
-
 typedef wg::ScaleMode   WgScaleMode;
 typedef wg::PixelFormat WgPixelType;
 

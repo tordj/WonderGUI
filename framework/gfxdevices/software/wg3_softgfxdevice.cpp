@@ -2563,8 +2563,11 @@ namespace wg
 			format != PixelFormat::A_8 )
 			return false;
 
-		if( m_pCanvasPixels )
-			m_pCanvas->unlock();
+		if (m_pCanvasPixels)
+		{
+			m_pCanvas->pullPixels(m_canvasPixelBuffer);
+			m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
+		}
 
 		m_pCanvas		= pCanvas;
 		m_canvasSize	= pCanvas->size();
@@ -2581,9 +2584,13 @@ namespace wg
 
 		if( m_pCanvasPixels )
 		{
-			m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
+			m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
+			m_pCanvas->pushPixels(m_canvasPixelBuffer);
+
+			m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
+			m_canvasPitch = m_canvasPixelBuffer.pitch;
+
 			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-			m_canvasPitch = m_pCanvas->pitch();
 
 			if( initOperation == CanvasInit::Clear )
 				m_pCanvas->fill(m_clearColor);
@@ -2787,9 +2794,12 @@ namespace wg
 
 		m_beginRenderOp = CanvasInit::Keep;
 
-		m_pCanvasPixels = m_pCanvas->lock(AccessMode::ReadWrite);
+		m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
+		m_pCanvas->pushPixels(m_canvasPixelBuffer);
+
+		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
 		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-		m_canvasPitch = m_pCanvas->pitch();
+		m_canvasPitch = m_canvasPixelBuffer.pitch;
 
 		_updateBlitFunctions();
 
@@ -2812,7 +2822,8 @@ namespace wg
 
 		// Clean up.
 
-		m_pCanvas->unlock();
+		m_pCanvas->pullPixels(m_canvasPixelBuffer);
+		m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
 		m_pCanvasPixels = 0;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;

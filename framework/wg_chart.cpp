@@ -766,7 +766,7 @@ void WgChart::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	{
 		if( !m_pCacheBitmap )
 		{
-			m_pCacheBitmap = m_pSurfaceFactory->createSurface( _canvas.size() );
+			m_pCacheBitmap = m_pSurfaceFactory->createSurface( _canvas.size(), wg::PixelFormat::BGRA_8 );
 			m_cacheDirt.add( _canvas.size() );
 		}
 

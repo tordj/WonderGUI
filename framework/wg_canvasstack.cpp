@@ -247,7 +247,7 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 		if (nbCanvases == 0)
 			m_pEndCanvas = nullptr;
 		else if (!m_pEndCanvas || m_pEndCanvas->size() != canvasSize)
-			m_pEndCanvas = wg::Base::activeContext()->surfaceFactory()->createSurface(canvasSize);
+			m_pEndCanvas = wg::Base::activeContext()->surfaceFactory()->createSurface(canvasSize, wg::PixelFormat::BGRA_8);
 
 		// Request render
 
@@ -277,7 +277,7 @@ const wg::TypeInfo WgCanvasStack::CustomSkin::TYPEINFO = { "CanvasStack::CustomS
 		if (m_createFunc)
 			return m_createFunc(canvasIdx, size);
 		else
-			return wg::Base::activeContext()->surfaceFactory()->createSurface(size);
+			return wg::Base::activeContext()->surfaceFactory()->createSurface(size, wg::PixelFormat::BGRA_8);
 	}
 
 	//____ _clearCanvases() ___________________________________________________

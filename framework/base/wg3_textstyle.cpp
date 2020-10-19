@@ -22,12 +22,21 @@
 
 #include <wg3_textstyle.h>
 #include <wg3_textstylemanager.h>
+#include <wg3_base.h>
 
 namespace wg
 {
 	using namespace Util;
 
 	const TypeInfo TextStyle::TYPEINFO = { "TextStyle", &Object::TYPEINFO };
+
+
+    //____ create() ________________________________________________________________
+
+    TextStyle_p TextStyle::create()
+    {
+        return TextStyle_p(new TextStyle());
+    }
 
 
 	//____ constructor _____________________________________________________________

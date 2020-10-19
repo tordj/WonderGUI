@@ -17,8 +17,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "924"
             endingLineNumber = "924"
-            landmarkName = "scrollPanelTest(pRoot)"
-            landmarkType = "9">
+            landmarkName = "unknown"
+            landmarkType = "0">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -3423,8 +3423,8 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "701"
             endingLineNumber = "701"
-            landmarkName = "unknown"
-            landmarkType = "0">
+            landmarkName = "packPanelStressTest(pRoot)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
       <BreakpointProxy
@@ -3540,9 +3540,9 @@
             timestampString = "604424422.723627"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "266"
-            endingLineNumber = "266"
-            landmarkName = "LoadStdWidgets( const char * pImagePath, const char * pImagePathX2, const char * pImagePathX4, const wg::SurfaceFactory* factory )"
+            startingLineNumber = "267"
+            endingLineNumber = "267"
+            landmarkName = "LoadStdWidgets(pImagePath, pImagePathX2, pImagePathX4, factory)"
             landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>

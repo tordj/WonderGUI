@@ -66,14 +66,14 @@ namespace wg
 
 		//.____ Content _______________________________________________________
 
-		uint32_t	pixel( CoordI coord ) override;
 		uint8_t		alpha( CoordI coord ) override;
 
 		//.____ Control _______________________________________________________
 
-		uint8_t *	lock( AccessMode mode ) override;
-		uint8_t *	lockRegion( AccessMode mode, const RectI& region ) override;
-		void		unlock() override;
+		const PixelBuffer	allocPixelBuffer(const RectI& rect) override;
+		bool				pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
+		void				pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) override;
+		void				freePixelBuffer(const PixelBuffer& buffer) override;
 
 		//.____  Internal ____________________________________________________
 
@@ -92,6 +92,8 @@ namespace wg
 
 		int			m_srcPosMaskX = 0;
 		int			m_srcPosMaskY = 0;
+
+		int			m_pitch;
 
 		Blob_p		m_pBlob;
 		uint8_t*	m_pData;

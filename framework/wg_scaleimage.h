@@ -66,22 +66,27 @@ public:
 
 	void resample(wg::Surface* src, wg::Surface* dest)
 	{
-		unsigned char* pSrc = (unsigned char*)src->lock(WgAccessMode::ReadOnly);
-		unsigned char* pDest = (unsigned char*)dest->lock(WgAccessMode::WriteOnly);
+        auto srcpixbuf = src->allocPixelBuffer();
+        auto destpixbuf = dest->allocPixelBuffer();
+
+        src->pushPixels(srcpixbuf);
+        
+        unsigned char* pSrc = (unsigned char*)srcpixbuf.pPixels;
+        unsigned char* pDest = (unsigned char*)destpixbuf.pPixels;
 
 		bool quit = false;
 		Resize_HQ_4ch(pSrc,
-					  src->pitch()/4,
-					  src->size().h,
-					  pDest,
-					  dest->pitch()/4,
-					  dest->size().h,
+                      srcpixbuf.pitch/4,
+                      srcpixbuf.rect.h,
+                      pDest,
+                      destpixbuf.pitch/4,
+                      destpixbuf.rect.h,
 					  &quit );
 
-		src->unlock();
-		dest->unlock();
-
-
+        dest->pullPixels(destpixbuf);
+        
+        src->freePixelBuffer(srcpixbuf);
+        dest->freePixelBuffer(destpixbuf);
 	}
 
 

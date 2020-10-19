@@ -240,6 +240,7 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 	WgPatches patches;
 	patches.add( sz );
 
+    auto oldClip = wg::Util::pushClipList(pDevice);
 
 	auto pOldCanvas = pDevice->canvas();
 	WgColor oldTint = pDevice->tintColor();
@@ -267,6 +268,8 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 	pDevice->setCanvas(pOldCanvas);
 	pDevice->setTintColor(oldTint);
 	pDevice->setBlendMode(oldBlendMode);
+
+    wg::Util::popClipList(pDevice, oldClip);
 
 	return pCanvas;
 }

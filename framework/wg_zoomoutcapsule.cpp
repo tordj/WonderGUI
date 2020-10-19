@@ -387,7 +387,7 @@ void WgZoomOutCapsule::_onEvent( const WgEvent::Event * pEvent, WgEventHandler *
 
 				// We need a separate surface that will belong to our image.
 
-				auto pSurface = wg::Base::activeContext()->surfaceFactory()->createSurface(m_pScreenshot->size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped );
+				auto pSurface = wg::Base::activeContext()->surfaceFactory()->createSurface(m_pScreenshot->size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Mipmapped);
 				pSurface->copyFrom( m_pScreenshot, {0,0} );
 
 				auto pImage = new WgImage();
