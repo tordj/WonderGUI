@@ -375,7 +375,7 @@ namespace wg
 			if (m_vSurfaces.size() <= surfaceId)
 				m_vSurfaces.resize(surfaceId + 1, nullptr);
 
-			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, flags | SurfaceFlag::WriteOnly, pClut);
+			m_vSurfaces[surfaceId] = m_pSurfaceFactory->createSurface(size, type, flags & ~SurfaceFlag::Buffered, pClut);
 
 			if (pClut)
 				Base::memStackRelease(4096);

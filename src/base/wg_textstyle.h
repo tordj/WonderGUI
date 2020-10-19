@@ -69,7 +69,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static TextStyle_p	create() { return TextStyle_p(new TextStyle()); }
+        static TextStyle_p	create();
 
 		//.____ Identification __________________________________________
 

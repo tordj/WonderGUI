@@ -88,17 +88,7 @@ namespace wg
 
 		m_inStreamId = _sendCreateSurface(size, format, flags, pClut);
 
-		if (m_pixelDescription.bits > 8 && (flags & SurfaceFlag::WriteOnly))
-		{
-			if (m_pixelDescription.A_bits == 0)
-				m_pAlphaLayer = nullptr;
-			else
-			{
-				m_pAlphaLayer = new uint8_t[size.w*size.h];
-				std::memset(m_pAlphaLayer, 0, size.w*size.h*2);
-			}
-		}
-		else
+		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
 			m_pBlob = Blob::create(m_pitch*size.h + (pClut ? 4096 : 0) );
 			std::memset(m_pBlob->data(), 0, m_pitch*size.h);
@@ -113,6 +103,16 @@ namespace wg
 
 			m_pAlphaLayer = nullptr;
 		}
+		else
+		{
+			if (m_pixelDescription.A_bits == 0)
+				m_pAlphaLayer = nullptr;
+			else
+			{
+				m_pAlphaLayer = new uint8_t[size.w*size.h];
+				std::memset(m_pAlphaLayer, 0, size.w*size.h*2);
+			}
+		}
 	}
 
 	StreamSurface::StreamSurface( CGfxOutStream& stream,SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut) : Surface(flags)
@@ -125,18 +125,18 @@ namespace wg
 
 		m_inStreamId = _sendCreateSurface(size, format, flags, pClut);
 
-		if (m_pixelDescription.bits > 8 && (flags & SurfaceFlag::WriteOnly))
+		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
+		{
+			m_pBlob = pBlob;
+			m_pClut = const_cast<Color*>(pClut);
+			m_pAlphaLayer = nullptr;
+		}
+		else
 		{
 			if (m_pixelDescription.A_bits == 0)
 				m_pAlphaLayer = nullptr;
 			else
 				m_pAlphaLayer = _genAlphaLayer((char*)pBlob->data(), pitch);
-		}
-		else
-		{
-			m_pBlob = pBlob;
-			m_pClut = const_cast<Color*>(pClut);
-			m_pAlphaLayer = nullptr;
 		}
 
 		_sendPixels(size, (uint8_t*) pBlob->data(), pitch);
@@ -161,14 +161,7 @@ namespace wg
 		_sendPixels(size, (uint8_t*)pBlob->data(), pitch);
 
 
-		if (m_pixelDescription.bits > 8 && (flags & SurfaceFlag::WriteOnly))
-		{
-			if (m_pixelDescription.A_bits == 0)
-				m_pAlphaLayer = nullptr;
-			else
-				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
-		}
-		else
+		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
 			m_pBlob = pBlob;
 
@@ -181,6 +174,13 @@ namespace wg
 				m_pClut = nullptr;
 
 			m_pAlphaLayer = nullptr;
+		}
+		else
+		{
+			if (m_pixelDescription.A_bits == 0)
+				m_pAlphaLayer = nullptr;
+			else
+				m_pAlphaLayer = _genAlphaLayer((char*)pPixels, pitch);
 		}
 
 	}
@@ -203,14 +203,7 @@ namespace wg
 
 		Util::pixelFormatToDescription(format, m_pixelDescription);
 
-		if (m_pixelDescription.bits > 8 && (flags & SurfaceFlag::WriteOnly) )
-		{
-			if (m_pixelDescription.A_bits == 0)
-				m_pAlphaLayer = nullptr;
-			else
-				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
-		}
-		else
+		if (m_pixelDescription.bits <= 8 || (flags & SurfaceFlag::Buffered))
 		{
 			m_pBlob = Blob::create(m_pitch*m_size.h + (pOther->clut() ? 4096 : 0));
 
@@ -223,6 +216,13 @@ namespace wg
 			}
 			else
 				m_pClut = nullptr;
+		}
+		else
+		{
+			if (m_pixelDescription.A_bits == 0)
+				m_pAlphaLayer = nullptr;
+			else
+				m_pAlphaLayer = _genAlphaLayer((char*)pixelbuffer.pPixels, pitch);
 		}
 
 		m_inStreamId = _sendCreateSurface(size, format, flags, pOther->clut());

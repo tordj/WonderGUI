@@ -270,17 +270,6 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(AccessMode i)
-	{
-		static const char * names[] = { 
-			"None",
-			"ReadOnly",
-			"WriteOnly",
-			"ReadWrite" };
-
-		return names[(int)i];
-	}
-
 	const char * toString(ScaleMode i)
 	{
 		static const char * names[] = { 

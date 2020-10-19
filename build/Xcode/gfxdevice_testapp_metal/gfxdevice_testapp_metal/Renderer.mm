@@ -74,7 +74,7 @@ using namespace wg;
     // Render. We do this outside the app since we might want to
     // handle updated rectangles in a system specific way.
 
-//    m_pRootPanel->addDirtyPatch({0,0,(int)_viewportSize.x,(int)_viewportSize.y});
+    m_pRootPanel->addDirtyPatch({0,0,(int)_viewportSize.x,(int)_viewportSize.y});
     
     m_pRootPanel->render();
 }

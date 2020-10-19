@@ -100,6 +100,9 @@ namespace wg
 		inline	GLuint	getTexture() const { return m_texture; }
 		inline	GLuint	getClutTexture() const { return m_clutTexture; }
 
+        static unsigned int totalTexturePixels() { return g_texturePixels; }
+        static unsigned int totalBackingPixels() { return g_backingPixels; }
+
 	private:
 		GlSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
 		GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
@@ -116,7 +119,7 @@ namespace wg
 		bool		m_bBackingBufferStale = false;				// Set when there are modifications (in texture or queued GL commands) for this surface.
 		bool        m_bMipmapStale = false;
 
-		void		_refreshBackingBuffer();
+		void		_readBackTexture( void * pDest);
 
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.
@@ -131,6 +134,10 @@ namespace wg
 		GLenum		m_pixelDataType;
 		static SizeI	s_maxSize;
 
+        static unsigned int    g_texturePixels;
+        static unsigned int    g_backingPixels;
+
+        
 		uint8_t*	m_pAlphaMap = nullptr;
 	};
 } // namespace wg

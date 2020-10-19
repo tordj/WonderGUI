@@ -126,10 +126,10 @@ namespace wg
 		inline const PixelBuffer allocPixelBuffer() { return allocPixelBuffer(m_size); }
 		virtual const PixelBuffer allocPixelBuffer(const RectI& rect) = 0;
 
-		inline bool			pushPixels(const PixelBuffer& buffer) { return pushPixels(buffer, buffer.rect); }
+        inline bool			pushPixels(const PixelBuffer& buffer) { return pushPixels(buffer, buffer.rect.size()); }
 		virtual bool		pushPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
 
-		inline void			pullPixels(const PixelBuffer& buffer) { pullPixels(buffer, buffer.rect); }
+        inline void			pullPixels(const PixelBuffer& buffer) { pullPixels(buffer, buffer.rect.size()); }
 		virtual void		pullPixels(const PixelBuffer& buffer, const RectI& bufferRect) = 0;
 
 		virtual void		freePixelBuffer(const PixelBuffer& buffer) = 0;

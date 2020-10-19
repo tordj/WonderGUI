@@ -40,7 +40,8 @@ namespace wg
 
 #define HANDLE_GLERROR(check) { GLenum err = check; if(err != 0) GlGfxDevice::onGlError(err, this, TYPEINFO, __func__, __FILE__, __LINE__ ); }
 
-
+    unsigned int    GlSurface::g_texturePixels = 0;
+    unsigned int    GlSurface::g_backingPixels = 0;
 
 	//____ maxSize() _______________________________________________________________
 
@@ -67,7 +68,7 @@ namespace wg
 
 		if (format == PixelFormat::Unknown || format == PixelFormat::Custom || format < PixelFormat_min || format > PixelFormat_max || ((format == PixelFormat::CLUT_8 || format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear) && pClut == nullptr))
 			return GlSurface_p();
-
+        
 		return GlSurface_p(new GlSurface(size,format,flags,pClut));
 	}
 
@@ -116,6 +117,7 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
 	{
+        flags |= (int) SurfaceFlag::Buffered;
 		HANDLE_GLERROR(glGetError());
 
 		_setPixelDetails(format);
@@ -123,7 +125,19 @@ namespace wg
 		m_size	= size;
 		m_pClut = nullptr;
 
-		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+		if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        {
+            g_backingPixels += m_size.w*m_size.h;
+            m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+
+            if (pClut)
+            {
+                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+                memcpy(m_pClut, pClut, 1024);
+            }
+        }
+        else
 		{
 			m_pitch = 0;
 
@@ -136,17 +150,6 @@ namespace wg
 			if (m_pixelDescription.A_bits > 0)
 				m_pAlphaMap = new uint8_t[size.w * size.h];
 		}
-		else
-		{
-			m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-			m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
-
-			if (pClut)
-			{
-				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-				memcpy(m_pClut, pClut, 1024);
-			}
-		}
 
 		_setupGlTexture(nullptr, flags);
 
@@ -156,6 +159,7 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
 	{
+        flags |= (int) SurfaceFlag::Buffered;
 		// Set general information
 
 		_setPixelDetails(format);
@@ -164,7 +168,13 @@ namespace wg
 		m_pClut = const_cast<Color*>(pClut);
 
 
-		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        {
+            g_backingPixels += m_size.w*m_size.h;
+            m_pitch = pitch;
+            m_pBlob = pBlob;
+        }
+        else
 		{
 			m_pitch = 0;
 
@@ -189,23 +199,36 @@ namespace wg
 				_updateAlphaMap( buf, size );
 			}
 		}
-		else
-		{
-			m_pitch = pitch;
-			m_pBlob = pBlob;
-		}
 
-		_setupGlTexture(m_pBlob->data(), flags);
+		//TODO: Support pitch
+		
+		_setupGlTexture(pBlob->data(), flags);
 	}
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
 	{
+       flags |= (int) SurfaceFlag::Buffered;
 	   _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
 		m_pClut = nullptr;
 
-		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        {
+            g_backingPixels += m_size.w*m_size.h;
+
+            m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
+
+            _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+
+            if (pClut)
+            {
+                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+                memcpy(m_pClut, pClut, 1024);
+            }
+        }
+        else
 		{
 			m_pitch = 0;
 
@@ -230,19 +253,8 @@ namespace wg
 				_updateAlphaMap(buf, size);
 			}
 		}
-		else
-		{
-			m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-			m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
 
-			_copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
-
-			if (pClut)
-			{
-				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-				memcpy(m_pClut, pClut, 1024);
-			}
-		}
+		//TODO: Support pitch
 
 		_setupGlTexture(m_pBlob->data(), flags);
 	}
@@ -250,20 +262,33 @@ namespace wg
 
 	GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
 	{
+        flags |= (int) SurfaceFlag::Buffered;
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= pOther->size();
 		m_pClut = nullptr;
 
 		auto pixbuf = pOther->allocPixelBuffer();
-		if( pOther->pushPixels(pixbuf) )
-			_copyFrom(pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size, m_size);
-		else
+		if( !pOther->pushPixels(pixbuf) )
 		{
 			// Error handling
 		}
 
-		if ((flags & SurfaceFlag::WriteOnly) && m_pixelDescription.bits > 8)
+        if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
+        {
+            g_backingPixels += m_size.w*m_size.h;
+
+            m_pitch = m_size.w * m_pixelSize;
+            m_pBlob = Blob::create(m_pitch * m_size.h + (pOther->clut() ? 1024 : 0));
+            _copyFrom(pOther->pixelDescription(), pixbuf.pPixels, pixbuf.pitch, m_size, m_size);
+
+            if (pOther->clut())
+            {
+                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+                memcpy(m_pClut, pOther->clut(), 1024);
+            }
+        }
+        else
 		{
 			m_pitch = 0;
 
@@ -279,26 +304,20 @@ namespace wg
 				_updateAlphaMap(pixbuf, m_size);
 			}
 		}
-		else
-		{
-			m_pitch = m_size.w * m_pixelSize;
-			m_pBlob = Blob::create(m_pitch * m_size.h + (pOther->clut() ? 1024 : 0));
 
-			if (pOther->clut())
-			{
-				m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
-				memcpy(m_pClut, pOther->clut(), 1024);
-			}
-		}
+		//TODO: Support pitch
+
+		_setupGlTexture(m_pBlob->data(), flags);
 
 		pOther->freePixelBuffer(pixbuf);
-		_setupGlTexture(m_pBlob->data(), flags);
 	}
 
 	void GlSurface::_setupGlTexture(void * pPixelsToUpload, int flags)
 	{
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
+
+        g_texturePixels += m_size.w*m_size.h;
 
 
 		glGenTextures(1, &m_texture);
@@ -465,6 +484,13 @@ namespace wg
 
 	GlSurface::~GlSurface()
 	{
+        
+        g_texturePixels -= m_size.w*m_size.h;
+
+        if( m_pBlob )
+            g_backingPixels -= m_size.w*m_size.h;
+
+        
 		// Free the stuff
 
 		glDeleteTextures( 1, &m_texture );
@@ -559,7 +585,7 @@ namespace wg
 			pixbuf.format = m_pixelDescription.format;
 			pixbuf.pClut = m_pClut;
 			pixbuf.pitch = ((rect.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
-			pixbuf.pPixels = new uint8_t[rect.h * pixbuf.pitch + rect.w * m_pixelSize];
+            pixbuf.pPixels = new uint8_t[rect.h * pixbuf.pitch];
 			pixbuf.rect = rect;
 		}
 		return pixbuf;
@@ -572,16 +598,19 @@ namespace wg
 		if (m_pBlob)
 		{
 			if (m_bBackingBufferStale)
-				_refreshBackingBuffer();
+				_readBackTexture(m_pBlob->data());
 
 			return true;
 		}
-		else
+        else if( bufferRect.size() == m_size )
 		{
-			// Implement a push instead. (but that seems to need OpenGL 4.5)
-
+            // This is OpenGL pre 4.5, we can only read back a whole texture :(
+            
+            _readBackTexture(buffer.pPixels);
 			return false;
 		}
+        else
+            return false;
 	}
 
 	//____ pullPixels() _______________________________________________________
@@ -598,7 +627,7 @@ namespace wg
 		RectI texRect = { buffer.rect.pos() + bufferRect.pos(), bufferRect.size() };
 		uint8_t* pSrc = buffer.pPixels + bufferRect.y * buffer.pitch + bufferRect.x * m_pixelSize;
 
-		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.rect.w);
+		glPixelStorei(GL_UNPACK_ROW_LENGTH, buffer.pitch/m_pixelSize);
 		glTexSubImage2D(GL_TEXTURE_2D, 0, texRect.x, texRect.y, texRect.w, texRect.h, m_accessFormat, m_pixelDataType, pSrc);
 
 		glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
@@ -748,7 +777,7 @@ namespace wg
 			{
 				for (int x = 0; x < bufferRect.w; x++)
 				{
-					*pDst++ = *pSrc;
+					*pDst++ = pSrc[3];
 					pSrc += 4;
 				}
 				pSrc += srcPitchAdd;
@@ -814,9 +843,9 @@ namespace wg
 	
 	}
 
-	//____ _refreshBackingBuffer() ____________________________________________
+	//____ _readBackTexture() ____________________________________________
 
-	void GlSurface::_refreshBackingBuffer()
+	void GlSurface::_readBackTexture(void * pDest)
 	{
 		// Flush any active device to make sure our texture is up-to-date
 
@@ -868,7 +897,7 @@ namespace wg
 
 		glBindTexture(GL_TEXTURE_2D, m_texture);
 		glPixelStorei(GL_PACK_ROW_LENGTH, m_size.w);
-		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, type, m_pBlob->data());
+		glGetTexImage(GL_TEXTURE_2D, 0, m_accessFormat, type, pDest);
 		glPixelStorei(GL_PACK_ROW_LENGTH, 0);
 		glBindTexture(GL_TEXTURE_2D, oldBinding);
 

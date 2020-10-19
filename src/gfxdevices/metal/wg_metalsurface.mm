@@ -119,7 +119,6 @@ namespace wg
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
         
-		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
         _setupMetalTexture( nullptr, 0, nullptr, flags, pClut );
 	}
 
@@ -131,7 +130,6 @@ namespace wg
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
-		m_pitch = pitch;
 
         PixelDescription srcFormat;
         Util::pixelFormatToDescription(format, srcFormat);
@@ -144,7 +142,6 @@ namespace wg
 	   _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
-		m_pitch = ((size.w*m_pixelDescription.bits/8)+3)&0xFFFFFFFC;
 
         PixelDescription srcFormat;
         
@@ -163,11 +160,17 @@ namespace wg
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= pOther->size();
-		m_pitch = m_size.w * m_pixelSize;
 
-        pOther->lock(AccessMode::ReadOnly);
-		_setupMetalTexture(pOther->pixels(), pOther->pitch(), pOther->pixelDescription(), flags, pOther->clut());
-        pOther->unlock();
+        
+        auto pixbuf = pOther->allocPixelBuffer();
+        if( pOther->pushPixels(pixbuf) )
+            _setupMetalTexture(pixbuf.pPixels, pixbuf.pitch, pOther->pixelDescription(), flags, pOther->clut());
+        else
+        {
+            // Error handling
+        }
+
+        pOther->freePixelBuffer(pixbuf);
 	}
 
     //____ _setupMetalTexture() __________________________________________________________________
@@ -187,9 +190,7 @@ namespace wg
               
         if( pPixels )
         {
-            m_pPixels = (uint8_t*) [m_textureBuffer contents];
             _copyFrom( pPixelDescription, (uint8_t*) pPixels, pitch, m_size, m_size );
-            m_pPixels = 0;
         }
                
         // Setup the clut if present
@@ -259,7 +260,7 @@ namespace wg
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
                             sourceOffset:       0
                             sourceBytesPerRow:  m_size.w * m_pixelSize
-                            sourceBytesPerImage:m_size.w * m_size.h * m_pixelSize
+                            sourceBytesPerImage:0
                             sourceSize:         textureSize
                             toTexture:          m_texture
                             destinationSlice:   0
@@ -274,7 +275,7 @@ namespace wg
             [blitCommandEncoder copyFromBuffer:     m_clutBuffer
                                 sourceOffset:       0
                                 sourceBytesPerRow:  1024
-                                sourceBytesPerImage:1024
+                                sourceBytesPerImage:0
                                 sourceSize:         clutSize
                                 toTexture:          m_clutTexture
                                 destinationSlice:   0
@@ -393,100 +394,56 @@ namespace wg
 //		if( m_internalFormat == GL_RGB )
 //			return true;
 
+        //TODO: Implement!
+        
 		return false;
 	}
 
-	//____ lock() __________________________________________________________________
+    //____ allocPixelBuffer() ______________________________________________________
 
-	uint8_t * MetalSurface::lock( AccessMode mode )
-	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
+    const PixelBuffer MetalSurface::allocPixelBuffer(const RectI& rect)
+    {
+        PixelBuffer pixbuf;
 
+        pixbuf.format = m_pixelDescription.format;
+        pixbuf.pClut = m_pClut;
+        pixbuf.pitch = m_size.w * m_pixelSize;
+        pixbuf.pPixels = ((uint8_t*)[m_textureBuffer contents]) + rect.y * pixbuf.pitch + rect.x * m_pixelSize;
+        pixbuf.rect = rect;
+        return pixbuf;
+    }
+
+    //____ pushPixels() ____________________________________________________________
+
+    bool MetalSurface::pushPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+    {
+        if( !m_texture )
+            return false;
+        
         // Make sure we have any changes made by GPU
+         
+         if( m_bBufferNeedsSync )
+             _syncBufferAndWait();
+         else
+             _waitForSyncedTexture();
         
-        if( m_bBufferNeedsSync )
-            _syncBufferAndWait();
-        else
-            _waitForSyncedTexture();
-		//
+        return true;
+    }
 
-		m_pPixels = (uint8_t*) [m_textureBuffer contents];
-		m_lockRegion = RectI(0,0,m_size);
-		m_accessMode = mode;
-		return m_pPixels;
-	}
+    //____ pullPixels() _____________________________________________________________
 
-	//____ lockRegion() __________________________________________________________________
+    void MetalSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
+    {
+        if( m_texture )
+            _syncTexture( bufferRect + buffer.rect.pos() );
+    }
 
-	uint8_t * MetalSurface::lockRegion( AccessMode mode, const RectI& region )
-	{
-		if( m_accessMode != AccessMode::None || mode == AccessMode::None )
-			return 0;
+    //____ freePixelBuffer() ________________________________________________________
 
-        // Make sure we have any changes made by GPU
-        
-        if( m_bBufferNeedsSync )
-            _syncBufferAndWait();
-        else
-            _waitForSyncedTexture();
-        
-		//
-
-		if( region.x + region.w > m_size.w || region.y + region.h > m_size.h || region.x < 0 || region.y < 0 )
-			return 0;
-
-		m_pPixels = ((uint8_t*)[m_textureBuffer contents]) + region.y*m_pitch + region.x*m_pixelSize;
-		m_lockRegion = region;
-		m_accessMode = mode;
-		return m_pPixels;
-	}
-
-
-	//____ unlock() ________________________________________________________________
-
-	void MetalSurface::unlock()
-	{
-		if(m_accessMode == AccessMode::None )
-			return;
-
-		if( m_accessMode != AccessMode::ReadOnly )
-		{
-            _syncTexture( m_lockRegion );
-		}
-		m_accessMode = AccessMode::None;
-		m_pPixels = 0;
-		m_lockRegion.w = 0;
-		m_lockRegion.h = 0;
-	}
-
-	//____ pixel() ______________________________________________________________
-
-	uint32_t MetalSurface::pixel( CoordI coord )
-	{
-        if( m_bBufferNeedsSync )
-            _syncBufferAndWait();
-
-        uint32_t val;
-
-        uint8_t * pPixel = ((uint8_t*) [m_textureBuffer contents]) + coord.y*m_pitch + coord.x*m_pixelSize;
-
-        switch( m_pixelSize )
-        {
-            case 1:
-                val = (uint32_t) *pPixel;
-            case 2:
-                val = (uint32_t) ((uint16_t*) pPixel)[0];
-            case 3:
-                val = ((uint32_t) pPixel[0]) + (((uint32_t) pPixel[1]) << 8) + (((uint32_t) pPixel[2]) << 16);
-            default:
-                val = *((uint32_t*) pPixel);
-        }
-
-        return val;
-	}
-
-
+    void MetalSurface::freePixelBuffer(const PixelBuffer& buffer)
+    {
+        // Do nothing.
+    }
 
 	//____ alpha() ____________________________________________________________
 
@@ -499,22 +456,24 @@ namespace wg
 
         uint8_t * p = (uint8_t*) [m_textureBuffer contents];
 
+        int pitch = m_size.w * m_pixelSize;
+        
         switch (m_pixelDescription.format)
         {
             case PixelFormat::CLUT_8_sRGB:
             case PixelFormat::CLUT_8_linear:
             {
-                uint8_t index = p[m_pitch * coord.y + coord.x];
+                uint8_t index = p[pitch * coord.y + coord.x];
                 return m_pClut[index].a;
             }
             case PixelFormat::A_8:
             {
-                uint8_t * pPixel = p + m_pitch * coord.y + coord.x;
+                uint8_t * pPixel = p + pitch * coord.y + coord.x;
                 return pPixel[0];
             }
             case PixelFormat::BGRA_4_linear:
             {
-                uint16_t pixel = * (uint16_t *)(p + m_pitch * coord.y + coord.x);
+                uint16_t pixel = * (uint16_t *)(p + pitch * coord.y + coord.x);
                 const uint8_t * pConvTab = s_pixelConvTabs[4];
 
                 return pConvTab[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
@@ -522,7 +481,7 @@ namespace wg
             case PixelFormat::BGRA_8_sRGB:
             case PixelFormat::BGRA_8_linear:
             {
-                uint8_t * pPixel = p + m_pitch * coord.y + coord.x * 4;
+                uint8_t * pPixel = p + pitch * coord.y + coord.x * 4;
                 return pPixel[3];
             }
             default:
@@ -596,15 +555,12 @@ namespace wg
 
     void MetalSurface::_syncTexture(RectI region)
     {
-        // If we have pending reads we need to flush them first
-        
-        if (m_bPendingReads && (m_accessMode == AccessMode::ReadWrite || m_accessMode == AccessMode::WriteOnly))
-            MetalGfxDevice::s_pActiveDevice->flush();
- 
+//        if (m_bPendingReads)
+//            MetalGfxDevice::s_pActiveDevice->flush();
+//        if (MetalGfxDevice::s_pActiveDevice)
+//            MetalGfxDevice::s_pActiveDevice->flush();
+
         //
-        
-        int     bufferLength = m_size.w * m_size.h * m_pixelSize;
-        int     lineLength = m_size.w * m_pixelSize;
 
         MTLSize textureSize = { (unsigned) region.w, (unsigned) region.h,1};
         MTLOrigin textureOrigin = { (unsigned) region.x, (unsigned) region.y,0};
@@ -616,7 +572,7 @@ namespace wg
         id<MTLBlitCommandEncoder> blitCommandEncoder = [commandBuffer blitCommandEncoder];
         [blitCommandEncoder copyFromBuffer:     m_textureBuffer
                             sourceOffset:       sourceOffset
-                            sourceBytesPerRow:  lineLength
+                            sourceBytesPerRow:  m_size.w * m_pixelSize
                             sourceBytesPerImage:0
                             sourceSize:         textureSize
                             toTexture:          m_texture
@@ -638,6 +594,8 @@ namespace wg
             m_bTextureSyncInProgress = false;
         }];
         [commandBuffer commit];
+        
+        _waitForSyncedTexture();
     }
 
 
