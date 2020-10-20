@@ -16,11 +16,11 @@ public:
 
 	bool init(GfxDevice * pDevice, const RectI& canvas, AppVisitor * pAppVisitor)
 	{
-		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_8);
-		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8);
-		m_pCanvasBGRX_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRX_8);
-		m_pCanvasBGRA_4 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_4_linear);
-		m_pCanvasBGR_565 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_565_linear);
+		m_pCanvasBGR_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_8, SurfaceFlag::Canvas );
+		m_pCanvasBGRA_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_8, SurfaceFlag::Canvas);
+		m_pCanvasBGRX_8 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRX_8, SurfaceFlag::Canvas);
+		m_pCanvasBGRA_4 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGRA_4_linear, SurfaceFlag::Canvas);
+		m_pCanvasBGR_565 = pDevice->surfaceFactory()->createSurface(canvas, PixelFormat::BGR_565_linear, SurfaceFlag::Canvas);
 
 		return true;
 	}

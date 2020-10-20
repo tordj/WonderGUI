@@ -73,7 +73,8 @@ public:
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
 		ofs++;
-
+                
+        pDevice->setMorphFactor(0.5f);
 		pDevice->setBlendMode(BlendMode::Morph);
 		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
 		ofs++;

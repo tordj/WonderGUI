@@ -300,6 +300,7 @@ namespace wg
         DestFormat      m_activeCanvasFormat;
         bool            m_bGradientActive   = false;
         BlendMode       m_activeBlendMode   = BlendMode::Blend;
+        float           m_activeMorphFactor = 0.5f;
                 
         SizeI                       m_viewportSize;
         

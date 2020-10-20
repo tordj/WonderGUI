@@ -1004,25 +1004,25 @@ namespace wg
 			{
 				int patchOfsY = patchPos.y - tint.tintRect.y;
 
-				tintB = topLeftB + int(tint.leftIncB) * patchOfsY;
-				tintG = topLeftG + int(tint.leftIncG) * patchOfsY;
-				tintR = topLeftR + int(tint.leftIncR) * patchOfsY;
-				tintA = topLeftA + int(tint.leftIncA) * patchOfsY;
+				tintB = topLeftB + tint.leftIncB * patchOfsY;
+				tintG = topLeftG + tint.leftIncG * patchOfsY;
+				tintR = topLeftR + tint.leftIncR * patchOfsY;
+				tintA = topLeftA + tint.leftIncA * patchOfsY;
 			}
 
 			if (tintMode == TintMode::GradientXY)
 			{
 				int patchOfsY = patchPos.y - tint.tintRect.y;
 
-				leftB = topLeftB + patchOfsY * int(tint.leftIncB);
-				leftG = topLeftG + patchOfsY * int(tint.leftIncG);
-				leftR = topLeftR + patchOfsY * int(tint.leftIncR);
-				leftA = topLeftA + patchOfsY * int(tint.leftIncA);
+				leftB = topLeftB + patchOfsY * tint.leftIncB;
+				leftG = topLeftG + patchOfsY * tint.leftIncG;
+				leftR = topLeftR + patchOfsY * tint.leftIncR;
+				leftA = topLeftA + patchOfsY * tint.leftIncA;
 
-				rightB = topRightB + patchOfsY * int(tint.rightIncB);
-				rightG = topRightG + patchOfsY * int(tint.rightIncG);
-				rightR = topRightR + patchOfsY * int(tint.rightIncR);
-				rightA = topRightA + patchOfsY * int(tint.rightIncA);
+				rightB = topRightB + patchOfsY * tint.rightIncB;
+				rightG = topRightG + patchOfsY * tint.rightIncG;
+				rightR = topRightR + patchOfsY * tint.rightIncR;
+				rightA = topRightA + patchOfsY * tint.rightIncA;
 			}
 		}
 	}
@@ -2370,7 +2370,7 @@ namespace wg
 						}
 						else
 						{
-							assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
+//							assert((ofsX | ofsY | (srcMax.w - (ofsX + 32768)) | (srcMax.h - (ofsY + 32768))) >= 0);
 
 							int nextX = (ofsX & 0x7FFF) == 0 ? 0 : srcPixelBytes;
 							int nextY = (ofsY & 0x7FFF) == 0 ? 0 : srcPitch;
@@ -2704,15 +2704,15 @@ namespace wg
 			m_colTrans.topRightB = b[1];
 			m_colTrans.topRightA = a[1];
 
-			m_colTrans.leftIncR = uint32_t(int(r[3] - r[0]) / m_tintGradientRect.h);
-			m_colTrans.leftIncG = uint32_t(int(g[3] - g[0]) / m_tintGradientRect.h);
-			m_colTrans.leftIncB = uint32_t(int(b[3] - b[0]) / m_tintGradientRect.h);
-			m_colTrans.leftIncA = uint32_t(int(a[3] - a[0]) / m_tintGradientRect.h);
+			m_colTrans.leftIncR = int(r[3] - r[0]) / m_tintGradientRect.h;
+			m_colTrans.leftIncG = int(g[3] - g[0]) / m_tintGradientRect.h;
+			m_colTrans.leftIncB = int(b[3] - b[0]) / m_tintGradientRect.h;
+			m_colTrans.leftIncA = int(a[3] - a[0]) / m_tintGradientRect.h;
 
-			m_colTrans.rightIncR = uint32_t(int(r[2] - r[1]) / m_tintGradientRect.h);
-			m_colTrans.rightIncG = uint32_t(int(g[2] - g[1]) / m_tintGradientRect.h);
-			m_colTrans.rightIncB = uint32_t(int(b[2] - b[1]) / m_tintGradientRect.h);
-			m_colTrans.rightIncA = uint32_t(int(a[2] - a[1]) / m_tintGradientRect.h);
+			m_colTrans.rightIncR = int(r[2] - r[1]) / m_tintGradientRect.h;
+			m_colTrans.rightIncG = int(g[2] - g[1]) / m_tintGradientRect.h;
+			m_colTrans.rightIncB = int(b[2] - b[1]) / m_tintGradientRect.h;
+			m_colTrans.rightIncA = int(a[2] - a[1]) / m_tintGradientRect.h;
 
 			diffMaskX |= (m_tintGradient[0].argb - m_tintGradient[1].argb) | (m_tintGradient[2].argb - m_tintGradient[3].argb);
 			diffMaskY |= (m_tintGradient[0].argb - m_tintGradient[3].argb) | (m_tintGradient[1].argb - m_tintGradient[2].argb);

@@ -37,6 +37,9 @@ public:
 		addTest("SegmentsTintYFlipY", &TintSegmentTests::flipY, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetFlip);
 		addTest("SegmentsTintXYFlipY", &TintSegmentTests::flipY, &TintSegmentTests::segmentsTintXY, &TintSegmentTests::resetFlip);
 
+        addTest("SegmentsTintYBaseTintXY", &TintSegmentTests::setBaseGradientXY, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetTint);
+        addTest("SegmentsTintYBaseTintXYRot90", &TintSegmentTests::rot90SetBaseGradientXY, &TintSegmentTests::segmentsTintY, &TintSegmentTests::resetTint);
+
 	}
 
 
@@ -78,11 +81,12 @@ public:
 
 	bool	resetTint(GfxDevice * pDevice, const RectI& canvas)
 	{
+        m_flip = GfxFlip::Normal;
 		pDevice->setTintColor(Color::White);
 		pDevice->clearTintGradient();
 		return true;
 	}
-
+    
 	bool	setBaseGradientX(GfxDevice * pDevice, const RectI& canvas)
 	{
 //		pDevice->setTintColor({ 128,255,255,255 });
@@ -114,6 +118,16 @@ public:
 		return true;
 	}
 
+    bool    rot90SetBaseGradientXY(GfxDevice * pDevice, const RectI& canvas)
+    {
+        //        pDevice->setTintColor({ 128,255,255,255 });
+
+        m_flip = GfxFlip::Rot90;
+        pDevice->setTintGradient(canvas, { 255,255,255,255 }, { 255,0,0,255 }, { 0,0,0,255 }, { 0,255,0,255 });
+        return true;
+    }
+
+    
 	bool	rot180(GfxDevice* pDevice, const RectI& canvas)
 	{
 		m_flip = GfxFlip::Rot180;

@@ -330,7 +330,7 @@ namespace wg
 #if TARGET_OS_IPHONE
 				m_internalFormat = MTLPixelFormatB5G6R5Unorm;
 #else
-                format = PixelFormat::BGRA_8_linear;
+                format = PixelFormat::BGRX_8_linear;
                 m_internalFormat = MTLPixelFormatBGRA8Unorm;
 #endif
 				break;

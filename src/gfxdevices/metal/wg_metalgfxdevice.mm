@@ -87,15 +87,15 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 //            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
             {
                 m_plotPipelines[blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Plot BGRA_8_linear Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_plotPipelines[blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Plot BGRA_8_linear Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_plotPipelines[blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Plot BGRX_8_linear Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
                 m_plotPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Plot BGRA_8_sRGB Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_plotPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Plot BGRA_8_sRGB Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_plotPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Plot BGRX_8_sRGB Pipeline", @"plotVertexShader", @"plotFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
                 m_plotPipelines[blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Plot A_8 Pipeline", @"plotVertexShader", @"plotFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
                 
                 m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Line BGRA_8_linear Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Line BGRA_8_linear Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Line BGRX_8_linear Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
                 m_lineFromToPipelines[blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Line BGRA_8_sRGB Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Line BGRA_8_sRGB Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_lineFromToPipelines[blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Line BGRX_8_sRGB Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
                 m_lineFromToPipelines[blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Line A_8 Pipeline", @"lineFromToVertexShader", @"lineFromToFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
             }
         }
@@ -107,28 +107,28 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 //            if( blendMode != int(BlendMode::Ignore) && blendMode != int(BlendMode::Undefined) )
             {
                 m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
-                m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Fill BGRX_8_linear Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_fillPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Fill BGRA_8_sRGB Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Fill BGRX_8_sRGB Pipeline", @"fillVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
                 m_fillPipelines[0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Fill A_8 Pipeline", @"fillVertexShader", @"fillFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
-                m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"GradientFill BGRX_8_linear Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_fillPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"GradientFill BGRA_8_sRGB Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"GradientFill BGRX_8_sRGB Pipeline", @"fillGradientVertexShader", @"fillFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
                 m_fillPipelines[1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"GradientFill A_8 Pipeline", @"fillGradientVertexShader", @"fillFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
-                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Fill BGRA_8_linear Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
-                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Filll BGRA_8_sRGB Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
-                m_fillAAPipelines[0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Fill A_8 Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"AAFill BGRA_8_linear Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"AAFill BGRX_8_linear Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"AAFill BGRA_8_sRGB Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"AAFill BGRX_8_sRGB Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_fillAAPipelines[0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"AAFill A_8 Pipeline", @"fillAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
 
-                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"GradientFill BGRA_8_linear Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
-                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"GradientFilll BGRA_8_sRGB Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
-                m_fillAAPipelines[1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"GradientFill A_8 Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"AAGradientFill BGRA_8_linear Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"AAGradientFill BGRX_8_linear Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"AAGradientFilll BGRA_8_sRGB Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"AAGradientFilll BGRX_8_sRGB Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader", (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_fillAAPipelines[1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"AAGradientFill A_8 Pipeline", @"fillGradientAAVertexShader", @"fillAAFragmentShader_A8", (BlendMode) blendMode, PixelFormat::A_8 );
             }
         }
         
@@ -222,18 +222,18 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             for( int blendMode = 0 ; blendMode < BlendMode_size ; blendMode++ )
             {
                 m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Segments BGRX_8_linear pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
 
                 m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Segments BGRX_8_sRGB pipeline", @"segmentsVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
 
                 m_segmentsPipelines[shader][0][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Segments A_8 pipeline", @"segmentsVertexShader", segFragShaders_A8[shader], (BlendMode) blendMode, PixelFormat::A_8 );
 
                 m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_linear );
-                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Segments BGRA_8_linear gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
+                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_linear] = _compileRenderPipeline( @"Segments BGRX_8_linear gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_linear );
 
                 m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRA8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRA_8_sRGB );
-                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Segments BGRA_8_sRGB gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
+                m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::BGRX8_sRGB] = _compileRenderPipeline( @"Segments BGRX_8_sRGB gradient pipeline", @"segmentsGradientVertexShader", segFragShaders[shader], (BlendMode) blendMode, PixelFormat::BGRX_8_sRGB );
 
                 m_segmentsPipelines[shader][1][blendMode][(int)DestFormat::A_8] = _compileRenderPipeline( @"Segments A_8 gradient pipeline", @"segmentsGradientVertexShader", segFragShaders_A8[shader], (BlendMode) blendMode, PixelFormat::A_8 );
             }
@@ -609,18 +609,11 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         
         m_pActiveCanvas     = (MetalSurface*) m_pCanvas.rawPtr();
         m_activeCanvasSize  = m_canvasSize;
-
-        // Queue initial blend mode.
         
-        _beginStateCommand(Command::SetBlendMode, 1);
-        m_pCommandBuffer[m_commandOfs++] = (int) m_blendMode;
-        _endCommand();
-
-        // Queue initial morph factor.
+        // Set initial active states
         
-        _beginStateCommand(Command::SetMorphFactor, 1);
-        m_pCommandBuffer[m_commandOfs++] = (int)(m_morphFactor*1024);
-        _endCommand();
+        m_activeBlendMode   = m_blendMode;
+        m_activeMorphFactor = m_morphFactor;
 
         // Queue initial blitSource.
         
@@ -1802,7 +1795,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             id<MTLBuffer> newId = [s_metalDevice newBufferWithLength:m_vertexBufferSize*sizeof(Vertex) options:MTLResourceStorageModeShared];
 
             Vertex * pNewBuffer = (Vertex *)[newId contents];
-            memcpy( pNewBuffer, m_pVertexBuffer, m_vertexOfs * sizeof(float));
+            memcpy( pNewBuffer, m_pVertexBuffer, m_vertexOfs * sizeof(Vertex));
             m_pVertexBuffer = pNewBuffer;
             
             m_vertexBufferId = newId;
@@ -2179,6 +2172,8 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         }
 
         [renderEncoder setViewport:(MTLViewport){0.0, 0.0, (double) width, (double) height, 0.0, 1.0 }];
+        [renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:m_activeMorphFactor];
+
 
         // Updating canvas info for our shaders
 
@@ -2196,6 +2191,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
         switch(pixelFormat)
         {
+            case PixelFormat::BGRX_8_linear:
+                m_activeCanvasFormat = DestFormat::BGRX8_linear;
+                break;
+
             case PixelFormat::BGRA_8_linear:
                 m_activeCanvasFormat = DestFormat::BGRA8_linear;
                 break;
@@ -2203,7 +2202,11 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             case PixelFormat::BGRA_8_sRGB:
                 m_activeCanvasFormat = DestFormat::BGRA8_sRGB;
                 break;
-                
+
+            case PixelFormat::BGRX_8_sRGB:
+                m_activeCanvasFormat = DestFormat::BGRX8_sRGB;
+                break;
+
             case PixelFormat::A_8:
                 m_activeCanvasFormat = DestFormat::A_8;
                 break;
@@ -2229,6 +2232,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
     void MetalGfxDevice::_setMorphFactor( id<MTLRenderCommandEncoder> renderEncoder, float morphFactor)
     {
         [renderEncoder setBlendColorRed:1.f green:1.f blue:1.f alpha:morphFactor];
+        m_activeMorphFactor = morphFactor;
     }
 
     //____ _setBlitSource() _______________________________________________________
@@ -2418,10 +2422,20 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
                 descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
                 descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+
+                if(bAlphaOnly)
+                {
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceColor;
+                }
+                else
+                {
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
+                }
+                
                 break;
 
             case BlendMode::Morph:
@@ -2439,18 +2453,18 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
 
                 if( bAlphaOnly )
                 {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
                 }
                 else
                 {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
                 }
                 break;
 
@@ -2459,18 +2473,18 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationReverseSubtract;
                 descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationReverseSubtract;
-                descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
-                descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
 
                 if( bAlphaOnly )
                 {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
                 }
                 else
                 {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
+                    descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorSourceAlpha;
+                    descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
                 }
                 break;
 
@@ -2481,17 +2495,9 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorDestinationColor;
                 descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
 
-                if( bAlphaOnly )
-                {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorDestinationAlpha;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorZero;
-                }
-                else
-                {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
                 break;
 
             case BlendMode::Invert:
@@ -2501,59 +2507,31 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOneMinusDestinationColor;
                 descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOneMinusSourceColor;
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
 
-                if( bAlphaOnly )
-                {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOneMinusDestinationAlpha;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOneMinusSourceAlpha;
-                }
-                else
-                {
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
                 break;
 
             case BlendMode::Min:
 
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMin;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
                 descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-
-                if( bAlphaOnly )
-                {
-                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationMin;
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
-                else
-                {
-                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
                 break;
 
             case BlendMode::Max:
 
                 descriptor.colorAttachments[0].blendingEnabled = YES;
                 descriptor.colorAttachments[0].rgbBlendOperation = MTLBlendOperationMax;
+                descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
                 descriptor.colorAttachments[0].sourceRGBBlendFactor = MTLBlendFactorOne;
                 descriptor.colorAttachments[0].destinationRGBBlendFactor = MTLBlendFactorOne;
-
-                if( bAlphaOnly )
-                {
-                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationMax;
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorOne;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
-                else
-                {
-                    descriptor.colorAttachments[0].alphaBlendOperation = MTLBlendOperationAdd;
-                    descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
-                    descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
-                }
+                descriptor.colorAttachments[0].sourceAlphaBlendFactor = MTLBlendFactorZero;
+                descriptor.colorAttachments[0].destinationAlphaBlendFactor = MTLBlendFactorOne;
                 break;
 
             case BlendMode::Ignore:

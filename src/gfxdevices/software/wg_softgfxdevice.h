@@ -138,25 +138,25 @@ namespace wg
 
 			RectI		tintRect;
 
-			uint32_t	topLeftR;		// Scale: 0 -> (1<<18)
-			uint32_t	topLeftG;
-			uint32_t	topLeftB;
-			uint32_t	topLeftA;
+			int32_t	topLeftR;		// Scale: 0 -> (1<<18)
+			int32_t	topLeftG;
+			int32_t	topLeftB;
+			int32_t	topLeftA;
 
-			uint32_t	leftIncR;
-			uint32_t	leftIncG;
-			uint32_t	leftIncB;
-			uint32_t	leftIncA;
+			int32_t	leftIncR;
+			int32_t	leftIncG;
+			int32_t	leftIncB;
+			int32_t	leftIncA;
 
-			uint32_t	topRightR;
-			uint32_t	topRightG;
-			uint32_t	topRightB;
-			uint32_t	topRightA;
+			int32_t	topRightR;
+			int32_t	topRightG;
+			int32_t	topRightB;
+			int32_t	topRightA;
 
-			uint32_t	rightIncR;
-			uint32_t	rightIncG;
-			uint32_t	rightIncB;
-			uint32_t	rightIncA;
+			int32_t	rightIncR;
+			int32_t	rightIncG;
+			int32_t	rightIncB;
+			int32_t	rightIncA;
 
 			int			morphFactor;	// Scale: 0 -> 4096
 		};
