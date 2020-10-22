@@ -384,12 +384,12 @@ namespace wg
 
 		// Render Lasso
 
-		if( m_pLassoSkin && m_lassoBegin != m_lassoEnd )
+		if( lasso && m_lassoBegin != m_lassoEnd )
 		{
-			Rect lasso( m_lassoBegin, m_lassoEnd );
-			lasso += _canvas.pos();
+			Rect lassoRect( m_lassoBegin, m_lassoEnd );
+			lassoRect += _canvas.pos();
 
-			m_pLassoSkin->render(pDevice, lasso, m_state );
+			lasso->render(pDevice, lassoRect, m_state );
 		}
 	}
 

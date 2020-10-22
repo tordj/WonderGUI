@@ -67,6 +67,10 @@ namespace wg
 		};
 
 
+		//.____ Components ____________________________________
+
+		CSkinSlot			lasso;
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
@@ -78,9 +82,6 @@ namespace wg
 		virtual bool		setEntrySkin( Skin * pOddEntrySkin, Skin * pEvenEntrySkin );
 		Skin_p				oddEntrySkin() const { return m_pEntrySkin[0]; }
 		Skin_p				evenEntrySkin() const { return m_pEntrySkin[1]; }
-
-		virtual void		setLassoSkin( Skin * pSkin );
-		Skin_p				lassoSkin() const { return m_pLassoSkin; }
 
 		//.____ Behavior ________________________________________________________
 
@@ -120,6 +121,15 @@ namespace wg
 		virtual void	_onLassoUpdated( const Rect& oldLasso, const Rect& newLasso ) = 0;
 
 
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos(const GeoComponent* pComponent) const override;
+		Size			_componentSize(const GeoComponent* pComponent) const override;
+		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+
+		void			_componentRequestRender(const GeoComponent* pComponent) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+
+
 		virtual Slot * _beginSlots() const = 0;
 		virtual Slot * _endSlots() const = 0;
 
@@ -133,7 +143,6 @@ namespace wg
 
 		SelectMode		m_selectMode;
 		Skin_p			m_pEntrySkin[2];
-		Skin_p			m_pLassoSkin;
 		bool			m_bOpaqueEntries;
 
 		Coord			m_lassoBegin;

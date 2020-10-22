@@ -38,7 +38,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	List::List() : m_selectMode(SelectMode::SingleEntry)
+	List::List() : lasso(this), m_selectMode(SelectMode::SingleEntry)
 	{
 	}
 
@@ -102,14 +102,6 @@ namespace wg
 		}
 		return true;
 	}
-
-	//____ setLassoSkin() _________________________________________________________
-
-	void List::setLassoSkin( Skin * pSkin )
-	{
-		m_pLassoSkin = pSkin;
-	}
-
 
 	//____ _cloneContent() _______________________________________________________
 
@@ -458,6 +450,66 @@ namespace wg
 		}
 
 		return nSelected + nDeselected;
+	}
+
+	//____ _componentState() __________________________________________________
+
+	State List::_componentState(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &lasso)
+			return StateEnum::Normal;
+		else
+			return m_state;
+	}
+
+	//____ _componentPos() ____________________________________________________
+
+	Coord List::_componentPos(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &lasso)
+			return m_lassoBegin;
+		else
+			return Coord();
+	}
+
+	//____ _componentSize() ___________________________________________________
+
+	Size List::_componentSize(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &lasso)
+			return Size(m_lassoEnd - m_lassoBegin);
+		else
+			return m_size;
+
+	}
+
+	//____ _componentGeo() ____________________________________________________
+
+	Rect List::_componentGeo(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &lasso)
+			return Rect(m_lassoBegin, m_lassoEnd);
+		else
+			return m_size;
+	}
+
+	//____ _componentRequestRender() __________________________________________
+
+	void List::_componentRequestRender(const GeoComponent* pComponent)
+	{
+		if (pComponent == &lasso)
+			return _requestRender( Rect(m_lassoBegin, m_lassoEnd) );
+		else
+			return _requestRender();
+
+	}
+
+	void List::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	{
+		if (pComponent == &lasso)
+			return _requestRender( rect + m_lassoBegin );
+		else
+			return _requestRender(rect);
 	}
 
 } // namespace wg
