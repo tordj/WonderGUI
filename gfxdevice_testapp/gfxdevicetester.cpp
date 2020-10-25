@@ -80,8 +80,6 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 
 	update_displaymode();
 
-	m_prevTime = m_pVisitor->time();
-
 	return true;
 }
 
@@ -114,14 +112,6 @@ bool GfxDeviceTester::update()
 
 		display_test_results();
 	}
-
-	Base::msgRouter()->dispatch();
-
-	// Update time and post a tick.
-
-	int64_t time = m_pVisitor->time();
-	Base::msgRouter()->post(TickMsg::create(time, (int)(time - m_prevTime)));
-	m_prevTime = time;
 
 	return true;
 }
@@ -475,8 +465,8 @@ void GfxDeviceTester::clock_test(DeviceTest* pDeviceTest, int rounds, Device* pD
 	stallEnd = m_pVisitor->time();
 
 
-	pDeviceTest->render_time = (end - start)/1000.0;
-	pDeviceTest->stalling_time = (stallEnd - stallBegin)/1000.0;
+	pDeviceTest->render_time = (end - start)/1000000.0;
+	pDeviceTest->stalling_time = (stallEnd - stallBegin)/1000000.0;
 }
 
 //____ setup_tests() ____________________________________________________

@@ -47,10 +47,10 @@ namespace wg
 
 	StdTextMapper::~StdTextMapper()
 	{
-		if( m_tickRouteId )
+		if( m_bReceivingUpdates )
 		{
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-			m_tickRouteId = 0;
+			Base::_stopReceiveUpdates(this);
+			m_bReceivingUpdates = false;
 		}
 	}
 
@@ -343,25 +343,22 @@ namespace wg
 		return distance;
 	}
 
-	//____ receive() ___________________________________________________________
+	//____ _update() ___________________________________________________________
 
-	void StdTextMapper::receive( Msg * pMsg )
+	void StdTextMapper::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		if( pMsg->type() == MsgType::Tick && m_pFocusedText )
-		{
-			if( _caretVisible(m_pFocusedText) )
-			{				
-				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-				if( pCaret )
-				{
-					int ms = static_cast<TickMsg*>(pMsg)->timediff();
+		if( _caretVisible(m_pFocusedText) )
+		{				
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			if( pCaret )
+			{
+				int ms = microPassed / 1000;
 
-					bool bDirty = pCaret->tick( ms );
-					if( bDirty )
-					{
-						int caretOfs = _caretOfs(m_pFocusedText);
-						_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
-					}
+				bool bDirty = pCaret->tick( ms );
+				if( bDirty )
+				{
+					int caretOfs = _caretOfs(m_pFocusedText);
+					_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
 				}
 			}
 		}
@@ -750,16 +747,19 @@ namespace wg
 			if( newState.isFocused() )
 			{
 				m_pFocusedText = pText;
-				if( !m_tickRouteId )
-					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+				if (!m_bReceivingUpdates)
+				{
+					Base::_startReceiveUpdates(this);
+					m_bReceivingUpdates = true;
+				}
 			}
 			else
 			{
 				m_pFocusedText = 0;
-				if( m_tickRouteId )
+				if( m_bReceivingUpdates )
 				{
-					Base::msgRouter()->deleteRoute( m_tickRouteId );
-					m_tickRouteId = 0;
+					Base::_stopReceiveUpdates(this);;
+					m_bReceivingUpdates = false;
 				}
 			}
 		}

@@ -38,7 +38,6 @@ namespace wg
 	MsgLogger::MsgLogger( std::ostream& stream ) : m_out(stream)
 	{
 		logAllMsgs();
-		ignoreMsg( MsgType::Tick );
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -203,9 +202,6 @@ namespace wg
 		switch( _pMsg->type() )
 		{
 			case MsgType::Dummy:
-				break;
-			case MsgType::Tick:
-				snprintf( params, c_paramLen, " millisec=%d", static_cast<TickMsg*>(_pMsg)->timediff() );
 				break;
 			case MsgType::PointerChange:
 				snprintf( params, c_paramLen, " style=%s", _formatPointerStyle( static_cast<PointerChangeMsg*>(_pMsg)).c_str() );

@@ -415,7 +415,6 @@ int main(int argc, char** argv)
 
 	MsgLogger_p pLogger = MsgLogger::create(std::cout);
 	pLogger->logAllMsgs();
-	pLogger->ignoreMsg(MsgType::Tick);
 	pLogger->ignoreMsg( MsgType::MouseMove);
 	pLogger->ignoreMsg(MsgType::MouseDrag);
 	pLogger->ignoreMsg(MsgType::MouseRepeat);
@@ -1264,7 +1263,7 @@ int main(int argc, char** argv)
 	{
 
 		translateEvents( pInput, pRoot );
-		Base::update(16);
+		Base::update(int64_t(SDL_GetTicks())*1000);
 		pRoot->render();
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
@@ -1292,23 +1291,6 @@ int main(int argc, char** argv)
 
 void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 {
-	// WonderGUI needs Tick-events to keep track of time passed for things such
-	// key-repeat, double-click detection, animations etc.  So we create one
-	// and put it on the event queue.
-
-	static unsigned int oldTicks = 0;
-
-	unsigned int ticks = SDL_GetTicks();
-	int tickDiff;
-
-	if( oldTicks == 0 )
-		tickDiff = 0;
-	else
-		tickDiff = (int) (ticks - oldTicks);
-	oldTicks = ticks;
-
-	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
-
 	// Process all the SDL events in a loop
 
 	SDL_Event e;

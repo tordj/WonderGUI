@@ -52,8 +52,6 @@ namespace wg
 
 	DragNDropLayer::~DragNDropLayer()
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
 
@@ -177,11 +175,6 @@ namespace wg
 	{
 		switch (_pMsg->type())
 		{
-			case MsgType::Tick:
-			{
-				break;
-			}
-
 			case MsgType::MouseDrag:
 			{
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
@@ -293,7 +286,6 @@ namespace wg
 				{
 					m_pPicked = pSource;
 					m_pickCategory = pSource->pickCategory();
-					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 					m_dragState = DragState::Picking;
 				}
 				break;
@@ -452,9 +444,6 @@ namespace wg
 
 	void DragNDropLayer::_cancel( ModifierKeys modKeys, Coord pointerPos )
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-
 		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.m_geo);
@@ -478,9 +467,6 @@ namespace wg
 	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
 	{
 		assert( !m_pTargeted );
-
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 
 		if( m_dragSlot._widget())
 		{

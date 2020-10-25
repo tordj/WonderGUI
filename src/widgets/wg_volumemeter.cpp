@@ -71,15 +71,13 @@ namespace wg
 
 		m_bUseFades = false;
 
-		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+		_startReceiveUpdates();
 	}
 
 	//____ Destructor _____________________________________________________________
 
 	VolumeMeter::~VolumeMeter()
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -215,130 +213,119 @@ namespace wg
 			m_iSidePadding = 0;
 	}
 
-	//____ _onEvent() ______________________________________________________________
+	//____ _update() ______________________________________________________________
 
-	void VolumeMeter::_receive( Msg * pMsg )
+	void VolumeMeter::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		switch( pMsg->type() )
+		int firstRenderLED = -1;
+		int lastRenderLED = -1;
+
+		for( int i = 0 ; i < m_nLEDs ; i++ )
 		{
-			case MsgType::Tick:
+			bool 	on = false;
+
+			// NB: Hold is not implemented for Zero In Middle
+			if(m_bZeroInMiddle)
 			{
-				int firstRenderLED = -1;
-				int lastRenderLED = -1;
+				float d = 1.0f / (float)(m_nLEDs - 1);
+				float d2 = 0.5f / (float)(m_nLEDs);
 
-				for( int i = 0 ; i < m_nLEDs ; i++ )
+
+				float id = d*(float)i;
+
+				// This one is tricky...
+
+				if(id < 0.5f)
 				{
-					bool 	on = false;
-
-					// NB: Hold is not implemented for Zero In Middle
-					if(m_bZeroInMiddle)
-					{
-						float d = 1.0f / (float)(m_nLEDs - 1);
-						float d2 = 0.5f / (float)(m_nLEDs);
-
-
-						float id = d*(float)i;
-
-						// This one is tricky...
-
-						if(id < 0.5f)
-						{
-							if(m_fPeak < id + d2)
-								on = true;
-						}
-						else if(id > 0.5f)
-						{
-							if(m_fPeak > id - d2)
-								on = true;
-						}
-						else
-							on = true;
-					}
-					else // Normal mode
-					{
-						if( i < m_iPeak || i+1 == m_iHold )
-							on = true;
-					}
-
-
-					float	LEDState;
-
-					if( on )
-						LEDState = 1.f;
-					else
-					{
-						if( m_bUseFades )
-						{
-							LEDState = m_LEDStates[i]*0.7f; // Fade out
-
-							if(LEDState < 0.1f)
-								LEDState = 0.f;
-						}
-						else LEDState =0.f;
-					}
-
-					if( LEDState != m_LEDStates[i] )
-					{
-						m_LEDStates[i] = LEDState;
-						if( firstRenderLED == -1 )
-							firstRenderLED = i;
-						lastRenderLED = i;
-					}
-
+					if(m_fPeak < id + d2)
+						on = true;
 				}
-
-				// Possibly calculate a dirty rectangle
-
-				if( firstRenderLED != -1 )
+				else if(id > 0.5f)
 				{
-					Size sz = m_size;
-					Rect rect;
-
-					MU meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
-
-					MU dirtBeg = firstRenderLED*meterLen/m_nLEDs;
-					MU dirtLen = (lastRenderLED+1)*meterLen/m_nLEDs + 1 - dirtBeg;	// One pixels margin, due to subpixel precision one LED can end on same that the next start
-
-					switch( m_direction )
-					{
-						case Direction::Up:
-
-							rect.x = 0;
-							rect.y = sz.h - (dirtBeg+dirtLen);
-							rect.w = sz.w;
-							rect.h = dirtLen;
-						break;
-
-						case Direction::Down:
-							rect.x = 0;
-							rect.y = dirtBeg;
-							rect.w = sz.w;
-							rect.h = dirtLen;
-						break;
-
-						case Direction::Left:
-							rect.x = sz.w - (dirtBeg+dirtLen);
-							rect.y = 0;
-							rect.w = dirtLen;
-							rect.h = sz.h;
-						break;
-
-						case Direction::Right:
-							rect.x = dirtBeg;
-							rect.y = 0;
-							rect.w = dirtLen;
-							rect.h = sz.h;
-						break;
-					}
-
-					_requestRender(rect);
+					if(m_fPeak > id - d2)
+						on = true;
 				}
+				else
+					on = true;
 			}
-			pMsg->swallow();
-			break;
+			else // Normal mode
+			{
+				if( i < m_iPeak || i+1 == m_iHold )
+					on = true;
+			}
 
-			default:
-			break;
+
+			float	LEDState;
+
+			if( on )
+				LEDState = 1.f;
+			else
+			{
+				if( m_bUseFades )
+				{
+					LEDState = m_LEDStates[i]*0.7f; // Fade out
+
+					if(LEDState < 0.1f)
+						LEDState = 0.f;
+				}
+				else LEDState =0.f;
+			}
+
+			if( LEDState != m_LEDStates[i] )
+			{
+				m_LEDStates[i] = LEDState;
+				if( firstRenderLED == -1 )
+					firstRenderLED = i;
+				lastRenderLED = i;
+			}
+
+		}
+
+		// Possibly calculate a dirty rectangle
+
+		if( firstRenderLED != -1 )
+		{
+			Size sz = m_size;
+			Rect rect;
+
+			MU meterLen = (m_direction == Direction::Up || m_direction == Direction::Down) ? sz.h : sz.w;
+
+			MU dirtBeg = firstRenderLED*meterLen/m_nLEDs;
+			MU dirtLen = (lastRenderLED+1)*meterLen/m_nLEDs + 1 - dirtBeg;	// One pixels margin, due to subpixel precision one LED can end on same that the next start
+
+			switch( m_direction )
+			{
+				case Direction::Up:
+
+					rect.x = 0;
+					rect.y = sz.h - (dirtBeg+dirtLen);
+					rect.w = sz.w;
+					rect.h = dirtLen;
+				break;
+
+				case Direction::Down:
+					rect.x = 0;
+					rect.y = dirtBeg;
+					rect.w = sz.w;
+					rect.h = dirtLen;
+				break;
+
+				case Direction::Left:
+					rect.x = sz.w - (dirtBeg+dirtLen);
+					rect.y = 0;
+					rect.w = dirtLen;
+					rect.h = sz.h;
+				break;
+
+				case Direction::Right:
+					rect.x = dirtBeg;
+					rect.y = 0;
+					rect.w = dirtLen;
+					rect.h = sz.h;
+				break;
+			}
+
+			_requestRender(rect);
 		}
 	}
 

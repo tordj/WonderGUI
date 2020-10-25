@@ -59,16 +59,13 @@ namespace wg
 		pValueTextMapper->setAlignment( Origo::NorthEast );
 		values.setTextMapper(pValueTextMapper);
 
-
-		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+		_startReceiveUpdates();
 	}
 
 	//____ ~FpsDisplay() __________________________________________________________
 
 	FpsDisplay::~FpsDisplay( void )
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 		if( m_pTickBuffer )
 		{
 			delete [] m_pTickBuffer;
@@ -119,73 +116,63 @@ namespace wg
 
 	//____ _receive() _____________________________________________________________
 
-	void FpsDisplay::_receive( Msg * pMsg )
+	void FpsDisplay::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		Widget::_receive(pMsg);
+		// Update tick buffer
 
-		switch( pMsg->type() )
+		m_tickBufferOfs = (++m_tickBufferOfs) % c_tickBuffer;
+
+		int msDiff = microPassed / 1000;
+		if( msDiff > 0 )
+			m_pTickBuffer[m_tickBufferOfs] = msDiff;
+		else
+			m_pTickBuffer[m_tickBufferOfs] = 1;
+
+		// Update valueTexts from tick-buffer
+
+		const int	cCurrentFrames = 10;
+		int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
+		if( currOfs < 0 )
+			currOfs += c_tickBuffer;
+
+		int	currTotal = 0;
+		for( int i = 0 ; i < cCurrentFrames ; i++ )
 		{
-			case MsgType::Tick:
-			{
-				// Update tick buffer
-
-				m_tickBufferOfs = (++m_tickBufferOfs) % c_tickBuffer;
-
-				int msDiff = static_cast<TickMsg*>(pMsg)->timediff();
-				if( msDiff > 0 )
-					m_pTickBuffer[m_tickBufferOfs] = msDiff;
-				else
-					m_pTickBuffer[m_tickBufferOfs] = 1;
-
-				// Update valueTexts from tick-buffer
-
-				const int	cCurrentFrames = 10;
-				int currOfs = ((int)m_tickBufferOfs) - cCurrentFrames;
-				if( currOfs < 0 )
-					currOfs += c_tickBuffer;
-
-				int	currTotal = 0;
-				for( int i = 0 ; i < cCurrentFrames ; i++ )
-				{
-					currTotal += m_pTickBuffer[currOfs++];
-					currOfs %= c_tickBuffer;
-				}
-				float	fpsCurrent = 1000.f / (currTotal / (float) cCurrentFrames);
-
-				//____
-
-				int	avg = 0;
-				for( int i = 0 ; i < c_tickBuffer ; i++ )
-					avg += m_pTickBuffer[i];
-				float fpsAvg = 1000.f / (((float)avg)/c_tickBuffer);
-
-				//____
-
-				int	min = 1000000000;
-				for( int i = 0 ; i < c_tickBuffer ; i++ )
-					if( min > m_pTickBuffer[i] )
-						min = m_pTickBuffer[i];
-				float fpsMax = 1000.f / min;
-
-				//____
-
-				int	max = 0;
-				for( int i = 0 ; i < c_tickBuffer ; i++ )
-					if( max < m_pTickBuffer[i] )
-						max = m_pTickBuffer[i];
-				float fpsMin = 1000.f / max;
-
-				//____
-
-				char	temp[100];
-				snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
-				OO(values)._set(temp);
-
-				_requestRender();
-			}
-			default:
-				break;
+			currTotal += m_pTickBuffer[currOfs++];
+			currOfs %= c_tickBuffer;
 		}
+		float	fpsCurrent = 1000.f / (currTotal / (float) cCurrentFrames);
+
+		//____
+
+		int	avg = 0;
+		for( int i = 0 ; i < c_tickBuffer ; i++ )
+			avg += m_pTickBuffer[i];
+		float fpsAvg = 1000.f / (((float)avg)/c_tickBuffer);
+
+		//____
+
+		int	min = 1000000000;
+		for( int i = 0 ; i < c_tickBuffer ; i++ )
+			if( min > m_pTickBuffer[i] )
+				min = m_pTickBuffer[i];
+		float fpsMax = 1000.f / min;
+
+		//____
+
+		int	max = 0;
+		for( int i = 0 ; i < c_tickBuffer ; i++ )
+			if( max < m_pTickBuffer[i] )
+				max = m_pTickBuffer[i];
+		float fpsMin = 1000.f / max;
+
+		//____
+
+		char	temp[100];
+		snprintf( temp, 100, "%.2f\n%.2f\n%.2f\n%.2f", fpsCurrent, fpsMin, fpsAvg, fpsMax );
+		OO(values)._set(temp);
+
+		_requestRender();
 	}
 
 	//____ _setState() ______________________________________________________
@@ -197,14 +184,11 @@ namespace wg
 		OO(values)._setState(state);
 		_requestRender();							//TODO: Check if there has been changes to text appearance.
 
-		if( state.isEnabled() && !m_state.isEnabled() )
-			m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+		if (state.isEnabled() && !m_state.isEnabled())
+			_startReceiveUpdates();
 
-		if( !state.isEnabled() && m_state.isEnabled() )
-		{
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-			m_tickRouteId = 0;
-		}
+		if (!state.isEnabled() && m_state.isEnabled())
+			_stopReceiveUpdates();
 
 		Widget::_setState(state);
 	}

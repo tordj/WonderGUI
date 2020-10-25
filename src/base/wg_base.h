@@ -50,6 +50,7 @@ namespace wg
 	class TextStyle;
 	class Context;
 	class Object;
+	class Receiver;
 
 	typedef	StrongPtr<MsgRouter>		MsgRouter_p;
 	typedef	StrongPtr<ValueFormatter>	ValueFormatter_p;
@@ -128,7 +129,7 @@ namespace wg
 
 		const static TypeInfo	TYPEINFO;
 
-		static void			update(int msPassed);
+		static void			update( int64_t timestamp_microseconds );
 
 		static char *		memStackAlloc( int bytes );
 		static void			memStackRelease( int bytes );
@@ -151,6 +152,10 @@ namespace wg
 		}
 
 		static void			_trackObject(Object* pObject, const char* pFileName, int lineNb);
+
+		static int64_t		_startReceiveUpdates(Receiver* pReceiver);
+		static void			_stopReceiveUpdates(Receiver* pReceiver);
+
 
 
 
@@ -182,12 +187,15 @@ namespace wg
 
 			MemPool *		pPtrPool;
 			MemStack *		pMemStack;
-
-
 		};
 
 		static Data *						s_pData;
 		static std::function<void(Error&)>	s_pErrorHandler;
+
+		static int64_t						s_timestamp;
+
+		static std::vector<Receiver*>		s_updateReceivers;
+
 
 		struct ObjectInfo
 		{

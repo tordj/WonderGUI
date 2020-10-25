@@ -160,6 +160,10 @@ int main ( int argc, char** argv )
 
 		translateEvents( pRoot );
 
+		// Let WonderGUI perform periodic updates
+
+		Base::update(int64_t(SDL_GetTicks()) * 1000);
+
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
 		SDL_LockSurface(pWinSurf);
@@ -195,24 +199,6 @@ int main ( int argc, char** argv )
 
 void translateEvents( RootPanel_p pRoot )
 {
-	// WonderGUI needs Tick-messages to keep track of time passed for things such
-	// key-repeat, double-click detection, animations etc.  So we create one
-	// and post it.
-
-	static unsigned int oldTicks = 0;
-
-	unsigned int ticks = SDL_GetTicks();
-	int tickDiff;
-
-	if( oldTicks == 0 )
-		tickDiff = 0;
-	else
-		tickDiff = (int) (ticks - oldTicks);
-	oldTicks = ticks;
-
-
-	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
-
 	// Process all the SDL events in a loop.
 	// In this example we only use mouse input, but typically you
 	// would also need to translate keyboard events.

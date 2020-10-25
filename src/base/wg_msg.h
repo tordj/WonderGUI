@@ -147,10 +147,6 @@ namespace wg
 	typedef	StrongPtr<WheelRollMsg>		WheelRollMsg_p;
 	typedef	WeakPtr<WheelRollMsg>	WheelRollMsg_wp;
 
-	class TickMsg;
-	typedef	StrongPtr<TickMsg>		TickMsg_p;
-	typedef	WeakPtr<TickMsg>	TickMsg_wp;
-
 	class PointerChangeMsg;
 	typedef	StrongPtr<PointerChangeMsg>		PointerChangeMsg_p;
 	typedef	WeakPtr<PointerChangeMsg>	PointerChangeMsg_wp;
@@ -625,31 +621,6 @@ namespace wg
 
 		int			m_wheel;
 		Coord		m_distance;
-	};
-
-	//____ TickMsg _____________________________________________________________
-
-	class TickMsg : public Msg
-	{
-	public:
-		//.____ Creation __________________________________________
-
-		inline static TickMsg_p	create( int64_t timestamp, int timediff ) { return new TickMsg(timestamp, timediff); }
-
-		//.____ Identification __________________________________________
-
-		const TypeInfo&		typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
-		//.____ Content ________________________________________________________
-
-		inline int			timediff() const { return m_timediff; }
-		inline int64_t		timestamp() const { return m_timestamp; }
-	protected:
-		TickMsg( int64_t timestamp, int ms );
-
-		int64_t		m_timestamp;
-		int			m_timediff;
 	};
 
 	//____ PointerChangeMsg ____________________________________________________

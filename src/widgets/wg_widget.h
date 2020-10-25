@@ -68,6 +68,7 @@ namespace wg
 		friend class GeoComponent;
 		friend class StaticSlot;
 		friend class DynamicSlot;
+		friend class Base;
 
 		template<class S> friend class CStaticSlotVector;
 		template<class S> friend class CDynamicSlotVector;
@@ -208,6 +209,8 @@ namespace wg
 		int					_listAncestors(Widget* array[], int max);
 
 		virtual Widget* 	_newOfMyType() const = 0;
+		int64_t				_startReceiveUpdates();
+		void				_stopReceiveUpdates();
 
 		bool            	_requestPreRenderCall();
 
@@ -215,10 +218,7 @@ namespace wg
 		inline Rect			_contentRect(const Rect& canvas) const { return OO(skin)._contentRect(canvas, m_state); }
 		inline Size			_contentPaddingSize() const { return OO(skin)._contentPaddingSize(); }
 
-
 		// Convenient calls to holder
-
-
 
 		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
 		inline void			_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
@@ -294,6 +294,7 @@ namespace wg
 		bool			m_bOpaque;			// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock;			// If set, the widget prevents focus shifting away from it with tab.
 		bool			m_bSelectable;		// Set if widget is allowed to be selected.
+		bool			m_bReceivingUpdates;//
 
 		State			m_state;			// Current state of widget.
 		Size			m_size;				// Current size of widget.

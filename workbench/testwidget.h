@@ -55,12 +55,11 @@ namespace wg
 		virtual Widget* _newOfMyType() const { return new TestWidget(); };
 	
 		void			_cloneContent( const Widget * _pOrg ) override;
-		virtual void	_receive( Msg * pMsg ) override;
-		virtual void	_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
+		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 
 	private:
 
-        RouteId m_tickRouteId;
 		CoordI 	m_coord[2];
 		int		m_speed[2];
 		bool	m_bPointsInitialized;

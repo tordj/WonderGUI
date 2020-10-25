@@ -125,7 +125,7 @@ public:
 
 	int64_t			time() override
 	{
-		return SDL_GetPerformanceCounter() * 1000 / SDL_GetPerformanceFrequency();
+		return SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency();
 	}
 
 	wg::Blob_p		loadBlob(const char* pPath) override;
@@ -177,6 +177,14 @@ int main(int argc, char *argv[] )
 			// Uppdate the app
 
 			bContinue = pApp->update();
+
+			// Dispatch messages
+
+			Base::msgRouter()->dispatch();
+
+			// Periodic update
+
+			Base::update(SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency());
 
 			// Render. We do this outside the app since we might want to 
 			// handle updated rectangles in a system specific way.

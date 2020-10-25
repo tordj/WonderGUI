@@ -82,7 +82,7 @@ namespace wg
 		virtual ~VolumeMeter();
 		virtual Widget* _newOfMyType() const override { return new VolumeMeter(); };
 
-		void			_receive( Msg * pMsg ) override;
+		void			_update(int microPassed, int64_t microsecTimestamp);
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const Coord& ofs ) override;

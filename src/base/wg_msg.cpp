@@ -451,22 +451,6 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ TickMsg _______________________________________________________________
-
-	const TypeInfo TickMsg::TYPEINFO = { "TickMsg", &Msg::TYPEINFO };
-
-	TickMsg::TickMsg( int64_t timestamp, int timediff )
-	{
-		m_type = MsgType::Tick;
-		m_timestamp = timestamp;
-		m_timediff = timediff;
-	}
-
-	const TypeInfo& TickMsg::typeInfo(void) const
-	{
-		return TYPEINFO;
-	}
-
 	//____ PointerChangeMsg _______________________________________________________________
 
 	const TypeInfo PointerChangeMsg::TYPEINFO = { "PointerChangeMsg", &Msg::TYPEINFO };

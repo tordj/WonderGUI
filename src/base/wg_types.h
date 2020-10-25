@@ -489,7 +489,6 @@ namespace wg
 	enum class MsgType	//. autoExtras
 	{
 		Dummy = 0,
-		Tick,
 		PointerChange,
 
 		FocusGained,

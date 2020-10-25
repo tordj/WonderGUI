@@ -53,6 +53,10 @@ namespace wg
 	unsigned int				Base::s_objectsCreated = 0;
 	unsigned int				Base::s_objectsDestroyed = 0;
 
+	int64_t						Base::s_timestamp = 0;
+	std::vector<Receiver*>		Base::s_updateReceivers;
+
+
 	bool						Base::s_bTrackingObjects = false;
 
 	std::unordered_map<Object*, Base::ObjectInfo>	Base::s_trackedObjects;
@@ -330,9 +334,21 @@ namespace wg
 
 	//____ update() ______________________________________________________________
 
-	void Base::update(int msPassed)
+	void Base::update( int64_t timestamp )
 	{
-		SkinSlotManager::update(msPassed);
+		int microPassed = int(timestamp - s_timestamp);
+		s_timestamp = timestamp;
+
+		// Update wondergui systems
+
+		s_pData->pInputHandler->_update(timestamp/1000);
+		SkinSlotManager::update(microPassed/1000);
+
+		// Update widgets
+
+		for (auto pReceiver : s_updateReceivers)
+			pReceiver->_update(microPassed, timestamp);
+
 	}
 
 	//____ memStackAlloc() ________________________________________________________
@@ -357,6 +373,22 @@ namespace wg
         if( s_bTrackingObjects )
             s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
 	}
+
+	//____ _startReceiveUpdates() ________________________________________________
+
+	int64_t Base::_startReceiveUpdates(Receiver* pReceiver)
+	{
+		s_updateReceivers.push_back(pReceiver);
+		return s_timestamp;
+	}
+
+	//____ _stopReceiveUpdates() _________________________________________________
+
+	void Base::_stopReceiveUpdates(Receiver* pReceiver)
+	{
+		s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver), s_updateReceivers.end());
+	}
+
 
 	//____ _allocWeakPtrHub() ______________________________________________________
 

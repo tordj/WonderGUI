@@ -47,8 +47,6 @@ namespace wg
 
 	AnimPlayer::~AnimPlayer()
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -132,7 +130,7 @@ namespace wg
 			return false;
 
 		m_bPlaying = true;
-		m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+		_startReceiveUpdates();
 		return true;
 	}
 
@@ -144,8 +142,7 @@ namespace wg
 			return;
 
 		m_bPlaying = false;
-		Base::msgRouter()->deleteRoute( m_tickRouteId );
-		m_tickRouteId = 0;
+		_stopReceiveUpdates();
 	}
 
 	//____ preferredSize() ___________________________________________________________
@@ -155,27 +152,16 @@ namespace wg
 		return OO(skin)._sizeForContent(frames.frameSize());
 	}
 
-	//____ _receive() ______________________________________________________________
+	//____ _update() ______________________________________________________________
 
-	void AnimPlayer::_receive( Msg * pMsg )
+	void AnimPlayer::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		Widget::_receive( pMsg );
+		if (m_cycleDuration == 0 || !m_state.isEnabled())
+			return;
 
-		switch( pMsg->type() )
-		{
-			case MsgType::Tick:
-			{
-				if( m_cycleDuration == 0 || !m_state.isEnabled() )
-					return;
+		m_playPos += int(microPassed * m_speed / 1000);
+		_playPosUpdated();
 
-				m_playPos += int(static_cast<TickMsg*>(pMsg)->timediff() * m_speed);
-				_playPosUpdated();
-			}
-			break;
-
-			default:
-				break;
-		}
 	}
 
 	//____ _render() ________________________________________________________
@@ -230,13 +216,11 @@ namespace wg
 	{
 		if( state.isEnabled() != m_state.isEnabled() && m_bPlaying )
 		{
-			if( state.isEnabled() )
-				m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+			if (state.isEnabled())
+				_startReceiveUpdates();
 			else
-			{
-				Base::msgRouter()->deleteRoute( m_tickRouteId );
-				m_tickRouteId = 0;
-			}
+				_stopReceiveUpdates();
+
 			_requestRender();
 		}
 

@@ -98,8 +98,6 @@ namespace wg
 		virtual int		wordBegin( const Text * pText, int charOfs ) const override;
 		virtual int		wordEnd( const Text * pText, int charOfs ) const override;
 
-
-		virtual void 	receive( Msg * pMsg ) override;
 		virtual void 	render( Text * pText, GfxDevice * pDevice, const Rect& canvas ) override;
 
 		virtual void	caretMove( Text * pText, int newOfs, int oldOfs ) override;
@@ -159,6 +157,8 @@ namespace wg
 			MU  spacing;			// Offset from start of line to start of next line.
 		};
 
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
+
 		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
 
 		int				_countLines( Text * pText, const Char * pChars ) const;
@@ -206,6 +206,7 @@ namespace wg
 		Origo			m_alignment;
 		Caret_p			m_pCaret;
 		bool			m_bLineWrap;
+		bool			m_bReceivingUpdates = false;
 
 		Color			m_selectionBackColor;
 		BlendMode		m_selectionBackRenderMode;

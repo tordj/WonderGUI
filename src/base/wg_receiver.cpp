@@ -35,6 +35,19 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ receive() __________________________________________________________
+
+	void Receiver::receive(Msg* pMsg)
+	{
+
+	}
+
+	//____ _update() __________________________________________________________
+
+	void Receiver::_update(int microPassed, int64_t microsecTimestamp)
+	{
+	}
+
 	//____ _onRouteAdded() _________________________________________________________
 
 	void  Receiver::_onRouteAdded()

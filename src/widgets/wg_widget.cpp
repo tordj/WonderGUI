@@ -37,7 +37,7 @@ namespace wg
 	Widget::Widget(): skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
 						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
-						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0)
+						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0), m_bReceivingUpdates(false)
 	{
 	}
 
@@ -45,6 +45,8 @@ namespace wg
 
 	Widget::~Widget()
 	{
+		if (m_bReceivingUpdates)
+			Base::_stopReceiveUpdates(this);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -525,6 +527,28 @@ namespace wg
 		return true;
 	}
 
+	//____ _startReceiveUpdates() _____________________________________________
+
+	int64_t Widget::_startReceiveUpdates()
+	{
+		if (!m_bReceivingUpdates)
+		{
+			m_bReceivingUpdates = true;
+			return Base::_startReceiveUpdates(this);
+		}
+		return 0;
+	}
+
+	//____ _stopReceiveUpdates() ______________________________________________
+
+	void Widget::_stopReceiveUpdates()
+	{
+		if (m_bReceivingUpdates)
+		{
+			Base::_stopReceiveUpdates(this);
+			m_bReceivingUpdates = false;
+		}
+	}
 
 	//____ _preRender() ____________________________________________________________
 
