@@ -21,10 +21,21 @@
 =========================================================================*/
 
 #include <wg_cskinslot.h>
-#include <wg_skinslotmanager.h>
+
+#include <assert.h>
 
 namespace wg
 {
+
+	const TypeInfo CSkinSlot::TYPEINFO = { "CSkinSlot", &GeoComponent::TYPEINFO };
+
+	//____ typeInfo() _________________________________________________________
+
+	const TypeInfo& CSkinSlot::typeInfo(void) const
+	{
+		return TYPEINFO;
+	}
+
 	//____ set() _________________________________________________________
 
 	void CSkinSlot::set(Skin* pSkin)
@@ -182,10 +193,9 @@ namespace wg
 
 	//____ _update() __________________________________________________________
 
-	bool CSkinSlot::_update(int msPassed)
+	bool CSkinSlot::_update(SkinSlotPocket * pPocket, int msPassed)
 	{
-		if (!m_pPocket)
-			return false;
+		assert(pPocket == m_pPocket);
 
 		// Prepare our dirtyRect check
 
@@ -267,8 +277,8 @@ namespace wg
 	{
 		if (!m_pPocket)
 		{
-			m_pPocket = CSkinSlotManager::allocPocket();
-			m_pPocket->pCSkinSlot = this;
+			m_pPocket = SkinSlotManager::allocPocket();
+			m_pPocket->pHolder = this;
 		}
 
 		Bitmask<uint8_t> statemask = state.mask();
@@ -289,7 +299,7 @@ namespace wg
 	{
 		if (m_pPocket)
 		{
-			CSkinSlotManager::freePocket(m_pPocket);
+			SkinSlotManager::freePocket(m_pPocket);
 			m_pPocket = nullptr;
 		}
 	}

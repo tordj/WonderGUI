@@ -69,7 +69,7 @@ namespace wg
 		}
 
 		TextStyleManager::init();
-		CSkinSlotManager::init();
+		SkinSlotManager::init();
 
 		s_pData = new Data;
 
@@ -123,13 +123,12 @@ namespace wg
 			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
-
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
 		delete s_pData;
 		s_pData = nullptr;
 
-		CSkinSlotManager::exit();
+		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
 		if (s_objectsCreated != s_objectsDestroyed)
@@ -333,7 +332,7 @@ namespace wg
 
 	void Base::update(int msPassed)
 	{
-		CSkinSlotManager::update(msPassed);
+		SkinSlotManager::update(msPassed);
 	}
 
 	//____ memStackAlloc() ________________________________________________________

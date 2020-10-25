@@ -42,6 +42,7 @@ namespace wg
 	class Skin : public Object
 	{
 		friend class CSkinSlot;
+		friend class CSkinSlotMI;
 
 	public:
 		virtual ~Skin() {};

@@ -24,7 +24,6 @@
 #pragma once
 
 #include <wg_mempool.h>
-#include <wg_cskinslot.h>
 
 #include <vector>
 
@@ -33,23 +32,45 @@ namespace wg
 
 
 
-	class CSkinSlotManager
+	struct SkinSlotPocket
 	{
+		class Holder
+		{
+		public:
+			virtual bool _update(SkinSlotPocket* pPocket, int msPassed) = 0;
+		};
+
+		Holder*				pHolder;
+		bool				bAnimated;		// Set if skin is animated beyond transitions.
+		int					animationCounter;	// Count animation progress in millisec.
+
+		Bitmask<uint8_t>	transitionFrom;	// Bitmask representation of state we transition from.
+		Bitmask<uint8_t>	transitionTo;	// Bitmask representation of tstate we transition to.
+		float				fractionalState[StateBits_Nb];
+		void* instance = 0;
+	};
+
+	class SkinSlotManager
+	{
+
 	public:
+
+
 		static void init();
 		static void exit();
 
 		static void update(int msPassed);
 
-		static CSkinSlot::Pocket* allocPocket();
-		static void freePocket(CSkinSlot::Pocket* pEntry);
+		static SkinSlotPocket* allocPocket();
+		static void freePocket(SkinSlotPocket* pEntry);
 
 
 	private:
 
+
 		static MemPool* s_pMemPool;
 
-		static std::vector<CSkinSlot::Pocket*>	s_slotPockets;
+		static std::vector<SkinSlotPocket*>	s_slotPockets;
 
 	};
 };

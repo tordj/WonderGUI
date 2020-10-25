@@ -25,12 +25,18 @@
 #pragma once
 
 #include <wg_skin.h>
+#include <wg_skinslotmanager.h>
 #include <wg_geocomponent.h>
 
 namespace wg
 {
 
-	class CSkinSlot : public GeoComponent
+	class CSkinSlot;
+	typedef	StrongComponentPtr<CSkinSlot>	CSkinSlot_p;
+	typedef	WeakComponentPtr<CSkinSlot>	CSkinSlot_wp;
+
+
+	class CSkinSlot : public GeoComponent, protected SkinSlotPocket::Holder
 	{
 		friend class CSkinSlotManager;
 	public:
@@ -42,33 +48,30 @@ namespace wg
 			virtual float	_skinValue2(const CSkinSlot* pSlot) const = 0;
 		};
 
-		struct Pocket
-		{
-			CSkinSlot*			pCSkinSlot;
-			bool				bAnimated;		// Set if skin is animated beyond transitions.
-			int					animationCounter;	// Count animation progress in millisec.
-
-			Bitmask<uint8_t>	transitionFrom;	// Bitmask representation of state we transition from.
-			Bitmask<uint8_t>	transitionTo;	// Bitmask representation of tstate we transition to.
-			float				fractionalState[StateBits_Nb];
-		};
-
 		CSkinSlot(Holder* pHolder) : GeoComponent(pHolder) {}
-		~CSkinSlot() { if (m_pSkin) m_pSkin->_incUseCount(); }
+		~CSkinSlot() { if (m_pSkin) m_pSkin->_decUseCount(); }
 
+		//.____ Identification _________________________________________________
 
-		// Operators for the holder
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+		//.____ Content _______________________________________________
+
+		void			set(Skin* pSkin);
+		inline bool		isEmpty() const { return m_pSkin == nullptr; }
+
+		//.____ Misc __________________________________________________________
+
+		inline CSkinSlot_p  ptr() { return CSkinSlot_p(this); }
+
+		//.____ Operators __________________________________________
 
 		inline const Skin* operator->() const { return m_pSkin; }
 		inline operator Skin*() const { return m_pSkin; }
 
 		inline CSkinSlot& operator=(Skin* pSkin) { set(pSkin); return *this; }
 		inline operator Skin_p() const { return m_pSkin; }
-
-
-		void			set(Skin* pSkin);
-		inline bool		isEmpty() const { return m_pSkin == nullptr; }
-
 
 		//
 
@@ -107,13 +110,13 @@ namespace wg
 		//
 
 
-		bool	_update(int msPassed);
+		bool	_update(SkinSlotPocket* pPocket, int msPassed);
 
 		void	_initPocket(State state);
 		void	_releasePocket();
 
 		Skin_p	m_pSkin;
-		Pocket* m_pPocket = nullptr;
+		SkinSlotPocket* m_pPocket = nullptr;
 	};
 
 

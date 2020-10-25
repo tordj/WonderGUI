@@ -557,6 +557,9 @@
     <ClInclude Include="..\..\..\src\components\wg_cskinslot.h">
       <Filter>components</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\components\wg_cskinslotmi.h">
+      <Filter>components</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -971,6 +974,9 @@
       <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cskinslot.cpp">
+      <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\components\wg_cskinslotmi.cpp">
       <Filter>components</Filter>
     </ClCompile>
   </ItemGroup>

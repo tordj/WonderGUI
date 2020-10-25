@@ -148,6 +148,7 @@
     <ClInclude Include="..\..\..\src\components\wg_cgfxinstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxoutstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cskinslot.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cskinslotmi.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
@@ -307,6 +308,7 @@
     <ClCompile Include="..\..\..\src\components\wg_component.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cshadows.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cskinslot.cpp" />
+    <ClCompile Include="..\..\..\src\components\wg_cskinslotmi.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstandardslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstaticslotcollection.cpp" />

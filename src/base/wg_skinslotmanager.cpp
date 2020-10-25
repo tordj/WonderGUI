@@ -25,19 +25,19 @@
 
 namespace wg
 {
-	MemPool* CSkinSlotManager::s_pMemPool = nullptr;
-	std::vector<CSkinSlot::Pocket*>	CSkinSlotManager::s_slotPockets;
+	MemPool* SkinSlotManager::s_pMemPool = nullptr;
+	std::vector<SkinSlotPocket*>	SkinSlotManager::s_slotPockets;
 
 	//____ init() _____________________________________________________________
 
-	void CSkinSlotManager::init()
+	void SkinSlotManager::init()
 	{
-		s_pMemPool = new MemPool(16, sizeof(CSkinSlot::Pocket));
+		s_pMemPool = new MemPool(16, sizeof(SkinSlotPocket));
 	}
 
 	//____ exit() _____________________________________________________________
 
-	void CSkinSlotManager::exit()
+	void SkinSlotManager::exit()
 	{
 		assert(s_pMemPool->entriesAllocated() == 0);
 		delete s_pMemPool;
@@ -45,13 +45,13 @@ namespace wg
 
 	//____ update() ___________________________________________________________
 
-	void CSkinSlotManager::update(int msPassed)
+	void SkinSlotManager::update(int msPassed)
 	{
 		auto deleteIt = std::remove_if(s_slotPockets.begin(),
 			s_slotPockets.end(),
-			[msPassed](CSkinSlot::Pocket* pPocket) 
+			[msPassed](SkinSlotPocket* pPocket) 
 			{
-				bool bDelete = pPocket->pCSkinSlot->_update(msPassed); 
+				bool bDelete = pPocket->pHolder->_update(pPocket, msPassed); 
 				if (bDelete) 
 					s_pMemPool->freeEntry(pPocket); 
 				return bDelete; 
@@ -64,11 +64,11 @@ namespace wg
 
 	//____ allocPocket() ______________________________________________________
 
-	CSkinSlot::Pocket* CSkinSlotManager::allocPocket()
+	SkinSlotPocket* SkinSlotManager::allocPocket()
 	{
 		auto pBuff = s_pMemPool->allocEntry();
 
-		auto pPocket = new(pBuff) CSkinSlot::Pocket();
+		auto pPocket = new(pBuff) SkinSlotPocket();
 
 		s_slotPockets.push_back(pPocket);
 		return pPocket;
@@ -76,7 +76,7 @@ namespace wg
 
 	//____ freePocket() _______________________________________________________
 
-	void CSkinSlotManager::freePocket(CSkinSlot::Pocket* pPocket)
+	void SkinSlotManager::freePocket(SkinSlotPocket* pPocket)
 	{
 		s_pMemPool->freeEntry(pPocket);
 
