@@ -34,6 +34,9 @@
 #include <wg_geo.h>
 #include <wg_surface.h>
 #include <wg_surfacefactory.h>
+#include <wg_canvaslayers.h>
+
+#include <vector>
 
 namespace wg
 {
@@ -78,21 +81,23 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		virtual bool		setCanvas(Surface * pCanvas, CanvasInit initOperaton = CanvasInit::Keep, bool bResetClipRects = true ) = 0;
+		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, RectI* pUpdateRects = nullptr, int startLayer = -1);
+		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, RectI* pUpdateRects = nullptr, int startLayer = -1);
+		void				endCanvasUpdate();
 		inline Surface_p	canvas() const { return m_pCanvas; }
 
 		inline SizeI		canvasSize() const { return m_canvasSize; }
 
 		//.____ State _________________________________________________
 
-		virtual bool		setClipList(int nRectangles, const RectI * pRectangles);
-		virtual void		clearClipList();
+		bool				setClipList(int nRectangles, const RectI * pRectangles);
+		void				clearClipList();
+		bool				pushClipList(int nRectangles, const RectI* pRectangles);
+		bool				popClipList();
+
 		inline const RectI*	clipList() const { return m_pClipRects; }
 		inline int			clipListSize() const { return m_nClipRects; }
 		inline RectI		clipBounds() const { return m_clipBounds; }
-
-		virtual void		setClearColor( Color col );
-		inline Color		clearColor() const { return m_clearColor; }
 
 		virtual void		setTintColor( Color color );
 		inline const Color&	tintColor() const { return m_tintColor; }
@@ -109,6 +114,8 @@ namespace wg
 		virtual void		setMorphFactor(float factor);
 		float				morphFactor() const { return m_morphFactor; }
 
+		void				setRenderLayer(int layer);
+		int					renderLayer() const { return m_renderLayer; }
 
 		//.____ Rendering ________________________________________________
 
@@ -188,12 +195,16 @@ namespace wg
 
 
 	protected:
-		GfxDevice( SizeI canvasSize );
+		GfxDevice();
 		virtual ~GfxDevice();
 
 		const static int	c_maxSegments = 16;
 
 		//
+
+		virtual void	_canvasWasChanged() = 0;
+		virtual void	_renderLayerWasChanged() = 0;	// Checked for errors before we get here.
+		virtual void	_clipListWasChanged();			// Called when cliplist has been changed.
 
 		virtual void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) = 0;
 		virtual void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) = 0;
@@ -209,34 +220,86 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
+		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, int startLayer);
+		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
+
+
 		const static int c_nCurveTabEntries = 1024;
 		static int *	s_pCurveTab;
 
+		//
 
+		struct StashedClipList
+		{
+			int				nClipRects;
+			const RectI* pClipRects;
+			RectI			clipBounds;
+		};
+
+		struct StashedCanvas
+		{
+			CanvasLayers_p	pLayerDef;
+			Surface_p		pCanvas;
+			StashedClipList	updateRects;
+			StashedClipList	clipRects;
+			int				renderLayer;
+			Bitmask<int>	layersInitialized;
+			Color			tintColor;
+			Color			tintGradient[4];
+			RectI			tintGradientRect;
+			bool			bTintGradient;
+			BlendMode		blendMode;
+			float			morphFactor;
+			SizeI			canvasSize;
+
+			Surface_p		layerSurfaces[CanvasLayers::c_maxLayers];		// Should maybe be a separate stack...
+		};
+
+		std::vector<StashedCanvas>		m_canvasStack;			// Offset of layer 0 in m_canvasLayers for each recursion of canvas.
+		std::vector<StashedClipList>	m_clipListStack;
 
 		//
+
+		CanvasLayers_p	m_pLayerDef;
 
 		Surface_p	m_pCanvas;
 		Surface_p	m_pBlitSource;
 
-		const RectI * m_pClipRects;
-		int			m_nClipRects;
-		RectI		m_clipBounds;
-		RectI		m_clipCanvas;						// Default clip rect for the canvas.
+		int			m_renderLayer = 0;
 
-		Color		m_clearColor = Color::Transparent;	// Current Clear color;
-		Color		m_tintColor;						// Current Tint color.
-		BlendMode	m_blendMode;						// Current BlendMode.
+		Surface_p	m_layerSurfaces[CanvasLayers::c_maxLayers];
+
+		const RectI* m_pCanvasUpdateRects;
+		int			m_nCanvasUpdateRects;
+		RectI		m_canvasUpdateBounds;
+
+		const RectI * m_pClipRects = nullptr;
+		int			m_nClipRects = 0;
+		RectI		m_clipBounds = { 0,0,0,0 };
+
+		Color		m_tintColor = Color::White;			// Current Tint color.
+		BlendMode	m_blendMode = BlendMode::Blend;		// Current BlendMode.
 		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
-		uint32_t	m_renderFlags;						// Current flags.
 
-		Color		m_tintGradient[4];
-		RectI		m_tintGradientRect;
+		Color		m_tintGradient[4] = { Color::White, Color::White, Color::White, Color::White };
+		RectI		m_tintGradientRect = { 0,0,0,0 };
 		bool		m_bTintGradient = false;
 
-		SizeI		m_canvasSize;
+		SizeI		m_canvasSize = { 0,0 };
 		bool        m_bRendering = false;
 	};
+
+
+	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, RectI* pUpdateRects, int startLayer)
+	{
+		return _beginCanvasUpdate(canvas, nullptr, nUpdateRects, pUpdateRects, startLayer);
+	}
+
+	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, RectI* pUpdateRects, int startLayer)
+	{
+		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, startLayer);
+	}
+
 
 } // namespace wg
 #endif	// WG_GFXDEVICE_DOT_H

@@ -104,6 +104,10 @@ void textStyleTest();
 
 int main(int argc, char** argv)
 {
+	SoftSurface_p		pCanvas;
+	GfxDevice_p			pDevice;
+	SurfaceFactory_p	pFactory;
+
 
 	Coord muC;
 	CoordI iC;
@@ -304,8 +308,10 @@ int main(int argc, char** argv)
 
 
 #ifdef USE_OPEN_GL
-	pContext->setSurfaceFactory(GlSurfaceFactory::create());
-	pContext->setGfxDevice( GlGfxDevice::create(SizeI(width, height)));
+	pCanvas = nullptr;
+	pDevice = GlGfxDevice::create(SizeI(width, height));
+	pFactory = GlSurfaceFactory::create();
+
 #else
 	{
 		SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
@@ -319,14 +325,16 @@ int main(int argc, char** argv)
 
 		Blob_p pBlob = Blob::create(pScreen->pixels, nullptr);
 
-		SoftSurface_p		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch);
-		GfxDevice_p			pDevice = SoftGfxDevice::create(pCanvas);
-		SurfaceFactory_p	pFactory = SoftSurfaceFactory::create();
+		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
+		pDevice = SoftGfxDevice::create();
+		pFactory = SoftSurfaceFactory::create();
 
-		pContext->setSurfaceFactory(pFactory);
-		pContext->setGfxDevice(pDevice);
 	}
 #endif
+
+	pContext->setSurfaceFactory(pFactory);
+	pContext->setGfxDevice(pDevice);
+
 	Base::setActiveContext(pContext);
 
 //	nisBlendTest();
@@ -405,7 +413,7 @@ int main(int argc, char** argv)
 	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
-	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
+	RootPanel_p pRoot = RootPanel::create(pCanvas, pGfxDevice);
 
 //		pRoot->setDebugMode(true);
 
@@ -2228,6 +2236,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 bool canvasStackTest(CStandardSlot_p pSlot)
 {
+/*
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
@@ -2307,6 +2316,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 	pBaseLayer->slots.pushBackMovable(pCanvasStack, Coord(10, 10));
 	*pSlot = pBaseLayer;
+*/
 	return true;
 }
 
@@ -2560,6 +2570,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 
 void nisBlendTest()
 {
+/*
 	SoftSurface_p pCanvas = SoftSurface::create({ 256,256 }, PixelFormat::BGR_8);
 	SurfaceFactory_p pFactory = SoftSurfaceFactory::create();
 	Surface_p pBackImg = loadSurface("../alpha_blending_example_files/knob_background.png", PixelFormat::BGRA_8);
@@ -2574,6 +2585,7 @@ void nisBlendTest()
 	pDevice->blit({ 0,0 });
 	pDevice->endRender();
 	savePNG(pCanvas, "knob_wg_software.png");
+*/ 
 }
 
 

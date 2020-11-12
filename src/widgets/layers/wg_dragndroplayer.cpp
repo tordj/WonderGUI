@@ -512,28 +512,14 @@ namespace wg
 			auto pCanvas = pFactory->createSurface(sz.px(),PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
-			RectI noClip(sz.px());
-
-			auto pOldClip   = pDevice->clipList();
-			int  nOldClip   = pDevice->clipListSize();
-			auto pOldCanvas = pDevice->canvas();
-			Color oldTint   = pDevice->tintColor();
-
-			pDevice->setClipList(1, &noClip);
-			pDevice->setCanvas(pCanvas);
-			pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
+			pDevice->beginCanvasUpdate(pCanvas);
 			OO(m_pPicked)->_render(pDevice, sz, sz);
-			pDevice->setCanvas(pOldCanvas);
-			pDevice->setTintColor(oldTint);
-			pDevice->setClipList(nOldClip, pOldClip);
+			pDevice->endCanvasUpdate();
 
 			auto pImage = Image::create();
 			pImage->setImage( pCanvas );
 
-//            auto pImage = Filler::create();
-//            pImage->setPreferredSize({16,16});
-//            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
-
+			//TODO: Allow for tinted image.
 
 			m_dragSlot._setWidget(pImage);
 			m_dragSlot._setSize(sz);

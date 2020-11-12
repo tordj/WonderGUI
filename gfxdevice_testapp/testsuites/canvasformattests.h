@@ -58,17 +58,13 @@ public:
 	bool	init_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas->fill(Color::Transparent);
-		m_pSavedCanvas = pDevice->canvas();
-		m_pSavedClipList = pDevice->clipList();
-		m_savedClipListSize = pDevice->clipListSize();
-		pDevice->setCanvas(m_pActiveCanvas);
+		pDevice->beginCanvasUpdate(m_pActiveCanvas);
 		return true;
 	}
 
 	bool	exit_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setCanvas(m_pSavedCanvas);
-		pDevice->setClipList(m_savedClipListSize, m_pSavedClipList);
+		pDevice->endCanvasUpdate();
 		pDevice->setBlitSource(m_pActiveCanvas);
 		pDevice->blit({ 0,0 });
 		m_pActiveCanvas = nullptr;
@@ -103,9 +99,7 @@ public:
 private:
 
 	Surface_p		m_pActiveCanvas;
-	Surface_p		m_pSavedCanvas;
-	const RectI *	m_pSavedClipList;
-	int				m_savedClipListSize;
+
 
 	Surface_p		m_pCanvasBGR_8;
 	Surface_p		m_pCanvasBGRA_8;

@@ -41,6 +41,30 @@ namespace wg
 	const TypeInfo RootPanel::TYPEINFO = { "RootPanel", &Object::TYPEINFO };
 
 
+	//____ create() ___________________________________________________________
+
+	RootPanel_p	RootPanel::create() 
+	{ 
+		return RootPanel_p(new RootPanel()); 
+	}
+
+	RootPanel_p	RootPanel::create( Surface* pCanvas, GfxDevice* pDevice )
+	{ 
+		if (!pCanvas)
+		{
+			//TODO: Error handling!
+			return nullptr;
+		}
+
+		return RootPanel_p(new RootPanel(pCanvas, pDevice)); 
+	}
+
+	RootPanel_p	RootPanel::create( const SizeI& pixelSize, GfxDevice* pDevice )
+	{ 
+		return RootPanel_p(new RootPanel(pixelSize, pDevice)); 
+	}
+
+
 	//____ constructor ____________________________________________________________
 
 	RootPanel::RootPanel() : slot(this), skin(this)
@@ -56,13 +80,21 @@ namespace wg
 		m_afterglowFrames = 4;
 	}
 
-	RootPanel::RootPanel(GfxDevice* pGfxDevice) : RootPanel()
+	RootPanel::RootPanel(Surface* pCanvas, GfxDevice * pGfxDevice ) : RootPanel()
 	{
-		if (pGfxDevice)
-			m_geo = Size::fromPX(pGfxDevice->canvasSize());
+		m_geo = pCanvas->size();
+		m_canvasSize = pCanvas->size();
 		m_pGfxDevice = pGfxDevice;
+		m_pCanvas = pCanvas;
 	}
 
+	RootPanel::RootPanel(const SizeI& pixelSize, GfxDevice* pGfxDevice) : RootPanel()
+	{
+		m_geo = pixelSize;
+		m_canvasSize = pixelSize;
+		m_pGfxDevice = pGfxDevice;
+		m_pCanvas = nullptr;
+	}
 
 
 	//____ Destructor _____________________________________________________________
@@ -84,12 +116,41 @@ namespace wg
 	{
 		m_pGfxDevice = pDevice;
 
-		if (m_pGfxDevice && !m_bHasGeo && slot._widget())
-			OO(slot._widget())->_resize(Size::fromPX(m_pGfxDevice->canvasSize()));
+		m_dirtyPatches.add( geo() );
+		return true;
+	}
+
+	//____ setCanvas() ________________________________________________________
+
+	bool RootPanel::setCanvas(Surface* pCanvas)
+	{
+		if (!pCanvas)
+		{
+			return false;
+		}
+
+		m_pCanvas = pCanvas;
+		m_canvasSize = pCanvas->size();
+
+		if (!m_bHasGeo && slot._widget())
+			OO(slot._widget())->_resize(Size::fromPX(pCanvas->size()));
 
 		m_dirtyPatches.add(geo());
 		return true;
 	}
+
+	bool RootPanel::setCanvas(const SizeI& pixelSize)
+	{
+		m_pCanvas = nullptr;
+		m_canvasSize = pixelSize;
+
+		if (!m_bHasGeo && slot._widget())
+			OO(slot._widget())->_resize(Size::fromPX(pixelSize));
+
+		m_dirtyPatches.add(geo());
+		return true;
+	}
+
 
 	//_____ setGeo() _____________________________________________________________
 
@@ -114,10 +175,8 @@ namespace wg
 	{
 		if (m_bHasGeo)
 			return m_geo;
-		else if (m_pGfxDevice)
-			return Rect(Coord(0, 0), Size::fromPX(m_pGfxDevice->canvasSize()));
 		else
-			return Rect();
+			return Size::fromPX(m_canvasSize);
 	}
 
 	//____ _object() ____________________________________________________________
@@ -186,9 +245,7 @@ namespace wg
 
 	bool RootPanel::render(const Rect& clip)
 	{
-
-
-		if (!beginRender())
+		if( !beginRender() )
 			return false;
 
 		if (!renderSection(clip))
@@ -207,7 +264,7 @@ namespace wg
 
 	bool RootPanel::beginRender()
 	{
-		if (!m_pGfxDevice || !slot._widget())
+		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Handle preRender calls.
@@ -257,14 +314,14 @@ namespace wg
 
 	bool RootPanel::renderSection(const Rect& _clip)
 	{
-		if (!m_pGfxDevice || !slot._widget())
-			return false;						// No GFX-device or no widgets to render.
+		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
+			return false;						// Missing GfxDevice or Canvas or widgets to render.
 
 		// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
 
-		Rect canvas = geo();
-		Rect clip = Rect(_clip, canvas).aligned();
-		if (clip.w == 0 || clip.h == 0)
+		Rect geo = this->geo();
+		Rect clip = Rect(_clip, geo).aligned();
+		if( clip.w == 0 || clip.h == 0 )
 			return false;						// Invalid rect area.
 
 		// Nothing to render if we are hidden
@@ -280,11 +337,29 @@ namespace wg
 
 		if (dirtyPatches.size() > 0)
 		{
-			ClipPopData clipPop = patchesToClipList(m_pGfxDevice, dirtyPatches);
-			OO(skin)._render(m_pGfxDevice, canvas, StateEnum::Normal);
+			int nRects = dirtyPatches.size();
+			const Rect* pRects = dirtyPatches.begin();
 
-			OO(slot._widget())->_render(m_pGfxDevice, canvas, canvas);
-			popClipList(m_pGfxDevice, clipPop);
+			int allocSize = nRects * sizeof(RectI);
+
+			RectI* pNewRects = (RectI*)Base::memStackAlloc(allocSize);
+
+			for (int i = 0; i < nRects; i++)
+				pNewRects[i] = pRects[i].px();
+
+			if (m_pCanvas)
+				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pNewRects);
+			else
+				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pNewRects);
+
+			if (m_pSkin)
+				m_pSkin->render(m_pGfxDevice, geo, StateEnum::Normal);
+
+			OO(slot._widget())->_render( m_pGfxDevice, geo, geo );
+
+			m_pGfxDevice->endCanvasUpdate();
+
+			Base::memStackRelease(allocSize);
 		}
 
 		// Handle updated rect overlays
@@ -295,7 +370,7 @@ namespace wg
 
 			RectI myClip = clip.px();
 
-			m_pGfxDevice->setClipList(1, &myClip);
+			m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, 0);
 
 			// Render our new overlays
 
@@ -313,6 +388,8 @@ namespace wg
 					m_pDebugOverlay->render(m_pGfxDevice, *pRect, StateEnum::Normal);
 				}
 			}
+
+			m_pGfxDevice->endCanvasUpdate();
 		}
 
 		return true;
@@ -322,7 +399,7 @@ namespace wg
 
 	bool RootPanel::endRender(void)
 	{
-		if (!m_pGfxDevice || !slot._widget())
+		if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !slot._widget() )
 			return false;						// No GFX-device or no widgets to render.
 
 		// Turn dirty patches into update patches

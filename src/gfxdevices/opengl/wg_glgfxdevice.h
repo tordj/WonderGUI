@@ -54,8 +54,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create(const RectI& viewport, int uboBindingPoint = 0);
-		static GlGfxDevice_p	create(GlSurface * pCanvas, int uboBindingPoint = 0);
+		static GlGfxDevice_p	create(int uboBindingPoint = 0);
 
 		//.____ Identification __________________________________________
 
@@ -69,16 +68,8 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas(SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true );
-		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
-
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
-		void	clearClipList() override;
-		void	setClearColor( Color col ) override;
 		void	setTintColor(Color color) override;
 		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
 		void	clearTintGradient() override;
@@ -108,10 +99,12 @@ namespace wg
 
 
 	protected:
-		GlGfxDevice(SizeI viewportSize, int uboBindingPoint);
-		GlGfxDevice(const RectI& viewport, int uboBindingPoint);
-		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
+		GlGfxDevice(int uboBindingPoint);
 		~GlGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;
+		void	_clipListWasChanged() override;
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
@@ -126,7 +119,6 @@ namespace wg
 		//			SetClip,
 					SetBlendMode,
 					SetMorphFactor,
-					SetClearColor,
 					SetTintColor,
 					SetTintGradient,
 					ClearTintGradient,
@@ -144,7 +136,6 @@ namespace wg
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
 				void	_setBlitSource(GlSurface * pSurf);
-				void	_setClearColor(Color color);
 				void	_setTintColor(Color color);
 				void	_setTintGradient(const RectI& rect, const Color colors[4]);
 				void	_clearTintGradient();
@@ -201,8 +192,6 @@ namespace wg
 
 		int				m_canvasYstart;
 		int				m_canvasYmul;
-
-		SizeI           m_emptyCanvasSize;
 
 		GLsync          m_idleSync = 0;
 

@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( SizeI canvas, CGfxOutStream& stream );
+		static StreamGfxDevice_p	create( CGfxOutStream& stream );
 
 		//.____ Identification __________________________________________
 
@@ -54,14 +54,9 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas( Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
 
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
-		void	clearClipList() override;
 		void	setTintColor( Color color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
 		bool	setBlitSource(Surface * pSource) override;
@@ -113,8 +108,12 @@ namespace wg
 
 
 	protected:
-		StreamGfxDevice( SizeI canvas, CGfxOutStream& stream );
+		StreamGfxDevice( CGfxOutStream& stream );
 		~StreamGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;	// Checked for errors before we get here.
+		void	_clipListWasChanged() override;		// Called when cliplist has been changed.
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;

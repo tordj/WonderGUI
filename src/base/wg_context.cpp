@@ -69,4 +69,12 @@ namespace wg
 	{
 		m_bGammaCorrection = bOn;
 	}
+
+	//____ setCanvasLayers() __________________________________________________
+
+	void Context::setCanvasLayers(CanvasLayers* pLayers)
+	{
+		m_pCanvasLayers = pLayers;
+	}
+
 }

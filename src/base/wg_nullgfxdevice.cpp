@@ -31,12 +31,12 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	NullGfxDevice_p NullGfxDevice::create( SizeI size )
+	NullGfxDevice_p NullGfxDevice::create()
 	{
-		return NullGfxDevice_p(new NullGfxDevice(size));
+		return NullGfxDevice_p(new NullGfxDevice());
 	}
 
-	NullGfxDevice::NullGfxDevice( SizeI size ) : GfxDevice(size)
+	NullGfxDevice::NullGfxDevice()
 	{
 	}
 
@@ -65,14 +65,13 @@ namespace wg
 		return SurfaceFactory_p();
 	}
 
-	//____ setCanvas() ________________________________________________________
-
-	bool NullGfxDevice::setCanvas(Surface * pCanvas, CanvasInit initOperation, bool bResetClipList )
+	void NullGfxDevice::_canvasWasChanged()
 	{
-		m_pCanvas = pCanvas;
-		return true;
 	}
 
+	void NullGfxDevice::_renderLayerWasChanged()
+	{
+	}
 
 	void NullGfxDevice::fill(const RectI& rect, const Color& col)
 	{

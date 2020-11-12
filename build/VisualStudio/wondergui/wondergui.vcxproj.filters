@@ -464,9 +464,6 @@
     <ClInclude Include="..\..\..\src\base\wg_dataset.h">
       <Filter>base</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h">
-      <Filter>widgets\capsules</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\src\widgets\wg_knob.h">
       <Filter>widgets</Filter>
     </ClInclude>
@@ -559,6 +556,9 @@
     </ClInclude>
     <ClInclude Include="..\..\..\src\components\wg_cskinslotmi.h">
       <Filter>components</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_canvaslayers.h">
+      <Filter>base</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -895,9 +895,6 @@
     <ClCompile Include="..\..\..\src\base\wg_dataset.cpp">
       <Filter>base</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvasstack.cpp">
-      <Filter>widgets\capsules</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\..\src\widgets\wg_animplayer.cpp">
       <Filter>widgets</Filter>
     </ClCompile>
@@ -963,6 +960,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp">
       <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_canvaslayers.cpp">
+      <Filter>base</Filter>
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\anim\wg_spinanimskin.cpp">
       <Filter>skins\anim</Filter>

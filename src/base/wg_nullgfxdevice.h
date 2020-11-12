@@ -42,7 +42,7 @@ namespace wg
 	public:
 		//.____ Creation ________________________________________________
 
-		static NullGfxDevice_p	create( SizeI size );
+		static NullGfxDevice_p	create();
 
 		//.____ Identification __________________________________________
 
@@ -55,10 +55,6 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool		setCanvas(Surface * pCanvas, CanvasInit init = CanvasInit::Keep, bool bResetClipList = true ) override;
-
 		//.____ Rendering ________________________________________________
 
 		void	fill(const RectI& rect, const Color& col) override;
@@ -70,8 +66,11 @@ namespace wg
 
 
 	protected:
-		NullGfxDevice( SizeI size );
+		NullGfxDevice();
 		~NullGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;	// Checked for errors before we get here.
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;

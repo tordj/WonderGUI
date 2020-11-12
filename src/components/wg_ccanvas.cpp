@@ -82,9 +82,6 @@ namespace wg
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
 		m_pSurface->fill(m_backColor);
 
-		if( m_pDevice )
-			m_pDevice->setCanvas(m_pSurface);
-
 		if (m_surfaceLostCallback != nullptr)
 			m_surfaceLostCallback(this);
 	}

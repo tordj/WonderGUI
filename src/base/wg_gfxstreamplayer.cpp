@@ -104,6 +104,7 @@ namespace wg
 
 		case GfxChunkId::SetCanvas:
 		{
+/*
 			uint16_t	surfaceId;
 			uint16_t	bResetClipList;
 			uint16_t 	initOperation;
@@ -118,6 +119,7 @@ namespace wg
 				m_pDevice->setCanvas(nullptr, (CanvasInit) initOperation, (bool) bResetClipList);
 
 			break;
+*/
 		}
 
 		case GfxChunkId::SetClip:

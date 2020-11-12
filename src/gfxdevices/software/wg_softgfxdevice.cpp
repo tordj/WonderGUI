@@ -2471,33 +2471,18 @@ namespace wg
 		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
 
-	SoftGfxDevice_p SoftGfxDevice::create( Surface * pCanvas )
-	{
-		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
-	}
-
-
 	//____ constructor _____________________________________________________________
 
-	SoftGfxDevice::SoftGfxDevice() : GfxDevice(SizeI(0,0))
+	SoftGfxDevice::SoftGfxDevice()
 	{
 		m_pCanvas = nullptr;
 		m_pCanvasPixels = nullptr;
+		m_pRenderLayerSurface = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		m_colTrans.morphFactor = 2048;
 		_initTables();
 
-	}
-
-	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():SizeI() )
-	{
-		m_pCanvas = pCanvas;
-		m_pCanvasPixels = nullptr;
-		m_canvasPixelBits = 0;
-		m_canvasPitch = 0;
-		m_colTrans.morphFactor = 2048;
-		_initTables();
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -2528,79 +2513,6 @@ namespace wg
 			m_pSurfaceFactory = SoftSurfaceFactory::create();
 
 		return m_pSurfaceFactory;
-	}
-
-	//____ setCanvas() _______________________________________________________________
-
-	bool SoftGfxDevice::setCanvas( Surface * pCanvas, CanvasInit initOperation, bool bResetClipRects )
-	{
-		if (m_pCanvas == pCanvas)
-			return true;			// Not an error.
-
-		if( !pCanvas )
-		{
-			m_pCanvas		= nullptr;
-			m_canvasSize	= SizeI();
-			m_clipCanvas	= RectI();
-			m_clipBounds	= RectI();
-			m_pClipRects	= &m_clipCanvas;
-			m_nClipRects	= 1;
-
-			// Make sure this also is cleared, in case we are rendering.
-
-			m_pCanvasPixels = nullptr;
-			m_canvasPixelBits = 0;
-			m_canvasPitch = 0;
-			return true;
-		}
-
-
-		PixelFormat format = pCanvas->pixelFormat();
-		if( format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear && 
-			format != PixelFormat::BGR_8_sRGB && format != PixelFormat::BGR_8_linear &&
-			format != PixelFormat::BGRX_8_sRGB && format != PixelFormat::BGRX_8_linear &&
-			format != PixelFormat::BGRA_4_linear && format != PixelFormat::BGR_565_linear && 
-			format != PixelFormat::A_8 )
-			return false;
-
-		if (m_pCanvasPixels)
-		{
-			m_pCanvas->pullPixels(m_canvasPixelBuffer);
-			m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
-		}
-
-		m_pCanvas		= pCanvas;
-		m_canvasSize	= pCanvas->size();
-		m_clipCanvas	= { 0,0,m_canvasSize };
-
-		if( bResetClipRects )
-		{
-			m_clipBounds	= { 0,0,m_canvasSize };
-			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
-		}
-
-		// Update stuff if we are rendering
-
-		if( m_pCanvasPixels )
-		{
-			m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
-			m_pCanvas->pushPixels(m_canvasPixelBuffer);
-
-			m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
-			m_canvasPitch = m_canvasPixelBuffer.pitch;
-
-			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-
-			if( initOperation == CanvasInit::Clear )
-				m_pCanvas->fill(m_clearColor);
-			
-			_updateBlitFunctions();
-		}
-		else
-			m_beginRenderOp = initOperation;				// Save operation for beginRender().
-
-		return true;
 	}
 
 	//____ setTintColor() _____________________________________________________
@@ -2786,24 +2698,7 @@ namespace wg
 
 	bool SoftGfxDevice::beginRender()
 	{
-		if( m_bRendering || !m_pCanvas)
-			return false;
-
-		if( m_beginRenderOp == CanvasInit::Clear )
-			m_pCanvas->fill(m_clearColor);
-
-		m_beginRenderOp = CanvasInit::Keep;
-
-		m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
-		m_pCanvas->pushPixels(m_canvasPixelBuffer);
-
-		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
-		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-		m_canvasPitch = m_canvasPixelBuffer.pitch;
-
-		_updateBlitFunctions();
-
-		if( !m_pCanvasPixels )
+		if( m_bRendering )
 			return false;
 
 		setTintColor(Color::White);
@@ -2817,18 +2712,9 @@ namespace wg
 
 	bool SoftGfxDevice::endRender()
 	{
-		if( !m_bRendering || !m_pCanvasPixels )
+		if( !m_bRendering )
 			return false;
 
-		// Clean up.
-
-		m_pCanvas->pullPixels(m_canvasPixelBuffer);
-		m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
-		m_pCanvasPixels = 0;
-		m_canvasPixelBits = 0;
-		m_canvasPitch = 0;
-
-		_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
 		m_bRendering = false;
 		return true;
 	}
@@ -2837,7 +2723,7 @@ namespace wg
 
 	void SoftGfxDevice::fill(const RectI& rect, const Color& col)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels )
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels )
 			return;
 
 		// Clipping
@@ -2864,7 +2750,7 @@ namespace wg
 		//
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pFunc == nullptr)
 			return;
 
@@ -2881,7 +2767,7 @@ namespace wg
 	
 	void SoftGfxDevice::fill(const RectF& rect, const Color& col)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels)
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
 		// Clipping
@@ -2907,9 +2793,9 @@ namespace wg
 		BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
-		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
-//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -3032,7 +2918,7 @@ namespace wg
 
 	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, Color color, float thickness)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels)
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
 		Color fillColor = color * m_tintColor;
@@ -3044,7 +2930,7 @@ namespace wg
 
 		//
 
-		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -3179,8 +3065,8 @@ namespace wg
 		_col = _col * m_tintColor;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -3701,7 +3587,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -4204,7 +4090,7 @@ namespace wg
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
 
-		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pOp == nullptr )
 			return;
@@ -4317,7 +4203,73 @@ namespace wg
 		m_pComplexBlitFirstPassOp = oldFirstPass;
 	}
 
+	//____ _canvasWasChanged() ________________________________________________
 
+	void SoftGfxDevice::_canvasWasChanged()
+	{
+		if (m_pCanvas)
+		{
+			_renderLayerWasChanged();
+		}
+		if (!m_pCanvas)
+		{
+			// Clean up.
+
+			if (m_pRenderLayerSurface)
+			{
+				m_pRenderLayerSurface->pullPixels(m_canvasPixelBuffer);
+				m_pRenderLayerSurface->freePixelBuffer(m_canvasPixelBuffer);
+			}
+
+			m_pRenderLayerSurface = nullptr;
+			m_pCanvasPixels = nullptr;
+			m_canvasPixelBits = 0;
+			m_canvasPitch = 0;
+
+			_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
+		}
+	}
+
+	//____ _renderLayerWasChanged() ___________________________________________
+
+	void SoftGfxDevice::_renderLayerWasChanged()
+	{
+		// Finish up previous render layer surface
+
+		if (m_pRenderLayerSurface)
+		{
+			m_pRenderLayerSurface->pullPixels(m_canvasPixelBuffer);
+			m_pRenderLayerSurface->freePixelBuffer(m_canvasPixelBuffer);
+		}
+
+		// Create our layer surface if needed
+
+		bool	bClear = false;
+		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
+		{
+			m_layerSurfaces[m_renderLayer - 1] = SoftSurface::create(m_canvasSize, m_pLayerDef->layerFormat(m_renderLayer - 1));
+			bClear = true;
+		}
+
+		// 
+
+		m_pRenderLayerSurface = m_renderLayer == 0 ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+
+		m_canvasPixelBuffer = m_pRenderLayerSurface->allocPixelBuffer();
+		m_pRenderLayerSurface->pushPixels(m_canvasPixelBuffer);
+
+		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
+		m_canvasPitch = m_canvasPixelBuffer.pitch;
+
+		m_canvasPixelBits = m_pRenderLayerSurface->pixelDescription()->bits;
+
+		_updateTintSettings();
+		_updateBlitFunctions();
+
+		if (bClear)
+			_clearRenderLayer();
+
+	}
 
 	//____ _transformBlit() [simple] ____________________________________
 
@@ -4662,7 +4614,7 @@ namespace wg
 	{
 		// Sanity checking...
 
-		if (!m_pCanvas || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
+		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
 		{
 			m_pSimpleBlitOp = &SoftGfxDevice::_dummySimpleBlit;
 			m_pComplexBlitOp = &SoftGfxDevice::_dummyComplexBlit;
@@ -4673,21 +4625,21 @@ namespace wg
 
 		ScaleMode		scaleMode = m_pBlitSource->scaleMode();
 		PixelFormat		srcFormat = m_pBlitSource->m_pixelDescription.format;
-		PixelFormat		dstFormat = m_pCanvas->pixelFormat();
+		PixelFormat		dstFormat = m_pRenderLayerSurface->pixelFormat();
 
 		// Add fallback back to two-pass rendering.
 
 		m_pSimpleBlitOnePassOp = nullptr;
 		m_pComplexBlitOnePassOp = nullptr;
 
-		if (m_pCanvas->pixelDescription()->bLinear && m_pBlitSource->pixelDescription()->bLinear)
+		if (m_pRenderLayerSurface->pixelDescription()->bLinear && m_pBlitSource->pixelDescription()->bLinear)
 		{
 			m_pSimpleBlitFirstPassOp = s_moveTo_BGRA_8_linear_OpTab[(int)srcFormat][0];
 			m_pSimpleTileBlitFirstPassOp = s_moveTo_BGRA_8_linear_OpTab[(int)srcFormat][1];
 			m_pComplexBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][0];
 			m_pComplexClipBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][1];
 			m_pComplexTileBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][2];
-			m_pBlitSecondPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+			m_pBlitSecondPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 		else
 		{
@@ -4696,14 +4648,14 @@ namespace wg
 			m_pComplexBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][0];
 			m_pComplexClipBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][1];
 			m_pComplexTileBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][2];
-			m_pBlitSecondPassOp = s_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+			m_pBlitSecondPassOp = s_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 
 
 		// Try to find a suitable one-pass operation
 
-		if (srcFormat == PixelFormat::BGRA_8_linear && m_pCanvas->pixelDescription()->bLinear )
-			m_pSimpleBlitOnePassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		if (srcFormat == PixelFormat::BGRA_8_linear && m_pRenderLayerSurface->pixelDescription()->bLinear )
+			m_pSimpleBlitOnePassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 
 		if (m_colTrans.mode == TintMode::None)

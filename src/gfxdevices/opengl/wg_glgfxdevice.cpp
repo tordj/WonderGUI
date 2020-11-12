@@ -100,35 +100,14 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	GlGfxDevice_p GlGfxDevice::create( const RectI& viewport, int uboBindingPoint)
+	GlGfxDevice_p GlGfxDevice::create( int uboBindingPoint)
 	{
-		GlGfxDevice_p p(new GlGfxDevice( viewport, uboBindingPoint ));
+		GlGfxDevice_p p(new GlGfxDevice( uboBindingPoint ));
 
 		if( !p->m_bFullyInitialized )
 			return GlGfxDevice_p(nullptr);
 
 		return p;
-	}
-
-	GlGfxDevice_p GlGfxDevice::create( GlSurface * pSurface, int uboBindingPoint)
-	{
-		GlGfxDevice_p p(new GlGfxDevice(pSurface, uboBindingPoint ));
-
-		if ( !p->m_bFullyInitialized )
-			return GlGfxDevice_p(nullptr);
-
-		return p;
-	}
-	//____ constructor _____________________________________________________________
-
-	GlGfxDevice::GlGfxDevice(GlSurface * pSurface, int uboBindingPoint) : GlGfxDevice(pSurface->size(), uboBindingPoint)
-	{
-		setCanvas(pSurface);
-	}
-
-	GlGfxDevice::GlGfxDevice(const RectI& viewport, int uboBindingPoint) : GlGfxDevice(viewport.size(), uboBindingPoint)
-	{
-		setCanvas(viewport);
 	}
 
 	//____ _setDrawUniforms() __________________________________________________
@@ -178,12 +157,9 @@ namespace wg
 
 	//____ constructor _____________________________________________________________________
 
-	GlGfxDevice::GlGfxDevice( SizeI viewportSize, int uboBindingPoint ) : GfxDevice(viewportSize)
+	GlGfxDevice::GlGfxDevice( int uboBindingPoint )
 	{
 		m_bFullyInitialized = true;
-
-		m_canvasYstart = viewportSize.h;
-		m_canvasYmul = -1;
 
 		_initTables();
 
@@ -590,164 +566,98 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ setCanvas() __________________________________________________________________
+	//____ _canvasWasChanged() ________________________________________________
 
-	bool GlGfxDevice::setCanvas( SizeI canvasSize, CanvasInit initOperation, bool bResetClipRects )
+	void GlGfxDevice::_canvasWasChanged()
 	{
-		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
-		// This method can be called without us having our GL-context.
+		_setCanvas(static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h);
 
-		if (canvasSize.w < 1 || canvasSize.h < 1)
-			return false;
+		_setBlendMode(m_blendMode);
+		_setMorphFactor(m_morphFactor);
 
-		m_pCanvas = nullptr;
-		m_canvasSize = canvasSize;
-		m_clipCanvas = m_canvasSize;
+		if (m_bTintGradient)
+			_setTintGradient(m_tintGradientRect, m_tintGradient);
+		else
+			_setTintColor(m_tintColor);
 
-		if( bResetClipRects )
+		_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
+
+		_renderLayerWasChanged();
+	}
+
+	//____ _renderLayerWasChanged() ___________________________________________
+
+	void GlGfxDevice::_renderLayerWasChanged()
+	{
+		Surface* pRenderSurface;
+
+		if (!m_pCanvas && m_renderLayer == 0)
 		{
-			m_clipBounds = m_canvasSize;
-			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
-		}
-
-		m_canvasYstart = canvasSize.h;
-		m_canvasYmul = -1;
-
-		if (m_bRendering)
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetCanvas, 3);
-			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
-			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
-			m_commandBuffer[m_commandOfs++] = (int) initOperation;
-			m_surfaceBuffer[m_surfaceOfs++] = nullptr;
+			m_canvasYstart = m_canvasSize.h;
+			m_canvasYmul = -1;
+			pRenderSurface = nullptr;
 		}
 		else
-			m_beginRenderOp = initOperation;
+		{
+			m_canvasYstart = 0;
+			m_canvasYmul = 1;
 
-		m_emptyCanvasSize = canvasSize;
+			pRenderSurface = (m_renderLayer == 0) ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+		}
 
-		return true;
+		_endCommand();
+		_beginStateCommand(Command::SetCanvas, 2);
+		m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
+		m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+		m_surfaceBuffer[m_surfaceOfs++] = (GlSurface*) pRenderSurface;
 	}
 
-	bool GlGfxDevice::setCanvas( Surface * pSurface, CanvasInit initOperation, bool bResetClipRects )
+	//____ _clipListWasChanged() ______________________________________________
+
+	void GlGfxDevice::_clipListWasChanged()
 	{
-		// Do NOT add any gl-calls here, INCLUDING glGetError()!!!
-		// This method can be called without us having our GL-context.
-
-		if( pSurface == nullptr )
-			return setCanvas( m_emptyCanvasSize, initOperation, bResetClipRects );
-
-		if (!pSurface || pSurface->typeInfo() != GlSurface::TYPEINFO)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a GlSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-
-		if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "A CLUT-based surface can not be used as canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
-			return false;
-		}
-
-		m_pCanvas = pSurface;
-		m_canvasSize = pSurface->size();
-		m_clipCanvas = m_canvasSize;
-
-		if( bResetClipRects )
-		{
-			m_clipBounds = m_canvasSize;
-			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
-		}
-
-		m_canvasYstart = 0;
-		m_canvasYmul = 1;
-
-		if (m_bRendering)
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetCanvas, 3);
-			m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
-			m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
-			m_commandBuffer[m_commandOfs++] = (int) initOperation;
-			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSurface);
-		}
-		else
-			m_beginRenderOp = initOperation;
-
-		return true;
-	}
-
-	//____ setClipList() ______________________________________________________
-
-	bool GlGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
-	{
-		if (GfxDevice::setClipList(nRectangles, pRectangles))
-		{
-			m_clipCurrOfs = -1;
-			return true;
-		}
-		return false;
-	}
-
-	//____ clearClipList() ____________________________________________________
-
-	void GlGfxDevice::clearClipList()
-	{
-		GfxDevice::clearClipList();
 		m_clipCurrOfs = -1;
 	}
-
-	//____ setClearColor() _____________________________________________________
-
-	void GlGfxDevice::setClearColor( Color color )
-	{
-		GfxDevice::setClearColor(color);
-		
-		if( m_bRendering )
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetClearColor, 1);
-			m_commandBuffer[m_commandOfs++] = color.argb;
-		}
-	}
-
 
 	//____ setTintColor() __________________________________________________________________
 
 	void GlGfxDevice::setTintColor(Color color)
 	{
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return;
+		}
+
 		GfxDevice::setTintColor(color);
 
-		if( m_bRendering )
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetTintColor, 1);
-			m_commandBuffer[m_commandOfs++] = color.argb;
-		}
+		_endCommand();
+		_beginStateCommand(Command::SetTintColor, 1);
+		m_commandBuffer[m_commandOfs++] = color.argb;
 	}
 
 	//____ setTintGradient() __________________________________________________________________
 
 	void GlGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
 	{
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return;
+		}
+
 		GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
 
-		if (m_bRendering)
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetTintGradient, 8);
-			m_commandBuffer[m_commandOfs++] = rect.x;
-			m_commandBuffer[m_commandOfs++] = rect.y;
-			m_commandBuffer[m_commandOfs++] = rect.w;
-			m_commandBuffer[m_commandOfs++] = rect.h;
-			m_commandBuffer[m_commandOfs++] = topLeft.argb;
-			m_commandBuffer[m_commandOfs++] = topRight.argb;
-			m_commandBuffer[m_commandOfs++] = bottomRight.argb;
-			m_commandBuffer[m_commandOfs++] = bottomLeft.argb;
-		}
+		_endCommand();
+		_beginStateCommand(Command::SetTintGradient, 8);
+		m_commandBuffer[m_commandOfs++] = rect.x;
+		m_commandBuffer[m_commandOfs++] = rect.y;
+		m_commandBuffer[m_commandOfs++] = rect.w;
+		m_commandBuffer[m_commandOfs++] = rect.h;
+		m_commandBuffer[m_commandOfs++] = topLeft.argb;
+		m_commandBuffer[m_commandOfs++] = topRight.argb;
+		m_commandBuffer[m_commandOfs++] = bottomRight.argb;
+		m_commandBuffer[m_commandOfs++] = bottomLeft.argb;
 
 	}
 
@@ -755,13 +665,16 @@ namespace wg
 
 	void GlGfxDevice::clearTintGradient()
 	{
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return;
+		}
+
 		GfxDevice::clearTintGradient();
 
-		if (m_bRendering)
-		{
-			_endCommand();
-			_beginStateCommand(Command::ClearTintGradient, 0);
-		}
+		_endCommand();
+		_beginStateCommand(Command::ClearTintGradient, 0);
 	}
 
 
@@ -772,14 +685,17 @@ namespace wg
 		if (blendMode == m_blendMode)
 			return true;
 
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return false;
+		}
+
 		GfxDevice::setBlendMode(blendMode);
 
-		if( m_bRendering )
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetBlendMode, 1);
-			m_commandBuffer[m_commandOfs++] = (int) blendMode;
-		}
+		_endCommand();
+		_beginStateCommand(Command::SetBlendMode, 1);
+		m_commandBuffer[m_commandOfs++] = (int) blendMode;
 
 		return true;
 	}
@@ -788,19 +704,25 @@ namespace wg
 
 	bool GlGfxDevice::setBlitSource(Surface * pSource)
 	{
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return false;
+		}
+
+		if (pSource == m_pBlitSource)
+			return true;
+
 		if (!pSource || pSource->typeInfo() != GlSurface::TYPEINFO)
 			return false;
 
 		m_pBlitSource = pSource;
 
-		if (m_bRendering)
-		{
-            //TODO: Check so that we don't overrun m_surfaceBuffer;
+        //TODO: Check so that we don't overrun m_surfaceBuffer;
 
-			_endCommand();
-			_beginStateCommand(Command::SetBlitSource, 0);
-			m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSource);
-		}
+		_endCommand();
+		_beginStateCommand(Command::SetBlitSource, 0);
+		m_surfaceBuffer[m_surfaceOfs++] = static_cast<GlSurface*>(pSource);
 
 		return true;
 	}
@@ -809,16 +731,19 @@ namespace wg
 
 	void GlGfxDevice::setMorphFactor(float factor)
 	{
+		if (!m_bRendering)
+		{
+			//TODO: Error handling!
+			return;
+		}
+
 		limit(factor, 0.f, 1.f);
 
 		m_morphFactor = factor;
 
-		if (m_bRendering)
-		{
-			_endCommand();
-			_beginStateCommand(Command::SetMorphFactor, 1);
-			m_commandBuffer[m_commandOfs++] = (int)(factor*1024);
-		}
+		_endCommand();
+		_beginStateCommand(Command::SetMorphFactor, 1);
+		m_commandBuffer[m_commandOfs++] = (int)(factor*1024);
 	}
 
 	//____ isCanvasReady() ___________________________________________________________
@@ -881,23 +806,7 @@ namespace wg
 		m_clipWriteOfs = 0;
 		m_clipCurrOfs = -1;
 
-		_setCanvas( static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h );
-
-		_setBlendMode(m_blendMode);
-		_setMorphFactor(m_morphFactor);
-		_setClearColor(m_clearColor);
-
-		if( m_beginRenderOp == CanvasInit::Clear )
-			glClear( GL_COLOR_BUFFER_BIT );
-		m_beginRenderOp = CanvasInit::Keep;
-
-		if (m_bTintGradient)
-			_setTintGradient(m_tintGradientRect, m_tintGradient);
-		else
-			_setTintColor(m_tintColor);
-		
-		_setBlitSource( static_cast<GlSurface*>(m_pBlitSource.rawPtr()) );
-
+		m_pBlitSource = nullptr;
 		
 		// Set our extras buffer and segments palette textures.
 
@@ -2123,11 +2032,7 @@ namespace wg
 				{
 					_setCanvas(m_surfaceBuffer[surfaceOfs], pCmd[0], pCmd[1]);
 					m_surfaceBuffer[surfaceOfs++] = nullptr;
-					
-					CanvasInit initOp = (CanvasInit) pCmd[2];
-					if( initOp == CanvasInit::Clear )
-						glClear( GL_COLOR_BUFFER_BIT);
-					pCmd += 3;
+					pCmd += 2;
 					break;
 				}
 				case Command::SetBlendMode:
@@ -2138,11 +2043,6 @@ namespace wg
 				case Command::SetMorphFactor:
 				{
 					_setMorphFactor((*pCmd++) / 1024.f);
-					break;
-				}
-				case Command::SetClearColor:
-				{
-					_setClearColor(*(Color*)(pCmd++));
 					break;
 				}
 				case Command::SetTintColor:
@@ -2557,15 +2457,6 @@ namespace wg
             m_pActiveBlitSource = nullptr;
         }
 		LOG_GLERROR(glGetError());
-	}
-
-	//____ _setClearColor() ___________________________________________________
-
-	void GlGfxDevice::_setClearColor(Color color)
-	{
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		glClearColor( pConv[color.r]/4096.f, pConv[color.g]/4096.f, pConv[color.b]/4096.f, color.a/255.f );
 	}
 
 	//____ _setTintColor() ____________________________________________________

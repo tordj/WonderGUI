@@ -72,7 +72,7 @@ public:
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = GlSurface::create(canvasSize, canvasFormat);
-		m_pDevice = GlGfxDevice::create(m_pCanvas, 1);              // Needs a UBO binding point separate from other GfxDevice.
+		m_pDevice = GlGfxDevice::create(1);              // Needs a UBO binding point separate from other GfxDevice.
 		return true;
 	}
 
@@ -85,11 +85,13 @@ public:
 	GfxDevice_p beginRender() const
 	{
 		m_pDevice->beginRender();
+		m_pDevice->beginCanvasUpdate(m_pCanvas);
 		return m_pDevice;
 	}
 
 	void endRender() const
 	{
+		m_pDevice->endCanvasUpdate();
 		m_pDevice->endRender();
 	}
 
@@ -229,9 +231,9 @@ bool init_wondergui()
 	pContext->setGammaCorrection(false);
 	Base::setActiveContext(pContext);
 
-	auto pGfxDevice = GlGfxDevice::create(g_windowSize*pContext->scale(), 0);
+	auto pGfxDevice = GlGfxDevice::create(0);
 
-	g_pRoot = RootPanel::create(pGfxDevice);
+	g_pRoot = RootPanel::create(g_windowSize*pContext->scale(), pGfxDevice);
 
 //	g_pRoot->setDebugMode(true);
 

@@ -26,7 +26,6 @@ public:
 	bool exit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pCanvas = nullptr;
-		m_pSavedCanvas = nullptr;
 		m_pImg = nullptr;
 		return true;
 	}
@@ -38,7 +37,7 @@ public:
 
 	bool finalize(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setCanvas(m_pSavedCanvas);
+		pDevice->endCanvasUpdate();
 		pDevice->setBlitSource(m_pCanvas);
 		pDevice->blit({ 0,0 });
 		return true;
@@ -47,9 +46,8 @@ public:
 
 	bool setCanvas(GfxDevice * pDevice, const RectI& canvas)
 	{
-		m_pSavedCanvas = pDevice->canvas();
 		m_pCanvas->fill(Color::Transparent);
-		pDevice->setCanvas(m_pCanvas);
+		pDevice->beginCanvasUpdate(m_pCanvas);
 		return true;
 	}
 
@@ -112,7 +110,6 @@ public:
 
 private:
 	Surface_p	m_pCanvas;
-	Surface_p	m_pSavedCanvas;
 	Surface_p	m_pImg;
 
 	float rot = 35;

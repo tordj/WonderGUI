@@ -65,6 +65,11 @@ namespace wg
 		virtual Coord	contentOfs(State state) const;
 		virtual Rect	contentRect(const Rect& canvas, State state) const;
 
+		//.____ Rendering ______________________________________________________
+
+		void			setLayer(int layer);
+		int				layer() const { return m_layer; }
+
 		//.____ Misc ____________________________________________________
 
 		bool			isOpaque() const { return m_bOpaque; }
@@ -104,6 +109,7 @@ namespace wg
 		bool			m_bOpaque = false;
 		int				m_useCount = 0;						// Counter of instances of this skin in use.
 
+		int			m_layer = -1;
 	};
 
 

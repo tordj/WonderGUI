@@ -63,8 +63,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
-		static RootPanel_p	create( GfxDevice * pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
+		static RootPanel_p	create();
+		static RootPanel_p	create(Surface* pCanvas, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(const SizeI& pixelSize, GfxDevice* pDevice = nullptr);
 
 		//.____ Components ____________________________________
 
@@ -113,6 +114,10 @@ namespace wg
 		bool				setGfxDevice( GfxDevice * pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
+		bool				setCanvas(Surface* pCanvas);
+		bool				setCanvas(const SizeI& pixelSize);
+		inline Surface_p	canvas() const { return m_pCanvas; }
+		inline SizeI		canvasSize() const { return m_canvasSize; }
 
 		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( ofs-m_geo.pos(),mode)); }
 
@@ -127,7 +132,8 @@ namespace wg
 
 	protected:
 		RootPanel();
-		RootPanel( GfxDevice * pGfxDevice );
+		RootPanel(Surface* pCanvas, GfxDevice* pGfxDevice );
+		RootPanel(const SizeI& pixelSize, GfxDevice* pGfxDevice);
 		~RootPanel();
 
 		// SlotHolder methods
@@ -218,6 +224,8 @@ namespace wg
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
+		Surface_p			m_pCanvas;
+		SizeI				m_canvasSize;		// Size of canvas in pixels, when m_pCanvas is null.
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

@@ -53,7 +53,6 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
-		static SoftGfxDevice_p	create(Surface * pCanvas);
 
 		//.____ Identification __________________________________________
 
@@ -66,9 +65,6 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true) override;
 
 		//.____ State _________________________________________________
 
@@ -108,8 +104,11 @@ namespace wg
 
 	protected:
 		SoftGfxDevice();
-		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;
+
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
@@ -404,11 +403,11 @@ namespace wg
 
 		int				m_lineThicknessTable[17];
 
+		Surface_p		m_pRenderLayerSurface = nullptr;	// render layer surface
 		PixelBuffer		m_canvasPixelBuffer;
-		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
-		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
+		uint8_t *		m_pCanvasPixels;	// Pixels of render layer surface
+		int				m_canvasPixelBits;	// PixelBits of render layer surface
 		int				m_canvasPitch;
-		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 	};
 
 

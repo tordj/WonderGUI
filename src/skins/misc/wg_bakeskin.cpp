@@ -244,33 +244,33 @@ namespace wg
 		if (skins.isEmpty())
 			return;
 
-		// Save old cliplist and canvas
-
-		auto oldClip = Util::pushClipList(pDevice);
-		auto oldCanvas = pDevice->canvas();
-
-		// Set new canvas (surface and rect).
-
-		pDevice->setCanvas(m_pBakeSurface, CanvasInit::Discard,false);
+		// 
 
 		Rect bakeCanvas = canvas.size();
 		RectI bakeCanvasPX = bakeCanvas.px();
 
 		// Generate and set new cliplist.
 
+		int		nClipRects = pDevice->clipListSize();
 		RectI	clip[8];
 
-		if (oldClip.nRects <= 8)
+		if (nClipRects <= 8)
 		{
-			for( int i = 0 ; i < oldClip.nRects ; i++ )
-				clip[i] = RectI( oldClip.pRects[i] - canvas.pos().px(), bakeCanvasPX );
-			pDevice->setClipList(oldClip.nRects, clip);
+			auto pOldClip = pDevice->clipList();
+			auto oldPos = canvas.pos().px();
+
+			for( int i = 0 ; i < nClipRects ; i++ )
+				clip[i] = RectI( pOldClip[i] - oldPos, bakeCanvasPX );
 		}
 		else
 		{
 			clip[0] = bakeCanvasPX;
-			pDevice->setClipList(1, clip);
+			nClipRects = 1;
 		}
+
+		// Set new canvas (surface and rect).
+
+		pDevice->beginCanvasUpdate(m_pBakeSurface, nClipRects, clip);
 
 		// Clear bake surface, unless we are opaque.
 
@@ -307,8 +307,7 @@ namespace wg
 
 		// Reset canvas and cliplist
 
-		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
-		Util::popClipList(pDevice, oldClip);
+		pDevice->endCanvasUpdate();
 
 		// Blit baked graphics to canvas.
 

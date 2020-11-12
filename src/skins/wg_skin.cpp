@@ -91,6 +91,14 @@ namespace wg
 		return (canvas - Border(m_contentPadding).aligned()).aligned();
 	}
 
+	//____ setLayer() _________________________________________________________
+
+	void Skin::setLayer(int layer)
+	{
+		m_layer = layer;
+	}
+
+
 	//____ isOpaque() _________________________________________________________
 
 	bool Skin::isOpaque(State state) const

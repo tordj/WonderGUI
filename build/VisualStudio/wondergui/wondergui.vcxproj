@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
     <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_blob.h" />
+    <ClInclude Include="..\..\..\src\base\wg_canvaslayers.h" />
     <ClInclude Include="..\..\..\src\base\wg_caret.h" />
     <ClInclude Include="..\..\..\src\base\wg_chain.h" />
     <ClInclude Include="..\..\..\src\base\wg_char.h" />
@@ -206,7 +207,6 @@
     <ClInclude Include="..\..\..\src\valueformatters\wg_timeformatter.h" />
     <ClInclude Include="..\..\..\src\valueformatters\wg_valueformatter.h" />
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
-    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_sizecapsule.h" />
@@ -256,6 +256,7 @@
     <ClCompile Include="..\..\..\src\base\wg_base.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_blob.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_canvaslayers.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_caret.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_chain.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_charbuffer.cpp" />
@@ -348,7 +349,6 @@
     <ClCompile Include="..\..\..\src\valueformatters\wg_standardformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_timeformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_valueformatter.cpp" />
-    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvasstack.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp" />

@@ -87,13 +87,13 @@ int main ( int argc, char** argv )
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
 
-	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 
 	// We create a RootPanel. This is responsible for rendering the
 	// tree of child widgets connected to it and handle their events.
 	// We provide it the GfxDevice to use for rendering.
 
-	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
+	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and

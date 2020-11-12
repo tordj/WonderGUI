@@ -38,16 +38,16 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StreamGfxDevice_p StreamGfxDevice::create( SizeI canvas, CGfxOutStream& stream )
+	StreamGfxDevice_p StreamGfxDevice::create( CGfxOutStream& stream )
 	{
-		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));
+		StreamGfxDevice_p p(new StreamGfxDevice( stream ));
 		return p;
 	}
 
 
 	//____ constructor _____________________________________________________________
 
-	StreamGfxDevice::StreamGfxDevice( SizeI canvas, CGfxOutStream& stream ) : GfxDevice(canvas)
+	StreamGfxDevice::StreamGfxDevice( CGfxOutStream& stream )
 	{
 		m_pStream = &stream;
 		m_bRendering = false;
@@ -81,57 +81,6 @@ namespace wg
 			m_pSurfaceFactory = StreamSurfaceFactory::create(*m_pStream);
 
 		return m_pSurfaceFactory;
-	}
-
-	//____ setClipList() __________________________________________________________
-
-	bool StreamGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
-	{
-		if (GfxDevice::setClipList(nRectangles, pRectangles))
-		{
-			(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 8*nRectangles };
-
-			for( int i = 0 ; i < nRectangles ; i++ )
-				(*m_pStream) << pRectangles[i];
-
-			return true;
-		}
-
-		return false;
-	}
-
-	//____ clearClipList() ____________________________________________________
-
-	void StreamGfxDevice::clearClipList()
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 0 };
-	}
-
-
-	//____ setCanvas() __________________________________________________________________
-
-	bool StreamGfxDevice::setCanvas( Surface * _pSurface, CanvasInit initOperation, bool bResetClipRects )
-	{	
-		if (_pSurface)
-		{
-			StreamSurface * pSurface = static_cast<StreamSurface*>(_pSurface);
-			if (!pSurface)
-				return false;			// Surface must be of type StreamSurface!
-		}
-
-		m_pCanvas		= _pSurface;
-
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 6 };
-
-		if( _pSurface )
-			(*m_pStream) << static_cast<StreamSurface*>(_pSurface)->m_inStreamId;
-		else
-			(*m_pStream) << (short) 0;
-
-		(*m_pStream) << (short) initOperation;
-		(*m_pStream) << (short) bResetClipRects;
-
-		return true;
 	}
 
 	//____ setTintColor() __________________________________________________________
@@ -316,6 +265,38 @@ namespace wg
 		(*m_pStream) << dest;
 		(*m_pStream) << source;
 	}
+
+	//____ _canvasWasChanged() ________________________________________________
+
+	void StreamGfxDevice::_canvasWasChanged()
+	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 6 };
+
+		if (m_pCanvas)
+			(*m_pStream) << static_cast<StreamSurface*>(m_pCanvas.rawPtr())->m_inStreamId;
+		else
+			(*m_pStream) << (short)0;
+
+		//TODO: Fill in will all the other data we need to send.
+	}
+
+	//____ _renderLayerWasChanged() ___________________________________________
+
+	void StreamGfxDevice::_renderLayerWasChanged()
+	{
+
+	}
+
+	//____ _clipListWasChanged() ______________________________________________
+
+	void StreamGfxDevice::_clipListWasChanged()
+	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 8 * m_nClipRects };
+
+		for (int i = 0; i < m_nClipRects; i++)
+			(*m_pStream) << m_pClipRects[i];
+	}
+
 
 	//____ _transformBlit() _____________________________________________
 
