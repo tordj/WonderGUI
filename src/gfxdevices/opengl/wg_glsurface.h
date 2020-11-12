@@ -124,7 +124,7 @@ namespace wg
 
 		GLuint 		m_clutTexture = 0;	// GL clut texture handle.
 
-		GLuint 		m_texture;			// GL texture handle.
+		GLuint 		m_texture = 0;		// GL texture handle.
 		GLint       m_internalFormat;   // GL_RGB8 or GL_RGBA8.
 		GLenum		m_accessFormat;		// GL_BGR or GL_BGRA.
 		Blob_p      m_pBlob;

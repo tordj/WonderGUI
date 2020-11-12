@@ -176,12 +176,12 @@ namespace wg
 		//
 
 
-		static const int c_commandBufferSize = 512;
-		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
-		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
-		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
-		static const int c_segmentsTintTexMapSize = 64;				// Number of segments tint palettes that fit into segmentsTintTexMap.
+		static const int c_commandBufferSize = 512*10;
+		static const int c_vertexBufferSize = 16384*10;				// Size of vertex buffer, in number of vertices.
+		static const int c_extrasBufferSize = 65536*4*10;				// Size of extras buffer, in GLfloats.
+		static const int c_surfaceBufferSize = 1024*10;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_clipListBufferSize = 4096*10;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_segmentsTintTexMapSize = 64*10;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -307,7 +307,6 @@ namespace wg
 		GLint		m_glScissorBox[4];
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
-		GLfloat		m_glClearColor[4];
 
 		//
 
@@ -468,6 +467,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 	{
 		(this->*m_pCmdFinalizer)();
 		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
+		m_cmd = Command::None;
 	}
 
 

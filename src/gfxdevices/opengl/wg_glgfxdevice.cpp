@@ -570,6 +570,14 @@ namespace wg
 
 	void GlGfxDevice::_canvasWasChanged()
 	{
+		// Do we need to end command and execute buffer if we
+		// put commands in the queue instead?
+
+		_endCommand();
+		_executeBuffer();
+
+		//
+
 		_setCanvas(static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h);
 
 		_setBlendMode(m_blendMode);
@@ -777,7 +785,6 @@ namespace wg
 		glGetIntegerv(GL_SCISSOR_BOX, m_glScissorBox);
 		glGetIntegerv(GL_READ_FRAMEBUFFER_BINDING, &m_glReadFrameBuffer);
 		glGetIntegerv(GL_DRAW_FRAMEBUFFER_BINDING, &m_glDrawFrameBuffer);
-		glGetFloatv(GL_COLOR_CLEAR_VALUE, m_glClearColor);
 
 		//  Modify states
 
@@ -865,7 +872,6 @@ namespace wg
 		else
 			glDisable(GL_FRAMEBUFFER_SRGB);
 
-		glClearColor( m_glClearColor[0], m_glClearColor[1], m_glClearColor[2], m_glClearColor[3] );
 		glBlendFunc( m_glBlendSrc, m_glBlendDst );
 		glViewport(m_glViewport[0], m_glViewport[1], m_glViewport[2], m_glViewport[3]);
 		glScissor(m_glScissorBox[0], m_glScissorBox[1], m_glScissorBox[2], m_glScissorBox[3]);
@@ -2189,6 +2195,7 @@ namespace wg
 			}
 		}
 
+		m_cmd = Command::None;
 		m_vertexOfs = 0;
 		m_extrasOfs = 0;
 		m_commandOfs = 0;

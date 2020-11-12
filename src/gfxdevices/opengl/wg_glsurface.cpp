@@ -617,6 +617,14 @@ namespace wg
 
 	void GlSurface::pullPixels(const PixelBuffer& buffer, const RectI& bufferRect)
 	{
+		// Handle special case where we use _copyFrom() in constructor
+		// before texture has been created.
+
+		if (m_texture == 0)
+			return;
+
+		//
+
 		if (m_bPendingReads)
 			GlGfxDevice::s_pActiveDevice->flush();
 
