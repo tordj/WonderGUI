@@ -68,7 +68,6 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 	return p2->id() - p1->id();
 }
 
-
 bool shadowLayerTest(CStandardSlot_p pSlot);
 bool stretchBlitTest(CStandardSlot_p pSlot);
 bool scrollIntoViewTest(CStandardSlot_p pSlot);
@@ -94,6 +93,7 @@ bool selectBoxTest(CStandardSlot_p pSlot);
 bool tileSkinTest(CStandardSlot_p pSlot);
 bool bakeSkinTest(CStandardSlot_p pSlot);
 bool animSkinTest(CStandardSlot_p pSlot);
+bool renderLayerTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -306,10 +306,14 @@ int main(int argc, char** argv)
 	pContext->setScale(2.00);
 
 
+	auto pCanvasLayers = CanvasLayers::create({ {BlendMode::Subtract, PixelFormat::A_8}, {BlendMode::Blend, PixelFormat::BGRA_8}, {BlendMode::Add, PixelFormat::BGRA_8} });
+	pContext->setCanvasLayers(pCanvasLayers);
+
+
 
 #ifdef USE_OPEN_GL
 	pCanvas = nullptr;
-	pDevice = GlGfxDevice::create(SizeI(width, height));
+	pDevice = GlGfxDevice::create();
 	pFactory = GlSurfaceFactory::create();
 
 #else
@@ -413,7 +417,12 @@ int main(int argc, char** argv)
 	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
-	RootPanel_p pRoot = RootPanel::create(pCanvas, pGfxDevice);
+	RootPanel_p pRoot;
+	if( pCanvas )
+		pRoot = RootPanel::create(pCanvas, pGfxDevice);
+	else
+		pRoot = RootPanel::create({ width,height }, pGfxDevice);
+
 
 //		pRoot->setDebugMode(true);
 
@@ -603,7 +612,8 @@ int main(int argc, char** argv)
 //	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
-	animSkinTest(&pRoot->slot);
+//	animSkinTest(&pRoot->slot);
+	renderLayerTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2560,6 +2570,38 @@ bool animSkinTest(CStandardSlot_p pSlot)
 	pFiller1->skin = pBakeSkin;
 
 	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 256, 256));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+//____ renderLayerTest() ____________________________________________________
+
+bool renderLayerTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
+	pBoxSkin->setLayer(2);
+	
+	auto pShadowSkin = StaticBoxSkin::create(20,{ 255,255,255,128 }, Color::Transparent);
+	pShadowSkin->setContentPadding({ 0,40,40,0 });
+	pShadowSkin->setLayer(1);
+	pShadowSkin->setBlendMode(BlendMode::Max);
+
+	auto pDaSkin = DoubleSkin::create(pBoxSkin, pShadowSkin);
+	pDaSkin->setSkinInSkin(true);
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto pWidget = Filler::create();
+		pWidget->skin = pDaSkin;
+
+		pBaseLayer->slots.pushBackMovable(pWidget, Rect(i*30, i*30, 100, 100));
+
+		Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
+	}
 
 	*pSlot = pBaseLayer;
 	return true;

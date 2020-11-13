@@ -90,7 +90,7 @@ namespace wg
 			return BlendMode::Undefined;
 		}
 
-		return BlendMode::Undefined;
+		return m_blendModes[layer];
 	}
 
 	//___ setDefaultLayer() ___________________________________________________

@@ -4268,7 +4268,6 @@ namespace wg
 
 		if (bClear)
 			_clearRenderLayer();
-
 	}
 
 	//____ _transformBlit() [simple] ____________________________________

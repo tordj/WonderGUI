@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -54,10 +55,24 @@ namespace wg
 		return TYPEINFO;
 	}
 
+	//____ setBlendMode() _____________________________________________________
+
+	void StaticColorSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		if (mode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (mode == BlendMode::Blend)
+			m_bOpaque = (m_color.a == 255);
+		else
+			m_bOpaque = false;
+	}
 	//____ render() ______________________________________________________________
 
 	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
+
 		pDevice->fill(canvas.px(), m_color);
 	}
 

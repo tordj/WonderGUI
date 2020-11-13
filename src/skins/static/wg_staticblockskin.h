@@ -53,6 +53,11 @@ namespace wg
 
 		Size	preferredSize() const override;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -69,6 +74,7 @@ namespace wg
 		Surface_p		m_pSurface;
 		RectI			m_block;
 		BorderI			m_frame;
+		BlendMode		m_blendMode = BlendMode::Blend;
 	};
 
 

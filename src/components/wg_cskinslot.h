@@ -49,7 +49,7 @@ namespace wg
 		};
 
 		CSkinSlot(Holder* pHolder) : GeoComponent(pHolder) {}
-		~CSkinSlot() { if (m_pSkin) m_pSkin->_decUseCount(); }
+		~CSkinSlot() { if (m_pSkin) m_pSkin->_decUseCount(); if (m_pPocket) SkinSlotManager::freePocket(m_pPocket); }
 
 		//.____ Identification _________________________________________________
 

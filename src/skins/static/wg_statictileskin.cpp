@@ -25,6 +25,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -65,12 +66,27 @@ namespace wg
 		return m_pSurface ? Size(m_pSurface->size()) : Size();
 	}
 
+	//____ setBlendMode() _____________________________________________________
+
+	void StaticTileSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		if (mode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (mode == BlendMode::Blend)
+			m_bOpaque = m_pSurface->isOpaque();
+		else
+			m_bOpaque = false;
+	}
+
 	//____ render() ______________________________________________________________
 
 	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
+
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->scaleTile(canvas.px(),MU::scale());

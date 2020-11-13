@@ -352,8 +352,7 @@ namespace wg
 			else
 				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pNewRects);
 
-			if (m_pSkin)
-				m_pSkin->render(m_pGfxDevice, geo, StateEnum::Normal);
+			OO(skin)._render(m_pGfxDevice, geo, StateEnum::Normal);
 
 			OO(slot._widget())->_render( m_pGfxDevice, geo, geo );
 

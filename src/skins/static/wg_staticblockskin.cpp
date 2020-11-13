@@ -25,6 +25,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -69,6 +70,19 @@ namespace wg
 		return sizeForContent(m_block.size());
 	}
 
+	//____ setBlendMode() _____________________________________________________
+
+	void StaticBlockSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		if (mode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (mode == BlendMode::Blend)
+			m_bOpaque = m_pSurface->isOpaque();
+		else
+			m_bOpaque = false;
+	}
+
 	//____ render() ______________________________________________________________
 
 	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, 
@@ -76,6 +90,8 @@ namespace wg
 	{
 		if (!m_pSurface)
 			return;
+
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);

@@ -199,6 +199,7 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_animskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_skin.impl.h" />
     <ClInclude Include="..\..\..\src\skins\wg_stateskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_stdtextmapper.h" />

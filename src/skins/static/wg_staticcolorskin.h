@@ -47,6 +47,11 @@ namespace wg
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -60,6 +65,7 @@ namespace wg
 		~StaticColorSkin() {};
 
 		Color		m_color;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 	};
 

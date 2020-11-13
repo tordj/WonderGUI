@@ -560,6 +560,9 @@
     <ClInclude Include="..\..\..\src\base\wg_canvaslayers.h">
       <Filter>base</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\wg_skin.impl.h">
+      <Filter>skins</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">

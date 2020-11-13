@@ -23,6 +23,7 @@
 #include <wg_staticboxskin.h>
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -110,14 +111,11 @@ namespace wg
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		BlendMode	oldBlendMode = pDevice->blendMode();
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		RectI canvas = _canvas.px();
 
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(m_blendMode);
-
-		if (m_frame.isEmpty() == 0 || m_frameColor == m_fillColor)
+		if (m_frame.isEmpty() || m_frameColor == m_fillColor)
 		{
 			pDevice->fill(canvas, m_fillColor);
 		}
@@ -139,10 +137,6 @@ namespace wg
 			if (center.w > 0 || center.h > 0)
 				pDevice->fill(center, m_fillColor);
 		}
-
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(oldBlendMode);
-
 	}
 
 

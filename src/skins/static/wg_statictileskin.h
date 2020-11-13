@@ -50,6 +50,11 @@ namespace wg
 
 		Size	preferredSize() const override;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -64,6 +69,7 @@ namespace wg
 		~StaticTileSkin() {};
 
 		Surface_p		m_pSurface;
+		BlendMode		m_blendMode = BlendMode::Blend;
 	};
 
 

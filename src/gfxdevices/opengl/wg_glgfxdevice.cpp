@@ -599,6 +599,13 @@ namespace wg
 	{
 		Surface* pRenderSurface;
 
+		bool bClear = false;
+		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
+		{
+			m_layerSurfaces[m_renderLayer - 1] = GlSurface::create(m_canvasSize, m_pLayerDef->layerFormat(m_renderLayer - 1), SurfaceFlag::Canvas);
+			bClear = true;
+		}
+
 		if (!m_pCanvas && m_renderLayer == 0)
 		{
 			m_canvasYstart = m_canvasSize.h;
@@ -611,6 +618,8 @@ namespace wg
 			m_canvasYmul = 1;
 
 			pRenderSurface = (m_renderLayer == 0) ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+
+			bool	bClear = false;
 		}
 
 		_endCommand();
@@ -618,6 +627,9 @@ namespace wg
 		m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
 		m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
 		m_surfaceBuffer[m_surfaceOfs++] = (GlSurface*) pRenderSurface;
+
+		if (bClear)
+			_clearRenderLayer();
 	}
 
 	//____ _clipListWasChanged() ______________________________________________
