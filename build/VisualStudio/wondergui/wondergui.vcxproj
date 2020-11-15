@@ -198,6 +198,7 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticblockskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\static\wg_staticgradientskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_animskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.impl.h" />
@@ -343,6 +344,7 @@
     <ClCompile Include="..\..\..\src\skins\static\wg_staticblockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticcolorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\static\wg_staticgradientskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_animskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_stateskin.cpp" />

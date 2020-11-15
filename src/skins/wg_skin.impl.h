@@ -30,7 +30,7 @@ namespace wg
 
 	//____ RenderSettings _____________________________________________________
 	/*
-	* Simple class for quickly and easily set blend mode and tint color for
+	* Simple class for quickly and easily set layer, blend mode and tint color for
 	* rendering and then revert back automatically when deleted.
 	*/
 
@@ -78,6 +78,70 @@ namespace wg
 		Color		m_prevTintColor;
 		bool		m_bTintChanged = false;
 	};
+
+	//____ RenderSettingsWithGradient _____________________________________________________
+	/*
+	* Simple class for quickly and easily set layer, blend mode and tint color/gradient for
+	* rendering and then revert back automatically when deleted.
+	*/
+
+	class RenderSettingsWithGradient
+	{
+	public:
+		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, Color tintColor, const Rect& rect, const Gradient& tintGradient, bool bGradient )
+		{
+			m_pDevice = pDevice;
+
+			if (layer != -1 && pDevice->renderLayer() != layer)
+			{
+				m_prevLayer = pDevice->renderLayer();
+				pDevice->setRenderLayer(layer);
+			}
+
+			if (blendMode != BlendMode::Undefined)
+			{
+				m_prevBlendMode = pDevice->blendMode();
+				pDevice->setBlendMode(blendMode);
+			}
+
+			if (bGradient)
+			{
+				pDevice->setTintGradient(rect, tintGradient);
+				m_bGradient = true;
+				m_bTintChanged = true;
+			}
+			else if (tintColor != Color::White)
+			{
+				m_prevTintColor = pDevice->tintColor();
+				pDevice->setTintColor(tintColor);
+				m_bTintChanged = true;
+			}
+
+		}
+
+		~RenderSettingsWithGradient()
+		{
+			if (m_prevLayer != -1)
+				m_pDevice->setRenderLayer(m_prevLayer);
+			if (m_prevBlendMode != BlendMode::Undefined)
+				m_pDevice->setBlendMode(m_prevBlendMode);
+			if (m_bTintChanged)
+			{
+				if (m_bGradient)
+					m_pDevice->clearTintGradient();
+				else
+					m_pDevice->setTintColor(m_prevTintColor);
+			}
+		}
+
+		GfxDevice* m_pDevice;
+		int			m_prevLayer = -1;
+		BlendMode	m_prevBlendMode = BlendMode::Undefined;
+		Color		m_prevTintColor;
+		bool		m_bTintChanged = false;
+		bool		m_bGradient = false;
+	};
+
 
 }
 #endif WG_SKINIMPL_DOT_H

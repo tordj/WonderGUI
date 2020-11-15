@@ -19,48 +19,38 @@
   should contact Tord Jansson [tord.jansson@gmail.com] for details.
 
 =========================================================================*/
-#ifndef WG_STATICTILESKIN_DOT_H
-#define WG_STATICTILESKIN_DOT_H
+#ifndef WG_STATICGRADIENTSKIN_DOT_H
+#define WG_STATICGRADIENTSKIN_DOT_H
 #pragma once
 
 #include <wg_skin.h>
-#include <wg_surface.h>
 #include <wg_gradient.h>
 
 namespace wg
 {
-	class StaticTileSkin;
 
-	typedef	StrongPtr<StaticTileSkin>	StaticTileSkin_p;
-	typedef	WeakPtr<StaticTileSkin>	StaticTileSkin_wp;
+	class StaticGradientSkin;
+
+	typedef	StrongPtr<StaticGradientSkin>	StaticGradientSkin_p;
+	typedef	WeakPtr<StaticGradientSkin>	StaticGradientSkin_wp;
 
 
-	class StaticTileSkin : public Skin
+	class StaticGradientSkin : public Skin
 	{
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticTileSkin_p create(Surface* pSurface);
+		static StaticGradientSkin_p create( const Gradient& gradient );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry _________________________________________________
-
-		Size	preferredSize() const override;
-
 		//.____ Appearance _________________________________________________
 
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
-
-		void		setTint(HiColor tintColor);
-		void		setTint(const Gradient& gradient);
-
-		HiColor		tintColor() const { return m_tintColor; }
-		Gradient	tintGradient() const { return m_tintGradient; }
 
 		//.____ Misc ____________________________________________________
 
@@ -68,22 +58,17 @@ namespace wg
 								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float value = 1.f, float value2 = -1.f, int animPos = 0, 
-							float* pStateFractions = nullptr) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticTileSkin(Surface* pSurface);
-		~StaticTileSkin() {};
+		StaticGradientSkin( const Gradient& gradient );
+		~StaticGradientSkin() {};
 
-		void		_updateOpacityFlag();
+		Gradient	m_gradient;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
-		Surface_p		m_pSurface;
-		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_tintColor = Color::White;
-		Gradient		m_tintGradient;
-		bool			m_bGradient = false;
 	};
 
 
 } // namespace wg
-#endif //WG_STATICTILESKIN_DOT_H
+#endif //WG_STATICGRADIENTSKIN_DOT_H

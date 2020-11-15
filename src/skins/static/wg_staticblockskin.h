@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 #include <wg_surface.h>
 
 namespace wg
@@ -58,6 +59,13 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
+		void		setTint(HiColor tintColor);
+		void		setTint(const Gradient& gradient);
+
+		HiColor		tintColor() const { return m_tintColor; }
+		Gradient	tintGradient() const { return m_tintGradient; }
+
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -71,10 +79,15 @@ namespace wg
 		StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame = { 0 });
 		~StaticBlockSkin() {};
 
+		void _updateOpacityFlag();
+
 		Surface_p		m_pSurface;
 		RectI			m_block;
 		BorderI			m_frame;
 		BlendMode		m_blendMode = BlendMode::Blend;
+		HiColor			m_tintColor = Color::White;
+		Gradient		m_tintGradient;
+		bool			m_bGradient = false;
 	};
 
 

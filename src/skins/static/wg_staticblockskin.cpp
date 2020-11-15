@@ -75,12 +75,23 @@ namespace wg
 	void StaticBlockSkin::setBlendMode(BlendMode mode)
 	{
 		m_blendMode = mode;
-		if (mode == BlendMode::Replace)
-			m_bOpaque = true;
-		else if (mode == BlendMode::Blend)
-			m_bOpaque = m_pSurface->isOpaque();
-		else
-			m_bOpaque = false;
+		_updateOpacityFlag();
+	}
+
+	//____ setTint() __________________________________________________________
+
+	void StaticBlockSkin::setTint(HiColor tintColor)
+	{
+		m_tintColor = tintColor;
+		m_bGradient = false;
+		_updateOpacityFlag();
+	}
+
+	void StaticBlockSkin::setTint(const Gradient& gradient)
+	{
+		m_tintGradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
 	}
 
 	//____ render() ______________________________________________________________
@@ -91,7 +102,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		RenderSettings settings(pDevice, m_layer, m_blendMode);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_tintGradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);
@@ -102,6 +113,24 @@ namespace wg
 	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void StaticBlockSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_tintGradient.isOpaque()) ||
+				(!m_bGradient && m_tintColor.a != 4096))
+				m_bOpaque = false;
+			else
+				m_bOpaque = m_pSurface->isOpaque();
+		}
+		else
+			m_bOpaque = false;
 	}
 
 
