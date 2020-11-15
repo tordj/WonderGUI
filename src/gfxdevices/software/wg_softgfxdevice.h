@@ -68,9 +68,9 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		void		setTintColor(Color color) override;
+		void		setTintColor(HiColor color) override;
 
-		void		setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void		setTintGradient(const RectI& rect, const Gradient& gradient) override;
 		void		clearTintGradient() override;
 
 		bool		setBlendMode(BlendMode blendMode) override;
@@ -131,11 +131,11 @@ namespace wg
 		{
 			TintMode mode;
 
-			int16_t	flatTintColor[4];	// Used in TintMode::Color. RGBA-order.
+			HiColor	flatTintColor;	// Used in TintMode::Color
 
 			// Following used in TintMode GradientX, GradientY and GradientXY.
 
-			RectI		tintRect;
+			RectI	tintRect;
 
 			int32_t	topLeftR;		// Scale: 0 -> (1<<18)
 			int32_t	topLeftG;

@@ -183,20 +183,17 @@ namespace wg
 
 	//____ setTintColor() __________________________________________________________
 
-	void GfxDevice::setTintColor( Color color )
+	void GfxDevice::setTintColor( HiColor color )
 	{
 		m_tintColor = color;
 	}
 
 	//____ setTintGradient() __________________________________________________
 
-	void GfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	void GfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		m_tintGradientRect = rect;
-		m_tintGradient[0] = topLeft;
-		m_tintGradient[1] = topRight;
-		m_tintGradient[2] = bottomRight;
-		m_tintGradient[3] = bottomLeft;
+		m_tintGradient = gradient;
 		m_bTintGradient = true;
 	}
 
@@ -277,7 +274,7 @@ namespace wg
 			_clipListWasChanged();
 
 			BlendMode	savedBlendMode = m_blendMode;
-			Color		savedTintColor = m_tintColor;
+			HiColor		savedTintColor = m_tintColor;
 			setBlendMode(BlendMode::Replace);
 			setTintColor(Color::White);
 			clearTintGradient();
@@ -419,10 +416,7 @@ namespace wg
 		back.clipRects.clipBounds = m_clipBounds;
 		back.renderLayer = m_renderLayer;
 		back.tintColor = m_tintColor;
-		back.tintGradient[0] = m_tintGradient[0];
-		back.tintGradient[1] = m_tintGradient[1];
-		back.tintGradient[2] = m_tintGradient[2];
-		back.tintGradient[3] = m_tintGradient[3];
+		back.tintGradient = m_tintGradient;
 		back.tintGradientRect = m_tintGradientRect;
 		back.bTintGradient = m_bTintGradient;
 		back.blendMode = m_blendMode;
@@ -451,10 +445,7 @@ namespace wg
 
 		m_renderLayer = layer;
 		m_tintColor = Color::White;
-		m_tintGradient[0] = Color::White;
-		m_tintGradient[1] = Color::White;
-		m_tintGradient[2] = Color::White;
-		m_tintGradient[3] = Color::White;
+		m_tintGradient.clear();
 		m_tintGradientRect = sz;
 		m_bTintGradient = false;
 		m_blendMode = BlendMode::Blend;
@@ -517,10 +508,7 @@ namespace wg
 		m_clipBounds = back.clipRects.clipBounds;
 		m_renderLayer = back.renderLayer;
 		m_tintColor = back.tintColor;
-		m_tintGradient[0] = back.tintGradient[0];
-		m_tintGradient[1] = back.tintGradient[1];
-		m_tintGradient[2] = back.tintGradient[2];
-		m_tintGradient[3] = back.tintGradient[3];
+		m_tintGradient = back.tintGradient;
 		m_tintGradientRect = back.tintGradientRect;
 		m_bTintGradient = back.bTintGradient;
 		m_blendMode = back.blendMode;

@@ -33,6 +33,8 @@ namespace wg
 	{
 	public:
 
+		Gradient() {}
+
 		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
 			topLeft(topLeft),
 			topRight(topRight),
@@ -40,6 +42,8 @@ namespace wg
 			bottomLeft(bottomLeft) {}
 
 		Gradient(Origo start, HiColor startColor, HiColor endColor);
+
+		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = Color::White; }
 
 		HiColor		topLeft;
 		HiColor		topRight;

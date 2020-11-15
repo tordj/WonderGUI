@@ -641,7 +641,7 @@ namespace wg
 
 	//____ setTintColor() __________________________________________________________________
 
-	void GlGfxDevice::setTintColor(Color color)
+	void GlGfxDevice::setTintColor(HiColor color)
 	{
 		if (!m_bRendering)
 		{
@@ -652,13 +652,15 @@ namespace wg
 		GfxDevice::setTintColor(color);
 
 		_endCommand();
-		_beginStateCommand(Command::SetTintColor, 1);
-		m_commandBuffer[m_commandOfs++] = color.argb;
+		_beginStateCommand(Command::SetTintColor, 2);
+		
+		* (HiColor*)(&m_commandBuffer[m_commandOfs]) = color;
+		m_commandOfs += 2;
 	}
 
 	//____ setTintGradient() __________________________________________________________________
 
-	void GlGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	void GlGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		if (!m_bRendering)
 		{
@@ -666,19 +668,18 @@ namespace wg
 			return;
 		}
 
-		GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+		GfxDevice::setTintGradient(rect, gradient);
 
 		_endCommand();
-		_beginStateCommand(Command::SetTintGradient, 8);
+		_beginStateCommand(Command::SetTintGradient, 12);
 		m_commandBuffer[m_commandOfs++] = rect.x;
 		m_commandBuffer[m_commandOfs++] = rect.y;
 		m_commandBuffer[m_commandOfs++] = rect.w;
 		m_commandBuffer[m_commandOfs++] = rect.h;
-		m_commandBuffer[m_commandOfs++] = topLeft.argb;
-		m_commandBuffer[m_commandOfs++] = topRight.argb;
-		m_commandBuffer[m_commandOfs++] = bottomRight.argb;
-		m_commandBuffer[m_commandOfs++] = bottomLeft.argb;
 
+		const int* pSrc = (int*) &gradient;
+		for (int i = 0; i < sizeof(Gradient) / 4; i++)
+			m_commandBuffer[m_commandOfs++] = * pSrc++;
 	}
 
 	//____ clearTintGradient() __________________________________________________________________
@@ -2065,17 +2066,18 @@ namespace wg
 				}
 				case Command::SetTintColor:
 				{
-					_setTintColor(*(Color*)(pCmd++));
+					_setTintColor(*(HiColor*)(pCmd));
+					pCmd += 2;
 					break;
 				}
 				case Command::SetTintGradient:
 				{
 					RectI& rect = *(RectI*)pCmd;
 					pCmd += 4;
-					Color* pColors = (Color*)pCmd;
-					pCmd += 4;
+					Gradient* pGradient = (Gradient*)pCmd;
+					pCmd += 8;
 
-					_setTintGradient(rect, pColors);
+					_setTintGradient(rect, * pGradient);
 					break;
 				}
 				case Command::ClearTintGradient:
@@ -2480,14 +2482,12 @@ namespace wg
 
 	//____ _setTintColor() ____________________________________________________
 
-	void GlGfxDevice::_setTintColor(Color color)
+	void GlGfxDevice::_setTintColor(HiColor color)
 	{
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		m_canvasUBOBuffer.flatTint[0] = pConv[color.r];
-		m_canvasUBOBuffer.flatTint[1] = pConv[color.g];
-		m_canvasUBOBuffer.flatTint[2] = pConv[color.b];
-		m_canvasUBOBuffer.flatTint[3] = m_linearToLinearTable[color.a];
+		m_canvasUBOBuffer.flatTint[0] = color.r / 4096.f;
+		m_canvasUBOBuffer.flatTint[1] = color.g / 4096.f;
+		m_canvasUBOBuffer.flatTint[2] = color.b / 4096.f;
+		m_canvasUBOBuffer.flatTint[3] = color.a / 4096.f;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16, 4 * 4, &m_canvasUBOBuffer.flatTint);
@@ -2496,33 +2496,31 @@ namespace wg
 
 	//____ _setTintGradient() _________________________________________________
 
-	void GlGfxDevice::_setTintGradient(const RectI& rect, const Color colors[4])
+	void GlGfxDevice::_setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		m_bGradientActive = true;
 
 		m_canvasUBOBuffer.tintRect = rect;
 
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+		m_canvasUBOBuffer.topLeftTint[0] = gradient.topLeft.r / 4096.f;
+		m_canvasUBOBuffer.topLeftTint[1] = gradient.topLeft.g / 4096.f;
+		m_canvasUBOBuffer.topLeftTint[2] = gradient.topLeft.b / 4096.f;
+		m_canvasUBOBuffer.topLeftTint[3] = gradient.topLeft.a / 4096.f;
 
-		m_canvasUBOBuffer.topLeftTint[0] = pConv[colors[0].r];
-		m_canvasUBOBuffer.topLeftTint[1] = pConv[colors[0].g];
-		m_canvasUBOBuffer.topLeftTint[2] = pConv[colors[0].b];
-		m_canvasUBOBuffer.topLeftTint[3] = m_linearToLinearTable[colors[0].a];
+		m_canvasUBOBuffer.topRightTint[0] = gradient.topRight.r / 4096.f;
+		m_canvasUBOBuffer.topRightTint[1] = gradient.topRight.g / 4096.f;
+		m_canvasUBOBuffer.topRightTint[2] = gradient.topRight.b / 4096.f;
+		m_canvasUBOBuffer.topRightTint[3] = gradient.topRight.a / 4096.f;
 
-		m_canvasUBOBuffer.topRightTint[0] = pConv[colors[1].r];
-		m_canvasUBOBuffer.topRightTint[1] = pConv[colors[1].g];
-		m_canvasUBOBuffer.topRightTint[2] = pConv[colors[1].b];
-		m_canvasUBOBuffer.topRightTint[3] = m_linearToLinearTable[colors[1].a];
+		m_canvasUBOBuffer.bottomRightTint[0] = gradient.bottomRight.r / 4096.f;
+		m_canvasUBOBuffer.bottomRightTint[1] = gradient.bottomRight.g / 4096.f;
+		m_canvasUBOBuffer.bottomRightTint[2] = gradient.bottomRight.b / 4096.f;
+		m_canvasUBOBuffer.bottomRightTint[3] = gradient.bottomRight.a / 4096.f;
 
-		m_canvasUBOBuffer.bottomRightTint[0] = pConv[colors[2].r];
-		m_canvasUBOBuffer.bottomRightTint[1] = pConv[colors[2].g];
-		m_canvasUBOBuffer.bottomRightTint[2] = pConv[colors[2].b];
-		m_canvasUBOBuffer.bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
-
-		m_canvasUBOBuffer.bottomLeftTint[0] = pConv[colors[3].r];
-		m_canvasUBOBuffer.bottomLeftTint[1] = pConv[colors[3].g];
-		m_canvasUBOBuffer.bottomLeftTint[2] = pConv[colors[3].b];
-		m_canvasUBOBuffer.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
+		m_canvasUBOBuffer.bottomLeftTint[0] = gradient.bottomLeft.r / 4096.f;
+		m_canvasUBOBuffer.bottomLeftTint[1] = gradient.bottomLeft.g / 4096.f;
+		m_canvasUBOBuffer.bottomLeftTint[2] = gradient.bottomLeft.b / 4096.f;
+		m_canvasUBOBuffer.bottomLeftTint[3] = gradient.bottomLeft.a / 4096.f;
 
 		glBindBuffer(GL_UNIFORM_BUFFER, m_canvasUBOId);
 		glBufferSubData(GL_UNIFORM_BUFFER, 16+16, 20 * 4 /*sizeof(canvasUBO)*/, &m_canvasUBOBuffer.tintRect);

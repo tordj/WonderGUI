@@ -783,10 +783,10 @@ namespace wg
 
 */
 
-			outR = (inR * tint.flatTintColor[0]) >> 12;
-			outG = (inG * tint.flatTintColor[1]) >> 12;
-			outB = (inB * tint.flatTintColor[2]) >> 12;
-			outA = (inA * tint.flatTintColor[3]) >> 12;
+			outR = (inR * tint.flatTintColor.r) >> 12;
+			outG = (inG * tint.flatTintColor.g) >> 12;
+			outB = (inB * tint.flatTintColor.b) >> 12;
+			outA = (inA * tint.flatTintColor.a) >> 12;
 		}
 		
 		if( tintMode == TintMode::None)
@@ -961,10 +961,10 @@ namespace wg
 
 		if (tintMode == TintMode::Flat)
 		{
-			tintR = tint.flatTintColor[0] << 6;
-			tintG = tint.flatTintColor[1] << 6;
-			tintB = tint.flatTintColor[2] << 6;
-			tintA = tint.flatTintColor[3] << 6;
+			tintR = tint.flatTintColor.r << 6;
+			tintG = tint.flatTintColor.g << 6;
+			tintB = tint.flatTintColor.b << 6;
+			tintA = tint.flatTintColor.a << 6;
 		}
 
 		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
@@ -1137,10 +1137,10 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		// Step 2: Get color components of background pixel blending into backX
@@ -1182,10 +1182,10 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			tintR = tint.flatTintColor[0];
-			tintG = tint.flatTintColor[1];
-			tintB = tint.flatTintColor[2];
-			tintA = tint.flatTintColor[3];
+			tintR = tint.flatTintColor.r;
+			tintG = tint.flatTintColor.g;
+			tintB = tint.flatTintColor.b;
+			tintA = tint.flatTintColor.a;
 		}
 
 		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
@@ -1294,10 +1294,10 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -1452,10 +1452,10 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -2511,7 +2511,7 @@ namespace wg
 
 	//____ setTintColor() _____________________________________________________
 
-	void SoftGfxDevice::setTintColor(Color color)
+	void SoftGfxDevice::setTintColor(HiColor color)
 	{
 		if (color == m_tintColor)
 			return;
@@ -2546,9 +2546,9 @@ namespace wg
 
 	//____ setTintGradient() __________________________________________________
 
-	void SoftGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	void SoftGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
-		GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+		GfxDevice::setTintGradient(rect, gradient);
 		m_colTrans.tintRect = rect;
 		_updateTintSettings();
 	}
@@ -2572,11 +2572,8 @@ namespace wg
 		if (!m_bTintGradient)
 		{
 			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
-			m_colTrans.flatTintColor[0] = pUnpackTab[m_tintColor.r];
-			m_colTrans.flatTintColor[1] = pUnpackTab[m_tintColor.g];
-			m_colTrans.flatTintColor[2] = pUnpackTab[m_tintColor.b];
-			m_colTrans.flatTintColor[3] = HiColor::unpackLinearTab[m_tintColor.a] ;
-			m_bTintOpaque = (m_tintColor.a == 255);
+			m_colTrans.flatTintColor = m_tintColor;
+			m_bTintOpaque = (m_tintColor.a == 4096);
 		}
 		else
 		{
@@ -2585,19 +2582,21 @@ namespace wg
 			int diffMaskX = 0, diffMaskY = 0;
 
 
-			uint32_t	flatTintColorR = pUnpackTab[m_tintColor.r];
-			uint32_t	flatTintColorG = pUnpackTab[m_tintColor.g];
-			uint32_t	flatTintColorB = pUnpackTab[m_tintColor.b];
-			uint32_t	flatTintColorA = HiColor::unpackLinearTab[m_tintColor.a];
+			uint32_t	flatTintColorR = m_tintColor.r;
+			uint32_t	flatTintColorG = m_tintColor.g;
+			uint32_t	flatTintColorB = m_tintColor.b;
+			uint32_t	flatTintColorA = m_tintColor.a;
 
 			uint32_t	r[4], g[4], b[4], a[4];							// Scale: 0 -> (1 << 18)
 
+			HiColor* pCol = &m_tintGradient.topLeft;
 			for (int i = 0; i < 4; i++)
 			{
-				r[i] = (pUnpackTab[m_tintGradient[i].r] * flatTintColorR) >> 6;
-				g[i] = (pUnpackTab[m_tintGradient[i].g] * flatTintColorG) >> 6;
-				b[i] = (pUnpackTab[m_tintGradient[i].b] * flatTintColorB) >> 6;
-				a[i] = (HiColor::unpackLinearTab[m_tintGradient[i].a] * flatTintColorA) >> 6;
+				r[i] = (pCol->r * flatTintColorR) >> 6;
+				g[i] = (pCol->g * flatTintColorG) >> 6;
+				b[i] = (pCol->b * flatTintColorB) >> 6;
+				a[i] = (pCol->a * flatTintColorA) >> 6;
+				pCol++;
 			}
 
 			m_colTrans.topLeftR = r[0];
@@ -2620,21 +2619,21 @@ namespace wg
 			m_colTrans.rightIncB = int(b[2] - b[1]) / m_tintGradientRect.h;
 			m_colTrans.rightIncA = int(a[2] - a[1]) / m_tintGradientRect.h;
 
-			diffMaskX |= (m_tintGradient[0].argb - m_tintGradient[1].argb) | (m_tintGradient[2].argb - m_tintGradient[3].argb);
-			diffMaskY |= (m_tintGradient[0].argb - m_tintGradient[3].argb) | (m_tintGradient[1].argb - m_tintGradient[2].argb);
+			diffMaskX |= (m_tintGradient.topLeft.argb - m_tintGradient.topRight.argb) | (m_tintGradient.bottomRight.argb - m_tintGradient.bottomLeft.argb);
+			diffMaskY |= (m_tintGradient.topLeft.argb - m_tintGradient.bottomLeft.argb) | (m_tintGradient.topRight.argb - m_tintGradient.bottomRight.argb);
 
 			// Calculate tintMode
 
 			if( (diffMaskX | diffMaskY) == 0 )
 			{
-				if (m_tintGradient[0] == Color::White)
+				if (m_tintGradient.topLeft == Color::White)
 					tintMode = TintMode::None;
 				else
 				{
-					m_colTrans.flatTintColor[0] = r[0] >> 6;
-					m_colTrans.flatTintColor[1] = g[0] >> 6;
-					m_colTrans.flatTintColor[2] = b[0] >> 6;
-					m_colTrans.flatTintColor[3] = a[0] >> 6;
+					m_colTrans.flatTintColor.r = r[0] >> 6;
+					m_colTrans.flatTintColor.g = g[0] >> 6;
+					m_colTrans.flatTintColor.b = b[0] >> 6;
+					m_colTrans.flatTintColor.a = a[0] >> 6;
 					tintMode = TintMode::Flat;
 				}
 			}
@@ -2650,10 +2649,10 @@ namespace wg
 
 			// Update m_bTintOpaque
 
-			int value = int(m_tintColor.a) + int(m_tintGradient[0].a) + int(m_tintGradient[1].a) 
-						+ int(m_tintGradient[2].a) + int(m_tintGradient[3].a);
+			int value = int(m_tintColor.a) + int(m_tintGradient.topLeft.a) + int(m_tintGradient.topRight.a) 
+						+ int(m_tintGradient.bottomRight.a) + int(m_tintGradient.bottomLeft.a);
 
-			m_bTintOpaque = (value == 255*5);
+			m_bTintOpaque = (value == 4096*5);
 		}
 
 		// Update tintMode and blitFunctions.
@@ -3324,10 +3323,10 @@ namespace wg
 
 			for (int i = 0; i < nSegments; i++)
 			{
-				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor[0]) >> 12;
-				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor[1]) >> 12;
-				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor[2]) >> 12;
-				colors[i][3] = (HiColor::unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
+				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor.r) >> 12;
+				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor.g) >> 12;
+				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor.b) >> 12;
+				colors[i][3] = (HiColor::unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor.a) >> 12;
 
 				transparentSegments[i] = (colors[i][3] == 0);
 				opaqueSegments[i] = (colors[i][3] == 4096);
@@ -3763,10 +3762,10 @@ namespace wg
 		}
 		else if (m_colTrans.mode == TintMode::Flat)
 		{
-			int r = m_colTrans.flatTintColor[0];
-			int g = m_colTrans.flatTintColor[1];
-			int b = m_colTrans.flatTintColor[2];
-			int a = m_colTrans.flatTintColor[3];
+			int r = m_colTrans.flatTintColor.r;
+			int g = m_colTrans.flatTintColor.g;
+			int b = m_colTrans.flatTintColor.b;
+			int a = m_colTrans.flatTintColor.a;
 
 			for (int i = 0; i < 4; i++)
 			{

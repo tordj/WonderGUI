@@ -249,7 +249,7 @@ namespace wg
 		inline	HiColor() : argb(0) {};
 		inline	HiColor(const HiColor& hiColor);
 				HiColor(Color lowColor);
-		inline	HiColor(int16_t r, int16_t g, int16_t b, int16_t a = 4096);
+		inline	HiColor(int r, int g, int b, int a = 4096);
 		inline	HiColor(float r, float g, float b, float a = 1.f);
 
 		//.____ Misc ________________________________________________
@@ -372,12 +372,12 @@ namespace wg
 		argb = hiColor.argb;
 	}
 
-	inline HiColor::HiColor(int16_t r, int16_t g, int16_t b, int16_t a)
+	inline HiColor::HiColor(int r, int g, int b, int a)
 	{
-		this->a = a;
-		this->r = r;
-		this->g = g;
-		this->b = b;
+		this->a = (int16_t) a;
+		this->r = (int16_t) r;
+		this->g = (int16_t) g;
+		this->b = (int16_t) b;
 	}
 
 	inline HiColor::HiColor(float r, float g, float b, float a)

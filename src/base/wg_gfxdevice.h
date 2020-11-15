@@ -29,6 +29,7 @@
 #include <wg_pointers.h>
 #include <wg_types.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 
 
 #include <wg_geo.h>
@@ -99,10 +100,10 @@ namespace wg
 		inline int			clipListSize() const { return m_nClipRects; }
 		inline RectI		clipBounds() const { return m_clipBounds; }
 
-		virtual void		setTintColor( Color color );
-		inline const Color&	tintColor() const { return m_tintColor; }
+		virtual void		setTintColor( HiColor color );
+		inline const HiColor&	tintColor() const { return m_tintColor; }
 
-		virtual void		setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft);
+		virtual void		setTintGradient(const RectI& rect, const Gradient& gradient);
 		virtual void		clearTintGradient();
 
 		virtual bool		setBlendMode( BlendMode blendMode );
@@ -244,8 +245,8 @@ namespace wg
 			StashedClipList	clipRects;
 			int				renderLayer;
 			Bitmask<int>	layersInitialized;
-			Color			tintColor;
-			Color			tintGradient[4];
+			HiColor			tintColor;
+			Gradient		tintGradient;
 			RectI			tintGradientRect;
 			bool			bTintGradient;
 			BlendMode		blendMode;
@@ -277,11 +278,11 @@ namespace wg
 		int			m_nClipRects = 0;
 		RectI		m_clipBounds = { 0,0,0,0 };
 
-		Color		m_tintColor = Color::White;			// Current Tint color.
+		HiColor		m_tintColor = Color::White;			// Current Tint color.
 		BlendMode	m_blendMode = BlendMode::Blend;		// Current BlendMode.
 		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
 
-		Color		m_tintGradient[4] = { Color::White, Color::White, Color::White, Color::White };
+		Gradient	m_tintGradient;
 		RectI		m_tintGradientRect = { 0,0,0,0 };
 		bool		m_bTintGradient = false;
 

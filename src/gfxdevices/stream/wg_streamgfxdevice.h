@@ -57,7 +57,7 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		void	setTintColor( Color color ) override;
+		void	setTintColor( HiColor color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
 		bool	setBlitSource(Surface * pSource) override;
 

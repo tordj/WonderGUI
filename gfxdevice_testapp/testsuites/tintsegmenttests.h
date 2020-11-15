@@ -92,7 +92,7 @@ public:
 //		pDevice->setTintColor({ 128,255,255,255 });
 
 //		pDevice->setTintGradient(canvas, { 0,0,0,255 }, { 255,255,255,255 }, { 255,255,255,255 }, { 0,0,0,255 } );
-		pDevice->setTintGradient(canvas, { 255,255,255,255 }, { 0,0,0,255 }, { 0,0,0,255 }, { 255,255,255,255 });
+		pDevice->setTintGradient(canvas, Gradient(Origo::West, Color::White, Color::Black) );
 		return true;
 	}
 
@@ -100,7 +100,7 @@ public:
 	{
 		//		pDevice->setTintColor({ 128,255,255,255 });
 
-		pDevice->setTintGradient(canvas, { 255,255,255,255 }, { 255,255,255,255 }, { 0,0,0,255 }, { 0,0,0,255 });
+		pDevice->setTintGradient(canvas, Gradient(Origo::North, Color::White, Color::Black));
 		return true;
 	}
 
@@ -108,7 +108,7 @@ public:
 	{
 		//		pDevice->setTintColor({ 128,255,255,255 });
 
-		pDevice->setTintGradient(canvas, { 255,255,255,255 }, { 255,0,0,255 }, { 0,0,0,255 }, { 0,255,0,255 });
+		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::White, Color::Black));
 		return true;
 	}
 
@@ -123,7 +123,7 @@ public:
         //        pDevice->setTintColor({ 128,255,255,255 });
 
         m_flip = GfxFlip::Rot90;
-        pDevice->setTintGradient(canvas, { 255,255,255,255 }, { 255,0,0,255 }, { 0,0,0,255 }, { 0,255,0,255 });
+        pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::White, Color::Black));
         return true;
     }
 

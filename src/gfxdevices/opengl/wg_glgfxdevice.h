@@ -70,8 +70,8 @@ namespace wg
 
 		//.____ State _________________________________________________
 
-		void	setTintColor(Color color) override;
-		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void	setTintColor(HiColor color) override;
+		void	setTintGradient(const RectI& rect, const Gradient& gradient) override;
 		void	clearTintGradient() override;
 
 		bool	setBlendMode(BlendMode blendMode) override;
@@ -136,8 +136,8 @@ namespace wg
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
 				void	_setBlitSource(GlSurface * pSurf);
-				void	_setTintColor(Color color);
-				void	_setTintGradient(const RectI& rect, const Color colors[4]);
+				void	_setTintColor(HiColor color);
+				void	_setTintGradient(const RectI& rect, const Gradient& gradient);
 				void	_clearTintGradient();
 
 				inline void	_beginDrawCommand(Command cmd);

@@ -85,7 +85,7 @@ namespace wg
 
 	//____ setTintColor() __________________________________________________________
 
-	void StreamGfxDevice::setTintColor( Color color )
+	void StreamGfxDevice::setTintColor( HiColor color )
 	{
 		GfxDevice::setTintColor(color);
 

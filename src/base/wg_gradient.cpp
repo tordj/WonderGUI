@@ -38,7 +38,7 @@ namespace wg
 		case Origo::NorthWest:
 			topLeft = startColor;
 			bottomRight = endColor;
-			topRight = bottomLeft = HiColor::mix(startColor, endColor, 128);
+			topRight = bottomLeft = HiColor::mix(startColor, endColor, 2048);
 			break;
 
 		case Origo::North:
@@ -49,7 +49,7 @@ namespace wg
 		case Origo::NorthEast:
 			topRight = startColor;
 			bottomLeft = endColor;
-			topLeft = bottomRight = HiColor::mix(startColor, endColor, 128);
+			topLeft = bottomRight = HiColor::mix(startColor, endColor, 2048);
 			break;
 
 		case Origo::East:
@@ -60,7 +60,7 @@ namespace wg
 		case Origo::SouthEast:
 			bottomRight = startColor;
 			topLeft = endColor;
-			bottomLeft = topRight = HiColor::mix(startColor, endColor, 128);
+			bottomLeft = topRight = HiColor::mix(startColor, endColor, 2048);
 			break;
 
 		case Origo::South:
@@ -71,7 +71,7 @@ namespace wg
 		case Origo::SouthWest:
 			bottomLeft = startColor;
 			topRight = endColor;
-			bottomRight = topLeft = HiColor::mix(startColor, endColor, 128);
+			bottomRight = topLeft = HiColor::mix(startColor, endColor, 2048);
 			break;
 
 		case Origo::West:
