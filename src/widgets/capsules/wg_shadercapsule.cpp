@@ -103,7 +103,7 @@ namespace wg
 		oldTC = pDevice->tintColor();
 
 		pDevice->setBlendMode(m_renderMode);
-		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );
+		pDevice->setTintColor( HiColor::blend(oldTC, m_tintColor, m_tintMode) );
 
 		// Render children recursively
 

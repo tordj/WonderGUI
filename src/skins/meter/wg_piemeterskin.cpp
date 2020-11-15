@@ -288,7 +288,7 @@ namespace wg
 		float sliceSizes[c_maxSlices];
 		Color sliceColors[c_maxSlices];
 
-		Color hubColor = m_hubColor.a == 255 ? m_hubColor : Color::blend(m_backColor, m_hubColor, BlendMode::Blend);
+		HiColor hubColor = m_hubColor.a == 255 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
 
 		float totalLength = m_minRange + value * (m_maxRange - m_minRange);
 
@@ -303,7 +303,7 @@ namespace wg
 
 			for (int i = 0; i < m_nSlices; i++)
 			{
-				sliceColors[i] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(value*255));
+				sliceColors[i] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
 
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size >= totalLength)
@@ -329,7 +329,7 @@ namespace wg
 				if (length + size > gapSize )
 				{
 					sliceSizes[nSlices] = length < gapSize ? length + size - gapSize : size;
-					sliceColors[nSlices] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(value * 255));
+					sliceColors[nSlices] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value * 4096));
 					nSlices++;
 				}
 				length += size;

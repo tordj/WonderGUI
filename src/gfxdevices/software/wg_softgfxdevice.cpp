@@ -41,12 +41,6 @@ namespace wg
 
 	int SoftGfxDevice::s_mulTab[256];
 
-	int16_t		SoftGfxDevice::s_unpackSRGBTab[256];
-	int16_t		SoftGfxDevice::s_unpackLinearTab[256];
-
-	uint8_t		SoftGfxDevice::s_packSRGBTab[4097];
-	uint8_t		SoftGfxDevice::s_packLinearTab[4097];
-
 	int16_t		SoftGfxDevice::s_limit4096Tab[4097 * 3];
 
 	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
@@ -228,10 +222,10 @@ namespace wg
 		{
 			const int16_t* p = (const int16_t*)pPixel;
 
-			outB = s_packLinearTab[p[0]];
-			outG = s_packLinearTab[p[1]];
-			outR = s_packLinearTab[p[2]];
-			outA = s_packLinearTab[p[3]];
+			outB = HiColor::packLinearTab[p[0]];
+			outG = HiColor::packLinearTab[p[1]];
+			outR = HiColor::packLinearTab[p[2]];
+			outA = HiColor::packLinearTab[p[3]];
 		}
 
 		if (format == PixelFormat::BGRA_8_linear || format == PixelFormat::BGRA_8_sRGB)
@@ -305,33 +299,33 @@ namespace wg
 
 		if (format == PixelFormat::BGRA_8_linear)
 		{
-			outB = s_unpackLinearTab[pPixel[0]];
-			outG = s_unpackLinearTab[pPixel[1]];
-			outR = s_unpackLinearTab[pPixel[2]];
-			outA = s_unpackLinearTab[pPixel[3]];
+			outB = HiColor::unpackLinearTab[pPixel[0]];
+			outG = HiColor::unpackLinearTab[pPixel[1]];
+			outR = HiColor::unpackLinearTab[pPixel[2]];
+			outA = HiColor::unpackLinearTab[pPixel[3]];
 		}
 
 		if (format == PixelFormat::BGRA_8_sRGB)
 		{
-			outB = s_unpackSRGBTab[pPixel[0]];
-			outG = s_unpackSRGBTab[pPixel[1]];
-			outR = s_unpackSRGBTab[pPixel[2]];
-			outA = s_unpackLinearTab[pPixel[3]];
+			outB = HiColor::unpackSRGBTab[pPixel[0]];
+			outG = HiColor::unpackSRGBTab[pPixel[1]];
+			outR = HiColor::unpackSRGBTab[pPixel[2]];
+			outA = HiColor::unpackLinearTab[pPixel[3]];
 		}
 
 		if (format == PixelFormat::BGR_8_linear)
 		{
-			outB = s_unpackLinearTab[pPixel[0]];
-			outG = s_unpackLinearTab[pPixel[1]];
-			outR = s_unpackLinearTab[pPixel[2]];
+			outB = HiColor::unpackLinearTab[pPixel[0]];
+			outG = HiColor::unpackLinearTab[pPixel[1]];
+			outR = HiColor::unpackLinearTab[pPixel[2]];
 			outA = 4096;
 		}
 
 		if (format == PixelFormat::BGR_8_sRGB)
 		{
-			outB = s_unpackSRGBTab[pPixel[0]];
-			outG = s_unpackSRGBTab[pPixel[1]];
-			outR = s_unpackSRGBTab[pPixel[2]];
+			outB = HiColor::unpackSRGBTab[pPixel[0]];
+			outG = HiColor::unpackSRGBTab[pPixel[1]];
+			outR = HiColor::unpackSRGBTab[pPixel[2]];
 			outA = 4096;
 		}
 
@@ -361,7 +355,7 @@ namespace wg
 			outB = 4096;
 			outG = 4096;
 			outR = 4096;
-			outA = s_unpackLinearTab[*pPixel];
+			outA = HiColor::unpackLinearTab[*pPixel];
 		}
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
@@ -382,10 +376,10 @@ namespace wg
 		{
 			int16_t* p = (int16_t*)pPixel;
 
-			p[0] = s_unpackLinearTab[b];
-			p[1] = s_unpackLinearTab[g];
-			p[2] = s_unpackLinearTab[r];
-			p[3] = s_unpackLinearTab[a];
+			p[0] = HiColor::unpackLinearTab[b];
+			p[1] = HiColor::unpackLinearTab[g];
+			p[2] = HiColor::unpackLinearTab[r];
+			p[3] = HiColor::unpackLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGRA_8_linear || format == PixelFormat::BGRA_8_sRGB)
@@ -440,50 +434,50 @@ namespace wg
 
 		if (format == PixelFormat::BGRA_8_linear)
 		{
-			pPixel[0] = s_packLinearTab[b];
-			pPixel[1] = s_packLinearTab[g];
-			pPixel[2] = s_packLinearTab[r];
-			pPixel[3] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packLinearTab[b];
+			pPixel[1] = HiColor::packLinearTab[g];
+			pPixel[2] = HiColor::packLinearTab[r];
+			pPixel[3] = HiColor::packLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGRA_8_sRGB)
 		{
-			pPixel[0] = s_packSRGBTab[b];
-			pPixel[1] = s_packSRGBTab[g];
-			pPixel[2] = s_packSRGBTab[r];
-			pPixel[3] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packSRGBTab[b];
+			pPixel[1] = HiColor::packSRGBTab[g];
+			pPixel[2] = HiColor::packSRGBTab[r];
+			pPixel[3] = HiColor::packLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGR_8_linear)
 		{
-			pPixel[0] = s_packLinearTab[b];
-			pPixel[1] = s_packLinearTab[g];
-			pPixel[2] = s_packLinearTab[r];
+			pPixel[0] = HiColor::packLinearTab[b];
+			pPixel[1] = HiColor::packLinearTab[g];
+			pPixel[2] = HiColor::packLinearTab[r];
 		}
 
 		if (format == PixelFormat::BGR_8_sRGB)
 		{
-			pPixel[0] = s_packSRGBTab[b];
-			pPixel[1] = s_packSRGBTab[g];
-			pPixel[2] = s_packSRGBTab[r];
+			pPixel[0] = HiColor::packSRGBTab[b];
+			pPixel[1] = HiColor::packSRGBTab[g];
+			pPixel[2] = HiColor::packSRGBTab[r];
 		}
 
 		if (format == PixelFormat::BGR_565_linear)
 		{
-			pPixel[0] = (s_packLinearTab[b] >> 3) | ((s_packLinearTab[g] & 0xFC) << 3);
-			pPixel[1] = (s_packLinearTab[g] >> 5) | (s_packLinearTab[r] & 0xF8);
+			pPixel[0] = (HiColor::packLinearTab[b] >> 3) | ((HiColor::packLinearTab[g] & 0xFC) << 3);
+			pPixel[1] = (HiColor::packLinearTab[g] >> 5) | (HiColor::packLinearTab[r] & 0xF8);
 
 		}
 
 		if (format == PixelFormat::BGRA_4_linear)
 		{
-			pPixel[0] = (s_packLinearTab[b] >> 4) | (s_packLinearTab[g] & 0xF0);
-			pPixel[1] = (s_packLinearTab[r] >> 4) | (s_packLinearTab[a] & 0xF0);
+			pPixel[0] = (HiColor::packLinearTab[b] >> 4) | (HiColor::packLinearTab[g] & 0xF0);
+			pPixel[1] = (HiColor::packLinearTab[r] >> 4) | (HiColor::packLinearTab[a] & 0xF0);
 		}
 
 		if (format == PixelFormat::A_8)
 		{
-			pPixel[0] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packLinearTab[a];
 		}
 	}
 
@@ -1131,12 +1125,12 @@ namespace wg
 		}
 		else
 		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 			srcB = pUnpackTab[color.b];
 			srcG = pUnpackTab[color.g];
 			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
+			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any tint to source
@@ -1194,7 +1188,7 @@ namespace wg
 			tintA = tint.flatTintColor[3];
 		}
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < nCoords; i++)
 		{
@@ -1221,7 +1215,7 @@ namespace wg
 					srcB = pUnpackTab[pColors[i].b];
 					srcG = pUnpackTab[pColors[i].g];
 					srcR = pUnpackTab[pColors[i].r];
-					srcA = s_unpackLinearTab[pColors[i].a];
+					srcA = HiColor::unpackLinearTab[pColors[i].a];
 				}
 
 				// Step 1.5: Apply any tint to source
@@ -1287,12 +1281,12 @@ namespace wg
 		}
 		else
 		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 			srcB = pUnpackTab[color.b];
 			srcG = pUnpackTab[color.g];
 			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
+			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 
@@ -1318,7 +1312,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (HiColor::unpackLinearTab[color.a] * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1446,12 +1440,12 @@ namespace wg
 		}
 		else
 		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 			srcB = pUnpackTab[color.b];
 			srcG = pUnpackTab[color.g];
 			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
+			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any flatTintColor
@@ -1496,7 +1490,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (HiColor::unpackLinearTab[color.a] * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1639,12 +1633,12 @@ namespace wg
 		}
 		else
 		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 			srcB = pUnpackTab[col.b];
 			srcG = pUnpackTab[col.g];
 			srcR = pUnpackTab[col.r];
-			srcA = s_unpackLinearTab[col.a];
+			srcA = HiColor::unpackLinearTab[col.a];
 		}
 
 
@@ -1773,10 +1767,10 @@ namespace wg
 					{
 						if (bFast8)
 						{
-							inR = s_packLinearTab[pSegmentColors[0]];
-							inG = s_packLinearTab[pSegmentColors[1]];
-							inB = s_packLinearTab[pSegmentColors[2]];
-							inA = s_packLinearTab[pSegmentColors[3]];
+							inR = HiColor::packLinearTab[pSegmentColors[0]];
+							inG = HiColor::packLinearTab[pSegmentColors[1]];
+							inB = HiColor::packLinearTab[pSegmentColors[2]];
+							inA = HiColor::packLinearTab[pSegmentColors[3]];
 						}
 						else
 						{
@@ -1795,10 +1789,10 @@ namespace wg
 							{
 								if (bFast8)
 								{
-									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
-									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
-									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
-									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+									inB = HiColor::packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = HiColor::packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = HiColor::packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = HiColor::packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
 								}
 								else
 								{
@@ -1830,10 +1824,10 @@ namespace wg
 							{
 								if (bFast8)
 								{
-									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
-									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
-									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
-									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+									inB = HiColor::packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = HiColor::packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = HiColor::packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = HiColor::packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
 								}
 								else
 								{
@@ -2573,7 +2567,7 @@ namespace wg
 	{
 		TintMode tintMode;
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		if (!m_bTintGradient)
 		{
@@ -2581,7 +2575,7 @@ namespace wg
 			m_colTrans.flatTintColor[0] = pUnpackTab[m_tintColor.r];
 			m_colTrans.flatTintColor[1] = pUnpackTab[m_tintColor.g];
 			m_colTrans.flatTintColor[2] = pUnpackTab[m_tintColor.b];
-			m_colTrans.flatTintColor[3] = s_unpackLinearTab[m_tintColor.a] ;
+			m_colTrans.flatTintColor[3] = HiColor::unpackLinearTab[m_tintColor.a] ;
 			m_bTintOpaque = (m_tintColor.a == 255);
 		}
 		else
@@ -2594,7 +2588,7 @@ namespace wg
 			uint32_t	flatTintColorR = pUnpackTab[m_tintColor.r];
 			uint32_t	flatTintColorG = pUnpackTab[m_tintColor.g];
 			uint32_t	flatTintColorB = pUnpackTab[m_tintColor.b];
-			uint32_t	flatTintColorA = s_unpackLinearTab[m_tintColor.a];
+			uint32_t	flatTintColorA = HiColor::unpackLinearTab[m_tintColor.a];
 
 			uint32_t	r[4], g[4], b[4], a[4];							// Scale: 0 -> (1 << 18)
 
@@ -2603,7 +2597,7 @@ namespace wg
 				r[i] = (pUnpackTab[m_tintGradient[i].r] * flatTintColorR) >> 6;
 				g[i] = (pUnpackTab[m_tintGradient[i].g] * flatTintColorG) >> 6;
 				b[i] = (pUnpackTab[m_tintGradient[i].b] * flatTintColorB) >> 6;
-				a[i] = (s_unpackLinearTab[m_tintGradient[i].a] * flatTintColorA) >> 6;
+				a[i] = (HiColor::unpackLinearTab[m_tintGradient[i].a] * flatTintColorA) >> 6;
 			}
 
 			m_colTrans.topLeftR = r[0];
@@ -3322,7 +3316,7 @@ namespace wg
 
 		// Unpack input colors and fill in transparentSegments
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		if (!bTintX && !bTintY)
 		{
@@ -3333,7 +3327,7 @@ namespace wg
 				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor[0]) >> 12;
 				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor[1]) >> 12;
 				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor[2]) >> 12;
-				colors[i][3] = (s_unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
+				colors[i][3] = (HiColor::unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
 
 				transparentSegments[i] = (colors[i][3] == 0);
 				opaqueSegments[i] = (colors[i][3] == 4096);
@@ -3348,7 +3342,7 @@ namespace wg
 				colors[i][0] = pUnpackTab[pSegmentColors[i].r];
 				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
 				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
-				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
+				colors[i][3] = HiColor::unpackLinearTab[pSegmentColors[i].a];
 			}
 		}
 
@@ -4783,20 +4777,6 @@ namespace wg
 	void SoftGfxDevice::_initTables()
 	{
 		// Init sRGBtoLinearTab
-
-		float max = powf(255, 2.2f);
-
-		for (int i = 0; i < 256; i++)
-			s_unpackSRGBTab[i] = int((powf(float(i),2.2f) / max) * 4096 + 0.5f);
-
-		for (int i = 0; i < 256; i++)
-			s_unpackLinearTab[i] = int(i / 255.f * 4096 + 0.5f);
-
-		for (int i = 0; i <= 4096; i++)
-			s_packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f) + 0.5f);
-
-		for (int i = 0; i <= 4096; i++)
-			s_packLinearTab[i] = uint8_t(i / 4096.f * 255.f + 0.5f);
 
 		for (int i = 0; i <= 4096; i++)
 			s_limit4096Tab[i] = 0;

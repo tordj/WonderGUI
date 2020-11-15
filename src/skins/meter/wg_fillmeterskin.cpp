@@ -156,7 +156,7 @@ namespace wg
 
 	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * value));
+		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 
 		RectI barCanvas = _barFillArea(_canvas,value, value2).px();
 		pDevice->fill(barCanvas, barColor);
@@ -205,7 +205,7 @@ namespace wg
 			return false;
 
 		if( _barFillArea(canvas, value, value2).contains(ofs) )
-			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*value)).a) >= opacityTreshold);
+			return (((int)HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a*255/4096) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
 	}

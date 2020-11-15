@@ -360,11 +360,6 @@ namespace wg
 
 
 		static int			s_mulTab[256];
-		static int16_t		s_unpackSRGBTab[256];
-		static int16_t		s_unpackLinearTab[256];
-
-		static uint8_t		s_packSRGBTab[4097];
-		static uint8_t		s_packLinearTab[4097];
 
 		static int16_t		s_limit4096Tab[4097 * 3];
 

@@ -112,7 +112,7 @@ namespace wg
 		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
-				enum Command
+				enum class Command
 				{
 					None,
 					SetCanvas,
@@ -372,7 +372,7 @@ namespace wg
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 
 		if (m_pCanvas)
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
@@ -388,7 +388,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 
 		if( m_pBlitSource )
 			static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
@@ -407,7 +407,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 		m_commandBuffer[m_commandOfs++] = data;
 
 		if (m_pCanvas)
@@ -438,7 +438,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
 		m_commandBuffer[m_commandOfs++] = m_nClipRects;
 
@@ -457,7 +457,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
 
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 	}
 
 

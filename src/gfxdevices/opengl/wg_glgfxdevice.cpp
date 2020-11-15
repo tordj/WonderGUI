@@ -2558,19 +2558,19 @@ namespace wg
 		glGetProgramiv(programID, GL_LINK_STATUS, &mess);
 		if (mess != GL_TRUE)
 		{
-			GLchar	vertexShaderLog[4096];
-			GLchar	fragmentShaderLog[4096];
-			GLchar	programInfoLog[4096];
+			GLchar	vertexShaderLog[2048];
+			GLchar	fragmentShaderLog[2048];
+			GLchar	programInfoLog[2048];
 
 			GLsizei vertexShaderLogLength;
 			GLsizei fragmentShaderLogLength;
 			GLsizei programInfoLogLength;
 
-			glGetShaderInfoLog(vertexShaderID, 4096, &vertexShaderLogLength, vertexShaderLog );
-			glGetShaderInfoLog(fragmentShaderID, 4096, &fragmentShaderLogLength, fragmentShaderLog);
-			glGetProgramInfoLog(programID, 4096, &programInfoLogLength, programInfoLog);
+			glGetShaderInfoLog(vertexShaderID, 2048, &vertexShaderLogLength, vertexShaderLog );
+			glGetShaderInfoLog(fragmentShaderID, 2048, &fragmentShaderLogLength, fragmentShaderLog);
+			glGetProgramInfoLog(programID, 2048, &programInfoLogLength, programInfoLog);
 
-			char	buffer[4096*3+256];
+			char	buffer[2048*3+256];
 
 			sprintf(buffer, "Failed compiling OpenGL shader\nVertexShaderLog: %s\nFragmentShaderLog: %s\nProgramInfoLog: %s", vertexShaderLog, fragmentShaderLog, programInfoLog);
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::OpenGL, buffer, this, TYPEINFO, __func__, __FILE__, __LINE__);

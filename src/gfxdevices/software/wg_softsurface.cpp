@@ -346,14 +346,14 @@ namespace wg
 		m_pClut4096 = new int16_t[256 * 4];
 
 		int16_t * p = m_pClut4096;
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? SoftGfxDevice::s_unpackSRGBTab : SoftGfxDevice::s_unpackLinearTab;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		for (int i = 0; i < 256; i++)
 		{
 			*p++ = pUnpackTab[m_pClut[i].r];
 			*p++ = pUnpackTab[m_pClut[i].g];
 			*p++ = pUnpackTab[m_pClut[i].b];
-			*p++ = SoftGfxDevice::s_unpackLinearTab[m_pClut[i].a];
+			*p++ = HiColor::unpackLinearTab[m_pClut[i].a];
 
 		}
 	}

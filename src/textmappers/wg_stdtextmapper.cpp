@@ -494,7 +494,7 @@ namespace wg
 					if( bRecalcColor )
 					{
 						if (bInSelection)
-							pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
+							pDevice->setTintColor(baseTint * HiColor::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
 						else
 							pDevice->setTintColor( baseTint * localTint );
 

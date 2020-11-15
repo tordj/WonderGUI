@@ -22,6 +22,8 @@
 
 #include <wg_color.h>
 #include <wg_util.h>
+#include <wg_base.h>
+#include <wg_context.h>
 
 #include <algorithm>
 
@@ -178,9 +180,15 @@ namespace wg
 	const Color Color::Yellow  			( 0xFFffff00 );
 	const Color Color::YellowGreen 		( 0xFF9acd32 );
 
+	int16_t		HiColor::unpackSRGBTab[256];
+	int16_t		HiColor::unpackLinearTab[256];
+
+	uint8_t		HiColor::packSRGBTab[4097];
+	uint8_t		HiColor::packLinearTab[4097];
+
 
 	//-------------------------------------------------------------------
-	Color Color::operator+( const Color& k ) const
+	Color Color::operator+(const Color& k) const
 	{
 		Color kNewColor;
 		kNewColor.r = Util::limitUint8(((int)r) + k.r);
@@ -191,7 +199,7 @@ namespace wg
 	}
 
 	//-------------------------------------------------------------------
-	Color Color::operator-( const Color& k ) const
+	Color Color::operator-(const Color& k) const
 	{
 		Color kNewColor;
 		kNewColor.r = Util::limitUint8(((int)r) - k.r);
@@ -202,27 +210,28 @@ namespace wg
 	}
 
 	//-------------------------------------------------------------------
-	Color Color::operator*( float f ) const
+	Color Color::operator*(float f) const
 	{
 		Color kNewColor;
-		kNewColor.r = (uint8_t)( (float)r * f );
-		kNewColor.g = (uint8_t)( (float)g * f );
-		kNewColor.b = (uint8_t)( (float)b * f );
-		kNewColor.a = (uint8_t)( (float)a * f );
+		kNewColor.r = (uint8_t)((float)r * f);
+		kNewColor.g = (uint8_t)((float)g * f);
+		kNewColor.b = (uint8_t)((float)b * f);
+		kNewColor.a = (uint8_t)((float)a * f);
 		return kNewColor;
 	}
 
 	//-------------------------------------------------------------------
-	Color Color::operator*( const Color& k ) const
+	Color Color::operator*(const Color& k) const
 	{
 		Color kNewColor;
-		kNewColor.r = (uint8_t)(((int)r * (int)k.r )/255);
-		kNewColor.g = (uint8_t)(((int)g * (int)k.g )/255);
-		kNewColor.b = (uint8_t)(((int)b * (int)k.b )/255);
-		kNewColor.a = (uint8_t)(((int)a * (int)k.a )/255);
+		kNewColor.r = (uint8_t)(((int)r * (int)k.r) / 255);
+		kNewColor.g = (uint8_t)(((int)g * (int)k.g) / 255);
+		kNewColor.b = (uint8_t)(((int)b * (int)k.b) / 255);
+		kNewColor.a = (uint8_t)(((int)a * (int)k.a) / 255);
 		return kNewColor;
 	}
 
+/*
 	//____ setCMYK ___________________________________________________________________
 
 	void Color::setCMYK( float c, float m, float y, float k, uint8_t alpha )
@@ -248,58 +257,72 @@ namespace wg
 		* _y = (1.f-fb-k) / (1.f-k);
 		* _k = k;
 	}
+*/
+
+	//____ constructor ________________________________________________________
+
+	HiColor::HiColor(Color lowColor)
+	{
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? unpackSRGBTab : unpackLinearTab;
+
+		r = pUnpackTab[lowColor.r];
+		g = pUnpackTab[lowColor.g];
+		b = pUnpackTab[lowColor.b];
+		a = unpackLinearTab[lowColor.a];
+	}
+
 
 	//____ blend() ________________________________________________________________
 
-	Color Color::mix( Color color1, Color color2, uint8_t balance )
+	HiColor HiColor::mix( HiColor color1, HiColor color2, int balance )
 	{
-		Color col;
+		HiColor col;
 
-		col.r = color1.r + uint8_t( (int(color2.r) - int(color1.r))*balance/255);
-		col.g = color1.g + uint8_t( (int(color2.g) - int(color1.g))*balance/255);
-		col.b = color1.b + uint8_t( (int(color2.b) - int(color1.b))*balance/255);
-		col.a = color1.a + uint8_t( (int(color2.a) - int(color1.a))*balance/255);
+		col.r = color1.r + ((int(color2.r) - int(color1.r)) * balance / 4096);
+		col.g = color1.g + ((int(color2.g) - int(color1.g)) * balance / 4096);
+		col.b = color1.b + ((int(color2.b) - int(color1.b)) * balance / 4096);
+		col.a = color1.a + ((int(color2.a) - int(color1.a)) * balance / 4096);
 
 		return col;
 	}
 
 	//____ invert()_________________________________________________________________
 
-	Color Color::invert( Color color, uint8_t grade )
+	HiColor HiColor::invert( HiColor color, int grade )
 	{
-		color.r = ((255-color.r)*grade + color.r*(255-grade))/255;
-		color.g = ((255-color.g)*grade + color.g*(255-grade))/255;
-		color.b = ((255-color.b)*grade + color.b*(255-grade))/255;
+		color.r = ((4096-color.r)*grade + color.r*(4096-grade))/4096;
+		color.g = ((4096-color.g)*grade + color.g*(4096-grade))/4096;
+		color.b = ((4096-color.b)*grade + color.b*(4096-grade))/4096;
 		return color;
 	}
 
 	//____ min() ___________________________________________________________________
 
-	Color Color::min(Color color1, Color color2)
+	HiColor HiColor::min(HiColor color1, HiColor color2)
 	{
-		return Color(std::min(color1.r, color2.r),std::min(color1.g,color2.g),std::min(color1.b,color2.b),std::min(color1.a,color2.a));
+		return HiColor(std::min(color1.r, color2.r),std::min(color1.g,color2.g),std::min(color1.b,color2.b),std::min(color1.a,color2.a));
 	}
 
 	//____ max() ____________________________________________________________________
 
-	Color Color::max(Color color1, Color color2)
+	HiColor HiColor::max(HiColor color1, HiColor color2)
 	{
-		return Color(std::max(color1.r, color2.r), std::max(color1.g, color2.g), std::max(color1.b, color2.b), std::max(color1.a, color2.a));
+		return HiColor(std::max(color1.r, color2.r), std::max(color1.g, color2.g), std::max(color1.b, color2.b), std::max(color1.a, color2.a));
 	}
 
 
 	//____ blend()___________________________________________________________________
 
-	Color Color::blend( Color baseColor, Color blendColor, BlendMode operation )
+	HiColor HiColor::blend( HiColor baseColor, HiColor blendColor, BlendMode operation )
 	{
 		switch( operation )
 		{
 			case BlendMode::Add:
 				return baseColor + blendColor;
 			case BlendMode::Morph:
-				return mix(baseColor, blendColor, 128);
+				return mix(baseColor, blendColor, 2048);
 			case BlendMode::Blend:
-				return mix(baseColor, Color(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
+				return mix(baseColor, HiColor(blendColor.r, blendColor.g, blendColor.b, baseColor.a), blendColor.a);
 			case BlendMode::Undefined:
 			case BlendMode::Ignore:
 				return baseColor;
@@ -319,7 +342,93 @@ namespace wg
 		}
 	}
 
+	//____ operator Colour() ___________________________________________________
 
+	HiColor::operator Color() const
+	{
+		Color c;
+		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? packSRGBTab : packLinearTab;
+		return Color(pPackTab[r], pPackTab[g], pPackTab[b], packLinearTab[a]);
+	}
+
+	//-------------------------------------------------------------------
+	HiColor HiColor::operator+(const HiColor& k) const
+	{
+		HiColor kNewColor;
+		kNewColor.r = r + k.r;
+		kNewColor.g = g + k.g;
+		kNewColor.b = b + k.b;
+		kNewColor.a = a + k.a;
+
+		if (kNewColor.r > 4096) kNewColor.r = 4096;
+		if (kNewColor.g > 4096) kNewColor.g = 4096;
+		if (kNewColor.b > 4096) kNewColor.b = 4096;
+		if (kNewColor.a > 4096) kNewColor.a = 4096;
+		return kNewColor;
+	}
+
+	//-------------------------------------------------------------------
+	HiColor HiColor::operator-(const HiColor& k) const
+	{
+		HiColor kNewColor;
+		kNewColor.r = r - k.r;
+		kNewColor.g = g - k.g;
+		kNewColor.b = b - k.b;
+		kNewColor.a = a - k.a;
+
+		if (kNewColor.r < 4096) kNewColor.r = 0;
+		if (kNewColor.g < 4096) kNewColor.g = 0;
+		if (kNewColor.b < 4096) kNewColor.b = 0;
+		if (kNewColor.a < 4096) kNewColor.a = 0;
+		return kNewColor;
+	}
+
+	//-------------------------------------------------------------------
+	HiColor HiColor::operator*(float f) const
+	{
+		HiColor kNewColor;
+		kNewColor.r = (uint16_t)((float)r * f);
+		kNewColor.g = (uint16_t)((float)g * f);
+		kNewColor.b = (uint16_t)((float)b * f);
+		kNewColor.a = (uint16_t)((float)a * f);
+
+		if (kNewColor.r > 4096) kNewColor.r = 4096;
+		if (kNewColor.g > 4096) kNewColor.g = 4096;
+		if (kNewColor.b > 4096) kNewColor.b = 4096;
+		if (kNewColor.a > 4096) kNewColor.a = 4096;
+
+		return kNewColor;
+	}
+
+	//-------------------------------------------------------------------
+	HiColor HiColor::operator*(const HiColor& k) const
+	{
+		HiColor kNewColor;
+		kNewColor.r = (uint16_t)(((int)r * (int)k.r) / 4096);
+		kNewColor.g = (uint16_t)(((int)g * (int)k.g) / 4096);
+		kNewColor.b = (uint16_t)(((int)b * (int)k.b) / 4096);
+		kNewColor.a = (uint16_t)(((int)a * (int)k.a) / 4096);
+		return kNewColor;
+	}
+
+	//____ _initTables() ______________________________________________________
+
+	void HiColor::_initTables()
+	{
+		float max = powf(255, 2.2f);
+
+		for (int i = 0; i < 256; i++)
+			HiColor::unpackSRGBTab[i] = int((powf(float(i), 2.2f) / max) * 4096 + 0.5f);
+
+		for (int i = 0; i < 256; i++)
+			HiColor::unpackLinearTab[i] = int(i / 255.f * 4096 + 0.5f);
+
+		for (int i = 0; i <= 4096; i++)
+			HiColor::packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f) + 0.5f);
+
+		for (int i = 0; i <= 4096; i++)
+			HiColor::packLinearTab[i] = uint8_t(i / 4096.f * 255.f + 0.5f);
+	}
 
 
 } // namespace wg

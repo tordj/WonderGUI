@@ -563,6 +563,9 @@
     <ClInclude Include="..\..\..\src\skins\wg_skin.impl.h">
       <Filter>skins</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\base\wg_gradient.h">
+      <Filter>base</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -981,6 +984,9 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\components\wg_cskinslotmi.cpp">
       <Filter>components</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\base\wg_gradient.cpp">
+      <Filter>base</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

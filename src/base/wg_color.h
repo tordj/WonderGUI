@@ -51,22 +51,11 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		inline Color() {};
+		inline Color() : argb(0) {};
 		inline Color( const Color& col );
 		inline Color( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
 		inline Color( uint32_t argb );
 		inline Color( uint32_t rgb, uint8_t a );
-
-		//.____ Misc ________________________________________________
-
-		static Color	mix( Color color1, Color color2, uint8_t balance );
-		static Color	invert( Color color, uint8_t grade );
-		static Color	min(Color color1, Color color2);
-		static Color	max(Color color1, Color color2);
-		static Color	blend( Color baseColor, Color blendColor, BlendMode operation );
-
-		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
-		void	getCMYK( float* c, float* m, float* y, float* k );
 
 		//.____ Operators ___________________________________________
 
@@ -248,6 +237,68 @@ namespace wg
 	};
 
 
+	//____ HiColor ____________________________________________________________
+
+	class HiColor
+	{
+		friend class Base;
+	public:
+
+		//.____ Creation __________________________________________
+
+		inline	HiColor() : argb(0) {};
+		inline	HiColor(const HiColor& hiColor);
+				HiColor(Color lowColor);
+		inline	HiColor(int16_t r, int16_t g, int16_t b, int16_t a = 4096);
+		inline	HiColor(float r, float g, float b, float a = 1.f);
+
+		//.____ Misc ________________________________________________
+
+		static HiColor	mix(HiColor color1, HiColor color2, int balance);			// Balance: 0 -> 4096
+		static HiColor	invert(HiColor color, int grade);						// Grade: 0 -> 4096
+		static HiColor	min(HiColor color1, HiColor color2);
+		static HiColor	max(HiColor color1, HiColor color2);
+		static HiColor	blend(HiColor baseColor, HiColor blendColor, BlendMode operation);
+
+		//.____ Operators ___________________________________________
+
+		operator Color() const;
+
+		inline bool operator==(const HiColor& k) const;
+		inline bool operator!=(const HiColor& k) const;
+
+		HiColor	operator+(const HiColor& k) const;
+		HiColor	operator-(const HiColor& k) const;
+
+		HiColor	operator*(float f) const;
+		HiColor	operator*(const HiColor& k) const;
+
+		//.____ Internal ____________________________________________
+
+		static int16_t		unpackSRGBTab[256];
+		static int16_t		unpackLinearTab[256];
+
+		static uint8_t		packSRGBTab[4097];
+		static uint8_t		packLinearTab[4097];
+
+		//.____ Properties __________________________________________
+
+		union
+		{
+			struct
+			{
+				int16_t b;
+				int16_t g;
+				int16_t r;
+				int16_t a;
+			};
+			int64_t argb;
+		};
+
+	private:
+		static void	_initTables();
+	};
+
 	//-------------------------------------------------------------------
 	inline bool Color::operator==( const Color& k ) const
 	{
@@ -293,6 +344,51 @@ namespace wg
 		argb = rgb;
 		a = _a;
 	}
+
+	//-------------------------------------------------------------------
+	inline bool HiColor::operator==(const HiColor& k) const
+	{
+		if (argb == k.argb)
+			return true;
+
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+	inline bool HiColor::operator!=(const HiColor& k) const
+	{
+		if (argb != k.argb)
+			return true;
+
+		return false;
+	}
+
+
+
+	//____ HiColor::HiColor() _________________________________________________________________
+
+	inline HiColor::HiColor(const HiColor& hiColor)
+	{
+		argb = hiColor.argb;
+	}
+
+	inline HiColor::HiColor(int16_t r, int16_t g, int16_t b, int16_t a)
+	{
+		this->a = a;
+		this->r = r;
+		this->g = g;
+		this->b = b;
+	}
+
+	inline HiColor::HiColor(float r, float g, float b, float a)
+	{
+		this->a = int16_t(a * 4096);
+		this->r = int16_t(r * 4096);
+		this->g = int16_t(g * 4096);
+		this->b = int16_t(b * 4096);
+	}
+
+
 
 
 } // namespace wg

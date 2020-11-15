@@ -99,6 +99,7 @@ namespace wg
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
 
 		TextTool::setDefaultBreakRules();
+		HiColor::_initTables();
 
 		MU::s_scale = 1.f;
 		MU::s_qpixPerPoint = 4;

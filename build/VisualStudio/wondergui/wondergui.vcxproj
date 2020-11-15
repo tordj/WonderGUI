@@ -104,6 +104,7 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamplug.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamreader.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h" />
+    <ClInclude Include="..\..\..\src\base\wg_gradient.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_internal.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
@@ -274,6 +275,7 @@
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamplug.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamreader.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamwriter.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_gradient.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_inputhandler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mempool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_memstack.cpp" />
