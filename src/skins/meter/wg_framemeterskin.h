@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_canimframes.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -58,6 +59,15 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+		void		setColor(HiColor tintColor);
+		HiColor		color() const { return m_color; }
+
+		void		setGradient(const Gradient& gradient);
+		Gradient	gradient() const { return m_gradient; }
+
 		void		setGfxPadding(BorderI padding);
 		Border		gfxPadding() const { return m_gfxPadding; }
 
@@ -78,6 +88,8 @@ namespace wg
 		FrameMeterSkin();
 		~FrameMeterSkin() {};
 
+		void		_updateOpacityFlag();
+
 		const AnimFrame * _valueToFrame(float value) const;
 
 		void		_didAddEntries(AnimFrame* pEntry, int nb) override;
@@ -89,6 +101,12 @@ namespace wg
 		Object*		_object() override;
 
 		BorderI		m_gfxPadding;
+		bool		m_bAllFramesOpaque = false;
+
+		BlendMode		m_blendMode = BlendMode::Blend;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
+		bool			m_bGradient = false;
 	};
 
 

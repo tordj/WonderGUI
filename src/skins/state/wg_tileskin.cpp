@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -131,9 +132,9 @@ namespace wg
 		return m_stateSurfaces[_stateToIndex(state)];
 	}
 
-	//____ setTint() __________________________________________________________
+	//____ setColor() __________________________________________________________
 
-	void TileSkin::setTint(Color tint)
+	void TileSkin::setColor(Color tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -142,7 +143,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setTint(State state, Color tint)
+	void TileSkin::setColor(State state, Color tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -152,7 +153,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void TileSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -165,13 +166,21 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ tint() _____________________________________________________________
+	//____ color() _____________________________________________________________
 
-	Color TileSkin::tint(State state) const
+	Color TileSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
 
+	//____ setGradient() ______________________________________________________
+
+	void TileSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpaqueFlags();
+	}
 
 
 	//____ setBlendMode() _____________________________________________________
@@ -186,23 +195,17 @@ namespace wg
 
 	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
-		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
+		int idx = _stateToIndex(state);
+
+		Surface * pSurf = m_stateSurfaces[idx];
 
 		if( !pSurf )
 			return;
 
-		BlendMode savedBlendMode = BlendMode::Undefined;
-		if (m_blendMode != BlendMode::Undefined)
-		{
-			savedBlendMode = pDevice->blendMode();
-			pDevice->setBlendMode(m_blendMode);
-		}
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(pSurf);
 		pDevice->scaleTile(canvas.px(),MU::scale());
-
-		if (m_blendMode != BlendMode::Undefined)
-			pDevice->setBlendMode(savedBlendMode);
 	}
 
 	//____ preferredSize() ________________________________________________________
@@ -223,6 +226,8 @@ namespace wg
 
 	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
+		//TODO: Take gradient and tintColor into account.
+
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
 		return markTestTileRect(_ofs, pSurf, canvas, opacityTreshold);
@@ -263,11 +268,14 @@ namespace wg
 
 	void TileSkin::_updateOpaqueFlags()
 	{
+
 		bool bTintDecides = false;
 
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		else if (m_bGradient && !m_gradient.isOpaque())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend)
 		{
 			bool bOpaque = true;
 

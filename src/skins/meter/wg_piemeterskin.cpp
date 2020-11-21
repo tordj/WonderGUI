@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -97,6 +98,15 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ setBlendMode() _____________________________________________________
+
+	void PieMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacity();
+	}
+
 
 	//____ setSlices() ________________________________________________________
 
@@ -227,6 +237,8 @@ namespace wg
 
 	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
+
 		bool	bFramed = false;
 
 		Rect canvas = _canvas;
@@ -400,7 +412,9 @@ namespace wg
 
 	void PieMeterSkin::_updateOpacity()
 	{
-		if (m_backColor.a < 255 || (m_hubSize > 0.f && m_hubColor.a < 255) )
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 255 || (m_hubSize > 0.f && m_hubColor.a < 255) )
 			m_bOpaque = false;
 		else
 		{

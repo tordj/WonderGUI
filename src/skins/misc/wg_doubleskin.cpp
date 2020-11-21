@@ -255,11 +255,21 @@ namespace wg
 
 		Rect canvas = _canvas;
 
+		int oldLayer = -1;
+		if (m_layer != -1)
+		{
+			oldLayer = pDevice->renderLayer();
+			pDevice->setRenderLayer(m_layer);
+		}
+
 		m_pBackSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
 		if (m_bSkinInSkin)
 			canvas = m_pBackSkin->contentRect(canvas, state);
 
 		m_pFrontSkin->render(pDevice, canvas, state, value, value2, animPos, pStateFractions);
+
+		if (oldLayer != -1)
+			pDevice->setRenderLayer(oldLayer);
 	}
 
 	//____ dirtyRect() ______________________________________________________

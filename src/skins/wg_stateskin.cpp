@@ -124,9 +124,9 @@ namespace wg
 		float* pNewStateFractions, float* pOldStateFractions) const
 	{
 		if (m_contentShift[_stateToIndex(newState)] == m_contentShift[_stateToIndex(oldState)])
-			return canvas;
-		else
 			return Rect();
+		else
+			return canvas;
 	}
 
 	//____ _refreshUnsetStates() _________________________________________________

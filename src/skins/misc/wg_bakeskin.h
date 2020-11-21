@@ -27,6 +27,7 @@
 #include <wg_surface.h>
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 
 #include <initializer_list>
 #include <utility>
@@ -60,8 +61,12 @@ namespace wg
 		void			setBlendMode( BlendMode blend );
 		BlendMode		blendMode() const { return m_blendMode; }
 
-		void			setTintColor(Color color);
-		Color			tintColor() const { return m_tintColor; }
+		void			setColor(Color color);
+		Color			color() const { return m_tintColor; }
+
+		void			setGradient(const Gradient& gradient);
+		Gradient		gradient() const { return m_gradient; }
+
 
 		void			setSkinInSkin(bool bInside);
 		bool			isSkinInSkin() const { return m_bSkinInSkin; }
@@ -123,6 +128,8 @@ namespace wg
 		Surface_p			m_pBakeSurface;
 		BlendMode			m_blendMode = BlendMode::Blend;
 		Color				m_tintColor = Color::White;
+		Gradient			m_gradient;
+		bool				m_bGradient = false;
 		bool				m_bContentPaddingSet = false;
 		bool				m_bSkinInSkin = false;
 

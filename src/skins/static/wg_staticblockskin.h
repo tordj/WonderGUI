@@ -59,11 +59,11 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setTint(HiColor tintColor);
-		void		setTint(const Gradient& gradient);
+		void		setColor(HiColor color);
+		void		setGradient(const Gradient& gradient);
 
-		HiColor		tintColor() const { return m_tintColor; }
-		Gradient	tintGradient() const { return m_tintGradient; }
+		HiColor		color() const { return m_color; }
+		Gradient	gradient() const { return m_gradient; }
 
 
 		//.____ Misc ____________________________________________________
@@ -85,8 +85,8 @@ namespace wg
 		RectI			m_block;
 		BorderI			m_frame;
 		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_tintColor = Color::White;
-		Gradient		m_tintGradient;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
 		bool			m_bGradient = false;
 	};
 

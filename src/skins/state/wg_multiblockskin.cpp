@@ -261,6 +261,13 @@ namespace wg
 
 		int stateIndex = _stateToIndex(state);
 
+		int orgLayer;
+		if (m_layer != -1)
+		{
+			orgLayer = pDevice->renderLayer();
+			pDevice->setRenderLayer(m_layer);
+		}
+
 		BlendMode	orgBlendMode = pDevice->blendMode();
 		Color		orgTintColor = pDevice->tintColor();
 
@@ -298,6 +305,9 @@ namespace wg
 
 		if (blendMode != orgBlendMode)
 			pDevice->setBlendMode(orgBlendMode);
+
+		if (m_layer != -1)
+			pDevice->setRenderLayer(orgLayer);
 	}
 
 

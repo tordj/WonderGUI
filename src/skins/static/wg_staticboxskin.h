@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticBoxSkin_p create(BorderI frame, Color fillColor, Color frameColor);
+		static StaticBoxSkin_p create(BorderI frame, HiColor fillColor, HiColor frameColor);
 
 		//.____ Identification __________________________________________
 
@@ -68,7 +68,7 @@ namespace wg
 							float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBoxSkin(BorderI frame, Color fillColor, Color frameColor);
+		StaticBoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor);
 		~StaticBoxSkin() {};
 
 		void		_updateOpaqueFlag();
@@ -76,8 +76,8 @@ namespace wg
 		BorderI		m_frame;							// In points
 		BlendMode	m_blendMode = BlendMode::Blend;
 
-		Color		m_fillColor;
-		Color		m_frameColor;
+		HiColor		m_fillColor;
+		HiColor		m_frameColor;
 	};
 
 

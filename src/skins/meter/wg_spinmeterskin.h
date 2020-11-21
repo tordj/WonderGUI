@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 #include <wg_surface.h>
 
 namespace wg
@@ -55,6 +56,17 @@ namespace wg
 
 		Size	preferredSize() const override;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+		void		setColor(HiColor tintColor);
+		HiColor		color() const { return m_color; }
+
+		void		setGradient(const Gradient& gradient);
+		Gradient	gradient() const { return m_gradient; }
+
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
@@ -74,6 +86,8 @@ namespace wg
 						float zoom = 1.f, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI());
 		~SpinMeterSkin() {};
 
+		void		_updateOpacityFlag();
+
 		Surface_p	m_pSurface;
 		Size		m_preferredSize;
 		CoordF		m_srcCenter;
@@ -82,6 +96,11 @@ namespace wg
 		float		m_toDegrees;
 		float		m_zoom;
 		BorderI		m_gfxPadding;
+
+		BlendMode		m_blendMode = BlendMode::Blend;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
+		bool			m_bGradient = false;
 	};
 
 

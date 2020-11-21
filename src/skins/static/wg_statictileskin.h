@@ -56,11 +56,11 @@ namespace wg
 		void		setBlendMode(BlendMode mode);
 		BlendMode	blendMode() const { return m_blendMode; }
 
-		void		setTint(HiColor tintColor);
-		void		setTint(const Gradient& gradient);
+		void		setColor(HiColor tintColor);
+		HiColor		color() const { return m_color; }
 
-		HiColor		tintColor() const { return m_tintColor; }
-		Gradient	tintGradient() const { return m_tintGradient; }
+		void		setGradient(const Gradient& gradient);
+		Gradient	gradient() const { return m_gradient; }
 
 		//.____ Misc ____________________________________________________
 
@@ -79,8 +79,8 @@ namespace wg
 
 		Surface_p		m_pSurface;
 		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_tintColor = Color::White;
-		Gradient		m_tintGradient;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
 		bool			m_bGradient = false;
 	};
 

@@ -25,6 +25,7 @@
 
 #include <wg_stateskin.h>
 #include <wg_surface.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -62,10 +63,13 @@ namespace wg
 
 		Surface_p surface(State state = StateEnum::Normal) const;
 
-		void	setTint(Color tint);
-		void	setTint(State state, Color tint);
-		void	setTint(std::initializer_list< std::tuple<State, Color> > stateTints);
-		Color	tint(State state) const;
+		void	setColor(Color tint);
+		void	setColor(State state, Color tint);
+		void	setColor(std::initializer_list< std::tuple<State, Color> > stateTints);
+		Color	color(State state) const;
+
+		void	setGradient(const Gradient& gradient);
+		Gradient gradient() const { return m_gradient; }
 
 		void			setBlendMode(BlendMode mode);
 		BlendMode		blendMode() const { return m_blendMode; }
@@ -100,14 +104,16 @@ namespace wg
 		void		_updateUnsetStateSurfaces();
 		void		_updateUnsetStateColors();
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateSurfaceMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Surface_p m_stateSurfaces[StateEnum_Nb];
-		Color	m_stateColors[StateEnum_Nb];
-		bool	m_bStateOpaque[StateEnum_Nb];
+		Surface_p	m_stateSurfaces[StateEnum_Nb];
+		Color		m_stateColors[StateEnum_Nb];
+		bool		m_bStateOpaque[StateEnum_Nb];
+		Gradient	m_gradient;
+		bool		m_bGradient = false;
 	};
 
 

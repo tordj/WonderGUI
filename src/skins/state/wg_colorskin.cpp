@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -148,17 +149,10 @@ namespace wg
 
 	void ColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		BlendMode	oldBlendMode = pDevice->blendMode();
-
-		if (m_blendMode != oldBlendMode )
-			pDevice->setBlendMode(m_blendMode);
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		int i = _stateToIndex(state);
-
 		pDevice->fill( canvas.px(), m_color[i] );
-
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(oldBlendMode);
 	}
 
 	//____ markTest() _____________________________________________________________

@@ -34,14 +34,14 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticBoxSkin_p StaticBoxSkin::create(BorderI frame, Color fillColor, Color frameColor)
+	StaticBoxSkin_p StaticBoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor)
 	{
 		return StaticBoxSkin_p(new StaticBoxSkin(frame, fillColor, frameColor));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticBoxSkin::StaticBoxSkin(BorderI frame, Color fillColor, Color frameColor)
+	StaticBoxSkin::StaticBoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor)
 	{
 		m_frame = frame;
 		m_fillColor = fillColor;
@@ -95,14 +95,14 @@ namespace wg
 		int opacity;
 
 		if (m_bOpaque)
-			opacity = 255;
+			opacity = 4096;
 		else
 		{
 			Rect center = canvas - Border(m_frame).aligned();
 			opacity =  center.contains(ofs) ? m_fillColor.a : m_frameColor.a;
 		}
 
-		return (opacity >= opacityTreshold);
+		return (opacity/16 >= opacityTreshold);
 	}
 
 	//____ render() ______________________________________________________________
@@ -123,19 +123,26 @@ namespace wg
 		{
 			BorderI frame = pointsToPixels(m_frame);
 
-			RectI top(canvas.x, canvas.y, canvas.w, frame.top);
-			RectI left(canvas.x, canvas.y + frame.top, frame.left, canvas.h - frame.height());
-			RectI right(canvas.x + canvas.w - frame.right, canvas.y + frame.top, frame.right, canvas.h - frame.height());
-			RectI bottom(canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom);
-			RectI center(canvas - frame);
+			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
+			{
+				pDevice->fill(canvas, m_frameColor);
+			}
+			else
+			{
+				RectI top(canvas.x, canvas.y, canvas.w, frame.top);
+				RectI left(canvas.x, canvas.y + frame.top, frame.left, canvas.h - frame.height());
+				RectI right(canvas.x + canvas.w - frame.right, canvas.y + frame.top, frame.right, canvas.h - frame.height());
+				RectI bottom(canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom);
+				RectI center(canvas - frame);
 
-			pDevice->fill(top, m_frameColor);
-			pDevice->fill(left, m_frameColor);
-			pDevice->fill(right, m_frameColor);
-			pDevice->fill(bottom, m_frameColor);
+				pDevice->fill(top, m_frameColor);
+				pDevice->fill(left, m_frameColor);
+				pDevice->fill(right, m_frameColor);
+				pDevice->fill(bottom, m_frameColor);
 
-			if (center.w > 0 || center.h > 0)
-				pDevice->fill(center, m_fillColor);
+				if (center.w > 0 || center.h > 0)
+					pDevice->fill(center, m_fillColor);
+			}
 		}
 	}
 
@@ -152,7 +159,7 @@ namespace wg
 
 		case BlendMode::Blend:
 		{
-			m_bOpaque = (m_fillColor.a == 255 && (m_frame.isEmpty() || m_frameColor.a == 255));
+			m_bOpaque = (m_fillColor.a == 4096 && (m_frame.isEmpty() || m_frameColor.a == 4096));
 			break;
 		}
 

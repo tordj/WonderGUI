@@ -35,17 +35,17 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StaticColorSkin_p StaticColorSkin::create( Color col )
+	StaticColorSkin_p StaticColorSkin::create( HiColor col )
 	{
 		return StaticColorSkin_p(new StaticColorSkin(col));
 	}
 
 	//____ constructor ____________________________________________________________
 
-	StaticColorSkin::StaticColorSkin( Color col )
+	StaticColorSkin::StaticColorSkin( HiColor col )
 	{
 		m_color = col;
-		m_bOpaque = (m_color.a == 255);
+		m_bOpaque = (m_color.a == 4096);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -63,7 +63,7 @@ namespace wg
 		if (mode == BlendMode::Replace)
 			m_bOpaque = true;
 		else if (mode == BlendMode::Blend)
-			m_bOpaque = (m_color.a == 255);
+			m_bOpaque = (m_color.a == 4096);
 		else
 			m_bOpaque = false;
 	}
@@ -80,7 +80,7 @@ namespace wg
 
 	bool StaticColorSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
-		return ( canvas.contains(ofs) && ((int)m_color.a) >= opacityTreshold );
+		return ( canvas.contains(ofs) && ((int)m_color.a)/16 >= opacityTreshold );
 	}
 
 

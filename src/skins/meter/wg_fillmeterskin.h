@@ -55,6 +55,9 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		void	setDirection(Direction dir);
 		Direction direction() const { return m_direction; }
 
@@ -95,7 +98,7 @@ namespace wg
 		void		_updateOpacity();
 		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
-
+		BlendMode	m_blendMode = BlendMode::Blend;
 		Direction	m_direction;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside;

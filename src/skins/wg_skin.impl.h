@@ -108,9 +108,9 @@ namespace wg
 			{
 				pDevice->setTintGradient(rect, tintGradient);
 				m_bGradient = true;
-				m_bTintChanged = true;
 			}
-			else if (tintColor != Color::White)
+			
+			if (tintColor != Color::White)
 			{
 				m_prevTintColor = pDevice->tintColor();
 				pDevice->setTintColor(tintColor);
@@ -126,12 +126,9 @@ namespace wg
 			if (m_prevBlendMode != BlendMode::Undefined)
 				m_pDevice->setBlendMode(m_prevBlendMode);
 			if (m_bTintChanged)
-			{
-				if (m_bGradient)
-					m_pDevice->clearTintGradient();
-				else
-					m_pDevice->setTintColor(m_prevTintColor);
-			}
+				m_pDevice->setTintColor(m_prevTintColor);
+			if (m_bGradient)
+				m_pDevice->clearTintGradient();
 		}
 
 		GfxDevice* m_pDevice;

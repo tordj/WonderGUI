@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -164,14 +165,14 @@ namespace wg
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		BlendMode	oldBlendMode = pDevice->blendMode();
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		RectI canvas = _canvas.px();
 
-		if (m_blendMode != oldBlendMode )
-			pDevice->setBlendMode(m_blendMode);
-
 		int i = _stateToIndex(state);
+		pDevice->fill(canvas, m_fillColor[i]);
+
+
 		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{
 			pDevice->fill( canvas, m_fillColor[i] );
@@ -180,23 +181,28 @@ namespace wg
 		{
 			BorderI frame = pointsToPixels(m_frame);
 
-			RectI top( canvas.x, canvas.y, canvas.w, frame.top );
-			RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
-			RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
-			RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
-			RectI center( canvas - frame );
+			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
+			{
+				pDevice->fill(canvas, m_frameColor[i]);
+			}
+			else
+			{
+				RectI top( canvas.x, canvas.y, canvas.w, frame.top );
+				RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
+				RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
+				RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
+				RectI center( canvas - frame );
 
-			pDevice->fill( top, m_frameColor[i] );
-			pDevice->fill( left, m_frameColor[i] );
-			pDevice->fill( right, m_frameColor[i] );
-			pDevice->fill( bottom, m_frameColor[i] );
+				pDevice->fill( top, m_frameColor[i] );
+				pDevice->fill( left, m_frameColor[i] );
+				pDevice->fill( right, m_frameColor[i] );
+				pDevice->fill( bottom, m_frameColor[i] );
 
-			if( center.w > 0 || center.h > 0 )
-				pDevice->fill( center, m_fillColor[i] );
+				if( center.w > 0 || center.h > 0 )
+					pDevice->fill( center, m_fillColor[i] );
+			}
 		}
 
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(oldBlendMode);
 	}
 
 	//____ minSize() ______________________________________________________________

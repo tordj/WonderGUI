@@ -26,6 +26,7 @@
 #include <wg_util.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <wg_skin.impl.h>
 
 #include <cmath>
 
@@ -109,6 +110,7 @@ namespace wg
 		else if (degrees >= 360.f)
 			degrees = (float) fmod(degrees, 360.f);
 
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
@@ -119,6 +121,32 @@ namespace wg
 	Size SpinMeterSkin::preferredSize() const
 	{
 		return m_preferredSize;
+	}
+
+	//____ setColor() _____________________________________________________
+
+	void SpinMeterSkin::setColor(HiColor color)
+	{
+		m_color = color;
+		_updateOpacityFlag();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void SpinMeterSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
+
+	//____ setBlendMode() _____________________________________________________
+
+	void SpinMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
 	}
 
 	//____ markTest() _________________________________________________________
@@ -146,6 +174,23 @@ namespace wg
 			return canvas;
 
 		return Rect();
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void SpinMeterSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+				m_bOpaque = false;
+			else
+				m_bOpaque = m_pSurface->isOpaque();
+		}
+		else
+			m_bOpaque = false;
 	}
 
 } // namespace wg

@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -32,7 +33,7 @@ namespace wg
 
 	using namespace Util;
 
-	//____ create() _______________________________________________________________
+	//____ create() ___________________________________________________________
 
 	FillMeterSkin_p FillMeterSkin::create()
 	{
@@ -44,7 +45,7 @@ namespace wg
 		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
 	}
 
-	//____ constructor ____________________________________________________________
+	//____ constructor ________________________________________________________
 
 	FillMeterSkin::FillMeterSkin() :
 		m_direction(Direction::Right),
@@ -80,7 +81,7 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ preferredSize() ____________________________________________________
 
 	Size FillMeterSkin::preferredSize() const
 	{
@@ -96,6 +97,15 @@ namespace wg
 	{
 		m_preferredSize = preferred;
 	}
+
+	//____ setBlendMode() _____________________________________________________
+
+	void FillMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacity();
+	}
+
 
 	//____ setDirection() _____________________________________________________
 
@@ -156,6 +166,8 @@ namespace wg
 
 	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
+
 		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
 
 		RectI barCanvas = _barFillArea(_canvas,value, value2).px();
@@ -193,8 +205,6 @@ namespace wg
 			pDevice->fill(backCanvas1, m_backColor);
 			pDevice->fill(backCanvas2, m_backColor);
 		}
-
-
 	}
 
 	//____ markTest() _________________________________________________________
@@ -361,6 +371,10 @@ namespace wg
 	void FillMeterSkin::_updateOpacity()
 	{
 		if (!m_barPadding.isEmpty())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode != BlendMode::Blend)
 			m_bOpaque = false;
 		else
 			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;

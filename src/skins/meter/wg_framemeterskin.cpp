@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -73,6 +74,32 @@ namespace wg
 			return Skin::minSize();
 	}
 
+	//____ setColor() _____________________________________________________
+
+	void FrameMeterSkin::setColor(HiColor color)
+	{
+		m_color = color;
+		_updateOpacityFlag();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void FrameMeterSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
+
+	//____ setBlendMode() _____________________________________________________
+
+	void FrameMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
+	}
+
 	//____ setGfxPadding() ____________________________________________________
 
 	void FrameMeterSkin::setGfxPadding(BorderI padding)
@@ -82,15 +109,17 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
+	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
+			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+
 			pDevice->setBlitSource(frames.surface());
-			pDevice->blitNinePatch(_canvas.px(), pointsToPixels(m_gfxPadding ), RectI(pFrame->source(), frames.frameSize()), m_gfxPadding);
+			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding ), RectI(pFrame->source(), frames.frameSize()), m_gfxPadding);
 		}
 	}
 
@@ -99,6 +128,7 @@ namespace wg
 	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Support flip!
+		//TODO: Support tint!
 
 		if (!canvas.contains(ofs))
 			return false;
@@ -126,6 +156,23 @@ namespace wg
 			return Rect();
 		else
 			return canvas;
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void FrameMeterSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+				m_bOpaque = false;
+			else
+				m_bOpaque = frames._surface() ? frames._surface()->isOpaque() : false;
+		}
+		else
+			m_bOpaque = false;
 	}
 
 	//____ _valueToFrame() _________________________________________________
@@ -166,9 +213,7 @@ namespace wg
 
 	void FrameMeterSkin::_didSetAnimSurface(CAnimFrames* pComponent)
 	{
-		auto pSurf = pComponent->_surface();
-
-		m_bOpaque = pSurf ? pSurf->isOpaque() : false;
+		_updateOpacityFlag();
 	}
 
 	//____ _object() __________________________________________________________

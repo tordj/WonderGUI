@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -246,9 +247,9 @@ namespace wg
 		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
 	}
 
-	//____ setTint() __________________________________________________________
+	//____ setColor() __________________________________________________________
 
-	void BlockSkin::setTint(Color tint)
+	void BlockSkin::setColor(Color tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -257,7 +258,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(State state, Color tint)
+	void BlockSkin::setColor(State state, Color tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -267,7 +268,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void BlockSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -280,13 +281,21 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ tint() _____________________________________________________________
+	//____ color() _____________________________________________________________
 
-	Color BlockSkin::tint(State state) const
+	Color BlockSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
 
+	//____ setGradient() ______________________________________________________
+
+	void BlockSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpaqueFlags();
+	}
 
 
 	//____ setBlendMode() _____________________________________________________
@@ -326,19 +335,12 @@ namespace wg
 		if( !m_pSurface )
 			return;
 
-		BlendMode savedBlendMode = BlendMode::Undefined;
-		if (m_blendMode != BlendMode::Undefined)
-		{
-			savedBlendMode = pDevice->blendMode();
-			pDevice->setBlendMode(m_blendMode);
-		}
+		int idx = _stateToIndex(state);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
-		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
+		CoordI blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch( canvas.px(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
-
-		if (m_blendMode != BlendMode::Undefined)
-			pDevice->setBlendMode(savedBlendMode);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -422,7 +424,9 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		else if (m_bGradient && !m_gradient.isOpaque())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend )
 		{
 			m_bOpaque = m_pSurface->isOpaque();
 			bTintDecides = m_bOpaque;
@@ -433,7 +437,11 @@ namespace wg
 		if (bTintDecides)
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
+			{
 				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+				if (m_stateColors[i].a != 255)
+					m_bOpaque = false;
+			}
 		}
 		else
 		{

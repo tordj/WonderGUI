@@ -52,7 +52,7 @@ namespace wg
 		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, Color minColor, Color maxColor, Color emptyColor = Color::Transparent,
 										float hubSize = 0.f, Color hubColor = Color::Transparent, 
 										Color backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
-										const BorderI& contentPadding = BorderI(), bool bStaticSections = true, bool bRectangular = false);
+										const BorderI& contentPadding = BorderI(), bool bStaticSlices = true, bool bRectangular = false);
 
 		//.____ Identification __________________________________________
 
@@ -60,6 +60,9 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance ____________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
 
 		bool	setSlices(std::initializer_list<Slice> slices);
 
@@ -91,6 +94,7 @@ namespace wg
 
 		void	setBackColor(Color back);
 		Color	backColor() const { return m_backColor; }
+
 
 		//.____ Geometry _________________________________________________
 
@@ -128,6 +132,7 @@ namespace wg
 
 		BorderI		m_gfxPadding;
 
+		BlendMode	m_blendMode = BlendMode::Blend;
 		Color		m_hubColor = Color::Transparent;
 		Color		m_backColor = Color::Transparent;
 		Color		m_emptyColor = Color::DarkBlue;

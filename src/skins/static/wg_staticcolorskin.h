@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticColorSkin_p create( Color col );
+		static StaticColorSkin_p create( HiColor col );
 
 		//.____ Identification __________________________________________
 
@@ -61,10 +61,10 @@ namespace wg
 							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticColorSkin( Color col );
+		StaticColorSkin( HiColor col );
 		~StaticColorSkin() {};
 
-		Color		m_color;
+		HiColor		m_color;
 		BlendMode	m_blendMode = BlendMode::Blend;
 
 	};

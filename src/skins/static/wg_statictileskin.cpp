@@ -76,16 +76,15 @@ namespace wg
 
 	//____ setTint() __________________________________________________________
 
-	void StaticTileSkin::setTint(HiColor tintColor)
+	void StaticTileSkin::setColor(HiColor tintColor)
 	{
-		m_tintColor = tintColor;
-		m_bGradient = false;
+		m_color = tintColor;
 		_updateOpacityFlag();
 	}
 
-	void StaticTileSkin::setTint(const Gradient& gradient)
+	void StaticTileSkin::setGradient(const Gradient& gradient)
 	{
-		m_tintGradient = gradient;
+		m_gradient = gradient;
 		m_bGradient = true;
 		_updateOpacityFlag();
 	}
@@ -97,7 +96,7 @@ namespace wg
 		if (!m_pSurface)
 			return;
 
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_tintGradient, m_bGradient );
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient );
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->scaleTile(canvas.px(),MU::scale());
@@ -120,8 +119,7 @@ namespace wg
 			m_bOpaque = true;
 		else if (m_blendMode == BlendMode::Blend)
 		{
-			if ((m_bGradient && !m_tintGradient.isOpaque()) ||
-				(!m_bGradient && m_tintColor.a != 4096) )
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096 )
 				m_bOpaque = false;
 			else
 				m_bOpaque = m_pSurface->isOpaque();

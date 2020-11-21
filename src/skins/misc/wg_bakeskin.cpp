@@ -29,6 +29,7 @@
 #include <cassert>
 #include <wg_cdynamicvector.impl.h>
 #include <wg_internal.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -90,13 +91,24 @@ namespace wg
 	void BakeSkin::setBlendMode(BlendMode blend)
 	{
 		m_blendMode = blend;
+		_onModified();
 	}
 
-	//____ setTintColor() _____________________________________________________
+	//____ setColor() _____________________________________________________
 
-	void BakeSkin::setTintColor(Color color)
+	void BakeSkin::setColor(Color color)
 	{
 		m_tintColor = color;
+		_onModified();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void BakeSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_onModified();
 	}
 
 	//____ setSkinInSkin() ____________________________________________________
@@ -311,6 +323,8 @@ namespace wg
 
 		// Blit baked graphics to canvas.
 
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_tintColor, canvas, m_gradient, m_bGradient);
+
 		pDevice->setBlitSource(m_pBakeSurface);
 		pDevice->blit(canvas.pos().px(), { 0,0,canvas.size().px() });
 	}
@@ -486,7 +500,7 @@ namespace wg
 			bOpaque = true;
 			opaqueStates = 0xFFFFFFFF;
 		}
-		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 255)
+		else if (m_blendMode != BlendMode::Blend || m_tintColor.a < 255 || (m_bGradient && !m_gradient.isOpaque()) )
 		{
 			bOpaque = false;
 			opaqueStates = 0;
