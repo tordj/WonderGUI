@@ -23,6 +23,8 @@
 #define WG_OBJECT_DOT_H
 #pragma once
 
+#include <atomic>
+
 #include <wg_pointers.h>
 #include <wg_types.h>
 
@@ -85,14 +87,14 @@ namespace wg
 		inline void _incRefCount() { m_refCount++; }
 		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
 
-		inline void _incRefCount(int amount) { m_refCount += amount; }
-		inline void _decRefCount(int amount) { m_refCount -= amount; if( m_refCount == 0 ) _destroy(); }
+		inline void _incRefCount(int amount) { m_refCount.fetch_add(amount); }
+		inline void _decRefCount(int amount) { m_refCount.fetch_sub(amount); if( m_refCount == 0 ) _destroy(); }
 
 		WeakPtrHub *	m_pWeakPtrHub = nullptr;
 
 	private:
 		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
-		int				m_refCount = 0;
+		std::atomic_int	m_refCount = 0;
 	};
 
 
