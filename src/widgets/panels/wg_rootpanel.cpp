@@ -369,7 +369,10 @@ namespace wg
 
 			RectI myClip = clip.px();
 
-			m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, 0);
+			if (m_pCanvas)
+				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, 0);
+			else
+				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &myClip, 0);
 
 			// Render our new overlays
 

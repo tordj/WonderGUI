@@ -2585,7 +2585,7 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
 	pBoxSkin->setLayer(2);
 	
-	auto pShadowSkin = StaticBoxSkin::create(20,{ 255,255,255,128 }, Color::Transparent);
+	auto pShadowSkin = StaticBoxSkin::create(20,{ 4096,4096,4096,2048 }, Color::Transparent);
 	pShadowSkin->setContentPadding({ 0,40,40,0 });
 	pShadowSkin->setLayer(1);
 	pShadowSkin->setBlendMode(BlendMode::Max);

@@ -570,25 +570,6 @@ namespace wg
 
 	void GlGfxDevice::_canvasWasChanged()
 	{
-		// Do we need to end command and execute buffer if we
-		// put commands in the queue instead?
-
-		_endCommand();
-		_executeBuffer();
-
-		//
-
-		_setCanvas(static_cast<GlSurface*>(m_pCanvas.rawPtr()), m_canvasSize.w, m_canvasSize.h);
-
-		_setBlendMode(m_blendMode);
-		_setMorphFactor(m_morphFactor);
-
-		if (m_bTintGradient)
-			_setTintGradient(m_tintGradientRect, m_tintGradient);
-		else
-			_setTintColor(m_tintColor);
-
-		_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
 
 		_renderLayerWasChanged();
 	}
@@ -618,15 +599,34 @@ namespace wg
 			m_canvasYmul = 1;
 
 			pRenderSurface = (m_renderLayer == 0) ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
-
-			bool	bClear = false;
 		}
 
+		// Do we need to end command and execute buffer if we
+		// put commands in the queue instead?
+
 		_endCommand();
-		_beginStateCommand(Command::SetCanvas, 2);
-		m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
-		m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
-		m_surfaceBuffer[m_surfaceOfs++] = (GlSurface*) pRenderSurface;
+		_executeBuffer();
+
+		//
+
+		_setCanvas(static_cast<GlSurface*>(pRenderSurface), m_canvasSize.w, m_canvasSize.h);
+
+		_setBlendMode(m_blendMode);
+		_setMorphFactor(m_morphFactor);
+
+		if (m_bTintGradient)
+			_setTintGradient(m_tintGradientRect, m_tintGradient);
+
+		_setTintColor(m_tintColor);
+
+		_setBlitSource(static_cast<GlSurface*>(m_pBlitSource.rawPtr()));
+
+
+	//	_endCommand();
+	//	_beginStateCommand(Command::SetCanvas, 2);
+	//	m_commandBuffer[m_commandOfs++] = m_canvasSize.w;
+	//	m_commandBuffer[m_commandOfs++] = m_canvasSize.h;
+	//	m_surfaceBuffer[m_surfaceOfs++] = (GlSurface*) pRenderSurface;
 
 		if (bClear)
 			_clearRenderLayer();
