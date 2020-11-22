@@ -61,8 +61,8 @@ namespace wg
 		void			setBlendMode( BlendMode blend );
 		BlendMode		blendMode() const { return m_blendMode; }
 
-		void			setColor(Color color);
-		Color			color() const { return m_tintColor; }
+		void			setColor(HiColor color);
+		HiColor			color() const { return m_tintColor; }
 
 		void			setGradient(const Gradient& gradient);
 		Gradient		gradient() const { return m_gradient; }
@@ -127,7 +127,7 @@ namespace wg
 
 		Surface_p			m_pBakeSurface;
 		BlendMode			m_blendMode = BlendMode::Blend;
-		Color				m_tintColor = Color::White;
+		HiColor				m_tintColor = Color::White;
 		Gradient			m_gradient;
 		bool				m_bGradient = false;
 		bool				m_bContentPaddingSet = false;

@@ -169,9 +169,9 @@ namespace wg
 
 
 
-	//____ setLayerTint() _________________________________________________________
+	//____ setLayerColor() _________________________________________________________
 
-	bool MultiBlockSkin::setLayerTint(int layerIdx, Color tintColor)
+	bool MultiBlockSkin::setLayerColor(int layerIdx, HiColor tintColor)
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
@@ -188,7 +188,7 @@ namespace wg
 	}
 
 
-	bool MultiBlockSkin::setLayerTint(int layerIdx, std::initializer_list< std::pair<State,Color> > stateColors)
+	bool MultiBlockSkin::setLayerColor(int layerIdx, std::initializer_list< std::pair<State,HiColor> > stateColors)
 	{
 		auto& layer = m_layers.at(layerIdx-1);
 
@@ -392,7 +392,7 @@ namespace wg
 
 		for (auto& layer : m_layers)
 		{
-			if (layer.blendMode == BlendMode::Replace || (layer.blendMode == BlendMode::Blend && layer.pSurface->isOpaque() && layer.tintColor[stateIdx].a == 255) )
+			if (layer.blendMode == BlendMode::Replace || (layer.blendMode == BlendMode::Blend && layer.pSurface->isOpaque() && layer.tintColor[stateIdx].a == 4096) )
 			{
 				bOpaque = true;
 				break;

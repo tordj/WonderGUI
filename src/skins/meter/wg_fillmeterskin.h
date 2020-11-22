@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, Color fillColorEmpty, Color fillColorFull, Color backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFillStartOutside = false);
+		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFillStartOutside = false);
 
 		//.____ Identification __________________________________________
 
@@ -64,14 +64,14 @@ namespace wg
 		void	setGfxPadding(BorderI padding);
 		Border	gfxPadding() const { return m_barPadding; }
 
-		void	setBackColor(Color back);
-		Color	backColor() const { return m_backColor; }
+		void	setBackColor(HiColor back);
+		HiColor	backColor() const { return m_backColor; }
 
-		void	setFillColors(Color empty, Color full);
-		void	setFillColorEmpty(Color empty);
-		Color	fillColorEmpty() const { return m_barColorEmpty; }
-		void	setFillColorFull(Color full);
-		Color	fillColorFull() const { return m_barColorFull; }
+		void	setFillColors(HiColor empty, HiColor full);
+		void	setFillColorEmpty(HiColor empty);
+		HiColor	fillColorEmpty() const { return m_barColorEmpty; }
+		void	setFillColorFull(HiColor full);
+		HiColor	fillColorFull() const { return m_barColorFull; }
 
 		void	setFillStartOutside(bool bStartOutside);
 		bool	isFillStartOutside() const { return m_bBarStartOutside; }
@@ -90,7 +90,7 @@ namespace wg
 
 	private:
 		FillMeterSkin();
-		FillMeterSkin(	Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, 
+		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
 						const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside );
 		~FillMeterSkin() {};
 
@@ -102,9 +102,9 @@ namespace wg
 		Direction	m_direction;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside;
-		Color		m_barColorEmpty;
-		Color		m_barColorFull;
-		Color		m_backColor;
+		HiColor		m_barColorEmpty;
+		HiColor		m_barColorFull;
+		HiColor		m_backColor;
 		Size		m_preferredSize;
 	};
 

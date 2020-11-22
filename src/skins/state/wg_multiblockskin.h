@@ -62,8 +62,8 @@ namespace wg
 		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks);		// DEPRECATED!!!
 		int		addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
 
-		bool	setLayerTint(int layerIdx, Color tintColor);
-		bool	setLayerTint(int layerIdx, std::initializer_list< std::pair<State,Color> > stateColors);
+		bool	setLayerColor(int layerIdx, HiColor tintColor);
+		bool	setLayerColor(int layerIdx, std::initializer_list< std::pair<State,HiColor> > stateColors);
 		bool	setLayerBlendMode(int layerIdx, BlendMode blendMode);
 
 		//.____ Geometry _________________________________________________

@@ -42,8 +42,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
-		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static BoxSkin_p 	create(BorderI frame, HiColor fillColor, HiColor frameColor );
+		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,HiColor,HiColor> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -58,10 +58,10 @@ namespace wg
 
 		void		setFrame( BorderI frame );
 
-		void						setColors(Color fill, Color frame);
-		void						setColors(State state, Color fill, Color frame);
-		void						setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors);
-		std::tuple<Color, Color>	colors(State state) const;
+		void						setColors(HiColor fill, HiColor frame);
+		void						setColors(State state, HiColor fill, HiColor frame);
+		void						setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors);
+		std::tuple<HiColor, HiColor>	colors(State state) const;
 
 		//.____ Geometry _________________________________________________
 
@@ -88,7 +88,7 @@ namespace wg
 
 	private:
 		BoxSkin();
-		BoxSkin(BorderI frame, Color fillColor, Color frameColor  );
+		BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor  );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
@@ -99,8 +99,8 @@ namespace wg
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Color		m_fillColor[StateEnum_Nb];
-		Color		m_frameColor[StateEnum_Nb];
+		HiColor		m_fillColor[StateEnum_Nb];
+		HiColor		m_frameColor[StateEnum_Nb];
 	};
 
 

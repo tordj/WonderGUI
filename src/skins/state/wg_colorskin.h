@@ -42,8 +42,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static ColorSkin_p	create();
-		static ColorSkin_p create(Color color,  BorderI contentPadding = BorderI() );
-		static ColorSkin_p	create(std::initializer_list< std::tuple<State,Color> > stateColors, BorderI contentPadding = BorderI() );
+		static ColorSkin_p create(HiColor color,  BorderI contentPadding = BorderI() );
+		static ColorSkin_p	create(std::initializer_list< std::tuple<State,HiColor> > stateColors, BorderI contentPadding = BorderI() );
 
 		//.____ Identification __________________________________________
 
@@ -57,10 +57,10 @@ namespace wg
 		BlendMode	blendMode() const { return m_blendMode; }
 
 
-		void		setColor(Color fill);
-		void		setColor(State state, Color fill);
-		void		setColor(std::initializer_list< std::tuple<State, Color> > stateColors);
-		Color		color(State state) const;
+		void		setColor(HiColor fill);
+		void		setColor(State state, HiColor fill);
+		void		setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors);
+		HiColor		color(State state) const;
 
 
 		//.____ Misc ____________________________________________________
@@ -92,7 +92,7 @@ namespace wg
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Color		m_color[StateEnum_Nb];
+		HiColor		m_color[StateEnum_Nb];
 	};
 
 

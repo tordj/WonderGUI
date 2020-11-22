@@ -249,7 +249,7 @@ namespace wg
 
 	//____ setColor() __________________________________________________________
 
-	void BlockSkin::setColor(Color tint)
+	void BlockSkin::setColor(HiColor tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -258,7 +258,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setColor(State state, Color tint)
+	void BlockSkin::setColor(State state, HiColor tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -268,7 +268,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void BlockSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -283,7 +283,7 @@ namespace wg
 
 	//____ color() _____________________________________________________________
 
-	Color BlockSkin::color(State state) const
+	HiColor BlockSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
@@ -438,8 +438,8 @@ namespace wg
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
 			{
-				m_bStateOpaque[i] = m_stateColors[i].a == 255;
-				if (m_stateColors[i].a != 255)
+				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
+				if (m_stateColors[i].a != 4096)
 					m_bOpaque = false;
 			}
 		}

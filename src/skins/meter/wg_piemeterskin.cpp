@@ -41,8 +41,8 @@ namespace wg
 	}
 
 
-	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, Color minColor, Color maxColor, Color emptyColor,
-										float hubSize, Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding,
+	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor,
+										float hubSize, HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
 										bool bStaticSections, bool bRectangular)
 	{
 		return PieMeterSkin_p(new PieMeterSkin(start, min, max, minColor, maxColor, emptyColor, hubSize, hubColor, backColor, piePadding, contentPadding, bStaticSections, bRectangular));
@@ -63,8 +63,8 @@ namespace wg
 		m_bIgnoresValue = false;
 	}
 
-	PieMeterSkin::PieMeterSkin(	float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize,
-								Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding,
+	PieMeterSkin::PieMeterSkin(	float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize,
+								HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
 								bool bStaticSections, bool bRectangular)
 	{
 		m_rangeStart = start;
@@ -199,14 +199,14 @@ namespace wg
 
 	//____ setEmptyColor() _____________________________________________________
 
-	void PieMeterSkin::setEmptyColor(Color empty)
+	void PieMeterSkin::setEmptyColor(HiColor empty)
 	{
 		m_emptyColor = empty;
 	}
 
 	//____ setHub() _____________________________________________________
 
-	void PieMeterSkin::setHub(float size, Color color)
+	void PieMeterSkin::setHub(float size, HiColor color)
 	{
 		m_hubSize = size;
 		m_hubColor = color;
@@ -221,14 +221,14 @@ namespace wg
 
 	//____ setHubColor() _____________________________________________________
 
-	void PieMeterSkin::setHubColor(Color hubColor)
+	void PieMeterSkin::setHubColor(HiColor hubColor)
 	{
 		m_hubColor = hubColor;
 	}
 
 	//____ setBackColor() _____________________________________________________
 
-	void PieMeterSkin::setBackColor(Color back)
+	void PieMeterSkin::setBackColor(HiColor back)
 	{
 		m_backColor = back;
 	}
@@ -300,7 +300,7 @@ namespace wg
 		float sliceSizes[c_maxSlices];
 		Color sliceColors[c_maxSlices];
 
-		HiColor hubColor = m_hubColor.a == 255 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
+		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
 
 		float totalLength = m_minRange + value * (m_maxRange - m_minRange);
 
@@ -414,7 +414,7 @@ namespace wg
 	{
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 255 || (m_hubSize > 0.f && m_hubColor.a < 255) )
+		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 4096 || (m_hubSize > 0.f && m_hubColor.a < 4096) )
 			m_bOpaque = false;
 		else
 		{
@@ -426,7 +426,7 @@ namespace wg
 				totalAlpha += m_slices[i].maxColor.a;
 			}
 
-			m_bOpaque = (totalAlpha == m_nSlices * 2 * 255);
+			m_bOpaque = (totalAlpha == m_nSlices * 2 * 4096);
 		}
 	}
 

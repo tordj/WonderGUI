@@ -40,14 +40,14 @@ namespace wg
 		return ColorSkin_p(new ColorSkin());
 	}
 
-	ColorSkin_p ColorSkin::create(Color color, BorderI contentPadding )
+	ColorSkin_p ColorSkin::create(HiColor color, BorderI contentPadding )
 	{
 		auto p = new ColorSkin(color);
 		p->setContentPadding(contentPadding);
 		return p;
 	}
 
-	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, Color> > stateColors, BorderI contentPadding )
+	ColorSkin_p ColorSkin::create(std::initializer_list< std::tuple<State, HiColor> > stateColors, BorderI contentPadding )
 	{
 		auto p = new ColorSkin();
 		p->setColor(stateColors);
@@ -90,17 +90,17 @@ namespace wg
 
 	//____ setColor() ________________________________________________________
 
-	void ColorSkin::setColor(Color color)
+	void ColorSkin::setColor(HiColor color)
 	{
 		m_stateColorMask = 1;
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 			m_color[i] = color;
 
-		m_bOpaque = (color.a == 255);
+		m_bOpaque = (color.a == 4096);
 	}
 
-	void ColorSkin::setColor(State state, Color color)
+	void ColorSkin::setColor(State state, HiColor color)
 	{
 		int i = _stateToIndex(state);
 
@@ -112,7 +112,7 @@ namespace wg
 		_updateUnsetColors();
 	}
 
-	void ColorSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateColors)
+	void ColorSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateColors)
 	{
 		for (auto& state : stateColors)
 		{
@@ -127,7 +127,7 @@ namespace wg
 
 	//____ color() ______________________________________________________
 
-	Color ColorSkin::color(State state) const
+	HiColor ColorSkin::color(State state) const
 	{
 		int i = _stateToIndex(state);
 		return m_color[i];
@@ -201,7 +201,7 @@ namespace wg
 				for (int i = 0; i < StateEnum_Nb; i++)
 					alpha += (int)m_color[i].a;
 
-				m_bOpaque = (alpha == 255 * StateEnum_Nb);
+				m_bOpaque = (alpha == 4096 * StateEnum_Nb);
 				break;
 			}
 

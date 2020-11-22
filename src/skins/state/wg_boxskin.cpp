@@ -40,12 +40,12 @@ namespace wg
 		return BoxSkin_p(new BoxSkin());
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, Color fillColor, Color frameColor )
+	BoxSkin_p BoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor )
 	{
 		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
+	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors )
 	{
 		BoxSkin_p p = new BoxSkin();
 
@@ -71,7 +71,7 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	BoxSkin::BoxSkin(BorderI frame, Color fillColor, Color frameColor )
+	BoxSkin::BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor )
 	{
 		m_frame = frame;
 		setColors(fillColor, frameColor);
@@ -107,7 +107,7 @@ namespace wg
 
 	//____ setColors() ________________________________________________________
 
-	void BoxSkin::setColors(Color fill, Color frame)
+	void BoxSkin::setColors(HiColor fill, HiColor frame)
 	{
 		m_stateColorMask = 1;
 
@@ -118,13 +118,13 @@ namespace wg
 		}
 
 		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
-		if (fill.a == 255 && (!hasFrame || frame.a == 255))
+		if (fill.a == 4096 && (!hasFrame || frame.a == 4096))
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
 	}
 
-	void BoxSkin::setColors(State state, Color fill, Color frame)
+	void BoxSkin::setColors(State state, HiColor fill, HiColor frame)
 	{
 		int i = _stateToIndex(state);
 
@@ -137,7 +137,7 @@ namespace wg
 		_updateOpaqueFlag();
 	}
 
-	void BoxSkin::setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors)
+	void BoxSkin::setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors)
 	{
 		for (auto& state : stateColors)
 		{
@@ -153,7 +153,7 @@ namespace wg
 
 	//____ colors() ______________________________________________________
 
-	std::tuple<Color, Color> BoxSkin::colors(State state) const
+	std::tuple<HiColor, HiColor> BoxSkin::colors(State state) const
 	{
 		int i = _stateToIndex(state);
 		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
@@ -252,9 +252,9 @@ namespace wg
 
 			Rect center = canvas - Border(m_frame).aligned();
 			if( center.contains(ofs) )
-				opacity = m_fillColor[i].a;
+				opacity = m_fillColor[i].a * 4096/255;
 			else
-				opacity = m_frameColor[i].a;
+				opacity = m_frameColor[i].a * 4096/255;
 		}
 
 		return ( opacity >= opacityTreshold );
@@ -265,7 +265,7 @@ namespace wg
 	bool BoxSkin::isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);
-		if( m_bOpaque || (m_fillColor[i].a == 255 && (m_frameColor[i] == 255 || (m_frame.width() + m_frame.height() == 0))) )
+		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_frameColor[i].a == 4096 || (m_frame.width() + m_frame.height() == 0))) )
 			return true;
 
 		return false;
@@ -279,11 +279,11 @@ namespace wg
 		Rect center = Rect(canvasSize) - Border(m_frame).aligned();
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
-			return m_fillColor[i].a == 255;
+			return m_fillColor[i].a == 4096;
 		else if( !center.intersectsWith(rect) )
-			return m_frameColor[i].a == 255;
+			return m_frameColor[i].a == 4096;
 
-		return m_fillColor[i].a == 255 && m_frameColor[i].a == 255;
+		return m_fillColor[i].a == 4096 && m_frameColor[i].a == 4096;
 	}
 
 	//____ dirtyRect() ______________________________________________________
@@ -328,7 +328,7 @@ namespace wg
 
 				bool hasFrame = (m_frame.width() + m_frame.height() > 0);
 
-				if (alpha == 255 * StateEnum_Nb && (!hasFrame || frameAlpha == 255 * StateEnum_Nb))
+				if (alpha == 4096 * StateEnum_Nb && (!hasFrame || frameAlpha == 4096 * StateEnum_Nb))
 					m_bOpaque = true;
 				else
 					m_bOpaque = false;

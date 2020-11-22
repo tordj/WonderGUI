@@ -134,7 +134,7 @@ namespace wg
 
 	//____ setColor() __________________________________________________________
 
-	void TileSkin::setColor(Color tint)
+	void TileSkin::setColor(HiColor tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -143,7 +143,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setColor(State state, Color tint)
+	void TileSkin::setColor(State state, HiColor tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -153,7 +153,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setColor(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void TileSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -168,7 +168,7 @@ namespace wg
 
 	//____ color() _____________________________________________________________
 
-	Color TileSkin::color(State state) const
+	HiColor TileSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
@@ -297,7 +297,7 @@ namespace wg
 		if (bTintDecides)
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
-				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
 		}
 		else
 		{

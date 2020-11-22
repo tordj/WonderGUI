@@ -40,7 +40,7 @@ namespace wg
 		return FillMeterSkin_p(new FillMeterSkin());
 	}
 
-	FillMeterSkin_p FillMeterSkin::create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
 	{
 		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
 	}
@@ -59,7 +59,7 @@ namespace wg
 		_updateOpacity();
 	}
 
-	FillMeterSkin::FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
+	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
 		m_direction(direction),
 		m_barColorEmpty(barColorEmpty),
 		m_barColorFull(barColorFull),
@@ -124,7 +124,7 @@ namespace wg
 
 	//____ setBackColor() _____________________________________________________
 
-	void FillMeterSkin::setBackColor(Color back)
+	void FillMeterSkin::setBackColor(HiColor back)
 	{
 		m_backColor = back;
 		_updateOpacity();
@@ -132,7 +132,7 @@ namespace wg
 
 	//____ setFillColors() ____________________________________________________
 
-	void FillMeterSkin::setFillColors(Color empty, Color full)
+	void FillMeterSkin::setFillColors(HiColor empty, HiColor full)
 	{
 		m_barColorEmpty = empty;
 		m_barColorFull = full;
@@ -141,7 +141,7 @@ namespace wg
 
 	//____ setFillColorEmpty() ________________________________________________
 
-	void FillMeterSkin::setFillColorEmpty(Color empty)
+	void FillMeterSkin::setFillColorEmpty(HiColor empty)
 	{
 		m_barColorEmpty = empty;
 		_updateOpacity();
@@ -149,7 +149,7 @@ namespace wg
 
 	//____ setFillColorFull() ________________________________________________
 
-	void FillMeterSkin::setFillColorFull(Color full)
+	void FillMeterSkin::setFillColorFull(HiColor full)
 	{
 		m_barColorFull = full;
 		_updateOpacity();
@@ -377,7 +377,7 @@ namespace wg
 		else if (m_blendMode != BlendMode::Blend)
 			m_bOpaque = false;
 		else
-			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 4096 * 3 ? true : false;
 	}
 
 

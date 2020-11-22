@@ -63,10 +63,10 @@ namespace wg
 
 		Surface_p surface(State state = StateEnum::Normal) const;
 
-		void	setColor(Color tint);
-		void	setColor(State state, Color tint);
-		void	setColor(std::initializer_list< std::tuple<State, Color> > stateTints);
-		Color	color(State state) const;
+		void	setColor(HiColor tint);
+		void	setColor(State state, HiColor tint);
+		void	setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
+		HiColor	color(State state) const;
 
 		void	setGradient(const Gradient& gradient);
 		Gradient gradient() const { return m_gradient; }
@@ -110,7 +110,7 @@ namespace wg
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
 		Surface_p	m_stateSurfaces[StateEnum_Nb];
-		Color		m_stateColors[StateEnum_Nb];
+		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 		Gradient	m_gradient;
 		bool		m_bGradient = false;

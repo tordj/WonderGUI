@@ -66,10 +66,10 @@ namespace wg
 		void		setBlocks(std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 });
 		RectI		block(State state) const;
 
-		void		setColor(Color tint);
-		void		setColor(State state, Color tint);
-		void		setColor(std::initializer_list< std::tuple<State, Color> > stateTints);
-		Color		color(State state) const;
+		void		setColor(HiColor tint);
+		void		setColor(State state, HiColor tint);
+		void		setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
+		HiColor		color(State state) const;
 
 		void		setGradient(const Gradient& gradient);
 		Gradient	gradient() const { return m_gradient; }
@@ -139,7 +139,7 @@ namespace wg
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
 		CoordI		m_stateBlocks[StateEnum_Nb];
-		Color		m_stateColors[StateEnum_Nb];
+		HiColor		m_stateColors[StateEnum_Nb];
 		bool		m_bStateOpaque[StateEnum_Nb];
 	};
 
