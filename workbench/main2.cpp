@@ -2173,7 +2173,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color(0x7F808080)},{StateEnum::Hovered,Color(0x7FA0A0A0)},{StateEnum::Pressed,Color(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = Slider::create();
@@ -2209,7 +2209,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 	auto pBaseLayer = FlexPanel::create();
 	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color(0x7F808080)},{StateEnum::Hovered,Color(0x7FA0A0A0)},{StateEnum::Pressed,Color(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = RangeSlider::create();

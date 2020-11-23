@@ -959,7 +959,7 @@ namespace wg
 
 	//____ fill() ____ [standard] __________________________________________________
 
-	void GlGfxDevice::fill(const RectI& rect, const Color& col)
+	void GlGfxDevice::fill(const RectI& rect, HiColor col)
 	{
 		// Skip calls that won't affect destination
 
@@ -1025,17 +1025,15 @@ namespace wg
 			}
 		}
 
-		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.r];
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.g];
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.b];
-		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f;
+		m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
 	}
 
 	//____ fill() ____ [subpixel] __________________________________________________
 
-	void GlGfxDevice::fill(const RectF& rect, const Color& col)
+	void GlGfxDevice::fill(const RectF& rect, HiColor col)
 	{
 		// Skip calls that won't affect destination
 
@@ -1109,12 +1107,10 @@ namespace wg
 
 		// Provide color	
 
-		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.r];
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.g];
-		m_extrasBufferData[m_extrasOfs++] = pConv[col.b];
-		m_extrasBufferData[m_extrasOfs++] = col.a / 255.f;
+		m_extrasBufferData[m_extrasOfs++] = col.r / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.g / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.b / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = col.a / 4096.f;
 
 		// Provide rectangle center and radius
 
@@ -1129,7 +1125,7 @@ namespace wg
 
 	//____ plotPixels() ______________________________________________________
 
-	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
+	void GlGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const HiColor * pColors)
 	{
 		if (nPixels == 0)
 			return;
@@ -1159,12 +1155,12 @@ namespace wg
 					m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
 					m_vertexOfs++;
 
-					Color color = pColors[pixel];
+					HiColor color = pColors[pixel];
 
-					m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
-					m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
-					m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
-					m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
+					m_extrasBufferData[m_extrasOfs++] = color.r / 4096.f;
+					m_extrasBufferData[m_extrasOfs++] = color.g / 4096.f;
+					m_extrasBufferData[m_extrasOfs++] = color.b / 4096.f;
+					m_extrasBufferData[m_extrasOfs++] = color.a / 4096.f;
 
 					if (m_vertexOfs == c_vertexBufferSize || m_extrasOfs == c_extrasBufferSize)
 					{
@@ -1179,7 +1175,7 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
 	{
 		if (m_vertexOfs > c_vertexBufferSize - 6 || m_extrasOfs > c_extrasBufferSize - 8 || m_clipCurrOfs == -1 )
 		{
@@ -1290,12 +1286,10 @@ namespace wg
 		m_vertexBufferData[m_vertexOfs].extrasOfs = m_extrasOfs/4;
 		m_vertexOfs++;
 
-		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
-		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
+		m_extrasBufferData[m_extrasOfs++] = color.r / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.g / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.b / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.a / 4096.f;
 
 		m_extrasBufferData[m_extrasOfs++] = s;
 		m_extrasBufferData[m_extrasOfs++] = w;
@@ -1305,7 +1299,7 @@ namespace wg
 
 	//____ drawLine() ____ [start/direction] __________________________________________________
 
-	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
+	void GlGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
 	{
 		// Skip calls that won't affect destination
 
@@ -1418,12 +1412,10 @@ namespace wg
 
 		// Provide color
 
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.r];
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.g];
-		m_extrasBufferData[m_extrasOfs++] = pConv[color.b];
-		m_extrasBufferData[m_extrasOfs++] = color.a / 255.f;
+		m_extrasBufferData[m_extrasOfs++] = color.r / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.g / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.b / 4096.f;
+		m_extrasBufferData[m_extrasOfs++] = color.a / 4096.f;
 
 		// Provide rectangle center and raidus.
 
@@ -1622,7 +1614,7 @@ namespace wg
 
 	//____ _transformDrawSegments() ______________________________________________________
 
-	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
+	void GlGfxDevice::_transformDrawSegments( const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2] )
 	{
 		if (!_dest.intersectsWith(m_clipBounds))
 			return;
@@ -1790,8 +1782,7 @@ namespace wg
 
 		// Add colors to segmentsTintTexMap
 
-		float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-		const Color* pSegCol = pSegmentColors;
+		const HiColor* pSegCol = pSegmentColors;
 
 		uint16_t* pMapRow = m_segmentsTintTexMap[m_segmentsTintTexOfs];
 		int			mapPitch = c_maxSegments * 4 * 2;
@@ -1803,10 +1794,10 @@ namespace wg
 			{
 				for (int i = 0; i < nSegments; i++)
 				{
-					uint16_t r = uint16_t(pConv[pSegCol->r] * 65535);
-					uint16_t g = uint16_t(pConv[pSegCol->g] * 65535);
-					uint16_t b = uint16_t(pConv[pSegCol->b] * 65535);
-					uint16_t a = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					uint16_t r = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					uint16_t g = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					uint16_t b = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					uint16_t a = uint16_t(int(pSegCol->a) * 65535 / 4096);
 
 					pMapRow[i * 8 + 0] = b;
 					pMapRow[i * 8 + 1] = g;
@@ -1834,16 +1825,16 @@ namespace wg
 			{
 				for (int i = 0; i < nSegments; i++)
 				{
-					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
-					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
-					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
-					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					uint16_t r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					uint16_t g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					uint16_t b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					uint16_t a1 = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
-					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
-					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
-					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
-					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					uint16_t r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					uint16_t g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					uint16_t b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					uint16_t a2 = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
 					pMapRow[i * 8 + 0] = b1;
@@ -1871,16 +1862,16 @@ namespace wg
 			{
 				for (int i = 0; i < nSegments; i++)
 				{
-					int r1 = uint16_t(pConv[pSegCol->r] * 65535);
-					int g1 = uint16_t(pConv[pSegCol->g] * 65535);
-					int b1 = uint16_t(pConv[pSegCol->b] * 65535);
-					int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					uint16_t r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					uint16_t g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					uint16_t b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					uint16_t a1 = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
-					int r2 = uint16_t(pConv[pSegCol->r] * 65535);
-					int g2 = uint16_t(pConv[pSegCol->g] * 65535);
-					int b2 = uint16_t(pConv[pSegCol->b] * 65535);
-					int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					uint16_t r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					uint16_t g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					uint16_t b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					uint16_t a2 = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
 					pMapRow[i * 8 + 0] = b1;
@@ -1908,28 +1899,28 @@ namespace wg
 			{
 				for (int i = 0; i < nSegments; i++)
 				{
-					pMapRow[i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
-					pMapRow[i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
-					pMapRow[i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
-					pMapRow[i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pMapRow[i * 8 + 0] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					pMapRow[i * 8 + 1] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					pMapRow[i * 8 + 2] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					pMapRow[i * 8 + 3] = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
-					pMapRow[i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
-					pMapRow[i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
-					pMapRow[i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
-					pMapRow[i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pMapRow[i * 8 + 4] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					pMapRow[i * 8 + 5] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					pMapRow[i * 8 + 6] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					pMapRow[i * 8 + 7] = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
-					pMapRow[mapPitch + i * 8 + 4] = uint16_t(pConv[pSegCol->b] * 65535);
-					pMapRow[mapPitch + i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
-					pMapRow[mapPitch + i * 8 + 6] = uint16_t(pConv[pSegCol->r] * 65535);
-					pMapRow[mapPitch + i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pMapRow[mapPitch + i * 8 + 4] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 5] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 6] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 7] = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 
-					pMapRow[mapPitch + i * 8 + 0] = uint16_t(pConv[pSegCol->b] * 65535);
-					pMapRow[mapPitch + i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
-					pMapRow[mapPitch + i * 8 + 2] = uint16_t(pConv[pSegCol->r] * 65535);
-					pMapRow[mapPitch + i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+					pMapRow[mapPitch + i * 8 + 0] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 1] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 2] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+					pMapRow[mapPitch + i * 8 + 3] = uint16_t(int(pSegCol->a) * 65535 / 4096);
 					pSegCol++;
 				}
 				break;

@@ -73,19 +73,19 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::fill(const RectI& rect, const Color& col)
+	void NullGfxDevice::fill(const RectI& rect, HiColor col)
 	{
 	}
 
-	void NullGfxDevice::fill(const RectF& rect, const Color& col)
+	void NullGfxDevice::fill(const RectF& rect, HiColor col)
 	{
 	}
 
-	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
 	{
 	}
 
-	void NullGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
+	void NullGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
 	{
 	}
 
@@ -97,7 +97,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
 	}
 

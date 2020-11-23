@@ -97,7 +97,7 @@ public:
 
 	bool wildRainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
-		Color colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 0,0,0,255 } };
+		HiColor colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 0,0,0,4096 } };
 
 		int edges[512 + 1][7];
 		for (int i = 0; i <= canvas.w; i++)
@@ -200,16 +200,16 @@ public:
 
 private:
 
-	Color	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
+	HiColor	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 4096,4096,4096,2048 } };
 
 	int		m_nRainbowEdges = 512 + 1;
 	int		m_rainbowEdges[512 + 1][7];
 
 	CoordI	m_precisionPlotCoords[4] = { {1,1}, {1,2}, {1,3}, {1,4} };
-	Color	m_precisionPlotColors[4] = { {42,42,42,255}, {128,128,128,255}, {213,213,213,255}, {255,255,255,255} };
+	HiColor	m_precisionPlotColors[4] = { Color(42,42,42,255), Color(128,128,128,255), Color(213,213,213,255), Color(255,255,255,255) };
 
 	int		m_precisionEdges[2][4] = { {0 * 256+128, 6 * 256, 6 * 256, 6 * 256}, {3 * 256+128, 6 * 256, 6 * 256, 6 * 256} };
-	Color	m_precisionColors[5] = { {0,0,0,0}, {255,255,255,255}, {255,0,0,255}, {255,0,0,255}, {255,0,0,255} };
+	HiColor	m_precisionColors[5] = { {0,0,0,0}, {4096,4096,4096,4096}, {4096,0,0,4096}, {4096,0,0,4096}, {4096,0,0,4096} };
 
 	int		m_precisionEdges2[2][4] = { {200 * 256 + 240, 219 * 256 + 89, 260 * 256, 260 * 256}, {206 * 256+170, 240 * 256, 260 * 256, 260 * 256} };
 

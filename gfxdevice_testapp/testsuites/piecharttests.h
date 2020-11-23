@@ -99,7 +99,7 @@ private:
 
 	float	m_sliceSizes1[7] = { 0.1f, 0.1f, 0.1f, 0.2f, 0.15f, 0.125f, 0.2f };
 	float	m_sliceSizesOverflow[7] = { 0.30f, 0.20f, 0.20f, 0.20f, 0.09f, 0.125f, 0.2f };
-	Color	m_rainbowColors[7] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet };
+	HiColor	m_rainbowColors[7] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet };
 
 };
 

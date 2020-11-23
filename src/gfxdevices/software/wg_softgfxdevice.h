@@ -84,13 +84,13 @@ namespace wg
 		//
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, const Color& col) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
-		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
 
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
@@ -113,7 +113,7 @@ namespace wg
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::GradientXY;
@@ -263,19 +263,19 @@ namespace wg
 */
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchOfs);
+		static void _plot(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchOfs);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 
 		template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
+		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 
 		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
 		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
@@ -298,11 +298,11 @@ namespace wg
 
 		//
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
-		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);

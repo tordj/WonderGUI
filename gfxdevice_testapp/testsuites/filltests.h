@@ -32,27 +32,27 @@ public:
 
 	bool blendFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintColor({ 255,255,255,128 });
+		pDevice->setTintColor({ 4096,4096,4096,2048 });
 
 		pDevice->fill(canvas, Color::RosyBrown);
 
-		pDevice->setTintColor({ 255,255,255,255 });
+		pDevice->setTintColor(HiColor::White);
 
 		return true;
 	}
 
 	bool tintFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintColor({ 255,0,0,255 });
+		pDevice->setTintColor({ 4096,0,0,4096 });
 		pDevice->fill( RectI(0,0,32,32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor({ 0,255,0,255 });
+		pDevice->setTintColor({ 0,4096,0,4096 });
 		pDevice->fill(RectI(40, 0, 32, 32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor({ 0,0,255,255 });
+		pDevice->setTintColor({ 0,0,4096,4096 });
 		pDevice->fill(RectI(80, 0, 32, 32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor({ 255,255,255,255 });
+		pDevice->setTintColor(HiColor::White);
 
 		return true;
 	}

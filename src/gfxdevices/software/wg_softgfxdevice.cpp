@@ -1101,7 +1101,7 @@ namespace wg
 	//____ _plot() ____________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot(uint8_t * pDst, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_plot(uint8_t * pDst, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
@@ -1118,19 +1118,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any tint to source
@@ -1167,7 +1167,7 @@ namespace wg
 	//____ plot_list() ________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
 	{
 		bool bFast8 = false;
 
@@ -1188,7 +1188,7 @@ namespace wg
 			tintA = tint.flatTintColor.a;
 		}
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
+		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		for (int i = 0; i < nCoords; i++)
 		{
@@ -1205,17 +1205,18 @@ namespace wg
 
 				if (bFast8)
 				{
+
+					srcB = pPackTab[pColors[i].b];
+					srcG = pPackTab[pColors[i].g];
+					srcR = pPackTab[pColors[i].r];
+					srcA = HiColor::packLinearTab[pColors[i].a];
+				}
+				else
+				{
 					srcB = pColors[i].b;
 					srcG = pColors[i].g;
 					srcR = pColors[i].r;
 					srcA = pColors[i].a;
-				}
-				else
-				{
-					srcB = pUnpackTab[pColors[i].b];
-					srcG = pUnpackTab[pColors[i].g];
-					srcR = pUnpackTab[pColors[i].r];
-					srcA = HiColor::unpackLinearTab[pColors[i].a];
 				}
 
 				// Step 1.5: Apply any tint to source
@@ -1252,7 +1253,7 @@ namespace wg
 	//____ _draw_line() _______________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
@@ -1266,7 +1267,7 @@ namespace wg
 		const BlendMode EdgeBlendMode = BLEND == BlendMode::Replace ? BlendMode::Blend : BLEND;
 
 		if (BLEND == BlendMode::Replace)
-			color.a = 255;						// Needed since we still blend the edges.
+			color.a = 4096;						// Needed since we still blend the edges.
 
 		// Step 1: Read source pixels
 
@@ -1274,19 +1275,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 
@@ -1312,7 +1313,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (HiColor::unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (color.a * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1418,14 +1419,14 @@ namespace wg
 	//____ _clip_draw_line() __________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
 		const BlendMode EdgeBlendMode = (BLEND == BlendMode::Replace) ? BlendMode::Blend : BLEND;
 
 		if (BLEND == BlendMode::Replace)
-			color.a = 255;						// Needed since we still blend the edges.
+			color.a = 4096;						// Needed since we still blend the edges.
 
 		// Step 1: Read source pixels
 
@@ -1433,19 +1434,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = HiColor::unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any flatTintColor
@@ -1490,7 +1491,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (HiColor::unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (color.a * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1599,7 +1600,7 @@ namespace wg
 	//____ _fill() ____________________________________________________________
 
 	template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 		int		bits = 12;
@@ -1626,19 +1627,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[col.b];
+			srcG = pPackTab[col.g];
+			srcR = pPackTab[col.r];
+			srcA = HiColor::packLinearTab[col.a];
+		}
+		else
+		{
 			srcB = col.b;
 			srcG = col.g;
 			srcR = col.r;
 			srcA = col.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
-
-			srcB = pUnpackTab[col.b];
-			srcG = pUnpackTab[col.g];
-			srcR = pUnpackTab[col.r];
-			srcA = HiColor::unpackLinearTab[col.a];
 		}
 
 
@@ -2714,7 +2715,7 @@ namespace wg
 
 	//____ fill() ______________________________________________________
 
-	void SoftGfxDevice::fill(const RectI& rect, const Color& col)
+	void SoftGfxDevice::fill(const RectI& rect, HiColor col)
 	{
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels )
 			return;
@@ -2735,7 +2736,7 @@ namespace wg
 		// Optimize calls
 
 		BlendMode blendMode = m_blendMode;
-		if (blendMode == BlendMode::Blend && col.a == 255 && m_bTintOpaque)
+		if (blendMode == BlendMode::Blend && col.a == 4096 && m_bTintOpaque)
 		{
 			blendMode = BlendMode::Replace;
 		}
@@ -2758,7 +2759,7 @@ namespace wg
 		}
 	}
 	
-	void SoftGfxDevice::fill(const RectF& rect, const Color& col)
+	void SoftGfxDevice::fill(const RectF& rect, HiColor col)
 	{
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
@@ -2777,7 +2778,7 @@ namespace wg
 		// Optimize calls
 
 		BlendMode blendMode = m_blendMode;
-		if (blendMode == BlendMode::Blend && col.a == 255 && m_bTintOpaque)
+		if (blendMode == BlendMode::Blend && col.a == 4096 && m_bTintOpaque)
 		{
 			blendMode = BlendMode::Replace;
 		}
@@ -2792,7 +2793,7 @@ namespace wg
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Color color = col;
+			HiColor color = col;
 
 			RectF  patch(rect, RectF(m_pClipRects[i]));
 			if (patch.w == 0.f || patch.h == 0.f)
@@ -2811,30 +2812,30 @@ namespace wg
 
 			// Draw the sides
 
-			int aaLeft = (256 - (int)(patch.x * 256)) & 0xFF;
-			int aaTop = (256 - (int)(patch.y * 256)) & 0xFF;
-			int aaRight = ((int)((patch.x + patch.w) * 256)) & 0xFF;
-			int aaBottom = ((int)((patch.y + patch.h) * 256)) & 0xFF;
+			int aaLeft = (4096 - (int)(patch.x * 4096)) & 0xFFF;
+			int aaTop = (4096 - (int)(patch.y * 4096)) & 0xFFF;
+			int aaRight = ((int)((patch.x + patch.w) * 4096)) & 0xFFF;
+			int aaBottom = ((int)((patch.y + patch.h) * 4096)) & 0xFFF;
 
-			int aaTopLeft = aaTop * aaLeft / 256;
-			int aaTopRight = aaTop * aaRight / 256;
-			int aaBottomLeft = aaBottom * aaLeft / 256;
-			int aaBottomRight = aaBottom * aaRight / 256;
+			int aaTopLeft = aaTop * aaLeft / 4096;
+			int aaTopRight = aaTop * aaRight / 4096;
+			int aaBottomLeft = aaBottom * aaLeft / 4096;
+			int aaBottomRight = aaBottom * aaRight / 4096;
 
 
 			if (m_blendMode != BlendMode::Replace)
 			{
-				int alpha = s_mulTab[color.a];
+				int alpha = color.a;
 
-				aaLeft = aaLeft * alpha >> 16;
-				aaTop = aaTop * alpha >> 16;
-				aaRight = aaRight * alpha >> 16;
-				aaBottom = aaBottom * alpha >> 16;
+				aaLeft = aaLeft * alpha >> 12;
+				aaTop = aaTop * alpha >> 12;
+				aaRight = aaRight * alpha >> 12;
+				aaBottom = aaBottom * alpha >> 12;
 
-				aaTopLeft = aaTopLeft * alpha >> 16;
-				aaTopRight = aaTopRight * alpha >> 16;
-				aaBottomLeft = aaBottomLeft * alpha >> 16;
-				aaBottomRight = aaBottomRight * alpha >> 16;
+				aaTopLeft = aaTopLeft * alpha >> 12;
+				aaTopRight = aaTopRight * alpha >> 12;
+				aaBottomLeft = aaBottomLeft * alpha >> 12;
+				aaBottomRight = aaBottomRight * alpha >> 12;
 			}
 
 
@@ -2909,12 +2910,12 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, Color color, float thickness)
+	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, HiColor color, float thickness)
 	{
 		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
-		Color fillColor = color * m_tintColor;
+		HiColor fillColor = color * m_tintColor;
 
 		// Skip calls that won't affect destination
 
@@ -3041,7 +3042,7 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, Color _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, HiColor _col, float thickness)
 	{
 		//TODO: Optimize!
 
@@ -3097,8 +3098,8 @@ namespace wg
 					if (begin.y < clip.y || begin.y >= clip.y + clip.h)
 						continue;
 
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
+					HiColor col = _col;
+					col.a = (int16_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, m_colTrans, { 0,0 });
@@ -3106,7 +3107,7 @@ namespace wg
 				else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+					HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 					if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
 						continue;
@@ -3164,8 +3165,8 @@ namespace wg
 					if (begin.x < clip.x || begin.x >= clip.x + clip.w)
 						continue;
 
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
+					HiColor col = _col;
+					col.a = (int16_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, m_canvasPitch, 0, 1, length, col, m_colTrans, { 0,0 });
@@ -3173,7 +3174,7 @@ namespace wg
 				else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+					HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 					if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
 						continue;
@@ -3210,7 +3211,7 @@ namespace wg
 
 	//____ _transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
+	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
 		RectI dest = _dest;
 
@@ -3315,18 +3316,16 @@ namespace wg
 
 		// Unpack input colors and fill in transparentSegments
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
-
 		if (!bTintX && !bTintY)
 		{
 			// If we just use flat tinting (or no tint at all), we tint our segment colors right away
 
 			for (int i = 0; i < nSegments; i++)
 			{
-				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor.r) >> 12;
-				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor.g) >> 12;
-				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor.b) >> 12;
-				colors[i][3] = (HiColor::unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor.a) >> 12;
+				colors[i][0] = (pSegmentColors[i].r * m_colTrans.flatTintColor.r) >> 12;
+				colors[i][1] = (pSegmentColors[i].g * m_colTrans.flatTintColor.g) >> 12;
+				colors[i][2] = (pSegmentColors[i].b * m_colTrans.flatTintColor.b) >> 12;
+				colors[i][3] = (pSegmentColors[i].a * m_colTrans.flatTintColor.a) >> 12;
 
 				transparentSegments[i] = (colors[i][3] == 0);
 				opaqueSegments[i] = (colors[i][3] == 4096);
@@ -3338,10 +3337,10 @@ namespace wg
 
 			for (int i = 0; i < nSegments*colorsPerSegment; i++)
 			{
-				colors[i][0] = pUnpackTab[pSegmentColors[i].r];
-				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
-				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
-				colors[i][3] = HiColor::unpackLinearTab[pSegmentColors[i].a];
+				colors[i][0] = pSegmentColors[i].r;
+				colors[i][1] = pSegmentColors[i].g;
+				colors[i][2] = pSegmentColors[i].b;
+				colors[i][3] = pSegmentColors[i].a;
 			}
 		}
 
@@ -4078,7 +4077,7 @@ namespace wg
 
 	//____ plotPixels() _________________________________________________
 
-	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
 	{
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;

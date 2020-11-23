@@ -298,7 +298,7 @@ namespace wg
 		//
 
 		float sliceSizes[c_maxSlices];
-		Color sliceColors[c_maxSlices];
+		HiColor sliceColors[c_maxSlices];
 
 		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
 

@@ -112,7 +112,7 @@ namespace wg
 		CGfxInStream& operator>> (SizeF&);
 		CGfxInStream& operator>> (RectI&);
 		CGfxInStream& operator>> (RectF&);
-		CGfxInStream& operator>> (Color&);
+		CGfxInStream& operator>> (HiColor&);
 		CGfxInStream& operator>> (Direction&);
 		CGfxInStream& operator>> (BlendMode&);
 		CGfxInStream& operator>> (Axis&);

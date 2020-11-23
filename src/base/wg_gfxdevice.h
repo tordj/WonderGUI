@@ -128,14 +128,14 @@ namespace wg
 
 		// Draw methods.
 
-		virtual void	fill(const Color& col);
-		virtual void	fill( const RectI& rect, const Color& col ) = 0;
-		virtual void	fill(const RectF& rect, const Color& col) = 0;
+		virtual void	fill(HiColor col);
+		virtual void	fill( const RectI& rect, HiColor col ) = 0;
+		virtual void	fill(const RectF& rect, HiColor col) = 0;
 
-		virtual void    plotPixels( int nCoords, const CoordI * pCoords, const Color * pColors) = 0;
+		virtual void    plotPixels( int nCoords, const CoordI * pCoords, const HiColor * pColors) = 0;
 
-	 	virtual void	drawLine( CoordI begin, CoordI end, Color color, float thickness = 1.f ) = 0;
-		virtual void	drawLine( CoordI begin, Direction dir, int length, Color col, float thickness = 1.f);
+	 	virtual void	drawLine( CoordI begin, CoordI end, HiColor color, float thickness = 1.f ) = 0;
+		virtual void	drawLine( CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f);
 
 		// Blit methods
 
@@ -164,15 +164,15 @@ namespace wg
 
 		// Draw segments methods
 
-		virtual void	drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill);
-		virtual void	flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip);
+		virtual void	drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill);
+		virtual void	flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip);
 
-		virtual void	drawElipse(const RectF& canvas, float thickness, Color color, float outlineThickness = 0.f, Color outlineColor = Color::Black);
+		virtual void	drawElipse(const RectF& canvas, float thickness, HiColor color, float outlineThickness = 0.f, HiColor outlineColor = HiColor::Black);
 
-		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const Color * pSliceColors, float hubSize = 0.f, Color hubColor = Color::Transparent, Color backColor = Color::Transparent, bool bRectangular = false);
+		virtual void	drawPieChart(const RectI& canvas, float start, int nSlices, const float * pSliceSizes, const HiColor * pSliceColors, float hubSize = 0.f, HiColor hubColor = HiColor::Transparent, HiColor backColor = HiColor::Transparent, bool bRectangular = false);
 
-		virtual void	drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat );
-		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat);
+		virtual void	drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode = TintMode::Flat );
+		virtual void	flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode = TintMode::Flat);
 
 
 		// Special draw/blit methods
@@ -210,8 +210,8 @@ namespace wg
 		virtual void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) = 0;
 		virtual void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) = 0;
 
-		virtual void	_transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]);
-		virtual void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
+		virtual void	_transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2]);
+		virtual void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) = 0;
 
 
 		// Static, shared data

@@ -82,7 +82,7 @@ namespace wg
 		{
 			RectI	dest;
 			int		nSegments;
-			Color	colors[GfxDevice::c_maxSegments];
+			HiColor	colors[GfxDevice::c_maxSegments];
 			int		nEdgeStrips;
 			int *	pEdgeStrips;
 			int		transform[2][2];

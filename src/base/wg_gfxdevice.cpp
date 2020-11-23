@@ -540,14 +540,14 @@ namespace wg
 	 * @return Nothing.
 	 */
 
-	void GfxDevice::fill(const Color& col)
+	void GfxDevice::fill(HiColor col)
 	{
 		fill(m_canvasSize, col);
 	}
 
 	//____ drawLine() __________________________________________________
 
-	void GfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
+	void GfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
 	{
 		CoordI end;
 
@@ -999,21 +999,21 @@ namespace wg
 
 	//____ drawWave() ______________________________________________________
 
-	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill )
+	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
 	{
 		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
 
-	void GfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip )
+	void GfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip )
 	{
 		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
 	}
 
 	//____ _transformDrawWave() ______________________________________________________
 
-	void GfxDevice::_transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2] )
+	void GfxDevice::_transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2] )
 	{
 		//TODO: If borders have different colors and cross, colors are not swapped.
 
@@ -1121,13 +1121,13 @@ namespace wg
 
 			// Render the segments
 
-			Color	col[5];
+			HiColor	col[5];
 
-			col[0] = Color::Transparent;
+			col[0] = HiColor::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = pBottomBorder->color;
-			col[4] = Color::Transparent;
+			col[4] = HiColor::Transparent;
 
 			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
@@ -1166,14 +1166,14 @@ namespace wg
 
 			// Render the segments
 
-			Color	col[6];
+			HiColor	col[6];
 
-			col[0] = Color::Transparent;
+			col[0] = HiColor::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = backFill;
 			col[4] = pBottomBorder->color;
-			col[5] = Color::Transparent;
+			col[5] = HiColor::Transparent;
 
 			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
@@ -1187,7 +1187,7 @@ namespace wg
 
 	//____ drawElipse() ______________________________________________________
 
-	void GfxDevice::drawElipse(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor )
+	void GfxDevice::drawElipse(const RectF& canvas, float thickness, HiColor fillColor, float outlineThickness, HiColor outlineColor )
 	{
 		// Center and corners in 24.8 format.
 
@@ -1387,7 +1387,7 @@ namespace wg
 
 		// Render columns
 
-		Color	col[5];
+		HiColor	col[5];
 		col[0] = Color::Transparent;
 		col[1] = outlineColor;
 		col[2] = fillColor;
@@ -1412,7 +1412,7 @@ namespace wg
 
 	//____ drawPieChart() _____________________________________________________
 
-	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float hubSize, Color hubColor, Color backColor, bool bRectangular)
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
 	{
 		static const int c_maxSlices = c_maxSegments - 2;
 
@@ -1439,7 +1439,7 @@ namespace wg
 		{
 			float ofs;
 			float size;
-			Color color;
+			HiColor color;
 		};
 
 		Slice slices[c_maxSlices+2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
@@ -1555,7 +1555,7 @@ namespace wg
 
 		GfxFlip quadFlip[4] = { GfxFlip::Normal, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
 
-		Color colors[c_maxSegments];
+		HiColor colors[c_maxSegments];
 
 		int maxSegments = nSlices + 2;
 		int edgePitch = maxSegments - 1;
@@ -1727,7 +1727,7 @@ namespace wg
 			// Draw
 
 			int * pEdges = pBuffer;
-			Color * pColors = colors;
+			HiColor * pColors = colors;
 			if (bRectangular)
 			{
 				pEdges++;
@@ -1735,7 +1735,7 @@ namespace wg
 				nSegments--;
 			}
 
-			uint8_t		alphaCheck = 0;
+			int16_t		alphaCheck = 0;
 			for (int i = 0; i < nSegments; i++)
 				alphaCheck |= pColors[i].a;
 
@@ -1756,14 +1756,14 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
 		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
 		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
 	}
