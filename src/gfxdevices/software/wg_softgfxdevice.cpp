@@ -216,7 +216,7 @@ namespace wg
 
 	//____ read_pixel_fast8() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -274,7 +274,7 @@ namespace wg
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 		{
-			Color c = pClut[*pPixel];
+			Color8 c = pClut[*pPixel];
 			outB = c.b;
 			outG = c.g;
 			outR = c.r;
@@ -285,7 +285,7 @@ namespace wg
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -2527,7 +2527,7 @@ namespace wg
 
 		if (m_nTintGradients == 0)
 		{
-			if (color == Color::White)
+			if (color == HiColor::White)
 				tintMode = TintMode::None;
 			else
 				tintMode = TintMode::Flat;
@@ -2572,7 +2572,7 @@ namespace wg
 
 		if (!m_bTintGradient)
 		{
-			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
+			tintMode = (m_tintColor == HiColor::White) ? TintMode::None : TintMode::Flat;
 			m_colTrans.flatTintColor = m_tintColor;
 			m_bTintOpaque = (m_tintColor.a == 4096);
 		}
@@ -2627,7 +2627,7 @@ namespace wg
 
 			if( (diffMaskX | diffMaskY) == 0 )
 			{
-				if (m_tintGradient.topLeft == Color::White)
+				if (m_tintGradient.topLeft == HiColor::White)
 					tintMode = TintMode::None;
 				else
 				{
@@ -2695,7 +2695,7 @@ namespace wg
 		if( m_bRendering )
 			return false;
 
-		setTintColor(Color::White);
+		setTintColor(HiColor::White);
 		setBlendMode(BlendMode::Blend);
 
 		m_bRendering = true;
@@ -3299,7 +3299,7 @@ namespace wg
 
 		if (tintMode != TintMode::None)
 		{
-			bTintFlat = m_tintColor != Color::White;
+			bTintFlat = m_tintColor != HiColor::White;
 
 			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
 			{

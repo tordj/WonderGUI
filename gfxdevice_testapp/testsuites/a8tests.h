@@ -46,7 +46,7 @@ public:
 
 	bool setCanvas(GfxDevice * pDevice, const RectI& canvas)
 	{
-		m_pCanvas->fill(Color::Transparent);
+		m_pCanvas->fill(HiColor::Transparent);
 		pDevice->beginCanvasUpdate(m_pCanvas);
 		return true;
 	}
@@ -60,45 +60,45 @@ public:
 
 	bool	fills(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->fill(canvas - BorderI(64), Color(0,0,0,64) );
+		pDevice->fill(canvas - BorderI(64), Color8(0,0,0,64) );
 
 		int ofs = 0;
 
 		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->fill( RectI(6,80+ofs*20,500,15), Color(0, 0, 0, 128));
+		pDevice->fill( RectI(6,80+ofs*20,500,15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Blend);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
                 
         pDevice->setMorphFactor(0.5f);
 		pDevice->setBlendMode(BlendMode::Morph);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Add);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Subtract);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Multiply);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0,0,0,128) );
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0,0,0,128) );
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Min);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Max);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Invert);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color::White);
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), HiColor::White);
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Blend);

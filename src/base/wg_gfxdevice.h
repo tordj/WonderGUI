@@ -57,7 +57,7 @@ namespace wg
 	{
 		int		length;
 		float	thickness;
-		Color	color;
+		HiColor	color;
 		int *	pWave;      // Pixel offset in 24.8 format.
 		int		hold;      // Value for extending the line if it is too short (or completely missing).
 	};
@@ -278,7 +278,7 @@ namespace wg
 		int			m_nClipRects = 0;
 		RectI		m_clipBounds = { 0,0,0,0 };
 
-		HiColor		m_tintColor = Color::White;			// Current Tint color.
+		HiColor		m_tintColor = HiColor::White;			// Current Tint color.
 		BlendMode	m_blendMode = BlendMode::Blend;		// Current BlendMode.
 		float		m_morphFactor = 0.5f;				// Factor used for morphing in BlendMode::Morph.
 

@@ -38,8 +38,8 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
-		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(HiColor::White), m_selectionBackRenderMode(BlendMode::Invert),
+		m_selectionCharColor(HiColor::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
 	{
 	}
 
@@ -129,7 +129,7 @@ namespace wg
 
 	//____ setSelectionBackColor() _________________________________________________
 
-	void StdTextMapper::setSelectionBack(Color color, BlendMode renderMode )
+	void StdTextMapper::setSelectionBack(HiColor color, BlendMode renderMode )
 	{
 		m_selectionBackColor = color;
 		m_selectionBackRenderMode = renderMode;
@@ -137,7 +137,7 @@ namespace wg
 
 	//____ setSelectionCharColor() ____________________________________________
 
-	void StdTextMapper::setSelectionCharColor(Color color, BlendMode blend)
+	void StdTextMapper::setSelectionCharColor(HiColor color, BlendMode blend)
 	{
 		m_selectionCharColor = color;
 		m_selectionCharBlend = blend;
@@ -384,8 +384,8 @@ namespace wg
 		Font_p 			pFont;
 		TextStyle_h		hStyle = 0xFFFF;
 
-		Color	baseTint = pDevice->tintColor();
-		Color	localTint = Color::White;
+		HiColor	baseTint = pDevice->tintColor();
+		HiColor	localTint = HiColor::White;
 
 		BlendMode renderMode = pDevice->blendMode();
 
@@ -453,7 +453,7 @@ namespace wg
 					if( pChar->styleHandle() != hStyle )
 					{
 						MU oldFontSize = attr.size;
-						Color oldBgColor = attr.bgColor;
+						HiColor oldBgColor = attr.bgColor;
 
 						attr = baseAttr;
 
@@ -560,7 +560,7 @@ namespace wg
 
 		TextStyle_h hStyle = 0xFFFF;
 
-		Color		color = Color::Transparent;
+		HiColor		color = HiColor::Transparent;
 
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{
@@ -568,7 +568,7 @@ namespace wg
 			{
 				State state = _state(pText);
 
-				Color newColor;
+				HiColor newColor;
 
 				TextStyle_p p = pChar->stylePtr();
 				if( p && p->isBgColorDefined(state) )
@@ -595,7 +595,7 @@ namespace wg
 	//____ _renderBackSection() ________________________________________________
 
 	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const Rect& canvas,
-											int begChar, int endChar, Color color )
+											int begChar, int endChar, HiColor color )
 	{
 
 		Coord begPos = charPos( pText, begChar );

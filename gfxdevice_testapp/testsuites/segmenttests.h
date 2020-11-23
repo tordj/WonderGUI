@@ -97,7 +97,7 @@ public:
 
 	bool wildRainbow(GfxDevice * pDevice, const RectI& canvas)
 	{
-		HiColor colors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 0,0,0,4096 } };
+		HiColor colors[8] = { HiColor::Red, HiColor::Orange, HiColor::Yellow, HiColor::Green, HiColor::Blue, HiColor::Indigo, HiColor::Violet, { 0,0,0,4096 } };
 
 		int edges[512 + 1][7];
 		for (int i = 0; i <= canvas.w; i++)
@@ -122,7 +122,7 @@ public:
 
 	bool largeCircle(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawElipse(static_cast<RectF>(canvas), 20.f, Color::Aquamarine, 2.f, Color::White);
+		pDevice->drawElipse(static_cast<RectF>(canvas), 20.f, HiColor::Aquamarine, 2.f, HiColor::White);
 		return true;
 	}
 
@@ -132,7 +132,7 @@ public:
 		{
 			for (int x = 0; x < 12; x++)
 			{
-				pDevice->drawElipse({ x*32.1f,y*26+y*y*1.5f+x*0.11f,y*15.01f+x*2.05f,y*15.01f+x*2.05f }, 4.f, Color::Aquamarine, 1.f, Color::White);
+				pDevice->drawElipse({ x*32.1f,y*26+y*y*1.5f+x*0.11f,y*15.01f+x*2.05f,y*15.01f+x*2.05f }, 4.f, HiColor::Aquamarine, 1.f, HiColor::White);
 			}
 		}
 
@@ -141,8 +141,8 @@ public:
 
 	bool elipses(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawElipse({ 0.f,0.f,canvas.w*3/4.f, canvas.w*3/4/3.f}, 20.f, Color::Aquamarine, 5.f, Color::White);
-		pDevice->drawElipse({ canvas.w*3/4.f,0.f,canvas.w/4.f, canvas.h*1.f }, 20.f, Color::Aquamarine, 5.f, Color::White);
+		pDevice->drawElipse({ 0.f,0.f,canvas.w*3/4.f, canvas.w*3/4/3.f}, 20.f, HiColor::Aquamarine, 5.f, HiColor::White);
+		pDevice->drawElipse({ canvas.w*3/4.f,0.f,canvas.w/4.f, canvas.h*1.f }, 20.f, HiColor::Aquamarine, 5.f, HiColor::White);
 
 		return true;
 	}
@@ -153,7 +153,7 @@ public:
 		int x = 0;
 		int y = 1;
 
-		pDevice->drawElipse({ x*30.1f,y * 20 + y * y*1.5f + x * 0.11f,y*15.01f + x * 2.05f,y*10.01f + x * 2.05f }, 4.f, Color::Aquamarine, 1.f, Color::White);
+		pDevice->drawElipse({ x*30.1f,y * 20 + y * y*1.5f + x * 0.11f,y*15.01f + x * 2.05f,y*10.01f + x * 2.05f }, 4.f, HiColor::Aquamarine, 1.f, HiColor::White);
 
 		return true;
 	}
@@ -200,13 +200,13 @@ public:
 
 private:
 
-	HiColor	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 4096,4096,4096,2048 } };
+	HiColor	m_rainbowColors[8] = { HiColor::Red, HiColor::Orange, HiColor::Yellow, HiColor::Green, HiColor::Blue, HiColor::Indigo, HiColor::Violet, { 4096,4096,4096,2048 } };
 
 	int		m_nRainbowEdges = 512 + 1;
 	int		m_rainbowEdges[512 + 1][7];
 
 	CoordI	m_precisionPlotCoords[4] = { {1,1}, {1,2}, {1,3}, {1,4} };
-	HiColor	m_precisionPlotColors[4] = { Color(42,42,42,255), Color(128,128,128,255), Color(213,213,213,255), Color(255,255,255,255) };
+	HiColor	m_precisionPlotColors[4] = { Color8(42,42,42,255), Color8(128,128,128,255), Color8(213,213,213,255), Color8(255,255,255,255) };
 
 	int		m_precisionEdges[2][4] = { {0 * 256+128, 6 * 256, 6 * 256, 6 * 256}, {3 * 256+128, 6 * 256, 6 * 256, 6 * 256} };
 	HiColor	m_precisionColors[5] = { {0,0,0,0}, {4096,4096,4096,4096}, {4096,0,0,4096}, {4096,0,0,4096}, {4096,0,0,4096} };

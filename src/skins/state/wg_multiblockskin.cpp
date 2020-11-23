@@ -84,7 +84,7 @@ namespace wg
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
 			layer.blockOfs[i] = ofs*pSurf->qpixPerPoint()/4;
-			layer.tintColor[i] = Color::White;
+			layer.tintColor[i] = HiColor::White;
 
 			_updateStateOpacity(i);
 		}
@@ -119,7 +119,7 @@ namespace wg
 		//
 
 		for (int i = 0; i < StateEnum_Nb; i++)
-			layer.tintColor[i] = Color::White;
+			layer.tintColor[i] = HiColor::White;
 
 		//
 
@@ -177,7 +177,7 @@ namespace wg
 
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
-			uint8_t		oldAlpha = layer.tintColor[i].a;
+			int16_t		oldAlpha = layer.tintColor[i].a;
 
 			layer.tintColor[i] = tintColor;
 
@@ -194,7 +194,7 @@ namespace wg
 
 		// Set default color for normal state.
 
-		layer.tintColor[0] = Color::White;
+		layer.tintColor[0] = HiColor::White;
 
 		//
 
@@ -202,7 +202,7 @@ namespace wg
 		{
 			int index = _stateToIndex(stateColor.first);
 
-			uint8_t		oldAlpha = layer.tintColor[index].a;
+			int16_t		oldAlpha = layer.tintColor[index].a;
 
 			layer.tintColor[index] = stateColor.second;
 
@@ -218,7 +218,7 @@ namespace wg
 		{
 			if (!layer.stateColorMask.bit(i))
 			{
-				uint8_t		oldAlpha = layer.tintColor[i].a;
+				int16_t		oldAlpha = layer.tintColor[i].a;
 
 				int fallbackIndex = bestStateIndexMatch(i, layer.stateBlockMask);
 				layer.tintColor[i] = layer.tintColor[fallbackIndex];
@@ -269,11 +269,11 @@ namespace wg
 		}
 
 		BlendMode	orgBlendMode = pDevice->blendMode();
-		Color		orgTintColor = pDevice->tintColor();
+		HiColor		orgTintColor = pDevice->tintColor();
 
 		BlendMode	blendMode = orgBlendMode;
-		Color		tintColor = orgTintColor;
-		Color		mixedTint = orgTintColor;
+		HiColor		tintColor = orgTintColor;
+		HiColor		mixedTint = orgTintColor;
 
 		for (auto& layer : m_layers)
 		{

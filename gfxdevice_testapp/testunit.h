@@ -37,7 +37,7 @@ namespace test
 		bool run(GfxDevice * pDevice, const RectI& canvas)
 		{
 			pDevice->setBlendMode(BlendMode::Replace);
-			pDevice->fill( canvas, Color::RosyBrown );
+			pDevice->fill( canvas, HiColor::RosyBrown );
 			pDevice->setBlendMode(BlendMode::Blend);
 
 			return true;
@@ -55,7 +55,7 @@ namespace test
 		{
 			pDevice->setTintColor({ 255,255,255,128 });
 
-			pDevice->fill( canvas, Color::RosyBrown );
+			pDevice->fill( canvas, HiColor::RosyBrown );
 
 			pDevice->setTintColor({ 255,255,255,255 });
 
@@ -80,7 +80,7 @@ namespace test
 		bool			run(GfxDevice * pDevice, const RectI& canvas)
 		{
 
-			m_pMyCanvas->fill(Color::Transparent);
+			m_pMyCanvas->fill(HiColor::Transparent);
 
 			pDevice->fill(canvas.size(), Color(0,255,0));
 			Surface_p pOldCanvas = pDevice->canvas();
@@ -89,14 +89,14 @@ namespace test
 
 			pDevice->blit(canvas, m_pBlitSource, CoordI(50, 50));
 
-			pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), Color::Red, 3.f);
+			pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), HiColor::Red, 3.f);
 			pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color(0,0,255,128), 3.f);
 
 			CoordI	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 			SizeI	fillSize = { 50,50 };
 			CoordI	stepping = { 60, 0 };
 
-			pDevice->fill({ fillOfs, fillSize }, Color::Red);
+			pDevice->fill({ fillOfs, fillSize }, HiColor::Red);
 			pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
 			pDevice->fill({ fillOfs + stepping*2, fillSize }, Color(0, 0, 255, 64));
 			pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
@@ -130,7 +130,7 @@ namespace test
 		bool			run(GfxDevice * pDevice, const RectI& canvas)
 		{
 
-//			m_pMyCanvas->fill(Color::Transparent);
+//			m_pMyCanvas->fill(HiColor::Transparent);
 
 //			pDevice->fill(canvas.size(), Color(0, 255, 0));
 //			Surface_p pOldCanvas = pDevice->canvas();
@@ -163,19 +163,19 @@ namespace test
 		bool			run(GfxDevice * pDevice, const RectI& canvas)
 		{
 
-			m_pMyCanvas->fill(Color::Transparent);
+			m_pMyCanvas->fill(HiColor::Transparent);
 
 			Surface_p pOldCanvas = pDevice->canvas();
 			pDevice->setCanvas(m_pMyCanvas);
 
-			pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), Color::Red, 3.f);
+			pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), HiColor::Red, 3.f);
 			pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color(0, 0, 255, 128), 3.f);
 
 			CoordI	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 			SizeI	fillSize = { 50,50 };
 			CoordI	stepping = { 60, 0 };
 
-			pDevice->fill({ fillOfs, fillSize }, Color::Red);
+			pDevice->fill({ fillOfs, fillSize }, HiColor::Red);
 			pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
 			pDevice->fill({ fillOfs + stepping * 2, fillSize }, Color(0, 0, 255, 64));
 			pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));

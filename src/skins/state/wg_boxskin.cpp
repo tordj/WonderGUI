@@ -64,8 +64,8 @@ namespace wg
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
-			m_fillColor[i] = Color::White;
-			m_frameColor[i] = Color::White;
+			m_fillColor[i] = HiColor::White;
+			m_frameColor[i] = HiColor::White;
 		}
 
 		m_bOpaque = true;

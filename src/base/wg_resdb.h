@@ -114,7 +114,7 @@ namespace wg
 		typedef ResWrapper<Font_p>		FontRes;
 		typedef ResWrapper<Caret_p>		CaretRes;
 		typedef ResWrapper<TextStyle_p>	TextStyleRes;
-		typedef ResWrapper<Color>		ColorRes;
+		typedef ResWrapper<HiColor>		ColorRes;
 		typedef ResWrapper<Skin_p>		SkinRes;
 		typedef ResWrapper<Widget_p>	WidgetRes;
 		typedef ResWrapper<void*>		DataSetRes;
@@ -125,7 +125,7 @@ namespace wg
 		static std::string	generateName( Surface * data );
 		static std::string	generateName( Font * data );
 		static std::string	generateName( Caret * data );
-		static std::string	generateName( const Color data );
+		static std::string	generateName( const HiColor data );
 		static std::string	generateName( TextStyle * data );
 		static std::string	generateName( Skin * data );
 		static std::string	generateName( Widget * data );
@@ -147,7 +147,7 @@ namespace wg
 		bool				addFont( const std::string& id, Font * pFont, MetaData * pMetaData = 0 );
 		bool				addCaret( const std::string& id, Caret * pCaret, MetaData * pMetaData = 0 );
 		bool				addTextStyle( const std::string& id, TextStyle * pProp, MetaData * pMetaData = 0 );
-		bool				addColor( const std::string& id, Color col, MetaData * pMetaData = 0 );
+		bool				addColor( const std::string& id, HiColor col, MetaData * pMetaData = 0 );
 		bool				addLegoSource( const std::string& id, const std::string& surface, RectI rect, uint32_t nStates, MetaData * pMetaData = 0 );
 		bool				addSkin( const std::string& id, Skin * pSkin, MetaData * pMetaData = 0 );
 		bool				addConnect( MetaData * pMetaData );
@@ -181,12 +181,12 @@ namespace wg
 
 
 
-		Surface_p		getSurface( const std::string& id ) const;
-		Font_p			getFont( const std::string& id ) const;
-		Caret_p			getCaret( const std::string& id ) const;
-		TextStyle_p		getTextStyle( const std::string& id ) const;
-		Color				getColor( const std::string& id ) const;
-		Skin_p			getSkin( const std::string& id ) const;
+		Surface_p			getSurface( const std::string& id ) const;
+		Font_p				getFont( const std::string& id ) const;
+		Caret_p				getCaret( const std::string& id ) const;
+		TextStyle_p			getTextStyle( const std::string& id ) const;
+		HiColor				getColor( const std::string& id ) const;
+		Skin_p				getSkin( const std::string& id ) const;
 		Widget_p			getWidget( const std::string& id ) const;
 		MetaData*			getDataSet( const std::string& id ) const;
 		Widget_p			cloneWidget( const std::string& id ) const;
@@ -209,7 +209,7 @@ namespace wg
 		FontRes *			findResFont( Font * data ) const;
 		CaretRes *			findResCaret( Caret * data ) const;
 		TextStyleRes *		findResTextStyle( TextStyle * data ) const;
-		ColorRes *			findResColor( const Color col ) const;
+		ColorRes *			findResColor( const HiColor col ) const;
 		SkinRes *			findResSkin( Skin * data ) const;
 		WidgetRes *			findResWidget( Widget * data ) const;
 
@@ -217,7 +217,7 @@ namespace wg
 		std::string			findFontId( Font * data ) const				{ FontRes *	r =		findResFont(data); return r ? r->id : ""; }
 		std::string			findCaretId( Caret * data ) const			{ CaretRes *	r =	findResCaret(data); return r ? r->id : ""; }
 		std::string			findTextStyleId( TextStyle * data ) const	{ TextStyleRes *r =  findResTextStyle(data); return r ? r->id : ""; }
-		std::string			findColorId( const Color data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
+		std::string			findColorId( const HiColor data ) const				{ ColorRes *r =		findResColor(data); return r ? r->id : ""; }
 		std::string			findSkinId( Skin * data ) const			{ SkinRes *r =		findResSkin(data); return r ? r->id : ""; }
 		std::string			findWidgetId( Widget * data ) const			{ WidgetRes *r =	findResWidget(data); return r ? r->id : ""; }
 

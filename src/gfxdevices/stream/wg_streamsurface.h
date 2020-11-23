@@ -46,9 +46,9 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
+		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
+		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
+		static StreamSurface_p	create( CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
 		static StreamSurface_p	create( CGfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 
 		//.____ Identification __________________________________________
@@ -78,8 +78,8 @@ namespace wg
 
 		//.____  Rendering ____________________________________________________
 
-		bool		fill(Color col) override;
-		bool		fill(Color col, const RectI& region) override;
+		bool		fill(HiColor col) override;
+		bool		fill(HiColor col, const RectI& region) override;
 		bool		copyFrom(Surface * pSrcSurf, const RectI& srcRect, CoordI dst) override;
 		bool		copyFrom(Surface * pSrcSurf, CoordI dst) override;
 
@@ -88,13 +88,13 @@ namespace wg
 
 
 	private:
-		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color * pClut );
-		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
-		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, int flags, const Color8 * pClut );
+		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut );
+		StreamSurface( CGfxOutStream& stream, SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut );
 		StreamSurface( CGfxOutStream& stream, Surface * pOther, int flags = SurfaceFlag::Static );
 		~StreamSurface();
 
-		short		_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color * pClut);
+		short		_sendCreateSurface(SizeI size, PixelFormat format, int flags, const Color8 * pClut);
 		void		_sendPixels(RectI rect, const uint8_t * pSource, int pitch);
 		void		_sendDeleteSurface();
 		uint8_t*	_genAlphaLayer(const char * pSource, int pitch);

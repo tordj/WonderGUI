@@ -276,9 +276,9 @@ namespace wg
 			BlendMode	savedBlendMode = m_blendMode;
 			HiColor		savedTintColor = m_tintColor;
 			setBlendMode(BlendMode::Replace);
-			setTintColor(Color::White);
+			setTintColor(HiColor::White);
 			clearTintGradient();
-			fill(Color::Transparent);
+			fill(HiColor::Transparent);
 			setBlendMode(savedBlendMode);
 			setTintColor(savedTintColor);
 
@@ -444,7 +444,7 @@ namespace wg
 
 
 		m_renderLayer = layer;
-		m_tintColor = Color::White;
+		m_tintColor = HiColor::White;
 		m_tintGradient.clear();
 		m_tintGradientRect = sz;
 		m_bTintGradient = false;
@@ -481,7 +481,7 @@ namespace wg
 					if (bFirst)
 					{
 						setClipList(m_nCanvasUpdateRects, m_pCanvasUpdateRects);
-						setTintColor(Color::White);
+						setTintColor(HiColor::White);
 						clearTintGradient();
 						setRenderLayer(0);
 						bFirst = false;
@@ -1388,11 +1388,11 @@ namespace wg
 		// Render columns
 
 		HiColor	col[5];
-		col[0] = Color::Transparent;
+		col[0] = HiColor::Transparent;
 		col[1] = outlineColor;
 		col[2] = fillColor;
 		col[3] = outlineColor;
-		col[4] = Color::Transparent;
+		col[4] = HiColor::Transparent;
 
 		const RectI * pOldClipRects = m_pClipRects;
 		int nOldClipRects = m_nClipRects;

@@ -60,7 +60,7 @@ namespace wg
 
 	//____ create ______________________________________________________________
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, int flags, const Color8 * pClut )
 	{
 		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -72,7 +72,7 @@ namespace wg
 		return GlSurface_p(new GlSurface(size,format,flags,pClut));
 	}
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut )
 	{
 		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -84,7 +84,7 @@ namespace wg
 		return GlSurface_p(new GlSurface(size,format,pBlob,pitch,flags,pClut));
 	}
 
-	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut )
+	GlSurface_p	GlSurface::create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut )
 	{
 		SizeI max = maxSize();
 		if (size.w > max.w || size.h > max.h)
@@ -115,7 +115,7 @@ namespace wg
 	//____ constructor _____________________________________________________________
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) : Surface(flags)
 	{
         flags |= (int) SurfaceFlag::Buffered;
 		HANDLE_GLERROR(glGetError());
@@ -133,7 +133,7 @@ namespace wg
 
             if (pClut)
             {
-                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
                 memcpy(m_pClut, pClut, 1024);
             }
         }
@@ -143,7 +143,7 @@ namespace wg
 
 			if (pClut)
 			{
-				m_pClut = new Color[256];
+				m_pClut = new Color8[256];
 				memcpy(m_pClut, pClut, 1024);
 			}
 
@@ -157,7 +157,7 @@ namespace wg
 	}
 
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) : Surface(flags)
 	{
         flags |= (int) SurfaceFlag::Buffered;
 		// Set general information
@@ -165,7 +165,7 @@ namespace wg
 		_setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size = size;
-		m_pClut = const_cast<Color*>(pClut);
+		m_pClut = const_cast<Color8*>(pClut);
 
 
         if ((flags & SurfaceFlag::Buffered) || m_pixelDescription.bits <= 8)
@@ -180,7 +180,7 @@ namespace wg
 
 			if (pClut)
 			{
-				m_pClut = new Color[256];
+				m_pClut = new Color8[256];
 				memcpy(m_pClut, pClut, 1024);
 			}
 
@@ -205,7 +205,7 @@ namespace wg
 		_setupGlTexture(pBlob->data(), flags);
 	}
 
-	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) : Surface(flags)
+	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) : Surface(flags)
 	{
        flags |= (int) SurfaceFlag::Buffered;
 	   _setPixelDetails(format);
@@ -224,7 +224,7 @@ namespace wg
 
             if (pClut)
             {
-                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
                 memcpy(m_pClut, pClut, 1024);
             }
         }
@@ -234,7 +234,7 @@ namespace wg
 
 			if (pClut)
 			{
-				m_pClut = new Color[256];
+				m_pClut = new Color8[256];
 				memcpy(m_pClut, pClut, 1024);
 			}
 
@@ -284,7 +284,7 @@ namespace wg
 
             if (pOther->clut())
             {
-                m_pClut = (Color*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
+                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * m_size.h);
                 memcpy(m_pClut, pOther->clut(), 1024);
             }
         }
@@ -294,7 +294,7 @@ namespace wg
 
 			if (pOther->clut())
 			{
-				m_pClut = new Color[256];
+				m_pClut = new Color8[256];
 				memcpy(m_pClut, pOther->clut(), 1024);
 			}
 

@@ -100,8 +100,8 @@ namespace wg
 		inline bool			isSizeFixed() const;
 		inline SizeI		size() const;
 
-		void				setBackColor(Color color);
-		inline Color		backColor() const;
+		void				setBackColor(HiColor color);
+		inline HiColor		backColor() const;
 
 		inline Surface_wp	surface() const;
 
@@ -138,7 +138,7 @@ namespace wg
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
-		Color			m_backColor				= Color::White;
+		HiColor			m_backColor				= HiColor::White;
 
 		std::function<void(CCanvas*)>	m_surfaceLostCallback;
 
@@ -238,7 +238,7 @@ namespace wg
 	*
 	*	@return	Back color as specified for the surface.
 	**/
-	Color CCanvas::backColor() const
+	HiColor CCanvas::backColor() const
 	{
 		return m_backColor;
 	}

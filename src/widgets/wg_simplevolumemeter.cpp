@@ -37,9 +37,9 @@ namespace wg
 	{
 		m_direction = Direction::Up;
 
-		m_sectionColors[0] = Color::Green;
-		m_sectionColors[1] = Color::Yellow;
-		m_sectionColors[2] = Color::Red;
+		m_sectionColors[0] = HiColor::Green;
+		m_sectionColors[1] = HiColor::Yellow;
+		m_sectionColors[2] = HiColor::Red;
 
 		m_fSectionHeight[0] = 0.75f;
 		m_fSectionHeight[1] = 0.18f;
@@ -73,7 +73,7 @@ namespace wg
 
 	//____ setColors() ___________________________________________________________
 
-	void SimpleVolumeMeter::setColors( Color bottom, Color middle, Color top )
+	void SimpleVolumeMeter::setColors( HiColor bottom, HiColor middle, HiColor top )
 	{
 		if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
 		{
@@ -386,7 +386,7 @@ namespace wg
 		{
 			if( holdOfs - m_iHoldHeight > peakHeight )				// Render Hold separately if separated from Peak
 			{
-				Color c;
+				HiColor c;
 
 				if( holdOfs <= m_iSectionHeight[0] )
 					c = m_sectionColors[0];

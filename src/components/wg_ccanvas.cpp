@@ -263,7 +263,7 @@ namespace wg
 	*	Default back color is White (0xFFFFFFFF). Changing the back color will discard the current surface.
 	**/
 
-	void CCanvas::setBackColor(Color color)
+	void CCanvas::setBackColor(HiColor color)
 	{
 		if (color != m_backColor)
 		{

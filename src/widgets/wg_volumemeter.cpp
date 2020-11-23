@@ -41,12 +41,12 @@ namespace wg
 
 	VolumeMeter::VolumeMeter()
 	{
-		m_LEDColors[0][0] = Color::Black;
-		m_LEDColors[1][0] = Color::Black;
-		m_LEDColors[2][0] = Color::Black;
-		m_LEDColors[0][1] = Color::Green;
-		m_LEDColors[1][1] = Color::Yellow;
-		m_LEDColors[2][1] = Color::Red;
+		m_LEDColors[0][0] = HiColor::Black;
+		m_LEDColors[1][0] = HiColor::Black;
+		m_LEDColors[2][0] = HiColor::Black;
+		m_LEDColors[0][1] = HiColor::Green;
+		m_LEDColors[1][1] = HiColor::Yellow;
+		m_LEDColors[2][1] = HiColor::Red;
 
 		m_nSectionLEDs[0] = 8;
 		m_nSectionLEDs[1] = 2;
@@ -101,8 +101,8 @@ namespace wg
 
 	//____ setLEDColors() ___________________________________________________________
 
-	void VolumeMeter::setLEDColors(	Color bottomOn, Color middleOn, Color topOn,
-									Color bottomOff, Color middleOff, Color topOff )
+	void VolumeMeter::setLEDColors(	HiColor bottomOn, HiColor middleOn, HiColor topOn,
+									HiColor bottomOff, HiColor middleOff, HiColor topOff )
 	{
 		m_LEDColors[0][0] = bottomOff;
 		m_LEDColors[0][1] = bottomOn;
@@ -384,7 +384,7 @@ namespace wg
 				else
 					section = 2;
 
-				Color color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
+				HiColor color = m_LEDColors[section][0]*(1.0f-m_LEDStates[i]) + m_LEDColors[section][1]*m_LEDStates[i];
 
 				pDevice->fill( ledRect/4.f, color);
 			}

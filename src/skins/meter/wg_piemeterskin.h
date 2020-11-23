@@ -49,9 +49,9 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static PieMeterSkin_p create();
-		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, HiColor minColor, HiColor maxColor, HiColor emptyColor = Color::Transparent,
-										float hubSize = 0.f, HiColor hubColor = Color::Transparent, 
-										HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
+		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, HiColor minColor, HiColor maxColor, HiColor emptyColor = HiColor::Transparent,
+										float hubSize = 0.f, HiColor hubColor = HiColor::Transparent, 
+										HiColor backColor = HiColor::Transparent, const BorderI& gfxPadding = BorderI(), 
 										const BorderI& contentPadding = BorderI(), bool bStaticSlices = true, bool bRectangular = false);
 
 		//.____ Identification __________________________________________
@@ -133,9 +133,9 @@ namespace wg
 		BorderI		m_gfxPadding;
 
 		BlendMode	m_blendMode = BlendMode::Blend;
-		HiColor		m_hubColor = Color::Transparent;
-		HiColor		m_backColor = Color::Transparent;
-		HiColor		m_emptyColor = Color::DarkBlue;
+		HiColor		m_hubColor = HiColor::Transparent;
+		HiColor		m_backColor = HiColor::Transparent;
+		HiColor		m_emptyColor = HiColor::DarkBlue;
 
 		const static int c_maxSlices = 12;
 		Slice		m_slices[c_maxSlices];

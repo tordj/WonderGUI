@@ -79,7 +79,7 @@ namespace wg
 
 		Surface_p		m_pSurface;
 		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_color = Color::White;
+		HiColor			m_color = HiColor::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;
 	};

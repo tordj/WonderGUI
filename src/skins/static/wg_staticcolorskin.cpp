@@ -67,6 +67,7 @@ namespace wg
 		else
 			m_bOpaque = false;
 	}
+
 	//____ render() ______________________________________________________________
 
 	void StaticColorSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const

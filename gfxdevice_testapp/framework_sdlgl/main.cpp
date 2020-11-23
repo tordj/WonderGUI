@@ -228,7 +228,7 @@ bool init_wondergui()
 	Context_p pContext = Context::create();
     pContext->setScale(1.0);
     pContext->setSurfaceFactory(GlSurfaceFactory::create());
-	pContext->setGammaCorrection(false);
+	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
 	auto pGfxDevice = GlGfxDevice::create(0);
@@ -516,9 +516,9 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 	convertSDLFormat(&format, pSDLSurf->format);
 
 	PixelFormat px;
-	Color* pClut = nullptr;
+	Color8* pClut = nullptr;
 
-	Color clut[256];
+	Color8 clut[256];
 
 	if (format.bIndexed)
 	{

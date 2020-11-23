@@ -62,13 +62,13 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
-	pStyle->setColor(Color::Black);
+	pStyle->setColor(HiColor::Black);
 	Base::setDefaultStyle(pStyle);
 
 	g_pButtonLabelStyle = TextStyle::create();
 	g_pButtonLabelStyle->setFont(pFont);
 	g_pButtonLabelStyle->setSize(16);
-	g_pButtonLabelStyle->setColor(Color::Black);
+	g_pButtonLabelStyle->setColor(HiColor::Black);
 
 	//
 
@@ -304,7 +304,7 @@ Canvas_p GfxDeviceTester::create_canvas()
 	pCanvas->canvas.setSize(g_canvasSize);
 	//pCanvas->canvas.setDevice(GlGfxDevice::create({ 0,0,10,10 }));
 	pCanvas->canvas.setFactory(Base::activeContext()->surfaceFactory());
-	pCanvas->canvas.setBackColor(Color::Black);
+	pCanvas->canvas.setBackColor(HiColor::Black);
 	return pCanvas;
 }
 
@@ -394,7 +394,7 @@ void GfxDeviceTester::run_tests(Device* pDevice, DeviceEnum device)
 	auto pGfxDevice = pDevice->beginRender();
 	//	pDevice->setClip(g_canvasSize);
 
-	pGfxDevice->fill(g_canvasSize, Color::Black);
+	pGfxDevice->fill(g_canvasSize, HiColor::Black);
 	pGfxDevice->setClipList((int)g_clipList.size(), &g_clipList[0]);
 
 	for (auto& test : g_tests)
@@ -584,14 +584,14 @@ bool GfxDeviceTester::setup_chrome()
 
 
 
-	//    BoxStateSkin_p pPlateSkin = BoxSkin::create( Border(2), Color::Red, Color::Blue );
+	//    BoxStateSkin_p pPlateSkin = BoxSkin::create( Border(2), HiColor::Red, HiColor::Blue );
 	//    BoxStateSkin_p pPressablePlateSkin = pPlateSkin;
 	//    BoxStateSkin_p pSimpleButtonSkin = pPlateSkin;
 
 		// Setup base layers
 
 	auto pLayerStack = StackPanel::create();
-	pLayerStack->skin = StaticColorSkin::create(Color::AntiqueWhite);
+	pLayerStack->skin = StaticColorSkin::create(HiColor::AntiqueWhite);
 	m_pVisitor->rootPanel()->slot = pLayerStack;
 
 	// Divid screen into sidebar and canvaspanel with top section
@@ -617,7 +617,7 @@ bool GfxDeviceTester::setup_chrome()
 	pViewNav->skin = pPlateSkin;
 
 	auto pViewPanel = ScrollPanel::create();
-	pViewPanel->skin = StaticColorSkin::create(Color::SlateGrey);
+	pViewPanel->skin = StaticColorSkin::create(Color8::SlateGrey);
 	g_pViewPanel = pViewPanel;
 
 	pMidSection->slots << pCanvasPanel;
@@ -843,14 +843,14 @@ bool GfxDeviceTester::setup_chrome()
 
 
 
-	auto pSkin = BoxSkin::create(1, Color::White, Color::Black);
+	auto pSkin = BoxSkin::create(1, HiColor::White, HiColor::Black);
 	pSkin->setContentPadding(8);
 
-	auto pEntrySkin = BoxSkin::create(1, Color::White, Color::Black);
+	auto pEntrySkin = BoxSkin::create(1, HiColor::White, HiColor::Black);
 	pEntrySkin->setContentPadding(8);
-	pEntrySkin->setColors(StateEnum::Hovered, Color::AntiqueWhite, Color::Black);
-	pEntrySkin->setColors(StateEnum::SelectedHovered, Color::Aquamarine, Color::Black);
-	pEntrySkin->setColors(StateEnum::Selected, Color::Aquamarine, Color::Black);
+	pEntrySkin->setColors(StateEnum::Hovered, HiColor::AntiqueWhite, HiColor::Black);
+	pEntrySkin->setColors(StateEnum::SelectedHovered, HiColor::Aquamarine, HiColor::Black);
+	pEntrySkin->setColors(StateEnum::Selected, HiColor::Aquamarine, HiColor::Black);
 
 	pTestList->skin = pSkin;
 	pTestList->setEntrySkin(pEntrySkin);
@@ -871,7 +871,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pTestScrollbar = Scrollbar::create();
 
-	pTestScrollbar->setBackgroundSkin(StaticColorSkin::create(Color::Green));
+	pTestScrollbar->setBackgroundSkin(StaticColorSkin::create(HiColor::Green));
 	pTestScrollbar->setHandleSkin(pSimpleButtonSkin);
 
 
@@ -895,12 +895,12 @@ bool GfxDeviceTester::setup_chrome()
 		pBase->setAxis(Axis::Y);
 
 		auto pList = PackList::create();
-		pList->skin = StaticColorSkin::create(Color::White);
+		pList->skin = StaticColorSkin::create(HiColor::White);
 
-		auto pOddEntrySkin = BoxSkin::create(0, Color::White, Color::White);
+		auto pOddEntrySkin = BoxSkin::create(0, HiColor::White, HiColor::White);
 		pOddEntrySkin->setContentPadding(BorderI(0));
 
-		auto pEvenEntrySkin = BoxSkin::create(0, Color::PaleGreen, Color::PaleGreen);
+		auto pEvenEntrySkin = BoxSkin::create(0, HiColor::PaleGreen, HiColor::PaleGreen);
 		pEvenEntrySkin->setContentPadding(BorderI(0));
 
 		pList->setEntrySkin(pOddEntrySkin, pEvenEntrySkin);

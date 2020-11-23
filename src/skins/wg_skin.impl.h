@@ -37,7 +37,7 @@ namespace wg
 	class RenderSettings
 	{
 	public:
-		RenderSettings(GfxDevice* pDevice, int layer, BlendMode blendMode = BlendMode::Undefined, Color tintColor = Color::White)
+		RenderSettings(GfxDevice* pDevice, int layer, BlendMode blendMode = BlendMode::Undefined, HiColor tintColor = HiColor::White)
 		{
 			m_pDevice = pDevice;
 
@@ -53,7 +53,7 @@ namespace wg
 				pDevice->setBlendMode(blendMode);
 			}
 
-			if (tintColor != Color::White)
+			if (tintColor != HiColor::White)
 			{
 				m_prevTintColor = pDevice->tintColor();
 				pDevice->setTintColor(tintColor);
@@ -75,7 +75,7 @@ namespace wg
 		GfxDevice* m_pDevice;
 		int			m_prevLayer = -1;
 		BlendMode	m_prevBlendMode = BlendMode::Undefined;
-		Color		m_prevTintColor;
+		HiColor		m_prevTintColor;
 		bool		m_bTintChanged = false;
 	};
 
@@ -88,7 +88,7 @@ namespace wg
 	class RenderSettingsWithGradient
 	{
 	public:
-		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, Color tintColor, const Rect& rect, const Gradient& tintGradient, bool bGradient )
+		RenderSettingsWithGradient(GfxDevice* pDevice, int layer, BlendMode blendMode, HiColor tintColor, const Rect& rect, const Gradient& tintGradient, bool bGradient )
 		{
 			m_pDevice = pDevice;
 
@@ -110,7 +110,7 @@ namespace wg
 				m_bGradient = true;
 			}
 			
-			if (tintColor != Color::White)
+			if (tintColor != HiColor::White)
 			{
 				m_prevTintColor = pDevice->tintColor();
 				pDevice->setTintColor(tintColor);
@@ -134,7 +134,7 @@ namespace wg
 		GfxDevice* m_pDevice;
 		int			m_prevLayer = -1;
 		BlendMode	m_prevBlendMode = BlendMode::Undefined;
-		Color		m_prevTintColor;
+		HiColor		m_prevTintColor;
 		bool		m_bTintChanged = false;
 		bool		m_bGradient = false;
 	};

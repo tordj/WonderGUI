@@ -699,7 +699,6 @@ namespace wg
 		SizeI texSize = calcTextureSize( slotSize, 16 );
 
 		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize, wg::PixelFormat::BGRA_8 );
-		pSurf->fill( Color( 255,0,0,64 ) );
 
 		CacheSurf * pCache = new CacheSurf( pSurf );
 		s_cacheSurfaces.pushBack( pCache );

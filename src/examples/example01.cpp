@@ -124,7 +124,7 @@ int main ( int argc, char** argv )
 		// of the FlexPanel.
 
 		Filler_p pBackground = Filler::create();
-		pBackground->skin = StaticColorSkin::create(Color::Bisque);
+		pBackground->skin = StaticColorSkin::create(HiColor::Bisque);
 		pFlexPanel->slots.pushBackPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 		// Now we create the button, using a clickable skin built from the BMP

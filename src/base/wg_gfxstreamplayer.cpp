@@ -366,11 +366,11 @@ namespace wg
 			*m_pStream >> flags;
 
 
-			Color * pClut = nullptr;
+			Color8 * pClut = nullptr;
 
 			if (header.size > 4096)
 			{
-				pClut = (Color*) Base::memStackAlloc(4096);
+				pClut = (Color8*) Base::memStackAlloc(4096);
 				*m_pStream >> GfxStream::DataChunk{ 4096, pClut };
 			}
 

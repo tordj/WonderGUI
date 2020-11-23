@@ -49,18 +49,18 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) const
 	{
 		return GlSurface::create(size,format,flags | m_flags,pClut);
 	}
 
 
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) const
 	{
 		return GlSurface::create(size, format, pBlob, pitch, flags | m_flags, pClut);
 	}
 
-	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
+	Surface_p GlSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) const
 	{
 		return GlSurface::create(size,format, pPixels, pitch, pPixelDescription, flags | m_flags, pClut);
 	}

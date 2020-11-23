@@ -98,7 +98,7 @@ namespace wg
 		BorderI		m_gfxPadding;
 
 		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_color = Color::White;
+		HiColor			m_color = HiColor::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;
 	};

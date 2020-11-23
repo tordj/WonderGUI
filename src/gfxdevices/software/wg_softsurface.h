@@ -45,9 +45,9 @@ namespace wg
 
 		 //.____ Creation __________________________________________
 
-		static SoftSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static SoftSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr );
-		static SoftSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color * pClut = nullptr);
+		static SoftSurface_p	create( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
+		static SoftSurface_p	create( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr );
+		static SoftSurface_p	create( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription = nullptr, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr);
 		static SoftSurface_p	create( Surface * pOther, int flags = SurfaceFlag::Static );
 
 		//.____ Identification __________________________________________
@@ -81,9 +81,9 @@ namespace wg
 
 
 	protected:
-		SoftSurface( SizeI size, PixelFormat format, int flags, const Color * pClut );
-		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut );
-		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut );
+		SoftSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut );
+		SoftSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut );
+		SoftSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut );
 		SoftSurface( Surface * pOther, int flags );
 
 		virtual ~SoftSurface();

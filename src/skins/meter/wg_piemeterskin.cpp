@@ -53,8 +53,8 @@ namespace wg
 	PieMeterSkin::PieMeterSkin()
 	{
 		m_slices[0].size = 1.f;
-		m_slices[0].minColor = Color::Green;
-		m_slices[0].maxColor = Color::Green;
+		m_slices[0].minColor = HiColor::Green;
+		m_slices[0].maxColor = HiColor::Green;
 		m_nSlices = 1;
 
 		_updateOpacity();

@@ -50,9 +50,9 @@ namespace wg
 	FillMeterSkin::FillMeterSkin() :
 		m_direction(Direction::Right),
 		m_bBarStartOutside(false),
-		m_barColorEmpty(Color::DarkBlue),
-		m_barColorFull(Color::LightBlue),
-		m_backColor(Color::Transparent)
+		m_barColorEmpty(HiColor::DarkBlue),
+		m_barColorFull(HiColor::LightBlue),
+		m_backColor(HiColor::Transparent)
 	{
 		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
 		m_bIgnoresValue = false;

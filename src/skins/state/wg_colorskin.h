@@ -82,7 +82,7 @@ namespace wg
 
 	private:
 		ColorSkin();
-		ColorSkin(Color color);
+		ColorSkin(HiColor color);
 		~ColorSkin() {};
 
 		void	_updateOpaqueFlag();

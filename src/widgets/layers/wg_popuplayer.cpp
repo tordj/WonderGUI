@@ -456,19 +456,19 @@ namespace wg
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			Color tint = Color::White;
+			HiColor tint = HiColor::White;
 
 			if (p->pSlot->m_state == Slot::State::Opening)
-				tint.a = 255 * p->pSlot->m_stateCounter / m_openingFadeMs;
+				tint.a = 4096 * p->pSlot->m_stateCounter / m_openingFadeMs;
 
 			if (p->pSlot->m_state == Slot::State::Closing)
-				tint.a = 255 - (255 * p->pSlot->m_stateCounter / m_closingFadeMs);
+				tint.a = 4096 - (4096 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
-			if (tint.a == 255)
+			if (tint.a == 4096)
 				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 			else
 			{
-				Color oldTint = pDevice->tintColor();
+				HiColor oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
 				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);

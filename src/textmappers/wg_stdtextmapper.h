@@ -63,14 +63,14 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void			setSelectionBack(Color color, BlendMode renderMode = BlendMode::Replace );
+		void			setSelectionBack(HiColor color, BlendMode renderMode = BlendMode::Replace );
 
-		void			setSelectionCharColor(Color color, BlendMode blend = BlendMode::Replace );
+		void			setSelectionCharColor(HiColor color, BlendMode blend = BlendMode::Replace );
 
-		Color			selectionBackColor() { return m_selectionBackColor;  }
+		HiColor			selectionBackColor() { return m_selectionBackColor;  }
 		BlendMode		selectionBackRenderMode() { return m_selectionBackRenderMode; }
 
-		Color			selectionCharColor() { return m_selectionCharColor; }
+		HiColor			selectionCharColor() { return m_selectionCharColor; }
 		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
 
 
@@ -189,7 +189,7 @@ namespace wg
 
 		void 			_renderBack( Text * pText, GfxDevice * pDevice, const Rect& canvas );
 		void 			_renderBackSection( Text * pText, GfxDevice * pDevice, const Rect& canvas,
-											int begChar, int endChar, Color color );
+											int begChar, int endChar, HiColor color );
 
 
 		enum struct SelectMode
@@ -208,10 +208,10 @@ namespace wg
 		bool			m_bLineWrap;
 		bool			m_bReceivingUpdates = false;
 
-		Color			m_selectionBackColor;
+		HiColor			m_selectionBackColor;
 		BlendMode		m_selectionBackRenderMode;
 
-		Color			m_selectionCharColor;
+		HiColor			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 
 

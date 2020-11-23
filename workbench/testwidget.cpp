@@ -93,11 +93,11 @@ namespace wg
 		if( m_bPointsInitialized )
 		{
 		
-			pDevice->drawLine( _canvas.pos().px(), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ).px(), Color(255,000,000), 10.f );
+			pDevice->drawLine( _canvas.pos().px(), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ).px(), HiColor(4096,000,000), 10.f );
 
 			for( int i = 0 ; i < 2 ; i+=2 )
 			{
-				pDevice->drawLine( _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], Color(000,255,000), 15.5f );
+				pDevice->drawLine( _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], HiColor(000,4096,000), 15.5f );
 			}
 		}
 

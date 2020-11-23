@@ -95,7 +95,7 @@ namespace wg
 			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
 			CoordI				blockOfs[StateEnum_Nb];		// Block for each state
-			Color				tintColor[StateEnum_Nb];
+			HiColor				tintColor[StateEnum_Nb];
 	//		Origo			placementOrigo;
 	//		CoordI			placementOfs;
 	//		SizeI			dimensions;                   // Stored in pixels

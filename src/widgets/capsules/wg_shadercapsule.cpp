@@ -52,7 +52,7 @@ namespace wg
 
 	//____ setTintColor() ______________________________________________________
 
-	void ShaderCapsule::setTintColor( Color color, BlendMode mode )
+	void ShaderCapsule::setTintColor( HiColor color, BlendMode mode )
 	{
 		if( color != m_tintColor || mode != m_tintMode )
 		{
@@ -96,8 +96,8 @@ namespace wg
 		// Set our tint color and blend mode.
 
 		BlendMode		oldBM;
-		Color			oldTC;
-		Color			newTC;
+		HiColor			oldTC;
+		HiColor			newTC;
 
 		oldBM = pDevice->blendMode();
 		oldTC = pDevice->tintColor();

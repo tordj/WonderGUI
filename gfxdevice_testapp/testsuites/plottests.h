@@ -17,10 +17,10 @@ public:
 		m_coords[2] = { 1,3 };
 		m_coords[3] = { 3,3 };
 
-		m_colors[0] = Color::Red;
-		m_colors[1] = Color::Green;
-		m_colors[2] = Color::Blue;
-		m_colors[3] = Color::White;
+		m_colors[0] = HiColor::Red;
+		m_colors[1] = HiColor::Green;
+		m_colors[2] = HiColor::Blue;
+		m_colors[3] = HiColor::White;
 
 		m_coords[4] = { 1,5 };
 		m_coords[5] = { 1,7 };
@@ -35,7 +35,7 @@ public:
 		for (int i = 8; i < c_nbCoords; i++)
 		{
 			m_coords[i] = { rand() % canvas.w, rand() % canvas.h };
-			m_colors[i] = Color::Beige;
+			m_colors[i] = HiColor::Beige;
 		}
 
 		return true;

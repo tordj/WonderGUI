@@ -171,7 +171,7 @@ namespace wg
 		m_bOpaque = false;
 
 		for (int i = 0; i < StateEnum_Nb; i++)
-			m_stateColors[i] = Color::White;
+			m_stateColors[i] = HiColor::White;
 	}
 
 	BlockSkin::BlockSkin(Surface * pSurface, RectI block, BorderI frame)
@@ -184,7 +184,7 @@ namespace wg
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_stateBlocks[i] = block.pos();
-			m_stateColors[i] = Color::White;
+			m_stateColors[i] = HiColor::White;
 		}
 	}
 

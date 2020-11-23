@@ -63,12 +63,12 @@ namespace wg
 		m_stateColorMask = 1;
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
-			m_color[i] = Color::White;
+			m_color[i] = HiColor::White;
 
 		m_bOpaque = true;
 	}
 
-	ColorSkin::ColorSkin(Color color )
+	ColorSkin::ColorSkin(HiColor color )
 	{
 		setColor(color);
 	}

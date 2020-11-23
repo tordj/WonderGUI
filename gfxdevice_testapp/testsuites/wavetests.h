@@ -22,13 +22,13 @@ public:
 	{
 		// Generate simple wave
 
-		m_simpleWaveTopLine.color = Color::White;
+		m_simpleWaveTopLine.color = HiColor::White;
 		m_simpleWaveTopLine.hold = canvas.h / 2 * 256;
 		m_simpleWaveTopLine.length = 513;
 		m_simpleWaveTopLine.pWave = m_simpleWaveTopSamples;
 		m_simpleWaveTopLine.thickness = 1.f;
 
-		m_simpleWaveBottomLine.color = Color::HotPink;
+		m_simpleWaveBottomLine.color = HiColor::HotPink;
 		m_simpleWaveBottomLine.hold = canvas.h / 2 * 256;
 		m_simpleWaveBottomLine.length = 30;
 		m_simpleWaveBottomLine.pWave = m_simpleWaveBottomSamples;
@@ -42,13 +42,13 @@ public:
 
 		// Generate backface wave
 
-		m_backfaceWaveTopLine.color = Color::White;
+		m_backfaceWaveTopLine.color = HiColor::White;
 		m_backfaceWaveTopLine.hold = canvas.h / 2 * 256;
 		m_backfaceWaveTopLine.length = 513;
 		m_backfaceWaveTopLine.pWave = m_backfaceWaveTopSamples;
 		m_backfaceWaveTopLine.thickness = 1.f;
 
-		m_backfaceWaveBottomLine.color = Color::HotPink;
+		m_backfaceWaveBottomLine.color = HiColor::HotPink;
 		m_backfaceWaveBottomLine.hold = canvas.h / 2 * 256;
 		m_backfaceWaveBottomLine.length = 513;
 		m_backfaceWaveBottomLine.pWave = m_backfaceWaveBottomSamples;
@@ -68,49 +68,49 @@ public:
 
 	bool simpleWave(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red);
+		pDevice->drawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red);
 		return true;
 	}
 
 	bool simpleWaveRot90(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot90);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red, GfxFlip::Rot90);
 		return true;
 	}
 
 	bool simpleWaveRot180(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot180);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red, GfxFlip::Rot180);
 		return true;
 	}
 
 	bool simpleWaveRot270(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::Rot270);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red, GfxFlip::Rot270);
 		return true;
 	}
 
 	bool simpleWaveFlipX(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipX);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red, GfxFlip::FlipX);
 		return true;
 	}
 
 	bool simpleWaveFlipY(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, Color::Green, Color::Red, GfxFlip::FlipY);
+		pDevice->flipDrawWave(canvas, &m_simpleWaveTopLine, &m_simpleWaveBottomLine, HiColor::Green, HiColor::Red, GfxFlip::FlipY);
 		return true;
 	}
 
 	bool backfaceWave(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, Color::Green, Color::Red );
+		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, HiColor::Green, HiColor::Red );
 		return true;
 	}
 
 	bool backfaceWaveSameColor(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, Color::Green, Color::Green);
+		pDevice->drawWave(canvas, &m_backfaceWaveTopLine, &m_backfaceWaveBottomLine, HiColor::Green, HiColor::Green);
 		return true;
 	}
 
@@ -131,6 +131,6 @@ private:
 
 
 
-	Color	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, { 255,255,255,128 } };
+	HiColor	m_rainbowColors[8] = { HiColor::Red, HiColor::Orange, HiColor::Yellow, HiColor::Green, HiColor::Blue, HiColor::Indigo, HiColor::Violet, { 255,255,255,128 } };
 };
  

@@ -33,7 +33,7 @@ for line in input
   green = (green ** 2.2)
   red = (red ** 2.2)
 
-  outstring = (alpha*4096+0.5).to_i.to_s + ', ' + (red*4096+0.5).to_i.to_s + ', ' + (green*4096+0.5).to_i.to_s + ', ' + (blue*4096+0.5).to_i.to_s
+  outstring = (red*4096+0.5).to_i.to_s + ', ' + (green*4096+0.5).to_i.to_s + ', ' + (blue*4096+0.5).to_i.to_s + ', ' + (alpha*4096+0.5).to_i.to_s
   
   output << line.sub(valuestring,outstring)
 end

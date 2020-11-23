@@ -52,11 +52,11 @@ namespace wg
 	{
 		// Create default skins
 
-		auto pSelSkin = BoxSkin::create(1, Color::Transparent, Color::Red);
+		auto pSelSkin = BoxSkin::create(1, HiColor::Transparent, HiColor::Red);
 		pSelSkin->setContentPadding(1);
 		m_pSelectionSkin = pSelSkin;
 
-		auto pPalSkin = BoxSkin::create({ 16,2,2,2 }, Color::White, Color::Yellow);
+		auto pPalSkin = BoxSkin::create({ 16,2,2,2 }, HiColor::White, HiColor::Yellow);
 		pPalSkin->setContentPadding({ 16,2,2,2 });
 		m_pToolboxSkin = pPalSkin;
 
