@@ -231,14 +231,14 @@ namespace wg
             int        canvasYOfs;
             int        canvasYMul;
 
-            vector_float4 flatTint;
+            simd_float4 flatTint;
 
             RectI    tintRect;
 
-            vector_float4   topLeftTint;
-            vector_float4   topRightTint;
-            vector_float4   bottomRightTint;
-            vector_float4   bottomLeftTint;
+            simd_float4   topLeftTint;
+            simd_float4   topRightTint;
+            simd_float4   bottomRightTint;
+            simd_float4   bottomLeftTint;
 
             SizeI    textureSize;
         };
@@ -247,7 +247,7 @@ namespace wg
         {
             CoordI          coord;
             int             extrasOfs;                        // Offset into extras buffer.
-            vector_float2   uv;
+            simd_float2   uv;
         };
            
         // Buffers

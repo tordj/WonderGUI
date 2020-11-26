@@ -24,7 +24,6 @@
 #define	WG_METALSURFACE_DOT_H
 #pragma once
 
-#import "simd/simd.h"
 #import "MetalKit/MetalKit.h"
 
 #include <wg_surface.h>
