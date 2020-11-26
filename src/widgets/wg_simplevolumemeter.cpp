@@ -37,9 +37,9 @@ namespace wg
 	{
 		m_direction = Direction::Up;
 
-		m_sectionColors[0] = HiColor::Green;
-		m_sectionColors[1] = HiColor::Yellow;
-		m_sectionColors[2] = HiColor::Red;
+		m_sectionColors[0] = Color::Green;
+		m_sectionColors[1] = Color::Yellow;
+		m_sectionColors[2] = Color::Red;
 
 		m_fSectionHeight[0] = 0.75f;
 		m_fSectionHeight[1] = 0.18f;

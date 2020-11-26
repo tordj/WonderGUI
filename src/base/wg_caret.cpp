@@ -187,7 +187,7 @@ namespace wg
 			Rect r = dirtyRect(cell);
 			BlendMode oldMode = pDevice->blendMode();
 			pDevice->setBlendMode(BlendMode::Invert);
-			pDevice->fill( r.px(), HiColor::White );
+			pDevice->fill( r.px(), Color::White );
 			pDevice->setBlendMode(oldMode);
 		}
 

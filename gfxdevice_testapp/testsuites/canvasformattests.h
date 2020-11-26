@@ -57,7 +57,7 @@ public:
 
 	bool	init_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
-		m_pActiveCanvas->fill(HiColor::Transparent);
+		m_pActiveCanvas->fill(Color::Transparent);
 		pDevice->beginCanvasUpdate(m_pActiveCanvas);
 		return true;
 	}
@@ -74,18 +74,18 @@ public:
 
 	bool	drawPrimitives(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), HiColor::Red, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), Color::Red, 3.f);
 		pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color8(0, 0, 255, 128), 3.f);
 
-		pDevice->drawLine(canvas.pos() + CoordI(5, 100), canvas.pos() + CoordI(40,101), HiColor::Green, 3.f);
-		pDevice->drawLine(canvas.pos() + CoordI(5, 105), canvas.pos() + CoordI(6, 145), HiColor::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 100), canvas.pos() + CoordI(40,101), Color::Green, 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(5, 105), canvas.pos() + CoordI(6, 145), Color::Green, 3.f);
 
 
 		CoordI	fillOfs = { canvas.x, canvas.y + canvas.h / 2 };
 		SizeI	fillSize = { 50,50 };
 		CoordI	stepping = { 60, 0 };
 
-		pDevice->fill({ fillOfs, fillSize }, HiColor::Red);
+		pDevice->fill({ fillOfs, fillSize }, Color::Red);
 		pDevice->fill({ fillOfs + stepping, fillSize }, Color8(0, 0, 255, 128));
 		pDevice->fill({ fillOfs + stepping * 2, fillSize }, Color8(0, 0, 255, 64));
 		pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color8(0, 0, 255, 32));

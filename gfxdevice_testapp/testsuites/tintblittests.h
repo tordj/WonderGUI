@@ -47,7 +47,7 @@ public:
 
 	bool cleanup(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintColor(HiColor::White);
+		pDevice->setTintColor(Color::White);
 		pDevice->clearTintGradient();
 		return true;
 	}
@@ -62,35 +62,35 @@ public:
 	bool setFlatTint(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintColor(HiColor::Blue);
+		pDevice->setTintColor(Color::Blue);
 		return true;
 	}
 
 	bool setTintX(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::West, HiColor::Red, HiColor::Blue) );
+		pDevice->setTintGradient(canvas, Gradient(Origo::West, Color::Red, Color::Blue) );
 		return true;
 	}
 
 	bool setTintY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::North, HiColor::Red, HiColor::Blue) );
+		pDevice->setTintGradient(canvas, Gradient(Origo::North, Color::Red, Color::Blue) );
 		return true;
 	}
 
 	bool setTintXY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, HiColor::Red, HiColor::Blue));
+		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::Red, Color::Blue));
 		return true;
 	}
 
 	bool setOffsetTintXY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient({ 200,200,100,100 }, Gradient(Origo::NorthWest, HiColor::Black, HiColor::White));
+		pDevice->setTintGradient({ 200,200,100,100 }, Gradient(Origo::NorthWest, Color::Black, Color::White));
 		return true;
 	}
 

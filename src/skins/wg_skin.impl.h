@@ -37,7 +37,7 @@ namespace wg
 	class RenderSettings
 	{
 	public:
-		RenderSettings(GfxDevice* pDevice, int layer, BlendMode blendMode = BlendMode::Undefined, HiColor tintColor = HiColor::White)
+		RenderSettings(GfxDevice* pDevice, int layer, BlendMode blendMode = BlendMode::Undefined, HiColor tintColor = Color::White)
 		{
 			m_pDevice = pDevice;
 
@@ -53,7 +53,7 @@ namespace wg
 				pDevice->setBlendMode(blendMode);
 			}
 
-			if (tintColor != HiColor::White)
+			if (tintColor != Color::White)
 			{
 				m_prevTintColor = pDevice->tintColor();
 				pDevice->setTintColor(tintColor);
@@ -110,7 +110,7 @@ namespace wg
 				m_bGradient = true;
 			}
 			
-			if (tintColor != HiColor::White)
+			if (tintColor != Color::White)
 			{
 				m_prevTintColor = pDevice->tintColor();
 				pDevice->setTintColor(tintColor);

@@ -456,7 +456,7 @@ namespace wg
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			HiColor tint = HiColor::White;
+			HiColor tint = Color::White;
 
 			if (p->pSlot->m_state == Slot::State::Opening)
 				tint.a = 4096 * p->pSlot->m_stateCounter / m_openingFadeMs;

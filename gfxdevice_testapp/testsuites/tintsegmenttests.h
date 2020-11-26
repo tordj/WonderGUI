@@ -82,7 +82,7 @@ public:
 	bool	resetTint(GfxDevice * pDevice, const RectI& canvas)
 	{
         m_flip = GfxFlip::Normal;
-		pDevice->setTintColor(HiColor::White);
+		pDevice->setTintColor(Color::White);
 		pDevice->clearTintGradient();
 		return true;
 	}
@@ -92,7 +92,7 @@ public:
 //		pDevice->setTintColor({ 128,255,255,255 });
 
 //		pDevice->setTintGradient(canvas, { 0,0,0,255 }, { 255,255,255,255 }, { 255,255,255,255 }, { 0,0,0,255 } );
-		pDevice->setTintGradient(canvas, Gradient(Origo::West, HiColor::White, HiColor::Black) );
+		pDevice->setTintGradient(canvas, Gradient(Origo::West, Color::White, Color::Black) );
 		return true;
 	}
 
@@ -100,7 +100,7 @@ public:
 	{
 		//		pDevice->setTintColor({ 128,255,255,255 });
 
-		pDevice->setTintGradient(canvas, Gradient(Origo::North, HiColor::White, HiColor::Black));
+		pDevice->setTintGradient(canvas, Gradient(Origo::North, Color::White, Color::Black));
 		return true;
 	}
 
@@ -108,7 +108,7 @@ public:
 	{
 		//		pDevice->setTintColor({ 128,255,255,255 });
 
-		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, HiColor::White, HiColor::Black));
+		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::White, Color::Black));
 		return true;
 	}
 
@@ -123,7 +123,7 @@ public:
         //        pDevice->setTintColor({ 128,255,255,255 });
 
         m_flip = GfxFlip::Rot90;
-        pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, HiColor::White, HiColor::Black));
+        pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::White, Color::Black));
         return true;
     }
 
@@ -169,7 +169,7 @@ public:
 
 	bool segmentsNoTint(GfxDevice * pDevice, const RectI& canvas)
 	{
-		HiColor colors[] = { HiColor::Red, HiColor::Orange, HiColor::Green };
+		HiColor colors[] = { Color::Red, Color::Orange, Color::Green };
 
 		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip);
 		return true;
@@ -177,7 +177,7 @@ public:
 
 	bool segmentsTintX(GfxDevice * pDevice, const RectI& canvas)
 	{
-		HiColor colors[] = { HiColor::White, HiColor::Red, HiColor::Orange, HiColor::Orange, HiColor::Black, HiColor::Green };
+		HiColor colors[] = { Color::White, Color::Red, Color::Orange, Color::Orange, Color::Black, Color::Green };
 
 		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientX);
 		return true;
@@ -186,7 +186,7 @@ public:
 
 	bool segmentsTintY(GfxDevice * pDevice, const RectI& canvas)
 	{
-		HiColor colors[] = { {0,0,0,4096}, {4096,0,0,4096}, HiColor::Orange, HiColor::Orange, HiColor::Blue, HiColor::Green };
+		HiColor colors[] = { Color(0,0,0,255), Color(255,0,0,255), Color::Orange, Color::Orange, Color::Blue, Color::Green };
 
 		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientY);
 		return true;
@@ -194,7 +194,7 @@ public:
 
 	bool segmentsTintXY(GfxDevice * pDevice, const RectI& canvas)
 	{
-		HiColor colors[] = { HiColor::DeepPink, HiColor::HotPink, HiColor::Black, HiColor::White, HiColor::Orange, HiColor::Orange, HiColor::Orange, HiColor::Orange, HiColor::LightBlue, HiColor::Blue, HiColor::Green, HiColor::LightGreen };
+		HiColor colors[] = { Color::DeepPink, Color::HotPink, Color::Black, Color::White, Color::Orange, Color::Orange, Color::Orange, Color::Orange, Color::LightBlue, Color::Blue, Color::Green, Color::LightGreen };
 
 		pDevice->flipDrawSegments(canvas, 3, colors, m_nRainbowEdges, (int*)m_rainbowEdges2, 7, m_flip, TintMode::GradientXY );
 		return true;
@@ -205,7 +205,7 @@ private:
 
 	GfxFlip	m_flip = GfxFlip::Normal;
 
-	HiColor	m_rainbowColors[8] = { HiColor::Red, HiColor::Orange, HiColor::Yellow, HiColor::Green, HiColor::Blue, HiColor::Indigo, HiColor::Violet, { 4096,4096,4096,2048 } };
+	HiColor	m_rainbowColors[8] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet, Color( 255,255,255,128 ) };
 
 	int		m_nRainbowEdges = 512 + 1;
 	int		m_rainbowEdges[512 + 1][7];

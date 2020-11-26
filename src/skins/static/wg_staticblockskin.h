@@ -85,7 +85,7 @@ namespace wg
 		RectI			m_block;
 		BorderI			m_frame;
 		BlendMode		m_blendMode = BlendMode::Blend;
-		HiColor			m_color = HiColor::White;
+		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;
 	};

@@ -2527,7 +2527,7 @@ namespace wg
 
 		if (m_nTintGradients == 0)
 		{
-			if (color == HiColor::White)
+			if (color == Color::White)
 				tintMode = TintMode::None;
 			else
 				tintMode = TintMode::Flat;
@@ -2572,7 +2572,7 @@ namespace wg
 
 		if (!m_bTintGradient)
 		{
-			tintMode = (m_tintColor == HiColor::White) ? TintMode::None : TintMode::Flat;
+			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
 			m_colTrans.flatTintColor = m_tintColor;
 			m_bTintOpaque = (m_tintColor.a == 4096);
 		}
@@ -2627,7 +2627,7 @@ namespace wg
 
 			if( (diffMaskX | diffMaskY) == 0 )
 			{
-				if (m_tintGradient.topLeft == HiColor::White)
+				if (m_tintGradient.topLeft.isWhite() )
 					tintMode = TintMode::None;
 				else
 				{
@@ -2695,7 +2695,7 @@ namespace wg
 		if( m_bRendering )
 			return false;
 
-		setTintColor(HiColor::White);
+		setTintColor(Color::White);
 		setBlendMode(BlendMode::Blend);
 
 		m_bRendering = true;
@@ -3299,7 +3299,7 @@ namespace wg
 
 		if (tintMode != TintMode::None)
 		{
-			bTintFlat = m_tintColor != HiColor::White;
+			bTintFlat = !m_tintColor.isWhite();
 
 			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
 			{

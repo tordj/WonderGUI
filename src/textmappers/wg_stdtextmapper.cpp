@@ -38,8 +38,8 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(HiColor::White), m_selectionBackRenderMode(BlendMode::Invert),
-		m_selectionCharColor(HiColor::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
+	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
+		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
 	{
 	}
 
@@ -385,7 +385,7 @@ namespace wg
 		TextStyle_h		hStyle = 0xFFFF;
 
 		HiColor	baseTint = pDevice->tintColor();
-		HiColor	localTint = HiColor::White;
+		HiColor	localTint = Color::White;
 
 		BlendMode renderMode = pDevice->blendMode();
 
@@ -560,7 +560,7 @@ namespace wg
 
 		TextStyle_h hStyle = 0xFFFF;
 
-		HiColor		color = HiColor::Transparent;
+		HiColor		color = Color::Transparent;
 
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{

@@ -30,7 +30,7 @@ public:
 
 	bool squarePieChart(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.f, HiColor::Transparent, HiColor::Transparent, true);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 
@@ -72,7 +72,7 @@ public:
 
 	bool squarePieChartWithHole(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 0.6f, HiColor::Transparent, HiColor::Transparent, true);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 0.6f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 
@@ -90,7 +90,7 @@ public:
 
 	bool squarePieChartWith100PctHole(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.0f, HiColor::Transparent, HiColor::Transparent, true);
+		pDevice->drawPieChart(canvas, 0.f, 7, m_sliceSizes1, m_rainbowColors, 1.0f, Color::Transparent, Color::Transparent, true);
 		return true;
 	}
 
@@ -99,7 +99,7 @@ private:
 
 	float	m_sliceSizes1[7] = { 0.1f, 0.1f, 0.1f, 0.2f, 0.15f, 0.125f, 0.2f };
 	float	m_sliceSizesOverflow[7] = { 0.30f, 0.20f, 0.20f, 0.20f, 0.09f, 0.125f, 0.2f };
-	HiColor	m_rainbowColors[7] = { HiColor::Red, HiColor::Orange, HiColor::Yellow, HiColor::Green, HiColor::Blue, HiColor::Indigo, HiColor::Violet };
+	HiColor	m_rainbowColors[7] = { Color::Red, Color::Orange, Color::Yellow, Color::Green, Color::Blue, Color::Indigo, Color::Violet };
 
 };
 

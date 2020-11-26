@@ -71,9 +71,9 @@ namespace wg
 
 	void StaticGradientSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, HiColor::White, canvas, m_gradient, true);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, Color::White, canvas, m_gradient, true);
 
-		pDevice->fill(canvas.px(), HiColor::White);
+		pDevice->fill(canvas.px(), Color::White);
 	}
 
 	//____ markTest() _________________________________________________________

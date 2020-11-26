@@ -84,7 +84,7 @@ namespace wg
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
 			layer.blockOfs[i] = ofs*pSurf->qpixPerPoint()/4;
-			layer.tintColor[i] = HiColor::White;
+			layer.tintColor[i] = Color::White;
 
 			_updateStateOpacity(i);
 		}
@@ -119,7 +119,7 @@ namespace wg
 		//
 
 		for (int i = 0; i < StateEnum_Nb; i++)
-			layer.tintColor[i] = HiColor::White;
+			layer.tintColor[i] = Color::White;
 
 		//
 
@@ -194,7 +194,7 @@ namespace wg
 
 		// Set default color for normal state.
 
-		layer.tintColor[0] = HiColor::White;
+		layer.tintColor[0] = Color::White;
 
 		//
 

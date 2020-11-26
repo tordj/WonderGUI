@@ -369,7 +369,7 @@ namespace wg
 
 		// Members controlling render states
 
-		ColTrans			m_colTrans = { TintMode::None, {4096,4096,4096,4096}, {0,0,0,0} };		// Color transformation data
+		ColTrans			m_colTrans = { TintMode::None, HiColor(4096,4096,4096,4096), {0,0,0,0} };		// Color transformation data
 
 		bool				m_bTintOpaque = true;						// Set if tint alpha is 255 after combining tintColor and gradient.
 

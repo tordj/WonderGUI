@@ -70,7 +70,7 @@ namespace wg
 		m_bOpaque = false;
 
 		for (int i = 0; i < StateEnum_Nb; i++)
-			m_stateColors[i] = HiColor::White;
+			m_stateColors[i] = Color::White;
 	}
 
 	TileSkin::TileSkin(Surface * pSurface)
@@ -80,7 +80,7 @@ namespace wg
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
 			m_stateSurfaces[i] = pSurface;
-			m_stateColors[i] = HiColor::White;
+			m_stateColors[i] = Color::White;
 		}
 	}
 

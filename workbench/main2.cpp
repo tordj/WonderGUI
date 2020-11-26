@@ -464,7 +464,7 @@ int main(int argc, char** argv)
 	TextStyle_p pStyle = TextStyle::create();
 	pStyle->setFont(pFont);
 	pStyle->setSize(16);
-	pStyle->setColor(HiColor::Black);
+	pStyle->setColor(Color::Black);
 	Base::setDefaultStyle(pStyle);
 
 	/*
@@ -473,7 +473,7 @@ int main(int argc, char** argv)
 		Base::setDefaultTextMapper(pMapper);
 	*/
 
-	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(HiColor::White, BlendMode::Invert);
+	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(Color::White, BlendMode::Invert);
 
 	// Init skins
 
@@ -544,23 +544,23 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
-	pRoot->skin = ColorSkin::create(HiColor::Black);
+	pRoot->skin = ColorSkin::create(Color::Black);
 	pRoot->slot = pDnDLayer;
 
 	PopupLayer_p pPopupLayer = PopupLayer::create();
 	pDnDLayer->mainSlot = pPopupLayer;
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
-	pBasePanel->skin = StaticColorSkin::create(HiColor::Burlywood);
+	pBasePanel->skin = StaticColorSkin::create(Color::Burlywood);
 	pPopupLayer->mainSlot = pBasePanel;
 
 	/*	Filler_p pBackground = Filler::create();
-		pBackground->setSkin( ColorSkin::create(HiColor::aqua) );
+		pBackground->setSkin( ColorSkin::create(Color::aqua) );
 		pFlexPanel->addWidget(pBackground, WG_NORTHWEST, CoordI(), WG_SOUTHEAST, CoordI());
 	*/
 
 
-	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, HiColor::Beige}, {StateEnum::Pressed, HiColor::Red} }, BorderI(5), { {StateEnum::Hovered, HiColor::Green} });
+	//	auto pTestSkin = BoxSkin::create({ {StateEnum::Normal, Color::Beige}, {StateEnum::Pressed, Color::Red} }, BorderI(5), { {StateEnum::Hovered, Color::Green} });
 	//	pTestSkin->setBlendMode(BlendMode::Add);
 
 	auto pTestSkin = MultiBlockSkin::create({ 10,10 }, BorderI(4));
@@ -569,7 +569,7 @@ int main(int argc, char** argv)
 	pTestSkin->setLayerBlendMode(layer1, BlendMode::Blend);
 
 	//	int layer2 = pTestSkin->addLayer(pBackgroundSurface, { 0,0 });
-	//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, HiColor::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
+	//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
 
 	Button_p pImage0 = Button::create();
 	pImage0->skin = pTestSkin;
@@ -810,7 +810,7 @@ int main(int argc, char** argv)
 		PackPanel_p pHorr2 = PackPanel::create();
 
 		LineEditor_p pEditLine = LineEditor::create();
-		pEditLine->setSkin(ColorSkin::create(HiColor::Black));
+		pEditLine->setSkin(ColorSkin::create(Color::Black));
 		pEditLine->text.setMaxChars(8);
 		pHorr2->slots.add( pEditLine );
 
@@ -829,21 +829,21 @@ int main(int argc, char** argv)
 		pVert->slots.add( pFillerSouth );
 
 		TextEditor_p pText = TextEditor::create();
-		pText->setSkin( ColorSkin::create( HiColor::Black ) );
+		pText->setSkin( ColorSkin::create( Color::Black ) );
 
 
 		TextStyle_p pBig = TextStyle::create();
 		pBig->setSize( 16 );
 
 		TextStyle_p pRed = TextStyle::create();
-		pRed->setColor( HiColor::Red );
+		pRed->setColor( Color::Red );
 		pRed->setSize( 25 );
 
 		TextStyle_p pAnuv = TextStyle::create();
 		pAnuv->setFont( pBmpFont );
 
 		TextStyle_p pLink = TextStyle::create();
-		pLink->setColor(HiColor::Green );
+		pLink->setColor(Color::Green );
 		pLink->setLink( TextLink::create( "www.somewhere.net" ) );
 
 		pText->text.set( "This is a\npiece of TEXT with LINK" );
@@ -887,7 +887,7 @@ int main(int argc, char** argv)
 		pMenu->setAxis(Axis::Y);
 //		pMenu->setSelectable(false);
 
-		auto pSkin = BoxSkin::create(HiColor::Red, BorderI(0), HiColor::Red );
+		auto pSkin = BoxSkin::create(Color::Red, BorderI(0), Color::Red );
 		pSkin->setContentPadding(12);
 		pMenu->setSkin(pSkin);
 
@@ -954,7 +954,7 @@ int main(int argc, char** argv)
 /*
 	{
 		auto pSplit = SplitPanel::create();
-		pSplit->setSkin(ColorSkin::create(HiColor::Beige));
+		pSplit->setSkin(ColorSkin::create(Color::Beige));
 		pSplit->setSplitFactor(0.5f);
 		pSplit->setHandleSkin(pPressablePlateSkin);
 //		pSplit->setHandleThickness(10);
@@ -967,12 +967,12 @@ int main(int argc, char** argv)
 		pMapper->setAlignment(Origo::SouthEast);
 
 		TextEditor_p pText1 = TextEditor::create();
-		pText1->setSkin(ColorSkin::create(HiColor::SandyBrown));
+		pText1->setSkin(ColorSkin::create(Color::SandyBrown));
 		pText1->text.set("Once upon a time in a land.");
 		pText1->text.setTextMapper(pMapper);
 
 		TextEditor_p pText2 = TextEditor::create();
-		pText2->setSkin(ColorSkin::create(HiColor::Black));
+		pText2->setSkin(ColorSkin::create(Color::Black));
 		pText2->text.set("Once upon a time in a land far, far away...");
 		pText2->text.setTextMapper(pMapper);
 
@@ -1056,8 +1056,8 @@ int main(int argc, char** argv)
 	ScrollPanel_p pScrollPanel;
 	{
 		Scrollbar_p pScrollbar = Scrollbar::create();
-		pScrollbar->setBackgroundSkin( ColorSkin::create( HiColor::Green ));
-		pScrollbar->setHandleSkin( ColorSkin::create( HiColor::Red ));
+		pScrollbar->setBackgroundSkin( ColorSkin::create( Color::Green ));
+		pScrollbar->setHandleSkin( ColorSkin::create( Color::Red ));
 		pScrollPanel = ScrollPanel::create();
 		pScrollPanel->vscrollbar = pScrollbar;
 
@@ -1070,7 +1070,7 @@ int main(int argc, char** argv)
 	{
 		PackList_p pList = PackList::create();
 
-		BoxStateSkin_p pHeaderSkin = BoxSkin::create( HiColor::Aquamarine, BorderI(2), HiColor::DarkRed );
+		BoxStateSkin_p pHeaderSkin = BoxSkin::create( Color::Aquamarine, BorderI(2), Color::DarkRed );
 		pHeaderSkin->setContentPadding( 8 );
 
 		pList->header.label.set("Label");
@@ -1081,7 +1081,7 @@ int main(int argc, char** argv)
 		pList->setSortFunction( sortWidgets );
 		pList->setSelectMode( SelectMode::MultiEntries );
 
-		BoxStateSkin_p pListSkin = BoxSkin::create( HiColor::Chocolate, BorderI(2), HiColor::Yellow );
+		BoxStateSkin_p pListSkin = BoxSkin::create( Color::Chocolate, BorderI(2), Color::Yellow );
 		pListSkin->setContentPadding( 8 );
 		pList->setSkin( pListSkin );
 
@@ -1089,7 +1089,7 @@ int main(int argc, char** argv)
 		pList->setLassoSkin( ColorSkin::create( Color(0,0,0,128)));
 
 
-		BoxStateSkin_p pEditBoxStateSkin = BoxSkin::create(HiColor::Black, 1, HiColor::White );
+		BoxStateSkin_p pEditBoxStateSkin = BoxSkin::create(Color::Black, 1, Color::White );
 		pEditBoxStateSkin->setContentPadding(2);
 
 		for( int i = 0 ; i < 20 ; i++ )
@@ -1178,7 +1178,7 @@ int main(int argc, char** argv)
 		pBig->setSize( 16 );
 
 		TextStyle_p pRed = TextStyle::create();
-		pRed->setColor( HiColor::Red );
+		pRed->setColor( Color::Red );
 		pRed->setSize( 25 );
 
 		TextStyle_p pAnuv = TextStyle::create();
@@ -1680,17 +1680,17 @@ bool shadowLayerTest(CStandardSlot_p pEntry )
 	auto pFiller2 = Filler::create();
 	auto pFiller3 = Filler::create();
 
-	pFiller1->setSkin(ColorSkin::create(HiColor::DarkKhaki));
+	pFiller1->setSkin(ColorSkin::create(Color::DarkKhaki));
 	pFrontLayer->slots.addMovable(pFiller1, { 0,0,50,50 });
 
-	pFiller2->setSkin(ColorSkin::create(HiColor::DarkSlateBlue));
+	pFiller2->setSkin(ColorSkin::create(Color::DarkSlateBlue));
 	pFrontLayer->slots.addMovable(pFiller2, { 50,50,50,50 });
 
-	pFiller3->setSkin(ColorSkin::create(HiColor::DarkSeaGreen));
+	pFiller3->setSkin(ColorSkin::create(Color::DarkSeaGreen));
 	pFrontLayer->slots.addMovable(pFiller3, { 100,100,50,50 });
 
 	auto pBackground = Filler::create();
-	pBackground->setSkin(ColorSkin::create(HiColor::LightSalmon));
+	pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
 	pBaseLayer->slots.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 	pShadowLayer->shadows.add(pFiller1, pShadowSkin);
@@ -1728,7 +1728,7 @@ bool stretchBlitTest(CStandardSlot_p pEntry)
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 	auto pBack = FlexPanel::create();
-	pBack->skin = StaticColorSkin::create(HiColor::Blue);
+	pBack->skin = StaticColorSkin::create(Color::Blue);
 	* pEntry = pBack;
 
 	auto pImage = Image::create();
@@ -1754,11 +1754,11 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXT AREA.");
-	pEditor->skin = ColorSkin::create(HiColor::YellowGreen);
+	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
 	pScrollPanel->viewSlot = pEditor;
-	pScrollPanel->skin = ColorSkin::create(HiColor::Pink);
+	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
 
 	auto pFlex = FlexPanel::create();
@@ -1773,7 +1773,7 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 
 bool textClipTest(CStandardSlot_p pEntry)
 {
-	auto pSkin = ColorSkin::create(HiColor::YellowGreen);
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
 
 	auto pEditor = TextEditor::create();
@@ -1793,7 +1793,7 @@ bool textClipTest(CStandardSlot_p pEntry)
 
 bool textEditorTest(CStandardSlot_p pEntry)
 {
-	auto pSkin = ColorSkin::create(HiColor::YellowGreen);
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(2);
 
 	auto pEditor = TextEditor::create();
@@ -1814,7 +1814,7 @@ bool textEditorTest(CStandardSlot_p pEntry)
 
 bool lineEditorTest(CStandardSlot_p pEntry)
 {
-	auto pSkin = ColorSkin::create(HiColor::YellowGreen);
+	auto pSkin = ColorSkin::create(Color::YellowGreen);
 	pSkin->setContentPadding(10);
 
 	auto pEditor = LineEditor::create();
@@ -1835,13 +1835,13 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 bool popupOpenerTest(CStandardSlot_p pEntry)
 {
 
-	auto pButtonSkin = BoxSkin::create(1, HiColor::LightGrey, HiColor::Black);
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
 	pButtonSkin->setContentPadding(2);
 
 
 	auto pPopupLayer = PopupLayer::create();
 	* pEntry = pPopupLayer;
-	pPopupLayer->skin = ColorSkin::create(HiColor::PaleGoldenrod);
+	pPopupLayer->skin = ColorSkin::create(Color::PaleGoldenrod);
 
 	auto pFlex = FlexPanel::create();
 	pPopupLayer->mainSlot = pFlex;
@@ -1863,29 +1863,29 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 bool scrollbarTest(CStandardSlot_p pEntry)
 {
-	auto pButtonSkin = BoxSkin::create(1, HiColor::LightGrey, HiColor::Black);
+	auto pButtonSkin = BoxSkin::create(1, Color::LightGrey, Color::Black);
 	pButtonSkin->setContentPadding(5);
 
 
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXT AREA.");
-	pEditor->skin = ColorSkin::create(HiColor::YellowGreen);
+	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
 	pScrollPanel->viewSlot = pEditor;
-	pScrollPanel->skin = ColorSkin::create(HiColor::Pink);
+	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
 	auto pVScrollbar = Scrollbar::create();
 	pVScrollbar->setFwdButtonSkin(pButtonSkin);
 	pVScrollbar->setBwdButtonSkin(pButtonSkin);
-	pVScrollbar->setBackgroundSkin(ColorSkin::create(HiColor::DarkGreen));
+	pVScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
 	pVScrollbar->setHandleSkin(pButtonSkin);
 
 	auto pHScrollbar = Scrollbar::create();
 	pHScrollbar->setFwdButtonSkin(pButtonSkin);
 	pHScrollbar->setBwdButtonSkin(pButtonSkin);
-	pHScrollbar->setBackgroundSkin(ColorSkin::create(HiColor::DarkGreen));
+	pHScrollbar->setBackgroundSkin(ColorSkin::create(Color::DarkGreen));
 	pHScrollbar->setHandleSkin(pButtonSkin);
 
 
@@ -1934,16 +1934,16 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 {
 	auto pSplit = SplitPanel::create();
 
-	pSplit->handleSkin = ColorSkin::create({ { StateEnum::Normal, HiColor::Black }, { StateEnum::Hovered, HiColor::Brown }, { StateEnum::Pressed, HiColor::Red } });
+	pSplit->handleSkin = ColorSkin::create({ { StateEnum::Normal, Color::Black }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } });
 	pSplit->setHandleThickness(10);
 
 	auto pContent1 = TextEditor::create();
-	pContent1->skin = StaticColorSkin::create(HiColor::AntiqueWhite);
+	pContent1->skin = StaticColorSkin::create(Color::AntiqueWhite);
 	pSplit->slots[0] = pContent1;
 
 	
 	auto pContent2 = TextEditor::create();
-	pContent2->skin = StaticColorSkin::create(HiColor::BlanchedAlmond);
+	pContent2->skin = StaticColorSkin::create(Color::BlanchedAlmond);
 	pSplit->slots[1] = pContent2;
 
 
@@ -1959,18 +1959,18 @@ bool designLayerTest(CStandardSlot_p pSlot)
 	auto pDesignLayer = DesignLayer::create();
 
 	auto pFlexPanel = FlexPanel::create();
-	pFlexPanel->skin = ColorSkin::create(HiColor::Thistle);
+	pFlexPanel->skin = ColorSkin::create(Color::Thistle);
 
 	auto pFiller1 = Filler::create();
-	pFiller1->skin = ColorSkin::create(HiColor::Azure);
+	pFiller1->skin = ColorSkin::create(Color::Azure);
 	pFiller1->setPreferredSize({ 20,20 });
 
 	auto pFiller2 = Filler::create();
-	pFiller2->skin = ColorSkin::create(HiColor::Maroon);
+	pFiller2->skin = ColorSkin::create(Color::Maroon);
 	pFiller2->setPreferredSize({ 20,20 });
 
 	auto pFiller3 = Filler::create();
-	pFiller3->skin = ColorSkin::create(HiColor::CadetBlue);
+	pFiller3->skin = ColorSkin::create(Color::CadetBlue);
 	pFiller3->setPreferredSize({ 20,20 });
 
 	pFlexPanel->slots.pushFrontMovable(pFiller1, Rect(10, 10, 50, 50));
@@ -1992,7 +1992,7 @@ bool designLayerTest(CStandardSlot_p pSlot)
 bool pianoKeyboardTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	{
 		Surface_p pOddWhiteKeys = loadSurface("../resources/whiteoddkeys.png", PixelFormat::BGRA_8);
@@ -2000,7 +2000,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		Surface_p pBlackKeys = loadSurface("../resources/blackkeys.png", PixelFormat::BGRA_8);
 
 		auto pSimplePiano = PianoKeyboard::create();
-		pSimplePiano->skin = ColorSkin::create(HiColor::Black, { 60,10,10,10 });
+		pSimplePiano->skin = ColorSkin::create(Color::Black, { 60,10,10,10 });
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
 		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed });
 
@@ -2017,7 +2017,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		Surface_p pBlackKeys = loadSurface("../resources/NisBlack.png", PixelFormat::BGRA_8);
 
 		auto pNisPiano = PianoKeyboard::create();
-		pNisPiano->setSkin(ColorSkin::create(HiColor::Black, { 0,0,0,0 }));
+		pNisPiano->setSkin(ColorSkin::create(Color::Black, { 0,0,0,0 }));
 		pNisPiano->setLayout(26, std::bitset<7>("1110110"));
 		pNisPiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Pressed });
 
@@ -2040,18 +2040,18 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 bool pieKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, HiColor::Green, HiColor::Green, HiColor::Black);
-	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, HiColor::Green, HiColor::Green, HiColor::Black);
+	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black);
+	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black);
 
-	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, HiColor::Green, HiColor::Red, HiColor::DarkGray, 0.75f, HiColor::Transparent, HiColor::Black);
+	auto pBgSkin3 = PieMeterSkin::create(10.f / 12.f, 0.05f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.75f, Color::Transparent, Color::Black);
 
-	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 1 / 24.f, 4.f / 12.f, HiColor::Green, HiColor::Red, HiColor::DarkGray, 0.25f, HiColor::Yellow, HiColor::Black);
-	pBgSkin4->setSlices({ {0.2f,HiColor::Red,HiColor::Red},{0.2f,HiColor::Orange,HiColor::Orange},{0.6f,HiColor::Blue,HiColor::Green} });
+	auto pBgSkin4 = PieMeterSkin::create(10.f / 12.f, 1 / 24.f, 4.f / 12.f, Color::Green, Color::Red, Color::DarkGray, 0.25f, Color::Yellow, Color::Black);
+	pBgSkin4->setSlices({ {0.2f,Color::Red,Color::Red},{0.2f,Color::Orange,Color::Orange},{0.6f,Color::Blue,Color::Green} });
 
-	auto pBgSkin5 = PieMeterSkin::create(10.f / 12.f, 0 / 24.f, 4.f / 12.f, HiColor::Blue, HiColor::Blue, HiColor::DarkGray, 0.25f, HiColor::Yellow, HiColor::Black );
-	pBgSkin5->setSlices({ {0.7f,HiColor::DarkBlue,HiColor::DarkBlue},{0.2f,HiColor::Blue,HiColor::Blue},{0.1f,HiColor::LightBlue,HiColor::LightBlue} });
+	auto pBgSkin5 = PieMeterSkin::create(10.f / 12.f, 0 / 24.f, 4.f / 12.f, Color::Blue, Color::Blue, Color::DarkGray, 0.25f, Color::Yellow, Color::Black );
+	pBgSkin5->setSlices({ {0.7f,Color::DarkBlue,Color::DarkBlue},{0.2f,Color::Blue,Color::Blue},{0.1f,Color::LightBlue,Color::LightBlue} });
 	pBgSkin5->setStaticSections(false);
 
 	auto pKnob1 = Knob::create();
@@ -2093,7 +2093,7 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 bool spinKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
 	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
@@ -2139,7 +2139,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 bool animKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
@@ -2171,14 +2171,14 @@ bool animKnobTest(CStandardSlot_p pSlot)
 bool sliderTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, HiColor::Green, HiColor::Green, HiColor::Black, BorderI(0,10,0,10), BorderI(), true );
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->skin = pBgSkin;
@@ -2188,7 +2188,7 @@ bool sliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = Slider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, HiColor::Green, HiColor::Green, HiColor::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->skin = pBgSkin;
@@ -2207,14 +2207,14 @@ bool sliderTest(CStandardSlot_p pSlot)
 bool rangeSliderTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Right, HiColor::Green, HiColor::Green, HiColor::Black, BorderI(0, 10, 0, 10), BorderI(), true);
+		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0, 10, 0, 10), BorderI(), true);
 
 		pSliderX->setAxis(Axis::X);
 		pSliderX->skin = pBgSkin;
@@ -2225,7 +2225,7 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 	auto pSliderY = RangeSlider::create();
 	{
-		auto pBgSkin = FillMeterSkin::create(Direction::Up, HiColor::Green, HiColor::Green, HiColor::Black, BorderI(10, 0, 10, 0), BorderI(), false);
+		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
 		pSliderY->skin = pBgSkin;
@@ -2248,7 +2248,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 {
 /*
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	auto pCanvasStack = CanvasStack::create();
 
@@ -2260,7 +2260,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 	Surface_p pLedMaskSurf = loadSurface("../resources/parallels/led_mask0001.png", PixelFormat::BGRA_8);
 
 	Surface_p pLedMixTempSurf = Base::activeContext()->surfaceFactory()->createSurface(pLedMaskSurf->size());
-	pLedMixTempSurf->fill(HiColor::Transparent);
+	pLedMixTempSurf->fill(Color::Transparent);
 
 	pCanvasStack->setCombineFunc([=](GfxDevice* pDevice, Surface* pEndCanvas, std::vector<Surface_p>& canvases)
 	{
@@ -2271,7 +2271,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 		//
 
 		pDevice->setCanvas(pLedMixTempSurf, CanvasInit::Keep, false);
-		pDevice->fill(HiColor::Transparent);
+		pDevice->fill(Color::Transparent);
 		pDevice->setBlendMode(BlendMode::Blend);
 		pDevice->setBlitSource(canvases[1]);
 		pDevice->blit({ 0,0 });
@@ -2336,7 +2336,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 bool doubleSkinTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
 	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
@@ -2348,7 +2348,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 
 	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, { 0.5f,0.5f }, -135, 135);
 
-	auto pFillMeterSkin = FillMeterSkin::create(Direction::Up, HiColor::Green, HiColor::Green);
+	auto pFillMeterSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green);
 
 	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pFillMeterSkin);
 
@@ -2367,7 +2367,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 bool timerTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 //	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
 //	pSurfClockFace->setScaleMode(ScaleMode::Interpolate);
@@ -2393,7 +2393,7 @@ bool timerTest(CStandardSlot_p pSlot)
 bool animPlayerTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
@@ -2425,7 +2425,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	PopupLayer_p pPopupLayer = PopupLayer::create();
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pMainSurf = loadSurface("../resources/selectbox.png", PixelFormat::BGRA_8);
 
@@ -2435,12 +2435,12 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	auto pSelectBox = SelectBox::create();
 	pSelectBox->skin = pMainSkin;
 
-	auto pListSkin = BoxSkin::create(1, HiColor::White, HiColor::Black);
+	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black);
 	pListSkin->setContentPadding(3);
 
-	auto pListEntrySkin = BoxSkin::create(1, { { StateEnum::Normal, HiColor::Transparent, HiColor::Transparent },
-													{ StateEnum::Hovered, HiColor::Yellow, HiColor::Orange },
-													{ StateEnum::Selected, HiColor::LightBlue, HiColor::White } });
+	auto pListEntrySkin = BoxSkin::create(1, { { StateEnum::Normal, Color::Transparent, Color::Transparent },
+													{ StateEnum::Hovered, Color::Yellow, Color::Orange },
+													{ StateEnum::Selected, Color::LightBlue, Color::White } });
 	pListEntrySkin->setContentPadding(3);
 
 
@@ -2463,7 +2463,7 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
@@ -2499,7 +2499,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
@@ -2543,7 +2543,7 @@ bool animSkinTest(CStandardSlot_p pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::PapayaWhip);
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSplashSurf = loadSurface("../resources/splash.png");
 
@@ -2554,9 +2554,9 @@ bool animSkinTest(CStandardSlot_p pSlot)
 	pAnimSkin2->setContentPadding(10);
 
 
-	auto pBoxSkin = BoxSkin::create(2, HiColor::Red, HiColor::Black);
+	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
 
-	auto pFramingSkin = BoxSkin::create(2, HiColor::Transparent, HiColor::Black);
+	auto pFramingSkin = BoxSkin::create(2, Color::Transparent, Color::Black);
 	pFramingSkin->setContentPadding(80);
 
 	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
@@ -2580,12 +2580,12 @@ bool animSkinTest(CStandardSlot_p pSlot)
 bool renderLayerTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->skin = ColorSkin::create(HiColor::SlateGrey);
+	pBaseLayer->skin = ColorSkin::create(Color::SlateGrey);
 
-	auto pBoxSkin = StaticBoxSkin::create(2, HiColor::Green, HiColor::Black);
+	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
 	pBoxSkin->setLayer(2);
 	
-	auto pShadowSkin = StaticBoxSkin::create(20,{ 4096,4096,4096,2048 }, HiColor::Transparent);
+	auto pShadowSkin = StaticBoxSkin::create(20,Color( 255,255,255,128), Color::Transparent);
 	pShadowSkin->setContentPadding({ 0,40,40,0 });
 	pShadowSkin->setLayer(1);
 	pShadowSkin->setBlendMode(BlendMode::Max);
@@ -2687,15 +2687,15 @@ void textStyleTest()
 	auto pBase = TextStyle::create();
 	auto pAdded = TextStyle::create();
 
-	assert(pBase->bgColor(StateEnum::Selected) == HiColor::Transparent);
-	assert(pBase->color(StateEnum::Hovered) == HiColor::Black);
+	assert(pBase->bgColor(StateEnum::Selected) == Color::Transparent);
+	assert(pBase->color(StateEnum::Hovered) == Color::Black);
 
-	pBase->setColor(HiColor::Red, StateEnum::Hovered);
-	assert(pBase->color(StateEnum::Normal) == HiColor::Black);
-	assert(pBase->color(StateEnum::Hovered) == HiColor::Red);
-	assert(pBase->color(StateEnum::Pressed) == HiColor::Red);
-	assert(pBase->color(StateEnum::SelectedHoveredFocused) == HiColor::Red);
-	assert(pBase->color(StateEnum::SelectedFocused) == HiColor::Black);
+	pBase->setColor(Color::Red, StateEnum::Hovered);
+	assert(pBase->color(StateEnum::Normal) == Color::Black);
+	assert(pBase->color(StateEnum::Hovered) == Color::Red);
+	assert(pBase->color(StateEnum::Pressed) == Color::Red);
+	assert(pBase->color(StateEnum::SelectedHoveredFocused) == Color::Red);
+	assert(pBase->color(StateEnum::SelectedFocused) == Color::Black);
 
 	pBase->setSize(16, StateEnum::Hovered);
 	pAdded->setSize(15);

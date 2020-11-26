@@ -37,7 +37,7 @@ public:
 	{
 		for (int i = 0; i < c_nbSolarisLines; i++)
 		{
-			pDevice->drawLine(m_begCoordsSolaris[i], m_endCoordsSolaris[i], HiColor::Yellow, 1.f);
+			pDevice->drawLine(m_begCoordsSolaris[i], m_endCoordsSolaris[i], Color::Yellow, 1.f);
 		}
 
 		return true;

@@ -276,9 +276,9 @@ namespace wg
 			BlendMode	savedBlendMode = m_blendMode;
 			HiColor		savedTintColor = m_tintColor;
 			setBlendMode(BlendMode::Replace);
-			setTintColor(HiColor::White);
+			setTintColor(Color::White);
 			clearTintGradient();
-			fill(HiColor::Transparent);
+			fill(Color::Transparent);
 			setBlendMode(savedBlendMode);
 			setTintColor(savedTintColor);
 
@@ -444,7 +444,7 @@ namespace wg
 
 
 		m_renderLayer = layer;
-		m_tintColor = HiColor::White;
+		m_tintColor = Color::White;
 		m_tintGradient.clear();
 		m_tintGradientRect = sz;
 		m_bTintGradient = false;
@@ -453,6 +453,7 @@ namespace wg
 		m_canvasSize = sz;
 		_canvasWasChanged();
 //		_clearRenderLayer();
+		return true;
 	}
 
 	//____ endCanvasUpdate() __________________________________________________
@@ -481,7 +482,7 @@ namespace wg
 					if (bFirst)
 					{
 						setClipList(m_nCanvasUpdateRects, m_pCanvasUpdateRects);
-						setTintColor(HiColor::White);
+						setTintColor(Color::White);
 						clearTintGradient();
 						setRenderLayer(0);
 						bFirst = false;
@@ -1123,11 +1124,11 @@ namespace wg
 
 			HiColor	col[5];
 
-			col[0] = HiColor::Transparent;
+			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = pBottomBorder->color;
-			col[4] = HiColor::Transparent;
+			col[4] = Color::Transparent;
 
 			_transformDrawSegments(dest, 5, col, length + 1, pEdgeBuffer, 4, TintMode::Flat, simpleTransform );
 
@@ -1168,12 +1169,12 @@ namespace wg
 
 			HiColor	col[6];
 
-			col[0] = HiColor::Transparent;
+			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
 			col[2] = frontFill;
 			col[3] = backFill;
 			col[4] = pBottomBorder->color;
-			col[5] = HiColor::Transparent;
+			col[5] = Color::Transparent;
 
 			_transformDrawSegments(dest, 6, col, length + 1, pEdgeBuffer, 5, TintMode::Flat, simpleTransform);
 		}
@@ -1388,11 +1389,11 @@ namespace wg
 		// Render columns
 
 		HiColor	col[5];
-		col[0] = HiColor::Transparent;
+		col[0] = Color::Transparent;
 		col[1] = outlineColor;
 		col[2] = fillColor;
 		col[3] = outlineColor;
-		col[4] = HiColor::Transparent;
+		col[4] = Color::Transparent;
 
 		const RectI * pOldClipRects = m_pClipRects;
 		int nOldClipRects = m_nClipRects;

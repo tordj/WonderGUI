@@ -31,7 +31,6 @@ namespace wg
 {
 
 	class Surface;
-	class Color;
 
 	class NullGfxDevice;
 	typedef	StrongPtr<NullGfxDevice>	NullGfxDevice_p;

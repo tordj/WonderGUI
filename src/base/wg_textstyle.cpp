@@ -48,8 +48,8 @@ namespace wg
 		for (int i = 0; i < StateEnum_Nb; i++)
 		{
 			m_size[i]			= 0;
-			m_color[i]			= HiColor::Black;
-			m_bgColor[i]		= HiColor::Transparent;
+			m_color[i]			= Color::Black;
+			m_bgColor[i]		= Color::Transparent;
 			m_decoration[i]		= TextDecoration::Undefined;
 		}
 	}
@@ -190,7 +190,7 @@ namespace wg
 	void TextStyle::clearColor()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
-			m_color[i] = HiColor::Black;
+			m_color[i] = Color::Black;
 
 		m_colorSetMask = 0;
         m_colorDefinedMask = 0;
@@ -201,7 +201,7 @@ namespace wg
 	{
 		int i = Util::_stateToIndex(state);
 
-		m_color[i] = HiColor::Black;
+		m_color[i] = Color::Black;
 		m_colorSetMask.clearBit(i);
 
 		_refreshColor();
@@ -212,7 +212,7 @@ namespace wg
 	void TextStyle::clearBgColor()
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
-			m_bgColor[i] = HiColor::Transparent;
+			m_bgColor[i] = Color::Transparent;
 
 		m_bgColorSetMask = 0;
         m_bgColorDefinedMask = 0;
@@ -223,7 +223,7 @@ namespace wg
 	{
 		int i = Util::_stateToIndex(state);
 
-		m_bgColor[i] = HiColor::Transparent;
+		m_bgColor[i] = Color::Transparent;
 		m_bgColorSetMask.clearBit(i);
 
 		_refreshBgColor();

@@ -138,7 +138,7 @@ namespace wg
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
 		Origo			m_origo					= Origo::NorthWest;
-		HiColor			m_backColor				= HiColor::White;
+		HiColor			m_backColor				= Color::White;
 
 		std::function<void(CCanvas*)>	m_surfaceLostCallback;
 

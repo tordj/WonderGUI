@@ -24,7 +24,7 @@ public:
 	bool straightFill(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->fill(canvas, HiColor::RosyBrown);
+		pDevice->fill(canvas, Color::RosyBrown);
 		pDevice->setBlendMode(BlendMode::Blend);
 
 		return true;
@@ -32,50 +32,50 @@ public:
 
 	bool blendFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintColor({ 4096,4096,4096,2048 });
+		pDevice->setTintColor( Color(255,255,255,128) );
 
-		pDevice->fill(canvas, HiColor::RosyBrown);
+		pDevice->fill(canvas, Color::RosyBrown);
 
-		pDevice->setTintColor(HiColor::White);
+		pDevice->setTintColor(Color::White);
 
 		return true;
 	}
 
 	bool tintFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintColor({ 4096,0,0,4096 });
-		pDevice->fill( RectI(0,0,32,32) + canvas.pos(), HiColor::White);
+		pDevice->setTintColor(Color(255,0,0,255));
+		pDevice->fill( RectI(0,0,32,32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor({ 0,4096,0,4096 });
-		pDevice->fill(RectI(40, 0, 32, 32) + canvas.pos(), HiColor::White);
+		pDevice->setTintColor(Color(0,255,0,255));
+		pDevice->fill(RectI(40, 0, 32, 32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor({ 0,0,4096,4096 });
-		pDevice->fill(RectI(80, 0, 32, 32) + canvas.pos(), HiColor::White);
+		pDevice->setTintColor(Color(0,0,255,255));
+		pDevice->fill(RectI(80, 0, 32, 32) + canvas.pos(), Color::White);
 
-		pDevice->setTintColor(HiColor::White);
+		pDevice->setTintColor(Color::White);
 
 		return true;
 	}
 
 	bool nonGradientFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), HiColor::White);
+		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), Color::White);
 
 		return true;
 	}
 
 	bool gradientXFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintGradient(canvas,  Gradient(Origo::West, { 4096,0,0,4096 }, { 0,0,4096,4096 }));
-		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w-256, canvas.h-256, 256, 256) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w-100, 0, 100, 240) + canvas.pos(), HiColor::White);
+		pDevice->setTintGradient(canvas,  Gradient(Origo::West, Color(255,0,0,255), Color(0,0,255,255)));
+		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w-256, canvas.h-256, 256, 256) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w-100, 0, 100, 240) + canvas.pos(), Color::White);
 
 		pDevice->clearTintGradient();
 
@@ -84,12 +84,12 @@ public:
 
 	bool gradientYFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintGradient(canvas, Gradient(Origo::North, { 4096,0,0,4096 }, { 0,0,4096,4096 }));
-		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), HiColor::White);
+		pDevice->setTintGradient(canvas, Gradient(Origo::North, Color(255,0,0,255), Color(0,0,255,255)));
+		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), Color::White);
 
 		pDevice->clearTintGradient();
 
@@ -98,12 +98,12 @@ public:
 
 	bool gradientXYFill(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, { 4096,0,0,4096 }, { 0,0,4096,4096 }));
-		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), HiColor::White);
-		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), HiColor::White);
+		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color(255,0,0,255), Color(0,0,255,255)));
+		pDevice->fill(RectI(0, 0, 64, 64) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(64, 0, 256, 80) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 256, canvas.h - 256, 256, 256) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(0, canvas.h - 350, 250, 350) + canvas.pos(), Color::White);
+		pDevice->fill(RectI(canvas.w - 100, 0, 100, 240) + canvas.pos(), Color::White);
 
 		pDevice->clearTintGradient();
 
@@ -120,7 +120,7 @@ public:
 
 			for (int j = 0; j < 5; j++)
 			{
-				pDevice->fill(rect, HiColor::White);
+				pDevice->fill(rect, Color::White);
 				rect.y += 12.f;
 				rect.x += 0.25f;
 			}
@@ -131,7 +131,7 @@ public:
 
 	bool subPixelGradientXYFill(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, { 4096,0,0,4096 }, { 0,0,4096,4096 }));
+		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color(255,0,0,255), Color(0,0,255,255)));
 
 		for (int i = 0; i < 10; i++)
 		{
@@ -139,7 +139,7 @@ public:
 
 			for (int j = 0; j < 10; j++)
 			{
-				pDevice->fill(rect, HiColor::White);
+				pDevice->fill(rect, Color::White);
 				rect.y += 12.f;
 				rect.x += 0.25f;
 			}
