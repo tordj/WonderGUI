@@ -27,10 +27,10 @@ public:
 		m_coords[6] = { 1,9 };
 		m_coords[7] = { 1,11 };
 
-		m_colors[4] = { 255,0,0,128 };
-		m_colors[5] = { 255,0,0,64 };
-		m_colors[6] = { 255,0,0,32 };
-		m_colors[7] = { 255,0,0,16 };
+		m_colors[4] = Color(255,0,0,128);
+		m_colors[5] = Color(255,0,0,64);
+		m_colors[6] = Color(255,0,0,32);
+		m_colors[7] = Color(255,0,0,16);
 
 		for (int i = 8; i < c_nbCoords; i++)
 		{
@@ -51,6 +51,6 @@ public:
 	const static int c_nbCoords = 1000;
 
 	CoordI	m_coords[c_nbCoords];
-	Color	m_colors[c_nbCoords];
+	HiColor	m_colors[c_nbCoords];
 
 };

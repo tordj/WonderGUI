@@ -63,14 +63,14 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void			setSelectionBack(Color color, BlendMode renderMode = BlendMode::Replace );
+		void			setSelectionBack(HiColor color, BlendMode renderMode = BlendMode::Replace );
 
-		void			setSelectionCharColor(Color color, BlendMode blend = BlendMode::Replace );
+		void			setSelectionCharColor(HiColor color, BlendMode blend = BlendMode::Replace );
 
-		Color			selectionBackColor() { return m_selectionBackColor;  }
+		HiColor			selectionBackColor() { return m_selectionBackColor;  }
 		BlendMode		selectionBackRenderMode() { return m_selectionBackRenderMode; }
 
-		Color			selectionCharColor() { return m_selectionCharColor; }
+		HiColor			selectionCharColor() { return m_selectionCharColor; }
 		BlendMode		selectionCharColorBlend() { return m_selectionCharBlend; }
 
 
@@ -98,8 +98,6 @@ namespace wg
 		virtual int		wordBegin( const Text * pText, int charOfs ) const override;
 		virtual int		wordEnd( const Text * pText, int charOfs ) const override;
 
-
-		virtual void 	receive( Msg * pMsg ) override;
 		virtual void 	render( Text * pText, GfxDevice * pDevice, const Rect& canvas ) override;
 
 		virtual void	caretMove( Text * pText, int newOfs, int oldOfs ) override;
@@ -159,6 +157,8 @@ namespace wg
 			MU  spacing;			// Offset from start of line to start of next line.
 		};
 
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
+
 		inline Glyph_p	_getGlyph( Font * pFont, uint16_t charCode ) const;
 
 		int				_countLines( Text * pText, const Char * pChars ) const;
@@ -189,7 +189,7 @@ namespace wg
 
 		void 			_renderBack( Text * pText, GfxDevice * pDevice, const Rect& canvas );
 		void 			_renderBackSection( Text * pText, GfxDevice * pDevice, const Rect& canvas,
-											int begChar, int endChar, Color color );
+											int begChar, int endChar, HiColor color );
 
 
 		enum struct SelectMode
@@ -206,11 +206,12 @@ namespace wg
 		Origo			m_alignment;
 		Caret_p			m_pCaret;
 		bool			m_bLineWrap;
+		bool			m_bReceivingUpdates = false;
 
-		Color			m_selectionBackColor;
+		HiColor			m_selectionBackColor;
 		BlendMode		m_selectionBackRenderMode;
 
-		Color			m_selectionCharColor;
+		HiColor			m_selectionCharColor;
 		BlendMode		m_selectionCharBlend;
 
 

@@ -25,6 +25,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -65,12 +66,37 @@ namespace wg
 		return m_pSurface ? Size(m_pSurface->size()) : Size();
 	}
 
+	//____ setBlendMode() _____________________________________________________
+
+	void StaticTileSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
+	}
+
+	//____ setTint() __________________________________________________________
+
+	void StaticTileSkin::setColor(HiColor tintColor)
+	{
+		m_color = tintColor;
+		_updateOpacityFlag();
+	}
+
+	void StaticTileSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
 	//____ render() ______________________________________________________________
 
-	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void StaticTileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
+
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient );
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->scaleTile(canvas.px(),MU::scale());
@@ -78,9 +104,28 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool StaticTileSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
+		//TODO: Take tint into account.
+
 		return markTestTileRect(ofs, m_pSurface, canvas, opacityTreshold);
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void StaticTileSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096 )
+				m_bOpaque = false;
+			else
+				m_bOpaque = m_pSurface->isOpaque();
+		}
+		else
+			m_bOpaque = false;
 	}
 
 

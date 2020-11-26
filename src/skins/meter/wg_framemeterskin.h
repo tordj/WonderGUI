@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_canimframes.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -58,25 +59,38 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+		void		setColor(HiColor tintColor);
+		HiColor		color() const { return m_color; }
+
+		void		setGradient(const Gradient& gradient);
+		Gradient	gradient() const { return m_gradient; }
+
 		void		setGfxPadding(BorderI padding);
 		Border		gfxPadding() const { return m_gfxPadding; }
 
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void 		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
-		Rect		fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
-										float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect		dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+								float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+								float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		FrameMeterSkin();
 		~FrameMeterSkin() {};
 
-		const AnimFrame * _fractionToFrame(float fraction) const;
+		void		_updateOpacityFlag();
+
+		const AnimFrame * _valueToFrame(float value) const;
 
 		void		_didAddEntries(AnimFrame* pEntry, int nb) override;
 		void		_didMoveEntries(AnimFrame* pFrom, AnimFrame* pTo, int nb) override;
@@ -87,6 +101,12 @@ namespace wg
 		Object*		_object() override;
 
 		BorderI		m_gfxPadding;
+		bool		m_bAllFramesOpaque = false;
+
+		BlendMode		m_blendMode = BlendMode::Blend;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
+		bool			m_bGradient = false;
 	};
 
 

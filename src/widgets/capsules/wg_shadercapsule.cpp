@@ -52,7 +52,7 @@ namespace wg
 
 	//____ setTintColor() ______________________________________________________
 
-	void ShaderCapsule::setTintColor( Color color, BlendMode mode )
+	void ShaderCapsule::setTintColor( HiColor color, BlendMode mode )
 	{
 		if( color != m_tintColor || mode != m_tintMode )
 		{
@@ -87,8 +87,7 @@ namespace wg
 	{
 		// Render our skin
 
-		if( m_pSkin )
-			m_pSkin->render( pDevice, _canvas, m_state );
+		OO(skin)._render( pDevice, _canvas, m_state );
 
 		if (!slot._widget())
 			return;
@@ -97,18 +96,18 @@ namespace wg
 		// Set our tint color and blend mode.
 
 		BlendMode		oldBM;
-		Color			oldTC;
-		Color			newTC;
+		HiColor			oldTC;
+		HiColor			newTC;
 
 		oldBM = pDevice->blendMode();
 		oldTC = pDevice->tintColor();
 
 		pDevice->setBlendMode(m_renderMode);
-		pDevice->setTintColor( Color::blend(oldTC, m_tintColor, m_tintMode) );
+		pDevice->setTintColor( HiColor::blend(oldTC, m_tintColor, m_tintMode) );
 
 		// Render children recursively
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		if (canvas != _canvas)
 		{

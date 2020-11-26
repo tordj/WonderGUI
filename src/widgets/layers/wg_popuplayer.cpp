@@ -400,8 +400,7 @@ namespace wg
 	{
 		// Render container itself
 
-		if( m_pSkin )
-			m_pSkin->render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_state);
 
 		// Render children
 
@@ -457,19 +456,19 @@ namespace wg
 		{
 			WidgetRenderContext * p = &renderList[i];
 
-			Color tint = Color::White;
+			HiColor tint = Color::White;
 
 			if (p->pSlot->m_state == Slot::State::Opening)
-				tint.a = 255 * p->pSlot->m_stateCounter / m_openingFadeMs;
+				tint.a = 4096 * p->pSlot->m_stateCounter / m_openingFadeMs;
 
 			if (p->pSlot->m_state == Slot::State::Closing)
-				tint.a = 255 - (255 * p->pSlot->m_stateCounter / m_closingFadeMs);
+				tint.a = 4096 - (4096 * p->pSlot->m_stateCounter / m_closingFadeMs);
 
-			if (tint.a == 255)
+			if (tint.a == 4096)
 				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 			else
 			{
-				Color oldTint = pDevice->tintColor();
+				HiColor oldTint = pDevice->tintColor();
 				pDevice->setTintColor(oldTint*tint);
 				OO(p->pSlot->_widget())->_render(pDevice, p->geo, p->geo);
 				pDevice->setTintColor(oldTint);
@@ -516,72 +515,8 @@ namespace wg
 	{
 		Layer::_receive(_pMsg);
 
-		int ms = static_cast<TickMsg*>(_pMsg)->timediff();
-
 		switch( _pMsg->type() )
 		{
-			case MsgType::Tick:
-
-				// Update state for all open popups
-
-				for (Slot* pSlot = popupSlots._begin() ; pSlot != popupSlots._end() ; pSlot++)
-				{
-					Slot& popup = *pSlot;
-
-					switch (popup.m_state)
-					{
-					case Slot::State::OpeningDelay:
-						if (popup.m_stateCounter + ms < m_openingDelayMs)
-						{
-							popup.m_stateCounter += ms;
-							break;
-						}
-						else
-						{
-							popup.m_state = Slot::State::Opening;
-							popup.m_stateCounter -= m_openingDelayMs;
-							// No break here, let's continue down to opening...
-						}
-					case Slot::State::Opening:
-						popup.m_stateCounter += ms;
-						_requestRender(popup.m_geo);
-						if (popup.m_stateCounter >= m_openingFadeMs)
-						{
-							popup.m_stateCounter = 0;
-							popup.m_state = popup.m_bAutoClose ? Slot::State::PeekOpen : Slot::State::FixedOpen;
-						}
-						break;
-
-					case Slot::State::ClosingDelay:
-						if (popup.m_stateCounter + ms < m_closingDelayMs)
-						{
-							popup.m_stateCounter += ms;
-							break;
-						}
-						else
-						{
-							popup.m_state = Slot::State::Closing;
-							popup.m_stateCounter -= m_closingDelayMs;
-							// No break here, let's continue down to closing...
-						}
-					case Slot::State::Closing:
-						popup.m_stateCounter += ms;
-						_requestRender(popup.m_geo);
-						// Removing any closed popups is done in next loop
-						break;
-					default:
-						break;
-					}
-
-				}
-
-				// Close any popup that is due for closing.
-
-				while (!popupSlots.isEmpty() && popupSlots._first()->m_state == Slot::State::Closing && popupSlots._first()->m_stateCounter >= m_closingFadeMs)
-					_removeSlots(0, 1);
-
-			break;
-
 			case MsgType::MouseEnter:
 			case MsgType::MouseMove:
 			{
@@ -765,6 +700,72 @@ namespace wg
 		}
 	}
 
+	//____ _update() _______________________________________________________________
+
+	void PopupLayer::_update(int microPassed, int64_t microsecTimestamp)
+	{
+		int ms = microPassed / 1000;
+
+		// Update state for all open popups
+
+		for (Slot* pSlot = popupSlots._begin(); pSlot != popupSlots._end(); pSlot++)
+		{
+			Slot& popup = *pSlot;
+
+			switch (popup.m_state)
+			{
+			case Slot::State::OpeningDelay:
+				if (popup.m_stateCounter + ms < m_openingDelayMs)
+				{
+					popup.m_stateCounter += ms;
+					break;
+				}
+				else
+				{
+					popup.m_state = Slot::State::Opening;
+					popup.m_stateCounter -= m_openingDelayMs;
+					// No break here, let's continue down to opening...
+				}
+			case Slot::State::Opening:
+				popup.m_stateCounter += ms;
+				_requestRender(popup.m_geo);
+				if (popup.m_stateCounter >= m_openingFadeMs)
+				{
+					popup.m_stateCounter = 0;
+					popup.m_state = popup.m_bAutoClose ? Slot::State::PeekOpen : Slot::State::FixedOpen;
+				}
+				break;
+
+			case Slot::State::ClosingDelay:
+				if (popup.m_stateCounter + ms < m_closingDelayMs)
+				{
+					popup.m_stateCounter += ms;
+					break;
+				}
+				else
+				{
+					popup.m_state = Slot::State::Closing;
+					popup.m_stateCounter -= m_closingDelayMs;
+					// No break here, let's continue down to closing...
+				}
+			case Slot::State::Closing:
+				popup.m_stateCounter += ms;
+				_requestRender(popup.m_geo);
+				// Removing any closed popups is done in next loop
+				break;
+			default:
+				break;
+			}
+
+		}
+
+		// Close any popup that is due for closing.
+
+		while (!popupSlots.isEmpty() && popupSlots._first()->m_state == Slot::State::Closing && popupSlots._first()->m_stateCounter >= m_closingFadeMs)
+			_removeSlots(0, 1);
+	}
+
+
 	//____ _stealKeyboardFocus() _________________________________________________
 
 	void PopupLayer::_stealKeyboardFocus()
@@ -847,8 +848,7 @@ namespace wg
 		_updateGeo(pSlot);
 		_stealKeyboardFocus();
 
-		if (m_tickRouteId == 0)
-			m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
+		_startReceiveUpdates();
 	}
 
 
@@ -874,10 +874,7 @@ namespace wg
 		_restoreKeyboardFocus();
 
 		if (popupSlots.isEmpty())
-		{
-			Base::msgRouter()->deleteRoute(m_tickRouteId);
-			m_tickRouteId = 0;
-		}
+			_stopReceiveUpdates();
 	}
 
 	//____ _beginLayerSlots() __________________________________________________

@@ -85,6 +85,7 @@
     <ClInclude Include="..\..\..\src\base\wg_base.h" />
     <ClInclude Include="..\..\..\src\base\wg_bitmapfont.h" />
     <ClInclude Include="..\..\..\src\base\wg_blob.h" />
+    <ClInclude Include="..\..\..\src\base\wg_canvaslayers.h" />
     <ClInclude Include="..\..\..\src\base\wg_caret.h" />
     <ClInclude Include="..\..\..\src\base\wg_chain.h" />
     <ClInclude Include="..\..\..\src\base\wg_char.h" />
@@ -103,12 +104,14 @@
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamplug.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamreader.h" />
     <ClInclude Include="..\..\..\src\base\wg_gfxstreamwriter.h" />
+    <ClInclude Include="..\..\..\src\base\wg_gradient.h" />
     <ClInclude Include="..\..\..\src\base\wg_inputhandler.h" />
     <ClInclude Include="..\..\..\src\base\wg_internal.h" />
     <ClInclude Include="..\..\..\src\base\wg_paddedslot.h" />
     <ClInclude Include="..\..\..\src\base\wg_dataset.h" />
     <ClInclude Include="..\..\..\src\base\wg_mu.h" />
     <ClInclude Include="..\..\..\src\base\wg_selectableslot.h" />
+    <ClInclude Include="..\..\..\src\base\wg_skinslotmanager.h" />
     <ClInclude Include="..\..\..\src\base\wg_slotiterator.h" />
     <ClInclude Include="..\..\..\src\base\wg_strongcomponentptr.h" />
     <ClInclude Include="..\..\..\src\base\wg_key.h" />
@@ -146,6 +149,8 @@
     <ClInclude Include="..\..\..\src\components\wg_cdynamicvector.impl.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxinstream.h" />
     <ClInclude Include="..\..\..\src\components\wg_cgfxoutstream.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cskinslot.h" />
+    <ClInclude Include="..\..\..\src\components\wg_cskinslotmi.h" />
     <ClInclude Include="..\..\..\src\components\wg_cslotarray.h" />
     <ClInclude Include="..\..\..\src\components\wg_cstandardslot.h" />
     <ClInclude Include="..\..\..\src\components\wg_ccanvas.h" />
@@ -173,9 +178,11 @@
     <ClInclude Include="..\..\..\src\components\wg_cstaticvaluedisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cvaluedisplay.h" />
     <ClInclude Include="..\..\..\src\components\wg_cvalueeditor.h" />
+    <ClInclude Include="..\..\..\src\components\wg_geocomponent.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_sizebroker.h" />
     <ClInclude Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.h" />
+    <ClInclude Include="..\..\..\src\skins\anim\wg_spinanimskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_fillmeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_framemeterskin.h" />
     <ClInclude Include="..\..\..\src\skins\meter\wg_piemeterskin.h" />
@@ -191,7 +198,10 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticblockskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticcolorskin.h" />
+    <ClInclude Include="..\..\..\src\skins\static\wg_staticgradientskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_statictileskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_animskin.h" />
+    <ClInclude Include="..\..\..\src\skins\wg_skin.impl.h" />
     <ClInclude Include="..\..\..\src\skins\wg_stateskin.h" />
     <ClInclude Include="..\..\..\src\skins\wg_skin.h" />
     <ClInclude Include="..\..\..\src\textmappers\wg_stdtextmapper.h" />
@@ -200,7 +210,6 @@
     <ClInclude Include="..\..\..\src\valueformatters\wg_timeformatter.h" />
     <ClInclude Include="..\..\..\src\valueformatters\wg_valueformatter.h" />
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
-    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvasstack.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_sizecapsule.h" />
@@ -250,6 +259,7 @@
     <ClCompile Include="..\..\..\src\base\wg_base.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_bitmapfont.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_blob.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_canvaslayers.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_caret.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_chain.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_charbuffer.cpp" />
@@ -266,6 +276,7 @@
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamplug.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamreader.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_gfxstreamwriter.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_gradient.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_inputhandler.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_mempool.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_memstack.cpp" />
@@ -280,6 +291,7 @@
     <ClCompile Include="..\..\..\src\base\wg_receiver.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_resdb.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_scrollbartarget.cpp" />
+    <ClCompile Include="..\..\..\src\base\wg_skinslotmanager.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_slot.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_string.cpp" />
     <ClCompile Include="..\..\..\src\base\wg_surface.cpp" />
@@ -300,6 +312,8 @@
     <ClCompile Include="..\..\..\src\components\wg_cicondisplay.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_component.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cshadows.cpp" />
+    <ClCompile Include="..\..\..\src\components\wg_cskinslot.cpp" />
+    <ClCompile Include="..\..\..\src\components\wg_cskinslotmi.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstandardslot.cpp" />
     <ClCompile Include="..\..\..\src\components\wg_cstaticslotcollection.cpp" />
@@ -314,6 +328,7 @@
     <ClCompile Include="..\..\..\src\sizebrokers\wg_scalepreferred_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_sizebroker.cpp" />
     <ClCompile Include="..\..\..\src\sizebrokers\wg_uniform_sizebroker.cpp" />
+    <ClCompile Include="..\..\..\src\skins\anim\wg_spinanimskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_fillmeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_framemeterskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\meter\wg_piemeterskin.cpp" />
@@ -329,7 +344,9 @@
     <ClCompile Include="..\..\..\src\skins\static\wg_staticblockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticcolorskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\static\wg_staticgradientskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_statictileskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\wg_animskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_stateskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp" />
     <ClCompile Include="..\..\..\src\textmappers\wg_stdtextmapper.cpp" />
@@ -337,7 +354,6 @@
     <ClCompile Include="..\..\..\src\valueformatters\wg_standardformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_timeformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_valueformatter.cpp" />
-    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvasstack.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp" />

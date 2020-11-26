@@ -99,9 +99,9 @@ public:
 
 	bool draw(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->fill( RectI(100, 100, 100, 100), Color(255, 0, 0, 255));
-		pDevice->fill( RectI(150, 100, 100, 100), Color(0, 255, 0, 255));
-		pDevice->fill( RectI(100, 150, 100, 100), Color(0, 0, 255, 255));
+		pDevice->fill( RectI(100, 100, 100, 100), Color8(255, 0, 0, 255));
+		pDevice->fill( RectI(150, 100, 100, 100), Color8(0, 255, 0, 255));
+		pDevice->fill( RectI(100, 150, 100, 100), Color8(0, 0, 255, 255));
 		return true;
 	}
 

@@ -50,6 +50,11 @@ namespace wg
 
 		static RangeSlider_p	create() { return RangeSlider_p(new RangeSlider()); }
 
+		//.____ Components ____________________________________
+
+		CSkinSlot		beginHandleSkin;
+		CSkinSlot		endHandleSkin;
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&	typeInfo(void) const override;
@@ -63,14 +68,6 @@ namespace wg
 		inline MU		preferredSlideLength() const { return m_preferredSlideLength; }
 
 		//.____ Appearance _____________________________________________
-
-		void			setSkin(Skin * pSkin) override;
-
-		void			setBeginHandleSkin(Skin * pSkin);
-		inline Skin_p	beginHandleSkin() const { return m_pBeginHandleSkin; }
-
-		void			setEndHandleSkin(Skin * pSkin);
-		inline Skin_p	endHandleSkin() const { return m_pEndHandleSkin; }
 
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
@@ -103,14 +100,25 @@ namespace wg
 
 		void		_setRange(float begin, float end, bool bPostMsg = true);
 		void		_setHandleState(State state, bool isBeginHandle);
-		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle);
+		Rect		_handleGeo(const Rect& widgetGeo, bool isbBeginHandle) const;
+
+		State		_componentState(const GeoComponent* pComponent) const override;
+		Coord		_componentPos(const GeoComponent* pComponent) const override;
+		Size		_componentSize(const GeoComponent* pComponent) const override;
+		Rect		_componentGeo(const GeoComponent* pComponent) const override;
+
+		void		_componentRequestRender(const GeoComponent* pComponent) override;
+		void		_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+
+		void		_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+
+		float		_skinValue(const CSkinSlot* pSlot) const override;
+		float		_skinValue2(const CSkinSlot* pSlot) const override;
 
 
 	private:
 		Size		m_preferredSize;
 		MU			m_preferredSlideLength;
-		Skin_p		m_pBeginHandleSkin;
-		Skin_p		m_pEndHandleSkin;
 		float		m_rangeBegin = 0.f;
 		float		m_rangeEnd = 1.f;
 		float		m_minRange = 0.f;

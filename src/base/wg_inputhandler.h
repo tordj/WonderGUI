@@ -51,7 +51,7 @@ namespace wg
 	typedef	StrongPtr<InputHandler>		InputHandler_p;
 	typedef	WeakPtr<InputHandler>		InputHandler_wp;
 
-	class InputHandler : public Receiver
+	class InputHandler : public Object
 	{
 
 	friend class RootPanel;
@@ -114,7 +114,6 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		void 		receive( Msg * pMsg ) override;
 
 		Key			translateKey( int native_keycode );
 
@@ -124,6 +123,7 @@ namespace wg
 
 		void		_yieldButtonEvents(MouseButton button, Widget* pFrom, Widget* pTo);
 
+		void 		_update(int64_t timestamp);
 
 
 	protected:
@@ -152,7 +152,6 @@ namespace wg
 
 
 		char			m_inputId;
-		RouteId			m_tickRoute;
 		int64_t			m_timeStamp;
 
 		Coord			m_pointerPos;

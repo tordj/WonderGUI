@@ -36,7 +36,6 @@ namespace wg
 	{
 		m_inputId 		= 1;	//TODO: Make unique between input handlers.
 
-		m_tickRoute 	= Base::msgRouter()->addRoute( MsgType::Tick, this );
 		m_timeStamp 	= 0;
 		m_pointerStyle 	= PointerStyle::Default;
 		m_modKeys 		= MODKEY_NONE;
@@ -63,7 +62,6 @@ namespace wg
 
 	InputHandler::~InputHandler()
 	{
-		Base::msgRouter()->deleteRoute(m_tickRoute);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -713,20 +711,14 @@ namespace wg
 		return false;
 	}
 
-	//____ receive() _________________________________________________________________
+	//____ _update() _________________________________________________________________
 
-	void InputHandler::receive( Msg * pMsg )
+	void InputHandler::_update( int64_t timestamp )
 	{
+		_handleButtonRepeats( timestamp );
+		_handleKeyRepeats( timestamp );
 
-		if( pMsg->type() == MsgType::Tick ) {
-
-			int64_t timestamp = static_cast<TickMsg*>(pMsg)->timestamp();
-
-			_handleButtonRepeats( timestamp );
-			_handleKeyRepeats( timestamp );
-
-			m_timeStamp = timestamp;
-		}
+		m_timeStamp = timestamp;
 	}
 
 	//____ _handleButtonRepeats() _________________________________________

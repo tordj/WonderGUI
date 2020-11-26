@@ -176,6 +176,8 @@ namespace wg
 		void			_cloneContent( const Widget * _pOrg ) override;
 		void			_resize( const Size& size ) override;
 		void			_receive( Msg * pMsg ) override;
+		void			_update(int microPassed, int64_t microsecTimestamp);
+
 
 		// Needed by CSlots
 
@@ -183,8 +185,6 @@ namespace wg
 		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
-
-		RouteId			m_tickRouteId = 0;
 
 		int				m_openingDelayMs = 100;
 		int				m_openingFadeMs = 100;

@@ -53,7 +53,6 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static SoftGfxDevice_p	create();
-		static SoftGfxDevice_p	create(Surface * pCanvas);
 
 		//.____ Identification __________________________________________
 
@@ -66,15 +65,12 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true) override;
 
 		//.____ State _________________________________________________
 
-		void		setTintColor(Color color) override;
+		void		setTintColor(HiColor color) override;
 
-		void		setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void		setTintGradient(const RectI& rect, const Gradient& gradient) override;
 		void		clearTintGradient() override;
 
 		bool		setBlendMode(BlendMode blendMode) override;
@@ -88,13 +84,13 @@ namespace wg
 		//
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, const Color& col) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, Color color, float thickness = 1.f) override;
-		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness = 1.f) override;
+		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
 
 		bool	setBlitSource(Surface * pSource) override;
 		void	rotScaleBlit(const RectI& dest, float rotationDegrees, float scale, CoordF srcCenter = { 0.5f,0.5f }, CoordF destCenter = { 0.5f,0.5f } ) override;
@@ -108,13 +104,16 @@ namespace wg
 
 	protected:
 		SoftGfxDevice();
-		SoftGfxDevice(Surface * pCanvas);
 		~SoftGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;
+
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 		const static TintMode      TintMode_min = TintMode::None;
 		const static TintMode      TintMode_max = TintMode::GradientXY;
@@ -132,11 +131,11 @@ namespace wg
 		{
 			TintMode mode;
 
-			int16_t	flatTintColor[4];	// Used in TintMode::Color. RGBA-order.
+			HiColor	flatTintColor;	// Used in TintMode::Color
 
 			// Following used in TintMode GradientX, GradientY and GradientXY.
 
-			RectI		tintRect;
+			RectI	tintRect;
 
 			int32_t	topLeftR;		// Scale: 0 -> (1<<18)
 			int32_t	topLeftG;
@@ -183,7 +182,7 @@ namespace wg
 			int dstY;			// Pitch in bytes from end of line to beginning of next for each line written.
 		};
 
-		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel_fast8(uint8_t* pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
 		inline static void	_blend_pixels_fast8(BlendMode mode, int morphFactor, PixelFormat destFormat,
@@ -192,7 +191,7 @@ namespace wg
 			int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 
 
-		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
+		inline static void _read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA);
 		inline static void _write_pixel(uint8_t * pPixel, PixelFormat format, int16_t b, int16_t g, int16_t r, int16_t a);
 
 		inline static void	_blend_pixels(	BlendMode mode, int morphFactor, PixelFormat destFormat,
@@ -264,19 +263,19 @@ namespace wg
 */
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchOfs);
+		static void _plot(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchOfs);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		static void _plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		static void _draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 
 		template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
+		static void _clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
 
 		template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
+		static void _fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 
 		template<PixelFormat SRCFORMAT, TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT, bool TILE>
 		static void	_simple_blit(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
@@ -299,11 +298,11 @@ namespace wg
 
 		//
 
-		typedef	void(*PlotOp_p)(uint8_t * pDst, Color col, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
-		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos);
-		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotOp_p)(uint8_t * pDst, HiColor col, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*PlotListOp_p)(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint);
+		typedef	void(*LineOp_p)(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*ClipLineOp_p)(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos);
+		typedef	void(*FillOp_p)(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos);
 		typedef	void(*SimpleBlitOp_p)(const uint8_t * pSrc, uint8_t * pDst, const SoftSurface * pSrcSurf, const Pitches& pitches, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos, const int simpleTransform[2][2]);
 		typedef	void(*ComplexBlitOp_p)(const SoftSurface * pSrcSurf, CoordF pos, const float matrix[2][2], uint8_t * pDst, int dstPitchX, int dstPitchY, int nLines, int lineLength, const ColTrans& tint, CoordI patchPos);
 		typedef void(*SegmentOp_p)(int clipBeg, int clipEnd, uint8_t * pStripStart, int pixelPitch, int nEdges, SegmentEdge * pEdges, const int16_t * pSegmentColors, const SegmentGradient * pSegmentGradients, const bool * pTransparentSegments, const bool* pOpaqueSegments, int morphFactor);
@@ -361,11 +360,6 @@ namespace wg
 
 
 		static int			s_mulTab[256];
-		static int16_t		s_unpackSRGBTab[256];
-		static int16_t		s_unpackLinearTab[256];
-
-		static uint8_t		s_packSRGBTab[4097];
-		static uint8_t		s_packLinearTab[4097];
 
 		static int16_t		s_limit4096Tab[4097 * 3];
 
@@ -375,7 +369,7 @@ namespace wg
 
 		// Members controlling render states
 
-		ColTrans			m_colTrans = { TintMode::None, {4096,4096,4096,4096}, {0,0,0,0} };		// Color transformation data
+		ColTrans			m_colTrans = { TintMode::None, HiColor(4096,4096,4096,4096), {0,0,0,0} };		// Color transformation data
 
 		bool				m_bTintOpaque = true;						// Set if tint alpha is 255 after combining tintColor and gradient.
 
@@ -404,11 +398,11 @@ namespace wg
 
 		int				m_lineThicknessTable[17];
 
+		Surface_p		m_pRenderLayerSurface = nullptr;	// render layer surface
 		PixelBuffer		m_canvasPixelBuffer;
-		uint8_t *		m_pCanvasPixels;	// Pixels of m_pCanvas when locked
-		int				m_canvasPixelBits;	// PixelBits of m_pCanvas when locked
+		uint8_t *		m_pCanvasPixels;	// Pixels of render layer surface
+		int				m_canvasPixelBits;	// PixelBits of render layer surface
 		int				m_canvasPitch;
-		CanvasInit		m_beginRenderOp = CanvasInit::Keep;
 	};
 
 

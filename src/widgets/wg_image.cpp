@@ -20,8 +20,6 @@
 
 =========================================================================*/
 
-
-
 #include <wg_image.h>
 #include <wg_gfxdevice.h>
 #include <wg_util.h>
@@ -96,21 +94,14 @@ namespace wg
 		}
 	}
 
-
-
 	//____ preferredSize() _____________________________________________________________
 
 	Size Image::preferredSize() const
 	{
 		if( m_pSurface )
-		{
-			if( m_pSkin )
-				return m_pSkin->sizeForContent( m_rect.size() );
-			else
-				return m_rect.size();
-		}
-
-		return Widget::preferredSize();
+			return OO(skin)._sizeForContent( m_rect.size() );
+		else
+			return Widget::preferredSize();
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -133,11 +124,7 @@ namespace wg
 
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest;
-			if( m_pSkin )
-				dest = m_pSkin->contentRect( _canvas, state() );
-			else
-				dest = _canvas;
+			Rect dest = OO(skin)._contentRect( _canvas, state() );
 
 			pDevice->setBlitSource(m_pSurface);
 			pDevice->stretchBlit( dest.px(), m_rect );
@@ -150,11 +137,7 @@ namespace wg
 	{
 		if( m_pSurface && !m_rect.isEmpty() )
 		{
-			Rect dest;
-			if( m_pSkin )
-				dest = m_pSkin->contentRect( m_size, state() );
-			else
-				dest = m_size;
+			Rect dest = OO(skin)._contentRect( m_size, state() );
 
 			if( Util::markTestStretchRect( ofs, m_pSurface, m_rect, dest, m_markOpacity ) )
 				return true;

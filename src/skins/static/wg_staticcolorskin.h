@@ -40,26 +40,32 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticColorSkin_p create( Color col );
+		static StaticColorSkin_p create( HiColor col );
 
 		//.____ Identification __________________________________________
 
 		const TypeInfo&		typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticColorSkin( Color col );
+		StaticColorSkin( HiColor col );
 		~StaticColorSkin() {};
 
-		Color		m_color;
+		HiColor		m_color;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 	};
 

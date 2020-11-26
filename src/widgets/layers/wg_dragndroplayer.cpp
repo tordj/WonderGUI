@@ -52,8 +52,6 @@ namespace wg
 
 	DragNDropLayer::~DragNDropLayer()
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 	}
 
 
@@ -177,11 +175,6 @@ namespace wg
 	{
 		switch (_pMsg->type())
 		{
-			case MsgType::Tick:
-			{
-				break;
-			}
-
 			case MsgType::MouseDrag:
 			{
 				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
@@ -293,7 +286,6 @@ namespace wg
 				{
 					m_pPicked = pSource;
 					m_pickCategory = pSource->pickCategory();
-					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
 					m_dragState = DragState::Picking;
 				}
 				break;
@@ -452,9 +444,6 @@ namespace wg
 
 	void DragNDropLayer::_cancel( ModifierKeys modKeys, Coord pointerPos )
 	{
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-
 		if( m_dragSlot._widget())
 		{
 			_requestRender(m_dragSlot.m_geo);
@@ -478,9 +467,6 @@ namespace wg
 	void DragNDropLayer::_complete( Widget * pDeliveredTo, ModifierKeys modKeys, Coord pointerPos )
 	{
 		assert( !m_pTargeted );
-
-		if( m_tickRouteId )
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
 
 		if( m_dragSlot._widget())
 		{
@@ -526,28 +512,14 @@ namespace wg
 			auto pCanvas = pFactory->createSurface(sz.px(),PixelFormat::BGRA_8);
 			pCanvas->fill( Color::Transparent );
 
-			RectI noClip(sz.px());
-
-			auto pOldClip   = pDevice->clipList();
-			int  nOldClip   = pDevice->clipListSize();
-			auto pOldCanvas = pDevice->canvas();
-			Color oldTint   = pDevice->tintColor();
-
-			pDevice->setClipList(1, &noClip);
-			pDevice->setCanvas(pCanvas);
-			pDevice->setTintColor( {oldTint.r, oldTint.g, oldTint.b, (uint8_t)(oldTint.a*0.75f)});
+			pDevice->beginCanvasUpdate(pCanvas);
 			OO(m_pPicked)->_render(pDevice, sz, sz);
-			pDevice->setCanvas(pOldCanvas);
-			pDevice->setTintColor(oldTint);
-			pDevice->setClipList(nOldClip, pOldClip);
+			pDevice->endCanvasUpdate();
 
 			auto pImage = Image::create();
 			pImage->setImage( pCanvas );
 
-//            auto pImage = Filler::create();
-//            pImage->setPreferredSize({16,16});
-//            pImage->setSkin(BoxSkin::create( 1, Color::Red, Color::Black ));
-
+			//TODO: Allow for tinted image.
 
 			m_dragSlot._setWidget(pImage);
 			m_dragSlot._setSize(sz);

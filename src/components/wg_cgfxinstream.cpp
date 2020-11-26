@@ -141,9 +141,12 @@ namespace wg
 		return *this;
 	}
 
-	CGfxInStream& CGfxInStream::operator>> (Color& color)
+	CGfxInStream& CGfxInStream::operator>> (HiColor& color)
 	{
-		color.argb = m_pHolder->_pullInt();
+		color.a= m_pHolder->_pullShort();
+		color.r = m_pHolder->_pullShort();
+		color.g = m_pHolder->_pullShort();
+		color.b = m_pHolder->_pullShort();
 		return *this;
 	}
 

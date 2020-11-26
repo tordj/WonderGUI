@@ -198,17 +198,9 @@ namespace wg
 
 		MU		length;
 		if( m_bHorizontal )
-		{
-			length = m_size.w;
-			if( m_pSkin )
-				length -= m_pSkin->contentPaddingSize().w;
-		}
+			length = m_size.w - OO(skin)._contentPaddingSize().w;
 		else
-		{
-			length = m_size.h;
-			if( m_pSkin )
-				length -= m_pSkin->contentPaddingSize().h;
-		}
+			length = m_size.h - OO(skin)._contentPaddingSize().h;
 
 		length -= m_headerLen + m_footerLen;
 
@@ -271,7 +263,7 @@ namespace wg
 								Skin * pHandleSkin,
 								Skin * pBwdButtonSkin, Skin * pFwdButtonSkin )
 	{
-		m_pSkin 		= pBaseSkin;
+		skin.set( pBaseSkin );
 		m_pBgSkin		= pBackgroundSkin;
 		m_pHandleSkin	= pHandleSkin;
 		m_pBtnFwdSkin	= pFwdButtonSkin;
@@ -480,17 +472,10 @@ namespace wg
 
 		MU	maxLen;
 		if( m_bHorizontal )
-		{
-			maxLen = m_size.w;
-			if( m_pSkin )
-				maxLen -= m_pSkin->contentPaddingSize().w;
-		}
+			maxLen = m_size.w - OO(skin)._contentPaddingSize().w;
 		else
-		{
-			maxLen = m_size.h;
-			if( m_pSkin )
-				maxLen -= m_pSkin->contentPaddingSize().h;
-		}
+			maxLen = m_size.h - OO(skin)._contentPaddingSize().h;
+
 		maxLen -= m_headerLen + m_footerLen;
 
 		//len = m_handleSize * maxLen;
@@ -624,11 +609,8 @@ namespace wg
 
 		// Add padding for base skin
 
-		if( m_pSkin )
-		{
-			minW += m_pSkin->contentPaddingSize().w;
-			minH += m_pSkin->contentPaddingSize().h;
-		}
+		minW += OO(skin)._contentPaddingSize().w;
+		minH += OO(skin)._contentPaddingSize().h;
 
 		// Set if changed.
 
@@ -664,9 +646,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	dest = _canvas;
-		if( m_pSkin )
-			dest = m_pSkin->contentRect(_canvas,m_state);
+		Rect	dest = OO(skin)._contentRect(_canvas,m_state);
 
 		// Render header buttons
 
@@ -750,12 +730,7 @@ namespace wg
 
 	Scrollbar::Component Scrollbar::_findMarkedComponent( Coord ofs )
 	{
-		Rect canvas;
-
-		if( m_pSkin )
-			canvas = m_pSkin->contentRect( Rect(0,0,m_size),m_state);
-		else
-			canvas = Rect(0,0,m_size);
+		Rect canvas = OO(skin)._contentRect( Rect(0,0,m_size),m_state);
 
 		Rect dest = canvas;
 
@@ -841,11 +816,7 @@ namespace wg
 		MU		pointerOfs;
 		MU		length;
 
-		Rect contentRect;
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(Rect(0,0,m_size),m_state);
-		else
-			contentRect = Rect(0,0,m_size);
+		Rect contentRect = OO(skin)._contentRect(Rect(0,0,m_size),m_state);
 
 		if( m_bHorizontal )
 		{
@@ -1089,10 +1060,7 @@ namespace wg
 		MU   handlePos, handleLen;
 		_viewToPosLen( &handlePos, &handleLen );
 
-		Rect area(0,0,m_size);
-
-		if( m_pSkin )
-			area = m_pSkin->contentRect(area,m_state);
+		Rect area = OO(skin)._contentRect((0,0,m_size),m_state);
 
 		if( m_bHorizontal )
 		{

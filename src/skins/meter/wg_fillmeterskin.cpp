@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -32,19 +33,19 @@ namespace wg
 
 	using namespace Util;
 
-	//____ create() _______________________________________________________________
+	//____ create() ___________________________________________________________
 
 	FillMeterSkin_p FillMeterSkin::create()
 	{
 		return FillMeterSkin_p(new FillMeterSkin());
 	}
 
-	FillMeterSkin_p FillMeterSkin::create(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
+	FillMeterSkin_p FillMeterSkin::create(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside )
 	{
 		return FillMeterSkin_p(new FillMeterSkin(direction, barColorEmpty, barColorFull, backColor, barPadding, contentPadding, bBarStartOutside ));
 	}
 
-	//____ constructor ____________________________________________________________
+	//____ constructor ________________________________________________________
 
 	FillMeterSkin::FillMeterSkin() :
 		m_direction(Direction::Right),
@@ -54,11 +55,11 @@ namespace wg
 		m_backColor(Color::Transparent)
 	{
 		m_preferredSize = SizeI::max(SizeI( 50,10 ),m_contentPadding.size());
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		_updateOpacity();
 	}
 
-	FillMeterSkin::FillMeterSkin(Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
+	FillMeterSkin::FillMeterSkin(Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside ) : 
 		m_direction(direction),
 		m_barColorEmpty(barColorEmpty),
 		m_barColorFull(barColorFull),
@@ -68,7 +69,7 @@ namespace wg
 	{
 		SizeI pref = (direction == Direction::Up || direction == Direction::Down) ? SizeI(10, 50) : SizeI(50, 10);
 		m_preferredSize = SizeI::max(pref, m_contentPadding.size());
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		m_contentPadding = contentPadding;
 		_updateOpacity();
 	}
@@ -80,7 +81,7 @@ namespace wg
 		return TYPEINFO;
 	}
 
-	//____ preferredSize() ______________________________________________________________
+	//____ preferredSize() ____________________________________________________
 
 	Size FillMeterSkin::preferredSize() const
 	{
@@ -96,6 +97,15 @@ namespace wg
 	{
 		m_preferredSize = preferred;
 	}
+
+	//____ setBlendMode() _____________________________________________________
+
+	void FillMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacity();
+	}
+
 
 	//____ setDirection() _____________________________________________________
 
@@ -114,7 +124,7 @@ namespace wg
 
 	//____ setBackColor() _____________________________________________________
 
-	void FillMeterSkin::setBackColor(Color back)
+	void FillMeterSkin::setBackColor(HiColor back)
 	{
 		m_backColor = back;
 		_updateOpacity();
@@ -122,7 +132,7 @@ namespace wg
 
 	//____ setFillColors() ____________________________________________________
 
-	void FillMeterSkin::setFillColors(Color empty, Color full)
+	void FillMeterSkin::setFillColors(HiColor empty, HiColor full)
 	{
 		m_barColorEmpty = empty;
 		m_barColorFull = full;
@@ -131,7 +141,7 @@ namespace wg
 
 	//____ setFillColorEmpty() ________________________________________________
 
-	void FillMeterSkin::setFillColorEmpty(Color empty)
+	void FillMeterSkin::setFillColorEmpty(HiColor empty)
 	{
 		m_barColorEmpty = empty;
 		_updateOpacity();
@@ -139,7 +149,7 @@ namespace wg
 
 	//____ setFillColorFull() ________________________________________________
 
-	void FillMeterSkin::setFillColorFull(Color full)
+	void FillMeterSkin::setFillColorFull(HiColor full)
 	{
 		m_barColorFull = full;
 		_updateOpacity();
@@ -154,11 +164,13 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void FillMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
-		Color barColor = Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255 * fraction));
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
-		RectI barCanvas = _barFillArea(_canvas,fraction, fraction2).px();
+		HiColor barColor = HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096 * value));
+
+		RectI barCanvas = _barFillArea(_canvas,value, value2).px();
 		pDevice->fill(barCanvas, barColor);
 
 		if (m_backColor.a != 0)
@@ -193,28 +205,30 @@ namespace wg
 			pDevice->fill(backCanvas1, m_backColor);
 			pDevice->fill(backCanvas2, m_backColor);
 		}
-
-
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool FillMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
 
-		if( _barFillArea(canvas, fraction, fraction2).contains(ofs) )
-			return (((int)Color::mix(m_barColorEmpty, m_barColorFull, uint8_t(255*fraction)).a) >= opacityTreshold);
+		if( _barFillArea(canvas, value, value2).contains(ofs) )
+			return (((int)HiColor::mix(m_barColorEmpty, m_barColorFull, int(4096*value)).a*255/4096) >= opacityTreshold);
 
 		return (((int)m_backColor.a) >= opacityTreshold);
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect FillMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2 ) const
+	Rect FillMeterSkin::dirtyRect(const Rect& _canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
+		if (newValue == oldValue)
+			return Rect();
+
 		if (m_barColorFull != m_barColorEmpty)
 			return _canvas;
 
@@ -223,11 +237,11 @@ namespace wg
 		Rect result1;
 		Rect result2;
 
-		if(oldFraction != newFraction)
-			result1 = _fractionChangeRect(canvas, state, oldFraction, newFraction);
+		if (oldValue != newValue)
+			result1 = _valueChangeRect(canvas, newState, oldValue, newValue);
 
-		if(oldFraction2 != newFraction2)
-			result2 = _fractionChangeRect(canvas, state, oldFraction2, newFraction2);
+		if (oldValue2 != newValue2)
+			result2 = _valueChangeRect(canvas, newState, oldValue2, newValue2);
 
 		if (result2.isEmpty())
 			return result1;
@@ -235,10 +249,11 @@ namespace wg
 		if (result1.isEmpty())
 			return result2;
 
-		return Rect::getUnion(result1,result2);
+		return Rect::getUnion(result1, result2);
 	}
 
-	Rect FillMeterSkin::_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
+
+	Rect FillMeterSkin::_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction ) const
 	{
 		switch (m_direction)
 		{
@@ -291,12 +306,12 @@ namespace wg
 
 	//____ _barFillArea() _____________________________________________________
 
-	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float fraction, float fraction2) const
+	Rect FillMeterSkin::_barFillArea(const Rect& _canvas, float value, float value2) const
 	{
 		Rect canvas = (_canvas - m_barPadding);
 
-		float beg = fraction2 >= 0.f ? fraction : 0.f;
-		float end = fraction2 >= 0.f ? fraction2 : fraction;
+		float beg = value2 >= 0.f ? value : 0.f;
+		float end = value2 >= 0.f ? value2 : value;
 
 		bool bStartOutside = m_bBarStartOutside && beg == 0.f;
 
@@ -357,8 +372,12 @@ namespace wg
 	{
 		if (!m_barPadding.isEmpty())
 			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode != BlendMode::Blend)
+			m_bOpaque = false;
 		else
-			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 255 * 3 ? true : false;
+			m_bOpaque = int(m_barColorEmpty.a) + int(m_barColorFull.a) + int(m_backColor.a) == 4096 * 3 ? true : false;
 	}
 
 

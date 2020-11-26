@@ -23,10 +23,30 @@
 #define	WG_WEAKPTR_DOT_H
 #pragma once
 
-#include <wg_object.h>
+//#include <wg_object.h>
 
 namespace wg
 {
+	class Object;
+
+
+	typedef	void(*Finalizer_p)(Object*);
+
+	class WeakPtrHub		/** @private */
+	{
+	public:
+		int				refCnt;
+		Object* pObj;
+		Finalizer_p		pFinalizer;
+
+		static WeakPtrHub* getHub(Object* pObj);
+		static void			releaseHub(WeakPtrHub* pHub);
+
+		static void			objectWillDestroy(WeakPtrHub* pHub);
+		static void			setFinalizer(Object* pObj, Finalizer_p pFinalizer);
+		static Finalizer_p	getFinalizer(Object* pObj);
+	};
+
 
 	template<class Cls> class WeakPtr		/** @private */
 	{

@@ -68,7 +68,6 @@ int sortWidgets( const Widget * p1, const Widget * p2 )
 	return p2->id() - p1->id();
 }
 
-
 bool shadowLayerTest(CStandardSlot_p pSlot);
 bool stretchBlitTest(CStandardSlot_p pSlot);
 bool scrollIntoViewTest(CStandardSlot_p pSlot);
@@ -93,6 +92,8 @@ bool animPlayerTest(CStandardSlot_p pSlot);
 bool selectBoxTest(CStandardSlot_p pSlot);
 bool tileSkinTest(CStandardSlot_p pSlot);
 bool bakeSkinTest(CStandardSlot_p pSlot);
+bool animSkinTest(CStandardSlot_p pSlot);
+bool renderLayerTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -103,6 +104,10 @@ void textStyleTest();
 
 int main(int argc, char** argv)
 {
+	SoftSurface_p		pCanvas;
+	GfxDevice_p			pDevice;
+	SurfaceFactory_p	pFactory;
+
 
 	Coord muC;
 	CoordI iC;
@@ -301,10 +306,16 @@ int main(int argc, char** argv)
 	pContext->setScale(2.00);
 
 
+	auto pCanvasLayers = CanvasLayers::create({ {BlendMode::Subtract, PixelFormat::A_8}, {BlendMode::Blend, PixelFormat::BGRA_8}, {BlendMode::Add, PixelFormat::BGRA_8} });
+	pContext->setCanvasLayers(pCanvasLayers);
+
+
 
 #ifdef USE_OPEN_GL
-	pContext->setSurfaceFactory(GlSurfaceFactory::create());
-	pContext->setGfxDevice( GlGfxDevice::create(SizeI(width, height)));
+	pCanvas = nullptr;
+	pDevice = GlGfxDevice::create();
+	pFactory = GlSurfaceFactory::create();
+
 #else
 	{
 		SDL_Surface * pScreen = SDL_GetWindowSurface(pWin);
@@ -318,14 +329,16 @@ int main(int argc, char** argv)
 
 		Blob_p pBlob = Blob::create(pScreen->pixels, nullptr);
 
-		SoftSurface_p		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch);
-		GfxDevice_p			pDevice = SoftGfxDevice::create(pCanvas);
-		SurfaceFactory_p	pFactory = SoftSurfaceFactory::create();
+		pCanvas = SoftSurface::create( SizeI(width, height), type, pBlob, pScreen->pitch, SurfaceFlag::Canvas);
+		pDevice = SoftGfxDevice::create();
+		pFactory = SoftSurfaceFactory::create();
 
-		pContext->setSurfaceFactory(pFactory);
-		pContext->setGfxDevice(pDevice);
 	}
 #endif
+
+	pContext->setSurfaceFactory(pFactory);
+	pContext->setGfxDevice(pDevice);
+
 	Base::setActiveContext(pContext);
 
 //	nisBlendTest();
@@ -404,7 +417,12 @@ int main(int argc, char** argv)
 	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
-	RootPanel_p pRoot = RootPanel::create(pGfxDevice);
+	RootPanel_p pRoot;
+	if( pCanvas )
+		pRoot = RootPanel::create(pCanvas, pGfxDevice);
+	else
+		pRoot = RootPanel::create({ width,height }, pGfxDevice);
+
 
 //		pRoot->setDebugMode(true);
 
@@ -414,7 +432,6 @@ int main(int argc, char** argv)
 
 	MsgLogger_p pLogger = MsgLogger::create(std::cout);
 	pLogger->logAllMsgs();
-	pLogger->ignoreMsg(MsgType::Tick);
 	pLogger->ignoreMsg( MsgType::MouseMove);
 	pLogger->ignoreMsg(MsgType::MouseDrag);
 	pLogger->ignoreMsg(MsgType::MouseRepeat);
@@ -456,7 +473,7 @@ int main(int argc, char** argv)
 		Base::setDefaultTextMapper(pMapper);
 	*/
 
-	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(Color(255, 255, 255, 255), BlendMode::Invert);
+	wg_cast<StdTextMapper_p>(Base::defaultTextMapper())->setSelectionBack(Color::White, BlendMode::Invert);
 
 	// Init skins
 
@@ -527,14 +544,14 @@ int main(int argc, char** argv)
 	//------------------------------------------------------
 
 	DragNDropLayer_p pDnDLayer = DragNDropLayer::create();
-	pRoot->setSkin(ColorSkin::create(Color::Black));
+	pRoot->skin = ColorSkin::create(Color::Black);
 	pRoot->slot = pDnDLayer;
 
 	PopupLayer_p pPopupLayer = PopupLayer::create();
 	pDnDLayer->mainSlot = pPopupLayer;
 
 	LambdaPanel_p pBasePanel = LambdaPanel::create();
-	pBasePanel->setSkin(StaticColorSkin::create(Color::Burlywood));
+	pBasePanel->skin = StaticColorSkin::create(Color::Burlywood);
 	pPopupLayer->mainSlot = pBasePanel;
 
 	/*	Filler_p pBackground = Filler::create();
@@ -555,7 +572,7 @@ int main(int argc, char** argv)
 	//	pTestSkin->setLayerTint(layer2, { {StateEnum::Normal, Color::Transparent}, {StateEnum::Hovered, {255,255,255,64} } });
 
 	Button_p pImage0 = Button::create();
-	pImage0->setSkin(pTestSkin);
+	pImage0->skin = pTestSkin;
 	pImage0->setPointerStyle(PointerStyle::Crosshair);
 
 	pBasePanel->slots.pushBack(pImage0, [](Widget * pWidget, SizeI size) {return RectI(size.w - 80 * 2, (size.h - 33 * 2) / 2, 80 * 2, 33 * 2); });
@@ -584,7 +601,7 @@ int main(int argc, char** argv)
 //	designLayerTest(&pRoot->slot);
 //	pianoKeyboardTest(&pRoot->slot);
 //	sliderTest(&pRoot->slot);
-	rangeSliderTest(&pRoot->slot);
+//	rangeSliderTest(&pRoot->slot);
 //	pieKnobTest(&pRoot->slot);
 //	spinKnobTest(&pRoot->slot);
 //  animKnobTest(&pRoot->slot);
@@ -594,7 +611,9 @@ int main(int argc, char** argv)
 //	animPlayerTest(&pRoot->slot);
 //	selectBoxTest(&pRoot->slot);
 //	tileSkinTest(&pRoot->slot);
-	bakeSkinTest(&pRoot->slot);
+//	bakeSkinTest(&pRoot->slot);
+//	animSkinTest(&pRoot->slot);
+	renderLayerTest(&pRoot->slot);
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -1262,7 +1281,7 @@ int main(int argc, char** argv)
 	{
 
 		translateEvents( pInput, pRoot );
-
+		Base::update(int64_t(SDL_GetTicks())*1000);
 		pRoot->render();
 //		SDL_UpdateWindowSurface(pWin);
 		updateWindowRects(pRoot, pWin);
@@ -1290,23 +1309,6 @@ int main(int argc, char** argv)
 
 void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 {
-	// WonderGUI needs Tick-events to keep track of time passed for things such
-	// key-repeat, double-click detection, animations etc.  So we create one
-	// and put it on the event queue.
-
-	static unsigned int oldTicks = 0;
-
-	unsigned int ticks = SDL_GetTicks();
-	int tickDiff;
-
-	if( oldTicks == 0 )
-		tickDiff = 0;
-	else
-		tickDiff = (int) (ticks - oldTicks);
-	oldTicks = ticks;
-
-	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
-
 	// Process all the SDL events in a loop
 
 	SDL_Event e;
@@ -1726,7 +1728,7 @@ bool stretchBlitTest(CStandardSlot_p pEntry)
 	pImgSurface->setScaleMode(ScaleMode::Interpolate);
 
 	auto pBack = FlexPanel::create();
-	pBack->setSkin(StaticColorSkin::create(Color::Blue));
+	pBack->skin = StaticColorSkin::create(Color::Blue);
 	* pEntry = pBack;
 
 	auto pImage = Image::create();
@@ -1752,11 +1754,11 @@ bool scrollIntoViewTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXT AREA.");
-	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
+	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
 	pScrollPanel->viewSlot = pEditor;
-	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
+	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
 
 	auto pFlex = FlexPanel::create();
@@ -1777,7 +1779,7 @@ bool textClipTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
-	pEditor->setSkin(pSkin);
+	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
 	pFlex->slots.pushBackMovable(pEditor, { 10,10,50,30 });
@@ -1797,7 +1799,7 @@ bool textEditorTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXTAREA LINE 1.\nTEXTAREA LINE 2\nTEXTAREA LINE 3.");
-	pEditor->setSkin(pSkin);
+	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
 	pFlex->slots.pushBackMovable(pEditor, { 10,10,150,0 });
@@ -1818,7 +1820,7 @@ bool lineEditorTest(CStandardSlot_p pEntry)
 	auto pEditor = LineEditor::create();
 
 	pEditor->text.set("TEXT.");
-	pEditor->setSkin(pSkin);
+	pEditor->skin = pSkin;
 
 	auto pFlex = FlexPanel::create();
 	pFlex->slots.pushBackMovable(pEditor, { 10,100,80,40 });
@@ -1839,18 +1841,18 @@ bool popupOpenerTest(CStandardSlot_p pEntry)
 
 	auto pPopupLayer = PopupLayer::create();
 	* pEntry = pPopupLayer;
-	pPopupLayer->setSkin(ColorSkin::create(Color::PaleGoldenrod));
+	pPopupLayer->skin = ColorSkin::create(Color::PaleGoldenrod);
 
 	auto pFlex = FlexPanel::create();
 	pPopupLayer->mainSlot = pFlex;
 
 	auto  pOpener = PopupOpener::create();
-	pOpener->setSkin(pButtonSkin);
+	pOpener->skin = pButtonSkin;
 	pOpener->text.set("OPEN POPUP");
 	pFlex->slots.pushBackMovable(pOpener, { 50,50,50,30 });
 
 	auto pOpened = Filler::create();
-	pOpened->setSkin(pButtonSkin);
+	pOpened->skin = pButtonSkin;
 	pOpened->setPreferredSize({ 50,100 });
 	pOpener->setPopup(pOpened);
 
@@ -1868,11 +1870,11 @@ bool scrollbarTest(CStandardSlot_p pEntry)
 	auto pEditor = TextEditor::create();
 
 	pEditor->text.set("TEXT AREA.");
-	pEditor->setSkin(ColorSkin::create(Color::YellowGreen));
+	pEditor->skin = ColorSkin::create(Color::YellowGreen);
 
 	auto pScrollPanel = ScrollPanel::create();
 	pScrollPanel->viewSlot = pEditor;
-	pScrollPanel->setSkin(ColorSkin::create(Color::Pink));
+	pScrollPanel->skin = ColorSkin::create(Color::Pink);
 
 	auto pVScrollbar = Scrollbar::create();
 	pVScrollbar->setFwdButtonSkin(pButtonSkin);
@@ -1932,16 +1934,16 @@ bool splitPanelTest(CStandardSlot_p pEntry)
 {
 	auto pSplit = SplitPanel::create();
 
-	pSplit->setHandleSkin(ColorSkin::create({ { StateEnum::Normal, Color::Black }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } }));
+	pSplit->handleSkin = ColorSkin::create({ { StateEnum::Normal, Color::Black }, { StateEnum::Hovered, Color::Brown }, { StateEnum::Pressed, Color::Red } });
 	pSplit->setHandleThickness(10);
 
 	auto pContent1 = TextEditor::create();
-	pContent1->setSkin(StaticColorSkin::create(Color::AntiqueWhite));
+	pContent1->skin = StaticColorSkin::create(Color::AntiqueWhite);
 	pSplit->slots[0] = pContent1;
 
 	
 	auto pContent2 = TextEditor::create();
-	pContent2->setSkin(StaticColorSkin::create(Color::BlanchedAlmond));
+	pContent2->skin = StaticColorSkin::create(Color::BlanchedAlmond);
 	pSplit->slots[1] = pContent2;
 
 
@@ -1957,18 +1959,18 @@ bool designLayerTest(CStandardSlot_p pSlot)
 	auto pDesignLayer = DesignLayer::create();
 
 	auto pFlexPanel = FlexPanel::create();
-	pFlexPanel->setSkin(ColorSkin::create(Color::Thistle));
+	pFlexPanel->skin = ColorSkin::create(Color::Thistle);
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(ColorSkin::create(Color::Azure));
+	pFiller1->skin = ColorSkin::create(Color::Azure);
 	pFiller1->setPreferredSize({ 20,20 });
 
 	auto pFiller2 = Filler::create();
-	pFiller2->setSkin(ColorSkin::create(Color::Maroon));
+	pFiller2->skin = ColorSkin::create(Color::Maroon);
 	pFiller2->setPreferredSize({ 20,20 });
 
 	auto pFiller3 = Filler::create();
-	pFiller3->setSkin(ColorSkin::create(Color::CadetBlue));
+	pFiller3->skin = ColorSkin::create(Color::CadetBlue);
 	pFiller3->setPreferredSize({ 20,20 });
 
 	pFlexPanel->slots.pushFrontMovable(pFiller1, Rect(10, 10, 50, 50));
@@ -1990,7 +1992,7 @@ bool designLayerTest(CStandardSlot_p pSlot)
 bool pianoKeyboardTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	{
 		Surface_p pOddWhiteKeys = loadSurface("../resources/whiteoddkeys.png", PixelFormat::BGRA_8);
@@ -1998,7 +2000,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 		Surface_p pBlackKeys = loadSurface("../resources/blackkeys.png", PixelFormat::BGRA_8);
 
 		auto pSimplePiano = PianoKeyboard::create();
-		pSimplePiano->setSkin(ColorSkin::create(Color::Black, { 60,10,10,10 }));
+		pSimplePiano->skin = ColorSkin::create(Color::Black, { 60,10,10,10 });
 		pSimplePiano->setLayout(7, std::bitset<7>("1101110"));
 		pSimplePiano->setSurfaces(pOddWhiteKeys, pEvenWhiteKeys, pBlackKeys, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed });
 
@@ -2038,7 +2040,7 @@ bool pianoKeyboardTest(CStandardSlot_p pSlot)
 bool pieKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	auto pBgSkin1 = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black);
 	auto pBgSkin2 = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black);
@@ -2053,26 +2055,26 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 	pBgSkin5->setStaticSections(false);
 
 	auto pKnob1 = Knob::create();
-	pKnob1->setSkin(pBgSkin1);
+	pKnob1->skin = pBgSkin1;
 	pKnob1->setValue(0.5f);
 
 	auto pKnob2 = Knob::create();
-	pKnob2->setSkin(pBgSkin2);
+	pKnob2->skin = pBgSkin2;
 	pKnob2->setValue(0.5f);
 	pKnob2->setDragAxis(Axis::X);
 
 	auto pKnob3 = Knob::create();
-	pKnob3->setSkin(pBgSkin3);
+	pKnob3->skin = pBgSkin3;
 	pKnob3->setValue(0.5f);
 	pKnob3->setDragAxis(Axis::Y);
 
 	auto pKnob4 = Knob::create();
-	pKnob4->setSkin(pBgSkin4);
+	pKnob4->skin = pBgSkin4;
 	pKnob4->setValue(0.5f);
 	pKnob4->setDragAxis(Axis::Y);
 
 	auto pKnob5 = Knob::create();
-	pKnob5->setSkin(pBgSkin5);
+	pKnob5->skin = pBgSkin5;
 	pKnob5->setValue(0.5f);
 	pKnob5->setDragAxis(Axis::Y);
 
@@ -2091,7 +2093,7 @@ bool pieKnobTest(CStandardSlot_p pSlot)
 bool spinKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
 	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
@@ -2104,7 +2106,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 	auto pArrowSkin = SpinMeterSkin::create(pSurfArrow, { 400,400 }, { 0.5f, 540 / 600.f }, {0.5f,0.5f}, -135, 135 );
 
 	auto pKnob1 = Knob::create();
-	pKnob1->setSkin(pArrowSkin);
+	pKnob1->skin = pArrowSkin;
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 	/*
@@ -2137,7 +2139,7 @@ bool spinKnobTest(CStandardSlot_p pSlot)
 bool animKnobTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
@@ -2154,7 +2156,7 @@ bool animKnobTest(CStandardSlot_p pSlot)
 
 
 	auto pKnob1 = Knob::create();
-	pKnob1->setSkin(pAnimSkin);
+	pKnob1->skin = pAnimSkin;
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 
@@ -2169,9 +2171,9 @@ bool animKnobTest(CStandardSlot_p pSlot)
 bool sliderTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = Slider::create();
@@ -2179,8 +2181,8 @@ bool sliderTest(CStandardSlot_p pSlot)
 		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0,10,0,10), BorderI(), true );
 
 		pSliderX->setAxis(Axis::X);
-		pSliderX->setSkin(pBgSkin);
-		pSliderX->setHandleSkin(pHandleSkin);
+		pSliderX->skin = pBgSkin;
+		pSliderX->handleSkin = pHandleSkin;
 		pSliderX->setPreferredSlideLength(100);
 	}
 
@@ -2189,8 +2191,8 @@ bool sliderTest(CStandardSlot_p pSlot)
 		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
-		pSliderY->setSkin(pBgSkin);
-		pSliderY->setHandleSkin(pHandleSkin);
+		pSliderY->skin = pBgSkin;
+		pSliderY->handleSkin = pHandleSkin;
 		pSliderY->setPreferredSlideLength(100);
 	}
 
@@ -2205,9 +2207,9 @@ bool sliderTest(CStandardSlot_p pSlot)
 bool rangeSliderTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
-	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,0x7F808080},{StateEnum::Hovered,0x7FA0A0A0},{StateEnum::Pressed,0xFFF0F0F0} });
+	auto pHandleSkin = ColorSkin::create({ {StateEnum::Normal,Color8(0x7F808080)},{StateEnum::Hovered,Color8(0x7FA0A0A0)},{StateEnum::Pressed,Color8(0xFFF0F0F0)} });
 	pHandleSkin->setContentPadding(10);
 
 	auto pSliderX = RangeSlider::create();
@@ -2215,9 +2217,9 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 		auto pBgSkin = FillMeterSkin::create(Direction::Right, Color::Green, Color::Green, Color::Black, BorderI(0, 10, 0, 10), BorderI(), true);
 
 		pSliderX->setAxis(Axis::X);
-		pSliderX->setSkin(pBgSkin);
-		pSliderX->setBeginHandleSkin(pHandleSkin);
-		pSliderX->setEndHandleSkin(pHandleSkin);
+		pSliderX->skin = pBgSkin;
+		pSliderX->beginHandleSkin = pHandleSkin;
+		pSliderX->endHandleSkin = pHandleSkin;
 		pSliderX->setPreferredSlideLength(100);
 	}
 
@@ -2226,9 +2228,9 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 		auto pBgSkin = FillMeterSkin::create(Direction::Up, Color::Green, Color::Green, Color::Black, BorderI(10, 0, 10, 0), BorderI(), false);
 
 		pSliderY->setAxis(Axis::Y);
-		pSliderY->setSkin(pBgSkin);
-		pSliderY->setBeginHandleSkin(pHandleSkin);
-		pSliderY->setEndHandleSkin(pHandleSkin);
+		pSliderY->skin = pBgSkin;
+		pSliderY->beginHandleSkin = pHandleSkin;
+		pSliderY->endHandleSkin = pHandleSkin;
 		pSliderY->setPreferredSlideLength(100);
 	}
 
@@ -2244,8 +2246,9 @@ bool rangeSliderTest(CStandardSlot_p pSlot)
 
 bool canvasStackTest(CStandardSlot_p pSlot)
 {
+/*
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	auto pCanvasStack = CanvasStack::create();
 
@@ -2308,14 +2311,14 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 	auto pSlider = Slider::create();
 	pSlider->setAxis(Axis::Y);
-	pSlider->setHandleSkin(pHandleSkin);
-	pSlider->setSkin(pRedirectedSliderBgSkin);
+	pSlider->handleSkin = pHandleSkin;
+	pSlider->skin = pRedirectedSliderBgSkin;
 
 	pContent->slots.pushFrontMovable(pSlider, { 92,854,72,333 });
 
 
 	auto pFiller = Filler::create();
-	pFiller->setSkin(ColorSkin::create(Color(144, 196, 235)));
+	pFiller->skin = ColorSkin::create(Color(144, 196, 235));
 
 	auto pRedirectedFiller = pCanvasStack->redirectWidget(pFiller, 1);
 	pContent->slots.pushFrontMovable(pRedirectedFiller, { 625,270,330,330 });
@@ -2323,6 +2326,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 
 	pBaseLayer->slots.pushBackMovable(pCanvasStack, Coord(10, 10));
 	*pSlot = pBaseLayer;
+*/
 	return true;
 }
 
@@ -2332,7 +2336,7 @@ bool canvasStackTest(CStandardSlot_p pSlot)
 bool doubleSkinTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfKnob_bg = loadSurface("../resources/knob_bg.png", PixelFormat::BGRA_8);
 	Surface_p pSurfKnob_fg = loadSurface("../resources/knob_fg.png", PixelFormat::BGRA_8);
@@ -2349,7 +2353,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 	auto pDoubleSkin = DoubleSkin::create(pArrowSkin, pFillMeterSkin);
 
 	auto pKnob1 = Knob::create();
-	pKnob1->setSkin(pDoubleSkin);
+	pKnob1->skin = pDoubleSkin;
 	pKnob1->setValue(0.5f);
 	pKnob1->setDragRange(500);
 
@@ -2363,7 +2367,7 @@ bool doubleSkinTest(CStandardSlot_p pSlot)
 bool timerTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 //	Surface_p pSurfClockFace = loadSurface("../resources/clockface.png", PixelFormat::BGRA_8);
 //	pSurfClockFace->setScaleMode(ScaleMode::Interpolate);
@@ -2372,7 +2376,7 @@ bool timerTest(CStandardSlot_p pSlot)
 	auto pSkin = FillMeterSkin::create();
 
 	auto pTimer1 = Timer::create();
-	pTimer1->setSkin(pSkin);
+	pTimer1->skin = pSkin;
 	pTimer1->setDuration(5000);
 	pTimer1->setPlayMode(PlayMode::BackwardPingPong);
 	pTimer1->start();
@@ -2389,7 +2393,7 @@ bool timerTest(CStandardSlot_p pSlot)
 bool animPlayerTest(CStandardSlot_p pSlot)
 {
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pSurfAnim = loadSurface("../resources/giraffe-anim-1024x1024.jpg", PixelFormat::BGRA_8);
 
@@ -2421,7 +2425,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	PopupLayer_p pPopupLayer = PopupLayer::create();
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pMainSurf = loadSurface("../resources/selectbox.png", PixelFormat::BGRA_8);
 
@@ -2429,7 +2433,7 @@ bool selectBoxTest(CStandardSlot_p pSlot)
 	pMainSkin->setContentPadding({ 3,23,3,3 });
 
 	auto pSelectBox = SelectBox::create();
-	pSelectBox->setSkin(pMainSkin);
+	pSelectBox->skin = pMainSkin;
 
 	auto pListSkin = BoxSkin::create(1, Color::White, Color::Black);
 	pListSkin->setContentPadding(3);
@@ -2459,7 +2463,7 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
@@ -2474,10 +2478,10 @@ bool tileSkinTest(CStandardSlot_p pSlot)
 	pDynamicSkin->setContentPadding({ 10,10,10,10 });
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(pStaticSkin);
+	pFiller1->skin = pStaticSkin;
 
 	auto pFiller2 = Filler::create();
-	pFiller2->setSkin(pDynamicSkin);
+	pFiller2->skin = pDynamicSkin;
 
 
 
@@ -2495,7 +2499,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 {
 
 	auto pBaseLayer = FlexPanel::create();
-	pBaseLayer->setSkin(ColorSkin::create(Color::PapayaWhip));
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
 
 	Surface_p pNormalSurf = loadSurface("../resources/tile_blocks.png", PixelFormat::BGRA_8);
 	pNormalSurf->setTiling(true);
@@ -2521,7 +2525,7 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 
 
 	auto pFiller1 = Filler::create();
-	pFiller1->setSkin(pBakedSkin);
+	pFiller1->skin = pBakedSkin;
 
 
 
@@ -2533,13 +2537,82 @@ bool bakeSkinTest(CStandardSlot_p pSlot)
 	return true;
 }
 
+//____ animSkinTest() ____________________________________________________
 
+bool animSkinTest(CStandardSlot_p pSlot)
+{
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	Surface_p pSplashSurf = loadSurface("../resources/splash.png");
+
+	auto pAnimSkin = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 10000 );
+	pAnimSkin->setContentPadding(80);
+
+	auto pAnimSkin2 = SpinAnimSkin::create(pSplashSurf, { 256,256 }, 5000 );
+	pAnimSkin2->setContentPadding(10);
+
+
+	auto pBoxSkin = BoxSkin::create(2, Color::Red, Color::Black);
+
+	auto pFramingSkin = BoxSkin::create(2, Color::Transparent, Color::Black);
+	pFramingSkin->setContentPadding(80);
+
+	auto pDoubleSkin = DoubleSkin::create(pAnimSkin2, pFramingSkin, true);
+
+	auto pBakeSurface = Base::activeContext()->surfaceFactory()->createSurface(SizeI(512, 512));
+
+	auto pBakeSkin = BakeSkin::create(pBakeSurface, {pAnimSkin2, pBoxSkin,pAnimSkin});
+	pBakeSkin->setSkinInSkin(true);
+
+	auto pFiller1 = Filler::create();
+	pFiller1->skin = pBakeSkin;
+
+	pBaseLayer->slots.pushBackMovable(pFiller1, Rect(10, 10, 256, 256));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+//____ renderLayerTest() ____________________________________________________
+
+bool renderLayerTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::SlateGrey);
+
+	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
+	pBoxSkin->setLayer(2);
+	
+	auto pShadowSkin = StaticBoxSkin::create(20,Color( 255,255,255,128), Color::Transparent);
+	pShadowSkin->setContentPadding({ 0,40,40,0 });
+	pShadowSkin->setLayer(1);
+	pShadowSkin->setBlendMode(BlendMode::Max);
+
+	auto pDaSkin = DoubleSkin::create(pBoxSkin, pShadowSkin);
+	pDaSkin->setSkinInSkin(true);
+
+	for (int i = 0; i < 5; i++)
+	{
+		auto pWidget = Filler::create();
+		pWidget->skin = pDaSkin;
+
+		pBaseLayer->slots.pushBackMovable(pWidget, Rect(i*30, i*30, 100, 100));
+
+		Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
+	}
+
+	*pSlot = pBaseLayer;
+	return true;
+}
 
 
 //____
 
 void nisBlendTest()
 {
+/*
 	SoftSurface_p pCanvas = SoftSurface::create({ 256,256 }, PixelFormat::BGR_8);
 	SurfaceFactory_p pFactory = SoftSurfaceFactory::create();
 	Surface_p pBackImg = loadSurface("../alpha_blending_example_files/knob_background.png", PixelFormat::BGRA_8);
@@ -2554,6 +2627,7 @@ void nisBlendTest()
 	pDevice->blit({ 0,0 });
 	pDevice->endRender();
 	savePNG(pCanvas, "knob_wg_software.png");
+*/ 
 }
 
 

@@ -53,7 +53,7 @@ namespace wg
 	 */
 
 
-	class RootPanel : public Object, protected SlotHolder
+	class RootPanel : public Object, protected SlotHolder, protected CSkinSlot::Holder
 	{
 		friend class Widget;
 		friend class Container;
@@ -63,12 +63,14 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static RootPanel_p	create() { return RootPanel_p(new RootPanel()); }
-		static RootPanel_p	create( GfxDevice * pDevice ) { return RootPanel_p(new RootPanel(pDevice)); }
+		static RootPanel_p	create();
+		static RootPanel_p	create(Surface* pCanvas, GfxDevice* pDevice = nullptr);
+		static RootPanel_p	create(const SizeI& pixelSize, GfxDevice* pDevice = nullptr);
 
 		//.____ Components ____________________________________
 
 		CStandardSlot		slot;
+		CSkinSlot			skin;				//TODO: Padding is not respected yet.
 
 		//.____ Identification __________________________________________
 
@@ -86,11 +88,6 @@ namespace wg
 		bool				isVisible() const { return m_bVisible; }
 
 		inline Widget_p		focusedChild() const { return _focusedChild(); }
-
-		//.____ Appearance _________________________________________________
-
-		void				setSkin(Skin * pSkin);
-		inline Skin_p		skin() const;
 
 		//.____ Rendering ________________________________________________
 
@@ -117,6 +114,10 @@ namespace wg
 		bool				setGfxDevice( GfxDevice * pDevice );
 		inline GfxDevice_p 	gfxDevice() const { return m_pGfxDevice; }
 
+		bool				setCanvas(Surface* pCanvas);
+		bool				setCanvas(const SizeI& pixelSize);
+		inline Surface_p	canvas() const { return m_pCanvas; }
+		inline SizeI		canvasSize() const { return m_canvasSize; }
 
 		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( ofs-m_geo.pos(),mode)); }
 
@@ -131,7 +132,8 @@ namespace wg
 
 	protected:
 		RootPanel();
-		RootPanel( GfxDevice * pGfxDevice );
+		RootPanel(Surface* pCanvas, GfxDevice* pGfxDevice );
+		RootPanel(const SizeI& pixelSize, GfxDevice* pGfxDevice);
 		~RootPanel();
 
 		// SlotHolder methods
@@ -178,7 +180,31 @@ namespace wg
 		void			_hideSlots(StaticSlot * pSlot, int nb) override;
 		void			_unhideSlots(StaticSlot * pSlot, int nb) override;
 
-		//
+		// CSkinSlot::Holder methods
+
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos(const GeoComponent* pComponent) const override;
+		Size			_componentSize(const GeoComponent* pComponent) const override;
+		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+		Coord			_globalComponentPos(const GeoComponent* pComponent) const override;
+		Rect			_globalComponentGeo(const GeoComponent* pComponent) const override;
+
+		void			_componentRequestRender(const GeoComponent* pComponent) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+		void			_componentRequestResize(const GeoComponent* pComponent) override;
+
+		void			_componentRequestFocus(const GeoComponent* pComponent) override;
+		void			_componentRequestInView(const GeoComponent* pComponent) override;
+		void			_componentRequestInView(const GeoComponent* pComponent, const Rect& mustHave, const Rect& niceToHave) override;
+
+		void			_receiveComponentNotif(GeoComponent* pComponent, ComponentNotif notification, int value, void* pData) override;
+
+		// Methods for skin to access
+
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		float			_skinValue(const CSkinSlot* pSlot) const override;
+		float			_skinValue2(const CSkinSlot* pSlot) const override;
+
 
 		inline void         _addPreRenderCall(Widget * pWidget) { m_preRenderCalls.push_back(pWidget); }
 
@@ -192,35 +218,20 @@ namespace wg
 
 		std::vector<Widget_p>   m_preRenderCalls;
 
-		Skin_p				m_pSkin;				//TODO: Padding is not respected yet.
-
 		bool				m_bDebugMode;
 		Skin_p				m_pDebugOverlay;
 		int					m_afterglowFrames;
 		std::deque<Patches>	m_afterglowRects;	// Afterglow rects are placed in this queue.
 
 		GfxDevice_p			m_pGfxDevice;
+		Surface_p			m_pCanvas;
+		SizeI				m_canvasSize;		// Size of canvas in pixels, when m_pCanvas is null.
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;
 
 		Widget_wp			m_pFocusedChild;
 	};
-
-
-	//____ skin() _____________________________________________________________
-	/**
-	 * @brief Get the skin used as background.
-	 *
-	 * Get the skin used as background for the whole RootPanel.
-	 *
-	 * @return Pointer to the skin.
-	 */
-
-	Skin_p RootPanel::skin() const
-	{
-		return m_pSkin;
-	}
 
 } // namespace wg
 #endif //WG_ROOTPANEL_DOT_H

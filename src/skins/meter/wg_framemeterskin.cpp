@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -43,7 +44,7 @@ namespace wg
 
 	FrameMeterSkin::FrameMeterSkin() : frames(this)
 	{
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -73,6 +74,32 @@ namespace wg
 			return Skin::minSize();
 	}
 
+	//____ setColor() _____________________________________________________
+
+	void FrameMeterSkin::setColor(HiColor color)
+	{
+		m_color = color;
+		_updateOpacityFlag();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void FrameMeterSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
+
+	//____ setBlendMode() _____________________________________________________
+
+	void FrameMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
+	}
+
 	//____ setGfxPadding() ____________________________________________________
 
 	void FrameMeterSkin::setGfxPadding(BorderI padding)
@@ -82,51 +109,75 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void FrameMeterSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Support flip!
 
-		auto pFrame = _fractionToFrame(fraction);
+		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 		{
+			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
+
 			pDevice->setBlitSource(frames.surface());
-			pDevice->blitNinePatch(_canvas.px(), pointsToPixels(m_gfxPadding ), RectI(pFrame->source(), frames.frameSize()), m_gfxPadding);
+			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding ), RectI(pFrame->source(), frames.frameSize()), m_gfxPadding);
 		}
 	}
 
 	//____ markTest() _________________________________________________________
 
-	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool FrameMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Support flip!
+		//TODO: Support tint!
 
 		if (!canvas.contains(ofs))
 			return false;
 
-		auto pFrame = _fractionToFrame(fraction);
+		auto pFrame = _valueToFrame(value);
 		if (pFrame)
 			return Util::markTestNinePatch(ofs, frames._surface(), RectI(pFrame->source(), frames.frameSize()), canvas, opacityTreshold, m_gfxPadding);
 
 		return false;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect FrameMeterSkin::fractionChangeRect(const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect FrameMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		auto pOldFrame = _fractionToFrame(oldFraction);
-		auto pNewFrame = _fractionToFrame(newFraction);
+		if (newValue == oldValue)
+			return Rect();
+
+		auto pOldFrame = _valueToFrame(oldValue);
+		auto pNewFrame = _valueToFrame(newValue);
 
 		if (pOldFrame == pNewFrame)
 			return Rect();
 		else
-			return _canvas;
+			return canvas;
 	}
 
-	//____ _fractionToFrame() _________________________________________________
+	//____ _updateOpacityFlag() _______________________________________________
 
-	const AnimFrame* FrameMeterSkin::_fractionToFrame(float fraction) const
+	void FrameMeterSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+				m_bOpaque = false;
+			else
+				m_bOpaque = frames._surface() ? frames._surface()->isOpaque() : false;
+		}
+		else
+			m_bOpaque = false;
+	}
+
+	//____ _valueToFrame() _________________________________________________
+
+	const AnimFrame* FrameMeterSkin::_valueToFrame(float fraction) const
 	{
 		if (frames.isEmpty())
 			return nullptr;
@@ -162,9 +213,7 @@ namespace wg
 
 	void FrameMeterSkin::_didSetAnimSurface(CAnimFrames* pComponent)
 	{
-		auto pSurf = pComponent->_surface();
-
-		m_bOpaque = pSurf ? pSurf->isOpaque() : false;
+		_updateOpacityFlag();
 	}
 
 	//____ _object() __________________________________________________________

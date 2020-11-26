@@ -39,6 +39,7 @@ namespace wg
 	class Receiver : public Object
 	{
 		friend class MsgRouter;
+		friend class Base;
 	public:
 
 		//.____ Identification _________________________________________________
@@ -48,10 +49,13 @@ namespace wg
 
 		//.____ Misc ____________________________________________________________
 
-		virtual void 	receive( Msg * pMsg ) = 0;
+		virtual void 	receive( Msg * pMsg );
+
 
 	protected:
 		Receiver() {};
+
+		virtual void	_update(int microPassed, int64_t microsecTimestamp);
 
 		virtual void	_onRouteAdded();
 		virtual void	_onRouteRemoved();

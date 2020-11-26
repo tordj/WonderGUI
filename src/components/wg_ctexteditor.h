@@ -38,7 +38,7 @@ namespace wg
 
 	//____ CTextEditor __________________________________________________________________
 
-	class CTextEditor : public CTextDisplay	/** @private */
+	class CTextEditor : public CTextDisplay
 	{
 	public:
 

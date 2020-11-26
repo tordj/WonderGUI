@@ -31,7 +31,6 @@ namespace wg
 {
 
 	class Surface;
-	class Color;
 
 	class NullGfxDevice;
 	typedef	StrongPtr<NullGfxDevice>	NullGfxDevice_p;
@@ -42,7 +41,7 @@ namespace wg
 	public:
 		//.____ Creation ________________________________________________
 
-		static NullGfxDevice_p	create( SizeI size );
+		static NullGfxDevice_p	create();
 
 		//.____ Identification __________________________________________
 
@@ -55,28 +54,27 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool		setCanvas(Surface * pCanvas, CanvasInit init = CanvasInit::Keep, bool bResetClipList = true ) override;
-
 		//.____ Rendering ________________________________________________
 
-		void	fill(const RectI& rect, const Color& col) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
+		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness) override;
 
 
 	protected:
-		NullGfxDevice( SizeI size );
+		NullGfxDevice();
 		~NullGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;	// Checked for errors before we get here.
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 		const static TypeInfo	SURFACETYPEINFO;
 

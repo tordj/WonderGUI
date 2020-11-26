@@ -26,7 +26,6 @@ public:
 	bool exit(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pCanvas = nullptr;
-		m_pSavedCanvas = nullptr;
 		m_pImg = nullptr;
 		return true;
 	}
@@ -38,7 +37,7 @@ public:
 
 	bool finalize(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setCanvas(m_pSavedCanvas);
+		pDevice->endCanvasUpdate();
 		pDevice->setBlitSource(m_pCanvas);
 		pDevice->blit({ 0,0 });
 		return true;
@@ -47,9 +46,8 @@ public:
 
 	bool setCanvas(GfxDevice * pDevice, const RectI& canvas)
 	{
-		m_pSavedCanvas = pDevice->canvas();
 		m_pCanvas->fill(Color::Transparent);
-		pDevice->setCanvas(m_pCanvas);
+		pDevice->beginCanvasUpdate(m_pCanvas);
 		return true;
 	}
 
@@ -62,41 +60,41 @@ public:
 
 	bool	fills(GfxDevice* pDevice, const RectI& canvas)
 	{
-		pDevice->fill(canvas - BorderI(64), Color(0,0,0,64) );
+		pDevice->fill(canvas - BorderI(64), Color8(0,0,0,64) );
 
 		int ofs = 0;
 
 		pDevice->setBlendMode(BlendMode::Replace);
-		pDevice->fill( RectI(6,80+ofs*20,500,15), Color(0, 0, 0, 128));
+		pDevice->fill( RectI(6,80+ofs*20,500,15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Blend);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
                 
         pDevice->setMorphFactor(0.5f);
 		pDevice->setBlendMode(BlendMode::Morph);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Add);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Subtract);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Multiply);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0,0,0,128) );
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0,0,0,128) );
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Min);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Max);
-		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color(0, 0, 0, 128));
+		pDevice->fill(RectI(6, 80 + ofs * 20, 500, 15), Color8(0, 0, 0, 128));
 		ofs++;
 
 		pDevice->setBlendMode(BlendMode::Invert);
@@ -112,7 +110,6 @@ public:
 
 private:
 	Surface_p	m_pCanvas;
-	Surface_p	m_pSavedCanvas;
 	Surface_p	m_pImg;
 
 	float rot = 35;

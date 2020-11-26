@@ -107,6 +107,21 @@ namespace wg
 		Other
 	};
 
+	//___ StateBits ____________________________________________________
+
+	enum class StateBits
+	{
+		Focused = 0,
+		Hovered = 1,
+		Pressed = 2,
+		Selected = 3,
+		Targeted = 4,
+		Disabled = 5
+	};
+
+	static const int	StateBits_Nb = 6;
+	static const int	StateBits_MaxValue = 5;
+
 	//____ StateEnum ____________________________________________________
 
 	enum class StateEnum : uint8_t
@@ -199,6 +214,8 @@ namespace wg
 			return *this;
 		}
 
+		inline uint8_t mask() { return m_state; }
+
 	private:
 		uint8_t		m_state;
 	};
@@ -215,9 +232,21 @@ namespace wg
 		inline void setBit(int index, bool value) { m_mask &= ~(T(1) << index); m_mask |= (T(value) << index); }
 		inline bool bit(int index) const { return ((m_mask & (T(1) << index)) != 0); }
 		inline void clearBit(int index) { m_mask &= ~(T(1) << index); }
+		inline bool isEmpty() const { return m_mask == 0; }
+		inline void flipBit(int index) { m_mask ^= (T(1) << index);  }
 
 		inline Bitmask<T> operator=(const Bitmask<T>& r) { m_mask = r.m_mask; return *this; }
 		inline Bitmask<T> operator=(T r) { m_mask = r; return *this; }
+
+		inline Bitmask<T> operator&(const Bitmask<T>& r) { return Bitmask<T>(m_mask & r.m_mask); }
+		inline Bitmask<T> operator|(const Bitmask<T>& r) { return Bitmask<T>(m_mask | r.m_mask); }
+		inline Bitmask<T> operator^(const Bitmask<T>& r) { return Bitmask<T>(m_mask ^ r.m_mask); }
+		inline Bitmask<T> operator~() { return Bitmask<T>(~m_mask); }
+
+		inline Bitmask<T> operator&=(const Bitmask<T>& r) { m_mask &= r.m_mask; return *this; }
+		inline Bitmask<T> operator|=(const Bitmask<T>& r) { m_mask |= r.m_mask; return *this; }
+		inline Bitmask<T> operator^=(const Bitmask<T>& r) { m_mask ^= r.m_mask; return *this; }
+
 
 		inline operator T() const { return m_mask; }
 
@@ -460,7 +489,6 @@ namespace wg
 	enum class MsgType	//. autoExtras
 	{
 		Dummy = 0,
-		Tick,
 		PointerChange,
 
 		FocusGained,

@@ -44,7 +44,7 @@ public:
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat);
-		m_pDevice = SoftGfxDevice::create(m_pCanvas);
+		m_pDevice = SoftGfxDevice::create();
 		return true;
 	}
 
@@ -57,11 +57,13 @@ public:
 	GfxDevice_p beginRender() const
 	{
 		m_pDevice->beginRender();
+		m_pDevice->beginCanvasUpdate(m_pCanvas);
 		return m_pDevice;
 	}
 
 	void endRender() const
 	{
+		m_pDevice->endCanvasUpdate();
 		m_pDevice->endRender();
 	}
 
@@ -101,13 +103,12 @@ public:
 	{
 		m_pStreamBuffer = GfxStreamPlug::create();
 
-		m_pOutputDevice = SoftGfxDevice::create(m_pOutputCanvas);
+		m_pOutputDevice = SoftGfxDevice::create();
 		m_pStreamPlayer = GfxStreamPlayer::create(m_pStreamBuffer->output[0], m_pOutputDevice, m_pOutputDevice->surfaceFactory());
 		m_pStreamBuffer->openOutput(0);
 
-		m_pStreamDevice = StreamGfxDevice::create(canvasSize, m_pStreamBuffer->input);
+		m_pStreamDevice = StreamGfxDevice::create(m_pStreamBuffer->input);
 		m_pStreamCanvas = StreamSurface::create(m_pStreamBuffer->input, canvasSize, canvasFormat);
-		m_pStreamDevice->setCanvas(m_pStreamCanvas);
 
 		return true;
 	}
@@ -124,11 +125,13 @@ public:
 	GfxDevice_p beginRender() const
 	{
 		m_pStreamDevice->beginRender();
+		m_pStreamDevice->beginCanvasUpdate(m_pStreamCanvas);
 		return m_pStreamDevice;
 	}
 
 	void endRender() const
 	{
+		m_pStreamDevice->endCanvasUpdate();
 		m_pStreamDevice->endRender();
 		m_pStreamPlayer->playAll();
 		return;

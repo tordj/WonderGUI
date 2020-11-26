@@ -65,7 +65,7 @@ namespace wg
 		Coord() : x(0), y(0) {}
 		Coord(MU x, MU y) : x(x), y(y) {}
 		Coord(const Coord& coord) : x(coord.x), y(coord.y) {}
-		Coord(const Rect& rect);
+		explicit Coord(const Size& size);
 
 		template<typename T>
 		explicit Coord(const CoordT<T>& r) : x((MU)r.x), y((MU)r.y) {}
@@ -76,7 +76,6 @@ namespace wg
 
 		//.____ Misc ______________________________________________
 
-		inline const Size& toSize() const;
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
 		inline const CoordI&	qpix() const {	return reinterpret_cast<const CoordI&>(*this); }
@@ -229,8 +228,7 @@ namespace wg
 		Size() : w(0), h(0) {}
 		Size(MU width, MU height) : w(width), h(height) {}
 		Size(const Size& size) : w(size.w), h(size.h) {}
-		inline Size(const Rect& rect);
-		Size(const Coord& c1, const Coord& c2) { w = c2.x - c1.x; h = c2.y - c1.y; }
+		explicit inline Size(const Coord& coord);
 
 		// These explicit constructors enables us to cast from RectI and SizeI of different kind.
 
@@ -246,8 +244,6 @@ namespace wg
 		inline void			limit(const Size& min, const Size& max);
 		inline void			clear() { w = 0; h = 0; }
 		inline bool			isEmpty() const { return (w == 0 && h == 0); }
-
-		inline const Coord& toCoord() const { return reinterpret_cast<const Coord&>(*this); }
 
 		inline const SizeI&	qpix() const { return reinterpret_cast<const SizeI&>(*this); }
 		inline const SizeI	px() const;
@@ -439,6 +435,11 @@ namespace wg
 		template<typename T>
 		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
 
+		// Rect can be IMPLICITLY cast to subtypes Size and Coord
+
+		inline operator Size() const { return Size(w, h); }
+		inline operator Coord() const { return Coord(x, y); }
+
 		//
 
 		inline Rect& operator=(const Rect& rect);				///< @brief Normal assignment operator.
@@ -514,7 +515,7 @@ namespace wg
 		CoordT() : x(0), y(0) {}
 		CoordT(Type x, Type y) : x(x), y(y) {}
 		CoordT(const CoordT<Type>& coord) : x(coord.x), y(coord.y) {}
-		CoordT(const RectT<Type>& rect);
+		explicit CoordT(const SizeT<Type>& size);
 
 		template<typename T>
 		explicit CoordT(const CoordT<T>& r) : x((Type)r.x), y((Type)r.y) {}
@@ -525,7 +526,6 @@ namespace wg
 
 		//.____ Misc ______________________________________________
 
-		inline SizeT<Type> toSize();
 		inline void clear() { x = 0; y = 0; }			///< Sets X and Y to 0.
 
 		//.____ Operators ___________________________________________
@@ -565,17 +565,10 @@ namespace wg
 
 	//_____________________________________________________________________________
 	template<typename Type>
-	inline CoordT<Type>::CoordT(const RectT<Type>& rect)
+	inline CoordT<Type>::CoordT(const SizeT<Type>& size)
 	{
-		x = rect.x;
-		y = rect.y;
-	}
-
-	//_____________________________________________________________________________
-	template<typename Type>
-	inline SizeT<Type> CoordT<Type>::toSize()
-	{
-		return SizeT<Type>(x, y);
+		x = size.w;
+		y = size.h;
 	}
 
 	//____ BorderI ______________________________________________________________
@@ -690,7 +683,7 @@ namespace wg
 		SizeT() : w(0), h(0) {}
 		SizeT( Type width, Type height ) : w(width), h(height) {}
 		SizeT( const SizeT<Type>& size ) : w(size.w), h(size.h) {}
-		SizeT( const RectT<Type>& rect ) : w(rect.w), h(rect.h) {}
+		explicit SizeT( const CoordT<Type>& coord ) : w(coord.x), h(coord.y) {}
 		SizeT( const CoordT<Type>& c1, const CoordT<Type>& c2 ) { w = c2.x - c1.x; h = c2.y - c1.y; }
 
 		// These explicit constructors enables us to cast from RectI and SizeI of different kind.
@@ -707,8 +700,6 @@ namespace wg
 		inline void limit( const SizeT<Type>& min, const SizeT<Type>& max );
 		inline void clear()		{ w = 0; h = 0; }
 		inline bool	isEmpty() const { return (w == 0 && h == 0); }
-
-		inline CoordT<Type> toCoord() { return CoordT<Type>(w,h); }
 
 		//.____ Operators ___________________________________________
 
@@ -866,7 +857,6 @@ namespace wg
 		template<typename T>
 		explicit RectT(const SizeT<T>& sz) : x(0), y(0), w((Type)sz.w), h((Type)sz.h) {}
 
-
 		//.____ Misc ______________________________________________
 
 		inline void setPos( const CoordT<Type>& p );					///< @brief Set position of rectangle.
@@ -938,6 +928,11 @@ namespace wg
 		template<typename T, typename TP = Type, typename std::enable_if< !std::is_arithmetic<TP>::value, int>::type = 0>
 		inline operator SizeT<T>() const { return SizeT<T>(w, h); }
 
+		// All versions of RectT can be IMPLICITLY cast to their subtypes SizeT and CoordT
+
+		inline operator SizeT<Type>() const { return SizeT<Type>(w, h); }
+		inline operator CoordT<Type>() const { return CoordT<Type>(x, y); }
+
 		//
 
 		inline RectT<Type>& operator=(const RectT<Type>&);					///< @brief Normal assignment operator.
@@ -982,16 +977,10 @@ namespace wg
 
 
 	//_____________________________________________________________________________
-	inline Coord::Coord(const Rect& rect)
+	inline Coord::Coord(const Size& size)
 	{
-		x = rect.x;
-		y = rect.y;
-	}
-
-	//_____________________________________________________________________________
-	inline const Size& Coord::toSize() const
-	{
-		return reinterpret_cast<const Size&>(*this);
+		x = size.w;
+		y = size.h;
 	}
 
 	//_____________________________________________________________________________
@@ -1038,7 +1027,7 @@ namespace wg
 
 	//_____________________________________________________________________________
 
-	inline Size::Size(const Rect& rect) : w(rect.w), h(rect.h)
+	inline Size::Size(const Coord& coord) : w(coord.x), h(coord.y)
 	{
 	}
 

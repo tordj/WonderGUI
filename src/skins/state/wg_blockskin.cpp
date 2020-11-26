@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -246,9 +247,9 @@ namespace wg
 		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
 	}
 
-	//____ setTint() __________________________________________________________
+	//____ setColor() __________________________________________________________
 
-	void BlockSkin::setTint(Color tint)
+	void BlockSkin::setColor(HiColor tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -257,7 +258,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(State state, Color tint)
+	void BlockSkin::setColor(State state, HiColor tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -267,7 +268,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void BlockSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -280,13 +281,21 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ tint() _____________________________________________________________
+	//____ color() _____________________________________________________________
 
-	Color BlockSkin::tint(State state) const
+	HiColor BlockSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
 
+	//____ setGradient() ______________________________________________________
+
+	void BlockSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpaqueFlags();
+	}
 
 
 	//____ setBlendMode() _____________________________________________________
@@ -321,24 +330,17 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if( !m_pSurface )
 			return;
 
-		BlendMode savedBlendMode = BlendMode::Undefined;
-		if (m_blendMode != BlendMode::Undefined)
-		{
-			savedBlendMode = pDevice->blendMode();
-			pDevice->setBlendMode(m_blendMode);
-		}
+		int idx = _stateToIndex(state);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
-		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
+		CoordI blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch( canvas.px(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
-
-		if (m_blendMode != BlendMode::Undefined)
-			pDevice->setBlendMode(savedBlendMode);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -372,7 +374,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
@@ -392,15 +394,25 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ isStateIdentical() _____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect BlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && StateSkin::isStateIdentical(state,comparedTo) );
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if (m_stateBlocks[i1] != m_stateBlocks[i2])
+			return canvas;
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
+
 
 	//____ _updateOpaqueFlags() ________________________________________________
 
@@ -412,7 +424,9 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		else if (m_bGradient && !m_gradient.isOpaque())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend )
 		{
 			m_bOpaque = m_pSurface->isOpaque();
 			bTintDecides = m_bOpaque;
@@ -423,7 +437,11 @@ namespace wg
 		if (bTintDecides)
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
-				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+			{
+				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
+				if (m_stateColors[i].a != 4096)
+					m_bOpaque = false;
+			}
 		}
 		else
 		{

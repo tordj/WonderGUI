@@ -82,9 +82,6 @@ namespace wg
 		m_pSurface = pFactory->createSurface(sz, m_pixelFormat);
 		m_pSurface->fill(m_backColor);
 
-		if( m_pDevice )
-			m_pDevice->setCanvas(m_pSurface);
-
 		if (m_surfaceLostCallback != nullptr)
 			m_surfaceLostCallback(this);
 	}
@@ -266,7 +263,7 @@ namespace wg
 	*	Default back color is White (0xFFFFFFFF). Changing the back color will discard the current surface.
 	**/
 
-	void CCanvas::setBackColor(Color color)
+	void CCanvas::setBackColor(HiColor color)
 	{
 		if (color != m_backColor)
 		{

@@ -73,7 +73,7 @@ namespace wg
 
 	//____ setColors() ___________________________________________________________
 
-	void SimpleVolumeMeter::setColors( Color bottom, Color middle, Color top )
+	void SimpleVolumeMeter::setColors( HiColor bottom, HiColor middle, HiColor top )
 	{
 		if( bottom != m_sectionColors[0] || middle != m_sectionColors[1] || top != m_sectionColors[2] )
 		{
@@ -99,7 +99,7 @@ namespace wg
 			m_fSectionHeight[1] = middleFraction;
 			m_fSectionHeight[2] = topFraction;
 
-			Size canvasSize = m_pSkin ? Size() - m_pSkin->contentPaddingSize() : Size();
+			Size canvasSize = Size() - OO(skin)._contentPaddingSize();
 
 			_updateValueDisplays( canvasSize );
 			_requestRender();
@@ -116,7 +116,7 @@ namespace wg
 		{
 			m_fHoldHeight = fraction;
 
-			Size size = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
+			Size size = m_size - OO(skin)._contentPaddingSize();
 			_updateValueDisplays( size );
 			_requestRender();
 		}
@@ -132,7 +132,7 @@ namespace wg
 		m_fPeak[0] = peak;
 		m_fHold[0] = hold;
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect( m_size, m_state ) : Rect(m_size);
+		Rect canvas = OO(skin)._contentRect( m_size, m_state );
 
 		MU length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 		MU  iPeak = (peak * length).aligned();
@@ -166,7 +166,7 @@ namespace wg
 		m_fHold[0] = leftHold;
 		m_fHold[1] = rightHold;
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect( m_size, m_state ) : Rect(m_size);
+		Rect canvas = OO(skin)._contentRect( m_size, m_state );
 
 		MU length = (m_direction == Direction::Left || m_direction == Direction::Right) ? canvas.w : canvas.h;
 
@@ -201,7 +201,7 @@ namespace wg
 		{
 			m_direction = direction;
 
-			Size size = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
+			Size size = m_size - OO(skin)._contentPaddingSize();
 			_updateValueDisplays(size);
 			_requestResize();
 			_requestRender();
@@ -314,24 +314,9 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		Size canvasSize = m_pSkin ? size - m_pSkin->contentPaddingSize() : size;
+		Size canvasSize = size - OO(skin)._contentPaddingSize();
 
 		_updateValueDisplays( canvasSize );
-	}
-
-	//____ setSkin() ________________________________________________________________
-
-	void SimpleVolumeMeter::setSkin( Skin * pSkin )
-	{
-		Size sz;
-
-		Rect oldCanvas = m_pSkin ? m_pSkin->contentRect(sz,m_state) : Rect(sz);
-		Rect newCanvas = pSkin ? pSkin->contentRect(sz,m_state) : Rect(sz);
-
-		Widget::setSkin( pSkin );
-
-		if( oldCanvas != newCanvas )
-			_updateValueDisplays( newCanvas );
 	}
 
 	//____ _render() _____________________________________________________________________
@@ -343,11 +328,7 @@ namespace wg
 		if( !m_state.isEnabled() )
 			return;
 
-		Rect canvas;
-		if( m_pSkin )
-			canvas = m_pSkin->contentRect(_canvas, m_state);
-		else
-			canvas = _canvas;
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 		if( m_bStereo )
 		{
@@ -405,7 +386,7 @@ namespace wg
 		{
 			if( holdOfs - m_iHoldHeight > peakHeight )				// Render Hold separately if separated from Peak
 			{
-				Color c;
+				HiColor c;
 
 				if( holdOfs <= m_iSectionHeight[0] )
 					c = m_sectionColors[0];
@@ -544,7 +525,7 @@ namespace wg
 		m_fHold[0] = pOrg->m_fHold[0];
 		m_fHold[1] = pOrg->m_fHold[1];
 
-		Size canvasSize = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
+		Size canvasSize = m_size - OO(skin)._contentPaddingSize();
 		_updateValueDisplays( canvasSize );
 	}
 

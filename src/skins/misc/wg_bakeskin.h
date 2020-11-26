@@ -27,6 +27,7 @@
 #include <wg_surface.h>
 #include <wg_skin.h>
 #include <wg_color.h>
+#include <wg_gradient.h>
 
 #include <initializer_list>
 #include <utility>
@@ -60,8 +61,12 @@ namespace wg
 		void			setBlendMode( BlendMode blend );
 		BlendMode		blendMode() const { return m_blendMode; }
 
-		void			setTintColor(Color color);
-		Color			tintColor() const { return m_tintColor; }
+		void			setColor(HiColor color);
+		HiColor			color() const { return m_tintColor; }
+
+		void			setGradient(const Gradient& gradient);
+		Gradient		gradient() const { return m_gradient; }
+
 
 		void			setSkinInSkin(bool bInside);
 		bool			isSkinInSkin() const { return m_bSkinInSkin; }
@@ -85,22 +90,29 @@ namespace wg
 		bool			isOpaque( State state ) const override;
 		bool			isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool			isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2= 0.f) const override;
-
 		bool			markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-									float fraction = 1.f, float fraction2 = -1.f) const override;
+									float value = 1.f, float value2 = -1.f) const override;
 
 		void			render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect			fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect			dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+									float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+									float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
+
+		int				animationLength(State state) const override;
+
+		Bitmask<uint8_t>transitioningStates() const override;
+		const int*		transitionTimes() const override;
 
 
 	private:
 		BakeSkin(Surface * pBakeSurface);
 		BakeSkin(Surface* pBakeSurface, std::initializer_list<Skin_p> skins);
-		~BakeSkin() {};
+		~BakeSkin();
+
+		void			_incUseCount() override;
+		void			_decUseCount() override;
 
 		void			_updateCachedGeo() const;
 		void			_onModified();
@@ -115,7 +127,9 @@ namespace wg
 
 		Surface_p			m_pBakeSurface;
 		BlendMode			m_blendMode = BlendMode::Blend;
-		Color				m_tintColor = Color::White;
+		HiColor				m_tintColor = Color::White;
+		Gradient			m_gradient;
+		bool				m_bGradient = false;
 		bool				m_bContentPaddingSet = false;
 		bool				m_bSkinInSkin = false;
 
@@ -125,6 +139,11 @@ namespace wg
 		mutable Border		m_cachedContentPadding[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_opaqueStates;
+
+		Bitmask<uint8_t>	m_transitioningStates;
+		int					m_transitionTimes[StateBits_Nb];
+
+		int					m_animationLengths[StateEnum_Nb];
 	};
 
 } // namespace wg

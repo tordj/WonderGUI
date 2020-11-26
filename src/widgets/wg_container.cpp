@@ -348,8 +348,7 @@ namespace wg
 	{
 		// Render container itself
 
-		if( m_pSkin )
-			m_pSkin->render(pDevice, _canvas, m_state );
+		OO(skin)._render(pDevice, _canvas, m_state );
 
 		// Render children
 
@@ -443,19 +442,19 @@ namespace wg
 
 	void Container::_collectPatches( Patches& container, const Rect& geo, const Rect& clip )
 	{
-		if( m_pSkin )
-			container.add( Rect( geo, clip ) );
-		else
+		if( skin.isEmpty() )
 		{
 			SlotWithGeo child;
-			_firstSlotWithGeo( child );
+			_firstSlotWithGeo(child);
 
-			while(child.pSlot)
+			while (child.pSlot)
 			{
-				OO(child.pSlot)->_widget()->_collectPatches( container, child.geo + geo.pos(), clip );
-				_nextSlotWithGeo( child );
+				OO(child.pSlot)->_widget()->_collectPatches(container, child.geo + geo.pos(), clip);
+				_nextSlotWithGeo(child);
 			}
 		}
+		else
+			container.add( Rect( geo, clip ) );
 	}
 
 	//____ _maskPatches() __________________________________________________________

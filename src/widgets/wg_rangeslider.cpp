@@ -34,7 +34,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	RangeSlider::RangeSlider()
+	RangeSlider::RangeSlider() : beginHandleSkin(this), endHandleSkin(this)
 	{
 	}
 
@@ -55,7 +55,7 @@ namespace wg
 
 	Size RangeSlider::preferredSize() const
 	{
-		if( m_preferredSize.w >= 0 && m_preferredSize.h >= 0 )
+		if (m_preferredSize.w >= 0 && m_preferredSize.h >= 0)
 			return m_preferredSize;
 		else
 			return Widget::preferredSize();
@@ -74,38 +74,6 @@ namespace wg
 		m_preferredSlideLength = length;
 		_updatePreferredSize();
 	}
-
-	//____ setSkin() _________________________________________________________
-
-	void RangeSlider::setSkin(Skin * pSkin)
-	{
-		Widget::setSkin(pSkin);
-	}
-
-	//____ setBeginHandleSkin() ___________________________________________________
-
-	void RangeSlider::setBeginHandleSkin(Skin * pSkin)
-	{
-		if (pSkin != m_pBeginHandleSkin)
-		{
-			m_pBeginHandleSkin = pSkin;
-			_requestRender();
-			_updatePreferredSize();
-		}
-	}
-
-	//____ setEndHandleSkin() ___________________________________________________
-
-	void RangeSlider::setEndHandleSkin(Skin * pSkin)
-	{
-		if (pSkin != m_pEndHandleSkin)
-		{
-			m_pEndHandleSkin = pSkin;
-			_requestRender();
-			_updatePreferredSize();
-		}
-	}
-
 
 	//____ setAxis() _________________________________________________________
 
@@ -132,7 +100,7 @@ namespace wg
 		if (nbSteps != m_nbSteps)
 		{
 			m_nbSteps = nbSteps;
-			if( nbSteps > 0 )
+			if (nbSteps > 0)
 				_setRange(m_rangeBegin, m_rangeEnd);		// Have the range aligned to the steps.
 		}
 	}
@@ -144,182 +112,173 @@ namespace wg
 		limit(begin, 0.f, 1.f - m_minRange);
 		limit(end, begin + m_minRange, 1.f);
 
-		_setRange(begin,end,false);
+		_setRange(begin, end, false);
 	}
 
 	//____ _receive() __________________________________________________________
 
-	void RangeSlider::_receive(Msg * _pMsg)
+	void RangeSlider::_receive(Msg* _pMsg)
 	{
 		switch (_pMsg->type())
 		{
-			case MsgType::MouseEnter:
-			case MsgType::MouseMove:
-			{
-				auto pMsg = static_cast<InputMsg*>(_pMsg);
-				Coord pos = toLocal(pMsg->pointerPos());
+		case MsgType::MouseEnter:
+		case MsgType::MouseMove:
+		{
+			auto pMsg = static_cast<InputMsg*>(_pMsg);
+			Coord pos = toLocal(pMsg->pointerPos());
 
-				if( _handleGeo(m_size,true).contains(pos) != m_beginHandleState.isHovered() )
-					_setHandleState(m_beginHandleState + StateEnum::Hovered, true);
+			if (_handleGeo(m_size, true).contains(pos) != m_beginHandleState.isHovered())
+				_setHandleState(m_beginHandleState + StateEnum::Hovered, true);
 
-				if (_handleGeo(m_size, false).contains(pos) != m_endHandleState.isHovered())
-					_setHandleState(m_endHandleState + StateEnum::Hovered, false);
+			if (_handleGeo(m_size, false).contains(pos) != m_endHandleState.isHovered())
+				_setHandleState(m_endHandleState + StateEnum::Hovered, false);
+			break;
+		}
+
+		case MsgType::MouseLeave:
+			if (m_beginHandleState.isHovered() && !m_beginHandleState.isPressed())
+				_setHandleState(m_beginHandleState - StateEnum::Hovered, true);
+
+			if (m_endHandleState.isHovered() && !m_endHandleState.isPressed())
+				_setHandleState(m_endHandleState - StateEnum::Hovered, false);
+
+			break;
+
+		case MsgType::MousePress:
+		{
+			auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+
+			if (pMsg->button() != MouseButton::Left)
 				break;
+
+			Coord pos = toLocal(pMsg->pointerPos());
+			Rect  beginHandle = _handleGeo(m_size, true);
+			Rect  endHandle = _handleGeo(m_size, false);
+			if (beginHandle.contains(pos))
+			{
+				_setHandleState(m_beginHandleState + StateEnum::Pressed, true);
+				m_valueAtPress = m_rangeBegin;
 			}
+			else if (endHandle.contains(pos))
+			{
+				_setHandleState(m_endHandleState + StateEnum::Pressed, false);
+				m_valueAtPress = m_rangeEnd;
+			}
+			else
+			{
+				//TODO: Handle click on background.
+			}
+			break;
+		}
 
-			case MsgType::MouseLeave:
-				if (m_beginHandleState.isHovered() && !m_beginHandleState.isPressed() )
-					_setHandleState(m_beginHandleState - StateEnum::Hovered, true);
+		case MsgType::MouseRelease:
+		{
+			auto pMsg = static_cast<MousePressMsg*>(_pMsg);
 
-				if (m_endHandleState.isHovered() && !m_endHandleState.isPressed())
-					_setHandleState(m_endHandleState - StateEnum::Hovered, false);
-
+			if (pMsg->button() != MouseButton::Left)
 				break;
 
-			case MsgType::MousePress:
+			//				Coord pos = toLocal(pMsg->pointerPos());
+			//				Rect  handle = _handleGeo(m_size);
+			if (m_beginHandleState.isPressed())
 			{
-				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+				_setHandleState(m_beginHandleState - StateEnum::Pressed, true);
+			}
+			else if (m_endHandleState.isPressed())
+			{
+				_setHandleState(m_endHandleState - StateEnum::Pressed, false);
+			}
+			else
+			{
+				//TODO: Handle click on background.
+			}
+			break;
 
-				if (pMsg->button() != MouseButton::Left)
-					break;
+		}
 
-				Coord pos = toLocal(pMsg->pointerPos());
-				Rect  beginHandle = _handleGeo(m_size,true);
-				Rect  endHandle = _handleGeo(m_size, false);
-				if (beginHandle.contains(pos))
+		case MsgType::MouseRepeat:
+			break;
+
+		case MsgType::MouseDrag:
+		{
+			if (m_beginHandleState.isPressed() || m_endHandleState.isPressed())
+			{
+				auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
+
+				bool isBeginHandle = m_beginHandleState.isPressed();
+
+				Size contentSize = m_size - OO(skin)._contentPaddingSize();
+				Size handleSize = _handleGeo(m_size, isBeginHandle).size();
+				Coord totalDrag = pMsg->draggedTotal();
+
+				MU slideLen;
+				MU slided;
+
+				if (m_axis == Axis::X)
 				{
-					_setHandleState(m_beginHandleState + StateEnum::Pressed,true);
-					m_valueAtPress = m_rangeBegin;
-				}
-				else if (endHandle.contains(pos))
-				{
-					_setHandleState(m_endHandleState + StateEnum::Pressed, false);
-					m_valueAtPress = m_rangeEnd;
+					slideLen = contentSize.w - handleSize.w;
+					slided = totalDrag.x;
 				}
 				else
 				{
-					//TODO: Handle click on background.
+					slideLen = contentSize.h - handleSize.h;
+					slided = -totalDrag.y;
 				}
-				break;
-			}
 
-			case MsgType::MouseRelease:
-			{
-				auto pMsg = static_cast<MousePressMsg*>(_pMsg);
+				float newValue = m_valueAtPress + slided / slideLen;
+				limit(newValue, 0.f, 1.f);
 
-				if (pMsg->button() != MouseButton::Left)
-					break;
-
-//				Coord pos = toLocal(pMsg->pointerPos());
-//				Rect  handle = _handleGeo(m_size);
-				if (m_beginHandleState.isPressed())
+				if (isBeginHandle)
 				{
-					_setHandleState(m_beginHandleState - StateEnum::Pressed, true);
-				}
-				else if (m_endHandleState.isPressed())
-				{
-					_setHandleState(m_endHandleState - StateEnum::Pressed, false);
+					if (newValue > m_rangeEnd - m_minRange)
+						newValue = m_rangeEnd - m_minRange;
+					_setRange(newValue, m_rangeEnd);
 				}
 				else
 				{
-					//TODO: Handle click on background.
-				}
-				break;
-
-			}
-
-			case MsgType::MouseRepeat:
-				break;
-
-			case MsgType::MouseDrag:
-			{
-				if (m_beginHandleState.isPressed() || m_endHandleState.isPressed())
-				{
-					auto pMsg = static_cast<MouseDragMsg*>(_pMsg);
-
-					bool isBeginHandle = m_beginHandleState.isPressed();
-
-					Size contentSize = m_pSkin ? m_size - m_pSkin->contentPaddingSize() : m_size;
-					Size handleSize = _handleGeo(m_size, isBeginHandle).size();
-					Coord totalDrag = pMsg->draggedTotal();
-
-					MU slideLen;
-					MU slided;
-
-					if (m_axis == Axis::X)
-					{
-						slideLen = contentSize.w - handleSize.w;
-						slided = totalDrag.x;
-					}
-					else
-					{
-						slideLen = contentSize.h - handleSize.h;
-						slided = -totalDrag.y;
-					}
-
-					float newValue = m_valueAtPress + slided / slideLen;
-					limit(newValue, 0.f, 1.f);
-
-					if (isBeginHandle)
-					{
-						if (newValue > m_rangeEnd - m_minRange)
-							newValue = m_rangeEnd - m_minRange;
-						_setRange(newValue, m_rangeEnd);
-					}
-					else
-					{
-						if (newValue < m_rangeBegin + m_minRange)
-							newValue = m_rangeBegin + m_minRange;
-						_setRange(m_rangeBegin, newValue);
-					}
+					if (newValue < m_rangeBegin + m_minRange)
+						newValue = m_rangeBegin + m_minRange;
+					_setRange(m_rangeBegin, newValue);
 				}
 			}
-			default:
-				break;
+		}
+		default:
+			break;
 		}
 	}
 
 
 	//____ _cloneContent() _______________________________________________________
 
-	void RangeSlider::_cloneContent( const Widget * _pOrg )
+	void RangeSlider::_cloneContent(const Widget* _pOrg)
 	{
-		Widget::_cloneContent( _pOrg );
+		Widget::_cloneContent(_pOrg);
 
-		RangeSlider * pOrg = (RangeSlider*) _pOrg;
+		RangeSlider* pOrg = (RangeSlider*)_pOrg;
 
 		m_preferredSize = pOrg->m_preferredSize;
 	}
 
 	//____ _render() __________________________________________________________
 
-	void RangeSlider::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
+	void RangeSlider::_render(GfxDevice* pDevice, const Rect& canvas, const Rect& window)
 	{
-		if (m_pSkin)
-			m_pSkin->render(pDevice, canvas, m_state, m_rangeBegin, m_rangeEnd);
-
-		if (m_pBeginHandleSkin)
-			m_pBeginHandleSkin->render(pDevice, _handleGeo(canvas,true), m_beginHandleState, m_rangeBegin);
-
-		if (m_pEndHandleSkin)
-			m_pEndHandleSkin->render(pDevice, _handleGeo(canvas,false), m_endHandleState, m_rangeEnd);
-
+		OO(skin)._render(pDevice, canvas, m_state, m_rangeBegin, m_rangeEnd);
+		OO(beginHandleSkin)._render(pDevice, _handleGeo(canvas, true), m_beginHandleState, m_rangeBegin);
+		OO(endHandleSkin)._render(pDevice, _handleGeo(canvas, false), m_endHandleState, m_rangeEnd);
 	}
 
 	//____ _alphaTest() ________________________________________________________
 
 	bool RangeSlider::_alphaTest(const Coord& ofs)
 	{
-		bool bMarked = false;
+		bool bMarked = OO(skin)._markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_rangeBegin, m_rangeEnd);
 
-		if (m_pSkin)
-			bMarked = m_pSkin->markTest(ofs, Rect(m_size), m_state, m_markOpacity, m_rangeBegin, m_rangeEnd);
+		if (!bMarked)
+			bMarked = OO(beginHandleSkin)._markTest(ofs, _handleGeo(m_size, true), m_beginHandleState, m_markOpacity, m_rangeBegin);
 
-		if (!bMarked && m_pBeginHandleSkin)
-			bMarked = m_pBeginHandleSkin->markTest(ofs, _handleGeo(m_size,true), m_beginHandleState, m_markOpacity, m_rangeBegin);
-
-		if (!bMarked && m_pEndHandleSkin)
-			bMarked = m_pEndHandleSkin->markTest(ofs, _handleGeo(m_size, false), m_endHandleState, m_markOpacity, m_rangeEnd);
+		if (!bMarked)
+			bMarked = OO(endHandleSkin)._markTest(ofs, _handleGeo(m_size, false), m_endHandleState, m_markOpacity, m_rangeEnd);
 
 		return bMarked;
 	}
@@ -329,19 +288,16 @@ namespace wg
 
 	void RangeSlider::_updatePreferredSize()
 	{
-		Size sz =	m_pBeginHandleSkin ? m_pBeginHandleSkin->preferredSize() : Size( 4, 4 );
-		Size sz2 =	m_pEndHandleSkin ? m_pEndHandleSkin->preferredSize() : Size(4, 4);
+		Size sz = OO(beginHandleSkin)._preferredSize();
+		Size sz2 = OO(endHandleSkin)._preferredSize();
 
 		if (m_axis == Axis::X)
 			sz.w += m_preferredSlideLength + sz2.w;
 		else
 			sz.h += m_preferredSlideLength + sz2.h;
 
-		if (m_pSkin)
-		{
-			sz += m_pSkin->contentPaddingSize();
-			sz = Size::max(sz, m_pSkin->preferredSize());
-		}
+		sz += OO(skin)._contentPaddingSize();
+		sz = Size::max(sz, OO(skin)._preferredSize());
 
 		if (sz != m_preferredSize)
 		{
@@ -365,14 +321,16 @@ namespace wg
 
 		if (begin != m_rangeBegin || end != m_rangeEnd)
 		{
+			float oldBegin = m_rangeBegin;
+			float oldEnd = m_rangeEnd;
+
 			Rect changeRect;
 
 			if (begin != m_rangeBegin)
 			{
-				Rect oldGeo = _handleGeo(m_size,true);
-
+				Rect oldGeo = _handleGeo(m_size, true);
 				m_rangeBegin = begin;
-				Rect newGeo = _handleGeo(m_size,true);
+				Rect newGeo = _handleGeo(m_size, true);
 
 				changeRect = Rect::getUnion(oldGeo, newGeo);
 			}
@@ -380,20 +338,16 @@ namespace wg
 			if (end != m_rangeEnd)
 			{
 				Rect oldGeo = _handleGeo(m_size, false);
-
 				m_rangeEnd = end;
 				Rect newGeo = _handleGeo(m_size, false);
 
 				changeRect = Rect::getUnion(changeRect, Rect::getUnion(oldGeo, newGeo));
 			}
+			_requestRender(changeRect);
 
+			OO(skin)._valueChanged(begin, oldBegin, end, oldEnd);
 
-			if( m_pSkin )
-				changeRect.growToContain( m_pSkin->fractionChangeRect(m_size, m_state, m_rangeBegin, begin, m_rangeEnd, end) );
-
-			_requestRender( changeRect );
-
-			if(bPostMsg)
+			if (bPostMsg)
 				Base::msgRouter()->post(RangeUpdateMsg::create(this, 0, 0, m_rangeBegin, m_rangeEnd - m_rangeBegin, false));
 
 		}
@@ -403,31 +357,31 @@ namespace wg
 
 	void RangeSlider::_setHandleState(State state, bool isBeginHandle)
 	{
-		if (isBeginHandle )
+		if (isBeginHandle)
 		{
-			if (m_pBeginHandleSkin && !m_pBeginHandleSkin->isStateIdentical(state, m_beginHandleState, m_rangeBegin))
-				_requestRender(_handleGeo(m_size, isBeginHandle));
-
+			State oldState = m_beginHandleState;
 			m_beginHandleState = state;
+
+			OO(beginHandleSkin)._stateChanged(state, oldState);
 		}
 		else
 		{
-			if (m_pEndHandleSkin && !m_pEndHandleSkin->isStateIdentical(state, m_endHandleState, m_rangeEnd))
-				_requestRender(_handleGeo(m_size, isBeginHandle));
-
+			State oldState = m_endHandleState;
 			m_endHandleState = state;
+
+			OO(endHandleSkin)._stateChanged(state, oldState);
 		}
 	}
 
 	//____ _handleGeo() _______________________________________________________
 
-	Rect RangeSlider::_handleGeo(const Rect& widgetGeo, bool isBeginHandle)
+	Rect RangeSlider::_handleGeo(const Rect& widgetGeo, bool isBeginHandle) const
 	{
-		Rect contentGeo = m_pSkin ? m_pSkin->contentRect(widgetGeo, m_state) : widgetGeo;
+		Rect contentGeo = OO(skin)._contentRect(widgetGeo, m_state);
 
 		Rect handleGeo;
 
-		Size handlePrefSize = isBeginHandle ? m_pBeginHandleSkin->preferredSize() : m_pEndHandleSkin->preferredSize();
+		Size handlePrefSize = isBeginHandle ? OO(beginHandleSkin)._preferredSize() : OO(endHandleSkin)._preferredSize();
 		float value = isBeginHandle ? m_rangeBegin : m_rangeEnd;
 
 		if (m_axis == Axis::X)
@@ -449,6 +403,109 @@ namespace wg
 
 		return handleGeo.aligned();
 	}
+
+	//____ _componentState() _______________________________________________________
+
+	State RangeSlider::_componentState(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &beginHandleSkin)
+			return m_beginHandleState;
+		else if (pComponent == &endHandleSkin)
+			return m_endHandleState;
+		else
+			return m_state;
+	}
+
+	//____ _componentPos() ___________________________________________________
+
+	Coord RangeSlider::_componentPos(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &beginHandleSkin)
+			return _handleGeo(m_size, true).pos();
+		else if (pComponent == &endHandleSkin)
+			return _handleGeo(m_size, false).pos();
+
+		return Coord();
+	}
+
+	//____ _componentSize() ___________________________________________________
+
+	Size RangeSlider::_componentSize(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &beginHandleSkin)
+			return _handleGeo(m_size, true).size();
+		else if (pComponent == &endHandleSkin)
+			return _handleGeo(m_size, false).size();
+
+		return Size();
+	}
+
+	//____ _componentGeo() ___________________________________________________
+
+	Rect RangeSlider::_componentGeo(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &beginHandleSkin)
+			return _handleGeo(m_size, true);
+		else if (pComponent == &endHandleSkin)
+			return _handleGeo(m_size, false);
+
+		return Size();
+	}
+
+	//____ _componentRequestRender() _______________________________________________
+
+	void RangeSlider::_componentRequestRender(const GeoComponent* pComponent)
+	{
+		if (pComponent == &beginHandleSkin)
+			_requestRender(_handleGeo(m_size, true));
+		else if (pComponent == &endHandleSkin)
+			_requestRender(_handleGeo(m_size, false));
+		else
+			_requestRender();
+	}
+
+	void RangeSlider::_componentRequestRender(const GeoComponent* pComponent, const Rect& rect)
+	{
+		Coord ofs;
+
+		if (pComponent == &beginHandleSkin)
+			ofs = _handleGeo(m_size, true).pos();
+		else if (pComponent == &endHandleSkin)
+			ofs = _handleGeo(m_size, false).pos();
+
+		_requestRender( rect + ofs);
+	}
+
+	//____ _skinChanged() _____________________________________________________
+
+	void RangeSlider::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
+	{
+		_updatePreferredSize();
+		Widget::_skinChanged(pSlot, pNewSkin, pOldSkin);
+	}
+
+
+	//____ _skinValue() _______________________________________________________
+
+	float RangeSlider::_skinValue(const CSkinSlot* pSlot) const
+	{
+		if (pSlot == &endHandleSkin)
+			return m_rangeEnd;
+		else
+			return m_rangeBegin;
+	}
+
+	//____ _skinValue2() ______________________________________________________
+
+	float RangeSlider::_skinValue2(const CSkinSlot* pSlot) const
+	{
+		if (pSlot == &skin)
+			return m_rangeEnd;
+		else
+			return -1;
+	}
+
+
 
 
 } // namespace wg

@@ -46,6 +46,10 @@ namespace wg
 		using		iterator = typename std::vector<EntryType>::iterator;
 		using		const_iterator = typename std::vector<EntryType>::const_iterator;
 
+		using		reverse_iterator = typename std::vector<EntryType>::reverse_iterator;
+		using		const_reverse_iterator = typename std::vector<EntryType>::const_reverse_iterator;
+
+
 		CStaticVector(Holder * pHolder) : m_pHolder(pHolder) {}
 
 		//.____ Identification _________________________________________________
@@ -65,6 +69,19 @@ namespace wg
 
 		inline const_iterator	begin() const { return m_entries.begin(); }
 		inline const_iterator	end() const { return m_entries.end(); }
+
+		inline reverse_iterator	rbegin() { return m_entries.rbegin(); }
+		inline reverse_iterator	rend() { return m_entries.rend(); }
+
+		inline const_reverse_iterator	rbegin() const { return m_entries.rbegin(); }
+		inline const_reverse_iterator	rend() const { return m_entries.rend(); }
+
+
+		inline EntryType& front() { return m_entries.front(); }
+		inline const EntryType& front() const { return m_entries.front(); }
+
+		inline EntryType& back() { return m_entries.back(); }
+		inline const EntryType& back() const { return m_entries.back(); }
 
 		//.____ Operators __________________________________________
 

@@ -110,7 +110,7 @@ namespace wg
 		CGfxOutStream&	operator<< (const RectI&);
 		CGfxOutStream&	operator<< (const RectF&);
 
-		CGfxOutStream&	operator<< (Color);
+		CGfxOutStream&	operator<< (HiColor);
 		CGfxOutStream&	operator<< (Direction);
 		CGfxOutStream&	operator<< (BlendMode);
 		CGfxOutStream&	operator<< (Axis);

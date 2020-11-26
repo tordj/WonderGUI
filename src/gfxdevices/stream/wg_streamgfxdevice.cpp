@@ -38,16 +38,16 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	StreamGfxDevice_p StreamGfxDevice::create( SizeI canvas, CGfxOutStream& stream )
+	StreamGfxDevice_p StreamGfxDevice::create( CGfxOutStream& stream )
 	{
-		StreamGfxDevice_p p(new StreamGfxDevice( canvas, stream ));
+		StreamGfxDevice_p p(new StreamGfxDevice( stream ));
 		return p;
 	}
 
 
 	//____ constructor _____________________________________________________________
 
-	StreamGfxDevice::StreamGfxDevice( SizeI canvas, CGfxOutStream& stream ) : GfxDevice(canvas)
+	StreamGfxDevice::StreamGfxDevice( CGfxOutStream& stream )
 	{
 		m_pStream = &stream;
 		m_bRendering = false;
@@ -83,64 +83,13 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ setClipList() __________________________________________________________
-
-	bool StreamGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
-	{
-		if (GfxDevice::setClipList(nRectangles, pRectangles))
-		{
-			(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 8*nRectangles };
-
-			for( int i = 0 ; i < nRectangles ; i++ )
-				(*m_pStream) << pRectangles[i];
-
-			return true;
-		}
-
-		return false;
-	}
-
-	//____ clearClipList() ____________________________________________________
-
-	void StreamGfxDevice::clearClipList()
-	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 0 };
-	}
-
-
-	//____ setCanvas() __________________________________________________________________
-
-	bool StreamGfxDevice::setCanvas( Surface * _pSurface, CanvasInit initOperation, bool bResetClipRects )
-	{	
-		if (_pSurface)
-		{
-			StreamSurface * pSurface = static_cast<StreamSurface*>(_pSurface);
-			if (!pSurface)
-				return false;			// Surface must be of type StreamSurface!
-		}
-
-		m_pCanvas		= _pSurface;
-
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 6 };
-
-		if( _pSurface )
-			(*m_pStream) << static_cast<StreamSurface*>(_pSurface)->m_inStreamId;
-		else
-			(*m_pStream) << (short) 0;
-
-		(*m_pStream) << (short) initOperation;
-		(*m_pStream) << (short) bResetClipRects;
-
-		return true;
-	}
-
 	//____ setTintColor() __________________________________________________________
 
-	void StreamGfxDevice::setTintColor( Color color )
+	void StreamGfxDevice::setTintColor( HiColor color )
 	{
 		GfxDevice::setTintColor(color);
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetTintColor, 2 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetTintColor, 4 };
 		(*m_pStream) << color;
 	}
 
@@ -206,24 +155,24 @@ namespace wg
 
 	//____ fill() __________________________________________________________________
 
-	void StreamGfxDevice::fill( const RectI& _rect, const Color& _col )
+	void StreamGfxDevice::fill( const RectI& _rect, HiColor _col )
 	{
 		if( _col.a  == 0 || _rect.w < 1 || _rect.h < 1 )
 			return;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::Fill, 12 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::Fill, 16 };
 		(*m_pStream) << _rect;
 		(*m_pStream) << _col;
 
 		return;
 	}
 
-	void StreamGfxDevice::fill(const RectF& rect, const Color& col)
+	void StreamGfxDevice::fill(const RectF& rect, HiColor col)
 	{
 		if (col.a == 0)
 			return;
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::FillSubpixel, 20 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::FillSubpixel, 24 };
 		(*m_pStream) << rect;
 		(*m_pStream) << col;
 
@@ -232,7 +181,7 @@ namespace wg
 
 	//____ plotPixels() ________________________________________________________
 
-	void StreamGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+	void StreamGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
 	{
 		// Each pixel is packed down to 4 + 4 bytes: int16_t x, int16_t y, Color
 		// All coordinates comes first, then all colors.
@@ -262,7 +211,7 @@ namespace wg
 
 			*m_pStream << GfxStream::Header{ GfxChunkId::PlotPixels, chunkCoords * 8 };
 			*m_pStream << GfxStream::DataChunk{ chunkCoords * 4, pBuffer };
-			*m_pStream << GfxStream::DataChunk{ chunkCoords * 4, pColors };
+			*m_pStream << GfxStream::DataChunk{ chunkCoords * 8, pColors };
 
 
 			nCoords -= chunkCoords;
@@ -276,18 +225,18 @@ namespace wg
 
 	//____ drawLine() __________________________________________________________
 
-	void StreamGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
+	void StreamGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
 	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 16 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineFromTo, 20 };
 		(*m_pStream) << begin;
 		(*m_pStream) << end;
 		(*m_pStream) << color;
 		(*m_pStream) << thickness;
 	}
 
-	void StreamGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color col, float thickness)
+	void StreamGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness)
 	{
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 16 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::DrawLineStraight, 20 };
 		(*m_pStream) << begin;
 		(*m_pStream) << dir;
 		(*m_pStream) << (uint16_t)length;
@@ -317,6 +266,38 @@ namespace wg
 		(*m_pStream) << source;
 	}
 
+	//____ _canvasWasChanged() ________________________________________________
+
+	void StreamGfxDevice::_canvasWasChanged()
+	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetCanvas, 6 };
+
+		if (m_pCanvas)
+			(*m_pStream) << static_cast<StreamSurface*>(m_pCanvas.rawPtr())->m_inStreamId;
+		else
+			(*m_pStream) << (short)0;
+
+		//TODO: Fill in will all the other data we need to send.
+	}
+
+	//____ _renderLayerWasChanged() ___________________________________________
+
+	void StreamGfxDevice::_renderLayerWasChanged()
+	{
+
+	}
+
+	//____ _clipListWasChanged() ______________________________________________
+
+	void StreamGfxDevice::_clipListWasChanged()
+	{
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::SetClip, 8 * m_nClipRects };
+
+		for (int i = 0; i < m_nClipRects; i++)
+			(*m_pStream) << m_pClipRects[i];
+	}
+
+
 	//____ _transformBlit() _____________________________________________
 
 	void StreamGfxDevice::_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2])
@@ -337,7 +318,7 @@ namespace wg
 
 	//____ _transformDrawSegments() ______________________________________
 
-	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void StreamGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
 		//TODO: TintMode not accounted for.
 
@@ -345,7 +326,7 @@ namespace wg
 
 		// Generate the TransformDrawSegmentPatches chunk.
 
-		(*m_pStream) << GfxStream::Header{ GfxChunkId::TransformDrawSegments, 18 + nSegments * 4 };
+		(*m_pStream) << GfxStream::Header{ GfxChunkId::TransformDrawSegments, 18 + nSegments * 8 };
 		(*m_pStream) << dest;
 		(*m_pStream) << (uint16_t) nSegments;
 		(*m_pStream) << (uint16_t) nEdgeStrips;

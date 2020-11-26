@@ -128,7 +128,7 @@ namespace wg
 		return std::string("_caret__") + TextTool::itoa(++nGenerated, pBuf, 10);
 	}
 
-	std::string	ResDB::generateName( const Color data )
+	std::string	ResDB::generateName( const HiColor data )
 	{
 		static int nGenerated = 0;
 		char pBuf[100];
@@ -283,7 +283,7 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	bool ResDB::addColor( const std::string& id, Color col, MetaData * pMetaData )
+	bool ResDB::addColor( const std::string& id, HiColor col, MetaData * pMetaData )
 	{
 		assert(m_mapColors.find(id) == m_mapColors.end());
 		if(m_mapColors.find(id) == m_mapColors.end())
@@ -412,7 +412,7 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	Color ResDB::getColor( const std::string& id ) const
+	HiColor ResDB::getColor( const std::string& id ) const
 	{
 		ColorRes* colorRes = getResColor(id);
 		return colorRes ? colorRes->res : Color::Black;
@@ -739,7 +739,7 @@ namespace wg
 
 	//____ () _________________________________________________________
 
-	ResDB::ColorRes* ResDB::findResColor( const Color meta ) const
+	ResDB::ColorRes* ResDB::findResColor( const HiColor meta ) const
 	{
 		ColorRes* res = 0;
 		for(ResDBRes* db = getFirstResDbRes(); db; db = db->next())

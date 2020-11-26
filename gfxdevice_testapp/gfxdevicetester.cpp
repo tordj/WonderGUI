@@ -80,8 +80,6 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 
 	update_displaymode();
 
-	m_prevTime = m_pVisitor->time();
-
 	return true;
 }
 
@@ -114,14 +112,6 @@ bool GfxDeviceTester::update()
 
 		display_test_results();
 	}
-
-	Base::msgRouter()->dispatch();
-
-	// Update time and post a tick.
-
-	int64_t time = m_pVisitor->time();
-	Base::msgRouter()->post(TickMsg::create(time, (int)(time - m_prevTime)));
-	m_prevTime = time;
 
 	return true;
 }
@@ -475,8 +465,8 @@ void GfxDeviceTester::clock_test(DeviceTest* pDeviceTest, int rounds, Device* pD
 	stallEnd = m_pVisitor->time();
 
 
-	pDeviceTest->render_time = (end - start)/1000.0;
-	pDeviceTest->stalling_time = (stallEnd - stallBegin)/1000.0;
+	pDeviceTest->render_time = (end - start)/1000000.0;
+	pDeviceTest->stalling_time = (stallEnd - stallBegin)/1000000.0;
 }
 
 //____ setup_tests() ____________________________________________________
@@ -601,7 +591,7 @@ bool GfxDeviceTester::setup_chrome()
 		// Setup base layers
 
 	auto pLayerStack = StackPanel::create();
-	pLayerStack->setSkin(StaticColorSkin::create(Color::AntiqueWhite));
+	pLayerStack->skin = StaticColorSkin::create(Color::AntiqueWhite);
 	m_pVisitor->rootPanel()->slot = pLayerStack;
 
 	// Divid screen into sidebar and canvaspanel with top section
@@ -614,7 +604,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	auto pSidebar = PackPanel::create();
 	pSidebar->setAxis(Axis::Y);
-	pSidebar->setSkin(pPlateSkin);
+	pSidebar->skin = pPlateSkin;
 	pSidebar->setSizeBroker(UniformSizeBroker::create());
 
 	auto pCanvasPanel = PackPanel::create();
@@ -624,10 +614,10 @@ bool GfxDeviceTester::setup_chrome()
 	auto pViewNav = PackPanel::create();
 	pViewNav->setAxis(Axis::X);
 	pViewNav->setSizeBroker(UniformSizeBroker::create());
-	pViewNav->setSkin(pPlateSkin);
+	pViewNav->skin = pPlateSkin;
 
 	auto pViewPanel = ScrollPanel::create();
-	pViewPanel->setSkin(StaticColorSkin::create(Color::SlateGrey));
+	pViewPanel->skin = StaticColorSkin::create(Color8::SlateGrey);
 	g_pViewPanel = pViewPanel;
 
 	pMidSection->slots << pCanvasPanel;
@@ -675,19 +665,19 @@ bool GfxDeviceTester::setup_chrome()
 
 
 	auto pNoClipButton = Button::create();
-	pNoClipButton->setSkin(pSimpleButtonSkin);
+	pNoClipButton->skin = pSimpleButtonSkin;
 	pNoClipButton->text.set("One");
 	pNoClipButton->text.setStyle(g_pButtonLabelStyle);
 	pNoClipButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pFewButton = Button::create();
-	pFewButton->setSkin(pSimpleButtonSkin);
+	pFewButton->skin = pSimpleButtonSkin;
 	pFewButton->text.set("Few");
 	pFewButton->text.setStyle(g_pButtonLabelStyle);
 	pFewButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pManyButton = Button::create();
-	pManyButton->setSkin(pSimpleButtonSkin);
+	pManyButton->skin = pSimpleButtonSkin;
 	pManyButton->text.set("Many");
 	pManyButton->text.setStyle(g_pButtonLabelStyle);
 	pManyButton->text.setTextMapper(g_pButtonLabelMapper);
@@ -708,31 +698,32 @@ bool GfxDeviceTester::setup_chrome()
 
 
 	auto pTesteeButton = Button::create();
-	pTesteeButton->setSkin(pSimpleButtonSkin);
+	pTesteeButton->skin = pSimpleButtonSkin;
 	pTesteeButton->text.set("Testee");
 	pTesteeButton->text.setStyle(g_pButtonLabelStyle);
 	pTesteeButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pRefButton = Button::create();
-	pRefButton->setSkin(pSimpleButtonSkin);
+	pRefButton->skin = pSimpleButtonSkin;
 	pRefButton->text.set("Reference");
 	pRefButton->text.setStyle(g_pButtonLabelStyle);
 	pRefButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pBothButton = Button::create();
-	pBothButton->setSkin(pSimpleButtonSkin);
+	pBothButton->skin = pSimpleButtonSkin;
+//	pBothButton->text = { "Both", g_pButtonLabelStyle, g_pButtonLabelMapper }
 	pBothButton->text.set("Both");
 	pBothButton->text.setStyle(g_pButtonLabelStyle);
 	pBothButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pDiffButton = Button::create();
-	pDiffButton->setSkin(pSimpleButtonSkin);
+	pDiffButton->skin = pSimpleButtonSkin;
 	pDiffButton->text.set("Diff");
 	pDiffButton->text.setStyle(g_pButtonLabelStyle);
 	pDiffButton->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pTimeButton = Button::create();
-	pTimeButton->setSkin(pSimpleButtonSkin);
+	pTimeButton->skin = pSimpleButtonSkin;
 	pTimeButton->text.set("Time");
 	pTimeButton->text.setStyle(g_pButtonLabelStyle);
 	pTimeButton->text.setTextMapper(g_pButtonLabelMapper);
@@ -774,25 +765,25 @@ bool GfxDeviceTester::setup_chrome()
 	pDispModeSection->setSizeBroker(UniformSizeBroker::create());
 
 	auto pX1Button = Button::create();
-	pX1Button->setSkin(pSimpleButtonSkin);
+	pX1Button->skin = pSimpleButtonSkin;
 	pX1Button->text.set(" X1 ");
 	pX1Button->text.setStyle(g_pButtonLabelStyle);
 	pX1Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX2Button = Button::create();
-	pX2Button->setSkin(pSimpleButtonSkin);
+	pX2Button->skin = pSimpleButtonSkin;
 	pX2Button->text.set(" X2 ");
 	pX2Button->text.setStyle(g_pButtonLabelStyle);
 	pX2Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX4Button = Button::create();
-	pX4Button->setSkin(pSimpleButtonSkin);
+	pX4Button->skin = pSimpleButtonSkin;
 	pX4Button->text.set(" X4 ");
 	pX4Button->text.setStyle(g_pButtonLabelStyle);
 	pX4Button->text.setTextMapper(g_pButtonLabelMapper);
 
 	auto pX8Button = Button::create();
-	pX8Button->setSkin(pSimpleButtonSkin);
+	pX8Button->skin = pSimpleButtonSkin;
 	pX8Button->text.set(" X8 ");
 	pX8Button->text.setStyle(g_pButtonLabelStyle);
 	pX8Button->text.setTextMapper(g_pButtonLabelMapper);
@@ -861,7 +852,7 @@ bool GfxDeviceTester::setup_chrome()
 	pEntrySkin->setColors(StateEnum::SelectedHovered, Color::Aquamarine, Color::Black);
 	pEntrySkin->setColors(StateEnum::Selected, Color::Aquamarine, Color::Black);
 
-	pTestList->setSkin(pSkin);
+	pTestList->skin = pSkin;
 	pTestList->setEntrySkin(pEntrySkin);
 
 	int id = 0;
@@ -904,7 +895,7 @@ bool GfxDeviceTester::setup_chrome()
 		pBase->setAxis(Axis::Y);
 
 		auto pList = PackList::create();
-		pList->setSkin(StaticColorSkin::create(Color::White));
+		pList->skin = StaticColorSkin::create(Color::White);
 
 		auto pOddEntrySkin = BoxSkin::create(0, Color::White, Color::White);
 		pOddEntrySkin->setContentPadding(BorderI(0));
@@ -918,12 +909,12 @@ bool GfxDeviceTester::setup_chrome()
 		// Create the bottom section
 
 		auto pBottom = PackPanel::create();
-		pBottom->setSkin(pPlateSkin);
+		pBottom->skin = pPlateSkin;
 		pBottom->setAxis(Axis::X);
 		pBottom->setSizeBroker(UniformSizeBroker::create());
 
 		auto pRefresh = Button::create();
-		pRefresh->setSkin(pSimpleButtonSkin);
+		pRefresh->skin = pSimpleButtonSkin;
 		pRefresh->text.set("REFRESH");
 		pRefresh->text.setStyle(g_pButtonLabelStyle);
 		pRefresh->text.setTextMapper(g_pButtonLabelMapper);

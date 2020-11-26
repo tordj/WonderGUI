@@ -42,8 +42,8 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static BoxSkin_p	create();
-		static BoxSkin_p 	create(BorderI frame, Color fillColor, Color frameColor );
-		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,Color,Color> > stateColors );
+		static BoxSkin_p 	create(BorderI frame, HiColor fillColor, HiColor frameColor );
+		static BoxSkin_p	create(BorderI frame, std::initializer_list< std::tuple<State,HiColor,HiColor> > stateColors );
 
 		//.____ Identification __________________________________________
 
@@ -58,10 +58,10 @@ namespace wg
 
 		void		setFrame( BorderI frame );
 
-		void						setColors(Color fill, Color frame);
-		void						setColors(State state, Color fill, Color frame);
-		void						setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors);
-		std::tuple<Color, Color>	colors(State state) const;
+		void						setColors(HiColor fill, HiColor frame);
+		void						setColors(State state, HiColor fill, HiColor frame);
+		void						setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors);
+		std::tuple<HiColor, HiColor>	colors(State state) const;
 
 		//.____ Geometry _________________________________________________
 
@@ -74,19 +74,21 @@ namespace wg
 		bool		isOpaque( State state ) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
-
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 
 	private:
 		BoxSkin();
-		BoxSkin(BorderI frame, Color fillColor, Color frameColor  );
+		BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor  );
 		~BoxSkin() {};
 
 		void	_updateOpaqueFlag();
@@ -97,8 +99,8 @@ namespace wg
 
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Color		m_fillColor[StateEnum_Nb];
-		Color		m_frameColor[StateEnum_Nb];
+		HiColor		m_fillColor[StateEnum_Nb];
+		HiColor		m_frameColor[StateEnum_Nb];
 	};
 
 

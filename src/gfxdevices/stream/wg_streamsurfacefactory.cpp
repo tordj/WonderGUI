@@ -56,17 +56,17 @@ namespace wg
 
 	//____ createSurface() ________________________________________________________
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) const
 	{
 		return StreamSurface::create(*m_pStream,size,format,flags,pClut);
 	}
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) const
 	{
 		return StreamSurface::create(*m_pStream,size,format, pBlob,pitch,flags,pClut);
 	}
 
-	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color * pClut ) const
+	Surface_p StreamSurfaceFactory::createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) const
 	{
 		return StreamSurface::create(*m_pStream,size,format, pPixels, pitch, pPixelDescription,flags,pClut);
 	}

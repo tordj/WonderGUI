@@ -23,7 +23,9 @@
 #define WG_OBJECT_DOT_H
 #pragma once
 
-#include <wg_strongptr.h>
+#include <atomic>
+
+#include <wg_pointers.h>
 #include <wg_types.h>
 
 namespace wg
@@ -33,23 +35,7 @@ namespace wg
 	struct TypeInfo;
 
 	typedef StrongPtr<Object>	Object_p;
-
-	typedef	void(*Finalizer_p)(Object*);
-
-	class WeakPtrHub		/** @private */
-	{
-	public:
-		int				refCnt;
-		Object *		pObj;
-		Finalizer_p		pFinalizer;
-
-		static WeakPtrHub *	getHub(Object * pObj);
-		static void			releaseHub(WeakPtrHub * pHub);
-
-		static void			objectWillDestroy(WeakPtrHub * pHub);
-		static void			setFinalizer(Object * pObj, Finalizer_p pFinalizer);
-		static Finalizer_p	getFinalizer(Object * pObj);
-	};
+	typedef WeakPtr<Object>		Object_wp;
 
 
 	/**
@@ -101,14 +87,14 @@ namespace wg
 		inline void _incRefCount() { m_refCount++; }
 		inline void _decRefCount() { m_refCount--; if( m_refCount == 0 ) _destroy(); }
 
-		inline void _incRefCount(int amount) { m_refCount += amount; }
-		inline void _decRefCount(int amount) { m_refCount -= amount; if( m_refCount == 0 ) _destroy(); }
+		inline void _incRefCount(int amount) { m_refCount.fetch_add(amount); }
+		inline void _decRefCount(int amount) { m_refCount.fetch_sub(amount); if( m_refCount == 0 ) _destroy(); }
 
 		WeakPtrHub *	m_pWeakPtrHub = nullptr;
 
 	private:
 		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
-		int				m_refCount = 0;
+		std::atomic_int	m_refCount = 0;
 	};
 
 

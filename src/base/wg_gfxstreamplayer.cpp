@@ -104,6 +104,7 @@ namespace wg
 
 		case GfxChunkId::SetCanvas:
 		{
+/*
 			uint16_t	surfaceId;
 			uint16_t	bResetClipList;
 			uint16_t 	initOperation;
@@ -118,6 +119,7 @@ namespace wg
 				m_pDevice->setCanvas(nullptr, (CanvasInit) initOperation, (bool) bResetClipList);
 
 			break;
+*/
 		}
 
 		case GfxChunkId::SetClip:
@@ -133,7 +135,7 @@ namespace wg
 
 		case GfxChunkId::SetTintColor:
 		{
-			Color	col;
+			HiColor	col;
 			*m_pStream >> col;
 			m_pDevice->setTintColor(col);
 			break;
@@ -159,7 +161,7 @@ namespace wg
 		case GfxChunkId::Fill:
 		{
 			RectI	rect;
-			Color	col;
+			HiColor	col;
 
 			*m_pStream >> rect;
 			*m_pStream >> col;
@@ -171,7 +173,7 @@ namespace wg
 		case GfxChunkId::FillSubpixel:
 		{
 			RectF	rect;
-			Color	col;
+			HiColor	col;
 
 			*m_pStream >> rect;
 			*m_pStream >> col;
@@ -204,7 +206,7 @@ namespace wg
 
 			//
 
-			m_pDevice->plotPixels(nPixels, (CoordI*)pBuffer, (Color*)(pBuffer + header.size / 2));
+			m_pDevice->plotPixels(nPixels, (CoordI*)pBuffer, (HiColor*)(pBuffer + header.size / 2));
 
 			Base::memStackRelease(bufferSize);
 			break;
@@ -214,7 +216,7 @@ namespace wg
 		{
 			CoordI	begin;
 			CoordI	end;
-			Color	color;
+			HiColor	color;
 			float	thickness;
 
 			*m_pStream >> begin;
@@ -231,7 +233,7 @@ namespace wg
 			CoordI		begin;
 			Direction	dir;
 			uint16_t	length;
-			Color		color;
+			HiColor		color;
 			float		thickness;
 
 			*m_pStream >> begin;
@@ -364,11 +366,11 @@ namespace wg
 			*m_pStream >> flags;
 
 
-			Color * pClut = nullptr;
+			Color8 * pClut = nullptr;
 
 			if (header.size > 4096)
 			{
-				pClut = (Color*) Base::memStackAlloc(4096);
+				pClut = (Color8*) Base::memStackAlloc(4096);
 				*m_pStream >> GfxStream::DataChunk{ 4096, pClut };
 			}
 
@@ -441,7 +443,7 @@ namespace wg
 		{
 			uint16_t	surfaceId;
 			RectI		region;
-			Color		col;
+			HiColor		col;
 
 			*m_pStream >> surfaceId;
 			*m_pStream >> region;

@@ -116,8 +116,6 @@ namespace wg
 			Delivering,     // We have released mouse button on a targeted widget. Deliver + Complete/Cancel cycle is taking place.
 		};
 
-		RouteId			m_tickRouteId;
-
 		DragState		m_dragState = DragState::Idle;
 
 		Slot			m_dragSlot;            // Slot for widget being dragged, when it is dragged.

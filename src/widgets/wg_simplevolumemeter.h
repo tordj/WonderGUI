@@ -56,13 +56,11 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void			setColors( Color bottom, Color middle, Color top );
+		void			setColors( HiColor bottom, HiColor middle, HiColor top );
 		void			setSections( float bottomFraction, float topFraction );
 		void			setHoldHeight( float fraction );
 
 		void            setGaps(float fSides, float fGap) {m_fSidePadding = fSides; m_fGap = fGap; }
-
-		void			setSkin(Skin * pSkin) override;
 
 		void				setDirection(Direction direction);
 		inline Direction	direction() const { return m_direction; }
@@ -90,7 +88,7 @@ namespace wg
 
 
 		Direction		m_direction;
-		Color			m_sectionColors[3];
+		HiColor			m_sectionColors[3];
 		float			m_fSectionHeight[3];
 		float			m_fHoldHeight;
 		bool			m_bStereo;

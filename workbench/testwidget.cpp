@@ -66,19 +66,14 @@ namespace wg
 
 	void TestWidget::start()
 	{
-        if( !m_tickRouteId )
-            m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+		_startReceiveUpdates();
 	}
 
 	//____ stop() __________________________________________________________________
 
 	void TestWidget::stop()
 	{
-        if( m_tickRouteId )
-        {
-            Base::msgRouter()->deleteRoute( m_tickRouteId );
-            m_tickRouteId = 0;
-        }
+		_stopReceiveUpdates();
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -98,11 +93,11 @@ namespace wg
 		if( m_bPointsInitialized )
 		{
 		
-			pDevice->drawLine( _canvas.pos().px(), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ).px(), Color(255,000,000), 10.f );
+			pDevice->drawLine( _canvas.pos().px(), Coord(_canvas.x + _canvas.w, _canvas.y + _canvas.h ).px(), HiColor(4096,000,000), 10.f );
 
 			for( int i = 0 ; i < 2 ; i+=2 )
 			{
-				pDevice->drawLine( _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], Color(000,255,000), 15.5f );
+				pDevice->drawLine( _canvas.pos() + m_coord[i], _canvas.pos() + m_coord[i+1], HiColor(000,4096,000), 15.5f );
 			}
 		}
 
@@ -111,74 +106,60 @@ namespace wg
         
 	}
 
-	//____ _receive() ______________________________________________________________
+	//____ _update() ______________________________________________________________
 
-	void TestWidget::_receive( Msg* pMsg )
-	{
-		switch( pMsg->type() )
+	void TestWidget::_update(int microPassed, int64_t microsecTimestamp)
+	{				
+		RectI area( 0,0, m_size );			
+				
+		if( !m_bPointsInitialized )
 		{
-			case MsgType::Tick:
+			for( int i = 0 ; i < 2 ; i+=2 )
 			{
-//                auto pTick = static_cast<TickMsg*>(pMsg);
-				
-				RectI area( 0,0, m_size );
-				
-				
-				if( !m_bPointsInitialized )
-				{
-					for( int i = 0 ; i < 2 ; i+=2 )
-					{
-						CoordI& c = m_coord[i];
+				CoordI& c = m_coord[i];
 						
-						c.x = 0;
-						c.y = 0;
+				c.x = 0;
+				c.y = 0;
 
-						c = m_coord[i+1];
+				c = m_coord[i+1];
 
-						c.x = 100000;
-						c.y = 100000;
+				c.x = 100000;
+				c.y = 100000;
 						
-					}
-					m_bPointsInitialized = true;
-				}
-				
-				
-				for( int i = 0 ; i < 2 ; i++ )
-				{
-					CoordI& c = m_coord[i];
-					
-					if( c.x < area.x )
-						c.x = area.x;
-						
-					if( c.y < area.y )
-						c.y = area.y;
-
-					if( c.x > area.x + area.w )
-						c.x = area.x + area.w;
-
-					if( c.y > area.y + area.h )
-						c.y = area.y + area.h;					
-
-					
-					
-					if( (c.y == area.y) && (c.x < area.x + area.w) )
-						c.x++;
-					else if( (c.x == area.x + area.w) && (c.y < area.y + area.h) )
-						c.y++;
-					else if( (c.y == area.y + area.h) && (c.x > area.x) )
-						c.x--;
-					else
-						c.y--;
-				}
-				
-				_requestRender();
-
 			}
-			break;
-
-			default:
-			break;
+			m_bPointsInitialized = true;
 		}
+				
+				
+		for( int i = 0 ; i < 2 ; i++ )
+		{
+			CoordI& c = m_coord[i];
+					
+			if( c.x < area.x )
+				c.x = area.x;
+						
+			if( c.y < area.y )
+				c.y = area.y;
+
+			if( c.x > area.x + area.w )
+				c.x = area.x + area.w;
+
+			if( c.y > area.y + area.h )
+				c.y = area.y + area.h;					
+
+					
+					
+			if( (c.y == area.y) && (c.x < area.x + area.w) )
+				c.x++;
+			else if( (c.x == area.x + area.w) && (c.y < area.y + area.h) )
+				c.y++;
+			else if( (c.y == area.y + area.h) && (c.x > area.x) )
+				c.x--;
+			else
+				c.y--;
+		}
+				
+		_requestRender();
 	}
 
 } // namespace wg

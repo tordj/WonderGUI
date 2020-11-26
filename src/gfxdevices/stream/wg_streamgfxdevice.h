@@ -41,7 +41,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static StreamGfxDevice_p	create( SizeI canvas, CGfxOutStream& stream );
+		static StreamGfxDevice_p	create( CGfxOutStream& stream );
 
 		//.____ Identification __________________________________________
 
@@ -54,15 +54,10 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas( Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
 
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
-		void	clearClipList() override;
-		void	setTintColor( Color color ) override;
+		void	setTintColor( HiColor color ) override;
 		bool	setBlendMode( BlendMode blendMode ) override;
 		bool	setBlitSource(Surface * pSource) override;
 
@@ -72,13 +67,13 @@ namespace wg
 		bool	endRender() override;
 
 //		void	fill(const Color& col) override;
-		void	fill( const RectI& rect, const Color& col ) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill( const RectI& rect, HiColor col ) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels( int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels( int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine( CoordI begin, CoordI end, Color color, float thickness = 1.f ) override;
-		void	drawLine( CoordI begin, Direction dir, int length, Color col, float thickness = 1.f) override;
+		void	drawLine( CoordI begin, CoordI end, HiColor color, float thickness = 1.f ) override;
+		void	drawLine( CoordI begin, Direction dir, int length, HiColor col, float thickness = 1.f) override;
 
 
 //		void	blit(CoordI dest) override;
@@ -113,14 +108,18 @@ namespace wg
 
 
 	protected:
-		StreamGfxDevice( SizeI canvas, CGfxOutStream& stream );
+		StreamGfxDevice( CGfxOutStream& stream );
 		~StreamGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;	// Checked for errors before we get here.
+		void	_clipListWasChanged() override;		// Called when cliplist has been changed.
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
 		//		void	_transformDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2]) override;
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
 		void _addPatches(int nPatches, const RectI * pPatches);

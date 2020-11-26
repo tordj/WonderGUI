@@ -58,17 +58,13 @@ public:
 	bool	init_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
 		m_pActiveCanvas->fill(Color::Transparent);
-		m_pSavedCanvas = pDevice->canvas();
-		m_pSavedClipList = pDevice->clipList();
-		m_savedClipListSize = pDevice->clipListSize();
-		pDevice->setCanvas(m_pActiveCanvas);
+		pDevice->beginCanvasUpdate(m_pActiveCanvas);
 		return true;
 	}
 
 	bool	exit_drawToSurface(GfxDevice * pDevice, const RectI& canvas)
 	{
-		pDevice->setCanvas(m_pSavedCanvas);
-		pDevice->setClipList(m_savedClipListSize, m_pSavedClipList);
+		pDevice->endCanvasUpdate();
 		pDevice->setBlitSource(m_pActiveCanvas);
 		pDevice->blit({ 0,0 });
 		m_pActiveCanvas = nullptr;
@@ -79,7 +75,7 @@ public:
 	bool	drawPrimitives(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->drawLine(canvas.pos() + CoordI(10, 10), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 20), Color::Red, 3.f);
-		pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color(0, 0, 255, 128), 3.f);
+		pDevice->drawLine(canvas.pos() + CoordI(10, 20), canvas.pos() + CoordI(canvas.size().w, canvas.size().h) - CoordI(10, 10), Color8(0, 0, 255, 128), 3.f);
 
 		pDevice->drawLine(canvas.pos() + CoordI(5, 100), canvas.pos() + CoordI(40,101), Color::Green, 3.f);
 		pDevice->drawLine(canvas.pos() + CoordI(5, 105), canvas.pos() + CoordI(6, 145), Color::Green, 3.f);
@@ -90,10 +86,10 @@ public:
 		CoordI	stepping = { 60, 0 };
 
 		pDevice->fill({ fillOfs, fillSize }, Color::Red);
-		pDevice->fill({ fillOfs + stepping, fillSize }, Color(0, 0, 255, 128));
-		pDevice->fill({ fillOfs + stepping * 2, fillSize }, Color(0, 0, 255, 64));
-		pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color(0, 0, 255, 32));
-		pDevice->fill({ fillOfs + stepping * 4, fillSize }, Color(0, 0, 255, 16));
+		pDevice->fill({ fillOfs + stepping, fillSize }, Color8(0, 0, 255, 128));
+		pDevice->fill({ fillOfs + stepping * 2, fillSize }, Color8(0, 0, 255, 64));
+		pDevice->fill({ fillOfs + stepping * 3, fillSize }, Color8(0, 0, 255, 32));
+		pDevice->fill({ fillOfs + stepping * 4, fillSize }, Color8(0, 0, 255, 16));
 
 		return true;
 	}
@@ -103,9 +99,7 @@ public:
 private:
 
 	Surface_p		m_pActiveCanvas;
-	Surface_p		m_pSavedCanvas;
-	const RectI *	m_pSavedClipList;
-	int				m_savedClipListSize;
+
 
 	Surface_p		m_pCanvasBGR_8;
 	Surface_p		m_pCanvasBGRA_8;

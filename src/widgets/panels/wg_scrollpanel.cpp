@@ -453,7 +453,7 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	ScrollPanel::ScrollPanel() : viewSlot(this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this)
+	ScrollPanel::ScrollPanel() : viewSlot(this), vscrollbar(&m_scrollbarSlots[1], this), hscrollbar(&m_scrollbarSlots[0], this), cornerSkin(this)
 	{
 		m_scrollbarSlots[0].m_pHolder = (SlotHolder*) this;
 		m_scrollbarSlots[1].m_pHolder = (SlotHolder*) this;
@@ -651,24 +651,6 @@ namespace wg
 		}
 	}
 
-	//____ setSkin() ______________________________________________________________
-
-	void ScrollPanel::setSkin( Skin * pSkin )
-	{
-		Panel::setSkin(pSkin);
-		viewSlot._updateCanvasGeo();
-
-		//TODO: Should force some kind of update here!
-	}
-
-	//____ setCornerSkin() ______________________________________________________
-
-	void ScrollPanel::setCornerSkin( Skin * pSkin )
-	{
-		m_pCornerSkin = pSkin;
-		_requestRender( m_cornerGeo );
-	}
-
 	//____ _setWindowPos() ____________________________________________________
 
 	bool ScrollPanel::_setWindowPos(Coord pos)
@@ -746,11 +728,8 @@ namespace wg
 
 			// Check window skin
 
-			if( m_pSkin )
-			{
-				if( m_pSkin->markTest( pos - p->m_windowGeo.pos() + p->m_viewPointOfs, p->m_contentSize, m_state, m_markOpacity ) )
-					return this;
-			}
+			if( OO(skin)._markTest( pos - p->m_windowGeo.pos() + p->m_viewPointOfs, p->m_contentSize, m_state, m_markOpacity ) )
+				return this;
 		}
 
 		// Check our little corner square and geometry
@@ -1126,22 +1105,22 @@ namespace wg
 
 		// Render Window background skin
 
-		if( m_pSkin )
+		if( !skin.isEmpty() )
 		{
 			Rect skinWindow = viewSlot.m_windowGeo + _canvas.pos();
 
 			Size skinSize = Size::max(viewSlot.m_contentSize, viewSlot.m_windowGeo);
 			Rect skinCanvas = Rect( skinWindow.pos() - viewSlot.m_viewPointOfs, skinSize );
 
-			m_pSkin->render( pDevice, skinCanvas, m_state );
+			OO(skin)._render( pDevice, skinCanvas, m_state );
 		}
 
 		// Render corner piece
 
-		if (m_pCornerSkin && m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
+		if (m_cornerGeo.w != 0 && m_cornerGeo.h != 0)
 		{
 			Rect canvas = m_cornerGeo + _canvas.pos();
-			m_pCornerSkin->render(pDevice, canvas, m_state);
+			OO(cornerSkin)._render(pDevice, canvas, m_state);
 		}
 
 		// Render view recursively
@@ -1189,7 +1168,7 @@ namespace wg
 	void ScrollPanel::_maskPatches( Patches& patches, const Rect& geo, const Rect& clip, BlendMode blendMode )
 	{
 		//TODO: Don't just check isOpaque() globally, check rect by rect.
-		if( ((m_bOpaque || (m_pSkin && m_pSkin->isOpaque(m_state))) && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
+		if( ((m_bOpaque || (OO(skin)._isOpaque(m_state))) && blendMode == BlendMode::Blend) || blendMode == BlendMode::Replace )
 		{
 			patches.sub( Rect(geo,clip) );
 			return;
@@ -1204,7 +1183,7 @@ namespace wg
 				{
 					ViewSlot * p = &viewSlot;
 
-					if (m_pSkin && m_pSkin->isOpaque())
+					if (OO(skin)._isOpaque(m_state))
 						patches.sub(Rect(p->m_windowGeo + geo.pos(), clip));
 					else if (p->_widget())
 						OO(p->_widget())->_maskPatches(patches, p->m_canvasGeo + geo.pos(), Rect(p->m_windowGeo + geo.pos(), clip), blendMode);
@@ -1222,7 +1201,7 @@ namespace wg
 
 				// Maska against corner piece
 
-				if( !m_cornerGeo.isEmpty() && m_pCornerSkin && m_pCornerSkin->isOpaque() )
+				if( !m_cornerGeo.isEmpty() && OO(cornerSkin)._isOpaque(m_state) )
 					patches.sub( Rect(m_cornerGeo + geo.pos(), clip) );
 
 				break;
@@ -1239,14 +1218,14 @@ namespace wg
 
 	bool ScrollPanel::_alphaTest( const Coord& ofs )
 	{
-		if( m_pSkin && viewSlot.m_windowGeo.contains( ofs ) )
+		if( viewSlot.m_windowGeo.contains( ofs ) )
 		{
-			return m_pSkin->markTest( ofs, viewSlot.m_canvasGeo, m_state, m_markOpacity );
+			return OO(skin)._markTest( ofs, viewSlot.m_canvasGeo, m_state, m_markOpacity );
 		}
 
-		if( m_pCornerSkin && m_cornerGeo.contains( ofs ) )
+		if( m_cornerGeo.contains( ofs ) )
 		{
-			return m_pCornerSkin->markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
+			return OO(cornerSkin)._markTest( ofs, m_cornerGeo, m_state, m_markOpacity );
 		}
 
 		return false;

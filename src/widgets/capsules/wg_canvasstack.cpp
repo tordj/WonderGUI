@@ -164,8 +164,7 @@ namespace wg
 	{
 		m_bRendering = true;
 
-		if (m_pSkin)
-			m_pSkin->render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_state);
 
 		if (m_canvases.size() == 0)
 		{
@@ -326,7 +325,9 @@ namespace wg
 	CanvasStack::CustomSkin::CustomSkin(CanvasStack * pHolder, Skin * pSkin, int canvasIdx)
 		: m_pStack(pHolder), m_pSkin(pSkin), m_canvasIdx(canvasIdx)
 	{
-		m_bIgnoresFraction = pSkin->ignoresFraction();
+		m_bIgnoresValue = pSkin->ignoresValue();
+		m_bIgnoresState = pSkin->ignoresState();
+		m_bContentShifting = pSkin->isContentShifting();
 		m_bOpaque = pSkin->isOpaque();
 	}
 
@@ -381,24 +382,19 @@ namespace wg
 		return m_pSkin->isOpaque(rect,canvasSize,state);
 	}
 
-	bool CanvasStack::CustomSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
+	bool CanvasStack::CustomSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
-		return m_pSkin->isStateIdentical(state,comparedTo,fraction,fraction2);
+		return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, value, value2);
 	}
 
-	bool CanvasStack::CustomSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
-	{
-		return m_pSkin->markTest(ofs, canvas, state, opacityTreshold, fraction,fraction2);
-	}
-
-	void CanvasStack::CustomSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void CanvasStack::CustomSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pStack || !m_pStack->m_bRendering)
 		{
 			// Skin rendered from Widget not descendant to CanvasStack.
 			// This is ok, we just do no redirection.
 
-			m_pSkin->render(pDevice, canvas, state, fraction,fraction2);
+			m_pSkin->render(pDevice, canvas, state, value,value2,animPos,pStateFractions);
 			return;
 		}
 
@@ -407,16 +403,32 @@ namespace wg
 
 		auto oldCanvas = pDevice->canvas();
 		pDevice->setCanvas(m_pStack->m_canvases[m_canvasIdx], CanvasInit::Keep, false);
-		m_pSkin->render(pDevice,canvas,state,fraction);
+		m_pSkin->render(pDevice,canvas,state,value);
 		pDevice->setCanvas(oldCanvas, CanvasInit::Keep, false);
 	}
 
-
-	Rect CanvasStack::CustomSkin::fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
-														float oldFraction2, float newFraction2) const
+	Rect CanvasStack::CustomSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+								float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+								float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		return m_pSkin->fractionChangeRect(canvas,state,oldFraction,newFraction,oldFraction2,newFraction2);
+		return m_pSkin->dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2, newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
+
+	int CanvasStack::CustomSkin::animationLength(State state) const
+	{
+		return m_pSkin->animationLength(state);
+	}
+
+	Bitmask<uint8_t> CanvasStack::CustomSkin::transitioningStates() const
+	{
+		return m_pSkin->transitioningStates();
+	}
+
+	const int* CanvasStack::CustomSkin::transitionTimes() const
+	{
+		return m_pSkin->transitionTimes();
+	}
+
 
 
 	const TypeInfo&	CanvasStack::CustomCapsule::typeInfo(void) const

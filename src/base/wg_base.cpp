@@ -38,6 +38,7 @@
 #include <wg_textstyle.h>
 #include <wg_texttool.h>
 #include <wg_textstylemanager.h>
+#include <wg_skinslotmanager.h>
 
 #include <iostream>
 
@@ -51,6 +52,10 @@ namespace wg
 
 	unsigned int				Base::s_objectsCreated = 0;
 	unsigned int				Base::s_objectsDestroyed = 0;
+
+	int64_t						Base::s_timestamp = 0;
+	std::vector<Receiver*>		Base::s_updateReceivers;
+
 
 	bool						Base::s_bTrackingObjects = false;
 
@@ -68,6 +73,7 @@ namespace wg
 		}
 
 		TextStyleManager::init();
+		SkinSlotManager::init();
 
 		s_pData = new Data;
 
@@ -93,6 +99,7 @@ namespace wg
 		s_pData->pDefaultStyle->setFont( DummyFont::create() );
 
 		TextTool::setDefaultBreakRules();
+		HiColor::_initTables();
 
 		MU::s_scale = 1.f;
 		MU::s_qpixPerPoint = 4;
@@ -121,12 +128,12 @@ namespace wg
 			handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Memstack still contains data. Not all allocations have been correctly released.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 		}
 
-
 		delete s_pData->pPtrPool;
 		delete s_pData->pMemStack;
 		delete s_pData;
 		s_pData = nullptr;
 
+		SkinSlotManager::exit();
 		TextStyleManager::exit();
 
 		if (s_objectsCreated != s_objectsDestroyed)
@@ -326,6 +333,25 @@ namespace wg
 		return s_pErrorHandler;
 	}
 
+	//____ update() ______________________________________________________________
+
+	void Base::update( int64_t timestamp )
+	{
+		int microPassed = int(timestamp - s_timestamp);
+		s_timestamp = timestamp;
+
+		// Update wondergui systems
+
+		s_pData->pInputHandler->_update(timestamp/1000);
+		SkinSlotManager::update(microPassed/1000);
+
+		// Update widgets
+
+		for (auto pReceiver : s_updateReceivers)
+			pReceiver->_update(microPassed, timestamp);
+
+	}
+
 	//____ memStackAlloc() ________________________________________________________
 
 	char * Base::memStackAlloc( int bytes )
@@ -348,6 +374,22 @@ namespace wg
         if( s_bTrackingObjects )
             s_trackedObjects[pObject] = { pFileName, lineNb, s_objectsCreated };
 	}
+
+	//____ _startReceiveUpdates() ________________________________________________
+
+	int64_t Base::_startReceiveUpdates(Receiver* pReceiver)
+	{
+		s_updateReceivers.push_back(pReceiver);
+		return s_timestamp;
+	}
+
+	//____ _stopReceiveUpdates() _________________________________________________
+
+	void Base::_stopReceiveUpdates(Receiver* pReceiver)
+	{
+		s_updateReceivers.erase(std::remove(s_updateReceivers.begin(), s_updateReceivers.end(), pReceiver), s_updateReceivers.end());
+	}
+
 
 	//____ _allocWeakPtrHub() ______________________________________________________
 

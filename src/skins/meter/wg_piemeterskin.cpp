@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -40,8 +41,8 @@ namespace wg
 	}
 
 
-	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, Color minColor, Color maxColor, Color emptyColor,
-										float hubSize, Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding,
+	PieMeterSkin_p PieMeterSkin::create(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor,
+										float hubSize, HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
 										bool bStaticSections, bool bRectangular)
 	{
 		return PieMeterSkin_p(new PieMeterSkin(start, min, max, minColor, maxColor, emptyColor, hubSize, hubColor, backColor, piePadding, contentPadding, bStaticSections, bRectangular));
@@ -59,11 +60,11 @@ namespace wg
 		_updateOpacity();
 
 		m_preferredSize = { 64,64 };
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
-	PieMeterSkin::PieMeterSkin(	float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize,
-								Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding,
+	PieMeterSkin::PieMeterSkin(	float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize,
+								HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding,
 								bool bStaticSections, bool bRectangular)
 	{
 		m_rangeStart = start;
@@ -88,7 +89,7 @@ namespace wg
 		_updateOpacity();
 		
 		m_preferredSize = minSize() + SizeI(64, 64);
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -97,6 +98,15 @@ namespace wg
 	{
 		return TYPEINFO;
 	}
+
+	//____ setBlendMode() _____________________________________________________
+
+	void PieMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacity();
+	}
+
 
 	//____ setSlices() ________________________________________________________
 
@@ -189,14 +199,14 @@ namespace wg
 
 	//____ setEmptyColor() _____________________________________________________
 
-	void PieMeterSkin::setEmptyColor(Color empty)
+	void PieMeterSkin::setEmptyColor(HiColor empty)
 	{
 		m_emptyColor = empty;
 	}
 
 	//____ setHub() _____________________________________________________
 
-	void PieMeterSkin::setHub(float size, Color color)
+	void PieMeterSkin::setHub(float size, HiColor color)
 	{
 		m_hubSize = size;
 		m_hubColor = color;
@@ -211,22 +221,24 @@ namespace wg
 
 	//____ setHubColor() _____________________________________________________
 
-	void PieMeterSkin::setHubColor(Color hubColor)
+	void PieMeterSkin::setHubColor(HiColor hubColor)
 	{
 		m_hubColor = hubColor;
 	}
 
 	//____ setBackColor() _____________________________________________________
 
-	void PieMeterSkin::setBackColor(Color back)
+	void PieMeterSkin::setBackColor(HiColor back)
 	{
 		m_backColor = back;
 	}
 
 	//____ render() ______________________________________________________________
 
-	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void PieMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
+
 		bool	bFramed = false;
 
 		Rect canvas = _canvas;
@@ -286,11 +298,11 @@ namespace wg
 		//
 
 		float sliceSizes[c_maxSlices];
-		Color sliceColors[c_maxSlices];
+		HiColor sliceColors[c_maxSlices];
 
-		Color hubColor = m_hubColor.a == 255 ? m_hubColor : Color::blend(m_backColor, m_hubColor, BlendMode::Blend);
+		HiColor hubColor = m_hubColor.a == 4096 ? m_hubColor : HiColor::blend(m_backColor, m_hubColor, BlendMode::Blend);
 
-		float totalLength = m_minRange + fraction * (m_maxRange - m_minRange);
+		float totalLength = m_minRange + value * (m_maxRange - m_minRange);
 
 //		if (totalLength == 0.f)
 //			return;
@@ -303,7 +315,7 @@ namespace wg
 
 			for (int i = 0; i < m_nSlices; i++)
 			{
-				sliceColors[i] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(fraction*255));
+				sliceColors[i] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value*4096));
 
 				float size = m_slices[i].size*m_maxRange;
 				if (length + size >= totalLength)
@@ -329,7 +341,7 @@ namespace wg
 				if (length + size > gapSize )
 				{
 					sliceSizes[nSlices] = length < gapSize ? length + size - gapSize : size;
-					sliceColors[nSlices] = Color::mix(m_slices[i].minColor, m_slices[i].maxColor, uint8_t(fraction * 255));
+					sliceColors[nSlices] = HiColor::mix(m_slices[i].minColor, m_slices[i].maxColor, int(value * 4096));
 					nSlices++;
 				}
 				length += size;
@@ -338,10 +350,10 @@ namespace wg
 
 		// Possibly fill out with empty section
 
-		if (fraction < 1.f)
+		if (value < 1.f)
 		{
 			sliceColors[nSlices] = m_emptyColor;
-			sliceSizes[nSlices++] = (1.f - fraction) * (m_maxRange - m_minRange);
+			sliceSizes[nSlices++] = (1.f - value) * (m_maxRange - m_minRange);
 		}
 
 		pDevice->drawPieChart(canvas.px(), m_rangeStart, nSlices, sliceSizes, sliceColors, m_hubSize, hubColor, m_backColor, m_bRectangular);
@@ -369,7 +381,7 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool PieMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -382,21 +394,27 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect PieMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect PieMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		//TODO: Implement!
+		//TODO: Implement more optimized version.
 
-		return _canvas;
+		if (newValue != oldValue)
+			return canvas;
+
+		return Rect();
 	}
 
 	//____ _updateOpacity() ___________________________________________________
 
 	void PieMeterSkin::_updateOpacity()
 	{
-		if (m_backColor.a < 255 || (m_hubSize > 0.f && m_hubColor.a < 255) )
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode != BlendMode::Blend || m_backColor.a < 4096 || (m_hubSize > 0.f && m_hubColor.a < 4096) )
 			m_bOpaque = false;
 		else
 		{
@@ -408,7 +426,7 @@ namespace wg
 				totalAlpha += m_slices[i].maxColor.a;
 			}
 
-			m_bOpaque = (totalAlpha == m_nSlices * 2 * 255);
+			m_bOpaque = (totalAlpha == m_nSlices * 2 * 4096);
 		}
 	}
 

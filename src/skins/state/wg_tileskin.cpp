@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -131,9 +132,9 @@ namespace wg
 		return m_stateSurfaces[_stateToIndex(state)];
 	}
 
-	//____ setTint() __________________________________________________________
+	//____ setColor() __________________________________________________________
 
-	void TileSkin::setTint(Color tint)
+	void TileSkin::setColor(HiColor tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -142,7 +143,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setTint(State state, Color tint)
+	void TileSkin::setColor(State state, HiColor tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -152,7 +153,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void TileSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void TileSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -165,13 +166,21 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ tint() _____________________________________________________________
+	//____ color() _____________________________________________________________
 
-	Color TileSkin::tint(State state) const
+	HiColor TileSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
 
+	//____ setGradient() ______________________________________________________
+
+	void TileSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpaqueFlags();
+	}
 
 
 	//____ setBlendMode() _____________________________________________________
@@ -184,25 +193,19 @@ namespace wg
 
 	//____ render() _______________________________________________________________
 
-	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void TileSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float * pStateFractions) const
 	{
-		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
+		int idx = _stateToIndex(state);
+
+		Surface * pSurf = m_stateSurfaces[idx];
 
 		if( !pSurf )
 			return;
 
-		BlendMode savedBlendMode = BlendMode::Undefined;
-		if (m_blendMode != BlendMode::Undefined)
-		{
-			savedBlendMode = pDevice->blendMode();
-			pDevice->setBlendMode(m_blendMode);
-		}
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(pSurf);
 		pDevice->scaleTile(canvas.px(),MU::scale());
-
-		if (m_blendMode != BlendMode::Undefined)
-			pDevice->setBlendMode(savedBlendMode);
 	}
 
 	//____ preferredSize() ________________________________________________________
@@ -221,8 +224,10 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool TileSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
+		//TODO: Take gradient and tintColor into account.
+
 		Surface * pSurf = m_stateSurfaces[_stateToIndex(state)];
 
 		return markTestTileRect(_ofs, pSurf, canvas, opacityTreshold);
@@ -240,25 +245,37 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ isStateIdentical() _____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool TileSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect TileSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		return ( m_stateSurfaces[i1] == m_stateSurfaces[i2] && StateSkin::isStateIdentical(state,comparedTo) );
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if(m_stateSurfaces[i1] != m_stateSurfaces[i2])
+			return canvas;
+		
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2, 
+									newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 	//____ _updateOpaqueFlags() ________________________________________________
 
 	void TileSkin::_updateOpaqueFlags()
 	{
+
 		bool bTintDecides = false;
 
 		if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		else if (m_bGradient && !m_gradient.isOpaque())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend)
 		{
 			bool bOpaque = true;
 
@@ -280,7 +297,7 @@ namespace wg
 		if (bTintDecides)
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
-				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
 		}
 		else
 		{

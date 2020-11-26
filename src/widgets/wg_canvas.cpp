@@ -91,8 +91,7 @@ namespace wg
 		if (sz.w == sz.h == 0)
 			sz = { 16*4,16*4 };
 
-		if (m_pSkin)
-			sz += m_pSkin->contentPaddingSize();
+		sz += OO(skin)._contentPaddingSize();
 
 		return sz;
 	}
@@ -112,19 +111,6 @@ namespace wg
 		OO(canvas)._setComponentSize(size);
 	}
 
-	//____ setSkin() ____________________________________________________________
-
-	void Canvas::setSkin(Skin * pSkin)
-	{
-		Size oldPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
-
-		Widget::setSkin(pSkin);
-
-		Size newPadding = m_pSkin ? m_pSkin->contentPaddingSize() : Size();
-		if (newPadding != oldPadding)
-			OO(canvas)._setComponentSize(m_size - newPadding);
-	}
-
 	//____ _render() __________________________________________________________
 
 	void Canvas::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
@@ -133,7 +119,7 @@ namespace wg
 
 		Widget::_render(pDevice, canvas, window);
 
-		Rect componentCanvas = m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas;
+		Rect componentCanvas = OO(skin)._contentRect(canvas, m_state);
 
 		OO(Canvas::canvas)._render(pDevice, componentCanvas); // , RectI(_clip, componentCanvas)); //TODO: Needs to clip against componentCanvas!!!
 	}
@@ -145,13 +131,9 @@ namespace wg
 		if (Widget::_alphaTest(_ofs))
 			return true;
 
-		Coord ofs;
-		if( m_pSkin )
-			ofs -= m_pSkin->contentOfs(m_state);
+		Coord ofs = _ofs - OO(skin)._contentOfs(m_state);
 
 		return OO(canvas)._alphaTest(ofs, m_markOpacity);
 	}
-
-
 
 } // namespace wg

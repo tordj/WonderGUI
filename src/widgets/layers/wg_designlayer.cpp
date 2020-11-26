@@ -172,10 +172,9 @@ namespace wg
 	{
 		// Render skin
 
-		if (m_pSkin)
-			m_pSkin->render(pDevice, _canvas, m_state);
+		OO(skin)._render(pDevice, _canvas, m_state);
 
-		Rect contentRect = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		Rect contentRect = OO(skin)._contentRect(_canvas, m_state);
 
 		if (!mainSlot.isEmpty())
 		{

@@ -106,8 +106,7 @@ namespace wg
 
 		Size preferredSize = Size::max( iconPreferredSize, textPreferredSize );
 
-		if( m_pSkin )
-			preferredSize = m_pSkin->sizeForContent( preferredSize );
+		preferredSize = OO(skin)._sizeForContent( preferredSize );
 
 		return preferredSize;
 	}
@@ -229,9 +228,11 @@ namespace wg
 
 		OO(text)._setState( state );
 
-		if( !_icon().isEmpty() && !_icon().skin()->isStateIdentical(state, m_state) )
-			_requestRender();		//TODO: Just request render on icon?
-
+		if (!_icon().isEmpty())
+		{
+			//TODO: Remove once icon uses CSkinSlot.
+			_requestRender();
+		}
 		if( state.isSelected() != oldState.isSelected() )
 		{
 			Base::msgRouter()->post( ToggleMsg::create(this, state.isSelected() ) );
@@ -241,16 +242,6 @@ namespace wg
 		}
 	}
 
-	//____ setSkin() _______________________________________________________
-
-	void ToggleButton::setSkin( Skin * pSkin )
-	{
-		//TODO: Set canvas size for the components
-
-		Widget::setSkin(pSkin);
-	}
-
-
 	//____ _render() ________________________________________________________
 
 	void ToggleButton::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
@@ -259,9 +250,7 @@ namespace wg
 
 		// Get the content rect and icon rect
 
-		Rect contentRect	= _canvas;
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(_canvas, m_state );
+		Rect contentRect	= OO(skin)._contentRect(_canvas, m_state );
 
 		Rect iconRect		= _icon()._getIconRect( contentRect );
 
@@ -294,9 +283,7 @@ namespace wg
 	{
 		Widget::_resize( size );
 
-		Rect contentRect	= Rect(0,0,size);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+		Rect contentRect	= OO(skin)._contentRect(size, m_state );
 
 		OO(text)._setSize( _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect )) );
 	}
@@ -320,9 +307,7 @@ namespace wg
 
 	bool ToggleButton::_markTestTextArea( const Coord& pos )
 	{
-		Rect contentRect	= Rect(0,0,m_size);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state );
+		Rect contentRect = OO(skin)._contentRect(m_size, m_state );
 
 		contentRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
@@ -338,9 +323,7 @@ namespace wg
 	{
 		Size	bgSize		= m_size;
 
-		Rect	contentRect = Rect(0,0,bgSize);
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect( contentRect, m_state );
+		Rect	contentRect = OO(skin)._contentRect( bgSize, m_state );
 
 		Rect	iconRect	= _icon()._getIconRect( contentRect );
 
@@ -361,7 +344,7 @@ namespace wg
 					iconRect.x = textRect.right();
 				}
 
-				if( iconRect.y + iconRect.h < textRect.y )
+				if( iconRect.y + iconRect.h < textRect.y ) 
 					iconRect.h = textRect.y - iconRect.y;
 
 				if( iconRect.y > textRect.bottom() )

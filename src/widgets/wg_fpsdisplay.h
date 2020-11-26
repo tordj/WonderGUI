@@ -67,8 +67,8 @@ namespace wg
 		virtual ~FpsDisplay();
 		virtual Widget* _newOfMyType() const override { return new FpsDisplay(); };
 
-		void		_receive( Msg * pMsg ) override;
 		void		_setState( State state ) override;
+		void		_update(int microPassed, int64_t microsecTimestamp);
 		void		_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void		_cloneContent( const Widget * _pOrg ) override;
 
@@ -79,7 +79,6 @@ namespace wg
 
 		int *			m_pTickBuffer;
 		int				m_tickBufferOfs;
-		RouteId			m_tickRouteId;
 	};
 
 

@@ -41,7 +41,7 @@ namespace wg
 		//.____ Creation __________________________________________
 
 		static FillMeterSkin_p create();
-		static FillMeterSkin_p create(Direction direction, Color fillColorEmpty, Color fillColorFull, Color backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFillStartOutside = false);
+		static FillMeterSkin_p create(Direction direction, HiColor fillColorEmpty, HiColor fillColorFull, HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), const BorderI& contentPadding = BorderI(), bool bFillStartOutside = false);
 
 		//.____ Identification __________________________________________
 
@@ -55,20 +55,23 @@ namespace wg
 
 		//.____ Appearance ____________________________________________________
 
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
 		void	setDirection(Direction dir);
 		Direction direction() const { return m_direction; }
 
 		void	setGfxPadding(BorderI padding);
 		Border	gfxPadding() const { return m_barPadding; }
 
-		void	setBackColor(Color back);
-		Color	backColor() const { return m_backColor; }
+		void	setBackColor(HiColor back);
+		HiColor	backColor() const { return m_backColor; }
 
-		void	setFillColors(Color empty, Color full);
-		void	setFillColorEmpty(Color empty);
-		Color	fillColorEmpty() const { return m_barColorEmpty; }
-		void	setFillColorFull(Color full);
-		Color	fillColorFull() const { return m_barColorFull; }
+		void	setFillColors(HiColor empty, HiColor full);
+		void	setFillColorEmpty(HiColor empty);
+		HiColor	fillColorEmpty() const { return m_barColorEmpty; }
+		void	setFillColorFull(HiColor full);
+		HiColor	fillColorFull() const { return m_barColorFull; }
 
 		void	setFillStartOutside(bool bStartOutside);
 		bool	isFillStartOutside() const { return m_bBarStartOutside; }
@@ -76,30 +79,32 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f) const override;
 
-		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float fraction = 1.f, float fraction2 = -1.f) const override;
+		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, float value = 1.f, 
+						float value2 = -1.f, int animPos = 0, float* pStateFractions = nullptr) const override;
 
-		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction, 
-									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		FillMeterSkin();
-		FillMeterSkin(	Direction direction, Color barColorEmpty, Color barColorFull, Color backColor, 
+		FillMeterSkin(	Direction direction, HiColor barColorEmpty, HiColor barColorFull, HiColor backColor, 
 						const BorderI& barPadding, const BorderI& contentPadding, bool bBarStartOutside );
 		~FillMeterSkin() {};
 
-		Rect		_barFillArea(const Rect& canvas, float fraction, float fraction2) const;
+		Rect		_barFillArea(const Rect& canvas, float value, float value2) const;
 		void		_updateOpacity();
-		Rect		_fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
+		Rect		_valueChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction) const;
 
-
+		BlendMode	m_blendMode = BlendMode::Blend;
 		Direction	m_direction;
 		BorderI		m_barPadding;
 		bool		m_bBarStartOutside;
-		Color		m_barColorEmpty;
-		Color		m_barColorFull;
-		Color		m_backColor;
+		HiColor		m_barColorEmpty;
+		HiColor		m_barColorFull;
+		HiColor		m_backColor;
 		Size		m_preferredSize;
 	};
 

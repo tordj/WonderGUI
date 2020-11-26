@@ -72,7 +72,7 @@ public:
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
 		m_pCanvas = GlSurface::create(canvasSize, canvasFormat);
-		m_pDevice = GlGfxDevice::create(m_pCanvas, 1);              // Needs a UBO binding point separate from other GfxDevice.
+		m_pDevice = GlGfxDevice::create(1);              // Needs a UBO binding point separate from other GfxDevice.
 		return true;
 	}
 
@@ -85,11 +85,13 @@ public:
 	GfxDevice_p beginRender() const
 	{
 		m_pDevice->beginRender();
+		m_pDevice->beginCanvasUpdate(m_pCanvas);
 		return m_pDevice;
 	}
 
 	void endRender() const
 	{
+		m_pDevice->endCanvasUpdate();
 		m_pDevice->endRender();
 	}
 
@@ -125,7 +127,7 @@ public:
 
 	int64_t			time() override
 	{
-		return SDL_GetPerformanceCounter() * 1000 / SDL_GetPerformanceFrequency();
+		return SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency();
 	}
 
 	wg::Blob_p		loadBlob(const char* pPath) override;
@@ -178,6 +180,14 @@ int main(int argc, char *argv[] )
 
 			bContinue = pApp->update();
 
+			// Dispatch messages
+
+			Base::msgRouter()->dispatch();
+
+			// Periodic update
+
+			Base::update(SDL_GetPerformanceCounter() * 1000000 / SDL_GetPerformanceFrequency());
+
 			// Render. We do this outside the app since we might want to 
 			// handle updated rectangles in a system specific way.
 
@@ -218,12 +228,12 @@ bool init_wondergui()
 	Context_p pContext = Context::create();
     pContext->setScale(1.0);
     pContext->setSurfaceFactory(GlSurfaceFactory::create());
-	pContext->setGammaCorrection(false);
+	pContext->setGammaCorrection(true);
 	Base::setActiveContext(pContext);
 
-	auto pGfxDevice = GlGfxDevice::create(g_windowSize*pContext->scale(), 0);
+	auto pGfxDevice = GlGfxDevice::create(0);
 
-	g_pRoot = RootPanel::create(pGfxDevice);
+	g_pRoot = RootPanel::create(g_windowSize*pContext->scale(), pGfxDevice);
 
 //	g_pRoot->setDebugMode(true);
 
@@ -506,9 +516,9 @@ Surface_p MyAppVisitor::loadSurface(const char* pPath, SurfaceFactory* pFactory,
 	convertSDLFormat(&format, pSDLSurf->format);
 
 	PixelFormat px;
-	Color* pClut = nullptr;
+	Color8* pClut = nullptr;
 
-	Color clut[256];
+	Color8 clut[256];
 
 	if (format.bIndexed)
 	{

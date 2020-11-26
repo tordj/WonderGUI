@@ -133,7 +133,7 @@ namespace wg
 
 			case GfxChunkId::SetTintColor:
 			{
-				Color	col;
+				HiColor	col;
 				*m_pGfxStream >> col;
 
 				m_charStream << "    color       = " << (int)col.a << ", " << (int)col.r << ", " << (int)col.g << ", " << (int)col.b << std::endl;
@@ -161,7 +161,7 @@ namespace wg
 			case GfxChunkId::Fill:
 			{
 				RectI	rect;
-				Color	col;
+				HiColor	col;
 
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
@@ -174,7 +174,7 @@ namespace wg
 			case GfxChunkId::FillSubpixel:
 			{
 				RectF	rect;
-				Color	col;
+				HiColor	col;
 
 				*m_pGfxStream >> rect;
 				*m_pGfxStream >> col;
@@ -196,7 +196,7 @@ namespace wg
 			{
 				CoordI	begin;
 				CoordI	end;
-				Color	color;
+				HiColor	color;
 				float	thickness;
 
 				*m_pGfxStream >> begin;
@@ -217,7 +217,7 @@ namespace wg
 				CoordI		begin;
 				Direction	dir;
 				uint16_t	length;
-				Color		color;
+				HiColor		color;
 				float		thickness;
 
 				*m_pGfxStream >> begin;
@@ -317,7 +317,7 @@ namespace wg
 				m_charStream << "    seg colors  = ";
 				for (int i = 0; i < nSegments; i++)
 				{
-					Color color;
+					HiColor color;
 					(*m_pGfxStream) >> color;
 
 					m_charStream << "{ " << (int)color.a << ", " << (int)color.r << ", " << (int)color.g << ", " << (int)color.b << " } ";
@@ -406,7 +406,7 @@ namespace wg
 			{
 				uint16_t	surfaceId;
 				RectI		region;
-				Color		col;
+				HiColor		col;
 
 				*m_pGfxStream >> surfaceId;
 				*m_pGfxStream >> region;

@@ -21,6 +21,7 @@
 =========================================================================*/
 #include <wg_skin.h>
 #include <wg_util.h>
+#include <wg_base.h>
 
 namespace wg
 {
@@ -90,6 +91,14 @@ namespace wg
 		return (canvas - Border(m_contentPadding).aligned()).aligned();
 	}
 
+	//____ setLayer() _________________________________________________________
+
+	void Skin::setLayer(int layer)
+	{
+		m_layer = layer;
+	}
+
+
 	//____ isOpaque() _________________________________________________________
 
 	bool Skin::isOpaque(State state) const
@@ -102,18 +111,36 @@ namespace wg
 		return m_bOpaque;
 	}
 
-	//____ isStateIdentical() ____________________________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	bool Skin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2 ) const
-	{
-		return true;
-	}
-
-	//____ fractionChangeRect() ______________________________________
-
-	Rect Skin::fractionChangeRect(const Rect& canvas, State state, float oldFraction, float newFraction, float oldFraction2, float newFraction2 ) const
+	Rect Skin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos, float* pNewStateFractions,
+		float* pOldStateFractions) const
 	{
 		return Rect();
+	}
+
+	//____ animationLength() ____________________________________________
+
+	int Skin::animationLength(State state) const
+	{
+		return 0;
+	}
+
+	//____ transitioningStates() __________________________________________________
+
+	Bitmask<uint8_t> Skin::transitioningStates() const
+	{
+		return Bitmask<uint8_t>(0);
+	}
+
+	//____ transitionTimes() ____________________________________________
+
+	const int* Skin::transitionTimes() const
+	{
+		const static int	transitionTimes[StateBits_Nb] = { 0,0,0,0,0,0 };
+
+		return transitionTimes;
 	}
 
 

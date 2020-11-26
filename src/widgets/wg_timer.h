@@ -85,26 +85,25 @@ namespace wg
 
 
 	protected:
-		Timer();
-		virtual ~Timer();
 		virtual Widget* _newOfMyType() const override { return new Timer(); };
-		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
+		void		_update(int microPassed, int64_t microsecTimestamp) override;
 		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void		_setValue(int millisec);
 
+		float		_skinValue(const CSkinSlot* pSlot) const override;
+
 	private:
 
-		int			m_value;
-		int			m_duration;
-		int			m_stepSize;
-		PlayMode	m_playMode;
-		int			m_direction;			// 1 or -1, depending on the direction we go.
-		bool		m_bOn;
+		int			m_value = 0;
+		int			m_duration = 1000;
+		int			m_stepSize = 1;
+		PlayMode	m_playMode = PlayMode::Forward;
+		int			m_direction = 1;			// 1 or -1, depending on the direction we go.
+		bool		m_bOn = false;
 
-		RouteId		m_tickRouteId;
-		float		m_renderedFraction;
+		float		m_renderedFraction = -1.f;
 
 	};
 

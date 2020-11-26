@@ -34,10 +34,10 @@ namespace wg
 
 	//____ constructor ____________________________________________________________
 
-	Widget::Widget():m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
+	Widget::Widget(): skin(this), m_id(0), m_pHolder(0), m_pSlot(0), m_pointerStyle(PointerStyle::Default),
 						m_markOpacity( 1 ), m_bOpaque(false), m_bTabLock(false),
 						 m_bPressed(false), m_bSelectable(true), m_size(256,256),
-						m_bPickable(false), m_bDropTarget(false)
+						m_bPickable(false), m_bDropTarget(false), m_pickCategory(0), m_bReceivingUpdates(false)
 	{
 	}
 
@@ -45,6 +45,8 @@ namespace wg
 
 	Widget::~Widget()
 	{
+		if (m_bReceivingUpdates)
+			Base::_stopReceiveUpdates(this);
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -59,9 +61,6 @@ namespace wg
 	 * @brief Check if this widget is a container.
 	 *
 	 *  Check if widget is a container.
-	 *
-	 *  This method is a quicker way to check if the widget
-	 *  is a container than calling isInstanceOf(Container::CLASS).
 	 *
 	 *  @return True if the widget is a subclass of Container.
 	 */
@@ -307,7 +306,6 @@ namespace wg
 		m_id			= pOrg->m_id;
 
 		m_pointerStyle 	= pOrg->m_pointerStyle;
-		m_pSkin			= pOrg->m_pSkin;
 
 		m_tooltip		= pOrg->m_tooltip;
 		m_markOpacity	= pOrg->m_markOpacity;
@@ -317,8 +315,7 @@ namespace wg
 
 		m_size			= pOrg->m_size;
 
-		//TODO: We should clone stateflags selectively, like disabled.
-
+		skin.set(pOrg->skin);
 	}
 
 	//____ matchingHeight() _______________________________________________________
@@ -379,10 +376,7 @@ namespace wg
 
 	Size Widget::preferredSize() const
 	{
-		if( m_pSkin )
-			return m_pSkin->preferredSize();
-		else
-			return Size(0,0);
+		return OO(skin)._preferredSize();
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -403,10 +397,7 @@ namespace wg
 
 	Size Widget::minSize() const
 	{
-		if( m_pSkin )
-			return m_pSkin->minSize();
-		else
-			return Size(0,0);
+		return OO(skin)._minSize();
 	}
 
 	//____ maxSize() ______________________________________________________________
@@ -536,6 +527,28 @@ namespace wg
 		return true;
 	}
 
+	//____ _startReceiveUpdates() _____________________________________________
+
+	int64_t Widget::_startReceiveUpdates()
+	{
+		if (!m_bReceivingUpdates)
+		{
+			m_bReceivingUpdates = true;
+			return Base::_startReceiveUpdates(this);
+		}
+		return 0;
+	}
+
+	//____ _stopReceiveUpdates() ______________________________________________
+
+	void Widget::_stopReceiveUpdates()
+	{
+		if (m_bReceivingUpdates)
+		{
+			Base::_stopReceiveUpdates(this);
+			m_bReceivingUpdates = false;
+		}
+	}
 
 	//____ _preRender() ____________________________________________________________
 
@@ -549,8 +562,7 @@ namespace wg
 
 	void Widget::_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window )
 	{
-		if( m_pSkin )
-			m_pSkin->render( pDevice, _canvas, m_state );
+			OO(skin)._render( pDevice, _canvas, m_state );
 	}
 
 	//____ _resize() ___________________________________________________________
@@ -565,61 +577,21 @@ namespace wg
 
 	void Widget::_refresh()
 	{
-		if( m_pSkin && m_pSkin->isOpaque(m_state) )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
+		m_bOpaque = OO(skin)._isOpaque(m_state);
 
 		_requestResize();
 		_requestRender();
-	}
-
-	//____ setSkin() ______________________________________________________________
-	/**
-	 * @brief Sets the skin of this widget.
-	 *
-	 * @param pSkin 	Pointer to the skin to be used.
-	 *
-	 * Specifies the skin to be used by this widget. The skin will cover the
-	 * whole widget and provide the background for any components placed
-	 * on the widget (if any).
-	 *
-	 * A skin typically has different looks depending on the widgets state (normal,
-	 * disabled, mouse inside, pressed, selected etc) and can also include padding.
-	 *
-	 * Some widgets have more than one skin, but this is always the background skin for
-	 * the whole widget.
-	 *
-	 */
-
-	void Widget::setSkin( Skin * pSkin )
-	{
-		bool bRequestResize = ( !m_pSkin || !pSkin || m_pSkin->contentPaddingSize() != pSkin->contentPaddingSize() ||
-								m_pSkin->preferredSize() != pSkin->preferredSize() || m_pSkin->minSize() != pSkin->minSize() );
-
-		if( pSkin && pSkin->isOpaque(m_state) )
-			m_bOpaque = true;
-		else
-			m_bOpaque = false;
-
-		m_pSkin = pSkin;
-		_requestRender();
-
-		if( bRequestResize )
-			_requestResize();
 	}
 
 	//____ _setState() _________________________________________________________
 
 	void Widget::_setState( State state )
 	{
-		if( m_pSkin && !m_pSkin->isStateIdentical(state, m_state) )
-		{
-			m_bOpaque = m_pSkin->isOpaque(state);
-			_requestRender();
-		}
-
+		State oldState = m_state;
 		m_state = state;
+
+		OO(skin)._stateChanged(state, oldState);
+		m_bOpaque = OO(skin)._isOpaque(state);
 	}
 
 	//____ _receive() _____________________________________________________________
@@ -696,10 +668,7 @@ namespace wg
 
 	bool Widget::_alphaTest( const Coord& ofs )
 	{
-		if( m_pSkin )
-			return m_pSkin->markTest( ofs, Rect(m_size), m_state, m_markOpacity );
-
-		return false;
+		return OO(skin)._markTest( ofs, Rect(m_size), m_state, m_markOpacity );
 	}
 
 	//____ _windowPadding() _______________________________________________________
@@ -751,34 +720,41 @@ namespace wg
 	}
 
 
+	//____ _componentState() ______________________________________________________________
+
+	State Widget::_componentState(const GeoComponent* pComponent) const
+	{
+		return m_state;
+	}
+
 	//____ _componentPos() ______________________________________________________________
 
 	Coord Widget::_componentPos( const GeoComponent * pComponent ) const
 	{
-		if( m_pSkin )
-			return m_pSkin->contentOfs( m_state );
-		else
+		if (pComponent == &skin)
 			return Coord();
+		else
+			return OO(skin)._contentOfs( m_state );
 	}
 
 	//____ _componentSize() ______________________________________________________________
 
 	Size Widget::_componentSize( const GeoComponent * pComponent ) const
 	{
-		if( m_pSkin )
-			return m_size - m_pSkin->contentPaddingSize();
-		else
+		if (pComponent == &skin)
 			return m_size;
+		else
+			return m_size - OO(skin)._contentPaddingSize();
 	}
 
 	//____ _componentGeo() ______________________________________________________________
 
 	Rect Widget::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		if( m_pSkin )
-			return m_pSkin->contentRect( m_size, m_state );
+		if (pComponent == &skin)
+			return m_size;
 		else
-			return Rect( 0,0,m_size );
+			return OO(skin)._contentRect( m_size, m_state );
 	}
 
 	//____ _globalComponentPos() ________________________________________________________
@@ -807,7 +783,6 @@ namespace wg
 		return this;
 	}
 
-
 	//____ _receiveComponentNotif() __________________________________________________
 
 	void Widget::_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData )
@@ -815,6 +790,30 @@ namespace wg
 		// By default we do nothing
 	}
 
+	//____ _skinChanged() _____________________________________________________
+
+	void Widget::_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin)
+	{
+		m_bOpaque = pNewSkin ? pNewSkin->isOpaque(m_state) : false;
+
+		if (!pNewSkin || !pOldSkin || pNewSkin->contentPaddingSize() != pOldSkin->contentPaddingSize() ||
+			pNewSkin->preferredSize() != pOldSkin->preferredSize() || pNewSkin->minSize() != pOldSkin->minSize())
+			_requestResize();
+	}
+
+	//____ _skinValue() _______________________________________________________
+
+	float Widget::_skinValue(const CSkinSlot* pSlot) const
+	{
+		return 1.f;
+	}
+
+	//____ _skinValue2() ______________________________________________________
+
+	float Widget::_skinValue2(const CSkinSlot* pSlot) const
+	{
+		return -1.f;
+	}
 
 
 } // namespace wg

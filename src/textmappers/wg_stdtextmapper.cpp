@@ -47,10 +47,10 @@ namespace wg
 
 	StdTextMapper::~StdTextMapper()
 	{
-		if( m_tickRouteId )
+		if( m_bReceivingUpdates )
 		{
-			Base::msgRouter()->deleteRoute( m_tickRouteId );
-			m_tickRouteId = 0;
+			Base::_stopReceiveUpdates(this);
+			m_bReceivingUpdates = false;
 		}
 	}
 
@@ -129,7 +129,7 @@ namespace wg
 
 	//____ setSelectionBackColor() _________________________________________________
 
-	void StdTextMapper::setSelectionBack(Color color, BlendMode renderMode )
+	void StdTextMapper::setSelectionBack(HiColor color, BlendMode renderMode )
 	{
 		m_selectionBackColor = color;
 		m_selectionBackRenderMode = renderMode;
@@ -137,7 +137,7 @@ namespace wg
 
 	//____ setSelectionCharColor() ____________________________________________
 
-	void StdTextMapper::setSelectionCharColor(Color color, BlendMode blend)
+	void StdTextMapper::setSelectionCharColor(HiColor color, BlendMode blend)
 	{
 		m_selectionCharColor = color;
 		m_selectionCharBlend = blend;
@@ -343,25 +343,22 @@ namespace wg
 		return distance;
 	}
 
-	//____ receive() ___________________________________________________________
+	//____ _update() ___________________________________________________________
 
-	void StdTextMapper::receive( Msg * pMsg )
+	void StdTextMapper::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		if( pMsg->type() == MsgType::Tick && m_pFocusedText )
-		{
-			if( _caretVisible(m_pFocusedText) )
-			{				
-				Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
-				if( pCaret )
-				{
-					int ms = static_cast<TickMsg*>(pMsg)->timediff();
+		if( _caretVisible(m_pFocusedText) )
+		{				
+			Caret * pCaret = m_pCaret ? m_pCaret : Base::defaultCaret();
+			if( pCaret )
+			{
+				int ms = microPassed / 1000;
 
-					bool bDirty = pCaret->tick( ms );
-					if( bDirty )
-					{
-						int caretOfs = _caretOfs(m_pFocusedText);
-						_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
-					}
+				bool bDirty = pCaret->tick( ms );
+				if( bDirty )
+				{
+					int caretOfs = _caretOfs(m_pFocusedText);
+					_setTextDirty( m_pFocusedText, pCaret->dirtyRect(charRect(m_pFocusedText, caretOfs)) );
 				}
 			}
 		}
@@ -387,8 +384,8 @@ namespace wg
 		Font_p 			pFont;
 		TextStyle_h		hStyle = 0xFFFF;
 
-		Color	baseTint = pDevice->tintColor();
-		Color	localTint = Color::White;
+		HiColor	baseTint = pDevice->tintColor();
+		HiColor	localTint = Color::White;
 
 		BlendMode renderMode = pDevice->blendMode();
 
@@ -456,7 +453,7 @@ namespace wg
 					if( pChar->styleHandle() != hStyle )
 					{
 						MU oldFontSize = attr.size;
-						Color oldBgColor = attr.bgColor;
+						HiColor oldBgColor = attr.bgColor;
 
 						attr = baseAttr;
 
@@ -497,7 +494,7 @@ namespace wg
 					if( bRecalcColor )
 					{
 						if (bInSelection)
-							pDevice->setTintColor(baseTint * Color::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
+							pDevice->setTintColor(baseTint * HiColor::blend(localTint, m_selectionCharColor, m_selectionCharBlend));
 						else
 							pDevice->setTintColor( baseTint * localTint );
 
@@ -563,7 +560,7 @@ namespace wg
 
 		TextStyle_h hStyle = 0xFFFF;
 
-		Color		color = Color::Transparent;
+		HiColor		color = Color::Transparent;
 
 		for( pChar = pCharArray ; !pChar->isEndOfText() ; pChar++ )
 		{
@@ -571,7 +568,7 @@ namespace wg
 			{
 				State state = _state(pText);
 
-				Color newColor;
+				HiColor newColor;
 
 				TextStyle_p p = pChar->stylePtr();
 				if( p && p->isBgColorDefined(state) )
@@ -598,7 +595,7 @@ namespace wg
 	//____ _renderBackSection() ________________________________________________
 
 	void StdTextMapper::_renderBackSection( Text * pText, GfxDevice * pDevice, const Rect& canvas,
-											int begChar, int endChar, Color color )
+											int begChar, int endChar, HiColor color )
 	{
 
 		Coord begPos = charPos( pText, begChar );
@@ -750,16 +747,19 @@ namespace wg
 			if( newState.isFocused() )
 			{
 				m_pFocusedText = pText;
-				if( !m_tickRouteId )
-					m_tickRouteId = Base::msgRouter()->addRoute( MsgType::Tick, this );
+				if (!m_bReceivingUpdates)
+				{
+					Base::_startReceiveUpdates(this);
+					m_bReceivingUpdates = true;
+				}
 			}
 			else
 			{
 				m_pFocusedText = 0;
-				if( m_tickRouteId )
+				if( m_bReceivingUpdates )
 				{
-					Base::msgRouter()->deleteRoute( m_tickRouteId );
-					m_tickRouteId = 0;
+					Base::_stopReceiveUpdates(this);;
+					m_bReceivingUpdates = false;
 				}
 			}
 		}

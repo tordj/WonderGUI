@@ -26,6 +26,7 @@
 #include <wg_util.h>
 #include <wg_base.h>
 #include <wg_context.h>
+#include <wg_skin.impl.h>
 
 #include <cmath>
 
@@ -61,7 +62,7 @@ namespace wg
 		//TODO: Also take frame opacity into account.
 
 		m_bOpaque = pSurface->isOpaque();
-		m_bIgnoresFraction = false;
+		m_bIgnoresValue = false;
 		m_contentPadding = contentPadding;
 	}
 
@@ -74,7 +75,7 @@ namespace wg
 
 	//____ render() ______________________________________________________________
 
-	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void SpinMeterSkin::render(GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		float	zoom = m_zoom * Base::activeContext()->scale();
 
@@ -102,13 +103,14 @@ namespace wg
 
 		canvas -= m_gfxPadding;
 
-		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*fraction;
+		float	degrees = m_fromDegrees + (m_toDegrees - m_fromDegrees)*value;
 
 		if (degrees < 0.f)
 			degrees = 360.f + (float) fmod(degrees, 360.f);
 		else if (degrees >= 360.f)
 			degrees = (float) fmod(degrees, 360.f);
 
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->rotScaleBlit(_canvas.px(), degrees, zoom, m_srcCenter, m_dstCenter);
@@ -121,9 +123,35 @@ namespace wg
 		return m_preferredSize;
 	}
 
+	//____ setColor() _____________________________________________________
+
+	void SpinMeterSkin::setColor(HiColor color)
+	{
+		m_color = color;
+		_updateOpacityFlag();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void SpinMeterSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
+
+	//____ setBlendMode() _____________________________________________________
+
+	void SpinMeterSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
+	}
+
 	//____ markTest() _________________________________________________________
 
-	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool SpinMeterSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (!canvas.contains(ofs))
 			return false;
@@ -136,12 +164,33 @@ namespace wg
 		return true;
 	}
 
-	//____ fractionChangeRect() ______________________________________
+	//____ dirtyRect() ________________________________________________________
 
-	Rect SpinMeterSkin::fractionChangeRect(	const Rect& _canvas, State state, float oldFraction, float newFraction,
-											float oldFraction2, float newFraction2) const
+	Rect SpinMeterSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		return _canvas;
+		if (newValue != oldValue)
+			return canvas;
+
+		return Rect();
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void SpinMeterSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+				m_bOpaque = false;
+			else
+				m_bOpaque = m_pSurface->isOpaque();
+		}
+		else
+			m_bOpaque = false;
 	}
 
 } // namespace wg

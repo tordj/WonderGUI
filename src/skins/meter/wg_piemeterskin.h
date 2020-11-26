@@ -42,17 +42,17 @@ namespace wg
 		struct Slice
 		{
 			float	size;
-			Color	minColor;
-			Color	maxColor;
+			HiColor	minColor;
+			HiColor	maxColor;
 		};
 
 		//.____ Creation __________________________________________
 
 		static PieMeterSkin_p create();
-		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, Color minColor, Color maxColor, Color emptyColor = Color::Transparent,
-										float hubSize = 0.f, Color hubColor = Color::Transparent, 
-										Color backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
-										const BorderI& contentPadding = BorderI(), bool bStaticSections = true, bool bRectangular = false);
+		static PieMeterSkin_p create(	float startAngle, float minLength, float maxLength, HiColor minColor, HiColor maxColor, HiColor emptyColor = Color::Transparent,
+										float hubSize = 0.f, HiColor hubColor = Color::Transparent, 
+										HiColor backColor = Color::Transparent, const BorderI& gfxPadding = BorderI(), 
+										const BorderI& contentPadding = BorderI(), bool bStaticSlices = true, bool bRectangular = false);
 
 		//.____ Identification __________________________________________
 
@@ -60,6 +60,9 @@ namespace wg
 		const static TypeInfo	TYPEINFO;
 
 		//.____ Appearance ____________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
 
 		bool	setSlices(std::initializer_list<Slice> slices);
 
@@ -80,17 +83,18 @@ namespace wg
 		void	setGfxPadding(BorderI padding);
 		Border	gfxPadding() const { return m_gfxPadding; }
 
-		void	setEmptyColor(Color empty);
-		Color	emptyColor() const { return m_emptyColor; }
+		void	setEmptyColor(HiColor empty);
+		HiColor	emptyColor() const { return m_emptyColor; }
 
-		void	setHub(float size, Color color);
+		void	setHub(float size, HiColor color);
 		void	setHubSize(float hubSize);
 		float	hubSize() const { return m_hubSize; }
-		void	setHubColor(Color hubColor);
-		Color	hubColor() const { return m_hubColor; }
+		void	setHubColor(HiColor hubColor);
+		HiColor	hubColor() const { return m_hubColor; }
 
-		void	setBackColor(Color back);
-		Color	backColor() const { return m_backColor; }
+		void	setBackColor(HiColor back);
+		HiColor	backColor() const { return m_backColor; }
+
 
 		//.____ Geometry _________________________________________________
 
@@ -100,17 +104,19 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f) const override;
 
 		void 	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float fraction = 1.f, float fraction2 = -1.f) const override;
+						float value = 1.f, float value2 = -1.f, int animPos = 0,
+						float* pStateFractions = nullptr) const override;
 
-		Rect	fractionChangeRect(	const Rect& canvas, State state, float oldFraction, float newFraction,
-									float oldFraction2 = -1.f, float newFraction2 = -1.f) const override;
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 		PieMeterSkin();
-		PieMeterSkin(float start, float min, float max, Color minColor, Color maxColor, Color emptyColor, float hubSize, Color hubColor, Color backColor, const BorderI& piePadding, const BorderI& contentPadding, bool bStaticSections, bool bSquare);
+		PieMeterSkin(float start, float min, float max, HiColor minColor, HiColor maxColor, HiColor emptyColor, float hubSize, HiColor hubColor, HiColor backColor, const BorderI& piePadding, const BorderI& contentPadding, bool bStaticSections, bool bSquare);
 		~PieMeterSkin() {};
 
 		void		_updateOpacity();
@@ -126,11 +132,12 @@ namespace wg
 
 		BorderI		m_gfxPadding;
 
-		Color		m_hubColor = Color::Transparent;
-		Color		m_backColor = Color::Transparent;
-		Color		m_emptyColor = Color::DarkBlue;
+		BlendMode	m_blendMode = BlendMode::Blend;
+		HiColor		m_hubColor = Color::Transparent;
+		HiColor		m_backColor = Color::Transparent;
+		HiColor		m_emptyColor = Color::DarkBlue;
 
-		const static int c_maxSlices = 6;
+		const static int c_maxSlices = 12;
 		Slice		m_slices[c_maxSlices];
 		int			m_nSlices;
 	};

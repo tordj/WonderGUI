@@ -25,6 +25,7 @@
 
 #include <wg_stateskin.h>
 #include <wg_surface.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -62,10 +63,13 @@ namespace wg
 
 		Surface_p surface(State state = StateEnum::Normal) const;
 
-		void	setTint(Color tint);
-		void	setTint(State state, Color tint);
-		void	setTint(std::initializer_list< std::tuple<State, Color> > stateTints);
-		Color	tint(State state) const;
+		void	setColor(HiColor tint);
+		void	setColor(State state, HiColor tint);
+		void	setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints);
+		HiColor	color(State state) const;
+
+		void	setGradient(const Gradient& gradient);
+		Gradient gradient() const { return m_gradient; }
 
 		void			setBlendMode(BlendMode mode);
 		BlendMode		blendMode() const { return m_blendMode; }
@@ -79,14 +83,16 @@ namespace wg
 		bool	isOpaque( State state ) const override;
 		bool	isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool	isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
-
 		bool	markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f) const override;
 
 		void	render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-						float fraction = 1.f, float fraction2 = -1.f) const override;
+						float value = 1.f, float value2 = -1.f, int animPos = 0,
+						float* pStateFractions = nullptr) const override;
 
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 
@@ -98,14 +104,16 @@ namespace wg
 		void		_updateUnsetStateSurfaces();
 		void		_updateUnsetStateColors();
 
-		BlendMode	m_blendMode = BlendMode::Undefined;
+		BlendMode	m_blendMode = BlendMode::Blend;
 
 		Bitmask<uint32_t>	m_stateSurfaceMask = 1;
 		Bitmask<uint32_t>	m_stateColorMask = 1;
 
-		Surface_p m_stateSurfaces[StateEnum_Nb];
-		Color	m_stateColors[StateEnum_Nb];
-		bool	m_bStateOpaque[StateEnum_Nb];
+		Surface_p	m_stateSurfaces[StateEnum_Nb];
+		HiColor		m_stateColors[StateEnum_Nb];
+		bool		m_bStateOpaque[StateEnum_Nb];
+		Gradient	m_gradient;
+		bool		m_bGradient = false;
 	};
 
 

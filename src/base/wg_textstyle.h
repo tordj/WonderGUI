@@ -44,9 +44,9 @@ namespace wg
 
 			Font_p			pFont;
 			MU				size;
-			Color			color;
+			HiColor			color;
 			BlendMode		renderMode;
-			Color			bgColor;
+			HiColor			bgColor;
 			BlendMode		bgRenderMode;
 			TextDecoration	decoration;
 			TextLink_p		pLink;
@@ -83,10 +83,10 @@ namespace wg
 		void			setRenderMode(BlendMode mode);
 		void			setBgRenderMode(BlendMode mode);
 
-		void			setColor( Color color );
-		void			setColor(Color color, State state);
-		void			setBgColor( Color color );
-		void			setBgColor(Color color, State state);
+		void			setColor( HiColor color );
+		void			setColor(HiColor color, State state);
+		void			setBgColor( HiColor color );
+		void			setBgColor(HiColor color, State state);
 		void			setSize( int size );
 		void			setSize(int size, State state);
 		void			setDecoration( TextDecoration decoration );
@@ -110,8 +110,8 @@ namespace wg
 		inline TextLink_p		link() const;
 		inline BlendMode		renderMode() const;
 		inline BlendMode		bgRenderMode() const;
-		inline Color			color( State state ) const;
-		inline Color			bgColor( State state ) const;
+		inline HiColor			color( State state ) const;
+		inline HiColor			bgColor( State state ) const;
 		inline int				size( State state ) const;
 		inline TextDecoration 	decoration( State state ) const;
 
@@ -154,8 +154,8 @@ namespace wg
 		BlendMode			m_bgRenderMode = BlendMode::Blend;
 
 		int					m_size[StateEnum_Nb];
-		Color				m_color[StateEnum_Nb];
-		Color				m_bgColor[StateEnum_Nb];
+		HiColor				m_color[StateEnum_Nb];
+		HiColor				m_bgColor[StateEnum_Nb];
 		TextDecoration		m_decoration[StateEnum_Nb];
 
 		Bitmask<uint32_t>	m_sizeSetMask = 0;
@@ -190,13 +190,13 @@ namespace wg
 	}
 
 	//______________________________________________________________________________
-	inline Color TextStyle::color( State state ) const
+	inline HiColor TextStyle::color( State state ) const
 	{
 		return m_color[Util::_stateToIndex(state)];
 	}
 
 	//______________________________________________________________________________
-	inline 	Color TextStyle::bgColor( State state ) const
+	inline 	HiColor TextStyle::bgColor( State state ) const
 	{
 		return m_bgColor[Util::_stateToIndex(state)];
 	}

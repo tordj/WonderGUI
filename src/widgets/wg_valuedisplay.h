@@ -58,9 +58,6 @@ namespace wg
 
 		Size			preferredSize() const override;
 
-		//.____ Appearance _______________________________________________
-
-		void			setSkin(Skin * pSkin) override;
 
 
 	protected:

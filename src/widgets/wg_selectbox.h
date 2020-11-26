@@ -114,7 +114,7 @@ namespace wg
 		TextMapper_p	listTextMapper() const { return m_pListTextMapper; }
 
 		void			setListSkin(Skin * pSkin);
-		Skin_p			listSkin() const { return m_pListCanvas->skin(); }
+		Skin_p			listSkin() const { return m_pListCanvas->skin; }
 
 		//.___ Control _____________________________________________________________
 

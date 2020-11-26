@@ -362,21 +362,21 @@ namespace wg
 
 	Size PianoKeyboard::preferredSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
+		return m_preferredKeyboardSize + OO(skin)._contentPaddingSize();
 	}
 
 	//____ minSize() __________________________________________________________
 
 	Size PianoKeyboard::minSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
+		return m_preferredKeyboardSize + OO(skin)._contentPaddingSize();
 	}
 
 	//____ maxSize() __________________________________________________________
 
 	Size PianoKeyboard::maxSize() const
 	{
-		return m_preferredKeyboardSize + (m_pSkin ? m_pSkin->contentPaddingSize() : Size());
+		return m_preferredKeyboardSize + OO(skin)._contentPaddingSize();
 	}
 
 
@@ -398,7 +398,7 @@ namespace wg
 
 		Widget::_render(pDevice, _canvas, _window);
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect(_canvas, m_state) : _canvas;
+		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 
 		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
@@ -660,7 +660,7 @@ namespace wg
 	{
 		// Convert coordinate from canvas to source
 
-		Rect canvas = m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect(0, 0, m_size);
+		Rect canvas = OO(skin)._contentRect(m_size, m_state);
 
 		if (!canvas.contains(pos))
 			return -1;
@@ -704,7 +704,7 @@ namespace wg
 
 	Rect PianoKeyboard::_keyRect(int keyIdx)
 	{
-		Rect canvas = m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect(0, 0, m_size);
+		Rect canvas = OO(skin)._contentRect(m_size, m_state);
 
 		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
 

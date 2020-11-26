@@ -25,6 +25,7 @@
 
 #include <wg_skin.h>
 #include <wg_surface.h>
+#include <wg_gradient.h>
 
 namespace wg
 {
@@ -50,19 +51,37 @@ namespace wg
 
 		Size	preferredSize() const override;
 
+		//.____ Appearance _________________________________________________
+
+		void		setBlendMode(BlendMode mode);
+		BlendMode	blendMode() const { return m_blendMode; }
+
+		void		setColor(HiColor tintColor);
+		HiColor		color() const { return m_color; }
+
+		void		setGradient(const Gradient& gradient);
+		Gradient	gradient() const { return m_gradient; }
+
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0, 
+							float* pStateFractions = nullptr) const override;
 
 	private:
 		StaticTileSkin(Surface* pSurface);
 		~StaticTileSkin() {};
 
+		void		_updateOpacityFlag();
+
 		Surface_p		m_pSurface;
+		BlendMode		m_blendMode = BlendMode::Blend;
+		HiColor			m_color = Color::White;
+		Gradient		m_gradient;
+		bool			m_bGradient = false;
 	};
 
 

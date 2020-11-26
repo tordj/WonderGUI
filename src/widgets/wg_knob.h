@@ -55,10 +55,6 @@ namespace wg
 		const TypeInfo&	typeInfo(void) const override;
 		const static TypeInfo	TYPEINFO;
 
-		//.____ Geometry ____________________________________________
-
-		Size			preferredSize() const override;
-
 		//.____ Control _______________________________________________________
 
 		void			setSteps(int nbSteps );
@@ -87,9 +83,9 @@ namespace wg
 		void 			_receive(Msg* pMsg) override;
 
 		void		_cloneContent( const Widget * _pOrg ) override;
-		void		_render(GfxDevice * pDevice, const Rect& _canvas, const Rect& _window) override;
 		void		_setValue(float value, bool bPostMsg = true);
 
+		float		_skinValue(const CSkinSlot* pSlot) const override;
 
 	private:
 		MU			m_dragRange = 200;

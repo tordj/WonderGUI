@@ -58,10 +58,10 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		void				setTintColor( Color color, BlendMode operation = BlendMode::Replace );
+		void				setTintColor( HiColor color, BlendMode operation = BlendMode::Replace );
 		void				setRenderMode( BlendMode mode );
 
-		inline Color		tintColor() { return m_tintColor; }
+		inline HiColor		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }
 		inline BlendMode	tintMode() { return m_tintMode; }
 
@@ -78,7 +78,7 @@ namespace wg
 
 	private:
 
-		Color			m_tintColor;
+		HiColor			m_tintColor;
 		BlendMode		m_tintMode;
 		BlendMode		m_renderMode;
 

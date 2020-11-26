@@ -103,6 +103,7 @@ namespace wg
 		//.____ Components _______________________________________
 
 		CSlots			slots;
+		CSkinSlot		handleSkin;
 
 		//.____ Identification __________________________________________
 
@@ -112,14 +113,11 @@ namespace wg
 		//.____ Geometry ____________________________________________
 
 		void			setAxis(Axis orientaiton);
-		Axis		axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
+		Axis			axis() const { return m_bHorizontal ? Axis::X : Axis::Y; }
 
 		Size			preferredSize() const override;
 
 		//.____ Appearance _________________________________________________
-
-		void			setHandleSkin(Skin * pSkin);
-		Skin_p			handleSkin() const { return m_pHandleSkin; }
 
 		void			setHandleThickness(MU thickness);
 		MU				handleThickness() const { return m_handleThickness;  }
@@ -193,12 +191,23 @@ namespace wg
 
 		//
 
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos(const GeoComponent* pComponent) const override;
+		Size			_componentSize(const GeoComponent* pComponent) const override;
+		Rect			_componentGeo(const GeoComponent* pComponent) const override;
+
+		void			_componentRequestRender(const GeoComponent* pComponent) override;
+		void			_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+
+		//
+
 		bool			m_bHorizontal;
 		Size			m_preferredSize;
 		float			m_splitFactor;			// fraction of available child length that goes to first child. Measured in 1/65536.
 		ScaleBehavior	m_scaleBehavior;
 
-		Skin_p			m_pHandleSkin;
 		MU				m_handleThickness;			// Set to 0 to use default from handleSkin.
 		Rect			m_handleGeo;
 		State			m_handleState;

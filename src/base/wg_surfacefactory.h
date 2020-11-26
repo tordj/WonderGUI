@@ -62,11 +62,11 @@ namespace wg
 
 		//.____ Misc _______________________________________________________
 
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color * pClut = nullptr ) const = 0;
-		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color * pClut = nullptr) const = 0;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format = PixelFormat::BGRA_8, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr ) const = 0;
+		virtual Surface_p	createSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags = SurfaceFlag::Static, const Color8 * pClut = nullptr) const = 0;
 		virtual Surface_p	createSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch,
 										   const PixelDescription * pPixelDescription = 0, int flags = SurfaceFlag::Static,
-										   const Color * pClut = nullptr) const = 0;
+										   const Color8 * pClut = nullptr) const = 0;
 		virtual Surface_p	createSurface( Surface * pOther, int flags = SurfaceFlag::Static ) const = 0;
 
 	protected:

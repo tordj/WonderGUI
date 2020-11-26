@@ -32,27 +32,6 @@ namespace wg
 
 	const TypeInfo Timer::TYPEINFO = { "Timer", &Widget::TYPEINFO };
 
-	//____ constructor ____________________________________________________________
-
-	Timer::Timer() :
-		m_value(0),
-		m_duration(1000),
-		m_stepSize(1),
-		m_playMode(PlayMode::Forward),
-		m_direction(1),
-		m_bOn(false),
-		m_tickRouteId(0),
-		m_renderedFraction(-1.f)
-	{
-	}
-
-	//____ Destructor _____________________________________________________________
-
-	Timer::~Timer()
-	{
-		if (m_tickRouteId)
-			Base::msgRouter()->deleteRoute(m_tickRouteId);
-	}
 
 	//____ typeInfo() _________________________________________________________
 
@@ -138,13 +117,10 @@ namespace wg
 			if (m_value == 0 || m_value == m_duration)
 				reset();
 
-			m_tickRouteId = Base::msgRouter()->addRoute(MsgType::Tick, this);
+			_startReceiveUpdates();
 		}
 		else
-		{
-			if (m_tickRouteId)
-				Base::msgRouter()->deleteRoute(m_tickRouteId);
-		}
+			_stopReceiveUpdates();
 	}
 
 	//____ setValue() _________________________________________________________
@@ -155,59 +131,47 @@ namespace wg
 			_setValue(value);
 	}
 
-	//____ _receive() __________________________________________________________
+	//____ _update() __________________________________________________________
 
-	void Timer::_receive(Msg * _pMsg)
+	void Timer::_update(int microPassed, int64_t microsecTimestamp)
 	{
-		switch (_pMsg->type())
+		int value = m_value + microPassed/1000 * m_direction;
+
+		switch (m_playMode)
 		{
-			case MsgType::Tick:
-			{
-				int value = m_value + static_cast<TickMsg*>(_pMsg)->timediff() * m_direction;
-
-				switch (m_playMode)
-				{
-					case PlayMode::Forward:
-						if (value >= m_duration)
-							stop();
-						break;
-
-					case PlayMode::Looping:
-						value %= m_duration;
-						break;
-
-					case PlayMode::PingPong:
-					case PlayMode::BackwardPingPong:
-						while (value < 0 || value > m_duration)
-						{
-							if (value < 0)
-								value = 0 - value;
-							else
-								value = m_duration - (value - m_duration);
-
-							m_direction *= -1;
-						}
-						break;
-
-					case PlayMode::Backward:
-						if (value <= 0)
-							stop();
-						break;
-
-					case PlayMode::BackwardLooping:
-						if (value < 0)
-							value = m_duration + (value % m_duration);
-						break;
-				}
-				_setValue(value);
+			case PlayMode::Forward:
+				if (value >= m_duration)
+					stop();
 				break;
-			}
 
-			default:
+			case PlayMode::Looping:
+				value %= m_duration;
+				break;
+
+			case PlayMode::PingPong:
+			case PlayMode::BackwardPingPong:
+				while (value < 0 || value > m_duration)
+				{
+					if (value < 0)
+						value = 0 - value;
+					else
+						value = m_duration - (value - m_duration);
+
+					m_direction *= -1;
+				}
+				break;
+
+			case PlayMode::Backward:
+				if (value <= 0)
+					stop();
+				break;
+
+			case PlayMode::BackwardLooping:
+				if (value < 0)
+					value = m_duration + (value % m_duration);
 				break;
 		}
-
-		Widget::_receive(_pMsg);
+		_setValue(value);
 	}
 
 	//____ _cloneContent() _______________________________________________________
@@ -223,12 +187,12 @@ namespace wg
 
 	void Timer::_render(GfxDevice * pDevice, const Rect& canvas, const Rect& window)
 	{
-		if (m_pSkin)
+		if (!skin.isEmpty())
 		{
 			int quantizedValue = m_value - (m_value % m_stepSize);
 			m_renderedFraction = quantizedValue / float(m_duration);
 
-			m_pSkin->render(pDevice, canvas, m_state, m_renderedFraction );
+			OO(skin)._render(pDevice, canvas, m_state, m_renderedFraction );
 		}
 	}
 
@@ -245,14 +209,16 @@ namespace wg
 			int quantizedValue = value - (value % m_stepSize);
 			float fraction = quantizedValue / float(m_duration);
 
-			if (m_pSkin && fraction != m_renderedFraction)
-			{
-				if (m_renderedFraction < 0)
-					_requestRender();
-				else
-					_requestRender(m_pSkin->fractionChangeRect(m_size, m_state, m_renderedFraction, fraction));
-			}
+			OO(skin)._valueChanged(fraction, m_renderedFraction);
 		}
 	}
+
+	//____ _skinValue() _______________________________________________________
+
+	float Timer::_skinValue(const CSkinSlot* pSlot) const
+	{
+		return float(m_value)/m_duration;
+	}
+
 
 } // namespace wg

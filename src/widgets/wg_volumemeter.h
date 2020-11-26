@@ -54,8 +54,8 @@ namespace wg
 
 		//.____ Appearance __________________________________________
 
-		void			setLEDColors( Color bottomOn, Color middleOn, Color topOn,
-								   Color bottomOff, Color middleOff, Color topOff );
+		void			setLEDColors( HiColor bottomOn, HiColor middleOn, HiColor topOn,
+								   HiColor bottomOff, HiColor middleOff, HiColor topOff );
 		void			setNbLEDs( int bottomSection, int middleSection, int topSection );
 		void			setLEDSpacing( float spacing );
 
@@ -82,7 +82,7 @@ namespace wg
 		virtual ~VolumeMeter();
 		virtual Widget* _newOfMyType() const override { return new VolumeMeter(); };
 
-		void			_receive( Msg * pMsg ) override;
+		void			_update(int microPassed, int64_t microsecTimestamp);
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_cloneContent( const Widget * _pOrg ) override;
 		bool			_alphaTest( const Coord& ofs ) override;
@@ -91,7 +91,7 @@ namespace wg
 		RouteId			m_tickRouteId;
 
 		Direction		m_direction;
-		Color			m_LEDColors[3][2];
+		HiColor			m_LEDColors[3][2];
 		int				m_nSectionLEDs[3];
 		int				m_nLEDs;
 		float			m_LEDSpacing;

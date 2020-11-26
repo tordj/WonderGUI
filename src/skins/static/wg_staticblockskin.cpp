@@ -25,6 +25,7 @@
 #include <wg_surface.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -69,12 +70,40 @@ namespace wg
 		return sizeForContent(m_block.size());
 	}
 
+	//____ setBlendMode() _____________________________________________________
+
+	void StaticBlockSkin::setBlendMode(BlendMode mode)
+	{
+		m_blendMode = mode;
+		_updateOpacityFlag();
+	}
+
+	//____ setColor() __________________________________________________________
+
+	void StaticBlockSkin::setColor(HiColor color)
+	{
+		m_color = color;
+		_updateOpacityFlag();
+	}
+
+	//____ setGradient() ______________________________________________________
+
+	void StaticBlockSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpacityFlag();
+	}
+
 	//____ render() ______________________________________________________________
 
-	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, 
+								  float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (!m_pSurface)
 			return;
+
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
 		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);
@@ -82,9 +111,26 @@ namespace wg
 
 	//____ markTest() _________________________________________________________
 
-	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
+	}
+
+	//____ _updateOpacityFlag() _______________________________________________
+
+	void StaticBlockSkin::_updateOpacityFlag()
+	{
+		if (m_blendMode == BlendMode::Replace)
+			m_bOpaque = true;
+		else if (m_blendMode == BlendMode::Blend)
+		{
+			if ((m_bGradient && !m_gradient.isOpaque()) || m_color.a != 4096)
+				m_bOpaque = false;
+			else
+				m_bOpaque = m_pSurface->isOpaque();
+		}
+		else
+			m_bOpaque = false;
 	}
 
 

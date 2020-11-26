@@ -87,13 +87,13 @@ int main ( int argc, char** argv )
 	// Wg create the GfxDevice that will be used for all rendering, providing
 	// it our canvas to draw up.
 
-	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create( pCanvas );
+	SoftGfxDevice_p pGfxDevice = SoftGfxDevice::create();
 
 	// We create a RootPanel. This is responsible for rendering the
 	// tree of child widgets connected to it and handle their events.
 	// We provide it the GfxDevice to use for rendering.
 
-	RootPanel_p pRoot = RootPanel::create( pGfxDevice );
+	RootPanel_p pRoot = RootPanel::create( pCanvas, pGfxDevice );
 
 	//------------------------------------------------------
 	// Setup a simple GUI consisting of a filled background and
@@ -124,7 +124,7 @@ int main ( int argc, char** argv )
 		// of the FlexPanel.
 
 		Filler_p pBackground = Filler::create();
-		pBackground->setSkin( StaticColorSkin::create(Color::Bisque) );
+		pBackground->skin = StaticColorSkin::create(Color::Bisque);
 		pFlexPanel->slots.pushBackPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
 
 		// Now we create the button, using a clickable skin built from the BMP
@@ -140,7 +140,7 @@ int main ( int argc, char** argv )
 		// For best performance you should add widgets from front to back and avoid insert.
 
 		Button_p pButton = Button::create();
-		pButton->setSkin(BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Axis::X ));
+		pButton->skin = BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Axis::X );
 		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
 
 		// Finally we add a callback to the click-event of the button.
@@ -159,6 +159,10 @@ int main ( int argc, char** argv )
 		// and process them.
 
 		translateEvents( pRoot );
+
+		// Let WonderGUI perform periodic updates
+
+		Base::update(int64_t(SDL_GetTicks()) * 1000);
 
 		// Let WonderGUI render any updated/dirty regions of the screen.
 
@@ -195,24 +199,6 @@ int main ( int argc, char** argv )
 
 void translateEvents( RootPanel_p pRoot )
 {
-	// WonderGUI needs Tick-messages to keep track of time passed for things such
-	// key-repeat, double-click detection, animations etc.  So we create one
-	// and post it.
-
-	static unsigned int oldTicks = 0;
-
-	unsigned int ticks = SDL_GetTicks();
-	int tickDiff;
-
-	if( oldTicks == 0 )
-		tickDiff = 0;
-	else
-		tickDiff = (int) (ticks - oldTicks);
-	oldTicks = ticks;
-
-
-	Base::msgRouter()->post( TickMsg::create(ticks, tickDiff) );
-
 	// Process all the SDL events in a loop.
 	// In this example we only use mouse input, but typically you
 	// would also need to translate keyboard events.

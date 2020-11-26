@@ -108,8 +108,6 @@ protected:
 
 	AppVisitor*			m_pVisitor = nullptr;
 
-	int64_t				m_prevTime = 0;
-
 	ScrollPanel_p		g_pViewPanel = nullptr;
 
 	Device* g_pTesteeDevice = nullptr;

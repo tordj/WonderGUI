@@ -92,7 +92,7 @@ namespace wg
 		MsgRouter();
 		~MsgRouter();
 
-		class	Route;
+		class		Route;
 
 		void 		_dispatchQueued();
 

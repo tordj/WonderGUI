@@ -54,8 +54,7 @@ namespace wg
 
 		//.____ Creation __________________________________________
 
-		static GlGfxDevice_p	create(const RectI& viewport, int uboBindingPoint = 0);
-		static GlGfxDevice_p	create(GlSurface * pCanvas, int uboBindingPoint = 0);
+		static GlGfxDevice_p	create(int uboBindingPoint = 0);
 
 		//.____ Identification __________________________________________
 
@@ -69,18 +68,10 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-		bool	setCanvas(SizeI canvasSize, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true );
-		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipRects = true ) override;
-
 		//.____ State _________________________________________________
 
-		bool	setClipList(int nRectangles, const RectI * pRectangles) override;
-		void	clearClipList() override;
-		void	setClearColor( Color col ) override;
-		void	setTintColor(Color color) override;
-		void	setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+		void	setTintColor(HiColor color) override;
+		void	setTintGradient(const RectI& rect, const Gradient& gradient) override;
 		void	clearTintGradient() override;
 
 		bool	setBlendMode(BlendMode blendMode) override;
@@ -97,36 +88,37 @@ namespace wg
 		void	flush() override;
 
 		using 	GfxDevice::fill;
-		void	fill(const RectI& rect, const Color& col) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
-		void	drawLine(CoordI begin, Direction dir, int length, Color col, float thickness) override;
+		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness) override;
+		void	drawLine(CoordI begin, Direction dir, int length, HiColor col, float thickness) override;
 
 
 
 	protected:
-		GlGfxDevice(SizeI viewportSize, int uboBindingPoint);
-		GlGfxDevice(const RectI& viewport, int uboBindingPoint);
-		GlGfxDevice(GlSurface * pCanvas, int uboBindingPoint);
+		GlGfxDevice(int uboBindingPoint);
 		~GlGfxDevice();
+
+		void	_canvasWasChanged() override;
+		void	_renderLayerWasChanged() override;
+		void	_clipListWasChanged() override;
 
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
 
-				enum Command
+				enum class Command
 				{
 					None,
 					SetCanvas,
 		//			SetClip,
 					SetBlendMode,
 					SetMorphFactor,
-					SetClearColor,
 					SetTintColor,
 					SetTintGradient,
 					ClearTintGradient,
@@ -144,9 +136,8 @@ namespace wg
 				void	_setBlendMode(BlendMode mode);
 				void	_setMorphFactor(float morphFactor);
 				void	_setBlitSource(GlSurface * pSurf);
-				void	_setClearColor(Color color);
-				void	_setTintColor(Color color);
-				void	_setTintGradient(const RectI& rect, const Color colors[4]);
+				void	_setTintColor(HiColor color);
+				void	_setTintGradient(const RectI& rect, const Gradient& gradient);
 				void	_clearTintGradient();
 
 				inline void	_beginDrawCommand(Command cmd);
@@ -185,12 +176,12 @@ namespace wg
 		//
 
 
-		static const int c_commandBufferSize = 512;
-		static const int c_vertexBufferSize = 16384;				// Size of vertex buffer, in number of vertices.
-		static const int c_extrasBufferSize = 65536*4;				// Size of extras buffer, in GLfloats.
-		static const int c_surfaceBufferSize = 1024;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
-		static const int c_clipListBufferSize = 4096;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
-		static const int c_segmentsTintTexMapSize = 64;				// Number of segments tint palettes that fit into segmentsTintTexMap.
+		static const int c_commandBufferSize = 512*10;
+		static const int c_vertexBufferSize = 16384*10;				// Size of vertex buffer, in number of vertices.
+		static const int c_extrasBufferSize = 65536*4*10;				// Size of extras buffer, in GLfloats.
+		static const int c_surfaceBufferSize = 1024*10;				// Size of Surface_p buffer, used by SetBlitSource and SetCanvas commands.
+		static const int c_clipListBufferSize = 4096*10;				// Size of clip rect buffer, containing clipLists needed for execution of certain commands in command buffer.
+		static const int c_segmentsTintTexMapSize = 64*10;				// Number of segments tint palettes that fit into segmentsTintTexMap.
 
 		Command			m_cmd;
 		CmdFinalizer_p	m_pCmdFinalizer;
@@ -201,8 +192,6 @@ namespace wg
 
 		int				m_canvasYstart;
 		int				m_canvasYmul;
-
-		SizeI           m_emptyCanvasSize;
 
 		GLsync          m_idleSync = 0;
 
@@ -300,8 +289,8 @@ namespace wg
 
 		// Active state data
 
-		GlSurface * m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
-		GlSurface * m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
+		GlSurface_p m_pActiveBlitSource = nullptr;									// Currently active blit source in OpenGL, not to confuse with m_pBlitSource which might not be active yet.
+		GlSurface_p m_pActiveCanvas = nullptr;                                      // Currently active canvas in OpenGL, not to confuse with m_pCanvas which might not be active yet.
 		bool        m_bMipmappedActiveCanvas = false;                               // Set if currently active canvas is a surface that is mipmapped.
 		bool		m_bGradientActive = false;										
 		BlendMode	m_activeBlendMode = BlendMode::Blend;
@@ -318,7 +307,6 @@ namespace wg
 		GLint		m_glScissorBox[4];
 		GLint		m_glReadFrameBuffer;
 		GLint		m_glDrawFrameBuffer;
-		GLfloat		m_glClearColor[4];
 
 		//
 
@@ -384,7 +372,7 @@ namespace wg
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 
 		if (m_pCanvas)
 			static_cast<GlSurface*>(m_pCanvas.rawPtr())->m_bBackingBufferStale = true;
@@ -400,7 +388,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 
 		if( m_pBlitSource )
 			static_cast<GlSurface*>(m_pBlitSource.rawPtr())->m_bPendingReads = true;
@@ -419,7 +407,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 		m_commandBuffer[m_commandOfs++] = data;
 
 		if (m_pCanvas)
@@ -450,7 +438,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_drawCmdFinalizer;
 		m_cmdBeginVertexOfs = m_vertexOfs;
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 		m_commandBuffer[m_commandOfs++] = m_clipCurrOfs;
 		m_commandBuffer[m_commandOfs++] = m_nClipRects;
 
@@ -469,7 +457,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 		m_cmd = cmd;
 		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
 
-		m_commandBuffer[m_commandOfs++] = cmd;
+		m_commandBuffer[m_commandOfs++] = (int) cmd;
 	}
 
 
@@ -479,6 +467,7 @@ inline void GlGfxDevice::_beginDrawCommandWithSource(Command cmd)
 	{
 		(this->*m_pCmdFinalizer)();
 		m_pCmdFinalizer = &GlGfxDevice::_dummyFinalizer;
+		m_cmd = Command::None;
 	}
 
 

@@ -50,7 +50,7 @@ namespace wg
 	{
 		PixelFormat	format;
 		uint8_t*	pPixels;
-		Color*		pClut;
+		Color8*		pClut;
 		RectI		rect;
 		int			pitch;
 	};
@@ -110,10 +110,10 @@ namespace wg
 		virtual uint8_t		alpha( CoordI coord ) = 0;	///< @brief Get Alpha value of pixel at specified coordinate.
 		inline uint8_t		alpha( int x, int y );		///< @brief Get Alpha value of pixel at specified coordinate.
 
-		virtual	uint32_t	colorToPixel( const Color& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
-		virtual	Color		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
+		virtual	uint32_t	colorToPixel( const HiColor& col ) const;		///< @brief Convert specified color to a pixel in surface's native format.
+		virtual	HiColor		pixelToColor( uint32_t pixel ) const;		///< @brief Get the color and alpha values of a pixel.
 
-		inline const Color* clut() const;
+		inline const Color8* clut() const;
 
 		inline const PixelDescription*	pixelDescription() const; ///< @brief Get the pixel description for the surface.
 		inline PixelFormat	pixelFormat() const;
@@ -137,8 +137,8 @@ namespace wg
 
 		//.____  Rendering ____________________________________________________
 
-		virtual bool		fill( Color col );								///< @brief Fill surface with specified color.
-		virtual bool		fill( Color col, const RectI& region );			///< @brief Fill section of surface with specified color
+		virtual bool		fill( HiColor col );								///< @brief Fill surface with specified color.
+		virtual bool		fill( HiColor col, const RectI& region );			///< @brief Fill section of surface with specified color
 		virtual bool		copyFrom( Surface * pSrcSurf, const RectI& srcRect, CoordI dst );	///< @brief Copy block of graphics from other surface
 		virtual bool		copyFrom( Surface * pSrcSurf, CoordI dst );		///< @brief Copy other surface as a block
 
@@ -153,7 +153,7 @@ namespace wg
 
 		static const uint8_t *	s_pixelConvTabs[9];
 
-		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT = nullptr );
+		bool 				_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT = nullptr );
 
 		int                 m_id = 0;
 
@@ -166,7 +166,7 @@ namespace wg
 		bool				m_bMipmapped = false;
 		bool				m_bTiling = false;
 
-		Color *				m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
+		Color8 *			m_pClut = nullptr;					// Pointer at color lookup table. Always 256 entries long.
 
 		Object_p			m_pBaggage;
 
@@ -236,7 +236,7 @@ namespace wg
 
 	//____ clut() _____________________________________________________________
 
-	const Color* Surface::clut() const
+	const Color8* Surface::clut() const
 	{
 		return m_pClut;
 	}

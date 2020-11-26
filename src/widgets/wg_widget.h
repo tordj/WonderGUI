@@ -26,10 +26,10 @@
 
 #include <wg_types.h>
 #include <wg_string.h>
-#include <wg_skin.h>
 #include <wg_receiver.h>
 #include <wg_geocomponent.h>
 #include <wg_slotholder.h>
+#include <wg_cskinslot.h>
 
 namespace wg
 {
@@ -62,18 +62,39 @@ namespace wg
 	 * Widget is the base class for all widgets, providing common functionality.
 	 */
 
-	class Widget : public Receiver, protected GeoComponent::Holder
+	class Widget : public Receiver, protected CSkinSlot::Holder
 	{
 		friend class Container;
 		friend class GeoComponent;
 		friend class StaticSlot;
 		friend class DynamicSlot;
+		friend class Base;
 
 		template<class S> friend class CStaticSlotVector;
 		template<class S> friend class CDynamicSlotVector;
 		template<class S, int X> friend class CSlotArray;
 
 	public:
+
+		//.____ Components ____________________________________
+
+		/**
+		 * @brief The skin of this widget.
+		 *
+		 * The skin used by this widget. The skin covers the
+		 * whole widget and provide the background for any components placed
+		 * on the widget (if any).
+		 *
+		 * A skin typically has different looks depending on the widgets state (normal,
+		 * disabled, mouse inside, pressed, selected etc) and can also include padding,
+		 * transitions and be animated.
+		 *
+		 * Some widgets have more than one skin, but this is always the background skin for
+		 * the whole widget.
+		 *
+		 */
+
+		CSkinSlot			skin;
 
 		//.____ Identification _________________________________________________
 
@@ -133,9 +154,6 @@ namespace wg
 
 		//.____ Appearance _________________________________________________
 
-		virtual void		setSkin( Skin * pSkin );
-		inline Skin_p		skin() const;
-
 		inline void			setTooltip(const String& str);
 		inline virtual String tooltip() const;
 
@@ -191,17 +209,16 @@ namespace wg
 		int					_listAncestors(Widget* array[], int max);
 
 		virtual Widget* 	_newOfMyType() const = 0;
+		int64_t				_startReceiveUpdates();
+		void				_stopReceiveUpdates();
 
 		bool            	_requestPreRenderCall();
 
-		inline Rect			_contentRect() const { return m_pSkin ? m_pSkin->contentRect(m_size, m_state) : Rect( m_size ); }
-		inline Rect			_contentRect(const Rect& canvas) const { return m_pSkin ? m_pSkin->contentRect(canvas, m_state) : canvas; }
-		inline Size			_contentPaddingSize() const { return m_pSkin ? m_pSkin->contentPaddingSize() : Size(); }
-
+		inline Rect			_contentRect() const { return OO(skin)._contentRect(m_size, m_state); }
+		inline Rect			_contentRect(const Rect& canvas) const { return OO(skin)._contentRect(canvas, m_state); }
+		inline Size			_contentPaddingSize() const { return OO(skin)._contentPaddingSize(); }
 
 		// Convenient calls to holder
-
-
 
 		inline void			_requestRender() { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot ); }
 		inline void			_requestRender( const Rect& rect ) { if( m_pHolder ) m_pHolder->_childRequestRender( m_pSlot, rect ); }
@@ -237,26 +254,31 @@ namespace wg
 
 		// Methods for components to access
 
-		virtual Object * 	_object() override;
-		virtual const Object * _object() const override;
+		Object * 	_object() override;
+		const Object * _object() const override;
 
-		virtual Coord		_componentPos( const GeoComponent * pComponent ) const override;
-		virtual Size		_componentSize( const GeoComponent * pComponent ) const override;
-		virtual Rect		_componentGeo( const GeoComponent * pComponent ) const override;
-		virtual Coord		_globalComponentPos( const GeoComponent * pComponent ) const override;
-		virtual Rect		_globalComponentGeo( const GeoComponent * pComponent ) const override;
+		State			_componentState(const GeoComponent* pComponent) const override;
+		Coord			_componentPos( const GeoComponent * pComponent ) const override;
+		Size			_componentSize( const GeoComponent * pComponent ) const override;
+		Rect			_componentGeo( const GeoComponent * pComponent ) const override;
+		Coord			_globalComponentPos( const GeoComponent * pComponent ) const override;
+		Rect			_globalComponentGeo( const GeoComponent * pComponent ) const override;
 
-		virtual void		_componentRequestRender( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
-		virtual void		_componentRequestResize( const GeoComponent * pComponent ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent ) override;
+		void			_componentRequestRender( const GeoComponent * pComponent, const Rect& rect ) override;
+		void			_componentRequestResize( const GeoComponent * pComponent ) override;
 
- 		virtual void		_componentRequestFocus( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestInView( const GeoComponent * pComponent ) override;
-		virtual void		_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
+ 		void			_componentRequestFocus( const GeoComponent * pComponent ) override;
+		void			_componentRequestInView( const GeoComponent * pComponent ) override;
+		void			_componentRequestInView( const GeoComponent * pComponent, const Rect& mustHave, const Rect& niceToHave ) override;
 
-		virtual void		_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
+		void			_receiveComponentNotif( GeoComponent * pComponent, ComponentNotif notification, int value, void * pData ) override;
 
-		//
+		// Methods for skin to access
+
+		void			_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		float			_skinValue(const CSkinSlot* pSlot) const override;
+		float			_skinValue2(const CSkinSlot* pSlot) const override;
 
 		int				m_id;
 		Object_p		m_pBaggage;
@@ -264,7 +286,6 @@ namespace wg
 		SlotHolder *	m_pHolder;
 		StaticSlot *	m_pSlot;
 
-		Skin_p			m_pSkin;
 		PointerStyle	m_pointerStyle;
 
 		String			m_tooltip;
@@ -273,6 +294,7 @@ namespace wg
 		bool			m_bOpaque;			// Set if widget is totally opaque, no need to render anything behind.
 		bool			m_bTabLock;			// If set, the widget prevents focus shifting away from it with tab.
 		bool			m_bSelectable;		// Set if widget is allowed to be selected.
+		bool			m_bReceivingUpdates;//
 
 		State			m_state;			// Current state of widget.
 		Size			m_size;				// Current size of widget.
@@ -614,21 +636,6 @@ namespace wg
 		if( m_pHolder )
 			return m_pHolder->_prevChild( m_pSlot );
 		return 0;
-	}
-
-	//____ skin() _____________________________________________________________
-	/**
-	 * @brief Get the skin used by widget.
-	 *
-	 * Get the skin used by this widget. If a widget has several skins, this is the background skin,
-	 * covering the area of the widget and padding its content.
-	 *
-	 * @return Pointer to the skin used by this widget.
-	 */
-
-	Skin_p Widget::skin() const 
-	{ 
-		return m_pSkin; 
 	}
 
 	//____ setTooltip() _______________________________________________________

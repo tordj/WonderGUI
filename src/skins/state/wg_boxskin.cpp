@@ -24,6 +24,7 @@
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>
 #include <wg_util.h>
+#include <wg_skin.impl.h>
 
 namespace wg
 {
@@ -39,12 +40,12 @@ namespace wg
 		return BoxSkin_p(new BoxSkin());
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, Color fillColor, Color frameColor )
+	BoxSkin_p BoxSkin::create(BorderI frame, HiColor fillColor, HiColor frameColor )
 	{
 		return BoxSkin_p(new BoxSkin(frame, fillColor, frameColor));
 	}
 
-	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, Color, Color> > stateColors )
+	BoxSkin_p BoxSkin::create(BorderI frame, std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors )
 	{
 		BoxSkin_p p = new BoxSkin();
 
@@ -70,7 +71,7 @@ namespace wg
 		m_bOpaque = true;
 	}
 
-	BoxSkin::BoxSkin(BorderI frame, Color fillColor, Color frameColor )
+	BoxSkin::BoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor )
 	{
 		m_frame = frame;
 		setColors(fillColor, frameColor);
@@ -106,7 +107,7 @@ namespace wg
 
 	//____ setColors() ________________________________________________________
 
-	void BoxSkin::setColors(Color fill, Color frame)
+	void BoxSkin::setColors(HiColor fill, HiColor frame)
 	{
 		m_stateColorMask = 1;
 
@@ -117,13 +118,13 @@ namespace wg
 		}
 
 		bool hasFrame = (m_frame.width() + m_frame.height() > 0);
-		if (fill.a == 255 && (!hasFrame || frame.a == 255))
+		if (fill.a == 4096 && (!hasFrame || frame.a == 4096))
 			m_bOpaque = true;
 		else
 			m_bOpaque = false;
 	}
 
-	void BoxSkin::setColors(State state, Color fill, Color frame)
+	void BoxSkin::setColors(State state, HiColor fill, HiColor frame)
 	{
 		int i = _stateToIndex(state);
 
@@ -136,7 +137,7 @@ namespace wg
 		_updateOpaqueFlag();
 	}
 
-	void BoxSkin::setColors(std::initializer_list< std::tuple<State, Color, Color> > stateColors)
+	void BoxSkin::setColors(std::initializer_list< std::tuple<State, HiColor, HiColor> > stateColors)
 	{
 		for (auto& state : stateColors)
 		{
@@ -152,7 +153,7 @@ namespace wg
 
 	//____ colors() ______________________________________________________
 
-	std::tuple<Color, Color> BoxSkin::colors(State state) const
+	std::tuple<HiColor, HiColor> BoxSkin::colors(State state) const
 	{
 		int i = _stateToIndex(state);
 		return std::make_tuple(m_fillColor[i], m_frameColor[i]);
@@ -160,18 +161,18 @@ namespace wg
 
 	//____ _render() _______________________________________________________________
 
-	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float fraction, float fraction2) const
+	void BoxSkin::render( GfxDevice * pDevice, const Rect& _canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		//TODO: Optimize! Clip patches against canvas first.
 
-		BlendMode	oldBlendMode = pDevice->blendMode();
+		RenderSettings settings(pDevice, m_layer, m_blendMode);
 
 		RectI canvas = _canvas.px();
 
-		if (m_blendMode != oldBlendMode )
-			pDevice->setBlendMode(m_blendMode);
-
 		int i = _stateToIndex(state);
+		pDevice->fill(canvas, m_fillColor[i]);
+
+
 		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{
 			pDevice->fill( canvas, m_fillColor[i] );
@@ -180,23 +181,28 @@ namespace wg
 		{
 			BorderI frame = pointsToPixels(m_frame);
 
-			RectI top( canvas.x, canvas.y, canvas.w, frame.top );
-			RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
-			RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
-			RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
-			RectI center( canvas - frame );
+			if (frame.width() >= canvas.w || frame.height() >= canvas.h)
+			{
+				pDevice->fill(canvas, m_frameColor[i]);
+			}
+			else
+			{
+				RectI top( canvas.x, canvas.y, canvas.w, frame.top );
+				RectI left( canvas.x, canvas.y+frame.top, frame.left, canvas.h - frame.height() );
+				RectI right( canvas.x + canvas.w - frame.right, canvas.y+frame.top, frame.right, canvas.h - frame.height() );
+				RectI bottom( canvas.x, canvas.y + canvas.h - frame.bottom, canvas.w, frame.bottom );
+				RectI center( canvas - frame );
 
-			pDevice->fill( top, m_frameColor[i] );
-			pDevice->fill( left, m_frameColor[i] );
-			pDevice->fill( right, m_frameColor[i] );
-			pDevice->fill( bottom, m_frameColor[i] );
+				pDevice->fill( top, m_frameColor[i] );
+				pDevice->fill( left, m_frameColor[i] );
+				pDevice->fill( right, m_frameColor[i] );
+				pDevice->fill( bottom, m_frameColor[i] );
 
-			if( center.w > 0 || center.h > 0 )
-				pDevice->fill( center, m_fillColor[i] );
+				if( center.w > 0 || center.h > 0 )
+					pDevice->fill( center, m_fillColor[i] );
+			}
 		}
 
-		if (m_blendMode != oldBlendMode)
-			pDevice->setBlendMode(oldBlendMode);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -231,7 +237,7 @@ namespace wg
 
 	//____ markTest() _____________________________________________________________
 
-	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool BoxSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if( !canvas.contains(ofs) )
 			return false;
@@ -246,9 +252,9 @@ namespace wg
 
 			Rect center = canvas - Border(m_frame).aligned();
 			if( center.contains(ofs) )
-				opacity = m_fillColor[i].a;
+				opacity = m_fillColor[i].a * 4096/255;
 			else
-				opacity = m_frameColor[i].a;
+				opacity = m_frameColor[i].a * 4096/255;
 		}
 
 		return ( opacity >= opacityTreshold );
@@ -259,7 +265,7 @@ namespace wg
 	bool BoxSkin::isOpaque( State state ) const
 	{
 		int i = _stateToIndex(state);
-		if( m_bOpaque || (m_fillColor[i].a == 255 && (m_frameColor[i] == 255 || (m_frame.width() + m_frame.height() == 0))) )
+		if( m_bOpaque || (m_fillColor[i].a == 4096 && (m_frameColor[i].a == 4096 || (m_frame.width() + m_frame.height() == 0))) )
 			return true;
 
 		return false;
@@ -273,25 +279,30 @@ namespace wg
 		Rect center = Rect(canvasSize) - Border(m_frame).aligned();
 		int i = _stateToIndex(state);
 		if( center.contains(rect) )
-			return m_fillColor[i].a == 255;
+			return m_fillColor[i].a == 4096;
 		else if( !center.intersectsWith(rect) )
-			return m_frameColor[i].a == 255;
+			return m_frameColor[i].a == 4096;
 
-		return m_fillColor[i].a == 255 && m_frameColor[i].a == 255;
+		return m_fillColor[i].a == 4096 && m_frameColor[i].a == 4096;
 	}
 
-	//____ isStateIdentical() ____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool BoxSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect BoxSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		if( m_fillColor[i1] == m_fillColor[i2] && (m_frame.isEmpty() || m_frameColor[i1] == m_frameColor[i2]) &&
-			StateSkin::isStateIdentical(state,comparedTo) )
-			return true;
-		else
-			return false;
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if (m_fillColor[i1] != m_fillColor[i2] || (!m_frame.isEmpty() && m_frameColor[i1] != m_frameColor[i2]))
+			return canvas;
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
 
 	//____ _updateOpaqueFlag() ____________________________________________________
@@ -317,7 +328,7 @@ namespace wg
 
 				bool hasFrame = (m_frame.width() + m_frame.height() > 0);
 
-				if (alpha == 255 * StateEnum_Nb && (!hasFrame || frameAlpha == 255 * StateEnum_Nb))
+				if (alpha == 4096 * StateEnum_Nb && (!hasFrame || frameAlpha == 4096 * StateEnum_Nb))
 					m_bOpaque = true;
 				else
 					m_bOpaque = false;

@@ -89,9 +89,10 @@ namespace wg
 		virtual Widget* _newOfMyType() const override { return new AnimPlayer(); };
 
 		void			_cloneContent( const Widget * _pOrg ) override;
+
+		void			_update(int microPassed, int64_t microsecTimestamp) override;
 		void			_render( GfxDevice * pDevice, const Rect& _canvas, const Rect& _window ) override;
 		void			_refresh() override;
-		void			_receive( Msg * pMsg ) override;
 		bool			_alphaTest( const Coord& ofs ) override;
 		void			_setState( State state ) override;
 
@@ -107,8 +108,6 @@ namespace wg
 
 
 	private:
-
-		RouteId		m_tickRouteId = 0;
 
 		PlayMode	m_playMode	= PlayMode::Forward;
 		int			m_playPos	= 0;

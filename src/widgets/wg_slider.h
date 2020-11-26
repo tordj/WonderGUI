@@ -50,6 +50,11 @@ namespace wg
 
 		static Slider_p	create() { return Slider_p(new Slider()); }
 
+		//.____ Components ____________________________________
+
+		CSkinSlot		handleSkin;
+
+
 		//.____ Identification __________________________________________
 
 		const TypeInfo&	typeInfo(void) const override;
@@ -64,14 +69,8 @@ namespace wg
 
 		//.____ Appearance _____________________________________________
 
-		void			setSkin(Skin * pSkin) override;
-
-		void			setHandleSkin(const Skin_p& pSkin);
-		inline Skin_p	handleSkin() const { return m_pHandleSkin; }
-
 		void			setAxis(Axis axis);
 		Axis			axis() const { return m_axis; }
-
 
 		//.____ Control _______________________________________________________
 
@@ -98,13 +97,25 @@ namespace wg
 
 		void		_setValue(float value, bool bPostMsg = true);
 		void		_setHandleState(State state);
-		Rect		_handleGeo(const Rect& widgetGeo);
+		Rect		_handleGeo(const Rect& widgetGeo) const;
+
+		State		_componentState(const GeoComponent* pComponent) const override;
+		Coord		_componentPos(const GeoComponent* pComponent) const override;
+		Size		_componentSize(const GeoComponent* pComponent) const override;
+		Rect		_componentGeo(const GeoComponent* pComponent) const override;
+
+		void		_componentRequestRender(const GeoComponent* pComponent) override;
+		void		_componentRequestRender(const GeoComponent* pComponent, const Rect& rect) override;
+
+		void		_skinChanged(const CSkinSlot* pSlot, Skin* pNewSkin, Skin* pOldSkin) override;
+		float		_skinValue(const CSkinSlot* pSlot) const override;
+
+
 
 
 	private:
 		Size		m_preferredSize;
 		MU			m_preferredSlideLength;
-		Skin_p		m_pHandleSkin;
 		float		m_value = 0.f;
 		float		m_valueAtPress = 0.f;
 		int			m_nbSteps = 0;

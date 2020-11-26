@@ -60,17 +60,11 @@ namespace wg
 
 	MU Button::matchingHeight( MU width ) const
 	{
-		MU height = 0;
-
-		if( m_pSkin )
-			height = m_pSkin->preferredSize().h;
+		MU height = OO(skin)._preferredSize().h;
 
 		if( !OO(text).isEmpty() )
 		{
-			Size padding;
-
-			if( m_pSkin )
-				padding = m_pSkin->contentPaddingSize();
+			Size padding = OO(skin)._contentPaddingSize();
 
 			MU heightForText = OO(text)._matchingHeight(width-padding.w) + padding.h;
 			if( heightForText > height )
@@ -92,8 +86,7 @@ namespace wg
 		if( !OO(text).isEmpty() )
 			preferred = OO(text)._preferredSize();
 
-		if( m_pSkin )
-			preferred = m_pSkin->sizeForContent(preferred);
+		preferred = OO(skin)._sizeForContent(preferred);
 
 		//TODO: Take icon into account.
 
@@ -104,8 +97,11 @@ namespace wg
 
 	void Button::_setState( State state )
 	{
-		if(_icon().skin() && !_icon().skin()->isStateIdentical(state,m_state))
-				_requestRender();
+		if (!_icon().isEmpty())
+		{
+			//TODO: Remove once icon uses CSkinSlot.
+			_requestRender();
+		}
 
 		OO(text)._setState(state);
 		Widget::_setState(state);
@@ -117,16 +113,12 @@ namespace wg
 	{
 		Widget::_resize(_size);
 
-		Rect	contentRect(0,0,_size);
-
-		if( m_pSkin )
-			contentRect -= m_pSkin->contentPaddingSize();
+		Rect	contentRect = OO(skin)._contentRect(_size,m_state);
 
 		Rect textRect = _icon()._getTextRect( contentRect, _icon()._getIconRect( contentRect ) );
 
 		OO(text)._setSize( textRect );
 	}
-
 
 	//____ _render() _____________________________________________________________
 
@@ -134,10 +126,7 @@ namespace wg
 	{
 		Widget::_render(pDevice,_canvas,_window);
 
-		Rect	contentRect = _canvas;
-
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(_canvas, m_state);
+		Rect	contentRect = OO(skin)._contentRect(_canvas, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -233,13 +222,11 @@ namespace wg
 				break;
 		}
 
-
 		state.setPressed(m_bReturnPressed || m_bPressed);
 
 		if( state != m_state )
 			_setState(state);
 	}
-
 
 	//____ _refresh() ____________________________________________________________
 
@@ -250,7 +237,6 @@ namespace wg
 
 		//TODO: Handling of icon and text.
 	}
-
 
 	//____ _cloneContent() _______________________________________________________
 
@@ -283,10 +269,10 @@ namespace wg
 
 	Coord Button::_componentPos( const GeoComponent * pComponent ) const
 	{
-		Rect	contentRect = m_size;
+		if (pComponent == &skin)
+			return Coord();
 
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+		Rect contentRect = OO(skin)._contentRect(contentRect, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -303,10 +289,10 @@ namespace wg
 
 	Size Button::_componentSize( const GeoComponent * pComponent ) const
 	{
-		Size	sz = m_size;
+		if (pComponent == &skin)
+			return m_size;
 
-		if( m_pSkin )
-			sz -= m_pSkin->contentPaddingSize();
+		Size	sz = m_size - OO(skin)._contentPaddingSize();
 
 		Rect iconRect = _icon()._getIconRect( sz );
 
@@ -322,10 +308,10 @@ namespace wg
 
 	Rect Button::_componentGeo( const GeoComponent * pComponent ) const
 	{
-		Rect	contentRect = m_size;
+		if (pComponent == &skin)
+			return m_size;
 
-		if( m_pSkin )
-			contentRect = m_pSkin->contentRect(contentRect, m_state);
+		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
 
 		// Get icon and text rect from content rect
 
@@ -337,6 +323,5 @@ namespace wg
 		Rect textRect = _icon()._getTextRect( contentRect, iconRect );
 		return textRect;
 	}
-
 
 } // namespace wg

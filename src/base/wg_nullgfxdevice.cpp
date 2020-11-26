@@ -31,12 +31,12 @@ namespace wg
 
 	//____ create() _______________________________________________________________
 
-	NullGfxDevice_p NullGfxDevice::create( SizeI size )
+	NullGfxDevice_p NullGfxDevice::create()
 	{
-		return NullGfxDevice_p(new NullGfxDevice(size));
+		return NullGfxDevice_p(new NullGfxDevice());
 	}
 
-	NullGfxDevice::NullGfxDevice( SizeI size ) : GfxDevice(size)
+	NullGfxDevice::NullGfxDevice()
 	{
 	}
 
@@ -65,28 +65,27 @@ namespace wg
 		return SurfaceFactory_p();
 	}
 
-	//____ setCanvas() ________________________________________________________
-
-	bool NullGfxDevice::setCanvas(Surface * pCanvas, CanvasInit initOperation, bool bResetClipList )
-	{
-		m_pCanvas = pCanvas;
-		return true;
-	}
-
-
-	void NullGfxDevice::fill(const RectI& rect, const Color& col)
+	void NullGfxDevice::_canvasWasChanged()
 	{
 	}
 
-	void NullGfxDevice::fill(const RectF& rect, const Color& col)
+	void NullGfxDevice::_renderLayerWasChanged()
 	{
 	}
 
-	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+	void NullGfxDevice::fill(const RectI& rect, HiColor col)
 	{
 	}
 
-	void NullGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
+	void NullGfxDevice::fill(const RectF& rect, HiColor col)
+	{
+	}
+
+	void NullGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
+	{
+	}
+
+	void NullGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
 	{
 	}
 
@@ -98,7 +97,7 @@ namespace wg
 	{
 	}
 
-	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void NullGfxDevice::_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
 	}
 
