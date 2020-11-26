@@ -8,6 +8,7 @@ mkdir components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
+mkdir gfxdevices/metal
 mkdir skins
 mkdir fonts
 cd ..
@@ -62,6 +63,9 @@ cp wg_component.* \
 
 cd ../gfxdevices/opengl
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/opengl
+
+cd ../metal
+cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/metal
 
 cd ../software
 cp * ../../../../wg2/_kato_wg3/imports/gfxdevices/software/

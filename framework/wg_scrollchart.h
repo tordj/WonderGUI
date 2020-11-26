@@ -124,10 +124,10 @@ public:
 	bool	FeedSample(int waveId, SamplePair sample);
 
 
-	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight = false);
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
-	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnTop = false );
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgScrollChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
@@ -193,6 +193,7 @@ protected:
 		WgCoord				offset;
 		wg::Skin_p			pSkin;
 		wg::TextStyle_p		pTextStyle;
+        bool                bLabelAtEnd;
 	};
 
 	void	_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches);

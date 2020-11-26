@@ -71,6 +71,7 @@ void packPanelPaddingTest( WgRootPanel * pRoot );
 void packPanelTextWrapTest( WgRootPanel * pRoot );
 bool pianoKeyboardTest(WgRootPanel * pRoot);
 bool rangeSliderTest(WgRootPanel* pRoot);
+bool canvasCapsuleTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
@@ -149,7 +150,7 @@ int main ( int argc, char** argv )
 
 	SDL_Init(SDL_INIT_VIDEO);
 
-	int posX = 100, posY = 100, width = 3000, height = 1500;
+	int posX = 100, posY = 100, width = 700, height = 500;
 
 	int flags = 0;
 
@@ -290,8 +291,9 @@ int main ( int argc, char** argv )
 
 	WgRootPanel * pRoot = setupGUI( g_pGfxDevice );
 
+
 //    packPanelPaddingTest( pRoot );
-    packPanelTextWrapTest( pRoot );
+//    packPanelTextWrapTest( pRoot );
 //    flexHookGrowthTest( pRoot );
 //    packPanelStressTest( pRoot );
 //    baselineTest( pRoot );
@@ -302,7 +304,8 @@ int main ( int argc, char** argv )
 
 //    cursorInViewTest( pRoot );
 //	pianoKeyboardTest(pRoot);
-	rangeSliderTest(pRoot);
+//	rangeSliderTest(pRoot);
+    canvasCapsuleTest(pRoot);
 
 
 	// Setup debug overlays
@@ -1133,6 +1136,31 @@ bool rangeSliderTest(WgRootPanel* pRoot)
 
 	pRoot->SetChild(pBaseLayer);
 	return true;
+}
+
+//____ canvasCapsuleTest() _________________________________________________________
+
+bool canvasCapsuleTest(WgRootPanel* pRoot)
+{
+    auto pBaseLayer = new WgFlexPanel();
+    pBaseLayer->SetSkin(wg::ColorSkin::create(wg::Color::PapayaWhip));
+
+    auto pCanvas = new WgCanvasCapsule();
+    pCanvas->SetSurfaceFactory(g_pSurfaceFactory);
+
+    pCanvas->SetCanvasFillColor(wg::Color(255,255,255,128));
+    
+//    auto pFiller = new WgFiller();
+//    pFiller->SetColors( WgColorset::Create(wg::Color(255,255,255,0)) );
+//    pCanvas->SetChild(pFiller);
+    
+    pBaseLayer->AddChild(pCanvas, WgRect(10, 10,100,100));
+    
+//    pCanvas->StartFade(WgColor(0,0,0,255), 5000 );
+
+    
+    pRoot->SetChild(pBaseLayer);
+    return true;
 }
 
 

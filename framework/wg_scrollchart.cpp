@@ -74,9 +74,11 @@ WgScrollChart::WgScrollChart()
 
 	m_sampleLabelStyle.alignment = WgOrigo::South;
 	m_sampleLabelStyle.offset = { 0,0 };
+    m_sampleLabelStyle.bLabelAtEnd = false;
 
 	m_valueLabelStyle.alignment = WgOrigo::West;
 	m_valueLabelStyle.offset = { 0,0 };
+    m_valueLabelStyle.bLabelAtEnd = false;
 
 	m_chartColor = WgColor::White;
 }
@@ -333,12 +335,13 @@ void WgScrollChart::SetDynamicValueRange( bool bDynamic )
 
 //____ SetSampleLabelStyle() __________________________________________________
 
-void WgScrollChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
+void WgScrollChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnTop)
 {
 	m_sampleLabelStyle.alignment = alignment;
 	m_sampleLabelStyle.offset = offset;
 	m_sampleLabelStyle.pSkin = pSkin;
 	m_sampleLabelStyle.pTextStyle = pStyle;
+    m_sampleLabelStyle.bLabelAtEnd = bLabelsOnTop;
 	_requestRender();
 }
 
@@ -363,12 +366,13 @@ void WgScrollChart::SetSampleGridLines(int nLines, GridLine * pLines)
 
 //____ SetValueLabelStyle() ___________________________________________________
 
-void WgScrollChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
+void WgScrollChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight)
 {
 	m_valueLabelStyle.alignment = alignment;
 	m_valueLabelStyle.offset = offset;
 	m_valueLabelStyle.pSkin = pSkin;
 	m_valueLabelStyle.pTextStyle = pStyle;
+    m_valueLabelStyle.bLabelAtEnd = bLabelsOnRight;
 	_requestRender();
 }
 
@@ -1163,6 +1167,8 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 		mul = scrollCanvas.h / (m_bottomValue - m_topValue);
 		startOfs = float(mul > 0 ? scrollCanvas.y : scrollCanvas.y + scrollCanvas.h);
 
+        int   xOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.x + canvas.w : canvas.x;
+
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = int(startOfs) + (int)((line.pos - top) * mul + 0.5f);
@@ -1190,7 +1196,7 @@ void WgScrollChart::_onRender(wg::GfxDevice * pDevice, const WgRect& _canvas, co
 					textOfs = _skinContentRect( m_valueLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale).pos();
 				}
 
-				WgCoord labelPos = _placeLabel({ canvas.x, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
+				WgCoord labelPos = _placeLabel({ xOfs, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
 					_renderSkin(m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);

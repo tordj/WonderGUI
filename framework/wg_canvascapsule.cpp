@@ -70,6 +70,17 @@ void WgCanvasCapsule::SetSurfaceFactory(wg::SurfaceFactory * pFactory)
 	m_pFactory = pFactory;
 }
 
+//____ SetCanvasFillColor() ____________________________________________________
+
+void WgCanvasCapsule::SetCanvasFillColor(WgColor color)
+{
+    if( color != m_canvasFillColor )
+    {
+        m_canvasFillColor = color;
+        _requestRender();
+    }
+}
+
 
 //____ SetColor() ______________________________________________________________
 
@@ -206,7 +217,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 {
 	// Make sure we have children
 
-	if (!m_hook.Widget())
+    if (!m_hook.Widget() && m_canvasFillColor.a == 0)
 		return;
 
 	// Make sure we have a canvas
@@ -271,11 +282,12 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		pDevice->setTintColor(WgColor::White);
 
 		pDevice->setClipList(renderStack.size(), renderStack.begin());
-		pDevice->fill(WgColor::Transparent);
+		pDevice->fill(m_canvasFillColor);
 
 		pDevice->setBlendMode(WgBlendMode::Blend);
 
-		m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
+        if(m_hook.Widget())
+            m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
 		pDevice->setCanvas(pOldCanvas);
 
 	}

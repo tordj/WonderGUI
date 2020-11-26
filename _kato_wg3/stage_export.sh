@@ -7,6 +7,7 @@ mkdir components
 mkdir gfxdevices
 mkdir gfxdevices/opengl
 mkdir gfxdevices/software
+mkdir gfxdevices/metal
 mkdir skins
 mkdir fonts
 cd ..

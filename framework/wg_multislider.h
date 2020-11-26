@@ -210,6 +210,13 @@ public:
     Slider* MarkedSlider(WgCoord kPointOfs) { return _markedSlider(kPointOfs * m_scale / WG_SCALE_BASE); }
 
     WgRect  SliderHandleGeo(int sliderId) const;
+
+	//Used in WeissEQ1 & WeissEQMP when using lasso feature, so set the lock state of all selected bands (sliders)
+	//to the same direction.
+	int GetAxisLockState() { return m_axisLockState; }
+	void SetAxisLockState(int iLockState) { m_axisLockState = (AxisLockState)iLockState; }
+
+
 protected:
 
 	enum AxisLockState

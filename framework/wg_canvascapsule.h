@@ -51,6 +51,9 @@ public:
 	void                StartFade(WgColor destination, int ms);
 	void                StopFade();
 
+    void                SetCanvasFillColor(WgColor color);
+    inline WgColor      CanvasFillColor() const { return m_canvasFillColor; }
+    
 	void                SetColor( const WgColor& color);
 	void                SetTintMode( WgTintMode mode );
 	void                SetBlendMode( WgBlendMode mode );
@@ -82,6 +85,7 @@ private:
 	WgColor            m_tintColor;
 	WgColor            m_fadeStartColor;
 	WgColor            m_fadeEndColor;
+    WgColor            m_canvasFillColor = WgColor::Transparent;
 	int                m_fadeTime;
 	int                m_fadeTimeCounter;
 

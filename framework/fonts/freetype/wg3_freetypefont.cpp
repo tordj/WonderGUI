@@ -40,9 +40,10 @@
 #define SUPPORT_STEM_DARKENING
 
 #ifdef SUPPORT_STEM_DARKENING
-#	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library that does not support stem darkening. 
-										// Comment out define above to compile anyway. Small fonts will look thin/bright and anti-alias won't be as smooth
-										// without stem darkening when gamma correction is enabled.
+#	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library
+                                        // that does not support stem darkening. Comment out define above to compile anyway.
+                                        // Small fonts will look thin/bright and anti-alias won't be as smooth
+										// if gamma correction is enabled.
 #endif
 
 namespace wg
@@ -557,7 +558,7 @@ namespace wg
 		{
 			int x = 0;
 			for( ; x < src_width ; x++ )
-				pDest[x] = (int(pSrc[x]) << 24) | 0xFFFFFF;
+				pDest[x] = (int(pSrc[x]) << 24) | 0x00FFFFFF;
 
 			for( ; x < dest_width ; x++ )
 				pDest[x] = 0;

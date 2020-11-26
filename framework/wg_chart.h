@@ -108,10 +108,10 @@ public:
 
 //	bool	SetResampleMethod();			// Nearest, Interpolate etc   We have two dimensions here...  Average, Maintain peaks...
 
-	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+	void	SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnTop = false );
 	void	SetSampleGridLines(int nLines, GridLine * pLines);
 
-	void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle);
+    void	SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight = false );
 	void	SetValueGridLines(int nLines, GridLine * pLines);
 
 	void	SetResizeResponder(std::function<void(WgChart * pWidget, WgSize newSize)> func);	// Called when widgets size has changed.
@@ -127,6 +127,12 @@ public:
     void    UseTemporalFiltering(bool useFilter) { m_useTemporalFiltering = useFilter; }
     void    SetAttackTime(float attackTime) { m_attackTime = attackTime; }
     void    SetReleaseTime(float releaseTime) { m_releaseTime = releaseTime; }
+
+
+    void    SetSampleLabelColor(WgColor col);
+    void    SetSampleGridLineColor(WgColor col);
+    void    SetValueLabelColor(WgColor col);
+    void    SetValueGridLineColor(WgColor col);
 
 protected:
 
@@ -182,6 +188,7 @@ protected:
 		WgCoord				offset;
 		wg::Skin_p			pSkin;
 		wg::TextStyle_p		pTextStyle;
+        bool                bLabelAtEnd;
 	};
 
 	void    _updateBitmapCache( wg::GfxDevice * pDevice );

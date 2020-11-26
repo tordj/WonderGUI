@@ -388,7 +388,7 @@ namespace wg
 
 				auto maxsegPos = fragShader.find("$MAXSEG");
 				fragShader.replace(maxsegPos, 7, std::to_string(c_maxSegments));
-			
+
 				const char* pVertexShader = segmentsVertexShader;
 				for (int j = 0; j < 2; j++)
 				{
@@ -1179,7 +1179,7 @@ namespace wg
 			}
 		}
 
-		// Provide color	
+		// Provide color
 
 		float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
@@ -2096,7 +2096,6 @@ namespace wg
             glActiveTexture(GL_TEXTURE0);
         }
 
-
 		glEnableVertexAttribArray(0);
 		glEnableVertexAttribArray(1);
 
@@ -2341,7 +2340,7 @@ namespace wg
 				glDisable(GL_FRAMEBUFFER_SRGB);
 
 			glBindFramebuffer(GL_FRAMEBUFFER, 0);
- 
+
 			// Normally we would set the viewport and scissoring to the values given,
 			// but a bug in Logic Pro X doesn't handle viewports correctly when moving
 			// plugin window between screens with different scaling. Just maintaining

@@ -184,19 +184,19 @@ namespace wg
             stream << std::endl;
             stream << "Tracked objects: " << s_trackedObjects.size() << std::endl;
             stream << "---------------------------------------" << std::endl;
+		
+			for (auto& tracked : s_trackedObjects)
+			{
+				const char* pClassName = tracked.first->typeInfo().className;
 
-            for (auto& tracked : s_trackedObjects)
-            {
-                const char* pClassName = tracked.first->typeInfo().className;
+				stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
 
-                stream << "#" << tracked.second.serialNb << " - " << pClassName << " @ 0x" << tracked.first << " with " << tracked.first->refcount() << " references.";
+				if (tracked.second.pFileName)
+					stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
 
-                if (tracked.second.pFileName)
-                    stream << " Tracked from " << tracked.second.pFileName << ":" << tracked.second.lineNb;
-
-                stream << std::endl;
-            }
-        }
+				stream << std::endl;
+			}
+		}
 	}
 
 

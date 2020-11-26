@@ -52,9 +52,11 @@ WgChart::WgChart()
 
 	m_sampleLabelStyle.alignment = WgOrigo::South;
 	m_sampleLabelStyle.offset = { 0,0 };
+    m_sampleLabelStyle.bLabelAtEnd = false;
 
 	m_valueLabelStyle.alignment = WgOrigo::West;
 	m_valueLabelStyle.offset = { 0,0 };
+    m_valueLabelStyle.bLabelAtEnd = false;
 
 	m_waveIdCounter = 1;
 	m_renderSectionWidth = 220;			// Keep a high value until we have upgraded to new GfxDevice with multi-clip support.
@@ -295,6 +297,32 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
 		_requestRender();
 	return true;
 }
+
+
+void WgChart::SetSampleLabelColor(WgColor col)
+{
+    m_sampleLabelStyle.pTextStyle->setColor(col);
+}
+void WgChart::SetSampleGridLineColor(WgColor col)
+{
+    for(auto &p : m_sampleGridLines)
+    {
+        p.color = col;
+    }
+}
+void WgChart::SetValueLabelColor(WgColor col)
+{
+    m_valueLabelStyle.pTextStyle->setColor(col);
+
+}
+void WgChart::SetValueGridLineColor(WgColor col)
+{
+    for(auto &p : m_valueGridLines)
+    {
+        p.color = col;
+    }
+}
+
 
 //____ SetWaveSamples() _______________________________________________________
 
@@ -553,12 +581,13 @@ void WgChart::SetDynamicSampleRange()
 
 //____ SetSampleLabelStyle() __________________________________________________
 
-void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
+void WgChart::SetSampleLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnTop )
 {
 	m_sampleLabelStyle.alignment = alignment;
 	m_sampleLabelStyle.offset = offset;
 	m_sampleLabelStyle.pSkin = pSkin;
 	m_sampleLabelStyle.pTextStyle = pStyle;
+    m_sampleLabelStyle.bLabelAtEnd = bLabelsOnTop;
 	_requestRender();
 }
 
@@ -583,12 +612,13 @@ void WgChart::SetSampleGridLines(int nLines, GridLine * pLines)
 
 //____ SetValueLabelStyle() ___________________________________________________
 
-void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle)
+void WgChart::SetValueLabelStyle(WgOrigo alignment, WgCoord offset, wg::Skin * pSkin, wg::TextStyle * pStyle, bool bLabelsOnRight )
 {
 	m_valueLabelStyle.alignment = alignment;
 	m_valueLabelStyle.offset = offset;
 	m_valueLabelStyle.pSkin = pSkin;
 	m_valueLabelStyle.pTextStyle = pStyle;
+    m_valueLabelStyle.bLabelAtEnd = bLabelsOnRight;
 	_requestRender();
 }
 
@@ -835,6 +865,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 
 	WgRect waveCanvas = canvas - m_pixelPadding;
 	float sampleScale = waveCanvas.w / (m_lastSample - m_firstSample);
+    
+    int   yOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.y : canvas.y + canvas.h;
 
 	// Draw sample grid lines
 
@@ -868,7 +900,7 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					textOfs = _skinContentRect( m_sampleLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale ).pos();
 				}
 
-				WgCoord labelPos = _placeLabel({ xOfs,canvas.y+canvas.h }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
+				WgCoord labelPos = _placeLabel({ xOfs, yOfs }, m_sampleLabelStyle.alignment, m_sampleLabelStyle.offset, labelSize);
 
 				if (m_sampleLabelStyle.pSkin)
 					_renderSkin( m_sampleLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);
@@ -889,6 +921,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 		float mul = waveCanvas.h / (m_bottomValue - m_topValue);
 		int	  startOfs = mul > 0 ? waveCanvas.y : waveCanvas.y + waveCanvas.h;
 
+        int   xOfs = m_valueLabelStyle.bLabelAtEnd ? canvas.x + canvas.w : canvas.x;
+        
 		for (auto& line : m_valueGridLines)
 		{
 			int yOfs = startOfs + (int)((line.pos - top) * mul); // +0.5f);
@@ -917,8 +951,8 @@ void WgChart::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, const W
 					labelSize = _skinSizeForContent( m_valueLabelStyle.pSkin, labelSize, m_scale);
 					textOfs = _skinContentRect( m_valueLabelStyle.pSkin, labelSize, WgStateEnum::Normal, m_scale).pos();
 				}
-
-				WgCoord labelPos = _placeLabel({ canvas.x, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
+                
+				WgCoord labelPos = _placeLabel({ xOfs, yOfs }, m_valueLabelStyle.alignment, m_valueLabelStyle.offset, labelSize);
 
 				if (m_valueLabelStyle.pSkin)
 					_renderSkin( m_valueLabelStyle.pSkin, pDevice, WgStateEnum::Normal, { labelPos,labelSize }, m_scale);

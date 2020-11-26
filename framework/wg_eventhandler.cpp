@@ -1148,14 +1148,13 @@ void WgEventHandler::_processMouseEnter( WgEvent::MouseEnter * pEvent )
 
 void WgEventHandler::_processMouseLeave( WgEvent::MouseLeave * pEvent )
 {
-	// Post POINTER_EXIT event to marked widget
+	// Post event for finalizing position
 
-	WgWidget * pWidget = m_pMarkedWidget.GetRealPtr();
+	QueueEvent(new WgEvent::MousePosition());
 
-	if( pWidget )
-		QueueEvent( new WgEvent::MouseLeave( pWidget ) );
+	// Update pointer position
 
-	m_pMarkedWidget = 0;
+	m_pointerPos = { -1,-1 };
 }
 
 
