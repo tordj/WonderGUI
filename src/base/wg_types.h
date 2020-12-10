@@ -104,6 +104,7 @@ namespace wg
 		Internal,
 		SystemIntegrity,
 		IllegalCall,
+		ResourceExhausted,
 		Other
 	};
 

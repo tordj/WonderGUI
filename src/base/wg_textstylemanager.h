@@ -41,12 +41,18 @@ namespace wg
 	friend class ::WgBase;        // Needed by WG2
 	public:
 
+		//.____ Misc ________________________________________________
+
 		static TextStyle_p 	getPointer( TextStyle_h handle );
 		static inline int	getNbStyles() { return s_size; }
+
+		const static TypeInfo	TYPEINFO;
 
 	protected:
 //		TextStyleManager();
 //		~TextStyleManager();
+
+		static const int c_maxCapacity = 65535;			// Max capacity may not exceed 65535.
 
 		static void init();
 		static void exit();
