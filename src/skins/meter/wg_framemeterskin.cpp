@@ -119,7 +119,11 @@ namespace wg
 			RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 			pDevice->setBlitSource(frames.surface());
-			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding ), RectI(pFrame->source(), frames.frameSize()), m_gfxPadding);
+
+			NinePatch patch;
+			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.frame = m_gfxPadding;
+			pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_gfxPadding), patch);
 		}
 	}
 
@@ -135,7 +139,12 @@ namespace wg
 
 		auto pFrame = _valueToFrame(value);
 		if (pFrame)
-			return Util::markTestNinePatch(ofs, frames._surface(), RectI(pFrame->source(), frames.frameSize()), canvas, opacityTreshold, m_gfxPadding);
+		{
+			NinePatch patch;
+			patch.block = RectI(pFrame->source(), frames.frameSize());
+			patch.frame = m_gfxPadding;
+			return Util::markTestNinePatch(ofs, frames._surface(), patch, canvas, opacityTreshold);
+		}
 
 		return false;
 	}

@@ -26,11 +26,11 @@
 
 #include <wg_geo.h>
 #include <wg_types.h>
+#include <wg_surface.h>
 
 namespace wg
 {
 
-	class Surface;
 	class GfxDevice;
 	class Patches;
 
@@ -71,8 +71,7 @@ namespace wg
 
 		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
 		bool		markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold);
-
-		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const RectI& source, const Rect& dest, int opacityTreshold, const BorderI& sourceFrame);
+		bool		markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );

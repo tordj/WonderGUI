@@ -81,10 +81,14 @@ namespace wg
 		Surface_p	surface() const { return m_pSurface; }
 
 		void		setBlockSize(SizeI size);
-		SizeI		blockSize() const { return m_dimensions*4/m_pSurface->qpixPerPoint(); }
+		SizeI		blockSize() const { return m_ninePatch.block*4/m_pSurface->qpixPerPoint(); }
 
 		void		setFrame(BorderI frame);
-		BorderI		frame() const { return m_frame*4/m_pSurface->qpixPerPoint(); }
+		BorderI		frame() const { return m_ninePatch.frame*4/m_pSurface->qpixPerPoint(); }
+
+		bool		setRigidPartX(int ofs, int length, YSections sections);
+		bool		setRigidPartY(int ofs, int length, XSections sections);
+
 
 		//.____ Geometry _________________________________________________
 
@@ -127,9 +131,8 @@ namespace wg
 		void		_updateUnsetStateBlocks();
 		void		_updateUnsetStateColors();
 
+		NinePatch	m_ninePatch;		// Block offset is undefined.
 		Surface_p	m_pSurface;
-		SizeI		m_dimensions;   // Pixels
-		BorderI		m_frame;        // Pixels
 		Gradient	m_gradient;
 		bool		m_bGradient = false;
 

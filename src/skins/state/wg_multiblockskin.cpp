@@ -297,7 +297,10 @@ namespace wg
 			const BorderI&    sourceBorders = m_frame*layer.pSurface->qpixPerPoint();
 			const BorderI     canvasBorders = pointsToPixels(m_frame);
 
-			pDevice->blitNinePatch( canvas, canvasBorders, src, sourceBorders );
+			NinePatch patch;
+			patch.block = src;
+			patch.frame = sourceBorders;
+			pDevice->blitNinePatch(canvas, canvasBorders, patch);
 		}
 
 		if (mixedTint != orgTintColor)
@@ -354,7 +357,11 @@ namespace wg
 		for (auto& layer : m_layers)
 		{
 			CoordI srcOfs = layer.blockOfs[stateIndex];
-			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, { srcOfs,m_blockSize }, canvas, opacityTreshold, m_frame);
+
+			NinePatch patch;
+			patch.block = { srcOfs,m_blockSize };
+			patch.frame = m_frame * layer.pSurface->qpixPerPoint();
+			bool bMarked = markTestNinePatch(_ofs, layer.pSurface, patch, canvas, opacityTreshold);
 			if (bMarked)
 				return true;
 		}

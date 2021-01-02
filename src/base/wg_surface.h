@@ -55,6 +55,23 @@ namespace wg
 		int			pitch;
 	};
 
+	//____ NinePatch ___________________________________________________________
+
+	struct NinePatch
+	{
+		RectI		block;
+		BorderI		frame;
+
+		int			rigidPartXOfs = 0;
+		int			rigidPartXLength = 0;
+		YSections	rigidPartXSections = YSections::None;
+
+		int			rigidPartYOfs = 0;
+		int			rigidPartYLength = 0;
+		XSections	rigidPartYSections = XSections::None;
+	};
+
+
 
 	//____ Surface ______________________________________________________________
 	/**
