@@ -307,6 +307,7 @@ namespace wg
         PixelFormat                 m_baseCanvasPixelFormat;
         
         id<MTLCommandBuffer>        m_metalCommandBuffer;
+
         bool                        m_bRendering = false;               // Set to true while between beginRender() and endRender() calls.
         
         std::atomic<int>            m_flushesInProgress;                // Number of buffer flushes to complete before metal is idle.
@@ -326,6 +327,8 @@ namespace wg
 
         static id<MTLDevice>        s_metalDevice;
         static id<MTLCommandQueue>  s_metalCommandQueue;
+
+
 
         MetalGfxDevice *            m_pPrevActiveDevice; // Storage for previous active device when we become active.
         static MetalGfxDevice *    s_pActiveDevice;    // Pointer at Metal device currently in rendering state.

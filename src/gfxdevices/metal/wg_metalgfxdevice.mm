@@ -398,104 +398,6 @@ MetalGfxDevice::MetalGfxDevice()
         return true;
     }
 
-/*
-    //____ setCanvas() __________________________________________________________________
-
-    bool MetalGfxDevice::setCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI canvasSize, PixelFormat pixelFormat, bool bResetClipList )
-    {
-        if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
-        {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
-            return false;
-        }
-        
-        m_pCanvas = nullptr;
-        m_canvasSize = canvasSize;
-        m_clipCanvas = m_canvasSize;
-
-        if( bResetClipList )
-        {
-            m_clipBounds = m_canvasSize;
-            m_pClipRects = &m_clipCanvas;
-            m_nClipRects = 1;
-        }
-
-        m_canvasYstart = canvasSize.h;
-        m_canvasYmul = -1;
-
-        if (m_bRendering)
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
-            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
-            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            m_pCommandBuffer[m_commandOfs++] = 0;                                       // No CanvasInit operation specified, it is already in passDesc.
-            m_pCommandBuffer[m_commandOfs++] = 0;                                       // No clear color specified, it is already in passDesc;
-            * (void**)(m_pCommandBuffer+m_commandOfs) = nullptr;
-            m_commandOfs += sizeof(void*)/sizeof(int);
-        }
-
-        m_renderPassDesc = renderPassDesc;
-        m_baseCanvasSize = canvasSize;
-        m_baseCanvasPixelFormat = pixelFormat;
-        return true;
-    }
-
-    bool MetalGfxDevice::setCanvas( Surface * pSurface, CanvasInit initOperation, bool bResetClipRects )
-    {
-        if( pSurface == nullptr )
-            return setCanvas( m_renderPassDesc, m_baseCanvasSize, m_baseCanvasPixelFormat, bResetClipRects );
-
-        if (!pSurface || pSurface->typeInfo() != MetalSurface::TYPEINFO)
-        {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Provided surface is NOT a MetalSurface", this, TYPEINFO, __func__, __FILE__, __LINE__);
-            return false;
-        }
-
-        if (pSurface->pixelFormat() == PixelFormat::CLUT_8_sRGB || pSurface->pixelFormat() == PixelFormat::CLUT_8_linear)
-        {
-                Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "A CLUT-based surface can not be used as canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
-                return false;
-        }
-        
-        if( !(static_cast<MetalSurface*>(pSurface)->m_flags & SurfaceFlag::Canvas) )
-        {
-            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Surface can not be set as canvas unless created with SurfaceFlag::Canvas", this, TYPEINFO, __func__, __FILE__, __LINE__);
-            return false;
-        }
-            
-        m_pCanvas = pSurface;
-        m_canvasSize = pSurface->size();
-        m_clipCanvas = m_canvasSize;
-
-        if( bResetClipRects )
-        {
-            m_clipBounds = m_canvasSize;
-            m_pClipRects = &m_clipCanvas;
-            m_nClipRects = 1;
-        }
-
-        m_canvasYstart = m_canvasSize.h;
-        m_canvasYmul = -1;
-
-        if (m_bRendering)
-        {
-            _endCommand();
-            _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
-            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
-            m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
-            m_pCommandBuffer[m_commandOfs++] = (int) initOperation;
-            m_pCommandBuffer[m_commandOfs++] = m_clearColor.argb;
-            * (void**)(m_pCommandBuffer+m_commandOfs) = pSurface;
-            m_commandOfs += sizeof(void*)/sizeof(int);
-            pSurface->retain();
-        }
-        else
-            m_beginRenderOp = initOperation;
-        
-        return true;
-    }
-*/
     //____ setTintColor() _______________________________________________________
 
     void MetalGfxDevice::setTintColor(HiColor color)
@@ -649,7 +551,7 @@ MetalGfxDevice::MetalGfxDevice()
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
 
-        // Set intial canvas for first _executeBuffer() call.
+        // Set intial canvas
         
         m_pActiveCanvas     = nullptr;
         m_activeCanvasSize  = {0,0};
@@ -659,36 +561,6 @@ MetalGfxDevice::MetalGfxDevice()
         m_activeBlendMode   = m_blendMode;
         m_activeMorphFactor = m_morphFactor;
 
-        // Queue initial blitSource.
-        
-        _beginStateCommand(Command::SetBlitSource, sizeof(void*)/sizeof(int));
-        * (void**)(m_pCommandBuffer+m_commandOfs) = m_pBlitSource.rawPtr();
-        m_commandOfs += sizeof(void*)/sizeof(int);
-        if( m_pBlitSource )
-            m_pBlitSource->retain();
-        _endCommand();
-
-        // Queue intial tint
-        
-         if (m_bTintGradient)
-         {
-             _beginStateCommand(Command::SetTintGradient, 12);
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h;
-             *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = m_tintGradient;
-             m_commandOfs += 8;
-             _endCommand();
-         }
-        else
-        {
-             _beginStateCommand(Command::SetTintColor, 2);
-             *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = m_tintColor.argb;
-            m_commandOfs += 2;
-            _endCommand();
-        }
-        
         // Wait for previous render pass to complete by doing a flushAndWait on what we have in buffer so far.
         
         if( m_flushesInProgress > 0 )
@@ -796,6 +668,7 @@ MetalGfxDevice::MetalGfxDevice()
         // Create a new command buffer.
         m_metalCommandBuffer = [s_metalCommandQueue commandBuffer];
         m_metalCommandBuffer.label = @"MetalGfxDevice";
+                
     }
 
     //____ fill() ____ [standard] __________________________________________________
@@ -965,7 +838,7 @@ MetalGfxDevice::MetalGfxDevice()
         if (nPixels == 0)
             return;
 
-        if (m_vertexOfs > m_vertexBufferSize - 1 || m_extrasOfs > m_extrasBufferSize - 4)
+        if (m_vertexOfs > m_vertexBufferSize - nPixels || m_extrasOfs > m_extrasBufferSize - 4 * nPixels)
             _resizeBuffers();
 
         if (m_cmd != Command::Plot)
@@ -985,19 +858,10 @@ MetalGfxDevice::MetalGfxDevice()
                     m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs / 4;
                     m_vertexOfs++;
 
-                    Color color = pColors[pixel];
-
-                    m_pExtrasBuffer[m_extrasOfs++] = color.r / 4096.f;
-                    m_pExtrasBuffer[m_extrasOfs++] = color.g / 4096.f;
-                    m_pExtrasBuffer[m_extrasOfs++] = color.b / 4096.f;
-                    m_pExtrasBuffer[m_extrasOfs++] = color.a / 4096.f;
-
-                    if (m_vertexOfs == m_vertexBufferSize || m_extrasOfs == m_extrasBufferSize)
-                    {
-                        _endCommand();
-                        _executeBuffer();
-                        _beginDrawCommand(Command::Plot);
-                    }
+                    m_pExtrasBuffer[m_extrasOfs++] = pColors[pixel].r / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = pColors[pixel].g / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = pColors[pixel].b / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = pColors[pixel].a / 4096.f;
                 }
             }
         }
@@ -1408,15 +1272,15 @@ MetalGfxDevice::MetalGfxDevice()
         {
             m_pExtrasBuffer[m_extrasOfs++] = src.x + 0.5f;
             m_pExtrasBuffer[m_extrasOfs++] = src.y + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.x) + 0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.y) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) + 0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) + 0.5f;
         }
         else
         {
-            m_pExtrasBuffer[m_extrasOfs++] = src.x;
-            m_pExtrasBuffer[m_extrasOfs++] = src.y;
-            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.x) +0.5f;
-            m_pExtrasBuffer[m_extrasOfs++] = GLfloat(dest.y) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = src.x - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = src.y - 0.002f;                //TODO: Ugly patch. Figure out what exactly goes wrong and fix it!
+            m_pExtrasBuffer[m_extrasOfs++] = float(dest.x) +0.5f;
+            m_pExtrasBuffer[m_extrasOfs++] = float(dest.y) +0.5f;
         }
 
         m_pExtrasBuffer[m_extrasOfs++] = complexTransform[0][0];
@@ -1645,13 +1509,13 @@ MetalGfxDevice::MetalGfxDevice()
                     int r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
                     int g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
                     int b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
-                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 40966);
+                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
                     int r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
                     int g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
                     int b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
-                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 40966);
+                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
                     pMapRow[i * 8 + 0] = r1;
@@ -1682,13 +1546,13 @@ MetalGfxDevice::MetalGfxDevice()
                     int r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
                     int g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
                     int b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
-                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 40966);
+                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
                     int r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
                     int g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
                     int b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
-                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 40966);
+                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
                     pMapRow[i * 8 + 0] = r1;
@@ -1932,27 +1796,20 @@ MetalGfxDevice::MetalGfxDevice()
         
         id<MTLRenderCommandEncoder> renderEncoder = nil;
         
-/*
-        id<MTLRenderCommandEncoder> renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, CanvasInit::Keep, Color::White );
-        m_beginRenderOp = CanvasInit::Keep;
-        
-        // Set buffers for vertex shaders
-        
-        [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
-        
-        [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
-        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
-
-        // Set buffers/textures for segments fragment shader
-        
-        [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
-        [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
-*/
         int * pCmd = m_pCommandBuffer;
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
 
         int vertexOfs = m_vertexFlushPoint;
       
+        // Set initial state of canvas
+        
+        if( m_pActiveCanvas )
+        {
+            renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, CanvasInit::Keep, Color::Black );
+            _setBlitSource( renderEncoder, m_pActiveBlitSource );
+        }
+        
+        
         // Clear pending flags of active BlitSource and Canvas.
 
     //    if (m_pActiveBlitSource)
@@ -1978,16 +1835,6 @@ MetalGfxDevice::MetalGfxDevice()
                     {
                         MetalSurface* pSurf = *((MetalSurface**)(pCmd+4));
                         renderEncoder = _setCanvas(pSurf, pCmd[0], pCmd[1], (CanvasInit) pCmd[2], pCmd[3]);
-                        
-                        [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
-                        
-                        [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
-                        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
-
-                        // Set buffers/textures for segments fragment shader
-                        
-                        [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
-                        [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
 
                         if( pSurf )
                             pSurf->release();
@@ -2235,6 +2082,16 @@ MetalGfxDevice::MetalGfxDevice()
 
         [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex: (unsigned) VertexInputIndex::Uniform];
 
+        // Set vertex and extras buffer
+        
+        [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
+        [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
+
+        // Set buffers/textures for segments fragment shader
+        
+        [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
+        [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
+        
         //
         
         m_pActiveCanvas = pCanvas;
