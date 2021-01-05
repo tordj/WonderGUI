@@ -177,7 +177,7 @@ namespace wg
 
 		// Special draw/blit methods
 
-		virtual void	blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const RectI& srcRect, const BorderI& srcFrame);
+		virtual void	blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch);
 
 
 
@@ -223,6 +223,10 @@ namespace wg
 
 		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
+
+
+		void	_stretchBlitWithRigidPartX(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength);
+		void	_stretchBlitWithRigidPartY(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength);
 
 
 		const static int c_nCurveTabEntries = 1024;

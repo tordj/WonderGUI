@@ -104,6 +104,7 @@ namespace wg
 		Internal,
 		SystemIntegrity,
 		IllegalCall,
+		ResourceExhausted,			// A limited internal resource has been exhausted
 		Other
 	};
 
@@ -454,6 +455,46 @@ namespace wg
 		X,
 		Y
 	};
+
+	//____ XSections _______________________________________________________
+
+	enum class XSections : uint8_t
+	{
+		None	= 0,
+		Left	= 1 << 0,
+		Center	= 1 << 1,
+		Right	= 1 << 2,
+		All = Left | Center | Right
+	};
+
+	inline XSections operator|(XSections lhs, XSections rhs) {
+		return static_cast<XSections>( static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs) );
+	}
+
+	inline XSections operator&(XSections lhs, XSections rhs) {
+		return static_cast<XSections>( static_cast<uint8_t>(lhs) & static_cast<uint8_t>(rhs) );
+	}
+
+	//____ YSections _______________________________________________________
+
+	enum class YSections : uint8_t
+	{
+		None = 0,
+		Top = 1 << 0,
+		Center = 1 << 1,
+		Bottom = 1 << 2,
+		All = Top | Center | Bottom
+	};
+
+	inline YSections operator|(YSections lhs, YSections rhs) {
+		return static_cast<YSections>( static_cast<uint8_t>(lhs) | static_cast<uint8_t>(rhs) );
+	}
+
+	inline YSections operator&(YSections lhs, YSections rhs) {
+		return static_cast<YSections>( static_cast<uint8_t>(lhs) &	static_cast<uint8_t>(rhs) );
+	}
+
+
 
 	//____ SizePolicy ___________________________________________________________
 	/**

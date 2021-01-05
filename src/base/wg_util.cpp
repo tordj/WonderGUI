@@ -230,14 +230,14 @@ int Util::gcd(int a, int b)
 		return (alpha >= opacityTreshold);
 	}
 
-
-	//____ markTestNinePatch() ________________________________________________
-
-	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const RectI& _source, const Rect& _dest, int opacityTreshold, const BorderI& sourceFrame)
+	bool Util::markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold)
 	{
+		const BorderI& sourceFrame = patch.frame;
+		const RectI& _source = patch.block;
+
 		// Sanity check & shortcuts.
 
-		if (sourceFrame.isEmpty())
+		if (sourceFrame.isEmpty() && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None )
 			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
 
 		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
@@ -248,14 +248,19 @@ int Util::gcd(int a, int b)
 
 		//
 
-		BorderI destFrame = pointsToPixels(sourceFrame);
+		BorderI destFrame = sourceFrame; // pointsToPixels(sourceFrame);
 
 		RectI source;
 		Rect dest;
 
+		XSections markedSectionX;
+		YSections markedSectionY;
+
 		if (ofs.x < _dest.x + destFrame.left)
 		{
 			// left section
+			markedSectionX = XSections::Left;
+
 			source.x = _source.x;
 			source.w = sourceFrame.left;
 			dest.x = _dest.x;
@@ -264,6 +269,8 @@ int Util::gcd(int a, int b)
 		else if (ofs.x < _dest.x + _dest.w - destFrame.right)
 		{
 			// mid section
+			markedSectionX = XSections::Center;
+
 			source.x = _source.x + sourceFrame.left;
 			source.w = _source.w - sourceFrame.width();
 			dest.x = _dest.x + destFrame.left;
@@ -272,15 +279,20 @@ int Util::gcd(int a, int b)
 		else
 		{
 			// right section
+			markedSectionX = XSections::Right;
+
 			source.x = _source.x + _source.w - sourceFrame.right;
 			source.w = sourceFrame.right;
 			dest.x = _dest.x + _dest.w - destFrame.right;
 			dest.w = destFrame.right;
 		}
 
+		MU	test = _dest.y + destFrame.top;
 		if (ofs.y < _dest.y + destFrame.top)
 		{
-			// left section
+			// top section
+			markedSectionY = YSections::Top;
+
 			source.y = _source.y;
 			source.h = sourceFrame.top;
 			dest.y = _dest.y;
@@ -289,6 +301,8 @@ int Util::gcd(int a, int b)
 		else if (ofs.y < _dest.y + _dest.h - destFrame.bottom)
 		{
 			// mid section
+			markedSectionY = YSections::Center;
+
 			source.y = _source.y + sourceFrame.top;
 			source.h = _source.h - sourceFrame.height();
 			dest.y = _dest.y + destFrame.top;
@@ -296,7 +310,9 @@ int Util::gcd(int a, int b)
 		}
 		else
 		{
-			// right section
+			// top section
+			markedSectionY = YSections::Bottom;
+
 			source.y = _source.y + _source.h - sourceFrame.bottom;
 			source.h = sourceFrame.bottom;
 			dest.y = _dest.y + _dest.h - destFrame.bottom;
@@ -308,11 +324,55 @@ int Util::gcd(int a, int b)
 		ofs.x -= dest.x;
 		ofs.y -= dest.y;
 
+
 		// Convert offset in area to offset in bitmap.
 
 		RectI sourceOfs;
-		sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
-		sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
+
+		if (markedSectionX == XSections::Center && (patch.rigidPartXSections & markedSectionY) != YSections::None)
+		{
+			int leftSrcLen = patch.rigidPartXOfs;
+			int rightSrcLen = source.w - patch.rigidPartXOfs - patch.rigidPartXLength;
+
+			int totalSrcLen = leftSrcLen + rightSrcLen;
+
+			MU midDstLen = std::min(MU(patch.rigidPartXLength), dest.w);
+
+			MU leftDstLen = (dest.w - midDstLen) * leftSrcLen / totalSrcLen;
+			MU rightDstLen = dest.w - midDstLen - leftDstLen;
+
+			if (ofs.x < leftDstLen)
+				sourceOfs.x = int(ofs.x.qpix / double(leftDstLen.qpix) * leftSrcLen);
+			else if (ofs.x < leftDstLen + midDstLen)
+				sourceOfs.x = int(ofs.x - leftDstLen) + leftSrcLen;
+			else
+				sourceOfs.x = int((ofs.x.qpix - leftDstLen.qpix - midDstLen.qpix) / double(rightDstLen.qpix) * rightSrcLen) + leftSrcLen + patch.rigidPartXLength;
+		}
+		else
+			sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
+	
+		
+		if (markedSectionY == YSections::Center && (patch.rigidPartYSections & markedSectionX) != XSections::None)
+		{
+			int topSrcLen = patch.rigidPartYOfs;
+			int bottomSrcLen = source.h - patch.rigidPartYOfs - patch.rigidPartYLength;
+
+			int totalSrcLen = topSrcLen + bottomSrcLen;
+
+			MU midDstLen = std::min(MU(patch.rigidPartYLength), dest.h);
+
+			MU topDstLen = (dest.h - midDstLen) * topSrcLen / totalSrcLen;
+			MU bottomDstLen = dest.h - midDstLen - topDstLen;
+
+			if (ofs.y < topDstLen)
+				sourceOfs.y = int( ofs.y.qpix / double(topDstLen.qpix) * topSrcLen);
+			else if (ofs.y < topDstLen + midDstLen)
+				sourceOfs.y = int(ofs.y - topDstLen) + topSrcLen;
+			else
+				sourceOfs.y = int((ofs.y.qpix - topDstLen.qpix - midDstLen.qpix) / double(bottomDstLen.qpix) * bottomSrcLen) + topSrcLen + patch.rigidPartYLength;
+		}
+		else
+			sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
 
 		// Do alpha test
 
@@ -320,7 +380,6 @@ int Util::gcd(int a, int b)
 
 		return (alpha >= opacityTreshold);
 	}
-
 
 
 

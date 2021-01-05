@@ -94,6 +94,7 @@ bool tileSkinTest(CStandardSlot_p pSlot);
 bool bakeSkinTest(CStandardSlot_p pSlot);
 bool animSkinTest(CStandardSlot_p pSlot);
 bool renderLayerTest(CStandardSlot_p pSlot);
+bool rigidPartNinePatchTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -613,7 +614,9 @@ int main(int argc, char** argv)
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
-	renderLayerTest(&pRoot->slot);
+//	renderLayerTest(&pRoot->slot);
+	rigidPartNinePatchTest(&pRoot->slot);
+
 
 	// Test IChild and IChildIterator baseclasses
 /*
@@ -2602,6 +2605,30 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 
 		Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer, i](Msg* pMsg) { pBaseLayer->slots[i].move(static_cast<MouseDragMsg*>(pMsg)->draggedNow()); });
 	}
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+//____ rigidPartNinePatchTest() ________________________________________________
+
+bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	Surface_p pSurf = loadSurface("../resources/fixed_sections_alphatest.png");
+
+	auto pSkin = BlockSkin::create(pSurf, {StateEnum::Normal, StateEnum::Hovered}, 10, Axis::X);
+	pSkin->setRigidPartX(24, 16, YSections::Top | YSections::Center | YSections::Bottom);
+	pSkin->setRigidPartY(24, 16, XSections::Left | XSections::Center | XSections::Right);
+
+	auto pWidget = Filler::create();
+	pWidget->skin = pSkin;
+
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 256, 256));
+
+	Base::msgRouter()->addRoute(pWidget, MsgType::MouseDrag, [pBaseLayer](Msg* pMsg) { pBaseLayer->slots[0].setSize(pBaseLayer->slots[0].size() + SizeI(static_cast<MouseDragMsg*>(pMsg)->draggedNow())); });
 
 	*pSlot = pBaseLayer;
 	return true;

@@ -177,8 +177,8 @@ namespace wg
 	BlockSkin::BlockSkin(Surface * pSurface, RectI block, BorderI frame)
 	{
 		m_pSurface			= pSurface;
-		m_dimensions		= block.size();
-		m_frame				= frame;
+		m_ninePatch.block.setSize( block.size() );
+		m_ninePatch.frame	= frame;
 		m_bOpaque			= pSurface->isOpaque();
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
@@ -227,7 +227,7 @@ namespace wg
 		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
 		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
 
-		CoordI pitch = axis == Axis::X ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
+		CoordI pitch = axis == Axis::X ? CoordI(m_ninePatch.block.w + spacing, 0 ) : CoordI(0, m_ninePatch.block.h + spacing);
 
 		int ofs = 0;
 		for (StateEnum state : stateBlocks)
@@ -244,7 +244,7 @@ namespace wg
 
 	RectI BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
+		return { m_stateBlocks[_stateToIndex(state)], m_ninePatch.block.size()*4/m_pSurface->qpixPerPoint() };
 	}
 
 	//____ setColor() __________________________________________________________
@@ -318,15 +318,86 @@ namespace wg
 
 	void BlockSkin::setBlockSize(SizeI size)
 	{
-		m_dimensions = size*m_pSurface->qpixPerPoint() / 4;
+		m_ninePatch.block.setSize( size*m_pSurface->qpixPerPoint() / 4 );
 	}
 
 	//____ setFrame() ____________________________________________________________
 
 	void BlockSkin::setFrame(BorderI frame)
 	{
-		m_frame = frame*m_pSurface->qpixPerPoint() / 4;
+		m_ninePatch.frame = frame*m_pSurface->qpixPerPoint() / 4;
 	}
+
+	//____ setRigidPartX() _____________________________________________
+
+	bool BlockSkin::setRigidPartX(int ofs, int length, YSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+		ofs -= m_ninePatch.frame.left;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartXOfs = 0;
+			m_ninePatch.rigidPartXLength = 0;
+			m_ninePatch.rigidPartXSections = YSections::None;
+			return false;
+		}
+
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartXOfs = ofs;
+		m_ninePatch.rigidPartXLength = length;
+		m_ninePatch.rigidPartXSections = sections;
+
+		return true;
+	}
+
+	//____ setRigidPartY() _____________________________________________
+
+	bool BlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+		ofs -= m_ninePatch.frame.top;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartYOfs = 0;
+			m_ninePatch.rigidPartYLength = 0;
+			m_ninePatch.rigidPartYSections = XSections::None;
+			return false;
+		}
+
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartYOfs = ofs;
+		m_ninePatch.rigidPartYLength = length;
+		m_ninePatch.rigidPartYSections = sections;
+
+		return true;
+	}
+
 
 	//____ render() _______________________________________________________________
 
@@ -340,7 +411,11 @@ namespace wg
 
 		CoordI blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( canvas.px(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
+
+		NinePatch	patch = m_ninePatch;
+		patch.block.setPos(m_stateBlocks[idx]);
+
+		pDevice->blitNinePatch(canvas.px(), pointsToPixels(patch.frame * 4 / m_pSurface->qpixPerPoint()), patch);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -348,7 +423,7 @@ namespace wg
 	Size BlockSkin::minSize() const
 	{
 		Size content = Border(m_contentPadding).aligned();
-		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
+		Size frame = Border(m_ninePatch.frame*4/m_pSurface->qpixPerPoint()).aligned();
 		return Size::max( content, frame );
 	}
 
@@ -359,7 +434,7 @@ namespace wg
         //This takes the scale of the surface into account
         // Preferred size is to map each point of the surface to a point of the skinarea.
         
-        return Size((m_dimensions*4)/m_pSurface->qpixPerPoint());
+        return Size((m_ninePatch.block.size()*4)/m_pSurface->qpixPerPoint());
 	}
 
 	//____ sizeForContent() _______________________________________________________
@@ -367,7 +442,7 @@ namespace wg
 	Size BlockSkin::sizeForContent( const Size& contentSize ) const
 	{
 		Size sz = StateSkin::sizeForContent(contentSize);
-		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
+		Size min = Border(m_ninePatch.frame *4/m_pSurface->qpixPerPoint()).aligned();
 
 		return Size::max(sz, min);
 	}
@@ -378,8 +453,10 @@ namespace wg
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
-		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
+		NinePatch	patch = m_ninePatch;
+		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
+
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, opacityTreshold);
 	}
 
 	//____ isOpaque() _____________________________________________________________

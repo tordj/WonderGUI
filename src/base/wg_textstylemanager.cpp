@@ -21,6 +21,7 @@
 =========================================================================*/
 
 #include <wg_textstylemanager.h>
+#include <wg_base.h>
 
 
 namespace wg
@@ -30,10 +31,19 @@ namespace wg
 	int			TextStyleManager::s_size = 0;
 	int			TextStyleManager::s_nextAvailable = -1;		// Offset in table for next available entry.
 
+	const TypeInfo	TextStyleManager::TYPEINFO = { "TextStyleManager", nullptr };
+
+
 	//____ getPointer()_________________________________________________________
 
 	TextStyle_p TextStyleManager::getPointer( TextStyle_h handle )
 	{
+		if (handle == 0 || handle >= s_capacity)
+		{
+			Base::handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "TextStyle handle out of bounds. TextStyle does not exist. Returning nullptr.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return nullptr;
+		}
+
 		return s_pLookupTable[handle-1];
 	}
 
@@ -56,6 +66,12 @@ namespace wg
 
 	void TextStyleManager::exit()
 	{
+		if (s_size > 0)
+		{
+			Base::handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Exiting TextStyleManager before all TextStyles have been deleted. This can cause crashes later on.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
 		//TODO: Something if s_size > 0 (there are still existing TextStyles)
 
 		delete [] s_pLookupTable;
@@ -72,7 +88,13 @@ namespace wg
 	{
 		if( s_size == s_capacity )
 		{
-			int newCapacity = s_capacity * 2;
+			if (s_capacity == c_maxCapacity)
+			{
+				Base::handleError(ErrorSeverity::Critical, ErrorCode::ResourceExhausted, "Maximum number of TextStyles already created. Can have no more than 65535. Will return 0.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+				return 0;
+			}
+
+			int newCapacity = std::min( s_capacity * 2, c_maxCapacity);
 
 			TextStyle ** pNewTable = new TextStyle*[newCapacity];
 
@@ -106,9 +128,15 @@ namespace wg
 	{
         if( s_pLookupTable == nullptr )
         {
-            //TODO: Error handling! Should log a warning.
-            return;                         // Destroying a TextStyle after we have exited TextStyleManager. We let this pass.
+			Base::handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "TextStyle destroyed after TextStyleManager has exited (or possibly before being initialized).", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+            return;
         }
+
+		if (handle == 0 || handle >= s_capacity)
+		{
+			Base::handleError(ErrorSeverity::Warning, ErrorCode::SystemIntegrity, "Attempt to release invalid TextStyle-handle. Something has gone wrong.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
 
 		int idx = handle - 1;
 

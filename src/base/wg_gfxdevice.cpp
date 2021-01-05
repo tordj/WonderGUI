@@ -910,24 +910,27 @@ namespace wg
 		_transformBlit(dest, {ofsX,ofsY}, mtx);
 	}
 
-
 	//____ blitNinePatch() ________________________________________________
 
-	void GfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const RectI& srcRect, const BorderI& srcFrame)
+	void GfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame )
+		if (patch.block.w == dstRect.w && patch.block.h == dstRect.h && patch.frame == dstFrame)
 		{
-			blit(dstRect.pos(), srcRect);
+			blit(dstRect.pos(), patch.block);
 			return;
 		}
 
-		if (srcFrame.isEmpty() || dstFrame.isEmpty())
+		if ((patch.frame.isEmpty() || dstFrame.isEmpty()) && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None)
 		{
-			stretchBlit(dstRect, srcRect);
+			stretchBlit(dstRect, patch.block);
 			return;
 		}
+
+		const RectI& srcRect = patch.block;
+		const BorderI& srcFrame = patch.frame;
+
 
 		//TODO: Optimize! Call transformBlit directly instead of going through stretchBlit(), reuse transforms where possible.
 		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
@@ -939,7 +942,7 @@ namespace wg
 		{
 			RectI	srcNW(srcRect.x, srcRect.y, srcFrame.left, srcFrame.top);
 			RectI	srcN(srcRect.x + srcFrame.left, srcRect.y, srcMidSize.w, srcFrame.top);
-			RectI	srcNE(srcRect.x + srcRect.w-srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
+			RectI	srcNE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
 
 			RectI	dstNW(dstRect.x, dstRect.y, dstFrame.left, dstFrame.top);
 			RectI	dstN(dstRect.x + dstFrame.left, dstRect.y, dstMidSize.w, dstFrame.top);
@@ -949,7 +952,12 @@ namespace wg
 				stretchBlit(dstNW, srcNW);
 
 			if (srcN.w + dstN.w > 0)
-				stretchBlit(dstN, srcN);
+			{
+				if ((patch.rigidPartXSections & YSections::Top) != YSections::None)
+					_stretchBlitWithRigidPartX(srcN, dstN, patch.rigidPartXOfs, patch.rigidPartXLength);
+				else
+					stretchBlit(dstN, srcN);
+			}
 
 			if (srcNE.w + dstNE.w > 0)
 				stretchBlit(dstNE, srcNE);
@@ -967,13 +975,79 @@ namespace wg
 			RectI	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
 
 			if (srcW.w + dstW.w > 0)
-				stretchBlit(dstW, srcW);
+			{
+				if((patch.rigidPartYSections & XSections::Left) != XSections::None)
+					_stretchBlitWithRigidPartY(srcW, dstW, patch.rigidPartYOfs, patch.rigidPartYLength);
+				else
+					stretchBlit(dstW, srcW);
+			}
 
 			if (srcC.w + dstC.w > 0)
-				stretchBlit(dstC, srcC);
+			{
+				if ((patch.rigidPartYSections & XSections::Center) != XSections::None)
+				{
+					int topSrcLen = patch.rigidPartYOfs;
+					int bottomSrcLen = srcC.h - patch.rigidPartYOfs - patch.rigidPartYLength;
+
+					int totalSrcLen = topSrcLen + bottomSrcLen;
+
+					int midDstLen = std::min(patch.rigidPartYLength * MU::qpixPerPoint() / 4, dstC.h);
+
+					int topDstLen = (dstC.h - midDstLen) * topSrcLen / totalSrcLen;
+					int bottomDstLen = dstC.h - midDstLen - topDstLen;
+
+
+					if (topDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y, dstC.w, topDstLen);
+						RectI src(srcC.x, srcC.y, srcC.w, topSrcLen);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+
+					if (midDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y + topDstLen, dstC.w, midDstLen);
+						RectI src(srcC.x, srcC.y + topSrcLen, srcC.w, patch.rigidPartYLength);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+
+					if (bottomDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y + topDstLen + midDstLen, dstC.w, bottomDstLen);
+						RectI src(srcC.x, srcC.y + topSrcLen + patch.rigidPartYLength, srcC.w, bottomSrcLen);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+				}
+				else
+				{
+					if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+						_stretchBlitWithRigidPartX(srcC, dstC, patch.rigidPartXOfs, patch.rigidPartXLength);
+					else
+						stretchBlit(dstC, srcC);
+				}
+			}
+
 
 			if (srcE.w + dstE.w > 0)
-				stretchBlit(dstE, srcE);
+			{
+				if ((patch.rigidPartYSections & XSections::Right) != XSections::None)
+					_stretchBlitWithRigidPartY(srcE, dstE, patch.rigidPartYOfs, patch.rigidPartYLength);
+				else
+					stretchBlit(dstE, srcE);
+			}
+
 		}
 
 		if (srcFrame.bottom + dstFrame.bottom > 0)
@@ -990,14 +1064,18 @@ namespace wg
 				stretchBlit(dstSW, srcSW);
 
 			if (srcS.w + dstS.w > 0)
-				stretchBlit(dstS, srcS);
+			{
+				if ((patch.rigidPartXSections & YSections::Bottom) != YSections::None)
+					_stretchBlitWithRigidPartX(srcS, dstS, patch.rigidPartXOfs, patch.rigidPartXLength);
+				else
+					stretchBlit(dstS, srcS);
+			}
 
 			if (srcSE.w + dstSE.w > 0)
 				stretchBlit(dstSE, srcSE);
 		}
-
 	}
-
+	
 	//____ drawWave() ______________________________________________________
 
 	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
@@ -1986,6 +2064,54 @@ namespace wg
 				*pDest++ = bottom;
 			}
 		}
+	}
+
+	//____ _stretchBlitWithRigidPartX() _______________________________________
+
+	void GfxDevice::_stretchBlitWithRigidPartX(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength)
+	{
+		int leftSrcLen = rigidPartOfs;
+		int rightSrcLen = src.w - rigidPartOfs - rigidPartLength;
+
+		int totalSrcLen = leftSrcLen + rightSrcLen;
+
+		int midDstLen = std::min(rigidPartLength * MU::qpixPerPoint() / 4, dst.w);
+
+		int leftDstLen = (dst.w - midDstLen) * leftSrcLen / totalSrcLen;
+		int rightDstLen = dst.w - midDstLen - leftDstLen;
+
+		if (leftDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y, leftDstLen, dst.h), RectI(src.x, src.y, leftSrcLen, src.h));
+
+		if (midDstLen > 0)
+			stretchBlit(RectI(dst.x + leftDstLen, dst.y, midDstLen, dst.h), RectI(src.x + leftSrcLen, src.y, rigidPartLength, src.h));
+
+		if (rightDstLen > 0)
+			stretchBlit(RectI(dst.x + leftDstLen + midDstLen, dst.y, rightDstLen, dst.h), RectI(src.x + leftSrcLen + rigidPartLength, src.y, rightSrcLen, src.h));
+	}
+
+	//____ _stretchBlitWithRigidPartY() _______________________________________
+
+	void GfxDevice::_stretchBlitWithRigidPartY(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength)
+	{
+		int topSrcLen = rigidPartOfs;
+		int bottomSrcLen = src.h - rigidPartOfs - rigidPartLength;
+
+		int totalSrcLen = topSrcLen + bottomSrcLen;
+
+		int midDstLen = std::min(rigidPartLength * MU::qpixPerPoint() / 4, dst.h);
+
+		int topDstLen = (dst.h - midDstLen) * topSrcLen / totalSrcLen;
+		int bottomDstLen = dst.h - midDstLen - topDstLen;
+
+		if (topDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y, dst.w, topDstLen), RectI(src.x, src.y, src.w, topSrcLen));
+
+		if (midDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y + topDstLen, dst.w, midDstLen), RectI(src.x, src.y + topSrcLen, src.w, rigidPartLength));
+
+		if (bottomDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y + topDstLen + midDstLen, dst.w, bottomDstLen), RectI(src.x, src.y + topSrcLen + rigidPartLength, src.w, bottomSrcLen));
 	}
 
 } // namespace wg

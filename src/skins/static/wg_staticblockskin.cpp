@@ -51,8 +51,8 @@ namespace wg
 	StaticBlockSkin::StaticBlockSkin(Surface* pSurface, const RectI& block, const BorderI& frame)
 	{
 		m_pSurface = pSurface;
-		m_block = block;
-		m_frame = frame;
+		m_ninePatch.block = block;
+		m_ninePatch.frame = frame;
 		m_bOpaque = m_pSurface->isOpaque();
 	}
 
@@ -67,7 +67,7 @@ namespace wg
 
 	Size StaticBlockSkin::preferredSize() const
 	{
-		return sizeForContent(m_block.size());
+		return sizeForContent(m_ninePatch.block.size());
 	}
 
 	//____ setBlendMode() _____________________________________________________
@@ -95,6 +95,76 @@ namespace wg
 		_updateOpacityFlag();
 	}
 
+	//____ setRigidPartX() _____________________________________________
+
+	bool StaticBlockSkin::setRigidPartX(int ofs, int length, YSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+		ofs -= m_ninePatch.frame.left;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartXOfs = 0;
+			m_ninePatch.rigidPartXLength = 0;
+			m_ninePatch.rigidPartXSections = YSections::None;
+			return false;
+		}
+		
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartXOfs = ofs;
+		m_ninePatch.rigidPartXLength = length;
+		m_ninePatch.rigidPartXSections = sections;
+
+		return true;
+	}
+
+	//____ setRigidPartY() _____________________________________________
+
+	bool StaticBlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+		ofs -= m_ninePatch.frame.top;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartYOfs = 0;
+			m_ninePatch.rigidPartYLength = 0;
+			m_ninePatch.rigidPartYSections = XSections::None;
+			return false;
+		}
+
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartYOfs = ofs;
+		m_ninePatch.rigidPartYLength = length;
+		m_ninePatch.rigidPartYSections = sections;
+
+		return true;
+	}
+
 	//____ render() ______________________________________________________________
 
 	void StaticBlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, 
@@ -106,14 +176,14 @@ namespace wg
 		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_color, canvas, m_gradient, m_bGradient);
 
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_frame * 4 / m_pSurface->qpixPerPoint()), m_block, m_frame);
+		pDevice->blitNinePatch(canvas.px(), pointsToPixels(m_ninePatch.frame * 4 / m_pSurface->qpixPerPoint()), m_ninePatch);
 	}
 
 	//____ markTest() _________________________________________________________
 
 	bool StaticBlockSkin::markTest( const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
-		return markTestNinePatch(ofs, m_pSurface, m_block, canvas, opacityTreshold, m_frame);
+		return markTestNinePatch(ofs, m_pSurface, m_ninePatch, canvas, opacityTreshold );
 	}
 
 	//____ _updateOpacityFlag() _______________________________________________

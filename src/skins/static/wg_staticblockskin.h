@@ -65,6 +65,9 @@ namespace wg
 		HiColor		color() const { return m_color; }
 		Gradient	gradient() const { return m_gradient; }
 
+		bool		setRigidPartX(int ofs, int length, YSections sections);
+		bool		setRigidPartY(int ofs, int length, XSections sections);
+
 
 		//.____ Misc ____________________________________________________
 
@@ -82,12 +85,13 @@ namespace wg
 		void _updateOpacityFlag();
 
 		Surface_p		m_pSurface;
-		RectI			m_block;
-		BorderI			m_frame;
+		NinePatch		m_ninePatch;
+
 		BlendMode		m_blendMode = BlendMode::Blend;
 		HiColor			m_color = Color::White;
 		Gradient		m_gradient;
 		bool			m_bGradient = false;
+
 	};
 
 
