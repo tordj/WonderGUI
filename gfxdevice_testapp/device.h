@@ -43,7 +43,7 @@ public:
 
 	bool init(SizeI canvasSize, PixelFormat canvasFormat)
 	{
-		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat);
+		m_pCanvas = SoftSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
 		m_pDevice = SoftGfxDevice::create();
 		return true;
 	}

@@ -36,7 +36,6 @@
 namespace wg
 {
 	class Surface;
-	class Color;
 
 	class MetalGfxDevice;
 	typedef	StrongPtr<MetalGfxDevice>	MetalGfxDevice_p;
@@ -64,17 +63,12 @@ namespace wg
 
 		SurfaceFactory_p		surfaceFactory() override;
 
-		//.____ Geometry _________________________________________________
-
-        bool    setCanvas( MTLRenderPassDescriptor* passDesc, SizeI canvasSize, PixelFormat pixelFormat, bool bResetClipList = true );
-		bool	setCanvas(Surface * pCanvas, CanvasInit initOperation = CanvasInit::Keep, bool bResetClipList = true ) override;
-
         //.____ State _________________________________________________
 
-        bool    setClipList(int nRectangles, const RectI * pRectangles) override;
-        void    clearClipList() override;
-        void    setTintColor(Color color) override;
-        void    setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft) override;
+        bool    setBaseCanvasFormat( MTLRenderPassDescriptor* renderPassDesc, PixelFormat pixelFormat );
+        
+        void    setTintColor(HiColor color) override;
+        void    setTintGradient(const RectI& rect, const Gradient& gradient) override;
         void    clearTintGradient() override;
 
         bool    setBlendMode(BlendMode blendMode) override;
@@ -95,23 +89,27 @@ namespace wg
         void    autopresent( id<MTLDrawable> drawable );           // endRender() will clear this, so needs to be set for each begin/end render cycle.
 
         using   GfxDevice::fill;
-		void	fill(const RectI& rect, const Color& col) override;
-		void	fill(const RectF& rect, const Color& col) override;
+		void	fill(const RectI& rect, HiColor col) override;
+		void	fill(const RectF& rect, HiColor col) override;
 
-		void    plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors) override;
+		void    plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors) override;
 
-		void	drawLine(CoordI begin, CoordI end, Color color, float thickness) override;
-        void    drawLine(CoordI begin, Direction dir, int length, Color color, float thickness) override;
+		void	drawLine(CoordI begin, CoordI end, HiColor color, float thickness) override;
+        void    drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness) override;
 
 
 	protected:
 		MetalGfxDevice();
 		~MetalGfxDevice();
 
+        void    _canvasWasChanged() override;
+        void    _renderLayerWasChanged() override;    // Checked for errors before we get here.
+        void    _clipListWasChanged() override;            // Called when cliplist has been changed.
+        
 		void	_transformBlit(const RectI& dest, CoordI src, const int simpleTransform[2][2]) override;
 		void	_transformBlit(const RectI& dest, CoordF src, const float complexTransform[2][2]) override;
 
-		void	_transformDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
+		void	_transformDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdges, const int * pEdges, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2]) override;
 
         enum class VertexInputIndex
         {
@@ -176,8 +174,8 @@ namespace wg
         void            _setBlendMode( id<MTLRenderCommandEncoder>, BlendMode mode);
         void            _setMorphFactor( id<MTLRenderCommandEncoder>, float morphFactor);
         void            _setBlitSource( id<MTLRenderCommandEncoder>, MetalSurface * pSurf);
-        void            _setTintColor( id<MTLRenderCommandEncoder>, Color color);
-        void            _setTintGradient( id<MTLRenderCommandEncoder>, const RectI& rect, const Color colors[4]);
+        void            _setTintColor( id<MTLRenderCommandEncoder>, HiColor color);
+        void            _setTintGradient( id<MTLRenderCommandEncoder>, const RectI& rect, const Gradient& gradient);
         void            _clearTintGradient( id<MTLRenderCommandEncoder> renderEncoder );
         
         inline void    _beginDrawCommand(Command cmd);
@@ -219,7 +217,6 @@ namespace wg
         int             m_nSegments;                                // Number of segments for current segment command.
 
         int             m_canvasYstart;
-        int             m_canvasYmul;
 
         bool            m_bFullyInitialized = false;
         CanvasInit      m_beginRenderOp = CanvasInit::Keep;
@@ -306,8 +303,7 @@ namespace wg
         
         id<MTLLibrary>              m_library;
         id<MTLDrawable>             m_drawableToAutoPresent = nil;
-        MTLRenderPassDescriptor*    m_renderPassDesc;
-        SizeI                       m_baseCanvasSize;
+        MTLRenderPassDescriptor*    m_baseCanvasRenderPassDesc;
         PixelFormat                 m_baseCanvasPixelFormat;
         
         id<MTLCommandBuffer>        m_metalCommandBuffer;
@@ -401,8 +397,7 @@ namespace wg
             for (int i = 0; i < m_nClipRects; i++)
             {
                 RectI clip = m_pClipRects[i];
-                if( m_canvasYstart != 0 )
-                    clip.y = m_canvasSize.h - (clip.y + clip.h);
+                clip.y = m_canvasSize.h - (clip.y + clip.h);
 
                 m_pClipListBuffer[m_clipWriteOfs++] = clip;
             }

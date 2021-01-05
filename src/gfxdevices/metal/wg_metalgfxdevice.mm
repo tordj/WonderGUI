@@ -60,15 +60,12 @@ namespace wg
 
     //____ constructor() ______________________________________________________
 
-MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
+MetalGfxDevice::MetalGfxDevice()
 	{
         m_bFullyInitialized = true;
 
         m_flushesInProgress = 0;
         
-        m_canvasYstart = 0;
-        m_canvasYmul = -1;
-
         _initTables();
         
         //
@@ -334,6 +331,74 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         return m_pSurfaceFactory;
 	}
 
+    //____ _canvasWasChanged() ________________________________________________________
+
+    void MetalGfxDevice::_canvasWasChanged()
+    {
+        _renderLayerWasChanged();
+    }
+
+    //____ _renderLayerWasChanged() ________________________________________________________
+
+    void MetalGfxDevice::_renderLayerWasChanged()
+    {
+        Surface* pRenderSurface;
+
+        bool bClear = false;
+        if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
+        {
+            m_layerSurfaces[m_renderLayer - 1] = MetalSurface::create(m_canvasSize, m_pLayerDef->layerFormat(m_renderLayer - 1), SurfaceFlag::Canvas);
+            bClear = true;
+        }
+
+        if (!m_pCanvas && m_renderLayer == 0)
+        {
+            pRenderSurface = nullptr;
+        }
+        else
+        {
+            pRenderSurface = (m_renderLayer == 0) ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+            pRenderSurface->retain();
+        }
+        
+
+        _endCommand();
+        _beginStateCommand(Command::SetCanvas, 4 + sizeof(void*)/sizeof(int));
+        m_pCommandBuffer[m_commandOfs++] = m_canvasSize.w;
+        m_pCommandBuffer[m_commandOfs++] = m_canvasSize.h;
+        m_pCommandBuffer[m_commandOfs++] = bClear ? (int) CanvasInit::Discard : (int) CanvasInit::Keep;
+        m_pCommandBuffer[m_commandOfs++] = Color::Black.argb;
+        * (void**)(m_pCommandBuffer+m_commandOfs) = pRenderSurface;
+        m_commandOfs += sizeof(void*)/sizeof(int);
+
+        if(bClear)
+            _clearRenderLayer();
+    }
+
+    //____ _clipListWasChanged() ________________________________________________________
+
+    void MetalGfxDevice::_clipListWasChanged()
+    {
+        m_clipCurrOfs = -1;
+    }
+
+    //____ _setRenderPassDescriptor() ___________________________________________________
+
+    bool MetalGfxDevice::setBaseCanvasFormat( MTLRenderPassDescriptor* renderPassDesc, PixelFormat pixelFormat )
+    {
+        if( pixelFormat != PixelFormat::BGRA_8_linear && pixelFormat != PixelFormat::BGRA_8_sRGB && pixelFormat != PixelFormat::A_8 )
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "pixelFormat must be BGRA_8_linear, BGRA_8_sRGB or A_8", this, TYPEINFO, __func__, __FILE__, __LINE__);
+            return false;
+        }
+
+        m_baseCanvasRenderPassDesc = renderPassDesc;
+        m_baseCanvasPixelFormat = pixelFormat;
+        
+        return true;
+    }
+
+/*
     //____ setCanvas() __________________________________________________________________
 
     bool MetalGfxDevice::setCanvas( MTLRenderPassDescriptor* renderPassDesc, SizeI canvasSize, PixelFormat pixelFormat, bool bResetClipList )
@@ -430,59 +495,38 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         
         return true;
     }
-
-    //____ setClipList() _______________________________________________________
-
-    bool MetalGfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
-    {
-        if (GfxDevice::setClipList(nRectangles, pRectangles))
-        {
-            m_clipCurrOfs = -1;
-            return true;
-        }
-        return false;
-    }
-
-    //____ clearClipList() _______________________________________________________
-
-    void MetalGfxDevice::clearClipList()
-    {
-        GfxDevice::clearClipList();
-        m_clipCurrOfs = -1;
-    }
-
+*/
     //____ setTintColor() _______________________________________________________
 
-    void MetalGfxDevice::setTintColor(Color color)
+    void MetalGfxDevice::setTintColor(HiColor color)
     {
         GfxDevice::setTintColor(color);
 
         if( m_bRendering )
         {
             _endCommand();
-            _beginStateCommand(Command::SetTintColor, 1);
-            m_pCommandBuffer[m_commandOfs++] = color.argb;
+            _beginStateCommand(Command::SetTintColor, 2);
+            *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = color.argb;
+            m_commandOfs += 2;
         }
     }
 
     //____ setTintGradient() ______________________________________________________
 
-    void MetalGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+    void MetalGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
     {
-        GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+        GfxDevice::setTintGradient(rect, gradient);
 
         if (m_bRendering)
         {
             _endCommand();
-            _beginStateCommand(Command::SetTintGradient, 8);
+            _beginStateCommand(Command::SetTintGradient, 12);
             m_pCommandBuffer[m_commandOfs++] = rect.x;
             m_pCommandBuffer[m_commandOfs++] = rect.y;
             m_pCommandBuffer[m_commandOfs++] = rect.w;
             m_pCommandBuffer[m_commandOfs++] = rect.h;
-            m_pCommandBuffer[m_commandOfs++] = topLeft.argb;
-            m_pCommandBuffer[m_commandOfs++] = topRight.argb;
-            m_pCommandBuffer[m_commandOfs++] = bottomRight.argb;
-            m_pCommandBuffer[m_commandOfs++] = bottomLeft.argb;
+            *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = gradient;
+            m_commandOfs += 8;
         }
     }
 
@@ -607,8 +651,8 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
         // Set intial canvas for first _executeBuffer() call.
         
-        m_pActiveCanvas     = (MetalSurface*) m_pCanvas.rawPtr();
-        m_activeCanvasSize  = m_canvasSize;
+        m_pActiveCanvas     = nullptr;
+        m_activeCanvasSize  = {0,0};
         
         // Set initial active states
         
@@ -628,21 +672,20 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         
          if (m_bTintGradient)
          {
-             _beginStateCommand(Command::SetTintGradient, 8);
+             _beginStateCommand(Command::SetTintGradient, 12);
              m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.x;
              m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.y;
              m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.w;
              m_pCommandBuffer[m_commandOfs++] = m_tintGradientRect.h;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[0].argb;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[1].argb;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[2].argb;
-             m_pCommandBuffer[m_commandOfs++] = m_tintGradient[3].argb;
+             *(Gradient*)(&m_pCommandBuffer[m_commandOfs]) = m_tintGradient;
+             m_commandOfs += 8;
              _endCommand();
          }
         else
         {
-             _beginStateCommand(Command::SetTintColor, 1);
-             m_pCommandBuffer[m_commandOfs++] = m_tintColor.argb;
+             _beginStateCommand(Command::SetTintColor, 2);
+             *(int64_t*)(&m_pCommandBuffer[m_commandOfs]) = m_tintColor.argb;
+            m_commandOfs += 2;
             _endCommand();
         }
         
@@ -757,7 +800,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ fill() ____ [standard] __________________________________________________
 
-    void MetalGfxDevice::fill(const RectI& rect, const Color& col)
+    void MetalGfxDevice::fill(const RectI& rect, HiColor col)
     {
         // Skip calls that won't affect destination
 
@@ -820,17 +863,15 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             }
         }
 
-        float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.r];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.g];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.b];
-        m_pExtrasBuffer[m_extrasOfs++] = col.a / 255.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
     }
 
     //____ fill() ____ [subpixel] __________________________________________________
 
-	void MetalGfxDevice::fill(const RectF& rect, const Color& col)
+	void MetalGfxDevice::fill(const RectF& rect, HiColor col)
 	{
         // Skip calls that won't affect destination
 
@@ -901,12 +942,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
         // Provide color
 
-        float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.r];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.g];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[col.b];
-        m_pExtrasBuffer[m_extrasOfs++] = col.a / 255.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.r / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.g / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.b / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = col.a / 4096.f;
 
         // Provide rectangle center and radius
 
@@ -921,7 +960,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ plotPixels() _________________________________________________________________
 
-	void MetalGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const Color * pColors)
+	void MetalGfxDevice::plotPixels(int nPixels, const CoordI * pCoords, const HiColor * pColors)
 	{
         if (nPixels == 0)
             return;
@@ -934,8 +973,6 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             _endCommand();
             _beginDrawCommand(Command::Plot);
         }
-
-        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
 
         for (int i = 0; i < m_nClipRects; i++)
         {
@@ -950,10 +987,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
                     Color color = pColors[pixel];
 
-                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
-                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
-                    m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
-                    m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = color.r / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = color.g / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = color.b / 4096.f;
+                    m_pExtrasBuffer[m_extrasOfs++] = color.a / 4096.f;
 
                     if (m_vertexOfs == m_vertexBufferSize || m_extrasOfs == m_extrasBufferSize)
                     {
@@ -968,9 +1005,15 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ drawLine() ____ [from/to] __________________________________________________
 
-	void MetalGfxDevice::drawLine(CoordI begin, CoordI end, Color color, float thickness)
+	void MetalGfxDevice::drawLine(CoordI begin, CoordI end, HiColor color, float thickness)
 	{
+        // Skip calls that won't affect destination
 
+        if (color.a == 0 && (m_blendMode == BlendMode::Blend))
+            return;
+
+        //
+        
         if (m_vertexOfs > m_vertexBufferSize - 6 || m_extrasOfs > m_extrasBufferSize - 8 )
               _resizeBuffers();
 
@@ -1076,12 +1119,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         m_pVertexBuffer[m_vertexOfs].extrasOfs = m_extrasOfs/4;
         m_vertexOfs++;
 
-        float * pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
-        m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.r / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.g / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.b / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.a / 4096.f;
 
         m_pExtrasBuffer[m_extrasOfs++] = s;
         m_pExtrasBuffer[m_extrasOfs++] = w;
@@ -1092,7 +1133,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ drawLine() ____ [start/direction] __________________________________________________
 
-    void MetalGfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
+    void MetalGfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
     {
         // Skip calls that won't affect destination
 
@@ -1202,12 +1243,11 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
         // Provide color
 
-        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+        m_pExtrasBuffer[m_extrasOfs++] = color.r / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.g / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.b / 4096.f;
+        m_pExtrasBuffer[m_extrasOfs++] = color.a / 4096.f;
 
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.r];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.g];
-        m_pExtrasBuffer[m_extrasOfs++] = pConv[color.b];
-        m_pExtrasBuffer[m_extrasOfs++] = color.a / 255.f;
 
         // Provide rectangle center and raidus.
 
@@ -1387,7 +1427,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ _transformDrawSegments() ___________________________________________________
 
-	void MetalGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
+	void MetalGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int simpleTransform[2][2])
 	{
         if (!_dest.intersectsWith(m_clipBounds))
             return;
@@ -1559,8 +1599,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         
         // Add colors to segmentsTintTexMap
 
-        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-        const Color* pSegCol = pSegmentColors;
+        const HiColor* pSegCol = pSegmentColors;
 
         uint16_t* pMapRow = &m_pSegPalBuffer[m_segPalOfs*c_segPalEntrySize/2];
         int            mapPitch = c_maxSegments * 4 * 2;
@@ -1572,10 +1611,10 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             {
                 for (int i = 0; i < nSegments; i++)
                 {
-                    uint16_t r = uint16_t(pConv[pSegCol->r] * 65535);
-                    uint16_t g = uint16_t(pConv[pSegCol->g] * 65535);
-                    uint16_t b = uint16_t(pConv[pSegCol->b] * 65535);
-                    uint16_t a = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    uint16_t r = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    uint16_t g = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    uint16_t b = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    uint16_t a = uint16_t(int(pSegCol->a) * 65535 / 4096);
 
                     pMapRow[i * 8 + 0] = r;
                     pMapRow[i * 8 + 1] = g;
@@ -1603,16 +1642,16 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             {
                 for (int i = 0; i < nSegments; i++)
                 {
-                    int r1 = uint16_t(pConv[pSegCol->r] * 65535);
-                    int g1 = uint16_t(pConv[pSegCol->g] * 65535);
-                    int b1 = uint16_t(pConv[pSegCol->b] * 65535);
-                    int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    int r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    int g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    int b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 40966);
                     pSegCol++;
 
-                    int r2 = uint16_t(pConv[pSegCol->r] * 65535);
-                    int g2 = uint16_t(pConv[pSegCol->g] * 65535);
-                    int b2 = uint16_t(pConv[pSegCol->b] * 65535);
-                    int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    int r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    int g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    int b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 40966);
                     pSegCol++;
 
                     pMapRow[i * 8 + 0] = r1;
@@ -1640,16 +1679,16 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             {
                 for (int i = 0; i < nSegments; i++)
                 {
-                    int r1 = uint16_t(pConv[pSegCol->r] * 65535);
-                    int g1 = uint16_t(pConv[pSegCol->g] * 65535);
-                    int b1 = uint16_t(pConv[pSegCol->b] * 65535);
-                    int a1 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    int r1 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    int g1 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    int b1 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    int a1 = uint16_t(int(pSegCol->a) * 65535 / 40966);
                     pSegCol++;
 
-                    int r2 = uint16_t(pConv[pSegCol->r] * 65535);
-                    int g2 = uint16_t(pConv[pSegCol->g] * 65535);
-                    int b2 = uint16_t(pConv[pSegCol->b] * 65535);
-                    int a2 = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    int r2 = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    int g2 = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    int b2 = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    int a2 = uint16_t(int(pSegCol->a) * 65535 / 40966);
                     pSegCol++;
 
                     pMapRow[i * 8 + 0] = r1;
@@ -1677,28 +1716,28 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             {
                 for (int i = 0; i < nSegments; i++)
                 {
-                    pMapRow[i * 8 + 0] = uint16_t(pConv[pSegCol->r] * 65535);
-                    pMapRow[i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
-                    pMapRow[i * 8 + 2] = uint16_t(pConv[pSegCol->b] * 65535);
-                    pMapRow[i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pMapRow[i * 8 + 0] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    pMapRow[i * 8 + 1] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    pMapRow[i * 8 + 2] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    pMapRow[i * 8 + 3] = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
-                    pMapRow[i * 8 + 4] = uint16_t(pConv[pSegCol->r] * 65535);
-                    pMapRow[i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
-                    pMapRow[i * 8 + 6] = uint16_t(pConv[pSegCol->b] * 65535);
-                    pMapRow[i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pMapRow[i * 8 + 4] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    pMapRow[i * 8 + 5] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    pMapRow[i * 8 + 6] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    pMapRow[i * 8 + 7] = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
-                    pMapRow[mapPitch + i * 8 + 4] = uint16_t(pConv[pSegCol->r] * 65535);
-                    pMapRow[mapPitch + i * 8 + 5] = uint16_t(pConv[pSegCol->g] * 65535);
-                    pMapRow[mapPitch + i * 8 + 6] = uint16_t(pConv[pSegCol->b] * 65535);
-                    pMapRow[mapPitch + i * 8 + 7] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pMapRow[mapPitch + i * 8 + 4] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 5] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 6] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 7] = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
 
-                    pMapRow[mapPitch + i * 8 + 0] = uint16_t(pConv[pSegCol->r] * 65535);
-                    pMapRow[mapPitch + i * 8 + 1] = uint16_t(pConv[pSegCol->g] * 65535);
-                    pMapRow[mapPitch + i * 8 + 2] = uint16_t(pConv[pSegCol->b] * 65535);
-                    pMapRow[mapPitch + i * 8 + 3] = uint16_t(m_linearToLinearTable[pSegCol->a] * 65535);
+                    pMapRow[mapPitch + i * 8 + 0] = uint16_t(int(pSegCol->r) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 1] = uint16_t(int(pSegCol->g) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 2] = uint16_t(int(pSegCol->b) * 65535 / 4096);
+                    pMapRow[mapPitch + i * 8 + 3] = uint16_t(int(pSegCol->a) * 65535 / 4096);
                     pSegCol++;
                 }
                 break;
@@ -1890,8 +1929,11 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         }
 
         // Create our render encoder.
-
-        id<MTLRenderCommandEncoder> renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, m_beginRenderOp, m_clearColor );
+        
+        id<MTLRenderCommandEncoder> renderEncoder = nil;
+        
+/*
+        id<MTLRenderCommandEncoder> renderEncoder = _setCanvas( m_pActiveCanvas, m_activeCanvasSize.w, m_activeCanvasSize.h, CanvasInit::Keep, Color::White );
         m_beginRenderOp = CanvasInit::Keep;
         
         // Set buffers for vertex shaders
@@ -1905,7 +1947,7 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         
         [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
         [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
-        
+*/
         int * pCmd = m_pCommandBuffer;
         int * pCmdEnd = &m_pCommandBuffer[m_commandOfs];
 
@@ -1924,27 +1966,34 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
             {
                 case Command::SetCanvas:
                 {
-                    [renderEncoder endEncoding];
-                    
-                    MetalSurface* pSurf = *((MetalSurface**)(pCmd+4));
-                    renderEncoder = _setCanvas(pSurf, pCmd[0], pCmd[1], (CanvasInit) pCmd[2], pCmd[3]);
-                    
-                    [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
-                    
-                    [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
-                    [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
+                    if( renderEncoder != nil )
+                        [renderEncoder endEncoding];
 
-                    // Set buffers/textures for segments fragment shader
-                    
-                    [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
-                    [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
+                    if( pCmd[0] == 0 && pCmd[1] == 0)
+                    {
+                        m_pActiveCanvas = nullptr;
+                        m_activeCanvasSize.clear();
+                    }
+                    else
+                    {
+                        MetalSurface* pSurf = *((MetalSurface**)(pCmd+4));
+                        renderEncoder = _setCanvas(pSurf, pCmd[0], pCmd[1], (CanvasInit) pCmd[2], pCmd[3]);
+                        
+                        [renderEncoder setVertexBuffer:m_vertexBufferId offset:0 atIndex:(unsigned) VertexInputIndex::VertexBuffer];
+                        
+                        [renderEncoder setVertexBuffer:m_extrasBufferId offset:0 atIndex:(unsigned) VertexInputIndex::ExtrasBuffer];
+                        [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
 
-                    
-                    
-                    
-                    if( pSurf )
-                        pSurf->release();
-                    pCmd += 2 + sizeof(MetalSurface*)/sizeof(int);
+                        // Set buffers/textures for segments fragment shader
+                        
+                        [renderEncoder setFragmentTexture:m_segPalTextureId atIndex: (unsigned) TextureIndex::SegPal];
+                        [renderEncoder setFragmentBuffer:m_segEdgeBufferId offset:0 atIndex:(unsigned) FragmentInputIndex::ExtrasBuffer];
+
+                        if( pSurf )
+                            pSurf->release();
+
+                    }
+                    pCmd += 4 + sizeof(MetalSurface*)/sizeof(int);
                     break;
                 }
                 case Command::SetBlendMode:
@@ -1959,17 +2008,18 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
                 }
                 case Command::SetTintColor:
                 {
-                    _setTintColor(renderEncoder, *(Color*)(pCmd++));
+                    _setTintColor(renderEncoder, *(HiColor*)(pCmd));
+                    pCmd+=2;
                     break;
                 }
                 case Command::SetTintGradient:
                 {
                     RectI& rect = *(RectI*)pCmd;
                     pCmd += 4;
-                    Color* pColors = (Color*)pCmd;
-                    pCmd += 4;
+                    Gradient* pGradient = (Gradient*)pCmd;
+                    pCmd += 8;
 
-                    _setTintGradient(renderEncoder, rect, pColors);
+                    _setTintGradient(renderEncoder, rect, * pGradient);
                     break;
                 }
                 case Command::ClearTintGradient:
@@ -2165,7 +2215,8 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
         }
         else
         {
-            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_renderPassDesc];
+           
+            renderEncoder = [m_metalCommandBuffer renderCommandEncoderWithDescriptor:m_baseCanvasRenderPassDesc];
             renderEncoder.label = @"GfxDeviceMetal Render Pass";
            
             pixelFormat = m_baseCanvasPixelFormat;
@@ -2269,49 +2320,43 @@ MetalGfxDevice::MetalGfxDevice() : GfxDevice( SizeI{0,0} )
 
     //____ _setTintColor() ____________________________________________________
 
-    void MetalGfxDevice::_setTintColor( id<MTLRenderCommandEncoder> renderEncoder, Color color)
+    void MetalGfxDevice::_setTintColor( id<MTLRenderCommandEncoder> renderEncoder, HiColor color)
     {
-        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
-
-        float r, g, b, a;
-
-        m_uniform.flatTint[0] = r = pConv[color.r];
-        m_uniform.flatTint[1] = g = pConv[color.g];
-        m_uniform.flatTint[2] = b = pConv[color.b];
-        m_uniform.flatTint[3] = a = m_linearToLinearTable[color.a];
+        m_uniform.flatTint[0] = color.r / 4096.f;
+        m_uniform.flatTint[1] = color.g / 4096.f;
+        m_uniform.flatTint[2] = color.b / 4096.f;
+        m_uniform.flatTint[3] = color.a / 4096.f;
 
         [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }
 
     //____ _setTintGradient() _________________________________________________
 
-    void MetalGfxDevice::_setTintGradient( id<MTLRenderCommandEncoder> renderEncoder, const RectI& rect, const Color colors[4])
+    void MetalGfxDevice::_setTintGradient( id<MTLRenderCommandEncoder> renderEncoder, const RectI& rect, const Gradient& gradient)
     {
         m_bGradientActive = true;
 
         m_uniform.tintRect = rect;
 
-        float* pConv = Base::activeContext()->gammaCorrection() ? m_sRGBtoLinearTable : m_linearToLinearTable;
+        m_uniform.topLeftTint[0] = gradient.topLeft.r / 4096.f;
+        m_uniform.topLeftTint[1] = gradient.topLeft.g / 4096.f;
+        m_uniform.topLeftTint[2] = gradient.topLeft.b / 4096.f;
+        m_uniform.topLeftTint[3] = gradient.topLeft.a / 4096.f;
 
-        m_uniform.topLeftTint[0] = pConv[colors[0].r];
-        m_uniform.topLeftTint[1] = pConv[colors[0].g];
-        m_uniform.topLeftTint[2] = pConv[colors[0].b];
-        m_uniform.topLeftTint[3] = m_linearToLinearTable[colors[0].a];
+        m_uniform.topRightTint[0] = gradient.topRight.r / 4096.f;
+        m_uniform.topRightTint[1] = gradient.topRight.g / 4096.f;
+        m_uniform.topRightTint[2] = gradient.topRight.b / 4096.f;
+        m_uniform.topRightTint[3] = gradient.topRight.a / 4096.f;
 
-        m_uniform.topRightTint[0] = pConv[colors[1].r];
-        m_uniform.topRightTint[1] = pConv[colors[1].g];
-        m_uniform.topRightTint[2] = pConv[colors[1].b];
-        m_uniform.topRightTint[3] = m_linearToLinearTable[colors[1].a];
+        m_uniform.bottomRightTint[0] = gradient.bottomRight.r / 4096.f;
+        m_uniform.bottomRightTint[1] = gradient.bottomRight.g / 4096.f;
+        m_uniform.bottomRightTint[2] = gradient.bottomRight.b / 4096.f;
+        m_uniform.bottomRightTint[3] = gradient.bottomRight.a / 4096.f;
 
-        m_uniform.bottomRightTint[0] = pConv[colors[2].r];
-        m_uniform.bottomRightTint[1] = pConv[colors[2].g];
-        m_uniform.bottomRightTint[2] = pConv[colors[2].b];
-        m_uniform.bottomRightTint[3] = m_linearToLinearTable[colors[2].a];
-
-        m_uniform.bottomLeftTint[0] = pConv[colors[3].r];
-        m_uniform.bottomLeftTint[1] = pConv[colors[3].g];
-        m_uniform.bottomLeftTint[2] = pConv[colors[3].b];
-        m_uniform.bottomLeftTint[3] = m_linearToLinearTable[colors[3].a];
+        m_uniform.bottomLeftTint[0] = gradient.bottomLeft.r / 4096.f;
+        m_uniform.bottomLeftTint[1] = gradient.bottomLeft.g / 4096.f;
+        m_uniform.bottomLeftTint[2] = gradient.bottomLeft.b / 4096.f;
+        m_uniform.bottomLeftTint[3] = gradient.bottomLeft.a / 4096.f;
 
         [renderEncoder setVertexBytes:&m_uniform length:sizeof(Uniform) atIndex:(unsigned) VertexInputIndex::Uniform];
     }

@@ -37,7 +37,6 @@ public:
     {
         m_pCanvas = MetalSurface::create(canvasSize, canvasFormat, SurfaceFlag::Canvas);
         m_pDevice = MetalGfxDevice::create();              // Needs a UBO binding point separate from other GfxDevice.
-        m_pDevice->setCanvas(m_pCanvas);
         return true;
     }
 
@@ -50,11 +49,13 @@ public:
     GfxDevice_p beginRender() const
     {
         m_pDevice->beginRender();
+        m_pDevice->beginCanvasUpdate(m_pCanvas);
         return m_pDevice;
     }
 
     void endRender() const
     {
+        m_pDevice->endCanvasUpdate();
         m_pDevice->endRender();
     }
 
@@ -72,7 +73,7 @@ private:
 
     const char * m_pName = { "Metal" };
 
-    MetalGfxDevice_p    m_pDevice;
+    MetalGfxDevice_p      m_pDevice;
     MetalSurface_p        m_pCanvas;
 };
 
@@ -103,7 +104,7 @@ protected:
 
 };
 
-
+//____ GameViewController ________________________________________________________________________________
 
 @implementation GameViewController
 {
@@ -124,11 +125,14 @@ protected:
     
 }
 
+//____ viewDidLoad _______________________________________________________
+
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
     _view = (MTKView *)self.view;
+    _view.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
 
     _view.device = MTLCreateSystemDefaultDevice();
 
@@ -139,41 +143,41 @@ protected:
         return;
     }
 
-            Base::init();
+    Base::init();
 
-            MetalGfxDevice::setMetalDevice( _view.device );
-            m_pDevice = MetalGfxDevice::create();
+    MetalGfxDevice::setMetalDevice( _view.device );
+    m_pDevice = MetalGfxDevice::create();
 
-            
-            auto pContext = Context::create();
-            pContext->setGammaCorrection(true);
-            pContext->setGfxDevice(m_pDevice);
-            pContext->setSurfaceFactory(MetalSurfaceFactory::create());
-            
-            Base::setActiveContext(pContext);
+    MTLRenderPassDescriptor * pDesc = _view.currentRenderPassDescriptor;
+    pDesc.colorAttachments[0].loadAction = MTLLoadActionLoad;
+    m_pDevice->setBaseCanvasFormat( pDesc, PixelFormat::BGRA_8_sRGB );
 
-        
-            m_pRoot = RootPanel::create(m_pDevice);
-            
-            m_pRoot->setGeo( {0,0,1000,500});
-            
-            MyAppVisitor * pVisitor = new MyAppVisitor(nullptr);
-         
-            // Create app and visitor, make any app-specif initialization
+    
+    auto pContext = Context::create();
+    pContext->setGammaCorrection(true);
+    pContext->setGfxDevice(m_pDevice);
+    pContext->setSurfaceFactory(MetalSurfaceFactory::create());
+    
+    Base::setActiveContext(pContext);
 
-            m_pApp = new GfxDeviceTester();
-            m_pVisitor = new MyAppVisitor(m_pRoot);
+    // Get apps window size before we continue
 
-            // Get apps window size before we continue
+    m_pApp = new GfxDeviceTester();
+    m_windowSize = m_pApp->startWindowSize();
 
-    //        m_windowSize = m_pApp->startWindowSize();
+    m_pRoot = RootPanel::create(m_windowSize, m_pDevice);
+    
+    // Create app and visitor, make any app-specif initialization
 
-            m_pApp->addTestDevice(new SoftwareDevice());
-            m_pApp->addTestDevice(new MetalDevice());
+    m_pVisitor = new MyAppVisitor(m_pRoot);
 
-            // Initialize the app
 
-            bool bContinue = m_pApp->init( m_pVisitor );
+    m_pApp->addTestDevice(new SoftwareDevice());
+    m_pApp->addTestDevice(new MetalDevice());
+
+    // Initialize the app
+
+    bool bContinue = m_pApp->init( m_pVisitor );
 
     //
     
@@ -205,13 +209,24 @@ protected:
     
 }
 
+//____ updateApp _______________________________________________________________
+
 - (void)updateApp
 {
+    // Dispatch messages
+
+    Base::msgRouter()->dispatch();
+
     // Uppdate the app
 
-    /*bContinue =*/ m_pApp->update();
+    m_pApp->update();
 
+    // Periodic update
+
+    Base::update(16000);
 }
+
+//____ scrollWheel __________________________________________________________
 
 - (void)scrollWheel:(NSEvent *)theEvent {
     
@@ -252,27 +267,35 @@ protected:
         
 }
 
+//____ mouseDown ___________________________________________________________
 
 - (void)mouseDown:(NSEvent *)theEvent {
 
     Base::inputHandler()->setButton(MouseButton::Left, true);
 }
 
+//____ mouseUp _____________________________________________________________
+
 - (void)mouseUp:(NSEvent *)theEvent {
 
     Base::inputHandler()->setButton(MouseButton::Left, false);
 }
+
+//____ rightMouseDown ______________________________________________________
 
 - (void)rightMouseDown:(NSEvent *)theEvent {
 
     Base::inputHandler()->setButton(MouseButton::Right, true);
 }
 
+//____ rightMouseUp ________________________________________________________
+
 - (void)rightMouseUp:(NSEvent *)theEvent {
 
     Base::inputHandler()->setButton(MouseButton::Right, false);
 }
 
+//____ mouseEntered ________________________________________________________
 
 - (void)mouseEntered:(NSEvent *)theEvent {
 
@@ -288,11 +311,15 @@ protected:
 
 }
 
+//____ mouseExited ________________________________________________________
+
 - (void)mouseExited:(NSEvent *)theEvent {
 
     Base::inputHandler()->setPointer(m_pRoot, { -1, -1 } );
 
 }
+
+//____ mouseMoved ________________________________________________________
 
 - (void)mouseMoved:(NSEvent *)theEvent {
    
@@ -306,6 +333,8 @@ protected:
 
     Base::inputHandler()->setPointer(m_pRoot, {(float)mouseLoc.x, (float)mouseLoc.y} );
 }
+
+//____ mouseDragged ________________________________________________________
 
 - (void)mouseDragged:(NSEvent *)theEvent {
 

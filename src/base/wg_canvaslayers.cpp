@@ -38,7 +38,7 @@ namespace wg
 			if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 			{
 				Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Canvas layers can not be CLUT-based", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-				return false;
+				return nullptr;
 			}
 		}
 
@@ -49,7 +49,7 @@ namespace wg
 
 	CanvasLayers::CanvasLayers(const std::initializer_list<std::pair<BlendMode, PixelFormat>>& extraLayers)
 	{
-		m_nbLayers = extraLayers.size();
+		m_nbLayers = (int) extraLayers.size();
 
 		int ofs = 0;
 		for (auto& layer : extraLayers)

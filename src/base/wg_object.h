@@ -25,7 +25,8 @@
 
 #include <atomic>
 
-#include <wg_pointers.h>
+#include <wg_strongptr.h>
+#include <wg_weakptr.h>
 #include <wg_types.h>
 
 namespace wg
@@ -35,7 +36,7 @@ namespace wg
 	struct TypeInfo;
 
 	typedef StrongPtr<Object>	Object_p;
-	typedef WeakPtr<Object>		Object_wp;
+//	typedef WeakPtr<Object>		Object_wp;
 
 
 	/**
@@ -94,7 +95,7 @@ namespace wg
 
 	private:
 		virtual void 	_destroy();			// Pointers should call destroy instead of destructor.
-		std::atomic_int	m_refCount = 0;
+		std::atomic_int	m_refCount;
 	};
 
 
