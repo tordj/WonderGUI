@@ -271,6 +271,14 @@ namespace wg
 		return (m_pPocket->bAnimated == false && m_pPocket->transitionFrom == m_pPocket->transitionTo);
 	}
 
+	//____ _willRemovePocket() ___________________________________________________
+
+	void CSkinSlot::_willRemovePocket(SkinSlotPocket* pPocket)
+	{
+		m_pPocket = nullptr;
+	}
+
+
 	//____ _initPocket() ______________________________________________________
 
 	void CSkinSlot::_initPocket(State state)

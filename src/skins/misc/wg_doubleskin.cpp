@@ -50,6 +50,7 @@ namespace wg
 
 	DoubleSkin::DoubleSkin()
 	{
+		_onModified();
 	}
 
 	DoubleSkin::DoubleSkin(Skin * pFrontSkin, Skin * pBackSkin, bool bSkinInSkin) :

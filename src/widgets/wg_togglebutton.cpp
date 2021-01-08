@@ -391,4 +391,65 @@ namespace wg
 		};
 	}
 
+	//____ _componentPos() ______________________________________________________________
+
+	Coord ToggleButton::_componentPos(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &skin)
+			return Coord();
+
+		Rect contentRect = OO(skin)._contentRect(contentRect, m_state);
+
+		// Get icon and text rect from content rect
+
+		Rect iconRect = _icon()._getIconRect(contentRect);
+
+		if (pComponent == &icon)
+			return iconRect.pos();
+
+		Rect textRect = _icon()._getTextRect(contentRect, iconRect);
+		return textRect.pos();
+	}
+
+	//____ _componentSize() ______________________________________________________________
+
+	Size ToggleButton::_componentSize(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &skin)
+			return m_size;
+
+		Size	sz = m_size - OO(skin)._contentPaddingSize();
+
+		Rect iconRect = _icon()._getIconRect(sz);
+
+		if (pComponent == &icon)
+			return iconRect.size();
+
+		Rect textRect = _icon()._getTextRect(sz, iconRect);
+		return textRect.size();
+
+	}
+
+	//____ _componentGeo() ______________________________________________________________
+
+	Rect ToggleButton::_componentGeo(const GeoComponent* pComponent) const
+	{
+		if (pComponent == &skin)
+			return m_size;
+
+		Rect	contentRect = OO(skin)._contentRect(m_size, m_state);
+
+		// Get icon and text rect from content rect
+
+		Rect iconRect = _icon()._getIconRect(contentRect);
+
+		if (pComponent == &icon)
+			return iconRect;
+
+		Rect textRect = _icon()._getTextRect(contentRect, iconRect);
+		return textRect;
+	}
+
+
+
 } // namespace wg

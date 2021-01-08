@@ -38,6 +38,7 @@ namespace wg
 		{
 		public:
 			virtual bool _update(SkinSlotPocket* pPocket, int msPassed) = 0;
+			virtual void _willRemovePocket(SkinSlotPocket* pPocket) = 0;
 		};
 
 		Holder*				pHolder;

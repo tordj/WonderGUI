@@ -110,7 +110,9 @@ namespace wg
 		//
 
 
-		bool	_update(SkinSlotPocket* pPocket, int msPassed);
+		bool	_update(SkinSlotPocket* pPocket, int msPassed) override;
+		void	_willRemovePocket(SkinSlotPocket* pPocket) override;
+
 
 		void	_initPocket(State state);
 		void	_releasePocket();

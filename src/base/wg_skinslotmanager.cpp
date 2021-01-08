@@ -52,8 +52,11 @@ namespace wg
 			[msPassed](SkinSlotPocket* pPocket) 
 			{
 				bool bDelete = pPocket->pHolder->_update(pPocket, msPassed); 
-				if (bDelete) 
-					s_pMemPool->freeEntry(pPocket); 
+				if (bDelete)
+				{
+					pPocket->pHolder->_willRemovePocket(pPocket);
+					s_pMemPool->freeEntry(pPocket);
+				}
 				return bDelete; 
 			}
 		);
