@@ -39,6 +39,7 @@
 #include <wg3_bitmapfont.h>
 #include <wg3_freetypefont.h>
 #include <wg3_textstyle.h>
+#include <wg3_staticblockskin.h>
 
 
 #include "sdl_wglib.h"
@@ -54,6 +55,7 @@
 #include <wg_blockset.h>
 #include <wg_shadowlayer.h>
 #include <wg_pianokeyboard.h>
+#include <wg_tooltiplayer.h>
 
 
 #include "testwidget.h"
@@ -72,6 +74,7 @@ void packPanelTextWrapTest( WgRootPanel * pRoot );
 bool pianoKeyboardTest(WgRootPanel * pRoot);
 bool rangeSliderTest(WgRootPanel* pRoot);
 bool canvasCapsuleTest(WgRootPanel* pRoot);
+bool tooltipLayerTest(WgRootPanel* pRoot);
 
 
 //#define USE_OPEN_GL
@@ -227,7 +230,7 @@ int main ( int argc, char** argv )
 #endif
 
     auto pContext = wg::Context::create();
-    pContext->setScale(1.00f);
+    pContext->setScale(2.00f);
     pContext->setGfxDevice(g_pGfxDevice);
     pContext->setSurfaceFactory(g_pSurfaceFactory);
     wg::Base::setActiveContext(pContext);
@@ -305,7 +308,8 @@ int main ( int argc, char** argv )
 //    cursorInViewTest( pRoot );
 //	pianoKeyboardTest(pRoot);
 //	rangeSliderTest(pRoot);
-    canvasCapsuleTest(pRoot);
+//    canvasCapsuleTest(pRoot);
+    tooltipLayerTest(pRoot);
 
 
 	// Setup debug overlays
@@ -1160,6 +1164,56 @@ bool canvasCapsuleTest(WgRootPanel* pRoot)
 
     
     pRoot->SetChild(pBaseLayer);
+    return true;
+}
+
+
+//____ tooltipLayerTest() _____________________________________________________
+
+bool tooltipLayerTest(WgRootPanel * pRoot)
+{
+    auto pTooltipLayer = new WgTooltipLayer();
+
+    wg::Surface_p pTooltipBg = sdl_wglib::LoadSurface("../resources/tooltip_under_bg.png", g_pSurfaceFactory);
+    auto pSkin = wg::StaticBlockSkin::create(pTooltipBg, wg::BorderI( 10,4,3,4 ) );
+//        pSkin->setRigidPartX(5, 16, wg::YSections::Top | wg::YSections::Center | wg::YSections::Bottom);
+    pSkin->setContentPadding({ 10,4,4,4 });
+
+/*
+    pTooltipLayer->SetTooltipGenerator([pSkin](WgTooltipLayer::Placement& placement, const WgWidget* pHoveredWidget, const WgBorders& widgetMargins)
+    {
+        auto pTooltip = new WgTextDisplay();
+
+        pTooltip->SetSkin(pSkin);
+
+
+        placement.bTooltipAroundPointer = false;
+        placement.direction = wg::Origo::South;
+        placement.spacing = wg::BorderI(0);
+
+        pTooltip->SetText(pHoveredWidget->GetTooltipString());
+        return pTooltip;
+    });
+*/
+
+    auto pTooltipSkin = wg::BoxSkin::create(1, wg::Color::White, wg::Color::Black);
+    pTooltipSkin->setContentPadding(2);
+
+    auto pBaseLayer = new WgFlexPanel();
+    pBaseLayer->SetSkin( wg::ColorSkin::create(wg::Color::PapayaWhip) );
+
+    auto pWidget1 = new WgFiller();
+    pWidget1->SetColors( WgColorset::Create(wg::Color::Blue) );
+    pWidget1->SetTooltipString( wg::String("This is widget 1.") );
+    pBaseLayer->AddChild(pWidget1, WgRect(10, 10, 100, 100));
+
+    auto pWidget2 = new WgFiller();
+    pWidget2->SetColors( WgColorset::Create(wg::Color::Green) );
+    pWidget2->SetTooltipString( wg::String("This is widget 2.") );
+    pBaseLayer->AddChild(pWidget2, WgRect(150, 20, 170, 100));
+
+    pTooltipLayer->SetBase( pBaseLayer );
+    pRoot->SetChild(pTooltipLayer);
     return true;
 }
 

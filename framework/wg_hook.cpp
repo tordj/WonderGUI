@@ -119,18 +119,22 @@ void WgHook::_requestInView( const WgRect& mustHaveArea, const WgRect& niceToHav
 
 WgCoord WgHook::PointPos() const
 {
-	return (PixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
+    int scale = Parent() ? Parent()->Scale() : 4096;
+
+    return (PixelPos() * WG_SCALE_BASE ) / scale;
 }
 
 WgSize WgHook::PointSize() const
 {
-	return (PixelSize() * WG_SCALE_BASE ) / Parent()->Scale();
+    int scale = Parent() ? Parent()->Scale() : 4096;
+
+    return (PixelSize() * WG_SCALE_BASE ) / scale;
 }
 
 WgRect WgHook::PointGeo() const
 {
 	WgRect geo = PixelGeo();
-	int scale = Parent()->Scale();
+    int scale = Parent() ? Parent()->Scale() : 4096;
 
 	geo.x = (geo.x << WG_SCALE_BINALS) / scale;
 	geo.y = (geo.y << WG_SCALE_BINALS) / scale;
@@ -142,14 +146,15 @@ WgRect WgHook::PointGeo() const
 
 WgCoord WgHook::ScreenPointPos() const
 {
-	return (ScreenPixelPos() * WG_SCALE_BASE ) / Parent()->Scale();
-
+    int scale = Parent() ? Parent()->Scale() : 4096;
+    
+    return (ScreenPixelPos() * WG_SCALE_BASE ) / scale;
 }
 
 WgRect WgHook::ScreenPointGeo() const
 {
 	WgRect geo = ScreenPixelGeo();
-	int scale = Parent()->Scale();
+    int scale = Parent() ? Parent()->Scale() : 4096;
 
 	geo.x = (geo.x << WG_SCALE_BINALS) / scale;
 	geo.y = (geo.y << WG_SCALE_BINALS) / scale;

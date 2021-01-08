@@ -83,7 +83,8 @@ friend class WgPopupLayer;
 friend class WgFlowPanel;
 friend class WgDragNDropLayer;
 friend class WgShadowLayer;
-
+friend class WgTooltipLayer;
+    
 friend class WgTableRow;
 
 friend class WgZoomOutCapsule;
