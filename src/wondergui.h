@@ -126,6 +126,7 @@
 #include <wg_colorskin.h>
 #include <wg_lambdaskin.h>
 #include <wg_multiblockskin.h>
+#include <wg_scrollskin.h>
 #include <wg_tileskin.h>
 #include <wg_staticblockskin.h>
 #include <wg_staticboxskin.h>
@@ -138,8 +139,9 @@
 #include <wg_standardformatter.h>
 #include <wg_timeformatter.h>
 #include <wg_valueformatter.h>
-#include <wg_canvasstack.h>
 #include <wg_capsule.h>
+#include <wg_canvascapsule.h>
+#include <wg_renderlayercapsule.h>
 #include <wg_shadercapsule.h>
 #include <wg_sizecapsule.h>
 #include <wg_designlayer.h>
@@ -147,6 +149,7 @@
 #include <wg_layer.h>
 #include <wg_modallayer.h>
 #include <wg_popuplayer.h>
+#include <wg_tooltiplayer.h>
 #include <wg_list.h>
 #include <wg_packlist.h>
 #include <wg_flexpanel.h>

@@ -35,7 +35,7 @@
 #include <wg_freetypefont.h>
 #include "testwidget.h"
 
-//#define USE_OPEN_GL
+#define USE_OPEN_GL
 
 
 using namespace wg;
@@ -95,6 +95,8 @@ bool bakeSkinTest(CStandardSlot_p pSlot);
 bool animSkinTest(CStandardSlot_p pSlot);
 bool renderLayerTest(CStandardSlot_p pSlot);
 bool rigidPartNinePatchTest(CStandardSlot_p pSlot);
+bool scrollSkinTest(CStandardSlot_p pSlot);
+bool tooltipLayerTest(CStandardSlot_p pSlot);
 
 
 void nisBlendTest();
@@ -614,8 +616,10 @@ int main(int argc, char** argv)
 //	tileSkinTest(&pRoot->slot);
 //	bakeSkinTest(&pRoot->slot);
 //	animSkinTest(&pRoot->slot);
-//	renderLayerTest(&pRoot->slot);
-	rigidPartNinePatchTest(&pRoot->slot);
+	renderLayerTest(&pRoot->slot);
+//	rigidPartNinePatchTest(&pRoot->slot);
+//	scrollSkinTest(&pRoot->slot);
+	tooltipLayerTest(&pRoot->slot);
 
 
 	// Test IChild and IChildIterator baseclasses
@@ -2588,7 +2592,7 @@ bool renderLayerTest(CStandardSlot_p pSlot)
 	auto pBoxSkin = StaticBoxSkin::create(2, Color::Green, Color::Black);
 	pBoxSkin->setLayer(2);
 	
-	auto pShadowSkin = StaticBoxSkin::create(20,Color( 255,255,255,128), Color::Transparent);
+	auto pShadowSkin = StaticBoxSkin::create(20,Color( 255,255,255,32), Color::Transparent);
 	pShadowSkin->setContentPadding({ 0,40,40,0 });
 	pShadowSkin->setLayer(1);
 	pShadowSkin->setBlendMode(BlendMode::Max);
@@ -2633,6 +2637,83 @@ bool rigidPartNinePatchTest(CStandardSlot_p pSlot)
 	*pSlot = pBaseLayer;
 	return true;
 }
+
+//____ scrollSkinTest() ________________________________________________
+
+bool scrollSkinTest(CStandardSlot_p pSlot)
+{
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	Surface_p pSliderSurf = loadSurface("../resources/sliding_statebutton.png");
+	Surface_p pCoverSurf = loadSurface("../resources/sliding_statebutton_cover.png");
+
+	auto pSliderSkin = ScrollSkin::create(pSliderSurf, 84, StateBits::Selected, 300, Direction::Right, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Disabled }, 0);
+	auto pCoverSkin = StaticBlockSkin::create(pCoverSurf);
+
+	auto pComboSkin = DoubleSkin::create(pCoverSkin, pSliderSkin, false);
+
+	auto pWidget = ToggleButton::create();
+	pWidget->skin = pComboSkin;
+
+	pBaseLayer->slots.pushBackMovable(pWidget, Rect(10, 10, 84, 36));
+
+	*pSlot = pBaseLayer;
+	return true;
+}
+
+//____ tooltipLayerTest() _____________________________________________________
+
+TextDisplay_p	s_pTooltip;
+
+bool tooltipLayerTest(CStandardSlot_p pSlot)
+{
+	auto pTooltipLayer = TooltipLayer::create();
+
+	s_pTooltip = TextDisplay::create();
+
+	Surface_p pTooltipBg = loadSurface("../resources/tooltip_under_bg.png");
+	auto pSkin = StaticBlockSkin::create(pTooltipBg, BorderI( 10,4,3,4 ) );
+	pSkin->setRigidPartX(5, 16, YSections::Top | YSections::Center | YSections::Bottom);
+	pSkin->setContentPadding({ 10,4,4,4 });
+	s_pTooltip->skin = pSkin;
+
+
+	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Placement& placement, const Widget* pHoveredWidget, const Border& widgetMargins) 
+	{
+		placement.bTooltipAroundPointer = false;
+		placement.direction = Origo::South;
+		placement.spacing = Border(0);
+
+		s_pTooltip->text.set(pHoveredWidget->tooltip());
+		return s_pTooltip;
+	});
+
+
+	auto pTooltipSkin = BoxSkin::create(1, Color::White, Color::Black);
+	pTooltipSkin->setContentPadding(2);
+
+	auto pTooltip = TextDisplay::create();
+	pTooltip->skin = pTooltipSkin;
+
+	auto pBaseLayer = FlexPanel::create();
+	pBaseLayer->skin = ColorSkin::create(Color::PapayaWhip);
+
+	auto pWidget1 = Filler::create();
+	pWidget1->skin = ColorSkin::create(Color::Blue);
+	pWidget1->setTooltip( String("This is widget 1.") );
+	pBaseLayer->slots.pushBackMovable(pWidget1, Rect(20, 20, 100, 100));
+
+	auto pWidget2 = Filler::create();
+	pWidget2->skin = ColorSkin::create(Color::Green);
+	pWidget2->setTooltip(String("This is widget 2."));
+	pBaseLayer->slots.pushBackMovable(pWidget2, Rect(150, 20, 100, 100));
+
+	pTooltipLayer->mainSlot = pBaseLayer;
+	*pSlot = pTooltipLayer;
+	return true;
+}
+
 
 
 //____

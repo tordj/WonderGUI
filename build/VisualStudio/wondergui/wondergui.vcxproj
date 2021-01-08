@@ -194,6 +194,7 @@
     <ClInclude Include="..\..\..\src\skins\state\wg_colorskin.h" />
     <ClInclude Include="..\..\..\src\skins\state\wg_lambdaskin.h" />
     <ClInclude Include="..\..\..\src\skins\state\wg_multiblockskin.h" />
+    <ClInclude Include="..\..\..\src\skins\state\wg_scrollskin.h" />
     <ClInclude Include="..\..\..\src\skins\state\wg_tileskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticblockskin.h" />
     <ClInclude Include="..\..\..\src\skins\static\wg_staticboxskin.h" />
@@ -210,7 +211,9 @@
     <ClInclude Include="..\..\..\src\valueformatters\wg_timeformatter.h" />
     <ClInclude Include="..\..\..\src\valueformatters\wg_valueformatter.h" />
     <ClInclude Include="..\..\..\src\wg_userdefines.h" />
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvascapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_capsule.h" />
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_renderlayercapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_shadercapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\capsules\wg_sizecapsule.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_designlayer.h" />
@@ -218,6 +221,7 @@
     <ClInclude Include="..\..\..\src\widgets\layers\wg_layer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_modallayer.h" />
     <ClInclude Include="..\..\..\src\widgets\layers\wg_popuplayer.h" />
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_tooltiplayer.h" />
     <ClInclude Include="..\..\..\src\widgets\lists\wg_list.h" />
     <ClInclude Include="..\..\..\src\widgets\lists\wg_packlist.h" />
     <ClInclude Include="..\..\..\src\widgets\panels\wg_flexpanel.h" />
@@ -340,6 +344,7 @@
     <ClCompile Include="..\..\..\src\skins\state\wg_colorskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\state\wg_lambdaskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\state\wg_multiblockskin.cpp" />
+    <ClCompile Include="..\..\..\src\skins\state\wg_scrollskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\state\wg_tileskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticblockskin.cpp" />
     <ClCompile Include="..\..\..\src\skins\static\wg_staticboxskin.cpp" />
@@ -354,7 +359,9 @@
     <ClCompile Include="..\..\..\src\valueformatters\wg_standardformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_timeformatter.cpp" />
     <ClCompile Include="..\..\..\src\valueformatters\wg_valueformatter.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvascapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_capsule.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_renderlayercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_shadercapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\capsules\wg_sizecapsule.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_designlayer.cpp" />
@@ -362,6 +369,7 @@
     <ClCompile Include="..\..\..\src\widgets\layers\wg_layer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_modallayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\layers\wg_popuplayer.cpp" />
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_tooltiplayer.cpp" />
     <ClCompile Include="..\..\..\src\widgets\lists\wg_list.cpp" />
     <ClCompile Include="..\..\..\src\widgets\lists\wg_packlist.cpp" />
     <ClCompile Include="..\..\..\src\widgets\panels\wg_flexpanel.cpp" />

@@ -569,6 +569,18 @@
     <ClInclude Include="..\..\..\src\skins\static\wg_staticgradientskin.h">
       <Filter>skins\static</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\src\skins\state\wg_scrollskin.h">
+      <Filter>skins\state</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_canvascapsule.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\capsules\wg_renderlayercapsule.h">
+      <Filter>widgets\capsules</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\src\widgets\layers\wg_tooltiplayer.h">
+      <Filter>widgets\layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\src\skins\wg_skin.cpp">
@@ -993,6 +1005,18 @@
     </ClCompile>
     <ClCompile Include="..\..\..\src\skins\static\wg_staticgradientskin.cpp">
       <Filter>skins\static</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\skins\state\wg_scrollskin.cpp">
+      <Filter>skins\state</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_canvascapsule.cpp">
+      <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\capsules\wg_renderlayercapsule.cpp">
+      <Filter>widgets\capsules</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\src\widgets\layers\wg_tooltiplayer.cpp">
+      <Filter>widgets\layers</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

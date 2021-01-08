@@ -150,7 +150,7 @@ namespace wg
 		Widget *		_findWidget( const Coord& ofs, SearchMode mode ) override;
 
 
-		// Only base slot can have child replaced, we should throw something later...
+		// Only base slot can have child replaced, we need error handling...
 		void			_replaceChild(StaticSlot * pSlot, Widget * pNewChild) override { return Layer::_replaceChild(pSlot, pNewChild); }
 
 		void			_childRequestResize(StaticSlot * pSlot) override;
