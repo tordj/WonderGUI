@@ -29,7 +29,7 @@ using namespace wg;
     id<MTLCommandQueue> _commandQueue;
 
     // The current size of the view, used as an input to the vertex shader.
-    vector_uint2 _viewportSize;
+    simd_uint2 _viewportSize;
 
     RootPanel_p             m_pRootPanel;
  
@@ -40,7 +40,7 @@ using namespace wg;
     self = [super init];
     if(self)
     {
-        mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
+//        mtkView.colorPixelFormat = MTLPixelFormatBGRA8Unorm_sRGB;
         
         m_pRootPanel = pRootPanel;
 
@@ -67,13 +67,13 @@ using namespace wg;
     
     pDevice->autopresent(view.currentDrawable);
 
-    pDevice->setCanvas( pDesc, {(int)_viewportSize.x,(int)_viewportSize.y}, PixelFormat::BGRA_8_sRGB );
+    pDevice->setBaseCanvasFormat( pDesc, PixelFormat::BGRA_8_sRGB );
     
-    m_pRootPanel->setGeo( {0,0,(int)_viewportSize.x,(int)_viewportSize.y} );
+    m_pRootPanel->setCanvas( {(int)_viewportSize.x,(int)_viewportSize.y} );
     
     // Render. We do this outside the app since we might want to
     // handle updated rectangles in a system specific way.
-
+    
     m_pRootPanel->addDirtyPatch({0,0,(int)_viewportSize.x,(int)_viewportSize.y});
     
     m_pRootPanel->render();

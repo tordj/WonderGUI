@@ -107,7 +107,7 @@ namespace wg
 
 	//____ Constructor ________________________________________________________
 
-	Object::Object()
+	Object::Object() : m_refCount(0)
 	{
 		Base::_objectWasCreated(this);
 	}

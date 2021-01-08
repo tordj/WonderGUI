@@ -32,7 +32,7 @@ using namespace wg;
     id<MTLCommandQueue> _commandQueue;
 
     // The current size of the view, used as an input to the vertex shader.
-    vector_uint2 _viewportSize;
+    simd_uint2 _viewportSize;
     
     wg::MetalGfxDevice_p    m_pDevice;
     wg::MetalSurface_p      m_pSurface;

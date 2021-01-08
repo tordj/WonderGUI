@@ -94,7 +94,7 @@ namespace wg
 				return 0;
 			}
 
-			int newCapacity = std::min( s_capacity * 2, c_maxCapacity);
+			int newCapacity = s_capacity * 2 < c_maxCapacity ? s_capacity * 2 : c_maxCapacity;
 
 			TextStyle ** pNewTable = new TextStyle*[newCapacity];
 

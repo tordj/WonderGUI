@@ -403,28 +403,31 @@ namespace wg
 
 		// Push old values onto stack, if we have a canvas.
 
-		m_canvasStack.emplace_back();
-		auto& back = m_canvasStack.back();
+		if( !m_canvasSize.isEmpty() )
+		{
+			m_canvasStack.emplace_back();
+			auto& back = m_canvasStack.back();
 
-		back.pLayerDef = m_pLayerDef;
-		back.pCanvas = m_pCanvas;
-		back.updateRects.pClipRects = m_pCanvasUpdateRects;
-		back.updateRects.nClipRects = m_nCanvasUpdateRects;
-		back.updateRects.clipBounds = m_canvasUpdateBounds;
-		back.clipRects.pClipRects = m_pClipRects;
-		back.clipRects.nClipRects = m_nClipRects;
-		back.clipRects.clipBounds = m_clipBounds;
-		back.renderLayer = m_renderLayer;
-		back.tintColor = m_tintColor;
-		back.tintGradient = m_tintGradient;
-		back.tintGradientRect = m_tintGradientRect;
-		back.bTintGradient = m_bTintGradient;
-		back.blendMode = m_blendMode;
-		back.morphFactor = m_morphFactor;
-		back.canvasSize = m_canvasSize;
+			back.pLayerDef = m_pLayerDef;
+			back.pCanvas = m_pCanvas;
+			back.updateRects.pClipRects = m_pCanvasUpdateRects;
+			back.updateRects.nClipRects = m_nCanvasUpdateRects;
+			back.updateRects.clipBounds = m_canvasUpdateBounds;
+			back.clipRects.pClipRects = m_pClipRects;
+			back.clipRects.nClipRects = m_nClipRects;
+			back.clipRects.clipBounds = m_clipBounds;
+			back.renderLayer = m_renderLayer;
+			back.tintColor = m_tintColor;
+			back.tintGradient = m_tintGradient;
+			back.tintGradientRect = m_tintGradientRect;
+			back.bTintGradient = m_bTintGradient;
+			back.blendMode = m_blendMode;
+			back.morphFactor = m_morphFactor;
+			back.canvasSize = m_canvasSize;
 
-		memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
-		memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+			memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+			memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+		}
 
 		// Set values
 
@@ -495,38 +498,57 @@ namespace wg
 			}
 		}
 
-		// Unwind the stack, retrieve saved values
-
-		auto& back = m_canvasStack.back();
-
-		m_pLayerDef = back.pLayerDef;
-		m_pCanvas = back.pCanvas;
-		m_pCanvasUpdateRects = back.updateRects.pClipRects;
-		m_nCanvasUpdateRects = back.updateRects.nClipRects;
-		m_canvasUpdateBounds = back.updateRects.clipBounds;
-		m_pClipRects = back.clipRects.pClipRects;
-		m_nClipRects = back.clipRects.nClipRects;
-		m_clipBounds = back.clipRects.clipBounds;
-		m_renderLayer = back.renderLayer;
-		m_tintColor = back.tintColor;
-		m_tintGradient = back.tintGradient;
-		m_tintGradientRect = back.tintGradientRect;
-		m_bTintGradient = back.bTintGradient;
-		m_blendMode = back.blendMode;
-		m_morphFactor = back.morphFactor;
-		m_canvasSize = back.canvasSize;
-
 		// Dereference surfaces
 
 		for (int i = 0; i < CanvasLayers::c_maxLayers; i++)
 			m_layerSurfaces[i] = nullptr;
 
-		// Move surface pointers from stack without referencing/dereferencing.
+		// Unwind the stack, retrieve saved values
 
-		memcpy(m_layerSurfaces, back.layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
-		memset(back.layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+		if( !m_canvasStack.empty() )
+		{
+			auto& back = m_canvasStack.back();
 
-		m_canvasStack.pop_back();
+			m_pLayerDef = back.pLayerDef;
+			m_pCanvas = back.pCanvas;
+			m_pCanvasUpdateRects = back.updateRects.pClipRects;
+			m_nCanvasUpdateRects = back.updateRects.nClipRects;
+			m_canvasUpdateBounds = back.updateRects.clipBounds;
+			m_pClipRects = back.clipRects.pClipRects;
+			m_nClipRects = back.clipRects.nClipRects;
+			m_clipBounds = back.clipRects.clipBounds;
+			m_renderLayer = back.renderLayer;
+			m_tintColor = back.tintColor;
+			m_tintGradient = back.tintGradient;
+			m_tintGradientRect = back.tintGradientRect;
+			m_bTintGradient = back.bTintGradient;
+			m_blendMode = back.blendMode;
+			m_morphFactor = back.morphFactor;
+			m_canvasSize = back.canvasSize;
+
+
+			// Move surface pointers from stack without referencing/dereferencing.
+
+			memcpy(m_layerSurfaces, back.layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+			memset(back.layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+
+			m_canvasStack.pop_back();
+		}
+		else
+		{
+			m_pLayerDef = nullptr;
+			m_pCanvas = nullptr;
+			m_pCanvasUpdateRects = nullptr;
+			m_nCanvasUpdateRects = 0;
+			m_canvasUpdateBounds.clear();
+			m_pClipRects = nullptr;
+			m_nClipRects = 0;
+			m_clipBounds.clear();
+			m_renderLayer = 0;
+			m_canvasSize.clear();
+
+		}
+
 		_canvasWasChanged();
 	}
 
