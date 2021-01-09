@@ -41,48 +41,32 @@ namespace wg
 	{
 	public:
 
-		//____ Slot ___________________________________________________________
-
-		class Slot : public Layer::Slot
-		{
-			friend class TooltipLayer;
-		public:
-
-			//.____ Identification ________________________________________________
-
-			const static TypeInfo	TYPEINFO;
-
-		protected:
-
-			Slot(SlotHolder* pHolder) : Layer::Slot(pHolder) {}
-		};
-
-		//.____ Creation __________________________________________
-
-		static TooltipLayer_p	create() { return TooltipLayer_p(new TooltipLayer()); }
-
-		//.____ Identification __________________________________________
-
-		const TypeInfo& typeInfo(void) const override;
-		const static TypeInfo	TYPEINFO;
-
 		//
 
-		struct Placement
+		struct Position
 		{
 			Origo	direction;
 			Border	spacing;
 			bool	bTooltipAroundPointer;
 		};
 
+		//.____ Creation __________________________________________
 
-		void setTooltipGenerator( const std::function<Widget_p(Placement& placement, const Widget* pHoveredWidget, const Border& widgetMargins )> func );
-		void setTooltipPlacement(Origo direction, Border spacing, bool bTooltipAroundPointer = true );
+		static TooltipLayer_p	create() { return TooltipLayer_p(new TooltipLayer()); }
+
+		//.____ Identification ________________________________________________
+
+		const TypeInfo& typeInfo(void) const override;
+		const static TypeInfo	TYPEINFO;
+
+
+		//.____ Control _______________________________________________________
+
+		void setTooltipGenerator( const std::function<Widget_p(Position& placement, const Widget* pHoveredWidget, const Border& widgetMargins )> func );
+		void setTooltipPosition(Origo direction, Border spacing, bool bTooltipAroundPointer = true );
 
 		void setDisplayTooltips(bool bDisplay);
 		bool displayTooltips() const { return m_bDisplayTooltips;  }
-
-		
 
 
 	protected:
@@ -90,12 +74,25 @@ namespace wg
 		virtual ~TooltipLayer();
 		virtual Widget* _newOfMyType() const override { return new TooltipLayer(); };
 
+
+		class Slot : public Layer::Slot
+		{
+			friend class TooltipLayer;
+		public:
+			const static TypeInfo	TYPEINFO;
+
+		protected:
+
+			Slot(SlotHolder* pHolder) : Layer::Slot(pHolder) {}
+		};
+
+
 		void			_updateTooltipGeo();
 
 		void			_openTooltip();
 		void			_closeTooltip();
 
-		static Widget_p		_defaultTooltipGenerator(Placement& placement, const Widget*, const Border&);
+		static Widget_p		_defaultTooltipGenerator(Position& placement, const Widget*, const Border&);
 
 		// Overloaded from Widget
 
@@ -129,10 +126,10 @@ namespace wg
 		bool		m_bBlockReopen		= false;
 		bool		m_bDisplayTooltips	= true;
 
-		Placement	m_defaultPlacement = { Origo::SouthEast, {2,16,16,2}, true };
-		Placement	m_activePlacement;
+		Position	m_defaultPosition = { Origo::SouthEast, {2,16,16,2}, true };
+		Position	m_activePosition;
 
-		std::function<Widget_p(Placement& placement, const Widget* pHovered, const Border& margin)>	m_tooltipGenerator = _defaultTooltipGenerator;
+		std::function<Widget_p(Position& placement, const Widget* pHovered, const Border& margin)>	m_tooltipGenerator = _defaultTooltipGenerator;
 
 	};
 

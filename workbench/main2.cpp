@@ -2679,7 +2679,7 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	s_pTooltip->skin = pSkin;
 
 
-	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Placement& placement, const Widget* pHoveredWidget, const Border& widgetMargins) 
+	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Position& placement, const Widget* pHoveredWidget, const Border& widgetMargins) 
 	{
 		placement.bTooltipAroundPointer = false;
 		placement.direction = Origo::South;

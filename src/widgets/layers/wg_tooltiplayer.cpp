@@ -56,18 +56,18 @@ namespace wg
 
 	//____ setTooltipGenerator() ______________________________________________
 
-	void TooltipLayer::setTooltipGenerator(const std::function<Widget_p(Placement& direction, const Widget*, const Border&)> func)
+	void TooltipLayer::setTooltipGenerator(const std::function<Widget_p(Position& direction, const Widget*, const Border&)> func)
 	{
 		m_tooltipGenerator = func;
 	}
 
-	//____ setTooltipPlacement() ______________________________________________
+	//____ setTooltipPosition() ______________________________________________
 
-	void TooltipLayer::setTooltipPlacement(Origo direction, Border spacing, bool bTooltipAroundPointer)
+	void TooltipLayer::setTooltipPosition(Origo direction, Border spacing, bool bTooltipAroundPointer)
 	{
-		m_defaultPlacement.direction = direction;
-		m_defaultPlacement.spacing = spacing;
-		m_defaultPlacement.bTooltipAroundPointer = bTooltipAroundPointer;
+		m_defaultPosition.direction = direction;
+		m_defaultPosition.spacing = spacing;
+		m_defaultPosition.bTooltipAroundPointer = bTooltipAroundPointer;
 	}
 
 	//____ setDisplayTooltips() _______________________________________________
@@ -100,8 +100,8 @@ namespace wg
 		Rect hoveredGeo = pHovered->globalGeo() - globalPos();
 		Border widgetMargin{ hoveredGeo.y, m_size.w - hoveredGeo.right(), m_size.h - hoveredGeo.bottom(), hoveredGeo.x };
 
-		m_activePlacement = m_defaultPlacement;
-		Widget_p pWidget = m_tooltipGenerator(m_activePlacement, pHovered, widgetMargin);
+		m_activePosition = m_defaultPosition;
+		Widget_p pWidget = m_tooltipGenerator(m_activePosition, pHovered, widgetMargin);
 
 		if (pWidget)
 		{
@@ -109,23 +109,23 @@ namespace wg
 
 			Size tooltipSize = pWidget->preferredSize();
 
-			Placement& placement = m_activePlacement;
+			Position& position = m_activePosition;
 
-			Rect center = placement.bTooltipAroundPointer ? Rect(m_hoverPos) : hoveredGeo;
-			center += placement.spacing;
+			Rect center = position.bTooltipAroundPointer ? Rect(m_hoverPos) : hoveredGeo;
+			center += position.spacing;
 
 			Coord tooltipPos;
 
-			// Take care of vertical placement
+			// Take care of vertical position
 
-			if( placement.direction == Origo::NorthWest || placement.direction == Origo::North || placement.direction == Origo::NorthEast )
+			if( position.direction == Origo::NorthWest || position.direction == Origo::North || position.direction == Origo::NorthEast )
 			{
 				if (center.y < tooltipSize.h)
 					tooltipPos.y = center.y + center.h;
 				else
 					tooltipPos.y = center.y - tooltipSize.h;
 			}
-			else if (placement.direction == Origo::SouthWest || placement.direction == Origo::South || placement.direction == Origo::SouthEast)
+			else if (position.direction == Origo::SouthWest || position.direction == Origo::South || position.direction == Origo::SouthEast)
 			{
 				if (m_size.h - center.bottom() < tooltipSize.h)
 					tooltipPos.y = center.y - tooltipSize.h;
@@ -137,18 +137,18 @@ namespace wg
 				tooltipPos.y = (center.y + center.h / 2) - tooltipSize.h / 2;
 			}
 
-			// Take care of horizontal placement
+			// Take care of horizontal position
 
-			if (placement.direction == Origo::NorthWest || placement.direction == Origo::West || placement.direction == Origo::SouthWest)
+			if (position.direction == Origo::NorthWest || position.direction == Origo::West || position.direction == Origo::SouthWest)
 			{
-				if (center.x < tooltipSize.w)
+				if (position.direction == Origo::West && center.x < tooltipSize.w)
 					tooltipPos.x = center.x + center.w;
 				else
 					tooltipPos.x = center.x - tooltipSize.w;
 			}
-			else if (placement.direction == Origo::NorthEast || placement.direction == Origo::East || placement.direction == Origo::SouthEast)
+			else if (position.direction == Origo::NorthEast || position.direction == Origo::East || position.direction == Origo::SouthEast)
 			{
-				if (m_size.w - center.right() < tooltipSize.w)
+				if (position.direction == Origo::East && m_size.w - center.right() < tooltipSize.w)
 					tooltipPos.x = center.x - tooltipSize.w;
 				else
 					tooltipPos.x = center.x + center.w;
@@ -217,7 +217,7 @@ namespace wg
 					m_hoverPos = mousePos;
 					m_hoverCountdown = m_hoverMillisec;
 				}
-				else if (abs(mousePos.x - m_hoverPos.x) > m_openTooltipMaxMovement || abs(mousePos.x - m_hoverPos.x) > m_openTooltipMaxMovement)
+				else if (abs(mousePos.x - m_hoverPos.x) > m_openTooltipMaxMovement || abs(mousePos.y - m_hoverPos.y) > m_openTooltipMaxMovement)
 				{
 					_closeTooltip();
 					m_bBlockReopen = true;
@@ -337,7 +337,7 @@ namespace wg
 
 	//____ _defaultTooltipGenerator() ____________________________________________
 
-	Widget_p TooltipLayer::_defaultTooltipGenerator(Placement& placement, const Widget* pHovered, const Border& margin)
+	Widget_p TooltipLayer::_defaultTooltipGenerator(Position& position, const Widget* pHovered, const Border& margin)
 	{
 		BoxSkin_p pSkin = BoxSkin::create(1, Color::LightYellow, Color::Black);
 		pSkin->setContentPadding(2);
@@ -347,5 +347,4 @@ namespace wg
 		pWidget->text.set(pHovered->tooltip());
 		return pWidget;
 	}
-
 }
