@@ -68,8 +68,8 @@ namespace wg
 			void				setSizePolicy(SizePolicy2D policy) { _holder()->_setSizePolicy(this, policy); }
 			inline SizePolicy2D sizePolicy() const { return m_sizePolicy; }
 
-			void				setOrigo(Origo origo) { _holder()->_setOrigo(this, origo); }
-			inline Origo		origo() const { return m_origo; }
+			void				setPlacement(Placement placement) { _holder()->_setPlacement(this, placement); }
+			inline Placement	placement() const { return m_placement; }
 
 			//.____ Operators __________________________________________
 
@@ -85,7 +85,7 @@ namespace wg
 			StackPanel *		_holder() { return static_cast<StackPanel*>(PaddedSlot::_holder()); }
 			const StackPanel *	_holder() const { return static_cast<const StackPanel*>(PaddedSlot::_holder()); }
 
-			Origo			m_origo = Origo::Center;
+			Placement			m_placement = Placement::Center;
 			SizePolicy2D	m_sizePolicy = SizePolicy2D::Original;
 		};
 
@@ -175,7 +175,7 @@ namespace wg
 		//
 
 		void		_setSizePolicy(Slot * pSlot, SizePolicy2D policy);
-		void		_setOrigo(Slot * pSlot, Origo origo);
+		void		_setPlacement(Slot * pSlot, Placement placement);
 
 
 		// Internal to StackPanel

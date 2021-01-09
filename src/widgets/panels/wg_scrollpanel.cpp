@@ -95,13 +95,13 @@ namespace wg
 
 		if (m_windowGeo.w > m_contentSize.w)
 		{
-			Rect r = Util::origoToRect(m_contentOrigo, Size(m_windowGeo.w, 1), Size(m_contentSize.w, 1));
+			Rect r = Util::placementToRect(m_contentPlacement, Size(m_windowGeo.w, 1), Size(m_contentSize.w, 1));
 			out.x = m_windowGeo.x + r.x;
 		}
 
 		if (m_windowGeo.h > m_contentSize.h)
 		{
-			Rect r = Util::origoToRect(m_contentOrigo, Size(1, m_windowGeo.h), Size(1, m_contentSize.h));
+			Rect r = Util::placementToRect(m_contentPlacement, Size(1, m_windowGeo.h), Size(1, m_contentSize.h));
 			out.y = m_windowGeo.y + r.y;
 		}
 
@@ -298,12 +298,12 @@ namespace wg
 		return *this;
 	}
 
-	void ScrollPanel::CViewSlot::setOrigo(Origo origo)
+	void ScrollPanel::CViewSlot::setPlacement(Placement placement)
 	{
-		if (origo == m_contentOrigo)
+		if (placement == m_contentPlacement)
 			return;
 
-		m_contentOrigo = origo;
+		m_contentPlacement = placement;
 
 		bool bModified = _updateCanvasGeo();
 		if (bModified)
@@ -373,7 +373,7 @@ namespace wg
 		return _holder()->_jump(dir);
 	}
 
-	bool ScrollPanel::CViewSlot::setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo, Coord viewOfs)
+	bool ScrollPanel::CViewSlot::setWindowFocus(Placement canvasOrigo, Coord canvasOfs, Placement viewOrigo, Coord viewOfs)
 	{
 		//TODO: Implement!
 
@@ -411,7 +411,7 @@ namespace wg
 		return true;
 	}
 
-	bool ScrollPanel::ScrollbarEntry::setPlacement(Direction placement)
+	bool ScrollPanel::ScrollbarEntry::setPosition(Direction placement)
 	{
 		if ((placement == Direction::Up || placement == Direction::Down) && (m_pSlot->placement == Direction::Left || m_pSlot->placement == Direction::Right))
 			return false;

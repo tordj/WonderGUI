@@ -43,7 +43,7 @@ namespace wg
 
 	//____ pushFront() ________________________________________________
 
-	void PopupLayer::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize )
+	void PopupLayer::CSlots::pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize )
 	{
 		pPopup->releaseFromParent();
 		_holder()->_addSlot( pPopup, pOpener, launcherGeo, attachPoint, bAutoClose, maxSize);
@@ -114,56 +114,56 @@ namespace wg
 
 		switch( pSlot->m_attachPoint )
 		{
-			case Origo::NorthEast:					// Right side of launcherGeo, going down.
+			case Placement::NorthEast:					// Right side of launcherGeo, going down.
 			{
 				geo.x = pSlot->m_launcherGeo.right();
 				geo.y = pSlot->m_launcherGeo.top();
 				break;
 			}
 
-			case Origo::SouthEast:					// Right side of launcherGeo, going up.
+			case Placement::SouthEast:					// Right side of launcherGeo, going up.
 			{
 				geo.x = pSlot->m_launcherGeo.right();
 				geo.y = pSlot->m_launcherGeo.bottom() - geo.h;
 				break;
 			}
 
-			case Origo::NorthWest:					// Left-aligned above launcher.
+			case Placement::NorthWest:					// Left-aligned above launcher.
 			{
 				geo.x = pSlot->m_launcherGeo.left();
 				geo.y = pSlot->m_launcherGeo.top() - geo.h;
 				break;
 			}
 
-			case Origo::SouthWest:					// Left-aligned below launcher.
+			case Placement::SouthWest:					// Left-aligned below launcher.
 			{
 				geo.x = pSlot->m_launcherGeo.left();
 				geo.y = pSlot->m_launcherGeo.bottom();
 				break;
 			}
 
-			case Origo::West:						// Centered left of launcherGeo.
+			case Placement::West:						// Centered left of launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.left() - geo.w;
 				geo.y = pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h / 2 -geo.h / 2;
 				break;
 			}
 
-			case Origo::North:						// Centered above launcherGeo.
+			case Placement::North:						// Centered above launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 + geo.w/2;
 				geo.y = pSlot->m_launcherGeo.top() - geo.h;
 				break;
 			}
 
-			case Origo::East:						// Centered right of launcherGeo.
+			case Placement::East:						// Centered right of launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.right();
 				geo.y = pSlot->m_launcherGeo.top() + pSlot->m_launcherGeo.h/2 - geo.h/2;
 				break;
 			}
 
-			case Origo::South:						// Centered below launcherGeo.
+			case Placement::South:						// Centered below launcherGeo.
 			{
 				geo.x = pSlot->m_launcherGeo.left() + pSlot->m_launcherGeo.w/2 + geo.w/2;
 				geo.y = pSlot->m_launcherGeo.bottom();
@@ -832,7 +832,7 @@ namespace wg
 
 	//____ _addSlot() ____________________________________________________________
 
-	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Origo _attachPoint, bool _bAutoClose, Size _maxSize)
+	void PopupLayer::_addSlot(Widget * _pPopup, Widget * _pOpener, const Rect& _launcherGeo, Placement _attachPoint, bool _bAutoClose, Size _maxSize)
 	{
 		Slot * pSlot = popupSlots._pushFrontEmpty();
 		pSlot->m_pOpener = _pOpener;

@@ -32,7 +32,7 @@ namespace wg
 
 	CIconDisplay::CIconDisplay( GeoComponent::Holder * pHolder ) : GeoComponent(pHolder)
 	{
-		m_origo			= Origo::NorthWest;
+		m_placement		= Placement::NorthWest;
 		m_scale			= 0.f;
 		m_bOverlap		= true;
 	}
@@ -46,10 +46,10 @@ namespace wg
 
 	//____ set() ___________________________________________________________________
 
-	bool CIconDisplay::set( Skin * pSkin, Origo origo, BorderI padding, float scale, bool bOverlap )
+	bool CIconDisplay::set( Skin * pSkin, Placement placement, BorderI padding, float scale, bool bOverlap )
 	{
 		m_pSkin 	= pSkin;
-		m_origo 	= origo;
+		m_placement	= placement;
 		m_padding 	= padding;
 		m_scale 	= scale;
 		m_bOverlap 	= bOverlap;
@@ -63,7 +63,7 @@ namespace wg
 	void CIconDisplay::clear()
 	{
 		m_pSkin 	= 0;
-		m_origo 	= Origo::West;
+		m_placement	= Placement::West;
 		m_padding 	= BorderI(0);
 		m_scale 	= 0.f;
 		m_bOverlap 	= false;
@@ -87,13 +87,13 @@ namespace wg
 		return true;
 	}
 
-	//____ _setOrigo() ___________________________________________________
+	//____ _setPlacement() ___________________________________________________
 
-	void CIconDisplay::_setOrigo( Origo origo )
+	void CIconDisplay::_setPlacement( Placement placement )
 	{
-		if( origo != m_origo )
+		if( placement != m_placement )
 		{
-			m_origo = origo;
+			m_placement = placement;
 			_requestRender();
 		}
 	}
@@ -177,7 +177,7 @@ namespace wg
 			w += m_padding.width();
 			h += m_padding.height();
 
-			rect = Util::origoToRect( m_origo, contentRect.size(), Size(w,h) );
+			rect = Util::placementToRect( m_placement, contentRect.size(), Size(w,h) );
 			rect += contentRect.pos();
 			rect -= m_padding;
 		}
@@ -195,11 +195,11 @@ namespace wg
 
 		if( !m_bOverlap && iconRect.w.qpix > 0 && iconRect.h.qpix > 0 )
 		{
-			switch( m_origo )
+			switch( m_placement )
 			{
-				case Origo::NorthWest:
-				case Origo::SouthWest:
-				case Origo::West:
+				case Placement::NorthWest:
+				case Placement::SouthWest:
+				case Placement::West:
 				{
 					MU diff = iconRect.x - contentRect.x + iconRect.w + m_padding.right;
 					textRect.x += diff;
@@ -208,9 +208,9 @@ namespace wg
 						textRect.w.qpix = 0;
 					break;
 				}
-				case Origo::NorthEast:
-				case Origo::East:
-				case Origo::SouthEast:
+				case Placement::NorthEast:
+				case Placement::East:
+				case Placement::SouthEast:
 				{
 					textRect.w = iconRect.x - contentRect.x - m_padding.left;
 					if( textRect.w.qpix < 0 )
@@ -218,8 +218,8 @@ namespace wg
 					break;
 				}
 
-				case Origo::North:
-				case Origo::Center:
+				case Placement::North:
+				case Placement::Center:
 				{
 					int diff = iconRect.y - contentRect.y + iconRect.h + m_padding.bottom;
 					textRect.y += diff;
@@ -228,7 +228,7 @@ namespace wg
 						textRect.h.qpix = 0;
 					break;
 				}
-				case Origo::South:
+				case Placement::South:
 				{
 					textRect.h = iconRect.y - contentRect.y - m_padding.top;
 					if( textRect.h.qpix < 0 )
@@ -245,7 +245,7 @@ namespace wg
 
 	void CIconDisplay::_onCloneContent( const CIconDisplay * _pOrg )
 	{
-		m_origo			= _pOrg->m_origo;
+		m_placement			= _pOrg->m_placement;
 		m_scale			= _pOrg->m_scale;
 		m_bOverlap		= _pOrg->m_bOverlap;
 		m_padding		= _pOrg->m_padding;

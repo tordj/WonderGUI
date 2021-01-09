@@ -45,7 +45,7 @@ namespace wg
 
 	//____ Slot::setOrigo() ____________________________________________________
 
-	void ModalLayer::Slot::setOrigo(const Origo origo)
+	void ModalLayer::Slot::setOrigo(const Placement origo)
 	{
 		m_origo = origo;
 		_holder()->_refreshRealGeo(this);
@@ -86,7 +86,7 @@ namespace wg
 
 	//____ pushFront() _________________________________________________________________
 
-	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo)
 	{
 		//TODO: Assert
 
@@ -103,7 +103,7 @@ namespace wg
 
 	//____ pushBack() _________________________________________________________________
 
-	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo)
+	ModalLayer::CSlots::iterator ModalLayer::CSlots::pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo)
 	{
 		//TODO: Assert
 
@@ -136,7 +136,7 @@ namespace wg
 		if( sz.h <= 0 )
 			sz.h = 1;
 
-		Coord ofs = Util::origoToOfs( pSlot->m_origo, m_size ) - Util::origoToOfs( pSlot->m_origo, sz );
+		Coord ofs = Util::placementToOfs( pSlot->m_origo, m_size ) - Util::placementToOfs( pSlot->m_origo, sz );
 		ofs += pSlot->m_placementGeo.pos();
 
 		Rect geo( ofs, sz );

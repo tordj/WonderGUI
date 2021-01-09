@@ -69,7 +69,7 @@ namespace wg
 
 	//____ setAttachPoint() ___________________________________________________
 
-	void PopupOpener::setAttachPoint(Origo attachPoint)
+	void PopupOpener::setAttachPoint(Placement attachPoint)
 	{
 		m_attachPoint = attachPoint;
 	}

@@ -99,7 +99,7 @@ namespace wg
 		{
 			iconPreferredSize = _icon().skin()->preferredSize() + _icon().padding().size();
 
-			//TODO: Add magic for how icon influences textPreferredSize based on origo, iconBorder, iconScale and bgPreferredSize
+			//TODO: Add magic for how icon influences textPreferredSize based on placement, iconBorder, iconScale and bgPreferredSize
 		}
 
 		// Apply the skin

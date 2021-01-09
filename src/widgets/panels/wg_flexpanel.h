@@ -46,8 +46,8 @@ namespace wg
 
 		inline FlexPos() {}
 
-		inline FlexPos( Origo _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
-		inline FlexPos( Origo _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_offset) {}
+		inline FlexPos( Placement _origo ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]) {}
+		inline FlexPos( Placement _origo, Coord _offset ) : origo(s_origoTab[(int)_origo][0], s_origoTab[(int)_origo][1]), offset(_offset) {}
 
 		inline FlexPos( CoordF _origo ) : origo(_origo) {}
 		inline FlexPos( CoordF _origo, Coord _offset ) : origo(_origo), offset(_offset) {}
@@ -117,7 +117,7 @@ namespace wg
 			void			setPinned(const FlexPos& topLeft, const FlexPos& bottomRight);
 			inline bool		isPinned() const { return m_bPinned; }
 
-			void			setMovable(const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
+			void			setMovable(const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::NorthWest);
 			void			setMovable(const Rect& geometry, const FlexPos& origo, const FlexPos& hotspot);
 			inline bool		isMovable() const { return !m_bPinned; }
 
@@ -159,7 +159,7 @@ namespace wg
 
 		protected:
 
-			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Origo::NorthWest), m_hotspot(Origo::NorthWest) {}
+			Slot(SlotHolder * pHolder) : DynamicSlot(pHolder), m_bPinned(false), m_bVisible(false), m_origo(Placement::NorthWest), m_hotspot(Placement::NorthWest) {}
 
 			Slot(Slot&& o) = default;
 			Slot& operator=(Slot&& o) = default;
@@ -201,18 +201,18 @@ namespace wg
 
 			iterator	pushFrontPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
-			iterator	pushFrontMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
-				const FlexPos& hotspot = Origo::NorthWest);
+			iterator	pushFrontMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
+				const FlexPos& hotspot = Placement::NorthWest);
 
 			iterator	pushBackPinned(const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
-			iterator	pushBackMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Origo::NorthWest,
-				const FlexPos& hotspot = Origo::NorthWest);
+			iterator	pushBackMovable(const Widget_p& pWidget, const Rect& geometry = Rect(), const FlexPos& origo = Placement::NorthWest,
+				const FlexPos& hotspot = Placement::NorthWest);
 
 			iterator	insertPinned(int index, const Widget_p& pWidget, const FlexPos& topLeft,
 				const FlexPos& bottomRight);
 			iterator	insertMovable(int index, const Widget_p& pWidget, const Rect& geometry,
-				const FlexPos& origo = Origo::NorthWest, const FlexPos& hotspot = Origo::NorthWest);
+				const FlexPos& origo = Placement::NorthWest, const FlexPos& hotspot = Placement::NorthWest);
 
 			//.____ Misc _______________________________________________________
 

@@ -146,20 +146,20 @@ namespace wg
 	/*
 	TODO: Reinstate!!!
 
-				switch( OO(pLabel->text).alignment() )
+				switch( OO(pLabel->text).placement() )
 				{
-					case Origo::NorthWest:
-					case Origo::North:
-					case Origo::NorthEast:
+					case Placement::NorthWest:
+					case Placement::North:
+					case Placement::NorthEast:
 						break;
-					case Origo::SouthEast:
-					case Origo::South:
-					case Origo::SouthWest:
+					case Placement::SouthEast:
+					case Placement::South:
+					case Placement::SouthWest:
 						ofs -= height;
 						break;
-					case Origo::East:
-					case Origo::West:
-					case Origo::Center:
+					case Placement::East:
+					case Placement::West:
+					case Placement::Center:
 						ofs -= height/2;
 						break;
 				}
@@ -181,20 +181,20 @@ namespace wg
 	/*
 	TODO: Reinstate!
 
-				switch( OO(pLabel->text).alignment() )
+				switch( OO(pLabel->text).placement() )
 				{
-					case Origo::NorthWest:
-					case Origo::SouthWest:
-					case Origo::West:
+					case Placement::NorthWest:
+					case Placement::SouthWest:
+					case Placement::West:
 						break;
-					case Origo::SouthEast:
-					case Origo::NorthEast:
-					case Origo::East:
+					case Placement::SouthEast:
+					case Placement::NorthEast:
+					case Placement::East:
 						ofs -= width;
 						break;
-					case Origo::North:
-					case Origo::Center:
-					case Origo::South:
+					case Placement::North:
+					case Placement::Center:
+					case Placement::South:
 						ofs -= width/2;
 						break;
 				}

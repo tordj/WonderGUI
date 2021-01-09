@@ -420,9 +420,9 @@ namespace wg
 		ActionTarget,		///< Like MARKPOLICY, but takes modality into account.
 	};
 
-	//____ Origo _____________________________________________________________
+	//____ Placement _____________________________________________________________
 
-	enum class Origo : uint8_t	//. autoExtras
+	enum class Placement : uint8_t	//. autoExtras
 	{
 		// Clockwise from upper left corner, center last. Must be in range 0-8
 

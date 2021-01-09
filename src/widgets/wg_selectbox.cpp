@@ -296,7 +296,7 @@ namespace wg
 		auto pLayer = OO(_parent())->_getPopupLayer();
 		if (pLayer && m_pListCanvas)
 		{
-			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Origo::SouthWest, false);
+			pLayer->popupSlots.pushFront(m_pListCanvas, this, globalGeo(), Placement::SouthWest, false);
 			m_bOpen = true;
 			m_closeState = m_state;
 		}

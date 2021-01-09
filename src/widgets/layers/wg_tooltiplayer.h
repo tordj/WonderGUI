@@ -45,9 +45,9 @@ namespace wg
 
 		struct Position
 		{
-			Origo	direction;
-			Border	spacing;
-			bool	bTooltipAroundPointer;
+			Placement	placement;
+			Border		spacing;
+			bool		bAroundPointer;
 		};
 
 		//.____ Creation __________________________________________
@@ -62,8 +62,8 @@ namespace wg
 
 		//.____ Control _______________________________________________________
 
-		void setTooltipGenerator( const std::function<Widget_p(Position& placement, const Widget* pHoveredWidget, const Border& widgetMargins )> func );
-		void setTooltipPosition(Origo direction, Border spacing, bool bTooltipAroundPointer = true );
+		void setTooltipGenerator( const std::function<Widget_p(Position& position, const Widget* pHoveredWidget, const Border& widgetMargins )> func );
+		void setTooltipPosition(Placement direction, Border spacing, bool bTooltipAroundPointer = true );
 
 		void setDisplayTooltips(bool bDisplay);
 		bool displayTooltips() const { return m_bDisplayTooltips;  }
@@ -92,7 +92,7 @@ namespace wg
 		void			_openTooltip();
 		void			_closeTooltip();
 
-		static Widget_p		_defaultTooltipGenerator(Position& placement, const Widget*, const Border&);
+		static Widget_p		_defaultTooltipGenerator(Position& position, const Widget*, const Border&);
 
 		// Overloaded from Widget
 
@@ -126,10 +126,10 @@ namespace wg
 		bool		m_bBlockReopen		= false;
 		bool		m_bDisplayTooltips	= true;
 
-		Position	m_defaultPosition = { Origo::SouthEast, {2,16,16,2}, true };
+		Position	m_defaultPosition = { Placement::SouthEast, {2,16,16,2}, true };
 		Position	m_activePosition;
 
-		std::function<Widget_p(Position& placement, const Widget* pHovered, const Border& margin)>	m_tooltipGenerator = _defaultTooltipGenerator;
+		std::function<Widget_p(Position& position, const Widget* pHovered, const Border& margin)>	m_tooltipGenerator = _defaultTooltipGenerator;
 
 	};
 

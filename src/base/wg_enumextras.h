@@ -44,7 +44,7 @@ namespace wg
 	const static MouseButton     MouseButton_min     = MouseButton::None;
 	const static PlayMode        PlayMode_min        = PlayMode::Forward;
 	const static SearchMode      SearchMode_min      = SearchMode::MarkPolicy;
-	const static Origo           Origo_min           = Origo::NorthWest;
+	const static Placement           Origo_min           = Placement::NorthWest;
 	const static Direction       Direction_min       = Direction::Up;
 	const static Axis            Axis_min            = Axis::X;
 	const static SizePolicy      SizePolicy_min      = SizePolicy::Default;
@@ -66,7 +66,7 @@ namespace wg
 	const static MouseButton     MouseButton_max     = MouseButton::X2;
 	const static PlayMode        PlayMode_max        = PlayMode::BackwardPingPong;
 	const static SearchMode      SearchMode_max      = SearchMode::ActionTarget;
-	const static Origo           Origo_max           = Origo::Center;
+	const static Placement           Origo_max           = Placement::Center;
 	const static Direction       Direction_max       = Direction::Left;
 	const static Axis            Axis_max            = Axis::Y;
 	const static SizePolicy      SizePolicy_max      = SizePolicy::Expanded;
@@ -88,7 +88,7 @@ namespace wg
 	const static int             MouseButton_size    = (int)MouseButton::X2 + 1;
 	const static int             PlayMode_size       = (int)PlayMode::BackwardPingPong + 1;
 	const static int             SearchMode_size     = (int)SearchMode::ActionTarget + 1;
-	const static int             Origo_size          = (int)Origo::Center + 1;
+	const static int             Origo_size          = (int)Placement::Center + 1;
 	const static int             Direction_size      = (int)Direction::Left + 1;
 	const static int             Axis_size           = (int)Axis::Y + 1;
 	const static int             SizePolicy_size     = (int)SizePolicy::Expanded + 1;
@@ -110,7 +110,7 @@ namespace wg
 	const char * toString(MouseButton);
 	const char * toString(PlayMode);
 	const char * toString(SearchMode);
-	const char * toString(Origo);
+	const char * toString(Placement);
 	const char * toString(Direction);
 	const char * toString(Axis);
 	const char * toString(SizePolicy);

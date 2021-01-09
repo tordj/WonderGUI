@@ -52,7 +52,7 @@ namespace wg
 
 		//.____ Content _____________________________________________
 
-		bool			set(Skin * pIconGfx, Origo origo = Origo::West, BorderI padding = BorderI(0),
+		bool			set(Skin * pIconGfx, Placement placement = Placement::West, BorderI padding = BorderI(0),
 							float _scale = 0.f, bool _bOverlap = false);
 		void			clear();
 
@@ -61,13 +61,13 @@ namespace wg
 		//.____ Appearance _____________________________________________
 
 		inline bool			setScale(float scaleFactor) { return _setScale(scaleFactor); }
-		inline void			setOrigo(Origo origo) { _setOrigo(origo); }
+		inline void			setPlacement(Placement placement) { _setPlacement(placement); }
 		inline void			setPadding(Border padding) { _setPadding(padding); }
 		inline void			setOverlap(bool bOverlap) { _setOverlap(bOverlap); }
 		inline void			setSkin(Skin * pSkin) { _setSkin(pSkin); }
 
 		inline float		scale() const { return _scale(); }
-		inline Origo		origo() const { return _origo(); }
+		inline Placement	placement() const { return _placement(); }
 		inline Border		padding() const { return _padding(); }
 		inline bool			overlap() const { return _overlap(); }
 		inline Skin_p		skin() const { return _skin(); }
@@ -81,13 +81,13 @@ namespace wg
 
 
 		bool			_setScale( float scaleFactor );
-		void			_setOrigo( Origo origo );
+		void			_setPlacement( Placement placement );
 		void			_setPadding( Border borders );
 		void			_setOverlap( bool bOverlap );
 		void			_setSkin( Skin * pSkin );
 
 		float			_scale() const { return m_scale; }
-		Origo			_origo() const { return m_origo; }
+		Placement		_placement() const { return m_placement; }
 		Border			_padding() const { return m_padding; }
 		bool			_overlap() const { return m_bOverlap; }
 		Skin_p			_skin() const { return  m_pSkin; }
@@ -100,7 +100,7 @@ namespace wg
 		Size			_preferredSize() const;
 
 	private:
-		Origo			m_origo;
+		Placement		m_placement;
 		float			m_scale;					// Range: 0.f -> 1.f. 0.f = Fixed size.
 		bool			m_bOverlap;
 		Border			m_padding;

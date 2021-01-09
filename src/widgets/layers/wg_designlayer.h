@@ -67,8 +67,8 @@ namespace wg
 			const static bool safe_to_relocate = false;
 
 			bool		m_bVisible = true;
-			Origo		m_placement = Origo::NorthWest;
-			Coord		m_placementPos;			// Widgets pos relative selected widget and origo.
+			Placement	m_placement = Placement::NorthWest;
+			Coord		m_placementPos;			// Widgets pos relative selected widget and placement.
 		};
 
 

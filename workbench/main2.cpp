@@ -585,7 +585,7 @@ int main(int argc, char** argv)
 
 	//	Image_p pImage = Image::create();
 	//	pImage->setSkin( pSimpleButtonSkin );
-	//	pFlexPanel->slots.addMovable( pImage, RectI(0,0,80*2,33*2), Origo::Center, Origo::Center );
+	//	pFlexPanel->slots.addMovable( pImage, RectI(0,0,80*2,33*2), Placement::Center, Placement::Center );
 
 
 	//	pRoot->msgRouter()->AddCallback( MsgFilter::select(), pButton, myButtonClickCallback );
@@ -864,7 +864,7 @@ int main(int argc, char** argv)
 		pHorr->slots.add( pFillerEast );
 
 
-		pFlexPanel->slots.addPinned( pVert, Origo::NorthWest, Origo::SouthEast );
+		pFlexPanel->slots.addPinned( pVert, Placement::NorthWest, Placement::SouthEast );
 
 		pEditLine->grabFocus();
 		for (auto it = pVert->slots.begin(); it != pVert->slots.end(); it++ )
@@ -971,7 +971,7 @@ int main(int argc, char** argv)
 
 		auto pMapper = StdTextMapper::create();
 		pMapper->setLineWrap(true);
-		pMapper->setAlignment(Origo::SouthEast);
+		pMapper->setPlacement(Placement::SouthEast);
 
 		TextEditor_p pText1 = TextEditor::create();
 		pText1->setSkin(ColorSkin::create(Color::SandyBrown));
@@ -1082,7 +1082,7 @@ int main(int argc, char** argv)
 
 		pList->header.label.set("Label");
 		pList->header.setSkin( pHeaderSkin );
-		pList->header.arrow.set( pUpDownArrowSkin, Origo::East );
+		pList->header.arrow.set( pUpDownArrowSkin, Placement::East );
 		pList->header.icon.set( pSimpleIconSkin );
 
 		pList->setSortFunction( sortWidgets );
@@ -1129,7 +1129,7 @@ int main(int argc, char** argv)
 //		pScrollPanel->setJumpFunc([](Direction dir, int steps) { return 100*steps; });
 		pScrollPanel->setWheelRollFunc([](Direction dir, int steps) { return 1*steps; });
 
-//		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Origo::SouthEast);
+//		pFlexPanel->addWidget( pList, FlexOrigo(0,0.75), Placement::SouthEast);
 
 
 		auto pChildren = pList->slots.ptr();
@@ -1163,7 +1163,7 @@ int main(int argc, char** argv)
 
  /*  {
 		TestWidget_p pTest = TestWidget::create();
-		pFlexPanel->addWidget( pTest, Origo::NorthWest, Origo::SouthEast, BorderI(20) );
+		pFlexPanel->addWidget( pTest, Placement::NorthWest, Placement::SouthEast, BorderI(20) );
 		pTest->start();
 	}
 */
@@ -1176,7 +1176,7 @@ int main(int argc, char** argv)
 
 		auto pMapper = StdTextMapper::create();
 		pMapper->setLineWrap(true);
-		pMapper->setAlignment(Origo::North);
+		pMapper->setPlacement(Placement::North);
 
 		pText->text.setTextMapper(pMapper);
 
@@ -1263,7 +1263,7 @@ int main(int argc, char** argv)
 
 
 	StandardPrinter_p pPrinter = StandardPrinter::create();
-	pPrinter->setAlignment( WG_CENTER );
+	pPrinter->setPlacement( WG_CENTER );
 	pText->text.setPrinter( pPrinter );
 
 
@@ -1277,7 +1277,7 @@ int main(int argc, char** argv)
 /*
 	FpsDisplay_p pFps = FpsDisplay::create();
 	pFps->setSkin( pPressablePlateSkin );
-	pFlexPanel->addWidget( pFps, CoordI(0,0), Origo::SouthWest );
+	pFlexPanel->addWidget( pFps, CoordI(0,0), Placement::SouthWest );
 */
 
 	//------------------------------------------------------
@@ -1698,7 +1698,7 @@ bool shadowLayerTest(CStandardSlot_p pEntry )
 
 	auto pBackground = Filler::create();
 	pBackground->setSkin(ColorSkin::create(Color::LightSalmon));
-	pBaseLayer->slots.addPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+	pBaseLayer->slots.addPinned(pBackground, Placement::NorthWest, Placement::SouthEast);
 
 	pShadowLayer->shadows.add(pFiller1, pShadowSkin);
 	pShadowLayer->shadows.add(pFiller2, pShadowSkin);
@@ -2679,11 +2679,11 @@ bool tooltipLayerTest(CStandardSlot_p pSlot)
 	s_pTooltip->skin = pSkin;
 
 
-	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Position& placement, const Widget* pHoveredWidget, const Border& widgetMargins) 
+	pTooltipLayer->setTooltipGenerator([](TooltipLayer::Position& position, const Widget* pHoveredWidget, const Border& widgetMargins) 
 	{
-		placement.bTooltipAroundPointer = false;
-		placement.direction = Origo::South;
-		placement.spacing = Border(0);
+		position.bAroundPointer = false;
+		position.placement = Placement::South;
+		position.spacing = Border(0);
 
 		s_pTooltip->text.set(pHoveredWidget->tooltip());
 		return s_pTooltip;

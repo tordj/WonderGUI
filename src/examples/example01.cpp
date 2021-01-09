@@ -125,7 +125,7 @@ int main ( int argc, char** argv )
 
 		Filler_p pBackground = Filler::create();
 		pBackground->skin = StaticColorSkin::create(Color::Bisque);
-		pFlexPanel->slots.pushBackPinned(pBackground, Origo::NorthWest, Origo::SouthEast);
+		pFlexPanel->slots.pushBackPinned(pBackground, Placement::NorthWest, Placement::SouthEast);
 
 		// Now we create the button, using a clickable skin built from the BMP
 		// with the button graphics. First we specify the Surface and a rectangle
@@ -141,7 +141,7 @@ int main ( int argc, char** argv )
 
 		Button_p pButton = Button::create();
 		pButton->skin = BlockSkin::create(pButtonSurface, { 0,0,10,10 }, { StateEnum::Normal, StateEnum::Hovered, StateEnum::Pressed, StateEnum::Disabled }, BorderI(3,3,3,3), Axis::X );
-		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Origo::Center, Origo::Center);
+		pFlexPanel->slots.insertMovable(0, pButton, { 0,0,80,33 }, Placement::Center, Placement::Center);
 
 		// Finally we add a callback to the click-event of the button.
 

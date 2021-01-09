@@ -69,28 +69,28 @@ public:
 	bool setTintX(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::West, Color::Red, Color::Blue) );
+		pDevice->setTintGradient(canvas, Gradient(Placement::West, Color::Red, Color::Blue) );
 		return true;
 	}
 
 	bool setTintY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::North, Color::Red, Color::Blue) );
+		pDevice->setTintGradient(canvas, Gradient(Placement::North, Color::Red, Color::Blue) );
 		return true;
 	}
 
 	bool setTintXY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient(canvas, Gradient(Origo::NorthWest, Color::Red, Color::Blue));
+		pDevice->setTintGradient(canvas, Gradient(Placement::NorthWest, Color::Red, Color::Blue));
 		return true;
 	}
 
 	bool setOffsetTintXY(GfxDevice * pDevice, const RectI& canvas)
 	{
 		pDevice->setBlitSource(m_pImg);
-		pDevice->setTintGradient({ 200,200,100,100 }, Gradient(Origo::NorthWest, Color::Black, Color::White));
+		pDevice->setTintGradient({ 200,200,100,100 }, Gradient(Placement::NorthWest, Color::Black, Color::White));
 		return true;
 	}
 

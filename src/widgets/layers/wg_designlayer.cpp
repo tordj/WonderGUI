@@ -72,11 +72,11 @@ namespace wg
 
 		palettes[0]._setWidget(m_pSlotToolbox);
 		palettes[0].m_bVisible = false;
-		palettes[0].m_placement = Origo::South;
+		palettes[0].m_placement = Placement::South;
 
 		palettes[1]._setWidget(m_pWidgetToolbox);
 		palettes[1].m_bVisible = false;
-		palettes[1].m_placement = Origo::East;
+		palettes[1].m_placement = Placement::East;
 	}
 
 	//____ Destructor _____________________________________________________________
@@ -230,7 +230,7 @@ namespace wg
 	{
 		if (m_pSelectedWidget)
 		{
-			Origo origo = pSlot->m_placement;
+			Placement placement = pSlot->m_placement;
 			Border palettePadding = m_pToolboxSkin ? m_pToolboxSkin->contentPadding(StateEnum::Normal) : Border();
 
 			Size wantedSize = pSlot->_widget()->preferredSize() + palettePadding;
@@ -239,21 +239,21 @@ namespace wg
 			selectedGeo += m_pSelectionSkin ? m_pSelectionSkin->contentPadding(StateEnum::Normal) : Border();
 			Rect surroundBox = selectedGeo + Border(wantedSize.h+4, wantedSize.w+4);
 
-			Coord ofs = origoToOfs(origo, surroundBox.size()) - origoToOfs(origo, wantedSize) + surroundBox.pos();
+			Coord ofs = placementToOfs(placement, surroundBox.size()) - placementToOfs(placement, wantedSize) + surroundBox.pos();
 			ofs += pSlot->m_placementPos;
 
 			Rect geo = Rect(ofs, wantedSize).aligned();
 
 			if (geo.x < 0)
 			{
-				if (origo == Origo::West || origo == Origo::NorthWest || origo == Origo::SouthWest)
+				if (placement == Placement::West || placement == Placement::NorthWest || placement == Placement::SouthWest)
 					geo.x = selectedGeo.right() + (selectedGeo.x - geo.x);	// Flipping to right side instead.
 				else
 					geo.x = 0;
 			}
 			else if (geo.right() > m_size.w)
 			{
-				if (origo == Origo::East || origo == Origo::NorthEast || origo == Origo::SouthEast)
+				if (placement == Placement::East || placement == Placement::NorthEast || placement == Placement::SouthEast)
 					geo.x = selectedGeo.left() - (selectedGeo.right() - geo.right());	// Flipping to right side instead.
 				else
 					geo.x = m_size.w - geo.w;
@@ -261,14 +261,14 @@ namespace wg
 
 			if (geo.y < 0)
 			{
-				if (origo == Origo::North || origo == Origo::NorthWest || origo == Origo::NorthEast)
+				if (placement == Placement::North || placement == Placement::NorthWest || placement == Placement::NorthEast)
 					geo.y = selectedGeo.bottom() + (selectedGeo.y - geo.y);	// Flipping to right side instead.
 				else
 					geo.y = 0;
 			}
 			else if (geo.bottom() > m_size.h)
 			{
-				if (origo == Origo::South || origo == Origo::SouthWest || origo == Origo::SouthEast)
+				if (placement == Placement::South || placement == Placement::SouthWest || placement == Placement::SouthEast)
 					geo.y = selectedGeo.top() - (selectedGeo.bottom() - geo.bottom());	// Flipping to right side instead.
 				else
 					geo.y = m_size.h - geo.h;

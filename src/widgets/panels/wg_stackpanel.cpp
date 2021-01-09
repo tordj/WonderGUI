@@ -258,14 +258,14 @@ namespace wg
 		};
 	}
 
-	//____ _setOrigo() ________________________________________________________
+	//____ _setPlacement() ________________________________________________________
 
-	void StackPanel::_setOrigo(Slot * pSlot, Origo origo)
+	void StackPanel::_setPlacement(Slot * pSlot, Placement placement)
 	{
-		if (origo != pSlot->m_origo)
+		if (placement != pSlot->m_placement)
 		{
 			_childRequestRender(pSlot);
-			pSlot->m_origo = origo;
+			pSlot->m_placement = placement;
 			_childRequestRender(pSlot);
 		};
 	}
@@ -543,7 +543,7 @@ namespace wg
 		case SizePolicy2D::Original:
 			{
 				Size	size = pSlot->_widget()->preferredSize();
-				Rect geo = Util::origoToRect( pSlot->m_origo, base, size );
+				Rect geo = Util::placementToRect( pSlot->m_placement, base, size );
 
 				if( geo.w > base.w )
 				{
@@ -581,7 +581,7 @@ namespace wg
 					size.w = (int) (orgSize.w / fracY);
 				}
 
-				return Util::origoToRect( pSlot->m_origo, base, size );
+				return Util::placementToRect( pSlot->m_placement, base, size );
 			}
 		}
 	}

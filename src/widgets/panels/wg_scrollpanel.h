@@ -112,7 +112,7 @@ namespace wg
 
 			SizePolicy		m_widthPolicy = SizePolicy::Default;
 			SizePolicy		m_heightPolicy = SizePolicy::Default;
-			Origo			m_contentOrigo = Origo::NorthWest;		// Origo when content is smaller than window
+			Placement		m_contentPlacement = Placement::NorthWest;		// Placement when content is smaller than window
 			Size			m_contentSize;
 			Coord			m_viewPointOfs;
 
@@ -140,8 +140,8 @@ namespace wg
 
 			Size		canvasSize() const { return m_contentSize; };
 
-			void		setOrigo(Origo origo);
-			Origo		origo() const { return m_contentOrigo; }
+			void		setPlacement(Placement placement);
+			Placement	placement() const { return m_contentPlacement; }
 
 			void		setWidthPolicy(SizePolicy policy);
 			SizePolicy	widthPolicy() const { return m_widthPolicy; }
@@ -160,7 +160,7 @@ namespace wg
 			bool		setWindowPos(Coord pos);
 			bool		setWindowOffset(CoordF ofs);
 
-			bool		setWindowFocus(Origo canvasOrigo, Coord canvasOfs, Origo viewOrigo = Origo::Center, Coord viewOfs = { 0,0 });
+			bool		setWindowFocus(Placement canvasOrigo, Coord canvasOfs, Placement viewOrigo = Placement::Center, Coord viewOfs = { 0,0 });
 
 			//.____ Control _______________________________________________________
 
@@ -215,8 +215,8 @@ namespace wg
 
 			//.____ Geometry ______________________________________________________
 
-			bool		setPlacement(Direction);
-			Direction	placement() const { return m_pSlot->placement; }
+			bool		setPosition(Direction);
+			Direction	position() const { return m_pSlot->placement; }
 
 
 			//.____ Content _______________________________________________________

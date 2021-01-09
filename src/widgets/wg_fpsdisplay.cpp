@@ -50,13 +50,13 @@ namespace wg
 		labels.set( "Now:\nMin:\nAvg:\nMax:" );
 
 
-		// We set our own default text textMappers since we rely on alignment
+		// We set our own default text textMappers since we rely on text placement
 		// to present the information in a readable way.
 
 		labels.setTextMapper( StdTextMapper::create() );
 
 		StdTextMapper_p pValueTextMapper = StdTextMapper::create();
-		pValueTextMapper->setAlignment( Origo::NorthEast );
+		pValueTextMapper->setPlacement( Placement::NorthEast );
 		values.setTextMapper(pValueTextMapper);
 
 		_startReceiveUpdates();

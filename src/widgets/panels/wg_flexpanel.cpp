@@ -659,7 +659,7 @@ namespace wg
 
 			// Calculate position
 
-			Coord pos = pSlot->m_origo.pos( m_size );		// Origo,
+			Coord pos = pSlot->m_origo.pos( m_size );		// Placement,
 			pos -= pSlot->m_hotspot.pos(sz);				// hotspot
 			pos += pSlot->m_placementGeo.pos();				// and Offset.
 

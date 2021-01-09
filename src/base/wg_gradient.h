@@ -41,7 +41,7 @@ namespace wg
 			bottomRight(bottomRight),
 			bottomLeft(bottomLeft) {}
 
-		Gradient(Origo start, HiColor startColor, HiColor endColor);
+		Gradient(Placement start, HiColor startColor, HiColor endColor);
 
 		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = Color::White; }
 		inline bool isOpaque() { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }

@@ -49,8 +49,8 @@ namespace wg
 
 		//.____ Behavior __________________________________________________
 
-		void			setAlignment( Origo alignment );
-		Origo			alignment() const { return m_alignment; }
+		void			setPlacement( Placement placement );
+		Placement		placement() const { return m_placement; }
 
 		void			setLineWrap(bool wrap);
 		bool			lineWrap() const { return m_bLineWrap; }
@@ -203,7 +203,7 @@ namespace wg
 		int				_lineAtPosY( const Text * pText, MU posY, SelectMode mode ) const;
 		int				_charAtPosX( const Text * pText, int line, MU posX, SelectMode mode ) const;
 
-		Origo			m_alignment;
+		Placement		m_placement;
 		Caret_p			m_pCaret;
 		bool			m_bLineWrap;
 		bool			m_bReceivingUpdates = false;

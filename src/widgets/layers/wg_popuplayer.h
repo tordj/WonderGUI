@@ -77,7 +77,7 @@ namespace wg
 			};
 
 			Rect		m_launcherGeo;		// Launcher geo relative sibling or parent.
-			Origo		m_attachPoint = Origo::NorthWest;
+			Placement		m_attachPoint = Placement::NorthWest;
 			bool		m_bAutoClose;		// Has been opened in auto-close mode.
 			State		m_state;
 			int			m_stateCounter;		// Counts millisec the slot has been in a transitative state (Delay, Opening, Coundown and Closing).
@@ -105,7 +105,7 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint = Origo::NorthEast, bool bAutoClose = false, Size maxSize = Size(MU::Max, MU::Max));
+			void	pushFront(const Widget_p& pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint = Placement::NorthEast, bool bAutoClose = false, Size maxSize = Size(MU::Max, MU::Max));
 			void	pop(int nb = 1);
 			void	pop(Widget * pPopup);
 			void	clear();
@@ -182,7 +182,7 @@ namespace wg
 		// Needed by CSlots
 
 		void			_removeSlots(int ofs, int nb);
-		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Origo attachPoint, bool bAutoClose, Size maxSize);
+		void			_addSlot(Widget * pPopup, Widget * pOpener, const Rect& launcherGeo, Placement attachPoint, bool bAutoClose, Size maxSize);
 
 		Widget_wp			m_pKeyFocus;	// Pointer at child that held focus before any menu was opened.
 

@@ -38,7 +38,7 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	StdTextMapper::StdTextMapper() : m_alignment(Origo::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
+	StdTextMapper::StdTextMapper() : m_placement(Placement::NorthWest), m_bLineWrap(false), m_selectionBackColor(Color::White), m_selectionBackRenderMode(BlendMode::Invert),
 		m_selectionCharColor(Color::White), m_selectionCharBlend(BlendMode::Invert), m_pFocusedText(nullptr), m_tickRouteId(0)
 	{
 	}
@@ -90,13 +90,13 @@ namespace wg
 		}
 	}
 
-	//____ setAlignment() __________________________________________________________
+	//____ setPlacement() __________________________________________________________
 
-	void StdTextMapper::setAlignment( Origo alignment )
+	void StdTextMapper::setPlacement( Placement placement )
 	{
-		if( alignment != m_alignment )
+		if( placement != m_placement )
 		{
-			m_alignment = alignment;
+			m_placement = placement;
 
 			//TODO: Make all Texts dirty
 		}
@@ -1813,20 +1813,20 @@ namespace wg
 
 	MU StdTextMapper::_linePosX( const LineInfo * pLine, MU canvasWidth ) const
 	{
-		switch( m_alignment )
+		switch( m_placement )
 		{
-			case Origo::NorthWest:
-			case Origo::West:
-			case Origo::SouthWest:
+			case Placement::NorthWest:
+			case Placement::West:
+			case Placement::SouthWest:
 			default:
 				return 0;
-			case Origo::North:
-			case Origo::Center:
-			case Origo::South:
+			case Placement::North:
+			case Placement::Center:
+			case Placement::South:
 				return (canvasWidth - pLine->width) / 2;
-			case Origo::NorthEast:
-			case Origo::East:
-			case Origo::SouthEast:
+			case Placement::NorthEast:
+			case Placement::East:
+			case Placement::SouthEast:
 				return canvasWidth - pLine->width;
 		}
 	}
@@ -1848,20 +1848,20 @@ namespace wg
 
 	MU	StdTextMapper::_textPosY( const BlockHeader * pHeader, MU canvasHeight ) const
 	{
-		switch( m_alignment )
+		switch( m_placement )
 		{
-			case Origo::NorthWest:
-			case Origo::North:
-			case Origo::NorthEast:
+			case Placement::NorthWest:
+			case Placement::North:
+			case Placement::NorthEast:
 			default:
 				return 0;
-			case Origo::West:
-			case Origo::Center:
-			case Origo::East:
+			case Placement::West:
+			case Placement::Center:
+			case Placement::East:
 				return (canvasHeight - pHeader->textSize.h) / 2;
-			case Origo::SouthWest:
-			case Origo::South:
-			case Origo::SouthEast:
+			case Placement::SouthWest:
+			case Placement::South:
+			case Placement::SouthEast:
 				return canvasHeight - pHeader->textSize.h;
 		}
 	}

@@ -110,8 +110,8 @@ namespace wg
 		void				setPresentationScaling(SizePolicy2D policy);
 		inline SizePolicy2D	presentationScaling() const;
 
-		void				setOrigo(Origo origo);
-		inline Origo		origo() const;
+		void				setPlacement(Placement placement);
+		inline Placement	placement() const;
 
 
 		//.____ Misc __________________________________________________
@@ -137,7 +137,7 @@ namespace wg
 		SizeI			m_fixedSize;			// Fixed size of surface in pixels if set.
 		PixelFormat		m_pixelFormat			= PixelFormat::BGR_8;
 		SizePolicy2D	m_presentationScaling	= SizePolicy2D::Original;
-		Origo			m_origo					= Origo::NorthWest;
+		Placement		m_placement				= Placement::NorthWest;
 		HiColor			m_backColor				= Color::White;
 
 		std::function<void(CCanvas*)>	m_surfaceLostCallback;
@@ -255,17 +255,17 @@ namespace wg
 		return m_presentationScaling;
 	}
 
-	//____ origo() ____________________________________________________________
+	//____ placement() ____________________________________________________________
 	/**
-	*	@brief Gets origo used for a fixed size surface
+	*	@brief Gets placement for a fixed size surface
 	*
-	*	Gets the origo used to align the surface when it is of a different size than the CCanvas.
+	*	Gets the placement of the surface when it is of a different size than the CCanvas.
 	*
-	*	@return	Origo used for alignment of surface
+	*	@return	Placement of surface
 	**/
-	Origo CCanvas::origo() const
+	Placement CCanvas::placement() const
 	{
-		return m_origo;
+		return m_placement;
 	}
 
 	//____ surface() ____________________________________________________________

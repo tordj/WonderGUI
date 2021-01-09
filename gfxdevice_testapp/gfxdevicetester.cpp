@@ -51,7 +51,7 @@ bool GfxDeviceTester::init( AppVisitor * pVisitor )
 	// Init textmappers
 
 	auto pMapper = StdTextMapper::create();
-	pMapper->setAlignment(Origo::Center);
+	pMapper->setPlacement(Placement::Center);
 	g_pButtonLabelMapper = pMapper;
 
 	// Init fonts
@@ -884,7 +884,7 @@ bool GfxDeviceTester::setup_chrome()
 
 	{
 		auto pMapper = StdTextMapper::create();
-		pMapper->setAlignment(Origo::East);
+		pMapper->setPlacement(Placement::East);
 		g_pPerformanceValueMapper = pMapper;
 
 		auto pBroker = UniformSizeBroker::create();

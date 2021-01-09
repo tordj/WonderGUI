@@ -67,8 +67,8 @@ namespace wg
 		void		setOpenOnHover(bool bOpen);
 		bool		openOnHover() const { return m_bOpenOnHover;  }
 
-		void		setAttachPoint(Origo attachPoint);
-		Origo		attachPoint() const { return m_attachPoint;  }
+		void		setAttachPoint(Placement attachPoint);
+		Placement		attachPoint() const { return m_attachPoint;  }
 
 	protected:
 		PopupOpener();
@@ -98,7 +98,7 @@ namespace wg
 
 		Widget_p		m_pPopup;
 
-		Origo			m_attachPoint = Origo::SouthWest;
+		Placement			m_attachPoint = Placement::SouthWest;
 		bool			m_bOpenOnHover = false;
 		bool			m_bOpen = false;
 		State			m_closeState;

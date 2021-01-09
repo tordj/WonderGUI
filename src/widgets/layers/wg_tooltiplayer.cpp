@@ -56,18 +56,18 @@ namespace wg
 
 	//____ setTooltipGenerator() ______________________________________________
 
-	void TooltipLayer::setTooltipGenerator(const std::function<Widget_p(Position& direction, const Widget*, const Border&)> func)
+	void TooltipLayer::setTooltipGenerator(const std::function<Widget_p(Position& position, const Widget*, const Border&)> func)
 	{
 		m_tooltipGenerator = func;
 	}
 
 	//____ setTooltipPosition() ______________________________________________
 
-	void TooltipLayer::setTooltipPosition(Origo direction, Border spacing, bool bTooltipAroundPointer)
+	void TooltipLayer::setTooltipPosition(Placement placement, Border spacing, bool bTooltipAroundPointer)
 	{
-		m_defaultPosition.direction = direction;
+		m_defaultPosition.placement = placement;
 		m_defaultPosition.spacing = spacing;
-		m_defaultPosition.bTooltipAroundPointer = bTooltipAroundPointer;
+		m_defaultPosition.bAroundPointer = bTooltipAroundPointer;
 	}
 
 	//____ setDisplayTooltips() _______________________________________________
@@ -111,21 +111,21 @@ namespace wg
 
 			Position& position = m_activePosition;
 
-			Rect center = position.bTooltipAroundPointer ? Rect(m_hoverPos) : hoveredGeo;
+			Rect center = position.bAroundPointer ? Rect(m_hoverPos) : hoveredGeo;
 			center += position.spacing;
 
 			Coord tooltipPos;
 
 			// Take care of vertical position
 
-			if( position.direction == Origo::NorthWest || position.direction == Origo::North || position.direction == Origo::NorthEast )
+			if( position.placement == Placement::NorthWest || position.placement == Placement::North || position.placement == Placement::NorthEast )
 			{
 				if (center.y < tooltipSize.h)
 					tooltipPos.y = center.y + center.h;
 				else
 					tooltipPos.y = center.y - tooltipSize.h;
 			}
-			else if (position.direction == Origo::SouthWest || position.direction == Origo::South || position.direction == Origo::SouthEast)
+			else if (position.placement == Placement::SouthWest || position.placement == Placement::South || position.placement == Placement::SouthEast)
 			{
 				if (m_size.h - center.bottom() < tooltipSize.h)
 					tooltipPos.y = center.y - tooltipSize.h;
@@ -139,16 +139,16 @@ namespace wg
 
 			// Take care of horizontal position
 
-			if (position.direction == Origo::NorthWest || position.direction == Origo::West || position.direction == Origo::SouthWest)
+			if (position.placement == Placement::NorthWest || position.placement == Placement::West || position.placement == Placement::SouthWest)
 			{
-				if (position.direction == Origo::West && center.x < tooltipSize.w)
+				if (position.placement == Placement::West && center.x < tooltipSize.w)
 					tooltipPos.x = center.x + center.w;
 				else
 					tooltipPos.x = center.x - tooltipSize.w;
 			}
-			else if (position.direction == Origo::NorthEast || position.direction == Origo::East || position.direction == Origo::SouthEast)
+			else if (position.placement == Placement::NorthEast || position.placement == Placement::East || position.placement == Placement::SouthEast)
 			{
-				if (position.direction == Origo::East && m_size.w - center.right() < tooltipSize.w)
+				if (position.placement == Placement::East && m_size.w - center.right() < tooltipSize.w)
 					tooltipPos.x = center.x - tooltipSize.w;
 				else
 					tooltipPos.x = center.x + center.w;

@@ -98,13 +98,13 @@ namespace wg
 		switch (m_presentationScaling)
 		{
 		case SizePolicy2D::Scale:
-			output = Util::origoToRect(m_origo, window, Util::scaleToFit(bitmapSize, window));
+			output = Util::placementToRect(m_placement, window, Util::scaleToFit(bitmapSize, window));
 			break;
 		case SizePolicy2D::Stretch:
 			output = RectI(0,0,window);
 			break;
 		default:
-			output = Util::origoToRect(m_origo, window, bitmapSize);
+			output = Util::placementToRect(m_placement, window, bitmapSize);
 			break;
 		}
 
@@ -226,7 +226,7 @@ namespace wg
 	*
 	*	Sets a fixed size for the surface. When the surface has a fixed size it will not be discarded when
 	*	resizing CCanvas. Instead it will be positioned and scaled within the CCanvas area according to the
-	*	origo and presentation scaling settings.
+	*	placement and presentation scaling settings.
 	*
 	*	Setting a fixed size different from the surfaces current size will discard the current surface.
 	*
@@ -310,21 +310,21 @@ namespace wg
 		}
 	}
 
-	//____ setOrigo() _________________________________________________________
+	//____ setPlacement() _________________________________________________________
 	/**
-	*	@brief Sets origo for a fixed size surface
+	*	@brief Sets placement for a fixed size surface
 	*
-	*	Sets origo to be used to align the surface when it is of a different size than
+	*	Sets placement to be used when surface is of a different size than
 	*	the CCanvas, which can only happen if it has been set to a fixed size.
 	*
 	**/
-
-	void CCanvas::setOrigo(Origo origo)
+	
+	void CCanvas::setPlacement(Placement placement)
 	{
-		if (m_origo != origo)
+		if (m_placement != placement)
 		{
 			RectI oldArea = _calcPresentationArea();
-			m_origo = origo;
+			m_placement = placement;
 			RectI newArea = _calcPresentationArea();
 
 			if (oldArea != newArea)

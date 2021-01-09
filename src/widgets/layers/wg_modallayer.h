@@ -60,8 +60,8 @@ namespace wg
 
 			//.____ Geometry _________________________________________________
 
-			void			setOrigo(const Origo origo);
-			inline Origo	origo() const { return m_origo; }
+			void			setOrigo(const Placement origo);
+			inline Placement	origo() const { return m_origo; }
 
 			void			setGeo(const Rect& geometry);
 
@@ -82,7 +82,7 @@ namespace wg
 			const static bool safe_to_relocate = false;
 
 			bool		m_bVisible = true;
-			Origo		m_origo = Origo::NorthWest;
+			Placement	m_origo = Placement::NorthWest;
 			Rect		m_placementGeo;			// Widgets geo relative anchor and hotspot. Setting width and height to 0 uses Widgets preferredSize() dynamically.
 												// Setting just one of them to 0 uses Widgets matchingHeight() or matchingWidth() dynamically.
 			Widget_wp	m_pKeyFocus;			// Pointer at child that held focus when this modal was last on top.
@@ -103,11 +103,11 @@ namespace wg
 
 			//.____ Content _______________________________________________________
 
-			iterator	pushFront(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
-			iterator	pushFront(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushFront(pWidget, Rect(pos, 0, 0), origo); }
+			iterator	pushFront(const Widget_p& pWidget, const Rect& geometry, Placement origo = Placement::NorthWest);
+			iterator	pushFront(const Widget_p& pWidget, const Coord& pos, Placement origo = Placement::NorthWest) { return pushFront(pWidget, Rect(pos, 0, 0), origo); }
 
-			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Origo origo = Origo::NorthWest);
-			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Origo origo = Origo::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
+			iterator	pushBack(const Widget_p& pWidget, const Rect& geometry, Placement origo = Placement::NorthWest);
+			iterator	pushBack(const Widget_p& pWidget, const Coord& pos, Placement origo = Placement::NorthWest) { return pushBack(pWidget, Rect(pos, 0, 0), origo); }
 
 			//.____ Misc __________________________________________________________
 
