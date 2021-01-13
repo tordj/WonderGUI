@@ -95,7 +95,7 @@ private:
 
 	wg::Skin_p		m_pBG;
 	WgColor			m_gridColor;
-	WgColor			m_lineColor;
+	wg::HiColor		m_lineColor;
 	float			m_lineThickness;
 	int				m_nRenderSegments;
 
@@ -120,7 +120,7 @@ private:
 	// Anti-alias
 	int m_iNextPixel;
 	WgCoord m_pAAPix[WG_OSC_PIXEL_BUFFER_SIZE];
-	WgColor m_pAACol[WG_OSC_PIXEL_BUFFER_SIZE];
+	wg::HiColor m_pAACol[WG_OSC_PIXEL_BUFFER_SIZE];
 };
 
 

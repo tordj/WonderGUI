@@ -488,7 +488,7 @@ void WgOscilloscope::plot(const int x, const int y, const float alpha)
   {
 	  m_pAAPix[m_iNextPixel] = WgCoord(x, y);
 	  m_pAACol[m_iNextPixel] = m_lineColor;
-	  m_pAACol[m_iNextPixel].a = (Uint8)(255*alpha);
+	  m_pAACol[m_iNextPixel].a = (4096*alpha);
 
 	  ++m_iNextPixel;
   }

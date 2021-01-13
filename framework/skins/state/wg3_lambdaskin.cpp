@@ -59,7 +59,7 @@ namespace wg
 		m_bOpaque			= blueprint.opaque;
 		m_preferredSize		= blueprint.preferredSize;
 		m_renderFunc		= blueprint.renderFunc;
-		m_stateCompareFunc	= blueprint.stateCompareFunc;
+		m_dirtyRectFunc		= blueprint.dirtyRectFunc;
 	}
 
 	//____ typeInfo() _________________________________________________________
@@ -90,11 +90,13 @@ namespace wg
 		m_bOpaque = bOpaque;
 	}
 
-	//____ setStateCompareFunc() ______________________________________________
+	//____ setDirtyRectFunc() ______________________________________________
 
-	void LambdaSkin::setStateCompareFunc(const std::function<bool(State state1, State state2)>& function)
+	void LambdaSkin::setDirtyRectFunc(const std::function<bool(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+																float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+																float* pNewStateFractions, float* pOldStateFractions)>& function)
 	{
-		m_stateCompareFunc = function;
+		m_dirtyRectFunc = function;
 	}
 
 	//____ setMarkTestFunc() __________________________________________________
@@ -135,21 +137,27 @@ namespace wg
 			return false;
 	}
 
-	//____ isStateIdentical() _________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool LambdaSkin::isStateIdentical(State state, State comparedTo, float fraction, float fraction2) const
+	Rect LambdaSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		if (!StateSkin::isStateIdentical(state, comparedTo))
-			return false;
-		else if (m_stateCompareFunc)
-			return m_stateCompareFunc(state, comparedTo);
-		else
-			return false;
+		Rect r = StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
+
+		if (!r.isEmpty())
+			return r;
+		else if (m_dirtyRectFunc)
+			return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+				newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
+		else return canvas;
 	}
+
 
 	//____ markTest() ________________________________________________________
 
-	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool LambdaSkin::markTest(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		if (m_markTestFunc)
 			return m_markTestFunc(ofs, canvas, state, opacityTreshold);
@@ -159,7 +167,7 @@ namespace wg
 
 	//____ render() __________________________________________________________
 
-	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void LambdaSkin::render(GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if (m_renderFunc)
 			m_renderFunc(pDevice, canvas, state);

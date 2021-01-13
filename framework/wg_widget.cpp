@@ -240,36 +240,25 @@ wg::Surface_p WgWidget::Screenshot( int surfaceFlags )
 	WgPatches patches;
 	patches.add( sz );
 
-    auto oldClip = wg::Util::pushClipList(pDevice);
+    bool    bWasRendering = pDevice->isRendering();
+    
+	if( !bWasRendering )
+        pDevice->beginRender();
 
-	auto pOldCanvas = pDevice->canvas();
-	WgColor oldTint = pDevice->tintColor();
-	WgBlendMode oldBlendMode = pDevice->blendMode();
-	pDevice->setCanvas(pCanvas);
-	pDevice->setTintColor( WgColor::White);
+    WgColor oldTint = pDevice->tintColor();
+    WgBlendMode oldBlendMode = pDevice->blendMode();
+    pDevice->setTintColor( WgColor::White);
+    pDevice->setBlendMode(wg::BlendMode::Replace);
+    pDevice->beginCanvasUpdate(pCanvas);
+    pDevice->fill( WgColor::Transparent );
+    pDevice->setBlendMode(wg::BlendMode::Blend);
+    _renderPatches(pDevice, sz, sz, &patches);
+    pDevice->endCanvasUpdate();
+    pDevice->setTintColor(oldTint);
+    pDevice->setBlendMode(oldBlendMode);
 
-	if( pDevice->isRendering() )
-	{
-		pDevice->setBlendMode(wg::BlendMode::Replace);
-		pDevice->fill( WgColor::Transparent );
-		pDevice->setBlendMode(wg::BlendMode::Blend);
-		_renderPatches(pDevice, sz, sz, &patches);
-	}
-	else
-	{
-		pDevice->beginRender();
-		pDevice->setBlendMode(wg::BlendMode::Replace);
-		pDevice->fill( WgColor::Transparent );
-		pDevice->setBlendMode(wg::BlendMode::Blend);
-		_renderPatches(pDevice, sz, sz, &patches);
-		pDevice->endRender();
-	}
-
-	pDevice->setCanvas(pOldCanvas);
-	pDevice->setTintColor(oldTint);
-	pDevice->setBlendMode(oldBlendMode);
-
-    wg::Util::popClipList(pDevice, oldClip);
+    if( !bWasRendering )
+        pDevice->endRender();
 
 	return pCanvas;
 }
@@ -820,3 +809,21 @@ wg::RectI WgWidget::_skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, 
 	}
 }
 
+//____ _skinDirtyRect() _____________________________________________________________
+
+wg::RectI WgWidget::_skinDirtyRect(wg::Skin * pSkin, const wg::RectI& canvas, int scale, wg::State newState, wg::State oldState,
+                                   float newValue, float oldValue, float newValue2, float oldValue2, int newAnimPos, int oldAnimPos ) const
+{
+    int pixelQuarters = (scale * 4) / 4096;
+
+    int globalPixelQuarters = wg::MU::qpixPerPoint();
+    if( pixelQuarters == globalPixelQuarters )
+        return pSkin->dirtyRect(wg::Rect::fromPX(canvas),newState,oldState,newValue,oldValue,newValue2,oldValue2,newAnimPos,oldAnimPos).px();
+    else
+    {
+        WgBase::_setQuartersPerPoint(pixelQuarters);
+        wg::RectI ret = pSkin->dirtyRect(wg::Rect::fromPX(canvas),newState,oldState,newValue,oldValue,newValue2,oldValue2,newAnimPos,oldAnimPos).px();
+        WgBase::_setQuartersPerPoint(globalPixelQuarters);
+        return ret;
+    }
+}

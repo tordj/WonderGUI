@@ -24,6 +24,7 @@
 #include <wg3_gfxdevice.h>
 #include <wg3_geo.h>
 #include <wg3_util.h>
+#include <wg3_skin.impl.h>
 
 namespace wg
 {
@@ -170,23 +171,26 @@ namespace wg
 		m_bOpaque = false;
 
 		for (int i = 0; i < StateEnum_Nb; i++)
+		{
+			m_bStateOpaque[i] = false;
 			m_stateColors[i] = Color::White;
+		}
 	}
 
 	BlockSkin::BlockSkin(Surface * pSurface, RectI block, BorderI frame)
 	{
 		m_pSurface			= pSurface;
-		m_dimensions		= block.size();
-		m_frame				= frame;
+		m_ninePatch.block.setSize( block.size() );
+		m_ninePatch.frame	= frame;
 		m_bOpaque			= pSurface->isOpaque();
 
 		for( int i = 0 ; i < StateEnum_Nb ; i++ )
 		{
+			m_bStateOpaque[i] = m_bOpaque;
 			m_stateBlocks[i] = block.pos();
 			m_stateColors[i] = Color::White;
 		}
 	}
-
 
 
 	//____ typeInfo() _________________________________________________________
@@ -226,7 +230,7 @@ namespace wg
 		CoordI blockStartOfs = _blockStartOfs*m_pSurface->qpixPerPoint() / 4;
 		int spacing = _spacing*m_pSurface->qpixPerPoint() / 4;
 
-		CoordI pitch = axis == Axis::X ? CoordI(m_dimensions.w + spacing, 0 ) : CoordI(0, m_dimensions.h + spacing);
+		CoordI pitch = axis == Axis::X ? CoordI(m_ninePatch.block.w + spacing, 0 ) : CoordI(0, m_ninePatch.block.h + spacing);
 
 		int ofs = 0;
 		for (StateEnum state : stateBlocks)
@@ -243,12 +247,12 @@ namespace wg
 
 	RectI BlockSkin::block(State state) const
 	{
-		return { m_stateBlocks[_stateToIndex(state)], m_dimensions*4/m_pSurface->qpixPerPoint() };
+		return { m_stateBlocks[_stateToIndex(state)], m_ninePatch.block.size()*4/m_pSurface->qpixPerPoint() };
 	}
 
-	//____ setTint() __________________________________________________________
+	//____ setColor() __________________________________________________________
 
-	void BlockSkin::setTint(Color tint)
+	void BlockSkin::setColor(HiColor tint)
 	{
 		m_stateColors[0] = tint;
 		m_stateColorMask = 1;
@@ -257,7 +261,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(State state, Color tint)
+	void BlockSkin::setColor(State state, HiColor tint)
 	{
 		int i = _stateToIndex(state);
 
@@ -267,7 +271,7 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	void BlockSkin::setTint(std::initializer_list< std::tuple<State, Color> > stateTints)
+	void BlockSkin::setColor(std::initializer_list< std::tuple<State, HiColor> > stateTints)
 	{
 		for (auto& state : stateTints)
 		{
@@ -280,13 +284,21 @@ namespace wg
 		_updateOpaqueFlags();
 	}
 
-	//____ tint() _____________________________________________________________
+	//____ color() _____________________________________________________________
 
-	Color BlockSkin::tint(State state) const
+	HiColor BlockSkin::color(State state) const
 	{
 		return m_stateColors[_stateToIndex(state)];
 	}
 
+	//____ setGradient() ______________________________________________________
+
+	void BlockSkin::setGradient(const Gradient& gradient)
+	{
+		m_gradient = gradient;
+		m_bGradient = true;
+		_updateOpaqueFlags();
+	}
 
 
 	//____ setBlendMode() _____________________________________________________
@@ -309,36 +321,104 @@ namespace wg
 
 	void BlockSkin::setBlockSize(SizeI size)
 	{
-		m_dimensions = size*m_pSurface->qpixPerPoint() / 4;
+		m_ninePatch.block.setSize( size*m_pSurface->qpixPerPoint() / 4 );
 	}
 
 	//____ setFrame() ____________________________________________________________
 
 	void BlockSkin::setFrame(BorderI frame)
 	{
-		m_frame = frame*m_pSurface->qpixPerPoint() / 4;
+		m_ninePatch.frame = frame*m_pSurface->qpixPerPoint() / 4;
 	}
+
+	//____ setRigidPartX() _____________________________________________
+
+	bool BlockSkin::setRigidPartX(int ofs, int length, YSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.w - m_ninePatch.frame.width();
+		ofs -= m_ninePatch.frame.left;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartXOfs = 0;
+			m_ninePatch.rigidPartXLength = 0;
+			m_ninePatch.rigidPartXSections = YSections::None;
+			return false;
+		}
+
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartXOfs = ofs;
+		m_ninePatch.rigidPartXLength = length;
+		m_ninePatch.rigidPartXSections = sections;
+
+		return true;
+	}
+
+	//____ setRigidPartY() _____________________________________________
+
+	bool BlockSkin::setRigidPartY(int ofs, int length, XSections sections)
+	{
+		int	midSecLen = m_ninePatch.block.h - m_ninePatch.frame.height();
+		ofs -= m_ninePatch.frame.top;
+
+		// Sanity check
+
+		if (length <= 0 || ofs > midSecLen || ofs + length < 0)
+		{
+			m_ninePatch.rigidPartYOfs = 0;
+			m_ninePatch.rigidPartYLength = 0;
+			m_ninePatch.rigidPartYSections = XSections::None;
+			return false;
+		}
+
+		//
+
+		if (ofs < 0)
+		{
+			length += ofs;
+			ofs = 0;
+		}
+
+		if (ofs + length > midSecLen)
+			length = midSecLen - ofs;
+
+		m_ninePatch.rigidPartYOfs = ofs;
+		m_ninePatch.rigidPartYLength = length;
+		m_ninePatch.rigidPartYSections = sections;
+
+		return true;
+	}
+
 
 	//____ render() _______________________________________________________________
 
-	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float fraction, float fraction2) const
+	void BlockSkin::render( GfxDevice * pDevice, const Rect& canvas, State state, float value, float value2, int animPos, float* pStateFractions) const
 	{
 		if( !m_pSurface )
 			return;
 
-		BlendMode savedBlendMode = BlendMode::Undefined;
-		if (m_blendMode != BlendMode::Undefined)
-		{
-			savedBlendMode = pDevice->blendMode();
-			pDevice->setBlendMode(m_blendMode);
-		}
+		int idx = _stateToIndex(state);
+		RenderSettingsWithGradient settings(pDevice, m_layer, m_blendMode, m_stateColors[idx], canvas, m_gradient, m_bGradient);
 
-		CoordI blockOfs = m_stateBlocks[_stateToIndex(state)];
+		CoordI blockOfs = m_stateBlocks[idx];
 		pDevice->setBlitSource(m_pSurface);
-		pDevice->blitNinePatch( canvas.px(), pointsToPixels(m_frame*4/m_pSurface->qpixPerPoint()), { blockOfs,m_dimensions }, m_frame );
 
-		if (m_blendMode != BlendMode::Undefined)
-			pDevice->setBlendMode(savedBlendMode);
+		NinePatch	patch = m_ninePatch;
+		patch.block.setPos(m_stateBlocks[idx]);
+
+		pDevice->blitNinePatch(canvas.px(), pointsToPixels(patch.frame * 4 / m_pSurface->qpixPerPoint()), patch);
 	}
 
 	//____ minSize() ______________________________________________________________
@@ -346,7 +426,7 @@ namespace wg
 	Size BlockSkin::minSize() const
 	{
 		Size content = Border(m_contentPadding).aligned();
-		Size frame = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
+		Size frame = Border(m_ninePatch.frame*4/m_pSurface->qpixPerPoint()).aligned();
 		return Size::max( content, frame );
 	}
 
@@ -357,7 +437,7 @@ namespace wg
         //This takes the scale of the surface into account
         // Preferred size is to map each point of the surface to a point of the skinarea.
         
-        return Size((m_dimensions*4)/m_pSurface->qpixPerPoint());
+        return Size((m_ninePatch.block.size()*4)/m_pSurface->qpixPerPoint());
 	}
 
 	//____ sizeForContent() _______________________________________________________
@@ -365,19 +445,21 @@ namespace wg
 	Size BlockSkin::sizeForContent( const Size& contentSize ) const
 	{
 		Size sz = StateSkin::sizeForContent(contentSize);
-		Size min = Border(m_frame*4/m_pSurface->qpixPerPoint()).aligned();
+		Size min = Border(m_ninePatch.frame *4/m_pSurface->qpixPerPoint()).aligned();
 
 		return Size::max(sz, min);
 	}
 
 	//____ markTest() _____________________________________________________________
 
-	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float fraction, float fraction2) const
+	bool BlockSkin::markTest( const Coord& _ofs, const Rect& canvas, State state, int opacityTreshold, float value, float value2) const
 	{
 		//TODO: Take blendMode and tint (incl gradient) into account.
 
-		CoordI srcOfs = m_stateBlocks[_stateToIndex(state)];
-		return markTestNinePatch(_ofs, m_pSurface, { srcOfs,m_dimensions }, canvas, opacityTreshold, m_frame);
+		NinePatch	patch = m_ninePatch;
+		patch.block.setPos(m_stateBlocks[_stateToIndex(state)]);
+
+		return markTestNinePatch(_ofs, m_pSurface, patch, canvas, opacityTreshold);
 	}
 
 	//____ isOpaque() _____________________________________________________________
@@ -392,15 +474,25 @@ namespace wg
 		return m_bStateOpaque[_stateToIndex(state)];
 	}
 
-	//____ isStateIdentical() _____________________________________________________
+	//____ dirtyRect() ______________________________________________________
 
-	bool BlockSkin::isStateIdentical( State state, State comparedTo, float fraction, float fraction2) const
+	Rect BlockSkin::dirtyRect(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+		float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+		float* pNewStateFractions, float* pOldStateFractions) const
 	{
-		int i1 = _stateToIndex(state);
-		int i2 = _stateToIndex(comparedTo);
+		if (oldState == newState)
+			return Rect();
 
-		return ( m_stateBlocks[i1] == m_stateBlocks[i2] && StateSkin::isStateIdentical(state,comparedTo) );
+		int i1 = _stateToIndex(newState);
+		int i2 = _stateToIndex(oldState);
+
+		if (m_stateBlocks[i1] != m_stateBlocks[i2])
+			return canvas;
+
+		return StateSkin::dirtyRect(canvas, newState, oldState, newValue, oldValue, newValue2, oldValue2,
+			newAnimPos, oldAnimPos, pNewStateFractions, pOldStateFractions);
 	}
+
 
 	//____ _updateOpaqueFlags() ________________________________________________
 
@@ -412,7 +504,9 @@ namespace wg
 			m_bOpaque = false;
 		else if (m_blendMode == BlendMode::Replace)
 			m_bOpaque = true;
-		else if (m_blendMode == BlendMode::Blend || m_blendMode == BlendMode::Undefined )		// Assumes that incoming BlendMide is Blend.
+		else if (m_bGradient && !m_gradient.isOpaque())
+			m_bOpaque = false;
+		else if (m_blendMode == BlendMode::Blend )
 		{
 			m_bOpaque = m_pSurface->isOpaque();
 			bTintDecides = m_bOpaque;
@@ -423,7 +517,11 @@ namespace wg
 		if (bTintDecides)
 		{
 			for (int i = 0; i < StateEnum_Nb; i++)
-				m_bStateOpaque[i] = m_stateColors[i].a == 255;
+			{
+				m_bStateOpaque[i] = m_stateColors[i].a == 4096;
+				if (m_stateColors[i].a != 4096)
+					m_bOpaque = false;
+			}
 		}
 		else
 		{

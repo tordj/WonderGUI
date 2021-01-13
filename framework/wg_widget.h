@@ -266,6 +266,8 @@ protected:
 	wg::SizeI       _skinContentPadding(wg::Skin * pSkin, int scale) const;
 	wg::CoordI      _skinContentOfs(wg::Skin * pSkin, wg::State state, int scale) const;
 	wg::RectI       _skinContentRect(wg::Skin * pSkin, const wg::RectI& canvas, wg::State state, int scale) const;
+    wg::RectI       _skinDirtyRect(wg::Skin * pSkin, const wg::RectI& canvas, int scale, wg::State newState, wg::State oldState,
+                                   float newValue = 1, float oldValue =1, float newValue2 = -1, float oldValue2 = -1, int newAnimPos = 0, int oldAnimPos = 0 ) const;
 
 	//
 

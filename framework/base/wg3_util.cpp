@@ -146,20 +146,27 @@ double Util::squareRoot(double a)
 	return rst;
 }
 
-double Util::powerOfTen(int num){
+double Util::powerOfTen(int num)
+{
 	double rst = 1.0;
-	if(num >= 0){
-		for(int i = 0; i < num ; i++){
+	if(num >= 0)
+	{
+		for(int i = 0; i < num ; i++)
 			rst *= 10.0;
-		}
-	}else{
-		for(int i = 0; i < (0 - num ); i++){
-			rst *= 0.1;
-		}
 	}
-
+	else
+	{
+		for(int i = 0; i < (0 - num ); i++)
+			rst *= 0.1;
+	}
 	return rst;
 }
+
+int Util::gcd(int a, int b) 
+{
+	return b == 0 ? a : Util::gcd(b, a % b);
+}
+
 
 	//____ markTestStretchRect() __________________________________________________
 
@@ -223,14 +230,14 @@ double Util::powerOfTen(int num){
 		return (alpha >= opacityTreshold);
 	}
 
-
-	//____ markTestNinePatch() ________________________________________________
-
-	bool Util::markTestNinePatch(Coord ofs, Surface * pSurface, const RectI& _source, const Rect& _dest, int opacityTreshold, const BorderI& sourceFrame)
+	bool Util::markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold)
 	{
+		const BorderI& sourceFrame = patch.frame;
+		const RectI& _source = patch.block;
+
 		// Sanity check & shortcuts.
 
-		if (sourceFrame.isEmpty())
+		if (sourceFrame.isEmpty() && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None )
 			return markTestStretchRect(ofs, pSurface, _source, _dest, opacityTreshold);
 
 		if (!pSurface || !_dest.contains(ofs) || _source.isEmpty() || _dest.isEmpty() || opacityTreshold > 255)
@@ -241,14 +248,19 @@ double Util::powerOfTen(int num){
 
 		//
 
-		BorderI destFrame = pointsToPixels(sourceFrame);
+		BorderI destFrame = sourceFrame; // pointsToPixels(sourceFrame);
 
 		RectI source;
 		Rect dest;
 
+		XSections markedSectionX;
+		YSections markedSectionY;
+
 		if (ofs.x < _dest.x + destFrame.left)
 		{
 			// left section
+			markedSectionX = XSections::Left;
+
 			source.x = _source.x;
 			source.w = sourceFrame.left;
 			dest.x = _dest.x;
@@ -257,6 +269,8 @@ double Util::powerOfTen(int num){
 		else if (ofs.x < _dest.x + _dest.w - destFrame.right)
 		{
 			// mid section
+			markedSectionX = XSections::Center;
+
 			source.x = _source.x + sourceFrame.left;
 			source.w = _source.w - sourceFrame.width();
 			dest.x = _dest.x + destFrame.left;
@@ -265,15 +279,20 @@ double Util::powerOfTen(int num){
 		else
 		{
 			// right section
+			markedSectionX = XSections::Right;
+
 			source.x = _source.x + _source.w - sourceFrame.right;
 			source.w = sourceFrame.right;
 			dest.x = _dest.x + _dest.w - destFrame.right;
 			dest.w = destFrame.right;
 		}
 
+		MU	test = _dest.y + destFrame.top;
 		if (ofs.y < _dest.y + destFrame.top)
 		{
-			// left section
+			// top section
+			markedSectionY = YSections::Top;
+
 			source.y = _source.y;
 			source.h = sourceFrame.top;
 			dest.y = _dest.y;
@@ -282,6 +301,8 @@ double Util::powerOfTen(int num){
 		else if (ofs.y < _dest.y + _dest.h - destFrame.bottom)
 		{
 			// mid section
+			markedSectionY = YSections::Center;
+
 			source.y = _source.y + sourceFrame.top;
 			source.h = _source.h - sourceFrame.height();
 			dest.y = _dest.y + destFrame.top;
@@ -289,7 +310,9 @@ double Util::powerOfTen(int num){
 		}
 		else
 		{
-			// right section
+			// top section
+			markedSectionY = YSections::Bottom;
+
 			source.y = _source.y + _source.h - sourceFrame.bottom;
 			source.h = sourceFrame.bottom;
 			dest.y = _dest.y + _dest.h - destFrame.bottom;
@@ -301,11 +324,55 @@ double Util::powerOfTen(int num){
 		ofs.x -= dest.x;
 		ofs.y -= dest.y;
 
+
 		// Convert offset in area to offset in bitmap.
 
 		RectI sourceOfs;
-		sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
-		sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
+
+		if (markedSectionX == XSections::Center && (patch.rigidPartXSections & markedSectionY) != YSections::None)
+		{
+			int leftSrcLen = patch.rigidPartXOfs;
+			int rightSrcLen = source.w - patch.rigidPartXOfs - patch.rigidPartXLength;
+
+			int totalSrcLen = leftSrcLen + rightSrcLen;
+
+			MU midDstLen = std::min(MU(patch.rigidPartXLength), dest.w);
+
+			MU leftDstLen = (dest.w - midDstLen) * leftSrcLen / totalSrcLen;
+			MU rightDstLen = dest.w - midDstLen - leftDstLen;
+
+			if (ofs.x < leftDstLen)
+				sourceOfs.x = int(ofs.x.qpix / double(leftDstLen.qpix) * leftSrcLen);
+			else if (ofs.x < leftDstLen + midDstLen)
+				sourceOfs.x = int(ofs.x - leftDstLen) + leftSrcLen;
+			else
+				sourceOfs.x = int((ofs.x.qpix - leftDstLen.qpix - midDstLen.qpix) / double(rightDstLen.qpix) * rightSrcLen) + leftSrcLen + patch.rigidPartXLength;
+		}
+		else
+			sourceOfs.x = (int)(ofs.x.qpix / ((double)dest.w.qpix) * source.w);
+	
+		
+		if (markedSectionY == YSections::Center && (patch.rigidPartYSections & markedSectionX) != XSections::None)
+		{
+			int topSrcLen = patch.rigidPartYOfs;
+			int bottomSrcLen = source.h - patch.rigidPartYOfs - patch.rigidPartYLength;
+
+			int totalSrcLen = topSrcLen + bottomSrcLen;
+
+			MU midDstLen = std::min(MU(patch.rigidPartYLength), dest.h);
+
+			MU topDstLen = (dest.h - midDstLen) * topSrcLen / totalSrcLen;
+			MU bottomDstLen = dest.h - midDstLen - topDstLen;
+
+			if (ofs.y < topDstLen)
+				sourceOfs.y = int( ofs.y.qpix / double(topDstLen.qpix) * topSrcLen);
+			else if (ofs.y < topDstLen + midDstLen)
+				sourceOfs.y = int(ofs.y - topDstLen) + topSrcLen;
+			else
+				sourceOfs.y = int((ofs.y.qpix - topDstLen.qpix - midDstLen.qpix) / double(bottomDstLen.qpix) * bottomSrcLen) + topSrcLen + patch.rigidPartYLength;
+		}
+		else
+			sourceOfs.y = (int)(ofs.y.qpix / ((double)dest.h.qpix) * source.h);
 
 		// Do alpha test
 
@@ -313,7 +380,6 @@ double Util::powerOfTen(int num){
 
 		return (alpha >= opacityTreshold);
 	}
-
 
 
 

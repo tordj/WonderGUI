@@ -27,6 +27,7 @@
 #include <wg3_geo.h>
 #include <wg3_util.h>
 #include <wg3_base.h>
+#include <wg3_context.h>
 
 using namespace std;
 
@@ -89,16 +90,8 @@ namespace wg
 
 	//____ constructor _____________________________________________________________
 
-	GfxDevice::GfxDevice( SizeI canvasSize )
+	GfxDevice::GfxDevice()
 	{
-		m_tintColor 		= Color(255,255,255);
-		m_blendMode 		= BlendMode::Blend;
-		m_canvasSize		= canvasSize;
-		m_clipCanvas		= canvasSize;
-		m_clipBounds		= canvasSize;
-		m_pClipRects		= &m_clipCanvas;
-		m_nClipRects		= 1;
-
 		if (s_gfxDeviceCount == 0)
 		{
 			_genCurveTab();
@@ -126,14 +119,11 @@ namespace wg
 
 	//____ setClipList() __________________________________________________________
 
-	bool GfxDevice::setClipList(int nRectangles, const RectI * pRectangles)
+	bool GfxDevice::setClipList(int nRectangles, const RectI* pRectangles)
 	{
 		if (nRectangles == 0)
 		{
-			m_clipCanvas = m_canvasSize;
-			m_clipBounds = {0,0,0,0};
-			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 0;
+			clearClipList();
 			return true;
 		}
 
@@ -147,6 +137,7 @@ namespace wg
 		m_pClipRects = pRectangles;
 		m_nClipRects = nRectangles;
 		m_clipBounds = bounds;
+		_clipListWasChanged();
 		return true;
 	}
 
@@ -154,35 +145,55 @@ namespace wg
 
 	void GfxDevice::clearClipList()
 	{
-		m_clipBounds = m_canvasSize;
-		m_clipCanvas = m_canvasSize;
-		m_pClipRects = &m_clipCanvas;
-		m_nClipRects = 1;
+		m_clipBounds = m_canvasUpdateBounds;
+		m_pClipRects = m_pCanvasUpdateRects;
+		m_nClipRects = m_nCanvasUpdateRects;
+		_clipListWasChanged();
 	}
 
-	//____ setClearColor() __________________________________________________________
+	//____ pushClipList() _____________________________________________________
 
-	void GfxDevice::setClearColor( Color color )
+	bool GfxDevice::pushClipList(int nRectangles, const RectI* pRectangles)
 	{
-		m_clearColor = color;
+		m_clipListStack.push_back({ m_nClipRects,m_pClipRects,m_clipBounds });
+		return setClipList(nRectangles, pRectangles);
+	}
+
+	//____ popClipList() ______________________________________________________
+
+	bool GfxDevice::popClipList()
+	{
+		if (m_clipListStack.empty())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No ClipLists in stack, nothing to pop.", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return false;
+		}
+
+		auto& clipList = m_clipListStack.back();
+
+		m_clipBounds = clipList.clipBounds;
+		m_pClipRects = clipList.pClipRects;
+		m_nClipRects = clipList.nClipRects;
+
+		m_clipListStack.pop_back();
+
+		_clipListWasChanged();
+		return true;
 	}
 
 	//____ setTintColor() __________________________________________________________
 
-	void GfxDevice::setTintColor( Color color )
+	void GfxDevice::setTintColor( HiColor color )
 	{
 		m_tintColor = color;
 	}
 
 	//____ setTintGradient() __________________________________________________
 
-	void GfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	void GfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
 		m_tintGradientRect = rect;
-		m_tintGradient[0] = topLeft;
-		m_tintGradient[1] = topRight;
-		m_tintGradient[2] = bottomRight;
-		m_tintGradient[3] = bottomLeft;
+		m_tintGradient = gradient;
 		m_bTintGradient = true;
 	}
 
@@ -220,6 +231,65 @@ namespace wg
 		limit(factor, 0.f, 1.f);
 		m_morphFactor = factor;
 	}
+
+	//____ setRenderLayer() ___________________________________________________
+
+	void GfxDevice::setRenderLayer(int layer)
+	{
+		if (layer == m_renderLayer)
+			return;
+
+		if (!m_pLayerDef || layer < 0 || layer >= m_pLayerDef->size())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		m_renderLayer = layer;
+//		_clearRenderLayer();
+		_renderLayerWasChanged();
+
+		// Init layer if we are rendering.
+
+	}
+
+	//____ _clearRenderLayer() _____________________________________________________
+
+	void GfxDevice::_clearRenderLayer()
+	{
+		if (m_renderLayer > 0 )
+		{
+
+
+			//TODO: Save tint gradient.
+
+			const RectI* pSavedClipRects = m_pClipRects;
+			int				nSavedClipRects = m_nClipRects;
+			RectI			savedClipBounds = m_clipBounds;
+
+			m_pClipRects = m_pCanvasUpdateRects;
+			m_nClipRects = m_nCanvasUpdateRects;
+			m_clipBounds = m_canvasUpdateBounds;
+
+			_clipListWasChanged();
+
+			BlendMode	savedBlendMode = m_blendMode;
+			HiColor		savedTintColor = m_tintColor;
+			setBlendMode(BlendMode::Replace);
+			setTintColor(Color::White);
+			clearTintGradient();
+			fill(Color::Transparent);
+			setBlendMode(savedBlendMode);
+			setTintColor(savedTintColor);
+
+			m_pClipRects = pSavedClipRects;
+			m_nClipRects = nSavedClipRects;
+			m_clipBounds = savedClipBounds;
+
+			_clipListWasChanged();
+		}
+	}
+
 
 	//____ beginRender() ___________________________________________________________
 
@@ -300,6 +370,189 @@ namespace wg
 	{
 	}
 
+
+	//____ _beginCanvasUpdate() ________________________________________________
+
+	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, int startLayer)
+	{
+		CanvasLayers_p pLayerDef = Base::activeContext()->canvasLayers();
+
+		SizeI sz = canvas.size();
+
+		RectI bounds;
+
+		if (nUpdateRects > 0)
+		{
+			bounds = *pUpdateRects;
+			for (int i = 1; i < nUpdateRects; i++)
+				bounds.growToContain(pUpdateRects[i]);
+
+			if (bounds.x < 0 || bounds.y < 0 || bounds.w > sz.w || bounds.h > sz.h)
+			{
+				//TODO: Error handling!
+
+				return false;
+			}
+		}
+		else
+		{
+			bounds = sz;
+			nUpdateRects = 1;
+			pUpdateRects = &m_canvasUpdateBounds;
+		}
+
+		// Push old values onto stack, if we have a canvas.
+
+		if( !m_canvasSize.isEmpty() )
+		{
+			m_canvasStack.emplace_back();
+			auto& back = m_canvasStack.back();
+
+			back.pLayerDef = m_pLayerDef;
+			back.pCanvas = m_pCanvas;
+			back.updateRects.pClipRects = m_pCanvasUpdateRects;
+			back.updateRects.nClipRects = m_nCanvasUpdateRects;
+			back.updateRects.clipBounds = m_canvasUpdateBounds;
+			back.clipRects.pClipRects = m_pClipRects;
+			back.clipRects.nClipRects = m_nClipRects;
+			back.clipRects.clipBounds = m_clipBounds;
+			back.renderLayer = m_renderLayer;
+			back.tintColor = m_tintColor;
+			back.tintGradient = m_tintGradient;
+			back.tintGradientRect = m_tintGradientRect;
+			back.bTintGradient = m_bTintGradient;
+			back.blendMode = m_blendMode;
+			back.morphFactor = m_morphFactor;
+			back.canvasSize = m_canvasSize;
+
+			memcpy(back.layerSurfaces, m_layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+			memset(m_layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+		}
+
+		// Set values
+
+		m_pLayerDef = pLayerDef;
+		m_pCanvas = pCanvas;
+		m_pCanvasUpdateRects = pUpdateRects;
+		m_nCanvasUpdateRects = nUpdateRects;
+		m_canvasUpdateBounds = bounds;
+
+		m_pClipRects = pUpdateRects;
+		m_nClipRects = nUpdateRects;
+		m_clipBounds = bounds;
+
+		int layer = 0;
+		if (pLayerDef)
+			layer = (startLayer >= 0 && startLayer <= pLayerDef->size()) ? startLayer : pLayerDef->defaultLayer();
+
+
+		m_renderLayer = layer;
+		m_tintColor = Color::White;
+		m_tintGradient.clear();
+		m_tintGradientRect = sz;
+		m_bTintGradient = false;
+		m_blendMode = BlendMode::Blend;
+		m_morphFactor = 0.5f;
+		m_canvasSize = sz;
+		_canvasWasChanged();
+//		_clearRenderLayer();
+		return true;
+	}
+
+	//____ endCanvasUpdate() __________________________________________________
+
+	void GfxDevice::endCanvasUpdate()
+	{
+		// Sanity checks
+
+		if (m_canvasStack.empty())
+		{
+			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::FailedPrerequisite, "No Canvas being updated, nothing to end.", this, TYPEINFO, __func__, __FILE__, __LINE__);
+			return;
+		}
+
+		// Blend together the layers
+
+		if (m_pLayerDef)
+		{
+			bool bFirst = true;
+
+			int nbLayers = m_pLayerDef->size();
+			for (int layer = 0; layer < nbLayers; layer++)
+			{
+				if (m_layerSurfaces[layer] )
+				{
+					if (bFirst)
+					{
+						setClipList(m_nCanvasUpdateRects, m_pCanvasUpdateRects);
+						setTintColor(Color::White);
+						clearTintGradient();
+						setRenderLayer(0);
+						bFirst = false;
+					}
+
+					setBlendMode(m_pLayerDef->layerBlendMode(layer));
+					setBlitSource(m_layerSurfaces[layer]);
+					blit({ 0,0 });
+				}
+			}
+		}
+
+		// Dereference surfaces
+
+		for (int i = 0; i < CanvasLayers::c_maxLayers; i++)
+			m_layerSurfaces[i] = nullptr;
+
+		// Unwind the stack, retrieve saved values
+
+		if( !m_canvasStack.empty() )
+		{
+			auto& back = m_canvasStack.back();
+
+			m_pLayerDef = back.pLayerDef;
+			m_pCanvas = back.pCanvas;
+			m_pCanvasUpdateRects = back.updateRects.pClipRects;
+			m_nCanvasUpdateRects = back.updateRects.nClipRects;
+			m_canvasUpdateBounds = back.updateRects.clipBounds;
+			m_pClipRects = back.clipRects.pClipRects;
+			m_nClipRects = back.clipRects.nClipRects;
+			m_clipBounds = back.clipRects.clipBounds;
+			m_renderLayer = back.renderLayer;
+			m_tintColor = back.tintColor;
+			m_tintGradient = back.tintGradient;
+			m_tintGradientRect = back.tintGradientRect;
+			m_bTintGradient = back.bTintGradient;
+			m_blendMode = back.blendMode;
+			m_morphFactor = back.morphFactor;
+			m_canvasSize = back.canvasSize;
+
+
+			// Move surface pointers from stack without referencing/dereferencing.
+
+			memcpy(m_layerSurfaces, back.layerSurfaces, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+			memset(back.layerSurfaces, 0, sizeof(Surface_p) * CanvasLayers::c_maxLayers);
+
+			m_canvasStack.pop_back();
+		}
+		else
+		{
+			m_pLayerDef = nullptr;
+			m_pCanvas = nullptr;
+			m_pCanvasUpdateRects = nullptr;
+			m_nCanvasUpdateRects = 0;
+			m_canvasUpdateBounds.clear();
+			m_pClipRects = nullptr;
+			m_nClipRects = 0;
+			m_clipBounds.clear();
+			m_renderLayer = 0;
+			m_canvasSize.clear();
+
+		}
+
+		_canvasWasChanged();
+	}
+
+
 	//____ fill() ______________________________________________________
 	/**
 	 * @brief Fill the canvas with specified color.
@@ -310,14 +563,14 @@ namespace wg
 	 * @return Nothing.
 	 */
 
-	void GfxDevice::fill(const Color& col)
+	void GfxDevice::fill(HiColor col)
 	{
 		fill(m_canvasSize, col);
 	}
 
 	//____ drawLine() __________________________________________________
 
-	void GfxDevice::drawLine(CoordI begin, Direction dir, int length, Color color, float thickness)
+	void GfxDevice::drawLine(CoordI begin, Direction dir, int length, HiColor color, float thickness)
 	{
 		CoordI end;
 
@@ -679,24 +932,27 @@ namespace wg
 		_transformBlit(dest, {ofsX,ofsY}, mtx);
 	}
 
-
 	//____ blitNinePatch() ________________________________________________
 
-	void GfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const RectI& srcRect, const BorderI& srcFrame)
+	void GfxDevice::blitNinePatch(const RectI& dstRect, const BorderI& dstFrame, const NinePatch& patch)
 	{
 		assert(m_pBlitSource != nullptr);
 
-		if (srcRect.w == dstRect.w && srcRect.h == dstRect.h && srcFrame == dstFrame )
+		if (patch.block.w == dstRect.w && patch.block.h == dstRect.h && patch.frame == dstFrame)
 		{
-			blit(dstRect.pos(), srcRect);
+			blit(dstRect.pos(), patch.block);
 			return;
 		}
 
-		if (srcFrame.isEmpty() || dstFrame.isEmpty())
+		if ((patch.frame.isEmpty() || dstFrame.isEmpty()) && patch.rigidPartXSections == YSections::None && patch.rigidPartYSections == XSections::None)
 		{
-			stretchBlit(dstRect, srcRect);
+			stretchBlit(dstRect, patch.block);
 			return;
 		}
+
+		const RectI& srcRect = patch.block;
+		const BorderI& srcFrame = patch.frame;
+
 
 		//TODO: Optimize! Call transformBlit directly instead of going through stretchBlit(), reuse transforms where possible.
 		//TODO: Optimize! Use blit instead of stretchBlit on opportunity,fill if center is only 1 pixel and just blit corners if not stretched.
@@ -708,7 +964,7 @@ namespace wg
 		{
 			RectI	srcNW(srcRect.x, srcRect.y, srcFrame.left, srcFrame.top);
 			RectI	srcN(srcRect.x + srcFrame.left, srcRect.y, srcMidSize.w, srcFrame.top);
-			RectI	srcNE(srcRect.x + srcRect.w-srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
+			RectI	srcNE(srcRect.x + srcRect.w - srcFrame.right, srcRect.y, srcFrame.right, srcFrame.top);
 
 			RectI	dstNW(dstRect.x, dstRect.y, dstFrame.left, dstFrame.top);
 			RectI	dstN(dstRect.x + dstFrame.left, dstRect.y, dstMidSize.w, dstFrame.top);
@@ -718,7 +974,12 @@ namespace wg
 				stretchBlit(dstNW, srcNW);
 
 			if (srcN.w + dstN.w > 0)
-				stretchBlit(dstN, srcN);
+			{
+				if ((patch.rigidPartXSections & YSections::Top) != YSections::None)
+					_stretchBlitWithRigidPartX(srcN, dstN, patch.rigidPartXOfs, patch.rigidPartXLength);
+				else
+					stretchBlit(dstN, srcN);
+			}
 
 			if (srcNE.w + dstNE.w > 0)
 				stretchBlit(dstNE, srcNE);
@@ -736,13 +997,79 @@ namespace wg
 			RectI	dstE(dstRect.x + dstRect.w - dstFrame.right, dstRect.y + dstFrame.top, dstFrame.right, dstMidSize.h);
 
 			if (srcW.w + dstW.w > 0)
-				stretchBlit(dstW, srcW);
+			{
+				if((patch.rigidPartYSections & XSections::Left) != XSections::None)
+					_stretchBlitWithRigidPartY(srcW, dstW, patch.rigidPartYOfs, patch.rigidPartYLength);
+				else
+					stretchBlit(dstW, srcW);
+			}
 
 			if (srcC.w + dstC.w > 0)
-				stretchBlit(dstC, srcC);
+			{
+				if ((patch.rigidPartYSections & XSections::Center) != XSections::None)
+				{
+					int topSrcLen = patch.rigidPartYOfs;
+					int bottomSrcLen = srcC.h - patch.rigidPartYOfs - patch.rigidPartYLength;
+
+					int totalSrcLen = topSrcLen + bottomSrcLen;
+
+					int midDstLen = std::min(patch.rigidPartYLength * MU::qpixPerPoint() / 4, dstC.h);
+
+					int topDstLen = (dstC.h - midDstLen) * topSrcLen / totalSrcLen;
+					int bottomDstLen = dstC.h - midDstLen - topDstLen;
+
+
+					if (topDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y, dstC.w, topDstLen);
+						RectI src(srcC.x, srcC.y, srcC.w, topSrcLen);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+
+					if (midDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y + topDstLen, dstC.w, midDstLen);
+						RectI src(srcC.x, srcC.y + topSrcLen, srcC.w, patch.rigidPartYLength);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+
+					if (bottomDstLen > 0)
+					{
+						RectI dst(dstC.x, dstC.y + topDstLen + midDstLen, dstC.w, bottomDstLen);
+						RectI src(srcC.x, srcC.y + topSrcLen + patch.rigidPartYLength, srcC.w, bottomSrcLen);
+
+						if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+							_stretchBlitWithRigidPartX(src, dst, patch.rigidPartXOfs, patch.rigidPartXLength);
+						else
+							stretchBlit(dst, src);
+					}
+				}
+				else
+				{
+					if ((patch.rigidPartXSections & YSections::Center) != YSections::None)
+						_stretchBlitWithRigidPartX(srcC, dstC, patch.rigidPartXOfs, patch.rigidPartXLength);
+					else
+						stretchBlit(dstC, srcC);
+				}
+			}
+
 
 			if (srcE.w + dstE.w > 0)
-				stretchBlit(dstE, srcE);
+			{
+				if ((patch.rigidPartYSections & XSections::Right) != XSections::None)
+					_stretchBlitWithRigidPartY(srcE, dstE, patch.rigidPartYOfs, patch.rigidPartYLength);
+				else
+					stretchBlit(dstE, srcE);
+			}
+
 		}
 
 		if (srcFrame.bottom + dstFrame.bottom > 0)
@@ -759,31 +1086,35 @@ namespace wg
 				stretchBlit(dstSW, srcSW);
 
 			if (srcS.w + dstS.w > 0)
-				stretchBlit(dstS, srcS);
+			{
+				if ((patch.rigidPartXSections & YSections::Bottom) != YSections::None)
+					_stretchBlitWithRigidPartX(srcS, dstS, patch.rigidPartXOfs, patch.rigidPartXLength);
+				else
+					stretchBlit(dstS, srcS);
+			}
 
 			if (srcSE.w + dstSE.w > 0)
 				stretchBlit(dstSE, srcSE);
 		}
-
 	}
-
+	
 	//____ drawWave() ______________________________________________________
 
-	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill )
+	void GfxDevice::drawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill )
 	{
 		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawWave() ______________________________________________________
 
-	void GfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, GfxFlip flip )
+	void GfxDevice::flipDrawWave(const RectI& dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, GfxFlip flip )
 	{
 		_transformDrawWave(dest, pTopBorder, pBottomBorder, frontFill, backFill, blitFlipTransforms[(int)flip] );
 	}
 
 	//____ _transformDrawWave() ______________________________________________________
 
-	void GfxDevice::_transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, Color frontFill, Color backFill, const int simpleTransform[2][2] )
+	void GfxDevice::_transformDrawWave(const RectI& _dest, const WaveLine * pTopBorder, const WaveLine * pBottomBorder, HiColor frontFill, HiColor backFill, const int simpleTransform[2][2] )
 	{
 		//TODO: If borders have different colors and cross, colors are not swapped.
 
@@ -891,7 +1222,7 @@ namespace wg
 
 			// Render the segments
 
-			Color	col[5];
+			HiColor	col[5];
 
 			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
@@ -936,7 +1267,7 @@ namespace wg
 
 			// Render the segments
 
-			Color	col[6];
+			HiColor	col[6];
 
 			col[0] = Color::Transparent;
 			col[1] = pTopBorder->color;
@@ -957,7 +1288,7 @@ namespace wg
 
 	//____ drawElipse() ______________________________________________________
 
-	void GfxDevice::drawElipse(const RectF& canvas, float thickness, Color fillColor, float outlineThickness, Color outlineColor )
+	void GfxDevice::drawElipse(const RectF& canvas, float thickness, HiColor fillColor, float outlineThickness, HiColor outlineColor )
 	{
 		// Center and corners in 24.8 format.
 
@@ -1157,7 +1488,7 @@ namespace wg
 
 		// Render columns
 
-		Color	col[5];
+		HiColor	col[5];
 		col[0] = Color::Transparent;
 		col[1] = outlineColor;
 		col[2] = fillColor;
@@ -1182,7 +1513,7 @@ namespace wg
 
 	//____ drawPieChart() _____________________________________________________
 
-	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const Color * pSliceColors, float hubSize, Color hubColor, Color backColor, bool bRectangular)
+	void GfxDevice::drawPieChart(const RectI& _canvas, float start, int nSlices, const float * _pSliceSizes, const HiColor * pSliceColors, float hubSize, HiColor hubColor, HiColor backColor, bool bRectangular)
 	{
 		static const int c_maxSlices = c_maxSegments - 2;
 
@@ -1209,7 +1540,7 @@ namespace wg
 		{
 			float ofs;
 			float size;
-			Color color;
+			HiColor color;
 		};
 
 		Slice slices[c_maxSlices+2];			// Maximum two extra slices in the end. Beginning offset + end transparency.
@@ -1325,7 +1656,7 @@ namespace wg
 
 		GfxFlip quadFlip[4] = { GfxFlip::Normal, GfxFlip::Rot90, GfxFlip::Rot180, GfxFlip::Rot270 };
 
-		Color colors[c_maxSegments];
+		HiColor colors[c_maxSegments];
 
 		int maxSegments = nSlices + 2;
 		int edgePitch = maxSegments - 1;
@@ -1497,7 +1828,7 @@ namespace wg
 			// Draw
 
 			int * pEdges = pBuffer;
-			Color * pColors = colors;
+			HiColor * pColors = colors;
 			if (bRectangular)
 			{
 				pEdges++;
@@ -1505,7 +1836,7 @@ namespace wg
 				nSegments--;
 			}
 
-			uint8_t		alphaCheck = 0;
+			int16_t		alphaCheck = 0;
 			for (int i = 0; i < nSegments; i++)
 				alphaCheck |= pColors[i].a;
 
@@ -1526,14 +1857,14 @@ namespace wg
 
 	//____ drawSegments() ______________________________________________________
 
-	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
+	void GfxDevice::drawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, TintMode tintMode )
 	{
 		_transformDrawSegments( dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)GfxFlip::Normal] );
 	}
 
 	//____ flipDrawSegments() ______________________________________________________
 
-	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
+	void GfxDevice::flipDrawSegments(const RectI& dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * pEdgeStrips, int edgeStripPitch, GfxFlip flip, TintMode tintMode)
 	{
 		_transformDrawSegments(dest, nSegments, pSegmentColors, nEdgeStrips, pEdgeStrips, edgeStripPitch, tintMode, blitFlipTransforms[(int)flip] );
 	}
@@ -1639,6 +1970,12 @@ namespace wg
 		blit( dest, r );
 	}
 
+	//____ _clipListWasChanged() _________________________________________________
+
+	void GfxDevice::_clipListWasChanged()
+	{
+		// Do nothing.
+	}
 	//____ _genCurveTab() ___________________________________________________________
 
 	void GfxDevice::_genCurveTab()
@@ -1749,6 +2086,54 @@ namespace wg
 				*pDest++ = bottom;
 			}
 		}
+	}
+
+	//____ _stretchBlitWithRigidPartX() _______________________________________
+
+	void GfxDevice::_stretchBlitWithRigidPartX(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength)
+	{
+		int leftSrcLen = rigidPartOfs;
+		int rightSrcLen = src.w - rigidPartOfs - rigidPartLength;
+
+		int totalSrcLen = leftSrcLen + rightSrcLen;
+
+		int midDstLen = std::min(rigidPartLength * MU::qpixPerPoint() / 4, dst.w);
+
+		int leftDstLen = (dst.w - midDstLen) * leftSrcLen / totalSrcLen;
+		int rightDstLen = dst.w - midDstLen - leftDstLen;
+
+		if (leftDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y, leftDstLen, dst.h), RectI(src.x, src.y, leftSrcLen, src.h));
+
+		if (midDstLen > 0)
+			stretchBlit(RectI(dst.x + leftDstLen, dst.y, midDstLen, dst.h), RectI(src.x + leftSrcLen, src.y, rigidPartLength, src.h));
+
+		if (rightDstLen > 0)
+			stretchBlit(RectI(dst.x + leftDstLen + midDstLen, dst.y, rightDstLen, dst.h), RectI(src.x + leftSrcLen + rigidPartLength, src.y, rightSrcLen, src.h));
+	}
+
+	//____ _stretchBlitWithRigidPartY() _______________________________________
+
+	void GfxDevice::_stretchBlitWithRigidPartY(const RectI& src, const RectI& dst, int rigidPartOfs, int rigidPartLength)
+	{
+		int topSrcLen = rigidPartOfs;
+		int bottomSrcLen = src.h - rigidPartOfs - rigidPartLength;
+
+		int totalSrcLen = topSrcLen + bottomSrcLen;
+
+		int midDstLen = std::min(rigidPartLength * MU::qpixPerPoint() / 4, dst.h);
+
+		int topDstLen = (dst.h - midDstLen) * topSrcLen / totalSrcLen;
+		int bottomDstLen = dst.h - midDstLen - topDstLen;
+
+		if (topDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y, dst.w, topDstLen), RectI(src.x, src.y, src.w, topSrcLen));
+
+		if (midDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y + topDstLen, dst.w, midDstLen), RectI(src.x, src.y + topSrcLen, src.w, rigidPartLength));
+
+		if (bottomDstLen > 0)
+			stretchBlit(RectI(dst.x, dst.y + topDstLen + midDstLen, dst.w, bottomDstLen), RectI(src.x, src.y + topSrcLen + rigidPartLength, src.w, bottomSrcLen));
 	}
 
 } // namespace wg

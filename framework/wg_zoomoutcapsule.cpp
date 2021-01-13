@@ -563,7 +563,7 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 		uint8_t newTint = uint8_t(oldTint.a*WgUtil::ParametricBlendInOut(1.f-m_innerTransitionFactor));
 
-		pDevice->setTintColor({oldTint.r, oldTint.g, oldTint.b, newTint });
+		pDevice->setTintColor( wg::Color8(oldTint.r, oldTint.g, oldTint.b, newTint) );
 
 		if (m_pSkin)
 			_renderSkin( m_pSkin, pDevice, m_state, _canvas, m_scale);
@@ -572,7 +572,7 @@ void WgZoomOutCapsule::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas
 
 		if( m_pButtonSkin )
 		{
-			pDevice->setTintColor({oldTint.r, oldTint.g, oldTint.b, uint8_t(newTint*m_outerZoom) });
+			pDevice->setTintColor( wg::Color8(oldTint.r, oldTint.g, oldTint.b, uint8_t(newTint*m_outerZoom)) );
 			_renderSkin( m_pButtonSkin, pDevice, m_buttonState, _buttonArea(canvas), m_scale);
 		}
 		pDevice->setTintColor(oldTint);

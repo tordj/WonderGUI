@@ -1236,8 +1236,9 @@ void WgFlexPanel::_onEvent( const WgEvent::Event * _pEvent, WgEventHandler * pHa
 
 	if( state != m_state )
 	{
-		if( m_pSkin && !m_pSkin->isStateIdentical(state, m_state) )
-			_requestRender();
+        wg::RectI dirt = _skinDirtyRect( m_pSkin, PixelSize(), m_scale, state, m_state );
+        if( !dirt.isEmpty() )
+            _requestRender(dirt);
 
 		m_state = state;
 	}

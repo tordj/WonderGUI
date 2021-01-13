@@ -48,7 +48,9 @@ namespace wg
 			bool	opaque;
 			SizeI	preferredSize;
 			std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)> renderFunc;
-			std::function<bool(State state1, State state2)>	stateCompareFunc;
+			std::function<bool(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+				float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+				float* pNewStateFractions, float* pOldStateFractions)>	dirtyRectFunc;
 		};
 
 		//.____ Creation __________________________________________
@@ -75,7 +77,9 @@ namespace wg
 //		void		setContentShifting(bool bShifting);
 //		void		setIgnoresFraction(bool bIgnoresFraction);
 
-		void		setStateCompareFunc(const std::function<bool(State state1, State state2)>& function);
+		void		setDirtyRectFunc(const std::function<bool(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+									float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+									float* pNewStateFractions, float* pOldStateFractions)>& function);
 		void		setMarkTestFunc(const std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>& function);
 		void		setOpacityTestFunc(const std::function<bool(const Rect& rect, const Size& canvasSize, State state)>& function);
 		void		setRenderFunc(const std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>& function);
@@ -85,14 +89,16 @@ namespace wg
 		bool		isOpaque(State state) const override;
 		bool		isOpaque(const Rect& rect, const Size& canvasSize, State state) const override;
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
-
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 
 	private:
@@ -103,7 +109,9 @@ namespace wg
 		SizeI		m_preferredSize;				// Points
 		SizeI		m_minSize;						// Points
 
-		std::function<bool(State state, State comparedTo)>											m_stateCompareFunc = nullptr;
+		std::function<bool(const Rect& canvas, State newState, State oldState, float newValue, float oldValue,
+			float newValue2, float oldValue2, int newAnimPos, int oldAnimPos,
+			float* pNewStateFractions, float* pOldStateFractions)>									m_dirtyRectFunc = nullptr;
 		std::function<bool(const Coord& ofs, const Rect& canvas, State state, int opacityTreshold)>	m_markTestFunc = nullptr;
 		std::function<bool(const Rect& rect, const Size& canvasSize, State state)>					m_opacityTestFunc = nullptr;
 		std::function<void(GfxDevice * pDevice, const Rect& canvas, State state)>					m_renderFunc = nullptr;

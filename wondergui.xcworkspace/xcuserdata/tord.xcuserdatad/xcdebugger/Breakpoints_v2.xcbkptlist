@@ -15,8 +15,8 @@
             timestampString = "604852291.3147891"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "931"
-            endingLineNumber = "931"
+            startingLineNumber = "763"
+            endingLineNumber = "763"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -32,8 +32,8 @@
             timestampString = "604852291.314863"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "929"
-            endingLineNumber = "929"
+            startingLineNumber = "761"
+            endingLineNumber = "761"
             landmarkName = "unknown"
             landmarkType = "0">
          </BreakpointContent>
@@ -3336,8 +3336,8 @@
             timestampString = "604852291.315109"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "695"
-            endingLineNumber = "695"
+            startingLineNumber = "527"
+            endingLineNumber = "527"
             landmarkName = "packPanelStressTest(pRoot)"
             landmarkType = "9">
          </BreakpointContent>
@@ -3353,8 +3353,8 @@
             timestampString = "604852291.315169"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "692"
-            endingLineNumber = "692"
+            startingLineNumber = "524"
+            endingLineNumber = "524"
             landmarkName = "packPanelStressTest(pRoot)"
             landmarkType = "9">
          </BreakpointContent>
@@ -3370,8 +3370,8 @@
             timestampString = "604852291.315225"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "705"
-            endingLineNumber = "705"
+            startingLineNumber = "537"
+            endingLineNumber = "537"
             landmarkName = "packPanelStressTest(pRoot)"
             landmarkType = "9">
          </BreakpointContent>
@@ -3421,8 +3421,8 @@
             timestampString = "604852291.315397"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "708"
-            endingLineNumber = "708"
+            startingLineNumber = "540"
+            endingLineNumber = "540"
             landmarkName = "packPanelStressTest(pRoot)"
             landmarkType = "9">
          </BreakpointContent>
@@ -3506,8 +3506,8 @@
             timestampString = "604852291.315559"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "512"
-            endingLineNumber = "512"
+            startingLineNumber = "344"
+            endingLineNumber = "344"
             landmarkName = "main(argc, argv)"
             landmarkType = "9">
          </BreakpointContent>
@@ -3594,6 +3594,22 @@
             endingLineNumber = "315"
             landmarkName = "WgTooltipLayer::_onEvent(pEvent, pHandler)"
             landmarkType = "7">
+         </BreakpointContent>
+      </BreakpointProxy>
+      <BreakpointProxy
+         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
+         <BreakpointContent
+            uuid = "015D7525-1EE8-4F6C-94C2-2B4DF7AC2587"
+            shouldBeEnabled = "No"
+            ignoreCount = "0"
+            continueAfterRunningActions = "No"
+            filePath = "bench/main.cpp"
+            startingColumnNumber = "9223372036854775807"
+            endingColumnNumber = "9223372036854775807"
+            startingLineNumber = "1007"
+            endingLineNumber = "1007"
+            landmarkName = "tooltipLayerTest(pRoot)"
+            landmarkType = "9">
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

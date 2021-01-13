@@ -622,12 +622,11 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 		{
 			auto oldCanvas = pDevice->canvas();
 
-			pDevice->setCanvas(m_pShadowSurface);
+			pDevice->beginCanvasUpdate(m_pShadowSurface,shadowPatches.size(), shadowPatches.begin());
 
-			pDevice->setClipList(shadowPatches.size(), shadowPatches.begin());
 			pDevice->setTintColor(WgColor::White);
 			pDevice->setBlendMode(WgBlendMode::Replace);
-			pDevice->fill({ 0,0,0,0 });
+			pDevice->fill( wg::Color8(0,0,0,0) );
 
 			pDevice->setBlendMode(WgBlendMode::Max);
 
@@ -636,14 +635,13 @@ void WgShadowLayer::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 					_renderSkin( shadow.shadow(), pDevice, WgStateEnum::Normal, shadow.m_geo, shadow.widget()->Scale());
 
 
-			pDevice->setCanvas(oldCanvas);
-			pDevice->setClipList(patches.size(), patches.begin());
+			pDevice->endCanvasUpdate();
 		}
 
 
 		// Render shadows
 
-		pDevice->setTintColor( { 255,255,255,m_shadowTint} );
+		pDevice->setTintColor( wg::Color8(255,255,255,m_shadowTint) );
 		pDevice->setBlendMode(WgBlendMode::Blend);
 		pDevice->setBlitSource( m_pShadowSurface );
 		pDevice->blit( _canvas.pos() );

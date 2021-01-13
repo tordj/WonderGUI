@@ -486,9 +486,13 @@ void WgTextDisplay::_onEvent( const WgEvent::Event * pEvent, WgEventHandler * pH
 
 	if (oldState != m_state)
 	{
-		if ((m_pSkin && !m_pSkin->isStateIdentical(m_state, oldState))||(m_text.getStyle() && !m_text.getStyle()->isStateIdentical(m_state,m_text.state()) ))
-			_requestRender();
-
+        if( m_pSkin )
+        {
+            wg::RectI dirt = _skinDirtyRect( m_pSkin, PixelSize(), m_scale, m_state, oldState );
+            if( !dirt.isEmpty() )
+                _requestRender(dirt);
+        }
+        
 		m_text.setState(m_state);
 	}
 

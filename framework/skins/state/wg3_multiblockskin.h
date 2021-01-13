@@ -62,8 +62,8 @@ namespace wg
 		int		addLayer(Surface * pSurf, CoordI blockStartOfs, SizeI blockPitch, std::initializer_list<State> stateBlocks);		// DEPRECATED!!!
 		int		addLayer(Surface * pSurf, std::initializer_list<State> stateBlocks, Axis axis = Axis::Y, int spacing = 0, CoordI blockStartOfs = { 0,0 } );
 
-		bool	setLayerTint(int layerIdx, Color tintColor);
-		bool	setLayerTint(int layerIdx, std::initializer_list< std::pair<State,Color> > stateColors);
+		bool	setLayerColor(int layerIdx, HiColor tintColor);
+		bool	setLayerColor(int layerIdx, std::initializer_list< std::pair<State,HiColor> > stateColors);
 		bool	setLayerBlendMode(int layerIdx, BlendMode blendMode);
 
 		//.____ Geometry _________________________________________________
@@ -74,14 +74,16 @@ namespace wg
 
 		//.____ Misc ____________________________________________________
 
-		bool		isStateIdentical( State state, State comparedTo, float fraction = 1.f, float fraction2 = -1.f) const override;
-
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0,
+							float* pStateFractions = nullptr) const override;
 
+		Rect	dirtyRect(	const Rect& canvas, State newState, State oldState, float newValue = 1.f, float oldValue = 1.f,
+							float newValue2 = -1.f, float oldValue2 = -1.f, int newAnimPos = 0, int oldAnimPos = 0,
+							float* pNewStateFractions = nullptr, float* pOldStateFractions = nullptr) const override;
 
 	private:
 
@@ -93,7 +95,7 @@ namespace wg
 			Bitmask<uint32_t>   stateColorMask = 1;         // Normal state always exist for colors and is by default white.
 
 			CoordI				blockOfs[StateEnum_Nb];		// Block for each state
-			Color				tintColor[StateEnum_Nb];
+			HiColor				tintColor[StateEnum_Nb];
 	//		Origo			placementOrigo;
 	//		CoordI			placementOfs;
 	//		SizeI			dimensions;                   // Stored in pixels

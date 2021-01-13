@@ -372,7 +372,7 @@ void WgRangeSlider::_setRange(float begin, float end)
 	{
 		WgRect changeRect;
 
-		if (m_pSkin && !m_pSkin->ignoresFraction())
+		if (m_pSkin && !m_pSkin->ignoresValue())
 		{
 			changeRect = PixelSize();
 			m_rangeBegin = begin;
@@ -411,16 +411,23 @@ void WgRangeSlider::_setHandleState(wg::State state, bool isBeginHandle)
 {
 	if (isBeginHandle )
 	{
-		if (m_pBeginHandleSkin && !m_pBeginHandleSkin->isStateIdentical(state, m_beginHandleState, m_rangeBegin))
-			_requestRender(_handleGeo(PixelSize(), isBeginHandle));
-
+		if (m_pBeginHandleSkin )
+        {
+            wg::RectI dirty = _skinDirtyRect(m_pBeginHandleSkin, _handleGeo(PixelSize(), isBeginHandle), m_scale, state, m_beginHandleState, m_rangeBegin, m_rangeBegin);
+            if( !dirty.isEmpty() )
+                _requestRender( dirty );
+        }
 		m_beginHandleState = state;
 	}
 	else
 	{
-		if (m_pEndHandleSkin && !m_pEndHandleSkin->isStateIdentical(state, m_endHandleState, m_rangeEnd))
-			_requestRender(_handleGeo(PixelSize(), isBeginHandle));
-
+        if (m_pEndHandleSkin )
+        {
+            wg::RectI dirty = _skinDirtyRect(m_pEndHandleSkin, _handleGeo(PixelSize(), isBeginHandle), m_scale, state, m_endHandleState, m_rangeEnd, m_rangeEnd);
+            if( !dirty.isEmpty() )
+                _requestRender( dirty );
+        }
+        
 		m_endHandleState = state;
 	}
 }

@@ -529,9 +529,9 @@ void WgMultiSlider::_setSliderStates(Slider& slider, WgState newSliderState, WgS
 	wg::Skin * pSliderSkin = slider.pBgSkin ? slider.pBgSkin.rawPtr() : m_pDefaultBgSkin.rawPtr();
 	wg::Skin * pHandleSkin = slider.pHandleSkin ? slider.pHandleSkin.rawPtr() : m_pDefaultHandleSkin.rawPtr();
 
-	if (pSliderSkin && !pSliderSkin->isStateIdentical(slider.sliderState, newSliderState))
+	if (pSliderSkin && !_skinDirtyRect(pSliderSkin, {0,0,100,100}, m_scale, slider.sliderState, newSliderState).isEmpty())
 		_requestRenderSlider(&slider);
-	else if (pHandleSkin && !pHandleSkin->isStateIdentical(slider.handleState, newHandleState))
+	else if (pHandleSkin  && !_skinDirtyRect(pSliderSkin, {0,0,100,100}, m_scale, slider.handleState, newHandleState).isEmpty())
 		_requestRenderHandle(&slider);
 
 	// Possibly send messages
@@ -1301,9 +1301,8 @@ void WgMultiSlider::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, c
 				WgState filledPartState = slider.sliderState;
 				filledPartState.setSelected(true);
 
-
-				if (pBgSkin->isStateIdentical(emptyPartState, filledPartState))
-					_renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
+                if( _skinDirtyRect(pBgSkin, {0,0,100,100}, m_scale, emptyPartState, filledPartState).isEmpty() )
+                    _renderSkin( pBgSkin, pDevice, emptyPartState, bgGeo, m_scale);
 				else
 				{
 					// Different parts of background should be rendered in different states.
@@ -1564,10 +1563,11 @@ void WgMultiSlider::_updateHandlePos(Slider& slider)
 	}
 
 	wg::Skin_p pBgSkin = slider.pBgSkin ? slider.pBgSkin : m_pDefaultBgSkin;
-	if (pBgSkin && !pBgSkin->isStateIdentical(slider.handleState, slider.handleState + WgStateEnum::Selected))
+	if (pBgSkin)
 	{
-		WgRect sliderSkinGeo = _sliderSkinGeo(slider, sliderGeo);
-		_requestRender(sliderSkinGeo);
+        wg::RectI dirty = _skinDirtyRect(pBgSkin, _sliderSkinGeo(slider, sliderGeo), m_scale, slider.handleState, slider.handleState + WgStateEnum::Selected);
+        if( !dirty.isEmpty() )
+            _requestRender( dirty );
 	}
 
 

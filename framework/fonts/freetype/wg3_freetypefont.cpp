@@ -40,10 +40,9 @@
 #define SUPPORT_STEM_DARKENING
 
 #ifdef SUPPORT_STEM_DARKENING
-#	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library
-                                        // that does not support stem darkening. Comment out define above to compile anyway.
-                                        // Small fonts will look thin/bright and anti-alias won't be as smooth
-										// if gamma correction is enabled.
+#	include FT_PARAMETER_TAGS_H			// If your compiler fails on this line, you likely have an old freetype library that does not support stem darkening. 
+										// Comment out define above to compile anyway. Small fonts will look thin/bright and anti-alias won't be as smooth
+										// without stem darkening when gamma correction is enabled.
 #endif
 
 namespace wg
@@ -700,7 +699,6 @@ namespace wg
 		SizeI texSize = calcTextureSize( slotSize, 16 );
 
 		Surface_p pSurf = Base::activeContext()->surfaceFactory()->createSurface( texSize, wg::PixelFormat::BGRA_8 );
-//		pSurf->fill( Color( 255,255,255,0 ) );
 
 		CacheSurf * pCache = new CacheSurf( pSurf );
 		s_cacheSurfaces.pushBack( pCache );

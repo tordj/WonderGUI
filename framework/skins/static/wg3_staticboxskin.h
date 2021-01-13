@@ -40,7 +40,7 @@ namespace wg
 	public:
 		//.____ Creation __________________________________________
 
-		static StaticBoxSkin_p create(BorderI frame, Color fillColor, Color frameColor);
+		static StaticBoxSkin_p create(BorderI frame, HiColor fillColor, HiColor frameColor);
 
 		//.____ Identification __________________________________________
 
@@ -61,13 +61,14 @@ namespace wg
 		//.____ Misc ____________________________________________________
 
 		bool		markTest(	const Coord& ofs, const Rect& canvas, State state, int opacityTreshold, 
-								float fraction = 1.f, float fraction2 = -1.f) const override;
+								float value = 1.f, float value2 = -1.f) const override;
 
 		void		render(	GfxDevice * pDevice, const Rect& canvas, State state, 
-							float fraction = 1.f, float fraction2 = -1.f) const override;
+							float value = 1.f, float value2 = -1.f, int animPos = 0, 
+							float* pStateFractions = nullptr) const override;
 
 	private:
-		StaticBoxSkin(BorderI frame, Color fillColor, Color frameColor);
+		StaticBoxSkin(BorderI frame, HiColor fillColor, HiColor frameColor);
 		~StaticBoxSkin() {};
 
 		void		_updateOpaqueFlag();
@@ -75,8 +76,8 @@ namespace wg
 		BorderI		m_frame;							// In points
 		BlendMode	m_blendMode = BlendMode::Blend;
 
-		Color		m_fillColor;
-		Color		m_frameColor;
+		HiColor		m_fillColor;
+		HiColor		m_frameColor;
 	};
 
 

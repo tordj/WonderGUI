@@ -231,7 +231,7 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 		if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
 			return;                            // Can't create a canvas of the required size!
 
-		m_pCanvas = m_pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8 );
+		m_pCanvas = m_pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas );
 		m_dirtyPatches.clear();
 		m_dirtyPatches.add(_canvas.size());
 	}
@@ -275,21 +275,19 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!renderStack.isEmpty())
 	{
-		auto pOldCanvas = pDevice->canvas();
-		pDevice->setCanvas(m_pCanvas);
+        pDevice->beginCanvasUpdate(m_pCanvas,renderStack.size(), renderStack.begin());
 
 		pDevice->setBlendMode(WgBlendMode::Replace);
 		pDevice->setTintColor(WgColor::White);
 
-		pDevice->setClipList(renderStack.size(), renderStack.begin());
 		pDevice->fill(m_canvasFillColor);
 
 		pDevice->setBlendMode(WgBlendMode::Blend);
 
         if(m_hook.Widget())
             m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
-		pDevice->setCanvas(pOldCanvas);
 
+        pDevice->endCanvasUpdate();
 	}
 
 	// Set our tint color and blend mode for blitting from back canvas to screen.

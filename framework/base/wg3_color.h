@@ -29,7 +29,7 @@
 namespace wg
 {
 
-	//____ Class Color _______________________________________________________________________
+	//____ Class Color8 _______________________________________________________________________
 
 	/**
 
@@ -45,39 +45,28 @@ namespace wg
 
 	**/
 
-	class Color
+	class Color8
 	{
 	public:
 
 		//.____ Creation __________________________________________
 
-		inline Color() {};
-		inline Color( const Color& col );
-		inline Color( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
-		inline Color( uint32_t argb );
-		inline Color( uint32_t rgb, uint8_t a );
-
-		//.____ Misc ________________________________________________
-
-		static Color	mix( Color color1, Color color2, uint8_t balance );
-		static Color	invert( Color color, uint8_t grade );
-		static Color	min(Color color1, Color color2);
-		static Color	max(Color color1, Color color2);
-		static Color	blend( Color baseColor, Color blendColor, BlendMode operation );
-
-		void	setCMYK( float c, float m, float y, float k, uint8_t alpha = 255 );
-		void	getCMYK( float* c, float* m, float* y, float* k );
+		inline Color8() : argb(0) {};
+		inline Color8( const Color8& col );
+		inline Color8( uint8_t r, uint8_t g, uint8_t b, uint8_t a = 255 );
+		inline Color8( uint32_t argb );
+		inline Color8( uint32_t rgb, uint8_t a );
 
 		//.____ Operators ___________________________________________
 
-		inline bool operator==(const Color& k) const;
-		inline bool operator!=(const Color& k) const;
+		inline bool operator==(const Color8& k) const;
+		inline bool operator!=(const Color8& k) const;
 
-		Color	operator+(const Color& k) const;
-		Color	operator-(const Color& k) const;
+		Color8	operator+(const Color8& k) const;
+		Color8	operator-(const Color8& k) const;
 
-		Color	operator*(float f) const;
-		Color	operator*(const Color& k) const;
+		Color8	operator*(float f) const;
+		Color8	operator*(const Color8& k) const;
 
 		//.____ Properties __________________________________________
 
@@ -95,161 +84,238 @@ namespace wg
 
 		//.____ Definitions _________________________________________
 
-		const static Color	Transparent;		// 0x00FFFFFF
-		const static Color	None;				// 0x00000000	// Handled differently than 'transparent' when cascading colors.
+		const static Color8		Transparent;		// 0x000000
+		const static Color8 	AliceBlue;			// 0xF0F8FF
+		const static Color8 	AntiqueWhite;		// 0xFAEBD7
+		const static Color8 	Aqua;				// 0x00ffff
+		const static Color8 	Aquamarine;			// 0x7fffd4
+		const static Color8 	Azure;				// 0xf0ffff
+		const static Color8 	Beige;				// 0xf5f5dc
+		const static Color8 	Bisque;  			// 0xffe4c4
+		const static Color8 	Black;	  			// 0x000000
+		const static Color8 	BlanchedAlmond; 	// 0xffebcD
+		const static Color8 	Blue; 	  			// 0x0000ff
+		const static Color8 	BlueViolet; 		// 0x8a2be2
+		const static Color8 	Brown;   			// 0xa52a2a
+		const static Color8 	Burlywood;  		// 0xdeb887
+		const static Color8 	CadetBlue;  		// 0x5f9ea0
+		const static Color8 	Chartreuse; 		// 0x7fff00
+		const static Color8 	Chocolate;  		// 0xd2691e
+		const static Color8 	Coral;   			// 0xff7f50
+		const static Color8 	CornflowerBlue; 	// 0x6495eD
+		const static Color8 	Cornsilk; 			// 0xfff8dc
+		const static Color8 	Crimson;  			// 0xdc143c
+		const static Color8 	Cyan;  				// 0x00ffff
+		const static Color8 	DarkBlue;  			// 0x00008b
+		const static Color8 	DarkCyan;  			// 0x008b8b
+		const static Color8 	DarkGoldenrod;  	// 0xb8860b
+		const static Color8 	DarkGray;  			// 0xa9a9a9
+		const static Color8 	DarkGrey;  			// 0xa9a9a9
+		const static Color8 	DarkGreen;  		// 0x006400
+		const static Color8 	DarkKhaki;  		// 0xbdb76b
+		const static Color8 	DarkMagenta;  		// 0x8b008b
+		const static Color8 	DarkOliveGreen; 	// 0x556b2F
+		const static Color8 	DarkOrange;  		// 0xff8c00
+		const static Color8 	DarkOrchid;  		// 0x9932cc
+		const static Color8 	DarkRed;  			// 0x8b0000
+		const static Color8 	DarkSalmon;  		// 0xe9967a
+		const static Color8 	DarkSeaGreen;  		// 0x8fbc8f
+		const static Color8 	DarkSlateBlue;  	// 0x483d8b
+		const static Color8 	DarkSlateGray;  	// 0x2f4f4f
+		const static Color8 	DarkSlateGrey;  	// 0x2f4f4f
+		const static Color8 	DarkTurquoise;  	// 0x00ced1
+		const static Color8 	DarkViolet;  		// 0x9400d3
+		const static Color8 	DeepPink;  			// 0xff1493
+		const static Color8 	DeepSkyBlue; 		// 0x00bfff
+		const static Color8 	DimGray;  			// 0x696969
+		const static Color8 	DimGrey;  			// 0x696969
+		const static Color8 	DodgerBlue;  		// 0x1e90ff
+		const static Color8 	FireBrick;  		// 0xb22222
+		const static Color8 	FloralWhite; 		// 0xfffaf0
+		const static Color8 	ForestGreen; 		// 0x228b22
+		const static Color8 	Fuchsia;  			// 0xff00ff
+		const static Color8 	Gainsboro;  		// 0xdcdcdc
+		const static Color8 	GhostWhite;  		// 0xf8f8ff
+		const static Color8 	Gold;  				// 0xffd700
+		const static Color8 	Goldenrod;  		// 0xdaa520
+		const static Color8 	Gray;  				// 0x808080
+		const static Color8 	Grey;  				// 0x808080
+		const static Color8 	Green;  			// 0x008000
+		const static Color8 	GreenYellow; 		// 0xadff2f
+		const static Color8 	Honeydew;  			// 0xf0fff0
+		const static Color8 	HotPink;  			// 0xff69b4
+		const static Color8 	IndianRed;   		// 0xcd5c5c
+		const static Color8 	Indigo;   			// 0x4b0082
+		const static Color8 	Ivory;  			// 0xfffff0
+		const static Color8 	Khaki;  			// 0xf0e68c
+		const static Color8 	Lavender;  			// 0xe6e6fa
+		const static Color8 	LavenderBlush;  	// 0xfff0f5
+		const static Color8 	LawnGreen;  		// 0x7cfc00
+		const static Color8 	LemonCiffon;		// 0xfffacd
+		const static Color8 	LightBlue;  		// 0xadd8e6
+		const static Color8 	LightCoral;  		// 0xf08080
+		const static Color8 	LightCyan;  		// 0xe0ffff
+		const static Color8 	LightGoldenrodYellow;	// 0xfAFAD2
+		const static Color8 	LightGray;  		// 0xd3d3d3
+		const static Color8 	LightGrey;  		// 0xd3d3d3
+		const static Color8 	LightGreen;  		// 0x90ee90
+		const static Color8 	LightPink;  		// 0xffb6c1
+		const static Color8 	LightSalmon;  		// 0xffa07a
+		const static Color8 	LightSeaGreen;  	// 0x20b2aa
+		const static Color8 	LightSkyBlue;  		// 0x87cefa
+		const static Color8 	LightSlateGray;  	// 0x778899
+		const static Color8 	LightSlateGrey;  	// 0x778899
+		const static Color8 	LightSteelBlue;  	// 0xb0c4dE
+		const static Color8 	LightYellow;  		// 0xffffe0
+		const static Color8 	Lime;  				// 0x00ff00
+		const static Color8 	LimeGreen;  		// 0x32cd32
+		const static Color8 	Linen;  			// 0xfaf0e6
+		const static Color8 	Magenta;  			// 0xff00ff
+		const static Color8 	Maroon;  			// 0x800000
+		const static Color8 	MediumAquamarine;  	// 0x66cdaA
+		const static Color8 	MediumBlue;  		// 0x0000cd
+		const static Color8 	MediumOrchid;		// 0xba55d3
+		const static Color8 	MediumPurple;	 	// 0x9370d8
+		const static Color8 	MediumSeaGreen;  	// 0x3cb371
+		const static Color8 	MediumSlateBlue;  	// 0x7b68eE
+		const static Color8 	MediumSpringGreen;  // 0x00fa9A
+		const static Color8 	MediumTurquoise;  	// 0x48d1cC
+		const static Color8 	MediumVioletRed;  	// 0xc71585
+		const static Color8 	MidnightBlue;  		// 0x191970
+		const static Color8 	MintCream;  		// 0xf5fffa
+		const static Color8 	MistyRose;  		// 0xffe4e1
+		const static Color8 	Moccasin;  			// 0xffe4b5
+		const static Color8 	NavajoWhite;  		// 0xffdead
+		const static Color8 	Navy;  				// 0x000080
+		const static Color8 	OldLace;  			// 0xfdf5e6
+		const static Color8 	Olive;  			// 0x808000
+		const static Color8 	OliveDrab;  		// 0x6b8e23
+		const static Color8 	Orange;  			// 0xffa500
+		const static Color8 	OrangeRed;  		// 0xff4500
+		const static Color8 	Orchid;  			// 0xda70d6
+		const static Color8 	PaleGoldenrod;  	// 0xeee8aa
+		const static Color8 	PaleGreen;  		// 0x98fb98
+		const static Color8 	PaleTurquoise;  	// 0xafeeee
+		const static Color8 	PaleVioletRed;  	// 0xd87093
+		const static Color8 	PapayaWhip;  		// 0xffefd5
+		const static Color8 	PeachPuff;  		// 0xffdab9
+		const static Color8 	Peru;  				// 0xcd853f
+		const static Color8 	Pink;  				// 0xffc0cb
+		const static Color8 	Plum;  				// 0xdda0dd
+		const static Color8 	PowderBlue;  		// 0xb0e0e6
+		const static Color8 	Purple;  			// 0x800080
+		const static Color8 	Red;  				// 0xff0000
+		const static Color8 	RosyBrown;  		// 0xbc8f8f
+		const static Color8 	RoyalBlue;  		// 0x4169e1
+		const static Color8 	SaddleBrown; 		// 0x8b4513
+		const static Color8 	Salmon;  			// 0xfa8072
+		const static Color8 	SandyBrown;  		// 0xf4a460
+		const static Color8 	SeaGreen;  			// 0x2e8b57
+		const static Color8 	Seashell;  			// 0xfff5ee
+		const static Color8 	Sienna;  			// 0xa0522d
+		const static Color8 	Silver;  			// 0xc0c0c0
+		const static Color8 	SkyBlue;  			// 0x87ceeb
+		const static Color8 	SlateBlue;  		// 0x6a5acd
+		const static Color8 	SlateGray;  		// 0x708090
+		const static Color8 	SlateGrey;  		// 0x708090
+		const static Color8 	Snow;  				// 0xfffafa
+		const static Color8 	SpringGreen; 		// 0x00ff7f
+		const static Color8 	SteelBlue;  		// 0x4682b4
+		const static Color8 	Tan;  				// 0xd2b48c
+		const static Color8 	Teal;  				// 0x008080
+		const static Color8 	Thistle;  			// 0xd8bfd8
+		const static Color8 	Tomato;  			// 0xff6347
+		const static Color8 	Turquoise;  		// 0x40e0d0
+		const static Color8 	Violet;  			// 0xee82ee
+		const static Color8 	Wheat;  			// 0xf5deb3
+		const static Color8 	White;  			// 0xffffff
+		const static Color8 	WhiteSmoke;  		// 0xf5f5f5
+		const static Color8 	Yellow;  			// 0xffff00
+		const static Color8 	YellowGreen; 		// 0x9acd32
 
-		const static Color 	AliceBlue;			// 0xF0F8FF
-		const static Color 	AntiqueWhite;		// 0xFAEBD7
-		const static Color 	Aqua;				// 0x00ffff
-		const static Color 	Aquamarine;			// 0x7fffd4
-		const static Color 	Azure;				// 0xf0ffff
-		const static Color 	Beige;				// 0xf5f5dc
-		const static Color 	Bisque;  			// 0xffe4c4
-		const static Color 	Black;	  			// 0x000000
-		const static Color 	BlanchedAlmond; 	// 0xffebcD
-		const static Color 	Blue; 	  			// 0x0000ff
-		const static Color 	BlueViolet; 		// 0x8a2be2
-		const static Color 	Brown;   			// 0xa52a2a
-		const static Color 	Burlywood;  		// 0xdeb887
-		const static Color 	CadetBlue;  		// 0x5f9ea0
-		const static Color 	Chartreuse; 		// 0x7fff00
-		const static Color 	Chocolate;  		// 0xd2691e
-		const static Color 	Coral;   			// 0xff7f50
-		const static Color 	CornflowerBlue; 	// 0x6495eD
-		const static Color 	Cornsilk; 			// 0xfff8dc
-		const static Color 	Crimson;  			// 0xdc143c
-		const static Color 	Cyan;  				// 0x00ffff
-		const static Color 	DarkBlue;  			// 0x00008b
-		const static Color 	DarkCyan;  			// 0x008b8b
-		const static Color 	DarkGoldenrod;  	// 0xb8860b
-		const static Color 	DarkGray;  			// 0xa9a9a9
-		const static Color 	DarkGrey;  			// 0xa9a9a9
-		const static Color 	DarkGreen;  		// 0x006400
-		const static Color 	DarkKhaki;  		// 0xbdb76b
-		const static Color 	DarkMagenta;  		// 0x8b008b
-		const static Color 	DarkOliveGreen; 	// 0x556b2F
-		const static Color 	DarkOrange;  		// 0xff8c00
-		const static Color 	DarkOrchid;  		// 0x9932cc
-		const static Color 	DarkRed;  			// 0x8b0000
-		const static Color 	DarkSalmon;  		// 0xe9967a
-		const static Color 	DarkSeaGreen;  		// 0x8fbc8f
-		const static Color 	DarkSlateBlue;  	// 0x483d8b
-		const static Color 	DarkSlateGray;  	// 0x2f4f4f
-		const static Color 	DarkSlateGrey;  	// 0x2f4f4f
-		const static Color 	DarkTurquoise;  	// 0x00ced1
-		const static Color 	DarkViolet;  		// 0x9400d3
-		const static Color 	DeepPink;  			// 0xff1493
-		const static Color 	DeepSkyBlue; 		// 0x00bfff
-		const static Color 	DimGray;  			// 0x696969
-		const static Color 	DimGrey;  			// 0x696969
-		const static Color 	DodgerBlue;  		// 0x1e90ff
-		const static Color 	FireBrick;  		// 0xb22222
-		const static Color 	FloralWhite; 		// 0xfffaf0
-		const static Color 	ForestGreen; 		// 0x228b22
-		const static Color 	Fuchsia;  			// 0xff00ff
-		const static Color 	Gainsboro;  		// 0xdcdcdc
-		const static Color 	GhostWhite;  		// 0xf8f8ff
-		const static Color 	Gold;  				// 0xffd700
-		const static Color 	Goldenrod;  		// 0xdaa520
-		const static Color 	Gray;  				// 0x808080
-		const static Color 	Grey;  				// 0x808080
-		const static Color 	Green;  			// 0x008000
-		const static Color 	GreenYellow; 		// 0xadff2f
-		const static Color 	Honeydew;  			// 0xf0fff0
-		const static Color 	HotPink;  			// 0xff69b4
-		const static Color 	IndianRed;   		// 0xcd5c5c
-		const static Color 	Indigo;   			// 0x4b0082
-		const static Color 	Ivory;  			// 0xfffff0
-		const static Color 	Khaki;  			// 0xf0e68c
-		const static Color 	Lavender;  			// 0xe6e6fa
-		const static Color 	LavenderBlush;  	// 0xfff0f5
-		const static Color 	LawnGreen;  		// 0x7cfc00
-		const static Color 	LemonCiffon;		// 0xfffacd
-		const static Color 	LightBlue;  		// 0xadd8e6
-		const static Color 	LightCoral;  		// 0xf08080
-		const static Color 	LightCyan;  		// 0xe0ffff
-		const static Color 	LightGoldenrodYellow;	// 0xfAFAD2
-		const static Color 	LightGray;  		// 0xd3d3d3
-		const static Color 	LightGrey;  		// 0xd3d3d3
-		const static Color 	LightGreen;  		// 0x90ee90
-		const static Color 	LightPink;  		// 0xffb6c1
-		const static Color 	LightSalmon;  		// 0xffa07a
-		const static Color 	LightSeaGreen;  	// 0x20b2aa
-		const static Color 	LightSkyBlue;  		// 0x87cefa
-		const static Color 	LightSlateGray;  	// 0x778899
-		const static Color 	LightSlateGrey;  	// 0x778899
-		const static Color 	LightSteelBlue;  	// 0xb0c4dE
-		const static Color 	LightYellow;  		// 0xffffe0
-		const static Color 	Lime;  				// 0x00ff00
-		const static Color 	LimeGreen;  		// 0x32cd32
-		const static Color 	Linen;  			// 0xfaf0e6
-		const static Color 	Magenta;  			// 0xff00ff
-		const static Color 	Maroon;  			// 0x800000
-		const static Color 	MediumAquamarine;  	// 0x66cdaA
-		const static Color 	MediumBlue;  		// 0x0000cd
-		const static Color 	MediumOrchid;		// 0xba55d3
-		const static Color 	MediumPurple;	 	// 0x9370d8
-		const static Color 	MediumSeaGreen;  	// 0x3cb371
-		const static Color 	MediumSlateBlue;  	// 0x7b68eE
-		const static Color 	MediumSpringGreen;  // 0x00fa9A
-		const static Color 	MediumTurquoise;  	// 0x48d1cC
-		const static Color 	MediumVioletRed;  	// 0xc71585
-		const static Color 	MidnightBlue;  		// 0x191970
-		const static Color 	MintCream;  		// 0xf5fffa
-		const static Color 	MistyRose;  		// 0xffe4e1
-		const static Color 	Moccasin;  			// 0xffe4b5
-		const static Color 	NavajoWhite;  		// 0xffdead
-		const static Color 	Navy;  				// 0x000080
-		const static Color 	OldLace;  			// 0xfdf5e6
-		const static Color 	Olive;  			// 0x808000
-		const static Color 	OliveDrab;  		// 0x6b8e23
-		const static Color 	Orange;  			// 0xffa500
-		const static Color 	OrangeRed;  		// 0xff4500
-		const static Color 	Orchid;  			// 0xda70d6
-		const static Color 	PaleGoldenrod;  	// 0xeee8aa
-		const static Color 	PaleGreen;  		// 0x98fb98
-		const static Color 	PaleTurquoise;  	// 0xafeeee
-		const static Color 	PaleVioletRed;  	// 0xd87093
-		const static Color 	PapayaWhip;  		// 0xffefd5
-		const static Color 	PeachPuff;  		// 0xffdab9
-		const static Color 	Peru;  				// 0xcd853f
-		const static Color 	Pink;  				// 0xffc0cb
-		const static Color 	Plum;  				// 0xdda0dd
-		const static Color 	PowderBlue;  		// 0xb0e0e6
-		const static Color 	Purple;  			// 0x800080
-		const static Color 	Red;  				// 0xff0000
-		const static Color 	RosyBrown;  		// 0xbc8f8f
-		const static Color 	RoyalBlue;  		// 0x4169e1
-		const static Color 	SaddleBrown; 		// 0x8b4513
-		const static Color 	Salmon;  			// 0xfa8072
-		const static Color 	SandyBrown;  		// 0xf4a460
-		const static Color 	SeaGreen;  			// 0x2e8b57
-		const static Color 	Seashell;  			// 0xfff5ee
-		const static Color 	Sienna;  			// 0xa0522d
-		const static Color 	Silver;  			// 0xc0c0c0
-		const static Color 	SkyBlue;  			// 0x87ceeb
-		const static Color 	SlateBlue;  		// 0x6a5acd
-		const static Color 	SlateGray;  		// 0x708090
-		const static Color 	SlateGrey;  		// 0x708090
-		const static Color 	Snow;  				// 0xfffafa
-		const static Color 	SpringGreen; 		// 0x00ff7f
-		const static Color 	SteelBlue;  		// 0x4682b4
-		const static Color 	Tan;  				// 0xd2b48c
-		const static Color 	Teal;  				// 0x008080
-		const static Color 	Thistle;  			// 0xd8bfd8
-		const static Color 	Tomato;  			// 0xff6347
-		const static Color 	Turquoise;  		// 0x40e0d0
-		const static Color 	Violet;  			// 0xee82ee
-		const static Color 	Wheat;  			// 0xf5deb3
-		const static Color 	White;  			// 0xffffff
-		const static Color 	WhiteSmoke;  		// 0xf5f5f5
-		const static Color 	Yellow;  			// 0xffff00
-		const static Color 	YellowGreen; 		// 0x9acd32
+
 	};
 
+	typedef Color8	Color;
+
+
+	//____ HiColor ____________________________________________________________
+
+	class HiColor
+	{
+		friend class Base;
+	public:
+
+		//.____ Creation __________________________________________
+
+		inline	HiColor() : argb(0) {};
+		inline	HiColor(const HiColor& hiColor);
+				HiColor(Color8 lowColor);
+		explicit inline	HiColor(int r, int g, int b, int a = 4096);
+		explicit inline	HiColor(float r, float g, float b, float a = 1.f);
+
+		//.____ Misc ________________________________________________
+
+		static HiColor	mix(HiColor color1, HiColor color2, int balance);			// Balance: 0 -> 4096
+		static HiColor	invert(HiColor color, int grade);						// Grade: 0 -> 4096
+		static HiColor	min(HiColor color1, HiColor color2);
+		static HiColor	max(HiColor color1, HiColor color2);
+		static HiColor	blend(HiColor baseColor, HiColor blendColor, BlendMode operation);
+
+		inline bool isWhite() const { return argb == 0x0FFF0FFF0FFF0FFF; }
+		inline bool isBlack() const { return argb == 0x0FFF000000000000; }
+		inline bool isOpaque() const { return a == 4096; }
+		inline bool isTransparent() const { return a == 0; }
+
+
+		//.____ Operators ___________________________________________
+
+		operator Color8() const;
+
+		inline bool operator==(const HiColor& k) const;
+		inline bool operator!=(const HiColor& k) const;
+
+		HiColor	operator+(const HiColor& k) const;
+		HiColor	operator-(const HiColor& k) const;
+
+		HiColor	operator*(float f) const;
+		HiColor	operator*(const HiColor& k) const;
+
+		//.____ Internal ____________________________________________
+
+		static int16_t		unpackSRGBTab[256];
+		static int16_t		unpackLinearTab[256];
+
+		static uint8_t		packSRGBTab[4097];
+		static uint8_t		packLinearTab[4097];
+
+		//.____ Properties __________________________________________
+
+		union
+		{
+			struct
+			{
+				int16_t b;
+				int16_t g;
+				int16_t r;
+				int16_t a;
+			};
+			int64_t argb;
+		};
+
+
+		//.____ Definitions ___________________________________________________
+
+		const static HiColor	Transparent;		// 0x000000
+		const static HiColor 	Black;  			// 0xffffff
+		const static HiColor 	White;  			// 0xffffff
+
+	private:
+		static void	_initTables();
+	};
 
 	//-------------------------------------------------------------------
-	inline bool Color::operator==( const Color& k ) const
+	inline bool Color8::operator==( const Color8& k ) const
 	{
 		if( argb == k.argb )
 			return true;
@@ -258,7 +324,7 @@ namespace wg
 	}
 
 	//-------------------------------------------------------------------
-	inline bool Color::operator!=( const Color& k ) const
+	inline bool Color8::operator!=( const Color8& k ) const
 	{
 		if( argb != k.argb )
 			return true;
@@ -268,19 +334,19 @@ namespace wg
 
 
 
-	//____ Color::Color() _________________________________________________________________
+	//____ Color8::Color8() _________________________________________________________________
 
-	inline Color::Color( const Color& _col )
+	inline Color8::Color8( const Color8& _col )
 	{
 		argb = _col.argb;
 	}
 
-	inline Color::Color( uint32_t _argb )
+	inline Color8::Color8( uint32_t _argb )
 	{
 		argb = _argb;
 	}
 
-	inline Color::Color( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
+	inline Color8::Color8( uint8_t _r, uint8_t _g, uint8_t _b, uint8_t _a )
 	{
 		a = _a;
 		r = _r;
@@ -288,11 +354,58 @@ namespace wg
 		b = _b;
 	}
 
-	inline Color::Color( uint32_t rgb, uint8_t _a )
+	inline Color8::Color8( uint32_t rgb, uint8_t _a )
 	{
 		argb = rgb;
 		a = _a;
 	}
+
+	//-------------------------------------------------------------------
+	inline bool HiColor::operator==(const HiColor& k) const
+	{
+		if (argb == k.argb)
+			return true;
+
+		return false;
+	}
+
+	//-------------------------------------------------------------------
+	inline bool HiColor::operator!=(const HiColor& k) const
+	{
+		if (argb != k.argb)
+			return true;
+
+		return false;
+	}
+
+
+
+	//____ HiColor::HiColor() _________________________________________________________________
+
+	inline HiColor::HiColor(const HiColor& hiColor)
+	{
+		argb = hiColor.argb;
+	}
+
+	inline HiColor::HiColor(int r, int g, int b, int a)
+	{
+		this->r = (int16_t) r;
+		this->g = (int16_t) g;
+		this->b = (int16_t) b;
+		this->a = (int16_t)a;
+	}
+
+	inline HiColor::HiColor(float r, float g, float b, float a)
+	{
+		this->r = int16_t(r * 4096);
+		this->g = int16_t(g * 4096);
+		this->b = int16_t(b * 4096);
+		this->a = int16_t(a * 4096);
+	}
+
+
+
+
 
 
 } // namespace wg

@@ -818,11 +818,10 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
 	const WgRect * pOldClipList = pDevice->clipList();
 	int     oldClipListSize = pDevice->clipListSize();
 
-	pDevice->setCanvas(m_pCacheBitmap);
+    pDevice->beginCanvasUpdate(m_pCacheBitmap, m_cacheDirt.size(), m_cacheDirt.begin());
 	pDevice->setBlendMode(WgBlendMode::Replace);
 	pDevice->setTintColor(WgColor::White);
 
-	pDevice->setClipList(m_cacheDirt.size(), m_cacheDirt.begin());
 	pDevice->fill(WgColor::Transparent);
 
 	pDevice->setBlendMode(WgBlendMode::Blend);
@@ -847,7 +846,7 @@ void WgChart::_updateBitmapCache( wg::GfxDevice * pDevice )
 	}
 */
 	m_cacheDirt.clear();
-	pDevice->setCanvas(pOldCanvas);
+	pDevice->endCanvasUpdate();
 	pDevice->setTintColor(oldTint);
 	pDevice->setBlendMode(oldBlend);
 	pDevice->setClipList(oldClipListSize, pOldClipList);

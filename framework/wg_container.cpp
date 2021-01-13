@@ -407,7 +407,8 @@ void WgContainer::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas
 		for( int i = 0 ; i < (int) renderList.size() ; i++ )
 		{
 			WidgetRenderContext * p = &renderList[i];
-			p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches );
+            if( !p->patches.isEmpty() )
+                p->pWidget->_renderPatches( pDevice, p->geo, p->geo, &p->patches );
 		}
 
 	}

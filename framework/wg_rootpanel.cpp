@@ -47,16 +47,30 @@ WgRootPanel::WgRootPanel()
 }
 
 
-WgRootPanel::WgRootPanel( wg::GfxDevice * pGfxDevice )
+WgRootPanel::WgRootPanel( wg::Surface * pCanvas, wg::GfxDevice * pGfxDevice )
 {
 	m_bVisible = true;
 	m_bHasGeo = false;
-	if( pGfxDevice )
-		m_geo = pGfxDevice->canvasSize();
+    m_geo = pCanvas->size();
+    m_canvasSize = pCanvas->size();
 	m_pGfxDevice = pGfxDevice;
+    m_pCanvas = pCanvas;
 	m_pEventHandler = new WgEventHandler(this);
 	m_hook.m_pRoot = this;
 	m_scale = WG_SCALE_BASE;
+}
+
+WgRootPanel::WgRootPanel( const WgSize pixelSize, wg::GfxDevice * pGfxDevice )
+{
+    m_bVisible = true;
+    m_bHasGeo = false;
+    m_geo = pixelSize;
+    m_canvasSize = pixelSize;
+    m_pGfxDevice = pGfxDevice;
+    m_pCanvas = nullptr;
+    m_pEventHandler = new WgEventHandler(this);
+    m_hook.m_pRoot = this;
+    m_scale = WG_SCALE_BASE;
 }
 
 //____ Destructor _____________________________________________________________
@@ -100,15 +114,8 @@ WgRect WgRootPanel::PixelGeo() const
 {
 	if( m_bHasGeo )
 		return m_geo;
-	else if( m_pGfxDevice )
-	{
-		WgRect r( WgCoord(0,0), m_pGfxDevice->canvasSize() );
-//		if( r.w == 0 || r.h == 0 )
-//			int x = 0;
-		return r;
-	}
 	else
-		return WgRect(0,0,0,0);
+        return m_canvasSize;
 }
 
 
@@ -227,18 +234,22 @@ bool WgRootPanel::Render( const WgRect& clip )
 
 bool WgRootPanel::BeginRender()
 {
-	if( !m_pGfxDevice || !m_hook.Widget() )
+	if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
-	//
+	// Attend to pre-render callbacks
 
 	for( auto& pWidget : m_preRenderCalls )
 		pWidget->_preRender();
 
 	m_preRenderCalls.clear();
 
-	//
+	// GfxDevice barfs on cliplist with rectangles (partly) outside canvas
 
+    m_dirtyPatches.clip(PixelGeo());
+    
+    //
+    
 	if( m_pUpdatedRectOverlay )
 	{
 		// Remove from afterglow queue patches that are overlapped by our new dirty patches.
@@ -278,7 +289,7 @@ bool WgRootPanel::BeginRender()
 
 bool WgRootPanel::RenderSection( const WgRect& _clip )
 {
-	if( !m_pGfxDevice || !m_hook.Widget() )
+	if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 	// Make sure we have a vaild clip rectangle (doesn't go outside our geometry and has an area)
@@ -307,16 +318,32 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 	// Render the dirty patches recursively
 
-	if( m_dirtyPatches.size() > 0 )
-		m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
+	if( dirtyPatches.size() > 0 )
+    {
+        int nRects = dirtyPatches.size();
+        const WgRect* pRects = dirtyPatches.begin();
 
+        if (m_pCanvas)
+            m_pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pRects);
+        else
+            m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pRects);
+
+        m_hook.Widget()->_renderPatches( m_pGfxDevice, canvas, canvas, &dirtyPatches );
+        
+        m_pGfxDevice->endCanvasUpdate();
+    }
 	// Handle updated rect overlays
 
 	if( m_pUpdatedRectOverlay )
 	{
-		// Reset cliplist, we don't need it anyway.
+        // Set clipping rectangle.
 
-		m_pGfxDevice->clearClipList();
+        wg::RectI myClip = clip;
+
+        if (m_pCanvas)
+            m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, 0);
+        else
+            m_pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &myClip, 0);
 
 		// Render our new overlays
 
@@ -334,6 +361,8 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 				m_pUpdatedRectOverlay->render( m_pGfxDevice, wg::Rect::fromPX(*pRect), WgStateEnum::Normal );
 			}
 		}
+        
+        m_pGfxDevice->endCanvasUpdate();
 	}
 
 	return true;
@@ -343,7 +372,7 @@ bool WgRootPanel::RenderSection( const WgRect& _clip )
 
 bool WgRootPanel::EndRender( void )
 {
-	if( !m_pGfxDevice || !m_hook.Widget() )
+	if( !m_pGfxDevice || (!m_pCanvas && m_canvasSize.isEmpty()) || !m_hook.Widget() )
 		return false;						// No GFX-device or no widgets to render.
 
 

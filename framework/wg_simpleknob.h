@@ -74,8 +74,8 @@ private:
 	// Anti-alias
 	int m_iNextPixel;
 	WgCoord m_pAAPix[WG_KNOB_PIXEL_BUFFER_SIZE];
-	WgColor m_pAACol[WG_KNOB_PIXEL_BUFFER_SIZE];
-	WgColor	m_lineColor;
+	wg::HiColor m_pAACol[WG_KNOB_PIXEL_BUFFER_SIZE];
+	wg::HiColor	m_lineColor;
 
 	WgSize m_preferredSize;
 

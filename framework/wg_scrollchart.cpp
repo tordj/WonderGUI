@@ -775,9 +775,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 		if (m_bRefreshCanvas || m_scrollAmount >= sz.w)
 		{
-			auto pOldCanvas = pDevice->canvas();
-			pDevice->setCanvas(m_pCanvas);
-			pDevice->clearClipList();
+            pDevice->beginCanvasUpdate(m_pCanvas);
 
 			pDevice->fill(sz, m_chartColor);
 			_renderGridLines(pDevice, sz, sz );
@@ -793,7 +791,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 */
 
 			_renderWaveSegment(pDevice, sz, m_windowBegin, m_windowEnd, timestampInc);
-			pDevice->setCanvas(pOldCanvas);
+			pDevice->endCanvasUpdate();
 
 			if (m_windowEnd - m_windowBegin < m_sampleTTL)
 			{
@@ -817,8 +815,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 
 			//
 
-			auto pOldCanvas = pDevice->canvas();
-			pDevice->setCanvas(m_pCanvas);
+			pDevice->beginCanvasUpdate(m_pCanvas);
 
 			if (m_canvasOfs + m_scrollAmount <= sz.w )
 			{
@@ -856,7 +853,7 @@ void WgScrollChart::_renderPatches(wg::GfxDevice * pDevice, const WgRect& _canva
 			}
 
 
-			pDevice->setCanvas(pOldCanvas);
+            pDevice->endCanvasUpdate();
 
 			m_canvasOfs = (m_canvasOfs + m_scrollAmount) % sz.w;
 			m_scrollAmount = 0;

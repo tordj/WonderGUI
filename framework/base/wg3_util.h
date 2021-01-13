@@ -26,11 +26,11 @@
 
 #include <wg3_geo.h>
 #include <wg3_types.h>
+#include <wg3_surface.h>
 
 namespace wg
 {
 
-	class Surface;
 	class GfxDevice;
 	class Patches;
 
@@ -65,13 +65,13 @@ namespace wg
 
 
 
-		double squareRoot(double a);
-		double powerOfTen(int num);
+		double	squareRoot(double a);
+		double	powerOfTen(int num);
+		int		gcd(int a, int b);
 
 		bool		markTestStretchRect( Coord ofs, Surface * pSurface, const RectI& source, const Rect& area, int opacityTreshold );
 		bool		markTestTileRect(Coord ofs, Surface* pSurface, const Rect& area, int opacityTreshold);
-
-		bool		markTestNinePatch( Coord ofs, Surface * pSurface, const RectI& source, const Rect& dest, int opacityTreshold, const BorderI& sourceFrame);
+		bool		markTestNinePatch(Coord ofs, Surface* pSurface, const NinePatch& patch, const Rect& _dest, int opacityTreshold);
 
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );

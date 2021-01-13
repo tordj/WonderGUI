@@ -160,9 +160,12 @@ namespace wg
 	 * @return Pixel value in surface's native format that closest resembles specified color.
 	 *
 	 **/
-	uint32_t Surface::colorToPixel( const Color& col ) const
+	uint32_t Surface::colorToPixel( const HiColor& color ) const
 	{
 		uint32_t pix;
+
+		uint8_t* pPackTab = m_pixelDescription.bLinear ? HiColor::packLinearTab : HiColor::packSRGBTab;
+		Color8 col(pPackTab[color.r], pPackTab[color.g], pPackTab[color.b], HiColor::packLinearTab[color.a]);
 
 		if (m_pixelDescription.bIndexed )
 		{
@@ -186,10 +189,10 @@ namespace wg
 		}
 		else
 		{
-			pix = ((col.r >> m_pixelDescription.R_loss) << m_pixelDescription.R_shift) |
-				((col.g >> m_pixelDescription.G_loss) << m_pixelDescription.G_shift) |
-				((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
-				((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
+			pix =	((col.r >> m_pixelDescription.R_loss) << m_pixelDescription.R_shift) |
+					((col.g >> m_pixelDescription.G_loss) << m_pixelDescription.G_shift) |
+					((col.b >> m_pixelDescription.B_loss) << m_pixelDescription.B_shift) |
+					((col.a >> m_pixelDescription.A_loss) << m_pixelDescription.A_shift);
 		}
 		return pix;
 	}
@@ -209,12 +212,12 @@ namespace wg
 	 * @return Color structure with RGBA values for the specified pixel value.
 	 *
 	 **/
-	Color Surface::pixelToColor( uint32_t pixel ) const
+	HiColor Surface::pixelToColor( uint32_t pixel ) const
 	{
 		if (m_pixelDescription.bIndexed)
 			return m_pClut[pixel];
 
-		Color col;
+		Color8 col;
 
         const uint8_t *    pConvTab_R = s_pixelConvTabs[m_pixelDescription.R_bits];
         const uint8_t *    pConvTab_G = s_pixelConvTabs[m_pixelDescription.G_bits];
@@ -226,7 +229,8 @@ namespace wg
         col.b = pConvTab_B[(pixel & m_pixelDescription.B_mask) >> m_pixelDescription.B_shift];
         col.a = pConvTab_A[(pixel & m_pixelDescription.A_mask) >> m_pixelDescription.A_shift];
 
-		return col;
+		int16_t* pUnpackTab = m_pixelDescription.bLinear ? HiColor::unpackLinearTab : HiColor::unpackSRGBTab;
+		return HiColor(pUnpackTab[col.r], pUnpackTab[col.g], pUnpackTab[col.b], HiColor::unpackLinearTab[col.a]);
 	}
 
 	//____ fill() _________________________________________________________________
@@ -245,7 +249,7 @@ namespace wg
 	 *
 	 **/
 
-	bool Surface::fill( Color col )
+	bool Surface::fill( HiColor col )
 	{
 		return fill( col, RectI(0,0,size()) );
 	}
@@ -265,7 +269,7 @@ namespace wg
 	 * pixel value most closely resembling the one specified.
 	 *
 	 **/
-	bool Surface::fill( Color col, const RectI& region )
+	bool Surface::fill( HiColor col, const RectI& region )
 	{
 
 		auto pixbuf = allocPixelBuffer(region);
@@ -418,7 +422,7 @@ namespace wg
 	*/
 
 
-	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color * pCLUT )
+	bool Surface::_copyFrom( const PixelDescription * pSrcFormat, uint8_t * pSrcPixels, int srcPitch, const RectI& srcRect, const RectI& dstRect, const Color8 * pCLUT )
 	{
 
 		if( srcRect.w <= 0 || dstRect.w <= 0 )
@@ -520,7 +524,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pCLUT[*pSrc++];
 							*pDst++ = srcpixel.a;
 						}
 						pSrc += srcLineInc;
@@ -533,7 +537,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pCLUT[*pSrc++];
 
 							unsigned int dstpixel = ((((uint32_t)srcpixel.r >> pDstFormat->R_loss) << pDstFormat->R_shift) |
 								(((uint32_t)srcpixel.g >> pDstFormat->G_loss) << pDstFormat->G_shift) |
@@ -551,7 +555,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pCLUT[*pSrc++];
 							pDst[0] = srcpixel.b;
 							pDst[1] = srcpixel.g;
 							pDst[2] = srcpixel.r;
@@ -567,7 +571,7 @@ namespace wg
 					{
 						for (int x = 0; x < srcRect.w; x++)
 						{
-							Color srcpixel = pCLUT[*pSrc++];
+							Color8 srcpixel = pCLUT[*pSrc++];
 							pDst[0] = srcpixel.b;
 							pDst[1] = srcpixel.g;
 							pDst[2] = srcpixel.r;

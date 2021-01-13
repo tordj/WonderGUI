@@ -36,6 +36,7 @@
 #include <wg_patches.h>
 #include <wg3_skin.h>
 #include <wg3_gfxdevice.h>
+#include <wg3_surface.h>
 
 class WgWidget;
 
@@ -45,7 +46,8 @@ class WgRootPanel : public WgWidgetHolder
 
 public:
 	WgRootPanel();
-	WgRootPanel( wg::GfxDevice * pGfxDevice );
+	WgRootPanel( wg::Surface * pCanvas, wg::GfxDevice * pGfxDevice = nullptr );
+    WgRootPanel( const WgSize pixelSize, wg::GfxDevice * pGfxDevice = nullptr );
 	~WgRootPanel();
 
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
@@ -98,6 +100,7 @@ public:
 	void	SetUpdatedRectOverlay( wg::Skin * pUpdatedRectOverlay, int afterglowFrames = 3 );
 
 	inline void	AddDirtyPatch( const WgRect& rect ) { m_dirtyPatches.add( rect ); }
+    inline void ClearDirtyPatches( const WgRect& rect ) { m_dirtyPatches.clear(); }
 
 	WgWidget *	FindWidget( const WgCoord& ofs, WgSearchMode mode );
 
@@ -157,6 +160,8 @@ protected:
 
 
 	wg::GfxDevice_p		m_pGfxDevice;
+    wg::Surface_p       m_pCanvas;
+    wg::SizeI           m_canvasSize;        // Size of canvas in pixels, when m_pCanvas is null.
 	WgEventHandler *	m_pEventHandler;
 	Hook				m_hook;
 	WgRect				m_geo;

@@ -20,6 +20,7 @@ cp wg_base.* \
    wg_object.* \
    wg_bitmapfont.* \
    wg_blob.* \
+   wg_canvaslayers.* \
    wg_chain.* \
    wg_char.* \
    wg_charbuffer.* \
@@ -33,12 +34,15 @@ cp wg_base.* \
    wg_font.* \
    wg_geo.* \
    wg_gfxdevice.* \
+   wg_gradient.* \
+   wg_internal.* \
    wg_mempool.* \
    wg_memstack.* \
    wg_nullgfxdevice.* \
    wg_patches.* \
    wg_pointers.* \
    wg_mu.* \
+   wg_skinslotmanager.* \
    wg_string.* \
    wg_strongcomponentptr.* \
    wg_strongptr.* \

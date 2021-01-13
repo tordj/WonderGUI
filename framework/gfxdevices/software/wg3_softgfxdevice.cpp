@@ -41,12 +41,6 @@ namespace wg
 
 	int SoftGfxDevice::s_mulTab[256];
 
-	int16_t		SoftGfxDevice::s_unpackSRGBTab[256];
-	int16_t		SoftGfxDevice::s_unpackLinearTab[256];
-
-	uint8_t		SoftGfxDevice::s_packSRGBTab[4097];
-	uint8_t		SoftGfxDevice::s_packLinearTab[4097];
-
 	int16_t		SoftGfxDevice::s_limit4096Tab[4097 * 3];
 
 	SoftGfxDevice::PlotOp_p		SoftGfxDevice::s_plotOpTab[BlendMode_size][PixelFormat_size];
@@ -222,16 +216,16 @@ namespace wg
 
 	//____ read_pixel_fast8() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel_fast8(const uint8_t* pPixel, PixelFormat format, const Color8* pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
 			const int16_t* p = (const int16_t*)pPixel;
 
-			outB = s_packLinearTab[p[0]];
-			outG = s_packLinearTab[p[1]];
-			outR = s_packLinearTab[p[2]];
-			outA = s_packLinearTab[p[3]];
+			outB = HiColor::packLinearTab[p[0]];
+			outG = HiColor::packLinearTab[p[1]];
+			outR = HiColor::packLinearTab[p[2]];
+			outA = HiColor::packLinearTab[p[3]];
 		}
 
 		if (format == PixelFormat::BGRA_8_linear || format == PixelFormat::BGRA_8_sRGB)
@@ -280,7 +274,7 @@ namespace wg
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 		{
-			Color c = pClut[*pPixel];
+			Color8 c = pClut[*pPixel];
 			outB = c.b;
 			outG = c.g;
 			outR = c.r;
@@ -291,7 +285,7 @@ namespace wg
 
 	//____ read_pixel() _______________________________________________________
 
-	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
+	inline void SoftGfxDevice::_read_pixel(const uint8_t * pPixel, PixelFormat format, const Color8 * pClut, const int16_t* pClut4096, int16_t& outB, int16_t& outG, int16_t& outR, int16_t& outA)
 	{
 		if (format == PixelFormat::Unknown)
 		{
@@ -305,33 +299,33 @@ namespace wg
 
 		if (format == PixelFormat::BGRA_8_linear)
 		{
-			outB = s_unpackLinearTab[pPixel[0]];
-			outG = s_unpackLinearTab[pPixel[1]];
-			outR = s_unpackLinearTab[pPixel[2]];
-			outA = s_unpackLinearTab[pPixel[3]];
+			outB = HiColor::unpackLinearTab[pPixel[0]];
+			outG = HiColor::unpackLinearTab[pPixel[1]];
+			outR = HiColor::unpackLinearTab[pPixel[2]];
+			outA = HiColor::unpackLinearTab[pPixel[3]];
 		}
 
 		if (format == PixelFormat::BGRA_8_sRGB)
 		{
-			outB = s_unpackSRGBTab[pPixel[0]];
-			outG = s_unpackSRGBTab[pPixel[1]];
-			outR = s_unpackSRGBTab[pPixel[2]];
-			outA = s_unpackLinearTab[pPixel[3]];
+			outB = HiColor::unpackSRGBTab[pPixel[0]];
+			outG = HiColor::unpackSRGBTab[pPixel[1]];
+			outR = HiColor::unpackSRGBTab[pPixel[2]];
+			outA = HiColor::unpackLinearTab[pPixel[3]];
 		}
 
 		if (format == PixelFormat::BGR_8_linear)
 		{
-			outB = s_unpackLinearTab[pPixel[0]];
-			outG = s_unpackLinearTab[pPixel[1]];
-			outR = s_unpackLinearTab[pPixel[2]];
+			outB = HiColor::unpackLinearTab[pPixel[0]];
+			outG = HiColor::unpackLinearTab[pPixel[1]];
+			outR = HiColor::unpackLinearTab[pPixel[2]];
 			outA = 4096;
 		}
 
 		if (format == PixelFormat::BGR_8_sRGB)
 		{
-			outB = s_unpackSRGBTab[pPixel[0]];
-			outG = s_unpackSRGBTab[pPixel[1]];
-			outR = s_unpackSRGBTab[pPixel[2]];
+			outB = HiColor::unpackSRGBTab[pPixel[0]];
+			outG = HiColor::unpackSRGBTab[pPixel[1]];
+			outR = HiColor::unpackSRGBTab[pPixel[2]];
 			outA = 4096;
 		}
 
@@ -361,7 +355,7 @@ namespace wg
 			outB = 4096;
 			outG = 4096;
 			outR = 4096;
-			outA = s_unpackLinearTab[*pPixel];
+			outA = HiColor::unpackLinearTab[*pPixel];
 		}
 
 		if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
@@ -382,10 +376,10 @@ namespace wg
 		{
 			int16_t* p = (int16_t*)pPixel;
 
-			p[0] = s_unpackLinearTab[b];
-			p[1] = s_unpackLinearTab[g];
-			p[2] = s_unpackLinearTab[r];
-			p[3] = s_unpackLinearTab[a];
+			p[0] = HiColor::unpackLinearTab[b];
+			p[1] = HiColor::unpackLinearTab[g];
+			p[2] = HiColor::unpackLinearTab[r];
+			p[3] = HiColor::unpackLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGRA_8_linear || format == PixelFormat::BGRA_8_sRGB)
@@ -440,50 +434,50 @@ namespace wg
 
 		if (format == PixelFormat::BGRA_8_linear)
 		{
-			pPixel[0] = s_packLinearTab[b];
-			pPixel[1] = s_packLinearTab[g];
-			pPixel[2] = s_packLinearTab[r];
-			pPixel[3] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packLinearTab[b];
+			pPixel[1] = HiColor::packLinearTab[g];
+			pPixel[2] = HiColor::packLinearTab[r];
+			pPixel[3] = HiColor::packLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGRA_8_sRGB)
 		{
-			pPixel[0] = s_packSRGBTab[b];
-			pPixel[1] = s_packSRGBTab[g];
-			pPixel[2] = s_packSRGBTab[r];
-			pPixel[3] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packSRGBTab[b];
+			pPixel[1] = HiColor::packSRGBTab[g];
+			pPixel[2] = HiColor::packSRGBTab[r];
+			pPixel[3] = HiColor::packLinearTab[a];
 		}
 
 		if (format == PixelFormat::BGR_8_linear)
 		{
-			pPixel[0] = s_packLinearTab[b];
-			pPixel[1] = s_packLinearTab[g];
-			pPixel[2] = s_packLinearTab[r];
+			pPixel[0] = HiColor::packLinearTab[b];
+			pPixel[1] = HiColor::packLinearTab[g];
+			pPixel[2] = HiColor::packLinearTab[r];
 		}
 
 		if (format == PixelFormat::BGR_8_sRGB)
 		{
-			pPixel[0] = s_packSRGBTab[b];
-			pPixel[1] = s_packSRGBTab[g];
-			pPixel[2] = s_packSRGBTab[r];
+			pPixel[0] = HiColor::packSRGBTab[b];
+			pPixel[1] = HiColor::packSRGBTab[g];
+			pPixel[2] = HiColor::packSRGBTab[r];
 		}
 
 		if (format == PixelFormat::BGR_565_linear)
 		{
-			pPixel[0] = (s_packLinearTab[b] >> 3) | ((s_packLinearTab[g] & 0xFC) << 3);
-			pPixel[1] = (s_packLinearTab[g] >> 5) | (s_packLinearTab[r] & 0xF8);
+			pPixel[0] = (HiColor::packLinearTab[b] >> 3) | ((HiColor::packLinearTab[g] & 0xFC) << 3);
+			pPixel[1] = (HiColor::packLinearTab[g] >> 5) | (HiColor::packLinearTab[r] & 0xF8);
 
 		}
 
 		if (format == PixelFormat::BGRA_4_linear)
 		{
-			pPixel[0] = (s_packLinearTab[b] >> 4) | (s_packLinearTab[g] & 0xF0);
-			pPixel[1] = (s_packLinearTab[r] >> 4) | (s_packLinearTab[a] & 0xF0);
+			pPixel[0] = (HiColor::packLinearTab[b] >> 4) | (HiColor::packLinearTab[g] & 0xF0);
+			pPixel[1] = (HiColor::packLinearTab[r] >> 4) | (HiColor::packLinearTab[a] & 0xF0);
 		}
 
 		if (format == PixelFormat::A_8)
 		{
-			pPixel[0] = s_packLinearTab[a];
+			pPixel[0] = HiColor::packLinearTab[a];
 		}
 	}
 
@@ -789,10 +783,10 @@ namespace wg
 
 */
 
-			outR = (inR * tint.flatTintColor[0]) >> 12;
-			outG = (inG * tint.flatTintColor[1]) >> 12;
-			outB = (inB * tint.flatTintColor[2]) >> 12;
-			outA = (inA * tint.flatTintColor[3]) >> 12;
+			outR = (inR * tint.flatTintColor.r) >> 12;
+			outG = (inG * tint.flatTintColor.g) >> 12;
+			outB = (inB * tint.flatTintColor.b) >> 12;
+			outA = (inA * tint.flatTintColor.a) >> 12;
 		}
 		
 		if( tintMode == TintMode::None)
@@ -967,10 +961,10 @@ namespace wg
 
 		if (tintMode == TintMode::Flat)
 		{
-			tintR = tint.flatTintColor[0] << 6;
-			tintG = tint.flatTintColor[1] << 6;
-			tintB = tint.flatTintColor[2] << 6;
-			tintA = tint.flatTintColor[3] << 6;
+			tintR = tint.flatTintColor.r << 6;
+			tintG = tint.flatTintColor.g << 6;
+			tintB = tint.flatTintColor.b << 6;
+			tintA = tint.flatTintColor.a << 6;
 		}
 
 		if (tintMode == TintMode::GradientX || tintMode == TintMode::GradientY || tintMode == TintMode::GradientXY)
@@ -1107,7 +1101,7 @@ namespace wg
 	//____ _plot() ____________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot(uint8_t * pDst, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_plot(uint8_t * pDst, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
@@ -1124,29 +1118,29 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any tint to source
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		// Step 2: Get color components of background pixel blending into backX
@@ -1173,7 +1167,7 @@ namespace wg
 	//____ plot_list() ________________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const Color * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
+	void SoftGfxDevice::_plot_list(const RectI& clip, int nCoords, const CoordI * pCoords, const HiColor * pColors, uint8_t * pCanvas, int pitchX, int pitchY, const ColTrans& tint)
 	{
 		bool bFast8 = false;
 
@@ -1188,13 +1182,13 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			tintR = tint.flatTintColor[0];
-			tintG = tint.flatTintColor[1];
-			tintB = tint.flatTintColor[2];
-			tintA = tint.flatTintColor[3];
+			tintR = tint.flatTintColor.r;
+			tintG = tint.flatTintColor.g;
+			tintB = tint.flatTintColor.b;
+			tintA = tint.flatTintColor.a;
 		}
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+		const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
 
 		for (int i = 0; i < nCoords; i++)
 		{
@@ -1211,17 +1205,18 @@ namespace wg
 
 				if (bFast8)
 				{
+
+					srcB = pPackTab[pColors[i].b];
+					srcG = pPackTab[pColors[i].g];
+					srcR = pPackTab[pColors[i].r];
+					srcA = HiColor::packLinearTab[pColors[i].a];
+				}
+				else
+				{
 					srcB = pColors[i].b;
 					srcG = pColors[i].g;
 					srcR = pColors[i].r;
 					srcA = pColors[i].a;
-				}
-				else
-				{
-					srcB = pUnpackTab[pColors[i].b];
-					srcG = pUnpackTab[pColors[i].g];
-					srcR = pUnpackTab[pColors[i].r];
-					srcA = s_unpackLinearTab[pColors[i].a];
 				}
 
 				// Step 1.5: Apply any tint to source
@@ -1258,7 +1253,7 @@ namespace wg
 	//____ _draw_line() _______________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_draw_line(uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
@@ -1272,7 +1267,7 @@ namespace wg
 		const BlendMode EdgeBlendMode = BLEND == BlendMode::Replace ? BlendMode::Blend : BLEND;
 
 		if (BLEND == BlendMode::Replace)
-			color.a = 255;						// Needed since we still blend the edges.
+			color.a = 4096;						// Needed since we still blend the edges.
 
 		// Step 1: Read source pixels
 
@@ -1280,19 +1275,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
 		}
 
 
@@ -1300,10 +1295,10 @@ namespace wg
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -1318,7 +1313,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (color.a * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1424,14 +1419,14 @@ namespace wg
 	//____ _clip_draw_line() __________________________________________________
 
 	template<BlendMode BLEND, TintMode TINT, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, Color color, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_clip_draw_line(int clipStart, int clipEnd, uint8_t * pRow, int rowInc, int pixelInc, int length, int width, int pos, int slope, HiColor color, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 
 		const BlendMode EdgeBlendMode = (BLEND == BlendMode::Replace) ? BlendMode::Blend : BLEND;
 
 		if (BLEND == BlendMode::Replace)
-			color.a = 255;						// Needed since we still blend the edges.
+			color.a = 4096;						// Needed since we still blend the edges.
 
 		// Step 1: Read source pixels
 
@@ -1439,29 +1434,29 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[color.b];
+			srcG = pPackTab[color.g];
+			srcR = pPackTab[color.r];
+			srcA = HiColor::packLinearTab[color.a];
+		}
+		else
+		{
 			srcB = color.b;
 			srcG = color.g;
 			srcR = color.r;
 			srcA = color.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
-
-			srcB = pUnpackTab[color.b];
-			srcG = pUnpackTab[color.g];
-			srcR = pUnpackTab[color.r];
-			srcA = s_unpackLinearTab[color.a];
 		}
 
 		// Step 1.5: Apply any flatTintColor
 
 		if (TINT != TintMode::None)
 		{
-			srcR = (srcR * tint.flatTintColor[0]) >> 12;
-			srcG = (srcG * tint.flatTintColor[1]) >> 12;
-			srcB = (srcB * tint.flatTintColor[2]) >> 12;
-			srcA = (srcA * tint.flatTintColor[3]) >> 12;
+			srcR = (srcR * tint.flatTintColor.r) >> 12;
+			srcG = (srcG * tint.flatTintColor.g) >> 12;
+			srcB = (srcB * tint.flatTintColor.b) >> 12;
+			srcA = (srcA * tint.flatTintColor.a) >> 12;
 		}
 
 		for (int i = 0; i < length; i++)
@@ -1496,7 +1491,7 @@ namespace wg
 			{
 				// Special case, one pixel wide row
 
-				int alpha = (s_unpackLinearTab[color.a] * width) >> 16;
+				int alpha = (color.a * width) >> 16;
 
 				int16_t backB, backG, backR, backA;
 				int16_t outB, outG, outR, outA;
@@ -1605,7 +1600,7 @@ namespace wg
 	//____ _fill() ____________________________________________________________
 
 	template<TintMode TINT, BlendMode BLEND, PixelFormat DSTFORMAT>
-	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, Color col, const ColTrans& tint, CoordI patchPos)
+	void SoftGfxDevice::_fill(uint8_t * pDst, int pitchX, int pitchY, int nLines, int lineLength, HiColor col, const ColTrans& tint, CoordI patchPos)
 	{
 		bool bFast8 = false;
 		int		bits = 12;
@@ -1632,19 +1627,19 @@ namespace wg
 
 		if (bFast8)
 		{
+			const uint8_t* pPackTab = Base::activeContext()->gammaCorrection() ? HiColor::packSRGBTab : HiColor::packLinearTab;
+
+			srcB = pPackTab[col.b];
+			srcG = pPackTab[col.g];
+			srcR = pPackTab[col.r];
+			srcA = HiColor::packLinearTab[col.a];
+		}
+		else
+		{
 			srcB = col.b;
 			srcG = col.g;
 			srcR = col.r;
 			srcA = col.a;
-		}
-		else
-		{
-			const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
-
-			srcB = pUnpackTab[col.b];
-			srcG = pUnpackTab[col.g];
-			srcR = pUnpackTab[col.r];
-			srcA = s_unpackLinearTab[col.a];
 		}
 
 
@@ -1773,10 +1768,10 @@ namespace wg
 					{
 						if (bFast8)
 						{
-							inR = s_packLinearTab[pSegmentColors[0]];
-							inG = s_packLinearTab[pSegmentColors[1]];
-							inB = s_packLinearTab[pSegmentColors[2]];
-							inA = s_packLinearTab[pSegmentColors[3]];
+							inR = HiColor::packLinearTab[pSegmentColors[0]];
+							inG = HiColor::packLinearTab[pSegmentColors[1]];
+							inB = HiColor::packLinearTab[pSegmentColors[2]];
+							inA = HiColor::packLinearTab[pSegmentColors[3]];
 						}
 						else
 						{
@@ -1795,10 +1790,10 @@ namespace wg
 							{
 								if (bFast8)
 								{
-									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
-									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
-									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
-									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+									inB = HiColor::packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = HiColor::packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = HiColor::packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = HiColor::packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
 								}
 								else
 								{
@@ -1830,10 +1825,10 @@ namespace wg
 							{
 								if (bFast8)
 								{
-									inB = s_packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
-									inG = s_packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
-									inR = s_packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
-									inA = s_packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
+									inB = HiColor::packLinearTab[((pSegmentGradients->begB + pSegmentGradients->incB * (offset >> 8)) >> 12)];
+									inG = HiColor::packLinearTab[((pSegmentGradients->begG + pSegmentGradients->incG * (offset >> 8)) >> 12)];
+									inR = HiColor::packLinearTab[((pSegmentGradients->begR + pSegmentGradients->incR * (offset >> 8)) >> 12)];
+									inA = HiColor::packLinearTab[((pSegmentGradients->begA + pSegmentGradients->incA * (offset >> 8)) >> 12)];
 								}
 								else
 								{
@@ -2471,33 +2466,18 @@ namespace wg
 		return SoftGfxDevice_p(new SoftGfxDevice());
 	}
 
-	SoftGfxDevice_p SoftGfxDevice::create( Surface * pCanvas )
-	{
-		return SoftGfxDevice_p(new SoftGfxDevice(pCanvas));
-	}
-
-
 	//____ constructor _____________________________________________________________
 
-	SoftGfxDevice::SoftGfxDevice() : GfxDevice(SizeI(0,0))
+	SoftGfxDevice::SoftGfxDevice()
 	{
 		m_pCanvas = nullptr;
 		m_pCanvasPixels = nullptr;
+		m_pRenderLayerSurface = nullptr;
 		m_canvasPixelBits = 0;
 		m_canvasPitch = 0;
 		m_colTrans.morphFactor = 2048;
 		_initTables();
 
-	}
-
-	SoftGfxDevice::SoftGfxDevice( Surface * pCanvas ) : GfxDevice( pCanvas?pCanvas->size():SizeI() )
-	{
-		m_pCanvas = pCanvas;
-		m_pCanvasPixels = nullptr;
-		m_canvasPixelBits = 0;
-		m_canvasPitch = 0;
-		m_colTrans.morphFactor = 2048;
-		_initTables();
 	}
 
 	//____ Destructor ______________________________________________________________
@@ -2530,82 +2510,9 @@ namespace wg
 		return m_pSurfaceFactory;
 	}
 
-	//____ setCanvas() _______________________________________________________________
-
-	bool SoftGfxDevice::setCanvas( Surface * pCanvas, CanvasInit initOperation, bool bResetClipRects )
-	{
-		if (m_pCanvas == pCanvas)
-			return true;			// Not an error.
-
-		if( !pCanvas )
-		{
-			m_pCanvas		= nullptr;
-			m_canvasSize	= SizeI();
-			m_clipCanvas	= RectI();
-			m_clipBounds	= RectI();
-			m_pClipRects	= &m_clipCanvas;
-			m_nClipRects	= 1;
-
-			// Make sure this also is cleared, in case we are rendering.
-
-			m_pCanvasPixels = nullptr;
-			m_canvasPixelBits = 0;
-			m_canvasPitch = 0;
-			return true;
-		}
-
-
-		PixelFormat format = pCanvas->pixelFormat();
-		if( format != PixelFormat::BGRA_8_sRGB && format != PixelFormat::BGRA_8_linear && 
-			format != PixelFormat::BGR_8_sRGB && format != PixelFormat::BGR_8_linear &&
-			format != PixelFormat::BGRX_8_sRGB && format != PixelFormat::BGRX_8_linear &&
-			format != PixelFormat::BGRA_4_linear && format != PixelFormat::BGR_565_linear && 
-			format != PixelFormat::A_8 )
-			return false;
-
-		if (m_pCanvasPixels)
-		{
-			m_pCanvas->pullPixels(m_canvasPixelBuffer);
-			m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
-		}
-
-		m_pCanvas		= pCanvas;
-		m_canvasSize	= pCanvas->size();
-		m_clipCanvas	= { 0,0,m_canvasSize };
-
-		if( bResetClipRects )
-		{
-			m_clipBounds	= { 0,0,m_canvasSize };
-			m_pClipRects = &m_clipCanvas;
-			m_nClipRects = 1;
-		}
-
-		// Update stuff if we are rendering
-
-		if( m_pCanvasPixels )
-		{
-			m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
-			m_pCanvas->pushPixels(m_canvasPixelBuffer);
-
-			m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
-			m_canvasPitch = m_canvasPixelBuffer.pitch;
-
-			m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-
-			if( initOperation == CanvasInit::Clear )
-				m_pCanvas->fill(m_clearColor);
-			
-			_updateBlitFunctions();
-		}
-		else
-			m_beginRenderOp = initOperation;				// Save operation for beginRender().
-
-		return true;
-	}
-
 	//____ setTintColor() _____________________________________________________
 
-	void SoftGfxDevice::setTintColor(Color color)
+	void SoftGfxDevice::setTintColor(HiColor color)
 	{
 		if (color == m_tintColor)
 			return;
@@ -2640,9 +2547,9 @@ namespace wg
 
 	//____ setTintGradient() __________________________________________________
 
-	void SoftGfxDevice::setTintGradient(const RectI& rect, Color topLeft, Color topRight, Color bottomRight, Color bottomLeft)
+	void SoftGfxDevice::setTintGradient(const RectI& rect, const Gradient& gradient)
 	{
-		GfxDevice::setTintGradient(rect, topLeft, topRight, bottomRight, bottomLeft);
+		GfxDevice::setTintGradient(rect, gradient);
 		m_colTrans.tintRect = rect;
 		_updateTintSettings();
 	}
@@ -2661,16 +2568,13 @@ namespace wg
 	{
 		TintMode tintMode;
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
+		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? HiColor::unpackSRGBTab : HiColor::unpackLinearTab;
 
 		if (!m_bTintGradient)
 		{
 			tintMode = (m_tintColor == Color::White) ? TintMode::None : TintMode::Flat;
-			m_colTrans.flatTintColor[0] = pUnpackTab[m_tintColor.r];
-			m_colTrans.flatTintColor[1] = pUnpackTab[m_tintColor.g];
-			m_colTrans.flatTintColor[2] = pUnpackTab[m_tintColor.b];
-			m_colTrans.flatTintColor[3] = s_unpackLinearTab[m_tintColor.a] ;
-			m_bTintOpaque = (m_tintColor.a == 255);
+			m_colTrans.flatTintColor = m_tintColor;
+			m_bTintOpaque = (m_tintColor.a == 4096);
 		}
 		else
 		{
@@ -2679,19 +2583,21 @@ namespace wg
 			int diffMaskX = 0, diffMaskY = 0;
 
 
-			uint32_t	flatTintColorR = pUnpackTab[m_tintColor.r];
-			uint32_t	flatTintColorG = pUnpackTab[m_tintColor.g];
-			uint32_t	flatTintColorB = pUnpackTab[m_tintColor.b];
-			uint32_t	flatTintColorA = s_unpackLinearTab[m_tintColor.a];
+			uint32_t	flatTintColorR = m_tintColor.r;
+			uint32_t	flatTintColorG = m_tintColor.g;
+			uint32_t	flatTintColorB = m_tintColor.b;
+			uint32_t	flatTintColorA = m_tintColor.a;
 
 			uint32_t	r[4], g[4], b[4], a[4];							// Scale: 0 -> (1 << 18)
 
+			HiColor* pCol = &m_tintGradient.topLeft;
 			for (int i = 0; i < 4; i++)
 			{
-				r[i] = (pUnpackTab[m_tintGradient[i].r] * flatTintColorR) >> 6;
-				g[i] = (pUnpackTab[m_tintGradient[i].g] * flatTintColorG) >> 6;
-				b[i] = (pUnpackTab[m_tintGradient[i].b] * flatTintColorB) >> 6;
-				a[i] = (s_unpackLinearTab[m_tintGradient[i].a] * flatTintColorA) >> 6;
+				r[i] = (pCol->r * flatTintColorR) >> 6;
+				g[i] = (pCol->g * flatTintColorG) >> 6;
+				b[i] = (pCol->b * flatTintColorB) >> 6;
+				a[i] = (pCol->a * flatTintColorA) >> 6;
+				pCol++;
 			}
 
 			m_colTrans.topLeftR = r[0];
@@ -2714,21 +2620,21 @@ namespace wg
 			m_colTrans.rightIncB = int(b[2] - b[1]) / m_tintGradientRect.h;
 			m_colTrans.rightIncA = int(a[2] - a[1]) / m_tintGradientRect.h;
 
-			diffMaskX |= (m_tintGradient[0].argb - m_tintGradient[1].argb) | (m_tintGradient[2].argb - m_tintGradient[3].argb);
-			diffMaskY |= (m_tintGradient[0].argb - m_tintGradient[3].argb) | (m_tintGradient[1].argb - m_tintGradient[2].argb);
+			diffMaskX |= (m_tintGradient.topLeft.argb - m_tintGradient.topRight.argb) | (m_tintGradient.bottomRight.argb - m_tintGradient.bottomLeft.argb);
+			diffMaskY |= (m_tintGradient.topLeft.argb - m_tintGradient.bottomLeft.argb) | (m_tintGradient.topRight.argb - m_tintGradient.bottomRight.argb);
 
 			// Calculate tintMode
 
 			if( (diffMaskX | diffMaskY) == 0 )
 			{
-				if (m_tintGradient[0] == Color::White)
+				if (m_tintGradient.topLeft.isWhite() )
 					tintMode = TintMode::None;
 				else
 				{
-					m_colTrans.flatTintColor[0] = r[0] >> 6;
-					m_colTrans.flatTintColor[1] = g[0] >> 6;
-					m_colTrans.flatTintColor[2] = b[0] >> 6;
-					m_colTrans.flatTintColor[3] = a[0] >> 6;
+					m_colTrans.flatTintColor.r = r[0] >> 6;
+					m_colTrans.flatTintColor.g = g[0] >> 6;
+					m_colTrans.flatTintColor.b = b[0] >> 6;
+					m_colTrans.flatTintColor.a = a[0] >> 6;
 					tintMode = TintMode::Flat;
 				}
 			}
@@ -2744,10 +2650,10 @@ namespace wg
 
 			// Update m_bTintOpaque
 
-			int value = int(m_tintColor.a) + int(m_tintGradient[0].a) + int(m_tintGradient[1].a) 
-						+ int(m_tintGradient[2].a) + int(m_tintGradient[3].a);
+			int value = int(m_tintColor.a) + int(m_tintGradient.topLeft.a) + int(m_tintGradient.topRight.a) 
+						+ int(m_tintGradient.bottomRight.a) + int(m_tintGradient.bottomLeft.a);
 
-			m_bTintOpaque = (value == 255*5);
+			m_bTintOpaque = (value == 4096*5);
 		}
 
 		// Update tintMode and blitFunctions.
@@ -2786,24 +2692,7 @@ namespace wg
 
 	bool SoftGfxDevice::beginRender()
 	{
-		if( m_bRendering || !m_pCanvas)
-			return false;
-
-		if( m_beginRenderOp == CanvasInit::Clear )
-			m_pCanvas->fill(m_clearColor);
-
-		m_beginRenderOp = CanvasInit::Keep;
-
-		m_canvasPixelBuffer = m_pCanvas->allocPixelBuffer();
-		m_pCanvas->pushPixels(m_canvasPixelBuffer);
-
-		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
-		m_canvasPixelBits = m_pCanvas->pixelDescription()->bits;
-		m_canvasPitch = m_canvasPixelBuffer.pitch;
-
-		_updateBlitFunctions();
-
-		if( !m_pCanvasPixels )
+		if( m_bRendering )
 			return false;
 
 		setTintColor(Color::White);
@@ -2817,27 +2706,18 @@ namespace wg
 
 	bool SoftGfxDevice::endRender()
 	{
-		if( !m_bRendering || !m_pCanvasPixels )
+		if( !m_bRendering )
 			return false;
 
-		// Clean up.
-
-		m_pCanvas->pullPixels(m_canvasPixelBuffer);
-		m_pCanvas->freePixelBuffer(m_canvasPixelBuffer);
-		m_pCanvasPixels = 0;
-		m_canvasPixelBits = 0;
-		m_canvasPitch = 0;
-
-		_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
 		m_bRendering = false;
 		return true;
 	}
 
 	//____ fill() ______________________________________________________
 
-	void SoftGfxDevice::fill(const RectI& rect, const Color& col)
+	void SoftGfxDevice::fill(const RectI& rect, HiColor col)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels )
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels )
 			return;
 
 		// Clipping
@@ -2856,7 +2736,7 @@ namespace wg
 		// Optimize calls
 
 		BlendMode blendMode = m_blendMode;
-		if (blendMode == BlendMode::Blend && col.a == 255 && m_bTintOpaque)
+		if (blendMode == BlendMode::Blend && col.a == 4096 && m_bTintOpaque)
 		{
 			blendMode = BlendMode::Replace;
 		}
@@ -2864,7 +2744,7 @@ namespace wg
 		//
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p pFunc = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pFunc == nullptr)
 			return;
 
@@ -2879,9 +2759,9 @@ namespace wg
 		}
 	}
 	
-	void SoftGfxDevice::fill(const RectF& rect, const Color& col)
+	void SoftGfxDevice::fill(const RectF& rect, HiColor col)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels)
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
 		// Clipping
@@ -2898,7 +2778,7 @@ namespace wg
 		// Optimize calls
 
 		BlendMode blendMode = m_blendMode;
-		if (blendMode == BlendMode::Blend && col.a == 255 && m_bTintOpaque)
+		if (blendMode == BlendMode::Blend && col.a == 4096 && m_bTintOpaque)
 		{
 			blendMode = BlendMode::Replace;
 		}
@@ -2907,13 +2787,13 @@ namespace wg
 		BlendMode	edgeBlendMode = (m_blendMode == BlendMode::Replace) ? BlendMode::Blend : m_blendMode; // Need to blend edges and corners even if fill is replace
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pCanvas->pixelFormat()];
-		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
-//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p pFillOp = s_fillOpTab[(int)m_colTrans.mode][(int)blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p pEdgeOp = s_fillOpTab[(int)m_colTrans.mode][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+//		PlotOp_p pPlotOp = s_plotOpTab[(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
-			Color color = col;
+			HiColor color = col;
 
 			RectF  patch(rect, RectF(m_pClipRects[i]));
 			if (patch.w == 0.f || patch.h == 0.f)
@@ -2932,30 +2812,30 @@ namespace wg
 
 			// Draw the sides
 
-			int aaLeft = (256 - (int)(patch.x * 256)) & 0xFF;
-			int aaTop = (256 - (int)(patch.y * 256)) & 0xFF;
-			int aaRight = ((int)((patch.x + patch.w) * 256)) & 0xFF;
-			int aaBottom = ((int)((patch.y + patch.h) * 256)) & 0xFF;
+			int aaLeft = (4096 - (int)(patch.x * 4096)) & 0xFFF;
+			int aaTop = (4096 - (int)(patch.y * 4096)) & 0xFFF;
+			int aaRight = ((int)((patch.x + patch.w) * 4096)) & 0xFFF;
+			int aaBottom = ((int)((patch.y + patch.h) * 4096)) & 0xFFF;
 
-			int aaTopLeft = aaTop * aaLeft / 256;
-			int aaTopRight = aaTop * aaRight / 256;
-			int aaBottomLeft = aaBottom * aaLeft / 256;
-			int aaBottomRight = aaBottom * aaRight / 256;
+			int aaTopLeft = aaTop * aaLeft / 4096;
+			int aaTopRight = aaTop * aaRight / 4096;
+			int aaBottomLeft = aaBottom * aaLeft / 4096;
+			int aaBottomRight = aaBottom * aaRight / 4096;
 
 
 			if (m_blendMode != BlendMode::Replace)
 			{
-				int alpha = s_mulTab[color.a];
+				int alpha = color.a;
 
-				aaLeft = aaLeft * alpha >> 16;
-				aaTop = aaTop * alpha >> 16;
-				aaRight = aaRight * alpha >> 16;
-				aaBottom = aaBottom * alpha >> 16;
+				aaLeft = aaLeft * alpha >> 12;
+				aaTop = aaTop * alpha >> 12;
+				aaRight = aaRight * alpha >> 12;
+				aaBottom = aaBottom * alpha >> 12;
 
-				aaTopLeft = aaTopLeft * alpha >> 16;
-				aaTopRight = aaTopRight * alpha >> 16;
-				aaBottomLeft = aaBottomLeft * alpha >> 16;
-				aaBottomRight = aaBottomRight * alpha >> 16;
+				aaTopLeft = aaTopLeft * alpha >> 12;
+				aaTopRight = aaTopRight * alpha >> 12;
+				aaBottomLeft = aaBottomLeft * alpha >> 12;
+				aaBottomRight = aaBottomRight * alpha >> 12;
 			}
 
 
@@ -3030,12 +2910,12 @@ namespace wg
 
 	//____ drawLine() ____ [from/to] __________________________________________
 
-	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, Color color, float thickness)
+	void SoftGfxDevice::drawLine(CoordI beg, CoordI end, HiColor color, float thickness)
 	{
-		if (!m_pCanvas || !m_pCanvasPixels)
+		if (!m_pRenderLayerSurface || !m_pCanvasPixels)
 			return;
 
-		Color fillColor = color * m_tintColor;
+		HiColor fillColor = color * m_tintColor;
 
 		// Skip calls that won't affect destination
 
@@ -3044,7 +2924,7 @@ namespace wg
 
 		//
 
-		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		ClipLineOp_p pOp = s_clipLineOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -3162,7 +3042,7 @@ namespace wg
 	// A one pixel thick line will only be drawn one pixel think, while a two pixels thick line will cover three pixels in thickness,
 	// where the outer pixels are faded.
 
-	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, Color _col, float thickness)
+	void SoftGfxDevice::drawLine(CoordI _begin, Direction dir, int _length, HiColor _col, float thickness)
 	{
 		//TODO: Optimize!
 
@@ -3179,8 +3059,8 @@ namespace wg
 		_col = _col * m_tintColor;
 
 		int pixelBytes = m_canvasPixelBits / 8;
-		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
-		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pCanvas->pixelFormat()];
+		FillOp_p	pCenterOp = s_fillOpTab[(int)TintMode::None][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
+		FillOp_p	pEdgeOp = s_fillOpTab[(int)TintMode::None][(int)edgeBlendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		for (int i = 0; i < m_nClipRects; i++)
 		{
@@ -3218,8 +3098,8 @@ namespace wg
 					if (begin.y < clip.y || begin.y >= clip.y + clip.h)
 						continue;
 
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
+					HiColor col = _col;
+					col.a = (int16_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, pixelBytes, 0, 1, length, col, m_colTrans, { 0,0 });
@@ -3227,7 +3107,7 @@ namespace wg
 				else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+					HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 					if (begin.y + expanse <= clip.y || begin.y - expanse >= clip.y + clip.h)
 						continue;
@@ -3285,8 +3165,8 @@ namespace wg
 					if (begin.x < clip.x || begin.x >= clip.x + clip.w)
 						continue;
 
-					Color col = _col;
-					col.a = (uint8_t)(thickness * col.a);
+					HiColor col = _col;
+					col.a = (int16_t)(thickness * col.a);
 
 					uint8_t * pBegin = m_pCanvasPixels + begin.y *m_canvasPitch + begin.x * pixelBytes;
 					pEdgeOp(pBegin, m_canvasPitch, 0, 1, length, col, m_colTrans, { 0,0 });
@@ -3294,7 +3174,7 @@ namespace wg
 				else
 				{
 					int expanse = (int)(1 + (thickness - 1) / 2);
-					Color edgeColor(_col.r, _col.g, _col.b, (uint8_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
+					HiColor edgeColor(_col.r, _col.g, _col.b, (int16_t)(_col.a * ((thickness - 1) / 2 - (expanse - 1))));
 
 					if (begin.x + expanse <= clip.x || begin.x - expanse >= clip.x + clip.w)
 						continue;
@@ -3331,7 +3211,7 @@ namespace wg
 
 	//____ _transformDrawSegments() _________________________________________
 
-	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const Color * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
+	void SoftGfxDevice::_transformDrawSegments(const RectI& _dest, int nSegments, const HiColor * pSegmentColors, int nEdgeStrips, const int * _pEdgeStrips, int edgeStripPitch, TintMode tintMode, const int _simpleTransform[2][2])
 	{
 		RectI dest = _dest;
 
@@ -3419,7 +3299,7 @@ namespace wg
 
 		if (tintMode != TintMode::None)
 		{
-			bTintFlat = m_tintColor != Color::White;
+			bTintFlat = !m_tintColor.isWhite();
 
 			if (tintMode == TintMode::GradientXY || m_colTrans.mode == TintMode::GradientXY)
 			{
@@ -3436,18 +3316,16 @@ namespace wg
 
 		// Unpack input colors and fill in transparentSegments
 
-		const int16_t* pUnpackTab = Base::activeContext()->gammaCorrection() ? s_unpackSRGBTab : s_unpackLinearTab;
-
 		if (!bTintX && !bTintY)
 		{
 			// If we just use flat tinting (or no tint at all), we tint our segment colors right away
 
 			for (int i = 0; i < nSegments; i++)
 			{
-				colors[i][0] = (pUnpackTab[pSegmentColors[i].r] * m_colTrans.flatTintColor[0]) >> 12;
-				colors[i][1] = (pUnpackTab[pSegmentColors[i].g] * m_colTrans.flatTintColor[1]) >> 12;
-				colors[i][2] = (pUnpackTab[pSegmentColors[i].b] * m_colTrans.flatTintColor[2]) >> 12;
-				colors[i][3] = (s_unpackLinearTab[pSegmentColors[i].a] * m_colTrans.flatTintColor[3]) >> 12;
+				colors[i][0] = (pSegmentColors[i].r * m_colTrans.flatTintColor.r) >> 12;
+				colors[i][1] = (pSegmentColors[i].g * m_colTrans.flatTintColor.g) >> 12;
+				colors[i][2] = (pSegmentColors[i].b * m_colTrans.flatTintColor.b) >> 12;
+				colors[i][3] = (pSegmentColors[i].a * m_colTrans.flatTintColor.a) >> 12;
 
 				transparentSegments[i] = (colors[i][3] == 0);
 				opaqueSegments[i] = (colors[i][3] == 4096);
@@ -3459,10 +3337,10 @@ namespace wg
 
 			for (int i = 0; i < nSegments*colorsPerSegment; i++)
 			{
-				colors[i][0] = pUnpackTab[pSegmentColors[i].r];
-				colors[i][1] = pUnpackTab[pSegmentColors[i].g];
-				colors[i][2] = pUnpackTab[pSegmentColors[i].b];
-				colors[i][3] = s_unpackLinearTab[pSegmentColors[i].a];
+				colors[i][0] = pSegmentColors[i].r;
+				colors[i][1] = pSegmentColors[i].g;
+				colors[i][2] = pSegmentColors[i].b;
+				colors[i][3] = pSegmentColors[i].a;
 			}
 		}
 
@@ -3701,7 +3579,7 @@ namespace wg
 		if (!dest.intersectsWith(m_clipBounds))
 			return;
 
-		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		SegmentOp_p	pOp = s_segmentOpTab[(int)bTintY][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		if (pOp == nullptr)
 			return;
 
@@ -3883,10 +3761,10 @@ namespace wg
 		}
 		else if (m_colTrans.mode == TintMode::Flat)
 		{
-			int r = m_colTrans.flatTintColor[0];
-			int g = m_colTrans.flatTintColor[1];
-			int b = m_colTrans.flatTintColor[2];
-			int a = m_colTrans.flatTintColor[3];
+			int r = m_colTrans.flatTintColor.r;
+			int g = m_colTrans.flatTintColor.g;
+			int b = m_colTrans.flatTintColor.b;
+			int a = m_colTrans.flatTintColor.a;
 
 			for (int i = 0; i < 4; i++)
 			{
@@ -4199,12 +4077,12 @@ namespace wg
 
 	//____ plotPixels() _________________________________________________
 
-	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const Color * pColors)
+	void SoftGfxDevice::plotPixels(int nCoords, const CoordI * pCoords, const HiColor * pColors)
 	{
 		const int pitch = m_canvasPitch;
 		const int pixelBytes = m_canvasPixelBits / 8;
 
-		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		PlotListOp_p pOp = s_plotListOpTab[(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 		if (pOp == nullptr )
 			return;
@@ -4317,7 +4195,72 @@ namespace wg
 		m_pComplexBlitFirstPassOp = oldFirstPass;
 	}
 
+	//____ _canvasWasChanged() ________________________________________________
 
+	void SoftGfxDevice::_canvasWasChanged()
+	{
+		if (m_pCanvas)
+		{
+			_renderLayerWasChanged();
+		}
+		if (!m_pCanvas)
+		{
+			// Clean up.
+
+			if (m_pRenderLayerSurface)
+			{
+				m_pRenderLayerSurface->pullPixels(m_canvasPixelBuffer);
+				m_pRenderLayerSurface->freePixelBuffer(m_canvasPixelBuffer);
+			}
+
+			m_pRenderLayerSurface = nullptr;
+			m_pCanvasPixels = nullptr;
+			m_canvasPixelBits = 0;
+			m_canvasPitch = 0;
+
+			_updateBlitFunctions();		// Good to have dummies in place when we are not allowed to blit.
+		}
+	}
+
+	//____ _renderLayerWasChanged() ___________________________________________
+
+	void SoftGfxDevice::_renderLayerWasChanged()
+	{
+		// Finish up previous render layer surface
+
+		if (m_pRenderLayerSurface)
+		{
+			m_pRenderLayerSurface->pullPixels(m_canvasPixelBuffer);
+			m_pRenderLayerSurface->freePixelBuffer(m_canvasPixelBuffer);
+		}
+
+		// Create our layer surface if needed
+
+		bool	bClear = false;
+		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
+		{
+			m_layerSurfaces[m_renderLayer - 1] = SoftSurface::create(m_canvasSize, m_pLayerDef->layerFormat(m_renderLayer - 1));
+			bClear = true;
+		}
+
+		// 
+
+		m_pRenderLayerSurface = m_renderLayer == 0 ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+
+		m_canvasPixelBuffer = m_pRenderLayerSurface->allocPixelBuffer();
+		m_pRenderLayerSurface->pushPixels(m_canvasPixelBuffer);
+
+		m_pCanvasPixels = m_canvasPixelBuffer.pPixels;
+		m_canvasPitch = m_canvasPixelBuffer.pitch;
+
+		m_canvasPixelBits = m_pRenderLayerSurface->pixelDescription()->bits;
+
+		_updateTintSettings();
+		_updateBlitFunctions();
+
+		if (bClear)
+			_clearRenderLayer();
+	}
 
 	//____ _transformBlit() [simple] ____________________________________
 
@@ -4662,7 +4605,7 @@ namespace wg
 	{
 		// Sanity checking...
 
-		if (!m_pCanvas || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
+		if (!m_pRenderLayerSurface || !m_pBlitSource || !m_pCanvasPixels || !m_pBlitSource->m_pData)
 		{
 			m_pSimpleBlitOp = &SoftGfxDevice::_dummySimpleBlit;
 			m_pComplexBlitOp = &SoftGfxDevice::_dummyComplexBlit;
@@ -4673,21 +4616,21 @@ namespace wg
 
 		ScaleMode		scaleMode = m_pBlitSource->scaleMode();
 		PixelFormat		srcFormat = m_pBlitSource->m_pixelDescription.format;
-		PixelFormat		dstFormat = m_pCanvas->pixelFormat();
+		PixelFormat		dstFormat = m_pRenderLayerSurface->pixelFormat();
 
 		// Add fallback back to two-pass rendering.
 
 		m_pSimpleBlitOnePassOp = nullptr;
 		m_pComplexBlitOnePassOp = nullptr;
 
-		if (m_pCanvas->pixelDescription()->bLinear && m_pBlitSource->pixelDescription()->bLinear)
+		if (m_pRenderLayerSurface->pixelDescription()->bLinear && m_pBlitSource->pixelDescription()->bLinear)
 		{
 			m_pSimpleBlitFirstPassOp = s_moveTo_BGRA_8_linear_OpTab[(int)srcFormat][0];
 			m_pSimpleTileBlitFirstPassOp = s_moveTo_BGRA_8_linear_OpTab[(int)srcFormat][1];
 			m_pComplexBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][0];
 			m_pComplexClipBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][1];
 			m_pComplexTileBlitFirstPassOp = s_transformTo_BGRA_8_linear_OpTab[(int)srcFormat][(int)scaleMode][2];
-			m_pBlitSecondPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+			m_pBlitSecondPassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 		else
 		{
@@ -4696,14 +4639,14 @@ namespace wg
 			m_pComplexBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][0];
 			m_pComplexClipBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][1];
 			m_pComplexTileBlitFirstPassOp = s_transformTo_internal_OpTab[(int)srcFormat][(int)scaleMode][2];
-			m_pBlitSecondPassOp = s_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+			m_pBlitSecondPassOp = s_pass2OpTab[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 		}
 
 
 		// Try to find a suitable one-pass operation
 
-		if (srcFormat == PixelFormat::BGRA_8_linear && m_pCanvas->pixelDescription()->bLinear )
-			m_pSimpleBlitOnePassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pCanvas->pixelFormat()];
+		if (srcFormat == PixelFormat::BGRA_8_linear && m_pRenderLayerSurface->pixelDescription()->bLinear )
+			m_pSimpleBlitOnePassOp = s_pass2OpTab_fast8[(int)m_colTrans.mode][(int)m_blendMode][(int)m_pRenderLayerSurface->pixelFormat()];
 
 
 		if (m_colTrans.mode == TintMode::None)
@@ -4832,20 +4775,6 @@ namespace wg
 	void SoftGfxDevice::_initTables()
 	{
 		// Init sRGBtoLinearTab
-
-		float max = powf(255, 2.2f);
-
-		for (int i = 0; i < 256; i++)
-			s_unpackSRGBTab[i] = int((powf(float(i),2.2f) / max) * 4096 + 0.5f);
-
-		for (int i = 0; i < 256; i++)
-			s_unpackLinearTab[i] = int(i / 255.f * 4096 + 0.5f);
-
-		for (int i = 0; i <= 4096; i++)
-			s_packSRGBTab[i] = uint8_t(powf(i * max / 4096, 1 / 2.2f) + 0.5f);
-
-		for (int i = 0; i <= 4096; i++)
-			s_packLinearTab[i] = uint8_t(i / 4096.f * 255.f + 0.5f);
 
 		for (int i = 0; i <= 4096; i++)
 			s_limit4096Tab[i] = 0;

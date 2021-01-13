@@ -99,7 +99,7 @@ namespace wg
 
 	//____ setColor() ______________________________________________________________
 
-	void TextStyle::setColor( Color color )
+	void TextStyle::setColor( HiColor color )
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 			m_color[i] = color;
@@ -109,7 +109,7 @@ namespace wg
 		m_bStaticColor = true;
 	}
 
-	void TextStyle::setColor( Color color, State state )
+	void TextStyle::setColor( HiColor color, State state )
 	{
 		int i = Util::_stateToIndex(state);
 
@@ -122,7 +122,7 @@ namespace wg
 
 	//____ setBgColor() ______________________________________________________________
 
-	void TextStyle::setBgColor( Color color )
+	void TextStyle::setBgColor( HiColor color )
 	{
 		for (int i = 0; i < StateEnum_Nb; i++)
 			m_bgColor[i] = color;
@@ -132,7 +132,7 @@ namespace wg
 		m_bStaticBgColor = true;
 	}
 
-	void TextStyle::setBgColor( Color color, State state )
+	void TextStyle::setBgColor( HiColor color, State state )
 	{
 		int i = Util::_stateToIndex(state);
 
