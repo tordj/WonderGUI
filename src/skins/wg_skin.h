@@ -99,6 +99,9 @@ namespace wg
 	protected:
 		Skin() {};
 
+        inline void     _doIncUseCount(Skin * pSkin) { pSkin->_incUseCount();}
+        inline void     _doDecUseCount(Skin * pSkin) { pSkin->_decUseCount();}
+
 		virtual void	_incUseCount() { m_useCount++; }
 		virtual void	_decUseCount() { m_useCount--; }
 

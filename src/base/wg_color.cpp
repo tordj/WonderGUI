@@ -347,7 +347,7 @@ namespace wg
 		}
 	}
 
-	//____ operator Colour() ___________________________________________________
+	//____ operator Color8() ___________________________________________________
 
 	HiColor::operator Color8() const
 	{

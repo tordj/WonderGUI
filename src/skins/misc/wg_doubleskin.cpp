@@ -23,8 +23,9 @@
 #include <wg_doubleskin.h>
 #include <wg_geo.h>
 #include <wg_util.h>
-#include <wg_internal.h>
+#include <wg_gfxdevice.h>
 #include <cassert>
+#include <algorithm>
 
 namespace wg
 {
@@ -392,10 +393,10 @@ namespace wg
 	void DoubleSkin::_incUseCount()
 	{
 		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_incUseCount();
+            _doIncUseCount(m_pFrontSkin);
 
 		if (m_pBackSkin)
-			OO(m_pBackSkin)->_incUseCount();
+            _doIncUseCount(m_pBackSkin);
 
 		m_useCount++;
 	}
@@ -405,10 +406,10 @@ namespace wg
 	void DoubleSkin::_decUseCount()
 	{
 		if (m_pFrontSkin)
-			OO(m_pFrontSkin)->_decUseCount();
+            _doDecUseCount(m_pFrontSkin);
 
 		if (m_pBackSkin)
-			OO(m_pBackSkin)->_decUseCount();
+			_doIncUseCount(m_pBackSkin);
 
 		m_useCount--;
 	}

@@ -25,10 +25,8 @@
 #include <wg_util.h>
 #include <wg_base.h>
 #include <wg_context.h>
-#include <wg_internal.h>
 #include <cassert>
 #include <wg_cdynamicvector.impl.h>
-#include <wg_internal.h>
 #include <wg_skin.impl.h>
 
 namespace wg
@@ -664,7 +662,7 @@ namespace wg
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
-				OO(pSkin)->_incUseCount();
+                _doIncUseCount(pSkin);
 		}
 
 		m_useCount++;
@@ -677,7 +675,7 @@ namespace wg
 		for (auto& pSkin : skins)
 		{
 			if (pSkin)
-				OO(pSkin)->_decUseCount();
+				_doDecUseCount(pSkin);
 		}
 
 		m_useCount--;

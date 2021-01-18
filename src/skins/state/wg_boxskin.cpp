@@ -170,8 +170,6 @@ namespace wg
 		RectI canvas = _canvas.px();
 
 		int i = _stateToIndex(state);
-		pDevice->fill(canvas, m_fillColor[i]);
-
 
 		if( m_frame.width() + m_frame.height() == 0 || m_frameColor[i] == m_fillColor[i] )
 		{

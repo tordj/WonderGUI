@@ -82,8 +82,8 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
-		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
 		void				endCanvasUpdate();
 		inline Surface_p	canvas() const { return m_pCanvas; }
 		inline SizeI		canvasSize() const { return m_canvasSize; }
@@ -221,7 +221,7 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
-		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
+		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
 
 
@@ -295,12 +295,12 @@ namespace wg
 	};
 
 
-	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
 		return _beginCanvasUpdate(canvas, nullptr, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
-	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
 		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}

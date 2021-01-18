@@ -23,7 +23,6 @@
 #include <wg_scrollskin.h>
 #include <wg_geo.h>
 #include <wg_util.h>
-#include <wg_internal.h>
 #include <wg_skin.impl.h>
 
 #include <cassert>

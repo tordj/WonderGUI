@@ -374,7 +374,7 @@ namespace wg
 
 	//____ _beginCanvasUpdate() ________________________________________________
 
-	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
+	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
 		SizeI sz = canvas.size();
 

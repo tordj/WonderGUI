@@ -343,14 +343,16 @@ namespace wg
 
 		// Update wondergui systems
 
-		s_pData->pInputHandler->_update(timestamp/1000);
-		SkinSlotManager::update(microPassed/1000);
+#ifndef WG2_MODE
+        s_pData->pInputHandler->_update(timestamp/1000);
+#endif
+        SkinSlotManager::update(microPassed/1000);
 
 		// Update widgets
-
+#ifndef WG2_MODE
 		for (auto pReceiver : s_updateReceivers)
 			pReceiver->_update(microPassed, timestamp);
-
+#endif
 	}
 
 	//____ memStackAlloc() ________________________________________________________

@@ -27,7 +27,6 @@
 #include <wg_base.h>
 #include <wg_context.h>
 #include <wg_skin.impl.h>
-#include <wg_msgrouter.h>
 
 #include <cmath>
 

@@ -23,9 +23,6 @@
 #include <wg_animskin.h>
 #include <wg_util.h>
 #include <wg_base.h>
-#include <wg_msgrouter.h>
-#include <wg_cskinslot.h>
-#include <wg_internal.h>
 
 namespace wg
 {
