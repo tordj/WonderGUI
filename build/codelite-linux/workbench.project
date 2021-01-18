@@ -65,6 +65,7 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/anim/"/>
         <IncludePath Value="../../src/skins/meter/"/>
         <IncludePath Value="../../src/skins/misc/"/>
         <IncludePath Value="../../src/skins/state/"/>
@@ -138,6 +139,7 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/anim/"/>
         <IncludePath Value="../../src/skins/meter/"/>
         <IncludePath Value="../../src/skins/misc/"/>
         <IncludePath Value="../../src/skins/state/"/>
@@ -153,6 +155,7 @@
         <IncludePath Value="../../src/gfxdevices/software/"/>
         <IncludePath Value="../../src/gfxdevices/opengl/"/>
         <IncludePath Value="../../src/gfxdevices/stream/"/>
+        <IncludePath Value="../../src/fonts/freetype/"/>
         <Preprocessor Value="NDEBUG"/>
       </Compiler>
       <Linker Options="" Required="yes">

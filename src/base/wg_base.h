@@ -32,6 +32,7 @@
 #include <string>
 #include <functional>
 #include <unordered_map>
+#include <vector>
 
 
 //#define WG2_MODE

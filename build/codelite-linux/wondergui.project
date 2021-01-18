@@ -80,8 +80,10 @@
     <File Name="../../src/widgets/wg_animplayer.h"/>
     <File Name="../../src/widgets/wg_animplayer.cpp"/>
     <VirtualDirectory Name="capsules">
-      <File Name="../../src/widgets/capsules/wg_canvasstack.h"/>
-      <File Name="../../src/widgets/capsules/wg_canvasstack.cpp"/>
+      <File Name="../../src/widgets/capsules/wg_renderlayercapsule.h"/>
+      <File Name="../../src/widgets/capsules/wg_renderlayercapsule.cpp"/>
+      <File Name="../../src/widgets/capsules/wg_canvascapsule.h"/>
+      <File Name="../../src/widgets/capsules/wg_canvascapsule.cpp"/>
       <File Name="../../src/widgets/capsules/wg_capsule.cpp"/>
       <File Name="../../src/widgets/capsules/wg_capsule.h"/>
       <File Name="../../src/widgets/capsules/wg_shadercapsule.cpp"/>
@@ -114,6 +116,8 @@
       <File Name="../../src/widgets/lists/wg_packlist.h"/>
     </VirtualDirectory>
     <VirtualDirectory Name="layers">
+      <File Name="../../src/widgets/layers/wg_tooltiplayer.h"/>
+      <File Name="../../src/widgets/layers/wg_tooltiplayer.cpp"/>
       <File Name="../../src/widgets/layers/wg_designlayer.h"/>
       <File Name="../../src/widgets/layers/wg_designlayer.cpp"/>
       <File Name="../../src/widgets/layers/wg_layer.cpp"/>
@@ -127,7 +131,16 @@
     </VirtualDirectory>
   </VirtualDirectory>
   <VirtualDirectory Name="skins">
+    <File Name="../../src/skins/wg_skin.impl.h"/>
+    <File Name="../../src/skins/wg_animskin.h"/>
+    <File Name="../../src/skins/wg_animskin.cpp"/>
+    <VirtualDirectory Name="anim">
+      <File Name="../../src/skins/anim/wg_spinanimskin.h"/>
+      <File Name="../../src/skins/anim/wg_spinanimskin.cpp"/>
+    </VirtualDirectory>
     <VirtualDirectory Name="static">
+      <File Name="../../src/skins/static/wg_staticgradientskin.h"/>
+      <File Name="../../src/skins/static/wg_staticgradientskin.cpp"/>
       <File Name="../../src/skins/static/wg_statictileskin.h"/>
       <File Name="../../src/skins/static/wg_statictileskin.cpp"/>
       <File Name="../../src/skins/static/wg_staticcolorskin.h"/>
@@ -138,6 +151,8 @@
       <File Name="../../src/skins/static/wg_staticblockskin.cpp"/>
     </VirtualDirectory>
     <VirtualDirectory Name="state">
+      <File Name="../../src/skins/state/wg_scrollskin.h"/>
+      <File Name="../../src/skins/state/wg_scrollskin.cpp"/>
       <File Name="../../src/skins/state/wg_tileskin.h"/>
       <File Name="../../src/skins/state/wg_tileskin.cpp"/>
       <File Name="../../src/skins/state/wg_multiblockskin.h"/>
@@ -208,6 +223,8 @@
     <File Name="../../src/base/wg_slotholder.h"/>
     <File Name="../../src/base/wg_slot.h"/>
     <File Name="../../src/base/wg_slot.cpp"/>
+    <File Name="../../src/base/wg_skinslotmanager.h"/>
+    <File Name="../../src/base/wg_skinslotmanager.cpp"/>
     <File Name="../../src/base/wg_shadow.h"/>
     <File Name="../../src/base/wg_selectableslot.h"/>
     <File Name="../../src/base/wg_scrollbartarget.h"/>
@@ -241,6 +258,8 @@
     <File Name="../../src/base/wg_internal.h"/>
     <File Name="../../src/base/wg_inputhandler.h"/>
     <File Name="../../src/base/wg_inputhandler.cpp"/>
+    <File Name="../../src/base/wg_gradient.h"/>
+    <File Name="../../src/base/wg_gradient.cpp"/>
     <File Name="../../src/base/wg_gfxstreamwriter.h"/>
     <File Name="../../src/base/wg_gfxstreamwriter.cpp"/>
     <File Name="../../src/base/wg_gfxstreamreader.h"/>
@@ -279,6 +298,8 @@
     <File Name="../../src/base/wg_chain.cpp"/>
     <File Name="../../src/base/wg_caret.h"/>
     <File Name="../../src/base/wg_caret.cpp"/>
+    <File Name="../../src/base/wg_canvaslayers.h"/>
+    <File Name="../../src/base/wg_canvaslayers.cpp"/>
     <File Name="../../src/base/wg_blob.h"/>
     <File Name="../../src/base/wg_blob.cpp"/>
     <File Name="../../src/base/wg_bitmapfont.h"/>
@@ -334,6 +355,10 @@
     <File Name="../../src/components/wg_cslotarray.h"/>
     <File Name="../../src/components/wg_cslot.h"/>
     <File Name="../../src/components/wg_cslot.cpp"/>
+    <File Name="../../src/components/wg_cskinslotmi.h"/>
+    <File Name="../../src/components/wg_cskinslotmi.cpp"/>
+    <File Name="../../src/components/wg_cskinslot.h"/>
+    <File Name="../../src/components/wg_cskinslot.cpp"/>
     <File Name="../../src/components/wg_cshadows.h"/>
     <File Name="../../src/components/wg_cshadows.cpp"/>
     <File Name="../../src/components/wg_cselectableslotvector.impl.h"/>
@@ -379,6 +404,7 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/anim/"/>
         <IncludePath Value="../../src/skins/meter/"/>
         <IncludePath Value="../../src/skins/misc/"/>
         <IncludePath Value="../../src/skins/state/"/>
@@ -434,6 +460,7 @@
         <IncludePath Value="../../src/interfaces/"/>
         <IncludePath Value="../../src/sizebrokers/"/>
         <IncludePath Value="../../src/skins/"/>
+        <IncludePath Value="../../src/skins/anim/"/>
         <IncludePath Value="../../src/skins/meter/"/>
         <IncludePath Value="../../src/skins/misc/"/>
         <IncludePath Value="../../src/skins/state/"/>

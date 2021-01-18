@@ -22,6 +22,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <cstring>
 
 #include <wg_gfxdevice.h>
 #include <wg_geo.h>

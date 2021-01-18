@@ -26,6 +26,7 @@
 #include <wg_context.h>
 
 #include <algorithm>
+#include <math.h>
 
 namespace wg
 {
