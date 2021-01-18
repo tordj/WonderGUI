@@ -280,6 +280,15 @@ bool WgChart::SetWaveStyle(int waveId, WgColor frontFill, WgColor backFill, floa
         p->bottomLineColorStart = p->bottomLineColor;
         startTransition = true;
     }
+    
+    if(transitionMs == 0)
+    {
+       p->frontFill = frontFill;
+       p->backFill = backFill;
+       p->topLineColor = topLineColor;
+       p->bottomLineColor = bottomLineColor;
+    }
+
 
     if(startTransition)
     {

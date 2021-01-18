@@ -213,6 +213,7 @@ public:
 	WgGfxFrame * GetLastFrame(void) {return (WgGfxFrame *) WgAnim::_lastKeyFrame(); };
 
 	WgBlock		 GetBlock( int64_t tick, int scale, WgGfxFrame * pProximity = 0 ) const;
+    std::tuple<WgBlock, WgBlock, float> GetInterpolatedBlock( double tick, int scale, WgGfxFrame * pProximity = 0 ) const;
 
 protected:
 

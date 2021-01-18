@@ -86,10 +86,41 @@ bool WgRootPanel::SetGfxDevice( wg::GfxDevice * pDevice )
 {
 	m_pGfxDevice = pDevice;
 
-	if( m_pGfxDevice && !m_bHasGeo && m_hook.Widget() )
-		m_hook.Widget()->_onNewSize( m_pGfxDevice->canvasSize() );
-
 	return true;
+}
+
+//____ SetCanvas() ________________________________________________________
+
+bool WgRootPanel::SetCanvas(wg::Surface* pCanvas)
+{
+    if( pCanvas == m_pCanvas )
+        return true;
+    
+    if (!pCanvas)
+    {
+        return false;
+    }
+
+    m_pCanvas = pCanvas;
+    m_canvasSize = pCanvas->size();
+
+    if( !m_bHasGeo && m_hook.Widget() )
+        m_hook.Widget()->_onNewSize(m_canvasSize);
+
+    m_dirtyPatches.add(PixelGeo());
+    return true;
+}
+
+bool WgRootPanel::SetCanvas(const wg::SizeI& pixelSize)
+{
+    m_pCanvas = nullptr;
+    m_canvasSize = pixelSize;
+
+    if( !m_bHasGeo && m_hook.Widget() )
+        m_hook.Widget()->_onNewSize(m_canvasSize);
+
+    m_dirtyPatches.add(PixelGeo());
+    return true;
 }
 
 //_____ SetPixelGeo() _____________________________________________________________

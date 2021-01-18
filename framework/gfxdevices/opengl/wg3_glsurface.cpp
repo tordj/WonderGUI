@@ -117,7 +117,7 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, int flags, const Color8 * pClut ) : Surface(flags)
 	{
-        flags |= (int) SurfaceFlag::Buffered;
+//        flags |= (int) SurfaceFlag::Buffered;
 		HANDLE_GLERROR(glGetError());
 
 		_setPixelDetails(format);
@@ -151,7 +151,7 @@ namespace wg
 				m_pAlphaMap = new uint8_t[size.w * size.h];
 		}
 
-		_setupGlTexture(nullptr, flags);
+		_setupGlTexture(nullptr, 0, flags);
 
 		HANDLE_GLERROR(glGetError());
 	}
@@ -159,7 +159,7 @@ namespace wg
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, Blob * pBlob, int pitch, int flags, const Color8 * pClut ) : Surface(flags)
 	{
-        flags |= (int) SurfaceFlag::Buffered;
+//        flags |= (int) SurfaceFlag::Buffered;
 		// Set general information
 
 		_setPixelDetails(format);
@@ -202,13 +202,14 @@ namespace wg
 
 		//TODO: Support pitch
 		
-		_setupGlTexture(pBlob->data(), flags);
+		_setupGlTexture(pBlob->data(), pitch, flags);
 	}
 
 	GlSurface::GlSurface( SizeI size, PixelFormat format, uint8_t * pPixels, int pitch, const PixelDescription * pPixelDescription, int flags, const Color8 * pClut ) : Surface(flags)
 	{
-       flags |= (int) SurfaceFlag::Buffered;
-	   _setPixelDetails(format);
+//       flags |= (int) SurfaceFlag::Buffered;
+
+        _setPixelDetails(format);
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= size;
 		m_pClut = nullptr;
@@ -222,21 +223,24 @@ namespace wg
 
             _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
 
-            if (pClut)
-            {
-                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
-                memcpy(m_pClut, pClut, 1024);
-            }
+            _setupGlTexture(m_pBlob->data(), m_pitch, flags);
         }
         else
 		{
-			m_pitch = 0;
+            if( pPixelDescription->format == PixelFormat::Custom )
+            {
+                m_pitch = ((size.w * m_pixelDescription.bits / 8) + 3) & 0xFFFFFFFC;
+                m_pBlob = Blob::create(m_pitch * m_size.h + (pClut ? 1024 : 0));
 
-			if (pClut)
-			{
-				m_pClut = new Color8[256];
-				memcpy(m_pClut, pClut, 1024);
-			}
+                _copyFrom(pPixelDescription == 0 ? &m_pixelDescription : pPixelDescription, pPixels, pitch, size, size);
+
+                _setupGlTexture(m_pBlob->data(), m_pitch, flags);
+            }
+            else
+                _setupGlTexture(pPixels, pitch, flags);
+
+            m_pBlob = nullptr;
+            m_pitch = 0;
 
 			if (m_pixelDescription.A_bits > 0)
 			{
@@ -254,15 +258,23 @@ namespace wg
 			}
 		}
 
-		//TODO: Support pitch
+        // Setup CLUT
+        
+        if (pClut)
+        {
+            if( m_pBlob )
+                m_pClut = (Color8*)((uint8_t*)m_pBlob->data() + m_pitch * size.h);
+            else
+                m_pClut = new Color[256];
 
-		_setupGlTexture(m_pBlob->data(), flags);
+            memcpy(m_pClut, pClut, 1024);
+        }
 	}
 
 
 	GlSurface::GlSurface( Surface * pOther, int flags ) : Surface(flags)
 	{
-        flags |= (int) SurfaceFlag::Buffered;
+//        flags |= (int) SurfaceFlag::Buffered;
 		_setPixelDetails(pOther->pixelFormat());
 		m_scaleMode = ScaleMode::Interpolate;
 		m_size	= pOther->size();
@@ -307,12 +319,12 @@ namespace wg
 
 		//TODO: Support pitch
 
-		_setupGlTexture(m_pBlob->data(), flags);
+        _setupGlTexture(pixbuf.pPixels, pixbuf.pitch, flags);
 
 		pOther->freePixelBuffer(pixbuf);
 	}
 
-	void GlSurface::_setupGlTexture(void * pPixelsToUpload, int flags)
+	void GlSurface::_setupGlTexture(void * pPixelsToUpload, int pitch, int flags)
 	{
 		GLint oldBinding;
 		glGetIntegerv(GL_TEXTURE_BINDING_2D, &oldBinding);
@@ -330,7 +342,9 @@ namespace wg
 //		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAX_LEVEL, 0);
 
 		HANDLE_GLERROR(glGetError());
-		glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, pitch/m_pixelSize);
+        glTexImage2D(GL_TEXTURE_2D, 0, m_internalFormat, m_size.w, m_size.h, 0, m_accessFormat, m_pixelDataType, pPixelsToUpload);
+        glPixelStorei(GL_UNPACK_ROW_LENGTH, 0);
 		HANDLE_GLERROR(glGetError());
 
 

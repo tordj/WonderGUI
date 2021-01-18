@@ -73,6 +73,8 @@ public:
 	bool			PlayTo(int pos );					/// Play to position measured in ticks
 	bool			PlayToFractional(float fraction);	/// Play to position measured in ticks
 
+    void            SetInterpolation(bool bInt) { m_bInterpolation = bInt; }
+    bool            GetInterpolation() { return m_bInterpolation; }
 
 	WgSize			PreferredPixelSize() const;
 
@@ -95,6 +97,8 @@ private:
 
 	WgGfxAnim *		m_pAnim;
 	WgBlock			m_animFrame;			// Frame currently used by animation.
+    WgBlock         m_animFrame2;           // Frame used by interpolation
+    double          m_fInterpolationWeight = 0.0f; 
 
 	bool			m_bPlaying;
 	double			m_playPos;
@@ -103,6 +107,8 @@ private:
 	float           m_playStateFraction = 0.0f;
 
 	WgColor         m_kTintColor;
+
+    bool            m_bInterpolation = false;
 };
 
 

@@ -287,15 +287,40 @@ void WgAnimPlayer::_playPosUpdated()
 	if( !m_pAnim )
 		return;
 
-	WgBlock block = m_pAnim->GetBlock( (int64_t) m_playPos, m_scale );
+    if(m_bInterpolation)
+    {
+        WgBlock block1;
+        WgBlock block2;
+        double weight;
 
-	if( block != m_animFrame )
-	{
-		m_animFrame = block;
-		_requestRender();
+        std::tie(block1, block2, weight) = m_pAnim->GetInterpolatedBlock( (double) m_playPos, m_scale );
+        if (block1 != m_animFrame ||
+            block2 != m_animFrame2 ||
+            weight != m_fInterpolationWeight)
+        {
+            m_animFrame = block1;
+            m_animFrame2 = block2;
+            m_fInterpolationWeight = weight;
 
-		_queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
-	}
+            _requestRender();
+
+            _queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
+        }
+    }
+    else
+    {
+        WgBlock block = m_pAnim->GetBlock( (int64_t) m_playPos, m_scale );
+
+        if( block != m_animFrame )
+        {
+            m_animFrame = block;
+            _requestRender();
+
+            _queueEvent( new WgEvent::AnimationUpdate(this, (int)m_playPos, (float) (m_playPos/(m_pAnim->Duration()-1))));
+        }
+    }
+
+
 }
 
 
@@ -367,8 +392,22 @@ void WgAnimPlayer::_onRender( wg::GfxDevice * pDevice, const WgRect& _canvas, co
 	}
 
 	if( m_pAnim && m_bEnabled )
-		WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
-	else if( m_pSkin )
+    {
+        if(m_bInterpolation)
+        {
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
+            pDevice->setMorphFactor(m_fInterpolationWeight);
+            pDevice->setBlendMode(wg::BlendMode::Morph);
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame2, _canvas );
+            pDevice->setBlendMode(wg::BlendMode::Blend);
+
+        }
+        else
+        {
+            WgGfxDevice::BlitBlock( pDevice, m_animFrame, _canvas );
+        }
+    }
+    else if( m_pSkin )
 	{
 		_renderSkin( m_pSkin, pDevice, WgStateEnum::Normal, _canvas, m_scale );
 	}

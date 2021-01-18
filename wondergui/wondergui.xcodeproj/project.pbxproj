@@ -48,6 +48,7 @@
 		1750E65225A5F9C0002F236C /* wg3_canvaslayers.h in Headers */ = {isa = PBXBuildFile; fileRef = 1750E65025A5F9C0002F236C /* wg3_canvaslayers.h */; };
 		1750E65925A8B54A002F236C /* wg_tooltiplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1750E65725A8B54A002F236C /* wg_tooltiplayer.cpp */; };
 		1750E65A25A8B54A002F236C /* wg_tooltiplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1750E65825A8B54A002F236C /* wg_tooltiplayer.h */; };
+		175968A825B04F2100F11CEC /* wg3_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968A725B04F2100F11CEC /* wg3_internal.h */; };
 		176A3F6025AEEF67001211CC /* wg3_skinslotmanager.h in Headers */ = {isa = PBXBuildFile; fileRef = 176A3F5E25AEEF66001211CC /* wg3_skinslotmanager.h */; };
 		176A3F6125AEEF67001211CC /* wg3_skinslotmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176A3F5F25AEEF66001211CC /* wg3_skinslotmanager.cpp */; };
 		177A719F23C620CB003E629B /* wg3_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177A719D23C620CB003E629B /* wg3_component.cpp */; };
@@ -316,6 +317,7 @@
 		1750E65025A5F9C0002F236C /* wg3_canvaslayers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_canvaslayers.h; path = ../framework/base/wg3_canvaslayers.h; sourceTree = "<group>"; };
 		1750E65725A8B54A002F236C /* wg_tooltiplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_tooltiplayer.cpp; path = ../framework/wg_tooltiplayer.cpp; sourceTree = "<group>"; };
 		1750E65825A8B54A002F236C /* wg_tooltiplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_tooltiplayer.h; path = ../framework/wg_tooltiplayer.h; sourceTree = "<group>"; };
+		175968A725B04F2100F11CEC /* wg3_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_internal.h; path = ../framework/base/wg3_internal.h; sourceTree = "<group>"; };
 		176A3F5E25AEEF66001211CC /* wg3_skinslotmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_skinslotmanager.h; path = ../framework/base/wg3_skinslotmanager.h; sourceTree = "<group>"; };
 		176A3F5F25AEEF66001211CC /* wg3_skinslotmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_skinslotmanager.cpp; path = ../framework/base/wg3_skinslotmanager.cpp; sourceTree = "<group>"; };
 		177A719D23C620CB003E629B /* wg3_component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_component.cpp; path = ../framework/components/wg3_component.cpp; sourceTree = "<group>"; };
@@ -754,6 +756,7 @@
 		17E03D2023D9F34900B0A3D8 /* base */ = {
 			isa = PBXGroup;
 			children = (
+				175968A725B04F2100F11CEC /* wg3_internal.h */,
 				17C483AB240D3A0B0030453B /* wg3_base.cpp */,
 				17E03D3723D9F37B00B0A3D8 /* wg3_base.h */,
 				170768C123FEB5CC00CAAAED /* wg3_bitmapfont.cpp */,
@@ -940,6 +943,7 @@
 				17F8270024AF1E4E00AF77DF /* wg_volumemeter.h in Headers */,
 				17F827BD24AF2ECE00AF77DF /* wg3_colorskin.h in Headers */,
 				170768E223FED09000CAAAED /* wg3_chain.h in Headers */,
+				175968A825B04F2100F11CEC /* wg3_internal.h in Headers */,
 				170768CC23FEB5CD00CAAAED /* wg3_font.h in Headers */,
 				17F8273624AF1E4E00AF77DF /* wg_eventfilter.h in Headers */,
 				17F826F724AF1E4E00AF77DF /* wg_interface_textholder.h in Headers */,

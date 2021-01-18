@@ -250,6 +250,26 @@ WgBlock WgGfxAnim::GetBlock( int64_t ticks, int scale, WgGfxFrame * pProximity )
 	return WgBlock( pFrame->pSurf[alt], WgRect( pFrame->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags );
 }
 
+//____ GetInterpolatedBlock() _____________________________________________________________
+
+std::tuple<WgBlock, WgBlock, float> WgGfxAnim::GetInterpolatedBlock( double ticks, int scale, WgGfxFrame * pProximity) const
+{
+    WgAnimPlayPos playPos = _playPos( ticks, pProximity );
+    WgGfxFrame * pFrame1 = (WgGfxFrame*) playPos.pKeyFrame1;
+    WgGfxFrame * pFrame2 = (WgGfxFrame*) playPos.pKeyFrame2;
+    double weight = (ticks - (double)pFrame1->Timestamp())/(double)pFrame1->Duration();
+
+    int alt = 0;
+    for( int i = 1 ; i < MAX_ANIM_ALT ; i++ )
+    {
+        if( m_activationScale[i] <= scale && pFrame1->pSurf[i] != 0 )
+            alt = i;
+    }
+
+    return { WgBlock( pFrame1->pSurf[alt], WgRect( pFrame1->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags ),
+        WgBlock( pFrame2->pSurf[alt], WgRect( pFrame2->ofs[alt], m_size[alt]), m_borders[alt], WgBorders(), WgBorders(), WgCoord(), WG_SCALE_BASE, m_blockFlags ),
+        weight };
+}
 
 //___________________________________________________________________
 

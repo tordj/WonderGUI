@@ -112,7 +112,7 @@ namespace wg
 
 
 		void		_setPixelDetails( PixelFormat format );
-		void		_setupGlTexture( void * pPixelsToUpload, int flags);
+		void		_setupGlTexture( void * pPixelsToUpload, int pitch, int flags);
 		void		_updateAlphaMap(const PixelBuffer& buffer, const RectI& bufferRect);
 
 		int			m_bPendingReads = false;					// Set if there are queued GL commands that will use surface as source. Active GlGfxDevice needs to be flushed before we modify.

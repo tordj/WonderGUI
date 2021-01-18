@@ -53,6 +53,11 @@ public:
 	bool					SetGfxDevice( wg::GfxDevice * pDevice );
 	inline wg::GfxDevice_p 	GfxDevice() const { return m_pGfxDevice; };
 
+    bool                    SetCanvas(wg::Surface* pCanvas);
+    bool                    SetCanvas(const wg::SizeI& pixelSize);
+    inline wg::Surface_p    Canvas() const { return m_pCanvas; }
+    inline wg::SizeI        CanvasSize() const { return m_canvasSize; }
+    
 	inline WgEventHandler *	EventHandler() const { return m_pEventHandler; }
 
 	bool					SetPixelGeo( const WgRect& geo );

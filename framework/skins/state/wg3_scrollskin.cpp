@@ -23,7 +23,6 @@
 #include <wg3_scrollskin.h>
 #include <wg3_geo.h>
 #include <wg3_util.h>
-#include <wg3_internal.h>
 #include <wg3_skin.impl.h>
 
 #include <cassert>
