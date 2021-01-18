@@ -67,16 +67,12 @@ namespace wg
 		void				setGammaCorrection(bool bOn);
 		inline bool			gammaCorrection() const { return m_bGammaCorrection; }
 
-		void				setCanvasLayers(CanvasLayers* pLayers);
-		inline CanvasLayers_p canvasLayers() const { return m_pCanvasLayers; }
-
 	private:
 		Context() {};
 		~Context() {};
 
 		GfxDevice_p			m_pGfxDevice;					// GfxDevice that can be used by Widgets when needed.
 		SurfaceFactory_p	m_pSurfaceFactory;				// SurfaceFactory that can be used by Widgets when needed.
-		CanvasLayers_p		m_pCanvasLayers;
 
 		float				m_scale				= 1.f;		// Valid values are 0.25, 0.5, 0.75, 1.0, 1.25, 1.5, 1.75, 2, 2.25, etc <= 8.0
 		bool				m_bGammaCorrection = true;		// 

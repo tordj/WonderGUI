@@ -310,8 +310,6 @@ int main(int argc, char** argv)
 	pContext->setScale(2.00);
 
 
-	auto pCanvasLayers = CanvasLayers::create({ {BlendMode::Subtract, PixelFormat::A_8}, {BlendMode::Blend, PixelFormat::BGRA_8}, {BlendMode::Add, PixelFormat::BGRA_8} });
-	pContext->setCanvasLayers(pCanvasLayers);
 
 
 
@@ -421,12 +419,15 @@ int main(int argc, char** argv)
 	GfxDevice_p pGfxDevice				= Base::activeContext()->gfxDevice();
 	SurfaceFactory_p pSurfaceFactory	= Base::activeContext()->surfaceFactory();
 
+
 	RootPanel_p pRoot;
 	if( pCanvas )
 		pRoot = RootPanel::create(pCanvas, pGfxDevice);
 	else
 		pRoot = RootPanel::create({ width,height }, pGfxDevice);
 
+	auto pCanvasLayers = CanvasLayers::create({ {BlendMode::Subtract, PixelFormat::A_8}, {BlendMode::Blend, PixelFormat::BGRA_8}, {BlendMode::Add, PixelFormat::BGRA_8} });
+	pRoot->setCanvasLayers(pCanvasLayers);
 
 //		pRoot->setDebugMode(true);
 

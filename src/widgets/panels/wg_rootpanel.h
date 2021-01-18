@@ -119,6 +119,9 @@ namespace wg
 		inline Surface_p	canvas() const { return m_pCanvas; }
 		inline SizeI		canvasSize() const { return m_canvasSize; }
 
+		void				setCanvasLayers( CanvasLayers * pLayers );
+		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
+
 		Widget_p			findWidget( const Coord& ofs, SearchMode mode ) { return Widget_p(_findWidget( ofs-m_geo.pos(),mode)); }
 
 		inline int			nbDirtyRects() const { return m_dirtyPatches.size(); }
@@ -226,6 +229,7 @@ namespace wg
 		GfxDevice_p			m_pGfxDevice;
 		Surface_p			m_pCanvas;
 		SizeI				m_canvasSize;		// Size of canvas in pixels, when m_pCanvas is null.
+		CanvasLayers_p		m_pCanvasLayers;
 		Rect				m_geo;
 		bool				m_bHasGeo;
 		bool				m_bVisible;

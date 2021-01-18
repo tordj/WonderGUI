@@ -583,7 +583,7 @@ namespace wg
 		bool bClear = false;
 		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer - 1] = GlSurface::create(m_canvasSize, m_pLayerDef->layerFormat(m_renderLayer - 1), SurfaceFlag::Canvas);
+			m_layerSurfaces[m_renderLayer - 1] = GlSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer - 1), SurfaceFlag::Canvas);
 			bClear = true;
 		}
 

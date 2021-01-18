@@ -97,6 +97,17 @@ namespace wg
 		}
 	}
 
+	//____ setCanvasLayers() ___________________________________________________
+
+	void CanvasCapsule::setCanvasLayers(CanvasLayers * pLayers)
+	{
+		if( pLayers != m_pCanvasLayers )
+		{
+			m_pCanvasLayers = pLayers;
+			_requestRender();
+		}
+	}
+
 	//____ _render() _____________________________________________________________
 
 	void CanvasCapsule::_render(GfxDevice* pDevice, const Rect& _canvas, const Rect& _window)
@@ -120,16 +131,16 @@ namespace wg
 		// Generate the clip buffer
 
 		int allocSize = m_patches.size() * sizeof(RectI);
-		char * pClipBuffer = Base::memStackAlloc(allocSize);
+		RectI * pClipBuffer = (RectI*) Base::memStackAlloc(allocSize);
 
-		RectI* pDst = (RectI*) pClipBuffer;
+		RectI* pDst = pClipBuffer;
 		const Rect* pSrc = m_patches.begin();
 		while (pSrc != m_patches.end())
 			*pDst++ = (*pSrc++).px();
 
 		// Render 
 
-		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), (RectI*)pClipBuffer);
+		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers);
 
 		OO(skin)._render(pDevice, _canvas.size(), m_state);
 

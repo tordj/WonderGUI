@@ -240,7 +240,7 @@ namespace wg
 		if (layer == m_renderLayer)
 			return;
 
-		if (!m_pLayerDef || layer < 0 || layer >= m_pLayerDef->size())
+		if (!m_pCanvasLayers || layer < 0 || layer >= m_pCanvasLayers->size())
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
@@ -374,10 +374,8 @@ namespace wg
 
 	//____ _beginCanvasUpdate() ________________________________________________
 
-	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, int startLayer)
+	bool GfxDevice::_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, RectI* pUpdateRects, CanvasLayers * pCanvasLayers, int startLayer )
 	{
-		CanvasLayers_p pLayerDef = Base::activeContext()->canvasLayers();
-
 		SizeI sz = canvas.size();
 
 		RectI bounds;
@@ -409,7 +407,7 @@ namespace wg
 			m_canvasStack.emplace_back();
 			auto& back = m_canvasStack.back();
 
-			back.pLayerDef = m_pLayerDef;
+			back.pCanvasLayers = m_pCanvasLayers;
 			back.pCanvas = m_pCanvas;
 			back.updateRects.pClipRects = m_pCanvasUpdateRects;
 			back.updateRects.nClipRects = m_nCanvasUpdateRects;
@@ -432,7 +430,7 @@ namespace wg
 
 		// Set values
 
-		m_pLayerDef = pLayerDef;
+		m_pCanvasLayers = pCanvasLayers;
 		m_pCanvas = pCanvas;
 		m_pCanvasUpdateRects = pUpdateRects;
 		m_nCanvasUpdateRects = nUpdateRects;
@@ -443,8 +441,8 @@ namespace wg
 		m_clipBounds = bounds;
 
 		int layer = 0;
-		if (pLayerDef)
-			layer = (startLayer >= 0 && startLayer <= pLayerDef->size()) ? startLayer : pLayerDef->defaultLayer();
+		if (pCanvasLayers)
+			layer = (startLayer >= 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->defaultLayer();
 
 
 		m_renderLayer = layer;
@@ -474,11 +472,11 @@ namespace wg
 
 		// Blend together the layers
 
-		if (m_pLayerDef)
+		if (m_pCanvasLayers)
 		{
 			bool bFirst = true;
 
-			int nbLayers = m_pLayerDef->size();
+			int nbLayers = m_pCanvasLayers->size();
 			for (int layer = 0; layer < nbLayers; layer++)
 			{
 				if (m_layerSurfaces[layer] )
@@ -492,7 +490,7 @@ namespace wg
 						bFirst = false;
 					}
 
-					setBlendMode(m_pLayerDef->layerBlendMode(layer));
+					setBlendMode(m_pCanvasLayers->layerBlendMode(layer));
 					setBlitSource(m_layerSurfaces[layer]);
 					blit({ 0,0 });
 				}
@@ -510,7 +508,7 @@ namespace wg
 		{
 			auto& back = m_canvasStack.back();
 
-			m_pLayerDef = back.pLayerDef;
+			m_pCanvasLayers = back.pCanvasLayers;
 			m_pCanvas = back.pCanvas;
 			m_pCanvasUpdateRects = back.updateRects.pClipRects;
 			m_nCanvasUpdateRects = back.updateRects.nClipRects;
@@ -537,7 +535,7 @@ namespace wg
 		}
 		else
 		{
-			m_pLayerDef = nullptr;
+			m_pCanvasLayers = nullptr;
 			m_pCanvas = nullptr;
 			m_pCanvasUpdateRects = nullptr;
 			m_nCanvasUpdateRects = 0;

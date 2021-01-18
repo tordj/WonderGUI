@@ -151,6 +151,16 @@ namespace wg
 		return true;
 	}
 
+	//____ setCanvasLayers() ___________________________________________________
+
+	void RootPanel::setCanvasLayers( CanvasLayers * pLayers )
+	{
+		if( pLayers != m_pCanvasLayers )
+		{
+			m_pCanvasLayers = pLayers;
+			m_dirtyPatches.add(geo());
+		}
+	}
 
 	//_____ setGeo() _____________________________________________________________
 
@@ -348,9 +358,9 @@ namespace wg
 				pNewRects[i] = pRects[i].px();
 
 			if (m_pCanvas)
-				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pNewRects);
+				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, nRects, pNewRects, m_pCanvasLayers);
 			else
-				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pNewRects);
+				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, nRects, pNewRects, m_pCanvasLayers);
 
 			OO(skin)._render(m_pGfxDevice, geo, StateEnum::Normal);
 
@@ -370,9 +380,9 @@ namespace wg
 			RectI myClip = clip.px();
 
 			if (m_pCanvas)
-				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, 0);
+				m_pGfxDevice->beginCanvasUpdate(m_pCanvas, 1, &myClip, nullptr, 0);
 			else
-				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &myClip, 0);
+				m_pGfxDevice->beginCanvasUpdate(m_canvasSize, 1, &myClip, nullptr, 0);
 
 			// Render our new overlays
 

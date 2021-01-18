@@ -26,6 +26,7 @@
 #include <wg_capsule.h>
 #include <wg_surfacefactory.h>
 #include <wg_patches.h>
+#include <wg_canvaslayers.h>
 
 namespace wg
 {
@@ -63,7 +64,13 @@ namespace wg
 		void				setRenderMode(BlendMode mode);
 
 		void				setSurfaceFactory(SurfaceFactory* pFactory);
+		SurfaceFactory_p	surfaceFactory() const { return m_pFactory; }
+		
 		void				setCanvasFormat(PixelFormat format);
+		PixelFormat			canvasFormat() const { return m_canvasFormat; }
+		
+		void				setCanvasLayers(CanvasLayers * pLayers);
+		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
 
 		inline HiColor		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }
@@ -83,6 +90,7 @@ namespace wg
 	private:
 
 		Surface_p			m_pCanvas;
+		CanvasLayers_p		m_pCanvasLayers;
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGR_8;
 
