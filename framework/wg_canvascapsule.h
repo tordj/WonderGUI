@@ -28,6 +28,7 @@
 #endif
 
 #include <wg3_surfacefactory.h>
+#include <wg3_canvaslayers.h>
 
 #include <wg_patches.h>
 
@@ -64,6 +65,18 @@ public:
 
 	WgWidget * 			FindWidget(const WgCoord& ofs, WgSearchMode mode);
 
+    void                SetCanvasLayers(wg::CanvasLayers * pLayers);
+    wg::CanvasLayers_p  CanvasLayers() const { return m_pCanvasLayers; }
+
+    void                SetRenderLayer(int layer);
+    int                 RenderLayer() const { return m_renderLayer; }
+    
+    void                SetPreferredSize( WgSize preferred );
+
+    WgSize              PreferredPixelSize() const override;
+
+    void                ForceRedraw();
+    
 protected:
 	void            _onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler);
 	void            _renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
@@ -93,8 +106,13 @@ private:
 	WgTintMode         m_tintMode;
 
 	wg::SurfaceFactory_p m_pFactory;
-	wg::Surface_p       m_pCanvas;
-	WgPatches           m_dirtyPatches;            // Dirty patches on our own canvas.
+	wg::Surface_p      m_pCanvas;
+    wg::CanvasLayers_p m_pCanvasLayers;
+    int                m_renderLayer = -1;
+    
+    WgSize             m_preferredSize = {-1,-1};
+    
+	WgPatches          m_dirtyPatches;            // Dirty patches on our own canvas.
 };
 
 #endif //WG_CANVASCAPSULE_DOT_H

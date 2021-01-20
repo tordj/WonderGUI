@@ -54,40 +54,41 @@ class WgEventHandler;
 
 class WgWidget : public WgWeakPtrTarget
 {
-friend class WgInput;
-friend class WgEventHandler;
+    friend class WgInput;
+    friend class WgEventHandler;
 
-friend class WgHook;
-friend class WgFlexHook;
-friend class WgModalHook;
-friend class WgListHook;
-friend class WgStackHook;
-friend class WgDragNDropHook;
+    friend class WgHook;
+    friend class WgFlexHook;
+    friend class WgModalHook;
+    friend class WgListHook;
+    friend class WgStackHook;
+    friend class WgDragNDropHook;
 
-friend class WgRootPanel;
-friend class WgFlexPanel;
-friend class WgModalLayer;
-friend class WgTablePanel;
-friend class WgScrollPanel;
-friend class WgListPanel;
-friend class WgCapsule;
-friend class WgLayer;
-friend class WgStackPanel;
-friend class WgContainer;
-friend class WgPanel;
-friend class WgPackPanel;
-friend class WgShaderCapsule;
-friend class WgCanvasCapsule;
-friend class WgFixCapsule;
-friend class WgPopupLayer;
-friend class WgFlowPanel;
-friend class WgDragNDropLayer;
-friend class WgShadowLayer;
-friend class WgTooltipLayer;
-    
-friend class WgTableRow;
+    friend class WgRootPanel;
+    friend class WgFlexPanel;
+    friend class WgModalLayer;
+    friend class WgTablePanel;
+    friend class WgScrollPanel;
+    friend class WgListPanel;
+    friend class WgCapsule;
+    friend class WgLayer;
+    friend class WgStackPanel;
+    friend class WgContainer;
+    friend class WgPanel;
+    friend class WgPackPanel;
+    friend class WgShaderCapsule;
+    friend class WgCanvasCapsule;
+    friend class WgRenderLayerCapsule;
+    friend class WgFixCapsule;
+    friend class WgPopupLayer;
+    friend class WgFlowPanel;
+    friend class WgDragNDropLayer;
+    friend class WgShadowLayer;
+    friend class WgTooltipLayer;
+        
+    friend class WgTableRow;
 
-friend class WgZoomOutCapsule;
+    friend class WgZoomOutCapsule;
 
 public:
 	WgWidget();

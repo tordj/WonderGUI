@@ -745,74 +745,74 @@ int Util::gcd(int a, int b)
 
 
 
-	//____ origoToOfs() ________________________________________________________
+	//____ placementToOfs() ________________________________________________________
 
-	Coord Util::origoToOfs( Origo origo, Size base )
+	Coord Util::placementToOfs( Placement placement, Size base )
 	{
-		switch( origo )
+		switch( placement )
 		{
 			default:
-			case Origo::NorthWest:
+			case Placement::NorthWest:
 				return Coord();
 
-			case Origo::North:
+			case Placement::North:
 				return Coord( base.w/2,0 );
 
-			case Origo::NorthEast:
+			case Placement::NorthEast:
 				return Coord( base.w,0 );
 
-			case Origo::East:
+			case Placement::East:
 				return Coord( base.w, base.h/2 );
 
-			case Origo::SouthEast:
+			case Placement::SouthEast:
 				return Coord( base.w, base.h );
 
-			case Origo::South:
+			case Placement::South:
 				return Coord( base.w/2, base.h );
 
-			case Origo::SouthWest:
+			case Placement::SouthWest:
 				return Coord( 0, base.h );
 
-			case Origo::West:
+			case Placement::West:
 				return Coord( 0, base.h/2 );
 
-			case Origo::Center:
+			case Placement::Center:
 				return Coord( base.w/2, base.h/2 );
 		}
 	}
 
-	//____ origoToRect() ________________________________________________________
+	//____ placementToRect() ________________________________________________________
 
-	Rect Util::origoToRect( Origo origo, Size base, Size rect )
+	Rect Util::placementToRect( Placement placement, Size base, Size rect )
 	{
-		switch( origo )
+		switch( placement )
 		{
 			default:
-			case Origo::NorthWest:
+			case Placement::NorthWest:
 				return Rect(0,0, rect);
 
-			case Origo::North:
+			case Placement::North:
 				return Rect( base.w/2 - rect.w/2, 0, rect );
 
-			case Origo::NorthEast:
+			case Placement::NorthEast:
 				return Rect( base.w - rect.w, 0, rect );
 
-			case Origo::East:
+			case Placement::East:
 				return Rect( base.w - rect.w, base.h/2 - rect.h/2, rect );
 
-			case Origo::SouthEast:
+			case Placement::SouthEast:
 				return Rect( base.w - rect.w, base.h - rect.h, rect );
 
-			case Origo::South:
+			case Placement::South:
 				return Rect( base.w/2 - rect.w/2, base.h - rect.h, rect );
 
-			case Origo::SouthWest:
+			case Placement::SouthWest:
 				return Rect( 0, base.h - rect.h, rect );
 
-			case Origo::West:
+			case Placement::West:
 				return Rect( 0, base.h/2 - rect.h/2, rect );
 
-			case Origo::Center:
+			case Placement::Center:
 				return Rect( base.w/2 - rect.w/2, base.h/2 - rect.h/2, rect );
 		}
 	}

@@ -20,41 +20,36 @@
 
 =========================================================================*/
 
-#ifndef	WG3_GRADIENT_DOT_H
-#define	WG3_GRADIENT_DOT_H
-#pragma once
+#ifndef WG_RENDERLAYERCAPSULE_DOT_H
+#define WG_RENDERLAYERCAPSULE_DOT_H
 
-#include <wg3_types.h>
-#include <wg3_color.h>
+#ifndef WG_CAPSULE_DOT_H
+#	include <wg_capsule.h>
+#endif
 
-namespace wg
+
+class WgRenderLayerCapsule : public WgCapsule
 {
-	class Gradient
-	{
-	public:
+public:
+    WgRenderLayerCapsule();
+	WgRenderLayerCapsule(WgWidget * pChild, int layer);
+	~WgRenderLayerCapsule();
 
-		Gradient() {}
+	virtual const char *Type( void ) const;
+	static const char * GetClass();
+	virtual WgWidget * NewOfMyType() const { return new WgRenderLayerCapsule(); };
 
-		Gradient(HiColor topLeft, HiColor topRight, HiColor bottomRight, HiColor bottomLeft) :
-			topLeft(topLeft),
-			topRight(topRight),
-			bottomRight(bottomRight),
-			bottomLeft(bottomLeft) {}
+	void		SetRenderLayer( int layer);
+    inline int 	RenderLayer() { return m_renderLayer; }
 
-		Gradient(Placement start, HiColor startColor, HiColor endColor);
-
-		inline void clear() { topLeft = topRight = bottomRight = bottomLeft = Color::White; }
-		inline bool isOpaque() { return (topLeft.a + topRight.a + bottomRight.a + bottomLeft.a) == 4096 * 4; }
-
-		HiColor		topLeft;
-		HiColor		topRight;
-		HiColor		bottomRight;
-		HiColor		bottomLeft;
-	};
+protected:
+	void		_renderPatches( wg::GfxDevice * pDevice, const WgRect& _canvas, const WgRect& _window, WgPatches * _pPatches );
 
 
-}
+	void		_onCloneContent( const WgWidget * _pOrg );
 
+private:
+    int         m_renderLayer = -1;
+};
 
-
-#endif //WG3_GRADIENT_DOT_H
+#endif //WG_RENDERLAYERCAPSULE_DOT_H

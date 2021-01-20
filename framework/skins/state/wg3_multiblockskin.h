@@ -96,7 +96,7 @@ namespace wg
 
 			CoordI				blockOfs[StateEnum_Nb];		// Block for each state
 			HiColor				tintColor[StateEnum_Nb];
-	//		Origo			placementOrigo;
+	//		Placement			placementOrigo;
 	//		CoordI			placementOfs;
 	//		SizeI			dimensions;                   // Stored in pixels
 	//		int				m_tiledSections;

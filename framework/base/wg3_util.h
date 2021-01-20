@@ -76,8 +76,8 @@ namespace wg
 
 		bool		pixelFormatToDescription( PixelFormat format, PixelDescription& output );
 
-		Coord 		origoToOfs( Origo origo, Size base );
-		Rect		origoToRect( Origo origo, Size base, Size rect );
+		Coord 		placementToOfs( Placement placement, Size base );
+		Rect		placementToRect( Placement placement, Size base, Size rect );
 
 		Size		scaleToFit(Size object, Size boundaries);
 

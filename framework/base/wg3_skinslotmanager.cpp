@@ -22,6 +22,7 @@
 
 #include <wg3_skinslotmanager.h>
 #include <assert.h>
+#include <algorithm>
 
 namespace wg
 {

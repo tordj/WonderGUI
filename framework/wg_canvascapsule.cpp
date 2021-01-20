@@ -24,6 +24,9 @@
 #include <wg_gfxdevice.h>
 #include <wg_eventhandler.h>
 
+#include <wg3_base.h>
+#include <wg3_context.h>
+
 static const char    c_widgetType[] = {"CanvasCapsule"};
 
 //____ Constructor ____________________________________________________________
@@ -151,6 +154,58 @@ WgWidget * WgCanvasCapsule::FindWidget(const WgCoord& ofs, WgSearchMode mode)
 	return nullptr;
 }
 
+//____ SetCanvasLayers() ___________________________________________________________
+
+void WgCanvasCapsule::SetCanvasLayers(wg::CanvasLayers * pLayers)
+{
+    if( pLayers != m_pCanvasLayers )
+    {
+        m_pCanvasLayers = pLayers;
+        _requestRender();
+    }
+}
+
+//____ SetRenderLayer() ___________________________________________________________
+
+void WgCanvasCapsule::SetRenderLayer(int layer)
+{
+    if( layer != m_renderLayer )
+    {
+        m_renderLayer = layer;
+        _requestRender();
+    }
+}
+
+//____ SetPreferredSize() ________________________________________________________
+
+void WgCanvasCapsule::SetPreferredSize( WgSize preferred )
+{
+    if( m_preferredSize != preferred )
+    {
+        m_preferredSize = preferred;
+        _requestResize();
+    }
+}
+
+//____ PreferredPixelSize() ______________________________________________________
+
+WgSize WgCanvasCapsule::PreferredPixelSize() const
+{
+    if( m_preferredSize.w != -1 )
+        return m_preferredSize * m_scale / WG_SCALE_BASE;
+    else
+        return WgCapsule::PreferredPixelSize();
+}
+
+//____ ForceRedraw() ___________________________________________________________
+
+void WgCanvasCapsule::ForceRedraw()
+{
+    m_dirtyPatches.clear();
+    m_dirtyPatches.push(PixelSize());
+    _requestRender();
+}
+
 //____ _onEvent() _____________________________________________________________
 
 void WgCanvasCapsule::_onEvent(const WgEvent::Event * pEvent, WgEventHandler * pHandler)
@@ -224,14 +279,16 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!m_pCanvas)
 	{
-		if (!m_pFactory)
+        wg::SurfaceFactory_p pFactory = m_pFactory ? m_pFactory : wg::Base::activeContext()->surfaceFactory();
+        
+		if (!pFactory)
 			return;                            // No SurfaceFactory set!
 
-		WgSize maxSize = m_pFactory->maxSize();
+		WgSize maxSize = pFactory->maxSize();
 		if (_canvas.w > maxSize.w || _canvas.h > maxSize.h)
 			return;                            // Can't create a canvas of the required size!
 
-		m_pCanvas = m_pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas );
+		m_pCanvas = pFactory->createSurface(_canvas.size(), WgPixelType::BGRA_8, wg::SurfaceFlag::Canvas );
 		m_dirtyPatches.clear();
 		m_dirtyPatches.add(_canvas.size());
 	}
@@ -275,15 +332,15 @@ void WgCanvasCapsule::_renderPatches( wg::GfxDevice * pDevice, const WgRect& _ca
 
 	if (!renderStack.isEmpty())
 	{
-        pDevice->beginCanvasUpdate(m_pCanvas,renderStack.size(), renderStack.begin());
+        pDevice->beginCanvasUpdate(m_pCanvas,renderStack.size(), renderStack.begin(), m_pCanvasLayers, m_renderLayer);
 
-		pDevice->setBlendMode(WgBlendMode::Replace);
-		pDevice->setTintColor(WgColor::White);
+//		pDevice->setBlendMode(WgBlendMode::Replace);
+//		pDevice->setTintColor(WgColor::White);
 
-		pDevice->fill(m_canvasFillColor);
+//		pDevice->fill(m_canvasFillColor);
 
-		pDevice->setBlendMode(WgBlendMode::Blend);
-
+//		pDevice->setBlendMode(WgBlendMode::Blend);
+        
         if(m_hook.Widget())
             m_hook.Widget()->_renderPatches(pDevice, _canvas.size(), _canvas.size(), &renderStack);
 

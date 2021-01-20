@@ -27,54 +27,54 @@ namespace wg
 {
 	//____ constructor ________________________________________________________
 
-	Gradient::Gradient(Origo start, HiColor startColor, HiColor endColor)
+	Gradient::Gradient(Placement start, HiColor startColor, HiColor endColor)
 	{
 		switch (start)
 		{
-		case Origo::Center:
+		case Placement::Center:
 			topLeft = topRight = bottomRight = bottomLeft = startColor;
 			break;
 
-		case Origo::NorthWest:
+		case Placement::NorthWest:
 			topLeft = startColor;
 			bottomRight = endColor;
 			topRight = bottomLeft = HiColor::mix(startColor, endColor, 2048);
 			break;
 
-		case Origo::North:
+		case Placement::North:
 			topLeft = topRight = startColor;
 			bottomLeft = bottomRight = endColor;
 			break;
 
-		case Origo::NorthEast:
+		case Placement::NorthEast:
 			topRight = startColor;
 			bottomLeft = endColor;
 			topLeft = bottomRight = HiColor::mix(startColor, endColor, 2048);
 			break;
 
-		case Origo::East:
+		case Placement::East:
 			topRight = bottomRight = startColor;
 			topLeft = bottomLeft = endColor;
 			break;
 
-		case Origo::SouthEast:
+		case Placement::SouthEast:
 			bottomRight = startColor;
 			topLeft = endColor;
 			bottomLeft = topRight = HiColor::mix(startColor, endColor, 2048);
 			break;
 
-		case Origo::South:
+		case Placement::South:
 			bottomLeft = bottomRight = startColor;
 			topLeft = topRight = endColor;
 			break;
 
-		case Origo::SouthWest:
+		case Placement::SouthWest:
 			bottomLeft = startColor;
 			topRight = endColor;
 			bottomRight = topLeft = HiColor::mix(startColor, endColor, 2048);
 			break;
 
-		case Origo::West:
+		case Placement::West:
 			topLeft = bottomLeft = startColor;
 			topRight = bottomRight = endColor;
 			break;

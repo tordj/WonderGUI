@@ -280,6 +280,8 @@ void WgRangeSlider::_onEvent(const WgEvent::Event* _pEvent, WgEventHandler* pHan
 
 			}
 		}
+        default:
+            break;
 	}
 }
 

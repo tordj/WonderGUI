@@ -45,7 +45,7 @@ typedef wg::BlendMode   WgBlendMode;
 typedef wg::PointerStyle WgPointerStyle;
 
 typedef wg::SearchMode  WgSearchMode;
-typedef wg::Origo       WgOrigo;
+typedef wg::Placement   WgOrigo;
 typedef wg::Direction   WgDirection;
 typedef wg::SizePolicy  WgSizePolicy;
 

@@ -132,7 +132,7 @@ namespace wg
 		return names[(int)i];
 	}
 
-	const char * toString(Origo i)
+	const char * toString(Placement i)
 	{
 		static const char * names[] = { 
 			"NorthWest",

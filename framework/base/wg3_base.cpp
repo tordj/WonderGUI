@@ -41,6 +41,7 @@
 #include <wg3_skinslotmanager.h>
 
 #include <iostream>
+#include <algorithm>
 
 namespace wg
 {

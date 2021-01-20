@@ -49,6 +49,8 @@
 		1750E65925A8B54A002F236C /* wg_tooltiplayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1750E65725A8B54A002F236C /* wg_tooltiplayer.cpp */; };
 		1750E65A25A8B54A002F236C /* wg_tooltiplayer.h in Headers */ = {isa = PBXBuildFile; fileRef = 1750E65825A8B54A002F236C /* wg_tooltiplayer.h */; };
 		175968A825B04F2100F11CEC /* wg3_internal.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968A725B04F2100F11CEC /* wg3_internal.h */; };
+		175968DF25B81B4800F11CEC /* wg_renderlayercapsule.h in Headers */ = {isa = PBXBuildFile; fileRef = 175968DD25B81B4800F11CEC /* wg_renderlayercapsule.h */; };
+		175968E025B81B4800F11CEC /* wg_renderlayercapsule.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 175968DE25B81B4800F11CEC /* wg_renderlayercapsule.cpp */; };
 		176A3F6025AEEF67001211CC /* wg3_skinslotmanager.h in Headers */ = {isa = PBXBuildFile; fileRef = 176A3F5E25AEEF66001211CC /* wg3_skinslotmanager.h */; };
 		176A3F6125AEEF67001211CC /* wg3_skinslotmanager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 176A3F5F25AEEF66001211CC /* wg3_skinslotmanager.cpp */; };
 		177A719F23C620CB003E629B /* wg3_component.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 177A719D23C620CB003E629B /* wg3_component.cpp */; };
@@ -318,6 +320,8 @@
 		1750E65725A8B54A002F236C /* wg_tooltiplayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_tooltiplayer.cpp; path = ../framework/wg_tooltiplayer.cpp; sourceTree = "<group>"; };
 		1750E65825A8B54A002F236C /* wg_tooltiplayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_tooltiplayer.h; path = ../framework/wg_tooltiplayer.h; sourceTree = "<group>"; };
 		175968A725B04F2100F11CEC /* wg3_internal.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_internal.h; path = ../framework/base/wg3_internal.h; sourceTree = "<group>"; };
+		175968DD25B81B4800F11CEC /* wg_renderlayercapsule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg_renderlayercapsule.h; path = ../framework/wg_renderlayercapsule.h; sourceTree = "<group>"; };
+		175968DE25B81B4800F11CEC /* wg_renderlayercapsule.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg_renderlayercapsule.cpp; path = ../framework/wg_renderlayercapsule.cpp; sourceTree = "<group>"; };
 		176A3F5E25AEEF66001211CC /* wg3_skinslotmanager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = wg3_skinslotmanager.h; path = ../framework/base/wg3_skinslotmanager.h; sourceTree = "<group>"; };
 		176A3F5F25AEEF66001211CC /* wg3_skinslotmanager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_skinslotmanager.cpp; path = ../framework/base/wg3_skinslotmanager.cpp; sourceTree = "<group>"; };
 		177A719D23C620CB003E629B /* wg3_component.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = wg3_component.cpp; path = ../framework/components/wg3_component.cpp; sourceTree = "<group>"; };
@@ -565,8 +569,6 @@
 		170F7A6B220076C000B70B56 = {
 			isa = PBXGroup;
 			children = (
-				1750E63C25A5C5B2002F236C /* wg3_gradient.cpp */,
-				1750E63D25A5C5B2002F236C /* wg3_gradient.h */,
 				17E03D2023D9F34900B0A3D8 /* base */,
 				1717918422CB48DD00B10F51 /* Components */,
 				170F7CA72200782100B70B56 /* Debug.h */,
@@ -663,6 +665,8 @@
 				17F8269524AF1E4900AF77DF /* wg_radiobutton.h */,
 				1712A1102521FCC000C977A9 /* wg_rangeslider.cpp */,
 				1712A1112521FCC000C977A9 /* wg_rangeslider.h */,
+				175968DE25B81B4800F11CEC /* wg_renderlayercapsule.cpp */,
+				175968DD25B81B4800F11CEC /* wg_renderlayercapsule.h */,
 				17F8265824AF1E4400AF77DF /* wg_rootpanel.cpp */,
 				17F8269924AF1E4900AF77DF /* wg_rootpanel.h */,
 				17F8267724AF1E4700AF77DF /* wg_rulerlabels.cpp */,
@@ -756,7 +760,6 @@
 		17E03D2023D9F34900B0A3D8 /* base */ = {
 			isa = PBXGroup;
 			children = (
-				175968A725B04F2100F11CEC /* wg3_internal.h */,
 				17C483AB240D3A0B0030453B /* wg3_base.cpp */,
 				17E03D3723D9F37B00B0A3D8 /* wg3_base.h */,
 				170768C123FEB5CC00CAAAED /* wg3_bitmapfont.cpp */,
@@ -790,6 +793,9 @@
 				17E03D2623D9F37900B0A3D8 /* wg3_geo.h */,
 				17E03D3923D9F37B00B0A3D8 /* wg3_gfxdevice.cpp */,
 				17E03D3F23D9F37C00B0A3D8 /* wg3_gfxdevice.h */,
+				1750E63C25A5C5B2002F236C /* wg3_gradient.cpp */,
+				1750E63D25A5C5B2002F236C /* wg3_gradient.h */,
+				175968A725B04F2100F11CEC /* wg3_internal.h */,
 				17C483AE240D3F0D0030453B /* wg3_mempool.cpp */,
 				17C483AD240D3F0D0030453B /* wg3_mempool.h */,
 				1739F3962407FC75005FECF2 /* wg3_memstack.cpp */,
@@ -925,6 +931,7 @@
 				170768E823FED09000CAAAED /* wg3_string.h in Headers */,
 				17F8275D24AF1E4E00AF77DF /* wg_knob.h in Headers */,
 				17F8274524AF1E4E00AF77DF /* wg_button.h in Headers */,
+				175968DF25B81B4800F11CEC /* wg_renderlayercapsule.h in Headers */,
 				17F827C424AF365100AF77DF /* wg3_cstaticvector.impl.h in Headers */,
 				17F8270424AF1E4E00AF77DF /* wg_util.h in Headers */,
 				17F8273F24AF1E4E00AF77DF /* wg_rulerlabels.h in Headers */,
@@ -1243,6 +1250,7 @@
 				17F8273424AF1E4E00AF77DF /* wg_iconholder.cpp in Sources */,
 				17F8271024AF1E4E00AF77DF /* wg_shadowlayer.cpp in Sources */,
 				17F8271D24AF1E4E00AF77DF /* wg_fpsdisplay.cpp in Sources */,
+				175968E025B81B4800F11CEC /* wg_renderlayercapsule.cpp in Sources */,
 				170768EC23FED09000CAAAED /* wg3_chain.cpp in Sources */,
 				17E03D5F23D9F37D00B0A3D8 /* wg3_surfacefactory.cpp in Sources */,
 			);

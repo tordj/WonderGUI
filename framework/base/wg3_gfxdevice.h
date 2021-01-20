@@ -82,12 +82,12 @@ namespace wg
 
 		//.____ Geometry _________________________________________________
 
-		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, int startLayer = -1);
-		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, int startLayer = -1);
+		inline bool			beginCanvasUpdate( const RectI& canvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
+		inline bool			beginCanvasUpdate(Surface * pCanvas, int nUpdateRects = 0, const RectI* pUpdateRects = nullptr, CanvasLayers * pLayers = nullptr, int startLayer = -1 );
 		void				endCanvasUpdate();
 		inline Surface_p	canvas() const { return m_pCanvas; }
-
 		inline SizeI		canvasSize() const { return m_canvasSize; }
+		inline CanvasLayers_p canvasLayers() const { return m_pCanvasLayers; }
 
 		//.____ State _________________________________________________
 
@@ -221,7 +221,7 @@ namespace wg
 		void	_genCurveTab();
 		void	_traceLine(int * pDest, int nPoints, const WaveLine * pWave, int offset);
 
-		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, int startLayer);
+		bool	_beginCanvasUpdate(const RectI& canvas, Surface * pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer);
 		void	_clearRenderLayer();						// Initializes and possibly clear render layer. 
 
 
@@ -243,7 +243,7 @@ namespace wg
 
 		struct StashedCanvas
 		{
-			CanvasLayers_p	pLayerDef;
+			CanvasLayers_p	pCanvasLayers;
 			Surface_p		pCanvas;
 			StashedClipList	updateRects;
 			StashedClipList	clipRects;
@@ -265,14 +265,14 @@ namespace wg
 
 		//
 
-		CanvasLayers_p	m_pLayerDef;
+		CanvasLayers_p	m_pCanvasLayers;
 
 		Surface_p	m_pCanvas;
 		Surface_p	m_pBlitSource;
 
 		int			m_renderLayer = 0;
 
-		Surface_p	m_layerSurfaces[CanvasLayers::c_maxLayers];
+		Surface_p	m_layerSurfaces[CanvasLayers::c_maxLayers+1];
 
 		const RectI* m_pCanvasUpdateRects;
 		int			m_nCanvasUpdateRects;
@@ -295,14 +295,14 @@ namespace wg
 	};
 
 
-	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, const RectI* pUpdateRects, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(const RectI& canvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
-		return _beginCanvasUpdate(canvas, nullptr, nUpdateRects, pUpdateRects, startLayer);
+		return _beginCanvasUpdate(canvas, nullptr, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
-	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, const RectI* pUpdateRects, int startLayer)
+	bool GfxDevice::beginCanvasUpdate(Surface* pCanvas, int nUpdateRects, const RectI* pUpdateRects, CanvasLayers * pLayers, int startLayer)
 	{
-		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, startLayer);
+		return _beginCanvasUpdate(pCanvas->size(), pCanvas, nUpdateRects, pUpdateRects, pLayers, startLayer);
 	}
 
 

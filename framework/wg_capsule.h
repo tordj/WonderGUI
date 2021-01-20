@@ -63,6 +63,7 @@ protected:
 	{
 		friend class WgCapsule;
 		friend class WgZoomOutCapsule;
+        friend class WgRenderLayerCapsule;
 
 	public:
 
