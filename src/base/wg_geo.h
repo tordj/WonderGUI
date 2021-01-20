@@ -790,7 +790,7 @@ namespace wg
 		and vertical offset from an origo position while members w and h specifies
 		the width and height.
 
-		Placement is normally the top-left corner of a parent rectangle, screen surface or
+		Origo is normally the top-left corner of a parent rectangle, screen surface or
 		bitmap and position normally specifies the position of the top-left corner of the rectangle, although
 		this might differ depending on context.
 

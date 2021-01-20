@@ -272,7 +272,7 @@ namespace wg
 
 		int			m_renderLayer = 0;
 
-		Surface_p	m_layerSurfaces[CanvasLayers::c_maxLayers];
+		Surface_p	m_layerSurfaces[CanvasLayers::c_maxLayers+1];
 
 		const RectI* m_pCanvasUpdateRects;
 		int			m_nCanvasUpdateRects;

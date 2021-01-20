@@ -29,11 +29,11 @@ namespace wg
 
 	//____ create() ___________________________________________________________
 
-	CanvasLayers_p CanvasLayers::create(const std::initializer_list<std::pair<BlendMode, PixelFormat>>& extraLayers)
+	CanvasLayers_p CanvasLayers::create(const std::initializer_list<PixelFormat>& extraLayers)
 	{
 		for (auto& layer : extraLayers)
 		{
-			PixelFormat format = layer.second;
+			PixelFormat format = layer;
 
 			if (format == PixelFormat::CLUT_8_sRGB || format == PixelFormat::CLUT_8_linear)
 			{
@@ -47,16 +47,14 @@ namespace wg
 
 	//____ constructor() ______________________________________________________
 
-	CanvasLayers::CanvasLayers(const std::initializer_list<std::pair<BlendMode, PixelFormat>>& extraLayers)
+	CanvasLayers::CanvasLayers(const std::initializer_list<PixelFormat>& extraLayers)
 	{
 		m_nbLayers = (int) extraLayers.size();
 
 		int ofs = 0;
 		for (auto& layer : extraLayers)
 		{
-			m_blendModes[ofs] = layer.first;
-			m_formats[ofs] = layer.second;
-			ofs++;
+			m_layers[ofs++].format = layer;
 		}
 	}
 
@@ -71,33 +69,21 @@ namespace wg
 
 	PixelFormat CanvasLayers::layerFormat(int layer) const
 	{
-		if (layer < 0 || layer >= m_nbLayers)
+		if (layer < 1 || layer > m_nbLayers)
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return PixelFormat::Unknown;
 		}
 
-		return m_formats[layer];
+		return m_layers[layer-1].format;
 	}
 
-	//____ layerBlendMode() ___________________________________________________
-
-	BlendMode CanvasLayers::layerBlendMode(int layer) const
-	{
-		if (layer < 0 || layer >= m_nbLayers)
-		{
-			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
-			return BlendMode::Undefined;
-		}
-
-		return m_blendModes[layer];
-	}
 
 	//___ setDefaultLayer() ___________________________________________________
 
 	void CanvasLayers::setDefaultLayer(int layer)
 	{
-		if (layer < 0 || layer >= m_nbLayers)
+		if (layer < 0 || layer > m_nbLayers)
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
@@ -105,5 +91,42 @@ namespace wg
 
 		m_defaultLayer = layer;
 	}
+
+    void CanvasLayers::setLayerInitializer(int layer, const std::function<void(GfxDevice*)>& func)
+    {
+        m_layers[layer-1].initializer = func;
+    }
+
+    void CanvasLayers::setLayerFinalizer(int layer, const std::function<void(GfxDevice*)>& func)
+    {
+        m_layers[layer-1].finalizer = func;
+    }
+
+    void CanvasLayers::setLayerBlender(int layer, const std::function<void(GfxDevice*)>& func)
+    {
+        m_layers[layer-1].blender = func;
+    }
+
+
+    void CanvasLayers::setCanvasInitializer(const std::function<void(GfxDevice*)>& func)
+    {
+        m_canvasInitializer = func;
+    }
+
+    void CanvasLayers::setCanvasFinalizer(const std::function<void(GfxDevice*)>& func)
+    {
+        m_canvasFinalizer = func;
+    }
+
+    void CanvasLayers::setCanvasModifier(int layer, const std::function<void(GfxDevice*)>& func)
+    {
+        if (layer < 1 || layer > m_nbLayers)
+        {
+            Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Layer does not exist.", nullptr, TYPEINFO, __func__, __FILE__, __LINE__);
+            return;
+        }
+
+        m_canvasModifiers[layer-1] = func;
+    }
 
 }

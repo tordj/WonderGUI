@@ -140,10 +140,10 @@ namespace wg
 
 		// Render 
 
-		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers);
+		pDevice->beginCanvasUpdate(m_pCanvas, m_patches.size(), pClipBuffer, m_pCanvasLayers, m_renderLayer);
 
 		OO(skin)._render(pDevice, _canvas.size(), m_state);
-
+		
 		// Render children recursively
 
 		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
@@ -159,7 +159,7 @@ namespace wg
 
 		pDevice->endCanvasUpdate();
 		Base::memStackRelease(allocSize);
-
+		
 		// Blit our canvas
 
 		pDevice->setBlitSource(m_pCanvas);

@@ -141,4 +141,4 @@ namespace wg
 
 
 }
-#endif WG_SKINIMPL_DOT_H
+#endif //WG_SKINIMPL_DOT_H

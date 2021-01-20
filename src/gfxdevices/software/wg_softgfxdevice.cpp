@@ -4237,15 +4237,15 @@ namespace wg
 		// Create our layer surface if needed
 
 		bool	bClear = false;
-		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer - 1] == nullptr)
+		if (m_renderLayer > 0 && m_layerSurfaces[m_renderLayer] == nullptr)
 		{
-			m_layerSurfaces[m_renderLayer - 1] = SoftSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer - 1));
+			m_layerSurfaces[m_renderLayer] = SoftSurface::create(m_canvasSize, m_pCanvasLayers->layerFormat(m_renderLayer));
 			bClear = true;
 		}
 
 		// 
 
-		m_pRenderLayerSurface = m_renderLayer == 0 ? m_pCanvas : m_layerSurfaces[m_renderLayer - 1];
+		m_pRenderLayerSurface = m_layerSurfaces[m_renderLayer];
 
 		m_canvasPixelBuffer = m_pRenderLayerSurface->allocPixelBuffer();
 		m_pRenderLayerSurface->pushPixels(m_canvasPixelBuffer);

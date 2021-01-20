@@ -67,8 +67,7 @@ namespace wg
 		void		_render(GfxDevice* pDevice, const Rect& _canvas, const Rect& _window) override;
 		void		_cloneContent(const Widget* _pOrg) override;
 
-	private:
-		int			m_renderLayer = 0;
+		int			m_renderLayer = -1;
 	};
 
 

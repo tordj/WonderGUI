@@ -240,14 +240,13 @@ namespace wg
 		if (layer == m_renderLayer)
 			return;
 
-		if (!m_pCanvasLayers || layer < 0 || layer >= m_pCanvasLayers->size())
+		if (!m_pCanvasLayers || layer < 0 || layer > m_pCanvasLayers->size())
 		{
 			Base::handleError(ErrorSeverity::SilentFail, ErrorCode::InvalidParam, "Specified layer out of bounds.", this, TYPEINFO, __func__, __FILE__, __LINE__);
 			return;
 		}
 
 		m_renderLayer = layer;
-//		_clearRenderLayer();
 		_renderLayerWasChanged();
 
 		// Init layer if we are rendering.
@@ -260,8 +259,6 @@ namespace wg
 	{
 		if (m_renderLayer > 0 )
 		{
-
-
 			//TODO: Save tint gradient.
 
 			const RectI* pSavedClipRects = m_pClipRects;
@@ -276,11 +273,24 @@ namespace wg
 
 			BlendMode	savedBlendMode = m_blendMode;
 			HiColor		savedTintColor = m_tintColor;
-			setBlendMode(BlendMode::Replace);
-			setTintColor(Color::White);
-			clearTintGradient();
-			fill(Color::Transparent);
-			setBlendMode(savedBlendMode);
+
+            setTintColor(Color::White);
+            clearTintGradient();
+
+            if( m_pCanvasLayers->_layerInitializer(m_renderLayer) != nullptr )
+            {
+                //NOTE! BlendMode can be anything when calling initializer.
+                
+                m_pCanvasLayers->_layerInitializer(m_renderLayer)(this);
+            }
+            else
+            {
+                setBlendMode(BlendMode::Replace);
+                fill(Color::Transparent);
+            }
+
+            
+            setBlendMode(savedBlendMode);
 			setTintColor(savedTintColor);
 
 			m_pClipRects = pSavedClipRects;
@@ -442,8 +452,9 @@ namespace wg
 
 		int layer = 0;
 		if (pCanvasLayers)
-			layer = (startLayer >= 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->defaultLayer();
+			layer = (startLayer > 0 && startLayer <= pCanvasLayers->size()) ? startLayer : pCanvasLayers->defaultLayer();
 
+        m_layerSurfaces[0] = pCanvas;
 
 		m_renderLayer = layer;
 		m_tintColor = Color::White;
@@ -454,7 +465,15 @@ namespace wg
 		m_morphFactor = 0.5f;
 		m_canvasSize = sz;
 		_canvasWasChanged();
-//		_clearRenderLayer();
+        
+        // Call Canvas Initializer
+        
+        if( pCanvasLayers && pCanvasLayers->_canvasInitializer() != nullptr )
+        {
+            setRenderLayer(0);
+            pCanvasLayers->_canvasInitializer()(this);
+            setRenderLayer(layer);
+        }
 		return true;
 	}
 
@@ -477,26 +496,65 @@ namespace wg
 			bool bFirst = true;
 
 			int nbLayers = m_pCanvasLayers->size();
-			for (int layer = 0; layer < nbLayers; layer++)
+			for (int layerIdx = 1; layerIdx <= nbLayers; layerIdx++)
 			{
-				if (m_layerSurfaces[layer] )
+                // Call pre-blend canvas modifier no matter if layer has a surface or not
+                
+                if( m_pCanvasLayers->_canvasModifier(layerIdx) != nullptr )
+                {
+                    if (bFirst)
+                    {
+                        setClipList(m_nCanvasUpdateRects, m_pCanvasUpdateRects);
+                        setBlendMode(BlendMode::Blend);
+                        setTintColor(Color::White);
+                        clearTintGradient();
+                        setRenderLayer(0);
+                        bFirst = false;
+                    }
+
+                    m_pCanvasLayers->_canvasModifier(layerIdx)(this);
+                }
+
+                // Finalize and blend layer if it has a surface.
+                
+                if (m_layerSurfaces[layerIdx])
 				{
 					if (bFirst)
 					{
 						setClipList(m_nCanvasUpdateRects, m_pCanvasUpdateRects);
+                        setBlendMode(BlendMode::Blend);
 						setTintColor(Color::White);
 						clearTintGradient();
 						setRenderLayer(0);
 						bFirst = false;
 					}
 
-					setBlendMode(m_pCanvasLayers->layerBlendMode(layer));
-					setBlitSource(m_layerSurfaces[layer]);
-					blit({ 0,0 });
+                    // Call layer finalizer before blending
+                    
+                    if( m_pCanvasLayers->_layerFinalizer(layerIdx) != nullptr )
+                    {
+                        setRenderLayer(layerIdx);
+                        m_pCanvasLayers->_layerFinalizer(layerIdx)(this);
+                        setRenderLayer(0);
+                    }
+                    
+                    // Blend layer onto base layer
+                    
+                    setBlitSource(m_layerSurfaces[layerIdx]);
+
+                    if( m_pCanvasLayers->_layerBlender(layerIdx) != nullptr )
+                        m_pCanvasLayers->_layerBlender(layerIdx)(this);
+                    else
+                        blit({ 0,0 });
 				}
 			}
-		}
 
+            // Call Canvas Finalizer
+            
+            if( m_pCanvasLayers->_canvasFinalizer() != nullptr )
+                m_pCanvasLayers->_canvasFinalizer()(this);
+        }
+        
 		// Dereference surfaces
 
 		for (int i = 0; i < CanvasLayers::c_maxLayers; i++)

@@ -73,13 +73,15 @@ namespace wg
 			return;
 
 		int oldLayer = pDevice->renderLayer();
-		pDevice->setRenderLayer(m_renderLayer);
+		if( m_renderLayer >= 0 )
+			pDevice->setRenderLayer(m_renderLayer);
 
 		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 		OO(slot._widget())->_render(pDevice, canvas, canvas);
 
 
-		pDevice->setRenderLayer(oldLayer);
+		if( m_renderLayer >= 0 )
+			pDevice->setRenderLayer(oldLayer);
 	}
 
 	//____ _cloneContent() _______________________________________________________

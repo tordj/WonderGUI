@@ -72,6 +72,10 @@ namespace wg
 		void				setCanvasLayers(CanvasLayers * pLayers);
 		CanvasLayers_p		canvasLayers() const { return m_pCanvasLayers; }
 
+		void				setRenderLayer(int layer);
+		int					renderLayer() const { return m_renderLayer; }
+
+		
 		inline HiColor		tintColor() { return m_tintColor; }
 		inline BlendMode	renderMode() { return m_renderMode; }
 		inline BlendMode	tintMode() { return m_tintMode; }
@@ -87,12 +91,12 @@ namespace wg
 
 		void				_childRequestRender(StaticSlot* pSlot) override;
 		void				_childRequestRender(StaticSlot* pSlot, const Rect& rect) override;
-	private:
 
 		Surface_p			m_pCanvas;
 		CanvasLayers_p		m_pCanvasLayers;
 		SurfaceFactory_p	m_pFactory;
 		PixelFormat			m_canvasFormat = PixelFormat::BGR_8;
+		int					m_renderLayer = -1;
 
 		HiColor				m_tintColor = HiColor::White;
 		BlendMode			m_tintMode = BlendMode::Replace;
