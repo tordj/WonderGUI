@@ -401,7 +401,7 @@ namespace wg
 		Rect canvas = OO(skin)._contentRect(_canvas, m_state);
 
 
-		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+		float whiteKeySpacing = float(canvas.w) / m_nbWhiteKeys;
 
 		float xScaleFactor = m_keyboardSourceSize.w / float(canvas.w);
 		float yScaleFactor = m_keyboardSourceSize.h / float(canvas.h);
@@ -706,7 +706,7 @@ namespace wg
 	{
 		Rect canvas = OO(skin)._contentRect(m_size, m_state);
 
-		MU whiteKeySpacing = canvas.w / m_nbWhiteKeys;
+		float whiteKeySpacing = float(canvas.w) / m_nbWhiteKeys;
 
 		Rect dst;
 		

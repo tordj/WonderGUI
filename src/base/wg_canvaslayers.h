@@ -42,9 +42,48 @@ namespace wg
 	typedef	WeakPtr<CanvasLayers>	CanvasLayers_wp;
 
 	//____ Class CanvasLayers ________________________________________________________
+	/**
+	 * @class CanvasLayers
+	 * @author Tord Jansson
+	 * @date 22/01/21
+	 * @file wg_canvaslayers.h
+	 * @brief Specifies canvas layers and the operations on them.
+	 * 
+	 * CanvasLayers specifies layers 1 and above when performing multi-layer rendering.
+	 * 
+	 * Layer 0 (also called the base layer) is the surface set as canvas. The first specified layer
+	 * in this CanvasLayer becomes layer 1. A maximum of 16 layers can be specified.
+	 * 
+	 * The surface of a layer is created on demand when the first widget or skin attempts to render to it
+	 * (calls GfxDevice::setRenderLayer(layer-number)), thus there is no cost for specifying layers that
+	 * are not used.
+	 * 
+	 * When the canvas is completed (when GfxDevice::endCanvasUpdate() is called), the generated
+	 * surfaces are blended onto the base layer and destroyed, resulting in the canvas surface containing
+	 * the composite image.
+	 * 
+	 * The format of the surface and the operation used to blend it onto the canvas surface can be specified.
+	 * Several other methods can also be specified, dealing with initializing and finalizing the individual layer
+	 * surfaces.
+	 * 
+	 * Using CanvasLayers allows for advanced rendering operations where shadows, glow, glass-effects etc
+	 * can be inserted between backgrounds and foregrounds of the UI. It is also an easy way to bog down the user
+	 * interface by allocating and blending large surfaces on the fly, using large amounts of memory, GPU and CPU.
+	 * 
+	 * CanvasLayers can also produce unexpected results when different widgets overlap. I.e. if an overlapping
+	 * widget renders all its contents to a layer below the layer used by the widget behind it, 
+	 * the content of the widget behind it could be rendered ontop anyway (if it really does or not depends on technical
+	 * details of optimizations in the rendering pipeline we won't go into here, the point is you should be careful not to 
+	 * mess with layers in a way that contradicts the layering of widgets).
+	 * 
+	 * It's a powerful tool, use it with caution.
+	 */
+
 
 	class	CanvasLayers : public Object	
 	{
+		friend class GfxDevice;
+		
 	public:
 		//.____ Creation __________________________________________
 
@@ -73,7 +112,11 @@ namespace wg
         
         void                    setCanvasModifier(int beforeLayer, const std::function<void(GfxDevice*)>& func);
 
-		//.____ Internal ______________________________________________________
+
+	protected:
+		CanvasLayers(const std::initializer_list<PixelFormat>& extraLayers);
+
+		const static int	    c_maxLayers = 16;
 
 		inline PixelFormat      _layerFormat(int i) const { return m_layers[i-1].format; }
         inline const std::function<void(GfxDevice * pDevice)>& _layerInitializer(int i) const { return m_layers[i-1].initializer; }
@@ -85,10 +128,7 @@ namespace wg
 
         inline const std::function<void(GfxDevice * pDevice)>& _canvasModifier(int i) const { return m_canvasModifiers[i-1]; }
 
-		const static int	    c_maxLayers = 16;
 
-	protected:
-		CanvasLayers(const std::initializer_list<PixelFormat>& extraLayers);
 
         struct LayerSpec
         {

@@ -426,7 +426,7 @@ int main(int argc, char** argv)
 	else
 		pRoot = RootPanel::create({ width,height }, pGfxDevice);
 
-	auto pCanvasLayers = CanvasLayers::create({ {BlendMode::Subtract, PixelFormat::A_8}, {BlendMode::Blend, PixelFormat::BGRA_8}, {BlendMode::Add, PixelFormat::BGRA_8} });
+	auto pCanvasLayers = CanvasLayers::create({ PixelFormat::A_8, PixelFormat::BGRA_8, PixelFormat::BGRA_8 });
 	pRoot->setCanvasLayers(pCanvasLayers);
 
 //		pRoot->setDebugMode(true);
