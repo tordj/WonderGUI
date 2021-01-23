@@ -1343,11 +1343,14 @@ void translateEvents( const InputHandler_p& pInput, const RootPanel_p& pRoot )
 
 			case SDL_MOUSEWHEEL:
 			{
+				bool bInvertScroll = false;
 				CoordI distance( e.wheel.x, e.wheel.y );
 				if( e.wheel.direction == SDL_MOUSEWHEEL_FLIPPED )
+				{
+					bInvertScroll = true;
 					distance *= -1;
-
-				pInput->setWheelRoll( 1, distance );
+				}
+				pInput->setWheelRoll( 1, distance, bInvertScroll );
 				break;
 			}
 

@@ -230,9 +230,9 @@ protected:
 
 - (void)scrollWheel:(NSEvent *)theEvent {
     
-    float fDeltaX;
+    bool bInverted = [theEvent isDirectionInvertedFromDevice];
     
-    fDeltaX = [theEvent deltaX];
+    float fDeltaX = [theEvent deltaX];
 
     // Convert to an integer representing the number of scrolls events
     int iDeltaX;
@@ -245,8 +245,7 @@ protected:
 
     iDeltaX = 1*((int)fDeltaX + iDeltaX);
 
-    
-    
+        
     float fDeltaY = [theEvent deltaY];
 
     // Convert to an integer representing the number of scrolls events
@@ -260,10 +259,15 @@ protected:
 
     iDeltaY = 1*((int)fDeltaY + iDeltaY);
 
-    
-    
-    
-    Base::inputHandler()->setWheelRoll(1, {iDeltaX,iDeltaY} );
+    if( bInverted )
+    {
+        // Don't know if we should invert iDeltaX here, but I guess so.
+        
+        iDeltaX *= -1;
+        iDeltaY *= -1;
+    }
+        
+    Base::inputHandler()->setWheelRoll(1, {iDeltaX,iDeltaY}, bInverted );
         
 }
 

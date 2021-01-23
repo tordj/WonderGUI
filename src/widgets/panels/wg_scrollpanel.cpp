@@ -1076,7 +1076,9 @@ namespace wg
 				{
 					if( viewSlot.m_windowGeo.contains( toLocal(pMsg->pointerPos())) )
 					{
-						Coord dist = pMsg->distance();
+						int inverter = pMsg->invertScroll() ? -1 : 1;
+						
+						Coord dist = pMsg->distance()*inverter;
 						if( dist.x < 0 )
 							_wheelRoll( Direction::Left, -dist.x );
 						if (dist.x > 0)

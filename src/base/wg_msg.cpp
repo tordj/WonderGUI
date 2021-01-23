@@ -427,11 +427,12 @@ namespace wg
 
 	const TypeInfo WheelRollMsg::TYPEINFO = { "WheelRollMsg", &InputMsg::TYPEINFO };
 
-	WheelRollMsg::WheelRollMsg( char inputId, int wheel, Coord distance, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( inputId, modKeys, pointerPos, timestamp )
+	WheelRollMsg::WheelRollMsg( char inputId, int wheel, Coord distance, bool bInvertScroll, Widget * pWidget, ModifierKeys modKeys, Coord pointerPos, int64_t timestamp ) : InputMsg( inputId, modKeys, pointerPos, timestamp )
 	{
 		m_type			= MsgType::WheelRoll;
 		m_wheel			= wheel;
 		m_distance		= distance;
+		m_bInvertScroll = bInvertScroll;
 		m_pSource		= pWidget;
 		m_pCopyTo		= pWidget;
 	}
@@ -444,6 +445,11 @@ namespace wg
 	Coord WheelRollMsg::distance() const
 	{
 		return m_distance;
+	}
+
+	bool WheelRollMsg::invertScroll() const
+	{
+		return m_bInvertScroll;
 	}
 
 	const TypeInfo& WheelRollMsg::typeInfo(void) const

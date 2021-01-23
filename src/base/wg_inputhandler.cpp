@@ -690,13 +690,13 @@ namespace wg
 
 	//____ setWheelRoll() __________________________________________________________
 
-	void InputHandler::setWheelRoll( int wheel, Coord distance, int64_t timestamp )
+	void InputHandler::setWheelRoll( int wheel, Coord distance, bool bInvertScroll, int64_t timestamp )
 	{
 		if( m_pMarkedWidget )
 		{
 			if( timestamp == 0 )
 				timestamp = m_timeStamp;
-			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, timestamp ) );
+			Base::msgRouter()->post( new WheelRollMsg( m_inputId, wheel, distance, bInvertScroll, m_pMarkedWidget.rawPtr(), m_modKeys, m_pointerPos, timestamp ) );
 		}
 	}
 
